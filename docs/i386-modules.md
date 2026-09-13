@@ -173,3 +173,18 @@ boot stage, not the production disk loader or a complete usable-memory map.
 All 23 expanded native loader cases pass on the QEMU 486/8 MiB runner, together
 with the 16 regenerated data cases and the native heap regression. This is not
 a physical-386 result or completion of native OS module/lifetime integration.
+
+## Function-body string literals
+
+The native COC backend now emits position-independent addresses for
+`IC_STR_CONST`. Literal bytes, including their trailing NUL and any embedded NULs,
+follow the function's executable body. A module data-range record covers that
+pool so validation and instruction auditing do not decode literal bytes as code.
+The address uses a local CALL/POP plus displacement and zeroes the high half of
+the pointer value. It needs no load-address relocation and remains valid for the
+lifetime of the loaded image. Literal identity/deduplication is not guaranteed.
+
+The native input fixture exercises multiple table literals, empty strings and
+an embedded-NUL string returned from another function. The existing 155 compiler
+cases also pass. This adds function-body expressions, not address-bearing global
+or static initializers, a general native assembler, or self-hosted compilation.

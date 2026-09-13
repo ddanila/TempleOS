@@ -6,6 +6,10 @@
 #include "/Kernel/I386/KbcInput.HH"
 #include "/Kernel/I386/Irq.HH"
 #include "/Kernel/I386/ScanSet1.HH"
+#include "/Kernel/I386/ScanChar.HH"
+U8 char_oracle[32768];
+extern I64 CharTest();
+extern U8 *StringTestValue();
 extern I64 ScanTest();
 extern U0 I386PicInit();
 extern U0 I386PicMask(U16 mask);
@@ -32,6 +36,8 @@ I64 Main(I64 a,I64 b)
   control=a; swap=b;
   result=ScanTest;
   if (result) return 100+result;
+  result=CharTest;
+  if (result) return result;
   I386PicInit;
   if (!I386SchedInit(&scheduler,&tasks[0],swap) ||
       I386KbcInputInit(0,&scheduler) || I386KbcInputInit(&input,0) ||
@@ -114,6 +120,23 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/ScanSet1.HC"
+#include "/Kernel/I386/ScanChar.HC"
+
+I64 CharTest()
+{
+  I64 i;
+  U8 *p;
+  p=StringTestValue;
+  if (p[0]!='A' || p[1] || p[2]!='B' || p[3] || (p+0)(U64)>>32) return 190;
+  p="";
+  if (*p) return 191;
+  //The x64 guest fills this array from its existing ScanCode2Char implementation.
+  for (i=0;i<32768;i++)
+    if (I386ScanCode2Char(i)!=char_oracle[i] ||
+        I386ScanCode2Char(i|0xFFFFFFFF00000000)!=char_oracle[i]) return 200+i;
+  return 0;
+}
+U8 *StringTestValue() { return "A\x00B"; }
 
 I64 ScanTest()
 {

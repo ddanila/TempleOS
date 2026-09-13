@@ -168,7 +168,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   CExternUsage *usage;
   CAOTImportExport *import_rec;
   CMemberLst *arg;
-  I64 arg_index,arg_offset;
+  I64 arg_index,arg_offset,pool_start;
   I64 depth,pass,stack_size=0,args=0;
   U8 *result=NULL;
   CHashClass *c;
@@ -386,6 +386,17 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_TYPE:
             I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[1]);
             I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[0]);
+            depth++;
+            break;
+          case IC_STR_CONST:
+            label=ic->ic_data;
+            if (!label || label->type!=CMT_STR_CONST || !label->str || label->st_len<1)
+              throw('Compiler');
+            I386Byte(&out,0xE8); I386Dword(&out,0);
+            arg_offset=out.count;
+            I386Bytes(&out,"\x58\x05",2);
+            I386Dword(&out,label->addr-arg_offset);
+            I386Bytes(&out,"\x31\xD2\x52\x50",4);
             depth++;
             break;
           case IC_ADDR_IMPORT:
@@ -635,6 +646,21 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
         }
       }
       if (calls) throw('Compiler');
+      //Keep literal bytes after the function's return, separate from executable ranges.
+      pool_start=out.count;
+      for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
+        if (ic->ic_code==IC_STR_CONST) {
+          label=ic->ic_data;
+          if (!pass) label->addr=out.count;
+          I386Bytes(&out,label->str,label->st_len);
+        }
+      if (pass && out.count>pool_start) {
+        import_rec=CAlloc(sizeof(CAOTImportExport));
+        import_rec->type=IET_I386_DATA;
+        import_rec->rip=cc->aotc->rip+pool_start;
+        import_rec->flags=out.count-pool_start;
+        QueIns(import_rec,cc->aot->last_ie);
+      }
     }
   } catch {
     if (Fs->except_ch=='Compiler')

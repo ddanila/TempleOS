@@ -153,3 +153,22 @@ Raw code/flag conventions come from `Kernel/KernelA.HH` and
 Controller register and transaction references:
 [SeaBIOS PS/2 implementation](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.c)
 and [definitions](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.h).
+
+## TempleOS character conversion
+
+`ScanChar.HH` / `ScanChar.HC` provide `I386ScanCode2Char(I64 scan)`, matching
+the existing x64 `ScanCode2Char` behavior. The caller supplies a mapped scan value
+with modifier flags; this function does not track key presses or perform keypad
+mapping. Extended codes and base codes at or above 0x50 return zero. Ctrl takes
+precedence and maps letters to TempleOS's 1–26 control characters. Otherwise
+Shift XOR Caps selects the shifted table, including punctuation, Shift-Escape
+(0x1C) and Shift-Space (0x1F). Release flags do not suppress character conversion;
+the eventual message producer must still distinguish key-down and key-up events.
+
+The native input fixture's x64 compilation step calls the existing OS function
+for all 32,768 combinations of bits 0–14 and writes the results into an exported
+target data array. Native execution compares every result, then repeats each
+comparison with the high 32 bits set. All 65,536 comparisons pass. This provides
+an independent compatibility reference rather than a duplicate implementation
+in the test. Modifier state, keypad remapping, event dispatch and live keyboard
+configuration remain separate work.
