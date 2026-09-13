@@ -702,3 +702,18 @@ recipient isolation, live keyboard delivery through focus and retirement gating.
 The full task suite, both x64 rebuilds and image verification (747 files,
 62 directories) pass. Window activation, popup/parent focus selection, focus
 notifications and release ownership across focus changes remain pending.
+
+## Overflow-aware keyboard event reads
+
+A reusable blocking reader now checks raw loss accounting before and after a
+potentially suspended input read. Changed loss counts discard ambiguous backlog,
+reset packet/key state and return an explicit discontinuity without overwriting
+the event output. Saturation requires coordinated queue reset rather than silently
+accepting further unobservable losses.
+
+Native tests drop a Shift release while an E0 prefix is pending, verify state
+reset and backlog disposal, then receive unshifted input. Counter saturation/
+reset, invalid arguments and IF restoration pass. All nine live QMP events also
+pass through the new reader. The full input suite, instruction audit, both x64
+rebuilds and image verification (749 files, 62 directories) pass. Notification and
+reconciliation of key state already delivered to message clients remain pending.

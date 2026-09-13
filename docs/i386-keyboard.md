@@ -303,3 +303,36 @@ NEW_KEY flags for all QMP events. Synthetic checks cover shifted make/release,
 Ctrl-C, repeated modifier suppression, argument validation, unchanged outputs
 and error-driven reset. Actual TaskMsg integration, focus routing, LED updates
 and queue-loss reconciliation remain pending.
+
+## Blocking reads with overflow detection
+
+`KeyboardRead.HH` / `KeyboardRead.HC` combine the raw input wait and event
+processor. Initialize a `CI386KeyboardReader` whose input pointer is zero with
+`I386KeyboardReadInit(reader,input)`. One serialized consumer must own the reader
+and its input stream. Keep both records and the scheduler alive while reads may
+be suspended; output storage must not overlap them.
+
+`I386KeyboardRead(reader,event,wait=TRUE)` returns 1 for a complete event, 0 when
+input is unavailable or reserved by another pending reader, and -1 for invalid
+arguments or a stream discontinuity. Incomplete packets and suppressed events
+are consumed internally. Nonblocking calls consume available bytes up to an event
+or empty queue; worker blocking preserves incoming IF across suspension.
+
+The loss counter is checked under the interrupt mask both before raw consumption
+and after the raw read returns, covering overflow while a worker was blocked.
+A changed counter discards the ambiguous queued backlog, clears packet/modifier/
+lock state, records the new count and returns -1 with output unchanged. A saturated
+counter returns -1 on every call because further losses cannot be distinguished;
+recovery requires a coordinated raw-queue reset while no read is pending. The
+counter reset itself is reported once as a discontinuity.
+
+The caller must reconcile key state already delivered to message clients after
+-1; no synthetic releases or focus notifications are generated here. This is
+explicit loss detection and local decoder recovery, not complete UI recovery.
+Corrupt-byte errors from the event processor are also returned to the caller.
+
+The native input suite fills the queue while Shift is held and an E0 prefix is
+pending, drops a Shift release, and checks backlog disposal, cleared key/prefix
+state, unchanged output and unshifted subsequent input. Counter saturation/reset,
+invalid arguments and IF preservation are also checked. The live QMP worker now
+uses this blocking event reader for all nine injected key events.

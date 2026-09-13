@@ -11,6 +11,8 @@
 #include "/Kernel/I386/KeyboardSetup.HH"
 #include "/Kernel/I386/ScanState.HH"
 #include "/Kernel/I386/KeyboardEvent.HH"
+#include "/Kernel/I386/KeyboardRead.HH"
+extern I64 ReadTest();
 extern I64 EventTest();
 extern I64 StateTest();
 extern Bool StateCheck(U32 raw,U32 expected);
@@ -57,6 +59,8 @@ I64 Main(I64 a,I64 b)
   if (!I386SchedInit(&scheduler,&tasks[0],swap) ||
       I386KbcInputInit(0,&scheduler) || I386KbcInputInit(&input,0) ||
       !I386KbcInputInit(&input,&scheduler) || I386KbcInputInit(&input,&scheduler)) return 1;
+  result=ReadTest;
+  if (result) return result;
   if (I386KbcInputPut(&uninitialized,1,1) ||
       I386KbcInputRead(&uninitialized,&data,&status) ||
       I386KbcInputRead(&input,&data,&status) || data!=0x55 || status!=0xAA) return 2;
@@ -153,19 +157,20 @@ I64 LiveKeys()
 }
 U0 LiveReader(I64 unused)
 {
-  CI386KeyboardState state;
+  CI386KeyboardReader reader;
   CI386KeyEvent event;
   U32 scan,expected[9];
-  U8 data,status,ch;
+  U8 ch;
   I64 decoded;
   expected[0]=0x1E; expected[1]=0x11E; expected[2]=0x1C; expected[3]=0x11C;
   expected[4]=0xC8; expected[5]=0x1C8; expected[6]=0xB7; expected[7]=0x1B7;
   expected[8]=0x61;
-  I386KeyboardReset(&state);
+  reader.input=0;
+  if (!I386KeyboardReadInit(&reader,&input)) { errors++; return; }
   SetRFlags(GetRFlags|0x200);
   while (live_events<9) {
-    if (!I386KbcInputRead(&input,&data,&status) || !(GetRFlags&0x200)) { errors++; return; }
-    decoded=I386KeyboardFeed(&state,data,status,&event);
+    decoded=I386KeyboardRead(&reader,&event);
+    if (!(GetRFlags&0x200)) { errors++; return; }
     if (decoded<0) { errors++; return; }
     if (decoded) {
       scan=expected[live_events];
@@ -201,6 +206,39 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/KeyboardSetup.HC"
 #include "/Kernel/I386/ScanState.HC"
 #include "/Kernel/I386/KeyboardEvent.HC"
+#include "/Kernel/I386/KeyboardRead.HC"
+
+I64 ReadTest()
+{
+  CI386KbcInput stream;
+  CI386KeyboardReader reader;
+  CI386KeyEvent event;
+  I64 i;
+  stream.scheduler=0; reader.input=0;
+  if (!I386KbcInputInit(&stream,&scheduler) || !I386KeyboardReadInit(&reader,&stream) ||
+      I386KeyboardReadInit(&reader,&stream)) return 180;
+  SetRFlags(GetRFlags|0x200);
+  if (!I386KbcInputPut(&stream,0x2A,1) || I386KeyboardRead(&reader,&event,FALSE)!=1 ||
+      !(event.scan&0x200) || !I386KbcInputPut(&stream,0xE0,1) ||
+      I386KeyboardRead(&reader,&event,FALSE) || !reader.state.packet.extended) return 181;
+  event.type=99; event.ch=98; event.scan=97;
+  for (i=0;i<64;i++) if (!I386KbcInputPut(&stream,0x1E,1)) return 182;
+  if (I386KbcInputPut(&stream,0xAA,1) || I386KeyboardRead(&reader,&event,FALSE)!=-1 ||
+      event.type!=99 || event.ch!=98 || event.scan!=97 || stream.queue.count ||
+      reader.state.packet.extended || reader.state.keys.down[0x2A] ||
+      reader.losses!=1 || !(GetRFlags&0x200)) return 183;
+  if (I386KeyboardRead(&reader,&event,FALSE) || !I386KbcInputPut(&stream,0x1E,1) ||
+      I386KeyboardRead(&reader,&event,FALSE)!=1 || event.ch!='a') return 184;
+  stream.queue.dropped=0xFFFFFFFF;
+  if (I386KeyboardRead(&reader,&event,FALSE)!=-1 ||
+      I386KeyboardRead(&reader,&event,FALSE)!=-1) return 185;
+  I386KbcQueueInit(&stream.queue);
+  if (I386KeyboardRead(&reader,&event,FALSE)!=-1 ||
+      I386KeyboardRead(&reader,&event,FALSE) || I386KeyboardRead(0,&event,FALSE)!=-1 ||
+      I386KeyboardRead(&reader,0,FALSE)!=-1 || !(GetRFlags&0x200)) return 186;
+  SetRFlags(GetRFlags&~0x200);
+  return 0;
+}
 
 I64 EventTest()
 {
