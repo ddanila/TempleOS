@@ -85,7 +85,7 @@ Undefined function addresses are rejection cases. Imported addresses are covered
 by the data/module corpus. The runner reports the zero-based case index in
 hexadecimal on failure. Function bodies
 are exercised; the cases may contain multiple functions in one compilation unit.
-Runtime module loading, switch dispatch,
+Resident-module integration, switch dispatch,
 chained comparisons, variadic functions, debug information, and
 software F64 are not implemented by this backend.
 
@@ -104,8 +104,8 @@ covers 19 malformed header/record variants (including overflow-shaped counts),
 truncated/null buffers, duplicate exports, unresolved imports, and missing entry
 symbols. An independent host read of the four exported fixtures confirms the
 header layout, symbol names, and relocation records. This is a bootstrap static
-linker; a native i386 runtime loader, absolute pointer initializers, and module
-lifecycle support remain unfinished.
+linker using the shared native loader; resident kernel symbol integration,
+absolute pointer initializers, and module lifecycle support remain unfinished.
 
 Version-2 modules classify data ranges and distinguish function/data exports.
 All 16 `python3 tools/test-i386.py --data` cases pass in the 8 MiB QEMU 486
@@ -126,9 +126,17 @@ malformed records, duplicate patches, modules without symbol records, data-range
 overlaps/bounds, code/data export mismatches, address imports, and legacy-version
 rejection. This
 exercises a real kernel unit with target pointer layouts and short-circuit guards;
-it does not yet provide a runtime loader.
+the allocation-free loading implementation is exercised separately below.
 
-This remains partial M1/M2 work. There is no i386 module loader, software F64,
+`Kernel/I386/ModuleLoad.HC` loads a validated module set into caller-owned memory.
+The host linker and the native target execute the same implementation. All 23
+`python3 tools/test-i386-loader.py` cases pass on the 8 MiB QEMU 486 runner,
+including executing each valid image at two addresses. Failure paths check capacity,
+input/output overlap, address wrap, symbol errors, and unchanged buffers. The
+loader uses no allocation or host calls. Filesystem access, a resident kernel
+symbol registry, and lifetime/unloading integration are still required.
+
+This remains partial M1/M2 work. There is no software F64,
 full kernel, native i386 compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
 low-memory self-hosting, or completion of M1/M2. See `docs/i386-abi.md` for the
 working ABI decisions and remaining boundaries.
@@ -139,6 +147,8 @@ working ABI decisions and remaining boundaries.
   debug logs, screenshots, and source/binary hash manifest.
 - `build/i386-module-check/`: shared validator code, module fixture, disassembly,
   malformed-input corpus, runner log, and result JSON.
+- `build/i386-loader-test/`: native loader image, disassembly, module packets,
+  and loaded-code execution results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
 - `build/i386-functions-test/`: function corpus, disassembly, ABI runner and logs.

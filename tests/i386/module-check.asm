@@ -1,5 +1,8 @@
 ; Executes the actual shared HolyC validator on the i386 target.
 %include "tests/i386/boot.inc"
+%ifndef TEST_NAME
+%define TEST_NAME "i386 module validator"
+%endif
 section stage vstart=0x10000 align=1
 bits 32
     cld
@@ -30,7 +33,17 @@ case_next:
     mov eax,0x70000
 .null:
     push eax
+    mov ebx,0x12345678
     call validator
+    mov [test_result],eax
+    cmp ebx,0x12345678
+    jne failed
+    cmp esi,[next_case]
+    jne failed
+    mov ecx,[ebp]
+    add ecx,0x70000
+    cmp edi,ecx
+    jne failed
     cmp esp,0x90000
     jne failed
     test edx,edx
@@ -59,6 +72,17 @@ failed:
     and al,15
     xlatb
     out 0xe9,al
+    mov al,':'
+    out 0xe9,al
+    mov eax,[test_result]
+    shr al,4
+    and al,15
+    xlatb
+    out 0xe9,al
+    mov eax,[test_result]
+    and al,15
+    xlatb
+    out 0xe9,al
     mov al,10
     out 0xe9,al
     mov eax,0x11
@@ -75,10 +99,11 @@ puts:
     jmp puts
 .done:
     ret
-passmsg: db 'PASS i386 module validator',10,0
-failmsg: db 'FAIL i386 module validator ',0
+passmsg: db 'PASS ',TEST_NAME,10,0
+failmsg: db 'FAIL ',TEST_NAME,' ',0
 hex_digits: db '0123456789ABCDEF'
 case_index: dd 0
 next_case: dd 0
+test_result: dd 0
 validator: incbin VALIDATOR_FILE
 cases: incbin CASES_FILE

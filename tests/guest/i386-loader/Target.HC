@@ -1,0 +1,63 @@
+#include "/Kernel/Types.HH"
+#define TRUE 1
+#define FALSE 0
+#define U32_MAX 0xFFFFFFFF
+extern I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,U8 *entry_name);
+U8 entry_name[5]="Main",output[2048],other[2048],original[2048];
+I64 Main(I64 a,I64 b)
+{
+  U8 *packet=a,*modules[3],*cursor;
+  I64 sizes[3],count,mode,expected,required,i,j,result;
+  I64 (*entry)(I64 x,I64 y);
+  if (b<28 || b>2048) return 1;
+  mode=packet(U32 *)[0]; count=packet(U32 *)[1]; expected=(packet+8)(I64 *)[0];
+  if (count<1 || count>3) return 2;
+  cursor=packet+28;
+  for (i=0;i<count;i++) {
+    sizes[i]=(packet+16)(U32 *)[i]; modules[i]=cursor;
+    if (sizes[i]>b-(cursor-packet)) return 3;
+    cursor+=sizes[i];
+  }
+  for (i=0;i<b;i++) original[i]=packet[i];
+  for (i=0;i<2048;i++) { output[i]=0xA5; other[i]=0x5A; }
+  required=I386LoadInto(modules,sizes,count,0,0,entry_name);
+  if (mode) {
+    if (required || I386LoadInto(modules,sizes,count,output,2048,entry_name)) return 4;
+  } else {
+    if (required<8 || required>2048) return 5;
+    if (I386LoadInto(modules,sizes,count,output,required-1,entry_name)) return 6;
+    if (I386LoadInto(modules,sizes,count,modules[0],required,entry_name)) return 7;
+    if (I386LoadInto(modules,sizes,count,modules,required,entry_name)) return 8;
+    if (I386LoadInto(modules,sizes,count,sizes,required,entry_name)) return 9;
+    if (I386LoadInto(modules,sizes,count,entry_name,required,entry_name)) return 10;
+    if (I386LoadInto(modules,sizes,count,0xFFFFFFF0,required,entry_name)) return 11;
+    if (I386LoadInto(modules,sizes,count,0,1,entry_name) ||
+        I386LoadInto(modules,sizes,0,output,2048,entry_name) ||
+        I386LoadInto(0,sizes,count,output,2048,entry_name) ||
+        I386LoadInto(modules,0,count,output,2048,entry_name) ||
+        I386LoadInto(modules,sizes,count,output,2048,0) ||
+        I386LoadInto(modules,sizes,count,output,-1,entry_name) ||
+        I386LoadInto(modules,sizes,count,output,0x100000000,entry_name) ||
+        I386LoadInto(modules,sizes,0x20000000,output,2048,entry_name) ||
+        I386LoadInto(modules,sizes,count,other,2048,output) ||
+        I386LoadInto(modules,sizes,count,other,2048,entry_name+4)) return 12;
+  }
+  for (i=0;i<2048;i++)
+    if (output[i]!=0xA5 || other[i]!=0x5A) return 13;
+  if (!mode) {
+    if (I386LoadInto(modules,sizes,count,output,required,entry_name)!=required ||
+        I386LoadInto(modules,sizes,count,other,2048,entry_name)!=required) return 14;
+    for (i=0;i<required;i++) if (output[i]!=other[i]) return 15;
+    entry=output; result=(*entry)(0,0);
+    if (result!=expected) return 16;
+    entry=other; result=(*entry)(0,0);
+    if (result!=expected) return 17;
+    for (i=required;i<2048;i++)
+      if (output[i]!=0xA5 || other[i]!=0x5A) return 18;
+  }
+  for (i=0;i<b;i++) if (original[i]!=packet[i]) return 19;
+  if (entry_name[0]!='M' || entry_name[1]!='a' || entry_name[2]!='i' ||
+      entry_name[3]!='n' || entry_name[4]) return 20;
+  return 0;
+}
+#include "/Kernel/I386/ModuleLoad.HC"

@@ -92,7 +92,9 @@ Stores use the destination value type, including assignments to array elements.
 Function code starts on eight-byte boundaries independently of packed data layout.
 Address-bearing static initializers and executable initializers remain pending.
 
-Variadic calls, runtime module loading, floating-point output, switch dispatch,
+The shared module loader now executes on i386 with caller-owned output memory.
+Resident kernel symbol binding and lifetime management remain pending.
+Variadic calls, floating-point output, switch dispatch,
 and chained comparisons remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.

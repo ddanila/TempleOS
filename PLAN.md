@@ -16,7 +16,7 @@ Implementation is underway; see [port progress](docs/port-progress.md) for curre
 evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 694 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
+checks 695 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. Experimental i386 expression
 and function backends are tracked in the progress document.
 
@@ -298,8 +298,10 @@ bootstrap linker and shared module validator now have target execution tests.
 Indirect fixed-arity calls and same-module function addresses now pass target
 execution tests, including callbacks in linked modules. Global/static storage and
 relative address imports now have a version-2 module path with explicit data ranges.
-Prioritize a native runtime loader, variadic calls, address-bearing initializers,
-and exception-safe runtime interfaces before attempting a full kernel link. Runner success remains an
+The shared loader now executes on i386 and loads code/data into caller-owned
+memory. Next, connect native allocation and platform services, then resident kernel
+symbol binding, variadic calls, address-bearing initializers, and exception-safe
+runtime interfaces before attempting a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.
 
 ## Verification strategy

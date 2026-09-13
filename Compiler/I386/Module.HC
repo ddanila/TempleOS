@@ -1,7 +1,7 @@
 //Bootstrap module writer/linker runs on the x86-64 HolyC compiler host.
 #include "/Kernel/I386/Module.HH"
 
-#include "/Kernel/I386/ModuleCheck.HC"
+#include "/Kernel/I386/ModuleLoad.HC"
 
 U0 I386AOTDel(CAOT *aot)
 {
@@ -79,66 +79,22 @@ record_done:
   return data;
 }
 
-I64 I386ModuleSymbol(U8 **modules,I64 count,I64 *bases,U8 *name,I64 *matches,I64 kind=0)
-{
-  CI386ModuleHeader *h;
-  CI386ModuleRecord *r;
-  I64 i,j,result=0;
-  *matches=0;
-  for (i=0;i<count;i++) {
-    h=modules[i]; r=modules[i]+h->records_offset;
-    for (j=0;j<h->record_count;j++,r++)
-      if ((r->kind==I386_MODULE_EXPORT || r->kind==I386_MODULE_DATA_EXPORT) &&
-          (!kind || kind==r->kind) && !StrCmp(modules[i]+r->name_offset,name)) {
-        (*matches)++; result=bases[i]+r->offset;
-      }
-  }
-  return result;
-}
-
 public U8 *I386Link(U8 **modules,I64 *sizes,I64 count,I64 *size,U8 *entry_name="Main")
-{//Link immutable T32M inputs to a flat bootstrap image with an entry trampoline.
-  CI386ModuleHeader *h;
-  CI386ModuleRecord *r;
+{//Host allocation wrapper around the shared native loader.
   U8 *image=NULL;
-  I64 *bases=NULL,i,j,total=8,matches,target,patch;
+  I64 required;
   if (!size) return NULL;
   *size=0;
-  if (!modules || !sizes || count<=0 || count>U32_MAX/8 || !entry_name) return NULL;
+  required=I386LoadInto(modules,sizes,count,NULL,0,entry_name);
+  if (!required) return NULL;
   try {
-    bases=CAlloc(count*8);
-    for (i=0;i<count;i++) {
-      if (!I386ModuleValid(modules[i],sizes[i])) throw('Compiler');
-      h=modules[i]; bases[i]=total; total+=h->code_size;
-      if (total>U32_MAX) throw('Compiler');
+    image=CAlloc(required);
+    if (I386LoadInto(modules,sizes,count,image,required,entry_name)!=required) {
+      Free(image); image=NULL;
     }
-    target=I386ModuleSymbol(modules,count,bases,entry_name,&matches,I386_MODULE_EXPORT);
-    if (matches!=1) throw('Compiler');
-    image=CAlloc(total);
-    image[0]=0xE9; (image+1)(U32 *)[0]=target-5;
-    for (i=0;i<count;i++) {
-      h=modules[i]; MemCpy(image+bases[i],modules[i]+32,h->code_size);
-      r=modules[i]+h->records_offset;
-      for (j=0;j<h->record_count;j++,r++) {
-        if (r->kind==I386_MODULE_DATA_RANGE) goto link_next_record;
-        target=I386ModuleSymbol(modules,count,bases,modules[i]+r->name_offset,&matches);
-        if (matches!=1) throw('Compiler');
-        if (r->kind==I386_MODULE_REL32) {
-          target=I386ModuleSymbol(modules,count,bases,modules[i]+r->name_offset,
-            &matches,I386_MODULE_EXPORT);
-          if (matches!=1) throw('Compiler');
-        }
-        if (r->kind==I386_MODULE_REL32 || r->kind==I386_MODULE_ADDRESS) {
-          patch=bases[i]+r->offset;
-          (image+patch)(U32 *)[0]=target-(patch+4);
-        }
-link_next_record:
-      }
-    }
-    *size=total;
   } catch {
     Free(image); image=NULL; Fs->catch_except=TRUE;
   }
-  Free(bases);
+  if (image) *size=required;
   return image;
 }

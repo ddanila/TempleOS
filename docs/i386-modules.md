@@ -1,11 +1,12 @@
 # i386 bootstrap modules
 
-`CmpI386Module` compiles HolyC with the i386 backend and writes a version-2 `T32M` module.
-`I386ModuleValid` checks its structure and architecture/ABI fields. `I386Link`
-links an array of modules into a flat bootstrap image. These functions currently
-run inside the x86-64 HolyC compiler host. The shared validator also has a native
-i386 execution test; a native i386 runtime loader remains
-unfinished. The module format is distinct from the existing x86-64 BIN format.
+`CmpI386Module` compiles HolyC with the i386 backend and writes a version-2 `T32M`
+module. `I386ModuleValid` checks its structure and architecture/ABI fields.
+`I386LoadInto` validates and loads a set of modules into caller-owned memory on
+both the x86-64 host and the native i386 target. `I386Link` provides the host
+allocation wrapper. The module format is distinct from the existing x86-64 BIN
+format. Filesystem integration, resident kernel symbols, and module lifetime
+management are still pending.
 
 All fields are little endian and all offsets/counts are unsigned fixed-width
 integers. No host pointer, host class image, source link, or timestamp is stored.
@@ -92,3 +93,40 @@ in both module orders, and imported callback addresses. The instruction audit us
 export and data-range boundaries and rejects unclassified non-padding bytes.
 `python3 tools/test-i386-module-check.py` executes the shared validator itself as
 i386 code, including malformed data-range and export-kind fixtures.
+
+## Native loading API
+
+`Kernel/I386/ModuleLoad.HC` implements:
+
+```text
+I64 I386LoadInto(U8 **modules, I64 *sizes, I64 count,
+                U8 *image, I64 capacity, U8 *entry_name)
+```
+
+A successful call returns the image size; failure returns zero. Passing a null
+image with zero capacity validates the complete module set and queries the needed
+size. A non-null output must have enough capacity. Entry names must contain 1–255
+bytes followed by NUL. Pointer tables use the executing architecture's pointer
+width; size/count/capacity arguments retain I64 widths.
+
+The caller supplies readable input arrays and module buffers, keeps them stable
+through the call, and owns writable output storage. The loader rejects an output
+range that wraps its address space or overlaps the module bytes, pointer/size
+tables, or entry name. It validates every module, symbol, and relocation before
+writing, so rejected loads leave output and inputs unchanged. Successful loads
+write exactly the returned number of bytes. No allocator, host callback, floating
+point, or exception runtime is required by the loader itself.
+
+The output begins with the entry trampoline and can be called using the entry
+function's HolyC signature. The caller controls execution and retains the buffer
+while code, data, or function pointers still refer to it. This API loads a complete
+module set; it does not yet bind imports to an existing kernel symbol registry or
+manage unloading.
+
+`python3 tools/test-i386-loader.py` first regenerates the data fixtures, then
+compiles this exact loader and executes it in the i386 runner. Its 23 cases cover
+loaded code/data at two output addresses, malformed/truncated modules, unresolved
+and duplicate exports, missing entries, and attempts to use data as code. Each
+valid case also checks size queries, exact/insufficient capacity, buffer overlap,
+address wrapping, invalid arguments, unchanged input bytes, output sentinels,
+and the loaded program's result. Artifacts are in `build/i386-loader-test/`.
