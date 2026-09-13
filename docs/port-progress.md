@@ -335,6 +335,25 @@ This is IRQ0/IRQ8 delivery in the QEMU 486/8 MiB runner, not a complete interrup
 subsystem. Keyboard input, full exception handling, scheduling,
 calibrated time, production boot wiring and physical 386 validation remain pending.
 
+## Cooperative context foundation
+
+`Kernel/I386/Context.asm` saves/restores integer registers, selectors, EFLAGS and
+ESP between live ring-0 stacks in one flat address space. `Context.HC` constructs
+fresh stacks for a HolyC entry with one full-width argument and a nonreturning
+exit path. Both calls require caller-owned state; switching requires IF clear.
+
+`python3 tools/test-i386.py --tasks` passes with two heap-owned guarded 8 KiB
+stacks, 64 yields per worker, checked local arrays and 64-bit accumulators,
+same-context switching, rejected initialization, task return, and retirement from
+the parent stack. Both stacks are freed and the full arena is reusable. Context
+assembly and native HolyC code have separate instruction audits. Both x64
+rebuild/reboot generations and the 718-file image verification also pass.
+
+This is a context primitive plus a test scheduler, not the complete TempleOS
+task system. Runnable queues, current-task/CPU descriptor bindings, public `Yield`,
+blocking/wakeup, cancellation, debugger/exception state, and F64 state remain.
+See the [context ABI and limits](i386-context.md).
+
 ## Test artifacts
 
 - `build/rebuild-test/`: build ISOs, both exported generations, QEMU commands,
@@ -345,6 +364,8 @@ calibrated time, production boot wiring and physical 386 validation remain pendi
   and allocated/caller-buffer loaded-code execution and lifetime results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
+- `build/i386-tasks-test/`: native workers, initializer, separately audited context
+  assembly, runner, and execution result.
 - `build/i386-irq-test/`: compiled PIC/PIT/RTC and callback code, audited assembly
   ranges, interrupt/exception runner, and execution result.
 - `build/i386-a20-test/`: native gate-method and high-memory allocation fixture,
