@@ -384,7 +384,16 @@ field accesses instead of the x64 MOV_FS/MOV_GS folding. A temporary GDT test us
 distinct FS/GS bases, checks self/pointer fields, reads/writes and 64-bit arithmetic,
 then restores the original GDTR and selectors. The combined task test, 150-function
 regression corpus, both x64 rebuilds and image verification pass. Descriptor setup
-is test-only and separately audited; automatic scheduler/CPU bindings remain next.
+is test-only and separately audited.
+
+Scheduler records now carry self-address pointers, and a one-time binding hook
+runs with IF masked before Yield/Block/Finish switches. Native descriptor creation
+and a small FS/GS reload routine bind the incoming task and one CPU record. Fresh
+contexts accept the corresponding selectors. The combined fixture verifies Fs/Gs
+identity in root, workers, the binding hook and timer IRQs, checks rejected binding
+and descriptor arguments, then restores the original GDT. The task and IRQ tests,
+both x64 rebuilds, and 723-file verification pass. Full CTask/CCPU migration,
+production descriptor-slot management and public task APIs remain pending.
 
 See the [context ABI and limits](i386-context.md).
 

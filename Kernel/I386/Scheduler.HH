@@ -4,6 +4,7 @@
 extern class CI386Scheduler;
 class CI386Task
 {
+  CI386Task *addr;
   CI386Context context;
   CI386Task *next,*last;
   CI386Scheduler *owner;
@@ -13,7 +14,9 @@ class CI386Scheduler
 {
   CI386Task *root,*current;
   U0 (*swap)(CI386Context *old,CI386Context *next);
+  U0 (*bind)(CI386Task *task);
 };
+class CI386Cpu { CI386Cpu *addr; CI386Scheduler *scheduler; };
 public extern Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next));
 public extern Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task);
@@ -23,4 +26,5 @@ public extern Bool I386SchedReap(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedBlock(CI386Scheduler *s);
 public extern Bool I386SchedWake(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedIdle(CI386Scheduler *s,U0 (*idle)());
+public extern Bool I386SchedSetBind(CI386Scheduler *s,U0 (*bind)(CI386Task *task));
 #endif

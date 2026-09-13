@@ -15,7 +15,13 @@ extern I64 TimerWakeTest();
 extern U0 TimerWorker(I64 arg);
 extern U0 OnTimer(CI386IrqFrame *frame);
 class CTimerDispatch { U0 (*handler)(CI386IrqFrame *frame); };
-class CTaskTestControl { CTimerDispatch *irq; U0 (*idle)(); I64 (*segments)(I64 callback); };
+class CTaskTestControl {
+  CTimerDispatch *irq; U0 (*idle)(); I64 (*segments)(I64 callback);
+  U0 (*reload)(U16 fs,U16 gs); U8 *task_descriptor,*cpu_descriptor;
+};
+extern Bool I386DataSegment(U8 *descriptor,U8 *base,I64 size);
+extern U0 BindTask(CI386Task *task);
+CI386Cpu bound_cpu;
 class CSegmentTask { CSegmentTask *addr; U32 tag; I64 wide; U8 *ptr; U8 bytes[4]; };
 class CSegmentCpu { CSegmentCpu *addr; U32 tag; CSegmentTask *task; };
 _intern 0x15 CSegmentTask *Fs();
@@ -81,7 +87,7 @@ I64 Main(I64 a,I64 b)
   if (heap.used || heap.allocations || !I386HeapValid(&heap)) return 11;
   p=I386HeapAlloc(&heap,32752);
   if (!p || !I386HeapFree(&heap,p)) return 12;
-  return SchedulerTest;
+  return (*test_control->segments)(&SchedulerTest);
 }
 U0 Worker(I64 arg)
 {
@@ -113,7 +119,7 @@ U0 TaskExit()
 I64 SchedulerTest()
 {
   CI386Heap heap;
-  U8 *stacks[3],*p;
+  U8 *stacks[3],*p,descriptor_before[8];
   I64 i,j,round;
   if (!I386HeapInit(&heap,0x40000,32768) ||
       I386SchedInit(0,&tasks[0],swap) || I386SchedInit(&scheduler,0,swap) ||
@@ -122,6 +128,17 @@ I64 SchedulerTest()
       I386SchedInit(&scheduler,&tasks[0],swap) ||
       !I386SchedYield(&scheduler) || I386SchedFinish(&scheduler) ||
       I386SchedAdd(&scheduler,&tasks[0]) || I386SchedReap(&scheduler,&tasks[0])) return 13;
+  for (i=0;i<8;i++) descriptor_before[i]=test_control->cpu_descriptor[i];
+  if (I386DataSegment(0,&bound_cpu,8) ||
+      I386DataSegment(test_control->cpu_descriptor,&bound_cpu,0) ||
+      I386DataSegment(test_control->cpu_descriptor,&bound_cpu,0x100001) ||
+      I386DataSegment(test_control->cpu_descriptor,0xFFFFFFF8,16)) return 38;
+  for (i=0;i<8;i++) if (descriptor_before[i]!=test_control->cpu_descriptor[i]) return 39;
+  bound_cpu.addr=&bound_cpu; bound_cpu.scheduler=&scheduler;
+  if (!I386DataSegment(test_control->cpu_descriptor,&bound_cpu,sizeof(CI386Cpu)) ||
+      I386SchedSetBind(0,&BindTask) || I386SchedSetBind(&scheduler,0) ||
+      !I386SchedSetBind(&scheduler,&BindTask) || I386SchedSetBind(&scheduler,&BindTask) ||
+      (Fs+0)(U8 *)!=&tasks[0] || (Gs+0)(U8 *)!=&bound_cpu) return 37;
   //Retire and reuse the same records and heap storage twice.
   if (I386SchedBlock(0) || I386SchedBlock(&scheduler) ||
       I386SchedWake(0,&tasks[0]) || I386SchedWake(&scheduler,0) ||
@@ -134,11 +151,11 @@ I64 SchedulerTest()
       if (!p) return 14;
       for (j=0;j<8208;j++) p[j]=0xA5;
       if (I386SchedAdd(&scheduler,&tasks[i]) ||
-          !I386ContextInit(&tasks[i].context,p+8,8192,&ScheduledWorker,i,&ScheduledExit) ||
+          !I386ContextInit(&tasks[i].context,p+8,8192,&ScheduledWorker,i,&ScheduledExit,0x18,0x20) ||
           !I386SchedAdd(&scheduler,&tasks[i]) || I386SchedAdd(&scheduler,&tasks[i]) ||
           I386SchedReap(&scheduler,&tasks[i])) return 15;
     }
-    if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] ||
+    if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] || (Fs+0)(U8 *)!=&tasks[0] || (Gs+0)(U8 *)!=&bound_cpu ||
         tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0]) return 25;
     for (i=1;i<=2;i++) if (!tasks[i].blocked || tasks[i].finished ||
         tasks[i].next || tasks[i].last || scheduled_progress[i] ||
@@ -147,7 +164,7 @@ I64 SchedulerTest()
         !I386SchedWake(&scheduler,&tasks[2]) || I386SchedWake(&scheduler,&tasks[2]) ||
         !I386SchedWake(&scheduler,&tasks[1]) || I386SchedWake(&scheduler,&tasks[1])) return 27;
     for (j=0;j<65;j++) {
-      if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] ||
+      if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] || (Fs+0)(U8 *)!=&tasks[0] || (Gs+0)(U8 *)!=&bound_cpu ||
           (GetRFlags&0x600) || errors || wake_order!=21) return 16;
       for (i=1;i<=2;i++) {
         if (j<64) {
@@ -172,15 +189,15 @@ I64 SchedulerTest()
 U0 ScheduledWorker(I64 id)
 {
   I64 round,local=0;
-  if (!I386SchedBlock(&scheduler) || scheduler.current!=&tasks[id] ||
+  if (!I386SchedBlock(&scheduler) || (scheduler.current!=&tasks[id] || (Fs+0)(U8 *)!=&tasks[id] || (Gs+0)(U8 *)!=&bound_cpu) ||
       tasks[id].blocked || local || (GetRFlags&0x600)) errors++;
   wake_order=wake_order*10+id;
   for (round=0;round<64;round++) {
-    if (scheduler.current!=&tasks[id]) errors++;
+    if ((scheduler.current!=&tasks[id] || (Fs+0)(U8 *)!=&tasks[id] || (Gs+0)(U8 *)!=&bound_cpu)) errors++;
     local+=0x100000000+id;
     scheduled_progress[id]=round+1;
     if (!I386SchedYield(&scheduler) || local!=(round+1)*(0x100000000+id) ||
-        scheduler.current!=&tasks[id]) errors++;
+        (scheduler.current!=&tasks[id] || (Fs+0)(U8 *)!=&tasks[id] || (Gs+0)(U8 *)!=&bound_cpu)) errors++;
   }
 }
 U0 ScheduledExit()
@@ -202,7 +219,7 @@ I64 TimerWakeTest()
   I386PicInit;
   timer_dispatch->handler=&OnTimer;
   if (!I386PitStart(1193) ||
-      !I386ContextInit(&tasks[1].context,stack+8,8192,&TimerWorker,0x1234567800000001,&ScheduledExit) ||
+      !I386ContextInit(&tasks[1].context,stack+8,8192,&TimerWorker,0x1234567800000001,&ScheduledExit,0x18,0x20) ||
       !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedYield(&scheduler) ||
       !tasks[1].blocked || events || wait_rounds) return 30;
   if (I386SchedIdle(0,idle) || I386SchedIdle(&scheduler,0) || (GetRFlags&0x200)) return 34;
@@ -235,7 +252,7 @@ U0 TimerWorker(I64 arg)
     while (events==consumed) if (!I386SchedBlock(&scheduler)) errors++;
     consumed=events;
     I386IrqRestore(flags);
-    if (!(GetRFlags&0x200) || scheduler.current!=&tasks[1] ||
+    if (!(GetRFlags&0x200) || scheduler.current!=&tasks[1] || (Fs+0)(U8 *)!=&tasks[1] || (Gs+0)(U8 *)!=&bound_cpu ||
         local!=0x1234567800000001) errors++;
     wait_rounds++;
   }
@@ -243,6 +260,7 @@ U0 TimerWorker(I64 arg)
 U0 OnTimer(CI386IrqFrame *frame)
 {
   CI386Task *before=scheduler.current;
+  if ((Fs+0)(U8 *)!=before || (Gs+0)(U8 *)!=&bound_cpu) errors++;
   if (!I386PicAccept(frame->irq)) { errors++; return; }
   if (frame->irq || (GetRFlags&0x600) || (frame->eflags&0x600)!=0x200) errors++;
   events++;
@@ -272,3 +290,12 @@ I64 SegmentCheck()
       (Fs+0)(U64)!=0x50000 || (Gs+0)(U64)!=0x50100) return 2;
   return 0;
 }
+
+U0 BindTask(CI386Task *task)
+{
+  if (GetRFlags&0x200 || task->addr!=task || scheduler.current!=task ||
+      !I386DataSegment(test_control->task_descriptor,task,sizeof(CI386Task))) errors++;
+  (*test_control->reload)(0x18,0x20);
+  if ((Fs+0)(U8 *)!=task || (Gs+0)(U8 *)!=&bound_cpu) errors++;
+}
+#include "/Kernel/I386/Segments.HC"

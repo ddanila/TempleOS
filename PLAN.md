@@ -16,7 +16,7 @@ Implementation is underway; see [port progress](docs/port-progress.md) for curre
 evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 721 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
+checks 723 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. Experimental i386 expression
 and function backends are tracked in the progress document.
 
@@ -324,8 +324,10 @@ a combined PIT/task test now passes IRQ-driven event publication and wakeup
 through 16 waits. Root-only idle now checks the queue with IF masked and halts
 through an adjacent STI/HLT sequence, with IRQ wakeup and IF restoration tested.
 Native Fs/Gs intrinsics now pass pointer and field-access tests through distinct
-protected-mode segment bases. Next, integrate descriptor binding during switches
-and public task semantics, bring up
+protected-mode segment bases. Scheduler binding now rewrites/reloads the incoming
+task's FS descriptor with IF masked, preserving a shared CPU GS binding through
+switches and hardware IRQs. Next, migrate full public task/CPU records and task
+semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe

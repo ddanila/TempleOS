@@ -17,7 +17,7 @@ The general-register order follows Intel's
 
 ## Initial stack
 
-`I386ContextInit(context, stack, size, entry, arg, exit)` constructs an initial
+`I386ContextInit(context, stack, size, entry, arg, exit, fs=16, gs=16)` constructs an initial
 frame without running it. The stack must be writable, eight-byte aligned, at
 least 256 bytes, and sized in multiples of eight. Its end must fit a U32 address
 and it cannot overlap the context record. Both function pointers are required.
@@ -28,7 +28,7 @@ The initializer reserves 88 bytes at the top of the stack:
 
 | Byte offset | Contents |
 | --- | --- |
-| 0–12 | GS, FS, ES, DS, initially flat selector 16 |
+| 0–12 | GS, FS (caller-selected, default 16), ES, DS (16) |
 | 16–44 | EDI, ESI, EBP, ignored saved ESP, EBX, EDX, ECX, EAX |
 | 48 | EFLAGS, initially 2 (IF and DF clear) |
 | 52 | Entry address consumed by the switch's RET |
@@ -202,5 +202,37 @@ heap, loaded stage, and stack. The test-only descriptor setup code is a sixth
 separate instruction-audit range; the GDT and GDTR data are excluded.
 
 This verifies native compiler access through real protected-mode segments.
-Production task/CPU record layouts, descriptor allocation and reloads during
-context switches, and automatic scheduler bindings still need implementation.
+The scheduler binding integration below builds on this isolated compiler test;
+full CTask/CCPU layouts and production descriptor-slot management remain pending.
+
+## Scheduler task/CPU binding
+
+`CI386Task` now begins with its flat self-address pointer, followed by its saved
+context and queue state. `CI386Cpu` provides a self-address pointer and scheduler
+pointer. These are bootstrap records, not the complete CTask/CCPU layouts.
+
+`I386SchedSetBind(s, bind)` installs a non-failing, non-yielding binding callback
+once on a fresh root before task attachment or the first context switch. It binds
+root immediately. Yield, Block, and Finish update `current`, invoke the callback
+with IF clear, then switch stacks. The callback must finish with IF clear and
+valid incoming task/CPU segment state. The transition briefly uses the old stack
+with incoming segment state; IRQs stay masked, and NMI use is unsupported.
+
+`I386DataSegment(descriptor, base, size)` writes a present, writable ring-0 data
+descriptor with 32-bit operands and byte granularity, for sizes 1 through 1 MiB.
+The range must fit the 32-bit address space. The caller owns a writable GDT slot
+and masks IRQs while editing it. `Segments.asm` reloads FS/GS from two U16 selector
+arguments after descriptor changes, refreshing the hidden base/limit caches.
+The format and reload behavior follow Intel's
+[segment translation description](https://pdos.csail.mit.edu/6.828/2008/readings/i386/s05_01.htm).
+
+Fresh contexts accept explicit FS/GS selectors; they must name installed, live
+descriptors when the context is first selected. The initializer does not validate
+GDT contents. Existing callers retain flat selector 16 defaults.
+
+The combined fixture uses a dedicated FS descriptor rewritten for each incoming
+task and one GS descriptor for its CPU record. It checks Fs/Gs identity in root,
+workers across yields and blocking, the binding callback, and hardware IRQs, then
+restores the original GDT/selectors on return to the outer harness. Segment reload
+assembly has its own audit range. Descriptor-slot management, full public task/CPU
+records and production boot wiring remain pending.
