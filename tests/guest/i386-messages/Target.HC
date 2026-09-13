@@ -5,6 +5,7 @@
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/Message.HH"
 #include "/Kernel/I386/Inbox.HH"
+#include "/Kernel/I386/Focus.HH"
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/KbcInput.HH"
 #include "/Kernel/I386/KeyboardSetup.HH"
@@ -20,6 +21,7 @@ CI386Scheduler scheduler;
 CI386Task tasks[3];
 CI386MsgQueue messages;
 CI386MsgQueue orphan;
+CI386MsgQueue root_inbox;
 CI386KbcInput input;
 CControl *control;
 U32 produced,consumed,errors;
@@ -51,6 +53,13 @@ I64 Main(I64 a,I64 b)
   if (!I386MsgAttach(&messages,&tasks[2]) || I386MsgAttach(&messages,&tasks[2]) ||
       I386MsgDetach(&messages) || I386TaskMsgSend(&tasks[1],2,0,0) ||
       !I386TaskMsgSend(&tasks[2],1,0,0)) return 20;
+  if (!I386MsgInit(&root_inbox,&scheduler) || !I386MsgAttach(&root_inbox,&tasks[0]) ||
+      !I386FocusSet(&scheduler,&tasks[0]) || !I386FocusMsgSend(&scheduler,5,6,7) ||
+      I386MsgRead(&root_inbox,&message)!=5 || message.arg1!=6 || message.arg2!=7 ||
+      !I386FocusSet(&scheduler,0) || I386FocusMsgSend(&scheduler,5,6,7) ||
+      !I386FocusSet(&scheduler,&tasks[2]) || !I386FocusSet(&scheduler,&tasks[2]) ||
+      I386FocusSet(&scheduler,&tasks[1]) || scheduler.focus!=&tasks[2] ||
+      !I386MsgClose(&root_inbox) || !I386MsgDetach(&root_inbox)) return 22;
   message.type=99;
   if (I386MsgRead(&messages,&message,~1,FALSE) || message.type!=99 || messages.count!=1 ||
       !I386SchedYield(&scheduler) || !tasks[1].blocked || !tasks[2].blocked) return 3;
@@ -75,6 +84,8 @@ I64 Main(I64 a,I64 b)
       I386SchedReap(&scheduler,&tasks[2]) || I386TaskMsgSend(&tasks[2],2,0,0) ||
       !I386MsgDetach(&messages) || tasks[2].messages || messages.recipient ||
       I386MsgDetach(&messages) ||
+      I386FocusMsgSend(&scheduler,2,0,0) || I386SchedReap(&scheduler,&tasks[2]) ||
+      I386FocusSet(&scheduler,&tasks[2]) || !I386FocusSet(&scheduler,0) ||
       !I386SchedReap(&scheduler,&tasks[1]) || !I386SchedReap(&scheduler,&tasks[2])) return 7;
   //A task that returns without closing its inbox still cannot be reaped or receive sends.
   if (!I386ContextInit(&tasks[1].context,0x52000,8192,&EmptyWorker,0,&EndTask) ||
@@ -132,7 +143,7 @@ U0 Broker(I64 unused)
     result=I386KeyboardFeed(&state,data,status,&event);
     if (result<0) { errors++; break; }
     if (result) {
-      if (!I386TaskMsgSend(&tasks[2],event.type,event.ch,event.scan) || !(GetRFlags&0x200)) {
+      if (!I386FocusMsgSend(&scheduler,event.type,event.ch,event.scan) || !(GetRFlags&0x200)) {
         errors++; break;
       }
       produced++;
@@ -206,6 +217,7 @@ I64 QueueTest()
 #include "/Kernel/I386/Message.HC"
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Inbox.HC"
+#include "/Kernel/I386/Focus.HC"
 #include "/Kernel/I386/KbcQueue.HC"
 #include "/Kernel/I386/KbcInput.HC"
 #include "/Kernel/I386/Kbc.HC"

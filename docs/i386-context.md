@@ -362,3 +362,7 @@ Fresh root/worker records initialize it to zero. Reap rejects a nonzero inbox
 pointer, which also prevents `I386TaskDestroy` from freeing an owned task while
 its queue retains the recipient. Closing and detaching the inbox is explicit;
 see [task-addressed inboxes](i386-messages.md) for ownership and cleanup rules.
+
+The scheduler also retains an optional focus task. Reap rejects that task until
+focus moves or clears, independently of inbox detachment. This keeps routing
+references valid through completion; `I386FocusSet` provides the serialized update.

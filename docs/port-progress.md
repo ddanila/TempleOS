@@ -688,3 +688,17 @@ A recipient also frees its own inbox with IF enabled before returning. The full
 message/QMP suite, instruction audit, both x64 rebuilds and image verification
 (745 files, 62 directories) pass. Automatic Spawn policy, full public task/job
 integration and focus routing remain pending.
+
+## Native keyboard focus routing
+
+The scheduler now retains one focus recipient. Selection requires a live task
+with an open attached inbox; invalid changes preserve the previous target.
+Focus-based sends select and publish under one interrupt mask. Reaping rejects
+the selected task even after inbox detach, so routing cannot retain a freed task.
+Focus must be moved or cleared explicitly after completion.
+
+The message fixture checks root/consumer switching, absent and invalid targets,
+recipient isolation, live keyboard delivery through focus and retirement gating.
+The full task suite, both x64 rebuilds and image verification (747 files,
+62 directories) pass. Window activation, popup/parent focus selection, focus
+notifications and release ownership across focus changes remain pending.

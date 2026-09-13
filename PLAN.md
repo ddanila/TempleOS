@@ -352,6 +352,8 @@ from a broker to a second blocked task, with masked reads and close wakeups.
 Task-addressed inboxes now enforce recipient-only reads and prevent reaping
 until close/detach, including completion with unread messages. Heap-backed inbox
 allocation and self/post-completion cleanup now pass failure and reclamation tests.
+Native focus selection now routes broker messages and pins the selected task
+until focus is moved or cleared.
 Full CTask/CJob and public message/focus integration, LED updates and input-loss
 reconciliation remain.
 A fixed raw-input FIFO now passes IRQ1-to-foreground

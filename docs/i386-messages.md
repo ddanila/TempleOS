@@ -100,3 +100,32 @@ rejected live-task cleanup, completion with unread data and full arena reclamati
 across repeated cycles. A third recipient frees its own inbox with IF enabled;
 its association is cleared and IF restored before normal task completion. The
 existing live keyboard broker/consumer path continues to pass.
+
+## Native focus selection
+
+`Focus.HH` / `Focus.HC` route messages through one selected recipient stored in
+`CI386Scheduler.focus`. `I386FocusSet(s,task)` requires a live, non-finishing task
+in that scheduler with an open attached inbox. Null clears focus; invalid
+selections preserve the previous target. Selecting the same valid task is safe.
+`I386FocusMsgSend` reads the selection and submits the task-addressed message
+under one saved interrupt mask. Missing, closed or finished recipients reject
+publication through the existing send checks. No task switch occurs in send.
+
+Reap now also rejects the selected focus task, even if its inbox has already
+been detached. A completed recipient remains a valid referenced record until
+focus is moved or cleared. Completion does not choose a replacement implicitly.
+Inbox cleanup and focus cleanup are separate: closing/detaching a selected inbox
+makes sends fail, while clearing focus releases the remaining task-lifetime hold.
+Keep the scheduler live and modify focus only through the setter.
+
+The message fixture switches between root and the keyboard consumer, checks
+that messages reach only the selected inbox, verifies empty/invalid selections,
+and then routes all live QMP events through focus. After consumer completion and
+inbox detach, reaping remains blocked until focus is cleared. The full task suite
+also passes with the enlarged scheduler record.
+
+This is native recipient selection, not full window focus. Focus notifications,
+popup/parent selection, ownership of releases across a focus change, and graphics
+activation are pending. Each message currently goes to the recipient selected at
+publication time, consistent with the existing keyboard broker's use of a global
+focus task.

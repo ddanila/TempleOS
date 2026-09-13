@@ -22,6 +22,7 @@ class CI386Scheduler
   CI386Task *root,*current;
   U0 (*swap)(CI386Context *old,CI386Context *next);
   U0 (*bind)(CI386Task *task);
+  CI386Task *focus;
 };
 class CI386Cpu { CI386Cpu *addr; CI386Scheduler *scheduler; };
 public extern Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,

@@ -13,6 +13,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   root->cleanup=0; root->finishing=0;
   root->messages=0;
   s->root=root; s->current=root; s->swap=swap; s->bind=0;
+  s->focus=0;
   return TRUE;
 }
 public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
@@ -73,7 +74,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
 {//Detach a finished task from another stack before its owner frees that stack.
   U32 flags=I386IrqSave;
   if (!s || !task || task->owner!=s || !task->finished || task==s->current ||
-      task->join_head || task->join_target || task->messages) {
+      task->join_head || task->join_target || task->messages || s->focus==task) {
     I386IrqRestore(flags); return FALSE;
   }
   task->addr=0; task->context.esp=0; task->owner=0; task->finished=0; task->blocked=0;
