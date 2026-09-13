@@ -63,7 +63,8 @@ integer expressions, not functions, pointer-layout queries, or complete modules.
 `Compiler/I386/Core.HC` adds the normal compiler function path through
 `CmpI386Buf`. Its current subset implements fixed-arity scalar arguments,
 integer arithmetic, comparisons, conditional branches, loops, local loads/stores,
-increment/decrement, compound assignments, casts and returns. Pointer-aware size
+increment/decrement, compound assignments, 64-bit shifts, casts and returns.
+Shift counts use the low six bits, preserving the 64-bit value model on i386. Pointer-aware size
 queries are used during parsing and scaling. Calls, variadic functions, module
 relocation, floating-point output, switch dispatch and short-circuit/chained
 comparisons remain pending.

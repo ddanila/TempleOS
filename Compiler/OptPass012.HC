@@ -426,7 +426,7 @@ args.
 		tmpi_push=tmpi1;
 		OptSetNOP1(tmpi2);
 		OptSetNOP1(tmpi);
-	      } else if (Bsf(i)==Bsr(i)) {
+	      } else if (Bsf(i)==Bsr(i) && !(cc->flags&CCF_TARGET_I386)) {
 		tmpi->ic_flags|=tmpi2->ic_flags;
 		tmpi->ic_data=Bsf(i);
 		tmpi->ic_code=IC_SHR_CONST;
@@ -840,7 +840,7 @@ args.
 	    }
 	    break;
 	  case IC_DIV_EQU:
-	    if (tmpi2->ic_code==IC_IMM_I64 && tmpc->raw_type!=RT_F64 &&
+	    if (!(cc->flags&CCF_TARGET_I386) && tmpi2->ic_code==IC_IMM_I64 && tmpc->raw_type!=RT_F64 &&
 		  tmpc2->raw_type!=RT_F64 &&
 		  (i=tmpi2->ic_data) && Bsf(i)==Bsr(i)) {
 	      tmpi2->ic_data=Bsf(i);

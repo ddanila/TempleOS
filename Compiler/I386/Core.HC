@@ -65,6 +65,20 @@ U0 I386Binary(CI386Out *out,I64 op)
   }
 }
 
+U0 I386Shift(CI386Out *out,Bool left,Bool is_unsigned)
+{//EDX:EAX shifted by ECX modulo 64, including the 32-bit boundary.
+  I386Bytes(out,"\x83\xE1\x3F\xF6\xC1\x20",6);
+  if (left)
+    I386Bytes(out,"\x74\x08\x89\xC2\x31\xC0\xD3\xE2\xEB\x05"
+      "\x0F\xA5\xC2\xD3\xE0",15);
+  else if (is_unsigned)
+    I386Bytes(out,"\x74\x08\x89\xD0\xD3\xE8\x31\xD2\xEB\x05"
+      "\x0F\xAD\xD0\xD3\xEA",15);
+  else
+    I386Bytes(out,"\x74\x09\x89\xD0\xD3\xF8\xC1\xFA\x1F\xEB\x05"
+      "\x0F\xAD\xD0\xD3\xFA",16);
+}
+
 U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
 {//Compare EDX:EAX with EBX:ECX; high words first, low words unsigned.
   U8 low_cc,high_cc;
@@ -258,6 +272,37 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               case IC_OR_EQU: I386Binary(&out,IC_OR); break;
               case IC_XOR_EQU: I386Binary(&out,IC_XOR); break;
             }
+            I386Byte(&out,0x59);
+            I386Store(&out,c);
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
+          case IC_SHL:
+          case IC_SHR:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A",4);
+            I386Shift(&out,ic->ic_code==IC_SHL,
+              ToBool(ic->t.arg1_class->raw_type&RTF_UNSIGNED));
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
+          case IC_SHL_CONST:
+          case IC_SHR_CONST:
+            if (depth<1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A\xB9",3);
+            I386Dword(&out,ic->ic_data);
+            I386Shift(&out,ic->ic_code==IC_SHL_CONST,
+              ToBool(ic->t.arg1_class->raw_type&RTF_UNSIGNED));
+            I386Bytes(&out,"\x52\x50",2);
+            break;
+          case IC_SHL_EQU:
+          case IC_SHR_EQU:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A\x50",5);
+            c=ic->t.arg1_class-1;
+            I386Load(&out,c);
+            I386Shift(&out,ic->ic_code==IC_SHL_EQU,
+              ToBool(c->raw_type&RTF_UNSIGNED));
             I386Byte(&out,0x59);
             I386Store(&out,c);
             I386Bytes(&out,"\x52\x50",2);
