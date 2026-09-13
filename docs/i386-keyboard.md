@@ -166,8 +166,9 @@ Shift XOR Caps selects the shifted table, including punctuation, Shift-Escape
 the eventual message producer must still distinguish key-down and key-up events.
 
 The native input fixture's x64 compilation step calls the existing OS function
-for all 32,768 combinations of bits 0–14 and writes the results into an exported
-target data array. Native execution compares every result, then repeats each
+for all 32,768 combinations of bits 0–14, verifies that only the key byte and
+Shift/Ctrl/Caps affect the result, and writes a 2,048-byte reference table into
+target data. Native execution compares every result, then repeats each
 comparison with the high 32 bits set. All 65,536 comparisons pass. This provides
 an independent compatibility reference rather than a duplicate implementation
 in the test. Modifier state, keypad remapping, event dispatch and live keyboard
@@ -236,3 +237,39 @@ The fixture also checks task completion/reaping and an empty input queue at the
 end. The Pause key has no ordinary release packet. These are emulated-device
 results; physical vintage keyboard/controller coverage, held modifiers, runtime
 command interleaving and public message dispatch remain pending.
+
+## Modifier state and paired scan values
+
+`ScanState.HH` / `ScanState.HC` add per-consumer key state. Reset initializes
+all physical keys as released and clears logical locks. Apply takes one decoded
+physical scan value and returns the full I64 scan pair: the low word holds the
+mapped key and flags, while the high word retains the physical key and the same
+flags. Both words retain KEY_UP. The mapping literals match the two tables in
+`Kernel/SerialDev/Keyboard.HC`, including Num Lock keypad mappings.
+
+Left/right Shift, Ctrl and Alt have independent physical down state. Releasing
+one leaves the aggregate flag set if the other remains held. Repeated modifier
+makes, including a second held member of the same group, suppress NEW_KEY;
+other makes and releases carry it. Caps/Num/Scroll toggle on a matched release,
+matching TempleOS's release-triggered convention while ignoring stray releases.
+Insert/Delete down flags are derived from held mapped keys. Pause is an impulse
+and is not retained as physically down.
+
+A key retains its initial mapped identity through repeats and release, even if
+Num Lock changes while it is held. This prevents a release being delivered for a
+different mapped key. These state rules intentionally address simultaneous-key
+and stray-release cases rather than copying the old handler's aggregate-state
+limitations. Raw physical identity remains available in the high word.
+
+Apply requires a valid initialized record, one serialized consumer and a writable
+I64 output outside the state. Null arguments, values beyond bits 0–8 and zero key
+codes fail without modifying output/state. There is no allocation, IRQ masking,
+LED programming, Ctrl-Alt callback, message dispatch or exception recovery here.
+Known stream loss requires coordinated reset of packet and key state; public
+release notification and runtime device-command routing remain pending.
+
+The native fixture checks all 512 mapping entries against the original table
+declarations compiled in the x64 test host, both sides of all three modifier
+groups, lock/repeat behavior, held-key identity across Num Lock transitions,
+Insert/Delete, Pause and invalid arguments. Live QMP key events now pass through
+this state layer before character conversion, retaining their raw high word.

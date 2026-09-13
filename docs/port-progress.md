@@ -610,3 +610,20 @@ the header fixed compilation. The completed native run and instruction audit
 pass. This checkpoint changes test tools/fixtures and documentation only; kernel
 and compiler sources retain the previous verified rebuild. Modifier tracking,
 public input messages and physical 386/controller validation remain pending.
+
+## Modifier state and TempleOS scan pairs
+
+A native state layer now applies the original normal/Num Lock maps and emits
+TempleOS's I64 mapped/raw scan pair. Physical left/right modifiers remain
+independent, locks toggle on matched releases and held keys retain their mapped
+identity across lock changes. Insert/Delete flags and Pause impulse behavior are
+also covered. LED commands, public message dispatch and loss recovery remain.
+
+All 512 mapping entries match the original declarations compiled by the x64 test
+host. Native state tests cover paired modifiers, repeats, lock transitions,
+held-key identity and invalid input; live QMP keys pass through the new layer.
+The character reference is now compact, with its compression checked against
+all original 32,768 inputs before the native 65,536 comparisons run. A Num Lock
+failure exposed truncation when passing the flag mask to one-byte Bool; an explicit
+zero comparison fixes it. The full input suite, instruction audit, both x64
+rebuilds and image verification (739 files, 62 directories) pass.

@@ -339,13 +339,14 @@ published only after cleanup returns, with recursive completion rejected.
 Bounded 8042 transport now passes keyboard echo delivery through IRQ1, status
 capture and controller configuration restoration. Scan-set-1 packet decoding now
 passes make/release, extended-key, Pause/Print Screen and error-recovery tests;
-modifier/lock processing remains pending. Native character conversion now matches
+Native modifier/lock state now preserves paired mapped/raw scan values, independent
+left/right modifiers and held-key mappings across Num Lock changes. Character conversion matches
 the x64 implementation across all 32,768 low scan/flag combinations. Function-body
 string literals now use position-independent addresses and explicit data ranges.
 Boot keyboard setup now explicitly requests scan set 2 and controller translation,
 with bounded ACK/RESEND handling. QMP-injected ordinary, extended, Print Screen
 and Pause keys now pass through IRQ1, a blocked worker and decoding/conversion;
-modifier tracking and public input-message integration remain.
+public input-message integration, LED updates and input-loss recovery remain.
 A fixed raw-input FIFO now passes IRQ1-to-foreground
 delivery, wraparound, overflow accounting and interrupt-state preservation;
 blocking raw input now passes worker wakeup through actual IRQ1 delivery, spurious

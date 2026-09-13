@@ -1,9 +1,18 @@
+//Compile the original private mapping tables in the x64 test host's scope.
+#exe {
+  U8 *source=FileRead("/Kernel/SerialDev/Keyboard.HC"),*first,*last;
+  first=StrFind("U8 scan_code_map[",source);
+  last=StrFind("};",StrFind("U8 num_lock_map[",first))+2;
+  *last=0;
+  ExePrint("%s",first);
+  Free(source);
+}
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
-  I64 size,loaded,errors,i,j,oracles=0;
+  I64 size,loaded,errors,i,j,index,flags,oracles=0;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native input\n");
@@ -20,8 +29,23 @@ U0 CompileTests()
   for (i=0;i<h->record_count;i++,r++) {
     line=NULL;
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"char_oracle")) {
-      if (r->offset+8+32768>loaded) { Report("FAIL character oracle bounds\n"); return; }
-      for (j=0;j<32768;j++) image[8+r->offset+j]=ScanCode2Char(j);
+      if (r->offset+8+2560>loaded) { Report("FAIL character oracle bounds\n"); return; }
+      for (j=0;j<2048;j++) {
+        flags=j>>8;
+        image[8+r->offset+j]=ScanCode2Char((j&255)|((flags&3)<<9)|((flags&4)<<10));
+      }
+      for (j=0;j<32768;j++) {
+        index=(j&255)+(((j>>9)&3)|((j>>10)&4))*256;
+        if (image[8+r->offset+index]!=ScanCode2Char(j)) {
+          Report("FAIL character oracle compression\n"); return;
+        }
+      }
+      for (j=0;j<256;j++) {
+        flags=scan_code_map[j]; if (!flags) flags=j;
+        image[8+r->offset+2048+j]=flags;
+        flags=num_lock_map[j]; if (!flags) flags=j;
+        image[8+r->offset+2304+j]=flags;
+      }
       oracles++;
     }
     if (r->kind==I386_MODULE_EXPORT)
