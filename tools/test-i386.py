@@ -41,14 +41,15 @@ def main():
     modes.add_argument('--redsea-alloc', action='store_true', help='Test native RedSea bitmap allocation and release')
     modes.add_argument('--redsea-create', action='store_true', help='Test native RedSea file creation and publication ordering')
     modes.add_argument('--redsea-delete', action='store_true', help='Test native RedSea deletion, reclamation and reuse')
+    modes.add_argument('--redsea-replace', action='store_true', help='Test native RedSea replacement without early reclamation')
     args = parser.parse_args()
     task_runner = args.tasks or args.input or args.messages
-    large_runner = task_runner or args.irq or args.redsea_create or args.redsea_delete
+    large_runner = task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete'):
+    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete')
+    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace')
     functions = kind != 'expressions'
     if functions:
         OUT = ROOT/f'build/i386-{kind}-test'
@@ -211,7 +212,7 @@ def main():
             stream.seek(512*512)
             for lba in range(512, 32768):
                 stream.write(patterns[(lba^(lba>>8))&255])
-    if args.redsea or args.redsea_write or args.redsea_alloc or args.redsea_create or args.redsea_delete:
+    if args.redsea or args.redsea_write or args.redsea_alloc or args.redsea_create or args.redsea_delete or args.redsea_replace:
         def rs_entry(name, attr, block, size):
             return struct.pack('<H38sqqQ', attr, name.encode('ascii'), block, size, 0x123456789ABCDEF0)
         def rs_boot(start, sectors=128, root=2050, bitmap=1):
@@ -266,7 +267,7 @@ def main():
                 stream.write(rs_boot(2048, sectors=8192, root=2051, bitmap=2))
                 stream.write(bitmap)
                 stream.write(root)
-        if args.redsea_create or args.redsea_delete:
+        if args.redsea_create or args.redsea_delete or args.redsea_replace:
             bitmap = bytearray(1024)
             bitmap[0] = 0x8F  # metadata, full directory, and read-only directory at bit 7
             bitmap[-1] = 0xC0
@@ -276,7 +277,7 @@ def main():
             entries += [rs_entry('ReadOnly', 0x811, 2057, 512)]
             entries += [rs_entry(f'F{i}', 0x800, 0, 0) for i in range(5, 7)]
             root[:448] = b''.join(entries)
-            if args.redsea_delete:
+            if args.redsea_delete or args.redsea_replace:
                 root[5*64:6*64] = rs_entry('F5', 0x801, 0, 0)
             root[512:640] = rs_entry('Ghost', 0x800, 0, 0)+rs_entry('Ghost2', 0x800, 0, 0)
             full = rs_entry('.', 0x810, 2053, 512)+rs_entry('..', 0x810, 2051, 0)
@@ -289,6 +290,22 @@ def main():
                 stream.write(full)
                 stream.seek(2057*512)
                 stream.write(rs_entry('.', 0x811, 2057, 512)+bytes(448))
+        if args.redsea_replace:
+            original_source = b'I64 Answer() { return 1; }\n'
+            with disk.open('r+b') as stream:
+                stream.seek(2049*512)
+                stream.write(bytes([0x9F]))
+                stream.seek(2051*512+2*64)
+                stream.write(struct.pack('<H38sqqQ', 0x822, b'Saved.HC', 2054,
+                                         len(original_source), 777))
+                stream.seek(2054*512)
+                stream.write(original_source)
+                stream.seek(12288*512)
+                stream.write(rs_boot(12288, sectors=128, root=12290))
+                stream.write(bytes([255])*512)
+                stream.write(rs_entry('.', 0x810, 12290, 512)+
+                             rs_entry('Kept', 0x800, 12291, 1)+bytes(384))
+                stream.write(b'K'+bytes(511))
         redsea_before = disk.read_bytes()
     if args.vga:
         run(sys.executable, 'tools/guest-run.py', str(disk), '--i386-disk',
@@ -322,7 +339,7 @@ def main():
            '-m', '8', '-nic', 'none', '-drive', f'file={disk},format=raw,if=ide',
            '-display', 'none', '-debugcon', f'file:{log}',
            '-device', 'isa-debug-exit,iobase=0xf4,iosize=4', '-no-reboot']
-    if args.ata or args.redsea_create or args.redsea_delete:
+    if args.ata or args.redsea_create or args.redsea_delete or args.redsea_replace:
         ata_trace = OUT/'ata-commands.log'
         ata_trace.write_text('')
         cmd += ['-trace', f'enable=ide_bus_exec_cmd,file={ata_trace}']
@@ -421,6 +438,25 @@ def main():
                           [0xE7,0x30,0xE7,0x30,0xE7] + [0x30,0xE7])
         if writes_flushes[-len(expected_order):] != expected_order:
             raise RuntimeError('RedSea deletion lacks expected tombstone/bitmap flush ordering')
+    if args.redsea_replace:
+        expected_disk = bytearray(redsea_before)
+        new_source = b'I64 Answer() { return 42; }\n'
+        location = 2051*512+2*64
+        expected_disk[location:location+64] = struct.pack(
+            '<H38sqqQ', 0x822, b'Saved.HC', 2054, len(new_source), 12345)
+        expected_disk[2055*512:2055*512+700] = bytes(
+            ((i*17)^(i>>2)^0x95)&255 for i in range(700))
+        expected_disk[2054*512:2054*512+len(new_source)] = new_source
+        if disk.read_bytes() != expected_disk:
+            raise RuntimeError('RedSea replacement differs from expected data/entry/reclaimed bitmap')
+        commands = [int(line.rsplit('cmd 0x', 1)[1], 16)
+                    for line in ata_trace.read_text().splitlines()
+                    if 'ide_bus_exec_cmd' in line and 'cmd 0x' in line]
+        writes_flushes = [command for command in commands if command in (0x30, 0xE7)]
+        expected_order = ([0x30,0x30,0x30,0xE7,0x30,0xE7,0x30,0xE7] +
+                          [0xE7,0x30,0xE7,0x30,0xE7] + [0x30,0x30,0xE7,0x30,0xE7])
+        if writes_flushes[-len(expected_order):] != expected_order:
+            raise RuntimeError('RedSea replacement lacks new-data/publication/old-release ordering')
     if args.memory:
         # Reuse the audited code, changing only its expected firmware-status argument.
         fault_data = bytearray(data)
@@ -443,7 +479,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'scope': 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'scope': 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

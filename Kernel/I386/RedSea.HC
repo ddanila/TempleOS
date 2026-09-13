@@ -6,6 +6,11 @@ I64 I386RedSeaWord(U8 *p)
   for (i=0;i<8;i++) value|=(p[i]+0)(U64)<<(8*i);
   return value;
 }
+U0 I386RedSeaPutWord(U8 *p,U64 value)
+{
+  I64 i;
+  for (i=0;i<8;i++) p[i]=value>>(8*i);
+}
 Bool I386RedSeaValid(CI386RedSea *v)
 {
   return v && v->signature==0x52533332 && v->disk &&

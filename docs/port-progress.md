@@ -864,3 +864,20 @@ Whole-image comparison verifies expected bytes and QEMU traces confirm ordering.
 The instruction audit, both x64 rebuilds and image verification (757 files,
 62 directories) pass. Replacement, directory growth,
 public file APIs, interrupted-delete recovery and physical validation remain.
+
+## Native RedSea file replacement
+
+Raw replacement now retains the existing name/attributes while writing a new
+extent, flushing its data, publishing/flushing the updated entry and finally
+reclaiming/flushing old storage. Empty replacement releases the old extent after
+publishing block/size zero. No-space failure preserves the old file; I/O failures
+invalidate the view and require explicit recovery of uncertain/orphan state.
+
+Native tests pass growth, truncation to empty, a subsequent HolyC-source save,
+64-bit timestamps, preserved attributes, intermediate bitmap states and remount
+readback. A separate full volume preserves its old file when replacement cannot
+allocate. Whole-image and command-trace checks confirm expected bytes and ordering.
+The creation regression, instruction audits, both x64 rebuilds and image
+verification (758 files, 62 directories) also pass.
+Directory growth, public file APIs, legacy cache policy, interrupted replacement
+recovery and physical validation remain pending.

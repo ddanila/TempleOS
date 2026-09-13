@@ -382,8 +382,10 @@ exhaustion/reclamation and I/O-failure invalidation checks. Native raw file crea
 now connects allocation, data flush and directory publication, with deleted-slot
 reuse, cross-sector append and remount/readback tests. Regular-file deletion now
 flushes tombstones before bitmap release, with empty-file, reclamation and reuse
-tests. Public CDrv/CFile integration, decompression, replacement, directory growth
-and loading native modules from disk remain pending. See `docs/i386-redsea.md`.
+tests. Replacement now writes and flushes new storage and publishes the updated entry
+before freeing old storage, with growth/empty/no-space preservation tests.
+Public CDrv/CFile integration, decompression, directory growth and loading native
+modules from disk remain pending. See `docs/i386-redsea.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

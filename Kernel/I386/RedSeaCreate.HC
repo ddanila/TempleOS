@@ -18,11 +18,7 @@ Bool I386RedSeaNewName(U8 *name)
   }
   return i<38;
 }
-U0 I386RedSeaPutWord(U8 *p,U64 value)
-{
-  I64 i;
-  for (i=0;i<8;i++) p[i]=value>>(8*i);
-}
+extern U0 I386RedSeaPutWord(U8 *p,U64 value);
 public I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0)
 {//1 created, 0 exists/full, -1 invalid/I/O. Failure after reservation can leak space.
   U8 sector[512],*raw;

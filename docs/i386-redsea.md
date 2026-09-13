@@ -117,6 +117,22 @@ write invalidates the mounted view and can leave uncertain publication or leaked
 allocation. Recovery is explicit; the operation does not restore a removed name
 or retry reclamation automatically. Recursive directory deletion is not provided.
 
+`RedSeaReplace.HC` replaces an existing regular file through a fresh extent,
+retaining its name and attributes and accepting a new timestamp. It returns 1
+on success, 0 for an absent file or insufficient space, and -1 for invalid input
+or I/O failure. Read-only files/directories and directory targets are rejected.
+Nonempty replacement requires enough free contiguous space while the old extent
+remains allocated, even when the new content is smaller. A no-space result leaves
+the old entry and contents intact. Empty replacement publishes block/size zero.
+
+The new extent is written/flushed, its address/size/date are published/flushed in
+the existing directory slot, and only then is the old allocation released/flushed.
+An I/O failure invalidates the view and can leave an orphan extent, an uncertain
+entry, or a visible replacement with unreclaimed old storage. There is no automatic
+rollback and no atomic-sector or power-loss guarantee. This raw replacement does
+not compress/decompress data or create a missing name. Callers must retire old
+entry/extent references and honor the same exclusive ownership and flush contract.
+
 The native fixture is `python3 tools/test-i386.py --redsea`. The host lays out a
 RedSea volume on a 16 MiB IDE disk alongside the runner. It includes a directory
 spanning two sectors, a deleted entry with deliberately invalid storage, nested
@@ -160,6 +176,14 @@ The host verifies all data and metadata bytes, and QEMU's command trace verifies
 tombstone-flush-before-bitmap-release ordering. Interrupted deletion is not yet
 fault-injected.
 
-Replacement, directory growth, legacy cache policy, cache and task locking,
+`python3 tools/test-i386.py --redsea-replace` grows an existing file, truncates it
+to empty and saves HolyC source again. It checks retained name/attributes, updated
+64-bit timestamps, intermediate bitmap states, remount/readback and unchanged
+sources. A separate full volume verifies no-space preservation of the old file.
+The host compares the entire image and checks QEMU's new-data/publication/old-free
+write-and-flush sequence. Creation is also rerun after sharing the format writer.
+Interrupted replacement is not yet fault-injected.
+
+Directory growth, legacy cache policy, cache and task locking,
 decompression, public file APIs, resident module loading from files, complete image consistency checks and
 physical 386/IDE validation remain pending.
