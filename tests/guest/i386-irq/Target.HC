@@ -7,6 +7,7 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/HeapIrq.HH"
 #include "/Kernel/I386/Kbc.HH"
+#include "/Kernel/I386/KbcQueue.HH"
 extern U0 OnHeapIrq(CI386IrqFrame *frame);
 extern I64 HeapInterruptTest();
 extern U0 I386PicInit();
@@ -30,6 +31,7 @@ CI386RtcState rtc;
 CI386Heap shared_heap;
 U32 heap_ticks;
 U8 *irq_allocation;
+CI386KbcQueue keyboard_queue;
 I64 Main(I64 a,I64 b)
 {
   I64 (*wait)(I64 count);
@@ -98,6 +100,29 @@ I64 Main(I64 a,I64 b)
         ticks!=first+control->ticks) return 12;
   }
   data=0x55; status=0xAA;
+  I386KbcQueueInit(&keyboard_queue);
+  SetRFlags(GetRFlags|0x200);
+  for (i=0;i<64;i++)
+    if (!I386KbcQueuePut(&keyboard_queue,i,i^0xE1)) return 31;
+  if (I386KbcQueuePut(&keyboard_queue,99,1) || keyboard_queue.dropped!=1 ||
+      !(GetRFlags&0x200)) return 32;
+  keyboard_queue.dropped=0xFFFFFFFF;
+  if (I386KbcQueuePut(&keyboard_queue,99,1) || keyboard_queue.dropped!=0xFFFFFFFF ||
+      I386KbcQueueGet(&keyboard_queue,0,&status) ||
+      I386KbcQueueGet(&keyboard_queue,&data,0) ||
+      I386KbcQueueGet(&keyboard_queue,&data,&data) || keyboard_queue.count!=64) return 38;
+  for (i=0;i<32;i++)
+    if (!I386KbcQueueGet(&keyboard_queue,&data,&status) || data!=i || status!=(i^0xE1)) return 33;
+  for (i=64;i<96;i++)
+    if (!I386KbcQueuePut(&keyboard_queue,i,i^0xE1)) return 34;
+  for (i=32;i<96;i++)
+    if (!I386KbcQueueGet(&keyboard_queue,&data,&status) || data!=i || status!=(i^0xE1)) return 35;
+  data=0x55; status=0xAA;
+  if (I386KbcQueueGet(&keyboard_queue,&data,&status) || data!=0x55 || status!=0xAA ||
+      I386KbcQueuePut(0,1,1) || I386KbcQueueGet(0,&data,&status) ||
+      !(GetRFlags&0x200)) return 36;
+  SetRFlags(GetRFlags&~0x200);
+  I386KbcQueueInit(&keyboard_queue);
   if (I386KbcWrite(FALSE,0xEE,0) || I386KbcWrite(FALSE,0xEE,-1) ||
       I386KbcWrite(FALSE,0xEE,100001) || I386KbcDrain(0) ||
       I386KbcRead(0,&status) || I386KbcRead(&data,0) || I386KbcRead(&data,&data) ||
@@ -114,6 +139,9 @@ I64 Main(I64 a,I64 b)
     result=(*wait)(1);
     I386PicMask(0xFFFF);
     if (result || errors || spurious!=2 || control->ticks!=1 || ticks!=first+1) return 28;
+    if (!I386KbcQueueGet(&keyboard_queue,&data,&status) || data!=0xEE ||
+        (status&0xE0) || keyboard_queue.count || keyboard_queue.dropped ||
+        (GetRFlags&0x200)) return 37;
   }
   if (!I386KbcWrite(TRUE,0x60) || !I386KbcWrite(FALSE,config) ||
       !I386KbcWrite(TRUE,0x20) || !I386KbcReadWait(&data,&status) ||
@@ -221,6 +249,7 @@ U0 OnIrq(CI386IrqFrame *frame)
   if (frame->irq==8 && (I386RtcAck&0xC0)!=0xC0) errors++;
   if (frame->irq==1) {
     if (!I386KbcRead(&data,&status) || data!=0xEE || (status&0xE0)) errors++;
+    else if (!I386KbcQueuePut(&keyboard_queue,data,status)) errors++;
   }
   if (frame->irq!=expected_irq || (frame->cs&65535)!=8 || (frame->eflags&0x600)!=0x600 ||
       (frame->ds&65535)!=16 || (frame->es&65535)!=16 ||
@@ -239,3 +268,4 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/HeapIrq.HC"
 #include "/Kernel/I386/Kbc.HC"
+#include "/Kernel/I386/KbcQueue.HC"

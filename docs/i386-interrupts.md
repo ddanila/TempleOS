@@ -168,6 +168,10 @@ receives their replies through IRQ1 with only that line unmasked. It checks raw
 status, the same frame/restoration invariants, and restores the controller command
 byte. See [the keyboard transport contract](i386-keyboard.md) for ownership
 requirements and the remaining input work.
+Replies now cross a fixed FIFO from IRQ context to the foreground consumer;
+synthetic queue tests cover wraparound, overflow and invalid reads. The expanded
+fixture uses the boot loader's existing 256-sector transfer option: its loaded
+region is 0x10000–0x30000, below the heap at 0x40000 and stack at 0x90000.
 
 This passes on the QEMU 486/8 MiB runner. Timer calibration, missed-tick accounting,
 interrupt latency on vintage CPUs, calendar reads, full exception handling, keyboard/mouse

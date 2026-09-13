@@ -37,6 +37,36 @@ reset and ACK/RESEND handling, scan-set selection and decoding, input queues,
 task wakeups, and public keyboard APIs remain pending. No interactive input or
 full-kernel boot is claimed by the echo test.
 
+## Deferred byte consumption
+
+`KbcQueue.HH` / `KbcQueue.HC` provide a fixed 64-entry FIFO of raw byte/status
+pairs for IRQ producers and task-level consumers. Init, Put and Get save IF,
+mask interrupts for the operation, and restore incoming IF. They require one
+CPU and exclude NMI access. Initialize live writable queue storage before use;
+callers must not modify its head, count or backing array. Reset discards prior
+input and must be coordinated with consumers.
+
+Put returns false when full, drops the newest arrival and increments `dropped`
+up to 0xFFFFFFFF. Retained input remains in order. A future scan-code decoder
+must treat a changed loss count as a stream discontinuity and reset partial
+prefix/modifier state appropriately. Once the counter saturates, further losses
+cannot be distinguished; recovery must coordinate a queue reset. No queue
+allocation occurs in IRQ context.
+The status byte is retained without filtering, including AUX and error bits.
+
+Get returns false on empty input or invalid arguments without changing outputs
+or removing input. Its two output bytes must be distinct writable storage outside
+the queue. Null queue pointers fail harmlessly (Init is a no-op). These APIs
+assume a valid initialized record; they do not validate arbitrary memory or
+protect against other ring-0 code corrupting queue metadata. Count and loss
+snapshots should be read with IF clear when consistency across fields matters.
+
+The IRQ fixture exercises fill, overflow and saturated loss counting, partial
+drain followed by wraparound, FIFO order and all status bits, invalid output
+pointers, empty reads, and IF restoration. Actual IRQ1 echo replies are queued
+by the callback and consumed after the interrupt wait returns. The queue does
+not yet provide blocking reads or scheduler wakeups.
+
 Controller register and transaction references:
 [SeaBIOS PS/2 implementation](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.c)
 and [definitions](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.h).

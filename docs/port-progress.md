@@ -518,3 +518,18 @@ shared-heap interrupt phases pass in the same runner. Both x64 rebuilds pass;
 image verification covers 727 files and 62 directories. This is a QEMU 486/8 MiB
 transport checkpoint, not keyboard initialization or interactive input. Scan-code
 decoding, input queues, task wakeups and physical vintage hardware checks remain.
+
+## IRQ-to-foreground input queue
+
+A fixed 64-entry FIFO retains raw keyboard-controller byte/status pairs. All
+operations preserve IF and serialize one CPU's IRQ producer and foreground
+consumer. Overflow drops the newest input and records a saturating loss count;
+empty and invalid reads preserve outputs and pending input.
+
+The native IRQ test passes fill, wraparound, ordered drain, status retention,
+overflow/saturation, invalid arguments and IF restoration. Four actual IRQ1 echo
+responses now pass through the queue. The enlarged fixture exceeded the previous
+64 KiB loader capacity, so it uses the existing 128 KiB transfer option, ending
+at 0x30000 below the test heap and stack. The full IRQ fixture and instruction
+audit pass; both x64 rebuilds and image verification (729 files, 62 directories)
+pass. Blocking input, scan-code decoding and scheduler wakeups remain pending.
