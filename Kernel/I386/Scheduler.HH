@@ -3,6 +3,7 @@
 #include "/Kernel/I386/Context.HH"
 #include "/Kernel/I386/Heap.HH"
 extern class CI386Scheduler;
+extern class CI386MsgQueue;
 class CI386Task
 {
   CI386Task *addr;
@@ -14,6 +15,7 @@ class CI386Task
   CI386Heap *memory;
   U0 (*cleanup)(CI386Task *task);
   U32 finishing;
+  CI386MsgQueue *messages;
 };
 class CI386Scheduler
 {

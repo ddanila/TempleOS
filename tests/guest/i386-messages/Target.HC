@@ -18,6 +18,7 @@ class CControl { CDispatch *irq; U0 (*idle)(); };
 CI386Scheduler scheduler;
 CI386Task tasks[3];
 CI386MsgQueue messages;
+CI386MsgQueue orphan;
 CI386KbcInput input;
 CControl *control;
 U32 produced,consumed,errors;
@@ -26,11 +27,13 @@ extern U0 Consumer(I64 unused);
 extern U0 EndTask();
 extern U0 OnKeyboard(CI386IrqFrame *frame);
 extern I64 QueueTest();
+extern U0 EmptyWorker(I64 unused);
 I64 Main(I64 a,I64 b)
 {
   U0 (*swap)(CI386Context *old,CI386Context *next);
   I64 i,result;
   U8 *p;
+  CI386Message message;
   control=a; swap=b; I386PicInit;
   if (!I386SchedInit(&scheduler,&tasks[0],swap)) return 1;
   result=QueueTest;
@@ -41,7 +44,12 @@ I64 Main(I64 a,I64 b)
   I386PicInit;
   if (!I386ContextInit(&tasks[1].context,0x52000,8192,&Broker,0,&EndTask) ||
       !I386ContextInit(&tasks[2].context,0x54000,8192,&Consumer,0,&EndTask) ||
-      !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedAdd(&scheduler,&tasks[2]) ||
+      !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedAdd(&scheduler,&tasks[2])) return 3;
+  if (!I386MsgAttach(&messages,&tasks[2]) || I386MsgAttach(&messages,&tasks[2]) ||
+      I386MsgDetach(&messages) || I386TaskMsgSend(&tasks[1],2,0,0) ||
+      !I386TaskMsgSend(&tasks[2],1,0,0)) return 20;
+  message.type=99;
+  if (I386MsgRead(&messages,&message,~1,FALSE) || message.type!=99 || messages.count!=1 ||
       !I386SchedYield(&scheduler) || !tasks[1].blocked || !tasks[2].blocked) return 3;
   //An unrelated wake does not satisfy the consumer's message predicate.
   if (!I386SchedWake(&scheduler,&tasks[2]) || !I386SchedYield(&scheduler) ||
@@ -61,9 +69,21 @@ I64 Main(I64 a,I64 b)
       !I386SchedYield(&scheduler)) return 8;
   if (produced!=9 || !tasks[1].finished || !tasks[2].finished ||
       messages.count || messages.waiter || !messages.closed || input.waiter ||
+      I386SchedReap(&scheduler,&tasks[2]) || I386TaskMsgSend(&tasks[2],2,0,0) ||
+      !I386MsgDetach(&messages) || tasks[2].messages || messages.recipient ||
+      I386MsgDetach(&messages) ||
       !I386SchedReap(&scheduler,&tasks[1]) || !I386SchedReap(&scheduler,&tasks[2])) return 7;
+  //A task that returns without closing its inbox still cannot be reaped or receive sends.
+  if (!I386ContextInit(&tasks[1].context,0x52000,8192,&EmptyWorker,0,&EndTask) ||
+      !I386SchedAdd(&scheduler,&tasks[1]) || !I386MsgInit(&orphan,&scheduler) ||
+      !I386MsgAttach(&orphan,&tasks[1]) || !I386TaskMsgSend(&tasks[1],5,6,7) ||
+      !I386SchedYield(&scheduler) || !tasks[1].finished || orphan.closed || orphan.count!=1 ||
+      I386MsgSend(&orphan,5,6,7) || I386SchedReap(&scheduler,&tasks[1]) ||
+      !I386MsgClose(&orphan) || !I386MsgDetach(&orphan) || orphan.count ||
+      !I386SchedReap(&scheduler,&tasks[1])) return 21;
   return 0;
 }
+U0 EmptyWorker(I64 unused) {}
 U0 Broker(I64 unused)
 {
   CI386KeyboardState state;
@@ -76,7 +96,7 @@ U0 Broker(I64 unused)
     result=I386KeyboardFeed(&state,data,status,&event);
     if (result<0) { errors++; break; }
     if (result) {
-      if (!I386MsgSend(&messages,event.type,event.ch,event.scan) || !(GetRFlags&0x200)) {
+      if (!I386TaskMsgSend(&tasks[2],event.type,event.ch,event.scan) || !(GetRFlags&0x200)) {
         errors++; break;
       }
       produced++;
@@ -93,7 +113,7 @@ U0 Consumer(I64 unused)
   expected[0]=0x1E; expected[1]=0x11E; expected[2]=0x1C; expected[3]=0x11C;
   expected[4]=0xC8; expected[5]=0x1C8; expected[6]=0xB7; expected[7]=0x1B7; expected[8]=0x61;
   SetRFlags(GetRFlags|0x200);
-  while (type=I386MsgRead(&messages,&message)) {
+  while (type=I386MsgRead(scheduler.current->messages,&message,(1<<2)|(1<<3))) {
     if (consumed>=9 || type!=message.type || type!=2+((expected[consumed]>>8)&1) ||
         (message.arg2>>32)!=expected[consumed] || !(GetRFlags&0x200)) { errors++; return; }
     if (consumed<2) { if (message.arg1!='a') errors++; }

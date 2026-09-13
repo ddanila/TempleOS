@@ -7,6 +7,7 @@ public Bool I386MsgInit(CI386MsgQueue *queue,CI386Scheduler *scheduler)
     I386IrqRestore(flags); return FALSE;
   }
   queue->scheduler=scheduler; queue->waiter=0;
+  queue->recipient=0;
   queue->head=0; queue->count=0; queue->closed=0;
   I386IrqRestore(flags); return TRUE;
 }
@@ -15,6 +16,9 @@ public Bool I386MsgSend(CI386MsgQueue *queue,I64 type,I64 arg1,I64 arg2)
   U32 flags=I386IrqSave;
   CI386Message *slot;
   if (!queue || !queue->scheduler || queue->closed || queue->count==16 || type<1 || type>63) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  if (queue->recipient && queue->recipient->finished) {
     I386IrqRestore(flags); return FALSE;
   }
   slot=&queue->messages[(queue->head+queue->count)&15];
@@ -34,7 +38,8 @@ public I64 I386MsgRead(CI386MsgQueue *queue,CI386Message *message,U64 mask=~1,Bo
     I386IrqRestore(flags); return 0;
   }
   s=queue->scheduler; self=s->current;
-  if (!self || (queue->waiter && queue->waiter!=self)) {
+  if (!self || (queue->recipient && queue->recipient!=self) ||
+      (queue->waiter && queue->waiter!=self)) {
     I386IrqRestore(flags); return 0;
   }
   while (TRUE) {
@@ -66,4 +71,38 @@ public Bool I386MsgClose(CI386MsgQueue *queue)
   queue->closed=1;
   if (queue->waiter) I386SchedWake(queue->scheduler,queue->waiter);
   I386IrqRestore(flags); return TRUE;
+}
+public Bool I386MsgAttach(CI386MsgQueue *queue,CI386Task *task)
+{//Attach an empty initialized queue; a live task may have only one inbox.
+  U32 flags=I386IrqSave;
+  if (!queue || !queue->scheduler || queue->closed || queue->count || queue->waiter ||
+      queue->recipient || !task || task->owner!=queue->scheduler || task->messages ||
+      task->finished || task->finishing) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  queue->recipient=task; task->messages=queue;
+  I386IrqRestore(flags); return TRUE;
+}
+public Bool I386MsgDetach(CI386MsgQueue *queue)
+{//Closed inbox only: its own task, or another task after recipient completion.
+  U32 flags=I386IrqSave;
+  CI386Task *task;
+  if (!queue || !queue->scheduler || !queue->closed || queue->waiter || !queue->recipient) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  task=queue->recipient;
+  if (task->messages!=queue || (!task->finished && task!=queue->scheduler->current)) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  task->messages=0; queue->recipient=0;
+  queue->head=0; queue->count=0;
+  I386IrqRestore(flags); return TRUE;
+}
+public Bool I386TaskMsgSend(CI386Task *task,I64 type,I64 arg1,I64 arg2)
+{
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
+  if (task && task->owner && !task->finished && task->messages)
+    result=I386MsgSend(task->messages,type,arg1,arg2);
+  I386IrqRestore(flags); return result;
 }

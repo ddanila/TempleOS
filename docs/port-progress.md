@@ -658,3 +658,18 @@ workers finishing and being reaped. The native test, instruction audit, both x64
 rebuilds and image verification (743 files, 62 directories) pass. Full CTask/CJob
 ownership, public message wrappers and focus/popup routing remain pending; see
 `docs/i386-messages.md` for the transport contract.
+
+## Task inbox association and retirement
+
+Native task records now hold an optional inbox association. Task-addressed sends
+reject finished recipients, attached queues enforce recipient-only reads, and
+reaping/owned destruction is blocked until the inbox is closed and detached.
+A recipient may detach its own closed inbox; external cleanup requires completion.
+Detach discards remaining messages and clears both references.
+
+The live keyboard broker/consumer fixture passes task-addressed delivery,
+recipient isolation, duplicate/early-operation rejection and retirement gating.
+A worker returning with unread messages rejects further sends and can be cleaned
+up externally before reaping. The full task suite, both x64 rebuilds and image
+verification (743 files, 62 directories) pass. Automatic inbox allocation, full
+public task/job integration and focus routing remain pending.

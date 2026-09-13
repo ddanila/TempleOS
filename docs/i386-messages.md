@@ -42,3 +42,33 @@ This is explicit queue delivery on QEMU 486/8 MiB. The queue is not yet attached
 to the full public CTask/CJob structures. TaskMsg/ScanMsg/GetMsg wrappers, focus
 and popup routing, job execution, per-task ownership and input-loss recovery
 remain pending before it can replace the original public message path.
+
+## Task-addressed inboxes
+
+A native task now has a `messages` pointer. `I386MsgAttach` binds an empty,
+initialized, open queue to a live task in the same scheduler. Both associations
+must be unused; finished/finishing tasks and queues with a pending reader are
+rejected. Once attached, only the recipient may read the queue. Explicit generic
+queues remain available when no recipient is attached.
+
+`I386TaskMsgSend(task,type,arg1,arg2)` sends through that inbox. It preserves IF
+and rejects tasks without a live owner/inbox or tasks already finished. Direct
+queue sends also reject a finished recipient. Callers must retain valid task and
+queue records; these APIs do not validate stale pointers into reclaimed memory.
+
+Completion does not automatically close the inbox. Reap, and consequently owned
+task destruction, rejects any task with an attached inbox. Close wakes a waiting
+recipient; after it has returned, `I386MsgDetach` clears both associations and
+discards remaining queued messages. Detach requires a closed queue without a
+pending reader, and may be performed by the recipient itself or by another task
+after recipient completion. The record remains closed and cannot be reinitialized.
+The caller owns its allocation and may reclaim it after all users have returned.
+
+The message fixture sends live keyboard events by recipient task. It verifies
+that root cannot steal queued messages, unmatched messages are discarded by the
+recipient's key-event mask, duplicate attachment and premature detach fail, and
+reaping is blocked until detach. A second worker returns with an open inbox and
+unread data; sends/reaping fail, then external close/detach discards the data and
+allows reaping. The full task suite also passes with the enlarged native record.
+Automatic inbox allocation and the complete public CTask/CJob interfaces remain
+pending.

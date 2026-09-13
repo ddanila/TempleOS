@@ -354,3 +354,11 @@ its data and IF after resumption. Root observes the finishing-but-unfinished sta
 and rejects destruction. Cleanup frees scratch memory and returns; normal completion
 and bulk destruction then proceed. Recursive Finish and hook replacement from
 inside cleanup are rejected, and the sequence repeats across task recreation.
+
+## Inbox lifetime
+
+`CI386Task.messages` optionally refers to an attached native message queue.
+Fresh root/worker records initialize it to zero. Reap rejects a nonzero inbox
+pointer, which also prevents `I386TaskDestroy` from freeing an owned task while
+its queue retains the recipient. Closing and detaching the inbox is explicit;
+see [task-addressed inboxes](i386-messages.md) for ownership and cleanup rules.
