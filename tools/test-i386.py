@@ -55,8 +55,11 @@ def main():
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
         '--timeout', '90')
     ranges = {}
+    linked = set()
     if functions:
         for line in (exports/'debug.log').read_text().splitlines():
+            if line.startswith('LINKED '):
+                linked.add(int(line.split()[1]))
             if line.startswith('RANGE '):
                 _, case, start = line.split()
                 ranges.setdefault(int(case), []).append(int(start, 16))
@@ -81,8 +84,16 @@ def main():
             raise ValueError('Truncated generated case')
         if functions:
             starts = sorted(ranges.get(count, []))
-            if not starts or starts[0] != 0 or len(starts) != len(set(starts)):
+            first = 8 if count in linked else 0
+            if not starts or starts[0] != first or len(starts) != len(set(starts)):
                 raise ValueError('Invalid exported function boundaries')
+            if count in linked:
+                if len(code)<8 or code[0]!=0xE9 or any(code[5:8]):
+                    raise ValueError('Invalid linked entry trampoline')
+                entry = 5+struct.unpack_from('<i',code,1)[0]
+                if entry not in starts:
+                    raise ValueError('Entry does not name an exported function')
+                listing.append(f'; Case {count}: entry trampoline to {entry:X}')
             spans = list(zip(starts, starts[1:]+[len(code)]))
         else:
             spans = [(0, len(code))]
@@ -109,7 +120,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (111 if functions else 9):
+    if offset != len(data) or count != (113 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.

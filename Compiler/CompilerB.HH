@@ -79,3 +79,6 @@ public extern I64 HashEntrySize2(CHashSrcSym *tmph);
 public extern I64 HashTableSize2(CHashTable *table);
 
 public extern CAOT *CmpI386Buf(U8 *buf,I64 *error_cnt=NULL);
+public extern Bool I386ModuleValid(U8 *data,I64 size);
+public extern U8 *CmpI386Module(U8 *source,I64 *size,I64 *error_cnt=NULL);
+public extern U8 *I386Link(U8 **modules,I64 *sizes,I64 count,I64 *size,U8 *entry_name="Main");

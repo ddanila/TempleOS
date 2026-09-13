@@ -1,3 +1,4 @@
+#include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 I64 case_number=0;
 U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
@@ -33,6 +34,107 @@ U0 Reject(U8 *source)
   aot=CmpI386Buf(source,&errors);
   if (aot || !errors) { Report("FAIL accepted unsupported source\n"); throw; }
 }
+U0 ModuleRejectTests(U8 *consumer,I64 consumer_size,U8 *provider,I64 provider_size)
+{
+  U8 *bad=MAlloc(consumer_size),*modules[3],*res;
+  I64 sizes[3],size,i,import_index=-1,j;
+  CI386ModuleHeader *h=consumer;
+  CI386ModuleRecord *r=consumer+h->records_offset;
+  for (j=0;j<h->record_count;j++)
+    if (r[j].kind==I386_MODULE_REL32) import_index=j;
+  if (import_index<0) { Report("FAIL missing import record\n"); throw; }
+  sizes[0]=consumer_size; sizes[1]=sizes[2]=provider_size;
+  modules[0]=bad; modules[1]=modules[2]=provider;
+  for (i=0;i<19;i++) {
+    MemCpy(bad,consumer,consumer_size);
+    h=bad; r=bad+h->records_offset; r+=import_index;
+    switch (i) {
+      case 0: h->magic^=1; break;
+      case 1: h->version++; break;
+      case 2: h->cpu=6; break;
+      case 3: h->pointer_size=8; break;
+      case 4: h->abi++; break;
+      case 5: h->total_size--; break;
+      case 6: h->code_size=U32_MAX; break;
+      case 7: h->record_count=U32_MAX; break;
+      case 8: h->records_offset=0; break;
+      case 9: h->strings_offset=U32_MAX; break;
+      case 10: r->kind=99; break;
+      case 11: r->offset=h->code_size-2; break;
+      case 12: r->name_offset=U32_MAX; break;
+      case 13: r->name_length=0; break;
+      case 14: bad[r->name_offset+r->name_length]=1; break;
+      case 15: bad[32+r->offset-1]=0x90; break;
+      case 16: bad[32+r->offset]=1; break;
+      case 17: h->code_size=0xFFFFFFF8; h->records_offset=24; break;
+      case 18: h->record_count=0x10000000; h->strings_offset=h->records_offset; break;
+    }
+    if (I386ModuleValid(bad,consumer_size)) { Report("FAIL accepted malformed module\n"); throw; }
+    res=I386Link(modules,sizes,2,&size);
+    if (res || size) { Report("FAIL linked malformed module\n"); throw; }
+  }
+  modules[0]=consumer;
+  res=I386Link(modules,sizes,1,&size);
+  if (res || size) { Report("FAIL unresolved import\n"); throw; }
+  res=I386Link(modules,sizes,3,&size);
+  if (res || size) { Report("FAIL duplicate export\n"); throw; }
+  res=I386Link(modules,sizes,2,&size,"Missing");
+  if (res || size) { Report("FAIL missing entry\n"); throw; }
+  if (I386ModuleValid(consumer,consumer_size-1) || I386ModuleValid(NULL,consumer_size)) {
+    Report("FAIL truncated/null module\n"); throw;
+  }
+  Free(bad);
+  Report("PASS module validation\n");
+}
+
+U0 EmitLinkedCase(I64 a,I64 b,I64 expected,U8 **cursor,Bool reverse)
+{
+  U8 *modules[2],*snapshots[2],*image,*again,*line,*saved;
+  I64 sizes[2],size,size2,errors,i,j,base=8;
+  CI386ModuleHeader *h;
+  CI386ModuleRecord *r;
+  modules[0]=CmpI386Module("#include \"/Kernel/Types.HH\"\nimport I64 Add(I64 a,I64 b); I64 Main(I64 a,I64 b) { return Add(a,b); }",&sizes[0],&errors);
+  if (!modules[0] || errors) { Report("FAIL caller module\n"); throw; }
+  modules[1]=CmpI386Module("#include \"/Kernel/Types.HH\"\nI64 Add(I64 a,I64 b) { return a+b; }",&sizes[1],&errors);
+  if (!modules[1] || errors) { Report("FAIL provider module\n"); throw; }
+  if (!reverse) ModuleRejectTests(modules[0],sizes[0],modules[1],sizes[1]);
+  if (reverse) {
+    saved=modules[0]; modules[0]=modules[1]; modules[1]=saved;
+    i=sizes[0]; sizes[0]=sizes[1]; sizes[1]=i;
+  }
+  for (i=0;i<2;i++) { snapshots[i]=MAlloc(sizes[i]); MemCpy(snapshots[i],modules[i],sizes[i]); }
+  image=I386Link(modules,sizes,2,&size);
+  again=I386Link(modules,sizes,2,&size2);
+  if (!image || !again || size!=size2 || MemCmp(image,again,size)) {
+    Report("FAIL module link\n"); throw;
+  }
+  Free(again);
+  line=MStrPrint("LINKED %d\n",case_number); Report(line); Free(line);
+  for (i=0;i<2;i++) {
+    if (MemCmp(modules[i],snapshots[i],sizes[i]) || !I386ModuleValid(modules[i],sizes[i])) { Report("FAIL mutated module\n"); throw; }
+    Free(snapshots[i]);
+    h=modules[i]; r=modules[i]+h->records_offset;
+    for (j=0;j<h->record_count;j++,r++)
+      if (r->kind==I386_MODULE_EXPORT) {
+        line=MStrPrint("RANGE %d %X\n",case_number,base+r->offset);
+        Report(line); Free(line);
+      }
+    base+=h->code_size;
+  }
+  (*cursor)(U32 *)[0]=size; *cursor+=4;
+  (*cursor)(I64 *)[0]=expected; *cursor+=8;
+  (*cursor)(I64 *)[0]=a; *cursor+=8;
+  (*cursor)(I64 *)[0]=b; *cursor+=8;
+  MemCpy(*cursor,image,size); *cursor+=size;
+  case_number++;
+  //Keep module buffers live for host artifact extraction.
+  for (i=0;i<2;i++) {
+    line=MStrPrint("EXPORT module-%d-%d.t32m %X %X\n",reverse,i,modules[i],sizes[i]);
+    Report(line); Free(line);
+  }
+  Free(image);
+}
+
 U0 CompileTests()
 {
   U8 *data=MAlloc(65536),*cursor=data,*line;
@@ -164,6 +266,8 @@ U0 CompileTests()
   Reject("#include \"/Kernel/Types.HH\"\nF64 Test(I64 a,I64 b) { return 1.5; }");
   Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(I64 a,I64 b); I64 Test(I64 a,I64 b) { return Missing(a,b); }");
   Reject("#exe { 1+2; }");
+  EmitLinkedCase(0xFFFFFFFF,1,0x100000000,&cursor,FALSE);
+  EmitLinkedCase(0x100000000,42,0x10000002A,&cursor,TRUE);
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);
   Report(line);

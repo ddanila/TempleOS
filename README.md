@@ -56,7 +56,8 @@ python3 tools/verify-iso.py
 
 The native 386+/VGA port is underway; the normal launcher still runs x86-64.
 See [the architecture plan](PLAN.md), [working i386 ABI](docs/i386-abi.md), and
-[implementation progress](docs/port-progress.md).
+[implementation progress](docs/port-progress.md) and
+[bootstrap module format](docs/i386-modules.md).
 
 Run isolated bootstrap/backend checks with:
 

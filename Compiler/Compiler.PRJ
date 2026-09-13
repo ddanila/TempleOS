@@ -46,3 +46,4 @@ CUAsmGlbls	uasm;
 #include "OptPass789A"
 
 #include "I386/Core"
+#include "I386/Module"

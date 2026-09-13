@@ -72,7 +72,9 @@ negative division retains the same rule with constant and variable divisors. Poi
 queries are used during parsing and scaling. Direct calls within a compilation
 unit, forward fixups, recursion, nested calls, scalar slot extension, and integer
 default arguments are implemented. Undefined functions are rejected during AOT
-resolution. Indirect/variadic calls, cross-module imports/loading, floating-point
+resolution. T32M objects support relative-call imports through the bootstrap
+linker described in `i386-modules.md`. Indirect/variadic calls, runtime module
+loading, floating-point
 output, switch dispatch and short-circuit/chained comparisons remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.

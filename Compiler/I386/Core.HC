@@ -150,6 +150,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   CCodeMisc *label;
   CI386Call *calls=NULL,*call;
   CExternUsage *usage;
+  CAOTImportExport *import_rec;
   CMemberLst *arg;
   I64 arg_index,arg_offset;
   I64 depth,pass,stack_size=0,args=0;
@@ -196,6 +197,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_CALL:
           case IC_CALL_EXTERN:
+          case IC_CALL_IMPORT:
             if (!calls || calls->called ||
                 depth!=calls->depth+calls->fun->arg_cnt) throw('Compiler');
             arg=calls->fun->member_lst_and_root;
@@ -216,6 +218,15 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Byte(&out,0xE8);
             if (ic->ic_code==IC_CALL) {
               I386Dword(&out,ic->ic_data-(cc->aotc->rip+out.count+4));
+            } else if (ic->ic_code==IC_CALL_IMPORT) {
+              if (pass) {
+                import_rec=CAlloc(sizeof(CAOTImportExport));
+                import_rec->type=IET_REL_I32;
+                import_rec->rip=cc->aotc->rip+out.count;
+                import_rec->next=calls->fun->ie_lst;
+                calls->fun->ie_lst=import_rec;
+              }
+              I386Dword(&out,0);
             } else {
               if (pass) {
                 usage=CAlloc(sizeof(CExternUsage));

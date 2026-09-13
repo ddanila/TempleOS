@@ -63,7 +63,7 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-111 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+113 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
 class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
 unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
@@ -79,9 +79,25 @@ Exported function boundaries separate executable code from AOT alignment padding
 during instruction auditing. The runner reports the zero-based case index in
 hexadecimal on failure. Function bodies
 are exercised; the cases may contain multiple functions in one compilation unit.
-Cross-module imports/loading, globals, indirect calls, switch dispatch,
+Runtime module loading, globals, indirect calls, switch dispatch,
 short-circuit/chained comparisons, variadic functions, debug information, and
 software F64 are not implemented by this backend.
+
+## Bootstrap module format and linking
+
+`CmpI386Module` writes architecture-tagged T32M objects; `I386Link` resolves
+relative-call imports between separately compiled objects on the x86-64 HolyC
+host. See [module format](i386-modules.md). The fixed-width header records CPU,
+pointer width and ABI version; incompatible values are rejected.
+
+Two linked-image cases execute caller/provider objects in both input orders.
+They also check repeatable output and byte-for-byte unchanged inputs. Validation
+covers 19 malformed header/record variants (including overflow-shaped counts),
+truncated/null buffers, duplicate exports, unresolved imports, and missing entry
+symbols. An independent host read of the four exported fixtures confirms the
+header layout, symbol names, and relocation records. This is a bootstrap static
+linker; a native i386 runtime loader, global/data relocations, and module lifecycle
+support remain unfinished.
 
 This remains partial M1/M2 work. There is no i386 module loader, software F64,
 full kernel, native i386 compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
