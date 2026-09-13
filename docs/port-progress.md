@@ -284,7 +284,7 @@ also pass. Both x86-64 rebuild/reboot generations pass. See the detailed
 [A20 and extended-memory contract](i386-a20.md) for hardware assumptions, controller
 side effects, and validation limits. No physical-386 or full-OS memory claim follows.
 
-## PIC/PIT interrupt entry
+## PIC/PIT/RTC interrupt entry
 
 `Kernel/I386/PicPit.HC` now programs the legacy PIC pair and PIT from native
 HolyC. The PIC uses vectors 0x20–0x2F, exact mask read/write, spurious IRQ7/15
@@ -302,8 +302,15 @@ and test IDT/wait assembly have separate instruction audits excluding data table
 The 150-function regression corpus and both x86-64 rebuild generations also pass.
 See the [interrupt ABI and limits](i386-interrupts.md).
 
-This is IRQ0 delivery in the QEMU 486/8 MiB runner, not a complete interrupt/time
-subsystem. Real slave IRQ delivery, RTC, keyboard input, exception entry, scheduling,
+`Kernel/I386/Rtc.HC` adds exclusive boot-time CMOS access and a saved A/B
+configuration for periodic IRQ8. Two more test phases each receive at least eight
+RTC IRQs at rate codes 10 and 11, with PIT IRQ0 masked. They check status C's
+IRQF/PF, frame restoration, both PIC EOIs through repeated slave delivery,
+configuration restoration, restart, and invalid rates/state transitions. CMOS
+access keeps NMI disabled; calendar reads and general shared ownership are pending.
+
+This is IRQ0/IRQ8 delivery in the QEMU 486/8 MiB runner, not a complete interrupt/time
+subsystem. Keyboard input, exception entry, scheduling,
 calibrated time, production boot wiring and physical 386 validation remain pending.
 
 ## Test artifacts
@@ -316,7 +323,7 @@ calibrated time, production boot wiring and physical 386 validation remain pendi
   and allocated/caller-buffer loaded-code execution and lifetime results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
-- `build/i386-irq-test/`: compiled PIC/PIT and callback code, audited assembly
+- `build/i386-irq-test/`: compiled PIC/PIT/RTC and callback code, audited assembly
   ranges, interrupt runner, and execution result.
 - `build/i386-a20-test/`: native gate-method and high-memory allocation fixture,
   instruction audit, runner disk/log, and result.
