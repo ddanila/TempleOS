@@ -110,8 +110,7 @@ records they need to wake.
 It returns false for an already runnable, finished, unowned, or invalid task.
 Wake masks interrupts only while updating the queue and restores the prior IF.
 It may run from a maskable IRQ callback, but it never switches or preempts; NMI
-use remains unsupported. IRQ delivery through this wake path still needs a
-combined hardware/task test.
+use remains unsupported. The combined hardware/task test below exercises this path with PIT IRQ0.
 
 Wake is not a counted event or a stored wake token. To avoid a missed wakeup when
 an interrupt owns the condition, the waiter must mask interrupts **before**
@@ -134,3 +133,24 @@ is runnable, rejects reaping blocked tasks, wakes worker 2 followed by worker 1,
 and checks observed resume order 21. Duplicate wakes and wakes after completion
 are rejected. Workers then complete the existing 64-yield lifecycle, and the whole
 sequence repeats after retirement and record reuse.
+
+## Hardware IRQ wakeup evidence
+
+The task runner now also installs the production IRQ/exception entries. After the
+queue lifecycle tests, a fresh worker starts with PIC lines masked, enables IF,
+and blocks on an event counter using the interrupt-masked condition-check loop.
+Root then unmasks PIT IRQ0 and enables interrupts. The callback publishes the
+counter before waking a blocked worker and verifies that Wake neither changes the
+current task nor enables IF inside the callback. Root yields cooperatively until
+the worker completes 16 event waits and returns through Finish.
+
+The worker checks a full-width stack value, current-task identity, and restored
+IF after each wait. Root checks successful wakeup, task completion, stack guards,
+reaping, and heap accounting. This passes on QEMU 486/8 MiB alongside the original
+context and lifecycle phases. It validates event/queue integration; it does not
+establish timing accuracy, a counted-event API, or production idle-loop behavior.
+
+The task fixture now loads a 128 KiB stage (256 CHS sectors) to accommodate the
+combined native test image. Its fixed heap at 0x40000 and stack at 0x90000 remain
+outside that stage. The runner audits context, IRQ, exception, and test IDT code
+as separate executable ranges in `irq-assembly.txt`, excluding descriptor tables.

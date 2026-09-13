@@ -1,3 +1,9 @@
+%ifdef TASK_TEST
+%define INTERRUPT_SETUP
+%endif
+%ifdef IRQ_TEST
+%define INTERRUPT_SETUP
+%endif
 %include "tests/i386/boot.inc"
 
 ; This section is loaded at 0x10000, hence labels need that virtual origin.
@@ -10,7 +16,7 @@ bits 32
     mov ss,ax
     mov fs,ax
     mov gs,ax
-%ifdef IRQ_TEST
+%ifdef INTERRUPT_SETUP
     mov esp,0x90000
     call irq_test_setup
 %else
@@ -43,7 +49,7 @@ case_next:
     push dword 0
     push dword i386_context_switch
     push dword 0
-    push dword 0
+    push dword i386_irq_dispatch
 %else
     push dword [esi+24]
     push dword [esi+20]
@@ -159,7 +165,7 @@ call_stack: dd 0
 case_index: dd 0
 hex_digits: db "0123456789ABCDEF"
 test_result: dd 0
-%ifdef IRQ_TEST
+%ifdef INTERRUPT_SETUP
 %include "tests/i386/irq.inc"
 %endif
 cases: incbin CASES_FILE
@@ -167,6 +173,9 @@ cases: incbin CASES_FILE
 %include "Kernel/I386/Context.asm"
     db 'I32T'
     dd i386_context_code_begin-$$+512,i386_context_code_end-i386_context_code_begin
+    dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
+    dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
+    dd i386_exception_stubs_begin-$$+512,i386_exception_stubs_end-i386_exception_stubs_begin
 %endif
 %ifdef IRQ_TEST
     db 'I32Q'

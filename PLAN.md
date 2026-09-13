@@ -319,8 +319,9 @@ foreground/PIT-callback allocation tests. Cooperative context switching now pass
 two native workers on separate heap-owned stacks, including entry/exit and stack
 reclamation. A native circular runnable queue now passes round-robin yield,
 completion, retirement and record reuse tests. Blocking removes tasks from the
-runnable queue; explicit wakeup passes ordered-resume and lifecycle tests. Next,
-integrate IRQ-driven wakeups, public task semantics and current-task bindings, bring up
+runnable queue; explicit wakeup passes ordered-resume and lifecycle tests;
+a combined PIT/task test now passes IRQ-driven event publication and wakeup
+through 16 waits. Next, integrate public task semantics and current-task bindings, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe

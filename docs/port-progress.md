@@ -363,8 +363,14 @@ root remains available, reversed wake order produces reversed resume order, and
 duplicate/finished wakes and reaping blocked tasks are rejected. The same lifecycle
 runs twice across record reuse and passes with both x64 rebuilds. The atomic
 condition-check/block contract is documented to avoid missed IRQ wakeups.
-The queue uses explicit scheduler pointers; combined hardware-IRQ wakeup tests,
-current-task bindings and public TempleOS task semantics remain pending.
+The combined task runner now passes hardware IRQ wakeups: a PIT callback publishes
+an event and inserts a blocked worker into the runnable queue without switching
+inside the handler. A native worker completes 16 event waits using the masked
+condition-check/block protocol, checks its 64-bit local and IF, and retires with
+stack guards and heap accounting intact. The task boot stage is now 128 KiB to
+hold the combined fixture; all four assembly regions are audited separately.
+Current-task bindings, public TempleOS task semantics, and a production idle loop
+remain pending.
 
 See the [context ABI and limits](i386-context.md).
 

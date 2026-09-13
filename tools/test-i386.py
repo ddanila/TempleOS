@@ -163,20 +163,21 @@ def main():
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
-    run('nasm', *(['-DTASK_TEST=1'] if args.tasks else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DTASK_TEST=1', '-DBOOT_SECTORS=256'] if args.tasks else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         f'-DEXPECTED_FAULTS={4 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
-    if args.irq:
+    if args.irq or args.tasks:
         raw = disk.read_bytes()
-        if raw[-28:-24] != b'I32Q':
+        trailer_size = 36 if args.tasks else 28
+        if raw[-trailer_size:-trailer_size+4] != (b'I32T' if args.tasks else b'I32Q'):
             raise ValueError('Missing IRQ assembly boundaries')
-        ranges = struct.unpack('<6I', raw[-24:])
+        ranges = struct.unpack('<8I' if args.tasks else '<6I', raw[-trailer_size+4:])
         irq_allowed = {'push','pop','pusha','popa','pushf','popf','mov','add','xor',
                        'shr','cmp','test','jmp','jz','jnz','jc','jnc','ja','call','ret',
                        'cld','std','cli','sti','hlt','int','int3','div','iret','lidt','loop','lodsd'}
         assembly = []
         for start, length in zip(ranges[::2], ranges[1::2]):
-            if start<512 or length<=0 or start+length>len(raw)-28:
+            if start<512 or length<=0 or start+length>len(raw)-trailer_size:
                 raise ValueError('Invalid IRQ assembly boundaries')
             (OUT/'irq-body.bin').write_bytes(raw[start:start+length])
             listing = subprocess.check_output(['ndisasm','-b32',str(OUT/'irq-body.bin')], text=True)
@@ -188,20 +189,7 @@ def main():
                     raise ValueError(f'Unexpected IRQ instruction: {line}')
             assembly.append(listing)
         (OUT/'irq-assembly.txt').write_text('\n'.join(assembly))
-    if args.tasks:
-        raw = disk.read_bytes()
-        if raw[-12:-8] != b'I32T':
-            raise ValueError('Missing context assembly boundaries')
-        start, length = struct.unpack('<2I', raw[-8:])
-        if start<512 or length<=0 or start+length>len(raw)-12:
-            raise ValueError('Invalid context assembly boundaries')
-        (OUT/'context.bin').write_bytes(raw[start:start+length])
-        listing = subprocess.check_output(['ndisasm','-b32',str(OUT/'context.bin')], text=True)
-        for line in listing.splitlines():
-            if line.split()[2] not in {'pushf','pusha','push','mov','pop','popa','popf','ret'}:
-                raise ValueError(f'Unexpected context instruction: {line}')
-        (OUT/'context-assembly.txt').write_text(listing)
-    if disk.stat().st_size > 129*512:
+    if disk.stat().st_size > (257 if args.tasks else 129)*512:
         raise ValueError('Runner exceeds boot-loader transfer size')
     with disk.open('ab') as stream:
         stream.truncate(16*1024*1024)

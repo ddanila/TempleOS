@@ -5,6 +5,18 @@
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Scheduler.HH"
+#include "/Kernel/I386/Irq.HH"
+extern U0 I386PicInit();
+extern U0 I386PicMask(U16 mask);
+extern Bool I386PicAccept(I64 irq);
+extern Bool I386PicEoi(I64 irq);
+extern Bool I386PitStart(I64 divisor);
+extern I64 TimerWakeTest();
+extern U0 TimerWorker(I64 arg);
+extern U0 OnTimer(CI386IrqFrame *frame);
+class CTimerDispatch { U0 (*handler)(CI386IrqFrame *frame); };
+CTimerDispatch *timer_dispatch;
+U32 events,consumed,wakes,wait_rounds;
 extern I64 SchedulerTest();
 extern U0 ScheduledWorker(I64 id);
 extern U0 ScheduledExit();
@@ -22,7 +34,7 @@ I64 Main(I64 a,I64 b)
   CI386Heap heap;
   U8 *stacks[3],*p;
   I64 i,j,round;
-  swap=b;
+  swap=b; timer_dispatch=a;
   if (!I386HeapInit(&heap,0x40000,32768)) return 1;
   for (i=1;i<=2;i++) {
     p=I386HeapAlloc(&heap,8208,TRUE); stacks[i]=p;
@@ -146,7 +158,7 @@ I64 SchedulerTest()
     }
     if (heap.used || heap.allocations || !I386HeapValid(&heap)) return 23;
   }
-  return 0;
+  return TimerWakeTest;
 }
 U0 ScheduledWorker(I64 id)
 {
@@ -168,3 +180,62 @@ U0 ScheduledExit()
   while (1) errors++;
 }
 #include "/Kernel/I386/Scheduler.HC"
+
+I64 TimerWakeTest()
+{
+  CI386Heap heap;
+  U8 *stack;
+  I64 i,loops;
+  if (!I386HeapInit(&heap,0x40000,32768)) return 28;
+  stack=I386HeapAlloc(&heap,8208);
+  if (!stack) return 29;
+  for (i=0;i<8208;i++) stack[i]=0xA5;
+  I386PicInit;
+  timer_dispatch->handler=&OnTimer;
+  if (!I386PitStart(1193) ||
+      !I386ContextInit(&tasks[1].context,stack+8,8192,&TimerWorker,0x1234567800000001,&ScheduledExit) ||
+      !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedYield(&scheduler) ||
+      !tasks[1].blocked || events || wait_rounds) return 30;
+  I386PicMask(0xFFFE);
+  SetRFlags(GetRFlags|0x200);
+  for (loops=0;loops<1000000;loops++) {
+    if (!I386SchedYield(&scheduler) || !(GetRFlags&0x200)) errors++;
+    if (tasks[1].finished) break;
+  }
+  I386IrqSave;
+  I386PicMask(0xFFFF);
+  if (errors || !tasks[1].finished || wait_rounds!=16 || events<16 || !wakes ||
+      !I386SchedReap(&scheduler,&tasks[1])) return 31;
+  for (i=0;i<8;i++) if (stack[i]!=0xA5 || stack[8200+i]!=0xA5) return 32;
+  if (!I386HeapFree(&heap,stack) || heap.used || heap.allocations ||
+      !I386HeapValid(&heap)) return 33;
+  return 0;
+}
+U0 TimerWorker(I64 arg)
+{
+  I64 flags,round,local=arg;
+  SetRFlags(GetRFlags|0x200);
+  for (round=0;round<16;round++) {
+    flags=I386IrqSave;
+    while (events==consumed) if (!I386SchedBlock(&scheduler)) errors++;
+    consumed=events;
+    I386IrqRestore(flags);
+    if (!(GetRFlags&0x200) || scheduler.current!=&tasks[1] ||
+        local!=0x1234567800000001) errors++;
+    wait_rounds++;
+  }
+}
+U0 OnTimer(CI386IrqFrame *frame)
+{
+  CI386Task *before=scheduler.current;
+  if (!I386PicAccept(frame->irq)) { errors++; return; }
+  if (frame->irq || (GetRFlags&0x600) || (frame->eflags&0x600)!=0x200) errors++;
+  events++;
+  if (tasks[1].blocked) {
+    if (!I386SchedWake(&scheduler,&tasks[1])) errors++;
+    else wakes++;
+  }
+  if (scheduler.current!=before || (GetRFlags&0x200)) errors++;
+  I386PicEoi(frame->irq);
+}
+#include "/Kernel/I386/PicPit.HC"
