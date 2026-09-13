@@ -10,6 +10,8 @@
 #include "/Kernel/I386/ScanChar.HH"
 #include "/Kernel/I386/KeyboardSetup.HH"
 #include "/Kernel/I386/ScanState.HH"
+#include "/Kernel/I386/KeyboardEvent.HH"
+extern I64 EventTest();
 extern I64 StateTest();
 extern Bool StateCheck(U32 raw,U32 expected);
 CI386ScanState key_state;
@@ -48,6 +50,8 @@ I64 Main(I64 a,I64 b)
   result=CharTest;
   if (result) return result;
   result=StateTest;
+  if (result) return result;
+  result=EventTest;
   if (result) return result;
   I386PicInit;
   if (!I386SchedInit(&scheduler,&tasks[0],swap) ||
@@ -149,26 +153,25 @@ I64 LiveKeys()
 }
 U0 LiveReader(I64 unused)
 {
-  CI386ScanSet1 decoder;
-  CI386ScanState state;
+  CI386KeyboardState state;
+  CI386KeyEvent event;
   U32 scan,expected[9];
   U8 data,status,ch;
-  I64 decoded,event;
+  I64 decoded;
   expected[0]=0x1E; expected[1]=0x11E; expected[2]=0x1C; expected[3]=0x11C;
   expected[4]=0xC8; expected[5]=0x1C8; expected[6]=0xB7; expected[7]=0x1B7;
   expected[8]=0x61;
-  I386ScanSet1Reset(&decoder);
-  I386ScanStateReset(&state);
+  I386KeyboardReset(&state);
   SetRFlags(GetRFlags|0x200);
   while (live_events<9) {
     if (!I386KbcInputRead(&input,&data,&status) || !(GetRFlags&0x200)) { errors++; return; }
-    decoded=I386ScanSet1Feed(&decoder,data,status,&scan);
+    decoded=I386KeyboardFeed(&state,data,status,&event);
     if (decoded<0) { errors++; return; }
     if (decoded) {
-      if (scan!=expected[live_events]) { errors++; return; }
-      if (!I386ScanStateApply(&state,scan,&event) ||
-          (event>>32)!=(scan|0x8000)) { errors++; return; }
-      ch=I386ScanCode2Char(event);
+      scan=expected[live_events];
+      if ((event.scan>>32)!=scan || (event.scan&0x0000800000008000) ||
+          event.type!=2+((scan>>8)&1)) { errors++; return; }
+      ch=event.ch;
       if (live_events<2) { if (ch!='a') errors++; }
       else if (live_events<4) { if (ch!=10) errors++; }
       else if (ch) errors++;
@@ -197,6 +200,32 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/ScanChar.HC"
 #include "/Kernel/I386/KeyboardSetup.HC"
 #include "/Kernel/I386/ScanState.HC"
+#include "/Kernel/I386/KeyboardEvent.HC"
+
+I64 EventTest()
+{
+  CI386KeyboardState state;
+  CI386KeyEvent event;
+  I386KeyboardReset(&state);
+  event.type=99; event.ch=98; event.scan=97;
+  if (I386KeyboardFeed(0,1,1,&event)!=-1 || I386KeyboardFeed(&state,1,1,0)!=-1 ||
+      I386KeyboardFeed(&state,0xE0,1,&event) || event.type!=99 || event.ch!=98 || event.scan!=97)
+    return 170;
+  I386KeyboardReset(&state);
+  if (I386KeyboardFeed(&state,0x2A,1,&event)!=1 || event.type!=2 || event.ch ||
+      event.scan!=0x22A0000022A) return 171;
+  if (I386KeyboardFeed(&state,0x2A,1,&event) || event.scan!=0x22A0000022A ||
+      I386KeyboardFeed(&state,0x1E,1,&event)!=1 || event.ch!='A' || event.type!=2 ||
+      event.scan!=0x21E0000021E) return 172;
+  if (I386KeyboardFeed(&state,0x9E,1,&event)!=1 || event.ch!='A' || event.type!=3 ||
+      event.scan!=0x31E0000031E) return 173;
+  if (I386KeyboardFeed(&state,0x1E,0x81,&event)!=-1 || event.scan!=0x31E0000031E ||
+      state.keys.down[0x2A] || I386KeyboardFeed(&state,0x1E,1,&event)!=1 || event.ch!='a')
+    return 174;
+  if (I386KeyboardFeed(&state,0x1D,1,&event)!=1 ||
+      I386KeyboardFeed(&state,0x2E,1,&event)!=1 || event.ch!=3 || event.type!=2) return 175;
+  return 0;
+}
 
 Bool StateCheck(U32 raw,U32 expected)
 {

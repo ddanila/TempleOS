@@ -346,7 +346,9 @@ string literals now use position-independent addresses and explicit data ranges.
 Boot keyboard setup now explicitly requests scan set 2 and controller translation,
 with bounded ACK/RESEND handling. QMP-injected ordinary, extended, Print Screen
 and Pause keys now pass through IRQ1, a blocked worker and decoding/conversion;
-public input-message integration, LED updates and input-loss recovery remain.
+a reusable event interface now returns TempleOS key-down/up types, characters
+and scan pairs. Task-message/focus integration, LED updates and input-loss
+reconciliation remain.
 A fixed raw-input FIFO now passes IRQ1-to-foreground
 delivery, wraparound, overflow accounting and interrupt-state preservation;
 blocking raw input now passes worker wakeup through actual IRQ1 delivery, spurious

@@ -273,3 +273,33 @@ declarations compiled in the x64 test host, both sides of all three modifier
 groups, lock/repeat behavior, held-key identity across Num Lock transitions,
 Insert/Delete, Pause and invalid arguments. Live QMP key events now pass through
 this state layer before character conversion, retaining their raw high word.
+
+## Message-shaped keyboard events
+
+`KeyboardEvent.HH` / `KeyboardEvent.HC` combine packet decoding, modifier state
+and character conversion behind `I386KeyboardFeed`. A `CI386KeyboardState` holds
+both state machines. Reset it before first use and after an explicit device or
+stream reset. Feed takes a raw controller byte/status pair and returns 1 for an
+event, 0 for incomplete/filtered input, or -1 for invalid/corrupt input. Its
+`CI386KeyEvent` output contains three I64 fields: `type` (MSG_KEY_DOWN=2 or
+MSG_KEY_UP=3), `ch`, and the paired `scan` value.
+
+The interface consumes NEW_KEY in both scan words before exposing the event,
+as the existing KbdHndlr does. Repeated modifier makes suppressed by key state
+produce no event. Character conversion still applies to release events, with
+type distinguishing them from presses. Incomplete, ignored, suppressed and
+invalid input leaves the output unchanged.
+
+Corrupt keyboard bytes reset both packet and key state before returning -1.
+The caller must treat this as a discontinuity and reconcile client key state;
+the function does not synthesize release messages or detect queue overflow.
+Null arguments return -1 without changing state. State and output must be valid,
+nonoverlapping storage owned by one serialized consumer. No allocation, waiting,
+IRQ masking or focus/task dispatch occurs inside this interface.
+
+The native live-input worker now consumes this interface directly after its
+blocking raw read and checks message types, characters, raw identity and cleared
+NEW_KEY flags for all QMP events. Synthetic checks cover shifted make/release,
+Ctrl-C, repeated modifier suppression, argument validation, unchanged outputs
+and error-driven reset. Actual TaskMsg integration, focus routing, LED updates
+and queue-loss reconciliation remain pending.

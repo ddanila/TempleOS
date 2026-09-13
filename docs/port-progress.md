@@ -627,3 +627,18 @@ all original 32,768 inputs before the native 65,536 comparisons run. A Num Lock
 failure exposed truncation when passing the flag mask to one-byte Bool; an explicit
 zero comparison fixes it. The full input suite, instruction audit, both x64
 rebuilds and image verification (739 files, 62 directories) pass.
+
+## Reusable keyboard-event interface
+
+Packet decoding, key state and character conversion now compose into a native
+interface returning TempleOS key-down/up message types, characters and full scan
+pairs. It consumes internal NEW_KEY flags, suppresses repeated modifier makes
+and resets both state machines on corrupt keyboard input while preserving the
+output on non-event returns.
+
+The live QMP worker now uses this interface directly. Synthetic shifted press/
+release, Ctrl-C, suppression, invalid arguments and error-reset checks also pass,
+along with the existing mapping and character references. The full input suite,
+instruction audit, both x64 rebuilds and image verification (741 files,
+62 directories) pass. TaskMsg/focus routing, LED updates and queue-loss/client
+state reconciliation remain pending.
