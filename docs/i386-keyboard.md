@@ -212,3 +212,27 @@ command byte, but does not claim to restore every keyboard setting. Emulator
 command/query behavior is documented in
 [QEMU's PS/2 source](https://github.com/qemu/qemu/blob/master/hw/input/ps2.c).
 Physical AT/386 validation and live key injection remain pending.
+
+## Keyboard-device integration test
+
+The `--input` fixture now adds live QMP key injection after its echo tests. The
+host sends press/release events for A, Enter, Up and Print Screen, then presses
+Pause. A newly created native worker blocks on the input stream and feeds actual
+controller bytes to the packet decoder. It checks all nine decoded events and
+character conversion for A/Enter. Print Screen's fake shifts and Pause's full
+packet therefore pass through the same IRQ/queue path as ordinary keys.
+
+`tools/i386-input-run.py` owns an isolated QEMU 486/8 MiB process and its QMP
+connection. It waits for each numbered guest request before sending the next
+key event, validates the complete request sequence and the runner's success exit,
+and records the command and event sequence. It injects through `input-send-event`,
+not controller-buffer writes or direct queue mutation. See the
+[QMP input command reference](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html#command-input-send-event).
+
+Root unmasks IRQ1 while idling, masks it before yielding to the worker, and
+repeats until the requested decoded event arrives. This deliberately tests
+interrupt-driven wakeups without asserting full concurrent worker/IRQ handling.
+The fixture also checks task completion/reaping and an empty input queue at the
+end. The Pause key has no ordinary release packet. These are emulated-device
+results; physical vintage keyboard/controller coverage, held modifiers, runtime
+command interleaving and public message dispatch remain pending.

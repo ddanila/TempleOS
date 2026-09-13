@@ -225,9 +225,12 @@ def main():
            '-m', '8', '-nic', 'none', '-drive', f'file={disk},format=raw,if=ide',
            '-display', 'none', '-debugcon', f'file:{log}',
            '-device', 'isa-debug-exit,iobase=0xf4,iosize=4', '-no-reboot']
-    result = subprocess.run(cmd, timeout=20)
+    if args.input:
+        run(sys.executable, 'tools/i386-input-run.py', str(disk), '--out', str(OUT))
+    else:
+        result = subprocess.run(cmd, timeout=20)
     runner_kind = 'functions' if functions else 'expressions'
-    if result.returncode != 33 or log.read_text() != f'PASS i386 {runner_kind}\n':
+    if not args.input and (result.returncode != 33 or log.read_text() != f'PASS i386 {runner_kind}\n'):
         raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
     if args.memory:
         # Reuse the audited code, changing only its expected firmware-status argument.

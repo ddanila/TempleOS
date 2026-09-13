@@ -2,6 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/KbcInput.HH"
 #include "/Kernel/I386/Irq.HH"
@@ -12,6 +13,9 @@ U8 char_oracle[32768];
 extern I64 CharTest();
 extern U8 *StringTestValue();
 extern I64 ScanTest();
+extern I64 LiveKeys();
+extern U0 LiveReader(I64 unused);
+U32 live_events;
 extern U0 I386PicInit();
 extern U0 I386PicMask(U16 mask);
 extern Bool I386PicAccept(I64 irq);
@@ -87,6 +91,8 @@ I64 Main(I64 a,I64 b)
   }
   if (!tasks[1].finished || input.waiter || input.queue.count || input.queue.dropped ||
       !I386SchedReap(&scheduler,&tasks[1]) || !I386SchedReap(&scheduler,&tasks[2])) return 12;
+  result=LiveKeys;
+  if (result) return result;
   if (!I386KbcWrite(TRUE,0x60) || !I386KbcWrite(FALSE,config) ||
       !I386KbcWrite(TRUE,0x20) || !I386KbcReadWait(&data,&status) || data!=config ||
       (status&0xE0)) return 13;
@@ -113,6 +119,53 @@ U0 Reader(I64 id)
   }
 }
 U0 EndTask() { I386SchedFinish(&scheduler); while (TRUE) {} }
+I64 LiveKeys()
+{
+  I64 i;
+  U8 *p;
+  if (!I386ContextInit(&tasks[1].context,0x52000,8192,&LiveReader,0,&EndTask) ||
+      !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedYield(&scheduler) ||
+      !tasks[1].blocked) return 20;
+  for (i=0;i<9;i++) {
+    p="KEY "; while (*p) OutU8(0xE9,*p++);
+    OutU8(0xE9,'0'+i); OutU8(0xE9,10);
+    while (live_events==i && !tasks[1].finished) {
+      I386PicMask(0xFFFD);
+      I386SchedIdle(&scheduler,control->idle);
+      I386PicMask(0xFFFF);
+      if (!I386SchedYield(&scheduler) || (GetRFlags&0x200)) return 21;
+    }
+    if (live_events!=i+1 || errors) return 22;
+  }
+  if (!tasks[1].finished || input.waiter || input.queue.count || input.queue.dropped ||
+      !I386SchedReap(&scheduler,&tasks[1])) return 23;
+  return 0;
+}
+U0 LiveReader(I64 unused)
+{
+  CI386ScanSet1 decoder;
+  U32 scan,expected[9];
+  U8 data,status,ch;
+  I64 decoded;
+  expected[0]=0x1E; expected[1]=0x11E; expected[2]=0x1C; expected[3]=0x11C;
+  expected[4]=0xC8; expected[5]=0x1C8; expected[6]=0xB7; expected[7]=0x1B7;
+  expected[8]=0x61;
+  I386ScanSet1Reset(&decoder);
+  SetRFlags(GetRFlags|0x200);
+  while (live_events<9) {
+    if (!I386KbcInputRead(&input,&data,&status) || !(GetRFlags&0x200)) { errors++; return; }
+    decoded=I386ScanSet1Feed(&decoder,data,status,&scan);
+    if (decoded<0) { errors++; return; }
+    if (decoded) {
+      if (scan!=expected[live_events]) { errors++; return; }
+      ch=I386ScanCode2Char(scan);
+      if (live_events<2) { if (ch!='a') errors++; }
+      else if (live_events<4) { if (ch!=10) errors++; }
+      else if (ch) errors++;
+      live_events++;
+    }
+  }
+}
 U0 OnKeyboard(CI386IrqFrame *frame)
 {
   U8 data,status;

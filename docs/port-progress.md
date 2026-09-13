@@ -595,3 +595,18 @@ IRQ1 worker-wakeup exchanges, decoder cases and 65,536 character comparisons
 pass. Both x64 rebuilds and image verification (737 files, 62 directories) pass.
 Live key injection, modifier tracking, concurrent runtime command routing and
 physical AT/386 checks remain pending.
+
+## Live emulated-keyboard input
+
+The native input fixture now consumes QMP-injected A, Enter, Up, Print Screen
+and Pause events through the keyboard device, IRQ1, the input queue and a blocked
+worker. All nine decoded make/release events and A/Enter character conversions
+pass. The host validates each guest request and the final runner exit, and records
+its QMP key sequence. Synthetic scan tests and the character oracle still pass.
+
+An initial compile stalled because fixture debug-port writes preceded their
+port declarations; the captured debugger screen identified that site, and adding
+the header fixed compilation. The completed native run and instruction audit
+pass. This checkpoint changes test tools/fixtures and documentation only; kernel
+and compiler sources retain the previous verified rebuild. Modifier tracking,
+public input messages and physical 386/controller validation remain pending.
