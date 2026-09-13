@@ -969,3 +969,20 @@ the shared-rounding refactor. Generated-function instruction audits, execution
 with CR0.EM set, both x64 rebuild generations and image verification (763 files,
 62 directories) pass. Division, conversions and native F64 expression lowering
 remain pending; this is still runtime groundwork for the complete port.
+
+
+## Software binary64 division
+
+`I386F64Div` now divides binary64 bit patterns with integer shift/subtract long
+division. It normalizes subnormal operands, retains 56 quotient bits and uses the
+remaining nonzero remainder as sticky information for nearest-even rounding.
+Signed zero/infinity and invalid zero/zero or infinity/infinity cases follow the
+documented runtime policy; floating-point exception flags remain pending.
+
+All four arithmetic helpers pass the expanded native fixture: 2,048 operand pairs,
+8,192 result comparisons against host binary64 arithmetic and explicit special
+value expectations. This includes repeating quotients, subnormal rounding, zero
+divisors and signed infinities. The fixture passes generated-function instruction
+audits and execution with CR0.EM set. Both x64 rebuilds and image verification
+(763 files, 62 directories) pass. Conversions, comparisons, native F64 compiler
+lowering and the rest of the full port remain unfinished.

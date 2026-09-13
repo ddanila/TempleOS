@@ -1,8 +1,9 @@
 # Integer-only binary64 runtime
 
 `Kernel/I386/SoftF64.HH` declares `I386F64Add(U64 a,U64 b)` and
-`I386F64Sub(U64 a,U64 b)`, plus `I386F64Mul(U64 a,U64 b)`. Arguments and return
-values are binary64 **bit patterns**, passed through the ordinary native integer ABI. They do not perform
+`I386F64Sub(U64 a,U64 b)`, plus `I386F64Mul(U64 a,U64 b)` and
+`I386F64Div(U64 a,U64 b)`. Arguments and return values are binary64 **bit
+patterns**, passed through the ordinary native integer ABI. They do not perform
 integer-to-floating-point conversion. The implementation uses only integer HolyC
 operations and requires no third-party runtime.
 
@@ -14,7 +15,10 @@ its sign and payload; otherwise the second NaN is quieted. Opposite infinities i
 addition (equal infinities in subtraction) produce `0x7FF8000000000000`.
 Multiplication uses the XOR of operand signs
 for finite results, zero and infinity; zero times infinity produces the same
-canonical quiet NaN.
+canonical quiet NaN. Division uses the same sign rule; zero divided by zero
+and infinity divided by infinity produce the canonical quiet NaN. Other
+division by zero produces signed infinity; finite values divided by infinity
+produce signed zero. These operations do not yet raise floating-point flags.
 
 Significands carry three guard/round/sticky bits. Alignment combines discarded
 bits into a sticky bit, with explicit handling of shifts of 64 or more. Magnitude
@@ -23,7 +27,10 @@ normal/subnormal boundaries and carry into the exponent. Multiplication normaliz
 nonzero subnormal inputs, forms an exact 106-bit product using 32-bit limbs, and
 reduces it to guard/round/sticky precision before the shared rounding step.
 Underflow shifts with sticky preservation before rounding, including values
-below half the smallest subnormal.
+below half the smallest subnormal. Division normalizes the operand significands
+and produces 56 quotient bits by shift/subtract long division. A nonzero final
+remainder sets the sticky bit; shared rounding then handles normal and subnormal
+results. Shifted remainders fit in 54 bits, so no 128-bit divide is required.
 
 This is runtime groundwork. Native compiler lowering of HolyC F64 expressions,
 other arithmetic, comparisons, conversions, formatting, math functions,
@@ -34,10 +41,12 @@ No full IEEE conformance or complete HolyC F64 support is claimed.
 
 Run `python3 tools/test-rebuild.py`, then
 `python3 tools/test-i386.py --soft-f64`. The fixture executes 2,048 operand pairs
-and compares addition, subtraction and multiplication bit-for-bit against host
-binary64 arithmetic, with explicit expected NaN propagation. It includes a cross-product
+and compares addition, subtraction, multiplication and division bit-for-bit
+against host binary64 arithmetic, with explicit expected NaN propagation.
+It includes a cross-product
 of special/boundary values, selected alignment distances, halfway cases, product
-underflow/overflow, cancellation and deterministic random inputs. The host patches only the exported
+underflow/overflow, quotient remainder rounding, cancellation and deterministic
+random inputs. The host patches only the exported
 oracle data region after cross-compilation. Function bytes pass the existing
 386 instruction audit; the native runner sets CR0.EM to trap x87 use. QEMU's
 486 model with 8 MiB is a development check, not real-386 or full-OS proof.

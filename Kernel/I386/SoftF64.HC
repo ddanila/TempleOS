@@ -95,3 +95,40 @@ public U64 I386F64Mul(U64 a,U64 b)
   if (x&0x0100000000000000) { x=I386F64ShiftJam(x,1); exp++; }
   return I386F64RoundPack(sign,exp,x);
 }
+
+public U64 I386F64Div(U64 a,U64 b)
+{
+  U64 magnitude=0x7FFFFFFFFFFFFFFF,infinity=0x7FF0000000000000;
+  U64 quiet=0x0008000000000000,frac=0x000FFFFFFFFFFFFF;
+  U64 sign=(a^b)&0x8000000000000000,x,y,quotient=0;
+  I64 exp,other,i;
+  if ((a&magnitude)>infinity) return a|quiet;
+  if ((b&magnitude)>infinity) return b|quiet;
+  a&=magnitude; b&=magnitude;
+  if ((!a && !b) || (a==infinity && b==infinity)) return infinity|quiet;
+  if (a==infinity || !b) return sign|infinity;
+  if (!a || b==infinity) return sign;
+  exp=a>>52; other=b>>52;
+  x=a&frac; y=b&frac;
+  if (exp) x|=0x0010000000000000;
+  else {
+    exp=1;
+    while (x<0x0010000000000000) { x<<=1; exp--; }
+  }
+  if (other) y|=0x0010000000000000;
+  else {
+    other=1;
+    while (y<0x0010000000000000) { y<<=1; other--; }
+  }
+  exp-=other-1023;
+  if (x<y) { x<<=1; exp--; }
+  //One integer bit and 55 fractional bits; the remainder supplies sticky.
+  //Each shifted remainder fits in 54 bits, including subnormal operands.
+  for (i=0;i<56;i++) {
+    quotient<<=1;
+    if (x>=y) { x-=y; quotient|=1; }
+    x<<=1;
+  }
+  if (x) quotient|=1;
+  return I386F64RoundPack(sign,exp,quotient);
+}

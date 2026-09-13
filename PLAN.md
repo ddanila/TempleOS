@@ -396,8 +396,8 @@ dependency discovery and production boot/JIT integration remain pending; see
 imports without copying providers, with ambiguity/type/overlap checks and native
 execution tests. A production kernel export table and provider lifetime tracking
 remain pending; see `docs/i386-module-bindings.md`.
-Integer-only binary64 addition/subtraction/multiplication helpers now pass 2,048
-operand pairs (6,144 result checks) with CR0.EM set and generated-function instruction audits.
+Integer-only binary64 addition/subtraction/multiplication/division helpers now
+pass 2,048 operand pairs (8,192 result checks) with CR0.EM set and generated-function instruction audits.
 The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
 infinities and NaN propagation. Native HolyC F64 expression lowering and the
 remaining arithmetic/conversion/formatting/math surface remain pending; see

@@ -1,4 +1,4 @@
-"""Deterministic binary64 add/subtract/multiply vectors; host arithmetic is the oracle.
+"""Deterministic binary64 arithmetic vectors; host arithmetic is the oracle.
 
 NaN payload selection is an explicit runtime policy, checked separately from
 host NaN propagation. Finite results use Python's binary64 float operations.
@@ -21,12 +21,17 @@ def expected(a, b, operation):
     if operation == "mul" and ((a & MASK == INF and b & MASK == 0) or
                                (b & MASK == INF and a & MASK == 0)):
         return INF | QUIET
+    if operation == "div":
+        if (a & MASK == 0 and b & MASK == 0) or (a & MASK == INF and b & MASK == INF):
+            return INF | QUIET
+        if b & MASK == 0:
+            return ((a ^ b) & SIGN) | INF
     effective_b = b ^ (SIGN if operation == "sub" else 0)
-    if operation != "mul" and a & MASK == INF and effective_b & MASK == INF and (a ^ effective_b) & SIGN:
+    if operation in ("add", "sub") and a & MASK == INF and effective_b & MASK == INF and (a ^ effective_b) & SIGN:
         return INF | QUIET
     x, = struct.unpack('<d', struct.pack('<Q', a))
     y, = struct.unpack('<d', struct.pack('<Q', b))
-    result = x*y if operation == "mul" else x-y if operation == "sub" else x+y
+    result = x/y if operation == "div" else x*y if operation == "mul" else x-y if operation == "sub" else x+y
     return struct.unpack('<Q', struct.pack('<d', result))[0]
 
 
@@ -63,5 +68,5 @@ def make_oracle(count):
             b = (a ^ SIGN) + rng.randrange(-16, 17)
             b &= (1 << 64)-1
         pairs.append((a, b))
-    return b''.join(struct.pack('<5Q', a, b, expected(a, b, 'add'), expected(a, b, 'sub'), expected(a, b, 'mul'))
+    return b''.join(struct.pack('<6Q', a, b, *(expected(a, b, op) for op in ('add', 'sub', 'mul', 'div')))
                     for a, b in pairs)
