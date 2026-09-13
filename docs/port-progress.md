@@ -184,8 +184,8 @@ The BIOS still establishes mode 0x12 before protected-mode entry. These routines
 require that mode's graphics-controller configuration and exclusive caller-owned
 VGA access. No scheduler locking, dirty-region optimization, retrace scheduling,
 or window-manager integration is implemented yet. The test now obtains and releases its source buffer through the native arena
-allocator described below. Its arena is a fixed test reservation at 0x30000;
-this is not firmware memory discovery or a measured full-OS RAM budget. This result does not establish physical VGA or 386SX/DX compatibility.
+allocator described below. Its arena is selected from the BIOS conventional-memory
+handoff with the stage and stack reserved; this is not a full-OS RAM measurement. This result does not establish physical VGA or 386SX/DX compatibility.
 
 ## Native arena allocation
 
@@ -206,9 +206,9 @@ model with 8 MiB RAM. The VGA test also allocates its 153,600-byte framebuffer
 through this implementation, presents it, frees it, and checks heap integrity;
 all 307,200 screenshot pixels still match.
 
-These are single-owner arena tests. Memory discovery/reservation, task-owned page
-pools, concurrency/interrupt handling, task teardown, and public allocation
-wrappers remain pending. The
+These are single-owner arena tests. Extended-memory discovery/reservation,
+task-owned page pools, concurrency/interrupt handling, task teardown, and public
+allocation wrappers remain pending. The
 full OS's low-memory requirements remain unmeasured.
 
 ## Allocated native modules
@@ -230,11 +230,34 @@ The 16 data cases, native heap stress fixture, and both x86-64 rebuild generatio
 also pass. See [the allocating API](i386-modules.md#allocating-native-loader).
 
 This fixture now needs a larger test stage: 256 individual BIOS CHS sector reads
-load at most 128 KiB beginning at 0x10000, below its heap at 0x40000. The other
-runners keep their 128-sector default. Both paths pass target execution checks.
-Boot memory discovery and reservation are still pending; these addresses remain
-explicit test reservations. Filesystem integration, resident kernel symbol binding,
+load at most 128 KiB beginning at 0x10000. The other runners keep their 128-sector
+default. Both paths pass target execution checks. The heap is now selected from
+the conventional-memory handoff below, with explicit runner reservations. Filesystem integration, resident kernel symbol binding,
 public allocation/exception interfaces, and coordinated unloading remain pending.
+
+## BIOS conventional-memory handoff
+
+The CHS test boot path now records INT 12h conventional memory, the BDA's EBDA
+address, an optional INT 15h/AH=88h extended-memory result, and the loaded stage
+bounds. `Kernel/I386/BootMemory.HC` validates that fixed-width record and selects
+the largest aligned conventional-memory gap after subtracting caller reservations.
+It excludes low boot/firmware data, loaded code, EBDA, VGA/ROM space, and all memory
+above 1 MiB. Reservation order and overlap do not change the selected free gap.
+VGA and module loading now initialize their heaps from this result while reserving
+the runner's packet buffer and protected-mode stack. All 307,200 VGA pixels and
+all 23 loader cases still pass, along with the 16 data-module cases.
+
+`python3 tools/test-i386.py --memory` tests the real handoff and synthetic records
+covering limits, malformed inputs, range unions, alignment, endpoint overflow,
+minimum size, equal-size choices, and unchanged outputs on rejection. It also runs
+an injected carry-set failure of the legacy extended-memory query. The same native
+selector passes with or without that optional result. Both x86-64 rebuild/reboot
+generations pass; this remains QEMU 486/8 MiB evidence. See the detailed
+[boot memory contract](i386-boot-memory.md).
+
+A20 handling, usable extended-memory ranges, the production boot path, and task/page
+pool integration remain pending. This conventional-memory step does not establish
+the full OS's memory budget or native 386 compatibility.
 
 ## Test artifacts
 
@@ -246,6 +269,8 @@ public allocation/exception interfaces, and coordinated unloading remain pending
   and allocated/caller-buffer loaded-code execution and lifetime results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
+- `build/i386-memory-test/`: native handoff/selector fixture, instruction audit,
+  normal and injected-query-failure boot disks/logs, and results.
 - `build/i386-heap-test/`: compiled allocator and integrity/stress fixture,
   instruction audit, runner disk, and target results.
 - `build/i386-vga-test/`: compiled presentation code, instruction audit, disk,

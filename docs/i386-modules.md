@@ -165,9 +165,9 @@ validated stable inputs and a valid nonoverlapping allocation normally make that
 second load succeed.
 
 The larger test image uses 256 single-sector CHS reads into 0x10000–0x2FFFF.
-Other compiler runners retain the 128-sector default. This remains a test boot
-stage below conventional-memory reservations, not a production disk loader or
-firmware memory map.
+Other compiler runners retain the 128-sector default. The heap is selected from the BIOS conventional-memory handoff after excluding
+the loaded stage and the runner's scratch/stack reservation. This remains a test
+boot stage, not the production disk loader or a complete usable-memory map.
 
 All 23 expanded native loader cases pass on the QEMU 486/8 MiB runner, together
 with the 16 regenerated data cases and the native heap regression. This is not

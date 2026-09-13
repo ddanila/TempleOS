@@ -3,12 +3,14 @@
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
 #include "/Kernel/I386/Heap.HH"
+#include "/Kernel/I386/BootMemory.HH"
 extern U8 *I386LoadAlloc(CI386Heap *heap,U8 **modules,I64 *sizes,I64 count,U8 *entry_name);
 extern I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,U8 *entry_name);
 U8 entry_name[5]="Main",output[2048],other[2048],original[2048];
 I64 Main(I64 a,I64 b)
 {
   CI386Heap heap;
+  CI386MemRange reserved,arena;
   U8 *packet=a,*modules[3],*cursor,*first,*second,*again,*reserve,*stored,*heap_modules[3];
   I64 sizes[3],count,mode,expected,required,i,j,result;
   I64 (*entry)(I64 x,I64 y);
@@ -23,7 +25,9 @@ I64 Main(I64 a,I64 b)
   }
   for (i=0;i<b;i++) original[i]=packet[i];
   for (i=0;i<2048;i++) { output[i]=0xA5; other[i]=0x5A; }
-  if (!I386HeapInit(&heap,0x40000,65536)) return 21;
+  reserved.base=0x70000; reserved.size=0x20000;
+  if (!I386BootArena(I386_BOOT_INFO_ADDRESS,&reserved,1,&arena) ||
+      !I386HeapInit(&heap,arena.base,arena.size)) return 21;
   required=I386LoadInto(modules,sizes,count,0,0,entry_name);
   if (mode) {
     if (required || I386LoadInto(modules,sizes,count,output,2048,entry_name)) return 4;
@@ -54,9 +58,9 @@ I64 Main(I64 a,I64 b)
     if (I386LoadInto(modules,sizes,count,output,required,entry_name)!=required ||
         I386LoadInto(modules,sizes,count,other,2048,entry_name)!=required) return 14;
     for (i=0;i<required;i++) if (output[i]!=other[i]) return 15;
-    reserve=I386HeapAlloc(&heap,65520);
+    reserve=I386HeapAlloc(&heap,heap.size-16);
     if (!reserve || I386LoadAlloc(&heap,modules,sizes,count,entry_name) ||
-        heap.used!=65536 || heap.allocations!=1 || !I386HeapValid(&heap) ||
+        heap.used!=heap.size || heap.allocations!=1 || !I386HeapValid(&heap) ||
         !I386HeapFree(&heap,reserve)) return 23;
     if (I386LoadAlloc(0,modules,sizes,count,entry_name)) return 24;
     first=I386LoadAlloc(&heap,modules,sizes,count,entry_name);
@@ -101,3 +105,5 @@ I64 Main(I64 a,I64 b)
   return 0;
 }
 #include "/Kernel/I386/ModuleAlloc.HC"
+
+#include "/Kernel/I386/BootMemory.HC"

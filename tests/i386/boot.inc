@@ -14,6 +14,46 @@ org 0x7c00
     mov sp,0x7c00
     sti
     mov [drive],dl
+    ; Fixed-width handoff at 0x5000; all bytes below the stage remain reserved.
+    mov dword [0x5000],0x4D323349
+    mov dword [0x5004],1
+    mov dword [0x500C],0
+    mov dword [0x5014],0x10000
+    mov dword [0x5018],0x10000+BOOT_SECTORS*512
+    mov dword [0x501C],1
+    push ds
+    int 0x12
+    pop ds
+    cmp ax,576 ; The test runners currently place their protected stack at 0x90000.
+    jb fail16
+    cmp ax,640
+    ja fail16
+    movzx eax,ax
+    mov [0x5008],eax
+    movzx eax,word [0x40E]
+    shl eax,4
+    mov [0x5010],eax
+    test eax,eax
+    jz .ebda_ok
+    cmp eax,0x90000
+    jb fail16
+    cmp eax,0xA0000
+    ja fail16
+.ebda_ok:
+    mov ah,0x88
+    stc
+    push ds
+    int 0x15
+    pop ds
+%ifdef BOOT_EXTENDED_FAIL
+    stc ; Exercise an unsupported legacy query on an emulator BIOS.
+%endif
+    jc .no_extended
+    movzx eax,ax
+    mov [0x500C],eax
+    or dword [0x501C],2
+.no_extended:
+    mov dl,[drive]
     mov ah,8
     int 0x13
     jc fail16
@@ -80,4 +120,3 @@ gdt_ptr:
     dd gdt
 times 510-($-$$) db 0
 dw 0xaa55
-

@@ -29,12 +29,13 @@ def main():
     modes.add_argument('--data', action='store_true', help='Test global/static storage and data imports')
     modes.add_argument('--vga', action='store_true', help='Test native planar VGA presentation and displayed pixels')
     modes.add_argument('--heap', action='store_true', help='Test native arena allocation, coalescing, exhaustion and corruption')
+    modes.add_argument('--memory', action='store_true', help='Test BIOS memory handoff and reserved-range selection')
     args = parser.parse_args()
-    data_mode = args.data or args.vga or args.heap
+    data_mode = args.data or args.vga or args.heap or args.memory
     functions = args.functions or data_mode
-    kind = 'heap' if args.heap else 'vga' if args.vga else 'data' if data_mode else 'functions' if functions else 'expressions'
+    kind = 'memory' if args.memory else 'heap' if args.heap else 'vga' if args.vga else 'data' if data_mode else 'functions' if functions else 'expressions'
     if functions:
-        OUT = ROOT/('build/i386-heap-test' if args.heap else 'build/i386-vga-test' if args.vga else 'build/i386-data-test' if data_mode else 'build/i386-functions-test')
+        OUT = ROOT/('build/i386-memory-test' if args.memory else 'build/i386-heap-test' if args.heap else 'build/i386-vga-test' if args.vga else 'build/i386-data-test' if data_mode else 'build/i386-functions-test')
         manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
         for name, digest in manifest['source_sha256'].items():
             if name.startswith(('Compiler/', 'Kernel/')):
@@ -55,7 +56,7 @@ def main():
     build = [sys.executable, 'tools/build-iso.py', '--overlay', str(OUT/'overlay')]
     if functions:
         build += ['--overlay', 'build/rebuild-test/overlay']
-    build += ['--overlay', 'tests/guest/i386-heap' if args.heap else 'tests/guest/i386-vga' if args.vga else 'tests/guest/i386-data' if data_mode else 'tests/guest/i386-functions' if functions else 'tests/guest/i386',
+    build += ['--overlay', 'tests/guest/i386-memory' if args.memory else 'tests/guest/i386-heap' if args.heap else 'tests/guest/i386-vga' if args.vga else 'tests/guest/i386-data' if data_mode else 'tests/guest/i386-functions' if functions else 'tests/guest/i386',
               '--output', str(iso)]
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
@@ -151,7 +152,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (1 if args.vga or args.heap else 16 if data_mode else 150 if functions else 9):
+    if offset != len(data) or count != (1 if args.vga or args.heap or args.memory else 16 if data_mode else 150 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
@@ -197,8 +198,29 @@ def main():
     runner_kind = 'functions' if functions else 'expressions'
     if result.returncode != 33 or log.read_text() != f'PASS i386 {runner_kind}\n':
         raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
+    if args.memory:
+        # Reuse the audited code, changing only its expected firmware-status argument.
+        fault_data = bytearray(data)
+        struct.pack_into('<Q', fault_data, 12, 1)
+        fault_cases = OUT/'cases-no-extended.bin'
+        fault_cases.write_bytes(fault_data)
+        fault_disk = OUT/'runner-no-extended.img'
+        run('nasm', '-DFUNCTIONS=1', '-DEXPECTED_FAULTS=0', '-DBOOT_EXTENDED_FAIL=1',
+            '-f', 'bin', f'-DCASES_FILE="{fault_cases}"', 'tests/i386/runner.asm',
+            '-o', str(fault_disk))
+        if fault_disk.stat().st_size > 129*512:
+            raise ValueError('Memory runner exceeds boot-loader transfer size')
+        with fault_disk.open('ab') as stream:
+            stream.truncate(16*1024*1024)
+        fault_log = OUT/'runner-no-extended.log'
+        fault_log.write_text('')
+        fault_cmd = [arg.replace(str(disk),str(fault_disk)).replace(str(log),str(fault_log)) for arg in cmd]
+        fault_result = subprocess.run(fault_cmd, timeout=20)
+        if fault_result.returncode != 33 or fault_log.read_text() != 'PASS i386 functions\n':
+            raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
-        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'scope': 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'boot_variants': 2 if args.memory else 1,
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'scope': 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 
