@@ -399,8 +399,10 @@ remain pending; see `docs/i386-module-bindings.md`.
 Integer-only binary64 addition/subtraction/multiplication/division helpers now
 pass 2,048 operand pairs (8,192 result checks) with CR0.EM set and generated-function instruction audits.
 The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
-infinities and NaN propagation. Native HolyC F64 expression lowering and the
-remaining arithmetic/conversion/formatting/math surface remain pending. Signed
+infinities and NaN propagation. Native HolyC same-type F64 arithmetic, literals,
+storage, unary minus and fixed-arity direct/indirect calls now pass target tests.
+Mixed conversions, comparisons and the remaining arithmetic/formatting/math
+surface still need compiler integration. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
 passes 1,024 inputs against actual x64 HolyC and an independent host oracle,

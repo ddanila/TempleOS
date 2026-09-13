@@ -1038,3 +1038,25 @@ quiet/signaling NaNs and deterministic random values. The 8,192-check arithmetic
 regression, instruction audits, both x64 rebuilds and image verification (763
 files, 62 directories) pass. Native compiler lowering, unsigned-output semantics
 and floating-point exception-state compatibility remain pending.
+
+
+## Initial native HolyC F64 expressions
+
+The i386 backend now compiles same-type F64 addition, subtraction, multiplication
+and division into calls to the software runtime. F64 bits pass through eight-byte
+argument/evaluation slots and EDX:EAX returns, with four-byte pointers. Literals,
+local/global and pointer storage, bitwise casts, unary sign changes and
+fixed-arity direct/indirect F64 calls are supported. Runtime ABI validation follows
+HolyC union forwarding to primitive types; forward and direct helper references
+use the existing relative module fixups. Direct helper definitions must precede
+the caller in the current module's address range.
+
+The native fixture passes 12 positive checks, including nested/indirect calls,
+zero/NaN sign changes and both helper-reference paths. Eight negative compilation
+checks reject missing/wrong runtime declarations and currently unsupported F64
+operations. Execution with CR0.EM set and generated-function instruction audits
+pass, along with all 155 integer/call cases, the 8,192-result arithmetic corpus,
+both x64 rebuild generations and image verification (763 files, 62 directories).
+Mixed conversions, comparisons, F64 conditions, compound assignment, remainder,
+math operations and floating-point state remain pending; the full port is not
+complete. See `docs/i386-f64-backend.md`.

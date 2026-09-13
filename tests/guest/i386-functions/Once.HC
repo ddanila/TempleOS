@@ -334,7 +334,7 @@ U0 CompileTests()
   EmitCase("return a%b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a/b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);
-  Reject("#include \"/Kernel/Types.HH\"\nF64 Test(I64 a,I64 b) { return 1.5; }");
+  Reject("#include \"/Kernel/Types.HH\"\nF64 Test(F64 a,I64 b) { return a+b; }");
   Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(I64 a,I64 b); I64 Test(I64 a,I64 b) { return Missing(a,b); }");
   Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(); I64 Test() { I64 (*fp)(); fp=&Missing; return (*fp)(); }");
   Reject("#exe { 1+2; }");
