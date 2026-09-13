@@ -18,4 +18,5 @@ public extern I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I6
 public extern I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count);
 public extern Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count);
 public extern I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0);
+public extern I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name);
 #endif

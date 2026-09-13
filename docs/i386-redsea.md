@@ -103,6 +103,20 @@ not claim a durable no-op for older disks whose cache policy is unknown. A verif
 legacy cache policy is still required to complete the vintage writable-filesystem
 target; the capability gate is an implementation limitation, not a revised target.
 
+`RedSeaDelete.HC` adds exact-name regular-file deletion. It returns 1 after
+removal/reclamation, 0 when absent, and -1 for invalid input or I/O failure.
+Directories, read-only files and read-only parent directories are rejected.
+The existing entry is marked deleted and flushed before its allocation is freed
+and flushed. Empty files need no bitmap update. Data bytes are not erased; a later
+allocation may reuse them. Names, sizes and dates remain in tombstones until reuse.
+
+Deletion shares creation's flush-capability requirement and exclusive ownership.
+Callers must stop using the removed file's cached entries/extents; there is no
+public handle registry to enforce lifetime yet. A failure after the tombstone
+write invalidates the mounted view and can leave uncertain publication or leaked
+allocation. Recovery is explicit; the operation does not restore a removed name
+or retry reclamation automatically. Recursive directory deletion is not provided.
+
 The native fixture is `python3 tools/test-i386.py --redsea`. The host lays out a
 RedSea volume on a 16 MiB IDE disk alongside the runner. It includes a directory
 spanning two sectors, a deleted entry with deliberately invalid storage, nested
@@ -138,6 +152,14 @@ trace checks data/terminator/publication write-and-flush ordering. It uses the
 existing 256-sector runner stage, which ends at 0x30000 below the 0x90000 stack,
 to fit the combined native filesystem code. Power-loss behavior is not simulated.
 
-Deletion/replacement, directory growth, legacy cache policy, cache and task locking,
+`python3 tools/test-i386.py --redsea-delete` creates/removes a multi-sector file,
+checks bitmap reclamation and unchanged residual data, then creates HolyC source
+in the reclaimed extent and directory slot. It also removes an empty file and
+checks absent/duplicate/read-only/directory rejection plus remount/readback.
+The host verifies all data and metadata bytes, and QEMU's command trace verifies
+tombstone-flush-before-bitmap-release ordering. Interrupted deletion is not yet
+fault-injected.
+
+Replacement, directory growth, legacy cache policy, cache and task locking,
 decompression, public file APIs, resident module loading from files, complete image consistency checks and
 physical 386/IDE validation remain pending.

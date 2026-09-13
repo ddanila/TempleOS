@@ -848,3 +848,19 @@ trace confirms the expected write/flush ordering. The instruction audit, both
 x64 rebuilds and image verification (756 files, 62 directories) pass. The combined fixture uses the existing 128 KiB stage and remains
 below the runner stack. Legacy cache policy, deletion/replacement, directory growth,
 public file APIs, interrupted-update recovery and physical validation remain.
+
+## Native RedSea deletion and reuse
+
+Regular-file deletion now flushes a directory tombstone before releasing and
+flushing its extent. It rejects directories/read-only targets, reports absent
+names separately, and removes empty files without a bitmap operation. Data is
+not erased. Failure after mutation invalidates the mounted view and can require
+orphan/uncertain-entry recovery; public handle lifetime tracking remains pending.
+
+The native fixture creates/removes a multi-sector file, verifies exact bitmap
+reclamation and residual data, and creates HolyC source in the reclaimed extent
+and slot. Empty/duplicate/invalid/read-only cases and remount/readback pass.
+Whole-image comparison verifies expected bytes and QEMU traces confirm ordering.
+The instruction audit, both x64 rebuilds and image verification (757 files,
+62 directories) pass. Replacement, directory growth,
+public file APIs, interrupted-delete recovery and physical validation remain.
