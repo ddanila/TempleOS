@@ -369,8 +369,14 @@ inside the handler. A native worker completes 16 event waits using the masked
 condition-check/block protocol, checks its 64-bit local and IF, and retires with
 stack guards and heap accounting intact. The task boot stage is now 128 KiB to
 hold the combined fixture; all four assembly regions are audited separately.
-Current-task bindings, public TempleOS task semantics, and a production idle loop
-remain pending.
+`Idle.asm` and `I386SchedIdle` now provide root-only interrupt-driven waiting.
+Queue inspection stays under IF masking until STI/HLT; the primitive returns with
+IF clear and the wrapper restores the original IF. The combined task test forces
+an initial halt/wakeup, checks the runnable-work rejection path and both disabled
+and enabled caller IF, then completes the 16 waits through an idle/yield loop.
+The idle code is a fifth separate audit range. Task and IRQ suites, both x64
+rebuilds, and 721-file image verification pass. Current-task bindings, public
+TempleOS task semantics, and production boot/service-loop wiring remain pending.
 
 See the [context ABI and limits](i386-context.md).
 

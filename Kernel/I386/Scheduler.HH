@@ -22,4 +22,5 @@ public extern Bool I386SchedFinish(CI386Scheduler *s);
 public extern Bool I386SchedReap(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedBlock(CI386Scheduler *s);
 public extern Bool I386SchedWake(CI386Scheduler *s,CI386Task *task);
+public extern Bool I386SchedIdle(CI386Scheduler *s,U0 (*idle)());
 #endif

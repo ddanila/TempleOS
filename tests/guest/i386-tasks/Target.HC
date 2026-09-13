@@ -15,7 +15,10 @@ extern I64 TimerWakeTest();
 extern U0 TimerWorker(I64 arg);
 extern U0 OnTimer(CI386IrqFrame *frame);
 class CTimerDispatch { U0 (*handler)(CI386IrqFrame *frame); };
+class CTaskTestControl { CTimerDispatch *irq; U0 (*idle)(); };
 CTimerDispatch *timer_dispatch;
+CTaskTestControl *test_control;
+U0 (*idle)();
 U32 events,consumed,wakes,wait_rounds;
 extern I64 SchedulerTest();
 extern U0 ScheduledWorker(I64 id);
@@ -34,7 +37,7 @@ I64 Main(I64 a,I64 b)
   CI386Heap heap;
   U8 *stacks[3],*p;
   I64 i,j,round;
-  swap=b; timer_dispatch=a;
+  swap=b; test_control=a; timer_dispatch=test_control->irq; idle=test_control->idle;
   if (!I386HeapInit(&heap,0x40000,32768)) return 1;
   for (i=1;i<=2;i++) {
     p=I386HeapAlloc(&heap,8208,TRUE); stacks[i]=p;
@@ -185,7 +188,7 @@ I64 TimerWakeTest()
 {
   CI386Heap heap;
   U8 *stack;
-  I64 i,loops;
+  I64 i,loops,idles=0;
   if (!I386HeapInit(&heap,0x40000,32768)) return 28;
   stack=I386HeapAlloc(&heap,8208);
   if (!stack) return 29;
@@ -196,15 +199,20 @@ I64 TimerWakeTest()
       !I386ContextInit(&tasks[1].context,stack+8,8192,&TimerWorker,0x1234567800000001,&ScheduledExit) ||
       !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedYield(&scheduler) ||
       !tasks[1].blocked || events || wait_rounds) return 30;
+  if (I386SchedIdle(0,idle) || I386SchedIdle(&scheduler,0) || (GetRFlags&0x200)) return 34;
   I386PicMask(0xFFFE);
+  if (!I386SchedIdle(&scheduler,idle) || (GetRFlags&0x200) || !wakes ||
+      tasks[1].blocked || I386SchedIdle(&scheduler,idle)) return 35;
+  idles++;
   SetRFlags(GetRFlags|0x200);
   for (loops=0;loops<1000000;loops++) {
+    if (I386SchedIdle(&scheduler,idle)) idles++;
     if (!I386SchedYield(&scheduler) || !(GetRFlags&0x200)) errors++;
     if (tasks[1].finished) break;
   }
   I386IrqSave;
   I386PicMask(0xFFFF);
-  if (errors || !tasks[1].finished || wait_rounds!=16 || events<16 || !wakes ||
+  if (errors || idles<1 || !tasks[1].finished || wait_rounds!=16 || events<16 || !wakes ||
       !I386SchedReap(&scheduler,&tasks[1])) return 31;
   for (i=0;i<8;i++) if (stack[i]!=0xA5 || stack[8200+i]!=0xA5) return 32;
   if (!I386HeapFree(&heap,stack) || heap.used || heap.allocations ||
@@ -214,6 +222,7 @@ I64 TimerWakeTest()
 U0 TimerWorker(I64 arg)
 {
   I64 flags,round,local=arg;
+  if (I386SchedIdle(&scheduler,idle)) errors++;
   SetRFlags(GetRFlags|0x200);
   for (round=0;round<16;round++) {
     flags=I386IrqSave;

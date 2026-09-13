@@ -49,7 +49,7 @@ case_next:
     push dword 0
     push dword i386_context_switch
     push dword 0
-    push dword i386_irq_dispatch
+    push dword task_test_control
 %else
     push dword [esi+24]
     push dword [esi+20]
@@ -171,11 +171,14 @@ test_result: dd 0
 cases: incbin CASES_FILE
 %ifdef TASK_TEST
 %include "Kernel/I386/Context.asm"
+%include "Kernel/I386/Idle.asm"
+task_test_control: dd i386_irq_dispatch,i386_idle
     db 'I32T'
     dd i386_context_code_begin-$$+512,i386_context_code_end-i386_context_code_begin
     dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
     dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
     dd i386_exception_stubs_begin-$$+512,i386_exception_stubs_end-i386_exception_stubs_begin
+    dd i386_idle_code_begin-$$+512,i386_idle_code_end-i386_idle_code_begin
 %endif
 %ifdef IRQ_TEST
     db 'I32Q'

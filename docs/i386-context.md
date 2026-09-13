@@ -124,8 +124,8 @@ I386IrqRestore(flags);
 ```
 
 The producer records the condition before calling Wake. Another runnable task
-must allow interrupts for interrupt-driven progress; this scheduler does not
-supply an idle loop or enable IF in fresh task entries. Blocking while holding
+must allow interrupts for interrupt-driven progress; the idle operation below can wait for interrupts, but fresh task entries still
+start with IF clear. Blocking while holding
 other resources needed by the producer can still deadlock.
 
 The native test blocks both workers before any progress, verifies that only root
@@ -148,9 +148,34 @@ The worker checks a full-width stack value, current-task identity, and restored
 IF after each wait. Root checks successful wakeup, task completion, stack guards,
 reaping, and heap accounting. This passes on QEMU 486/8 MiB alongside the original
 context and lifecycle phases. It validates event/queue integration; it does not
-establish timing accuracy, a counted-event API, or production idle-loop behavior.
+establish timing accuracy, a counted-event API, or a complete production kernel loop.
 
 The task fixture now loads a 128 KiB stage (256 CHS sectors) to accommodate the
 combined native test image. Its fixed heap at 0x40000 and stack at 0x90000 remain
-outside that stage. The runner audits context, IRQ, exception, and test IDT code
+outside that stage. The runner audits context, idle, IRQ, exception, and test IDT code
 as separate executable ranges in `irq-assembly.txt`, excluding descriptor tables.
+
+## Interrupt-driven idle
+
+`Kernel/I386/Idle.asm` provides a four-instruction `U0 idle()` primitive:
+STI, HLT, CLI, RET. Call it with IF clear after checking that there is no runnable
+work, and with an installed, unmasked interrupt source capable of waking the CPU.
+The [386 STI interrupt shadow](https://pdos.csail.mit.edu/6.828/2008/readings/i386/STI.htm)
+covers the immediately following HLT, so a pending maskable interrupt cannot be
+handled between enabling interrupts and entering the halt. After wakeup the
+primitive returns with IF clear. The bootstrap currently links it with NASM.
+
+`I386SchedIdle(s, idle)` masks interrupts, verifies that the caller is root and
+root is the only runnable task, invokes the primitive, then restores the caller's
+original IF. It returns false without halting for invalid arguments, a non-root
+caller, or queued work. True means the idle primitive returned; it does not promise
+that the interrupt made a worker runnable. Root must recheck the queue and yield
+as appropriate. There is no timeout if the caller provides no usable interrupt
+source, and idle is not allowed inside IRQ/NMI handlers.
+
+The PIT/task test forces an initial idle with IF clear and a blocked worker,
+verifies IRQ wakeup and restored disabled IF, rejects idle while that worker is
+runnable, then runs the remaining event waits with an idle/yield root loop entered
+with IF enabled. It also rejects idle from the worker and with missing arguments.
+The idle assembly has its own instruction-audit range. This establishes the
+primitive and scheduler integration, not a complete boot/task/device service loop.

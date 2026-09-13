@@ -88,3 +88,13 @@ public Bool I386SchedWake(CI386Scheduler *s,CI386Task *task)
   I386IrqRestore(flags);
   return TRUE;
 }
+public Bool I386SchedIdle(CI386Scheduler *s,U0 (*idle)())
+{//Root only. Keep IF clear from the queue check to the atomic enable/halt helper.
+  U32 flags=I386IrqSave;
+  if (!s || !s->root || s->current!=s->root || !idle || s->root->next!=s->root) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  (*idle)();
+  I386IrqRestore(flags);
+  return TRUE;
+}
