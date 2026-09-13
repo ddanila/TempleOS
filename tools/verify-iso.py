@@ -46,6 +46,11 @@ def visit(block):
 files = visit(root_block)
 paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', 'archive'],
                                 cwd=root).decode().splitlines()
+os_dirs = {name.split('/')[0] for name in paths if '/' in name}
+current = subprocess.check_output(['git', 'ls-files', '--cached', '--others',
+                                   '--exclude-standard'], cwd=root).decode().splitlines()
+paths = sorted(set(paths) | {name for name in current
+                             if name.split('/')[0] in os_dirs})
 assert set(files) == set(paths)
 for name in paths:
     assert files[name] == (root/name).read_bytes(), name

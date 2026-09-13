@@ -51,3 +51,20 @@ To check image structure and all packaged file contents:
 python3 tools/build-iso.py
 python3 tools/verify-iso.py
 ```
+
+## 32-bit port development
+
+The native 386+/VGA port is underway; the normal launcher still runs x86-64.
+See [the architecture plan](PLAN.md), [working i386 ABI](docs/i386-abi.md), and
+[implementation progress](docs/port-progress.md).
+
+Run isolated bootstrap/backend checks with:
+
+```sh
+python3 tools/test-rebuild.py
+python3 tools/test-i386.py
+```
+
+These tests compile HolyC inside a temporary TempleOS VM. The i386 test executes
+generated integer code in a protected-mode runner using QEMU's 486 model; it
+does not yet boot a complete 32-bit TempleOS system or prove real-386 support.

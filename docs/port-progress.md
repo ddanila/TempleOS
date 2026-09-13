@@ -1,0 +1,56 @@
+# i386 port progress
+
+The full objective and acceptance gates remain in `PLAN.md`. The standalone
+32-bit TempleOS environment is not yet implemented.
+
+## Bootstrap evidence
+
+`python3 tools/test-rebuild.py` packages an isolated test ISO, builds the compiler
+and kernel inside the x86-64 guest, exports their uncompressed binaries via QMP,
+boots those binaries, and rebuilds them again. Host tools package and transport
+bytes; HolyC compilation occurs in TempleOS. The desktop image, archived binaries,
+and user's writable disk are not modified by this test.
+
+Two such generations have run successfully. Exported sizes were 193,792 bytes for
+the compiler and 189,760 for the kernel. The generations are not byte-identical:
+the initial run found 22 differing compiler bytes and 67 differing kernel bytes.
+The kernel has an embedded compilation timestamp, but differences beyond that
+remain unexplained. This proves a rebuild/reboot cycle, not a reproducible-build
+fixed point or complete M0 acceptance. Run manifests record hashes and differences
+under `build/rebuild-test/result.json`.
+
+Persistence, audio, multicore validation, 386 emulator profile selection, and
+further source/binary difference analysis remain outstanding for M0.
+
+## Initial i386 backend
+
+`Compiler/I386/Expr.HC` uses the existing HolyC lexer/parser and consumes its IR.
+It emits 386 integer instructions with a pair-of-dwords evaluation stack and
+EDX:EAX returns. Currently supported: I64 literals, addition, subtraction,
+multiplication, bitwise AND/OR/XOR/complement, negation, and parentheses.
+
+`python3 tools/test-i386.py` compiles nine boundary-value expression cases inside
+TempleOS, exports the machine code, audits executable instruction ranges, and
+executes them in a separate 32-bit protected-mode BIOS/CHS runner with 8 MiB RAM
+under QEMU's 486 model. Cases exercise carry, borrow, cross-word multiplication,
+signed negation, complement, and wraparound. Expected values are fixed test
+vectors; the host does not evaluate source to generate the target code.
+Unsupported floating point, narrowing casts, and division are explicitly rejected.
+
+This is only an initial M2 experiment. There is no i386 pointer-layout support,
+function compilation, module loader, software F64, full kernel, native i386
+compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
+low-memory self-hosting, or completion of M1/M2. See `docs/i386-abi.md` for the
+working ABI decisions and remaining boundaries.
+
+## Test artifacts
+
+- `build/rebuild-test/`: build ISOs, both exported generations, QEMU commands,
+  debug logs, screenshots, and source/binary hash manifest.
+- `build/i386-test/`: compiler ISO, generated expressions, disassembly of code
+  ranges, test disk, runner log, and result JSON.
+
+`tools/guest-run.py` owns each test QEMU process and terminates it on completion
+or failure. Its port 0xE9 report/export protocol is test instrumentation, not a
+new production OS dependency. The ISO builder's overlays inject guest test files
+without modifying production startup files.

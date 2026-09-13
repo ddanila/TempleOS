@@ -4,6 +4,7 @@
 Layout follows Adam/Opt/Boot/DskISORedSea.HC and Doc/RedSea.DD.
 The existing kernel/compiler are the bootstrap for HolyC compilation in the VM.
 """
+import argparse
 import pathlib
 import struct
 import subprocess
@@ -20,10 +21,22 @@ def align(n, unit=SECTOR):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=pathlib.Path, default=OUT / 'TempleOS.iso')
+    parser.add_argument('--overlay', type=pathlib.Path, action='append', default=[],
+                        help='Directory of guest paths to add/replace (last wins)')
+    args = parser.parse_args()
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     OUT.mkdir(exist_ok=True)
-    # Only archived OS paths belong on the disc, including local modifications.
+    # Archive identifies OS roots; include new versioned/unignored OS source too.
     paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only',
                                      'archive'], cwd=ROOT).decode().splitlines()
+    os_dirs = {name.split("/")[0] for name in paths if "/" in name}
+    additions = subprocess.check_output(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+        cwd=ROOT).decode().splitlines()
+    paths = sorted(set(paths) | {name for name in additions
+                                 if name.split("/")[0] in os_dirs})
     tree = {}
     for name in paths:
         node = tree
@@ -31,6 +44,14 @@ def main():
         for part in parts[:-1]:
             node = node.setdefault(part, {})
         node[parts[-1]] = (ROOT / name).read_bytes()
+    for overlay in args.overlay:
+        for file in sorted(overlay.rglob('*')):
+            if file.is_file():
+                node = tree
+                parts = file.relative_to(overlay).parts
+                for part in parts[:-1]:
+                    node = node.setdefault(part, {})
+                node[parts[-1]] = file.read_bytes()
     tree.setdefault('Home', {})
     tree.setdefault('Tmp', {})['ScrnShots'] = {}
 
@@ -123,12 +144,14 @@ def main():
         raise ValueError('Kernel exceeds BIOS staging memory')
     subprocess.run(['nasm', '-f', 'bin', f'-DKERNEL_LBA={kernel_block // 4}',
                     f'-DKERNEL_BLOCKS={align(kernel_size, DVD) // DVD}',
-                    str(ROOT / 'tools/boot-dvd.asm'), '-o', str(OUT / 'boot.bin')],
+                    str(ROOT / 'tools/boot-dvd.asm'), '-o', str(args.output.with_suffix('.boot.bin'))],
                    check=True)
-    image[21*DVD:22*DVD] = (OUT / 'boot.bin').read_bytes()
-    target = OUT / 'TempleOS.iso'
+    image[21*DVD:22*DVD] = args.output.with_suffix('.boot.bin').read_bytes()
+    target = args.output
     assert len(image) == cursor and len(image) % DVD == 0
-    target.write_bytes(image)
+    temporary = target.with_suffix(target.suffix + '.tmp')
+    temporary.write_bytes(image)
+    temporary.replace(target)
     print(f'Built {target} ({len(image):,} bytes)')
 
 

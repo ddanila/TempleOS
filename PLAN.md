@@ -12,7 +12,8 @@ architectural target. Cross-platform QEMU launchers remain useful supporting
 work; they are not a substitute for native 386 compatibility. ARM, RISC-V, UEFI,
 and broad modern-device support are deferred.
 
-This document plans work; it does not claim any 32-bit implementation exists.
+Implementation is underway; see [port progress](docs/port-progress.md) for current
+evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
 checks 686 packaged files and embedded DolDoc record lengths. Native rebuilds,
