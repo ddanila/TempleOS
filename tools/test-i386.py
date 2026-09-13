@@ -120,7 +120,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (113 if functions else 9):
+    if offset != len(data) or count != (129 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.

@@ -135,6 +135,18 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
   return res;
 }
 
+class CI386Logic
+{
+  CI386Logic *next;
+  CIntermediateCode *left,*end;
+  I64 address;
+};
+U0 I386Bool(CI386Out *out)
+{//Normalize the top evaluation slot to zero or one.
+  I386Bytes(out,"\x58\x5A\x09\xD0\x0F\x95\xC0\x0F\xB6\xC0"
+    "\x31\xD2\x52\x50",14);
+}
+
 class CI386Call
 {
   CI386Call *next;
@@ -149,6 +161,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   CIntermediateCode *ic;
   CCodeMisc *label;
   CI386Call *calls=NULL,*call;
+  CI386Logic *logics=NULL,*logic;
   CExternUsage *usage;
   CAOTImportExport *import_rec;
   CMemberLst *arg;
@@ -175,6 +188,12 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   cc->pass=0;
   OptPass012(cc);
   try {
+    for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
+      if (ic->ic_code==IC_AND_AND || ic->ic_code==IC_OR_OR) {
+        logic=CAlloc(sizeof(CI386Logic));
+        logic->next=logics; logics=logic;
+        logic->left=ic->t.arg1_tree; logic->end=ic;
+      }
     // First pass determines label offsets; second resolves near branches.
     for (pass=0;pass<2;pass++) {
       out.count=0;
@@ -254,6 +273,19 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Bytes(&out,"\x52\x50",2);
             depth++;
             call=calls; calls=call->next; Free(call);
+            break;
+          case IC_AND_AND:
+          case IC_OR_OR:
+            if (depth<1) throw('Compiler');
+            I386Bool(&out);
+            for (logic=logics;logic;logic=logic->next)
+              if (logic->end==ic && !pass) logic->address=out.count;
+            break;
+          case IC_XOR_XOR:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A\x09\xD0\x0F\x95\xC0"
+              "\x09\xD9\x0F\x95\xC1\x30\xC8\x0F\xB6\xC0\x31\xD2\x52\x50",23);
+            depth--;
             break;
           case IC_ENTER:
             I386Bytes(&out,"\x55\x89\xE5\x81\xEC",5);
@@ -467,14 +499,28 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             PrintErr("i386 COC opcode %X not implemented\n",ic->ic_code);
             throw('Compiler');
         }
+        for (logic=logics;logic;logic=logic->next) {
+          if (logic->left==ic) {
+            if (depth<1) throw('Compiler');
+            I386Bool(&out);
+            I386Bytes(&out,"\x85\xC0\x0F",3);
+            if (logic->end->ic_code==IC_AND_AND) I386Byte(&out,0x84);
+            else I386Byte(&out,0x85);
+            I386Dword(&out,logic->address-out.count-4);
+            I386Bytes(&out,"\x83\xC4\x08",3);
+            depth--;
+          }
+        }
       }
       if (calls) throw('Compiler');
     }
   } catch {
     LinkedLstDel(calls);
+    LinkedLstDel(logics);
     Free(out.data);
     //Leave catch_except false so the original exception propagates.
   }
+  LinkedLstDel(logics);
   // CMain appends U64 units; include zero padding without reading past allocation.
   result=CAlloc((out.count+7)&~7);
   MemCpy(result,out.data,out.count);

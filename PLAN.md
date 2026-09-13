@@ -16,7 +16,7 @@ Implementation is underway; see [port progress](docs/port-progress.md) for curre
 evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 693 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
+checks 694 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. Experimental i386 expression
 and function backends are tracked in the progress document.
 
@@ -292,8 +292,11 @@ tests, or the complete desktop before resolving compile-time execution.
 
 The protected-mode runner now executes HolyC-generated integer functions with
 32-bit pointers, 64-bit arithmetic, and basic control flow. Next, complete the
-integer/call backend and architecture-tagged module path needed to compile real
-kernel units, while closing the remaining M0/M1 gates. Runner success remains an
+integer/call backend and native module loading path needed to compile and run
+more kernel units, while closing the remaining M0/M1 gates. The architecture-tagged
+bootstrap linker and shared module validator now have target execution tests.
+Prioritize global/data relocations, indirect calls, and exception-safe runtime
+interfaces before attempting a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.
 
 ## Verification strategy

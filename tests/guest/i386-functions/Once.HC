@@ -258,6 +258,23 @@ U0 CompileTests()
     "extern I64 Value();", "I64 Value() { return 42; }");
   EmitCase("return Sum(a,b,3);",10,20,33,&cursor,
     "extern I64 Sum(I64 a,I64 b,I64 c);", "I64 Sum(I64 a,I64 b,I64 c) { return a+b+c; }");
+  EmitCase("return a&&b;",0x100000000,42,1,&cursor);
+  EmitCase("return a||b;",0,0x100000000,1,&cursor);
+  EmitCase("return a&&b;",42,0,0,&cursor);
+  EmitCase("return a||b;",0,0,0,&cursor);
+  EmitCase("return a^^b;",0x100000000,1,0,&cursor);
+  EmitCase("return a^^b;",0,0x100000000,1,&cursor);
+  EmitCase("a&&b++; return b;",0,42,42,&cursor);
+  EmitCase("a||b++; return b;",1,42,42,&cursor);
+  EmitCase("a&&b++; return b;",1,42,43,&cursor);
+  EmitCase("a||b++; return b;",0,42,43,&cursor);
+  EmitCase("return a&&(1/b);",0,0,0,&cursor);
+  EmitCase("return a||(1/b);",1,0,1,&cursor);
+  EmitCase("return (a&&b)||(!a&&b);",0,42,1,&cursor);
+  EmitCase("if (a&&b) return 7; return 9;",1,1,7,&cursor);
+  EmitCase("if (a||b) return 7; return 9;",0,0,9,&cursor);
+  EmitCase("return a||(Add(a,b)&&b);",0,2,1,&cursor,
+    "extern I64 Add(I64 a,I64 b);", "I64 Add(I64 a,I64 b) { return a+b; }");
   //Reserved expected value tells the isolated runner to require vector 0.
   EmitCase("return a/b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",42,0,0xDEADBEEFCAFEBABE,&cursor);

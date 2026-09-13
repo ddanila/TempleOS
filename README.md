@@ -65,6 +65,7 @@ Run isolated bootstrap/backend checks with:
 python3 tools/test-rebuild.py
 python3 tools/test-i386.py
 python3 tools/test-i386.py --functions
+python3 tools/test-i386-module-check.py
 ```
 
 These tests compile HolyC inside a temporary TempleOS VM. The i386 test executes

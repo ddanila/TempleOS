@@ -63,7 +63,7 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-113 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+129 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
 class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
 unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
@@ -74,13 +74,14 @@ require vector 0 for zero divisors or signed quotient overflow; the runner check
 the exact fault count. Call cases cover forward/backward references within one
 compilation unit, recursion, nested calls, zero/two/three arguments, default
 arguments, void and narrow returns, pointer mutation, and full argument-slot
-extension. F64 output, unresolved functions, and `#exe` remain rejection cases.
+extension. Boolean cases cover `&&`, `||`, and `^^`, nested conditions, skipped
+side effects, and skipped division faults. F64 output, unresolved functions, and `#exe` remain rejection cases.
 Exported function boundaries separate executable code from AOT alignment padding
 during instruction auditing. The runner reports the zero-based case index in
 hexadecimal on failure. Function bodies
 are exercised; the cases may contain multiple functions in one compilation unit.
 Runtime module loading, globals, indirect calls, switch dispatch,
-short-circuit/chained comparisons, variadic functions, debug information, and
+chained comparisons, variadic functions, debug information, and
 software F64 are not implemented by this backend.
 
 ## Bootstrap module format and linking
@@ -99,6 +100,14 @@ header layout, symbol names, and relocation records. This is a bootstrap static
 linker; a native i386 runtime loader, global/data relocations, and module lifecycle
 support remain unfinished.
 
+`Kernel/I386/ModuleCheck.HC` now shares the same validator between the host
+module tools and target code. `python3 tools/test-i386-module-check.py` compiles
+that function through the i386 backend and executes 25 cases in the protected-mode
+runner: valid modules, null/truncated buffers, negative and oversized lengths,
+malformed records, duplicate patches, and modules without symbol records. This
+exercises a real kernel unit with target pointer layouts and short-circuit guards;
+it does not yet provide a runtime loader.
+
 This remains partial M1/M2 work. There is no i386 module loader, software F64,
 full kernel, native i386 compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
 low-memory self-hosting, or completion of M1/M2. See `docs/i386-abi.md` for the
@@ -108,6 +117,8 @@ working ABI decisions and remaining boundaries.
 
 - `build/rebuild-test/`: build ISOs, both exported generations, QEMU commands,
   debug logs, screenshots, and source/binary hash manifest.
+- `build/i386-module-check/`: shared validator code, module fixture, disassembly,
+  malformed-input corpus, runner log, and result JSON.
 - `build/i386-functions-test/`: function corpus, disassembly, ABI runner and logs.
 - `build/i386-test/`: compiler ISO, generated expressions, disassembly of code
   ranges, test disk, runner log, and result JSON.
