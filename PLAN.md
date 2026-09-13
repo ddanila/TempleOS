@@ -378,9 +378,11 @@ source, sector boundaries, 64-bit dates, malformed extents and partial I/O error
 Raw writes within existing extents now preserve partial-sector neighbors and
 report confirmed progress on failures, with flush/readback and whole-image checks.
 Contiguous bitmap allocation/release now passes fragmentation, cross-sector bits,
-exhaustion/reclamation and I/O-failure invalidation checks. Public CDrv/CFile
-integration, decompression, directory updates and loading native modules from disk
-remain pending. See `docs/i386-redsea.md`.
+exhaustion/reclamation and I/O-failure invalidation checks. Native raw file creation
+now connects allocation, data flush and directory publication, with deleted-slot
+reuse, cross-sector append and remount/readback tests. Public CDrv/CFile integration,
+decompression, deletion/replacement, directory growth and loading native modules
+from disk remain pending. See `docs/i386-redsea.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

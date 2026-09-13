@@ -80,6 +80,29 @@ ordering data and bitmap flushes, and recovering interrupted updates are work
 for the higher-level file operation. Low-level release must not be used on a
 still-referenced file or subdirectory.
 
+`RedSeaCreate.HC` connects these operations in `I386RedSeaCreate`. It creates a
+raw regular file with a caller-supplied timestamp, rejecting duplicate names,
+invalid names/ranges and read-only directories. It returns 1 on success, 0 for
+an existing name or insufficient data/directory space, and -1 for invalid input
+or I/O failure. A deleted directory slot is reused before appending at the logical
+end. The existing directory must have space; it is not grown by this operation.
+Empty files use block zero and consume no data extent.
+
+Creation writes the reserved extent and flushes before publishing its 64-byte
+entry. When appending, it preserves a zero-name terminator in the following slot;
+if that slot lies in the next sector, it writes/flushes the terminator before
+publishing the entry. The entry is then written and flushed. A data or publication
+I/O failure invalidates the mounted view and can leave an orphan allocation or
+an uncertain entry; callers must inspect/recover rather than blindly retry.
+There is no rollback, overwrite/replace, directory growth or crash-recovery journal.
+Only raw data bytes are written; tail padding is preserved and compression is not
+performed. Caller buffers remain unchanged.
+
+This initial ordered-creation path requires reported FLUSH CACHE support. It does
+not claim a durable no-op for older disks whose cache policy is unknown. A verified
+legacy cache policy is still required to complete the vintage writable-filesystem
+target; the capability gate is an implementation limitation, not a revised target.
+
 The native fixture is `python3 tools/test-i386.py --redsea`. The host lays out a
 RedSea volume on a 16 MiB IDE disk alongside the runner. It includes a directory
 spanning two sectors, a deleted entry with deliberately invalid storage, nested
@@ -107,6 +130,14 @@ forces a real bitmap read error and checks view invalidation. The host requires
 complete image equality after all successful allocations are released. Partial
 bitmap-write and power-loss failures are not yet fault-injected.
 
-Directory mutation and allocation policy integration, cache and task locking,
+`python3 tools/test-i386.py --redsea-create` verifies a new 700-byte file, HolyC
+source and an empty file, deleted-slot reuse, cross-sector append/terminators,
+invalid/duplicate/full/read-only rejection and remount/readback. The host checks
+exact data, bitmap and directory bytes across the entire image. A QEMU command
+trace checks data/terminator/publication write-and-flush ordering. It uses the
+existing 256-sector runner stage, which ends at 0x30000 below the 0x90000 stack,
+to fit the combined native filesystem code. Power-loss behavior is not simulated.
+
+Deletion/replacement, directory growth, legacy cache policy, cache and task locking,
 decompression, public file APIs, resident module loading from files, complete image consistency checks and
 physical 386/IDE validation remain pending.

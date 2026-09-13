@@ -831,3 +831,20 @@ starting contents. The instruction audit, both x64 rebuilds and image verificati
 (755 files, 62 directories) pass. Directory
 publication/removal, allocation policy in public file APIs, interrupted-update
 recovery and physical storage validation remain pending.
+
+## Native RedSea file creation
+
+Raw file creation now connects contiguous allocation, file data writes and
+directory publication. It reuses deleted slots, preserves append terminators
+across sector boundaries, rejects duplicate/full/read-only/invalid requests and
+creates empty files without a data extent. Data/allocation are flushed before
+publication; the entry is then flushed. I/O failure after reservation invalidates
+the mounted view and may require orphan/uncertain-entry recovery.
+
+The native fixture creates a 700-byte binary file, HolyC source and an empty file,
+then remounts and reads them back with exact timestamps. The host checks the
+complete image's data, bitmap, directory and unchanged surrounding bytes; QEMU's
+trace confirms the expected write/flush ordering. The instruction audit, both
+x64 rebuilds and image verification (756 files, 62 directories) pass. The combined fixture uses the existing 128 KiB stage and remains
+below the runner stack. Legacy cache policy, deletion/replacement, directory growth,
+public file APIs, interrupted-update recovery and physical validation remain.
