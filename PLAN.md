@@ -363,6 +363,9 @@ delivery, wraparound, overflow accounting and interrupt-state preservation;
 blocking raw input now passes worker wakeup through actual IRQ1 delivery, spurious
 wakeup handling and pending-reader reservation. See `docs/i386-keyboard.md`
 for the transport and queue contracts.
+Native ATA IDENTIFY and 16-bit PIO LBA28 sector reads now pass disk-pattern,
+error and absent-device tests; CHS-only device support and filesystem integration
+remain pending. See `docs/i386-ata.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

@@ -717,3 +717,17 @@ reset, invalid arguments and IF restoration pass. All nine live QMP events also
 pass through the new reader. The full input suite, instruction audit, both x64
 rebuilds and image verification (749 files, 62 directories) pass. Notification and
 reconciliation of key state already delivered to message clients remain pending.
+
+## Native ATA sector reads
+
+The port now identifies compatibility-port ATA disks and reads single LBA28
+sectors with 16-bit PIO. Operations use bounded polling and leave device IRQs
+disabled under exclusive boot ownership. Sector data is staged until successful
+completion, preserving the destination on failure.
+
+The new native ATA fixture passes capacity discovery, boot-signature and distinct
+pattern reads, the final sector, repeated reads, argument rejection, guard checks,
+a real out-of-range device error and recovery, plus absent-device probing. The
+instruction audit, both x64 rebuilds and image verification (751 files,
+62 directories) pass. CHS-only drives, writes, reset/recovery service, block/filesystem
+integration and physical vintage hardware validation remain pending.
