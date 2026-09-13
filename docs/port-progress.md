@@ -157,7 +157,7 @@ Executable instruction auditing covers the generated I/O instructions.
 Both x86-64 rebuild/reboot generations and the 150-case i386 function corpus pass.
 This is a prerequisite for platform drivers, not a framebuffer presentation test.
 The initial VGA upload implementation is described below; keyboard, timers, and
-native allocation remain pending.
+heap integration with the full kernel remain pending.
 
 ## Native VGA presentation
 
@@ -183,9 +183,33 @@ The 150-function regression corpus and both x86-64 rebuild generations also pass
 The BIOS still establishes mode 0x12 before protected-mode entry. These routines
 require that mode's graphics-controller configuration and exclusive caller-owned
 VGA access. No scheduler locking, dirty-region optimization, retrace scheduling,
-or window-manager integration is implemented yet. The test reserves its source
-buffer at 0x30000; this is not a native memory allocator or a measured full-OS RAM
-budget. This result does not establish physical VGA or 386SX/DX compatibility.
+or window-manager integration is implemented yet. The test now obtains and releases its source buffer through the native arena
+allocator described below. Its arena is a fixed test reservation at 0x30000;
+this is not firmware memory discovery or a measured full-OS RAM budget. This result does not establish physical VGA or 386SX/DX compatibility.
+
+## Native arena allocation
+
+`Kernel/I386/Heap.HC` now executes on the target. It implements eight-byte-aligned
+first-fit allocation, optional zero fill, requested-size lookup, adjacent-block
+coalescing, live/peak span accounting, and whole-chain integrity checks. It uses
+no x86-64 assembly or host runtime calls. See [the heap contract](i386-heap.md)
+for failure behavior and remaining kernel integration.
+
+`python3 tools/test-i386.py --heap` runs one compiled test entry containing checks
+for initialization rejection without writes, alignment, zero-size allocation,
+zero fill, exact exhaustion, splitting/coalescing, small-tail absorption,
+foreign/interior/double-free rejection, accounting, guard bytes, and malformed
+metadata. A deterministic 512-operation allocation/free sequence checks live
+payload contents and heap integrity throughout. The generated code passes the
+386 instruction audit and the preserved-register/stack ABI runner on QEMU's 486
+model with 8 MiB RAM. The VGA test also allocates its 153,600-byte framebuffer
+through this implementation, presents it, frees it, and checks heap integrity;
+all 307,200 screenshot pixels still match.
+
+These are single-owner arena tests. Memory discovery/reservation, task-owned page
+pools, concurrency/interrupt handling, task teardown, public allocation wrappers,
+and the native loader's use of allocated module storage remain pending. The
+full OS's low-memory requirements remain unmeasured.
 
 ## Test artifacts
 
@@ -197,6 +221,8 @@ budget. This result does not establish physical VGA or 386SX/DX compatibility.
   and loaded-code execution results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
+- `build/i386-heap-test/`: compiled allocator and integrity/stress fixture,
+  instruction audit, runner disk, and target results.
 - `build/i386-vga-test/`: compiled presentation code, instruction audit, disk,
   QMP display captures, pixel comparison result, and emulator command.
 - `build/i386-functions-test/`: function corpus, disassembly, ABI runner and logs.
