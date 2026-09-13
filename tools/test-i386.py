@@ -62,7 +62,7 @@ def main():
                'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',
-               'sar', 'shld', 'shrd'}
+               'sar', 'shld', 'shrd', 'rcl', 'div', 'dec', 'jns', 'jc', 'jnc', 'ja', 'jna'}
     while True:
         size, = struct.unpack_from('<I', data, offset)
         offset += 4
@@ -92,12 +92,13 @@ def main():
         listing.append(f'; Case {count}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (64 if functions else 9):
+    if offset != len(data) or count != (99 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
-    run('nasm', *(['-DFUNCTIONS=1'] if functions else []), '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
+    run('nasm', *(['-DFUNCTIONS=1'] if functions else []),
+        f'-DEXPECTED_FAULTS={4 if functions else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if disk.stat().st_size > 65*512:
         raise ValueError('Runner exceeds boot-loader transfer size')
@@ -113,7 +114,7 @@ def main():
     if result.returncode != 33 or log.read_text() != f'PASS i386 {kind}\n':
         raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
-        'ram_mib': 8, 'result': 'pass', 'scope': f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions else 0, 'result': 'pass', 'scope': f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} HolyC-generated i386 {kind}; instruction audit.')
 
 

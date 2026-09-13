@@ -64,7 +64,11 @@ integer expressions, not functions, pointer-layout queries, or complete modules.
 `CmpI386Buf`. Its current subset implements fixed-arity scalar arguments,
 integer arithmetic, comparisons, conditional branches, loops, local loads/stores,
 increment/decrement, compound assignments, 64-bit shifts, casts and returns.
-Shift counts use the low six bits, preserving the 64-bit value model on i386. Pointer-aware size
+Shift counts use the low six bits, preserving the 64-bit value model on i386.
+Signed division truncates toward zero; remainder has the dividend's sign.
+Division/remainder by zero and signed MIN_I64 divided by -1 raise vector 0.
+The i386 path bypasses the legacy power-of-two division-to-shift shortcut so
+negative division retains the same rule with constant and variable divisors. Pointer-aware size
 queries are used during parsing and scaling. Calls, variadic functions, module
 relocation, floating-point output, switch dispatch and short-circuit/chained
 comparisons remain pending.

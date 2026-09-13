@@ -85,10 +85,11 @@ bits 32
     mov ss,ax
     mov fs,ax
     mov gs,ax
+    lidt [idt_ptr]
     mov esp,0x90000
     mov esi,cases
     xor ebp,ebp
-.next:
+case_next:
     mov ecx,[esi]
     test ecx,ecx
     jz passed
@@ -102,6 +103,7 @@ bits 32
 %ifdef FUNCTIONS
     mov ebx,0x12345678
     mov ebp,esp
+    mov [call_stack],esp
     push dword [esi+24]
     push dword [esi+20]
     push dword [esi+16]
@@ -126,10 +128,23 @@ bits 32
     jne failed
     cmp edx,[esi+8]
     jne failed
+advance:
     inc dword [case_index]
     mov esi,edi
-    jmp .next
+    jmp case_next
+fault_handler:
+    inc dword [fault_count]
+    mov esp,[call_stack]
+    pop esi
+    pop edi
+    cmp dword [esi+4],0xCAFEBABE
+    jne failed
+    cmp dword [esi+8],0xDEADBEEF
+    jne failed
+    jmp advance
 passed:
+    cmp dword [fault_count],EXPECTED_FAULTS
+    jne failed
     mov esi,passmsg
     call puts
     mov eax,0x10
@@ -171,6 +186,16 @@ failmsg: db 'FAIL i386 functions',10,0
 passmsg: db 'PASS i386 expressions',10,0
 failmsg: db 'FAIL i386 expressions',10,0
 %endif
+align 8
+idt:
+    dw (fault_handler-$$+0x10000)&0xFFFF,8
+    db 0,0x8E
+    dw (fault_handler-$$+0x10000)>>16
+idt_ptr:
+    dw 7
+    dd idt
+fault_count: dd 0
+call_stack: dd 0
 case_index: dd 0
 hex_digits: db "0123456789ABCDEF"
 cases: incbin CASES_FILE

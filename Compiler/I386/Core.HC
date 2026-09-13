@@ -1,5 +1,6 @@
 // Target backend entered by the normal HolyC function compiler.
 #include "/Compiler/I386/Emit.HC"
+#include "/Compiler/I386/Divide.HC"
 
 I64 I386Size(CHashClass *c)
 {
@@ -305,6 +306,28 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               ToBool(c->raw_type&RTF_UNSIGNED));
             I386Byte(&out,0x59);
             I386Store(&out,c);
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
+          case IC_DIV:
+          case IC_MOD:
+          case IC_DIV_EQU:
+          case IC_MOD_EQU:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A",4);
+            if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
+              I386Byte(&out,0x50);
+              c=ic->t.arg1_class-1;
+              I386Load(&out,c);
+            } else c=ic->t.arg1_class;
+            I386Byte(&out,0xBE);
+            I386Dword(&out,!ToBool((c->raw_type|ic->t.arg2_class->raw_type)&RTF_UNSIGNED) |
+              2*ToBool(ic->ic_code==IC_MOD || ic->ic_code==IC_MOD_EQU));
+            I386Bytes(&out,i386_div_begin,i386_div_end-i386_div_begin);
+            if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
+              I386Byte(&out,0x59);
+              I386Store(&out,c);
+            }
             I386Bytes(&out,"\x52\x50",2);
             depth--;
             break;
