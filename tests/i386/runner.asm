@@ -10,7 +10,12 @@ bits 32
     mov ss,ax
     mov fs,ax
     mov gs,ax
+%ifdef IRQ_TEST
+    mov esp,0x90000
+    call irq_test_setup
+%else
     lidt [idt_ptr]
+%endif
     mov esp,0x90000
     mov esi,cases
     xor ebp,ebp
@@ -29,10 +34,17 @@ case_next:
     mov ebx,0x12345678
     mov ebp,esp
     mov [call_stack],esp
+%ifdef IRQ_TEST
+    push dword 0
+    push dword irq_test_wait
+    push dword 0
+    push dword i386_irq_dispatch
+%else
     push dword [esi+24]
     push dword [esi+20]
     push dword [esi+16]
     push dword [esi+12]
+%endif
     lea eax,[esi+28]
     call eax
     cmp esp,ebp
@@ -79,6 +91,7 @@ passed:
     out 0xf4,eax
     jmp stop
 failed:
+    mov [test_result],eax
     mov esi,failmsg
     call puts
     mov ebx,hex_digits
@@ -88,6 +101,17 @@ failed:
     xlatb
     out 0xe9,al
     mov eax,[case_index]
+    and al,15
+    xlatb
+    out 0xe9,al
+    mov al,':'
+    out 0xe9,al
+    mov eax,[test_result]
+    shr al,4
+    and al,15
+    xlatb
+    out 0xe9,al
+    mov eax,[test_result]
     and al,15
     xlatb
     out 0xe9,al
@@ -129,4 +153,13 @@ fault_count: dd 0
 call_stack: dd 0
 case_index: dd 0
 hex_digits: db "0123456789ABCDEF"
+test_result: dd 0
+%ifdef IRQ_TEST
+%include "tests/i386/irq.inc"
+%endif
 cases: incbin CASES_FILE
+%ifdef IRQ_TEST
+    db 'I32Q'
+    dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
+    dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
+%endif

@@ -284,6 +284,28 @@ also pass. Both x86-64 rebuild/reboot generations pass. See the detailed
 [A20 and extended-memory contract](i386-a20.md) for hardware assumptions, controller
 side effects, and validation limits. No physical-386 or full-OS memory claim follows.
 
+## PIC/PIT interrupt entry
+
+`Kernel/I386/PicPit.HC` now programs the legacy PIC pair and PIT from native
+HolyC. The PIC uses vectors 0x20–0x2F, exact mask read/write, spurious IRQ7/15
+checks, and slave-before-master EOI. PIT channel 0 uses binary mode 2 and an
+8253-compatible counter latch. `Kernel/I386/Irq.asm` provides sixteen 386 stubs
+that save a fixed-width frame, clear DF, call HolyC, restore registers/segments,
+and return with IRETD. The current bootstrap links these stubs with NASM.
+
+`python3 tools/test-i386.py --irq` passes with at least 32 PIT IRQs at divisor
+11932 and four at divisor 65536. It checks a 64-bit counter crossing the 32-bit
+boundary, mask readback, counter changes, frame offsets, saved general registers,
+IF/DF inside the callback, and restored general registers, FS/GS and DF afterward.
+Software vectors 0x27/0x2F exercise the spurious rejection paths. Production stubs
+and test IDT/wait assembly have separate instruction audits excluding data tables.
+The 150-function regression corpus and both x86-64 rebuild generations also pass.
+See the [interrupt ABI and limits](i386-interrupts.md).
+
+This is IRQ0 delivery in the QEMU 486/8 MiB runner, not a complete interrupt/time
+subsystem. Real slave IRQ delivery, RTC, keyboard input, exception entry, scheduling,
+calibrated time, production boot wiring and physical 386 validation remain pending.
+
 ## Test artifacts
 
 - `build/rebuild-test/`: build ISOs, both exported generations, QEMU commands,
@@ -294,6 +316,8 @@ side effects, and validation limits. No physical-386 or full-OS memory claim fol
   and allocated/caller-buffer loaded-code execution and lifetime results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
+- `build/i386-irq-test/`: compiled PIC/PIT and callback code, audited assembly
+  ranges, interrupt runner, and execution result.
 - `build/i386-a20-test/`: native gate-method and high-memory allocation fixture,
   instruction audit, runner disk/log, and result.
 - `build/i386-memory-test/`: native handoff/selector fixture, instruction audit,

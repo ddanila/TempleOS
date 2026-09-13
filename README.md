@@ -70,6 +70,7 @@ python3 tools/test-i386.py --vga
 python3 tools/test-i386.py --heap
 python3 tools/test-i386.py --memory
 python3 tools/test-i386.py --a20
+python3 tools/test-i386.py --irq
 python3 tools/test-i386-module-check.py
 python3 tools/test-i386-loader.py
 ```
