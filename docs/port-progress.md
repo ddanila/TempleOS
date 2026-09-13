@@ -548,3 +548,18 @@ the worker is already runnable remain ordered. IF restoration, task completion,
 reaping and controller restoration pass. Both x64 rebuilds and image verification
 (731 files, 62 directories) pass. Tests use QEMU 486/8 MiB; scan-code decoding,
 keyboard initialization, cancellation/close and interactive shell input remain.
+
+## Native scan-set-1 packet decoder
+
+The raw decoder now preserves TempleOS's physical E0/release bit conventions,
+recognizes complete Pause packets and suppresses Print Screen's fake Shift bytes.
+It retains keyboard prefix state across auxiliary traffic, rejects corrupt or
+malformed packets, ignores command acknowledgements and exposes an explicit reset
+for stream discontinuities. It assumes scan set 1 has already been established.
+
+The native input suite passes synthetic ordinary/extended make-release coverage,
+special sequences, auxiliary interleaving, invalid arguments and error recovery;
+the existing real IRQ1 worker-wakeup phase still passes. Both x64 rebuilds and
+image verification (733 files, 62 directories) pass. Decoder evidence is synthetic
+on the QEMU 486/8 MiB runner. Modifier/lock semantics, character mapping, real key
+injection, keyboard configuration and integration into the input consumer remain.

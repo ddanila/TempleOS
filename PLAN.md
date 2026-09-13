@@ -337,8 +337,10 @@ and bulk reclamation checks across task completion/destruction. Normal-return
 cleanup hooks can yield with task memory and bindings intact; completion is
 published only after cleanup returns, with recursive completion rejected.
 Bounded 8042 transport now passes keyboard echo delivery through IRQ1, status
-capture and controller configuration restoration. Scan-code decoding remains
-pending. A fixed raw-input FIFO now passes IRQ1-to-foreground
+capture and controller configuration restoration. Scan-set-1 packet decoding now
+passes make/release, extended-key, Pause/Print Screen and error-recovery tests;
+modifier/lock processing and character mapping remain pending.
+A fixed raw-input FIFO now passes IRQ1-to-foreground
 delivery, wraparound, overflow accounting and interrupt-state preservation;
 blocking raw input now passes worker wakeup through actual IRQ1 delivery, spurious
 wakeup handling and pending-reader reservation. See `docs/i386-keyboard.md`

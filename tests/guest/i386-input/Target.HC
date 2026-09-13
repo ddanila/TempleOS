@@ -5,6 +5,8 @@
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/KbcInput.HH"
 #include "/Kernel/I386/Irq.HH"
+#include "/Kernel/I386/ScanSet1.HH"
+extern I64 ScanTest();
 extern U0 I386PicInit();
 extern U0 I386PicMask(U16 mask);
 extern Bool I386PicAccept(I64 irq);
@@ -26,8 +28,10 @@ I64 Main(I64 a,I64 b)
 {
   U0 (*swap)(CI386Context *old,CI386Context *next);
   U8 config,data=0x55,status=0xAA;
-  I64 i;
+  I64 i,result;
   control=a; swap=b;
+  result=ScanTest;
+  if (result) return 100+result;
   I386PicInit;
   if (!I386SchedInit(&scheduler,&tasks[0],swap) ||
       I386KbcInputInit(0,&scheduler) || I386KbcInputInit(&input,0) ||
@@ -109,3 +113,56 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/KbcInput.HC"
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/PicPit.HC"
+#include "/Kernel/I386/ScanSet1.HC"
+
+I64 ScanTest()
+{
+  CI386ScanSet1 state;
+  U32 scan=0x12345678;
+  U8 pause[6];
+  I64 i;
+  I386ScanSet1Reset(&state);
+  //All ordinary baseline codes, including both physical Shift keys.
+  for (i=1;i<0x60;i++) {
+    if (I386ScanSet1Feed(&state,i,1,&scan)!=1 || scan!=i ||
+        I386ScanSet1Feed(&state,i|0x80,1,&scan)!=1 || scan!=(i|0x100)) return 1;
+    if (I386ScanSet1Feed(&state,0xE0,1,&scan) ||
+        I386ScanSet1Feed(&state,i,1,&scan)!=(i!=0x2A && i!=0x36)) return 2;
+    if (i!=0x2A && i!=0x36 && scan!=(i|0x80)) return 3;
+    if (I386ScanSet1Feed(&state,0xE0,1,&scan) ||
+        I386ScanSet1Feed(&state,i|0x80,1,&scan)!=(i!=0x2A && i!=0x36)) return 4;
+    if (i!=0x2A && i!=0x36 && scan!=(i|0x180)) return 5;
+  }
+  pause[0]=0xE1; pause[1]=0x1D; pause[2]=0x45;
+  pause[3]=0xE1; pause[4]=0x9D; pause[5]=0xC5;
+  scan=0x12345678;
+  for (i=0;i<5;i++)
+    if (I386ScanSet1Feed(&state,pause[i],1,&scan) || scan!=0x12345678) return 6;
+  if (I386ScanSet1Feed(&state,pause[5],1,&scan)!=1 || scan!=0x61 || state.pause) return 7;
+  //Print Screen make/break, including fake shifts on either side.
+  if (I386ScanSet1Feed(&state,0xE0,1,&scan) || I386ScanSet1Feed(&state,0x2A,1,&scan) ||
+      I386ScanSet1Feed(&state,0xE0,1,&scan) || I386ScanSet1Feed(&state,0x37,1,&scan)!=1 ||
+      scan!=0xB7 || I386ScanSet1Feed(&state,0xE0,1,&scan) ||
+      I386ScanSet1Feed(&state,0xB7,1,&scan)!=1 || scan!=0x1B7 ||
+      I386ScanSet1Feed(&state,0xE0,1,&scan) || I386ScanSet1Feed(&state,0xAA,1,&scan)) return 8;
+  //Auxiliary bytes do not destroy a pending keyboard prefix.
+  if (I386ScanSet1Feed(&state,0xE0,1,&scan) || I386ScanSet1Feed(&state,0xAA,0xE1,&scan) ||
+      I386ScanSet1Feed(&state,0xAA,0,&scan) ||
+      I386ScanSet1Feed(&state,0x48,1,&scan)!=1 || scan!=0xC8) return 9;
+  scan=0x12345678;
+  if (I386ScanSet1Feed(&state,0xE1,1,&scan) ||
+      I386ScanSet1Feed(&state,0x20,1,&scan)!=-1 || scan!=0x12345678 || state.pause ||
+      I386ScanSet1Feed(&state,0xE0,1,&scan) ||
+      I386ScanSet1Feed(&state,0x1E,0x81,&scan)!=-1 || state.extended ||
+      I386ScanSet1Feed(&state,0x1E,0x41,&scan)!=-1 ||
+      I386ScanSet1Feed(&state,0,1,&scan)!=-1 ||
+      I386ScanSet1Feed(&state,255,1,&scan)!=-1 || scan!=0x12345678) return 10;
+  if (I386ScanSet1Feed(&state,0xFA,1,&scan) || I386ScanSet1Feed(&state,0xFE,1,&scan) ||
+      I386ScanSet1Feed(&state,0xEE,1,&scan) || scan!=0x12345678 ||
+      I386ScanSet1Feed(0,0x1E,1,&scan)!=-1 ||
+      I386ScanSet1Feed(&state,0x1E,1,0)!=-1 ||
+      I386ScanSet1Feed(&state,0x1E,1,&scan)!=1 || scan!=0x1E) return 11;
+  I386ScanSet1Feed(&state,0xE0,1,&scan); I386ScanSet1Reset(&state);
+  if (I386ScanSet1Feed(&state,0x48,1,&scan)!=1 || scan!=0x48) return 12;
+  return 0;
+}

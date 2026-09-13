@@ -107,6 +107,49 @@ reader reservation, completion/reaping and controller restoration are checked.
 This is QEMU 486/8 MiB evidence. Scan-code decoding, device initialization and
 interactive shell input remain pending.
 
+## Scan-set-1 packet decoding
+
+`ScanSet1.HH` / `ScanSet1.HC` decode an established scan-set-1 byte stream,
+including the form produced by controller translation of scan set 2. The caller
+must configure/verify that format; these functions do not select a scan set.
+Use one `CI386ScanSet1` per stream, initialize it with `I386ScanSet1Reset`, and
+serialize access in the input consumer. No ports, clocks, allocation or scheduler
+operations are used by the decoder.
+
+`I386ScanSet1Feed(state,data,status,scan)` returns 1 for an event, 0 for an
+incomplete/ignored byte, or -1 for invalid arguments or corrupt keyboard input.
+The output is unchanged unless an event is returned. Output storage must be a
+writable U32 outside the decoder record. The value carries the physical base code
+in bits 0–6, TempleOS's E0 marker in bit 7, and its release flag in bit 8.
+Modifier/lock flags, key mapping, the full paired 64-bit TempleOS scan value and
+character conversion are subsequent layers and are not synthesized here.
+
+E0 prefixes apply to the next code. Extended fake left/right Shift bytes are
+suppressed, so Print Screen's E0 2A / E0 AA wrappers cannot change actual Shift
+state. E0 37/B7 yields physical Print Screen make/release events. The complete
+six-byte Pause sequence yields `SC_PAUSE` (0x61) once; the device sends no ordinary
+Pause release. Ctrl-Break remains the raw E0 46/C6 pair for later mapping.
+
+Auxiliary bytes and statuses without OBF are ignored without disturbing keyboard
+prefix state. Keyboard parity/timeout status, overrun bytes 00/FF and malformed
+Pause sequences clear partial state and return -1. The mismatching Pause byte is
+discarded. ACK, RESEND and echo replies are ignored and clear partial state;
+command ownership must still route replies before decoding. In particular, 0xAA
+is a valid left-Shift release in an established stream and cannot be globally
+filtered as a reset reply. Explicit reset is required after known input loss or
+a stream change; this decoder has no timeout or pressed-key state to repair.
+
+The `--input` fixture checks make/release pairs for ordinary codes 01–5F and
+their E0 forms, both fake shifts, complete Print Screen/Pause sequences, auxiliary
+interleaving, malformed/error recovery, ignored replies, argument rejection and
+unchanged outputs. These are synthetic decoder streams; the separate hardware
+phase still uses keyboard echoes. Real key injection, modifier/lock processing,
+character mapping and production input-loop integration remain pending.
+
+Raw code/flag conventions come from `Kernel/KernelA.HH` and
+`Kernel/SerialDev/Keyboard.HC`. Special sequence behavior is cross-checked against
+[QEMU's PS/2 implementation](https://github.com/qemu/qemu/blob/master/hw/input/ps2.c).
+
 Controller register and transaction references:
 [SeaBIOS PS/2 implementation](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.c)
 and [definitions](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.h).
