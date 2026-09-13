@@ -78,7 +78,7 @@ def main():
                'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',
-               'sar', 'shld', 'shrd', 'rcl', 'div', 'call', 'dec', 'jns', 'jc', 'jnc', 'ja', 'jna'}
+               'in', 'out', 'sar', 'shld', 'shrd', 'rcl', 'div', 'call', 'dec', 'jns', 'jc', 'jnc', 'ja', 'jna'}
     while True:
         size, = struct.unpack_from('<I', data, offset)
         offset += 4
@@ -148,7 +148,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (16 if data_mode else 141 if functions else 9):
+    if offset != len(data) or count != (16 if data_mode else 150 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.

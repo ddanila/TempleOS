@@ -299,7 +299,9 @@ Indirect fixed-arity calls and same-module function addresses now pass target
 execution tests, including callbacks in linked modules. Global/static storage and
 relative address imports now have a version-2 module path with explicit data ranges.
 The shared loader now executes on i386 and loads code/data into caller-owned
-memory. Next, connect native allocation and platform services, then resident kernel
+memory. Byte/word/dword port-I/O intrinsics now pass target tests, including VGA
+sequencer register readback; framebuffer presentation remains pending.
+Next, connect native allocation and platform services, then resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe
 runtime interfaces before attempting a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.

@@ -233,6 +233,35 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             calls->indirect=TRUE;
             calls->depth--;
             break;
+          case IC_IN_U8:
+          case IC_IN_U16:
+          case IC_IN_U32:
+          case IC_OUT_U8:
+          case IC_OUT_U16:
+          case IC_OUT_U32:
+            arg_index=1;
+            if (ic->ic_code>=IC_OUT_U8) arg_index=2;
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code ||
+                calls->fun->arg_cnt!=arg_index ||
+                depth!=calls->depth+arg_index) throw('Compiler');
+            //Arguments retain eight-byte slots; hardware consumes DX and AL/AX/EAX.
+            if (arg_index==1) {
+              I386Bytes(&out,"\x5A\x59\x31\xC0",4);
+              if (ic->ic_code==IC_IN_U16) I386Byte(&out,0x66);
+              if (ic->ic_code==IC_IN_U8) I386Byte(&out,0xEC);
+              else I386Byte(&out,0xED);
+              I386Bytes(&out,"\x31\xD2",2);
+            } else {
+              I386Bytes(&out,"\x5A\x59\x58\x59",4);
+              if (ic->ic_code==IC_OUT_U16) I386Byte(&out,0x66);
+              if (ic->ic_code==IC_OUT_U8) I386Byte(&out,0xEE);
+              else I386Byte(&out,0xEF);
+            }
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
           case IC_CALL_INDIRECT:
           case IC_CALL:
           case IC_CALL_EXTERN:

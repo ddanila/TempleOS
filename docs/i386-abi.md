@@ -98,3 +98,9 @@ Variadic calls, floating-point output, switch dispatch,
 and chained comparisons remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.
+
+Port-I/O intrinsics use the same eight-byte argument slots as fixed-arity calls.
+The backend consumes each slot, uses the low 16 bits of the port and the low
+8/16/32 bits of the output value, and zero-extends unsigned input results.
+Output intrinsics have U0 return semantics. Nested intrinsic calls retain the
+normal expression-stack and callee-saved-register rules.

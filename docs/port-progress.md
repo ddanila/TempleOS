@@ -63,7 +63,7 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-141 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+150 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
 class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
 unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
@@ -140,6 +140,23 @@ This remains partial M1/M2 work. There is no software F64,
 full kernel, native i386 compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
 low-memory self-hosting, or completion of M1/M2. See `docs/i386-abi.md` for the
 working ABI decisions and remaining boundaries.
+
+## Direct hardware I/O
+
+The i386 backend now lowers `InU8`, `InU16`, `InU32`, `OutU8`, `OutU16`, and
+`OutU32` to 386 port instructions. Arguments keep eight-byte slots; ports use
+DX, output values use AL/AX/EAX, and input values are zero-extended to EDX:EAX.
+Nine function cases cover all six operations, nested intrinsic calls, high-bit
+truncation, and VGA sequencer map-mask writes/readback using byte and word output.
+The existing runner checks stack cleanup and preserved registers for these cases.
+Unassigned-port read values are QEMU-specific test expectations; they are not a
+hardware discovery mechanism or a promise about physical machines. Those cases
+exercise output execution but do not independently observe word/dword output data.
+Executable instruction auditing covers the generated I/O instructions.
+
+Both x86-64 rebuild/reboot generations and the 150-case i386 function corpus pass.
+This is a prerequisite for platform drivers, not a framebuffer presentation test.
+The full VGA upload path, keyboard, timers, and native allocation remain pending.
 
 ## Test artifacts
 

@@ -300,6 +300,25 @@ U0 CompileTests()
   EmitCase("I64 (*fp)(I64 x,I64 y=7); fp=&Add; return (*fp)(a);",35,0,42,&cursor,
     "extern I64 Add(I64 x,I64 y);", "I64 Add(I64 x,I64 y) { return x+y; }");
   //Reserved expected value tells the isolated runner to require vector 0.
+  //QEMU unassigned ports test input widths; VGA sequencer tests actual writes.
+  EmitCase("return InU8(a);",1280,0,255,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("return InU16(a);",1280,0,65535,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("return InU32(a);",1280,0,4294967295,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("OutU8(a,b); return InU8(a);",1280,-1,255,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("OutU16(a,b); return InU16(a);",1280,-1,65535,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("OutU32(a,b); return InU32(a);",1280,-1,4294967295,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("OutU8(a,2); OutU8(a+1,b); return InU8(a+1);",1099511628740,4294967301,5,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("OutU16(a,b); return InU8(a+1)+InU8(a+1);",964,3842,30,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x67 U16 InU16(I64 port); _intern 0x68 U32 InU32(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val); _intern 0x6A U0 OutU16(I64 port,I64 val); _intern 0x6B U0 OutU32(I64 port,I64 val);");
+  EmitCase("OutU8(a,InU8(a)); return b+InU8(a);",0x500,0x100000000,0x1000000FF,&cursor,
+    "_intern 0x66 U8 InU8(I64 port); _intern 0x69 U0 OutU8(I64 port,I64 val);");
   EmitCase("return a/b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a/b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);
