@@ -7,7 +7,7 @@ class CI386Task
   CI386Context context;
   CI386Task *next,*last;
   CI386Scheduler *owner;
-  U32 finished;
+  U32 finished,blocked;
 };
 class CI386Scheduler
 {
@@ -20,4 +20,6 @@ public extern Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedYield(CI386Scheduler *s);
 public extern Bool I386SchedFinish(CI386Scheduler *s);
 public extern Bool I386SchedReap(CI386Scheduler *s,CI386Task *task);
+public extern Bool I386SchedBlock(CI386Scheduler *s);
+public extern Bool I386SchedWake(CI386Scheduler *s,CI386Task *task);
 #endif

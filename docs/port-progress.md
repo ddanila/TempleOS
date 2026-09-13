@@ -351,15 +351,20 @@ rebuild/reboot generations and the 718-file image verification also pass.
 
 This is a context primitive plus a test scheduler, not the complete TempleOS
 task system. Current-task/CPU descriptor bindings, public `Yield`,
-blocking/wakeup, cancellation, debugger/exception state, and F64 state remain.
+public wait services, cancellation, debugger/exception state, and F64 state remain.
 `Scheduler.HC` now adds a circular runnable queue, cooperative Yield, completion
 without returning to the finished task, and explicit reaping before stack release.
 The task test runs two additional 64-yield workers through this queue, checks
 ordering and lifecycle rejection, retires/frees them, then repeats using the same
 records. A root-only queue yields without switching and root completion is rejected.
 The combined task test, both x64 rebuilds, and 720-file image verification pass.
-The queue currently uses explicit scheduler pointers; blocked tasks and public
-TempleOS task semantics remain pending.
+The queue now supports Block/Wake: both workers leave the runnable queue,
+root remains available, reversed wake order produces reversed resume order, and
+duplicate/finished wakes and reaping blocked tasks are rejected. The same lifecycle
+runs twice across record reuse and passes with both x64 rebuilds. The atomic
+condition-check/block contract is documented to avoid missed IRQ wakeups.
+The queue uses explicit scheduler pointers; combined hardware-IRQ wakeup tests,
+current-task bindings and public TempleOS task semantics remain pending.
 
 See the [context ABI and limits](i386-context.md).
 

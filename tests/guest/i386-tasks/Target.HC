@@ -10,7 +10,7 @@ extern U0 ScheduledWorker(I64 id);
 extern U0 ScheduledExit();
 CI386Scheduler scheduler;
 CI386Task tasks[3];
-U32 scheduled_progress[3];
+U32 scheduled_progress[3],wake_order;
 extern U0 Worker(I64 arg);
 extern U0 TaskExit();
 CI386Context contexts[3];
@@ -102,7 +102,11 @@ I64 SchedulerTest()
       !I386SchedYield(&scheduler) || I386SchedFinish(&scheduler) ||
       I386SchedAdd(&scheduler,&tasks[0]) || I386SchedReap(&scheduler,&tasks[0])) return 13;
   //Retire and reuse the same records and heap storage twice.
+  if (I386SchedBlock(0) || I386SchedBlock(&scheduler) ||
+      I386SchedWake(0,&tasks[0]) || I386SchedWake(&scheduler,0) ||
+      I386SchedWake(&scheduler,&tasks[0])) return 24;
   for (round=0;round<2;round++) {
+    wake_order=0;
     for (i=1;i<=2;i++) {
       scheduled_progress[i]=0;
       p=I386HeapAlloc(&heap,8208); stacks[i]=p;
@@ -113,9 +117,17 @@ I64 SchedulerTest()
           !I386SchedAdd(&scheduler,&tasks[i]) || I386SchedAdd(&scheduler,&tasks[i]) ||
           I386SchedReap(&scheduler,&tasks[i])) return 15;
     }
+    if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] ||
+        tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0]) return 25;
+    for (i=1;i<=2;i++) if (!tasks[i].blocked || tasks[i].finished ||
+        tasks[i].next || tasks[i].last || scheduled_progress[i] ||
+        I386SchedReap(&scheduler,&tasks[i])) return 26;
+    if (!I386SchedYield(&scheduler) || wake_order ||
+        !I386SchedWake(&scheduler,&tasks[2]) || I386SchedWake(&scheduler,&tasks[2]) ||
+        !I386SchedWake(&scheduler,&tasks[1]) || I386SchedWake(&scheduler,&tasks[1])) return 27;
     for (j=0;j<65;j++) {
       if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] ||
-          (GetRFlags&0x600) || errors) return 16;
+          (GetRFlags&0x600) || errors || wake_order!=21) return 16;
       for (i=1;i<=2;i++) {
         if (j<64) {
           if (scheduled_progress[i]!=j+1 || tasks[i].finished) return 17;
@@ -125,7 +137,7 @@ I64 SchedulerTest()
     if (tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0] ||
         !I386SchedYield(&scheduler)) return 19;
     for (i=1;i<=2;i++) {
-      if (I386SchedAdd(&scheduler,&tasks[i]) ||
+      if (I386SchedAdd(&scheduler,&tasks[i]) || I386SchedWake(&scheduler,&tasks[i]) ||
           !I386SchedReap(&scheduler,&tasks[i]) || tasks[i].context.esp ||
           tasks[i].owner || I386SchedReap(&scheduler,&tasks[i])) return 20;
       p=stacks[i];
@@ -139,6 +151,9 @@ I64 SchedulerTest()
 U0 ScheduledWorker(I64 id)
 {
   I64 round,local=0;
+  if (!I386SchedBlock(&scheduler) || scheduler.current!=&tasks[id] ||
+      tasks[id].blocked || local || (GetRFlags&0x600)) errors++;
+  wake_order=wake_order*10+id;
   for (round=0;round<64;round++) {
     if (scheduler.current!=&tasks[id]) errors++;
     local+=0x100000000+id;

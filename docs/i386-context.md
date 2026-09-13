@@ -56,7 +56,7 @@ HolyC code and data.
 
 This is a cooperative context primitive and a test scheduler on QEMU 486/8 MiB.
 Public task creation and `Yield`, per-task FS/current-CPU GS
-bindings, timer/input integration, blocking and wakeups, cancellation, debugger
+bindings, timer/input integration, public wait services, cancellation, debugger
 state, exception unwinding, and software-F64 state still need integration. No
 coprocessor state is saved. Stack guards in this test detect boundary writes after
 execution; they do not provide a protected stack or recover from overflow. Physical
@@ -75,7 +75,7 @@ The stack and entry/exit functions are still supplied by the caller.
 A one-task queue returns immediately. Queue operations save and restore the
 caller's IF; switching itself happens with IF clear. Each resumed Yield restores
 its own saved IF. Fresh entries begin with IF clear as specified by ContextInit.
-These APIs are for cooperative task code, never IRQ/NMI callbacks, and callers
+Except for Wake below, these APIs are for cooperative task code, never IRQ/NMI callbacks, and callers
 must not yield while holding a resource or critical section that another task
 needs. Records and links must remain intact and exclusively managed by this API.
 
@@ -95,3 +95,42 @@ reaps/frees both stacks, then repeats with the same records. Rejected lifecycle
 operations are checked before and after retirement. This still uses an explicit
 scheduler pointer; FS/GS task bindings and the public TempleOS task API remain
 future integration work.
+
+## Blocking and wakeup
+
+`I386SchedBlock(s)` removes the current task from the runnable queue, marks it
+blocked, and switches to its successor. Root cannot block, so a runnable root
+always remains. The suspended Block returns true only after Wake has reinserted
+that task and a later cooperative yield selects it. Its own saved IF is restored.
+Blocked tasks retain their stack and owner association and cannot be reaped.
+There is no separate enumerable blocked-task list yet; event owners keep the
+records they need to wake.
+
+`I386SchedWake(s, task)` appends an owned, blocked, unfinished task before root.
+It returns false for an already runnable, finished, unowned, or invalid task.
+Wake masks interrupts only while updating the queue and restores the prior IF.
+It may run from a maskable IRQ callback, but it never switches or preempts; NMI
+use remains unsupported. IRQ delivery through this wake path still needs a
+combined hardware/task test.
+
+Wake is not a counted event or a stored wake token. To avoid a missed wakeup when
+an interrupt owns the condition, the waiter must mask interrupts **before**
+checking that condition, recheck it after every return from Block, and restore
+the original IF after the condition holds:
+
+```c
+flags=I386IrqSave;
+while (!condition) I386SchedBlock(s);
+I386IrqRestore(flags);
+```
+
+The producer records the condition before calling Wake. Another runnable task
+must allow interrupts for interrupt-driven progress; this scheduler does not
+supply an idle loop or enable IF in fresh task entries. Blocking while holding
+other resources needed by the producer can still deadlock.
+
+The native test blocks both workers before any progress, verifies that only root
+is runnable, rejects reaping blocked tasks, wakes worker 2 followed by worker 1,
+and checks observed resume order 21. Duplicate wakes and wakes after completion
+are rejected. Workers then complete the existing 64-yield lifecycle, and the whole
+sequence repeats after retirement and record reuse.
