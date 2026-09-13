@@ -342,6 +342,8 @@ passes make/release, extended-key, Pause/Print Screen and error-recovery tests;
 modifier/lock processing remains pending. Native character conversion now matches
 the x64 implementation across all 32,768 low scan/flag combinations. Function-body
 string literals now use position-independent addresses and explicit data ranges.
+Boot keyboard setup now explicitly requests scan set 2 and controller translation,
+with bounded ACK/RESEND handling; live key injection and modifier tracking remain.
 A fixed raw-input FIFO now passes IRQ1-to-foreground
 delivery, wraparound, overflow accounting and interrupt-state preservation;
 blocking raw input now passes worker wakeup through actual IRQ1 delivery, spurious

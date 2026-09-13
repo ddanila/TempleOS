@@ -172,3 +172,43 @@ comparison with the high 32 bits set. All 65,536 comparisons pass. This provides
 an independent compatibility reference rather than a duplicate implementation
 in the test. Modifier state, keypad remapping, event dispatch and live keyboard
 configuration remain separate work.
+
+## Explicit AT keyboard setup
+
+`KeyboardSetup.HH` / `KeyboardSetup.HC` provide boot-only setup with exclusive
+controller ownership, quiet input, IF clear and PIC IRQ1/12 masked. The caller
+must keep the PIC masked until its handler and input state are ready. This path
+disables the auxiliary clock/IRQ; later mouse initialization must take ownership
+and reconfigure them explicitly.
+
+`I386KeyboardCommand(value,polls=100000,attempts=3)` submits one keyboard command
+or parameter byte and requires ACK (FA). RESEND (FE) retries the same byte, up to
+1–3 total attempts. Unexpected replies, auxiliary/error status, transport failure
+or exhausted attempts return false. Poll budgets are 1–100000 per transport wait,
+not a calibrated time limit or one shared transaction budget. Invalid arguments
+perform no I/O. Additional response bytes belong to the command owner and must
+be consumed before issuing another transaction. This helper is for ACK-based
+commands; echo uses a different reply and deliberately fails this interface.
+
+`I386KeyboardSetup(polls=100000)` drains boot input, reads the controller command
+byte, enables translation and the keyboard clock, and disables both controller
+IRQs plus the auxiliary clock. It sends F5 (defaults, scanning disabled), F0/02
+(scan set 2), and F4 (scanning enabled), checking each ACK. Finally it enables
+controller IRQ1. Other command-byte bits are retained. This establishes the
+translated scan-set-1 stream expected by the packet decoder.
+
+Failure can leave controller and keyboard configuration partially changed;
+there is no rollback of device state. Keep IRQs masked and recover under exclusive
+ownership before consuming input. These functions do not route concurrent key or
+mouse traffic, probe every historical controller variant, or perform keyboard BAT.
+They are not runtime LED/typematic transaction management.
+
+The native input fixture checks invalid budgets/attempt counts, successful setup,
+controller bits, and the keyboard scan-set query. QEMU returns translated 41 for
+set 2. It also checks exhausted RESEND replies using QEMU's command 05 behavior,
+rejects an echo reply as an ACK, then successfully issues F4 and completes all
+four IRQ1 worker-wakeup exchanges. The fixture restores the original controller
+command byte, but does not claim to restore every keyboard setting. Emulator
+command/query behavior is documented in
+[QEMU's PS/2 source](https://github.com/qemu/qemu/blob/master/hw/input/ps2.c).
+Physical AT/386 validation and live key injection remain pending.

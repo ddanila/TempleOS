@@ -579,3 +579,19 @@ NULs and returned string pointers pass native checks. The full input fixture,
 155 compiler cases, both x64 rebuilds and image verification (735 files,
 62 directories) pass. Global/static address initializers and full self-hosting
 remain pending; this is still a QEMU 486/8 MiB development checkpoint.
+
+## Explicit keyboard configuration
+
+Boot setup now disables scanning, explicitly selects scan set 2, re-enables
+scanning and enables controller translation/IRQ1 with the auxiliary path disabled.
+A bounded command helper requires ACK and retries RESEND up to three attempts.
+The contract requires exclusive, quiescent boot ownership; failures can leave
+partial device state and do not claim transactional rollback.
+
+The native input fixture passes command-byte checks and a translated scan-set
+query, invalid budgets/attempt counts, exhausted RESEND handling, unexpected
+reply rejection and recovery with a successful command. All four subsequent
+IRQ1 worker-wakeup exchanges, decoder cases and 65,536 character comparisons
+pass. Both x64 rebuilds and image verification (737 files, 62 directories) pass.
+Live key injection, modifier tracking, concurrent runtime command routing and
+physical AT/386 checks remain pending.

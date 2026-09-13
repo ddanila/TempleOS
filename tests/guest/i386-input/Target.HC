@@ -7,6 +7,7 @@
 #include "/Kernel/I386/Irq.HH"
 #include "/Kernel/I386/ScanSet1.HH"
 #include "/Kernel/I386/ScanChar.HH"
+#include "/Kernel/I386/KeyboardSetup.HH"
 U8 char_oracle[32768];
 extern I64 CharTest();
 extern U8 *StringTestValue();
@@ -57,8 +58,18 @@ I64 Main(I64 a,I64 b)
   if (!I386SchedWake(&scheduler,&tasks[1]) || !I386SchedYield(&scheduler) ||
       !tasks[1].blocked || received || errors) return 6;
   if (!I386KbcDrain || !I386KbcWrite(TRUE,0x20) ||
-      !I386KbcReadWait(&config,&status) || (status&0xE0) ||
-      !I386KbcWrite(TRUE,0x60) || !I386KbcWrite(FALSE,(config|1)&~0x10)) return 7;
+      !I386KbcReadWait(&config,&status) || (status&0xE0)) return 7;
+  if (I386KeyboardSetup(0) || I386KeyboardSetup(-1) || I386KeyboardSetup(100001) ||
+      I386KeyboardCommand(0xF5,0) || I386KeyboardCommand(0xF5,100001) ||
+      I386KeyboardCommand(0xF5,100000,0) || I386KeyboardCommand(0xF5,100000,4)) return 15;
+  if (!I386KeyboardSetup || !I386KbcWrite(TRUE,0x20) ||
+      !I386KbcReadWait(&data,&status) || (status&0xE0) || (data&0x73)!=0x61) return 16;
+  //Query scan set 2: translation maps the returned 02 byte to 41.
+  if (!I386KeyboardCommand(0xF0) || !I386KeyboardCommand(0) ||
+      !I386KbcReadWait(&data,&status) || (status&0xE0) || data!=0x41) return 17;
+  //QEMU answers unsupported command 05 with RESEND; echo is not an ACK.
+  if (I386KeyboardCommand(0x05) || I386KeyboardCommand(0xEE) ||
+      !I386KeyboardCommand(0xF4) || (GetRFlags&0x200)) return 18;
   I386PicInit; control->irq->handler=&OnKeyboard;
   for (i=0;i<4;i++) {
     if (!tasks[1].blocked || !I386KbcWrite(FALSE,0xEE)) return 8;
@@ -121,6 +132,7 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/ScanSet1.HC"
 #include "/Kernel/I386/ScanChar.HC"
+#include "/Kernel/I386/KeyboardSetup.HC"
 
 I64 CharTest()
 {
