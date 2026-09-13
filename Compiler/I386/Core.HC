@@ -135,11 +135,23 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
   return res;
 }
 
+class CI386Call
+{
+  CI386Call *next;
+  CHashFun *fun;
+  I64 depth;
+  Bool called;
+};
+
 U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
 {
   CI386Out out;
   CIntermediateCode *ic;
   CCodeMisc *label;
+  CI386Call *calls=NULL,*call;
+  CExternUsage *usage;
+  CMemberLst *arg;
+  I64 arg_index,arg_offset;
   I64 depth,pass,stack_size=0,args=0;
   U8 *result=NULL;
   CHashClass *c;
@@ -173,6 +185,65 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
         switch (ic->ic_code) {
           case IC_NOP1:
           case IC_NOP2: break;
+          case IC_CALL_START:
+            call=CAlloc(sizeof(CI386Call));
+            call->next=calls;
+            calls=call;
+            call->fun=ic->ic_data;
+            call->depth=depth;
+            if (Bt(&call->fun->flags,Ff_DOT_DOT_DOT) ||
+                Bt(&call->fun->flags,Ff_NOARGPOP)) throw('Compiler');
+            break;
+          case IC_CALL:
+          case IC_CALL_EXTERN:
+            if (!calls || calls->called ||
+                depth!=calls->depth+calls->fun->arg_cnt) throw('Compiler');
+            arg=calls->fun->member_lst_and_root;
+            for (arg_index=0;arg_index<calls->fun->arg_cnt;arg_index++) {
+              c=arg->member_class;
+              if (arg->dim.next) c=cmp.internal_types[RT_U8]+1;
+              if (c->raw_type==RT_F64 && !c->ptr_stars_cnt) throw('Compiler');
+              if (I386Size(c)<8) {
+                arg_offset=arg_index*8;
+                I386Bytes(&out,"\x8B\x84\x24",3); I386Dword(&out,arg_offset);
+                I386Bytes(&out,"\x8B\x94\x24",3); I386Dword(&out,arg_offset+4);
+                I386Normalize(&out,c);
+                I386Bytes(&out,"\x89\x84\x24",3); I386Dword(&out,arg_offset);
+                I386Bytes(&out,"\x89\x94\x24",3); I386Dword(&out,arg_offset+4);
+              }
+              arg=arg->next;
+            }
+            I386Byte(&out,0xE8);
+            if (ic->ic_code==IC_CALL) {
+              I386Dword(&out,ic->ic_data-(cc->aotc->rip+out.count+4));
+            } else {
+              if (pass) {
+                usage=CAlloc(sizeof(CExternUsage));
+                usage->next=calls->fun->ext_lst;
+                calls->fun->ext_lst=usage;
+                usage->rip=cc->aotc->rip+out.count;
+              }
+              I386Dword(&out,0);
+            }
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
+          case IC_ADD_RSP1:
+          case IC_ADD_RSP:
+            if (!calls || !calls->called ||
+                ic->ic_data!=calls->fun->arg_cnt*8) throw('Compiler');
+            //Fixed-arity i386 callees have already removed argument slots.
+            break;
+          case IC_CALL_END:
+            if (!calls || !calls->called || calls->fun!=ic->ic_data)
+              throw('Compiler');
+            if (I386Size(calls->fun->return_class))
+              I386Normalize(&out,calls->fun->return_class);
+            else I386Bytes(&out,"\x31\xC0\x31\xD2",4);
+            I386Bytes(&out,"\x52\x50",2);
+            depth++;
+            call=calls; calls=call->next; Free(call);
+            break;
           case IC_ENTER:
             I386Bytes(&out,"\x55\x89\xE5\x81\xEC",5);
             I386Dword(&out,stack_size);
@@ -386,8 +457,10 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             throw('Compiler');
         }
       }
+      if (calls) throw('Compiler');
     }
   } catch {
+    LinkedLstDel(calls);
     Free(out.data);
     //Leave catch_except false so the original exception propagates.
   }

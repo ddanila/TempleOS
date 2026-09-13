@@ -69,8 +69,10 @@ Signed division truncates toward zero; remainder has the dividend's sign.
 Division/remainder by zero and signed MIN_I64 divided by -1 raise vector 0.
 The i386 path bypasses the legacy power-of-two division-to-shift shortcut so
 negative division retains the same rule with constant and variable divisors. Pointer-aware size
-queries are used during parsing and scaling. Calls, variadic functions, module
-relocation, floating-point output, switch dispatch and short-circuit/chained
-comparisons remain pending.
+queries are used during parsing and scaling. Direct calls within a compilation
+unit, forward fixups, recursion, nested calls, scalar slot extension, and integer
+default arguments are implemented. Undefined functions are rejected during AOT
+resolution. Indirect/variadic calls, cross-module imports/loading, floating-point
+output, switch dispatch and short-circuit/chained comparisons remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.

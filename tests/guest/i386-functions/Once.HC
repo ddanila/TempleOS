@@ -1,13 +1,23 @@
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
-U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor)
+I64 case_number=0;
+U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
+  U8 *prefix="",U8 *suffix="")
 {
   I64 errors;
   CAOT *aot;
-  U8 *source=MStrPrint("#include \"/Kernel/Types.HH\"\nI64 Test(I64 a,I64 b) { %s }",body);
+  CAOTImportExport *ie;
+  U8 *line,*source=MStrPrint("#include \"/Kernel/Types.HH\"\n%s\nI64 Test(I64 a,I64 b) { %s }\n%s",prefix,body,suffix);
   Report("CASE "); Report(body); Report("\n");
   aot=CmpI386Buf(source,&errors);
   Free(source);
   if (!aot || errors) { Report("FAIL function compile\n"); throw; }
+  for (ie=aot->next_ie;ie!=&aot->next_ie;ie=ie->next) {
+    if (ie->type==IET_REL32_EXPORT) {
+      line=MStrPrint("RANGE %d %X\n",case_number,ie->rip);
+      Report(line); Free(line);
+    }
+  }
+  case_number++;
   (*cursor)(U32 *)[0]=aot->aot_U8s; *cursor+=4;
   (*cursor)(I64 *)[0]=expected; *cursor+=8;
   (*cursor)(I64 *)[0]=a; *cursor+=8;
@@ -122,12 +132,37 @@ U0 CompileTests()
   EmitCase("return a(U64)%b(U64);",0x80000000FFFFFFFF,0xFFFFFFFF,0x80000000,&cursor);
   EmitCase("return a/b;",-320255973501901,4886718345,-65536,&cursor);
   EmitCase("return a%b;",-320255973501901,4886718345,-43981,&cursor);
+  EmitCase("return Add(a,b);",0xFFFFFFFF,1,0x100000000,&cursor,
+    "extern I64 Add(I64 a,I64 b);", "I64 Add(I64 a,I64 b) { return a+b; }");
+  EmitCase("return a+Add(a,Add(b,3));",10,2,25,&cursor,
+    "extern I64 Add(I64 a,I64 b);", "I64 Add(I64 a,I64 b) { return a+b; }");
+  EmitCase("if (a<=1) return b; return Test(a-1,a*b);",5,1,120,&cursor);
+  EmitCase("return Twice(a,b);",0x100000000,3,0x200000006,&cursor,
+    "extern I64 Twice(I64 a,I64 b); extern I64 Add(I64 a,I64 b);",
+    "I64 Add(I64 a,I64 b) { return a+b; } I64 Twice(I64 a,I64 b) { return Add(a,b)*2; }");
+  EmitCase("Store(&a,b); return a;",1,0x123456789ABCDEF0,0x123456789ABCDEF0,&cursor,
+    "extern U0 Store(I64 *p,I64 b);", "U0 Store(I64 *p,I64 b) { *p=b; }");
+  EmitCase("return Byte(a,b);",0x12345678FF,0,255,&cursor,
+    "extern U8 Byte(I64 a,I64 b);", "U8 Byte(I64 a,I64 b) { return a; }");
+  EmitCase("return Byte(a,b);",255,0,-1,&cursor,
+    "extern I8 Byte(I64 a,I64 b);", "I8 Byte(I64 a,I64 b) { return a; }");
+  EmitCase("return Add(a);",35,0,42,&cursor,
+    "extern I64 Add(I64 a,I64 b=7);", "I64 Add(I64 a,I64 b) { return a+b; }");
+  EmitCase("return Slot(a,b);",255,0,-1,&cursor,
+    "extern I64 Slot(I8 a,I64 b);", "I64 Slot(I8 a,I64 b) { return a(I64); }");
+  EmitCase("return Slot(a,b);",0x10000002A,0,42,&cursor,
+    "extern I64 Slot(U8 *p,I64 b);", "I64 Slot(U8 *p,I64 b) { return p(I64); }");
+  EmitCase("return a+Value();",7,0,49,&cursor,
+    "extern I64 Value();", "I64 Value() { return 42; }");
+  EmitCase("return Sum(a,b,3);",10,20,33,&cursor,
+    "extern I64 Sum(I64 a,I64 b,I64 c);", "I64 Sum(I64 a,I64 b,I64 c) { return a+b+c; }");
   //Reserved expected value tells the isolated runner to require vector 0.
   EmitCase("return a/b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a/b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);
   Reject("#include \"/Kernel/Types.HH\"\nF64 Test(I64 a,I64 b) { return 1.5; }");
+  Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(I64 a,I64 b); I64 Test(I64 a,I64 b) { return Missing(a,b); }");
   Reject("#exe { 1+2; }");
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);

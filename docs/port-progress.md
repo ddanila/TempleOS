@@ -63,7 +63,7 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-Ninety-nine function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+111 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
 class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
 unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
@@ -71,10 +71,15 @@ reinterpretation. Shift cases cover counts 0, 31, 32, 63, and 64, constant count
 and compound assignments. Division cases cover mixed signedness, multiword
 quotients/remainders, constant divisors, and compound assignments. Four cases
 require vector 0 for zero divisors or signed quotient overflow; the runner checks
-the exact fault count. F64 output and `#exe` remain rejection cases. Instruction auditing is
-limited to executable ranges, excluding AOT padding. The runner reports the
-zero-based case index in hexadecimal on failure. Only standalone function bodies
-are exercised; module relocation, globals, calls, switch dispatch,
+the exact fault count. Call cases cover forward/backward references within one
+compilation unit, recursion, nested calls, zero/two/three arguments, default
+arguments, void and narrow returns, pointer mutation, and full argument-slot
+extension. F64 output, unresolved functions, and `#exe` remain rejection cases.
+Exported function boundaries separate executable code from AOT alignment padding
+during instruction auditing. The runner reports the zero-based case index in
+hexadecimal on failure. Function bodies
+are exercised; the cases may contain multiple functions in one compilation unit.
+Cross-module imports/loading, globals, indirect calls, switch dispatch,
 short-circuit/chained comparisons, variadic functions, debug information, and
 software F64 are not implemented by this backend.
 

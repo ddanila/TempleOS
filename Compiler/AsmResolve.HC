@@ -134,6 +134,13 @@ U0 AOTGlblsResolve(CCmpCtrl *cc,CAOT *tmpaot)
   for (i=0;i<=cc->htc.glbl_hash_table->mask;i++) {
     tmpex=cc->htc.glbl_hash_table->body[i];
     while (tmpex) {
+      if (cc->flags&CCF_TARGET_I386 && tmpex->type&HTT_FUN) {
+        tmpf=tmpex;
+        if (tmpf->ext_lst && Bt(&tmpf->flags,Cf_EXTERN)) {
+          PrintErr("Undefined i386 function %s\n",tmpf->str);
+          throw('Compiler');
+        }
+      }
       if (tmpex->type & (HTF_IMPORT|HTF_GOTO_LABEL)) {
 	if (tmpex->use_cnt && (tmpie=tmpex->ie_lst)) {
 	  if (tmpex->type&HTF_GOTO_LABEL)
