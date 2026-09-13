@@ -330,7 +330,8 @@ switches and hardware IRQs. Heap-owned task creation, automatic finish on entry
 return, and destruction from another stack now pass lifecycle and exhaustion tests.
 Blocking joins now wake on completion, reject dependency cycles, and keep finished
 targets alive until registered joiners resume; native tests cover spurious wakeups
-and rejected early destruction.
+and rejected early destruction. Computed-pointer member accesses, including
+pointer-to-pointer field addresses, now pass native compiler regressions.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

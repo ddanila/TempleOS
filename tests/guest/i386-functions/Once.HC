@@ -299,6 +299,17 @@ U0 CompileTests()
     "I64 Add(I64 x,I64 y) { return x+y; } I64 Sub(I64 x,I64 y) { return x-y; }");
   EmitCase("I64 (*fp)(I64 x,I64 y=7); fp=&Add; return (*fp)(a);",35,0,42,&cursor,
     "extern I64 Add(I64 x,I64 y);", "I64 Add(I64 x,I64 y) { return x+y; }");
+  EmitCase("P p; P *ptr=&p; p.value=a; return (ptr)->value+b;",0x100000000,3,0x100000003,&cursor,
+    "class P { I64 value; P *next; U8 bytes[4]; };");
+  EmitCase("P p; P *ptr=&p,**pp=&ptr; p.value=a; (*pp)->value+=b; return p.value;",0x100000000,3,0x100000003,&cursor,
+    "class P { I64 value; P *next; U8 bytes[4]; };");
+  EmitCase("P p,q; P *ptr=&p,**pp=&ptr,**link; p.value=a; p.next=&q; q.value=b; link=&(*pp)->next; *link=&p; return p.next->value;",0x100000005,9,0x100000005,&cursor,
+    "class P { I64 value; P *next; U8 bytes[4]; };");
+  EmitCase("P p; (&p)->bytes[2]=a; return (&p)->bytes[2];",0x1FE,0,254,&cursor,
+    "class P { I64 value; P *next; U8 bytes[4]; };");
+  EmitCase("P p; p.value=a; return (Get(&p))->value+b;",0x100000000,3,0x100000003,&cursor,
+    "class P { I64 value; P *next; U8 bytes[4]; }; extern P *Get(P *p);",
+    "P *Get(P *p) { return p; }");
   //Reserved expected value tells the isolated runner to require vector 0.
   //QEMU unassigned ports test input widths; VGA sequencer tests actual writes.
   EmitCase("return InU8(a);",1280,0,255,&cursor,

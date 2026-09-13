@@ -973,7 +973,7 @@ I64 PrsUnaryModifier(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
   CArrayDim *tmpad1,tmpad2;
   CCodeMisc *cm;
   I64 mode,old_flags;
-  Bool was_paren=Btr(&cc->flags,CCf_PAREN);
+  Bool was_paren=Btr(&cc->flags,CCf_PAREN),preserve_arrow_type=FALSE;
 
   *_local_var=NULL;
   switch (cc->token) {
@@ -986,6 +986,8 @@ I64 PrsUnaryModifier(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
       tmpi=cc->coc.coc_head.last;
       if (!(cc->flags & (CCF_RAX | CCF_ARRAY)))
 	ICAdd(cc,IC_DEREF+PREC_UNARY_PRE<<16,0,tmpi->ic_class-1);
+      else if (cc->flags&CCF_TARGET_I386 && cc->flags&CCF_RAX)
+        preserve_arrow_type=TRUE;
       else
 	tmpi->ic_class--;
 
@@ -993,6 +995,9 @@ I64 PrsUnaryModifier(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
       if (!*unary_post_prec)
 	*unary_post_prec=PREC_TERM;
       tmpc=cc->coc.coc_head.last->ic_class;
+      //A computed pointer retains its emitted scalar type. Only member lookup
+      //uses the pointee class; mutating a preceding DEREF makes i386 load a struct.
+      if (preserve_arrow_type) tmpc--;
       if ((!tmpc->ptr_stars_cnt || cc->flags & CCF_ARRAY) && cc->token=='.')
 	LexExcept(cc,"Must be address, not value ");
       if (!(cc->flags & CCF_RAX))

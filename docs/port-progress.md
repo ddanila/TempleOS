@@ -63,7 +63,7 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-150 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+155 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
 class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
 unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
@@ -457,3 +457,19 @@ x64 rebuilds and image verification pass. Joins have no timeout/cancellation and
 are not the full public TempleOS task-wait interface. A pointer-to-pointer unlink
 expression was rejected by the current backend; the runtime uses a predecessor
 walk for this list operation.
+
+## Computed-pointer member access
+
+The parser now preserves the emitted pointer type when an i386 arrow expression
+uses a computed receiver. Previously `(ptr)->value` changed the preceding pointer
+load into a structure load, which the backend rejected; the same issue affected
+`&(*link)->next` during join implementation. Member lookup now uses the pointee
+class without changing the already-emitted operand type. The change is guarded
+for the i386 target.
+
+A reproducer failed before the fix. Five new native cases cover parenthesized
+pointers, pointer-to-pointer receivers, taking and writing a member address, array
+members, and pointer-returning calls with full-width numeric values. All 155
+function cases, the complete native task suite, both x64 rebuilds, and image
+verification pass. The join implementation can keep its predecessor walk; the
+original field-address expression is now independently supported and tested.
