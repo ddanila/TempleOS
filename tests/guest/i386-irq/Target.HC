@@ -6,6 +6,7 @@
 #include "/Kernel/I386/Exception.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/HeapIrq.HH"
+#include "/Kernel/I386/Kbc.HH"
 extern U0 OnHeapIrq(CI386IrqFrame *frame);
 extern I64 HeapInterruptTest();
 extern U0 I386PicInit();
@@ -33,6 +34,7 @@ I64 Main(I64 a,I64 b)
 {
   I64 (*wait)(I64 count);
   I64 first,i,result,old_a,old_b,outer,inner;
+  U8 config,data,status;
   wait=b;
   control=a; control->handler=&OnIrq;
   ticks=0xFFFFFFF0; spurious=0; errors=0;
@@ -95,6 +97,29 @@ I64 Main(I64 a,I64 b)
     if (result || errors || spurious!=2 || control->ticks<8 ||
         ticks!=first+control->ticks) return 12;
   }
+  data=0x55; status=0xAA;
+  if (I386KbcWrite(FALSE,0xEE,0) || I386KbcWrite(FALSE,0xEE,-1) ||
+      I386KbcWrite(FALSE,0xEE,100001) || I386KbcDrain(0) ||
+      I386KbcRead(0,&status) || I386KbcRead(&data,0) || I386KbcRead(&data,&data) ||
+      I386KbcReadWait(&data,&status,0) || data!=0x55 || status!=0xAA) return 24;
+  if (!I386KbcDrain || !I386KbcWrite(TRUE,0x20) ||
+      !I386KbcReadWait(&config,&status) || (status&0xE0)) return 25;
+  if (!I386KbcWrite(TRUE,0x60) || !I386KbcWrite(FALSE,(config|1)&~0x10)) return 26;
+  I386PicInit;
+  expected_irq=1;
+  for (i=0;i<4;i++) {
+    first=ticks; spurious=0;
+    if (!I386KbcWrite(FALSE,0xEE)) return 27;
+    I386PicMask(0xFFFD);
+    result=(*wait)(1);
+    I386PicMask(0xFFFF);
+    if (result || errors || spurious!=2 || control->ticks!=1 || ticks!=first+1) return 28;
+  }
+  if (!I386KbcWrite(TRUE,0x60) || !I386KbcWrite(FALSE,config) ||
+      !I386KbcWrite(TRUE,0x20) || !I386KbcReadWait(&data,&status) ||
+      (status&0xE0) || data!=config) return 29;
+  data=0x55; status=0xAA;
+  if (I386KbcReadWait(&data,&status,2) || data!=0x55 || status!=0xAA) return 30;
   return HeapInterruptTest;
 }
 I64 HeapInterruptTest()
@@ -191,8 +216,12 @@ U0 OnException(CI386ExceptionFrame *frame)
 }
 U0 OnIrq(CI386IrqFrame *frame)
 {
+  U8 data,status;
   if (!I386PicAccept(frame->irq)) { spurious++; return; }
   if (frame->irq==8 && (I386RtcAck&0xC0)!=0xC0) errors++;
+  if (frame->irq==1) {
+    if (!I386KbcRead(&data,&status) || data!=0xEE || (status&0xE0)) errors++;
+  }
   if (frame->irq!=expected_irq || (frame->cs&65535)!=8 || (frame->eflags&0x600)!=0x600 ||
       (frame->ds&65535)!=16 || (frame->es&65535)!=16 ||
       (frame->fs&65535) || (frame->gs&65535) ||
@@ -209,3 +238,4 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/HeapIrq.HC"
+#include "/Kernel/I386/Kbc.HC"

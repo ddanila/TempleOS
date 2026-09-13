@@ -503,3 +503,18 @@ while cleanup is suspended. Hook install/clear/reinstall and recursive-operation
 rejection pass across repeated task creation. The full task suite, both x64
 rebuilds and image verification pass. Hook faults, cancellation and exception-safe
 unwinding remain pending.
+
+## Keyboard-controller transport and IRQ1
+
+Native 8042 transport now provides bounded writes, raw status/data reads,
+polling reads and boot-only draining. Reads preserve auxiliary/error status for
+the caller; invalid arguments and unsuccessful reads leave outputs unchanged.
+Complete transactions require exclusive controller ownership with IF clear.
+
+The IRQ suite passes four keyboard echo exchanges through actual IRQ1 delivery,
+including frame/register/flag restoration, controller configuration restoration,
+invalid arguments and empty-buffer polling. Existing PIT, RTC, exception and
+shared-heap interrupt phases pass in the same runner. Both x64 rebuilds pass;
+image verification covers 727 files and 62 directories. This is a QEMU 486/8 MiB
+transport checkpoint, not keyboard initialization or interactive input. Scan-code
+decoding, input queues, task wakeups and physical vintage hardware checks remain.

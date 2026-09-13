@@ -163,6 +163,12 @@ and all other registers. The production exception stubs have a third independent
 audited executable range. Recovery addresses belong only to these test sites;
 this is not a general fault-skipping policy.
 
+The keyboard phase sends four echo commands through bounded 8042 transport and
+receives their replies through IRQ1 with only that line unmasked. It checks raw
+status, the same frame/restoration invariants, and restores the controller command
+byte. See [the keyboard transport contract](i386-keyboard.md) for ownership
+requirements and the remaining input work.
+
 This passes on the QEMU 486/8 MiB runner. Timer calibration, missed-tick accounting,
 interrupt latency on vintage CPUs, calendar reads, full exception handling, keyboard/mouse
 initialization, task integration, and production boot wiring remain pending.

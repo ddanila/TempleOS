@@ -336,6 +336,9 @@ private task arenas now pass allocation, exhaustion, cross-arena free rejection,
 and bulk reclamation checks across task completion/destruction. Normal-return
 cleanup hooks can yield with task memory and bindings intact; completion is
 published only after cleanup returns, with recursive completion rejected.
+Bounded 8042 transport now passes keyboard echo delivery through IRQ1, status
+capture and controller configuration restoration. Scan-code decoding and input
+queues remain pending; see `docs/i386-keyboard.md` for the transport contract.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
