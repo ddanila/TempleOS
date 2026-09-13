@@ -388,9 +388,11 @@ Public CDrv/CFile integration, decompression and directory growth remain pending
 See `docs/i386-redsea.md`. A disk-to-module bridge now reads uncompressed RedSea
 modules into temporary heap storage, validates/loads them and releases the file
 buffer before execution. Native tests cover mutable 64-bit data, buffer-lifetime
-independence, malformed files and both allocation-failure stages. Dependency sets,
-resident symbol binding and production boot/JIT integration remain pending;
-see `docs/i386-module-file.md`.
+independence, malformed files and both allocation-failure stages. Explicit file
+sets now resolve cross-module functions and data in either order, with missing/
+duplicate dependency rejection and cleanup at every allocation stage. Automatic
+dependency discovery, resident symbol binding and production boot/JIT integration
+remain pending; see `docs/i386-module-file.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

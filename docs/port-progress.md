@@ -899,3 +899,20 @@ The payload and loader code pass instruction audits; the backing disk remains
 unchanged. Both x64 rebuilds and image verification (760 files, 62 directories)
 pass. Multi-file dependencies, resident symbols,
 registry/lifetime policy and production boot/JIT integration remain pending.
+
+## Native module sets loaded from disk
+
+The disk bridge now accepts an explicit file-entry array, validates all extents,
+reads the files into temporary allocations and links one combined executable
+image. Cross-file function/data imports use the existing shared resolver. Temporary
+tables and every file buffer are reclaimed on success and failure; the one-file
+path retains its original allocation behavior.
+
+Native consumer/provider tests pass both file orders, mutable 64-bit imports,
+exact reclaimed-buffer overwrite and complete heap reclamation. Missing/duplicate
+providers, malformed dependencies, missing entry symbols, all four allocation
+stages and a real second-file read error pass rejection/cleanup checks. The direct
+linked payload and runtime pass instruction audits; the disk remains unchanged.
+The single-file regression, both x64 rebuilds and image verification (760 files,
+62 directories) pass. Automatic dependency search,
+resident kernel symbols, registry/lifetime policy and production boot/JIT remain.
