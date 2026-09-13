@@ -2,7 +2,8 @@
 
 Make TempleOS usable on more machines while preserving its character as a small,
 offline, personal programming environment. Start with portability of the virtual
-machine distribution, then assess native hardware support separately.
+machine distribution, then assess native hardware support separately. Include vintage hardware as a
+research target, distinguishing older compatible PCs from a true 16-bit port.
 
 ## Scope and design constraints
 
@@ -35,6 +36,8 @@ Emulation does not give guest applications unrestricted access to the host.
 | Portable QEMU distribution | Runs the same OS across host platforms | Preserves guest architecture and behavior | First priority |
 | Modern x86-64 hardware support | UEFI boot and selected newer devices | Preserves most concepts but adds driver complexity | Consider as a bounded second phase |
 | Native ARM64 or RISC-V port | Removes dependence on x86 execution | Preserves philosophy but changes assembly and hardware interfaces | Defer; substantial compiler/kernel project |
+| Vintage x86-64 PC with VGA | Runs on older hardware already close to the original design | Preserves the architecture; requires device and firmware validation | Include in native-target assessment |
+| True 16-bit x86 with VGA | Explores the programming environment on much smaller machines | Cannot retain the existing 64-bit kernel, memory model, or full HolyC compatibility | Add a feasibility track; decide scope before implementation |
 | Hosted application on Linux/macOS | Convenient desktop integration | Loses unrestricted machine access and actual kernel privilege | Possible companion, not the primary portability path |
 
 QEMU system emulation can provide the guest CPU and devices on different host
@@ -115,11 +118,65 @@ A native ARM64 or RISC-V port is a separate architectural project. Assess at lea
 Do not assume that introducing hardware boundaries makes the compiler or kernel
 CPU-independent.
 
+## Vintage hardware feasibility track
+
+Requested scope: assess vintage hardware, including the possibility of a true
+16-bit x86 CPU with a VGA adapter. This is an exploratory target, not a claim that
+the current OS can run on it.
+
+VGA itself fits the existing design: TempleOS already uses 640×480, 16-color
+VGA graphics. CPU capabilities, usable RAM, firmware, and device interfaces are
+the main questions. The current OS requires x86-64 and at least 512 MiB RAM
+(`Doc/Requirements.DD`). A 16-bit bootloader does not make its 64-bit payload
+compatible with a 16-bit CPU.
+
+Assess two distinct paths:
+
+1. **Older x86-64 PCs with VGA-compatible graphics.** Select representative
+   hardware with sufficient RAM, compatible boot firmware, input, and storage.
+   Validate the existing system before adding drivers. This path can preserve the
+   core requirements without changing the CPU architecture.
+2. **A true 16-bit system with VGA.** Identify an exact CPU and machine profile
+   before estimating feasibility: 8086/8088 and 80286 targets have materially
+   different memory and execution constraints. Establish RAM, storage, keyboard,
+   mouse, sound, and boot assumptions. Use an emulator for the chosen machine
+   before requiring physical hardware.
+
+For the 16-bit path, investigate and explicitly decide:
+
+- Whether the intended result is a standalone OS or a hosted environment such as
+  a DOS program. A hosted prototype does not establish standalone OS support.
+- A compiler bootstrap and 16-bit code generator, including the practical scope
+  of a HolyC subset and whether self-hosted compilation can fit.
+- Segmented addressing, pointer representation, allocation, and executable size
+  limits. The existing flat 64-bit programming model cannot be carried over
+  unchanged.
+- Which interactive programming, direct hardware access, DolDoc, graphics, and
+  simple sound features fit the memory budget.
+- Which requirements must be amended: 64-bit execution, multicore support, flat
+  addressing, existing binaries, and source compatibility cannot all be retained
+  on a true 16-bit CPU.
+- Code size, RAM consumption, and acceptable compilation/rendering speed on the
+  selected machine.
+
+The first deliverable is a feasibility assessment with a specific machine
+profile, explicit preserved and relaxed concepts, and a proposed minimal
+experiment. If approved, an experiment should demonstrate boot, VGA output,
+keyboard input, and evaluation of a small expression within measured memory
+limits. It must not be presented as a full TempleOS port.
+
+A reduced 16-bit implementation could preserve the offline, immediate,
+programming-first experience, but would be a separate architectural variant.
+Keep its compatibility claims and tradeoffs explicit; do not silently weaken the
+requirements for the primary TempleOS system.
+
 ## Priority and decision gates
 
 Proceed with phases 1 and 2 as the proposed next work. Phase 3 is conditional on a
 specific second target; phases 4 and 5 require separate scope decisions informed
-by the earlier results.
+by the earlier results. The vintage-hardware feasibility assessment is also in
+scope for planning; implementing a reduced 16-bit variant requires agreement on
+the machine profile and concept changes identified above.
 
 The immediate objective is practical portability without a large abstraction
 layer that undermines the system's simplicity. Recording this plan does not mark
