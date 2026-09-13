@@ -488,3 +488,18 @@ invalid arena sizes and complete parent-heap reclamation across repeated cycles.
 Both x64 rebuilds and image verification pass. These remain fixed-capacity,
 NULL-returning bootstrap heaps; page-pool growth, inherited policies, and public
 MAlloc/CAlloc/OutMem integration are pending.
+
+## Task cleanup hooks
+
+The scheduler now supports one replaceable cleanup hook on the current worker.
+Finish enters a distinct finishing state and invokes the hook before unlinking or
+publishing completion. The hook runs on its task stack with FS/private memory and
+incoming IF available, may yield, and cannot recursively finish or replace itself.
+Only after return are completion and join wakeups published.
+
+The native test allocates private scratch memory during cleanup, yields with IF
+enabled, checks preserved data/IF, and verifies that root cannot destroy the task
+while cleanup is suspended. Hook install/clear/reinstall and recursive-operation
+rejection pass across repeated task creation. The full task suite, both x64
+rebuilds and image verification pass. Hook faults, cancellation and exception-safe
+unwinding remain pending.

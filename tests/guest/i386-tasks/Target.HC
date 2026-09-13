@@ -13,6 +13,8 @@ CI386OwnedTask *join_tasks[3];
 CI386Task foreign_task;
 U32 join_stage,join_returns;
 extern U0 OwnedWorker(I64 arg);
+extern U0 OwnedCleanup(CI386Task *task);
+U32 cleanup_progress[2];
 CI386OwnedTask *owned_tasks[2];
 U8 *private_blocks[2];
 U32 owned_progress[2];
@@ -329,21 +331,26 @@ I64 OwnedTaskTest()
       I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,16) ||
       I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,4097) ||
       I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,0xFFFFFFFF)) return 57;
+  if (I386SchedSetCleanup(0,&OwnedCleanup) ||
+      I386SchedSetCleanup(&scheduler,&OwnedCleanup)) return 60;
   for (cycle=0;cycle<2;cycle++) {
     for (i=0;i<2;i++) {
-      owned_progress[i]=0; private_blocks[i]=0;
+      owned_progress[i]=0; private_blocks[i]=0; cleanup_progress[i]=0;
       owned_tasks[i]=I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0x100000000+i,0x18,0x20,4096);
       if (!owned_tasks[i] || I386TaskDestroy(owned_tasks[i]) ||
           owned_tasks[i]->task.addr!=&owned_tasks[i]->task) return 41;
     }
     if (heap.allocations!=2 || I386TaskSpawn(&scheduler,&heap,32768,&OwnedWorker,0) ||
         heap.allocations!=2 || !I386HeapValid(&heap)) return 42;
-    for (j=0;j<9;j++) {
+    for (j=0;j<10;j++) {
       if (!I386SchedYield(&scheduler) || I386TaskSelf!=&tasks[0] || errors) return 43;
       for (i=0;i<2;i++) {
         if (j<8) {
           if (owned_progress[i]!=j+1 || owned_tasks[i]->task.finished) return 44;
-        } else if (!owned_tasks[i]->task.finished || owned_progress[i]!=8) return 45;
+        } else if (j==8) {
+          if (owned_tasks[i]->task.finished || !owned_tasks[i]->task.finishing ||
+              cleanup_progress[i]!=1 || I386TaskDestroy(owned_tasks[i])) return 61;
+        } else if (!owned_tasks[i]->task.finished || owned_progress[i]!=8 || cleanup_progress[i]!=2) return 45;
       }
     }
     for (i=0;i<2;i++) {
@@ -368,6 +375,10 @@ U0 OwnedWorker(I64 arg)
   U32 local[8];
   U8 *p,*q;
   if (id>1 || arg!=0x100000000+id) { errors++; return; }
+  SetRFlags(GetRFlags|0x200);
+  if (!I386SchedSetCleanup(&scheduler,&OwnedCleanup) ||
+      !I386SchedSetCleanup(&scheduler,0) || I386TaskSelf->cleanup ||
+      !I386SchedSetCleanup(&scheduler,&OwnedCleanup)) errors++;
   q=I386TaskAlloc(4080);
   if (!q || I386TaskAlloc(1) || !I386TaskFree(q)) { errors++; return; }
   p=I386TaskAlloc(512,TRUE); private_blocks[id]=p;
@@ -431,4 +442,21 @@ U0 JoinWorker(I64 id)
         !I386SchedJoin(&scheduler,&join_tasks[0]->task)) errors++;
     join_returns++;
   }
+}
+
+U0 OwnedCleanup(CI386Task *task)
+{
+  I64 id;
+  U8 *p;
+  if (task==&owned_tasks[0]->task) id=0;
+  else id=1;
+  if (task!=I386TaskSelf || !(GetRFlags&0x200) || !task->finishing || task->finished ||
+      I386SchedFinish(&scheduler) || I386SchedSetCleanup(&scheduler,0)) errors++;
+  p=I386TaskAlloc(32,TRUE);
+  if (!p) { errors++; return; }
+  p[0]=0xA7;
+  cleanup_progress[id]=1;
+  if (!I386SchedYield(&scheduler) || !(GetRFlags&0x200) || p[0]!=0xA7 || task!=I386TaskSelf ||
+      !I386TaskFree(p)) errors++;
+  cleanup_progress[id]=2;
 }

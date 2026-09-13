@@ -328,3 +328,29 @@ rejects cross-arena frees, and deliberately retains a live allocation through
 completion. Root checks those payloads before destruction and verifies complete
 parent-heap reclamation across repeated create/destroy cycles. Invalid private
 sizes and allocation without a private heap are also checked.
+
+## Cleanup before completion
+
+`I386SchedSetCleanup(s, callback)` installs, replaces, or clears one cleanup hook
+on the current worker. Root and tasks already finishing are rejected. The hook
+has signature `U0 cleanup(CI386Task *task)` and runs on that task's stack with its
+FS binding, private heap, and incoming IF still available.
+
+Finish first marks the task as finishing, restores the caller's IF, and invokes
+the hook. Cleanup may cooperatively yield, block, or join another task; ordinary
+resource and join-cycle rules still apply. Recursive Finish calls and changing
+the hook while cleanup is active return false. Only after cleanup returns does
+Finish mask interrupts, unlink the task, publish `finished`, and wake joiners.
+Destroy therefore remains unavailable while cleanup is suspended.
+
+This is a normal-return cleanup hook, not exception unwinding or forced-exit
+recovery. A hook that never returns prevents completion; hook faults and cancellation
+still require a future error/unwind policy. The callback owns resource cleanup;
+remaining private allocations continue to be bulk-reclaimed at destruction.
+
+The native owned-worker test installs/clears/reinstalls the hook, enters completion
+with IF enabled, allocates private scratch memory in cleanup, yields, and verifies
+its data and IF after resumption. Root observes the finishing-but-unfinished state
+and rejects destruction. Cleanup frees scratch memory and returns; normal completion
+and bulk destruction then proceed. Recursive Finish and hook replacement from
+inside cleanup are rejected, and the sequence repeats across task recreation.

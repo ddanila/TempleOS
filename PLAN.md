@@ -333,7 +333,9 @@ targets alive until registered joiners resume; native tests cover spurious wakeu
 and rejected early destruction. Computed-pointer member accesses, including
 pointer-to-pointer field addresses, now pass native compiler regressions. Optional
 private task arenas now pass allocation, exhaustion, cross-arena free rejection,
-and bulk reclamation checks across task completion/destruction.
+and bulk reclamation checks across task completion/destruction. Normal-return
+cleanup hooks can yield with task memory and bindings intact; completion is
+published only after cleanup returns, with recursive completion rejected.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

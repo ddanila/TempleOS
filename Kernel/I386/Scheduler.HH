@@ -12,6 +12,8 @@ class CI386Task
   U32 finished,blocked;
   CI386Task *join_head,*join_next,*join_target;
   CI386Heap *memory;
+  U0 (*cleanup)(CI386Task *task);
+  U32 finishing;
 };
 class CI386Scheduler
 {
@@ -31,4 +33,5 @@ public extern Bool I386SchedWake(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedIdle(CI386Scheduler *s,U0 (*idle)());
 public extern Bool I386SchedSetBind(CI386Scheduler *s,U0 (*bind)(CI386Task *task));
 public extern Bool I386SchedJoin(CI386Scheduler *s,CI386Task *target);
+public extern Bool I386SchedSetCleanup(CI386Scheduler *s,U0 (*cleanup)(CI386Task *task));
 #endif

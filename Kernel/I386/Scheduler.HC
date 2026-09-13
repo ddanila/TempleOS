@@ -10,6 +10,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   root->owner=s; root->finished=0; root->blocked=0;
   root->join_head=0; root->join_next=0; root->join_target=0;
   root->memory=0;
+  root->cleanup=0; root->finishing=0;
   s->root=root; s->current=root; s->swap=swap; s->bind=0;
   return TRUE;
 }
@@ -21,6 +22,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   }
   task->addr=task; task->owner=s; task->finished=0; task->blocked=0;
   task->join_head=0; task->join_next=0; task->join_target=0;
+  task->cleanup=0; task->finishing=0;
   task->next=s->root; task->last=s->root->last;
   task->last->next=task; s->root->last=task;
   I386IrqRestore(flags);
@@ -44,10 +46,17 @@ public Bool I386SchedFinish(CI386Scheduler *s)
 {//Root cannot finish. Successful completion never returns to this task.
   U32 flags=I386IrqSave;
   CI386Task *old,*next,*waiter;
-  if (!s || !s->current || s->current==s->root) {
+  if (!s || !s->current || s->current==s->root || s->current->finishing) {
     I386IrqRestore(flags); return FALSE;
   }
-  old=s->current; next=old->next;
+  old=s->current;
+  old->finishing=1;
+  if (old->cleanup) {
+    I386IrqRestore(flags);
+    (*old->cleanup)(old);
+    flags=I386IrqSave;
+  }
+  next=old->next;
   old->last->next=next; next->last=old->last;
   old->next=0; old->last=0; old->finished=1;
   for (waiter=old->join_head;waiter;waiter=waiter->join_next)
@@ -67,6 +76,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   }
   task->addr=0; task->context.esp=0; task->owner=0; task->finished=0; task->blocked=0;
   task->memory=0;
+  task->cleanup=0; task->finishing=0;
   I386IrqRestore(flags);
   return TRUE;
 }
@@ -144,6 +154,16 @@ public Bool I386SchedJoin(CI386Scheduler *s,CI386Task *target)
     node->join_next=self->join_next;
   }
   self->join_next=0; self->join_target=0;
+  I386IrqRestore(flags);
+  return TRUE;
+}
+public Bool I386SchedSetCleanup(CI386Scheduler *s,U0 (*cleanup)(CI386Task *task))
+{//Current worker only. A null callback clears a previously installed hook.
+  U32 flags=I386IrqSave;
+  if (!s || !s->current || s->current==s->root || s->current->finishing) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  s->current->cleanup=cleanup;
   I386IrqRestore(flags);
   return TRUE;
 }
