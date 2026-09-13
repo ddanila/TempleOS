@@ -796,3 +796,20 @@ The complete backing image remains unchanged. The RedSea suite, executable-regio
 instruction audit, both x64 rebuilds and image verification (753 files,
 62 directories) pass. Public file APIs, decompression,
 filesystem writes, module loading from files and physical hardware remain pending.
+
+## Native RedSea fixed-extent writes
+
+Raw file updates now validate the entire range against the existing extent and
+reject read-only/directory/deleted/resident entries. Partial sectors use read–
+modify–write while whole sectors avoid the preliminary read. Sources remain
+unchanged; completion counts include only confirmed sectors, with failed-sector
+contents explicitly uncertain. Flushing remains a caller operation, and file
+size, timestamps and allocation metadata are not changed by this low-level API.
+
+The native write fixture passes overlapping unaligned/aligned updates, EOF
+padding preservation, flush/readback, invalid range/attribute checks and real
+partial/zero-progress device errors. A complete disk-image comparison verifies
+exactly the requested byte changes plus the confirmed sector of the fault test.
+The instruction audit, both x64 rebuilds and image verification (754 files,
+62 directories) pass. Allocation/directory mutation,
+public file semantics and physical storage validation remain pending.

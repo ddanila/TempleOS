@@ -1,4 +1,4 @@
-# Native RedSea reads
+# Native RedSea file access
 
 `Kernel/I386/RedSea.HH` and `RedSea.HC` connect RedSea metadata and raw file reads
 to the native ATA driver. All calls inherit ATA's exclusive, quiescent channel
@@ -40,6 +40,21 @@ a later I/O failure returns the number already copied, leaving the remaining
 output untouched. EOF or a zero-length valid request returns 0. Invalid requests
 do not modify the output. Callers must handle short reads.
 
+`RedSeaWrite.HC` adds `I386RedSeaWrite` for raw updates within an existing file's
+fixed extent. The entire requested range must fit the declared size; writes are
+not clipped or grown. Read-only, directory, deleted, resident and non-contiguous
+entries are rejected. Partial sectors are read before modification, preserving
+neighboring file bytes and the final sector's padding. Whole sectors are written
+directly. The source buffer remains unchanged. The API returns the number of
+confirmed bytes, or -1 if none completed; a failed sector may nevertheless have
+changed on the device. There is no rollback. Zero-length valid writes return 0.
+Callers explicitly flush via `I386AtaFlush(volume->disk)` when required.
+
+These low-level writes leave size, timestamp, attributes and allocation metadata
+unchanged. They operate on raw stored bytes even for compressed files. Creation,
+growth, metadata updates, recompression and public FileWrite semantics require
+higher-level services and are not implied by this interface.
+
 The native fixture is `python3 tools/test-i386.py --redsea`. The host lays out a
 RedSea volume on a 16 MiB IDE disk alongside the runner. It includes a directory
 spanning two sectors, a deleted entry with deliberately invalid storage, nested
@@ -51,6 +66,14 @@ An overstated disk/volume profile reaches a real device error after one successf
 sector, checking both partial and zero-progress error returns. The host requires
 the entire backing image to remain unchanged.
 
-Filesystem writes/allocation, cache and task locking, decompression, public file
+`python3 tools/test-i386.py --redsea-write` checks partial/full/partial sector
+updates, overlapping overwrites, an EOF update and explicit flushes. It verifies
+source preservation, readback, zero-length requests, rejected attributes/ranges
+and partial/zero-progress failures against a real out-of-range device write.
+The host compares the complete disk image against precisely the intended byte
+updates, including the first confirmed sector of the fault test. File padding,
+directory metadata, the bitmap and other sectors must remain unchanged.
+
+Allocation and directory mutation, cache and task locking, decompression, public file
 APIs, resident module loading from files, complete image consistency checks and
 physical 386/IDE validation remain pending.

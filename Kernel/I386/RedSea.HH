@@ -14,4 +14,5 @@ class CI386RedSeaEntry {
 public extern Bool I386RedSeaMount(CI386RedSea *volume,CI386Ata *disk,I64 start);
 public extern I64 I386RedSeaFind(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSeaEntry *entry);
 public extern I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
+public extern I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
 #endif
