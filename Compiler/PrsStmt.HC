@@ -170,6 +170,8 @@ U0 PrsFun(CCmpCtrl *cc,CHashClass *tmp_return,U8 *name,I64 fsp_flags)
   ICAdd(cc,IC_LEAVE,0,cc->htc.fun->return_class);
   cc->htc.fun->size&=~7;
   if (cc->flags&CCF_AOT_COMPILE) {
+    if (cc->flags&CCF_TARGET_I386)
+      while (cc->aotc->rip&7) AOTStoreCodeU8(cc,0);
     cc->htc.fun->exe_addr=cc->aotc->rip;
     cc->htc.fun->type|=HTF_EXPORT|HTF_RESOLVE;
     r=COCCompile(cc,&size,&cc->htc.fun->dbg_info,NULL);
@@ -290,10 +292,7 @@ U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
 	i=tmpad.total_cnt;
 	undef_array_size=FALSE;
       }
-      if (tmpf_fun_ptr)
-	j=sizeof(U8 *);
-      else
-	j=tmpc->size;
+      j=CmpTargetSize(cc,tmpc);
       j*=i;
       has_alias=FALSE;
       tmphg=NULL;
@@ -351,13 +350,13 @@ U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
 	      tmpg=CAlloc(sizeof(CHashGlblVar));
 	      if (cc->token=='=')
 		tmpg->data_addr=CAlloc(j);
-	      if (tmpc->size>=8) //align
+	      if (CmpTargetSize(cc,tmpc)>=8) //align
 		while (aotc->rip&7)
 		  AOTStoreCodeU8(cc,0);
-	      else if (tmpc->size==4)
+	      else if (CmpTargetSize(cc,tmpc)==4)
 		while (aotc->rip&3)
 		  AOTStoreCodeU8(cc,0);
-	      else if (tmpc->size==2)
+	      else if (CmpTargetSize(cc,tmpc)==2)
 		while (aotc->rip&1)
 		  AOTStoreCodeU8(cc,0);
 	      tmpg->data_addr_rip=aotc->rip;
@@ -417,7 +416,7 @@ U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
 	  Lex(cc);
 	  PrsGlblInit(cc,tmpg,1);
 	  LexPopNoRestore(cc);
-	  tmpg->size=tmpg->dim.total_cnt*tmpc->size;
+	  tmpg->size=tmpg->dim.total_cnt*CmpTargetSize(cc,tmpc);
 	  if (tmphg)
 	    tmphg->size=tmpg->size;
 	  if (cc->flags&CCF_AOT_COMPILE)
@@ -436,6 +435,8 @@ U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
 	    AOTStoreCodeU8At(cc,tmpg->data_addr_rip+k,tmpg->data_addr[k]);
 	LexPopNoRestore(cc);
       }
+      if (!(tmpg->flags&(GVF_EXTERN|GVF_IMPORT|GVF_ALIAS|GVF_DATA_HEAP)))
+        PrsI386DataRange(cc,tmpg->data_addr_rip,tmpg->size);
       if (has_alias) {
 	if (tmpex(CHashGlblVar *)->use_cnt<2) {
 	  PrintWarn("Unused extern '%s'\n",tmpex(CHashGlblVar *)->str);

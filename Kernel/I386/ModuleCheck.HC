@@ -4,8 +4,9 @@
 public Bool I386ModuleValid(U8 *data,I64 size)
 {
   CI386ModuleHeader *h=data;
-  CI386ModuleRecord *r;
-  I64 i,j,end;
+  CI386ModuleRecord *r,*q;
+  I64 i,j,end,lo,hi;
+  Bool in_data;
   if (!data || size<32 || size>U32_MAX) return FALSE;
   if (h->magic!=I386_MODULE_MAGIC || h->version!=I386_MODULE_VERSION ||
       h->cpu!=3 || h->pointer_size!=4 || h->abi!=I386_MODULE_ABI ||
@@ -16,24 +17,51 @@ public Bool I386ModuleValid(U8 *data,I64 size)
   end=h->records_offset+h->record_count*16;
   if (end!=h->strings_offset || end>size) return FALSE;
   r=data+h->records_offset;
+  //Range records use name_offset as byte length and have no name.
   for (i=0;i<h->record_count;i++,r++) {
+    if (r->kind==I386_MODULE_DATA_RANGE) {
+      if (r->name_length || !r->name_offset || r->name_offset>h->code_size ||
+          r->offset>h->code_size-r->name_offset) return FALSE;
+      q=data+h->records_offset;
+      for (j=0;j<i;j++,q++)
+        if (q->kind==I386_MODULE_DATA_RANGE &&
+            r->offset<q->offset+q->name_offset &&
+            q->offset<r->offset+r->name_offset) return FALSE;
+    }
+  }
+  r=data+h->records_offset;
+  for (i=0;i<h->record_count;i++,r++) {
+    if (r->kind==I386_MODULE_DATA_RANGE) goto next_record;
     if (!r->name_length || r->name_length>255 || r->name_offset<end ||
         r->name_offset>size-r->name_length-1) return FALSE;
     if (data[r->name_offset+r->name_length]) return FALSE;
     for (j=0;j<r->name_length;j++)
       if (!data[r->name_offset+j]) return FALSE;
-    if (r->kind==I386_MODULE_EXPORT) {
-      if (r->offset>=h->code_size) return FALSE;
-    } else if (r->kind==I386_MODULE_REL32) {
-      if (r->offset<1 || r->offset>h->code_size-4) return FALSE;
-      if (data[32+r->offset-1]!=0xE8) return FALSE;
-      if ((data+32+r->offset)(U32 *)[0]) return FALSE;
-      for (j=0;j<i;j++)
-        if ((data+h->records_offset)(CI386ModuleRecord *)[j].kind==I386_MODULE_REL32 &&
-            (data+h->records_offset)(CI386ModuleRecord *)[j].offset==r->offset)
-          return FALSE;
+    lo=r->offset; hi=lo+1;
+    if (r->kind==I386_MODULE_EXPORT || r->kind==I386_MODULE_DATA_EXPORT) {
+      if (lo>=h->code_size) return FALSE;
+    } else if (r->kind==I386_MODULE_REL32 || r->kind==I386_MODULE_ADDRESS) {
+      if (lo<1 || lo>h->code_size-4) return FALSE;
+      if (r->kind==I386_MODULE_REL32) {
+        if (data[32+lo-1]!=0xE8) return FALSE;
+      } else if (data[32+lo-1]!=0x05) return FALSE;
+      if ((data+32+lo)(U32 *)[0]) return FALSE;
+      q=data+h->records_offset;
+      for (j=0;j<i;j++,q++)
+        if ((q->kind==I386_MODULE_REL32 || q->kind==I386_MODULE_ADDRESS) &&
+            q->offset<lo+4 && lo<q->offset+4) return FALSE;
+      lo--; hi=r->offset+4;
     } else return FALSE;
+    in_data=FALSE;
+    q=data+h->records_offset;
+    for (j=0;j<h->record_count;j++,q++) {
+      if (q->kind==I386_MODULE_DATA_RANGE &&
+          lo<q->offset+q->name_offset && q->offset<hi) in_data=TRUE;
+    }
+    if (r->kind==I386_MODULE_DATA_EXPORT) {
+      if (!in_data) return FALSE;
+    } else if (in_data) return FALSE;
+next_record:
   }
   return TRUE;
 }
-

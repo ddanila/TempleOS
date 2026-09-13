@@ -117,7 +117,10 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
       case IC_RETURN_VAL2:
       case IC_RET: break;
       case IC_IMM_I64:
-        if (++count!=1 || ic->ic_class->ptr_stars_cnt) throw('Compiler');
+        if (++count!=1 || ic->ic_class->ptr_stars_cnt) {
+          PrintErr("i386 host constant has non-integer or multiple values\n");
+          throw('Compiler');
+        }
         value=ic->ic_data;
         break;
       default:
@@ -125,7 +128,7 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
         throw('Compiler');
     }
   }
-  if (count!=1) throw('Compiler');
+  if (count!=1) { PrintErr("i386 host constant has no value\n"); throw('Compiler'); }
   res=MAlloc(11,Fs->code_heap);
   res[0]=0x48; res[1]=0xB8; //Host MOV RAX,imm64; RET.
   MemCpy(res+2,&value,8); res[10]=0xC3;
@@ -174,12 +177,14 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   if (_type) *_type=RT_I64;
   if (_size) *_size=0;
   MemSet(&out,0,sizeof(out));
-  if (!(cc->flags&CCF_AOT_COMPILE) || cc->flags&CCF_EXE_BLK)
-    throw('Compiler');
   if (cc->flags&CCF_TARGET_HOST_CONST)
     return I386HostConstant(cc,_size,_type);
-  if (!cc->htc.fun || cc->coc.coc_head.next->ic_code!=IC_ENTER)
+  if (!(cc->flags&CCF_AOT_COMPILE) || cc->flags&CCF_EXE_BLK)
     throw('Compiler');
+  if (!cc->htc.fun || cc->coc.coc_head.next->ic_code!=IC_ENTER) {
+    PrintErr("i386 requires a function body (first opcode %X)\n",cc->coc.coc_head.next->ic_code);
+    throw('Compiler');
+  }
   if (cc->htc.fun) {
     stack_size=-cc->htc.fun->size;
     args=cc->htc.fun->arg_cnt*8;
@@ -327,17 +332,25 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_ADDR_IMPORT:
             addr_fun=ic->ic_data;
-            if (!(addr_fun->type&HTT_FUN) || addr_fun->type&HTF_IMPORT)
+            if (!(addr_fun->type&HTT_FUN) && !(addr_fun->type&HTF_IMPORT))
               throw('Compiler');
             //Use the ordinary forward REL32 fixup at ADD's immediate.
             //The saved PC plus nine equals the end of that immediate.
             I386Byte(&out,0xE8); I386Dword(&out,0);
             I386Bytes(&out,"\x58\x83\xC0\x09\x05",5);
             if (pass) {
-              usage=CAlloc(sizeof(CExternUsage));
-              usage->next=addr_fun->ext_lst;
-              addr_fun->ext_lst=usage;
-              usage->rip=cc->aotc->rip+out.count;
+              if (addr_fun->type&HTF_IMPORT) {
+                import_rec=CAlloc(sizeof(CAOTImportExport));
+                import_rec->type=IET_I386_REL32_ADDR;
+                import_rec->rip=cc->aotc->rip+out.count;
+                import_rec->next=addr_fun->ie_lst;
+                addr_fun->ie_lst=import_rec;
+              } else {
+                usage=CAlloc(sizeof(CExternUsage));
+                usage->next=addr_fun->ext_lst;
+                addr_fun->ext_lst=usage;
+                usage->rip=cc->aotc->rip+out.count;
+              }
             }
             I386Dword(&out,0);
             I386Bytes(&out,"\x31\xD2\x52\x50",4);
@@ -431,7 +444,6 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_XOR_EQU:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A\x50",5);
-            c=ic->t.arg1_class-1;
             I386Load(&out,c);
             switch (ic->ic_code) {
               case IC_ADD_EQU: I386Binary(&out,IC_ADD); break;
@@ -468,7 +480,6 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_SHR_EQU:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A\x50",5);
-            c=ic->t.arg1_class-1;
             I386Load(&out,c);
             I386Shift(&out,ic->ic_code==IC_SHL_EQU,
               ToBool(c->raw_type&RTF_UNSIGNED));
@@ -485,7 +496,6 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Bytes(&out,"\x59\x5B\x58\x5A",4);
             if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
               I386Byte(&out,0x50);
-              c=ic->t.arg1_class-1;
               I386Load(&out,c);
             } else c=ic->t.arg1_class;
             I386Byte(&out,0xBE);
@@ -502,7 +512,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_ASSIGN:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x58\x5A\x59\x5B",4);
-            I386Store(&out,ic->t.arg1_class-1);
+            I386Store(&out,c);
             I386Bytes(&out,"\x52\x50",2);
             depth--;
             break;
@@ -569,6 +579,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
       if (calls) throw('Compiler');
     }
   } catch {
+    if (Fs->except_ch=='Compiler')
+      PrintErr("i386 COC failure at opcode %X, depth %d, pass %d\n",ic->ic_code,depth,pass);
     LinkedLstDel(calls);
     LinkedLstDel(logics);
     Free(out.data);

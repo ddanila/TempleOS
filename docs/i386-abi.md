@@ -82,9 +82,15 @@ arguments, calls through its low dword, and removes that saved slot after the
 callee cleans up arguments. Callbacks can be local variables, parameters, or
 class members. Function addresses within the same compilation unit, including
 self-references and forward declarations, use position-relative code and compiler
-fixups; moving the linked image preserves them. Taking the address of an imported
-function remains unsupported by the current module format. An unresolved plain
+fixups; moving the linked image preserves them. Version-2 modules also support
+imported function and data addresses through relative address relocations. An unresolved plain
 `extern` function address is a compile error.
+
+Global/static storage has target-width layouts and constant scalar, array, and
+packed-record initializers. Inferred global/static array lengths are supported.
+Stores use the destination value type, including assignments to array elements.
+Function code starts on eight-byte boundaries independently of packed data layout.
+Address-bearing static initializers and executable initializers remain pending.
 
 Variadic calls, runtime module loading, floating-point output, switch dispatch,
 and chained comparisons remain pending.

@@ -372,6 +372,9 @@ class CPatchTableAbsAddr
 #define IET_DATA_HEAP		23
 #define IET_ZEROED_DATA_HEAP	24 //Not really used
 #define IET_MAIN		25
+//Private metadata for the i386 bootstrap writer; never legacy BIN records.
+#define IET_I386_DATA		26
+#define IET_I386_REL32_ADDR	27
 
 #help_index "Boot"
 class CKernel
@@ -1913,6 +1916,7 @@ public class CHashOpcode:CHash
 
 #help_index "Compiler/Intermediate Code"
 #define IEF_GOTO_LABEL		1
+#define IEF_I386_DATA_EXPORT	2
 class CAOTImportExport
 {
   CAOTImportExport *next,*last;

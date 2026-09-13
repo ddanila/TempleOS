@@ -35,6 +35,7 @@ U0 PrsVarInit(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,CArrayDim *tmpad,
       is_str=TRUE;
     else
       is_str=FALSE;
+    if (cc->flags&CCF_TARGET_I386 && is_str) throw('Compiler');
     if (cc->flags&CCF_AOT_COMPILE && is_str) {
       LexPopNoRestore(cc);
       machine_code=LexExtStr(cc,&i);
@@ -60,7 +61,7 @@ U0 PrsVarInit(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,CArrayDim *tmpad,
 	cc->flags=cc->flags&~CCF_NO_ABSS|CCF_AOT_COMPILE;
 	Free(machine_code);
 	if (pass==2) {
-	  MemSet(dst,0,tmpc->size);
+	  MemSet(dst,0,CmpTargetSize(cc,tmpc));
 	  LexPopRestore(cc);
 	  Lex(cc);
 	  COCPush(cc);
@@ -104,10 +105,10 @@ U0 PrsVarInit(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,CArrayDim *tmpad,
 	else if (type!=RT_F64 &&
 	      tmpc->raw_type==RT_F64)
 	  r(F64)=r;
-	MemCpy(dst,&r,tmpc->size);
+	MemCpy(dst,&r,CmpTargetSize(cc,tmpc));
       }
     }
-    dst+=tmpc->size;
+    dst+=CmpTargetSize(cc,tmpc);
     cc->flags=cc->flags&
 	  ~CCF_NO_ABSS|old_flags&(CCF_HAS_MISC_DATA|CCF_AOT_COMPILE);
   }
@@ -160,7 +161,7 @@ U0 PrsVarInit2(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,
 	QueInit(&head);
 	cnt=0;
 	while (cc->token!='}') {
-	  tmpvi=MAlloc(offset(CVI2.base)+tmpad1->total_cnt*tmpc->size);
+	  tmpvi=MAlloc(offset(CVI2.base)+tmpad1->total_cnt*CmpTargetSize(cc,tmpc));
 	  _b=&tmpvi->base;
 	  PrsVarInit2(cc,&_b,tmpc,tmpad1,data_addr_rip,_base,data_heap,pass);
 	  QueIns(tmpvi,head.last);
@@ -171,7 +172,7 @@ U0 PrsVarInit2(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,
 	Lex(cc); //skip '}'
 	tmpad1->cnt=cnt;
 	tmpad->total_cnt=cnt*tmpad1->total_cnt;
-	j=tmpad1->total_cnt*tmpc->size;
+	j=tmpad1->total_cnt*CmpTargetSize(cc,tmpc);
 	i=cnt*j;
 	Free(*_base);
 	if (data_heap)
@@ -256,8 +257,11 @@ U0 PrsArrayDims(CCmpCtrl *cc,I64 mode,CArrayDim *dim)
     if (mode.u8[1]==PRS1B_FUN_ARG)
       LexExcept(cc,"No arrays in fun args at ");
     do {
-      if (Lex(cc)==']' && !dim->next)
-	j=0;
+      if (Lex(cc)==']' && !dim->next) {
+        j=0;
+        if (cc->flags&CCF_TARGET_I386 &&
+            (mode.u8[1]==PRS1B_NULL || mode.u8[1]==PRS1B_STATIC_LOCAL_VAR)) j=-1;
+      }
       else {
 	if ((j=LexExpressionI64(cc))<0)
 	  LexExcept(cc,"Invalid array size at ");
@@ -584,6 +588,7 @@ pvl_restart3:
 	    tmpm->use_cnt=0;
 	    cc->flags|=CCF_DONT_MAKE_RES;
 	  }
+          PrsI386DataRange(cc,tmpm->static_data_rip,(i+7)&~7);
 	  if (cc->flags&CCF_AOT_COMPILE)
 	    Free(tmpm->static_data);
 	  break;

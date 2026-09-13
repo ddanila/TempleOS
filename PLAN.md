@@ -296,9 +296,10 @@ integer/call backend and native module loading path needed to compile and run
 more kernel units, while closing the remaining M0/M1 gates. The architecture-tagged
 bootstrap linker and shared module validator now have target execution tests.
 Indirect fixed-arity calls and same-module function addresses now pass target
-execution tests, including callbacks in linked modules. Prioritize global/data
-relocations, variadic calls, and exception-safe runtime interfaces before attempting
-a full kernel link. Runner success remains an
+execution tests, including callbacks in linked modules. Global/static storage and
+relative address imports now have a version-2 module path with explicit data ranges.
+Prioritize a native runtime loader, variadic calls, address-bearing initializers,
+and exception-safe runtime interfaces before attempting a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.
 
 ## Verification strategy

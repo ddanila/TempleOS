@@ -13,6 +13,13 @@ U0 Export(U8 *name,U8 *path)
   Free(line);
   // Keep exported buffers live until the host saves physical memory.
 }
+U0 ExportConsole()
+{
+  I64 size;
+  U8 *data=DocSave(DocPut,&size),*line;
+  line=MStrPrint("EXPORT compiler-log.DD %X %X\n",data,size);
+  Report(line); Free(line);
+}
 U0 Rebuild()
 {
   I64 errors;
@@ -21,12 +28,12 @@ U0 Rebuild()
   Cd("B:/");
   Report("STAGE compiler\n");
   errors=Cmp("B:/Compiler/Compiler","Compiler",,'B');
-  if (errors) { Report("FAIL compiler\n"); return; }
+  if (errors) { ExportConsole; Report("FAIL compiler\n"); return; }
   Export("Compiler.BIN","B:/Compiler/Compiler.BIN.Z");
   Report("STAGE kernel\n");
   In("TB\nScale2Mem(2048,0x40000)\nT \n\n\n\n");
   errors=Cmp("B:/Kernel/Kernel","Kernel",,'B');
-  if (errors) { Report("FAIL kernel\n"); return; }
+  if (errors) { ExportConsole; Report("FAIL kernel\n"); return; }
   Export("Kernel.BIN","B:/Kernel/Kernel.BIN.Z");
   Report("DONE rebuild\n");
 }

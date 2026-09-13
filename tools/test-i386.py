@@ -25,10 +25,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--functions', action='store_true',
                         help='Test normal function compilation using test-rebuild.py output')
-    functions = parser.parse_args().functions
-    kind = 'functions' if functions else 'expressions'
+    parser.add_argument('--data', action='store_true', help='Test global/static storage and data imports')
+    args = parser.parse_args()
+    data_mode = args.data
+    functions = args.functions or data_mode
+    kind = 'data' if data_mode else 'functions' if functions else 'expressions'
     if functions:
-        OUT = ROOT/'build/i386-functions-test'
+        OUT = ROOT/('build/i386-data-test' if data_mode else 'build/i386-functions-test')
         manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
         for name, digest in manifest['source_sha256'].items():
             if name.startswith(('Compiler/', 'Kernel/')):
@@ -49,17 +52,21 @@ def main():
     build = [sys.executable, 'tools/build-iso.py', '--overlay', str(OUT/'overlay')]
     if functions:
         build += ['--overlay', 'build/rebuild-test/overlay']
-    build += ['--overlay', 'tests/guest/i386-functions' if functions else 'tests/guest/i386',
+    build += ['--overlay', 'tests/guest/i386-data' if data_mode else 'tests/guest/i386-functions' if functions else 'tests/guest/i386',
               '--output', str(iso)]
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
         '--timeout', '90')
     ranges = {}
     linked = set()
+    data_ranges = {}
     if functions:
         for line in (exports/'debug.log').read_text().splitlines():
             if line.startswith('LINKED '):
                 linked.add(int(line.split()[1]))
+            if line.startswith('DATA '):
+                _, case, start, size = line.split()
+                data_ranges.setdefault(int(case), []).append((int(start, 16), int(size, 16)))
             if line.startswith('RANGE '):
                 _, case, start = line.split()
                 ranges.setdefault(int(case), []).append(int(start, 16))
@@ -85,7 +92,7 @@ def main():
         if functions:
             starts = sorted(ranges.get(count, []))
             first = 8 if count in linked else 0
-            if not starts or starts[0] != first or len(starts) != len(set(starts)):
+            if not starts or (not data_mode and starts[0] != first) or starts[0]<first or starts[-1]>=len(code) or len(starts) != len(set(starts)):
                 raise ValueError('Invalid exported function boundaries')
             if count in linked:
                 if len(code)<8 or code[0]!=0xE9 or any(code[5:8]):
@@ -94,7 +101,28 @@ def main():
                 if entry not in starts:
                     raise ValueError('Entry does not name an exported function')
                 listing.append(f'; Case {count}: entry trampoline to {entry:X}')
-            spans = list(zip(starts, starts[1:]+[len(code)]))
+            regions = sorted(data_ranges.get(count, []))
+            covered = bytearray(len(code))
+            if count in linked:
+                covered[:8] = b'P'*8
+            for begin, length in regions:
+                if begin<first or length<=0 or begin+length>len(code) or any(covered[begin:begin+length]):
+                    raise ValueError('Invalid data boundaries')
+                covered[begin:begin+length] = b'D'*length
+            boundaries = sorted(set(starts+[begin for begin, _ in regions]+[len(code)]))
+            spans = [(start, next(end for end in boundaries if end>start)) for start in starts]
+            for start, end in spans:
+                if any(covered[start:end]):
+                    raise ValueError('Function overlaps data')
+                covered[start:end] = b'C'*(end-start)
+            gap = 0
+            for i, marker in enumerate(covered):
+                if marker:
+                    gap = 0
+                else:
+                    gap += 1
+                    if code[i] or gap>7:
+                        raise ValueError('Unclassified bytes in module image')
         else:
             spans = [(0, len(code))]
         for start, limit in spans:
@@ -120,13 +148,13 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (141 if functions else 9):
+    if offset != len(data) or count != (16 if data_mode else 141 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
     run('nasm', *(['-DFUNCTIONS=1'] if functions else []),
-        f'-DEXPECTED_FAULTS={4 if functions else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
+        f'-DEXPECTED_FAULTS={4 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if disk.stat().st_size > 129*512:
         raise ValueError('Runner exceeds boot-loader transfer size')
@@ -139,10 +167,11 @@ def main():
            '-display', 'none', '-debugcon', f'file:{log}',
            '-device', 'isa-debug-exit,iobase=0xf4,iosize=4', '-no-reboot']
     result = subprocess.run(cmd, timeout=20)
-    if result.returncode != 33 or log.read_text() != f'PASS i386 {kind}\n':
+    runner_kind = 'functions' if functions else 'expressions'
+    if result.returncode != 33 or log.read_text() != f'PASS i386 {runner_kind}\n':
         raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
-        'ram_mib': 8, 'fault_cases': 4 if functions else 0, 'result': 'pass', 'scope': f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'scope': f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

@@ -151,6 +151,10 @@ U0 AOTGlblsResolve(CCmpCtrl *cc,CAOT *tmpaot)
 	    tmpie->str=StrNew(tmpex->str);
 	  do {
 	    tmpie1=tmpie->next;
+            if (cc->flags&CCF_TARGET_I386 && !tmpie->str) {
+              if (tmpex->import_name) tmpie->str=StrNew(tmpex->import_name);
+              else tmpie->str=StrNew(tmpex->str);
+            }
 	    QueIns(tmpie,tmpaot->last_ie);
 	  } while (tmpie=tmpie1);
 	  tmpex->ie_lst=NULL;
@@ -176,8 +180,10 @@ U0 AOTGlblsResolve(CCmpCtrl *cc,CAOT *tmpaot)
 	  tmpie->type=IET_REL32_EXPORT;
 	  if (tmpex->type & HTT_FUN)
 	    tmpie->rip=tmpf->exe_addr;
-	  else if (tmpex->type & HTT_GLBL_VAR)
+	  else if (tmpex->type & HTT_GLBL_VAR) {
 	    tmpie->rip=tmpex(CHashGlblVar *)->data_addr_rip;
+            if (cc->flags&CCF_TARGET_I386) tmpie->flags|=IEF_I386_DATA_EXPORT;
+          }
 	  else
 	    tmpie->rip=tmpex->val;
 	  tmpie->aot=cc->aot;

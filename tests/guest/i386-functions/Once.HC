@@ -307,7 +307,6 @@ U0 CompileTests()
   Reject("#include \"/Kernel/Types.HH\"\nF64 Test(I64 a,I64 b) { return 1.5; }");
   Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(I64 a,I64 b); I64 Test(I64 a,I64 b) { return Missing(a,b); }");
   Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(); I64 Test() { I64 (*fp)(); fp=&Missing; return (*fp)(); }");
-  Reject("#include \"/Kernel/Types.HH\"\nimport I64 Missing(); I64 Test() { I64 (*fp)(); fp=&Missing; return (*fp)(); }");
   Reject("#exe { 1+2; }");
   EmitLinkedCase(0xFFFFFFFF,1,0x100000000,&cursor,FALSE);
   EmitLinkedCase(0x100000000,42,0x10000002A,&cursor,TRUE);

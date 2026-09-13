@@ -67,7 +67,7 @@ def main():
     cases=[('valid',base,len(base),1,0),('null',base,len(base),0,1),
            ('short-header',base,31,0,0),('truncated',base,len(base)-1,0,0),
            ('negative-length',base,-1,0,0),('wide-length',base,1<<32,0,0)]
-    mutations=[('magic',0,'I',0),('version',4,'H',2),('cpu',6,'B',6),
+    mutations=[('magic',0,'I',0),('version',4,'H',3),('cpu',6,'B',6),
                ('pointer-width',7,'B',8),('abi',8,'I',2),('total-size',12,'I',len(base)+1),
                ('code-size',16,'I',0xFFFFFFF8),('record-count',20,'I',0x10000000),
                ('record-offset',24,'I',0),('string-offset',28,'I',0xFFFFFFFF),
@@ -93,6 +93,48 @@ def main():
     struct.pack_into('<I',empty,20,0)
     struct.pack_into('<I',empty,28,roff)
     cases.append(('no-records',bytes(empty),len(empty),1,0))
+    # Build a v2 fixture with explicitly classified data and a named data export.
+    def module(payload, entries):
+        strings = bytearray()
+        table = bytearray()
+        string_base = 32+len(payload)+16*len(entries)
+        for kind, offset, name in entries:
+            if kind == 4:
+                table += struct.pack('<4I', kind, offset, name, 0)
+            else:
+                encoded = name.encode('ascii')
+                table += struct.pack('<4I', kind, offset, string_base+len(strings), len(encoded))
+                strings += encoded+b'\0'
+        header = bytearray(base[:32])
+        struct.pack_into('<5I', header, 12, string_base+len(strings), len(payload),
+                         len(entries), 32+len(payload), string_base)
+        return bytes(header+payload+table+strings)
+
+    entries = [(kind, offset, base[name:name+n].decode('ascii'))
+               for kind,offset,name,n in records]
+    payload = base[32:roff]
+    data_entries = entries+[(4,len(payload),8),(3,len(payload),'State')]
+    with_data = module(payload+b'\0'*8, data_entries)
+    cases.append(('valid-data',with_data,len(with_data),1,0))
+    for name, replacement in [
+            ('empty-data-range', entries+[(4,len(payload),0),(3,len(payload),'State')]),
+            ('wide-data-range', entries+[(4,len(payload),0xFFFFFFFF),(3,len(payload),'State')]),
+            ('overlap-data-ranges', data_entries+[(4,len(payload)+1,1)]),
+            ('data-export-outside-range', entries+[(4,len(payload),8),(3,0,'State')]),
+            ('function-export-in-data', data_entries+[(1,len(payload),'Fake')]),
+            ('patch-in-data', entries+[(4,records[imp][1]-1,5)])]:
+        bad = module(payload+b'\0'*8,replacement)
+        cases.append((name,bad,len(bad),0,0))
+    address_payload = bytearray(payload)
+    address_payload[records[imp][1]-1] = 0x05
+    address_entries = [(5 if kind==2 else kind,offset,name) for kind,offset,name in entries]
+    address_module = module(address_payload,address_entries)
+    cases.append(('address-import',address_module,len(address_module),1,0))
+    bad = module(payload,address_entries)
+    cases.append(('address-import-opcode',bad,len(bad),0,0))
+    legacy = bytearray(base)
+    struct.pack_into('<H',legacy,4,1)
+    cases.append(('legacy-format',bytes(legacy),len(legacy),0,0))
     data=b''.join(struct.pack('<IqII',len(payload),size,expected,null)+payload
                   for _,payload,size,expected,null in cases)+struct.pack('<I',0)
     table=OUT/'cases.bin'

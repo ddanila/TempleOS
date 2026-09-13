@@ -81,17 +81,18 @@ during instruction auditing. Callback cases cover self-recursion, forward and
 backward function addresses, nested calls, callback parameters, class fields and
 arrays of records, narrow arguments/returns, void and zero-argument callbacks,
 and default arguments. Function pointer loads use the target's four-byte width.
-Undefined function addresses and imported function addresses are rejection cases. The runner reports the zero-based case index in
+Undefined function addresses are rejection cases. Imported addresses are covered
+by the data/module corpus. The runner reports the zero-based case index in
 hexadecimal on failure. Function bodies
 are exercised; the cases may contain multiple functions in one compilation unit.
-Runtime module loading, globals, switch dispatch,
+Runtime module loading, switch dispatch,
 chained comparisons, variadic functions, debug information, and
 software F64 are not implemented by this backend.
 
 ## Bootstrap module format and linking
 
 `CmpI386Module` writes architecture-tagged T32M objects; `I386Link` resolves
-relative-call imports between separately compiled objects on the x86-64 HolyC
+relative-call and address imports between separately compiled objects on the x86-64 HolyC
 host. See [module format](i386-modules.md). The fixed-width header records CPU,
 pointer width and ABI version; incompatible values are rejected.
 
@@ -103,14 +104,27 @@ covers 19 malformed header/record variants (including overflow-shaped counts),
 truncated/null buffers, duplicate exports, unresolved imports, and missing entry
 symbols. An independent host read of the four exported fixtures confirms the
 header layout, symbol names, and relocation records. This is a bootstrap static
-linker; a native i386 runtime loader, global/data relocations, and module lifecycle
-support remain unfinished.
+linker; a native i386 runtime loader, absolute pointer initializers, and module
+lifecycle support remain unfinished.
+
+Version-2 modules classify data ranges and distinguish function/data exports.
+All 16 `python3 tools/test-i386.py --data` cases pass in the 8 MiB QEMU 486
+runner, together with five link/initializer rejection checks. The corpus covers
+zero/constant global and static storage, four-byte
+pointers, packed records, initialized and inferred arrays, character arrays,
+shared data imports in both module orders, and imported callbacks. It also checks
+narrow array stores and compound assignments. Data cannot serve as a call target
+or module entry; duplicate function/data symbol names are rejected. Pointer-to-string
+and executable initializers are rejected before emitting target initialization code.
+The instruction audit accounts for data boundaries and alignment padding explicitly.
 
 `Kernel/I386/ModuleCheck.HC` now shares the same validator between the host
 module tools and target code. `python3 tools/test-i386-module-check.py` compiles
-that function through the i386 backend and executes 25 cases in the protected-mode
+that function through the i386 backend and executes 35 cases in the protected-mode
 runner: valid modules, null/truncated buffers, negative and oversized lengths,
-malformed records, duplicate patches, and modules without symbol records. This
+malformed records, duplicate patches, modules without symbol records, data-range
+overlaps/bounds, code/data export mismatches, address imports, and legacy-version
+rejection. This
 exercises a real kernel unit with target pointer layouts and short-circuit guards;
 it does not yet provide a runtime loader.
 
@@ -125,6 +139,8 @@ working ABI decisions and remaining boundaries.
   debug logs, screenshots, and source/binary hash manifest.
 - `build/i386-module-check/`: shared validator code, module fixture, disassembly,
   malformed-input corpus, runner log, and result JSON.
+- `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
+  executable/data boundaries, disassembly, and target runner results.
 - `build/i386-functions-test/`: function corpus, disassembly, ABI runner and logs.
 - `build/i386-test/`: compiler ISO, generated expressions, disassembly of code
   ranges, test disk, runner log, and result JSON.
