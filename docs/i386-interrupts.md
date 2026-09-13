@@ -101,6 +101,11 @@ truncation, DF set/read/clear, and the native flag reader inside IRQ callbacks
 against the assembly reader. Generated PUSHFD/POPFD are included in the instruction
 audit.
 
+The same test then switches to a callback that shares a heap with foreground
+allocation churn, using `I386HeapIrq*` in both contexts. This exercises interrupt
+masking around actual allocator metadata operations; see the
+[heap serialization contract](i386-heap.md#sharing-a-heap-with-hardware-irq-callbacks).
+
 ## Exception entry
 
 `Kernel/I386/Exception.asm` supplies entries for vectors 0–16 and a separate

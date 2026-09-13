@@ -323,7 +323,13 @@ PUSHFD/POPFD with eight-byte HolyC slots and 32-bit hardware values.
 The native test checks nested disabled/enabled restoration, high-half handling,
 and DF read/write, and uses the intrinsic inside hardware IRQ callbacks. The
 combined IRQ/exception test, 150-function regression corpus, and both x64 rebuild
-generations pass. Allocator and task code do not yet use the new helpers.
+generations pass. `HeapIrq.HC` now uses these helpers around the base allocator.
+The guarded 8 KiB shared-heap test runs at least 256 foreground iterations with
+at least 16 hardware PIT callbacks, each context owning and checking its own
+payloads. Integrity, IF restoration, rejected requests, final accounting and
+full-arena reuse pass, as does the standalone heap regression. All users of a
+shared heap must serialize; raw boot allocator entry points remain available.
+Task integration and reducing interrupt-disabled scan/zeroing latency are pending.
 
 This is IRQ0/IRQ8 delivery in the QEMU 486/8 MiB runner, not a complete interrupt/time
 subsystem. Keyboard input, full exception handling, scheduling,

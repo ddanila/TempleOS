@@ -42,10 +42,30 @@ structures, loaded images, stacks, and other heaps when providing an arena. An
 arena is contiguous; separate usable ranges require separate heaps or a later
 page-pool layer. Allocation/free do not yield or change interrupt state.
 
+## Sharing a heap with hardware IRQ callbacks
+
+`Kernel/I386/HeapIrq.HC` adds `I386HeapIrqInit`, `I386HeapIrqValid`,
+`I386HeapIrqAlloc`, `I386HeapIrqFree`, and `I386HeapIrqSize`. Link it with the base
+heap and `Cpu.HC` once. Each operation saves IF, disables maskable interrupts,
+performs the base operation, and restores the caller's IF on normal return,
+including rejected requests. Calling from an IRQ callback leaves IF clear.
+
+Every user of the same heap must use this serialization or already hold IF clear.
+These wrappers cover one CPU and maskable interrupts; they do not allow NMI
+allocation or provide a multicore lock. Initialization still requires exclusive
+lifecycle ownership. Payload access and allocation lifetime remain the caller's
+responsibility, and size queries do not pin an allocation. Reading control fields
+directly also requires exclusion if concurrent access is possible.
+
+Whole-chain validation and optional zero-fill currently run with IF clear.
+Interrupt latency therefore grows with block count and requested clear size;
+this is not a bounded-latency allocator for final interrupt workloads. There is
+no yielding or exception recovery in this layer. Task/page-pool integration and
+shorter critical sections still need work.
+
 ## Integration still required
 
-General device-hole discovery, page pools, task heap ownership, interrupt
-serialization, task teardown, and public `MAlloc`/`CAlloc`/`Free` wrappers remain
+General device-hole discovery, page pools, task heap ownership, task teardown, and public `MAlloc`/`CAlloc`/`Free` wrappers remain
 pending. The public TempleOS interface must preserve its `OutMem` exception
 semantics; NULL-returning try-allocation here is a lower-level bootstrap API.
 `I386LoadAlloc` now uses this heap for native module images; see
@@ -63,3 +83,11 @@ and 512 allocation/free operations with payload checks. `--vga` exercises a
 153,600-byte allocation through the real presentation routine and verifies the
 entire displayed image after releasing the buffer. Both tests pass on the QEMU
 486/8 MiB runner; they do not prove physical 386 support or full-OS RAM usage.
+
+`python3 tools/test-i386.py --irq` additionally shares a guarded 8 KiB arena
+between foreground allocation churn and actual PIT IRQ callbacks. The foreground
+runs at least 256 iterations while at least 16 IRQs alternate retaining and
+freeing a 64-byte allocation. Both contexts verify payloads and heap integrity;
+foreground calls preserve enabled IF and callback calls preserve disabled IF.
+Rejected requests, final accounting, guard bytes, exhaustion and full-arena reuse
+are checked. The fixed arena is outside the runner's loaded stage and stack.

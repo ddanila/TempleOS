@@ -16,7 +16,7 @@ Implementation is underway; see [port progress](docs/port-progress.md) for curre
 evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 713 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
+checks 715 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. Experimental i386 expression
 and function backends are tracked in the progress document.
 
@@ -314,7 +314,8 @@ arenas above 1 MiB. PIC/PIT IRQ0 and periodic RTC IRQ8 delivery through saved
 including real slave PIC delivery and RTC configuration restoration. Separate
 exception stubs now pass #DE/#GP/#BP delivery and controlled saved-frame recovery
 through native HolyC. EFLAGS intrinsics and nested save/restore of interrupt state
-now pass native tests. Next, bring up the production entry path, input and full
+now pass native tests. Heap operations wrapped in interrupt masking pass shared
+foreground/PIT-callback allocation tests. Next, bring up the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe
 runtime interfaces before attempting a full kernel link. Runner success remains an

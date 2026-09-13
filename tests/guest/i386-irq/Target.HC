@@ -5,6 +5,9 @@
 #include "/Kernel/I386/Rtc.HH"
 #include "/Kernel/I386/Exception.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/HeapIrq.HH"
+extern U0 OnHeapIrq(CI386IrqFrame *frame);
+extern I64 HeapInterruptTest();
 extern U0 I386PicInit();
 extern U0 I386PicMask(U16 mask);
 extern U16 I386PicMaskGet();
@@ -23,6 +26,9 @@ class CIrqTestControl {
 CIrqTestControl *control;
 I64 ticks,spurious,errors,expected_irq,exceptions;
 CI386RtcState rtc;
+CI386Heap shared_heap;
+U32 heap_ticks;
+U8 *irq_allocation;
 I64 Main(I64 a,I64 b)
 {
   I64 (*wait)(I64 count);
@@ -89,7 +95,85 @@ I64 Main(I64 a,I64 b)
     if (result || errors || spurious!=2 || control->ticks<8 ||
         ticks!=first+control->ticks) return 12;
   }
+  return HeapInterruptTest;
+}
+I64 HeapInterruptTest()
+{
+  U8 *slots[8],*p,*guard=0x3FFF8;
+  I64 i,j,round,slot,sizes[8],tag;
+  for (i=0;i<8208;i++) guard[i]=0xA5;
+  for (i=0;i<8;i++) slots[i]=0;
+  if (!I386HeapIrqInit(&shared_heap,0x40000,8192) ||
+      (GetRFlags&0x200) || !I386HeapIrqValid(&shared_heap)) return 19;
+  control->handler=&OnHeapIrq;
+  if (!I386PitStart(1193)) return 20;
+  I386PicMask(0xFFFE);
+  SetRFlags(GetRFlags|0x200);
+  for (round=0;round<100000;round++) {
+    slot=round%8;
+    p=slots[slot];
+    if (p) {
+      tag=slot+1;
+      for (j=0;j<sizes[slot];j++) if (p[j]!=tag) errors++;
+      if (!I386HeapIrqFree(&shared_heap,p)) errors++;
+    }
+    sizes[slot]=(round*17)%129;
+    p=I386HeapIrqAlloc(&shared_heap,sizes[slot],TRUE);
+    slots[slot]=p;
+    if (!p) errors++;
+    else {
+      if (I386HeapIrqSize(&shared_heap,p)!=sizes[slot]) errors++;
+      for (j=0;j<sizes[slot];j++) {
+        if (p[j]) errors++;
+        p[j]=slot+1;
+      }
+    }
+    if (!I386HeapIrqValid(&shared_heap) || !(GetRFlags&0x200) ||
+        I386HeapIrqAlloc(&shared_heap,-1) ||
+        I386HeapIrqFree(&shared_heap,0x40000) ||
+        I386HeapIrqSize(&shared_heap,0x40000)!=-1 || !(GetRFlags&0x200)) errors++;
+    if (round>=255 && heap_ticks>=16) break;
+  }
+  I386IrqSave;
+  I386PicMask(0xFFFF);
+  for (i=0;i<8;i++) if (slots[i]) {
+    for (j=0;j<sizes[i];j++) if (slots[i][j]!=i+1) errors++;
+    if (!I386HeapIrqFree(&shared_heap,slots[i])) errors++;
+  }
+  if (irq_allocation) {
+    for (j=0;j<64;j++) if (irq_allocation[j]!=0xB6) errors++;
+    if (!I386HeapIrqFree(&shared_heap,irq_allocation)) errors++;
+  }
+  irq_allocation=0;
+  if (errors || heap_ticks<16 || shared_heap.used || shared_heap.allocations ||
+      !I386HeapIrqValid(&shared_heap) || (GetRFlags&0x200)) return 21;
+  p=I386HeapIrqAlloc(&shared_heap,8176);
+  if (!p || I386HeapIrqAlloc(&shared_heap,1) ||
+      !I386HeapIrqFree(&shared_heap,p) || (GetRFlags&0x200)) return 22;
+  for (i=0;i<8;i++) if (guard[i]!=0xA5 || guard[8200+i]!=0xA5) return 23;
   return 0;
+}
+U0 OnHeapIrq(CI386IrqFrame *frame)
+{
+  I64 i;
+  if (!I386PicAccept(frame->irq)) { errors++; return; }
+  if (frame->irq || (frame->eflags&0x600)!=0x200 || (GetRFlags&0x600)) errors++;
+  if (irq_allocation) {
+    for (i=0;i<64;i++) if (irq_allocation[i]!=0xB6) errors++;
+    if (I386HeapIrqSize(&shared_heap,irq_allocation)!=64 ||
+        !I386HeapIrqFree(&shared_heap,irq_allocation)) errors++;
+    irq_allocation=0;
+  } else {
+    irq_allocation=I386HeapIrqAlloc(&shared_heap,64,TRUE);
+    if (!irq_allocation) errors++;
+    else for (i=0;i<64;i++) {
+      if (irq_allocation[i]) errors++;
+      irq_allocation[i]=0xB6;
+    }
+  }
+  if (!I386HeapIrqValid(&shared_heap) || (GetRFlags&0x200)) errors++;
+  heap_ticks++;
+  I386PicEoi(frame->irq);
 }
 U0 OnException(CI386ExceptionFrame *frame)
 {
@@ -123,3 +207,5 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/Rtc.HC"
 #include "/Kernel/I386/Cpu.HC"
+#include "/Kernel/I386/Heap.HC"
+#include "/Kernel/I386/HeapIrq.HC"
