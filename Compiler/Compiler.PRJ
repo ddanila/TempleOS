@@ -44,3 +44,5 @@ CUAsmGlbls	uasm;
 #include "BackB"
 #include "BackC"
 #include "OptPass789A"
+
+#include "I386/Core"

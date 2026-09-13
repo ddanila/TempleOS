@@ -246,6 +246,12 @@ U0 COCHeaderPut(CCmpCtrl *cc,I64 pass,Bool put)
   cc->pass=pass;
 }
 
+I64 CmpTargetSize(CCmpCtrl *cc,CHashClass *c)
+{//Compiler objects retain host pointers; source layouts use the target width.
+  if (cc->flags&CCF_TARGET_I386 && c->ptr_stars_cnt) return 4;
+  return c->size;
+}
+
 U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
 {
   U8 *res;
@@ -253,6 +259,8 @@ U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
   I64 i,code_size,last_code_size;
 
   COptReg reg_offsets[REG_REGS_NUM];
+  if (cc->flags&CCF_TARGET_I386)
+    return I386COCCompile(cc,_code_size,_dbg,_type);
   if (_dbg) *_dbg=NULL;
   cc->pass=0;
   COCHeaderPut(cc,1,TRUE);

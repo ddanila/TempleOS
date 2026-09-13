@@ -44,3 +44,5 @@ _extern CMP_TEMPLATES_DONT_POP		U32 cmp_templates_dont_pop[1];
 _extern CMP_TEMPLATES_DONT_PUSH2	U32 cmp_templates_dont_push2[1];
 _extern CMP_TEMPLATES_DONT_PUSH		U32 cmp_templates_dont_push[1];
 _extern CMP_TEMPLATES_DONT_PUSH_POP	U32 cmp_templates_dont_push_pop[1];
+
+extern U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type);

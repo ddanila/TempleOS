@@ -11,7 +11,7 @@ boots those binaries, and rebuilds them again. Host tools package and transport
 bytes; HolyC compilation occurs in TempleOS. The desktop image, archived binaries,
 and user's writable disk are not modified by this test.
 
-Two such generations have run successfully. Exported sizes were 193,792 bytes for
+Two such generations have run successfully. In the initial run, exported sizes were 193,792 bytes for
 the compiler and 189,760 for the kernel. The generations are not byte-identical:
 the initial run found 22 differing compiler bytes and 67 differing kernel bytes.
 The kernel has an embedded compilation timestamp, but differences beyond that
@@ -37,9 +37,34 @@ signed negation, complement, and wraparound. Expected values are fixed test
 vectors; the host does not evaluate source to generate the target code.
 Unsupported floating point, narrowing casts, and division are explicitly rejected.
 
-This is only an initial M2 experiment. There is no i386 pointer-layout support,
-function compilation, module loader, software F64, full kernel, native i386
-compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
+## Function compilation in progress
+
+`Compiler/I386/Core.HC` is selected by `CCF_TARGET_I386` in the normal compiler
+pipeline. `CmpI386Buf` is an experimental cross-compilation entry point. It emits
+fixed-arity integer functions, EDX:EAX arithmetic, stack arguments at EBP+8,
+local scalar loads/stores, explicit casts, and callee cleanup. Target-size queries
+cover parser member/local layouts, `sizeof`, and pointer arithmetic without
+changing the running compiler's object pointers. `Kernel/Types.HH` shares the
+numeric unions without requiring the complete architecture-specific kernel header.
+
+The x86-64 bootstrap handles folded integer array bounds/default expressions via
+an explicit host-constant path. It produces a host return stub containing the
+folded value; target function bytes are never used as host executable code.
+Nonconstant host evaluation and `#exe` are unsupported. This is temporary
+bootstrap machinery, not the eventual native i386 compiler implementation.
+
+Run `python3 tools/test-rebuild.py` before
+`python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
+Fifteen function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+arguments, returns, stack cleanup, preserved registers, pointer-array and packed
+class sizes, pointer indexing/wraparound, and narrow integer conversion. Three
+rejection cases cover division, F64 output, and `#exe`. Instruction auditing is
+limited to executable ranges, excluding AOT padding. Only standalone function bodies are exercised;
+module relocation, globals, calls, general control flow, variadic functions,
+debug information, and software F64 are not implemented by this backend.
+
+This remains partial M1/M2 work. There is no i386 module loader, software F64,
+full kernel, native i386 compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,
 low-memory self-hosting, or completion of M1/M2. See `docs/i386-abi.md` for the
 working ABI decisions and remaining boundaries.
 
@@ -47,6 +72,7 @@ working ABI decisions and remaining boundaries.
 
 - `build/rebuild-test/`: build ISOs, both exported generations, QEMU commands,
   debug logs, screenshots, and source/binary hash manifest.
+- `build/i386-functions-test/`: function corpus, disassembly, ABI runner and logs.
 - `build/i386-test/`: compiler ISO, generated expressions, disassembly of code
   ranges, test disk, runner log, and result JSON.
 

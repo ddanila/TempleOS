@@ -85,6 +85,9 @@ args.
 	}
 	break;
       case IC_HOLYC_TYPECAST:
+        //i386 pointers/narrow values differ from the I64 evaluation width.
+        //Keep the conversion boundary instead of retagging its producer.
+        if (cc->flags&CCF_TARGET_I386) break;
 	if (tmpi1->ic_code==IC_IMM_I64 || tmpi1->ic_code==IC_IMM_F64) {
 	  if (tmpi->ic_class->raw_type==RT_F64)
 	    tmpi1->ic_code=IC_IMM_F64;
@@ -1258,10 +1261,10 @@ args.
     }
     if (intermediate_code_table[code].arg_cnt==IS_2_ARG) {
       if (tmpi_push->ic_precedence&~ASSOC_MASK==PREC_ASSIGN)
-	OptFixSizeOf(tmpi2,tmpi_push,tmpi1->ic_class-1);
+	OptFixSizeOf(cc,tmpi2,tmpi_push,tmpi1->ic_class-1);
       else {
-	OptFixSizeOf(tmpi1,tmpi_push,tmpi2->ic_class);
-	OptFixSizeOf(tmpi2,tmpi_push,tmpi1->ic_class);
+	OptFixSizeOf(cc,tmpi1,tmpi_push,tmpi2->ic_class);
+	OptFixSizeOf(cc,tmpi2,tmpi_push,tmpi1->ic_class);
       }
     }
     if (intermediate_code_table[tmpi_push->ic_code].res_cnt) {

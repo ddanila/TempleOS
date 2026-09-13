@@ -77,3 +77,5 @@ extern CUAsmGlbls uasm;
 public extern I64 HashEntrySize(CHashSrcSym *tmph);
 public extern I64 HashEntrySize2(CHashSrcSym *tmph);
 public extern I64 HashTableSize2(CHashTable *table);
+
+public extern CAOT *CmpI386Buf(U8 *buf,I64 *error_cnt=NULL);

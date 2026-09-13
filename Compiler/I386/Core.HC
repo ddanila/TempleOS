@@ -1,0 +1,242 @@
+// Target backend entered by the normal HolyC function compiler.
+#include "/Compiler/I386/Emit.HC"
+
+I64 I386Size(CHashClass *c)
+{
+  if (!c) return 0;
+  if (c->ptr_stars_cnt) return 4;
+  return c->size;
+}
+U0 I386Normalize(CI386Out *out,CHashClass *c)
+{//Normalize EDX:EAX to the target scalar width.
+  if (!c) return;
+  if (c->ptr_stars_cnt) {
+    I386Bytes(out,"\x31\xD2",2);
+    return;
+  }
+  switch (c->raw_type) {
+    case RT_I8: I386Bytes(out,"\x0F\xBE\xC0\x99",4); break;
+    case RT_U8: I386Bytes(out,"\x0F\xB6\xC0\x31\xD2",5); break;
+    case RT_I16: I386Bytes(out,"\x0F\xBF\xC0\x99",4); break;
+    case RT_U16: I386Bytes(out,"\x0F\xB7\xC0\x31\xD2",5); break;
+    case RT_I32: I386Byte(out,0x99); break;
+    case RT_U32: I386Bytes(out,"\x31\xD2",2); break;
+    case RT_I64:
+    case RT_U64: break;
+    default: throw('Compiler');
+  }
+}
+U0 I386Load(CI386Out *out,CHashClass *c)
+{//Dereference target address EAX; result EDX:EAX.
+  if (I386Size(c)==8)
+    I386Bytes(out,"\x8B\x50\x04\x8B\x00",5);
+  else if (I386Size(c)==4)
+    I386Bytes(out,"\x8B\x00",2);
+  else if (I386Size(c)==2)
+    I386Bytes(out,"\x0F\xB7\x00",3);
+  else if (I386Size(c)==1)
+    I386Bytes(out,"\x0F\xB6\x00",3);
+  else throw('Compiler');
+  I386Normalize(out,c);
+}
+U0 I386Store(CI386Out *out,CHashClass *c)
+{//Store normalized EDX:EAX through target address ECX.
+  I386Normalize(out,c);
+  switch (I386Size(c)) {
+    case 8: I386Bytes(out,"\x89\x51\x04\x89\x01",5); break;
+    case 4: I386Bytes(out,"\x89\x01",2); break;
+    case 2: I386Bytes(out,"\x66\x89\x01",3); break;
+    case 1: I386Bytes(out,"\x88\x01",2); break;
+    default: throw('Compiler');
+  }
+}
+
+U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
+{//Array bounds/defaults are evaluated by the running x86-64 compiler.
+ //Accept only an integer constant after target-aware folding, never target code.
+  CIntermediateCode *ic;
+  I64 count=0,value=0;
+  U8 *res;
+  if (cc->flags&CCF_EXE_BLK) throw('Compiler');
+  cc->pass=0;
+  OptPass012(cc);
+  for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
+    switch (ic->ic_code) {
+      case IC_NOP1:
+      case IC_NOP2:
+      case IC_RETURN_VAL:
+      case IC_RETURN_VAL2:
+      case IC_RET: break;
+      case IC_IMM_I64:
+        if (++count!=1 || ic->ic_class->ptr_stars_cnt) throw('Compiler');
+        value=ic->ic_data;
+        break;
+      default:
+        PrintErr("i386 host evaluation requires a folded integer constant\n");
+        throw('Compiler');
+    }
+  }
+  if (count!=1) throw('Compiler');
+  res=MAlloc(11,Fs->code_heap);
+  res[0]=0x48; res[1]=0xB8; //Host MOV RAX,imm64; RET.
+  MemCpy(res+2,&value,8); res[10]=0xC3;
+  if (_size) *_size=11;
+  if (_type) *_type=RT_I64;
+  COCDel(cc,&cc->coc);
+  return res;
+}
+
+U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
+{
+  CI386Out out;
+  CIntermediateCode *ic;
+  CCodeMisc *label;
+  I64 depth,pass,stack_size=0,args=0;
+  U8 *result=NULL;
+  CHashClass *c;
+  if (_dbg) *_dbg=NULL;
+  if (_type) *_type=RT_I64;
+  if (_size) *_size=0;
+  MemSet(&out,0,sizeof(out));
+  if (!(cc->flags&CCF_AOT_COMPILE) || cc->flags&CCF_EXE_BLK)
+    throw('Compiler');
+  if (cc->flags&CCF_TARGET_HOST_CONST)
+    return I386HostConstant(cc,_size,_type);
+  if (!cc->htc.fun || cc->coc.coc_head.next->ic_code!=IC_ENTER)
+    throw('Compiler');
+  if (cc->htc.fun) {
+    stack_size=-cc->htc.fun->size;
+    args=cc->htc.fun->arg_cnt*8;
+    if (Bt(&cc->htc.fun->flags,Ff_DOT_DOT_DOT) || args>65535)
+      throw('Compiler');
+  }
+  cc->pass=0;
+  OptPass012(cc);
+  try {
+    // First pass determines label offsets; second resolves near branches.
+    for (pass=0;pass<2;pass++) {
+      out.count=0;
+      depth=0;
+      for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
+        c=ic->ic_class;
+        if (c && !c->ptr_stars_cnt && c->raw_type==RT_F64) throw('Compiler');
+        switch (ic->ic_code) {
+          case IC_NOP1:
+          case IC_NOP2: break;
+          case IC_ENTER:
+            I386Bytes(&out,"\x55\x89\xE5\x81\xEC",5);
+            I386Dword(&out,stack_size);
+            I386Bytes(&out,"\x53\x56\x57",3);
+            break;
+          case IC_IMM_I64:
+          case IC_TYPE:
+            I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[1]);
+            I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[0]);
+            depth++;
+            break;
+          case IC_RBP:
+            I386Bytes(&out,"\x6A\x00\x55",3);
+            depth++;
+            break;
+          case IC_DEREF:
+            if (depth<1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A",2);
+            I386Load(&out,c);
+            I386Bytes(&out,"\x52\x50",2);
+            break;
+          case IC_ADDR:
+          case IC_HOLYC_TYPECAST:
+            if (depth<1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A",2);
+            I386Normalize(&out,c);
+            I386Bytes(&out,"\x52\x50",2);
+            break;
+          case IC_ASSIGN:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A\x59\x5B",4);
+            I386Store(&out,ic->t.arg1_class-1);
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
+          case IC_ADD:
+          case IC_SUB:
+          case IC_MUL:
+          case IC_AND:
+          case IC_OR:
+          case IC_XOR:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A",4);
+            switch (ic->ic_code) {
+              case IC_ADD: I386Bytes(&out,"\x01\xC8\x11\xDA",4); break;
+              case IC_SUB: I386Bytes(&out,"\x29\xC8\x19\xDA",4); break;
+              case IC_AND: I386Bytes(&out,"\x21\xC8\x21\xDA",4); break;
+              case IC_OR: I386Bytes(&out,"\x09\xC8\x09\xDA",4); break;
+              case IC_XOR: I386Bytes(&out,"\x31\xC8\x31\xDA",4); break;
+              case IC_MUL:
+                I386Bytes(&out,"\x89\xC6\x89\xD7\x0F\xAF\xF9\x0F\xAF\xDE"
+                  "\xF7\xE1\x01\xFA\x01\xDA",16); break;
+            }
+            if (c && c->ptr_stars_cnt) I386Normalize(&out,c);
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
+          case IC_END_EXP:
+            if (depth!=1) throw('Compiler');
+            I386Bytes(&out,"\x83\xC4\x08",3);
+            depth--;
+            break;
+          case IC_RETURN_VAL:
+          case IC_RETURN_VAL2:
+            if (depth!=1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A",2);
+            I386Normalize(&out,c);
+            depth--;
+            break;
+          case IC_LABEL:
+            label=ic->ic_data;
+            if (!pass) label->addr=out.count;
+            break;
+          case IC_JMP:
+            if (depth) throw('Compiler');
+            label=ic->ic_data;
+            I386Byte(&out,0xE9);
+            I386Dword(&out,label->addr-out.count-4);
+            break;
+          case IC_LEAVE:
+            if (depth) throw('Compiler');
+            I386Bytes(&out,"\x5F\x5E\x5B\x89\xEC\x5D\xC2",7);
+            I386Byte(&out,args&255); I386Byte(&out,args>>8);
+            break;
+          case IC_RET:
+            I386Byte(&out,0xC3);
+            break;
+          default:
+            PrintErr("i386 COC opcode %X not implemented\n",ic->ic_code);
+            throw('Compiler');
+        }
+      }
+    }
+  } catch {
+    Free(out.data);
+    //Leave catch_except false so the original exception propagates.
+  }
+  // CMain appends U64 units; include zero padding without reading past allocation.
+  result=CAlloc((out.count+7)&~7);
+  MemCpy(result,out.data,out.count);
+  if (_size) *_size=out.count;
+  Free(out.data);
+  COCDel(cc,&cc->coc);
+  return result;
+}
+
+public CAOT *CmpI386Buf(U8 *buf,I64 *error_cnt=NULL)
+{
+  CCmpCtrl *cc=CmpCtrlNew(buf,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE|CCF_TARGET_I386);
+  CAOT *res;
+  QueIns(cc,Fs->last_cc);
+  res=CmpJoin(cc,CMPF_LEX_FIRST);
+  if (error_cnt) *error_cnt=cc->error_cnt;
+  QueRem(cc);
+  if (res) CmpCtrlDel(cc); //Follow CmpBuf error-path ownership.
+  return res;
+}

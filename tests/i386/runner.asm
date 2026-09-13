@@ -92,11 +92,34 @@ bits 32
     mov ecx,[esi]
     test ecx,ecx
     jz passed
+%ifdef FUNCTIONS
+    lea edi,[esi+ecx+28]
+%else
     lea edi,[esi+ecx+12]
+%endif
     push edi
     push esi
+%ifdef FUNCTIONS
+    mov ebx,0x12345678
+    mov ebp,esp
+    push dword [esi+24]
+    push dword [esi+20]
+    push dword [esi+16]
+    push dword [esi+12]
+    lea eax,[esi+28]
+    call eax
+    cmp esp,ebp
+    jne failed
+    cmp ebx,0x12345678
+    jne failed
+    cmp esi,[esp]
+    jne failed
+    cmp edi,[esp+4]
+    jne failed
+%else
     lea eax,[esi+12]
     call eax
+%endif
     pop esi
     pop edi
     cmp eax,[esi+4]
@@ -129,6 +152,11 @@ puts:
     jmp puts
 .done:
     ret
+%ifdef FUNCTIONS
+passmsg: db 'PASS i386 functions',10,0
+failmsg: db 'FAIL i386 functions',10,0
+%else
 passmsg: db 'PASS i386 expressions',10,0
 failmsg: db 'FAIL i386 expressions',10,0
+%endif
 cases: incbin CASES_FILE

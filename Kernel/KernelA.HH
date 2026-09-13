@@ -57,60 +57,7 @@ extern class CTask;
 #define sqrt2	(0x3FF6A09E667F3BCD(F64))
 #define eps	(0x3CB0000000000000(F64))
 
-#help_index "Data Types/Simple"
-/*HolyC union structure is treated as a
-whole if no member is specified,
-similar to bit fields.
-
-See $LK,"EndianI64",A="MN:EndianI64"$() and $LK,"::/Demo/SubIntAccess.HC"$.
-*/
-U16i union U16
-{
-  I8i	i8[2];
-  U8i	u8[2];
-};
-
-I16i union I16
-{
-  I8i	i8[2];
-  U8i	u8[2];
-};
-
-U32i union U32
-{
-  I8i	i8[4];
-  U8i	u8[4];
-  I16	i16[2];
-  U16	u16[2];
-};
-
-I32i union I32
-{
-  I8i	i8[4];
-  U8i	u8[4];
-  I16	i16[2];
-  U16	u16[2];
-};
-
-U64i union U64
-{
-  I8i	i8[8];
-  U8i	u8[8];
-  I16	i16[4];
-  U16	u16[4];
-  I32	i32[2];
-  U32	u32[2];
-};
-
-I64i union I64
-{
-  I8i	i8[8];
-  U8i	u8[8];
-  I16	i16[4];
-  U16	u16[4];
-  I32	i32[2];
-  U32	u32[2];
-};
+#include "/Kernel/Types.HH"
 
 #help_index "Math/Complex;Data Types/Complex"
 public class Complex
@@ -2175,6 +2122,8 @@ class CLexHashTableContext
 #define CCf_PAREN		37
 #define CCF_CLASS_DOL_OFFSET	0x4000000000
 #define CCF_DONT_MAKE_RES	0x8000000000
+#define CCF_TARGET_I386		0x10000000000
+#define CCF_TARGET_HOST_CONST	0x20000000000
 
 public class CCmpCtrl
 {

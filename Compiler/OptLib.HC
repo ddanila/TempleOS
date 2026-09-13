@@ -481,7 +481,7 @@ CIntermediateCode *OptBrNotZero(CCmpCtrl *cc,CIntermediateCode *tmpi)
   return tmpi;
 }
 
-U0 OptFixSizeOf(CIntermediateCode *tmpi1,
+U0 OptFixSizeOf(CCmpCtrl *cc,CIntermediateCode *tmpi1,
 	CIntermediateCode *tmpi_push,CHashClass *tmpcc)
 {
   if (tmpi1->ic_code==IC_MUL && tmpi1->t.arg2_tree->ic_code==IC_SIZEOF) {
@@ -490,9 +490,9 @@ U0 OptFixSizeOf(CIntermediateCode *tmpi1,
     tmpi_push->ic_class=tmpcc;
     if (tmpcc->ptr_stars_cnt) {
       tmpcc--;
-      if (tmpcc->size==1)
+      if (CmpTargetSize(cc,tmpcc)==1)
 	goto here;
-      tmpi1->t.arg2_tree->ic_data=tmpcc->size;
+      tmpi1->t.arg2_tree->ic_data=CmpTargetSize(cc,tmpcc);
     } else {
 here:
       if (tmpi_push==tmpi1)

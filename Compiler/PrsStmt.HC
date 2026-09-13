@@ -117,7 +117,8 @@ CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *tmp_return,
     LBts(&tmpf->flags,Ff_RET1);
   tmpm=tmpf->member_lst_and_root;
   while (tmpm) {
-    tmpm->offset+=16; //RBP+RETURN
+    if (cc->flags&CCF_TARGET_I386) tmpm->offset+=8;
+    else tmpm->offset+=16; //Saved frame + return
     tmpm=tmpm->next;
   }
   tmpf->size=0;

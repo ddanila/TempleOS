@@ -53,8 +53,8 @@ CIntermediateCode *PrsAddOp(CCmpCtrl *cc,I64 stk_op,CHashClass *tmpc)
   }
   if (div_sizeof) {
     tmpc--;
-    if (tmpc->size!=1) {
-      ICAdd(cc,IC_IMM_I64,tmpc->size,cmp.internal_types[RT_I64]);
+    if (CmpTargetSize(cc,tmpc)!=1) {
+      ICAdd(cc,IC_IMM_I64,CmpTargetSize(cc,tmpc),cmp.internal_types[RT_I64]);
       ICAdd(cc,IC_DIV,0,cmp.internal_types[RT_I64]);
       tmpc=cmp.internal_types[RT_I64];
     }
@@ -310,7 +310,7 @@ U0 PrsSizeOf(CCmpCtrl *cc)
     LexExcept(cc,"Invalid class at ");
   if (tmpm=cc->local_var_entry) {
     tmpc=tmpm->member_class;
-    i=tmpc->size*tmpm->dim.total_cnt;
+    i=CmpTargetSize(cc,tmpc)*tmpm->dim.total_cnt;
     if (Lex(cc)=='.')
       goto pu_sizeof_member;
   } else {
@@ -325,7 +325,7 @@ U0 PrsSizeOf(CCmpCtrl *cc)
 	    -dbg_info->body[0];
       Lex(cc);
     } else {
-      i=tmpc->size;
+      i=CmpTargetSize(cc,tmpc);
       while (Lex(cc)=='.') {
 pu_sizeof_member:
 	if (!(tmpc->type & (HTT_CLASS|HTT_GLBL_VAR)))
@@ -339,13 +339,14 @@ pu_sizeof_member:
 	tmpc=tmpm->member_class;
 //Probably others like this:
 	#assert offset(CHashClass.size)==offset(CHashGlblVar.size)
-	i=tmpc->size*tmpm->dim.total_cnt;
+	i=CmpTargetSize(cc,tmpc)*tmpm->dim.total_cnt;
       }
     }
   }
   if (cc->token=='*') {
     while (Lex(cc)=='*');
-    i=sizeof(U8 *);
+    if (cc->flags&CCF_TARGET_I386) i=4;
+    else i=sizeof(U8 *);
   }
   ICAdd(cc,IC_IMM_I64,i,cmp.internal_types[RT_I64]);
 }
@@ -1124,7 +1125,9 @@ U8 *LexExpression2Bin(CCmpCtrl *cc,I64 *_type=NULL)
   if (PrsExpression(cc,NULL,FALSE)) {
     ICAdd(cc,IC_RETURN_VAL,0,0);
     ICAdd(cc,IC_RET,0,0);
+    if (cc->flags&CCF_TARGET_I386) cc->flags|=CCF_TARGET_HOST_CONST;
     res=COCCompile(cc,&size,NULL,_type);
+    cc->flags&=~CCF_TARGET_HOST_CONST;
   } else
     res=NULL;
   COCPop(cc);

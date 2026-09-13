@@ -529,7 +529,7 @@ pvl_restart3:
       tmpc->member_cnt++;
 
       tmpc2=tmpm->member_class;
-      i=tmpc2->size*tmpm->dim.total_cnt;
+      i=CmpTargetSize(cc,tmpc2)*tmpm->dim.total_cnt;
       switch (mode.u8[1]) {
 	case PRS1B_STATIC_LOCAL_VAR:
 	  if (i<0) {
@@ -562,7 +562,7 @@ pvl_restart3:
 	      Lex(cc); //skip =
 	      PrsStaticInit(cc,tmpm,1);
 	      LexPopNoRestore(cc);
-	      i=tmpc2->size*tmpm->dim.total_cnt;
+	      i=CmpTargetSize(cc,tmpc2)*tmpm->dim.total_cnt;
 	      k=(i+7)&~7;
 	      if (cc->flags&CCF_AOT_COMPILE)	{
 		k>>=3;

@@ -21,6 +21,7 @@ def sha(path):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    (OUT/'result.json').unlink(missing_ok=True)
     manifest = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],
                 cwd=ROOT, text=True).strip(), 'source_sha256': {}, 'generations': []}
     names = subprocess.check_output(['git','ls-tree','-r','--name-only','archive'],

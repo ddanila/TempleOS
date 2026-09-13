@@ -1,6 +1,6 @@
 # i386 ABI working contract
 
-Status: architecture decisions for the port; the initial expression backend only
+Status: architecture decisions for the port; the experimental backends only
 implements a subset of this contract. No compatibility claim follows from this
 specification alone.
 
@@ -53,3 +53,11 @@ The initial `Compiler/I386/Expr.HC` entry point feeds the existing HolyC parser'
 unoptimized IR into a pair-of-dwords stack backend. It deliberately reports
 unsupported opcodes instead of falling back to x86-64 output. It currently accepts
 integer expressions, not functions, pointer-layout queries, or complete modules.
+
+`Compiler/I386/Core.HC` adds the normal compiler function path through
+`CmpI386Buf`. Its current subset implements fixed-arity scalar arguments,
+integer arithmetic, local loads/stores, casts and returns. Pointer-aware size
+queries are used during parsing and scaling. Calls, variadic functions, module
+relocation, floating-point output and full control flow remain pending.
+Compile-time integer evaluation has a separately selected x86-64 host stub;
+unsupported host expressions and `#exe` must fail rather than execute target code.
