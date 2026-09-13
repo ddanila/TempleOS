@@ -19,7 +19,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"f64_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,65536); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,81920); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)

@@ -952,3 +952,20 @@ arithmetic; NaN policy has explicit expected bits. Generated functions pass the
 Both x64 rebuild generations and image verification (763 files, 62 directories)
 pass. This remains a QEMU 486/8 MiB development check, not real-386 validation or
 full HolyC floating-point compatibility. See `docs/i386-soft-f64.md`.
+
+
+## Software binary64 multiplication
+
+`I386F64Mul` now multiplies binary64 bit patterns without a coprocessor. It
+normalizes nonzero subnormals, computes the exact 106-bit significand product
+with integer limbs, and shares nearest-even rounding/packing with addition and
+subtraction. Underflow retains sticky information, including rounding to signed
+zero; zero times infinity returns the documented canonical quiet NaN.
+
+The expanded native fixture passes 2,048 operand pairs across all three operations
+(6,144 bit comparisons), including product halfway cases, underflow/overflow,
+operand reversal and signed special values. Addition/subtraction pass again after
+the shared-rounding refactor. Generated-function instruction audits, execution
+with CR0.EM set, both x64 rebuild generations and image verification (763 files,
+62 directories) pass. Division, conversions and native F64 expression lowering
+remain pending; this is still runtime groundwork for the complete port.
