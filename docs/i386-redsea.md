@@ -55,6 +55,31 @@ unchanged. They operate on raw stored bytes even for compressed files. Creation,
 growth, metadata updates, recompression and public FileWrite semantics require
 higher-level services and are not implied by this interface.
 
+`RedSeaAlloc.HC` implements contiguous bitmap allocation and release. Bitmap bit
+indices use `block - (volume->first - 1)`, matching the existing RedSea data-area
+convention: bit zero represents the last bitmap sector. Allocation scans from the
+first data sector and uses the first sufficient free run; it returns its absolute
+sector, 0 for fragmentation/exhaustion, or -1 for invalid input/I/O failure. It does
+not zero data, create an entry or flush. This uses first-fit scanning rather than
+the x64 implementation's in-memory best-fit free list.
+
+Release requires an extent owned by the caller and no longer referenced by a
+live directory entry. It rejects metadata/out-of-volume ranges, the root directory
+extent and any range containing already-free bits. All bits are preflighted before
+any bitmap write, so a mixed allocated/free range is rejected without modification.
+Both operations update one bitmap sector at a time. A bitmap I/O failure clears
+the volume signature, preventing reuse of that view until explicit recovery and
+remount. Earlier bitmap sectors may already have changed; remount alone does not
+repair partial allocation/release. There is no transaction or automatic rollback.
+
+Allocation assumes the existing bitmap accurately describes live extents; these
+helpers are not a filesystem consistency checker or an ownership registry.
+One exclusive mounted view must own mutation; callers must not bypass failure
+invalidation through a second alias. Publishing/removing directory entries,
+ordering data and bitmap flushes, and recovering interrupted updates are work
+for the higher-level file operation. Low-level release must not be used on a
+still-referenced file or subdirectory.
+
 The native fixture is `python3 tools/test-i386.py --redsea`. The host lays out a
 RedSea volume on a 16 MiB IDE disk alongside the runner. It includes a directory
 spanning two sectors, a deleted entry with deliberately invalid storage, nested
@@ -74,6 +99,14 @@ The host compares the complete disk image against precisely the intended byte
 updates, including the first confirmed sector of the fault test. File padding,
 directory metadata, the bitmap and other sectors must remain unchanged.
 
-Allocation and directory mutation, cache and task locking, decompression, public file
-APIs, resident module loading from files, complete image consistency checks and
+`python3 tools/test-i386.py --redsea-alloc` uses an 8192-sector volume with two
+bitmap sectors. It verifies exact bits after an allocation crossing that boundary,
+fragmentation, mixed-range/double-free rejection, full exhaustion and reclamation.
+Root/bitmap reservations and unused tail bits remain intact. A forged device bound
+forces a real bitmap read error and checks view invalidation. The host requires
+complete image equality after all successful allocations are released. Partial
+bitmap-write and power-loss failures are not yet fault-injected.
+
+Directory mutation and allocation policy integration, cache and task locking,
+decompression, public file APIs, resident module loading from files, complete image consistency checks and
 physical 386/IDE validation remain pending.

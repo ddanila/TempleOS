@@ -813,3 +813,21 @@ exactly the requested byte changes plus the confirmed sector of the fault test.
 The instruction audit, both x64 rebuilds and image verification (754 files,
 62 directories) pass. Allocation/directory mutation,
 public file semantics and physical storage validation remain pending.
+
+## Native RedSea bitmap allocation
+
+Contiguous allocation now scans bitmap sectors for a sufficient free run and
+reserves it on disk. Release preflights the complete range, rejects already-free
+bits and protected root/metadata extents, then updates the bitmap. Both use the
+existing RedSea data-area bit numbering. Bitmap I/O failure invalidates the mounted
+view; recovery of partially written bitmap state is explicitly not automatic.
+These low-level helpers assume a consistent bitmap and exclusive caller ownership.
+
+The native allocation fixture passes bitmap-sector boundary changes, fragmentation,
+mixed-range/double-free rejection, full exhaustion and reclamation. It preserves
+reserved and out-of-volume tail bits, and forces a real bitmap-read failure to
+verify invalidation. After release and flush the entire disk image equals its
+starting contents. The instruction audit, both x64 rebuilds and image verification
+(755 files, 62 directories) pass. Directory
+publication/removal, allocation policy in public file APIs, interrupted-update
+recovery and physical storage validation remain pending.
