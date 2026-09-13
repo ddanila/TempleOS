@@ -347,7 +347,9 @@ Boot keyboard setup now explicitly requests scan set 2 and controller translatio
 with bounded ACK/RESEND handling. QMP-injected ordinary, extended, Print Screen
 and Pause keys now pass through IRQ1, a blocked worker and decoding/conversion;
 a reusable event interface now returns TempleOS key-down/up types, characters
-and scan pairs. Task-message/focus integration, LED updates and input-loss
+and scan pairs. A bounded native message queue now delivers live keyboard events
+from a broker to a second blocked task, with masked reads and close wakeups.
+Full CTask/CJob and public message/focus integration, LED updates and input-loss
 reconciliation remain.
 A fixed raw-input FIFO now passes IRQ1-to-foreground
 delivery, wraparound, overflow accounting and interrupt-state preservation;

@@ -642,3 +642,19 @@ along with the existing mapping and character references. The full input suite,
 instruction audit, both x64 rebuilds and image verification (741 files,
 62 directories) pass. TaskMsg/focus routing, LED updates and queue-loss/client
 state reconciliation remain pending.
+
+## Native task-to-task message transport
+
+A bounded native queue now carries message types and two full-width I64 arguments.
+Sends reject full queues, reads discard types outside their mask and may block,
+and close preserves queued data while waking the reader to drain/finish. All
+queue operations preserve IF; only one reader may be pending.
+
+The new `--messages` fixture passes capacity/wraparound, payload retention,
+mask/type-63 handling, invalid arguments and close/drain checks. A keyboard broker
+receives live QMP events and sends all nine decoded messages to a second blocked
+worker. Spurious wake/reblock and empty-queue close wakeup pass, followed by both
+workers finishing and being reaped. The native test, instruction audit, both x64
+rebuilds and image verification (743 files, 62 directories) pass. Full CTask/CJob
+ownership, public message wrappers and focus/popup routing remain pending; see
+`docs/i386-messages.md` for the transport contract.

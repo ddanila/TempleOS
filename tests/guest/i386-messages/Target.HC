@@ -1,0 +1,159 @@
+#include "/Kernel/Types.HH"
+#define TRUE 1
+#define FALSE 0
+#include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Ports.HH"
+#include "/Kernel/I386/Message.HH"
+#include "/Kernel/I386/Kbc.HH"
+#include "/Kernel/I386/KbcInput.HH"
+#include "/Kernel/I386/KeyboardSetup.HH"
+#include "/Kernel/I386/KeyboardEvent.HH"
+#include "/Kernel/I386/Irq.HH"
+extern U0 I386PicInit();
+extern U0 I386PicMask(U16 mask);
+extern Bool I386PicAccept(I64 irq);
+extern Bool I386PicEoi(I64 irq);
+class CDispatch { U0 (*handler)(CI386IrqFrame *frame); };
+class CControl { CDispatch *irq; U0 (*idle)(); };
+CI386Scheduler scheduler;
+CI386Task tasks[3];
+CI386MsgQueue messages;
+CI386KbcInput input;
+CControl *control;
+U32 produced,consumed,errors;
+extern U0 Broker(I64 unused);
+extern U0 Consumer(I64 unused);
+extern U0 EndTask();
+extern U0 OnKeyboard(CI386IrqFrame *frame);
+extern I64 QueueTest();
+I64 Main(I64 a,I64 b)
+{
+  U0 (*swap)(CI386Context *old,CI386Context *next);
+  I64 i,result;
+  U8 *p;
+  control=a; swap=b; I386PicInit;
+  if (!I386SchedInit(&scheduler,&tasks[0],swap)) return 1;
+  result=QueueTest;
+  if (result) return result;
+  if (!I386MsgInit(&messages,&scheduler) || !I386KbcInputInit(&input,&scheduler) ||
+      !I386KeyboardSetup) return 2;
+  control->irq->handler=&OnKeyboard;
+  I386PicInit;
+  if (!I386ContextInit(&tasks[1].context,0x52000,8192,&Broker,0,&EndTask) ||
+      !I386ContextInit(&tasks[2].context,0x54000,8192,&Consumer,0,&EndTask) ||
+      !I386SchedAdd(&scheduler,&tasks[1]) || !I386SchedAdd(&scheduler,&tasks[2]) ||
+      !I386SchedYield(&scheduler) || !tasks[1].blocked || !tasks[2].blocked) return 3;
+  //An unrelated wake does not satisfy the consumer's message predicate.
+  if (!I386SchedWake(&scheduler,&tasks[2]) || !I386SchedYield(&scheduler) ||
+      !tasks[2].blocked || consumed) return 4;
+  for (i=0;i<9;i++) {
+    p="KEY "; while (*p) OutU8(0xE9,*p++);
+    OutU8(0xE9,'0'+i); OutU8(0xE9,10);
+    while (consumed==i && !tasks[2].finished) {
+      I386PicMask(0xFFFD);
+      I386SchedIdle(&scheduler,control->idle);
+      I386PicMask(0xFFFF);
+      if (!I386SchedYield(&scheduler) || (GetRFlags&0x200)) return 5;
+    }
+    if (consumed!=i+1 || errors) return 6;
+  }
+  if (!tasks[2].blocked || messages.waiter!=&tasks[2] || messages.count ||
+      !I386SchedYield(&scheduler)) return 8;
+  if (produced!=9 || !tasks[1].finished || !tasks[2].finished ||
+      messages.count || messages.waiter || !messages.closed || input.waiter ||
+      !I386SchedReap(&scheduler,&tasks[1]) || !I386SchedReap(&scheduler,&tasks[2])) return 7;
+  return 0;
+}
+U0 Broker(I64 unused)
+{
+  CI386KeyboardState state;
+  CI386KeyEvent event;
+  U8 data,status;
+  I64 result;
+  I386KeyboardReset(&state); SetRFlags(GetRFlags|0x200);
+  while (produced<9) {
+    if (!I386KbcInputRead(&input,&data,&status)) { errors++; break; }
+    result=I386KeyboardFeed(&state,data,status,&event);
+    if (result<0) { errors++; break; }
+    if (result) {
+      if (!I386MsgSend(&messages,event.type,event.ch,event.scan) || !(GetRFlags&0x200)) {
+        errors++; break;
+      }
+      produced++;
+    }
+  }
+  if (produced==9) I386SchedYield(&scheduler);
+  if (!I386MsgClose(&messages)) errors++;
+}
+U0 Consumer(I64 unused)
+{
+  CI386Message message;
+  U32 expected[9];
+  I64 type;
+  expected[0]=0x1E; expected[1]=0x11E; expected[2]=0x1C; expected[3]=0x11C;
+  expected[4]=0xC8; expected[5]=0x1C8; expected[6]=0xB7; expected[7]=0x1B7; expected[8]=0x61;
+  SetRFlags(GetRFlags|0x200);
+  while (type=I386MsgRead(&messages,&message)) {
+    if (consumed>=9 || type!=message.type || type!=2+((expected[consumed]>>8)&1) ||
+        (message.arg2>>32)!=expected[consumed] || !(GetRFlags&0x200)) { errors++; return; }
+    if (consumed<2) { if (message.arg1!='a') errors++; }
+    else if (consumed<4) { if (message.arg1!=10) errors++; }
+    else if (message.arg1) errors++;
+    consumed++;
+  }
+  if (!messages.closed || consumed!=9 || !(GetRFlags&0x200)) errors++;
+}
+U0 EndTask() { I386SchedFinish(&scheduler); while (TRUE) {} }
+U0 OnKeyboard(CI386IrqFrame *frame)
+{
+  U8 data,status;
+  if (!I386PicAccept(frame->irq)) return;
+  if (frame->irq!=1 || scheduler.current!=&tasks[0] || (GetRFlags&0x600) ||
+      !I386KbcRead(&data,&status) || !I386KbcInputPut(&input,data,status)) errors++;
+  I386PicEoi(frame->irq);
+}
+I64 QueueTest()
+{
+  CI386MsgQueue q;
+  CI386Message message;
+  I64 i;
+  //Only the association field must initially be zero for this local record.
+  q.scheduler=0;
+  if (I386MsgInit(0,&scheduler) || I386MsgInit(&q,0) ||
+      !I386MsgInit(&q,&scheduler) || I386MsgInit(&q,&scheduler)) return 10;
+  if (I386MsgSend(&q,-1,0,0) || I386MsgSend(&q,0,0,0) || I386MsgSend(&q,64,0,0)) return 19;
+  SetRFlags(GetRFlags|0x200);
+  for (i=0;i<16;i++) if (!I386MsgSend(&q,2,0x1234567800000000+i,~i)) return 11;
+  if (I386MsgSend(&q,2,1,2) || I386MsgSend(&q,0,1,2) || I386MsgSend(&q,64,1,2) ||
+      !(GetRFlags&0x200)) return 12;
+  for (i=0;i<8;i++)
+    if (I386MsgRead(&q,&message)!=2 || message.arg1!=0x1234567800000000+i || message.arg2!=~i)
+      return 13;
+  for (i=16;i<24;i++) if (!I386MsgSend(&q,2,0x1234567800000000+i,~i)) return 14;
+  for (i=8;i<24;i++)
+    if (I386MsgRead(&q,&message)!=2 || message.arg1!=0x1234567800000000+i || message.arg2!=~i)
+      return 15;
+  if (!I386MsgSend(&q,2,1,2) || !I386MsgSend(&q,63,3,4) ||
+      I386MsgRead(&q,&message,1<<63)!=63 || message.arg1!=3 || q.count) return 16;
+  message.type=99; message.arg1=98; message.arg2=97;
+  if (I386MsgRead(&q,&message,0) || I386MsgRead(&q,0) || I386MsgRead(&q,&message,~1,FALSE) ||
+      message.type!=99 || message.arg1!=98 || message.arg2!=97 || !(GetRFlags&0x200)) return 17;
+  if (!I386MsgSend(&q,3,5,6) || !I386MsgClose(&q) || I386MsgClose(&q) ||
+      I386MsgSend(&q,2,1,2) || I386MsgRead(&q,&message)!=3 || message.arg2!=6 ||
+      I386MsgRead(&q,&message)) return 18;
+  SetRFlags(GetRFlags&~0x200);
+  return 0;
+}
+#include "/Kernel/I386/Context.HC"
+#include "/Kernel/I386/Cpu.HC"
+#include "/Kernel/I386/Scheduler.HC"
+#include "/Kernel/I386/Message.HC"
+#include "/Kernel/I386/KbcQueue.HC"
+#include "/Kernel/I386/KbcInput.HC"
+#include "/Kernel/I386/Kbc.HC"
+#include "/Kernel/I386/KeyboardSetup.HC"
+#include "/Kernel/I386/ScanSet1.HC"
+#include "/Kernel/I386/ScanState.HC"
+#include "/Kernel/I386/ScanChar.HC"
+#include "/Kernel/I386/KeyboardEvent.HC"
+#include "/Kernel/I386/PicPit.HC"
