@@ -36,13 +36,14 @@ def main():
     modes.add_argument('--input', action='store_true', help='Test blocking keyboard input and IRQ-driven task wakeups')
     modes.add_argument('--messages', action='store_true', help='Test native message delivery from keyboard broker to consumer')
     modes.add_argument('--ata', action='store_true', help='Test native ATA identify, single-sector PIO and cache flush')
+    modes.add_argument('--redsea', action='store_true', help='Test native RedSea mount, lookup and raw file reads')
     args = parser.parse_args()
     task_runner = args.tasks or args.input or args.messages
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata'):
+    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea'):
         if getattr(args, mode):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata')
+    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea')
     functions = kind != 'expressions'
     if functions:
         OUT = ROOT/f'build/i386-{kind}-test'
@@ -205,6 +206,52 @@ def main():
             stream.seek(512*512)
             for lba in range(512, 32768):
                 stream.write(patterns[(lba^(lba>>8))&255])
+    if args.redsea:
+        def rs_entry(name, attr, block, size):
+            return struct.pack('<H38sqqQ', attr, name.encode('ascii'), block, size, 0x123456789ABCDEF0)
+        def rs_boot(start, sectors=128, root=2050, bitmap=1):
+            record = bytearray(512)
+            record[3] = 0x88
+            struct.pack_into('<5q', record, 8, start, sectors, root, bitmap, 1)
+            struct.pack_into('<H', record, 510, 0xAA55)
+            return record
+        root = bytearray(1024)
+        entries = [rs_entry('.', 0x810, 2050, 1024), rs_entry('..', 0x810, 2050, 0),
+                   rs_entry('DATA.BIN', 0x900, -1, -1)]  # deleted, skip invalid extent
+        entries += [rs_entry(f'Empty{i}', 0x800, 0, 0) for i in range(5)]
+        entries += [rs_entry('DATA.BIN', 0x800, 2053, 1300),
+                    rs_entry('Tools', 0x810, 2052, 512), rs_entry('Empty', 0x800, 0, 0),
+                    rs_entry('Bad', 0x810, 2057, 512)]
+        root[:len(entries)*64] = b''.join(entries)
+        sub = bytearray(512)
+        source = b'I64 Twice(I64 x) { return x*2; }\n'
+        sub[:192] = b''.join([rs_entry('.', 0x810, 2052, 512),
+                             rs_entry('..', 0x810, 2050, 0),
+                             rs_entry('Source.HC', 0x800, 2056, len(source))])
+        bad = bytearray(512)
+        bad[:128] = rs_entry('.', 0x810, 2057, 512)+rs_entry('Outside', 0x800, 2175, 1024)
+        with disk.open('r+b') as stream:
+            for block, content in ((2048, rs_boot(2048)), (2049, bytes([255])*512),
+                    (2050, root), (2052, sub), (2053, bytes(((i*19)^(i>>4))&255 for i in range(1300))),
+                    (2056, source), (2057, bad), (32767, bytes([0x6C])*512)):
+                stream.seek(block*512)
+                stream.write(content)
+            # Invalid signatures, volume sizes, bitmap coverage and root extents.
+            for index in range(6):
+                boot = rs_boot(3072+index, root=3100)
+                if index == 0: boot[3] = 0
+                if index == 1: struct.pack_into('<q', boot, 16, -1)
+                if index == 2: struct.pack_into('<q', boot, 16, 1 << 62)
+                if index == 3: struct.pack_into('<q', boot, 32, 0)
+                if index == 4: struct.pack_into('<q', boot, 24, 32768)
+                if index == 5: struct.pack_into('<q', boot, 8, 0)
+                stream.seek((3072+index)*512)
+                stream.write(boot)
+            stream.seek(3100*512)
+            stream.write(rs_entry('.', 0x810, 3100, 512)+bytes(448))
+            stream.seek(3078*512)
+            stream.write(rs_boot(3078, root=3100))
+        redsea_before = disk.read_bytes()
     if args.vga:
         run(sys.executable, 'tools/guest-run.py', str(disk), '--i386-disk',
             '--out', str(OUT/'display'), '--timeout', '90')
@@ -268,6 +315,8 @@ def main():
             'verified_flush_commands': 5,
             'scope': 'QEMU backing image after process exit; not power-loss durability'
         }, indent=2)+'\n')
+    if args.redsea and disk.read_bytes() != redsea_before:
+        raise RuntimeError('Read-only RedSea test changed backing storage')
     if args.memory:
         # Reuse the audited code, changing only its expected firmware-status argument.
         fault_data = bytearray(data)
@@ -290,7 +339,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'scope': 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'scope': 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

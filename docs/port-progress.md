@@ -778,3 +778,21 @@ comparison, ATA instruction audit, both x64 rebuilds and image verification
 (751 files, 62 directories) pass. Legacy cache policy,
 fault-injected flush recovery, physical durability and filesystem integration
 remain pending.
+
+## Native RedSea volume and file reads
+
+The native filesystem path now mounts RedSea volumes through ATA, validates boot
+and root metadata, streams directory lookup and reads bounded raw file ranges.
+It preserves the existing 64-byte directory format and 64-bit block/size/date
+fields, validates extents and 32-bit destinations, and avoids whole-directory or
+whole-file allocation. Mount/lookup failures preserve output records; reads
+report partial progress on a later disk error.
+
+The native fixture passes a directory spanning two sectors, deleted-entry skip,
+nested HolyC source, empty files, unaligned/EOF reads, full-width timestamps,
+malformed metadata/extents and unchanged failed outputs. Overstated disk/volume
+bounds force a real second-sector read error and verify partial reporting.
+The complete backing image remains unchanged. The RedSea suite, executable-region
+instruction audit, both x64 rebuilds and image verification (753 files,
+62 directories) pass. Public file APIs, decompression,
+filesystem writes, module loading from files and physical hardware remain pending.

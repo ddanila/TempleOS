@@ -372,6 +372,11 @@ initialization, legacy cache policy and filesystem integration remain pending.
 Explicit FLUSH CACHE now uses validated capability detection; native tests and
 QEMU command traces cover write/flush/read ordering and unsupported rejection.
 See `docs/i386-ata.md`.
+A native RedSea reader now validates volume/root metadata, streams exact-name
+directory lookup and reads raw file ranges through ATA. Tests cover nested HolyC
+source, sector boundaries, 64-bit dates, malformed extents and partial I/O errors.
+Public CDrv/CFile integration, decompression, filesystem writes and loading native
+modules from disk remain pending. See `docs/i386-redsea.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
