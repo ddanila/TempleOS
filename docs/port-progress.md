@@ -762,3 +762,19 @@ QEMU exits and finds exactly the three intended sector replacements. The ATA
 suite, instruction audit, both x64 rebuilds and image verification (751 files,
 62 directories) pass. Cache policy/flush, task
 ownership, block/filesystem integration and physical IDE validation remain.
+
+## Explicit native ATA cache flush
+
+IDENTIFY now records FLUSH CACHE support only when word 83's validity bits and
+command capability agree. The explicit flush API rejects unsupported profiles,
+selects the drive and waits for successful non-data E7 completion under the
+existing boot ownership/poll bounds. It does not change cache policy or silently
+claim durability for legacy devices lacking capability reporting.
+
+Synthetic capability records and rejected invalid/unsupported calls pass. Four
+native write/flush/read sequences and a repeated final flush pass; QEMU's command
+trace independently confirms the exact command ordering. The full backing-image
+comparison, ATA instruction audit, both x64 rebuilds and image verification
+(751 files, 62 directories) pass. Legacy cache policy,
+fault-injected flush recovery, physical durability and filesystem integration
+remain pending.

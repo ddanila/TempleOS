@@ -43,6 +43,16 @@ I64 DecodeTest()
   if (I386AtaDecode(&disk,words,0,0)) return 27;
   words[117]=256;
   if (!I386AtaDecode(&disk,words,0,0)) return 28;
+  for (j=0;j<7;j++) {
+    words[83]=0;
+    if (j==1) words[83]=0x1000;
+    if (j==2) words[83]=0x4000;
+    if (j==3) words[83]=0xD000;
+    if (j==4) words[83]=0xFFFF;
+    if (j==5) words[83]=0x5000;
+    if (j==6) words[83]=0x7000;
+    if (!I386AtaDecode(&disk,words,0,0) || disk.flush!=(j>=5)) return 50;
+  }
   words[0]=0x8000;
   for (i=0;i<sizeof(CI386Ata);i++) bytes[i]=0xA5;
   if (I386AtaDecode(&disk,words,0,0) || I386AtaDecode(0,words,0,0) ||
@@ -95,6 +105,17 @@ I64 WriteTest(CI386Ata *disk)
   U8 source[514],readback[514];
   I64 i,j,lba,saved;
   for (i=0;i<514;i++) { source[i]=0xA5; readback[i]=0x5A; }
+  if (!disk->flush || I386AtaFlush(0) || I386AtaFlush(disk,0) ||
+      I386AtaFlush(disk,100001)) return 51;
+  disk->flush=FALSE;
+  if (I386AtaFlush(disk)) return 52;
+  disk->flush=TRUE;
+  saved=disk->signature; disk->signature=0;
+  if (I386AtaFlush(disk)) return 53;
+  disk->signature=saved;
+  saved=disk->control; disk->control=0;
+  if (I386AtaFlush(disk)) return 54;
+  disk->control=saved;
   if (I386AtaWrite(0,4096,source+1) || I386AtaWrite(disk,4096,0) ||
       I386AtaWrite(disk,-1,source+1) || I386AtaWrite(disk,32768,source+1) ||
       I386AtaWrite(disk,4096,source+1,0) ||
@@ -118,6 +139,7 @@ I64 WriteTest(CI386Ata *disk)
     disk->lba=(j<2);
     for (i=0;i<512;i++) source[i+1]=((i*19)^(i>>2)^(j*67)^0xA6)&255;
     if (!I386AtaWrite(disk,lba,source+1)) return 46;
+    if (!I386AtaFlush(disk)) return 55;
     //Read CHS writes using LBA, independently exercising the address mapping.
     disk->lba=TRUE;
     if (!I386AtaRead(disk,lba,readback+1)) return 47;
@@ -127,6 +149,7 @@ I64 WriteTest(CI386Ata *disk)
     if (source[0]!=0xA5 || source[513]!=0xA5 ||
         readback[0]!=0x5A || readback[513]!=0x5A) return 49;
   }
+  if (!I386AtaFlush(disk)) return 56;
   return 0;
 }
 I64 Main(I64 a,I64 b)

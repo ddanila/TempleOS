@@ -368,7 +368,9 @@ error and absent-device tests. Geometry decoding now accepts CHS-only profiles;
 forced CHS reads on QEMU pass head/cylinder boundaries and final-sector checks.
 Single-sector writes now pass LBA/CHS readback, source preservation and a complete
 backing-image comparison after QEMU exits. Actual CHS-only hardware, parameter
-initialization, cache flush/policy and filesystem integration remain pending.
+initialization, legacy cache policy and filesystem integration remain pending.
+Explicit FLUSH CACHE now uses validated capability detection; native tests and
+QEMU command traces cover write/flush/read ordering and unsupported rejection.
 See `docs/i386-ata.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full

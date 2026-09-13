@@ -1,7 +1,7 @@
 # Native ATA PIO transfers
 
 `Kernel/I386/Ata.HH` and `Ata.HC` implement boot-owned compatibility-port ATA
-IDENTIFY and single-sector LBA28 or CHS reads/writes. Channel 0 uses 1F0/3F6
+IDENTIFY, single-sector LBA28 or CHS reads/writes, and explicit cache flush. Channel 0 uses 1F0/3F6
 and channel 1 uses
 170/376; drive 0/1 selects master/slave. Calls require IF clear, exclusive ownership
 of the channel and a quiescent device. They leave device interrupts disabled
@@ -38,7 +38,18 @@ WRITE SECTORS (30), waits for DRQ, transfers 256 words through OutU16 and waits
 for successful command completion. It never modifies the caller's source.
 A failed write may already have changed some or all of the sector: there is no
 rollback or atomic-sector guarantee. Success reports command completion only;
-cache flushing, cache policy and power-loss durability remain separate work.
+call `I386AtaFlush` separately when write ordering/durability requires it.
+
+`I386AtaFlush` issues FLUSH CACHE (E7) only when IDENTIFY word 83 has valid
+capability bits and advertises bit 12. The profile's `flush` flag reports that
+capability; zero means unsupported or unknown, not that writes are already durable.
+Unsupported profiles and invalid arguments return FALSE before I/O. Supported
+calls select the device, wait for readiness with no pending data, issue E7, then
+wait for non-busy/ready completion with DRQ clear and no error/fault. The same
+exclusive boot ownership and bounded polling contract applies. Flush neither
+changes cache policy nor runs implicitly after writes. Success is the device's
+reported flush completion; a failure leaves durability uncertain. Legacy disks
+without this capability still need a separately verified cache policy.
 
 Each wait allows 1–100000 polls. Busy status defers interpretation of other bits;
 zero/floating status, device error/fault, or exhausted polling fails the operation.
@@ -49,7 +60,7 @@ leave channel state requiring recovery. There is no soft-reset/retry service yet
 
 The command/PIO sequence and legacy control-register policy were cross-checked
 against [SeaBIOS ATA code](https://github.com/coreboot/seabios/blob/master/src/hw/ata.c).
-The current-translation field selection was checked against
+The current-translation and flush-capability field selection was checked against
 [Linux ATA definitions](https://github.com/torvalds/linux/blob/master/include/linux/ata.h).
 
 `python3 tools/test-i386.py --ata` identifies a 16 MiB IDE disk in the native
@@ -72,11 +83,16 @@ writes. Source and destination guards are checked along with source preservation
 Invalid calls and a real out-of-range write fail before subsequent valid writes.
 After QEMU exits, the host compares all 16 MiB against the original image with
 exactly the three expected sector replacements; bootstrap and neighboring sectors
-must remain unchanged. `write-check.json` records this result. This proves the
-emulator backing image changed, not physical-media power-loss durability.
+must remain unchanged. Capability fixtures cover missing, invalid, and supported
+flush bits; unsupported/invalid flush calls are rejected. Four write/flush/read
+sequences and a final repeated flush pass. QEMU's `ide_bus_exec_cmd` trace is
+checked for that exact command suffix, independently confirming E7 commands.
+`ata-commands.log` and `write-check.json` record the evidence. This proves emulated
+command execution and backing-image contents, not physical-media power-loss
+durability or fault-injected flush recovery.
 Generated code passes the existing instruction audit.
 
 The bootstrap still reads its stage through BIOS CHS. Multi-sector requests,
-cache policy/flush, channel locking across tasks, block-device and
+legacy cache policy, channel locking across tasks, block-device and
 RedSea integration, recovery/reset and physical 386/IDE testing remain pending.
 This is not a filesystem or a complete production disk driver.

@@ -58,6 +58,7 @@ Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive)
   disk->io=0x1F0; disk->control=0x3F6;
   if (channel) { disk->io=0x170; disk->control=0x376; }
   disk->drive=drive; disk->lba=lba;
+  disk->flush=(words[83]&0xD000)==0x5000;
   return TRUE;
 }
 public Bool I386AtaIdentify(CI386Ata *disk,I64 channel,I64 drive,I64 polls=100000)
@@ -131,4 +132,17 @@ public Bool I386AtaRead(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
 public Bool I386AtaWrite(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
 {//Command completion, not a cache flush or power-loss durability guarantee.
   return I386AtaTransfer(disk,lba,buffer,polls,TRUE);
+}
+public Bool I386AtaFlush(CI386Ata *disk,I64 polls=100000)
+{//Unsupported is failure, never an implied durable no-op. Same boot ownership.
+  U16 io;
+  if (!disk || disk->signature!=0x41543332 || !disk->flush || polls<1 || polls>100000 ||
+      disk->drive>1 || !((disk->io==0x1F0 && disk->control==0x3F6) ||
+                        (disk->io==0x170 && disk->control==0x376))) return FALSE;
+  io=disk->io;
+  OutU8(disk->control,0x0A);
+  if (!I386AtaSelect(io,disk->control,0xA0|(disk->drive<<4),polls) ||
+      !I386AtaWait(io,0x48,0x40,FALSE,polls)) return FALSE;
+  OutU8(io+7,0xE7); I386AtaPause(disk->control);
+  return I386AtaWait(io,0x48,0x40,TRUE,polls);
 }
