@@ -44,14 +44,14 @@ page-pool layer. Allocation/free do not yield or change interrupt state.
 
 ## Integration still required
 
-Extended-memory discovery/reservation, page pools, task heap ownership, interrupt
+General device-hole discovery, page pools, task heap ownership, interrupt
 serialization, task teardown, and public `MAlloc`/`CAlloc`/`Free` wrappers remain
 pending. The public TempleOS interface must preserve its `OutMem` exception
 semantics; NULL-returning try-allocation here is a lower-level bootstrap API.
 `I386LoadAlloc` now uses this heap for native module images; see
 [the module API](i386-modules.md#allocating-native-loader).
-VGA and module loading now select conventional-memory arenas using the
-[BIOS handoff](i386-boot-memory.md). Fixed arenas remain in the isolated heap
+VGA and module loading now select arenas using the [BIOS handoff](i386-boot-memory.md)
+and opt into reported extended RAM after [A20 verification](i386-a20.md). Fixed arenas remain in the isolated heap
 stress fixture. Neither establishes the full OS's memory budget.
 
 ## Verification

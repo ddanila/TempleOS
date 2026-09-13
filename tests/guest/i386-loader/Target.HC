@@ -4,6 +4,7 @@
 #define U32_MAX 0xFFFFFFFF
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/BootMemory.HH"
+#include "/Kernel/I386/A20.HH"
 extern U8 *I386LoadAlloc(CI386Heap *heap,U8 **modules,I64 *sizes,I64 count,U8 *entry_name);
 extern I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,U8 *entry_name);
 U8 entry_name[5]="Main",output[2048],other[2048],original[2048];
@@ -11,6 +12,8 @@ I64 Main(I64 a,I64 b)
 {
   CI386Heap heap;
   CI386MemRange reserved,arena;
+  CI386BootInfo *boot=I386_BOOT_INFO_ADDRESS;
+  Bool extended=FALSE;
   U8 *packet=a,*modules[3],*cursor,*first,*second,*again,*reserve,*stored,*heap_modules[3];
   I64 sizes[3],count,mode,expected,required,i,j,result;
   I64 (*entry)(I64 x,I64 y);
@@ -25,9 +28,12 @@ I64 Main(I64 a,I64 b)
   }
   for (i=0;i<b;i++) original[i]=packet[i];
   for (i=0;i<2048;i++) { output[i]=0xA5; other[i]=0x5A; }
+  if (boot->flags&2 && boot->extended_kib>=64)
+    extended=I386A20Enable()!=0;
   reserved.base=0x70000; reserved.size=0x20000;
-  if (!I386BootArena(I386_BOOT_INFO_ADDRESS,&reserved,1,&arena) ||
+  if (!I386BootArena(boot,&reserved,1,&arena,extended) ||
       !I386HeapInit(&heap,arena.base,arena.size)) return 21;
+  if (!extended || arena.base<0x110000) return 40; //Assert high-memory execution in this profile.
   required=I386LoadInto(modules,sizes,count,0,0,entry_name);
   if (mode) {
     if (required || I386LoadInto(modules,sizes,count,output,2048,entry_name)) return 4;
@@ -107,3 +113,5 @@ I64 Main(I64 a,I64 b)
 #include "/Kernel/I386/ModuleAlloc.HC"
 
 #include "/Kernel/I386/BootMemory.HC"
+
+#include "/Kernel/I386/A20.HC"

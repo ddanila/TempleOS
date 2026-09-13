@@ -4,6 +4,7 @@
 #define FALSE 0
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/BootMemory.HH"
+#include "/Kernel/I386/A20.HH"
 extern U0 I386VgaPresent(U8 *planes);
 extern U0 I386VgaPalette(U8 *rgb6);
 U8 palette[]={
@@ -15,11 +16,16 @@ I64 Main(I64 a,I64 b)
 {
   CI386Heap heap;
   CI386MemRange reserved,arena;
+  CI386BootInfo *boot=I386_BOOT_INFO_ADDRESS;
+  Bool extended=FALSE;
   U8 *planes;
   I64 i,x,y,plane,color,index;
+  if (boot->flags&2 && boot->extended_kib>=64)
+    extended=I386A20Enable()!=0;
   reserved.base=0x70000; reserved.size=0x20000;
-  if (!I386BootArena(I386_BOOT_INFO_ADDRESS,&reserved,1,&arena) ||
+  if (!I386BootArena(boot,&reserved,1,&arena,extended) ||
       !I386HeapInit(&heap,arena.base,arena.size)) return 1;
+  if (!extended || arena.base<0x110000) return 4; //This 8 MiB QEMU fixture requires high RAM.
   planes=I386HeapAlloc(&heap,153600);
   if (!planes) return 2;
   for (i=0;i<153600;i++) planes[i]=255;
@@ -42,3 +48,5 @@ I64 Main(I64 a,I64 b)
 #include "/Kernel/I386/Heap.HC"
 
 #include "/Kernel/I386/BootMemory.HC"
+
+#include "/Kernel/I386/A20.HC"

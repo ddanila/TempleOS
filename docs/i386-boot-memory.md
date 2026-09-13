@@ -24,8 +24,8 @@ and [BIOS data area layout](https://github.com/coreboot/seabios/blob/master/src/
 
 ## Arena selection
 
-`I386BootArena(info, reserved, count, result)` chooses the largest eight-byte-aligned
-conventional-memory gap, with at least 24 bytes for the arena allocator. Equal
+`I386BootArena(info, reserved, count, result, extended=FALSE)` chooses the largest
+eight-byte-aligned permitted gap, with at least 24 bytes for the arena allocator. Equal
 candidates choose the lower address. The selector validates the record and all
 reservation ranges before writing its result; failure leaves the result unchanged.
 Inputs must be readable, stable caller-owned records, and the result must be a
@@ -34,14 +34,16 @@ separate writable record.
 Everything below `stage_end` is reserved, including IVT/BDA, the handoff, the
 real-mode boot stack, and the entire loaded stage. The upper bound is the smaller
 of conventional memory and a nonzero EBDA base, and can never exceed 0xA0000.
-Thus VGA memory, adapter/firmware space, and all extended memory stay excluded.
+Thus VGA memory and adapter/firmware space stay excluded. Extended memory is
+excluded by default; an explicit opt-in after A20 verification adds the bounded
+candidate described in [the A20 contract](i386-a20.md).
 Caller reservations are subtracted as a union, including overlapping and unsorted
 ranges. Up to 128 ranges are supported; empty ranges and wrapping endpoints are
 rejected. A high reservation ending exactly at 4 GiB is valid but cannot enlarge
 the conventional-memory candidate.
 
 VGA and native loader tests reserve 0x70000–0x8FFFF for their packet scratch space
-and protected-mode stack, then initialize a heap from the selected gap. They no
+and protected-mode stack, verify A20, and initialize a heap from the selected gap. They no
 longer choose a fixed heap base/size. The other heap stress fixtures retain their
 separate deliberately fixed arenas for guard-byte testing.
 
@@ -51,7 +53,9 @@ separate deliberately fixed arenas for guard-byte testing.
 Its fixture checks the real BIOS handoff and synthetic cases for EBDA limits,
 reservation unions, alignment, equal gaps, insufficient space, invalid records,
 invalid counts, endpoint overflow, and unchanged outputs after rejection. The
-reported extended-memory quantity must not expand the selected arena.
+reported extended-memory quantity must not expand the selected arena unless
+extended selection is explicitly enabled. Further fixtures check that opt-in,
+its ceiling and reservations, and fallback when high memory is unavailable.
 
 The test runs both the normal BIOS query and an injected carry-set failure. The
 normal QEMU 8 MiB profile must report a positive quantity no greater than
@@ -66,7 +70,7 @@ an EBDA below 0x90000, because the test runner stack is still fixed there. This 
 not the final OS boot contract. The selector itself can handle lower conventional
 limits when given suitable reservations; it does not relocate a running stack.
 
-A20 enabling/verification, extended-memory hole handling and usable-range
-selection, a production boot image, task/page-pool integration, and actual 386
-machine profiles remain pending. The current use of conventional RAM is an
-intermediate bring-up step, not a substitute for the full 8–16 MiB OS target.
+Native A20 enabling and bounded legacy extended-memory selection now have target
+tests. General machine-specific hole discovery, a production boot image,
+task/page-pool integration, and actual 386 machine profiles remain pending.
+These bring-up checks do not establish the full 8–16 MiB OS target.

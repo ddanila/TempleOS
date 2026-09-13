@@ -16,7 +16,7 @@ Implementation is underway; see [port progress](docs/port-progress.md) for curre
 evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 702 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
+checks 704 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. Experimental i386 expression
 and function backends are tracked in the progress document.
 
@@ -307,8 +307,10 @@ The native arena allocator now passes allocation, coalescing, corruption and
 exhaustion checks; VGA uses it for its framebuffer. Allocated module images now
 pass execution, exhaustion, release/reuse, and source-lifetime tests. BIOS
 conventional-memory discovery and reservation-aware arena selection now serve
-VGA and module loading. Next, implement A20 handling and usable extended-memory
-ranges, then platform services and resident kernel
+VGA and module loading. Native A20 verification/enabling and bounded legacy
+extended-memory selection now pass target tests; VGA and loaded modules use
+arenas above 1 MiB. Next, bring up the production entry path, PIC/PIT and input,
+then task/page-pool integration and resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe
 runtime interfaces before attempting a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.

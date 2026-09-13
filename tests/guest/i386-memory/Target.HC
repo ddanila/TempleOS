@@ -71,6 +71,17 @@ I64 Main(I64 a,I64 b)
   if (!I386BootArena(&info,r,2,&out) || out.base!=0x20000 || out.size!=0x10000) return 27;
   r[0].base=0x20010; r[0].size=0x7FFF0;
   if (!Rejected(&info,r,1)) return 28;
+  Reset(&info);
+  info.flags=3; info.extended_kib=65535;
+  if (!I386BootArena(&info,0,0,&out,TRUE) || out.base!=0x110000 || out.size!=0xDF0000) return 30;
+  r[0].base=0x200000; r[0].size=0xD00000;
+  if (!I386BootArena(&info,r,1,&out,TRUE) || out.base!=0x110000 || out.size!=0xF0000) return 31;
+  r[0].base=0x100000; r[0].size=0xE00000;
+  if (!I386BootArena(&info,r,1,&out,TRUE) || out.base!=0x20000 || out.size!=0x80000) return 32;
+  info.flags=1; info.extended_kib=0;
+  if (!I386BootArena(&info,0,0,&out,TRUE) || out.base!=0x20000 || out.size!=0x80000) return 33;
+  info.flags=3; info.extended_kib=64;
+  if (!I386BootArena(&info,0,0,&out,TRUE) || out.base!=0x20000 || out.size!=0x80000) return 34;
   return 0;
 }
 U0 Reset(CI386BootInfo *info)

@@ -14,5 +14,5 @@ class CI386MemRange
 #assert sizeof(CI386BootInfo)==32
 #assert sizeof(CI386MemRange)==8
 public extern Bool I386BootArena(CI386BootInfo *info,CI386MemRange *reserved,
-  I64 count,CI386MemRange *result);
+  I64 count,CI386MemRange *result,Bool extended=FALSE);
 #endif

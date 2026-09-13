@@ -89,7 +89,7 @@ def main():
         covered[begin:begin+length] = b'D'*length
     boundaries = sorted(set(starts+[begin for begin,_ in regions]+[len(code)]))
     allowed = {'push','pop','mov','movzx','movsx','add','adc','sub','sbb','and','or','xor',
-               'neg','not','mul','imul','div','dec','rcl','shl','shr','sar','shld','shrd',
+               'in','out','neg','not','mul','imul','div','dec','rcl','shl','shr','sar','shld','shrd',
                'cmp','test','call','ret','jmp','jz','jnz','jc','jnc','ja','jna','jns',
                'setz','setnz','setl','setnl','setg','setng','setc','setnc','seta','setna','cdq'}
     listing = []

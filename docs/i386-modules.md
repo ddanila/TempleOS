@@ -165,8 +165,9 @@ validated stable inputs and a valid nonoverlapping allocation normally make that
 second load succeed.
 
 The larger test image uses 256 single-sector CHS reads into 0x10000–0x2FFFF.
-Other compiler runners retain the 128-sector default. The heap is selected from the BIOS conventional-memory handoff after excluding
-the loaded stage and the runner's scratch/stack reservation. This remains a test
+Other compiler runners retain the 128-sector default. The heap is selected from the BIOS-reported regions after A20 verification and
+exclusion of the loaded stage, boot scratch, and the runner's scratch/stack
+reservation. The 8 MiB fixture explicitly requires high-memory allocation. This remains a test
 boot stage, not the production disk loader or a complete usable-memory map.
 
 All 23 expanded native loader cases pass on the QEMU 486/8 MiB runner, together
