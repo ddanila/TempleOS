@@ -7,6 +7,11 @@
 #include "/Kernel/I386/Scheduler.HH"
 #include "/Kernel/I386/Task.HH"
 extern I64 OwnedTaskTest();
+extern I64 JoinTest();
+extern U0 JoinWorker(I64 id);
+CI386OwnedTask *join_tasks[3];
+CI386Task foreign_task;
+U32 join_stage,join_returns;
 extern U0 OwnedWorker(I64 arg);
 CI386OwnedTask *owned_tasks[2];
 U32 owned_progress[2];
@@ -344,7 +349,7 @@ I64 OwnedTaskTest()
   }
   p=I386HeapAlloc(&heap,32752);
   if (!p || !I386HeapFree(&heap,p)) return 48;
-  return 0;
+  return JoinTest;
 }
 U0 OwnedWorker(I64 arg)
 {
@@ -361,3 +366,48 @@ U0 OwnedWorker(I64 arg)
   }
 }
 #include "/Kernel/I386/Task.HC"
+
+I64 JoinTest()
+{
+  CI386Heap heap;
+  I64 i;
+  if (!I386HeapInit(&heap,0x40000,32768) ||
+      I386SchedJoin(0,&tasks[0]) || I386SchedJoin(&scheduler,0) ||
+      I386SchedJoin(&scheduler,&tasks[0]) || I386SchedJoin(&scheduler,&foreign_task)) return 49;
+  for (i=0;i<3;i++) {
+    join_tasks[i]=I386TaskSpawn(&scheduler,&heap,8192,&JoinWorker,i);
+    if (!join_tasks[i]) return 50;
+  }
+  if (I386SchedJoin(&scheduler,&join_tasks[0]->task) || !I386SchedYield(&scheduler) ||
+      join_stage!=1 || join_returns || !join_tasks[1]->task.blocked ||
+      !join_tasks[2]->task.blocked || !join_tasks[0]->task.join_head) return 51;
+  //Wake a joiner before completion: it must recheck and block again.
+  if (!I386SchedWake(&scheduler,&join_tasks[1]->task) || !I386SchedYield(&scheduler) ||
+      join_stage!=2 || join_returns || !join_tasks[1]->task.blocked || errors) return 52;
+  if (!I386SchedYield(&scheduler) || !join_tasks[0]->task.finished ||
+      join_returns || !I386SchedJoin(&scheduler,&join_tasks[0]->task) ||
+      I386TaskDestroy(join_tasks[0]) || I386SchedReap(&scheduler,&join_tasks[0]->task)) return 53;
+  if (!I386SchedYield(&scheduler) || join_returns!=2 || errors ||
+      join_tasks[0]->task.join_head) return 54;
+  for (i=0;i<3;i++) if (!I386TaskDestroy(join_tasks[i])) return 55;
+  if (heap.used || heap.allocations || !I386HeapValid(&heap) ||
+      tasks[0].next!=&tasks[0] || (GetRFlags&0x200)) return 56;
+  return 0;
+}
+U0 JoinWorker(I64 id)
+{
+  if (id==0) {
+    join_stage=1;
+    I386SchedYield(&scheduler);
+    //Worker 1 depends on us; adding the reverse dependency would deadlock.
+    if (I386SchedJoin(&scheduler,&join_tasks[1]->task)) errors++;
+    join_stage=2;
+    I386SchedYield(&scheduler);
+  } else {
+    if (I386SchedJoin(&scheduler,I386TaskSelf) || I386SchedJoin(&scheduler,&tasks[0]) ||
+        !I386SchedJoin(&scheduler,&join_tasks[0]->task) ||
+        !join_tasks[0]->task.finished || I386TaskSelf->join_target ||
+        !I386SchedJoin(&scheduler,&join_tasks[0]->task)) errors++;
+    join_returns++;
+  }
+}

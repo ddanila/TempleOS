@@ -8,6 +8,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   if (!s || !root || !swap || s->root || root->owner) return FALSE;
   root->addr=root; root->context.esp=0; root->next=root; root->last=root;
   root->owner=s; root->finished=0; root->blocked=0;
+  root->join_head=0; root->join_next=0; root->join_target=0;
   s->root=root; s->current=root; s->swap=swap; s->bind=0;
   return TRUE;
 }
@@ -18,6 +19,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
     I386IrqRestore(flags); return FALSE;
   }
   task->addr=task; task->owner=s; task->finished=0; task->blocked=0;
+  task->join_head=0; task->join_next=0; task->join_target=0;
   task->next=s->root; task->last=s->root->last;
   task->last->next=task; s->root->last=task;
   I386IrqRestore(flags);
@@ -40,13 +42,15 @@ public Bool I386SchedYield(CI386Scheduler *s)
 public Bool I386SchedFinish(CI386Scheduler *s)
 {//Root cannot finish. Successful completion never returns to this task.
   U32 flags=I386IrqSave;
-  CI386Task *old,*next;
+  CI386Task *old,*next,*waiter;
   if (!s || !s->current || s->current==s->root) {
     I386IrqRestore(flags); return FALSE;
   }
   old=s->current; next=old->next;
   old->last->next=next; next->last=old->last;
   old->next=0; old->last=0; old->finished=1;
+  for (waiter=old->join_head;waiter;waiter=waiter->join_next)
+    I386SchedWake(s,waiter);
   s->current=next;
   if (s->bind) (*s->bind)(next);
   (*s->swap)(&old->context,&next->context);
@@ -56,7 +60,8 @@ public Bool I386SchedFinish(CI386Scheduler *s)
 public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
 {//Detach a finished task from another stack before its owner frees that stack.
   U32 flags=I386IrqSave;
-  if (!s || !task || task->owner!=s || !task->finished || task==s->current) {
+  if (!s || !task || task->owner!=s || !task->finished || task==s->current ||
+      task->join_head || task->join_target) {
     I386IrqRestore(flags); return FALSE;
   }
   task->addr=0; task->context.esp=0; task->owner=0; task->finished=0; task->blocked=0;
@@ -110,6 +115,33 @@ public Bool I386SchedSetBind(CI386Scheduler *s,U0 (*bind)(CI386Task *task))
   }
   s->bind=bind;
   (*bind)(s->root);
+  I386IrqRestore(flags);
+  return TRUE;
+}
+public Bool I386SchedJoin(CI386Scheduler *s,CI386Task *target)
+{//Task context only. Root may observe completion but cannot block.
+  U32 flags=I386IrqSave;
+  CI386Task *self,*node;
+  if (!s || !s->current || !target || target->owner!=s || target==s->current || target==s->root) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  if (target->finished) { I386IrqRestore(flags); return TRUE; }
+  self=s->current;
+  if (self==s->root) { I386IrqRestore(flags); return FALSE; }
+  //Reject cycles through existing join dependencies before registering a waiter.
+  for (node=target;node;node=node->join_target) if (node==self) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  self->join_target=target; self->join_next=target->join_head; target->join_head=self;
+  //A generic Wake can be spurious for a join; completion is the predicate.
+  while (!target->finished) I386SchedBlock(s);
+  node=target->join_head;
+  if (node==self) target->join_head=self->join_next;
+  else {
+    while (node->join_next!=self) node=node->join_next;
+    node->join_next=self->join_next;
+  }
+  self->join_next=0; self->join_target=0;
   I386IrqRestore(flags);
   return TRUE;
 }

@@ -263,7 +263,7 @@ Spawn and Destroy restore the caller's IF on normal return. Their heap validatio
 and zeroing are still linear operations under IRQ masking. They are task-context
 operations, not IRQ/NMI allocation services. This is not yet the complete public
 TempleOS Spawn interface: task settings/inheritance, per-task heaps, names,
-blocking joins, cleanup hooks and OutMem exception semantics remain pending.
+public join integration, cleanup hooks and OutMem exception semantics remain pending.
 
 The native task test creates two owned workers, verifies that live tasks cannot
 be destroyed, checks full-width entry arguments and stack locals across eight
@@ -271,3 +271,31 @@ yields, and lets both return automatically. Root destroys them, checks an empty
 runnable queue and heap accounting, repeats the cycle, then allocates the entire
 arena again. Invalid inputs and allocation exhaustion are checked for rejected
 creation without extra live heap blocks or queued tasks.
+
+## Joining task completion
+
+`I386SchedJoin(s, target)` waits for another task in the same scheduler to finish.
+It rejects null/foreign targets, self-joins, joins of root (which cannot finish),
+and dependency cycles. Root may observe an already finished target but cannot
+block on an unfinished one. Join is task-context only and restores the caller's
+IF on return.
+
+A waiting task links itself into the target's join list with interrupts masked,
+then blocks until the finished predicate holds. Generic Wake calls can wake it
+before completion; Join rechecks and blocks again. Finish publishes completion
+before waking all registered joiners. Their links remain until each suspended
+Join resumes and unregisters, so `I386SchedReap` and `I386TaskDestroy` reject
+release while joiners can still access the target.
+
+Join does not destroy a task or provide a result value. The target record must be
+live when Join is called, and callers still own all other reference lifetimes.
+After Join returns, callers must arrange ownership before retaining the pointer
+across another yield. There is no timeout, cancellation, forced task termination,
+or deadlock detection for resources other than join-dependency cycles.
+
+The native test schedules one target and two joiners, wakes one joiner before
+completion and verifies that it blocks again, rejects a reverse dependency that
+would form a cycle, and checks that completion wakes both joiners. Root attempts
+destruction while they have not yet resumed and verifies rejection. Both joiners
+then observe completion, unregister, and return; all three owned allocations are
+destroyed with an empty queue and intact heap accounting.

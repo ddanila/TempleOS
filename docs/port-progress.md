@@ -402,7 +402,7 @@ The test checks two workers over repeated creation/retirement cycles, full-width
 arguments and local state, rejected premature destruction and creation failures,
 heap accounting, and full-arena reuse. The combined task suite, both x64 rebuilds
 and 725-file verification pass. These are bootstrap try-allocation APIs; full
-Spawn settings/inheritance, per-task heaps, joins, cleanup and OutMem behavior
+Spawn settings/inheritance, per-task heaps, public wait APIs, cleanup and OutMem behavior
 remain to be integrated.
 
 See the [context ABI and limits](i386-context.md).
@@ -441,3 +441,19 @@ exception or task-unwinding implementation.
 or failure. Its port 0xE9 report/export protocol is test instrumentation, not a
 new production OS dependency. The ISO builder's overlays inject guest test files
 without modifying production startup files.
+
+## Task completion joins
+
+`I386SchedJoin` now registers a waiter before blocking, rechecks completion after
+wakeups, and rejects self/root/foreign targets and join-dependency cycles. Finish
+wakes registered joiners; reaping and owned-task destruction remain blocked until
+those joiners resume and unregister. Root can observe an already completed target
+but cannot block on an unfinished one.
+
+The combined native task test passes with two joiners, an injected spurious wake,
+cycle rejection, completed-target destruction rejection before joiners resume,
+and final destruction of all three tasks with clean queue/heap accounting. Both
+x64 rebuilds and image verification pass. Joins have no timeout/cancellation and
+are not the full public TempleOS task-wait interface. A pointer-to-pointer unlink
+expression was rejected by the current backend; the runtime uses a predecessor
+walk for this list operation.
