@@ -402,8 +402,10 @@ The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
 infinities and NaN propagation. Native HolyC F64 expression lowering and the
 remaining arithmetic/conversion/formatting/math surface remain pending. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
-64-bit extrema and nearest-even halfway cases; language-node mapping and the
-reverse conversions still need implementation/compatibility tests. Numerical
+64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
+passes 1,024 inputs against actual x64 HolyC and an independent host oracle,
+including invalid-result bits. Language-node mapping, explicit unsigned output
+semantics and floating-point exception state remain pending. Numerical
 comparison now passes 2,048 checks, including unordered NaNs, signed zeros and
 reversed operands; relational-operator lowering remains pending. See
 `docs/i386-soft-f64.md`.

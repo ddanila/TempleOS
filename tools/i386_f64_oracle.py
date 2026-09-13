@@ -123,3 +123,30 @@ def make_comparison_oracle(count):
             return 2
         return -1 if x < y else 1 if x > y else 0
     return b''.join(struct.pack('<QQq', a, b, compare(a, b)) for a, b in pairs)
+
+
+def make_to_int_oracle(count):
+    if count != 1024:
+        raise ValueError('x64 compatibility fixture requires 1024 inputs')
+    special = [0, 1, (1 << 52)-1, 1 << 52, INF-1, INF, INF+1, INF+QUIET+0x1234]
+    seed = 0x386F64C
+    records = []
+    for i in range(count):
+        seed = (seed*6364136223846793005+1442695040888963407) & ((1 << 64)-1)
+        if i < 768:
+            value = ((1023+i//12) << 52)+(i%6)-2
+            if i%12 >= 6:
+                value |= SIGN
+        elif i < 784:
+            value = special[(i-768)%8] | (SIGN if i >= 776 else 0)
+        else:
+            value = seed
+        x, = struct.unpack('<d', struct.pack('<Q', value))
+        if value & MASK >= INF:
+            result = -SIGN
+        else:
+            result = int(x)
+            if not -SIGN <= result < SIGN:
+                result = -SIGN
+        records.append(struct.pack('<Qq', value, result))
+    return b''.join(records)

@@ -1021,3 +1021,20 @@ are covered. The 8,192-check arithmetic regression, instruction audits, executio
 with CR0.EM set, both x64 rebuilds and image verification (763 files, 62
 directories) pass. This helper still needs native HolyC relational-operator
 integration and x64 compatibility checks; F64-to-integer conversion also remains.
+
+
+## Software binary64-to-I64 conversion with x64 evidence
+
+`I386F64ToI64` now truncates binary64 values toward zero using integer operations.
+NaNs, infinities and out-of-range values return the integer-indefinite bit pattern
+used by masked x64 `FISTTP`; exactly -2^63 correctly has that same result pattern.
+The runtime does not yet track floating-point invalid/inexact flags.
+
+A 1,024-input fixture executes the original x64 HolyC `ToI64` and compares its
+exported results to independent host truncation/range checks. Native results then
+match those same expectations with CR0.EM set. Inputs cover both signs around
+powers of two through the signed boundary, subnormals, signed zeros, infinities,
+quiet/signaling NaNs and deterministic random values. The 8,192-check arithmetic
+regression, instruction audits, both x64 rebuilds and image verification (763
+files, 62 directories) pass. Native compiler lowering, unsigned-output semantics
+and floating-point exception-state compatibility remain pending.

@@ -50,8 +50,15 @@ from unordered: `>` uses result == 1, and `>=` uses result == 0 or result == 1.
 Equality uses result == 0, inequality result != 0, `<` result == -1, and `<=`
 result == -1 or result == 0. This helper does not define F64-to-Bool conversion.
 
+`I386F64ToI64(U64 value)` converts binary64 bits to a signed integer by
+truncating toward zero. Values with magnitude below one become zero. NaNs,
+infinities and values outside the signed range return integer indefinite
+(`0x8000000000000000`), matching the masked x64 `FISTTP` result used by `ToI64`.
+That bit pattern is also the valid result for exactly -2^63; it is not a distinct
+error code. The helper does not yet record invalid/inexact exception flags.
+
 This is runtime groundwork. Native compiler lowering of HolyC F64 expressions,
-other arithmetic, F64-to-integer conversions, formatting, math functions,
+other arithmetic, explicit unsigned output conversion, formatting, math functions,
 exception flags/traps, selectable rounding modes and optional 387 execution
 remain unimplemented. NaN policy and precision differences from the existing x64
 x87 implementation need compatibility testing before full language integration.
@@ -80,6 +87,13 @@ against host numerical ordering and NaN classification, then checks the reversed
 order (2,048 comparisons). The corpus includes signed zeros, subnormal/normal
 boundaries, infinities, quiet/signaling NaNs and seeded random/adjacent values.
 The fixture also runs with CR0.EM set and passes the generated-function audit.
+
+`python3 tools/test-i386.py --soft-f64-to-int` checks 1,024 binary64 inputs
+against both actual x64 HolyC `ToI64` results and independently computed host
+truncation/range checks. It includes signed neighborhoods of all powers of two
+from 1 through 2^63, subnormals, infinities, NaNs and deterministic random values.
+The native fixture uses the same integer instruction audit and CR0.EM setting.
+This proves conversion result bits for the corpus, not x87 exception-state parity.
 
 For the wider arithmetic surface and rounding-mode terminology, see the
 [Berkeley SoftFloat interface documentation](https://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat.html).

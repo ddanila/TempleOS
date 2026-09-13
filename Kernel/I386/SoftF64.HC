@@ -169,3 +169,17 @@ public I64 I386F64Compare(U64 a,U64 b)
   } else if (a<b) return -1;
   return 1;
 }
+
+public I64 I386F64ToI64(U64 value)
+{
+  I64 exp=((value>>52)&0x7FF)-1023;
+  U64 magnitude;
+  //Match masked x64 FISTTP: truncate, returning integer indefinite if invalid.
+  if (exp<0) return 0;
+  if (exp>=63) return 0x8000000000000000;
+  magnitude=(value&0x000FFFFFFFFFFFFF)|0x0010000000000000;
+  if (exp<52) magnitude>>=52-exp;
+  else magnitude<<=exp-52;
+  if (value>>63) magnitude=0-magnitude;
+  return magnitude;
+}
