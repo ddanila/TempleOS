@@ -731,3 +731,19 @@ a real out-of-range device error and recovery, plus absent-device probing. The
 instruction audit, both x64 rebuilds and image verification (751 files,
 62 directories) pass. CHS-only drives, writes, reset/recovery service, block/filesystem
 integration and physical vintage hardware validation remain pending.
+
+## Native ATA CHS addressing
+
+IDENTIFY decoding now selects valid current translation or default CHS geometry,
+checks register limits and derives capacity for devices without LBA. Reads convert
+logical sector numbers to ATA cylinder/head/sector registers when LBA is absent,
+while retaining the existing bounded PIO and output-preservation contract.
+
+Synthetic records pass geometry/capacity and malformed-response checks. Clearing
+LBA support in the emulated disk profile exercises CHS commands against seeded
+sectors across head/cylinder boundaries and the final CHS sector, with invalid
+geometry/range rejection and unchanged failure outputs. The native ATA suite,
+instruction audit, both x64 rebuilds and image verification (751 files,
+62 directories) pass. This is evidence for CHS command
+execution on QEMU, not a physical CHS-only drive. Firmware-dependent parameter
+initialization, writes, recovery and filesystem integration remain pending.
