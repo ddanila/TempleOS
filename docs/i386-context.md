@@ -55,9 +55,43 @@ allocates the entire arena again. The context assembly is audited separately fro
 HolyC code and data.
 
 This is a cooperative context primitive and a test scheduler on QEMU 486/8 MiB.
-Runnable queues, public task creation and `Yield`, per-task FS/current-CPU GS
+Public task creation and `Yield`, per-task FS/current-CPU GS
 bindings, timer/input integration, blocking and wakeups, cancellation, debugger
 state, exception unwinding, and software-F64 state still need integration. No
 coprocessor state is saved. Stack guards in this test detect boundary writes after
 execution; they do not provide a protected stack or recover from overflow. Physical
 386 validation and the complete interactive OS remain pending.
+
+## Initial native runnable queue
+
+`Kernel/I386/Scheduler.HC` supplies a circular doubly linked runnable queue over
+`CI386Task` records. `I386SchedInit` associates an initially zeroed scheduler and
+root task with the context-switch function. Initialization requires exclusive
+ownership; it does not capture the root's live stack until the first switch.
+`I386SchedAdd` appends an unowned task with an initialized context before root.
+The stack and entry/exit functions are still supplied by the caller.
+
+`I386SchedYield` selects the next runnable task, updates `current`, and switches.
+A one-task queue returns immediately. Queue operations save and restore the
+caller's IF; switching itself happens with IF clear. Each resumed Yield restores
+its own saved IF. Fresh entries begin with IF clear as specified by ContextInit.
+These APIs are for cooperative task code, never IRQ/NMI callbacks, and callers
+must not yield while holding a resource or critical section that another task
+needs. Records and links must remain intact and exclusively managed by this API.
+
+`I386SchedFinish` rejects attempts to finish root. Otherwise it unlinks the current
+task, marks it finished, and switches to its successor without returning. The
+owner association remains until another task calls `I386SchedReap`, which rejects
+live/current/unowned tasks, clears the saved ESP, and releases the owner association.
+The caller can then free the stack and reinitialize the record for another entry.
+Finished tasks cannot be appended again before reaping and ContextInit. There is
+no automatic stack release, cancellation, reference tracking, blocked-task queue,
+or protection against stale external pointers.
+
+The task test now additionally schedules two workers through this production queue
+for 64 yields each, verifies round-robin progress and current-task identity, and
+runs their normal returns through Finish. It checks the root-only queue afterward,
+reaps/frees both stacks, then repeats with the same records. Rejected lifecycle
+operations are checked before and after retirement. This still uses an explicit
+scheduler pointer; FS/GS task bindings and the public TempleOS task API remain
+future integration work.

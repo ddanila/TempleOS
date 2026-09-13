@@ -350,8 +350,17 @@ assembly and native HolyC code have separate instruction audits. Both x64
 rebuild/reboot generations and the 718-file image verification also pass.
 
 This is a context primitive plus a test scheduler, not the complete TempleOS
-task system. Runnable queues, current-task/CPU descriptor bindings, public `Yield`,
+task system. Current-task/CPU descriptor bindings, public `Yield`,
 blocking/wakeup, cancellation, debugger/exception state, and F64 state remain.
+`Scheduler.HC` now adds a circular runnable queue, cooperative Yield, completion
+without returning to the finished task, and explicit reaping before stack release.
+The task test runs two additional 64-yield workers through this queue, checks
+ordering and lifecycle rejection, retires/frees them, then repeats using the same
+records. A root-only queue yields without switching and root completion is rejected.
+The combined task test, both x64 rebuilds, and 720-file image verification pass.
+The queue currently uses explicit scheduler pointers; blocked tasks and public
+TempleOS task semantics remain pending.
+
 See the [context ABI and limits](i386-context.md).
 
 ## Test artifacts
