@@ -4,6 +4,7 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/Message.HH"
+#include "/Kernel/I386/Inbox.HH"
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/KbcInput.HH"
 #include "/Kernel/I386/KeyboardSetup.HH"
@@ -28,6 +29,8 @@ extern U0 EndTask();
 extern U0 OnKeyboard(CI386IrqFrame *frame);
 extern I64 QueueTest();
 extern U0 EmptyWorker(I64 unused);
+extern I64 InboxTest();
+extern U0 InboxSelfWorker(I64 arg);
 I64 Main(I64 a,I64 b)
 {
   U0 (*swap)(CI386Context *old,CI386Context *next);
@@ -81,9 +84,42 @@ I64 Main(I64 a,I64 b)
       I386MsgSend(&orphan,5,6,7) || I386SchedReap(&scheduler,&tasks[1]) ||
       !I386MsgClose(&orphan) || !I386MsgDetach(&orphan) || orphan.count ||
       !I386SchedReap(&scheduler,&tasks[1])) return 21;
-  return 0;
+  return InboxTest;
 }
 U0 EmptyWorker(I64 unused) {}
+I64 InboxTest()
+{
+  CI386Heap heap;
+  CI386OwnedInbox *inbox;
+  U8 *all;
+  I64 i;
+  if (!I386HeapInit(&heap,0x40000,8192)) return 30;
+  for (i=0;i<3;i++) {
+    if (!I386ContextInit(&tasks[1].context,0x52000,8192,&EmptyWorker,0,&EndTask) ||
+        !I386SchedAdd(&scheduler,&tasks[1])) return 31;
+    all=I386HeapAlloc(&heap,8176);
+    if (!all || I386InboxAlloc(&tasks[1],&heap) || tasks[1].messages ||
+        heap.allocations!=1 || !I386HeapFree(&heap,all)) return 32;
+    inbox=I386InboxAlloc(&tasks[1],&heap);
+    if (!inbox || tasks[1].messages!=&inbox->queue || I386InboxAlloc(&tasks[1],&heap) ||
+        heap.allocations!=1 || I386InboxFree(inbox) || inbox->queue.closed ||
+        !I386TaskMsgSend(&tasks[1],2,0x123456789ABCDEF0,0xFEDCBA9876543210)) return 33;
+    if (i==2 && !I386ContextInit(&tasks[1].context,0x52000,8192,&InboxSelfWorker,
+        (inbox+0)(U64),&EndTask)) return 36;
+    if (!I386SchedYield(&scheduler) || !tasks[1].finished) return 34;
+    if (i<2 && (I386SchedReap(&scheduler,&tasks[1]) || !I386InboxFree(inbox))) return 37;
+    if (tasks[1].messages || errors ||
+        heap.allocations || heap.used || !I386HeapValid(&heap) ||
+        !I386SchedReap(&scheduler,&tasks[1]) || (GetRFlags&0x200)) return 34;
+  }
+  if (I386InboxAlloc(0,&heap) || I386InboxAlloc(&tasks[1],&heap) || I386InboxFree(0)) return 35;
+  return 0;
+}
+U0 InboxSelfWorker(I64 arg)
+{
+  SetRFlags(GetRFlags|0x200);
+  if (!I386InboxFree(arg) || !(GetRFlags&0x200) || scheduler.current->messages) errors++;
+}
 U0 Broker(I64 unused)
 {
   CI386KeyboardState state;
@@ -168,6 +204,8 @@ I64 QueueTest()
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Scheduler.HC"
 #include "/Kernel/I386/Message.HC"
+#include "/Kernel/I386/Heap.HC"
+#include "/Kernel/I386/Inbox.HC"
 #include "/Kernel/I386/KbcQueue.HC"
 #include "/Kernel/I386/KbcInput.HC"
 #include "/Kernel/I386/Kbc.HC"

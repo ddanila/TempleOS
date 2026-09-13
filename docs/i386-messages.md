@@ -72,3 +72,31 @@ unread data; sends/reaping fail, then external close/detach discards the data an
 allows reaping. The full task suite also passes with the enlarged native record.
 Automatic inbox allocation and the complete public CTask/CJob interfaces remain
 pending.
+
+## Heap-backed inbox ownership
+
+`Inbox.HH` / `Inbox.HC` add `I386InboxAlloc(task,heap)` and
+`I386InboxFree(inbox)`. Allocation uses the supplied native heap, initializes an
+empty queue and attaches it to the live task. A missing/finished/finishing task,
+existing inbox, invalid heap or exhausted arena fails without attaching anything.
+The helper frees its allocation if queue setup cannot complete.
+
+The returned `CI386OwnedInbox` contains the queue and its heap ownership metadata.
+Free accepts a live owned record, validates its allocation size, and requires no
+pending reader. It permits the recipient's own cleanup or cleanup from another
+task after recipient completion. It closes the queue if necessary, detaches it,
+discards unread messages and returns the block to its original heap. A rejected
+foreign cleanup of a live recipient leaves its queue open and attached.
+
+Use the ownership helper for the full lifecycle: do not manually detach an owned
+inbox and then pass it to Free. Keep the heap, inbox and task records alive until
+cleanup completes, and retain no queue pointers after a successful free. These
+are task-context operations under a saved interrupt mask, with the raw heap's
+validation/latency limits. They do not run allocation in IRQ handlers or add an
+inbox automatically to every Spawn call.
+
+The native message suite exercises exhausted allocation, duplicate attachment,
+rejected live-task cleanup, completion with unread data and full arena reclamation
+across repeated cycles. A third recipient frees its own inbox with IF enabled;
+its association is cleared and IF restored before normal task completion. The
+existing live keyboard broker/consumer path continues to pass.

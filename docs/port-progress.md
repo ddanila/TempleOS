@@ -673,3 +673,18 @@ A worker returning with unread messages rejects further sends and can be cleaned
 up externally before reaping. The full task suite, both x64 rebuilds and image
 verification (743 files, 62 directories) pass. Automatic inbox allocation, full
 public task/job integration and focus routing remain pending.
+
+## Heap-owned native inboxes
+
+Inbox allocation now obtains a queue from a caller-supplied native heap and
+attaches it to a live task, with no association left behind on failure. The
+matching cleanup helper validates ownership, closes/detaches, discards unread
+messages and returns the allocation to its original heap. Live foreign cleanup
+is rejected without closing the queue.
+
+The message fixture passes exhaustion, duplicate allocation, rejected premature
+cleanup and full arena reclamation after completion across repeated cycles.
+A recipient also frees its own inbox with IF enabled before returning. The full
+message/QMP suite, instruction audit, both x64 rebuilds and image verification
+(745 files, 62 directories) pass. Automatic Spawn policy, full public task/job
+integration and focus routing remain pending.
