@@ -378,6 +378,14 @@ The idle code is a fifth separate audit range. Task and IRQ suites, both x64
 rebuilds, and 721-file image verification pass. Current-task bindings, public
 TempleOS task semantics, and production boot/service-loop wiring remain pending.
 
+The compiler now supports native `Fs()`/`Gs()` reads of the 32-bit self-address
+pointer at segment offset zero. The i386 optimizer retains ordinary pointer-based
+field accesses instead of the x64 MOV_FS/MOV_GS folding. A temporary GDT test uses
+distinct FS/GS bases, checks self/pointer fields, reads/writes and 64-bit arithmetic,
+then restores the original GDTR and selectors. The combined task test, 150-function
+regression corpus, both x64 rebuilds and image verification pass. Descriptor setup
+is test-only and separately audited; automatic scheduler/CPU bindings remain next.
+
 See the [context ABI and limits](i386-context.md).
 
 ## Test artifacts

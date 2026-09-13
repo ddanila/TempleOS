@@ -233,6 +233,19 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             calls->indirect=TRUE;
             calls->depth--;
             break;
+          case IC_FS:
+          case IC_GS:
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt ||
+                depth!=calls->depth) throw('Compiler');
+            //The first native pointer in each segment record is its flat self address.
+            if (ic->ic_code==IC_FS) I386Byte(&out,0x64);
+            else I386Byte(&out,0x65);
+            I386Byte(&out,0xA1); I386Dword(&out,0);
+            I386Bytes(&out,"\x31\xD2",2);
+            calls->called=TRUE;
+            break;
           case IC_GET_RFLAGS:
           case IC_SET_RFLAGS:
             arg_index=0;

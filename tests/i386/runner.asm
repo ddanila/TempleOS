@@ -172,13 +172,15 @@ cases: incbin CASES_FILE
 %ifdef TASK_TEST
 %include "Kernel/I386/Context.asm"
 %include "Kernel/I386/Idle.asm"
-task_test_control: dd i386_irq_dispatch,i386_idle
+%include "tests/i386/segments.inc"
+task_test_control: dd i386_irq_dispatch,i386_idle,segment_test_run
     db 'I32T'
     dd i386_context_code_begin-$$+512,i386_context_code_end-i386_context_code_begin
     dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
     dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
     dd i386_exception_stubs_begin-$$+512,i386_exception_stubs_end-i386_exception_stubs_begin
     dd i386_idle_code_begin-$$+512,i386_idle_code_end-i386_idle_code_begin
+    dd segment_test_code_begin-$$+512,segment_test_code_end-segment_test_code_begin
 %endif
 %ifdef IRQ_TEST
     db 'I32Q'

@@ -115,6 +115,8 @@ args.
 	break;
       case IC_FS:
       case IC_GS:
+        //Native i386 currently uses the ordinary pointer/load path after Fs/Gs.
+        if (cc->flags&CCF_TARGET_I386) break;
 //CALL,FS/GS,CALL_END,IMM,ADD,DEREF-->MOV_FS/GS
 	tmpi1=tmpi->next->next; //IMM
 	tmpi2=tmpi1->next; //ADD
@@ -1290,4 +1292,3 @@ args.
 //This is for determining type conversions for passing args to funs.
   return last_with_class;
 }
-

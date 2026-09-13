@@ -15,7 +15,12 @@ extern I64 TimerWakeTest();
 extern U0 TimerWorker(I64 arg);
 extern U0 OnTimer(CI386IrqFrame *frame);
 class CTimerDispatch { U0 (*handler)(CI386IrqFrame *frame); };
-class CTaskTestControl { CTimerDispatch *irq; U0 (*idle)(); };
+class CTaskTestControl { CTimerDispatch *irq; U0 (*idle)(); I64 (*segments)(I64 callback); };
+class CSegmentTask { CSegmentTask *addr; U32 tag; I64 wide; U8 *ptr; U8 bytes[4]; };
+class CSegmentCpu { CSegmentCpu *addr; U32 tag; CSegmentTask *task; };
+_intern 0x15 CSegmentTask *Fs();
+_intern 0x17 CSegmentCpu *Gs();
+extern I64 SegmentCheck();
 CTimerDispatch *timer_dispatch;
 CTaskTestControl *test_control;
 U0 (*idle)();
@@ -38,6 +43,7 @@ I64 Main(I64 a,I64 b)
   U8 *stacks[3],*p;
   I64 i,j,round;
   swap=b; test_control=a; timer_dispatch=test_control->irq; idle=test_control->idle;
+  if ((*test_control->segments)(&SegmentCheck)) return 36;
   if (!I386HeapInit(&heap,0x40000,32768)) return 1;
   for (i=1;i<=2;i++) {
     p=I386HeapAlloc(&heap,8208,TRUE); stacks[i]=p;
@@ -248,3 +254,21 @@ U0 OnTimer(CI386IrqFrame *frame)
   I386PicEoi(frame->irq);
 }
 #include "/Kernel/I386/PicPit.HC"
+
+I64 SegmentCheck()
+{
+  CSegmentTask *task=0x50000;
+  CSegmentCpu *cpu=0x50100;
+  task->addr=task; task->tag=0x12345678; task->wide=0x123456789ABCDEF0;
+  task->ptr=&task->bytes[0]; task->bytes[0]=42;
+  cpu->addr=cpu; cpu->tag=0x87654321; cpu->task=task;
+  if (Fs!=task || Gs!=cpu || Fs->addr!=task || Gs->addr!=cpu ||
+      Gs->task!=Fs || Fs->tag!=0x12345678 || Gs->tag!=0x87654321 ||
+      Fs->wide!=0x123456789ABCDEF0 || *Fs->ptr!=42) return 1;
+  Fs->wide+=0x100000001;
+  Gs->task->tag=93;
+  Fs->bytes[1]=71;
+  if (task->wide!=0x123456799ABCDEF1 || task->tag!=93 || task->bytes[1]!=71 ||
+      (Fs+0)(U64)!=0x50000 || (Gs+0)(U64)!=0x50100) return 2;
+  return 0;
+}

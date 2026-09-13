@@ -323,7 +323,9 @@ runnable queue; explicit wakeup passes ordered-resume and lifecycle tests;
 a combined PIT/task test now passes IRQ-driven event publication and wakeup
 through 16 waits. Root-only idle now checks the queue with IF masked and halts
 through an adjacent STI/HLT sequence, with IRQ wakeup and IF restoration tested.
-Next, integrate public task semantics and current-task bindings, bring up
+Native Fs/Gs intrinsics now pass pointer and field-access tests through distinct
+protected-mode segment bases. Next, integrate descriptor binding during switches
+and public task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe

@@ -179,3 +179,28 @@ runnable, then runs the remaining event waits with an idle/yield root loop enter
 with IF enabled. It also rejects idle from the worker and with missing arguments.
 The idle assembly has its own instruction-audit range. This establishes the
 primitive and scheduler integration, not a complete boot/task/device service loop.
+
+## Native Fs/Gs compiler access
+
+The i386 backend now supports the existing `Fs()` and `Gs()` intrinsics. Each
+loads the 32-bit flat self-address pointer at offset zero through the corresponding
+segment override and zero-extends it into HolyC's eight-byte value slot. This
+matches the self-pointer convention used by the existing CTask and CCPU records;
+it does not read a descriptor base directly or return the selector value.
+
+For i386, the early optimizer leaves subsequent field accesses as ordinary
+pointer arithmetic and loads/stores instead of folding them into the x64-oriented
+MOV_FS/MOV_GS intermediate operations. Numeric fields retain their declared widths,
+including eight-byte I64 values. The x64 optimization path is unchanged.
+
+The task fixture temporarily installs two additional GDT descriptors, with FS
+based at 0x50000 and GS at 0x50100, initializes separate self-addressed records,
+and checks direct pointers, pointer fields, scalar/array reads and writes, and
+64-bit arithmetic through Fs/Gs. It restores the previous GDTR and FS/GS selectors
+before continuing the task lifecycle tests. These records lie outside the fixed
+heap, loaded stage, and stack. The test-only descriptor setup code is a sixth
+separate instruction-audit range; the GDT and GDTR data are excluded.
+
+This verifies native compiler access through real protected-mode segments.
+Production task/CPU record layouts, descriptor allocation and reloads during
+context switches, and automatic scheduler bindings still need implementation.

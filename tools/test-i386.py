@@ -168,13 +168,13 @@ def main():
         'tests/i386/runner.asm', '-o', str(disk))
     if args.irq or args.tasks:
         raw = disk.read_bytes()
-        trailer_size = 44 if args.tasks else 28
+        trailer_size = 52 if args.tasks else 28
         if raw[-trailer_size:-trailer_size+4] != (b'I32T' if args.tasks else b'I32Q'):
             raise ValueError('Missing IRQ assembly boundaries')
-        ranges = struct.unpack('<10I' if args.tasks else '<6I', raw[-trailer_size+4:])
+        ranges = struct.unpack('<12I' if args.tasks else '<6I', raw[-trailer_size+4:])
         irq_allowed = {'push','pop','pusha','popa','pushf','popf','mov','add','xor',
                        'shr','cmp','test','jmp','jz','jnz','jc','jnc','ja','call','ret',
-                       'cld','std','cli','sti','hlt','int','int3','div','iret','lidt','loop','lodsd'}
+                       'cld','std','cli','sti','hlt','int','int3','div','iret','lidt','lgdt','sgdt','sub','loop','lodsd'}
         assembly = []
         for start, length in zip(ranges[::2], ranges[1::2]):
             if start<512 or length<=0 or start+length>len(raw)-trailer_size:
