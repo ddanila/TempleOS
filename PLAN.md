@@ -16,7 +16,7 @@ Implementation is underway; see [port progress](docs/port-progress.md) for curre
 evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 695 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
+checks 697 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. Experimental i386 expression
 and function backends are tracked in the progress document.
 
@@ -300,7 +300,9 @@ execution tests, including callbacks in linked modules. Global/static storage an
 relative address imports now have a version-2 module path with explicit data ranges.
 The shared loader now executes on i386 and loads code/data into caller-owned
 memory. Byte/word/dword port-I/O intrinsics now pass target tests, including VGA
-sequencer register readback; framebuffer presentation remains pending.
+sequencer register readback. Native palette programming and a full planar VGA
+upload now pass a 640×480 pixel comparison in the protected-mode runner; integration
+with the graphics/window-manager path remains pending.
 Next, connect native allocation and platform services, then resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe
 runtime interfaces before attempting a full kernel link. Runner success remains an

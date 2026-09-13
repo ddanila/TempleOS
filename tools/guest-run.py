@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run an isolated x86-64 build/test guest and collect debugcon reports/exports."""
+"""Run an isolated build/test guest and collect debugcon reports, exports, and display."""
 import argparse
 import json
 from pathlib import Path
@@ -13,6 +13,7 @@ def main():
     parser.add_argument('iso', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--timeout', type=float, default=180)
+    parser.add_argument('--i386-disk', action='store_true', help='Run a protected-mode test disk with VGA and 8 MiB RAM')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -26,6 +27,12 @@ def main():
            '-boot', 'd', '-display', 'none', '-no-reboot',
            '-debugcon', f'file:{log}', '-global', 'isa-debugcon.iobase=0xe9',
            '-qmp', f'unix:{qmp_path},server=on,wait=off']
+    if args.i386_disk:
+        cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg',
+               '-cpu', '486', '-m', '8', '-nic', 'none',
+               '-drive', f'file={args.iso.resolve()},format=raw,if=ide',
+               '-display', 'none', '-no-reboot', '-debugcon', f'file:{log}',
+               '-qmp', f'unix:{qmp_path},server=on,wait=off']
     (out / 'command.json').write_text(json.dumps(cmd, indent=2)+'\n')
     sock = socket.socket(socket.AF_UNIX)
     with (out / 'qemu.log').open('w') as stderr:

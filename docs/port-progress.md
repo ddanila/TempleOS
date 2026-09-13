@@ -156,7 +156,36 @@ Executable instruction auditing covers the generated I/O instructions.
 
 Both x86-64 rebuild/reboot generations and the 150-case i386 function corpus pass.
 This is a prerequisite for platform drivers, not a framebuffer presentation test.
-The full VGA upload path, keyboard, timers, and native allocation remain pending.
+The initial VGA upload implementation is described below; keyboard, timers, and
+native allocation remain pending.
+
+## Native VGA presentation
+
+`Kernel/I386/Vga.HC` provides `I386VgaPalette` and `I386VgaPresent`, compiled by
+HolyC into the i386 module format. Presentation accepts the existing 640×480
+TempleOS planar layout: four consecutive 38,400-byte planes with the left pixel
+in the low bit. It reverses each byte for VGA, selects each hardware plane, and
+writes the 0xA0000 aperture. The implementation uses byte accesses and requires
+no newer CPU instructions. Palette setup follows the existing attribute-index
+and six-bit DAC programming sequence. `Kernel/I386/Ports.HH` supplies standalone
+intrinsic declarations for platform units; full kernel declarations remain in
+`KernelB.HH`.
+
+`python3 tools/test-i386.py --vga` cross-compiles the actual implementation,
+audits its executable regions, and boots a BIOS-CHS protected-mode runner on
+QEMU's 486 model with 8 MiB RAM. The guest uploads a filled framebuffer, replaces
+it with an asymmetric 16-color pattern, and returns through the normal ABI
+checks. QMP captures the display; all 307,200 pixels match independent host-side
+coordinate/color expectations. The screenshot comparison uses QEMU's specific
+[six-bit DAC conversion](https://github.com/qemu/qemu/blob/v10.2.1/hw/display/vga_int.h#L150-L156).
+The 150-function regression corpus and both x86-64 rebuild generations also pass.
+
+The BIOS still establishes mode 0x12 before protected-mode entry. These routines
+require that mode's graphics-controller configuration and exclusive caller-owned
+VGA access. No scheduler locking, dirty-region optimization, retrace scheduling,
+or window-manager integration is implemented yet. The test reserves its source
+buffer at 0x30000; this is not a native memory allocator or a measured full-OS RAM
+budget. This result does not establish physical VGA or 386SX/DX compatibility.
 
 ## Test artifacts
 
@@ -168,6 +197,8 @@ The full VGA upload path, keyboard, timers, and native allocation remain pending
   and loaded-code execution results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
+- `build/i386-vga-test/`: compiled presentation code, instruction audit, disk,
+  QMP display captures, pixel comparison result, and emulator command.
 - `build/i386-functions-test/`: function corpus, disassembly, ABI runner and logs.
 - `build/i386-test/`: compiler ISO, generated expressions, disassembly of code
   ranges, test disk, runner log, and result JSON.

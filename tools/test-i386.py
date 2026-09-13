@@ -26,12 +26,13 @@ def main():
     parser.add_argument('--functions', action='store_true',
                         help='Test normal function compilation using test-rebuild.py output')
     parser.add_argument('--data', action='store_true', help='Test global/static storage and data imports')
+    parser.add_argument('--vga', action='store_true', help='Test native planar VGA presentation and displayed pixels')
     args = parser.parse_args()
-    data_mode = args.data
+    data_mode = args.data or args.vga
     functions = args.functions or data_mode
-    kind = 'data' if data_mode else 'functions' if functions else 'expressions'
+    kind = 'vga' if args.vga else 'data' if data_mode else 'functions' if functions else 'expressions'
     if functions:
-        OUT = ROOT/('build/i386-data-test' if data_mode else 'build/i386-functions-test')
+        OUT = ROOT/('build/i386-vga-test' if args.vga else 'build/i386-data-test' if data_mode else 'build/i386-functions-test')
         manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
         for name, digest in manifest['source_sha256'].items():
             if name.startswith(('Compiler/', 'Kernel/')):
@@ -52,7 +53,7 @@ def main():
     build = [sys.executable, 'tools/build-iso.py', '--overlay', str(OUT/'overlay')]
     if functions:
         build += ['--overlay', 'build/rebuild-test/overlay']
-    build += ['--overlay', 'tests/guest/i386-data' if data_mode else 'tests/guest/i386-functions' if functions else 'tests/guest/i386',
+    build += ['--overlay', 'tests/guest/i386-vga' if args.vga else 'tests/guest/i386-data' if data_mode else 'tests/guest/i386-functions' if functions else 'tests/guest/i386',
               '--output', str(iso)]
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
@@ -148,18 +149,42 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (16 if data_mode else 150 if functions else 9):
+    if offset != len(data) or count != (1 if args.vga else 16 if data_mode else 150 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
-    run('nasm', *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         f'-DEXPECTED_FAULTS={4 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if disk.stat().st_size > 129*512:
         raise ValueError('Runner exceeds boot-loader transfer size')
     with disk.open('ab') as stream:
         stream.truncate(16*1024*1024)
+    if args.vga:
+        run(sys.executable, 'tools/guest-run.py', str(disk), '--i386-disk',
+            '--out', str(OUT/'display'), '--timeout', '90')
+        from PIL import Image
+        screen = Image.open(OUT/'display/screen.ppm').convert('RGB')
+        palette = [(0,0,0),(0,0,42),(0,42,0),(0,42,42),
+                   (42,0,0),(42,0,42),(42,21,0),(42,42,42),
+                   (21,21,21),(21,21,63),(21,63,21),(21,63,63),
+                   (63,21,21),(63,21,63),(63,63,21),(63,63,63)]
+        # QEMU v10.2.1 hw/display/vga_int.h c6_to_8 repeats the low DAC bit.
+        # https://github.com/qemu/qemu/blob/v10.2.1/hw/display/vga_int.h#L150-L156
+        palette = [tuple((v<<2)|((v&1)*3) for v in color) for color in palette]
+        if screen.size != (640,480):
+            raise ValueError(f'Unexpected VGA dimensions: {screen.size}')
+        for y in range(480):
+            for x in range(640):
+                expected = palette[((x//40+y//30)&15)^(x&7)]
+                if screen.getpixel((x,y)) != expected:
+                    raise ValueError(f'VGA pixel mismatch at {x},{y}: {screen.getpixel((x,y))} != {expected}')
+        screen.save(OUT/'display/screen.png')
+        (OUT/'result.json').write_text(json.dumps({'result':'pass', 'cpu':'486',
+            'ram_mib':8, 'pixels':640*480, 'scope':'native VGA palette and planar upload'}, indent=2)+'\n')
+        print('PASS: native VGA upload, all 307200 displayed pixels match.')
+        return
     log = OUT/'runner.log'
     log.write_text('')
     cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486',

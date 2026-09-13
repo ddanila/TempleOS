@@ -72,6 +72,9 @@ passed:
     jne failed
     mov esi,passmsg
     call puts
+%ifdef VGA_TEST
+    jmp stop
+%endif
     mov eax,0x10
     out 0xf4,eax
     jmp stop
@@ -104,7 +107,10 @@ puts:
     jmp puts
 .done:
     ret
-%ifdef FUNCTIONS
+%ifdef VGA_TEST
+passmsg: db 'DONE i386 VGA',10,0
+failmsg: db 'FAIL i386 VGA',10,0
+%elifdef FUNCTIONS
 passmsg: db 'PASS i386 functions',10,0
 failmsg: db 'FAIL i386 functions',10,0
 %else

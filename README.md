@@ -66,6 +66,7 @@ python3 tools/test-rebuild.py
 python3 tools/test-i386.py
 python3 tools/test-i386.py --functions
 python3 tools/test-i386.py --data
+python3 tools/test-i386.py --vga
 python3 tools/test-i386-module-check.py
 python3 tools/test-i386-loader.py
 ```
@@ -73,3 +74,6 @@ python3 tools/test-i386-loader.py
 These tests compile HolyC inside a temporary TempleOS VM. The i386 test executes
 generated integer code in a protected-mode runner using QEMU's 486 model; it
 does not yet boot a complete 32-bit TempleOS system or prove real-386 support.
+
+The VGA test additionally requires Pillow and checks every pixel of a 640×480
+screenshot after native palette programming and planar framebuffer uploads.
