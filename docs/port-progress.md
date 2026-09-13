@@ -881,3 +881,21 @@ The creation regression, instruction audits, both x64 rebuilds and image
 verification (758 files, 62 directories) also pass.
 Directory growth, public file APIs, legacy cache policy, interrupted replacement
 recovery and physical validation remain pending.
+
+## Native modules loaded from disk
+
+A RedSea-to-module bridge now reads a complete uncompressed module file into a
+temporary heap allocation and passes it through the existing target/ABI validator
+and native loader. It returns an independent executable image and releases the
+file copy. Incomplete reads, invalid modules and allocation failures return zero
+with temporary storage reclaimed; invocation/unloading remain caller-owned.
+
+A freshly cross-compiled file with mutable 64-bit global data executes after
+loading from RedSea, including after the exact reclaimed file-buffer allocation
+is overwritten. Repeated load/free resets module data and reclaims the heap.
+Wrong pointer width, truncation, small/compressed files, missing entry symbols,
+both exhaustion stages and a real partial disk read pass rejection/cleanup checks.
+The payload and loader code pass instruction audits; the backing disk remains
+unchanged. Both x64 rebuilds and image verification (760 files, 62 directories)
+pass. Multi-file dependencies, resident symbols,
+registry/lifetime policy and production boot/JIT integration remain pending.

@@ -384,8 +384,13 @@ reuse, cross-sector append and remount/readback tests. Regular-file deletion now
 flushes tombstones before bitmap release, with empty-file, reclamation and reuse
 tests. Replacement now writes and flushes new storage and publishes the updated entry
 before freeing old storage, with growth/empty/no-space preservation tests.
-Public CDrv/CFile integration, decompression, directory growth and loading native
-modules from disk remain pending. See `docs/i386-redsea.md`.
+Public CDrv/CFile integration, decompression and directory growth remain pending.
+See `docs/i386-redsea.md`. A disk-to-module bridge now reads uncompressed RedSea
+modules into temporary heap storage, validates/loads them and releases the file
+buffer before execution. Native tests cover mutable 64-bit data, buffer-lifetime
+independence, malformed files and both allocation-failure stages. Dependency sets,
+resident symbol binding and production boot/JIT integration remain pending;
+see `docs/i386-module-file.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

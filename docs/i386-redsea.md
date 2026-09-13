@@ -4,7 +4,8 @@
 to the native ATA driver. All calls inherit ATA's exclusive, quiescent channel
 ownership with IF clear. Volume, disk, entry, name and data buffers must remain
 live; output storage must not overlap the input records. This is an initial
-filesystem interface, not yet the public CDrv/CFile implementation.
+filesystem interface, not yet the public CDrv/CFile implementation. Uncompressed
+module loading is connected through [the module-file bridge](i386-module-file.md).
 
 The format follows `Doc/RedSea.DD`, `Kernel/KernelA.HH` and
 `Kernel/BlkDev/FileSysRedSea.HC`: 512-byte sectors, absolute sector addresses,
@@ -185,5 +186,5 @@ write-and-flush sequence. Creation is also rerun after sharing the format writer
 Interrupted replacement is not yet fault-injected.
 
 Directory growth, legacy cache policy, cache and task locking,
-decompression, public file APIs, resident module loading from files, complete image consistency checks and
+decompression, public file APIs, complete image consistency checks and
 physical 386/IDE validation remain pending.
