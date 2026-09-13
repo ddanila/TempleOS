@@ -5,6 +5,11 @@
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Scheduler.HH"
+#include "/Kernel/I386/Task.HH"
+extern I64 OwnedTaskTest();
+extern U0 OwnedWorker(I64 arg);
+CI386OwnedTask *owned_tasks[2];
+U32 owned_progress[2];
 #include "/Kernel/I386/Irq.HH"
 extern U0 I386PicInit();
 extern U0 I386PicMask(U16 mask);
@@ -240,7 +245,7 @@ I64 TimerWakeTest()
   for (i=0;i<8;i++) if (stack[i]!=0xA5 || stack[8200+i]!=0xA5) return 32;
   if (!I386HeapFree(&heap,stack) || heap.used || heap.allocations ||
       !I386HeapValid(&heap)) return 33;
-  return 0;
+  return OwnedTaskTest;
 }
 U0 TimerWorker(I64 arg)
 {
@@ -299,3 +304,60 @@ U0 BindTask(CI386Task *task)
   if ((Fs+0)(U8 *)!=task || (Gs+0)(U8 *)!=&bound_cpu) errors++;
 }
 #include "/Kernel/I386/Segments.HC"
+
+I64 OwnedTaskTest()
+{
+  CI386Heap heap;
+  I64 cycle,i,j;
+  U8 *p;
+  if (!I386HeapInit(&heap,0x40000,32768) || I386TaskDestroy(0) ||
+      I386TaskSpawn(0,&heap,8192,&OwnedWorker,0) ||
+      I386TaskSpawn(&scheduler,0,8192,&OwnedWorker,0) ||
+      I386TaskSpawn(&scheduler,&heap,8192,0,0) ||
+      I386TaskSpawn(&scheduler,&heap,-1,&OwnedWorker,0) ||
+      I386TaskSpawn(&scheduler,&heap,255,&OwnedWorker,0) ||
+      I386TaskSpawn(&scheduler,&heap,257,&OwnedWorker,0) ||
+      I386TaskSpawn(&scheduler,&heap,0x100000000,&OwnedWorker,0) || heap.used) return 40;
+  for (cycle=0;cycle<2;cycle++) {
+    for (i=0;i<2;i++) {
+      owned_progress[i]=0;
+      owned_tasks[i]=I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0x100000000+i);
+      if (!owned_tasks[i] || I386TaskDestroy(owned_tasks[i]) ||
+          owned_tasks[i]->task.addr!=&owned_tasks[i]->task) return 41;
+    }
+    if (heap.allocations!=2 || I386TaskSpawn(&scheduler,&heap,32768,&OwnedWorker,0) ||
+        heap.allocations!=2 || !I386HeapValid(&heap)) return 42;
+    for (j=0;j<9;j++) {
+      if (!I386SchedYield(&scheduler) || I386TaskSelf!=&tasks[0] || errors) return 43;
+      for (i=0;i<2;i++) {
+        if (j<8) {
+          if (owned_progress[i]!=j+1 || owned_tasks[i]->task.finished) return 44;
+        } else if (!owned_tasks[i]->task.finished || owned_progress[i]!=8) return 45;
+      }
+    }
+    for (i=0;i<2;i++) {
+      if (!I386TaskDestroy(owned_tasks[i])) return 46;
+      owned_tasks[i]=0;
+    }
+    if (heap.used || heap.allocations || !I386HeapValid(&heap) ||
+        tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0] || (GetRFlags&0x200)) return 47;
+  }
+  p=I386HeapAlloc(&heap,32752);
+  if (!p || !I386HeapFree(&heap,p)) return 48;
+  return 0;
+}
+U0 OwnedWorker(I64 arg)
+{
+  I64 id=arg&255,round,j;
+  U32 local[8];
+  if (id>1 || arg!=0x100000000+id) { errors++; return; }
+  for (j=0;j<8;j++) local[j]=id*100+j;
+  for (round=0;round<8;round++) {
+    if (I386TaskSelf!=&owned_tasks[id]->task || I386TaskSelf->owner!=&scheduler ||
+        I386TaskDestroy(owned_tasks[id])) errors++;
+    owned_progress[id]=round+1;
+    if (!I386SchedYield(&scheduler)) errors++;
+    for (j=0;j<8;j++) if (local[j]!=id*100+j) errors++;
+  }
+}
+#include "/Kernel/I386/Task.HC"

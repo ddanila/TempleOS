@@ -236,3 +236,38 @@ workers across yields and blocking, the binding callback, and hardware IRQs, the
 restores the original GDT/selectors on return to the outer harness. Segment reload
 assembly has its own audit range. Descriptor-slot management, full public task/CPU
 records and production boot wiring remain pending.
+
+## Heap-owned task lifecycle
+
+`Kernel/I386/Task.HC` provides a bootstrap `I386TaskSpawn`/`I386TaskDestroy` pair.
+Spawn requires a live scheduler with working self-addressed FS binding and valid
+FS/GS selectors (defaults 0x18/0x20). It allocates one heap block containing a
+`CI386OwnedTask` header and an aligned stack, zeroes it, initializes the context,
+and appends the task to the runnable queue. Stack size must be at least 256 bytes,
+a multiple of eight, and representable together with the header. Invalid or
+unavailable requests return zero; setup failure releases the temporary allocation.
+
+The entry remains `U0 entry(I64 arg)`. Its normal return reaches `I386TaskReturn`,
+which obtains the task through the native `I386TaskSelf` FS intrinsic and finishes
+it through its owner scheduler. It does not free the current stack.
+
+Another task calls `I386TaskDestroy` on the still-live owned record after completion.
+Destroy rejects unfinished/current tasks and invalid ownership metadata, verifies
+the backing allocation's requested size, reaps the task, then frees the combined
+record/stack. It keeps IF masked across validation and release. Callers must remove
+external references before destruction and must not reuse a freed pointer; there
+is no cancellation or reference counting. Direct scheduler reaping is reserved
+for caller-owned records, since it would remove the ownership needed by Destroy.
+
+Spawn and Destroy restore the caller's IF on normal return. Their heap validation
+and zeroing are still linear operations under IRQ masking. They are task-context
+operations, not IRQ/NMI allocation services. This is not yet the complete public
+TempleOS Spawn interface: task settings/inheritance, per-task heaps, names,
+blocking joins, cleanup hooks and OutMem exception semantics remain pending.
+
+The native task test creates two owned workers, verifies that live tasks cannot
+be destroyed, checks full-width entry arguments and stack locals across eight
+yields, and lets both return automatically. Root destroys them, checks an empty
+runnable queue and heap accounting, repeats the cycle, then allocates the entire
+arena again. Invalid inputs and allocation exhaustion are checked for rejected
+creation without extra live heap blocks or queued tasks.

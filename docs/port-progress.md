@@ -395,6 +395,16 @@ and descriptor arguments, then restores the original GDT. The task and IRQ tests
 both x64 rebuilds, and 723-file verification pass. Full CTask/CCPU migration,
 production descriptor-slot management and public task APIs remain pending.
 
+`Task.HC` now allocates a combined owned-task record and stack, prepares its
+context and queues it. Normal entry return uses the native FS self-pointer to
+finish the task; a separate task validates, reaps and frees the allocation.
+The test checks two workers over repeated creation/retirement cycles, full-width
+arguments and local state, rejected premature destruction and creation failures,
+heap accounting, and full-arena reuse. The combined task suite, both x64 rebuilds
+and 725-file verification pass. These are bootstrap try-allocation APIs; full
+Spawn settings/inheritance, per-task heaps, joins, cleanup and OutMem behavior
+remain to be integrated.
+
 See the [context ABI and limits](i386-context.md).
 
 ## Test artifacts
