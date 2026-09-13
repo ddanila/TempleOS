@@ -933,3 +933,22 @@ relative arithmetic without executing the synthetic address. The shared-loader
 audits, both x64 rebuilds and image verification (761 files, 62 directories) pass.
 Production kernel export discovery, provider pinning/unloading policy and boot/JIT
 integration remain pending.
+
+
+## Software binary64 addition and subtraction
+
+The initial software F64 runtime now implements addition/subtraction on binary64
+bit patterns through the native integer ABI. It uses integer operations only,
+with nearest-even rounding, gradual underflow, signed zeros, infinities and an
+explicit first-NaN quieting/payload policy. It is not yet connected to native
+HolyC F64 expression lowering; other arithmetic, comparisons, conversions,
+formatting, math functions and exception/rounding state remain pending.
+
+The native fixture passes 2,048 operand pairs (4,096 bit-for-bit add/subtract
+checks), including boundary cross-products, alignment/halfway cases, cancellation
+and seeded random inputs. Expected finite results come from host binary64
+arithmetic; NaN policy has explicit expected bits. Generated functions pass the
+386 instruction audit, and CR0.EM is set to trap x87 use during execution.
+Both x64 rebuild generations and image verification (763 files, 62 directories)
+pass. This remains a QEMU 486/8 MiB development check, not real-386 validation or
+full HolyC floating-point compatibility. See `docs/i386-soft-f64.md`.

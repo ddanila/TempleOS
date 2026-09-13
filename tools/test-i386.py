@@ -45,14 +45,15 @@ def main():
     modes.add_argument('--redsea-load', action='store_true', help='Test loading native modules from RedSea files')
     modes.add_argument('--redsea-load-set', action='store_true', help='Test linked module sets loaded from RedSea')
     modes.add_argument('--redsea-bind', action='store_true', help='Test modules bound to resident functions and data')
+    modes.add_argument('--soft-f64', action='store_true', help='Test integer-only binary64 addition and subtraction')
     args = parser.parse_args()
     task_runner = args.tasks or args.input or args.messages
-    large_runner = task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
+    large_runner = args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind'):
+    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind')
+    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64')
     functions = kind != 'expressions'
     if functions:
         OUT = ROOT/f'build/i386-{kind}-test'
@@ -95,6 +96,20 @@ def main():
                 _, case, start = line.split()
                 ranges.setdefault(int(case), []).append(int(start, 16))
     data = (exports/'expressions.bin').read_bytes()
+    if args.soft_f64:
+        from i386_f64_oracle import make_oracle
+        records = [line.split() for line in (exports/'debug.log').read_text().splitlines()
+                   if line.startswith('ORACLE ')]
+        if len(records) != 1:
+            raise ValueError('Missing/duplicate F64 oracle export')
+        begin, length = (int(value, 16) for value in records[0][1:])
+        oracle = make_oracle(2048)
+        if length != len(oracle) or begin < 28 or begin+length > len(data)-4:
+            raise ValueError('Invalid F64 oracle bounds')
+        if not any(begin == 28+start and length == size for start, size in data_ranges.get(0, [])):
+            raise ValueError('F64 oracle is not an exported data region')
+        data = data[:begin]+oracle+data[begin+length:]
+        (exports/'expressions.bin').write_bytes(data)
     offset = count = 0
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
@@ -177,7 +192,7 @@ def main():
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
-    run('nasm', *(['-DBOOT_SECTORS=256'] if large_runner else []), *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DSOFT_F64_TEST=1'] if args.soft_f64 else []), *(['-DBOOT_SECTORS=256'] if large_runner else []), *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         f'-DEXPECTED_FAULTS={4 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if args.irq or task_runner:
@@ -519,7 +534,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'scope': 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 0, 'scope': 'Binary64 add/subtract bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

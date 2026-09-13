@@ -396,7 +396,14 @@ dependency discovery and production boot/JIT integration remain pending; see
 imports without copying providers, with ambiguity/type/overlap checks and native
 execution tests. A production kernel export table and provider lifetime tracking
 remain pending; see `docs/i386-module-bindings.md`.
-Next, migrate full public task/CPU records and task semantics, bring up
+Integer-only binary64 addition/subtraction helpers now pass 2,048 operand pairs
+(4,096 result checks) with CR0.EM set and generated-function instruction audits.
+The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
+infinities and NaN propagation. Native HolyC F64 expression lowering and the
+remaining arithmetic/conversion/formatting/math surface remain pending; see
+`docs/i386-soft-f64.md`.
+Next, complete the software F64 runtime and compiler lowering, migrate full public
+task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
 symbol binding, variadic calls, address-bearing initializers, and exception-safe

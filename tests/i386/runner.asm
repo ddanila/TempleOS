@@ -10,6 +10,11 @@
 section stage vstart=0x10000 align=1
 bits 32
     cld
+%ifdef SOFT_F64_TEST
+    mov eax,cr0
+    or eax,4 ; CR0.EM: x87 instructions must fault even on the QEMU 486.
+    mov cr0,eax
+%endif
     mov ax,16
     mov ds,ax
     mov es,ax
