@@ -1060,3 +1060,21 @@ both x64 rebuild generations and image verification (763 files, 62 directories).
 Mixed conversions, comparisons, F64 conditions, compound assignment, remainder,
 math operations and floating-point state remain pending; the full port is not
 complete. See `docs/i386-f64-backend.md`.
+
+
+## Native HolyC F64 relational operators
+
+All six same-type F64 relations now call the software comparator and produce
+integer zero/one results. NaNs make inequality true and every ordered/equality
+relation false; signed zeros compare equal. The backend uses actual expression
+result types rather than the operand-precision metadata retained on comparison
+nodes, allowing their boolean results to drive branches and integer arithmetic.
+
+The expanded native corpus checks 1,024 pairs in both orders: 12,288 branch
+predicates, plus all six relations used in integer arithmetic and division of a
+boolean result. The 2,048 direct-runtime comparisons still pass. The compiled
+F64 fixture and its eight strengthened rejection cases, all 155 integer/call
+cases, instruction audits, execution with CR0.EM set, both x64 rebuilds and image
+verification (763 files, 62 directories) pass. Mixed conversions/relations, raw
+F64 conditions, floating-point state and complete native compiler/OS integration
+remain unfinished; x64 relational exception/NaN compatibility is not yet proven.

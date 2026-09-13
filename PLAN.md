@@ -401,15 +401,17 @@ pass 2,048 operand pairs (8,192 result checks) with CR0.EM set and generated-fun
 The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
 infinities and NaN propagation. Native HolyC same-type F64 arithmetic, literals,
 storage, unary minus and fixed-arity direct/indirect calls now pass target tests.
-Mixed conversions, comparisons and the remaining arithmetic/formatting/math
-surface still need compiler integration. See `docs/i386-f64-backend.md`. Signed
+Same-type F64 relations now compile to integer booleans and drive branches;
+12,288 branch predicates plus comparison-result arithmetic pass native tests.
+Mixed conversions and the remaining arithmetic/formatting/math surface still
+need compiler integration. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
 passes 1,024 inputs against actual x64 HolyC and an independent host oracle,
 including invalid-result bits. Language-node mapping, explicit unsigned output
 semantics and floating-point exception state remain pending. Numerical
 comparison now passes 2,048 checks, including unordered NaNs, signed zeros and
-reversed operands; relational-operator lowering remains pending. See
+reversed operands; same-type relational operators now use this runtime path. See
 `docs/i386-soft-f64.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up

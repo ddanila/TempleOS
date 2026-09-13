@@ -15,8 +15,14 @@ order and emits existing relative call fixups. Forward definitions, already
 compiled definitions and declared imports use the existing module mechanisms.
 There is no fallback to executing host function addresses.
 
+Same-type F64 `==`, `!=`, `<`, `>`, `<=` and `>=` call `I386F64Compare` and
+normalize its result to integer zero or one. Either NaN makes `!=` true and all
+other relations false; signed zeros compare equal. The resulting integer can
+control ordinary branches. The comparison helper declaration returns I64 while
+its two arguments retain the U64 bit-pattern ABI.
+
 This is an initial compiler integration. Runtime mixed integer/F64 conversions,
-relational operators, F64 conditions, increment/decrement, compound assignment,
+mixed-type relations, raw F64 conditions, increment/decrement, compound assignment,
 remainder and math intrinsics remain unsupported and are rejected. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
@@ -32,3 +38,12 @@ checks cover absent/malformed runtime declarations and unsupported operations. T
 runs with CR0.EM set and audits generated instructions. `--functions` retains
 integer/call regression coverage; software-runtime numerical corpora remain
 separate. QEMU 486 execution is not strict-386 or complete-OS validation.
+
+`--soft-f64-compare` now also executes compiled HolyC branches for all six
+relations over 1,024 operand pairs in both orders (12,288 operator checks), while
+retaining the 2,048 direct-runtime comparisons. A second expression test uses
+all six comparison results in integer arithmetic, including division of a boolean
+result. The backend distinguishes result types from retained operand metadata.
+Expected numerical ordering and
+NaN classification come from the host oracle. x64 operator/exception-state
+compatibility remains a separate unfinished check.

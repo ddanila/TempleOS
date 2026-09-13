@@ -58,7 +58,7 @@ That bit pattern is also the valid result for exactly -2^63; it is not a distinc
 error code. The helper does not yet record invalid/inexact exception flags.
 
 Initial native lowering now supports same-type F64 arithmetic, storage and calls;
-see [compiler integration](i386-f64-backend.md). Mixed conversions, comparisons,
+see [compiler integration](i386-f64-backend.md), including same-type relations. Mixed conversions,
 other arithmetic, explicit unsigned output conversion, formatting, math functions,
 exception flags/traps, selectable rounding modes and optional 387 execution
 remain unimplemented. NaN policy and precision differences from the existing x64
