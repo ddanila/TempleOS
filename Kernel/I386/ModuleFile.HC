@@ -2,7 +2,7 @@
 #include "/Kernel/I386/ModuleAlloc.HC"
 extern Bool I386RedSeaValid(CI386RedSea *v);
 extern Bool I386RedSeaExtent(CI386RedSea *v,I64 block,I64 size);
-public U8 *I386RedSeaLoad(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name)
+public U8 *I386RedSeaLoadBound(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
 {//Load one uncompressed module; caller invokes and eventually frees the image.
   U8 *file,*image=0;
   I64 size;
@@ -13,14 +13,14 @@ public U8 *I386RedSeaLoad(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap 
   file=I386HeapAlloc(heap,size);
   if (!file) return 0;
   if (I386RedSeaRead(volume,entry,0,file,size)==size)
-    image=I386LoadAlloc(heap,&file,&size,1,entry_name);
+    image=I386LoadBoundAlloc(heap,&file,&size,1,entry_name,bindings,binding_count);
   if (!I386HeapFree(heap,file)) {
     if (image) I386HeapFree(heap,image);
     return 0;
   }
   return image;
 }
-public U8 *I386RedSeaLoadSet(CI386RedSea *volume,CI386RedSeaEntry *entries,I64 count,CI386Heap *heap,U8 *entry_name)
+public U8 *I386RedSeaLoadSetBound(CI386RedSea *volume,CI386RedSeaEntry *entries,I64 count,CI386Heap *heap,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
 {//One linked image from an explicit file set. No dependency discovery or execution.
   U8 *metadata,*image=0,**files;
   I64 *sizes,i,pointer_bytes;
@@ -30,7 +30,7 @@ public U8 *I386RedSeaLoadSet(CI386RedSea *volume,CI386RedSeaEntry *entries,I64 c
       count>0xFFFFFFFF/sizeof(CI386RedSeaEntry) ||
       (entries+0)(U64)>0x100000000-count*sizeof(CI386RedSeaEntry) ||
       !I386HeapValid(heap)) return 0;
-  if (count==1) return I386RedSeaLoad(volume,entries,heap,entry_name);
+  if (count==1) return I386RedSeaLoadBound(volume,entries,heap,entry_name,bindings,binding_count);
   for (i=0;i<count;i++) {
     entry=entries+i;
     if ((entry->attr&0x710) || !(entry->attr&0x800) || entry->size<32 ||
@@ -45,7 +45,7 @@ public U8 *I386RedSeaLoadSet(CI386RedSea *volume,CI386RedSeaEntry *entries,I64 c
     files[i]=I386HeapAlloc(heap,sizes[i]);
     if (!files[i] || I386RedSeaRead(volume,entries+i,0,files[i],sizes[i])!=sizes[i]) goto done;
   }
-  image=I386LoadAlloc(heap,files,sizes,count,entry_name);
+  image=I386LoadBoundAlloc(heap,files,sizes,count,entry_name,bindings,binding_count);
 done:
   for (i=0;i<count;i++)
     if (files[i] && !I386HeapFree(heap,files[i])) clean=FALSE;
@@ -55,4 +55,13 @@ done:
     return 0;
   }
   return image;
+}
+
+public U8 *I386RedSeaLoad(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name)
+{
+  return I386RedSeaLoadBound(volume,entry,heap,entry_name,0,0);
+}
+public U8 *I386RedSeaLoadSet(CI386RedSea *volume,CI386RedSeaEntry *entries,I64 count,CI386Heap *heap,U8 *entry_name)
+{
+  return I386RedSeaLoadSetBound(volume,entries,count,heap,entry_name,0,0);
 }

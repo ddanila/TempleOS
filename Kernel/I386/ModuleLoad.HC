@@ -1,5 +1,6 @@
 //Allocation-free module loading shared by the cross host and native i386 kernel.
 #include "/Kernel/I386/ModuleCheck.HC"
+#include "/Kernel/I386/ModuleBind.HH"
 
 Bool I386NameEqual(U8 *a,U8 *b)
 {
@@ -32,15 +33,34 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
   return result;
 }
 
-public I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,
-  I64 capacity,U8 *entry_name)
+I64 I386BoundSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches,
+  CI386ModuleBinding *bindings,I64 binding_count,U8 *image)
+{
+  I64 i,result=I386FindSymbol(modules,count,name,kind,matches);
+  for (i=0;i<binding_count;i++)
+    if ((!kind || bindings[i].kind==kind) && I386NameEqual(bindings[i].name,name)) {
+      (*matches)++; result=(bindings[i].address+0)(U64)-(image+0)(U64);
+    }
+  return result;
+}
+public I64 I386LoadBoundInto(U8 **modules,I64 *sizes,I64 count,U8 *image,
+  I64 capacity,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
 {//Return loaded size, or zero on failure. NULL image/zero capacity queries size.
  //Validate all references before writing. Caller owns buffers and execution lifetime.
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
-  I64 i,j,total=8,matches,target,entry,base,patch,name_size;
+  I64 i,j,k,n,total=8,matches,target,entry,base,patch,name_size;
   if (!modules || !sizes || !entry_name || count<=0 || count>U32_MAX/8 ||
-      capacity<0 || capacity>U32_MAX) return 0;
+      capacity<0 || capacity>U32_MAX || binding_count<0 ||
+      binding_count>U32_MAX/sizeof(CI386ModuleBinding) || (binding_count && (!bindings || (bindings+0)(U64)>
+        0x100000000-binding_count*sizeof(CI386ModuleBinding)))) return 0;
+  for (i=0;i<binding_count;i++) {
+    if (!bindings[i].name || !bindings[i].address ||
+        (bindings[i].kind!=I386_MODULE_EXPORT && bindings[i].kind!=I386_MODULE_DATA_EXPORT)) return 0;
+    for (n=0;n<=255;n++) if (!bindings[i].name[n]) break;
+    if (!n || n>255) return 0;
+    for (j=0;j<i;j++) if (I386NameEqual(bindings[i].name,bindings[j].name)) return 0;
+  }
   for (name_size=0;name_size<=255;name_size++)
     if (!entry_name[name_size]) break;
   if (!name_size || name_size>255) return 0;
@@ -55,10 +75,10 @@ public I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,
     h=modules[i]; r=modules[i]+h->records_offset;
     for (j=0;j<h->record_count;j++,r++) {
       if (r->kind==I386_MODULE_DATA_RANGE) goto validate_next;
-      I386FindSymbol(modules,count,modules[i]+r->name_offset,0,&matches);
+      I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,bindings,binding_count,image);
       if (matches!=1) return 0;
       if (r->kind==I386_MODULE_REL32) {
-        I386FindSymbol(modules,count,modules[i]+r->name_offset,I386_MODULE_EXPORT,&matches);
+        I386BoundSymbol(modules,count,modules[i]+r->name_offset,I386_MODULE_EXPORT,&matches,bindings,binding_count,image);
         if (matches!=1) return 0;
       }
 validate_next:
@@ -74,6 +94,16 @@ validate_next:
       I386BuffersOverlap(image,total,entry_name,name_size+1)) return 0;
   for (i=0;i<count;i++)
     if (I386BuffersOverlap(image,total,modules[i],sizes[i])) return 0;
+  if (binding_count) {
+    if ((image+0)(U64)>0x100000000-total ||
+        I386BuffersOverlap(image,total,bindings,binding_count*sizeof(CI386ModuleBinding))) return 0;
+    for (k=0;k<binding_count;k++) {
+      n=0; while (bindings[k].name[n]) n++;
+      if (I386BuffersOverlap(image,total,bindings[k].name,n+1) ||
+          ((bindings[k].address+0)(U64)>=(image+0)(U64) &&
+           (bindings[k].address+0)(U64)-(image+0)(U64)<total)) return 0;
+    }
+  }
   //No writes above this point, including on malformed or unresolved input.
   image[0]=0xE9; (image+1)(U32 *)[0]=entry-5;
   image[5]=0; image[6]=0; image[7]=0;
@@ -84,7 +114,7 @@ validate_next:
     r=modules[i]+h->records_offset;
     for (j=0;j<h->record_count;j++,r++) {
       if (r->kind==I386_MODULE_REL32 || r->kind==I386_MODULE_ADDRESS) {
-        target=I386FindSymbol(modules,count,modules[i]+r->name_offset,0,&matches);
+        target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,bindings,binding_count,image);
         patch=base+r->offset;
         (image+patch)(U32 *)[0]=target-(patch+4);
       }
@@ -92,4 +122,10 @@ validate_next:
     base+=h->code_size;
   }
   return total;
+}
+
+public I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,
+  I64 capacity,U8 *entry_name)
+{//Existing API keeps module-only resolution and calling convention.
+  return I386LoadBoundInto(modules,sizes,count,image,capacity,entry_name,0,0);
 }

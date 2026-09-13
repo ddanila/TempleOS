@@ -916,3 +916,20 @@ linked payload and runtime pass instruction audits; the disk remains unchanged.
 The single-file regression, both x64 rebuilds and image verification (760 files,
 62 directories) pass. Automatic dependency search,
 resident kernel symbols, registry/lifetime policy and production boot/JIT remain.
+
+## Explicit resident module bindings
+
+The shared loader now accepts typed resident function/data addresses alongside
+module exports. Names must resolve uniquely, direct calls require function kinds,
+and binding metadata/target overlap is rejected before image writes. Native
+relative patches use the final image address. Heap and disk-loading bound APIs
+are available, while existing APIs delegate with no bindings and retain their ABI.
+
+Native tests call resident code and share mutable 64-bit data, including after
+binding addresses are cleared. They reject invalid, missing, duplicate, wrong-kind
+and conflicting definitions, protect output on rejection and check high-address
+relative arithmetic without executing the synthetic address. The shared-loader
+23-case corpus, 16-case data corpus, both disk-loader regressions, instruction
+audits, both x64 rebuilds and image verification (761 files, 62 directories) pass.
+Production kernel export discovery, provider pinning/unloading policy and boot/JIT
+integration remain pending.

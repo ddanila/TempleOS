@@ -391,8 +391,11 @@ buffer before execution. Native tests cover mutable 64-bit data, buffer-lifetime
 independence, malformed files and both allocation-failure stages. Explicit file
 sets now resolve cross-module functions and data in either order, with missing/
 duplicate dependency rejection and cleanup at every allocation stage. Automatic
-dependency discovery, resident symbol binding and production boot/JIT integration
-remain pending; see `docs/i386-module-file.md`.
+dependency discovery and production boot/JIT integration remain pending; see
+`docs/i386-module-file.md`. Explicit resident function/data bindings now resolve
+imports without copying providers, with ambiguity/type/overlap checks and native
+execution tests. A production kernel export table and provider lifetime tracking
+remain pending; see `docs/i386-module-bindings.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

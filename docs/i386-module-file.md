@@ -29,7 +29,8 @@ size tables and file buffers, resolves cross-file function and data imports thro
 the shared loader, then frees all temporary allocations. A failure at any stage
 cleans earlier file buffers too. Count one uses the original single-file path.
 The file list is explicit: there is no automatic dependency search, registry or
-binding to resident kernel symbols. Peak memory includes all serialized modules,
+automatic binding to resident kernel symbols. Explicit resident bindings are
+available through the bound APIs described in [module bindings](i386-module-bindings.md). Peak memory includes all serialized modules,
 the temporary tables and the combined image.
 
 `python3 tools/test-i386.py --redsea-load` cross-compiles a module with mutable
@@ -55,7 +56,7 @@ Heap exhaustion covers tables, each file and the final image; a real read error
 in the second file checks cleanup of the first. The single-file suite is rerun
 as a regression. Both payloads are also audited/executed as a direct linked case.
 
-Automatic dependency discovery, resident kernel symbol binding, a module
+Automatic dependency discovery, a production kernel export table, a module
 registry/unloading policy, compressed files, public file/task APIs and integration
 into the production boot/JIT path remain pending. This bridge does not establish
 native compiler self-hosting or a complete standalone OS.
