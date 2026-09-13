@@ -366,8 +366,10 @@ for the transport and queue contracts.
 Native ATA IDENTIFY and 16-bit PIO LBA28 sector reads now pass disk-pattern,
 error and absent-device tests. Geometry decoding now accepts CHS-only profiles;
 forced CHS reads on QEMU pass head/cylinder boundaries and final-sector checks.
-Actual CHS-only hardware, parameter initialization, writes and filesystem
-integration remain pending. See `docs/i386-ata.md`.
+Single-sector writes now pass LBA/CHS readback, source preservation and a complete
+backing-image comparison after QEMU exits. Actual CHS-only hardware, parameter
+initialization, cache flush/policy and filesystem integration remain pending.
+See `docs/i386-ata.md`.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel

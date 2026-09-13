@@ -78,12 +78,12 @@ public Bool I386AtaIdentify(CI386Ata *disk,I64 channel,I64 drive,I64 polls=10000
   if (!I386AtaWait(io,8,0,TRUE,polls)) return FALSE;
   return I386AtaDecode(disk,words,channel,drive);
 }
-public Bool I386AtaRead(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
-{//One logical sector via LBA28 or CHS; publish only after successful completion.
+Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool write)
+{//One logical sector via LBA28 or CHS; failed writes may have changed media.
   U16 words[256];
   I64 i,cylinder,track;
   U16 io;
-  U8 device,sector,cl,ch;
+  U8 device,sector,cl,ch,command=0x20;
   if (!disk || disk->signature!=0x41543332 || !buffer || polls<1 || polls>100000 ||
       lba<0 || lba>=disk->sectors || lba>=0x10000000 || disk->drive>1 ||
       !((disk->io==0x1F0 && disk->control==0x3F6) ||
@@ -100,17 +100,35 @@ public Bool I386AtaRead(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
     device=0xA0|(disk->drive<<4)|(track%disk->heads);
     cl=cylinder; ch=cylinder>>8;
   }
+  if (write) {
+    command=0x30;
+    for (i=0;i<256;i++) words[i]=buffer[2*i]|(buffer[2*i+1]<<8);
+  }
   io=disk->io;
   OutU8(disk->control,0x0A);
   if (!I386AtaSelect(io,disk->control,device,polls) ||
       !I386AtaWait(io,0x48,0x40,FALSE,polls)) return FALSE;
   OutU8(io+1,0); OutU8(io+2,1);
   OutU8(io+3,sector); OutU8(io+4,cl); OutU8(io+5,ch);
-  OutU8(io+7,0x20); I386AtaPause(disk->control);
+  OutU8(io+7,command); I386AtaPause(disk->control);
   if (!I386AtaWait(io,8,8,TRUE,polls)) return FALSE;
-  for (i=0;i<256;i++) words[i]=InU16(io);
+  if (write) {
+    for (i=0;i<256;i++) OutU16(io,words[i]);
+  } else {
+    for (i=0;i<256;i++) words[i]=InU16(io);
+  }
   I386AtaPause(disk->control);
   if (!I386AtaWait(io,8,0,TRUE,polls)) return FALSE;
-  for (i=0;i<256;i++) { buffer[2*i]=words[i]; buffer[2*i+1]=words[i]>>8; }
+  if (!write) {
+    for (i=0;i<256;i++) { buffer[2*i]=words[i]; buffer[2*i+1]=words[i]>>8; }
+  }
   return TRUE;
+}
+public Bool I386AtaRead(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
+{//Publish the read buffer only after successful completion.
+  return I386AtaTransfer(disk,lba,buffer,polls,FALSE);
+}
+public Bool I386AtaWrite(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
+{//Command completion, not a cache flush or power-loss durability guarantee.
+  return I386AtaTransfer(disk,lba,buffer,polls,TRUE);
 }

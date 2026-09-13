@@ -7,4 +7,5 @@ class CI386Ata {
 };
 public extern Bool I386AtaIdentify(CI386Ata *disk,I64 channel,I64 drive,I64 polls=100000);
 public extern Bool I386AtaRead(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000);
+public extern Bool I386AtaWrite(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000);
 #endif

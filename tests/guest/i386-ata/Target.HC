@@ -90,6 +90,45 @@ I64 ChsTest(CI386Ata *disk)
   disk->lba=TRUE;
   return 0;
 }
+I64 WriteTest(CI386Ata *disk)
+{
+  U8 source[514],readback[514];
+  I64 i,j,lba,saved;
+  for (i=0;i<514;i++) { source[i]=0xA5; readback[i]=0x5A; }
+  if (I386AtaWrite(0,4096,source+1) || I386AtaWrite(disk,4096,0) ||
+      I386AtaWrite(disk,-1,source+1) || I386AtaWrite(disk,32768,source+1) ||
+      I386AtaWrite(disk,4096,source+1,0) ||
+      I386AtaWrite(disk,4096,source+1,100001)) return 41;
+  disk->lba=FALSE;
+  saved=disk->heads; disk->heads=17;
+  if (I386AtaWrite(disk,4096,source+1)) return 42;
+  disk->heads=saved;
+  if (I386AtaWrite(disk,disk->cylinders*disk->heads*disk->sectors_per_track,source+1))
+    return 43;
+  disk->lba=TRUE;
+  //A real backend error must fail; subsequent valid writes must still work.
+  disk->sectors=32769;
+  if (I386AtaWrite(disk,32768,source+1)) return 44;
+  disk->sectors=32768;
+  for (i=0;i<514;i++) if (source[i]!=0xA5) return 45;
+  for (j=0;j<4;j++) {
+    lba=4096;
+    if (j==1) lba=32767;
+    if (j==2) lba=4097;
+    disk->lba=(j<2);
+    for (i=0;i<512;i++) source[i+1]=((i*19)^(i>>2)^(j*67)^0xA6)&255;
+    if (!I386AtaWrite(disk,lba,source+1)) return 46;
+    //Read CHS writes using LBA, independently exercising the address mapping.
+    disk->lba=TRUE;
+    if (!I386AtaRead(disk,lba,readback+1)) return 47;
+    for (i=0;i<512;i++)
+      if (source[i+1]!=(((i*19)^(i>>2)^(j*67)^0xA6)&255) ||
+          readback[i+1]!=source[i+1]) return 48;
+    if (source[0]!=0xA5 || source[513]!=0xA5 ||
+        readback[0]!=0x5A || readback[513]!=0x5A) return 49;
+  }
+  return 0;
+}
 I64 Main(I64 a,I64 b)
 {
   CI386Ata disk,absent;
@@ -131,6 +170,8 @@ I64 Main(I64 a,I64 b)
       absent.signature!=0x55AA || absent.sectors!=0x6677 ||
       !I386AtaRead(&disk,2049,buffer+1)) return 11;
   for (i=0;i<512;i++) if (buffer[i+1]!=(((i*37)^(i>>1)^9)&255)) return 12;
-  return ChsTest(&disk);
+  result=ChsTest(&disk);
+  if (result) return result;
+  return WriteTest(&disk);
 }
 #include "/Kernel/I386/Ata.HC"

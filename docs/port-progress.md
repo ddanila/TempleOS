@@ -747,3 +747,18 @@ instruction audit, both x64 rebuilds and image verification (751 files,
 62 directories) pass. This is evidence for CHS command
 execution on QEMU, not a physical CHS-only drive. Firmware-dependent parameter
 initialization, writes, recovery and filesystem integration remain pending.
+
+## Native ATA sector writes
+
+The shared LBA28/CHS transfer path now supports WRITE SECTORS through 16-bit PIO,
+with staged input, bounded DRQ/completion waits and unchanged source buffers.
+Failure may have altered media; success is command completion and does not yet
+include a cache flush or power-loss guarantee.
+
+Native tests pass LBA and forced-CHS writes, overwrite/readback, final-sector
+access, invalid arguments/geometry, guards, and a real out-of-range write error
+followed by successful writes. The host compares the entire 16 MiB image after
+QEMU exits and finds exactly the three intended sector replacements. The ATA
+suite, instruction audit, both x64 rebuilds and image verification (751 files,
+62 directories) pass. Cache policy/flush, task
+ownership, block/filesystem integration and physical IDE validation remain.
