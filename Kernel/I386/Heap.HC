@@ -55,7 +55,7 @@ public Bool I386HeapValid(CI386Heap *hc)
   return used==hc->used && count==hc->allocations;
 }
 
-public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero)
+public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Try-allocation: NULL on invalid size, corruption or exhaustion; no OutMem wrapper yet.
   CI386HeapBlock *block,*rest;
   U8 *result;

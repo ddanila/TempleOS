@@ -126,10 +126,10 @@ def main():
     table += struct.pack('<I',0)
     (OUT/'cases.bin').write_bytes(table)
     disk = OUT/'runner.img'
-    run('nasm','-f','bin',f'-DVALIDATOR_FILE="{exports / "loader.bin"}"',
+    run('nasm','-DBOOT_SECTORS=256','-f','bin',f'-DVALIDATOR_FILE="{exports / "loader.bin"}"',
         f'-DCASES_FILE="{OUT / "cases.bin"}"','-DTEST_NAME="i386 module loader"',
         'tests/i386/module-check.asm','-o',str(disk))
-    if disk.stat().st_size>129*512:
+    if disk.stat().st_size>257*512:
         raise ValueError('Loader runner exceeds BIOS transfer size')
     with disk.open('ab') as stream:
         stream.truncate(16*1024*1024)
@@ -141,7 +141,7 @@ def main():
     if result.returncode!=33 or log.read_text()!='PASS i386 module loader\n':
         raise RuntimeError(f'Native loader failed: {log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'result':'pass','cases':[c[0] for c in cases],
-        'cpu':'486','ram_mib':8,'scope':'native module loading and loaded-code execution at two addresses'},indent=2)+'\n')
+        'cpu':'486','ram_mib':8,'scope':'native module loading, heap allocation, execution, exhaustion, release and reuse'},indent=2)+'\n')
     print(f'PASS: native i386 loader executed {len(cases)} cases.')
 
 

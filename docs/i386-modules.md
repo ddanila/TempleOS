@@ -130,3 +130,45 @@ and duplicate exports, missing entries, and attempts to use data as code. Each
 valid case also checks size queries, exact/insufficient capacity, buffer overlap,
 address wrapping, invalid arguments, unchanged input bytes, output sentinels,
 and the loaded program's result. Artifacts are in `build/i386-loader-test/`.
+
+## Allocating native loader
+
+`Kernel/I386/ModuleAlloc.HC` combines the arena allocator with the shared loader:
+
+```text
+U8 *I386LoadAlloc(CI386Heap *heap, U8 **modules, I64 *sizes,
+                  I64 count, U8 *entry_name)
+```
+
+It validates and queries the complete module set before allocating. Success
+returns a heap-owned image beginning at the entry trampoline; `I386HeapSize`
+reports its byte size. Invalid input, unavailable memory, or an invalid heap
+returns zero. If the final load fails after allocation, the temporary allocation
+is freed. The try-allocation interface does not throw `OutMem`.
+
+Inputs and heap access must remain stable and serialized throughout the call.
+Inputs may reside in the same heap, but must then occupy live allocations, not
+unallocated space. After a successful load, source module bytes and their tables
+may be released: the loaded payload owns the code and data needed for execution.
+The caller must retain the image while any executing code, data pointer, callback,
+or other reference still depends on it. Once idle and unreferenced, release the
+entire image with `I386HeapFree`. No reference registry or automatic unloading is
+implied; resident kernel symbol binding and lifecycle integration remain pending.
+
+The native loader fixture exercises simultaneous allocated images, exact size
+queries, heap exhaustion, release and address reuse, and independent loaded data.
+It also loads from a live source allocation, frees and overwrites that allocation,
+and executes the resulting image. Malformed sets must allocate nothing. These
+checks supplement the existing caller-buffer tests rather than replacing them.
+The defensive rollback branch after a final-load failure is not fault-injected;
+validated stable inputs and a valid nonoverlapping allocation normally make that
+second load succeed.
+
+The larger test image uses 256 single-sector CHS reads into 0x10000–0x2FFFF.
+Other compiler runners retain the 128-sector default. This remains a test boot
+stage below conventional-memory reservations, not a production disk loader or
+firmware memory map.
+
+All 23 expanded native loader cases pass on the QEMU 486/8 MiB runner, together
+with the 16 regenerated data cases and the native heap regression. This is not
+a physical-386 result or completion of native OS module/lifetime integration.

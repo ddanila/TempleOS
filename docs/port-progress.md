@@ -207,9 +207,34 @@ through this implementation, presents it, frees it, and checks heap integrity;
 all 307,200 screenshot pixels still match.
 
 These are single-owner arena tests. Memory discovery/reservation, task-owned page
-pools, concurrency/interrupt handling, task teardown, public allocation wrappers,
-and the native loader's use of allocated module storage remain pending. The
+pools, concurrency/interrupt handling, task teardown, and public allocation
+wrappers remain pending. The
 full OS's low-memory requirements remain unmeasured.
+
+## Allocated native modules
+
+`Kernel/I386/ModuleAlloc.HC` now joins the native heap and shared module loader.
+It validates before allocation and returns an independently owned executable
+image; the caller queries its size and releases it through the heap API. The
+allocator definition now retains the same optional `zero` argument as its
+prototype, so callers compiled after the definition can omit that argument too.
+
+All 23 native loader cases pass with the expanded fixture. Valid module sets are
+loaded into two simultaneous heap allocations, executed, freed, and loaded again
+at a reused address with fresh data. They also load from source modules held in
+live heap storage, then execute after that source storage is freed and overwritten.
+Tests cover exact allocation sizes, heap exhaustion, a null heap, no allocation
+for malformed sets, and zero live allocations after release. The original
+caller-buffer overlap, capacity, symbol, and input-preservation checks remain.
+The 16 data cases, native heap stress fixture, and both x86-64 rebuild generations
+also pass. See [the allocating API](i386-modules.md#allocating-native-loader).
+
+This fixture now needs a larger test stage: 256 individual BIOS CHS sector reads
+load at most 128 KiB beginning at 0x10000, below its heap at 0x40000. The other
+runners keep their 128-sector default. Both paths pass target execution checks.
+Boot memory discovery and reservation are still pending; these addresses remain
+explicit test reservations. Filesystem integration, resident kernel symbol binding,
+public allocation/exception interfaces, and coordinated unloading remain pending.
 
 ## Test artifacts
 
@@ -218,7 +243,7 @@ full OS's low-memory requirements remain unmeasured.
 - `build/i386-module-check/`: shared validator code, module fixture, disassembly,
   malformed-input corpus, runner log, and result JSON.
 - `build/i386-loader-test/`: native loader image, disassembly, module packets,
-  and loaded-code execution results.
+  and allocated/caller-buffer loaded-code execution and lifetime results.
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
 - `build/i386-heap-test/`: compiled allocator and integrity/stress fixture,

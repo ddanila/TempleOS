@@ -1,4 +1,10 @@
 ; BIOS CHS test runner for compiler-produced i386 code. Not the ported kernel.
+%ifndef BOOT_SECTORS
+%define BOOT_SECTORS 128
+%endif
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 256
+%error Test stage must fit below physical 0x30000
+%endif
 bits 16
 org 0x7c00
     cli
@@ -20,7 +26,7 @@ org 0x7c00
     mov ax,0x1000
     mov es,ax
     mov word [sector],1
-    mov si,128
+    mov si,BOOT_SECTORS
 .load:
     mov ax,[sector]
     xor dx,dx
