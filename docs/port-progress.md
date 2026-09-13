@@ -317,6 +317,14 @@ own instruction-audit range. The combined test and both x64 rebuild generations
 pass. Stack-fault/double-fault recovery, NMI policy, debugger integration, and
 HolyC exception unwinding remain unimplemented.
 
+The compiler now lowers the existing `GetRFlags`/`SetRFlags` intrinsics to
+PUSHFD/POPFD with eight-byte HolyC slots and 32-bit hardware values.
+`Kernel/I386/Cpu.HC` provides interrupt save/disable and IF-only restore helpers.
+The native test checks nested disabled/enabled restoration, high-half handling,
+and DF read/write, and uses the intrinsic inside hardware IRQ callbacks. The
+combined IRQ/exception test, 150-function regression corpus, and both x64 rebuild
+generations pass. Allocator and task code do not yet use the new helpers.
+
 This is IRQ0/IRQ8 delivery in the QEMU 486/8 MiB runner, not a complete interrupt/time
 subsystem. Keyboard input, full exception handling, scheduling,
 calibrated time, production boot wiring and physical 386 validation remain pending.

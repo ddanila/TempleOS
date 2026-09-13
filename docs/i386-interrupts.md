@@ -77,6 +77,30 @@ the interrupted flags and instruction pointer. The layout assumes a same-ring
 hardware IRQ with no CPU error code. Exceptions use the separate entry path below. Privilege-level transitions
 are outside both frame contracts.
 
+## Native interrupt-state operations
+
+The i386 compiler implements the existing `GetRFlags` and `SetRFlags` intrinsics
+with PUSHFD/POPFD. Values retain HolyC's eight-byte ABI: reads zero-extend EFLAGS,
+and writes consume the low 32 bits. Standalone declarations are in `Cpu.HH`;
+the full kernel's declarations remain in `KernelB.HH`. Arithmetic flags can be
+changed by ordinary generated expression/return code surrounding an intrinsic;
+these operations do not make a HolyC expression a carry-preserving assembly block.
+The [architectural POPFD restrictions](https://pdos.csail.mit.edu/6.828/2008/readings/i386/POPF.htm) still apply.
+
+`Kernel/I386/Cpu.HC` adds `I386IrqSave()` and `I386IrqRestore(flags)` for single-CPU
+critical sections. Save clears IF and returns the prior flags. Restore changes only
+IF; restore nested sections in reverse order, using each section's own saved value.
+The compiler may emit instructions between reading flags and disabling interrupts;
+shared protected work must start after Save returns. These calls do not block NMI,
+provide multiprocessor exclusion, or implement an atomic enable-and-halt operation.
+
+The native fixture enables IF with all PIC lines masked, nests two Save calls,
+restores the inner disabled state followed by the outer enabled state, and disables
+again before device configuration. It also checks zero-extension, upper-half
+truncation, DF set/read/clear, and the native flag reader inside IRQ callbacks
+against the assembly reader. Generated PUSHFD/POPFD are included in the instruction
+audit.
+
 ## Exception entry
 
 `Kernel/I386/Exception.asm` supplies entries for vectors 0–16 and a separate

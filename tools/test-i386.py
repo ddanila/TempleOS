@@ -83,7 +83,7 @@ def main():
     offset = count = 0
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
-    allowed = {'push', 'pop', 'mov', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
+    allowed = {'push', 'pop', 'pushf', 'popf', 'mov', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
                'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',

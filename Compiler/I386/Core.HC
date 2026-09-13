@@ -233,6 +233,22 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             calls->indirect=TRUE;
             calls->depth--;
             break;
+          case IC_GET_RFLAGS:
+          case IC_SET_RFLAGS:
+            arg_index=0;
+            if (ic->ic_code==IC_SET_RFLAGS) arg_index=1;
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code ||
+                calls->fun->arg_cnt!=arg_index ||
+                depth!=calls->depth+arg_index) throw('Compiler');
+            if (!arg_index)
+              I386Bytes(&out,"\x9C\x58\x31\xD2",4); //PUSHFD; POP EAX; zero high half.
+            else
+              I386Bytes(&out,"\x58\x59\x50\x9D",4); //Consume I64; POPFD uses low 32 bits.
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
           case IC_IN_U8:
           case IC_IN_U16:
           case IC_IN_U32:

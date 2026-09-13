@@ -4,6 +4,7 @@
 #include "/Kernel/I386/Irq.HH"
 #include "/Kernel/I386/Rtc.HH"
 #include "/Kernel/I386/Exception.HH"
+#include "/Kernel/I386/Cpu.HH"
 extern U0 I386PicInit();
 extern U0 I386PicMask(U16 mask);
 extern U16 I386PicMaskGet();
@@ -25,12 +26,26 @@ CI386RtcState rtc;
 I64 Main(I64 a,I64 b)
 {
   I64 (*wait)(I64 count);
-  I64 first,i,result,old_a,old_b;
+  I64 first,i,result,old_a,old_b,outer,inner;
   wait=b;
   control=a; control->handler=&OnIrq;
   ticks=0xFFFFFFF0; spurious=0; errors=0;
   expected_irq=0;
   I386PicInit;
+  if ((GetRFlags>>32) || (GetRFlags&0x200)) return 14;
+  SetRFlags(GetRFlags|0x200|0xFFFFFFFF00000000);
+  outer=I386IrqSave;
+  inner=I386IrqSave;
+  if (!(outer&0x200) || (inner&0x200) || (GetRFlags&0x200)) return 15;
+  I386IrqRestore(inner);
+  if (GetRFlags&0x200) return 16;
+  I386IrqRestore(outer);
+  if (!(GetRFlags&0x200)) return 17;
+  I386IrqRestore(inner);
+  SetRFlags(GetRFlags|0x400);
+  first=GetRFlags;
+  SetRFlags(GetRFlags&~0x400);
+  if ((first&0x600)!=0x400 || (GetRFlags&0x600)) return 18;
   control->exception->handler=&OnException;
   if ((*control->faults)() || errors || exceptions!=3) return 13;
   if (I386PicMaskGet!=0xFFFF || I386PicAccept(-1) || I386PicAccept(16) ||
@@ -101,9 +116,10 @@ U0 OnIrq(CI386IrqFrame *frame)
   if (frame->eax!=0x11223344 || frame->ebx!=0x22334455 || frame->ecx!=0x33445566 ||
       frame->edx!=0x44556677 || frame->esi!=0x55667788 || frame->edi!=0x66778899 ||
       frame->ebp!=0x778899AA) errors++;
-  if ((*control->flags)()&0x600) errors++;
+  if ((GetRFlags|(*control->flags)())&0x600) errors++;
   ticks++; control->ticks++;
   I386PicEoi(frame->irq);
 }
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/Rtc.HC"
+#include "/Kernel/I386/Cpu.HC"
