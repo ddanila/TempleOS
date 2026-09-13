@@ -7,4 +7,7 @@ public extern U64 I386F64Mul(U64 a,U64 b);
 public extern U64 I386F64Div(U64 a,U64 b);
 public extern U64 I386F64FromU64(U64 value);
 public extern U64 I386F64FromI64(I64 value);
+//Compare returns -1, 0, 1, or unordered; it does not raise exception flags.
+#define I386_F64_UNORDERED 2
+public extern I64 I386F64Compare(U64 a,U64 b);
 #endif

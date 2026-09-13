@@ -154,3 +154,18 @@ public U64 I386F64FromI64(I64 value)
   }
   return I386F64FromU64(magnitude);
 }
+
+public I64 I386F64Compare(U64 a,U64 b)
+{
+  U64 magnitude=0x7FFFFFFFFFFFFFFF,infinity=0x7FF0000000000000;
+  if ((a&magnitude)>infinity || (b&magnitude)>infinity) return I386_F64_UNORDERED;
+  if (a==b || !((a|b)&magnitude)) return 0;
+  if ((a^b)>>63) {
+    if (a>>63) return -1;
+    return 1;
+  }
+  if (a>>63) {
+    if (a>b) return -1;
+  } else if (a<b) return -1;
+  return 1;
+}

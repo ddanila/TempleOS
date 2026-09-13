@@ -403,7 +403,9 @@ infinities and NaN propagation. Native HolyC F64 expression lowering and the
 remaining arithmetic/conversion/formatting/math surface remain pending. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases; language-node mapping and the
-reverse conversions still need implementation/compatibility tests. See
+reverse conversions still need implementation/compatibility tests. Numerical
+comparison now passes 2,048 checks, including unordered NaNs, signed zeros and
+reversed operands; relational-operator lowering remains pending. See
 `docs/i386-soft-f64.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up

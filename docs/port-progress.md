@@ -1004,3 +1004,20 @@ audits and execute with CR0.EM set; both x64 rebuild generations and image
 verification (763 files, 62 directories) pass. Mapping helpers to HolyC conversion
 nodes still needs x64 compatibility tests. Reverse conversions, comparisons and
 native F64 compiler integration remain unfinished.
+
+
+## Software binary64 comparison
+
+`I386F64Compare` now returns less/equal/greater/unordered through the integer ABI.
+It treats both signed zeros as equal, orders negative values numerically and
+returns unordered for either quiet or signaling NaNs without raising flags.
+The documented result contract explicitly distinguishes greater from unordered,
+so future relational lowering can avoid treating NaNs as greater values.
+
+The native fixture passes 1,024 operand pairs against host ordering and NaN
+classification, plus reversed operands (2,048 comparisons). Special values,
+subnormal/normal boundaries, adjacent representations and seeded random pairs
+are covered. The 8,192-check arithmetic regression, instruction audits, execution
+with CR0.EM set, both x64 rebuilds and image verification (763 files, 62
+directories) pass. This helper still needs native HolyC relational-operator
+integration and x64 compatibility checks; F64-to-integer conversion also remains.

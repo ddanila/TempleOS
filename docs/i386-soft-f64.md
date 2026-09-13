@@ -41,8 +41,17 @@ sticky information before the shared rounding/packing step. Mapping signed and
 unsigned helpers to existing HolyC conversion nodes still needs x64 compatibility
 tests before compiler integration.
 
+`I386F64Compare(U64 a,U64 b)` returns -1 for less, 0 for equal, 1 for
+greater, or `I386_F64_UNORDERED` (2) when either operand is a NaN. Both signed
+zeros compare equal; infinities and finite negative values follow numerical
+order. Quiet and signaling NaNs both return unordered without changing operands
+or raising exception flags. Compiler lowering must explicitly distinguish 1
+from unordered: `>` uses result == 1, and `>=` uses result == 0 or result == 1.
+Equality uses result == 0, inequality result != 0, `<` result == -1, and `<=`
+result == -1 or result == 0. This helper does not define F64-to-Bool conversion.
+
 This is runtime groundwork. Native compiler lowering of HolyC F64 expressions,
-other arithmetic, comparisons, F64-to-integer conversions, formatting, math functions,
+other arithmetic, F64-to-integer conversions, formatting, math functions,
 exception flags/traps, selectable rounding modes and optional 387 execution
 remain unimplemented. NaN policy and precision differences from the existing x64
 x87 implementation need compatibility testing before full language integration.
@@ -65,6 +74,12 @@ fixture, checking both signed and unsigned interpretations (2,048 conversions)
 against Python integer-to-binary64 conversion. It covers every power-of-two
 boundary, signed extrema, even/odd halfway rounding and seeded random values.
 This fixture uses the same native instruction audit and CR0.EM trap setting.
+
+`python3 tools/test-i386.py --soft-f64-compare` checks 1,024 operand pairs
+against host numerical ordering and NaN classification, then checks the reversed
+order (2,048 comparisons). The corpus includes signed zeros, subnormal/normal
+boundaries, infinities, quiet/signaling NaNs and seeded random/adjacent values.
+The fixture also runs with CR0.EM set and passes the generated-function audit.
 
 For the wider arithmetic surface and rounding-mode terminology, see the
 [Berkeley SoftFloat interface documentation](https://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat.html).

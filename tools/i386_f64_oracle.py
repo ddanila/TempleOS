@@ -100,3 +100,26 @@ def make_conversion_oracle(count):
     return b''.join(struct.pack('<3Q', value, bits(value),
                                 bits(value-(1 << 64) if value & SIGN else value))
                     for value in sorted(values))
+
+
+def make_comparison_oracle(count):
+    boundaries = [0, 1, (1 << 52)-1, 1 << 52, 0x3FEFFFFFFFFFFFFF,
+                  0x3FF0000000000000, 0x3FF0000000000001,
+                  INF-1, INF, INF+1, INF+QUIET+0x1234]
+    boundaries += [value | SIGN for value in boundaries]
+    pairs = [(a, b) for a in boundaries for b in boundaries]
+    if len(pairs) > count:
+        raise ValueError('Comparison oracle capacity omits boundary cases')
+    rng = random.Random(0x386CC)
+    while len(pairs) < count:
+        a, b = rng.getrandbits(64), rng.getrandbits(64)
+        if len(pairs) % 3 == 0:
+            b = (a+rng.randrange(-1, 2)) & ((1 << 64)-1)
+        pairs.append((a, b))
+    def compare(a, b):
+        x, = struct.unpack('<d', struct.pack('<Q', a))
+        y, = struct.unpack('<d', struct.pack('<Q', b))
+        if x != x or y != y:
+            return 2
+        return -1 if x < y else 1 if x > y else 0
+    return b''.join(struct.pack('<QQq', a, b, compare(a, b)) for a, b in pairs)
