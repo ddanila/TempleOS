@@ -3,7 +3,8 @@
 `CmpI386Module` compiles HolyC with the i386 backend and writes a `T32M` module.
 `I386ModuleValid` checks its structure and architecture/ABI fields. `I386Link`
 links an array of modules into a flat bootstrap image. These functions currently
-run inside the x86-64 HolyC compiler host; a native i386 runtime loader remains
+run inside the x86-64 HolyC compiler host. The shared validator also has a native
+i386 execution test; a native i386 runtime loader remains
 unfinished. The module format is distinct from the existing x86-64 BIN format.
 
 All fields are little endian and all offsets/counts are unsigned fixed-width
@@ -61,10 +62,14 @@ The flat output begins with an eight-byte bootstrap entry area: `E9 rel32`
 followed by three zero padding bytes. Module code follows on eight-byte
 boundaries. The trampoline jumps to the selected entry without changing its
 arguments or return address. Relative calls remain valid when the entire image
-is moved. This flat output is bootstrap code, not another T32M module.
+is moved. Same-module function addresses are computed relative to the executing
+code, including self-references and forward declarations resolved by the compiler.
+Taking an imported function's address needs a new relocation path and is currently
+rejected. This flat output is bootstrap code, not another T32M module.
 
 `python3 tools/test-i386.py --functions` compiles and links separate caller/provider
-modules in both orders, executes the linked images in the protected-mode runner,
+modules in both orders, executes relative imports and a self-callback in the
+linked images in the protected-mode runner,
 checks repeatable output and unchanged inputs, and exercises malformed module and
 symbol-resolution rejection. Exported `.t32m` fixtures are saved under
 `build/i386-functions-test/exports/`.

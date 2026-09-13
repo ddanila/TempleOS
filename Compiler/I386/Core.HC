@@ -152,7 +152,7 @@ class CI386Call
   CI386Call *next;
   CHashFun *fun;
   I64 depth;
-  Bool called;
+  Bool called,indirect;
 };
 
 U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
@@ -169,6 +169,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   I64 depth,pass,stack_size=0,args=0;
   U8 *result=NULL;
   CHashClass *c;
+  CHashFun *addr_fun;
   if (_dbg) *_dbg=NULL;
   if (_type) *_type=RT_I64;
   if (_size) *_size=0;
@@ -211,14 +212,29 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             calls=call;
             call->fun=ic->ic_data;
             call->depth=depth;
-            if (Bt(&call->fun->flags,Ff_DOT_DOT_DOT) ||
+            if (!call->fun || Bt(&call->fun->flags,Ff_DOT_DOT_DOT) ||
                 Bt(&call->fun->flags,Ff_NOARGPOP)) throw('Compiler');
             break;
+          case IC_SET_RAX:
+            //PrsFunCall stages an indirect target before CALL_START.
+            //Keep it in its evaluation slot until IC_PUSH_REGS marks it.
+            if (depth<1 || ic->next->ic_code!=IC_NOP2 ||
+                ic->next->next->ic_code!=IC_CALL_START) throw('Compiler');
+            break;
+          case IC_PUSH_REGS:
+            //The expression stack already holds the function pointer pair.
+            if (!calls || calls->called || calls->indirect ||
+                ic->ic_data!=1<<REG_RAX || depth<1) throw('Compiler');
+            calls->indirect=TRUE;
+            calls->depth--;
+            break;
+          case IC_CALL_INDIRECT:
           case IC_CALL:
           case IC_CALL_EXTERN:
           case IC_CALL_IMPORT:
             if (!calls || calls->called ||
-                depth!=calls->depth+calls->fun->arg_cnt) throw('Compiler');
+                depth!=calls->depth+calls->fun->arg_cnt+calls->indirect ||
+                calls->indirect!=(ic->ic_code==IC_CALL_INDIRECT)) throw('Compiler');
             arg=calls->fun->member_lst_and_root;
             for (arg_index=0;arg_index<calls->fun->arg_cnt;arg_index++) {
               c=arg->member_class;
@@ -234,34 +250,45 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               }
               arg=arg->next;
             }
-            I386Byte(&out,0xE8);
-            if (ic->ic_code==IC_CALL) {
-              I386Dword(&out,ic->ic_data-(cc->aotc->rip+out.count+4));
-            } else if (ic->ic_code==IC_CALL_IMPORT) {
-              if (pass) {
-                import_rec=CAlloc(sizeof(CAOTImportExport));
-                import_rec->type=IET_REL_I32;
-                import_rec->rip=cc->aotc->rip+out.count;
-                import_rec->next=calls->fun->ie_lst;
-                calls->fun->ie_lst=import_rec;
-              }
-              I386Dword(&out,0);
+            if (calls->indirect) {
+              if (ic->ic_data!=calls->fun->arg_cnt*8) throw('Compiler');
+              I386Bytes(&out,"\xFF\x94\x24",3);
+              I386Dword(&out,ic->ic_data);
+              //Callee removed arguments; discard the saved pointer pair.
+              I386Bytes(&out,"\x83\xC4\x08",3);
             } else {
-              if (pass) {
-                usage=CAlloc(sizeof(CExternUsage));
-                usage->next=calls->fun->ext_lst;
-                calls->fun->ext_lst=usage;
-                usage->rip=cc->aotc->rip+out.count;
+              I386Byte(&out,0xE8);
+              if (ic->ic_code==IC_CALL) {
+                I386Dword(&out,ic->ic_data-(cc->aotc->rip+out.count+4));
+              } else if (ic->ic_code==IC_CALL_IMPORT) {
+                if (pass) {
+                  import_rec=CAlloc(sizeof(CAOTImportExport));
+                  import_rec->type=IET_REL_I32;
+                  import_rec->rip=cc->aotc->rip+out.count;
+                  import_rec->next=calls->fun->ie_lst;
+                  calls->fun->ie_lst=import_rec;
+                }
+                I386Dword(&out,0);
+              } else {
+                if (pass) {
+                  usage=CAlloc(sizeof(CExternUsage));
+                  usage->next=calls->fun->ext_lst;
+                  calls->fun->ext_lst=usage;
+                  usage->rip=cc->aotc->rip+out.count;
+                }
+                I386Dword(&out,0);
               }
-              I386Dword(&out,0);
             }
             depth=calls->depth;
             calls->called=TRUE;
             break;
           case IC_ADD_RSP1:
           case IC_ADD_RSP:
-            if (!calls || !calls->called ||
-                ic->ic_data!=calls->fun->arg_cnt*8) throw('Compiler');
+            if (!calls || !calls->called) throw('Compiler');
+            if (calls->indirect && ic->ic_code==IC_ADD_RSP) {
+              if (ic->ic_data!=8 && ic->ic_data!=(calls->fun->arg_cnt+1)*8)
+                throw('Compiler');
+            } else if (ic->ic_data!=calls->fun->arg_cnt*8) throw('Compiler');
             //Fixed-arity i386 callees have already removed argument slots.
             break;
           case IC_CALL_END:
@@ -296,6 +323,33 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_TYPE:
             I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[1]);
             I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[0]);
+            depth++;
+            break;
+          case IC_ADDR_IMPORT:
+            addr_fun=ic->ic_data;
+            if (!(addr_fun->type&HTT_FUN) || addr_fun->type&HTF_IMPORT)
+              throw('Compiler');
+            //Use the ordinary forward REL32 fixup at ADD's immediate.
+            //The saved PC plus nine equals the end of that immediate.
+            I386Byte(&out,0xE8); I386Dword(&out,0);
+            I386Bytes(&out,"\x58\x83\xC0\x09\x05",5);
+            if (pass) {
+              usage=CAlloc(sizeof(CExternUsage));
+              usage->next=addr_fun->ext_lst;
+              addr_fun->ext_lst=usage;
+              usage->rip=cc->aotc->rip+out.count;
+            }
+            I386Dword(&out,0);
+            I386Bytes(&out,"\x31\xD2\x52\x50",4);
+            depth++;
+            break;
+          case IC_ABS_ADDR:
+            //Materialize a module-relative address without a load-address fixup.
+            I386Byte(&out,0xE8); I386Dword(&out,0);
+            arg_offset=cc->aotc->rip+out.count;
+            I386Bytes(&out,"\x58\x05",2);
+            I386Dword(&out,ic->ic_data-arg_offset);
+            I386Bytes(&out,"\x31\xD2\x52\x50",4);
             depth++;
             break;
           case IC_RBP:

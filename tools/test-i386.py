@@ -120,7 +120,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (129 if functions else 9):
+    if offset != len(data) or count != (141 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
@@ -128,7 +128,7 @@ def main():
     run('nasm', *(['-DFUNCTIONS=1'] if functions else []),
         f'-DEXPECTED_FAULTS={4 if functions else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
-    if disk.stat().st_size > 65*512:
+    if disk.stat().st_size > 129*512:
         raise ValueError('Runner exceeds boot-loader transfer size')
     with disk.open('ab') as stream:
         stream.truncate(16*1024*1024)

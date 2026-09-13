@@ -1,7 +1,7 @@
 # i386 ABI working contract
 
 Status: architecture decisions for the port; the experimental backends only
-implements a subset of this contract. No compatibility claim follows from this
+implement a subset of this contract. No compatibility claim follows from this
 specification alone.
 
 ## Values and layout
@@ -73,8 +73,20 @@ queries are used during parsing and scaling. Direct calls within a compilation
 unit, forward fixups, recursion, nested calls, scalar slot extension, and integer
 default arguments are implemented. Undefined functions are rejected during AOT
 resolution. T32M objects support relative-call imports through the bootstrap
-linker described in `i386-modules.md`. Indirect/variadic calls, runtime module
-loading, floating-point
-output, switch dispatch and short-circuit/chained comparisons remain pending.
+linker described in `i386-modules.md`. Short-circuit `&&`/`||` and Boolean `^^`
+are implemented.
+
+Indirect fixed-arity calls share the direct-call ABI. The caller captures a
+four-byte function pointer into an eight-byte evaluation slot before evaluating
+arguments, calls through its low dword, and removes that saved slot after the
+callee cleans up arguments. Callbacks can be local variables, parameters, or
+class members. Function addresses within the same compilation unit, including
+self-references and forward declarations, use position-relative code and compiler
+fixups; moving the linked image preserves them. Taking the address of an imported
+function remains unsupported by the current module format. An unresolved plain
+`extern` function address is a compile error.
+
+Variadic calls, runtime module loading, floating-point output, switch dispatch,
+and chained comparisons remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.

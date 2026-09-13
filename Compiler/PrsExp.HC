@@ -419,11 +419,13 @@ I64 PrsFunCall(CCmpCtrl *cc,CPrsStk *ps,Bool indirect,CHashFun *tmpf)
     is_template_fun=FALSE;
 
   if (indirect) {
+    tmpc2=cmp.internal_types[RT_PTR];
+    if (cc->flags&CCF_TARGET_I386) tmpc2=cmp.internal_types[RT_U8]+1;
     if (!(cc->flags & (CCF_RAX | CCF_ARRAY)))
-      ICAdd(cc,IC_DEREF,0,cmp.internal_types[RT_PTR]);
-    cc->coc.coc_head.last->ic_class=cmp.internal_types[RT_PTR];
-    ICAdd(cc,IC_SET_RAX,0,cmp.internal_types[RT_PTR]);
-    ICAdd(cc,IC_NOP2,1,cmp.internal_types[RT_PTR]); //balance the books
+      ICAdd(cc,IC_DEREF,0,tmpc2);
+    cc->coc.coc_head.last->ic_class=tmpc2;
+    ICAdd(cc,IC_SET_RAX,0,tmpc2);
+    ICAdd(cc,IC_NOP2,1,tmpc2); //balance the books
   }
   COCPush(cc);
   tmpcbh=cc->coc.coc_next;
@@ -634,12 +636,15 @@ I64 PrsUnaryTerm(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
 		      else
 			goto pu_new_sys_sym;
 		    }
-		    LexExcept(cc,"Can't take addr of extern fun");
-		  }
-		  cc->abs_cnts.externs++;
-		  ICAdd(cc,IC_IMM_I64,
+		    if (cc->flags&CCF_TARGET_I386)
+		      ICAdd(cc,IC_ADDR_IMPORT,tmpf,cmp.internal_types[RT_PTR]);
+		    else LexExcept(cc,"Can't take addr of extern fun");
+		  } else {
+		    cc->abs_cnts.externs++;
+		    ICAdd(cc,IC_IMM_I64,
 			&tmpf->exe_addr,cmp.internal_types[RT_PTR]);
-		  ICAdd(cc,IC_DEREF,0,cmp.internal_types[RT_PTR]);
+		    ICAdd(cc,IC_DEREF,0,cmp.internal_types[RT_PTR]);
+		  }
 		} else {
 		  if (cc->flags&CCF_AOT_COMPILE) {
 		    ICAdd(cc,IC_ABS_ADDR,

@@ -20,7 +20,7 @@ org 0x7c00
     mov ax,0x1000
     mov es,ax
     mov word [sector],1
-    mov si,64
+    mov si,128
 .load:
     mov ax,[sector]
     xor dx,dx

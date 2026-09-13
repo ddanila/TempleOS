@@ -93,7 +93,7 @@ U0 EmitLinkedCase(I64 a,I64 b,I64 expected,U8 **cursor,Bool reverse)
   I64 sizes[2],size,size2,errors,i,j,base=8;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
-  modules[0]=CmpI386Module("#include \"/Kernel/Types.HH\"\nimport I64 Add(I64 a,I64 b); I64 Main(I64 a,I64 b) { return Add(a,b); }",&sizes[0],&errors);
+  modules[0]=CmpI386Module("#include \"/Kernel/Types.HH\"\nimport I64 Add(I64 a,I64 b); I64 Main(I64 a,I64 b) { I64 (*fp)(I64 x,I64 y); fp=&Main; if (a) return (*fp)(0,Add(a,b)); return b; }",&sizes[0],&errors);
   if (!modules[0] || errors) { Report("FAIL caller module\n"); throw; }
   modules[1]=CmpI386Module("#include \"/Kernel/Types.HH\"\nI64 Add(I64 a,I64 b) { return a+b; }",&sizes[1],&errors);
   if (!modules[1] || errors) { Report("FAIL provider module\n"); throw; }
@@ -275,6 +275,30 @@ U0 CompileTests()
   EmitCase("if (a||b) return 7; return 9;",0,0,9,&cursor);
   EmitCase("return a||(Add(a,b)&&b);",0,2,1,&cursor,
     "extern I64 Add(I64 a,I64 b);", "I64 Add(I64 a,I64 b) { return a+b; }");
+  EmitCase("I64 (*fp)(I64 x,I64 y); fp=&Test; if (a<=1) return b; return (*fp)(a-1,a*b);",5,1,120,&cursor);
+  EmitCase("I64 (*fp)(I64 x,I64 y); fp=&Test; if (!a) return b; return b+(*fp)(0,b);",1,0x100000001,0x200000002,&cursor);
+  EmitCase("I64 (*fp)(I64 x,I64 y); fp=&Test; if (!a) return b; return (*fp)(0,(*fp)(0,b));",1,42,42,&cursor);
+  EmitCase("if (!a) return b; return Invoke(&Test,0,b);",1,0x10000002A,0x10000002A,&cursor,
+    "extern I64 Invoke(I64 (*fp)(I64 x,I64 y),I64 a,I64 b);",
+    "I64 Invoke(I64 (*fp)(I64 x,I64 y),I64 a,I64 b) { return (*fp)(a,b); }");
+  EmitCase("class P { I64 (*fp)(I64 x,I64 y); }; P p; p.fp=&Test; if (!a) return b; return (*p.fp)(0,b);",1,42,42,&cursor);
+  EmitCase("I64 (*fp)(I64 x,I64 y); fp=&Add; return (*fp)(a,b);",0xFFFFFFFF,1,0x100000000,&cursor,
+    "extern I64 Add(I64 x,I64 y);", "I64 Add(I64 x,I64 y) { return x+y; }");
+  EmitCase("return Invoke(a);",255,0,-1,&cursor,
+    "extern I64 Invoke(I64 a);",
+    "I64 Slot(I8 a) { return a(I64); } I64 Invoke(I64 a) { I64 (*fp)(I8 x); fp=&Slot; return (*fp)(a); }");
+  EmitCase("return Invoke();",0,0,42,&cursor,
+    "extern I64 Invoke();",
+    "I64 Value() { return 42; } I64 Invoke() { I64 (*fp)(); fp=&Value; return (*fp)(); }");
+  EmitCase("U0 (*fp)(I64 *p,I64 x); fp=&Store; (*fp)(&a,b); return a;",0,0x123456789ABCDEF0,0x123456789ABCDEF0,&cursor,
+    "extern U0 Store(I64 *p,I64 x);", "U0 Store(I64 *p,I64 x) { *p=x; }");
+  EmitCase("I8 (*fp)(I64 x); fp=&Byte; return (*fp)(a);",255,0,-1,&cursor,
+    "extern I8 Byte(I64 x);", "I8 Byte(I64 x) { return x; }");
+  EmitCase("class P { I64 (*fp)(I64 x,I64 y); }; P p[2]; p[0].fp=&Add; p[1].fp=&Sub; return (*p[1].fp)(a,b)+(*p[0].fp)(a,b);",0x100000000,3,0x200000000,&cursor,
+    "extern I64 Add(I64 x,I64 y); extern I64 Sub(I64 x,I64 y);",
+    "I64 Add(I64 x,I64 y) { return x+y; } I64 Sub(I64 x,I64 y) { return x-y; }");
+  EmitCase("I64 (*fp)(I64 x,I64 y=7); fp=&Add; return (*fp)(a);",35,0,42,&cursor,
+    "extern I64 Add(I64 x,I64 y);", "I64 Add(I64 x,I64 y) { return x+y; }");
   //Reserved expected value tells the isolated runner to require vector 0.
   EmitCase("return a/b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
@@ -282,6 +306,8 @@ U0 CompileTests()
   EmitCase("return a%b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);
   Reject("#include \"/Kernel/Types.HH\"\nF64 Test(I64 a,I64 b) { return 1.5; }");
   Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(I64 a,I64 b); I64 Test(I64 a,I64 b) { return Missing(a,b); }");
+  Reject("#include \"/Kernel/Types.HH\"\nextern I64 Missing(); I64 Test() { I64 (*fp)(); fp=&Missing; return (*fp)(); }");
+  Reject("#include \"/Kernel/Types.HH\"\nimport I64 Missing(); I64 Test() { I64 (*fp)(); fp=&Missing; return (*fp)(); }");
   Reject("#exe { 1+2; }");
   EmitLinkedCase(0xFFFFFFFF,1,0x100000000,&cursor,FALSE);
   EmitLinkedCase(0x100000000,42,0x10000002A,&cursor,TRUE);

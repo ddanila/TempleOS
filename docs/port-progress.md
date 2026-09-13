@@ -63,7 +63,7 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-129 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+141 function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
 class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
 unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
@@ -77,10 +77,14 @@ arguments, void and narrow returns, pointer mutation, and full argument-slot
 extension. Boolean cases cover `&&`, `||`, and `^^`, nested conditions, skipped
 side effects, and skipped division faults. F64 output, unresolved functions, and `#exe` remain rejection cases.
 Exported function boundaries separate executable code from AOT alignment padding
-during instruction auditing. The runner reports the zero-based case index in
+during instruction auditing. Callback cases cover self-recursion, forward and
+backward function addresses, nested calls, callback parameters, class fields and
+arrays of records, narrow arguments/returns, void and zero-argument callbacks,
+and default arguments. Function pointer loads use the target's four-byte width.
+Undefined function addresses and imported function addresses are rejection cases. The runner reports the zero-based case index in
 hexadecimal on failure. Function bodies
 are exercised; the cases may contain multiple functions in one compilation unit.
-Runtime module loading, globals, indirect calls, switch dispatch,
+Runtime module loading, globals, switch dispatch,
 chained comparisons, variadic functions, debug information, and
 software F64 are not implemented by this backend.
 
@@ -92,6 +96,8 @@ host. See [module format](i386-modules.md). The fixed-width header records CPU,
 pointer width and ABI version; incompatible values are rejected.
 
 Two linked-image cases execute caller/provider objects in both input orders.
+The caller also invokes a callback to itself, checking address materialization
+when the linker changes its position.
 They also check repeatable output and byte-for-byte unchanged inputs. Validation
 covers 19 malformed header/record variants (including overflow-shaped counts),
 truncated/null buffers, duplicate exports, unresolved imports, and missing entry

@@ -100,7 +100,7 @@ def main():
     disk=OUT/'runner.img'
     run('nasm','-f','bin',f'-DVALIDATOR_FILE="{exports / "validator.bin"}"',
         f'-DCASES_FILE="{table}"','tests/i386/module-check.asm','-o',str(disk))
-    if disk.stat().st_size>65*512:
+    if disk.stat().st_size>129*512:
         raise ValueError('Runner exceeds BIOS transfer size')
     with disk.open('ab') as stream:
         stream.truncate(16*1024*1024)

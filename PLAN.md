@@ -295,8 +295,10 @@ The protected-mode runner now executes HolyC-generated integer functions with
 integer/call backend and native module loading path needed to compile and run
 more kernel units, while closing the remaining M0/M1 gates. The architecture-tagged
 bootstrap linker and shared module validator now have target execution tests.
-Prioritize global/data relocations, indirect calls, and exception-safe runtime
-interfaces before attempting a full kernel link. Runner success remains an
+Indirect fixed-arity calls and same-module function addresses now pass target
+execution tests, including callbacks in linked modules. Prioritize global/data
+relocations, variadic calls, and exception-safe runtime interfaces before attempting
+a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.
 
 ## Verification strategy
