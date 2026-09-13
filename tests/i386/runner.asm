@@ -126,7 +126,7 @@ bits 32
     jne failed
     cmp edx,[esi+8]
     jne failed
-    inc ebp
+    inc dword [case_index]
     mov esi,edi
     jmp .next
 passed:
@@ -138,6 +138,18 @@ passed:
 failed:
     mov esi,failmsg
     call puts
+    mov ebx,hex_digits
+    mov eax,[case_index]
+    shr al,4
+    and al,15
+    xlatb
+    out 0xe9,al
+    mov eax,[case_index]
+    and al,15
+    xlatb
+    out 0xe9,al
+    mov al,10
+    out 0xe9,al
     mov eax,0x11
     out 0xf4,eax
 stop:
@@ -159,4 +171,6 @@ failmsg: db 'FAIL i386 functions',10,0
 passmsg: db 'PASS i386 expressions',10,0
 failmsg: db 'FAIL i386 expressions',10,0
 %endif
+case_index: dd 0
+hex_digits: db "0123456789ABCDEF"
 cases: incbin CASES_FILE

@@ -1091,9 +1091,11 @@ args.
 	}
 	break;
       case IC_BR_ZERO:
+        if (cc->flags&CCF_TARGET_I386) break; //Keep portable expression/branch IR.
 	tmpi_push=OptBrZero(cc,tmpi);
 	break;
       case IC_BR_NOT_ZERO:
+        if (cc->flags&CCF_TARGET_I386) break;
 	tmpi_push=OptBrNotZero(cc,tmpi);
 	break;
       case IC_NOP1:

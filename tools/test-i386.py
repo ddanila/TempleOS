@@ -59,7 +59,9 @@ def main():
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
     allowed = {'push', 'pop', 'mov', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
-               'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp'}
+               'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
+               'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
+               'setng', 'setc', 'setnc', 'seta', 'setna'}
     while True:
         size, = struct.unpack_from('<I', data, offset)
         offset += 4
@@ -89,7 +91,7 @@ def main():
         listing.append(f'; Case {count}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != (15 if functions else 9):
+    if offset != len(data) or count != (46 if functions else 9):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.

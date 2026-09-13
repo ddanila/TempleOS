@@ -51,6 +51,40 @@ U0 I386Store(CI386Out *out,CHashClass *c)
   }
 }
 
+U0 I386Binary(CI386Out *out,I64 op)
+{//EDX:EAX op EBX:ECX, with ESI/EDI scratch.
+  switch (op) {
+    case IC_ADD: I386Bytes(out,"\x01\xC8\x11\xDA",4); break;
+    case IC_SUB: I386Bytes(out,"\x29\xC8\x19\xDA",4); break;
+    case IC_AND: I386Bytes(out,"\x21\xC8\x21\xDA",4); break;
+    case IC_OR: I386Bytes(out,"\x09\xC8\x09\xDA",4); break;
+    case IC_XOR: I386Bytes(out,"\x31\xC8\x31\xDA",4); break;
+    case IC_MUL:
+      I386Bytes(out,"\x89\xC6\x89\xD7\x0F\xAF\xF9\x0F\xAF\xDE"
+        "\xF7\xE1\x01\xFA\x01\xDA",16); break;
+  }
+}
+
+U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
+{//Compare EDX:EAX with EBX:ECX; high words first, low words unsigned.
+  U8 low_cc,high_cc;
+  switch (op) {
+    case IC_EQU_EQU: low_cc=high_cc=0x94; break;
+    case IC_NOT_EQU: low_cc=high_cc=0x95; break;
+    case IC_LESS: low_cc=0x92; high_cc=0x9C; break;
+    case IC_GREATER_EQU: low_cc=0x93; high_cc=0x9D; break;
+    case IC_GREATER: low_cc=0x97; high_cc=0x9F; break;
+    case IC_LESS_EQU: low_cc=0x96; high_cc=0x9E; break;
+    default: throw('Compiler');
+  }
+  if (is_unsigned) high_cc=low_cc;
+  I386Bytes(out,"\x39\xDA\x75\x07\x39\xC8\x0F",7);
+  I386Byte(out,low_cc); I386Byte(out,0xC0);
+  I386Bytes(out,"\xEB\x03\x0F",3);
+  I386Byte(out,high_cc); I386Byte(out,0xC0);
+  I386Bytes(out,"\x0F\xB6\xC0\x31\xD2",5);
+}
+
 U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
 {//Array bounds/defaults are evaluated by the running x86-64 compiler.
  //Accept only an integer constant after target-aware folding, never target code.
@@ -120,6 +154,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
       for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
         c=ic->ic_class;
         if (c && !c->ptr_stars_cnt && c->raw_type==RT_F64) throw('Compiler');
+        if (ic->ic_flags&(ICF_PUSH_CMP|ICF_POP_CMP)) throw('Compiler');
         switch (ic->ic_code) {
           case IC_NOP1:
           case IC_NOP2: break;
@@ -151,6 +186,83 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Normalize(&out,c);
             I386Bytes(&out,"\x52\x50",2);
             break;
+          case IC_UNARY_MINUS:
+          case IC_COM:
+          case IC_NOT:
+            if (depth<1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A",2);
+            if (ic->ic_code==IC_UNARY_MINUS)
+              I386Bytes(&out,"\xF7\xD8\x83\xD2\x00\xF7\xDA",7);
+            else if (ic->ic_code==IC_COM)
+              I386Bytes(&out,"\xF7\xD0\xF7\xD2",4);
+            else
+              I386Bytes(&out,"\x09\xD0\x0F\x94\xC0\x0F\xB6\xC0\x31\xD2",10);
+            I386Bytes(&out,"\x52\x50",2);
+            break;
+          case IC_EQU_EQU...IC_LESS_EQU:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A",4);
+            I386Compare(&out,ic->ic_code,ToBool(ic->ic_flags&ICF_USE_UNSIGNED));
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
+          case IC_BR_ZERO:
+          case IC_BR_NOT_ZERO:
+            if (depth!=1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A\x09\xD0\x0F",5);
+            if (ic->ic_code==IC_BR_ZERO) I386Byte(&out,0x84);
+            else I386Byte(&out,0x85);
+            label=OptLabelFwd(ic->ic_data);
+            I386Dword(&out,label->addr-out.count-4);
+            depth--;
+            break;
+          case IC__PP:
+          case IC__MM:
+          case IC_PP_:
+          case IC_MM_:
+            if (depth<1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A\x89\xC1",4);
+            I386Load(&out,c);
+            I386Bytes(&out,"\x89\xC6\x89\xD7",4);
+            if (ic->ic_code==IC__PP || ic->ic_code==IC_PP_) {
+              I386Byte(&out,0x05);
+              if (c->ptr_stars_cnt) I386Dword(&out,I386Size(c-1));
+              else I386Dword(&out,1);
+              I386Bytes(&out,"\x83\xD2\x00",3);
+            } else {
+              I386Byte(&out,0x2D);
+              if (c->ptr_stars_cnt) I386Dword(&out,I386Size(c-1));
+              else I386Dword(&out,1);
+              I386Bytes(&out,"\x83\xDA\x00",3);
+            }
+            I386Store(&out,c);
+            if (ic->ic_code==IC__PP || ic->ic_code==IC__MM)
+              I386Bytes(&out,"\x89\xF0\x89\xFA",4);
+            I386Bytes(&out,"\x52\x50",2);
+            break;
+          case IC_ADD_EQU:
+          case IC_SUB_EQU:
+          case IC_MUL_EQU:
+          case IC_AND_EQU:
+          case IC_OR_EQU:
+          case IC_XOR_EQU:
+            if (depth<2) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A\x50",5);
+            c=ic->t.arg1_class-1;
+            I386Load(&out,c);
+            switch (ic->ic_code) {
+              case IC_ADD_EQU: I386Binary(&out,IC_ADD); break;
+              case IC_SUB_EQU: I386Binary(&out,IC_SUB); break;
+              case IC_MUL_EQU: I386Binary(&out,IC_MUL); break;
+              case IC_AND_EQU: I386Binary(&out,IC_AND); break;
+              case IC_OR_EQU: I386Binary(&out,IC_OR); break;
+              case IC_XOR_EQU: I386Binary(&out,IC_XOR); break;
+            }
+            I386Byte(&out,0x59);
+            I386Store(&out,c);
+            I386Bytes(&out,"\x52\x50",2);
+            depth--;
+            break;
           case IC_ASSIGN:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x58\x5A\x59\x5B",4);
@@ -166,16 +278,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_XOR:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A",4);
-            switch (ic->ic_code) {
-              case IC_ADD: I386Bytes(&out,"\x01\xC8\x11\xDA",4); break;
-              case IC_SUB: I386Bytes(&out,"\x29\xC8\x19\xDA",4); break;
-              case IC_AND: I386Bytes(&out,"\x21\xC8\x21\xDA",4); break;
-              case IC_OR: I386Bytes(&out,"\x09\xC8\x09\xDA",4); break;
-              case IC_XOR: I386Bytes(&out,"\x31\xC8\x31\xDA",4); break;
-              case IC_MUL:
-                I386Bytes(&out,"\x89\xC6\x89\xD7\x0F\xAF\xF9\x0F\xAF\xDE"
-                  "\xF7\xE1\x01\xFA\x01\xDA",16); break;
-            }
+            I386Binary(&out,ic->ic_code);
             if (c && c->ptr_stars_cnt) I386Normalize(&out,c);
             I386Bytes(&out,"\x52\x50",2);
             depth--;
@@ -198,7 +301,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_JMP:
             if (depth) throw('Compiler');
-            label=ic->ic_data;
+            label=OptLabelFwd(ic->ic_data);
             I386Byte(&out,0xE9);
             I386Dword(&out,label->addr-out.count-4);
             break;

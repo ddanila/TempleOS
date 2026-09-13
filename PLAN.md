@@ -290,9 +290,11 @@ M2's target runner and early M3 boot/interrupt work can be developed alongside
 the backend after M1. Do not require the full compiler before running backend
 tests, or the complete desktop before resolving compile-time execution.
 
-The next concrete implementation slice is M0/M1, followed by a tiny HolyC-generated
-386 executable that exercises 32-bit pointers and real 64-bit arithmetic in a
-protected-mode runner. This is an intermediate milestone, not the final OS.
+The protected-mode runner now executes HolyC-generated integer functions with
+32-bit pointers, 64-bit arithmetic, and basic control flow. Next, complete the
+integer/call backend and architecture-tagged module path needed to compile real
+kernel units, while closing the remaining M0/M1 gates. Runner success remains an
+intermediate milestone, not the final OS.
 
 ## Verification strategy
 

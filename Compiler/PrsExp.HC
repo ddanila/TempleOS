@@ -1068,7 +1068,7 @@ I64 PrsUnaryModifier(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
       }
       tmpc1=tmpc-1;
       if (tmpad1=*_tmpad) {
-	ICAdd(cc,IC_IMM_I64,tmpad1->total_cnt*tmpc1->size,tmpc);
+	ICAdd(cc,IC_IMM_I64,tmpad1->total_cnt*CmpTargetSize(cc,tmpc1),tmpc);
 	if (*_tmpad=tmpad1->next) {
 	  old_flags=cc->flags;
 	  if (!PrsExpression(cc,NULL,FALSE,ps))
@@ -1085,7 +1085,7 @@ I64 PrsUnaryModifier(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
 	  return PE_UNARY_MODIFIERS;
 	}
       } else
-	ICAdd(cc,IC_IMM_I64,tmpc1->size,tmpc);
+	ICAdd(cc,IC_IMM_I64,CmpTargetSize(cc,tmpc1),tmpc);
       old_flags=cc->flags;
       if (!PrsExpression(cc,NULL,FALSE,ps))
 	throw('Compiler');

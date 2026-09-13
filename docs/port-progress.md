@@ -42,7 +42,9 @@ Unsupported floating point, narrowing casts, and division are explicitly rejecte
 `Compiler/I386/Core.HC` is selected by `CCF_TARGET_I386` in the normal compiler
 pipeline. `CmpI386Buf` is an experimental cross-compilation entry point. It emits
 fixed-arity integer functions, EDX:EAX arithmetic, stack arguments at EBP+8,
-local scalar loads/stores, explicit casts, and callee cleanup. Target-size queries
+local scalar loads/stores, explicit casts, and callee cleanup. Comparisons,
+conditional branches, `if`/`while`/`do`/`for`, unary operations, prefix/postfix
+increment/decrement, and arithmetic/bitwise compound assignments are also emitted. Target-size queries
 cover parser member/local layouts, `sizeof`, and pointer arithmetic without
 changing the running compiler's object pointers. `Kernel/Types.HH` shares the
 numeric unions without requiring the complete architecture-specific kernel header.
@@ -55,13 +57,17 @@ bootstrap machinery, not the eventual native i386 compiler implementation.
 
 Run `python3 tools/test-rebuild.py` before
 `python3 tools/test-i386.py --functions` so the test boots the newly built compiler.
-Fifteen function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
+Forty-six function cases pass on QEMU's 486 model with 8 MiB RAM. The runner checks
 arguments, returns, stack cleanup, preserved registers, pointer-array and packed
-class sizes, pointer indexing/wraparound, and narrow integer conversion. Three
+class sizes, pointer indexing/wraparound, narrow integer conversion, signed and
+unsigned comparisons, loops, mutation operations, and HolyC lvalue storage
+reinterpretation. Three
 rejection cases cover division, F64 output, and `#exe`. Instruction auditing is
-limited to executable ranges, excluding AOT padding. Only standalone function bodies are exercised;
-module relocation, globals, calls, general control flow, variadic functions,
-debug information, and software F64 are not implemented by this backend.
+limited to executable ranges, excluding AOT padding. The runner reports the
+zero-based case index in hexadecimal on failure. Only standalone function bodies
+are exercised; module relocation, globals, calls, shifts/division, switch dispatch,
+short-circuit/chained comparisons, variadic functions, debug information, and
+software F64 are not implemented by this backend.
 
 This remains partial M1/M2 work. There is no i386 module loader, software F64,
 full kernel, native i386 compiler, or DolDoc desktop yet. Passing the runner does not prove 386SX/DX support,

@@ -13,6 +13,12 @@ widening an address to U64 zero-extends. An IPtr representation is signed I32;
 UPtr is U32. Checked allocation and image-loading interfaces reject overflow.
 Negative pointer sentinels must be compared at target pointer width.
 
+HolyC lvalue casts retain their storage-view semantics. Casting a four-byte
+pointer variable as `I64` can read eight bytes at that variable's address; it is
+not a value-widening operation. Use a value context to obtain the pointer value,
+which is zero-extended by the i386 load path. Audit existing pointer casts with
+this distinction in mind.
+
 Preserve HolyC's packed class layout unless explicit alignment is requested.
 Do not infer C compiler padding. Define every serialized record with fixed-width
 fields; compiler-host object sizes are not target layout queries.
@@ -56,8 +62,10 @@ integer expressions, not functions, pointer-layout queries, or complete modules.
 
 `Compiler/I386/Core.HC` adds the normal compiler function path through
 `CmpI386Buf`. Its current subset implements fixed-arity scalar arguments,
-integer arithmetic, local loads/stores, casts and returns. Pointer-aware size
+integer arithmetic, comparisons, conditional branches, loops, local loads/stores,
+increment/decrement, compound assignments, casts and returns. Pointer-aware size
 queries are used during parsing and scaling. Calls, variadic functions, module
-relocation, floating-point output and full control flow remain pending.
+relocation, floating-point output, switch dispatch and short-circuit/chained
+comparisons remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.
