@@ -1,6 +1,7 @@
 #ifndef I386_SCHEDULER_INCLUDED
 #define I386_SCHEDULER_INCLUDED
 #include "/Kernel/I386/Context.HH"
+#include "/Kernel/I386/Heap.HH"
 extern class CI386Scheduler;
 class CI386Task
 {
@@ -10,6 +11,7 @@ class CI386Task
   CI386Scheduler *owner;
   U32 finished,blocked;
   CI386Task *join_head,*join_next,*join_target;
+  CI386Heap *memory;
 };
 class CI386Scheduler
 {

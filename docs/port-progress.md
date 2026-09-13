@@ -473,3 +473,18 @@ members, and pointer-returning calls with full-width numeric values. All 155
 function cases, the complete native task suite, both x64 rebuilds, and image
 verification pass. The join implementation can keep its predecessor walk; the
 original field-address expression is now independently supported and tested.
+
+## Private task arenas
+
+Owned-task creation now accepts an optional fixed-size private heap after the
+stack, and the task record carries its allocator pointer. `I386TaskAlloc` and
+`I386TaskFree` use the current FS-bound task and preserve IF. Stack-only tasks
+retain the default zero-capacity behavior. Private allocations remain live after
+Finish and are reclaimed together when the owned task is destroyed.
+
+The combined task suite passes with two 4 KiB arenas, exhaustion/reuse, zero fill,
+payload retention over yields and after completion, rejected cross-arena frees,
+invalid arena sizes and complete parent-heap reclamation across repeated cycles.
+Both x64 rebuilds and image verification pass. These remain fixed-capacity,
+NULL-returning bootstrap heaps; page-pool growth, inherited policies, and public
+MAlloc/CAlloc/OutMem integration are pending.

@@ -7,18 +7,26 @@ public U0 I386TaskReturn()
   while (1) {}
 }
 public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
-  I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20)
+  I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   I64 header=(sizeof(CI386OwnedTask)+7)&~7,total;
   U32 flags;
   if (!s || !s->root || !s->bind || !heap || !entry || stack_size<256 ||
       stack_size&7 || stack_size>0xFFFFFFFF-header) return 0;
-  total=header+stack_size;
+  if (private_size<0 || private_size&7 || (private_size && private_size<24) ||
+      private_size>0xFFFFFFFF-header-stack_size) return 0;
+  total=header+stack_size+private_size;
   flags=I386IrqSave;
   owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
+  if (private_size) {
+    if (!I386HeapInit(&owned->local_heap,(owned+0)(U8 *)+header+stack_size,private_size)) {
+      I386HeapFree(heap,owned); I386IrqRestore(flags); return 0;
+    }
+    owned->task.memory=&owned->local_heap;
+  }
   if (!I386ContextInit(&owned->task.context,(owned+0)(U8 *)+header,stack_size,
       entry,arg,&I386TaskReturn,fs,gs) || !I386SchedAdd(s,&owned->task)) {
     I386HeapFree(heap,owned);
@@ -43,6 +51,20 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
     I386IrqRestore(flags); return FALSE;
   }
   result=I386HeapFree(heap,owned);
+  I386IrqRestore(flags);
+  return result;
+}
+public U8 *I386TaskAlloc(I64 size,Bool zero=FALSE)
+{//Try-allocation in the current task's optional private arena.
+  U32 flags=I386IrqSave;
+  U8 *result=I386HeapAlloc(I386TaskSelf->memory,size,zero);
+  I386IrqRestore(flags);
+  return result;
+}
+public Bool I386TaskFree(U8 *ptr)
+{
+  U32 flags=I386IrqSave;
+  Bool result=I386HeapFree(I386TaskSelf->memory,ptr);
   I386IrqRestore(flags);
   return result;
 }

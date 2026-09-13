@@ -262,7 +262,7 @@ for caller-owned records, since it would remove the ownership needed by Destroy.
 Spawn and Destroy restore the caller's IF on normal return. Their heap validation
 and zeroing are still linear operations under IRQ masking. They are task-context
 operations, not IRQ/NMI allocation services. This is not yet the complete public
-TempleOS Spawn interface: task settings/inheritance, per-task heaps, names,
+TempleOS Spawn interface: task settings/inheritance, growing task heaps, names,
 public join integration, cleanup hooks and OutMem exception semantics remain pending.
 
 The native task test creates two owned workers, verifies that live tasks cannot
@@ -299,3 +299,32 @@ would form a cycle, and checks that completion wakes both joiners. Root attempts
 destruction while they have not yet resumed and verifies rejection. Both joiners
 then observe completion, unregister, and return; all three owned allocations are
 destroyed with an empty queue and intact heap accounting.
+
+## Optional private task arenas
+
+`I386TaskSpawn` now accepts a final `private_size` argument, default zero. A
+nonzero value must be at least 24 bytes, aligned to eight bytes, and fit alongside
+the owned record and stack in the parent allocation. The private arena follows
+the stack; its heap control record lives in the owned header. The task's `memory`
+pointer selects that arena. Zero preserves stack-only creation.
+
+`I386TaskAlloc(size, zero)` and `I386TaskFree(ptr)` use the current task's arena
+through its FS self-pointer and restore the caller's IF. Allocation without an
+arena fails; freeing NULL remains a no-op. Free rejects pointers belonging to
+another arena. These are ownership conventions in the shared flat address space,
+not memory isolation, and all pointers are still directly accessible to ring-0
+code. Validation and zeroing retain the existing interrupt-latency limitations.
+
+Private allocations stay live after Finish, including while joiners inspect the
+completed task. Destroy releases the entire parent allocation, reclaiming the
+private arena even when individual payloads were not freed. All external
+references must be retired before destruction. The arena has a fixed capacity;
+there is no page-pool growth, inherited allocator policy, or public MAlloc/OutMem
+interface yet.
+
+The owned-worker test now gives each worker a 4 KiB private heap. It exhausts and
+reuses each arena, checks zero-fill and payload preservation across yields,
+rejects cross-arena frees, and deliberately retains a live allocation through
+completion. Root checks those payloads before destruction and verifies complete
+parent-heap reclamation across repeated create/destroy cycles. Invalid private
+sizes and allocation without a private heap are also checked.
