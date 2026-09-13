@@ -307,9 +307,11 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               if (!I386IsF64(ic->t.arg1_tree->ic_class) || !I386IsF64(ic->t.arg2_tree->ic_class))
                 throw('Compiler');
               break;
+            case IC_ADD_EQU: case IC_SUB_EQU: case IC_MUL_EQU: case IC_DIV_EQU:
             case IC_ASSIGN:
               if (!I386IsF64(c) || !I386IsF64(ic->t.arg2_tree->ic_class)) throw('Compiler');
               break;
+            case IC__PP: case IC__MM: case IC_PP_: case IC_MM_:
             case IC_UNARY_MINUS:
               if (!I386IsF64(c)) throw('Compiler');
               break;
@@ -606,7 +608,14 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Bytes(&out,"\x58\x5A\x89\xC1",4);
             I386Load(&out,c);
             I386Bytes(&out,"\x89\xC6\x89\xD7",4);
-            if (ic->ic_code==IC__PP || ic->ic_code==IC_PP_) {
+            if (I386IsF64(c)) {
+              I386Bytes(&out,"\x51\x31\xC9\xBB",4);
+              I386Dword(&out,0x3FF00000); //Right operand is binary64 1.0.
+              if (ic->ic_code==IC__PP || ic->ic_code==IC_PP_)
+                I386F64Binary(cc,&out,IC_ADD,pass);
+              else I386F64Binary(cc,&out,IC_SUB,pass);
+              I386Byte(&out,0x59);
+            } else if (ic->ic_code==IC__PP || ic->ic_code==IC_PP_) {
               I386Byte(&out,0x05);
               if (c->ptr_stars_cnt) I386Dword(&out,I386Size(c-1));
               else I386Dword(&out,1);
@@ -632,9 +641,18 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Bytes(&out,"\x59\x5B\x58\x5A\x50",5);
             I386Load(&out,c);
             switch (ic->ic_code) {
-              case IC_ADD_EQU: I386Binary(&out,IC_ADD); break;
-              case IC_SUB_EQU: I386Binary(&out,IC_SUB); break;
-              case IC_MUL_EQU: I386Binary(&out,IC_MUL); break;
+              case IC_ADD_EQU:
+                if (I386IsF64(c)) I386F64Binary(cc,&out,IC_ADD,pass);
+                else I386Binary(&out,IC_ADD);
+                break;
+              case IC_SUB_EQU:
+                if (I386IsF64(c)) I386F64Binary(cc,&out,IC_SUB,pass);
+                else I386Binary(&out,IC_SUB);
+                break;
+              case IC_MUL_EQU:
+                if (I386IsF64(c)) I386F64Binary(cc,&out,IC_MUL,pass);
+                else I386Binary(&out,IC_MUL);
+                break;
               case IC_AND_EQU: I386Binary(&out,IC_AND); break;
               case IC_OR_EQU: I386Binary(&out,IC_OR); break;
               case IC_XOR_EQU: I386Binary(&out,IC_XOR); break;
@@ -685,7 +703,11 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               I386Load(&out,c);
             } else c=ic->t.arg1_tree->ic_class;
             if (I386IsF64(c)) {
-              I386F64Binary(cc,&out,ic->ic_code,pass);
+              I386F64Binary(cc,&out,IC_DIV,pass);
+              if (ic->ic_code==IC_DIV_EQU) {
+                I386Byte(&out,0x59);
+                I386Store(&out,c);
+              }
               I386Bytes(&out,"\x52\x50",2);
               depth--;
               break;

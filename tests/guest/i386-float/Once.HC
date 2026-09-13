@@ -43,7 +43,7 @@ U0 CompileTests()
   line=MStrPrint("EXPORT expressions.bin %X %X\n",source,loaded+32); Report(line);
   if (!Reject("F64 Main(F64 a,F64 b) { return a+b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,I64 b) { return a+b; }") ||
-      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { a+=b; return a; }") ||
+      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,I64 b) { a+=b; return a; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(F64 a,I64 b) { return a<b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { if (a) return a; return b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a%b; }") ||

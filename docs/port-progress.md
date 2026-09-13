@@ -1078,3 +1078,19 @@ cases, instruction audits, execution with CR0.EM set, both x64 rebuilds and imag
 verification (763 files, 62 directories) pass. Mixed conversions/relations, raw
 F64 conditions, floating-point state and complete native compiler/OS integration
 remain unfinished; x64 relational exception/NaN compatibility is not yet proven.
+
+
+## Native F64 compound updates and increment/decrement
+
+The backend now lowers same-type F64 `+=`, `-=`, `*=` and `/=` through the
+software runtime while preserving the destination address across calls. Prefix
+and postfix increment/decrement use binary64 1.0; postfix keeps the original
+value in callee-preserved registers, while prefix returns the stored result.
+
+The native F64 fixture now passes 27 positive checks and eight unsupported-source
+checks. New cases cover all update forms, returned expression values, counted
+pointer-producing destinations, original signed-zero/signaling-NaN postfix bits
+and nearest-even increments at 2^53. The 155-case integer/call regression,
+instruction audits, CR0.EM execution, both x64 rebuilds and image verification
+(763 files, 62 directories) pass. Mixed conversions/updates, raw F64 conditions,
+remaining math operations and complete native compiler/OS integration remain.

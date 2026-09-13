@@ -401,6 +401,8 @@ pass 2,048 operand pairs (8,192 result checks) with CR0.EM set and generated-fun
 The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
 infinities and NaN propagation. Native HolyC same-type F64 arithmetic, literals,
 storage, unary minus and fixed-arity direct/indirect calls now pass target tests.
+Same-type compound assignments and prefix/postfix increment/decrement also pass,
+including single destination evaluation and preservation of original postfix bits.
 Same-type F64 relations now compile to integer booleans and drive branches;
 12,288 branch predicates plus comparison-result arithmetic pass native tests.
 Mixed conversions and the remaining arithmetic/formatting/math surface still

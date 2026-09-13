@@ -21,8 +21,15 @@ other relations false; signed zeros compare equal. The resulting integer can
 control ordinary branches. The comparison helper declaration returns I64 while
 its two arguments retain the U64 bit-pattern ABI.
 
+Same-type F64 `+=`, `-=`, `*=`, `/=` and prefix/postfix `++`/`--` now use
+the software arithmetic helpers. The destination address is retained across the
+helper call and evaluated once. Increment/decrement use binary64 1.0; postfix
+returns the original bit pattern while prefix returns the stored result. This
+also preserves a signaling NaN or negative zero in the postfix result when the
+updated value differs.
+
 This is an initial compiler integration. Runtime mixed integer/F64 conversions,
-mixed-type relations, raw F64 conditions, increment/decrement, compound assignment,
+mixed-type relations/compound assignments, raw F64 conditions,
 remainder and math intrinsics remain unsupported and are rejected. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
@@ -33,7 +40,10 @@ JIT/self-hosting and the production OS remain unfinished.
 Run `python3 tools/test-rebuild.py`, then `python3 tools/test-i386.py --float`.
 The native fixture checks arithmetic through functions, literals, local/global
 and pointer storage, unary sign changes for zeros/NaNs, nested calls, indirect
-F64 callbacks, and both forward/direct helper fixups. Eight negative compilation
+F64 callbacks, both forward/direct helper fixups, compound updates and all four
+increment/decrement forms. Pointer-producing calls count destination evaluations;
+additional checks cover postfix signed-zero/signaling-NaN preservation and
+nearest-even increments that leave a large value unchanged. Eight negative compilation
 checks cover absent/malformed runtime declarations and unsupported operations. The test
 runs with CR0.EM set and audits generated instructions. `--functions` retains
 integer/call regression coverage; software-runtime numerical corpora remain
