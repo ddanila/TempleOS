@@ -132,3 +132,25 @@ public U64 I386F64Div(U64 a,U64 b)
   if (x) quotient|=1;
   return I386F64RoundPack(sign,exp,quotient);
 }
+
+public U64 I386F64FromU64(U64 value)
+{
+  I64 exp=1078; //Exponent bias plus the guard-extended hidden-bit position.
+  if (!value) return 0;
+  while (value>=0x0100000000000000) {
+    value=I386F64ShiftJam(value,1); exp++;
+  }
+  while (value<0x0080000000000000) { value<<=1; exp--; }
+  return I386F64RoundPack(0,exp,value);
+}
+
+public U64 I386F64FromI64(I64 value)
+{
+  U64 magnitude=value;
+  if (value<0) {
+    //Unsigned subtraction also handles I64_MIN without signed overflow.
+    magnitude=0-magnitude;
+    return 0x8000000000000000|I386F64FromU64(magnitude);
+  }
+  return I386F64FromU64(magnitude);
+}

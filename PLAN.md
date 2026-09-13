@@ -400,7 +400,10 @@ Integer-only binary64 addition/subtraction/multiplication/division helpers now
 pass 2,048 operand pairs (8,192 result checks) with CR0.EM set and generated-function instruction audits.
 The bit-pattern API specifies nearest-even rounding, subnormals, signed zero,
 infinities and NaN propagation. Native HolyC F64 expression lowering and the
-remaining arithmetic/conversion/formatting/math surface remain pending; see
+remaining arithmetic/conversion/formatting/math surface remain pending. Signed
+and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
+64-bit extrema and nearest-even halfway cases; language-node mapping and the
+reverse conversions still need implementation/compatibility tests. See
 `docs/i386-soft-f64.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up

@@ -70,3 +70,33 @@ def make_oracle(count):
         pairs.append((a, b))
     return b''.join(struct.pack('<6Q', a, b, *(expected(a, b, op) for op in ('add', 'sub', 'mul', 'div')))
                     for a, b in pairs)
+
+
+def make_conversion_oracle(count):
+    if sys.float_info.radix != 2 or sys.float_info.mant_dig != 53 or sys.float_info.max_exp != 1024:
+        raise RuntimeError('Binary64 host float required')
+    values = {0, SIGN-1, SIGN, (1 << 64)-1}
+    for bit in range(64):
+        for delta in (-2, -1, 0, 1, 2):
+            value = (1 << bit)+delta
+            if 0 <= value < 1 << 64:
+                values.add(value)
+                values.add(-value & ((1 << 64)-1))
+    # Both parities of the retained significand, at and beside half-ulp ties.
+    for bit in range(53, 64):
+        ulp = 1 << (bit-52)
+        for parity in (0, 1):
+            for delta in (-1, 0, 1):
+                value = (1 << bit)+parity*ulp+ulp//2+delta
+                values.add(value)
+                values.add(-value & ((1 << 64)-1))
+    if len(values) > count:
+        raise ValueError('Conversion oracle capacity omits boundary cases')
+    rng = random.Random(0x386C64)
+    while len(values) < count:
+        values.add(rng.getrandbits(64))
+    def bits(value):
+        return struct.unpack('<Q', struct.pack('<d', float(value)))[0]
+    return b''.join(struct.pack('<3Q', value, bits(value),
+                                bits(value-(1 << 64) if value & SIGN else value))
+                    for value in sorted(values))

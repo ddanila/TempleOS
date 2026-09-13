@@ -32,8 +32,17 @@ and produces 56 quotient bits by shift/subtract long division. A nonzero final
 remainder sets the sticky bit; shared rounding then handles normal and subnormal
 results. Shifted remainders fit in 54 bits, so no 128-bit divide is required.
 
+`I386F64FromU64(U64 value)` and `I386F64FromI64(I64 value)` convert actual
+integer values to binary64 bit patterns. Both use nearest-even rounding; zero
+converts to positive zero. The signed path computes magnitude with unsigned
+subtraction, including `I64_MIN`. Values above 2^53 may round; in particular,
+`U64_MAX` rounds to the binary64 representation of 2^64. Normalization preserves
+sticky information before the shared rounding/packing step. Mapping signed and
+unsigned helpers to existing HolyC conversion nodes still needs x64 compatibility
+tests before compiler integration.
+
 This is runtime groundwork. Native compiler lowering of HolyC F64 expressions,
-other arithmetic, comparisons, conversions, formatting, math functions,
+other arithmetic, comparisons, F64-to-integer conversions, formatting, math functions,
 exception flags/traps, selectable rounding modes and optional 387 execution
 remain unimplemented. NaN policy and precision differences from the existing x64
 x87 implementation need compatibility testing before full language integration.
@@ -50,6 +59,12 @@ random inputs. The host patches only the exported
 oracle data region after cross-compilation. Function bytes pass the existing
 386 instruction audit; the native runner sets CR0.EM to trap x87 use. QEMU's
 486 model with 8 MiB is a development check, not real-386 or full-OS proof.
+
+`python3 tools/test-i386.py --soft-f64-convert` runs a separate 1,024-input
+fixture, checking both signed and unsigned interpretations (2,048 conversions)
+against Python integer-to-binary64 conversion. It covers every power-of-two
+boundary, signed extrema, even/odd halfway rounding and seeded random values.
+This fixture uses the same native instruction audit and CR0.EM trap setting.
 
 For the wider arithmetic surface and rounding-mode terminology, see the
 [Berkeley SoftFloat interface documentation](https://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat.html).

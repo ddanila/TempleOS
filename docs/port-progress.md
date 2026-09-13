@@ -986,3 +986,21 @@ divisors and signed infinities. The fixture passes generated-function instructio
 audits and execution with CR0.EM set. Both x64 rebuilds and image verification
 (763 files, 62 directories) pass. Conversions, comparisons, native F64 compiler
 lowering and the rest of the full port remain unfinished.
+
+
+## Software integer-to-binary64 conversion
+
+`I386F64FromU64` and `I386F64FromI64` now convert full-width integers to binary64
+bit patterns with nearest-even rounding. Normalization preserves sticky bits;
+unsigned magnitude subtraction handles `I64_MIN` without signed overflow.
+`U64_MAX` correctly rounds to 2^64 under this helper contract.
+
+A separate native fixture passes 1,024 input bit patterns interpreted as both
+signed and unsigned integers (2,048 result checks against host conversions).
+Power-of-two boundaries, signed extrema, both retained-significand parities at
+halfway rounding, neighboring values and seeded random inputs are covered.
+The 8,192-check arithmetic regression also passes. Both fixtures pass instruction
+audits and execute with CR0.EM set; both x64 rebuild generations and image
+verification (763 files, 62 directories) pass. Mapping helpers to HolyC conversion
+nodes still needs x64 compatibility tests. Reverse conversions, comparisons and
+native F64 compiler integration remain unfinished.
