@@ -340,7 +340,8 @@ Bounded 8042 transport now passes keyboard echo delivery through IRQ1, status
 capture and controller configuration restoration. Scan-code decoding remains
 pending. A fixed raw-input FIFO now passes IRQ1-to-foreground
 delivery, wraparound, overflow accounting and interrupt-state preservation;
-blocking input and scheduler wakeups remain pending. See `docs/i386-keyboard.md`
+blocking raw input now passes worker wakeup through actual IRQ1 delivery, spurious
+wakeup handling and pending-reader reservation. See `docs/i386-keyboard.md`
 for the transport and queue contracts.
 Next, migrate full public task/CPU records and task semantics, bring up
 the production entry path, input and full

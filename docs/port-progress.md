@@ -533,3 +533,18 @@ responses now pass through the queue. The enlarged fixture exceeded the previous
 at 0x30000 below the test heap and stack. The full IRQ fixture and instruction
 audit pass; both x64 rebuilds and image verification (729 files, 62 directories)
 pass. Blocking input, scan-code decoding and scheduler wakeups remain pending.
+
+## Blocking keyboard input and task wakeup
+
+The raw input interface now associates a FIFO with a scheduler and one pending
+reader. Queue check, waiter registration and blocking occur with IF masked;
+resumption rechecks the predicate. IRQ publication wakes the reader without
+switching the interrupted task. Other tasks cannot consume its reserved input.
+
+The separate `--input` native fixture passes queued/nonblocking reads, invalid
+arguments, competing readers, spurious wake/reblock and four actual IRQ1 keyboard
+echo replies waking a blocked worker from root idle. Extra bytes published while
+the worker is already runnable remain ordered. IF restoration, task completion,
+reaping and controller restoration pass. Both x64 rebuilds and image verification
+(731 files, 62 directories) pass. Tests use QEMU 486/8 MiB; scan-code decoding,
+keyboard initialization, cancellation/close and interactive shell input remain.

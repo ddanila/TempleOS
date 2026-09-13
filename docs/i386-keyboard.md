@@ -65,7 +65,47 @@ The IRQ fixture exercises fill, overflow and saturated loss counting, partial
 drain followed by wraparound, FIFO order and all status bits, invalid output
 pointers, empty reads, and IF restoration. Actual IRQ1 echo replies are queued
 by the callback and consumed after the interrupt wait returns. The queue does
-not yet provide blocking reads or scheduler wakeups.
+not itself provide blocking reads or scheduler wakeups; the input interface
+below adds those operations.
+
+## Blocking input broker
+
+`KbcInput.HH` / `KbcInput.HC` associate a raw FIFO with a scheduler and at most
+one pending reader. This supports a keyboard input broker that will eventually
+decode and distribute events. It is not a broadcast queue or a terminal API.
+
+- `I386KbcInputInit` requires a zeroed persistent record and an initialized
+  scheduler. Reinitializing an associated stream is rejected.
+- `I386KbcInputPut` publishes a byte/status pair and wakes a registered reader.
+  It is usable from a maskable IRQ and never switches the current task. A reader
+  already made runnable needs no further wake; additional bytes remain queued.
+- `I386KbcInputRead(input,data,status,wait=TRUE)` consumes queued data or blocks
+  the current worker. The queue check, waiter registration and blocking all occur
+  with IF clear. On resumption it rechecks the queue, so unrelated wakeups do not
+  produce phantom input. The original IF is restored on return.
+
+Read is task-context only. Root can consume available data but cannot block.
+`wait=FALSE` fails immediately on empty input. While a reader is registered,
+other tasks' reads fail without taking its pending bytes. Once the read returns,
+that reservation ends. Invalid arguments, empty nonblocking reads and competing
+readers preserve outputs. Output bytes must be distinct, writable and outside the
+input record. The raw queue's overflow and status-retention contracts still apply.
+
+All operations require one CPU and exclude NMI access. Keep the input record and
+scheduler alive throughout use, and do not reset or directly consume its embedded
+queue while a reader is pending. A waiting task remains owned by the scheduler;
+the existing runtime has no forced cancellation/destruction of blocked tasks.
+Timeouts, close/cancel, reader handoff and exception-safe abandonment are pending.
+
+`python3 tools/test-i386.py --input` uses a separate native fixture with the
+existing context/IRQ/idle assembly. It checks immediate and nonblocking reads,
+argument rejection, a competing reader, spurious wake/reblock, and four real
+keyboard echo IRQs waking a blocked worker from root idle. A second publication
+before each worker resumption checks retained ordering when the waiter is already
+runnable. Worker IF restoration, root IF restoration, no switching inside IRQ,
+reader reservation, completion/reaping and controller restoration are checked.
+This is QEMU 486/8 MiB evidence. Scan-code decoding, device initialization and
+interactive shell input remain pending.
 
 Controller register and transaction references:
 [SeaBIOS PS/2 implementation](https://github.com/coreboot/seabios/blob/master/src/hw/ps2port.c)
