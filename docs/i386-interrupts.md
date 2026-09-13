@@ -74,8 +74,31 @@ flat DS/ES. FS/GS retain their interrupted task/CPU selectors. The callback must
 keep IF clear, avoid yielding, and handle PIC acceptance/EOI. The exit restores
 segments and general registers, discards the IRQ number, and uses IRETD to restore
 the interrupted flags and instruction pointer. The layout assumes a same-ring
-hardware IRQ with no CPU error code. Exceptions and privilege-level transitions
-require different handling and are not provided by these stubs.
+hardware IRQ with no CPU error code. Exceptions use the separate entry path below. Privilege-level transitions
+are outside both frame contracts.
+
+## Exception entry
+
+`Kernel/I386/Exception.asm` supplies entries for vectors 0–16 and a separate
+`i386_exception_dispatch` callback: `U0 handler(CI386ExceptionFrame *frame)`.
+Install 32-bit interrupt gates with the same selectors as the IRQ path. Entries
+normalize the CPU error code: vectors 8 and 10–14 retain the hardware word; the
+others push zero. Do not invoke error-code entries using software INT, which does
+not push that word. The mapping follows Intel's
+[386 error-code table](https://pdos.csail.mit.edu/6.828/2008/readings/i386/s09_10.htm).
+
+The first twelve U32 fields match the IRQ frame. Offset 48 holds the vector,
+52 the error code, 56 EIP, 60 CS, and 64 EFLAGS (total 68 bytes). PUSHAD's saved
+ESP points to offset 48, not the interrupted stack top. The callback runs with
+IF/DF clear and must not yield or acknowledge the PIC. It may edit saved registers
+and EIP for an explicitly recognized recovery site. Entry restores the saved frame,
+discards vector/error, and returns with IRETD. A missing callback halts.
+
+This requires an intact ring-0 stack and does not provide stack-fault recovery,
+an emergency double-fault task/stack, safe NMI handling, page-fault address capture,
+debugger integration, or HolyC throw/catch unwinding. The table encodes 386 vectors;
+later CPUs' additional exceptions need their own entries before enabling associated
+features. As with IRQ entry, this is currently assembled by NASM at a fixed address.
 
 ## Verification
 
@@ -102,7 +125,16 @@ rates/state transitions, A/B programming, restoration, and restart. Generated Ho
 and test-only IDT/wait code are audited as separate executable ranges; descriptor
 and entry-pointer tables are excluded from instruction decoding.
 
+Before the hardware IRQ phases, the native callback handles actual DIV-by-zero
+(#DE), loading DS with an out-of-GDT selector (#GP, error 0x18), and INT3 (#BP).
+The test verifies fault EIP versus post-breakpoint EIP, normalized errors, saved
+registers/segments/DF, live IF/DF, and balanced stack restoration. HolyC sets a
+known recovery EIP and changes saved EAX; assembly checks the resumed register value
+and all other registers. The production exception stubs have a third independently
+audited executable range. Recovery addresses belong only to these test sites;
+this is not a general fault-skipping policy.
+
 This passes on the QEMU 486/8 MiB runner. Timer calibration, missed-tick accounting,
-interrupt latency on vintage CPUs, calendar reads, exceptions, keyboard/mouse
+interrupt latency on vintage CPUs, calendar reads, full exception handling, keyboard/mouse
 initialization, task integration, and production boot wiring remain pending.
 The standalone test is not a complete 32-bit kernel or physical-386 validation.

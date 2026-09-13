@@ -162,4 +162,5 @@ cases: incbin CASES_FILE
     db 'I32Q'
     dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
     dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
+    dd i386_exception_stubs_begin-$$+512,i386_exception_stubs_end-i386_exception_stubs_begin
 %endif

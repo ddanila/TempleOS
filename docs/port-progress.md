@@ -309,8 +309,16 @@ IRQF/PF, frame restoration, both PIC EOIs through repeated slave delivery,
 configuration restoration, restart, and invalid rates/state transitions. CMOS
 access keeps NMI disabled; calendar reads and general shared ownership are pending.
 
+`Kernel/I386/Exception.asm` and `Exception.HH` add a separate normalized 68-byte
+exception frame. The native test handles actual #DE, #GP with selector error 0x18,
+and #BP; it checks fault versus trap EIP, error codes, registers/segments/flags,
+and resumes through a HolyC-edited saved EIP/EAX. The exception stubs have their
+own instruction-audit range. The combined test and both x64 rebuild generations
+pass. Stack-fault/double-fault recovery, NMI policy, debugger integration, and
+HolyC exception unwinding remain unimplemented.
+
 This is IRQ0/IRQ8 delivery in the QEMU 486/8 MiB runner, not a complete interrupt/time
-subsystem. Keyboard input, exception entry, scheduling,
+subsystem. Keyboard input, full exception handling, scheduling,
 calibrated time, production boot wiring and physical 386 validation remain pending.
 
 ## Test artifacts
@@ -324,7 +332,7 @@ calibrated time, production boot wiring and physical 386 validation remain pendi
 - `build/i386-data-test/`: linked code/data corpus, version-2 module fixtures,
   executable/data boundaries, disassembly, and target runner results.
 - `build/i386-irq-test/`: compiled PIC/PIT/RTC and callback code, audited assembly
-  ranges, interrupt runner, and execution result.
+  ranges, interrupt/exception runner, and execution result.
 - `build/i386-a20-test/`: native gate-method and high-memory allocation fixture,
   instruction audit, runner disk/log, and result.
 - `build/i386-memory-test/`: native handoff/selector fixture, instruction audit,
