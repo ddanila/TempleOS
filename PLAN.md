@@ -434,7 +434,11 @@ programming environment through these concrete steps:
    returning caller-owned text and borrowed records without token publication or
    macro expansion. The version-4 interface requires rebuilding kernel and runtime
    together. Full lexical dispatch, owned token strings and preprocessing remain
-   required. Place remaining compiler modules here, defining
+   required. Owned native source attachment now prepares record/name/buffer copies
+   before changing parent state, then uses the shared lookahead backup. Boot/task
+   scanning crosses that include and reclaims it. Pending save points still block
+   native EOF pop; general lookahead across includes needs integration.
+   Place remaining compiler modules here, defining
    their code/data lifetimes; arbitrary unloading remains unsupported.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.

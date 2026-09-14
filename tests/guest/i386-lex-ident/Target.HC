@@ -4,12 +4,14 @@
 #include "/Compiler/ControlInit.HH"
 #include "/Compiler/I386/LexIdent.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Ports.HH"
 #include "/Kernel/CharBitmaps.HC"
 CI386Heap ident_heap;
 extern I64 IdentTest();
 extern I64 IdentLookupTest();
 extern I64 IdentFailureTest();
 extern I64 NativeIdentTest();
+extern I64 NativeIncludeTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
@@ -17,6 +19,7 @@ I64 Main(I64 unused,I64 unused2)
   result=IdentTest; if(result) return result;
   result=IdentLookupTest; if(result) return result;
   result=IdentFailureTest; if(result) return result;
+  result=NativeIncludeTest; if(result) return result;
   result=NativeIdentTest; if(result) return result;
   if(ident_heap.used || ident_heap.allocations || !I386HeapValid(&ident_heap)) return 2;
   return 0;
@@ -43,3 +46,4 @@ I64 IdentToken(CCmpCtrl *cc,U8 *output,I64 *lines)
 #include "T:/Lookup.HC"
 #include "T:/Failures.HC"
 #include "T:/Native.HC"
+#include "T:/Include.HC"

@@ -7,6 +7,7 @@ public class CLexFileRelease
   U0 (*allocation)(U8 *context,U8 *allocation);
   U0 (*document)(U8 *context,CDoc *document);
 };
+public extern U0 LexBackupLastChar(CCmpCtrl *cc);
 public extern CLexFile *LexFileAttach(CCmpCtrl *cc,CLexFile *file);
 public extern CLexFile *LexFileReleaseTop(CCmpCtrl *cc,CLexFileRelease *owner);
 #endif

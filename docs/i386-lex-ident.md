@@ -44,7 +44,8 @@ The module imports HashFind and StrCmp from the kernel, so lookup uses its live
 symbol table and shared comparison implementation. Member lookup runs in the
 retained image. The kernel validates the fifth service pointer before publication.
 
-Boot and task probes scan I64i into five bytes of caller-owned storage, resolve
+Boot and task probes scan a copied I64i include into five bytes of caller-owned
+storage, return to a cached parent semicolon with the child reclaimed, and resolve
 exactly the registered I64i primitive record, check its eight-byte type width and
 verify that scanning did not publish a token or allocate transient heap storage.
 The verifier matches its exported function offset and rejects interface version 3.

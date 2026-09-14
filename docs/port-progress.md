@@ -2301,3 +2301,28 @@ FNV32 0x0F3E515A and 22808 reclaimed bytes. Full lexical dispatch, owned token
 strings, macros/directives, native parser/JIT, public runtime ownership, DolDoc,
 self-hosting and strict 386 validation remain open. See
 [i386-lex-ident.md](i386-lex-ident.md).
+
+## Owned source attachment for native lexer inputs
+
+I386LexIncludeCopy now prepares independent name/source copies and an owned file
+record before changing the active input. Allocation failure reclaims temporary
+storage and preserves parent cursor/replay state. Success backs up the parent
+through the shared LexBackupLastChar helper, initializes the child and publishes
+it. Snapshot and include code now obtain that unchanged helper from LexFiles.
+String copies run outside the interrupt-masked allocation/publication sections.
+
+The identifier fixture passes copy independence, nested/empty children, define and
+line/depth fields, cached-byte narrowing, save-point rejection/release, 25 arena
+sizes spanning failure/success and reclamation, and both IF states with the PIC
+masked. The lexer-state regression and both x86-64 rebuild generations pass.
+Instruction audits pass. The full 8 MiB boot suite scans an owned I64i child through
+the retained runtime, returns to the cached parent delimiter and reclaims its
+record/name/buffer during both boot and task activity. Runtime/startup rejection,
+source, timer, keyboard/VGA and unchanged-disk checks pass.
+
+The bootstrap is 364232 bytes; the retained runtime remains 86328 bytes with a
+86344-byte heap span, observed at 0x1277D8. Source checks cover 22520 characters,
+494 newlines, FNV32 0xC83D98CE and 22984 reclaimed bytes. Owned token strings,
+full dispatch, macro/directive execution and lookahead across includes, native
+parser/JIT, public runtime ownership, DolDoc, self-hosting and strict 386 validation
+remain required. See [i386-lex-include.md](i386-lex-include.md).

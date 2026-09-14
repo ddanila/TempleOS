@@ -58,7 +58,9 @@ caller storage before reporting success.
 
 KernelCompilerProbe calls the actual relocated services during boot and again
 from the pulse task after startup, VGA allocation, task creation and timer IRQs.
-It parses a software-F64 numeric token, a hexadecimal string escape and a packed character constant, then skips a line comment, parses a shift assignment and resolves an identifier.
+It parses a software-F64 numeric token, a hexadecimal string escape and a packed character constant, then skips a line comment, parses a shift assignment and resolves an identifier
+from an owned copied include. The source crosses back to a cached parent delimiter
+and reclaims the child record/name/buffer.
 It checks
 returned values and input positions, verifies no transient heap allocation remains,
 and checks that the retained image is still a live allocation of the original
@@ -80,15 +82,14 @@ startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With identifier scanning in interface version 4, the bootstrap image is
-357936 bytes. The 86328-byte runtime image is allocated at 0x1277D8 in the
-8 MiB development profile and retains a 86344-byte heap span. All five service
-addresses match their relocated export offsets, and both boot/task probes return
-the expected values. Raw source checks cover 22348 characters, 491 newlines,
-FNV32 0x0F3E515A and reclamation of 22808 temporary heap bytes. These sizes and
-addresses are observations recorded in the manifest, not fixed addresses or memory
-minima required by the interface. Rebuild kernel and runtime together when changing
-this interface.
+With owned source attachment feeding the version-4 identifier service, the
+bootstrap image is 364232 bytes. The 86328-byte runtime image is allocated at
+0x1277D8 in the 8 MiB development profile and retains a 86344-byte heap span.
+All five service addresses match their relocated export offsets, and both boot/task
+probes return expected values after reclaiming their owned source. Raw source
+checks cover 22520 characters, 494 newlines, FNV32 0xC83D98CE and reclamation of
+22984 temporary heap bytes. Sizes and addresses are observations in the manifest,
+not fixed addresses or memory minima required by the interface.
 
 ## Import-declaration correction
 

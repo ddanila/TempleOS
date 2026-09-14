@@ -70,3 +70,41 @@ checked:
   LexFileReleaseTop(cc,&owner);
   return dispatch.release.ok;
 }
+
+Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE)
+{
+  CI386LexFile *file;
+  U8 *owned_name=0,*owned_source=0;
+  I64 name_size=1,source_size=1,i;
+  U32 flags;
+  if(!cc || !cc->lex_include_stk || !name || !source || cc->flags&CCF_PMT ||
+      cc->opts&OPTF_ECHO || cc->lex_include_stk->flags&LFSF_DOC) return FALSE;
+  while(name[name_size-1]) name_size++;
+  while(source[source_size-1]) source_size++;
+  flags=I386IrqSave;
+  file=I386HeapAlloc(heap,sizeof(CI386LexFile),TRUE);
+  if(file) owned_name=I386HeapAlloc(heap,name_size,FALSE);
+  if(owned_name) owned_source=I386HeapAlloc(heap,source_size,FALSE);
+  if(!owned_source) {
+    if(owned_name) I386HeapFree(heap,owned_name);
+    if(file) I386HeapFree(heap,file);
+    I386IrqRestore(flags);
+    return FALSE;
+  }
+  I386IrqRestore(flags);
+  //Copy outside the interrupt-masked allocation section. Inputs stay borrowed/live.
+  for(i=0;i<name_size;i++) owned_name[i]=name[i];
+  for(i=0;i<source_size;i++) owned_source[i]=source[i];
+  file->heap=heap; file->control=cc; file->signature=I386_LEX_FILE_MAGIC;
+  file->file.full_name=owned_name;
+  file->file.buf=file->file.buf_ptr=file->file.line_start=owned_source;
+  file->file.line_num=1;
+  if(is_define) file->file.flags=LFSF_DEFINE;
+  //Publish only after every owned allocation is ready; parent lookahead uses the shared rule.
+  flags=I386IrqSave;
+  LexBackupLastChar(cc);
+  LexFileAttach(cc,&file->file);
+  cc->cur_buf_ptr=owned_source;
+  I386IrqRestore(flags);
+  return TRUE;
+}

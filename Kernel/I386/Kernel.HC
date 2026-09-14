@@ -478,13 +478,16 @@ U0 KernelCompilerProbe(I64 phase)
   if(kernel_compiler.punct_token(&kernel_heap,&cc,ch,&lines)!=TK_SHL_EQU ||
       cc.last_U16!=59 || cc.cur_buf_ptr!=input+7 || lines!=1 ||
       kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
-  input[0]='I'; input[1]='6'; input[2]='4'; input[3]='i'; input[4]=';'; input[5]=0;
-  cc.flags=CCF_DONT_FREE_BUF; LexFileSeed(&file,input); cc.cur_buf_ptr=input;
+  input[0]=';'; input[1]=0;
+  cc.flags=CCF_DONT_FREE_BUF|CCF_USE_LAST_U16; cc.last_U16=';';
+  LexFileSeed(&file,input); cc.cur_buf_ptr=input+1;
+  if(!I386LexIncludeCopy(&kernel_heap,&cc,"Probe","I64i",TRUE) ||
+      !(cc.lex_include_stk->flags&LFSF_DEFINE) || cc.lex_include_stk->next!=&file) KernelStop;
   ch=I386LexRawChar(&kernel_heap,&cc,&lines);
   if(kernel_compiler.ident_scan(&kernel_heap,&cc,ch,ident,5,&ident_entry,&lines)!=5 ||
       ident_entry!=kernel_types.by_raw[RT_I64] || cc.local_var_entry ||
       ident[0]!='I' || ident[1]!='6' || ident[2]!='4' || ident[3]!='i' || ident[4] ||
-      cc.token!=TK_SHL_EQU || cc.last_U16!=59 || cc.cur_buf_ptr!=input+5 ||
+      cc.token!=TK_SHL_EQU || cc.last_U16!=59 || cc.cur_buf_ptr!=input+1 || cc.lex_include_stk!=&file ||
       kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
   KernelLog("RUNTIME PROBE "); KernelHex(phase); KernelLog(" ");
   KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog(" "); KernelHex(cc.cur_i64); KernelLog(" "); KernelHex(cc.token); KernelLog(" "); KernelHex(ident_entry(CHashClass *)->size); KernelLog("\n");
