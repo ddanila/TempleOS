@@ -85,6 +85,32 @@ Neither El Torito CD boot nor a large RAM disk may be a baseline dependency.
 
 ## Architectural work packages
 
+### Implementation boundaries
+
+Organize the port around these concrete boundaries. Keep shared behavior in the
+existing implementation and isolate changes that depend on pointer width, CPU
+instructions or PC hardware. Extract shared helpers incrementally as native
+integration needs them; avoid maintaining a second reduced compiler or desktop.
+
+| Boundary | Shared responsibility | i386 responsibility |
+| --- | --- | --- |
+| HolyC frontend | Language grammar, preprocessing, symbols and diagnostics | Target layout queries and native input/allocation services; compiler-host evaluation must remain explicit during bootstrap |
+| Code generation and modules | Language operations, symbol binding and module lifetime rules | Register-pair I64 operations, software F64, 32-bit ABI, instruction selection and relocations |
+| Kernel services | Public task, allocation, file and exception semantics | Protected-mode entry, context switching, FS/GS binding, interrupt delivery and physical memory accounting |
+| Documents and graphics | DolDoc, editor behavior, drawing coordinates, palette and font | VGA presentation and keyboard/mouse delivery through small concrete interfaces |
+| Persistent data | RedSea, compression and document-format contracts | ATA transfers, bounded buffers and checked conversion from disk offsets to native addresses |
+
+Use the existing `Compiler/I386` and `Kernel/I386` implementations for target
+mechanisms. Their private bootstrap records and explicit-heap helpers must connect
+to the public TempleOS interfaces as integration proceeds. Do not propagate a
+parallel task, file or allocation API throughout applications merely because it
+was convenient for isolated bring-up.
+
+Keep three distinctions visible in reviews: numeric width versus pointer width,
+compiler-host execution versus target execution, and logical graphics versus VGA
+memory access. These determine where architecture-specific work belongs without
+changing the user-facing programming model.
+
 ### Scope decision: preserve the programming model on a smaller machine
 
 Use native 32-bit protected mode as the architectural baseline. Keep the flat
