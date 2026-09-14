@@ -111,6 +111,21 @@ execution then checks that oracle, plus nesting, side effects, shared operands
 and decimal digit extraction. The general function fixture also verifies #DE
 for a zero divisor. Instruction auditing and an 8 MiB QEMU 486 run are development evidence, not strict 386 proof.
 
+`Kernel/KMathInt.HC` now holds the unchanged production implementations of
+`RoundI64`, `FloorI64`, `CeilI64`, `FloorU64` and `CeilU64`. The x64 `KMathB.HC`
+includes this file, and native callers can use `Kernel/KMathInt.HH` and compile
+the same source. This separates these routines from the task/CPU-dependent random
+number code without maintaining a second implementation. Sixty-four pairs cover
+signed extrema, negative/zero/positive inputs and eight positive steps, adding
+320 results to the integer-math corpus (10,496 total).
+
+Compatibility includes wrapping additions and truncating signed remainders.
+`RoundI64` truncates to a multiple, rather than choosing the nearest multiple;
+`CeilI64(-1,8)` returns -8 in the existing implementation. Both x64 and native
+execution verify these behaviors against a Python model. This does not establish
+new mathematical rounding semantics or validate negative steps. The shared
+`FloorI64` is a dependency of production floating-point formatting.
+
 Indirect fixed-arity calls share the direct-call ABI. The caller captures a
 four-byte function pointer into an eight-byte evaluation slot before evaluating
 arguments, calls through its low dword, and removes that saved slot after the

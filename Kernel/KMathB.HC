@@ -33,42 +33,7 @@ F64 Pow10I64(I64 i)
     return pow10_I64[i+309];
 }
 
-U64 FloorU64(U64 num,U64 to)
-{//Int multiples of num.
-  return num-num%to;
-}
-
-U64 CeilU64(U64 num,U64 to)
-{//Int multiples of num.
-  num+=to-1;
-  return num-num%to;
-}
-
-I64 RoundI64(I64 num,I64 to)
-{//Int multiples of num.
-  return num-num%to;
-}
-
-I64 FloorI64(I64 num,I64 to)
-{//Int multiples of num.
-  if (num>=0)
-    return num-num%to;
-  else {
-    num++;
-    return num-num%to-to;
-  }
-}
-
-I64 CeilI64(I64 num,I64 to)
-{//Int multiples of num.
-  if (num>=0) {
-    num+=to-1;
-    return num-num%to;
-  } else {
-    num+=to-1;
-    return num-num%to-to;
-  }
-}
+#include "/Kernel/KMathInt.HC"
 
 //See $LK,"::/Doc/Credits.DD"$.
 #define LIN_CONGRUE_A	6364136223846793005

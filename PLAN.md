@@ -456,6 +456,12 @@ x64 result comparisons, including NaNs, signed zero and square underflow/overflo
 Square root uses an exact integer algorithm; x64 intermediate-precision
 square and square-root rounding differences are documented while native results
 match the exact oracle.
+The five production integer-multiple routines now share `Kernel/KMathInt.HC`
+between x64 and i386, with standalone declarations in `KMathInt.HH`. Their
+implementations are unchanged; 320 new x64/native/Python result comparisons
+cover positive steps, signed extrema and existing rounding/overflow quirks.
+This brings the integer-math corpus to 10,496 checks and makes the production
+FloorI64 dependency available without CPU-dependent random-number routines.
 Public software Round, Trunc, Floor and Ceil now preserve full binary64 range,
 signed zero and quieted NaN payloads, matching x64 and a Python oracle across
 1,024 inputs each. They supply whole-number rounding needed by StrPrintJoin;

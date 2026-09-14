@@ -2,7 +2,8 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/Math.HH"
-U64 math_oracle[12288];
+#include "/Kernel/KMathInt.HH"
+U64 math_oracle[12736];
 I64 Main(I64 unused_a,I64 unused_b)
 {
   I64 i,count;
@@ -24,6 +25,14 @@ I64 Main(I64 unused_a,I64 unused_b)
       if (remainder!=row[11]) return i*10+10;
     }
   }
+  for (i=0;i<64;i++) {
+    row=math_oracle+12288+i*7;
+    if (RoundI64(row[0],row[1])!=row[2]) return 11000+i*5;
+    if (FloorI64(row[0],row[1])!=row[3]) return 11001+i*5;
+    if (CeilI64(row[0],row[1])!=row[4]) return 11002+i*5;
+    if (FloorU64(row[0],row[1])!=row[5]) return 11003+i*5;
+    if (CeilU64(row[0],row[1])!=row[6]) return 11004+i*5;
+  }
   count=-3; value=AbsI64(count++);
   if (value!=3 || count!=-2) return 10241;
   count=0; value=MinI64(count++,count++);
@@ -44,3 +53,5 @@ I64 Main(I64 unused_a,I64 unused_b)
   if (quotient!=3 || remainder) return 10248;
   return 0;
 }
+
+#include "/Kernel/KMathInt.HC"

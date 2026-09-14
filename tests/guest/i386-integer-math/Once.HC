@@ -10,11 +10,14 @@ U64 math_inputs[32]={
     0x4000000000000000, 0x4000000000000001, 0x0000000200000001, 0x123456789ABCDEF0,
     0xFEDCBA9876543210, 0xAAAAAAAAAAAAAAAA, 0x5555555555555555, 0x000000010000FFFF
 };
+I64 multiple_inputs[8]={0x8000000000000000,-0x100000000,-17,-1,0,17,
+  0x100000000,0x7FFFFFFFFFFFFFFF};
+I64 multiple_steps[8]={1,2,3,7,8,16,0x100000000,0x7FFFFFFFFFFFFFFF};
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i,j;
-  U64 *oracle=MAlloc(98304),*row,a,b,quotient;
+  U64 *oracle=MAlloc(101888),*row,a,b,quotient;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native integer math\n");
@@ -28,7 +31,13 @@ U0 CompileTests()
     row[10]=row[11]=0;
     if (b) { quotient=a; row[11]=ModU64(&quotient,b); row[10]=quotient; }
   }
-  line=MStrPrint("EXPORT x64-integer-math.bin %X %X\n",oracle,98304); Report(line);
+  for (i=0;i<8;i++) for (j=0;j<8;j++) {
+    a=multiple_inputs[i]; b=multiple_steps[j]; row=oracle+12288+(i*8+j)*7;
+    row[0]=a; row[1]=b;
+    row[2]=RoundI64(a,b); row[3]=FloorI64(a,b); row[4]=CeilI64(a,b);
+    row[5]=FloorU64(a,b); row[6]=CeilU64(a,b);
+  }
+  line=MStrPrint("EXPORT x64-integer-math.bin %X %X\n",oracle,101888); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -41,7 +50,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"math_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,98304); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,101888); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)
