@@ -14,7 +14,15 @@ U0 CompileTests()
     Report("FAIL exception tasks compile\n"); return;
   }
   modules[0]=module; sizes[0]=size;
-  modules[1]=FileRead("T:/SysTry.T32",&sizes[1]);
+  source=FileRead("/Kernel/I386/SysTry.HC");
+  modules[1]=CmpI386Module(source,&sizes[1],&errors);
+  Free(source);
+  if(!modules[1] || errors) {
+    source=DocSave(DocPut,&size);
+    line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
+    Report("FAIL HolyC SysTry provider compile\n"); return;
+  }
+  line=MStrPrint("EXPORT SysTry.t32m %X %X\n",modules[1],sizes[1]); Report(line);
   image=I386Link(modules,sizes,2,&loaded);
   if (!image) { Report("FAIL exception tasks link\n"); return; }
   Report("LINKED 0\n");

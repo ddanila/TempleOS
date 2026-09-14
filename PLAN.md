@@ -276,6 +276,32 @@ kernel self-hosting at 16 MiB, with no full-image RAM disk or hidden host compil
 
 ## Milestones and dependency order
 
+### Integration priorities for the 386+ VGA target
+
+Treat the remaining work as an integration sequence, with component tests as
+prerequisites rather than substitutes for a working OS:
+
+1. Freeze the implemented i386 ABI and keep compiler-host evaluation separate
+   from target execution. Migrate the remaining bootstrap assembly through the
+   HolyC assembler, preserving instruction audits and x86-64 rebuild checks.
+2. Connect the production boot path, memory map, task/CPU records, exception
+   services and resident exports. Bring up disk-backed loading, keyboard input
+   and VGA together in one persistent kernel image.
+3. Make the compiler resident on i386: complete the required language/runtime
+   dependencies, compile-time execution, numerical operations and formatting,
+   then demonstrate repeated native shell compile/run/recover cycles.
+4. Integrate DolDoc, editing, help, mouse and speaker sound over the same kernel
+   services. Measure resident and peak memory against the 8 MiB interactive
+   target throughout integration, including allocation-failure recovery.
+5. Rebuild and boot the compiler/kernel on the 16 MiB target, then close the
+   strict 386SX/DX and no-coprocessor verification gates. Establish that emulator
+   profile early enough to test each preceding stage, not only the final image.
+
+Keep shared language, document and filesystem code above small architecture
+boundaries. CPU register width must not change I64/F64 semantics, serialized
+formats or the 640×480 application coordinate space. Native JIT and self-hosting
+remain required outcomes of this sequence.
+
 | Milestone | Work and required evidence |
 | --- | --- |
 | M0: Verified starting point | A: source rebuild and regression baseline; select exact 386SX/DX emulator, BIOS, VGA, storage, and memory profiles |
@@ -554,6 +580,12 @@ target instruction bytes are never executed on the compiler host. Tests cover
 wide frame writes, loops, local calls, numeric branch addends and local offsets.
 Inline imports/exports, absolute/storage relocations and full native assembler/
 bootstrap integration remain unfinished; see `docs/i386-inline-asm.md`.
+The two-argument SysTry provider is now compiled from HolyC top-level USE32
+assembly, replacing its hand-built NASM module. Context, public-runtime and
+catch-time task-switch suites pass with the generated provider, including
+instruction audits; both x86-64 rebuild/reboot generations also pass. Remaining
+context/interrupt/boot assembly and native compiler-host execution still need
+integration before this constitutes self-hosting.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

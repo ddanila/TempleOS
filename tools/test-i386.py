@@ -112,8 +112,8 @@ def main():
     overlay.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT/'Compiler/I386/Expr.HC', overlay/'Expr.HC')
     if except_runner or args.except_tasks:
-        run('nasm', '-f', 'bin', 'Kernel/I386/SysTry.asm',
-            '-o', str(OUT/'overlay/SysTry.T32'))
+        #Discard the old NASM artifact; the guest now builds SysTry from HolyC.
+        (OUT/'overlay/SysTry.T32').unlink(missing_ok=True)
     iso = OUT/'compiler.iso'
     exports = OUT/'exports'
     build = [sys.executable, 'tools/build-iso.py', '--overlay', str(OUT/'overlay')]

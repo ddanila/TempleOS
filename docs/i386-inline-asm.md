@@ -46,3 +46,13 @@ preservation of caller registers. Negative cases cover unsupported modes,
 registers and absolute label addresses. Exported executable regions are audited
 as 32-bit instructions. This is component evidence, not native self-hosting or
 strict physical-386 verification.
+
+
+## Bootstrap provider migration
+
+Top-level USE32 assembly can already use the ordinary module export and REL32
+import path. `Kernel/I386/SysTry.HC` now uses it for the real two-argument SysTry
+entry, replacing the hand-built NASM module. The exception fixtures compile this
+source inside TempleOS and link it against HolyC runtime services. This removes
+one host assembler dependency; the remaining bootstrap/context/interrupt stubs
+and full native compiler self-hosting still need migration and verification.

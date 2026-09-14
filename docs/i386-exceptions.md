@@ -141,10 +141,12 @@ body. Task switching during catches has not yet been exercised by this fixture.
 
 ## Compiler SysTry module
 
-`Kernel/I386/SysTry.asm` builds a position-independent T32M v2 provider exporting
+`Kernel/I386/SysTry.HC` builds a position-independent T32M v2 provider exporting
 `SysTry(catch_start, untry_start)` with the compiler's two eight-byte argument
-slots. Build it with NASM's binary output and link it through the ordinary native
-module loader. The module has relative-call imports for two HolyC services:
+slots. Compile its top-level USE32 assembly with CmpI386Module and link it through
+the ordinary native module loader. The shared HolyC assembler emits the code;
+NASM no longer builds this provider. The module has relative-call imports for
+two HolyC services:
 
 - `Bool I386ExceptEnter(CI386ExceptCapture *capture)` copies the temporary capture
   into an owned record and returns true only after successful publication.
@@ -162,9 +164,10 @@ unhandled-exception or debugger implementation.
 The context fixture now imports this actual SysTry module. It no longer rebuilds
 the enclosing frame in a HolyC SysTry wrapper. Its environment services bind to
 the explicit test task/heap, and route registration failure through dispatch
-with an OutMem value. Production boot still must bind those services to the
-current task, allocator and unhandled-exception policy. Native assembler
-self-hosting remains pending; NASM is a bootstrap dependency.
+with an OutMem value. The FS-bound runtime below supplies the task/allocator services; production boot
+still must install runtime callbacks and unhandled-exception policy. Full native
+assembler self-hosting remains pending. Other bootstrap/context stubs and the
+test runner still use NASM.
 
 The linked context suite passes nested/cross-frame propagation with this entry,
 allocation failure caught by an outer handler, and early returns from both a
@@ -237,3 +240,13 @@ The sequential-FS public runtime fixture also checks reported caller addresses.
 This establishes cooperative catch-time switching for the tested bootstrap
 scheduler. Recursive throw behavior, full CTask migration, concrete debugger
 and logging UI, production boot integration and native self-hosting remain open.
+
+
+The context, public-runtime and task-switch fixtures compile SysTry.HC inside
+TempleOS and export the generated `SysTry.t32m` alongside their linked test
+image. The old NASM source and host generation step have been removed. Top-level
+HolyC assembly's exports and REL32 imports are sufficient for this provider;
+inline assembly imports and absolute relocations remain separate pending work.
+All three suites pass with this generated provider and native instruction audits;
+both x86-64 rebuild/reboot generations also pass. These are cross-compiled
+component results, not a native compiler self-hosting result.

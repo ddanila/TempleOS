@@ -1507,3 +1507,18 @@ function cases and both x64 rebuild/reboot generations pass.
 Inline external imports/exports, absolute/storage relocations and migration of
 bootstrap assembly modules remain unfinished, as do the full compiler/kernel
 link, native self-hosting and strict 386 verification. See `i386-inline-asm.md`.
+
+## HolyC-built SysTry provider
+
+`Kernel/I386/SysTry.HC` replaces the NASM-built two-argument entry with top-level
+USE32 assembly compiled inside TempleOS. Its module exports SysTry and imports
+the registration and failure services through ordinary REL32 relocations. The
+capture layout, callee cleanup and non-returning registration-failure contract
+are preserved. Exception fixtures now build and export this provider themselves.
+
+The context, public-runtime and task-switch suites all pass with the generated
+provider, including native instruction audits. Both x86-64 compiler/kernel
+rebuild/reboot generations also pass. This removes one host assembler dependency;
+the cross-compiler still runs on x86-64, and context/interrupt/boot assembly,
+production kernel integration, native self-hosting and strict 386 validation
+remain unfinished.
