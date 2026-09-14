@@ -135,6 +135,7 @@ U0 I386F64Runtime(CCmpCtrl *cc,CI386Out *out,I64 op,I64 pass)
     case IC_SUB: name="I386F64Sub"; break;
     case IC_MUL: name="I386F64Mul"; break;
     case IC_DIV: name="I386F64Div"; break;
+    case IC_MOD: name="I386F64Mod"; break;
     case IC_TO_F64:
       name="I386F64FromI64"; arg_type=RT_I64; arg_count=1; break;
     case IC_TO_I64:
@@ -398,7 +399,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               if (!I386IsF64(I386ValueClass(ic->t.arg1_tree)) || !I386IsF64(I386ValueClass(ic->t.arg2_tree)))
                 throw('Compiler');
               break;
-            case IC_ADD_EQU: case IC_SUB_EQU: case IC_MUL_EQU: case IC_DIV_EQU:
+            case IC_ADD_EQU: case IC_SUB_EQU: case IC_MUL_EQU: case IC_DIV_EQU: case IC_MOD_EQU:
               if (!I386IsF64(I386ValueClass(ic->t.arg2_tree)) || c->ptr_stars_cnt ||
                   I386Size(c)<1 || I386Size(c)>8) throw('Compiler');
               break;
@@ -409,7 +410,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             case IC_UNARY_MINUS:
               if (!I386IsF64(c)) throw('Compiler');
               break;
-            case IC_ADD: case IC_SUB: case IC_MUL: case IC_DIV:
+            case IC_ADD: case IC_SUB: case IC_MUL: case IC_DIV: case IC_MOD:
               if (!I386IsF64(c) || !I386IsF64(I386ValueClass(ic->t.arg1_tree)) ||
                   !I386IsF64(I386ValueClass(ic->t.arg2_tree))) {
                 PrintErr("i386 float op %X: result %X, operands %X/%X, flags %X/%X\n",
@@ -972,10 +973,12 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               I386Byte(&out,0x50);
               I386Load(&out,c);
             } else c=I386ValueClass(ic->t.arg1_tree);
-            if (I386IsF64(c) || (ic->ic_code==IC_DIV_EQU &&
+            if (I386IsF64(c) || ((ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) &&
                 I386IsF64(I386ValueClass(ic->t.arg2_tree)))) {
-              I386F64Update(cc,&out,IC_DIV,pass,!I386IsF64(c));
-              if (ic->ic_code==IC_DIV_EQU) {
+              if (ic->ic_code==IC_MOD || ic->ic_code==IC_MOD_EQU)
+                I386F64Update(cc,&out,IC_MOD,pass,!I386IsF64(c));
+              else I386F64Update(cc,&out,IC_DIV,pass,!I386IsF64(c));
+              if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
                 I386Byte(&out,0x59);
                 I386Store(&out,c);
               }

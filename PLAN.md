@@ -708,6 +708,14 @@ rebuild generations and the complete standalone suite. CompilerRuntime ABI 19
 is 112 bytes; FileRuntime ABI 10 validates it. The bootstrap reservation remains
 unchanged with 1720 bytes free.
 
+Native F64 remainder now supplies another dependency of the shared constant-folding
+pass. The software helper computes exact finite results without an FPU; `%` and
+`%=` lower through it for F64 and mixed integer/F64 operands. All 8192 native
+remainder checks and eleven mixed-update checks pass, with actual x64 comparison
+and an exact-rational oracle. Six NaN payload-selection differences are recorded
+separately. Full native pass execution still requires the remaining numerical,
+allocation and diagnostic dependencies; see `docs/i386-f64-remainder.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

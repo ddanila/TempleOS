@@ -15,6 +15,8 @@ extern F64 Sub(F64 a,F64 b);
 extern F64 Mul(F64 a,F64 b);
 extern F64 Div(F64 a,F64 b);
 extern F64 Neg(F64 a);
+extern I64 CheckRemainders();
+extern I64 CheckModUpdates();
 extern F64 Store(F64 *p,F64 value);
 extern F64 LateAdd(F64 a,F64 b);
 extern F64 Literal();
@@ -102,6 +104,8 @@ I64 Main(I64 unused_a,I64 unused_b)
   bits=0x7FF8000000001234; c=bits(F64); whole=7; whole+=c;
   if (whole!=0x8000000000000000) return 61;
   c=0.0; if (ConditionNotArithmetic(c)!=3) return 62;
+  whole=CheckRemainders(); if(whole) return 4000+whole;
+  whole=CheckModUpdates(); if(whole) return 13000+whole;
   whole=CheckConditions(); if (whole) return 1000+whole;
   whole=CheckChains(TRUE); if (whole) return 2000+whole;
   return 0;
@@ -110,12 +114,14 @@ F64 Add(F64 a,F64 b) { return a+b; }
 F64 Sub(F64 a,F64 b) { return a-b; }
 F64 Mul(F64 a,F64 b) { return a*b; }
 F64 Div(F64 a,F64 b) { return a/b; }
+F64 Mod(F64 a,F64 b) { return a%b; }
 F64 Neg(F64 a) { return -a; }
 F64 Store(F64 *p,F64 value) { *p=value; return *p; }
 #include "/Kernel/I386/SoftF64.HC"
 
 //The runtime definition already exists here: exercise direct helper relocation.
 F64 LateAdd(F64 a,F64 b) { return a+b; }
+F64 LateMod(F64 a,F64 b) { return a%b; }
 F64 Literal() { return 1.5; }
 F64 *Pick() { picks++; return &cell; }
 F64 ReturnFloat(I64 value) { return value; }
@@ -125,3 +131,6 @@ I64 *PickWhole() { picks++; return &mixed_cell; }
 #include "T:/Conditions.HC"
 
 #include "T:/Chains.HC"
+
+#include "T:/Remainder.HC"
+#include "T:/ModUpdates.HC"

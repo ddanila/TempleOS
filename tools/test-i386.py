@@ -165,7 +165,7 @@ def main():
     large_runner = args.redsea_alloc or args.redsea_write or args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     #Task and symbol integration corpora use a 160 KiB transfer; their first arena is 0x40000.
     #A 160 KiB transfer from 0x10000 ends at 0x38000, below that arena.
-    boot_sectors = 768 if args.task_symbols else 512 if args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.tasks else 320 if args.redsea or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner else 128
+    boot_sectors = 768 if args.task_symbols else 512 if args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.tasks else 320 if args.float or args.redsea or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner else 128
     kind = 'expressions'
     for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
@@ -243,18 +243,31 @@ def main():
         if (exports/'symbol-values.bin').read_bytes()!=expected:
             raise ValueError('Shared HashVal differs from pre-refactor x64 behavior')
     data = (exports/'expressions.bin').read_bytes()
-    if args.soft_f64_log or args.soft_f64_unary or args.integer_math or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int:
+    if args.float or args.soft_f64_log or args.soft_f64_unary or args.integer_math or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int:
         from i386_integer_oracle import make_integer_math_oracle
         from i386_log_oracle import make_log_oracle
-        from i386_f64_oracle import make_oracle, make_conversion_oracle, make_comparison_oracle, make_to_int_oracle, make_unary_oracle
+        from i386_f64_oracle import make_oracle, make_conversion_oracle, make_comparison_oracle, make_to_int_oracle, make_unary_oracle, make_mod_oracle
         records = [line.split() for line in (exports/'debug.log').read_text().splitlines()
                    if line.startswith('ORACLE ')]
         if len(records) != 1:
             raise ValueError('Missing/duplicate numeric oracle export')
         begin, length = (int(value, 16) for value in records[0][1:])
-        oracle = (make_log_oracle() if args.soft_f64_log else make_unary_oracle(1024) if args.soft_f64_unary else make_integer_math_oracle() if args.integer_math else make_to_int_oracle(1024) if args.soft_f64_to_int else
+        oracle = (make_mod_oracle() if args.float else make_log_oracle() if args.soft_f64_log else make_unary_oracle(1024) if args.soft_f64_unary else make_integer_math_oracle() if args.integer_math else make_to_int_oracle(1024) if args.soft_f64_to_int else
                   make_comparison_oracle(1024) if args.soft_f64_compare else
                   make_conversion_oracle(1024) if args.soft_f64_convert else make_oracle(2048))
+        if args.float:
+            x64 = (exports/'x64-mod.bin').read_bytes()
+            if len(x64) != len(oracle):
+                raise ValueError('Remainder oracle length mismatch')
+            for index, (actual, expected) in enumerate(zip(struct.iter_unpack('<3Q', x64), struct.iter_unpack('<3Q', oracle))):
+                if actual[:2] != expected[:2]:
+                    raise ValueError(f'Remainder oracle inputs differ at {index}')
+                if any((value & 0x7FFFFFFFFFFFFFFF) > 0x7FF0000000000000 for value in expected[:2]):
+                    #Runtime keeps the first NaN payload; x87 may select another.
+                    if (actual[2] & 0x7FF8000000000000) != 0x7FF8000000000000:
+                        raise ValueError(f'x64 remainder did not quiet NaN at {index}')
+                elif actual[2] != expected[2]:
+                    raise ValueError(f'x64 remainder differs from exact oracle at {index}: {actual[2]:016X} != {expected[2]:016X}')
         if args.soft_f64_log:
             x64 = (exports/'x64-log.bin').read_bytes()
             if len(x64) != len(oracle):

@@ -88,7 +88,7 @@ Current images and allocations:
 
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
-| CompilerRuntime, retained | 256216 | 256232 |
+| CompilerRuntime, retained | 260080 | 260096 |
 | FileRuntime, retained | 124688 | 124704 |
 | CompilerProbe, reclaimed after task check | 100000 | 100016 |
 

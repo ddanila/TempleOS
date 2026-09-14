@@ -66,8 +66,8 @@ integers, F64 and mixed conversions, while keeping comparison results integer
 booleans independently of operand-precision metadata. The existing logical
 context handling provides short-circuit branches and eager value expressions.
 
-This is an initial compiler integration. Remainder and the remaining math intrinsics remain
-unsupported and are rejected. Numeric
+This is an initial compiler integration. Remaining math intrinsics and F64 bitwise/shift operations require further
+integration. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
 host optimizer; numerical precision compatibility across folding and runtime
@@ -116,7 +116,7 @@ out-of-range results (`I8 -127 -= 2.5` yielded -129 and `U8 250 += 10.5` yielded
 all stored destinations to their declared width, including stack-backed locals.
 This is a known difference for those out-of-range register temporaries, not a
 claim of complete x64 expression compatibility. Unsupported-source checks retain
-coverage for mixed remainder updates and F64 bitwise operations.
+coverage for missing/malformed remainder providers and F64 bitwise operations.
 
 A shared x64/native condition fixture checks 144 pairs of 12 binary64 patterns.
 Each pair checks five branch predicates, four logical values used in integer
@@ -279,3 +279,9 @@ positive powers of two, from the minimum subnormal through 2^1023, and checks
 argument side effects. The two-ULP corpus tolerance for other finite values is
 not a claim of universal correct rounding. General exponential/power functions,
 trigonometry, exception state and production integration remain unfinished.
+
+
+F64 `%` and `%=` now use the exact integer-only `I386F64Mod` helper, including
+mixed operands and integer destinations. The expanded F64 fixture passes 8192
+remainder checks and eleven x64/native update checks, with NaN payload policy
+recorded separately. See [i386-f64-remainder.md](i386-f64-remainder.md).

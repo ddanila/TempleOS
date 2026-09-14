@@ -203,6 +203,42 @@ public U64 I386F64Div(U64 a,U64 b)
   return I386F64RoundPack(sign,exp,quotient);
 }
 
+public U64 I386F64Mod(U64 a,U64 b)
+{//Reduce integer significands; no rounded quotient or floating-point operation.
+  U64 magnitude=0x7FFFFFFFFFFFFFFF,infinity=0x7FF0000000000000;
+  U64 quiet=0x0008000000000000,frac=0x000FFFFFFFFFFFFF;
+  U64 sign=a&0x8000000000000000,x,y;
+  I64 exp,other;
+  if ((a&magnitude)>infinity) return a|quiet;
+  if ((b&magnitude)>infinity) return b|quiet;
+  a&=magnitude; b&=magnitude;
+  if (a==infinity || !b) return 0xFFF8000000000000;
+  if (a<b) return sign|a; //Includes finite % infinity and both dividend zeros.
+  if (a==b) return sign;
+  exp=a>>52; other=b>>52; x=a&frac; y=b&frac;
+  if (exp) x|=0x0010000000000000;
+  else {
+    exp=1;
+    while (x<0x0010000000000000) { x<<=1; exp--; }
+  }
+  if (other) y|=0x0010000000000000;
+  else {
+    other=1;
+    while (y<0x0010000000000000) { y<<=1; other--; }
+  }
+  //Each shifted remainder fits in 54 bits, even across the full exponent span.
+  while (exp>other) {
+    if (x>=y) x-=y;
+    if (!x) return sign;
+    x<<=1; exp--;
+  }
+  if (x>=y) x-=y;
+  if (!x) return sign;
+  while (x<0x0010000000000000) { x<<=1; other--; }
+  //The exact remainder is representable, including subnormals.
+  return I386F64RoundPack(sign,other,x<<3);
+}
+
 public U64 I386F64FromU64(U64 value)
 {
   I64 exp=1078; //Exponent bias plus the guard-extended hidden-bit position.

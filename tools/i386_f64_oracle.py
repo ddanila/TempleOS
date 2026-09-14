@@ -1,7 +1,8 @@
 """Deterministic binary64 arithmetic vectors; host arithmetic is the oracle.
 
 NaN payload selection is an explicit runtime policy, checked separately from
-host NaN propagation. Finite results use Python's binary64 float operations.
+host NaN propagation. Finite results use Python's binary64 float operations;
+truncating remainders use exact rational arithmetic.
 """
 import math
 import random
@@ -233,3 +234,46 @@ def make_unary_oracle(count):
     #Decimal parsing is independent of the table generator's Fraction conversion.
     records.extend(struct.pack('<d', float(f'1e{exponent}')) for exponent in range(-308, 309))
     return b''.join(records)
+
+
+def make_mod_oracle(count=2048):
+    """Exact rational truncating remainders, independently of runtime reduction."""
+    from fractions import Fraction
+    if count < 1536:
+        raise ValueError('Remainder corpus must retain all boundary/exponent cases')
+    special = [0, 1, 2, 3, 0x000FFFFFFFFFFFFF, 0x0010000000000000,
+               0x0010000000000001, 0x3FD5555555555555, 0x3FE0000000000000,
+               0x3FF0000000000000, 0x3FF8000000000000, 0x4008000000000000,
+               INF-1, INF, INF+1, INF+QUIET+0x1234]
+    seed = 0x386F64D
+    rows = []
+    for i in range(count):
+        seed = (seed*6364136223846793005+1442695040888963407) & ((1 << 64)-1)
+        a = seed
+        seed = (seed*6364136223846793005+1442695040888963407) & ((1 << 64)-1)
+        b = seed
+        if i < 1024:
+            a, b = special[i//32 % 16], special[i % 16]
+            if i//32 >= 16: a |= SIGN
+            if i % 32 >= 16: b |= SIGN
+        elif i < 1536:
+            j = i-1024
+            a = ((1+j//8*32) << 52) | (a & ((1 << 52)-1))
+            b = j % 4*2+1
+            if j & 4: a |= SIGN
+            if j & 2: b |= SIGN
+        x, y = a & MASK, b & MASK
+        if x > INF: result = a | QUIET
+        elif y > INF: result = b | QUIET
+        elif x == INF or y == 0: result = SIGN | INF | QUIET
+        elif y == INF: result = a
+        else:
+            left = Fraction.from_float(struct.unpack('<d', struct.pack('<Q', x))[0])
+            right = Fraction.from_float(struct.unpack('<d', struct.pack('<Q', y))[0])
+            remainder = left - (left // right)*right
+            value = float(remainder)
+            if Fraction.from_float(value) != remainder:
+                raise AssertionError('Finite binary64 remainder must be exactly representable')
+            result = struct.unpack('<Q', struct.pack('<d', value))[0] | (a & SIGN)
+        rows.append(struct.pack('<3Q', a, b, result))
+    return b''.join(rows)

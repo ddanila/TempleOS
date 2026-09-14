@@ -2,7 +2,7 @@
 
 `Kernel/I386/SoftF64.HH` declares `I386F64Add(U64 a,U64 b)` and
 `I386F64Sub(U64 a,U64 b)`, plus `I386F64Mul(U64 a,U64 b)` and
-`I386F64Div(U64 a,U64 b)`, `I386F64Abs(U64 value)` and
+`I386F64Div(U64 a,U64 b)`, `I386F64Mod(U64 a,U64 b)`, `I386F64Abs(U64 value)` and
 `I386F64Sqrt(U64 value)`. Arguments and return values are binary64 **bit
 patterns**, passed through the ordinary native integer ABI. They do not perform
 integer-to-floating-point conversion. The implementation uses only integer HolyC
@@ -148,3 +148,9 @@ halfway values to even. Results that round to zero preserve the input sign.
 NaNs are quieted with sign/payload preserved; infinity and already-integral values
 are unchanged. These operations do not read or modify an FPU control word or
 report exception flags. Public F64 wrappers live in `FloatMath.HC`.
+
+
+The truncating-remainder helper now computes exact finite remainders by integer
+significand reduction and preserves the dividend's sign, including zero. Native
+compiler lowering, mixed compound updates and exact/x64 oracles are documented
+in [i386-f64-remainder.md](i386-f64-remainder.md).

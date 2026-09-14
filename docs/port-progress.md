@@ -3269,3 +3269,45 @@ See [i386-branch-optimizer.md](i386-branch-optimizer.md) for the integration
 contract. Full native parser/optimizer/backend execution, public allocator and
 task/CPU integration, interactive HolyC, DolDoc/editing and self-hosting remain
 unfinished. QEMU/486 development success is not strict 386SX/DX acceptance.
+
+
+## Software F64 remainder and compiler lowering
+
+`I386F64Mod` now computes truncating binary64 remainders by integer significand
+reduction. Finite results are exact, including subnormals and signed zero. The
+backend lowers F64 `%` and `%=` through its checked runtime ABI, including mixed
+integer/F64 operands, integer destinations and single-evaluation pointer updates.
+This supplies a numerical dependency needed by the shared constant-folding pass;
+the remaining pass/runtime/frontend integration is still required.
+
+The expanded native F64 fixture passes 8192 remainder results over 2048 operand
+pairs using the helper, indirect F64 call, already-defined helper relocation and
+compound assignment. An exact-rational Python oracle covers signed boundary
+patterns, extreme exponent gaps, subnormal divisors and deterministic random
+pairs. Actual x64 HolyC agrees exactly on all 1808 cases without NaN inputs. All
+240 NaN-input pairs quiet their result; six differ in payload selection from the
+native first-NaN policy. Eleven additional mixed-update checks pass on x64 and
+i386; absent/malformed remainder providers are rejected. The fixture executes
+with CR0.EM set and uses a 160 KiB test-stage reservation.
+
+Successful verification:
+
+- `python3 tools/test-rebuild.py`: both native x64 rebuild/reboot generations.
+- `python3 tools/test-i386.py --float`: existing arithmetic/condition/chain tests,
+  8192 remainder results, eleven mixed updates and eight rejection checks.
+- `python3 tools/test-i386.py --soft-f64`: all 8192 existing arithmetic results.
+- `python3 tools/test-i386.py --functions`: all 233 integer/call/function cases.
+- `python3 tools/build-i386-kernel.py --test`: full standalone suite, including
+  input, VGA, compiler recovery and module rejection checks.
+- `git diff --check`.
+
+The retained CompilerRuntime image grows to 260080 bytes with a 260096-byte heap
+span. Its service record remains ABI 19/112 bytes; FileRuntime remains ABI 10,
+124688/124704 image/heap bytes. The temporary probe remains ABI 4,
+100000/100016 bytes. The kernel remains 389336 bytes, or 391496 including its
+loaded stage overhead, leaving 1720 bytes in the unchanged 393216-byte reservation.
+
+See [i386-f64-remainder.md](i386-f64-remainder.md) for semantics and oracle scope.
+Floating-point status/traps, remaining numerical operations, full native parser/
+optimizer/JIT, public task/allocator integration, DolDoc/editing, self-hosting and
+strict 386SX/DX acceptance remain unfinished.
