@@ -5,12 +5,21 @@
 #include "/Kernel/I386/Debug.HH"
 #include "/Kernel/I386/Gdt.HH"
 #include "/Kernel/I386/TaskPlatform.HH"
+#include "/Kernel/I386/Interrupt.HH"
+#include "/Kernel/I386/Timer.HH"
+import U0 i386_idle();
 _intern 0x17 CI386Cpu *CpuSelf();
 import U0 i386_segments_reload(U16 fs,U16 gs);
 CI386Scheduler scheduler;
 CI386Task root;
 CI386Cpu cpu;
-U8 gdt_storage[56];
+U8 gdt_storage[56],runtime_idt[2048];
+CI386Timer timer,rejected_timer;
+U32 irq_tasks[3];
+extern U0 OnTimer(CI386IrqFrame *frame);
+extern U0 OnFault(CI386ExceptionFrame *frame);
+extern U0 Unexpected();
+extern U0 WaitTick();
 CI386Heap heap;
 CI386OwnedTask *workers[2];
 U32 failures,progress[2],reports[2];
@@ -21,7 +30,8 @@ extern U0 Report(CI386Task *task,I64 ch);
 extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
 I64 Main(I64 unused0,I64 unused1)
 {
-  U8 saved[6],readback[6],*table=gdt_storage+8;
+  U8 saved[6],readback[6],saved_idt[6],*table=gdt_storage+8;
+  CI386InterruptServices irq_services;
   U16 old_fs,old_gs;
   U8 master_mask,slave_mask;
   I64 i,result;
@@ -83,7 +93,23 @@ I64 Main(I64 unused0,I64 unused1)
       cpu.addr!=&cpu || cpu.scheduler!=&scheduler || CpuSelf!=&cpu || !Caller(0)) return 41;
   if(!I386GdtRead(readback) || readback[0]!=39 || readback[1] ||
       (readback+2)(U32 *)[0]!=(table+0)(U64) || I386TaskSelf!=&root) result=29;
-  else result=Run;
+  else {
+    if(!I386IdtRead(saved_idt)) return 42;
+    I386PicInit;
+    irq_services.irq=&OnTimer; irq_services.exception=&OnFault;
+    if(!I386InterruptInstall(runtime_idt,256,&Unexpected,&irq_services)) return 43;
+    if(I386TimerInit(0,11932) || I386TimerInit(&timer,1) ||
+        I386TimerInit(&timer,65537) || I386TimerStep(&timer) || I386TimerTicks(&timer)) return 44;
+    if(!I386TimerInit(&timer,11932) || I386TimerInit(&timer,11932)) return 45;
+    timer.ticks=0xFFFFFFFFFFFFFFFF;
+    if(!I386TimerStep(&timer) || I386TimerTicks(&timer)) return 46;
+    timer.ticks=0xFFFFFFF0;
+    I386PicMask(0xFFFE);
+    result=Run;
+    I386PicMask(0xFFFF);
+    if(!I386IdtLoad((saved_idt+2)(U32 *)[0],
+        (saved_idt[0]+(saved_idt[1]<<8)+1)/8)) return 47;
+  }
   if(GetRFlags&0x200) return 33;
   if(saved[0]!=23 || saved[1]) return 34;
   if(!(saved+2)(U32 *)[0]) return 35;
@@ -99,6 +125,18 @@ I64 Main(I64 unused0,I64 unused1)
 I64 Run()
 {
   I64 cycle,i,round;
+  U64 previous,snapshot;
+  WaitTick;
+  SetRFlags(GetRFlags|0x200);
+  if(I386TimerStep(&timer) || I386TimerInit(&rejected_timer,11932)) failures++;
+  previous=I386TimerTicks(&timer);
+  while(previous<=0x100000001) {
+    snapshot=I386TimerTicks(&timer);
+    if(snapshot<previous || !(GetRFlags&0x200)) failures++;
+    previous=snapshot;
+  }
+  if(!(GetRFlags&0x200) || rejected_timer.ready || rejected_timer.ticks) failures++;
+  SetRFlags(GetRFlags&~0x200);
   try { throw(0x1234567800000001,TRUE); failures++; }
   catch {
     if(I386TaskSelf!=&root || root.except_ch!=0x1234567800000001 ||
@@ -122,6 +160,8 @@ I64 Run()
           !I386TaskDestroy(workers[i])) return 6;
     }
     if(failures || heap.used || heap.allocations || !I386HeapValid(&heap)) return 7;
+    if(!irq_tasks[0] || !irq_tasks[1] || !irq_tasks[2] ||
+        I386TimerTicks(&timer)<=0x100000000) return 48;
   }
   return 0;
 }
@@ -142,6 +182,7 @@ U0 Worker(I64 id)
       if(task->except_ch!=ch || task->memory->allocations!=1) failures++;
       task->catch_except=TRUE;
       I386SchedYield(&scheduler);
+      WaitTick;
       if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || !task->catch_except ||
           task->except_ch!=ch || task->except_callers[0]!=site ||
           task->except_rbp!=throw_frame || value!=0x1234567800000000+id+i*3) failures++;
@@ -154,6 +195,7 @@ U0 Worker(I64 id)
         selected=task->except_top;
         if(task->memory->allocations!=2) failures++;
         I386SchedYield(&scheduler);
+        WaitTick;
         if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || task->catch_except ||
             task->except_ch!=ch+0x200000000) failures++;
         value++;
@@ -164,6 +206,7 @@ U0 Worker(I64 id)
       task->catch_except=TRUE;
       if(task->memory->allocations!=1) failures++;
       I386SchedYield(&scheduler);
+      WaitTick;
       if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || !task->catch_except ||
           task->except_ch!=ch+0x200000000) failures++;
       value++;
@@ -205,3 +248,38 @@ U0 Fatal(CI386Task *task,I64 status,I64 ch)
 #include "/Kernel/I386/TaskPlatform.HC"
 
 #include "/Kernel/I386/ExceptNative.HC"
+
+U0 WaitTick()
+{
+  U64 before=I386TimerTicks(&timer);
+  if(GetRFlags&0x200) failures++;
+  while(I386TimerTicks(&timer)==before) i386_idle;
+  if(GetRFlags&0x200) failures++;
+}
+U0 OnTimer(CI386IrqFrame *frame)
+{
+  CI386Task *task=I386TaskSelf;
+  if(!I386PicAccept(frame->irq)) return;
+  if(frame->irq || task!=scheduler.current || CpuSelf!=&cpu ||
+      (GetRFlags&0x600) || (frame->fs&65535)!=0x18 || (frame->gs&65535)!=0x20 ||
+      !I386TimerStep(&timer)) failures++;
+  if(task==&root) irq_tasks[0]++;
+  else if(workers[0] && task==&workers[0]->task) irq_tasks[1]++;
+  else if(workers[1] && task==&workers[1]->task) irq_tasks[2]++;
+  else failures++;
+  I386PicEoi(frame->irq);
+}
+U0 OnFault(CI386ExceptionFrame *frame)
+{
+  failures++;
+  Unexpected;
+}
+U0 Unexpected()
+{
+  asm { CLI }
+  while(1) { asm { HLT } }
+}
+#include "/Kernel/I386/Idt.HC"
+#include "/Kernel/I386/Interrupt.HC"
+#include "/Kernel/I386/PicPit.HC"
+#include "/Kernel/I386/Timer.HC"

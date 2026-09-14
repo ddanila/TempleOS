@@ -1685,3 +1685,27 @@ entries. Public exception-runtime and general task regressions, instruction audi
 and both x86-64 rebuild/reboot generations pass. Initial protected-mode boot,
 concrete debugger/logging handlers, full public task migration, native compiler
 execution and strict 386 verification remain unfinished. See `i386-exceptions.md`.
+
+
+## Native timer delivery across task and exception state
+
+`Kernel/I386/Timer.HH/HC` now provide a 64-bit serviced-IRQ0 counter over the
+existing PIT driver, with IF-clear initialization/update and atomic single-CPU
+snapshots that preserve IF. `PicPit.HH` supplies shared driver declarations.
+The counter wraps modulo 2^64 and counts delivered interrupts; it is not an
+elapsed-time guarantee when interrupts are masked or coalesced.
+
+The exception-task fixture now links six modules, including native IRQ and CPU
+exception entries. It installs its own GDT/IDT and dispatch services, configures
+PIT channel 0 and unmasks IRQ0. Root and both workers receive real interrupts.
+Each of the 48 catch-time yields is followed by a hardware-tick wait, checking
+FS/GS, current task/CPU, IF/DF and exception/local preservation. Root also reads
+atomic snapshots with IF enabled across the 32-bit rollover; monotonicity and
+IF preservation pass. Rejected initialization/update cases and direct U64 wrap
+are checked. The fixture masks IRQs and restores its original IDTR/GDTR on return.
+
+The combined suite, linked IRQ regression, instruction audits and both x86-64
+rebuild/reboot generations pass. No runner function pointers enter the combined
+runtime. Production boot/device integration, public clock/sleep APIs, full CTask
+migration, native compiler execution and strict 386 validation remain unfinished.
+See `i386-timer.md`.

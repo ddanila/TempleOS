@@ -41,3 +41,7 @@ The exception-task fixture passes rejected/repeated initialization checks, root
 stack/heap/FS/GS identity, root exception diagnostics and reclamation, plus all
 48 worker catch-time yields with CPU identity checks. Native instruction audits,
 the general task regression and both x86-64 rebuild/reboot generations pass.
+
+The combined fixture now also installs the linked interrupt runtime and checks
+[real PIT delivery](i386-timer.md) after catch-time yields, exercising task/CPU
+binding inside IRQ dispatch as well as ordinary task execution.

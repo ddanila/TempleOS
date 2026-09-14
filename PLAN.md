@@ -629,6 +629,11 @@ context imports. The exception-task fixture links all four runtime/context
 modules and passes root/worker exception tests with zero entry arguments, using
 no runner-supplied function pointers. Concrete report/debugger handlers and the
 production boot environment remain required.
+The linked task/exception runtime now also installs native interrupt dispatch
+and receives PIT ticks on root and both workers. A 64-bit serviced-tick counter
+provides atomic snapshots; rollover, IF preservation and hardware delivery after
+all 48 catch-time yields pass. Public time/sleep services and production boot
+integration remain pending; see `docs/i386-timer.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

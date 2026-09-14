@@ -202,7 +202,7 @@ def main():
             if line.startswith('INTERRUPT '):
                 _, case, start, size = line.split()
                 key = (int(case), int(start, 16))
-                if not args.irq or key in interrupt_ranges:
+                if not (args.irq or args.except_tasks) or key in interrupt_ranges:
                     raise ValueError('Unexpected/duplicate interrupt code range')
                 interrupt_ranges[key] = int(size, 16)
             if line.startswith('RANGE '):
