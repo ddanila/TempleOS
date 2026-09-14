@@ -10,19 +10,18 @@ Startup and CompilerProbe.
 
 ## Interface and ownership
 
-CI386FileServices version 1 is a 16-byte i386 record: version/byte-count fields,
-an include callback and a decoded-read function pointer. Initialization writes a
-caller-owned candidate and retains no context. The kernel verifies the record's
-version, size and both addresses before publishing it. KernelServiceCheck and
-KernelServiceLog share the version/size/four-byte-pointer layout of the two native
-service tables, reducing duplicated bootstrap validation and logging. The host
-independently compares each published pointer with the module's export offset.
+CI386FileServices version 2 is a 20-byte i386 record: version/byte-count fields,
+an include callback, a decoded-read function and a volume-binding function.
+Initialization writes a caller-owned candidate. The kernel validates the version,
+size and all three addresses before publication; the host independently compares
+them with export offsets. The retained image owns canonical channel gates and I/O
+tables, initialized by the root-only binding service.
 
-The module imports nine existing kernel functions: heap allocation/free/size,
-interrupt save/restore, RedSea find/resolve/read-all and owned lexical source
-transfer. It retains its own string and codec code, with no duplicate ATA driver
-or private allocator. Kernel exports now include the four previously unbound
-find/resolve/read-all/transfer entries.
+The module imports eighteen kernel functions: the existing nine heap/interrupt/
+RedSea/lexical functions, plus RedSea begin/end/validation, the three shared ATA
+protocol functions and scheduler block/wake/yield. It retains its string/codec
+code and task/session adapters, with no duplicate PIO protocol or allocator.
+The kernel publishes 35 explicit resident bindings.
 
 The boot configuration borrows one mounted volume in drive slot C, a root current
 and home directory, and the original whitespace bitmap. Its stable path/volume
@@ -52,13 +51,13 @@ at parent value 44. This connects the existing loader's failure policy to actual
 retained include dispatch. Source bytes and copied names follow the existing owned
 file-stack contract; the codec's controls/stacks and temporary archives are freed.
 
-Calls still require quiescent volumes, exclusive ATA-channel access and IF clear.
-The task-phase test explicitly enables interrupts, checks rejection of the same
-valid include before disk access, then restores the caller's prior flags. It does
-not perform a long masked disk read during task activity. The existing task path
-normally restores IF clear and services interrupts through idle; this test does
-not assume that task execution itself implies IF set. Scheduler-aware file access
-remains required for the interactive compiler.
+Calls retain their IF-clear convention. After boot-time module loading and startup,
+the kernel binds C to the runtime's canonical channel gate before starting tasks.
+The task-phase probe now performs the same nested disk reads and archive-error
+cleanup as the boot probe. Polling yields with the file session still owned.
+It also explicitly enables IF and verifies rejection before disk access, then
+restores its original flags. See [i386-redsea-tasks.md](i386-redsea-tasks.md) for
+session scope, cancellation restrictions and remaining public integration.
 
 After the task probe returns, the kernel reclaims its diagnostic module and verifies
 that both compiler and file-service images remain live allocations of their
@@ -85,18 +84,18 @@ Current images and allocations:
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
 | CompilerRuntime, retained | 138664 | 138680 |
-| FileRuntime, retained | 69376 | 69392 |
-| CompilerProbe, reclaimed after task check | 68256 | 68272 |
+| FileRuntime, retained | 96144 | 96160 |
+| CompilerProbe, reclaimed after task check | 68680 | 68696 |
 
-The native bootstrap is 389112 bytes. With its 2160-byte loaded stage overhead,
-391272 bytes occupy the unchanged 393216-byte reservation, leaving 1944 bytes.
+The native bootstrap is 387432 bytes. With its 2160-byte loaded stage overhead,
+389592 bytes occupy the unchanged 393216-byte reservation, leaving 3624 bytes.
 The separate 512-byte boot sector is excluded from that reservation. Further
 bootstrap growth needs extraction or reduction; the low-memory reservation has
 not been raised. These are measured artifacts built with local changes before
 commit; manifests record revision and source hashes.
 
 Public task/drive binding, resident-file caching, public errors/exceptions,
-scheduler-aware ATA ownership, full compiler-control lifetime, parser/JIT,
+reset recovery and latency measurement, full compiler-control lifetime, parser/JIT,
 DolDoc and persistent editing, strict 386SX/DX profiles and native self-hosting
 remain open. The connected include path is a compiler prerequisite, not a claim
 that the full native programming environment is complete.

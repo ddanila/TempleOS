@@ -13,7 +13,7 @@ public I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name)
   if (entry.attr&0x11) return -1;
   //Find has validated the live record; exclusive ownership keeps it stable.
   for (index=0;index<dir_size/64;index++) {
-    if (!(index&7) && index && !I386AtaRead(volume->disk,directory+index/8,sector)) goto io_fail;
+    if (!(index&7) && index && !I386RedSeaSectorRead(volume,directory+index/8,sector)) goto io_fail;
     raw=sector+(index&7)*64;
     if (!raw[2]) goto io_fail;
     if (!(raw[1]&1)) {
@@ -21,12 +21,12 @@ public I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name)
       while (i<38 && raw[2+i]==entry.name[i]) {
         if (!entry.name[i]) {
           raw[1]|=1;
-          if (!I386AtaWrite(volume->disk,directory+index/8,sector) ||
-              !I386AtaFlush(volume->disk)) goto io_fail;
+          if (!I386RedSeaSectorWrite(volume,directory+index/8,sector) ||
+              !I386RedSeaFlush(volume)) goto io_fail;
           //Only a flushed tombstone permits releasing the referenced allocation.
           blocks=(entry.size+511)/512;
           if (blocks && (!I386RedSeaFree(volume,entry.block,blocks) ||
-                         !I386AtaFlush(volume->disk))) goto io_fail;
+                         !I386RedSeaFlush(volume))) goto io_fail;
           return 1;
         }
         i++;

@@ -14,9 +14,9 @@ public I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offse
     block=entry->block+offset/512;
     n=512-(offset&511);
     if (n>count-written) n=count-written;
-    if (n!=512 && !I386AtaRead(volume->disk,block,sector)) goto fail;
+    if (n!=512 && !I386RedSeaSectorRead(volume,block,sector)) goto fail;
     for (i=0;i<n;i++) sector[(offset&511)+i]=buffer[written+i];
-    if (!I386AtaWrite(volume->disk,block,sector)) goto fail;
+    if (!I386RedSeaSectorWrite(volume,block,sector)) goto fail;
     written+=n; offset+=n;
   }
   return written;

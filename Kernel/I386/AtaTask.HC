@@ -9,7 +9,7 @@ U0 I386AtaTaskPoll(U8 *context)
   I386SchedYield(scheduler);
   I386IrqSave;
 }
-Bool I386AtaTaskRequest(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,I64 operation)
+Bool I386AtaTaskOwned(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,I64 operation)
 {
   CI386AtaPoll poll;
   U32 flags=I386IrqSave;
@@ -17,7 +17,8 @@ Bool I386AtaTaskRequest(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buff
   I64 number;
   if(!channel || !disk || polls<1 || polls>100000 || operation<0 || operation>3) goto request_done;
   if(operation && (disk->io!=channel->io || disk->control!=channel->control)) goto request_done;
-  if(!I386AtaChannelAcquire(channel)) goto request_done;
+  if(channel->signature!=0x41434831 || channel->poisoned || !channel->scheduler ||
+      !channel->owner || channel->owner!=channel->scheduler->current || !channel->owner->io_locks) goto request_done;
   poll.context=channel; poll.step=&I386AtaTaskPoll; poll.touched=FALSE;
   number=0; if(channel->io==0x170) number=1;
   switch(operation) {
@@ -29,6 +30,17 @@ Bool I386AtaTaskRequest(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buff
   //A failed touched transaction may still be active. Fail closed until reboot;
   //future reset/re-identification must quiesce both drives before clearing poison.
   if(!result && poll.touched) channel->poisoned=TRUE;
+request_done:
+  I386IrqRestore(flags); return result;
+}
+Bool I386AtaTaskRequest(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,I64 operation)
+{
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
+  if(!channel || !disk || polls<1 || polls>100000 || operation<0 || operation>3 ||
+      (operation && (disk->io!=channel->io || disk->control!=channel->control))) goto request_done;
+  if(!I386AtaChannelAcquire(channel)) goto request_done;
+  result=I386AtaTaskOwned(channel,disk,lba,buffer,polls,operation);
   if(!I386AtaChannelRelease(channel)) result=FALSE;
 request_done:
   I386IrqRestore(flags); return result;

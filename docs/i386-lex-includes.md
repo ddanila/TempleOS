@@ -81,5 +81,5 @@ reclamation; see `i386-compiler-runtime.md`.
 
 At version-10 interface introduction, the bootstrap was 384208 bytes. The retained compiler image is 138664 bytes
 (138680 heap bytes). The retained disk provider is now packaged and bound; see `i386-file-runtime.md`
-for current measurements. Task-aware disk ownership, public errors and resident-file semantics, full compiler-context
+for current measurements. Task-owned volume sessions are connected; public errors and resident-file semantics, full compiler-context
 lifetime, parser/JIT, DolDoc, strict 386 profiles and self-hosting remain open.

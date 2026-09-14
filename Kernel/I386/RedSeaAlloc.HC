@@ -14,7 +14,7 @@ Bool I386RedSeaBitmapChange(CI386RedSea *v,I64 block,I64 count,Bool set)
     index=block-(v->first-1);
     while (index<end) {
       lba=v->start+1+index/4096;
-      if (!I386AtaRead(v->disk,lba,sector)) goto io_fail;
+      if (!I386RedSeaSectorRead(v,lba,sector)) goto io_fail;
       limit=(index/4096+1)*4096;
       if (limit>end) limit=end;
       while (index<limit) {
@@ -27,7 +27,7 @@ Bool I386RedSeaBitmapChange(CI386RedSea *v,I64 block,I64 count,Bool set)
         }
         index++;
       }
-      if (pass && !I386AtaWrite(v->disk,lba,sector)) goto io_fail;
+      if (pass && !I386RedSeaSectorWrite(v,lba,sector)) goto io_fail;
     }
   }
   return TRUE;
@@ -45,7 +45,7 @@ public I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count)
     index=block-(volume->first-1);
     if (cached!=index/4096) {
       cached=index/4096;
-      if (!I386AtaRead(volume->disk,volume->start+1+cached,sector)) {
+      if (!I386RedSeaSectorRead(volume,volume->start+1+cached,sector)) {
         volume->signature=0; return -1;
       }
     }

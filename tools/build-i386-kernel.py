@@ -93,18 +93,18 @@ def file_runtime_layout(module):
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
-            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake'}:
+            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexFileInclude', 'I386FileReadAt'):
+    for name in ('Main', 'I386LexFileInclude', 'I386FileReadAt', 'I386FileRuntimeBind'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 1:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 2:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         include_offset=8+exports['I386LexFileInclude'][1], read_offset=8+exports['I386FileReadAt'][1],
-        import_offset=imports['I386RedSeaReadAll'])
+        bind_offset=8+exports['I386FileRuntimeBind'][1], import_offset=imports['I386RedSeaReadAll'])
 
 
 def verify_file_rejection(disk, volume, out, layout):
@@ -550,20 +550,24 @@ def main():
                 include_address != address+runtime_layout['include_offset']):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=6: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=7: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
-                file_read!=file_address+files_layout['read_offset']):
+                file_read!=file_address+files_layout['read_offset'] or
+                file_bind!=file_address+files_layout['bind_offset']):
             raise ValueError('File-runtime placement or service mismatch')
         disk_includes = [line.split() for line in log.splitlines() if line.startswith('DISK INCLUDE ')]
-        if ([list(map(lambda x:int(x,16),row[2:])) for row in disk_includes]!=[[0,68],[1,0]] or
+        if ([list(map(lambda x:int(x,16),row[2:])) for row in disk_includes]!=[[0,68],[1,68]] or
                 log.index('DISK INCLUDE ')>log.index('STARTUP disk module') or
-                log.rindex('DISK INCLUDE ')<log.rindex('TICK ')):
+                log.rindex('DISK INCLUDE ')<log.rindex('TICK ') or
+                log.count('DISK IF REJECT\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
+                not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=1, image_address=file_address, image_bytes=file_size,
-            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read,
+        result['file_runtime'] = dict(version=2, image_address=file_address, image_bytes=file_size,
+            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind,
+            task_volume_bound=True,
             disk_include_lines=68, enabled_if_rejected=True, lifetime='kernel lifetime')
         probes = [line.split() for line in log.splitlines() if line.startswith('RUNTIME PROBE ')]
         if ([list(map(lambda x: int(x, 16), row[2:])) for row in probes] !=

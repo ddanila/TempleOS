@@ -31,6 +31,8 @@ U0 PollProbe(U8 *context)
 }
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 DiskTest();
+extern I64 FileSessionTest();
+extern Bool FileSessionReadFailure();
 U0 Diagnostic(U32 value)
 {
   I64 i; U8 digit;
@@ -59,7 +61,7 @@ I64 DiskTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x40000,32768) ||
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x50000,32768) ||
       !I386AtaChannelInit(&channel,&scheduler,0) || !I386AtaChannelInit(&other,&scheduler,1)) return 1;
   if(!I386AtaTaskIdentify(&channel,&disks[0],0) || !I386AtaTaskIdentify(&channel,&disks[1],1) ||
       disks[0].sectors!=32768 || disks[1].sectors!=32768 || channel.owner || channel.poisoned ||
@@ -100,6 +102,7 @@ I64 DiskTest()
   }
   for(i=0;i<3;i++) if(!I386TaskDestroy(workers[i])) return 10;
   if(heap.used || heap.allocations || !I386HeapValid(&heap)) return 11;
+  i=FileSessionTest; if(i) return i;
   //One device rejects an out-of-range command after its reported limit is forged.
   //The other drive's already queued request must fail without issuing a command.
   disks[0].sectors=32769;
@@ -150,9 +153,12 @@ U0 FailedReader(I64 id)
 {
   U8 buffer[512];
   I64 i,lba=32768;
+  Bool succeeded;
   for(i=0;i<512;i++) buffer[i]=0xA5;
   if(id) { lba=512; SetRFlags(GetRFlags|0x200); }
-  if(I386AtaTaskRead(&channel,&disks[id],lba,buffer) || I386TaskSelf->io_locks ||
+  if(!id) succeeded=FileSessionReadFailure;
+  else succeeded=I386AtaTaskRead(&channel,&disks[id],lba,buffer);
+  if(succeeded || I386TaskSelf->io_locks ||
       (GetRFlags&0x200)!=(id*0x200)) errors++;
   for(i=0;i<512;i++) if(buffer[i]!=0xA5) errors++;
   failed++;
@@ -189,3 +195,5 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/AtaChannel.HC"
 #include "/Kernel/I386/AtaTask.HC"
+
+#include "T:/RedSea.HC"

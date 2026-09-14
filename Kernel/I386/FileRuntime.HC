@@ -1,9 +1,10 @@
-//Disk-loaded file/path/expansion services. Calls require quiescent volumes and IF clear.
+//Retained file/path/expansion services. IF-clear callers; optional task-owned volume sessions.
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/RedSeaTask.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
@@ -13,13 +14,39 @@ import I64 I386RedSeaFind(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSea
 import I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386RedSeaEntry *entry);
 import U8 *I386RedSeaReadAll(CI386RedSea *volume,CI386Heap *heap,CI386RedSeaEntry *entry,I64 *size=0);
 import Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
+import Bool I386RedSeaBegin(CI386RedSea *volume);
+import Bool I386RedSeaEnd(CI386RedSea *volume);
+import Bool I386RedSeaValid(CI386RedSea *volume);
+import Bool I386AtaIdentifyPolled(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll);
+import Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool write,CI386AtaPoll *poll);
+import Bool I386AtaFlushPolled(CI386Ata *disk,I64 polls,CI386AtaPoll *poll);
+import Bool I386SchedBlock(CI386Scheduler *scheduler);
+import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
+import Bool I386SchedYield(CI386Scheduler *scheduler);
+CI386AtaChannel file_channels[2];
+CI386RedSeaIo file_io[2];
+Bool I386FileRuntimeBind(CI386Scheduler *scheduler,CI386RedSea *volume)
+{
+  I64 number;
+  if(GetRFlags&0x200 || !scheduler || scheduler->current!=scheduler->root ||
+      !I386RedSeaValid(volume) || volume->io) return FALSE;
+  number=0;
+  if(volume->disk->io==0x170) number=1;
+  else if(volume->disk->io!=0x1F0) return FALSE;
+  if(!file_channels[number].signature) {
+    if(!I386AtaChannelInit(&file_channels[number],scheduler,number) ||
+        !I386RedSeaTaskIoInit(&file_io[number],&file_channels[number])) return FALSE;
+  }
+  if(file_channels[number].scheduler!=scheduler) return FALSE;
+  return I386RedSeaTaskBind(volume,&file_io[number]);
+}
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==16
+#assert sizeof(CI386FileServices)==20
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
-  services->include=&I386LexFileInclude; services->read=&I386FileReadAt;
+  services->include=&I386LexFileInclude; services->read=&I386FileReadAt; services->bind=&I386FileRuntimeBind;
   return 1;
 }
 #include "/Kernel/I386/FileNames.HC"
@@ -30,3 +57,6 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/FileLoad.HC"
 #include "/Kernel/I386/FileContext.HC"
 #include "/Compiler/I386/LexFileRead.HC"
+#include "/Kernel/I386/AtaChannel.HC"
+#include "/Kernel/I386/AtaTask.HC"
+#include "/Kernel/I386/RedSeaTask.HC"

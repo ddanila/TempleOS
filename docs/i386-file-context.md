@@ -37,12 +37,11 @@ new buffers. The source is transferred only after the record/name allocations
 succeed. Empty sources are valid. Document/prompt/echo modes remain unsupported
 by this raw-file bridge and are rejected before loading.
 
-Both functions currently require quiescent volumes, exclusive channel access and
-interrupts disabled. They reject enabled IF before I/O and preserve IF. Paths,
-volume bindings and compiler state must remain stable throughout the operation;
-these functions neither acquire scheduler locks nor yield. This is a bootstrap
-integration contract, not permission to perform long masked reads in the final
-interactive system.
+Both functions require IF clear and preserve it. Unbound volumes retain the
+quiescent boot contract. Bound volumes acquire a complete-operation session in
+the decoded loader and may yield at ATA polling points while retaining channel
+ownership. Paths, volume bindings and compiler state must stay live and stable.
+Public task/drive binding and interruptible compiler cleanup remain open.
 
 ## Verification and remaining work
 
@@ -63,7 +62,7 @@ These tests operate directly on the include service and raw reader; they do not
 claim that the native lexer dispatches include directives or that it runs a parser.
 
 Native integration checks and executable instruction audits pass. Both x64
-rebuild/reboot generations pass, and the unchanged standalone image passes its
+rebuild/reboot generations pass, and the standalone image passes its
 boot regression.
 
 Commands:
@@ -77,19 +76,25 @@ python3 tools/build-i386-kernel.py --test
 The integration fixture uses a 256 KiB loader ending at 0x50000, a separate
 128 KiB heap at 0x50000–0x70000, and small test arenas at 0x71000. The largest small
 arena ends below 0x82100, clear of the runner stack. These are test placements;
-the standalone bootstrap remains 383496 bytes and does not yet link these services.
+see `i386-file-runtime.md` for current standalone/retained-image measurements.
 
 Remaining work includes current-task/public drive binding, resident-file caching,
-public FileRead errors/exception behavior, scheduler-aware ATA ownership, resident
-include-service binding and full compiler-control construction/destruction.
+public FileRead errors/exception behavior, reset recovery, latency measurement
+and full compiler-control construction/destruction.
 The fixed borrowed volume table is an integration input for public wrappers, not
 a replacement application API or a new device framework. Resident parser/JIT,
 DolDoc, strict 386SX/DX verification and native self-hosting remain required.
 
 Native directive dispatch now accepts this bridge through I386LexFileInclude and
 an explicit service context. See `i386-lex-includes.md` for its compatibility tests,
-callback contract and remaining resident-module integration.
+callback contract and resident-module integration.
 
 The file bridge is now packaged in retained FileRuntime and bound to the retained
 compiler's include dispatcher during native boot. See `i386-file-runtime.md` for
 the connected disk tests and the remaining task/interrupt ownership restrictions.
+
+Bound volumes now support complete-operation sessions through the retained task
+adapter. `I386RedSeaFileLoad` owns the session across lookup, reading and expansion,
+so `I386FileReadAt` and compiler includes inherit serialization and polling yields.
+The IF-clear API convention remains. See [i386-redsea-tasks.md](i386-redsea-tasks.md)
+for binding, ownership, failure cleanup and remaining public task/file work.

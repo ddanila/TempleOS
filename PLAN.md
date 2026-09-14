@@ -461,37 +461,40 @@ The FIFO channel gate and task transaction adapter now pass real-task contention
 interrupt-state, task-lifetime and two-drive LBA/CHS tests. The adapter retains
 ownership across polling/yields and PIO completion; timer/keyboard IRQs continue.
 A touched failure poisons the channel, drains queued requests without I/O and
-requires reboot. Argument failures leave it usable. Existing RedSea/file calls
-still use the boot-owned entry points. Binding those services, reset/recovery,
-measured latency and the interactive compiler acceptance above remain required.
-See `docs/i386-ata.md` for contracts and verification limits.
+requires reboot. Argument failures leave it usable. RedSea now supports a
+complete-operation session, shared across both drives, so metadata/data operations
+cannot interleave between sectors. Retained FileRuntime binds the mounted volume
+before task startup; native task includes use this path. Reset/recovery, measured
+latency and the public interactive compiler acceptance above remain required.
+See `docs/i386-redsea-tasks.md` for contracts and verification limits.
 
 The path-string extraction now passes 44 original x64 cases on both targets,
 with native owned-buffer and allocation-failure checks. Explicit-context helpers
-remain outside the native runtime; task-to-volume binding and the remaining
+are retained in FileRuntime; public current-task/drive binding and the remaining
 file/compiler integration above are still required. See `docs/i386-file-paths.md`.
 
 An explicit drive-to-volume reader now connects these path rules to decoded
 RedSea loading. The compiler file-input bridge adds HC.Z, preserves the original
 two normalization steps and transfers loaded bytes into owned include records.
 Two-volume and nested-input tests cover routing, replay, I/O/allocation failures
-and reclamation. These quiescent IF-clear services still require task/public
-binding, resident-file semantics, scheduler-aware disk access and resident service
-binding; see `docs/i386-file-context.md`.
+and reclamation. These IF-clear services now manage bound volume sessions and
+allow task switches at ATA polling points. Public current-task binding and
+resident-file semantics remain; see `docs/i386-file-context.md`.
 
 Native include dispatch now accepts an explicit synchronous provider and preserves
 that binding across recursive token reads and conditional scans. Eight original
 x64 include scenarios match native execution; disk-adapter ownership/I/O checks
 also pass. Version 10 of the retained compiler table now publishes the include
-entry; boot/task callbacks verify relocated execution and reclamation. The disk provider is now packaged in retained FileRuntime and bound during boot;
-scheduler-aware disk ownership and public task/file integration remain gates.
+entry; boot/task callbacks verify relocated execution and reclamation. The disk
+provider is packaged in retained FileRuntime with task-owned volume sessions;
+public task/file integration remains a gate.
 See `docs/i386-lex-includes.md`.
 
 The retained lexer now consumes nested plain/compressed disk includes, restores
 parent input after an archive error and reclaims temporary source/codec state.
-FileRuntime has a checked versioned interface and kernel-lifetime ownership.
-Its IF-clear disk contract is enforced; a task-phase enabled-IF call is rejected.
-The bootstrap plus loaded stage now leaves 1944 bytes in the fixed reservation,
+FileRuntime has a checked version-2 interface and kernel-lifetime ownership.
+Both boot and task reads pass; its IF-clear entry contract remains enforced.
+The bootstrap plus loaded stage now leaves 3624 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 

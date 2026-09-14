@@ -211,7 +211,17 @@ module, binds the declared imports, initializes a zeroed stack candidate (at mos
 the loaded allocation, and only then copies the candidate into the resident
 record. Failure reclaims the image and checks the original heap baseline. The
 existing wrong-target/import/version boot tests still exercise both services.
-This consolidation keeps the native kernel at 387,616 bytes after adding shared
-ATA polling hooks; including the 2,160-byte stage overhead leaves 3,440 bytes in
-the fixed 384 KiB reservation. Task-owned ATA transactions are tested separately;
-standalone RedSea/file calls still use quiescent boot-owned disk access.
+The native kernel is now 387,432 bytes; including the 2,160-byte stage overhead
+leaves 3,624 bytes in the fixed 384 KiB reservation. Symbol registration uses one
+loop with a packed name list and a pointer table. The bootstrap links
+`ModuleFileSingle.HC`; the module-set loader remains in the shared
+`ModuleFile.HC` and its independent regression tests. This removes unused code
+from the bootstrap without changing the loader APIs. Startup binding setup also
+no longer writes entries 13/14 beyond its three-entry array.
+
+After boot-time module loading and Startup, FileRuntime version 2 binds the
+mounted volume to its retained channel/session implementation. The pulse task
+then repeats the nested plain/compressed include and archive-error checks through
+that path. The API still requires IF clear on entry, but ATA polling opens IRQ
+windows and yields while retaining the complete file-operation lease. See
+[i386-redsea-tasks.md](i386-redsea-tasks.md) for ownership and verification limits.

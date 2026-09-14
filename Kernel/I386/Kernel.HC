@@ -52,7 +52,8 @@ I64 kernel_startup_count;
 CHashTable *kernel_symbols;
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
-CI386KernelSymbol kernel_exports[26];
+CI386KernelSymbol kernel_exports[35];
+U8 kernel_export_kinds[35]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
 U8 *kernel_file_image;
@@ -112,6 +113,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelFileLoad;
   KernelCompilerProbe(0);
   KernelStartup;
+  if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
+  KernelLog("STORAGE TASK BOUND\n");
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
       !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
   kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelKeys,0,
@@ -206,7 +209,7 @@ U0 KernelDisplay()
 }
 #include "/Kernel/I386/BootMemory.HC"
 #include "/Kernel/I386/A20.HC"
-#include "/Kernel/I386/ModuleFile.HC"
+#include "/Kernel/I386/ModuleFileSingle.HC"
 #include "/Kernel/I386/Frame.HC"
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Except.HC"
@@ -340,8 +343,6 @@ U0 KernelStartup()
   KernelBinding(&bindings[0],"KernelLog");
   KernelBinding(&bindings[1],"KernelDisplay");
   KernelBinding(&bindings[2],"kernel_startup_count");
-  KernelBinding(&bindings[13],"HashAdd");
-  KernelBinding(&bindings[14],"char_bmp_non_eol_white_space");
   image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,3);
   if(!image || kernel_heap.allocations!=allocations+1) KernelStop;
   transient=kernel_heap.used-used;
@@ -359,6 +360,7 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i,used;
+  U8 *addresses[35],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0";
   CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
@@ -379,59 +381,48 @@ U0 KernelSymbols()
   kernel_types.table->next=kernel_keywords.table;
   if(HashFind("F64",kernel_symbols,HTG_TYPE_MASK)!=kernel_types.by_raw[RT_F64]) KernelStop;
   KernelLog("KEYWORDS "); KernelHex(COMPILER_KEYWORDS_NUM); KernelLog(" "); KernelHex(kernel_heap.used-used); KernelLog("\n");
-  kernel_exports[0].str="KernelLog"; kernel_exports[0].kind=1;
-  kernel_exports[0].val=(&KernelLog+0)(U64);
-  kernel_exports[1].str="KernelDisplay"; kernel_exports[1].kind=1;
-  kernel_exports[1].val=(&KernelDisplay+0)(U64);
-  kernel_exports[2].str="kernel_startup_count"; kernel_exports[2].kind=3;
-  kernel_exports[2].val=(&kernel_startup_count+0)(U64);
-  kernel_exports[3].str="I386LexRawChar"; kernel_exports[3].kind=1;
-  kernel_exports[3].val=(&I386LexRawChar+0)(U64);
-  kernel_exports[4].str="I386LexSourceRead"; kernel_exports[4].kind=1;
-  kernel_exports[4].val=(&I386LexSourceRead+0)(U64);
-  kernel_exports[5].str="char_bmp_hex_numeric"; kernel_exports[5].kind=3;
-  kernel_exports[5].val=(char_bmp_hex_numeric+0)(U64);
-  kernel_exports[6].str="char_bmp_dec_numeric"; kernel_exports[6].kind=3;
-  kernel_exports[6].val=(char_bmp_dec_numeric+0)(U64);
-  kernel_exports[7].str="char_bmp_non_eol"; kernel_exports[7].kind=3;
-  kernel_exports[7].val=(char_bmp_non_eol+0)(U64);
-  kernel_exports[8].str="HashFind"; kernel_exports[8].kind=1;
-  kernel_exports[8].val=(&HashFind+0)(U64);
-  kernel_exports[9].str="StrCmp"; kernel_exports[9].kind=1;
-  kernel_exports[9].val=(&StrCmp+0)(U64);
-  kernel_exports[10].str="I386HeapAlloc"; kernel_exports[10].kind=1;
-  kernel_exports[10].val=(&I386HeapAlloc+0)(U64);
-  kernel_exports[11].str="I386HeapFree"; kernel_exports[11].kind=1;
-  kernel_exports[11].val=(&I386HeapFree+0)(U64);
-  kernel_exports[12].str="I386HeapSize"; kernel_exports[12].kind=1;
-  kernel_exports[12].val=(&I386HeapSize+0)(U64);
-  kernel_exports[13].str="I386IrqSave"; kernel_exports[13].kind=1;
-  kernel_exports[13].val=(&I386IrqSave+0)(U64);
-  kernel_exports[14].str="I386IrqRestore"; kernel_exports[14].kind=1;
-  kernel_exports[14].val=(&I386IrqRestore+0)(U64);
-  kernel_exports[15].str="I386LexIncludeCopy"; kernel_exports[15].kind=1;
-  kernel_exports[15].val=(&I386LexIncludeCopy+0)(U64);
-  kernel_exports[16].str="HashAdd"; kernel_exports[16].kind=1;
-  kernel_exports[16].val=(&HashAdd+0)(U64);
-  kernel_exports[17].str="char_bmp_non_eol_white_space"; kernel_exports[17].kind=3;
-  kernel_exports[17].val=(char_bmp_non_eol_white_space+0)(U64);
-  kernel_exports[18].str="KernelHex"; kernel_exports[18].kind=1;
-  kernel_exports[18].val=(&KernelHex+0)(U64);
-  kernel_exports[19].str="KernelStop"; kernel_exports[19].kind=1;
-  kernel_exports[19].val=(&KernelStop+0)(U64);
-  kernel_exports[20].str="I386HeapValid"; kernel_exports[20].kind=1;
-  kernel_exports[20].val=(&I386HeapValid+0)(U64);
-  kernel_exports[21].str="char_bmp_alpha_numeric"; kernel_exports[21].kind=3;
-  kernel_exports[21].val=(char_bmp_alpha_numeric+0)(U64);
-  kernel_exports[22].str="I386RedSeaFind"; kernel_exports[22].kind=1;
-  kernel_exports[22].val=(&I386RedSeaFind+0)(U64);
-  kernel_exports[23].str="I386RedSeaResolve"; kernel_exports[23].kind=1;
-  kernel_exports[23].val=(&I386RedSeaResolve+0)(U64);
-  kernel_exports[24].str="I386RedSeaReadAll"; kernel_exports[24].kind=1;
-  kernel_exports[24].val=(&I386RedSeaReadAll+0)(U64);
-  kernel_exports[25].str="I386LexIncludeTake"; kernel_exports[25].kind=1;
-  kernel_exports[25].val=(&I386LexIncludeTake+0)(U64);
-  for(i=0;i<26;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
+  addresses[0]=&KernelLog;
+  addresses[1]=&KernelDisplay;
+  addresses[2]=&kernel_startup_count;
+  addresses[3]=&I386LexRawChar;
+  addresses[4]=&I386LexSourceRead;
+  addresses[5]=char_bmp_hex_numeric;
+  addresses[6]=char_bmp_dec_numeric;
+  addresses[7]=char_bmp_non_eol;
+  addresses[8]=&HashFind;
+  addresses[9]=&StrCmp;
+  addresses[10]=&I386HeapAlloc;
+  addresses[11]=&I386HeapFree;
+  addresses[12]=&I386HeapSize;
+  addresses[13]=&I386IrqSave;
+  addresses[14]=&I386IrqRestore;
+  addresses[15]=&I386LexIncludeCopy;
+  addresses[16]=&HashAdd;
+  addresses[17]=char_bmp_non_eol_white_space;
+  addresses[18]=&KernelHex;
+  addresses[19]=&KernelStop;
+  addresses[20]=&I386HeapValid;
+  addresses[21]=char_bmp_alpha_numeric;
+  addresses[22]=&I386RedSeaFind;
+  addresses[23]=&I386RedSeaResolve;
+  addresses[24]=&I386RedSeaReadAll;
+  addresses[25]=&I386LexIncludeTake;
+  addresses[26]=&I386RedSeaBegin;
+  addresses[27]=&I386RedSeaEnd;
+  addresses[28]=&I386RedSeaValid;
+  addresses[29]=&I386AtaIdentifyPolled;
+  addresses[30]=&I386AtaTransfer;
+  addresses[31]=&I386AtaFlushPolled;
+  addresses[32]=&I386SchedBlock;
+  addresses[33]=&I386SchedWake;
+  addresses[34]=&I386SchedYield;
+  for(i=0;i<35;i++) {
+    kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
+    kernel_exports[i].val=(addresses[i]+0)(U64); kernel_exports[i].type=HTT_EXPORT_SYS_SYM;
+    HashAdd(&kernel_exports[i],kernel_symbols);
+    while(*names) names++;
+    names++;
+  }
 }
 U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
@@ -528,15 +519,24 @@ U0 KernelCompilerProbe(I64 phase)
 
 U0 KernelFileLoad()
 {
-  CI386ModuleBinding bindings[9];
+  CI386ModuleBinding bindings[18];
   if(kernel_file_image || kernel_files.version) KernelStop;
   KernelBinding(&bindings[0],"I386HeapAlloc"); KernelBinding(&bindings[1],"I386HeapFree");
   KernelBinding(&bindings[2],"I386HeapSize"); KernelBinding(&bindings[3],"I386IrqSave");
   KernelBinding(&bindings[4],"I386IrqRestore"); KernelBinding(&bindings[5],"I386RedSeaFind");
   KernelBinding(&bindings[6],"I386RedSeaResolve"); KernelBinding(&bindings[7],"I386RedSeaReadAll");
   KernelBinding(&bindings[8],"I386LexIncludeTake");
+  KernelBinding(&bindings[9],"I386RedSeaBegin");
+  KernelBinding(&bindings[10],"I386RedSeaEnd");
+  KernelBinding(&bindings[11],"I386RedSeaValid");
+  KernelBinding(&bindings[12],"I386AtaIdentifyPolled");
+  KernelBinding(&bindings[13],"I386AtaTransfer");
+  KernelBinding(&bindings[14],"I386AtaFlushPolled");
+  KernelBinding(&bindings[15],"I386SchedBlock");
+  KernelBinding(&bindings[16],"I386SchedWake");
+  KernelBinding(&bindings[17],"I386SchedYield");
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
-    bindings,9,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+    bindings,18,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;

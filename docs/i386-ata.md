@@ -149,9 +149,9 @@ device. The access restrictions and PIO state transitions are described in
 The software's interrupt windows occur between complete port operations, with
 the channel still owned. This source review is not physical-device validation.
 
-Existing RedSea and retained file services still call the boot-owned IF-clear
-entry points. They must be bound to the task adapter before interactive compiler
-reads can use these interrupt windows.
+RedSea and retained file services now support complete-operation sessions through
+`I386AtaTaskOwned`. FileRuntime binds the standalone volume before task startup;
+see [i386-redsea-tasks.md](i386-redsea-tasks.md) for session scope and restrictions.
 
 `python3 tools/test-i386.py --tasks` includes three real workers contending behind
 root, FIFO handoff across yields, spurious wake/reblock, IF-clear and IF-set
@@ -167,10 +167,11 @@ Root observes queued ownership and cannot steal the channel. Both IF states are
 preserved, timer IRQs and a keyboard echo are serviced with the channel owned,
 and all task stacks are reclaimed. A 130-sample unsuccessful status wait checks
 three callback visits (samples 0, 64 and 128) without issuing a command. A forged
-capacity causes a real out-of-range device error; the queued other-drive read and
-subsequent requests fail without commands or destination-buffer changes. The host
+capacity causes a real out-of-range device error during a multi-sector owned
+file read; its temporary buffer is reclaimed and size output preserved. The
+queued other-drive read and subsequent requests fail without commands. The host
 checks the exact native command suffix and every byte of both backing images,
-allowing only the two expected sector writes. Results are recorded in
+allowing the two raw sector writes and two serialized file-sector writes. Results are recorded in
 `build/i386-ata-tasks-test/ata-task-check.json`. This covers polling cadence and
 one device-error path, not a stuck-BSY fault injection, reset recovery, write-error
 recovery, physical-media durability or wall-clock latency bounds.
@@ -180,7 +181,7 @@ Validation also passes the two-generation x86-64 compiler/kernel rebuild, native
 `python3 tools/build-i386-kernel.py --test`. Compiler/file runtime loading now
 shares a bounded candidate-validation/publication path, preserving rejection and
 reclamation checks while reducing bootstrap duplication. The standalone native
-kernel is 387,616 bytes; its 2,160-byte stage overhead leaves 3,440 bytes in the
-fixed 393,216-byte reservation. The task adapter is exercised in its integration
-test and is not yet linked into the standalone file path. These are QEMU
+kernel is 387,432 bytes; its 2,160-byte stage overhead leaves 3,624 bytes in the
+fixed 393,216-byte reservation. The retained task adapter now serves the
+standalone volume after boot-time module loading. These are QEMU
 486/8 MiB development results, not strict 386 or physical-machine validation.

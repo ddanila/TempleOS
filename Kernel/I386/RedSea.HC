@@ -43,7 +43,7 @@ Bool I386RedSeaDecode(CI386RedSea *v,U8 *raw,CI386RedSeaEntry *entry)
 Bool I386RedSeaDirectory(CI386RedSea *v,I64 block,U8 *sector,I64 *size)
 {
   CI386RedSeaEntry self;
-  if (!I386RedSeaExtent(v,block,512) || !I386AtaRead(v->disk,block,sector) ||
+  if (!I386RedSeaExtent(v,block,512) || !I386RedSeaSectorRead(v,block,sector) ||
       !I386RedSeaDecode(v,sector,&self) || !(self.attr&0x10) ||
       self.name[0]!='.' || self.name[1] || self.block!=block ||
       self.size<512 || (self.size&511)) return FALSE;
@@ -63,7 +63,7 @@ public Bool I386RedSeaMount(CI386RedSea *volume,CI386Ata *disk,I64 start)
   bitmap=I386RedSeaWord(sector+32);
   if (sectors<3 || sectors>disk->sectors-start || bitmap<1 || bitmap>=sectors-1 ||
       bitmap<(sectors+4095)/4096) return FALSE;
-  v.disk=disk; v.signature=0x52533332; v.start=start; v.sectors=sectors;
+  v.io=0; v.disk=disk; v.signature=0x52533332; v.start=start; v.sectors=sectors;
   v.first=start+bitmap+1; v.root=root;
   if (!I386RedSeaValid(&v) || !I386RedSeaDirectory(&v,root,sector,&size)) return FALSE;
   src=&v; dst=volume;
@@ -80,7 +80,7 @@ public I64 I386RedSeaFind(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSea
   while (length<38 && name[length]) length++;
   if (!length || length==38 || !I386RedSeaDirectory(volume,directory,sector,&size)) return -1;
   for (index=0;index<size/64;index++) {
-    if (!(index&7) && index && !I386AtaRead(volume->disk,directory+index/8,sector)) return -1;
+    if (!(index&7) && index && !I386RedSeaSectorRead(volume,directory+index/8,sector)) return -1;
     raw=sector+(index&7)*64;
     if (!raw[2]) return 0;
     if (!(raw[1]&1)) {
@@ -106,7 +106,7 @@ public I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset
   if (count>entry->size-offset) count=entry->size-offset;
   if (count>0xFFFFFFFF || (buffer+0)(U64)>0x100000000-count) return -1;
   while (copied<count) {
-    if (!I386AtaRead(volume->disk,entry->block+offset/512,sector)) {
+    if (!I386RedSeaSectorRead(volume,entry->block+offset/512,sector)) {
       if (!copied) return -1;
       return copied;
     }
@@ -150,3 +150,5 @@ public I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386Red
   for(i=0;i<sizeof(CI386RedSeaEntry);i++) dst[i]=src[i];
   return 1;
 }
+
+#include "/Kernel/I386/RedSeaIo.HC"

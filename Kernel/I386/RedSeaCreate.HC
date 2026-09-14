@@ -33,7 +33,7 @@ public I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffe
   if (status) return 0;
   if (!I386RedSeaDirectory(volume,directory,sector,&dir_size) || (sector[0]&1)) return -1;
   for (index=0;index<dir_size/64;index++) {
-    if (!(index&7) && index && !I386AtaRead(volume->disk,directory+index/8,sector)) return -1;
+    if (!(index&7) && index && !I386RedSeaSectorRead(volume,directory+index/8,sector)) return -1;
     raw=sector+(index&7)*64;
     if (!raw[2]) {
       if (slot<0) { slot=index; append=TRUE; }
@@ -52,15 +52,15 @@ public I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffe
     if (I386RedSeaWrite(volume,&entry,0,buffer,size)!=size) goto io_fail;
   }
   //Reserve/data must reach the device's flush boundary before a name is published.
-  if (!I386AtaFlush(volume->disk)) goto io_fail;
+  if (!I386RedSeaFlush(volume)) goto io_fail;
   next=slot+1;
   if (append && next<dir_size/64 && !(next&7)) {
-    if (!I386AtaRead(volume->disk,directory+next/8,sector)) goto io_fail;
+    if (!I386RedSeaSectorRead(volume,directory+next/8,sector)) goto io_fail;
     for (i=0;i<64;i++) sector[i]=0;
-    if (!I386AtaWrite(volume->disk,directory+next/8,sector) || !I386AtaFlush(volume->disk))
+    if (!I386RedSeaSectorWrite(volume,directory+next/8,sector) || !I386RedSeaFlush(volume))
       goto io_fail;
   }
-  if (!I386AtaRead(volume->disk,directory+slot/8,sector)) goto io_fail;
+  if (!I386RedSeaSectorRead(volume,directory+slot/8,sector)) goto io_fail;
   if (append && next<dir_size/64 && (next&7))
     for (i=0;i<64;i++) sector[(next&7)*64+i]=0;
   raw=sector+(slot&7)*64;
@@ -71,7 +71,7 @@ public I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffe
   I386RedSeaPutWord(raw+40,entry.block);
   I386RedSeaPutWord(raw+48,size);
   I386RedSeaPutWord(raw+56,datetime);
-  if (!I386AtaWrite(volume->disk,directory+slot/8,sector) || !I386AtaFlush(volume->disk))
+  if (!I386RedSeaSectorWrite(volume,directory+slot/8,sector) || !I386RedSeaFlush(volume))
     goto io_fail;
   return 1;
 io_fail:

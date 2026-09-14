@@ -61,19 +61,19 @@ U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
 {
   CI386RedSeaEntry entry;
   I64 found,bytes=0,attributes;
-  U8 *raw,*result;
-  if(GetRFlags&0x200 || !heap || !path) return 0;
+  U8 *raw,*result=0;
+  if(GetRFlags&0x200 || !heap || !path || !I386RedSeaBegin(volume)) return 0;
   found=I386RedSeaFileLocate(volume,heap,directory,path,&entry,scan_parents);
-  if(found!=1) return 0;
+  if(found!=1) goto file_load_done;
   raw=I386RedSeaReadAll(volume,heap,&entry,&bytes);
-  if(!raw) return 0;
+  if(!raw) goto file_load_done;
   attributes=FileAttr(entry.name,entry.attr);
   if(attributes&RS_ATTR_COMPRESSED) {
     result=I386ExpandBuf(heap,raw,bytes,&bytes);
     I386HeapFree(heap,raw);
-    if(!result) return 0;
   } else result=raw;
-  if(size) *size=bytes;
-  if(attr) *attr=attributes;
+file_load_done:
+  if(!I386RedSeaEnd(volume)) { if(result) I386HeapFree(heap,result); return 0; }
+  if(result) { if(size) *size=bytes; if(attr) *attr=attributes; }
   return result;
 }

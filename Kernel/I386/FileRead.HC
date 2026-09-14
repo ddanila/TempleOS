@@ -17,6 +17,11 @@ U8 *I386RedSeaReadAll(CI386RedSea *volume,CI386Heap *heap,CI386RedSeaEntry *entr
 U8 *I386RedSeaFileRead(CI386RedSea *volume,CI386Heap *heap,I64 directory,U8 *path,I64 *size)
 {
   CI386RedSeaEntry entry;
-  if(GetRFlags&0x200 || !heap || I386RedSeaResolve(volume,directory,path,&entry)!=1) return 0;
-  return I386RedSeaReadAll(volume,heap,&entry,size);
+  U8 *result=0;
+  I64 bytes;
+  if(GetRFlags&0x200 || !heap || !I386RedSeaBegin(volume)) return 0;
+  if(I386RedSeaResolve(volume,directory,path,&entry)==1) result=I386RedSeaReadAll(volume,heap,&entry,&bytes);
+  if(!I386RedSeaEnd(volume)) { if(result) I386HeapFree(heap,result); return 0; }
+  if(result && size) *size=bytes;
+  return result;
 }

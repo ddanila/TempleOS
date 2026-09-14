@@ -14,7 +14,7 @@ public I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buff
   if (status<=0) return status;
   if (old.attr&0x11) return -1;
   for (index=0;index<dir_size/64;index++) {
-    if (!(index&7) && index && !I386AtaRead(volume->disk,directory+index/8,sector)) return -1;
+    if (!(index&7) && index && !I386RedSeaSectorRead(volume,directory+index/8,sector)) return -1;
     raw=sector+(index&7)*64;
     if (!raw[2]) return -1;
     if (!(raw[1]&1)) {
@@ -36,15 +36,15 @@ found:
     if (fresh.block<0) return -1;
     if (I386RedSeaWrite(volume,&fresh,0,buffer,size)!=size) goto io_fail;
   }
-  if (!I386AtaFlush(volume->disk)) goto io_fail;
+  if (!I386RedSeaFlush(volume)) goto io_fail;
   //Publish the new extent in the same slot, retaining the name and attributes.
   I386RedSeaPutWord(raw+40,fresh.block);
   I386RedSeaPutWord(raw+48,size);
   I386RedSeaPutWord(raw+56,datetime);
-  if (!I386AtaWrite(volume->disk,directory+index/8,sector) ||
-      !I386AtaFlush(volume->disk)) goto io_fail;
+  if (!I386RedSeaSectorWrite(volume,directory+index/8,sector) ||
+      !I386RedSeaFlush(volume)) goto io_fail;
   blocks=(old.size+511)/512;
-  if (blocks && (!I386RedSeaFree(volume,old.block,blocks) || !I386AtaFlush(volume->disk)))
+  if (blocks && (!I386RedSeaFree(volume,old.block,blocks) || !I386RedSeaFlush(volume)))
     goto io_fail;
   return 1;
 io_fail:

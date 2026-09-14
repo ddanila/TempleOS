@@ -1,0 +1,39 @@
+#include "/Kernel/I386/RedSeaTask.HH"
+#include "/Kernel/I386/Cpu.HH"
+Bool I386RedSeaTaskBegin(U8 *context) { return I386AtaChannelAcquire(context); }
+Bool I386RedSeaTaskEnd(U8 *context) { return I386AtaChannelRelease(context); }
+Bool I386RedSeaTaskRead(U8 *context,CI386Ata *disk,I64 block,U8 *buffer)
+{
+  return I386AtaTaskOwned(context,disk,block,buffer,100000,1);
+}
+Bool I386RedSeaTaskWrite(U8 *context,CI386Ata *disk,I64 block,U8 *buffer)
+{
+  return I386AtaTaskOwned(context,disk,block,buffer,100000,2);
+}
+Bool I386RedSeaTaskFlush(U8 *context,CI386Ata *disk)
+{
+  return I386AtaTaskOwned(context,disk,0,0,100000,3);
+}
+Bool I386RedSeaTaskIdle(CI386AtaChannel *channel)
+{
+  return !(GetRFlags&0x200) && channel && channel->signature==0x41434831 &&
+    !channel->poisoned && !channel->owner && !channel->head && !channel->tail &&
+    channel->scheduler && channel->scheduler->current==channel->scheduler->root;
+}
+Bool I386RedSeaTaskIoInit(CI386RedSeaIo *io,CI386AtaChannel *channel)
+{
+  if(!io || !I386RedSeaTaskIdle(channel) || io->context || io->begin || io->end ||
+      io->read || io->write || io->flush) return FALSE;
+  io->context=channel; io->begin=&I386RedSeaTaskBegin; io->end=&I386RedSeaTaskEnd;
+  io->read=&I386RedSeaTaskRead; io->write=&I386RedSeaTaskWrite; io->flush=&I386RedSeaTaskFlush;
+  return TRUE;
+}
+Bool I386RedSeaTaskBind(CI386RedSea *volume,CI386RedSeaIo *io)
+{
+  CI386AtaChannel *channel;
+  if(!io || !I386RedSeaValid(volume) || volume->io || !(channel=io->context) ||
+      !I386RedSeaTaskIdle(channel) || volume->disk->io!=channel->io || volume->disk->control!=channel->control ||
+      io->begin!=&I386RedSeaTaskBegin || io->end!=&I386RedSeaTaskEnd ||
+      io->read!=&I386RedSeaTaskRead || io->write!=&I386RedSeaTaskWrite || io->flush!=&I386RedSeaTaskFlush) return FALSE;
+  volume->io=io; return TRUE;
+}

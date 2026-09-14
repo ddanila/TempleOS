@@ -5,6 +5,8 @@
 //Task context only, with working maskable IRQ dispatch and a cooperative scheduler.
 //One canonical channel gate for both drives. No cancellation/exception unwinding.
 //Root uses bounded IF-clear polling and cannot wait for another owner.
+//Internal session path: caller already owns the channel. Operation 0/1/2/3 is identify/read/write/flush.
+public extern Bool I386AtaTaskOwned(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,I64 operation);
 public extern Bool I386AtaTaskIdentify(CI386AtaChannel *channel,CI386Ata *disk,I64 drive,I64 polls=100000);
 public extern Bool I386AtaTaskRead(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000);
 public extern Bool I386AtaTaskWrite(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000);
