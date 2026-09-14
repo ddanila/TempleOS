@@ -1,8 +1,9 @@
 # Native exception record ownership
 
 This describes record ownership and low-level context primitives for HolyC
-try/catch on the 32-bit target. The compiler SysTry entry is available as a bootstrap module; production
-service binding, SysUntry and public throw integration remain incomplete.
+try/catch on the 32-bit target. The compiler SysTry entry is available as a bootstrap module. Standalone
+FS-bound SysUntry and public throw are implemented; full production boot,
+public CTask and debugger integration remain incomplete.
 An explicit task dispatcher now connects record ownership to context transfer. Compiler registration lowering and bounded frame traversal
 are separate existing prerequisites; context primitives are described below.
 
@@ -170,3 +171,41 @@ allocation failure caught by an outer handler, and early returns from both a
 try body and a catch body. Each path checks that exception records and heap
 allocations are reclaimed. Executable instruction auditing includes the linked
 SysTry module as well as generated HolyC and the context primitives.
+
+
+## FS-bound public runtime
+
+`ExceptRuntime.HH/HC` supplies the HolyC services imported by SysTry, public
+SysUntry and `throw(I64 ch=0, Bool no_log=FALSE)`. These use I386TaskSelf through
+FS and allocate records from the current task's `memory` heap. Boot must install
+a valid FS task binding, register stack bounds and provide a live heap before
+using try/throw. Invalid registration context takes the fatal path; failure to
+allocate a record raises OutMem through existing catches with logging suppressed.
+
+`I386ExceptInstall` copies a service table once, rejecting missing callbacks or
+a second installation. The required callbacks are catch invocation, nonlocal
+resume, reporting and fatal recovery. Install before enabling the runtime; keep
+all callback code resident. Table publication preserves interrupt state.
+
+Public throw stores the I64 exception value before reporting, calls the report
+hook unless no_log is true, and dispatches through the current task's records.
+The report hook must return normally without throwing. A returned dispatch status
+is sent to the fatal hook with the task and original exception value. Fatal
+may transfer to debugger/recovery code or terminate; if it returns (or services
+were never installed), the runtime masks IRQs and stops in a loop. This fallback
+prevents continuation after a failed operation; it is not a complete panic UI.
+Fatal must also tolerate a null/invalid-context task argument. SysUntry removes
+the current record and routes removal failure to fatal recovery.
+
+The dedicated `--except-runtime` fixture runs the actual SysTry module and these
+HolyC services under two sequential FS bindings with separate task heaps. It
+checks current-task selection, ordinary/default/no_log throws, full I64 exception
+values, logging calls, nested cross-frame propagation, OutMem recovery, early
+catch return and reclamation. It checks unhandled routing with a test recovery
+hook that recreates a cleanup record before resuming a saved frame. This proves
+hook routing, not a debugger or panic implementation. Both task profiles share
+the runner stack sequentially; catch-time scheduler switching is still pending.
+
+Full public CTask integration, caller traces, concrete log/debugger hooks,
+recursive throw semantics, catch-time yielding and native assembler/boot
+integration remain required. The runtime does not provide those by itself.

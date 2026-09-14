@@ -1437,3 +1437,25 @@ The fixture still supplies environment-specific task/heap and failure services.
 Production service binding, public throw/unhandled/debug recovery, native
 assembler/self-hosting and the complete OS remain unfinished. See
 `i386-exceptions.md`.
+
+
+## FS-bound public exception runtime
+
+ExceptRuntime now supplies the native SysTry services, public SysUntry and throw.
+It resolves the task through FS, uses that task's heap, reports ordinary throws
+through an installed callback, honors no_log, and sends returned dispatch errors
+to a fatal/recovery hook. OutMem during registration propagates to existing
+catches without logging. A returning fatal hook cannot continue the failed
+operation. Service installation is validated and allowed once.
+
+The new `--except-runtime` fixture passes under two sequential FS task bindings
+with separate heaps. Tests cover default and full-width exception values, logging
+and no_log, nested propagation, registration exhaustion, early catch return,
+unhandled recovery-hook routing and complete record reclamation. The context
+regression, instruction audits (including temporary segment setup) and both x64
+rebuild/reboot generations also pass.
+
+These remain bootstrap task records and installed test report/recovery hooks.
+Concrete logging/debugger behavior, caller traces, recursive throw semantics,
+catch-time switching, public CTask/boot integration, self-hosting and the full
+386 OS remain unfinished. See `i386-exceptions.md`.

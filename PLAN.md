@@ -537,6 +537,11 @@ prevents failed registration from entering the try body. Linked tests now use
 this entry for nested/cross-frame catches, OutMem recovery through an outer
 catch and early returns from try/catch bodies. Current-task service binding,
 public throw, unhandled/debug recovery and native assembler integration remain.
+Standalone SysUntry and public throw now use FS current-task binding, the task's
+record heap, and installed report/fatal services. Native tests exercise two FS
+bindings, logging/no_log, nested propagation, OutMem recovery, early return and
+unhandled-hook routing. Production boot/public CTask binding, concrete debugger
+and logging hooks, caller traces and catch-time task switching remain pending.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full
