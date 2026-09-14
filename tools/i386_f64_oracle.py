@@ -182,6 +182,26 @@ def expected_sqrt(value):
     return ((result_exp+1023) << 52) | (root & ((1 << 52)-1))
 
 
+def expected_integral(value, mode):
+    magnitude = value & MASK
+    if magnitude >= INF:
+        return value | (QUIET if magnitude > INF else 0)
+    #Exact rational input and Python integer rounding, independent of bit masking.
+    number = struct.unpack('<d', struct.pack('<Q', value))[0]
+    numerator, denominator = number.as_integer_ratio()
+    if mode == 'floor':
+        integer = numerator // denominator
+    elif mode == 'ceil':
+        integer = -((-numerator) // denominator)
+    elif mode == 'trunc':
+        integer = abs(numerator) // denominator * (-1 if numerator < 0 else 1)
+    else:
+        integer = round(number)
+    if not integer:
+        return value & SIGN
+    return struct.unpack('<Q', struct.pack('<d', float(integer)))[0]
+
+
 def make_unary_oracle(count):
     if count != 1024:
         raise ValueError('Unary compatibility fixture requires 1024 inputs')
@@ -189,7 +209,11 @@ def make_unary_oracle(count):
                0x1E5FFFFFFFFFFFFF, 0x1E60000000000000, 0x1E60000000000001,
                0x3FE0000000000000, 0x3FF8000000000000,
                0x5FEFFFFFFFFFFFFF, 0x5FF0000000000000,
-               INF-1, INF, INF+1, INF+QUIET+0x1234]
+               INF-1, INF, INF+1, INF+QUIET+0x1234,
+               0x3FDFFFFFFFFFFFFF,0x3FE0000000000001,0x3FF7FFFFFFFFFFFF,0x3FF8000000000001,
+               0x4003FFFFFFFFFFFF,0x4004000000000000,0x4004000000000001,0x400C000000000000,
+               0x432FFFFFFFFFFFFF,0x4330000000000000,0x4330000000000001,0x3FF0000000000000,
+               0x3FEFFFFFFFFFFFFF,0x3FF0000000000001,0x4000000000000000,0x4012000000000000]
     seed = 0x386F64A
     records = []
     for i in range(count):
@@ -198,11 +222,12 @@ def make_unary_oracle(count):
             value = (((i//6)*16 << 52)+(i%3)-1) & ((1 << 64)-1)
             if i%6 >= 3:
                 value |= SIGN
-        elif i < 800:
-            value = special[(i-768)%16] | (SIGN if i >= 784 else 0)
+        elif i < 832:
+            value = special[(i-768)%32] | (SIGN if i >= 800 else 0)
         else:
             value = seed
         magnitude = value & MASK
         absolute = magnitude | (QUIET if magnitude > INF else 0)
-        records.append(struct.pack('<4Q', value, absolute, expected(value, value, 'mul'), expected_sqrt(value)))
+        records.append(struct.pack('<8Q', value, absolute, expected(value, value, 'mul'), expected_sqrt(value),
+                                   *(expected_integral(value, mode) for mode in ('round', 'trunc', 'floor', 'ceil'))))
     return b''.join(records)

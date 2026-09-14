@@ -7,6 +7,38 @@ U64 I386F64Abs(U64 value)
   return value;
 }
 
+//Round a binary64 value to an integral binary64 without narrowing to I64.
+//Modes: nearest/even, toward -infinity, toward +infinity, toward zero.
+U64 I386F64Integral(U64 value,I64 mode)
+{
+  U64 magnitude=value&0x7FFFFFFFFFFFFFFF,unit,fraction,result;
+  I64 exp=(magnitude>>52)-1023;
+  Bool negative=(value>>63)!=0,increment=FALSE;
+  if (magnitude>0x7FF0000000000000) return value|0x0008000000000000;
+  if (!magnitude || exp>=52) return value;
+  if (exp<0) {
+    result=value&0x8000000000000000;
+    if (mode==1 && negative || mode==2 && !negative ||
+        mode==0 && magnitude>0x3FE0000000000000)
+      result|=0x3FF0000000000000;
+    return result;
+  }
+  unit=1(U64)<<(52-exp);
+  fraction=value&(unit-1);
+  result=value&~(unit-1);
+  if (fraction) {
+    if (mode==1 && negative || mode==2 && !negative) increment=TRUE;
+    if (mode==0 && (fraction>unit>>1 ||
+        fraction==unit>>1 && (result&unit))) increment=TRUE;
+    if (increment) result+=unit;
+  }
+  return result;
+}
+U64 I386F64Round(U64 value) { return I386F64Integral(value,0); }
+U64 I386F64Floor(U64 value) { return I386F64Integral(value,1); }
+U64 I386F64Ceil(U64 value) { return I386F64Integral(value,2); }
+U64 I386F64Trunc(U64 value) { return I386F64Integral(value,3); }
+
 extern U64 I386F64RoundPack(U64 sign,I64 exp,U64 x);
 
 U64 I386F64Sqrt(U64 value)

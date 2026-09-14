@@ -450,10 +450,16 @@ remainder from one unsigned division, bringing the math corpus to 10,176
 result checks. Decimal digit extraction, shared operands and zero-divisor #DE
 also pass. These unblock arithmetic used by kernel message,
 memory and mouse code; full unit integration remains pending. F64 Abs, Sqr
-and Sqrt now lower through the software runtime, with 5,120 native checks and 3,072
+and Sqrt now lower through the software runtime. The expanded unary corpus has
+13,312 native checks and 7,168
 x64 result comparisons, including NaNs, signed zero and square underflow/overflow.
-Square root uses an exact integer algorithm; two x64 intermediate-precision
-rounding differences are documented while native results match the exact oracle.
+Square root uses an exact integer algorithm; x64 intermediate-precision
+square and square-root rounding differences are documented while native results
+match the exact oracle.
+Public software Round, Trunc, Floor and Ceil now preserve full binary64 range,
+signed zero and quieted NaN payloads, matching x64 and a Python oracle across
+1,024 inputs each. They supply whole-number rounding needed by StrPrintJoin;
+logarithms, powers and production formatting integration remain pending.
 Template-call nesting and malformed-provider rejection also have tests;
 trigonometry and remaining numerical/formatting integration are still pending. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including

@@ -173,8 +173,9 @@ use the existing F64 conversion path. `Sqrt` uses the one-argument
 providers and use the existing declaration/ABI validation and relocations.
 
 `python3 tools/test-i386.py --soft-f64-unary` checks 1,024 patterns against an
-independent host oracle and actual x64 Abs/Sqr/Sqrt output. It executes 5,120 native
-checks (three compiled intrinsics and direct Abs/Sqrt), plus nested templates,
+independent host oracle and actual x64 output for seven operations. It executes
+13,312 native checks (three compiled intrinsics, four public rounding functions
+and six direct helpers), plus nested templates,
 integer-argument/postfix side effects and a surrounding ToI64 call. Six negative
 compilation cases reject missing providers and malformed unary helper declarations.
 CR0.EM execution and generated-instruction audits pass. Trigonometry,
@@ -182,7 +183,7 @@ remaining numerical operations and floating-point state remain unfinished.
 
 
 Square root uses correctly rounded binary64 results. Actual x64 execution differs
-by one ULP at two tested inputs, consistent with rounding first to an x87
+by one ULP at four tested inputs, consistent with rounding first to an x87
 64-bit significand and then to binary64. The host comparison explicitly checks
 these observations while native execution must match the exact integer oracle:
 
@@ -190,8 +191,30 @@ these observations while native execution must match the exact integer oracle:
 | --- | --- | --- |
 | `5FEFFFFFFFFFFFFF` | `4FEFFFFFFFFFFFFF` | `4FF0000000000000` |
 | `7FEFFFFFFFFFFFFF` | `5FEFFFFFFFFFFFFF` | `5FF0000000000000` |
+| `432FFFFFFFFFFFFF` | `418FFFFFFFFFFFFF` | `4190000000000000` |
+| `3FEFFFFFFFFFFFFF` | `3FEFFFFFFFFFFFFF` | `3FF0000000000000` |
+
+Square also differs for two magnitudes (both signs). Rounding the exact square
+first to a 64-bit significand and then to binary64 reproduces these x64 results:
+
+| Input magnitude bits | Native square | Observed x64 square |
+| --- | --- | --- |
+| `3FF7FFFFFFFFFFFF` | `4001FFFFFFFFFFFF` | `4001FFFFFFFFFFFE` |
+| `4004000000000001` | `4019000000000003` | `4019000000000002` |
 
 All other unary outputs in the corpus match x64. Full x87 precision/exception-state
-compatibility remains unresolved. The main `--float` fixture now uses the existing
-128 KiB boot-transfer path because its linked code exceeded 64 KiB; its RAM stays
+compatibility remains unresolved. The `--float` and `--soft-f64-unary` fixtures use the existing
+128 KiB boot-transfer path because their code and data exceed 64 KiB; RAM stays
 8 MiB. This is runner capacity, not a change to the OS memory target.
+
+
+`Kernel/I386/FloatMath.HH/HC` provides the ordinary public F64 functions `Round`,
+`Trunc`, `Floor`, and `Ceil`, calling the bit-pattern helpers from SoftF64.
+`Round` uses nearest/even; the other functions round toward zero, negative
+infinity and positive infinity respectively. No conversion through I64 occurs,
+so large finite values and infinities remain representable. The 1,024-input
+corpus covers signed zeros, subnormals, NaNs, half-integers and their neighbors,
+and the 2^52 integral boundary. All four operations match actual x64 output and
+an independent Python oracle. Side-effecting arguments and nested public calls
+also pass. Formatting still needs logarithms/powers, exception handling and
+other production dependencies before StrPrintJoin can be integrated.

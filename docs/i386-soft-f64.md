@@ -117,8 +117,8 @@ operands, retaining the multiplication rounding and NaN policy.
 
 The `--soft-f64-unary` corpus includes signed exponent-boundary neighborhoods,
 subnormal and square underflow/overflow edges, infinities, NaNs and deterministic
-random bit patterns. The Abs/Sqr outputs match x64; square-root precision differences are recorded
-in the compiler integration document. All 5,120 native helper/intrinsic checks
+random bit patterns. Abs and integral rounding match x64; square and square-root precision differences are recorded
+in the compiler integration document. All 13,312 native helper/intrinsic/public-function checks
 pass without a coprocessor. This corpus does
 not prove universal x87 intermediate-precision or exception-state equivalence.
 
@@ -139,3 +139,12 @@ and compares the squared midpoint exactly before packing a 53-bit significand.
 It includes minimum subnormal, maximum finite and exponent-boundary cases. Native
 execution matches this oracle, including the two observed x64 double-rounding
 differences listed in `i386-f64-backend.md`.
+
+
+`I386F64Round`, `I386F64Trunc`, `I386F64Floor` and `I386F64Ceil` return integral
+binary64 bit patterns. They mask fractional significand bits and increment the
+magnitude when the selected direction requires it; nearest rounding resolves
+halfway values to even. Results that round to zero preserve the input sign.
+NaNs are quieted with sign/payload preserved; infinity and already-integral values
+are unchanged. These operations do not read or modify an FPU control word or
+report exception flags. Public F64 wrappers live in `FloatMath.HC`.

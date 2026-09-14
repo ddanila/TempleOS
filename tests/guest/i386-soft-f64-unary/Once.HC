@@ -8,15 +8,19 @@ Bool RejectUnary(U8 *body)
   if (module) { Free(module); return FALSE; }
   return TRUE;
 }
-U64 unary_special[16]={0,1,2,0x000FFFFFFFFFFFFF,0x0010000000000000,
+U64 unary_special[32]={0,1,2,0x000FFFFFFFFFFFFF,0x0010000000000000,
   0x1E5FFFFFFFFFFFFF,0x1E60000000000000,0x1E60000000000001,
   0x3FE0000000000000,0x3FF8000000000000,0x5FEFFFFFFFFFFFFF,0x5FF0000000000000,
-  0x7FEFFFFFFFFFFFFF,0x7FF0000000000000,0x7FF0000000000001,0x7FF8000000001234};
+  0x7FEFFFFFFFFFFFFF,0x7FF0000000000000,0x7FF0000000000001,0x7FF8000000001234,
+  0x3FDFFFFFFFFFFFFF,0x3FE0000000000001,0x3FF7FFFFFFFFFFFF,0x3FF8000000000001,
+  0x4003FFFFFFFFFFFF,0x4004000000000000,0x4004000000000001,0x400C000000000000,
+  0x432FFFFFFFFFFFFF,0x4330000000000000,0x4330000000000001,0x3FF0000000000000,
+  0x3FEFFFFFFFFFFFFF,0x3FF0000000000001,0x4000000000000000,0x4012000000000000};
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i;
-  U64 *oracle=MAlloc(32768),bits,seed=0x386F64A;
+  U64 *oracle=MAlloc(65536),bits,seed=0x386F64A;
   F64 value;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
@@ -26,16 +30,20 @@ U0 CompileTests()
     if (i<768) {
       bits=(((i/6)(U64)*16)<<52)+(i%3)-1;
       if (i%6>=3) bits|=0x8000000000000000;
-    } else if (i<800) {
-      bits=unary_special[(i-768)%16];
-      if (i>=784) bits|=0x8000000000000000;
+    } else if (i<832) {
+      bits=unary_special[(i-768)%32];
+      if (i>=800) bits|=0x8000000000000000;
     } else bits=seed;
-    oracle[i*4]=bits;
-    value=Abs(bits(F64)); oracle[i*4+1]=value(U64);
-    value=Sqr(bits(F64)); oracle[i*4+2]=value(U64);
-    value=Sqrt(bits(F64)); oracle[i*4+3]=value(U64);
+    oracle[i*8]=bits;
+    value=Abs(bits(F64)); oracle[i*8+1]=value(U64);
+    value=Sqr(bits(F64)); oracle[i*8+2]=value(U64);
+    value=Sqrt(bits(F64)); oracle[i*8+3]=value(U64);
+    value=Round(bits(F64)); oracle[i*8+4]=value(U64);
+    value=Trunc(bits(F64)); oracle[i*8+5]=value(U64);
+    value=Floor(bits(F64)); oracle[i*8+6]=value(U64);
+    value=Ceil(bits(F64)); oracle[i*8+7]=value(U64);
   }
-  line=MStrPrint("EXPORT x64-unary.bin %X %X\n",oracle,32768); Report(line);
+  line=MStrPrint("EXPORT x64-unary.bin %X %X\n",oracle,65536); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -48,7 +56,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"f64_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,32768); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,65536); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)
