@@ -55,3 +55,42 @@ All cases pass with the executable instruction audit. Both x86-64 rebuild/reboot
 generations and the complete standalone 314504-byte kernel boot checks pass on
 the 8 MiB QEMU/486 development profile. Strict 386 validation and native lexer/
 compiler execution remain required; see `port-progress.md`.
+
+## Lexical file ownership
+
+`Compiler/LexFiles.HH/HC` shares file attachment and release policy. Attachment
+sets the root depth to -1 and nested depths relative to the current top. It does
+not initialize source buffers, names or line numbers, nor change cur_buf_ptr.
+The existing x86-64 LexFilePush/Pop use these helpers with CAlloc, Free and DocDel.
+
+Release unlinks the top before disposing of it. Every nested input owns its
+payload; CCF_DONT_FREE_BUF retains only the last/root payload. Raw inputs release
+their buffer, whereas document inputs release their nonnull document through the
+document service and do not separately free buf. Filenames and file records are
+always released. Empty stacks have no release effects. The caller still manages
+the current buffer pointer when moving between inputs, as in the existing lexer.
+
+`I386LexFilePush` allocates a zeroed public CLexFile prefix with private heap/control
+ownership metadata. Its 64-byte allocation consumes an 80-byte heap span. Failure
+leaves the include stack unchanged. `I386LexFilePop` returns success/failure rather
+than the new top; it rejects a wrong heap/control, an empty stack, outstanding
+save points, or a missing service for an owned nonnull document before unlinking.
+A retained root document needs no release service. The callback receives the
+caller's document context, independently of the heap-release context.
+
+The caller exclusively owns live file/control records. Names and owned raw buffers
+must belong to the supplied heap. Document services must return normally, preserve
+their caller's interrupt state and not reenter or destroy the active control.
+Heap operations mask interrupts and restore their prior state; document callbacks
+run in the caller's state. Release failures from invalid nested ownership do not
+roll back a partially disposed file. These are ownership checks, not validation of
+arbitrary corrupt graphs. Drain snapshots and detach other references before pop.
+
+The expanded `--lex-state` fixture passes root/nested depth, all raw/document and
+root-retention combinations, null documents, callback contexts/counts and unchanged
+current-buffer semantics on both targets. Native tests cover the 80-byte minimum,
+allocation failure, wrong ownership, missing services, snapshot/pop interaction,
+retained payloads, both interrupt states and complete heap reclamation. Existing
+snapshot tests, instruction audits, both x86-64 rebuild generations and full
+standalone kernel boot checks also pass. Native document destruction itself,
+source-file loading, full control destruction and tokenization remain unfinished.

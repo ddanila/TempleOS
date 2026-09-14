@@ -9,14 +9,20 @@ CI386Heap state_heap;
 I64 state_free_errors;
 extern I64 LexStateTest();
 extern I64 NativeStateTest();
+extern I64 LexFilesTest();
+extern I64 NativeFilesTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
   if(!I386HeapInit(&state_heap,0x40000,65536)) return 8;
+  result=LexFilesTest;
+  if(result) return result;
   result=LexStateTest;
   if(result) return result;
   if(state_free_errors || state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap)) return 9;
-  return NativeStateTest;
+  result=NativeStateTest;
+  if(result) return result;
+  return NativeFilesTest;
 }
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
@@ -71,3 +77,8 @@ I64 NativeStateTest()
       state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap)) return 19;
   I386IrqRestore(flags); return 0;
 }
+
+#include "/Compiler/I386/LexFiles.HC"
+#assert sizeof(CI386LexFile)==64
+#include "T:/Files.HC"
+#include "T:/NativeFiles.HC"

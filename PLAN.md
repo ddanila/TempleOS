@@ -351,6 +351,10 @@ programming environment through these concrete steps:
    Lexer save/restore now shares CLexFile snapshot semantics, with native heap,
    control and active-file ownership checks. Native failures leave the save state
    unchanged before publication; input loading and tokenization remain open.
+   Lexical file attachment/release now shares root-buffer retention and document
+   cleanup rules. Native file records check heap/control ownership, reject pops
+   with live save points and require a document release service when needed.
+   Native source loading and full control destruction remain to be connected.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 

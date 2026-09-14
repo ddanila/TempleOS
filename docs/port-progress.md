@@ -2039,3 +2039,23 @@ audits, both x86-64 rebuild generations and the complete 314504-byte kernel's
 This supplies parser backtracking state. Native file/include loading, tokenization,
 control destruction and the complete compiler/JIT environment remain required;
 strict 386 validation and self-hosting are still open. See `i386-lex-state.md`.
+
+## Shared lexical file ownership
+
+File attachment and release now share the original depth, root-retention and
+raw/document ownership rules. The x86-64 wrappers retain CAlloc/Free/DocDel.
+Native records add heap/control metadata; native pop refuses outstanding save
+points or a missing required document service before changing the stack. File
+names and owned raw buffers use the supplied heap; document callbacks receive
+separate caller context. Buffer-position changes remain the lexer's responsibility.
+
+The expanded lexer suite passes raw/document and root-retention combinations,
+nested depths, null documents, callback routing and full native reclamation.
+Native minimum/exhausted allocation, wrong heap/control, pending snapshots,
+missing callbacks, retained payloads and interrupt-state checks pass. Existing
+snapshot cases, instruction audits, both x86-64 rebuild generations and the
+314504-byte kernel's complete 8 MiB QEMU/486 boot checks also pass.
+
+Native source loading, document destruction, full control teardown, tokenization
+and the compiler/JIT environment remain required; self-hosting and strict 386
+validation are still open. See `i386-lex-state.md`.

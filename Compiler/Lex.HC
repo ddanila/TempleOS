@@ -1,30 +1,23 @@
 #include "/Compiler/ControlInit.HC"
 
-CLexFile *LexFilePush(CCmpCtrl *cc)
-{//#include file push.
-  CLexFile *res=CAlloc(sizeof(CLexFile));
-  if (res->next=cc->lex_include_stk)
-    res->depth=res->next->depth+1;
-  else
-    res->depth=-1; //Include depth starts with -1.
-  return cc->lex_include_stk=res;
+#include "/Compiler/LexFiles.HC"
+U0 LexFileSystemFree(U8 *context,U8 *allocation)
+{
+  Free(allocation);
 }
-
+U0 LexFileSystemDocDel(U8 *context,CDoc *document)
+{
+  DocDel(document);
+}
+CLexFile *LexFilePush(CCmpCtrl *cc)
+{
+  return LexFileAttach(cc,CAlloc(sizeof(CLexFile)));
+}
 CLexFile *LexFilePop(CCmpCtrl *cc)
-{//#include file pop.
-  CLexFile *tmpf;
-  if (tmpf=cc->lex_include_stk) {
-    if ((cc->lex_include_stk=tmpf->next) || !(cc->flags & CCF_DONT_FREE_BUF)) {
-      if (tmpf->flags & LFSF_DOC) {
-	if (tmpf->doc)
-	  DocDel(tmpf->doc);
-      } else
-	Free(tmpf->buf);;
-    }
-    Free(tmpf->full_name);
-    Free(tmpf);
-  }
-  return cc->lex_include_stk;
+{
+  CLexFileRelease owner;
+  owner.context=0; owner.allocation=&LexFileSystemFree; owner.document=&LexFileSystemDocDel;
+  return LexFileReleaseTop(cc,&owner);
 }
 
 CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL)

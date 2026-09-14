@@ -4,6 +4,8 @@ U0 StateFree(U8 *allocation) { Free(allocation); }
 Bool StatePush(CCmpCtrl *cc) { LexPush(cc); return TRUE; }
 Bool StatePop(CCmpCtrl *cc,Bool restore) { if(restore) LexPopRestore(cc); else LexPopNoRestore(cc); return TRUE; }
 #include "T:/State.HC"
+#include "/Compiler/LexFiles.HH"
+#include "T:/Files.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -13,6 +15,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex state\n");
+  if(LexFilesTest) { Report("FAIL x64 lexical files\n"); return; }
   if(LexStateTest) { Report("FAIL x64 lexer snapshots\n"); return; }
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
