@@ -5,6 +5,7 @@
 #include "/Kernel/I386/String.HH"
 #include "/Compiler/MemberLookup.HH"
 #include "/Compiler/I386/SymbolAlloc.HH"
+#include "/Compiler/I386/SymbolDelete.HH"
 #include "/Kernel/I386/HashTable.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Ports.HH"
@@ -35,6 +36,7 @@
 U64 value_oracle[28];
 extern I64 MemberLookupTest();
 extern I64 SymbolAllocTest();
+extern I64 NativeSymbolDeleteTest();
 extern I64 SymbolValueCase(I64 index);
 I64 Main(I64 unused,I64 unused2)
 {
@@ -83,7 +85,9 @@ I64 Main(I64 unused,I64 unused2)
       variable.fun_ptr!=&function || variable.var_class!=member.member_class) return 5;
   result=MemberLookupTest;
   if(result) return result;
-  return SymbolAllocTest;
+  result=SymbolAllocTest;
+  if(result) return result;
+  return NativeSymbolDeleteTest;
 }
 #include "T:/Values.HC"
 #include "/Kernel/HashValue.HC"
@@ -98,3 +102,39 @@ I64 Main(I64 unused,I64 unused2)
 
 #include "T:/Seeds.HC"
 #include "T:/Allocate.HC"
+
+#include "/Compiler/I386/SymbolDelete.HC"
+CI386Heap delete_heap;
+I64 delete_free_errors;
+U8 *DeleteAllocRaw(I64 size) { return I386HeapAlloc(&delete_heap,size,TRUE); }
+U0 DeleteFreeRaw(U8 *allocation)
+{
+  if(!I386HeapFree(&delete_heap,allocation)) delete_free_errors++;
+}
+#include "T:/Delete.HC"
+I64 NativeSymbolDeleteTest()
+{
+  U32 flags=I386IrqSave;
+  CHashFun *fun;
+  CMemberLst *member;
+  I64 result;
+  if(!I386HeapInit(&delete_heap,0x40000,65536)) return 64;
+  delete_free_errors=0;
+  result=SymbolDeleteTest;
+  if(result) return result;
+  if(delete_free_errors || delete_heap.used || delete_heap.allocations || !I386HeapValid(&delete_heap)) return 65;
+  fun=I386PrsFunNew(&delete_heap);
+  if(!fun) return 66;
+  member=I386HeapAlloc(&delete_heap,sizeof(CMemberLst),TRUE);
+  if(!member) return 67;
+  member->str=I386HeapAlloc(&delete_heap,8,TRUE);
+  if(!member->str) return 68;
+  fun->member_lst_and_root=member; fun->arg_cnt=1;
+  SetRFlags(GetRFlags|0x200);
+  if(!I386ClassMemberLstDel(&delete_heap,fun) || !(GetRFlags&0x200) ||
+      fun->arg_cnt || fun->member_lst_and_root || delete_heap.allocations!=1) return 69;
+  if(!I386HashDel(&delete_heap,fun) || !I386HashDel(&delete_heap,0) || !(GetRFlags&0x200)) return 70;
+  I386IrqSave;
+  if(delete_heap.used || delete_heap.allocations || !I386HeapValid(&delete_heap)) return 71;
+  I386IrqRestore(flags); return 0;
+}

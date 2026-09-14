@@ -330,19 +330,15 @@ programming environment through these concrete steps:
    interface, including symbol storage, formatting, software F64, generators and
    target execution. Bring up a native compile/run path, then repeat editing,
    compilation, execution and error recovery without host assistance.
-   The base hash declarations are now shared, and native public hash primitives
-   supply the resident loader's export index. Compiler symbol declarations and
-   value access are now shared and tested for native layouts; rich-symbol
-   construction/destruction, task ownership and compiler initialization remain required. Explicit-heap
-   table creation, resizing, detachment and empty-table deletion now pass lifecycle
-   and allocation-failure tests; compiler-aware symbol destruction remains open.
-   Existing member-name/class-base and metadata lookup now compile from shared
-   frontend source on both targets, with native `StrCmp` also used by resident
-   hash lookup. Member construction and compiler-control initialization remain.
-   Class/function initialization is now shared too, with target-sized pointer
-   variants and native explicit-heap allocation tested through member/hash use
-   and reclamation. Public task/code-heap selection, allocation-failure exception
-   behavior, nested symbol destruction and compiler-control initialization remain.
+   Shared symbol declarations, value access, member lookup and class/function
+   initialization now pass host/native checks. Native hash primitives supply the
+   resident loader's export index; explicit-heap table creation, resizing,
+   detachment and deletion pass lifecycle and allocation-failure tests.
+   Target-sized class/function pointer variants and legacy symbol/member cleanup
+   also pass nested ownership and reclamation tests. Cleanup requires detached,
+   privately owned symbol graphs and retains borrowed code/data references.
+   Public task/code-heap selection, allocation-failure exception behavior, member
+   construction, module-code lifetime and compiler-control initialization remain.
 
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,

@@ -8,6 +8,10 @@
 #include "T:/Members.HC"
 #include "/Compiler/SymbolInit.HH"
 #include "T:/Seeds.HC"
+#include "/Kernel/SymbolDelete.HH"
+U8 *DeleteAllocRaw(I64 size) { return CAlloc(size); }
+U0 DeleteFreeRaw(U8 *allocation) { Free(allocation); }
+#include "T:/Delete.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -20,6 +24,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native symbols\n");
+  if(SymbolDeleteTest) { Report("FAIL x64 symbol destruction\n"); return; }
   if(MemberLookupTest) { Report("FAIL x64 member lookup\n"); return; }
   seed_class=CAlloc(sizeof(CHashClass)*5); seed_fun=CAlloc(sizeof(CHashFun)*5);
   PrsClassInit(seed_class); PrsFunInit(seed_fun);

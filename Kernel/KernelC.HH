@@ -420,6 +420,7 @@ public extern I64 FramePtrDel(U8 *name,CTask *task=NULL);
 public extern I64 FramePtrSet(U8 *name,I64 val,CTask *task=NULL);
 
 #help_index "Hash/System"
+#include "/Kernel/SymbolDelete.HH"
 public extern U0 HashDel(CHashSrcSym *tmph);
 public extern CHashGeneric *HashGenericAdd(U8 *name,
 	I64 type,I64 val=0,I64 u8=0,I64 u16=0,CTask *task=NULL);

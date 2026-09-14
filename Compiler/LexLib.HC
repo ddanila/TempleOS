@@ -124,42 +124,22 @@ Bool  MemberLstCmp(CMemberLst *tmpm1,CMemberLst *tmpm2,I64 cnt=I64_MAX)
     return FALSE;
 }
 
-U0 MemberLstDel(CMemberLst *tmpm)
+#include "/Kernel/SymbolDelete.HH"
+U0 SymbolCompilerFree(U8 *context,U8 *allocation)
 {
-  CMemberLst *tmpm1;
-  CMemberLstMeta *tmp_meta,*tmp_meta1;
-  while (tmpm) {
-    tmpm1=tmpm->next;
-    Free(tmpm->str);
-    LinkedLstDel(tmpm->dim.next);
-    if (tmpm->flags & MLF_STR_DFT_AVAILABLE)
-      Free(tmpm->dft_val);
-    if (tmpm->flags & MLF_FUN)
-      HashDel(tmpm->fun_ptr-tmpm->fun_ptr->ptr_stars_cnt);
-    tmp_meta=tmpm->meta;
-    while (tmp_meta) {
-      tmp_meta1=tmp_meta->next;
-      Free(tmp_meta->str);
-      if (tmp_meta->flags&MLMF_IS_STR)
-	Free(tmp_meta->user_data);
-      Free(tmp_meta);
-      tmp_meta=tmp_meta1;
-    }
-    Free(tmpm);
-    tmpm=tmpm1;
-  }
+  Free(allocation);
 }
-
-U0 ClassMemberLstDel(CHashClass *tmpc)
+U0 MemberLstDel(CMemberLst *members)
 {
-  MemberLstDel(tmpc->member_lst_and_root);
-  tmpc->size=0;
-  tmpc->last_in_member_lst=&tmpc->member_lst_and_root;
-  tmpc->member_lst_and_root=NULL;
-  tmpc->member_class_base_root=NULL;
-  tmpc->member_cnt=0;
-  if (tmpc->type&HTT_FUN)
-    tmpc(CHashFun *)->arg_cnt=0;
+  CSymbolRelease owner;
+  owner.context=0; owner.release=&SymbolCompilerFree;
+  SymbolMemberLstDel(&owner,members);
+}
+U0 ClassMemberLstDel(CHashClass *symbol)
+{
+  CSymbolRelease owner;
+  owner.context=0; owner.release=&SymbolCompilerFree;
+  SymbolClassMemberLstDel(&owner,symbol);
 }
 
 I64 MemberLstSize(CHashClass *tmpc)

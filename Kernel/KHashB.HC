@@ -9,35 +9,16 @@ CHashTable *HashTableNew(I64 size,CTask *mem_task=NULL)
   return table;
 }
 
-U0 HashDel(CHashSrcSym *tmph)
-{//Free a std TempleOS system hash entry.
-  if (!tmph) return;
-  if (!(tmph->type&HTT_DICT_WORD))
-    Free(tmph->str);
-  if (tmph->type & HTG_SRC_SYM) {
-    Free(tmph->src_link);
-    Free(tmph->idx);
-    Free(tmph->import_name);
-    LinkedLstDel(tmph->ie_lst);
-    if (tmph->type & (HTT_FUN | HTT_EXPORT_SYS_SYM))
-      Free(tmph->dbg_info);
-    if (tmph->type & (HTT_FUN | HTT_CLASS))
-//Assumes code not on heap, so doesn't Free.
-    //$LK,"ClassMemberLstDel",A="MN:ClassMemberLstDel"$() is an import to the Kernel module
-      ClassMemberLstDel(tmph);
-    else if (tmph->type&HTT_DEFINE_STR)
-      Free(tmph(CHashDefineStr *)->data);
-    else if (tmph->type & HTT_GLBL_VAR) {
-      if (!(tmph(CHashGlblVar *)->flags&GVF_ALIAS))
-	Free(tmph(CHashGlblVar *)->data_addr);
-      LinkedLstDel(tmph(CHashGlblVar *)->dim.next);
-      if (tmph(CHashGlblVar *)->fun_ptr)
-	HashDel(tmph(CHashGlblVar *)->fun_ptr
-	      -tmph(CHashGlblVar *)->fun_ptr->ptr_stars_cnt);
-    }
-  } else if (tmph->type & HTT_FILE)
-    Free(tmph(CHashGeneric *)->user_data0);
-  Free(tmph);
+#include "/Kernel/SymbolDelete.HC"
+U0 SymbolSystemFree(U8 *context,U8 *allocation)
+{
+  Free(allocation);
+}
+U0 HashDel(CHashSrcSym *symbol)
+{
+  CSymbolRelease owner;
+  owner.context=0; owner.release=&SymbolSystemFree;
+  SymbolHashDel(&owner,symbol);
 }
 
 U0 HashTableDel(CHashTable *table)

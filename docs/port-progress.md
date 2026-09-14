@@ -1933,3 +1933,26 @@ source execution remain required. See `i386-symbols.md`.
 The standalone 292360-byte kernel also passes its complete 8 MiB QEMU/486
 source/module, keyboard/VGA, timer and invalid-module boot checks. This remains
 a development profile, with strict 386 and native self-hosting gates open.
+
+## Shared symbol and member destruction
+
+The kernel/compiler symbol cleanup now shares the legacy ownership rules through
+an explicit release callback. Existing x86-64 public entry points retain ordinary
+Free behavior; native adapters use a supplied heap and mask interrupts around
+each release. Compiler calls to the shared kernel functions are declared as
+imports through KernelC.HH. Both x86-64 rebuild/reboot generations pass.
+
+The host/native symbol fixture passes nested signatures through pointer variants,
+member-list reset, dimensions, source data, string defaults and metadata, aliases,
+defines, exports, file payloads and dictionary names. Tracked releases verify that
+owned allocations are freed once and borrowed allocations survive; the native
+heap is fully reclaimed. Existing layout/legacy-value/member/string/constructor
+checks and instruction audits also pass. The 292360-byte standalone kernel still
+passes its complete 8 MiB QEMU/486 source/module, keyboard/VGA, timer and invalid
+module checks.
+
+Deletion requires a detached live acyclic ownership graph and does not validate
+arbitrary pointers or roll back failed releases. Public task-selected allocation,
+module-code lifetime, compiler-control initialization, native source execution,
+the full environment, self-hosting and strict 386 verification remain unfinished.
+See `i386-symbols.md`.

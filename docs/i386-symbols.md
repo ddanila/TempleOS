@@ -131,3 +131,50 @@ hash insertion/removal, high-bit function values, and complete arena reclamation
 Existing legacy value, layout, member and string checks and the instruction audit
 pass. Both x86-64 rebuild generations also pass. This supplies another compiler
 dependency; it does not initialize or run a resident native compiler.
+
+## Symbol ownership and destruction
+
+`Kernel/SymbolDelete.HH/HC` shares the original `HashDel`, `MemberLstDel` and
+`ClassMemberLstDel` ownership branches through an explicit release callback.
+The x86-64 public functions adapt ordinary `Free`; the native adapters in
+`Compiler/I386/SymbolDelete.HH/HC` release allocations from a supplied heap.
+The walker follows the list links, not the member search trees. Function-pointer
+variants are normalized to their five-record root before recursively deleting
+owned signatures. Member-only cleanup resets the class list cursor, roots, size
+and counts, including function argument count, while retaining the symbol itself.
+
+Owned names, source links, indices, import names, import/export lists, dimensions,
+string defaults and string metadata follow the existing cleanup policy. Function
+and export debug data are owned; dictionary names, aliased global data, executable
+code, class references, return types and member static data are retained. This is
+legacy ownership behavior, not a new general-purpose garbage collector or a
+module-image destructor. In particular, shared type references must not be
+mistaken for the privately owned function signatures marked by `MLF_FUN`.
+
+The caller must detach external references and supply a live acyclic ownership
+graph without duplicate owned allocations. Native owned allocations must all
+belong to the supplied heap. The native result reports rejected frees; it does
+not validate arbitrary graphs or roll back a partially completed deletion.
+Nested signatures use recursive calls, so stack demand depends on nesting depth.
+Native deletion masks interrupts around each heap release and restores the
+caller's state between releases. The caller retains exclusive ownership of the
+graph throughout the walk; callbacks must not yield or publish its records.
+
+The shared functions are declared through `KernelC.HH`, so compiler builds mark
+calls across this boundary as kernel imports. Declaring them only inside
+`LexLib.HC` was insufficient: the first rebuilt compiler faulted during loading.
+With the import declarations in place, two x86-64 rebuild/reboot generations and
+the standalone 8 MiB QEMU/486 kernel boot checks pass.
+
+The same tracked-allocation fixture now passes on x86-64 and i386. It exercises
+nested function signatures through pointer variants, multiple members, dimension
+and import/export lists, string defaults, string/numeric metadata, class-list
+reset, ordinary/aliased globals, defines, exports, file payloads and dictionary
+names. It detects missing, duplicate and unexpected releases while retaining a
+borrowed allocation through all cases. Native adapters also pass real heap
+reclamation and interrupt-state checks. Existing symbol layout, legacy value,
+member/string and constructor tests and the executable instruction audit pass.
+
+Public task-selected allocation, compiler control state, native compiler startup,
+source execution and self-hosting remain required. These cleanup routines do not
+make a borrowed module image safe to unload while code or data references survive.
