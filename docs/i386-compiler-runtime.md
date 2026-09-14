@@ -17,10 +17,10 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 9 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 10 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
-identifier-token completion, owned string tokens and mixed-token dispatch.
-The structure is 40 bytes on i386. The entry receives caller-owned interface
+identifier-token completion, owned string tokens, mixed-token dispatch and dispatch with an explicit include provider.
+The structure is 44 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -36,9 +36,9 @@ its own numerical implementation and immutable-use power table inside its image.
 
 KernelCompilerLoad runs with IF clear and exclusive disk/heap ownership. After
 loading, the kernel verifies one retained allocation, extended-memory placement,
-interface version and byte count, and that all eight service pointers fall inside the
+interface version and byte count, and that all nine service pointers fall inside the
 loaded image. It publishes the global interface only after these checks succeed.
-The host boot verifier independently checks all eight pointer values against the
+The host boot verifier independently checks all nine pointer values against the
 module's actual function export offsets, not just the image's address range.
 
 The image, its code/data and the kernel providers must remain live for every
@@ -88,29 +88,36 @@ startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With conditional preprocessing in interface version 9, the bootstrap image is
-372288 bytes of its 393216-byte reservation. The 135952-byte runtime image
-is allocated at 0x135B80 in the 8 MiB development profile and retains a
-135968-byte heap span. All eight service addresses match their exported offsets.
-Boot/task probes expand a macro, publish its identifier, replace that text with a
-binary string and free it. They also define a new macro from source, expand it to
-F64, consume the delimiter/EOF, detach the definition and reclaim its owned
-record/name/body/source link. DEFINE PROBE records are required in both phases,
-alongside the existing IDENT PROBE, STRING PROBE and LEX PROBE records.
-Version 9 also selects nested symbol-conditional branches through the real keyword
-and primitive namespace, with CONDITIONAL PROBE records required in both phases.
+Version 10 appends next_token_with_includes, which calls the shared native lexer
+with the supplied synchronous provider. The original next_token remains available
+without a provider. No callback or context is stored in the retained runtime.
+The provider's code and context must remain live for the complete call, including
+recursive include and conditional reads. The kernel validates the new address
+before publication, and the host matches it to I386RuntimeLexIncludes's export.
+The wrong-version boot now supplies version 9 and verifies rejection/reclamation.
 
-Source checks cover 25613 characters, 550 newlines, FNV32 0x6B3D88F3 and
-26072 reclaimed heap bytes. Sizes and addresses are observations from result.json,
-not fixed addresses or memory minima required by the interface. After native
-keyword initialization, the bootstrap has 20928 bytes of headroom. The 73 keyword
-records retain 6208 heap bytes and sit behind primitive types in symbol lookup.
-Definition probes now use that actual namespace, without a synthetic keyword.
-The temporary probe image is 48232 bytes, and its 48248-byte heap span is
-released after its second call; the compiler runtime and keyword registry remain
-resident. See [keyword initialization](i386-keywords.md),
+ProbeIncludes calls the relocated service with a callback in the temporary probe
+module. It reads nested children producing 11, 22 and 33, skips an inactive missing
+include, returns to the parent delimiter and reaches EOF. A subsequent missing
+include returns an error and resumes at parent value 44. The old providerless
+entry rejects an include without invoking the previous callback. The probe checks
+interrupt-state preservation, owned input/token reclamation and runtime liveness.
+INCLUDE PROBE records are required before startup and after task/IRQ activity;
+all temporary callback use ends before the probe image is freed.
+
+Current 8 MiB development evidence: bootstrap 384208 bytes of the 393216-byte
+reservation, leaving 9008 bytes. The retained runtime has 138664 image bytes and
+138680 heap bytes. The temporary diagnostic image has 59760 bytes and reclaims
+its entire 59776-byte heap span after the task call. Source consumption verifies
+25871 characters and 551 newlines with 26448 reclaimed heap bytes. These are
+measurements recorded in result.json, not fixed addresses or memory minima.
+The 73 keyword records retain 6208 bytes behind primitive types in symbol lookup.
+
+Disk-backed include loading remains a separate provider awaiting resident module
+packaging and binding. These probes use copied source and perform no disk I/O
+from the task phase. See [include dispatch](i386-lex-includes.md),
 [compiler diagnostics](i386-compiler-probe.md) and
-[native definition handling](i386-lex-define.md) for ownership and remaining work.
+[file input](i386-file-context.md) for the remaining integration boundaries.
 
 ## Import-declaration correction
 

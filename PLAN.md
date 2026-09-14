@@ -465,8 +465,9 @@ binding; see `docs/i386-file-context.md`.
 Native include dispatch now accepts an explicit synchronous provider and preserves
 that binding across recursive token reads and conditional scans. Eight original
 x64 include scenarios match native execution; disk-adapter ownership/I/O checks
-also pass. The retained compiler table still uses the providerless entry, so
-publishing and binding the resident include service remains an integration gate.
+also pass. Version 10 of the retained compiler table now publishes the include
+entry; boot/task callbacks verify relocated execution and reclamation. Packaging
+and binding the disk provider remains an integration gate.
 See `docs/i386-lex-includes.md`.
 
 #### Continuing integration sequence

@@ -24,6 +24,7 @@ extern U0 ProbeTokens(CI386CompilerProbe *probe);
 extern U0 ProbeIdent(CI386CompilerProbe *probe);
 extern U0 ProbeDefine(CI386CompilerProbe *probe);
 extern U0 ProbeConditional(CI386CompilerProbe *probe);
+extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
 #assert sizeof(CI386CompilerProbe)==44
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
@@ -90,6 +91,7 @@ U0 ProbeTokens(CI386CompilerProbe *probe)
   ProbeIdent(probe);
   ProbeDefine(probe);
   ProbeConditional(probe);
+  ProbeIncludes(probe);
 }
 U0 ProbeIdent(CI386CompilerProbe *probe)
 {
@@ -192,4 +194,54 @@ U0 ProbeConditional(CI386CompilerProbe *probe)
   I386IrqRestore(flags);
   if(probe->heap->used!=used || probe->heap->allocations!=allocations || !I386HeapValid(probe->heap)) KernelStop;
   KernelLog("CONDITIONAL PROBE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(cc.cur_f64(U64)); KernelLog("\n");
+}
+
+class CProbeIncludeContext { I64 calls; };
+Bool ProbeIncludePush(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *name)
+{
+  CProbeIncludeContext *state=context;
+  U8 *source=0;
+  state->calls++;
+  if(!StrCmp(name,"Outer")) source="11 #include \"Inner\" 33";
+  else if(!StrCmp(name,"Inner")) source="#ifdef Missing #include \"Missing\" #else 22 #endif";
+  if(!source) return FALSE;
+  return I386LexIncludeCopy(heap,cc,name,source,FALSE);
+}
+U0 ProbeIncludes(CI386CompilerProbe *probe)
+{
+  CCmpCtrl cc; CLexFile file;
+  CI386LexIncludeService service; CProbeIncludeContext state;
+  U8 *bytes; U32 flags,initial_if=GetRFlags&0x200;
+  I64 i,lines=0,used=probe->heap->used,allocations=probe->heap->allocations;
+  bytes=&cc; for(i=0;i<sizeof(CCmpCtrl);i++) bytes[i]=0;
+  bytes=&file; for(i=0;i<sizeof(CLexFile);i++) bytes[i]=0;
+  CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,probe->symbols,char_bmp_alpha_numeric);
+  LexFileSeed(&file,"#include \"Outer\";"); cc.lex_include_stk=&file; cc.cur_buf_ptr=file.buf;
+  state.calls=0; service.context=&state; service.push=&ProbeIncludePush;
+  for(i=1;i<=3;i++)
+    if(probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=TK_I64 ||
+        cc.cur_i64!=11*i || (GetRFlags&0x200)!=initial_if) KernelStop;
+  if(probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=59 ||
+      probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=TK_EOF ||
+      state.calls!=2 || cc.lex_include_stk!=&file) KernelStop;
+  cc.flags=CCF_DONT_FREE_BUF;
+  LexFileSeed(&file,"#include \"Missing\" 44;"); cc.cur_buf_ptr=file.buf;
+  if(probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=-1 ||
+      state.calls!=3 || cc.lex_include_stk!=&file || !cc.cur_str || StrCmp(cc.cur_str,"Missing") ||
+      probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=TK_I64 || cc.cur_i64!=44 ||
+      probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=59 ||
+      probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=TK_EOF) KernelStop;
+  cc.flags=CCF_DONT_FREE_BUF;
+  LexFileSeed(&file,"#include \"Outer\""); cc.cur_buf_ptr=file.buf;
+  if(probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=-4 ||
+      state.calls!=3 || !cc.cur_str || StrCmp(cc.cur_str,"include")) KernelStop;
+  flags=I386IrqSave;
+  if(!I386HeapFree(probe->heap,cc.cur_str)) KernelStop;
+  cc.cur_str=0;
+  I386IrqRestore(flags);
+  if(probe->heap->used!=used || probe->heap->allocations!=allocations ||
+      !I386HeapValid(probe->heap) || (GetRFlags&0x200)!=initial_if ||
+      I386HeapSize(probe->heap,probe->runtime_image)!=probe->runtime_size) KernelStop;
+  KernelLog("INCLUDE PROBE "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(state.calls); KernelLog(" "); KernelHex(cc.cur_i64); KernelLog("\n");
 }

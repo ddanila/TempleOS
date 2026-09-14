@@ -16,8 +16,9 @@ shared control/file seed routines; it does not contain a second compiler runtime
 
 Main receives a version-1, 44-byte CI386CompilerProbe record plus its size. Every
 pointer is borrowed only during that synchronous call. The module rejects an
-incompatible record before running tests. It registers no callbacks or tasks and
-retains no caller pointers. Its phase-zero call executes before Startup. Its image
+incompatible record before running tests. It registers no persistent callbacks or tasks and
+retains no caller pointers. Include callbacks are borrowed only for synchronous
+calls into the retained compiler service. Its phase-zero call executes before Startup. Its image
 then remains live until the phase-one call from the pulse task after timer/IRQ
 activity; that call performs no disk I/O.
 
@@ -56,13 +57,28 @@ validation remain required.
 
 With native keyword initialization, ProbeDefine inherits the real 73-entry registry
 through resident symbols instead of constructing a synthetic define keyword. The
-current probe image is 43328 bytes with a 43344-byte temporary heap span. Both
+probe image at that stage was 43328 bytes with a 43344-byte temporary heap span. Both
 phases, reclamation and rejection checks pass with this namespace; see
 `docs/i386-keywords.md` for the separate resident registry lifetime.
 
 Conditional preprocessing adds ProbeConditional, which exercises a skipped outer
 branch and a selected nested symbol condition through the actual namespace. Both
-phases require CONDITIONAL PROBE records and token-text reclamation. The current
-diagnostics image is 48232 bytes with a 48248-byte temporary span; its context ABI
+phases require CONDITIONAL PROBE records and token-text reclamation. At that stage the
+diagnostics image was 48232 bytes with a 48248-byte temporary span; its context ABI
 remains version 1. See `docs/i386-lex-conditional.md` for the runtime version-9
 conditional services and the still-unimplemented expression path.
+
+With compiler service version 10, ProbeIncludes passes a local callback/context
+through the retained include-capable entry. Nested children, skipped branches,
+missing-provider errors, parent recovery, interrupt state and reclamation are
+checked in both phases. The old entry also rejects includes without reusing that
+callback. The host requires INCLUDE PROBE records before startup and after ticks;
+all callback use ends before probe-module reclamation. The probe's own version-1
+record stays unchanged.
+
+The current probe image is 59760 bytes with a 59776-byte temporary heap span, all
+reclaimed. The compiler runtime retains 138680 heap bytes for its 138664-byte image.
+The bootstrap is 384208 bytes with 9008 bytes of headroom. Both x64 generations,
+all native boot/value/reclamation/pixel checks, executable instruction audits and
+runtime/probe rejection boots pass. Disk-provider packaging/binding and the full
+native compiler remain open.

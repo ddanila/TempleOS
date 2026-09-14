@@ -67,19 +67,19 @@ def compiler_runtime_layout(module):
                 imports.append((symbol, name))
     if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space'}:
         raise ValueError('Unexpected compiler-runtime import contract')
-    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext'):
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes'):
         if name not in exports or exports[name][0] != 1:
             raise ValueError(f'Missing compiler-runtime function {name}')
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 9:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 10:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
                 punct_offset=8+exports['I386RuntimePunct'][1], ident_offset=8+exports['I386LexIdentScan'][1],
                 ident_token_offset=8+exports['I386LexIdentToken'][1], string_token_offset=8+exports['I386LexStringToken'][1],
-                next_offset=8+exports['I386RuntimeLexNext'][1], version_offset=version_offset,
+                next_offset=8+exports['I386RuntimeLexNext'][1], include_offset=8+exports['I386RuntimeLexIncludes'][1], version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
@@ -99,7 +99,7 @@ def compiler_probe_layout(module):
                 'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric'}
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
-    for name in ('Main', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional'):
+    for name in ('Main', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing compiler-probe function {name}')
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
@@ -132,7 +132,7 @@ def verify_probe_rejection(disk, volume, out, layout):
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
                 f'PROBE REJECT {reason} reclaimed\n' not in evidence or
                 any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ',
-                    'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'PROBE MODULE ',
+                    'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'INCLUDE PROBE ', 'PROBE MODULE ',
                     'STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
             raise ValueError(f'Compiler probe did not reject/reclaim {label} before use')
         if candidate.read_bytes() != changed:
@@ -149,7 +149,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 8), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 9), 'api')):
         work = out/f'reject-runtime-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -162,7 +162,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
                 f'RUNTIME REJECT {reason} reclaimed\n' not in evidence or
-                any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ', 'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'STARTUP disk module',
+                any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ', 'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'INCLUDE PROBE ', 'STARTUP disk module',
                     'MODULE ', 'READY native kernel', 'DONE native kernel'))):
             raise ValueError(f'Compiler runtime did not reject/reclaim {label} before publication')
         if candidate.read_bytes() != changed:
@@ -476,9 +476,9 @@ def main():
             raise ValueError('Unexpected 8 MiB memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
-        if len(runtime) != 1 or len(runtime[0]) != 12:
+        if len(runtime) != 1 or len(runtime[0]) != 13:
             raise ValueError('Missing retained compiler-runtime image')
-        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address = (int(x, 16) for x in runtime[0][1:])
+        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address = (int(x, 16) for x in runtime[0][1:])
         if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
                 address < begin or address+size > begin+length or
                 string_address != address+runtime_layout['string_offset'] or
@@ -488,7 +488,8 @@ def main():
                 ident_address != address+runtime_layout['ident_offset'] or
                 ident_token_address != address+runtime_layout['ident_token_offset'] or
                 string_token_address != address+runtime_layout['string_token_offset'] or
-                next_address != address+runtime_layout['next_offset']):
+                next_address != address+runtime_layout['next_offset'] or
+                include_address != address+runtime_layout['include_offset']):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         probes = [line.split() for line in log.splitlines() if line.startswith('RUNTIME PROBE ')]
         if ([list(map(lambda x: int(x, 16), row[2:])) for row in probes] !=
@@ -526,6 +527,12 @@ def main():
                 log.index('CONDITIONAL PROBE ') > log.index('STARTUP disk module') or
                 log.rindex('CONDITIONAL PROBE ') < log.rindex('TICK ')):
             raise ValueError('Native nested conditional probes failed')
+        include_probes = [line.split() for line in log.splitlines() if line.startswith('INCLUDE PROBE ')]
+        if ([list(map(lambda x: int(x, 16), row[2:])) for row in include_probes] !=
+                [[0, 3, 44], [1, 3, 44]] or
+                log.index('INCLUDE PROBE ') > log.index('STARTUP disk module') or
+                log.rindex('INCLUDE PROBE ') < log.rindex('TICK ')):
+            raise ValueError('Retained include callbacks failed before/after task activity')
         probe_modules = [line.split() for line in log.splitlines() if line.startswith('PROBE MODULE ')]
         releases = [line.split() for line in log.splitlines() if line.startswith('PROBE RELEASE ')]
         if len(probe_modules)!=1 or len(probe_modules[0])!=5 or len(releases)!=1 or len(releases[0])!=4:
@@ -540,9 +547,9 @@ def main():
         result['compiler_probe'] = dict(module='CompilerProbe', version=1, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=9, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=10, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
-            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
+            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')

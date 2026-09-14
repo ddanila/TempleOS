@@ -73,10 +73,12 @@ python3 tools/build-i386-kernel.py --test
 ```
 
 Both x64 rebuild/reboot generations, native suites, instruction audits and full
-standalone boot checks pass. The standalone bootstrap remains 383496 bytes.
-The retained compiler image is now 138168 bytes (138184 heap bytes), an increase
-of 2216 bytes. Its version-9, eight-entry service table still calls the providerless
-entry; publishing an include-capable resident service and binding file services
-remain required work. Task-aware disk ownership, public errors and resident-file
-semantics, full compiler-context lifetime, parser/JIT, DolDoc, strict 386 profiles
-and self-hosting are still open.
+standalone boot checks pass. The retained version-10 interface now exposes a ninth
+service, next_token_with_includes. Boot/task probes call that relocated service
+with a temporary callback and verify nested input, failure recovery, IF state and
+reclamation; see `i386-compiler-runtime.md`.
+
+The bootstrap is 384208 bytes. The retained compiler image is 138664 bytes
+(138680 heap bytes). Disk-provider packaging and binding, task-aware disk
+ownership, public errors and resident-file semantics, full compiler-context
+lifetime, parser/JIT, DolDoc, strict 386 profiles and self-hosting remain open.

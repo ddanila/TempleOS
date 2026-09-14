@@ -2843,3 +2843,31 @@ task-aware I/O, public file semantics, complete compiler lifetime, parser/JIT,
 DolDoc, strict 386 validation and self-hosting, remain required. The dispatcher
 and disk adapter have separate integration tests; the combined resident command
 path is still open. See `docs/i386-lex-includes.md`.
+
+## Retained include-capable compiler interface
+
+Compiler service version 10 appends next_token_with_includes, making the native
+include dispatcher available through the resident module's table. The i386 record
+is 44 bytes with nine function pointers. Kernel publication validates all nine
+addresses against the owned image; the host independently matches the include
+entry to its export. The existing providerless entry remains available. An older
+version-9 interface, wrong target and missing import are rejected with reclamation.
+
+A callback in the temporary CompilerProbe module now supplies nested owned sources
+through that relocated entry during boot and after task/IRQ activity. The probe
+checks 11/22/33, inactive include skipping, parent delimiter/EOF, a failed load and
+recovery at 44, providerless rejection, interrupt state and complete reclamation.
+The runtime retains no callback/context, and every callback call finishes before
+the probe module is reclaimed. Both phases are required by the host verifier.
+
+Both x64 rebuild/reboot generations and full native boot/rejection/VGA/keyboard/
+timer checks pass, including executable instruction audits. The bootstrap is
+384208 bytes, leaving 9008 in its fixed reservation. CompilerRuntime has 138664
+image bytes and a retained span of 138680; CompilerProbe has 59760 image bytes
+and reclaims 59776 heap bytes. These boot artifacts were built with local changes
+before commit; their manifests contain the build revision and source hashes.
+
+Disk-provider packaging/binding, scheduler-aware ATA ownership, public task/file
+and resident-record semantics, full compiler-context lifetime, parser/JIT, DolDoc,
+strict 386SX/DX validation and self-hosting remain open. See
+`docs/i386-compiler-runtime.md` and `docs/i386-lex-includes.md`.

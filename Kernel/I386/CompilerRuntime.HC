@@ -29,8 +29,9 @@ U32 runtime_first[TK_TKS_NUM],runtime_second[TK_TKS_NUM],runtime_third[TK_TKS_NU
 CLexPunctTables runtime_punct;
 extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
 extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines);
+extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==40
+#assert sizeof(CI386CompilerServices)==44
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -46,6 +47,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->ident_token=&I386LexIdentToken;
   services->string_token=&I386LexStringToken;
   services->next_token=&I386RuntimeLexNext;
+  services->next_token_with_includes=&I386RuntimeLexIncludes;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -66,4 +68,10 @@ I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines)
 I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines)
 {
   return I386LexNext(heap,cc,&runtime_punct,macro_filename,compiled_lines);
+}
+
+I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
+  I64 *compiled_lines,CI386LexIncludeService *includes)
+{
+  return I386LexNextWithIncludes(heap,cc,&runtime_punct,macro_filename,compiled_lines,includes);
 }

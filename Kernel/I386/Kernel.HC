@@ -428,10 +428,10 @@ U0 KernelCompilerLoad()
   CI386CompilerServices candidate;
   I64 (*entry)(CI386CompilerServices *services,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
-  U64 base,string_address,number_address,char_address,punct_address,ident_address,ident_token_address,string_token_address,next_address;
+  U64 base,string_address,number_address,char_address,punct_address,ident_address,ident_token_address,string_token_address,next_address,include_address;
   U8 *image=0,*reason="load";
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0; candidate.punct_token=0; candidate.ident_scan=0; candidate.ident_token=0; candidate.string_token=0; candidate.next_token=0;
+  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0; candidate.punct_token=0; candidate.ident_scan=0; candidate.ident_token=0; candidate.string_token=0; candidate.next_token=0; candidate.next_token_with_includes=0;
   if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerRuntime.t32m",&file)!=1)
@@ -464,6 +464,7 @@ U0 KernelCompilerLoad()
       ident_token_address=(candidate.ident_token+0)(U64);
       string_token_address=(candidate.string_token+0)(U64);
       next_address=(candidate.next_token+0)(U64);
+      include_address=(candidate.next_token_with_includes+0)(U64);
       if(candidate.version!=I386_COMPILER_SERVICES_VERSION || candidate.bytes!=sizeof(CI386CompilerServices) ||
           string_address<base+8 || string_address>=base+size ||
           number_address<base+8 || number_address>=base+size ||
@@ -472,7 +473,8 @@ U0 KernelCompilerLoad()
           ident_address<base+8 || ident_address>=base+size ||
           ident_token_address<base+8 || ident_token_address>=base+size ||
           string_token_address<base+8 || string_token_address>=base+size ||
-          next_address<base+8 || next_address>=base+size) accepted=0;
+          next_address<base+8 || next_address>=base+size ||
+          include_address<base+8 || include_address>=base+size) accepted=0;
     }
   }
   if(accepted!=1) {
@@ -485,10 +487,11 @@ U0 KernelCompilerLoad()
   kernel_compiler.char_token=candidate.char_token; kernel_compiler.punct_token=candidate.punct_token;
   kernel_compiler.ident_scan=candidate.ident_scan; kernel_compiler.ident_token=candidate.ident_token;
   kernel_compiler.string_token=candidate.string_token; kernel_compiler.next_token=candidate.next_token;
+  kernel_compiler.next_token_with_includes=candidate.next_token_with_includes;
   kernel_compiler_image=image; kernel_compiler_size=size; kernel_compiler_span=kernel_heap.used-used;
   KernelLog("RUNTIME "); KernelHex((image+0)(U64)); KernelLog(" ");
   KernelHex(size); KernelLog(" "); KernelHex(kernel_compiler_span); KernelLog(" ");
-  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog(" "); KernelHex(char_address); KernelLog(" "); KernelHex(punct_address); KernelLog(" "); KernelHex(ident_address); KernelLog(" "); KernelHex(ident_token_address); KernelLog(" "); KernelHex(string_token_address); KernelLog(" "); KernelHex(next_address); KernelLog("\n");
+  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog(" "); KernelHex(char_address); KernelLog(" "); KernelHex(punct_address); KernelLog(" "); KernelHex(ident_address); KernelLog(" "); KernelHex(ident_token_address); KernelLog(" "); KernelHex(string_token_address); KernelLog(" "); KernelHex(next_address); KernelLog(" "); KernelHex(include_address); KernelLog("\n");
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.
