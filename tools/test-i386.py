@@ -49,6 +49,7 @@ def main():
                         help='Test normal function compilation using test-rebuild.py output')
     modes.add_argument('--data', action='store_true', help='Test global/static storage and data imports')
     modes.add_argument('--vga', action='store_true', help='Test native planar VGA presentation and displayed pixels')
+    modes.add_argument('--except-tasks', action='store_true', help='Test public exceptions across native task switches')
     modes.add_argument('--except-runtime', action='store_true', help='Test FS-bound native SysTry, SysUntry and public throw')
     modes.add_argument('--except-context', action='store_true', help='Test native exception capture, catch invocation and resume primitives')
     modes.add_argument('--except-records', action='store_true', help='Test native task-owned exception record lifetime')
@@ -79,13 +80,16 @@ def main():
     modes.add_argument('--float', action='store_true', help='Test compiled native HolyC F64 expressions and calls')
     args = parser.parse_args()
     except_runner = args.except_context or args.except_runtime
-    task_runner = args.tasks or args.input or args.messages
+    task_runner = args.tasks or args.input or args.messages or args.except_tasks
     large_runner = args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
+    #The general task corpus has outgrown 128 KiB; its first arena is 0x40000.
+    #A 160 KiB transfer from 0x10000 ends at 0x38000, below that arena.
+    boot_sectors = 320 if args.tasks else 256 if large_runner else 128
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
+    for mode in ('functions', 'data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
+    data_mode = kind in ('data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
     if args.soft_f64_unary:
         run(sys.executable, 'tools/gen-i386-pow10.py', '--check')
     functions = kind != 'expressions'
@@ -106,7 +110,7 @@ def main():
     overlay = OUT / 'overlay/Compiler/I386'
     overlay.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT/'Compiler/I386/Expr.HC', overlay/'Expr.HC')
-    if except_runner:
+    if except_runner or args.except_tasks:
         run('nasm', '-f', 'bin', 'Kernel/I386/SysTry.asm',
             '-o', str(OUT/'overlay/SysTry.T32'))
     iso = OUT/'compiler.iso'
@@ -297,15 +301,15 @@ def main():
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
-    run('nasm', *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), *(['-DBOOT_SECTORS=256'] if large_runner else []), *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DEXCEPT_TASK_TEST=1'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if args.irq or task_runner or except_runner:
         raw = disk.read_bytes()
-        trailer_size = 28 if except_runner else 60 if task_runner else 28
+        trailer_size = 68 if args.except_tasks else 28 if except_runner else 60 if task_runner else 28
         if raw[-trailer_size:-trailer_size+4] != (b'I32E' if except_runner else b'I32T' if task_runner else b'I32Q'):
             raise ValueError('Missing IRQ assembly boundaries')
-        ranges = struct.unpack('<6I' if except_runner else '<14I' if task_runner else '<6I', raw[-trailer_size+4:])
+        ranges = struct.unpack('<16I' if args.except_tasks else '<6I' if except_runner else '<14I' if task_runner else '<6I', raw[-trailer_size+4:])
         irq_allowed = {'push','pop','pusha','popa','pushf','popf','mov','add','xor',
                        'shr','cmp','test','jmp','jz','jnz','jc','jnc','ja','call','ret',
                        'and','lea','cld','std','cli','sti','hlt','int','int3','div','iret','lidt','lgdt','sgdt','sub','loop','lodsd'}
@@ -323,7 +327,7 @@ def main():
                     raise ValueError(f'Unexpected IRQ instruction: {line}')
             assembly.append(listing)
         (OUT/'irq-assembly.txt').write_text('\n'.join(assembly))
-    if disk.stat().st_size > (257 if large_runner else 129)*512:
+    if disk.stat().st_size > (boot_sectors+1)*512:
         raise ValueError('Runner exceeds boot-loader transfer size')
     with disk.open('ab') as stream:
         stream.truncate(16*1024*1024)
@@ -639,7 +643,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 5 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_log or args.soft_f64_unary or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Software Ln/Log10/Log2 with high-precision oracle and CR0.EM set' if args.soft_f64_log else 'Software F64 Abs/Sqr/Sqrt and integral rounding with x64 oracle and CR0.EM set' if args.soft_f64_unary else 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'FS-bound public native exception runtime' if args.except_runtime else 'native exception capture and context transfer primitives' if args.except_context else 'native exception record ownership (no context transfer)' if args.except_records else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 5 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_log or args.soft_f64_unary or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Software Ln/Log10/Log2 with high-precision oracle and CR0.EM set' if args.soft_f64_log else 'Software F64 Abs/Sqr/Sqrt and integral rounding with x64 oracle and CR0.EM set' if args.soft_f64_unary else 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'Public exceptions across native task switches' if args.except_tasks else 'FS-bound public native exception runtime' if args.except_runtime else 'native exception capture and context transfer primitives' if args.except_context else 'native exception record ownership (no context transfer)' if args.except_records else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

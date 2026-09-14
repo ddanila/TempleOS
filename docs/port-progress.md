@@ -1459,3 +1459,28 @@ These remain bootstrap task records and installed test report/recovery hooks.
 Concrete logging/debugger behavior, caller traces, recursive throw semantics,
 catch-time switching, public CTask/boot integration, self-hosting and the full
 386 OS remain unfinished. See `i386-exceptions.md`.
+
+
+## Exceptions across task switches and caller diagnostics
+
+Public throw now stores a diagnostic throw-frame pointer and eight bounded
+return addresses before reporting, including when no_log suppresses the report.
+Task lifecycle operations clear the fields. These are snapshots, not contexts
+that may safely be dereferenced or restored after recovery.
+
+The new `--except-tasks` integration suite runs two actual heap-owned workers
+with separate stacks and private heaps across two lifecycle cycles. Four rounds
+per worker cover acceptance, rejection/propagation and 48 yields inside catches.
+FS task state, I64 locals, exception values and flags, record identity/counts and
+caller snapshots survive switches; completion and destruction reclaim all memory.
+Report hooks compare stored addresses against Caller at the corresponding depth.
+
+The new task-exception and sequential-FS runtime suites, general task regression,
+instruction audits and both x64 rebuild/reboot generations pass. The general
+task fixture exceeded its 128 KiB transfer cap after the layout/lifecycle changes.
+It now loads 160 KiB from 0x10000 through 0x37FFF, below its first heap at 0x40000.
+Other fixture transfer sizes and the 8 MiB guest RAM setting are unchanged. This
+is harness capacity, not evidence that the full OS meets its RAM targets.
+
+Recursive throw semantics, full public task/debugger integration, production
+boot, native self-hosting and strict 386 validation remain unfinished.

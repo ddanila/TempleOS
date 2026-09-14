@@ -204,8 +204,36 @@ values, logging calls, nested cross-frame propagation, OutMem recovery, early
 catch return and reclamation. It checks unhandled routing with a test recovery
 hook that recreates a cleanup record before resuming a saved frame. This proves
 hook routing, not a debugger or panic implementation. Both task profiles share
-the runner stack sequentially; catch-time scheduler switching is still pending.
+the runner stack sequentially; the separate task fixture below covers actual
+catch-time scheduler switching.
 
-Full public CTask integration, caller traces, concrete log/debugger hooks,
-recursive throw semantics, catch-time yielding and native assembler/boot
-integration remain required. The runtime does not provide those by itself.
+Full public CTask integration, concrete log/debugger hooks, recursive throw
+semantics and native assembler/boot integration remain required. The runtime does not provide those by itself.
+
+
+## Caller diagnostics and task switches
+
+Public throw records its frame address in `except_rbp` and up to eight saved
+return addresses in `except_callers` before invoking the report hook. The first
+address is the call site of throw; this matches Caller(1) when called inside
+throw. Every frame read uses the task's registered stack bounds, and traversal
+past an invalid/end frame fills the remaining entries with zero. no_log suppresses
+reporting but does not suppress capture. Task initialization, attachment and
+reaping clear the diagnostic fields.
+
+These are diagnostic snapshots. The throw frame may no longer be live after
+recovery, and its address must not be used as an unwinding context. Actual
+restoration continues to use the selected owned exception record.
+
+`--except-tasks` runs two heap-owned workers with separate 8 KiB stacks and
+4 KiB private heaps across two creation/destruction cycles. Each worker performs
+four rounds of accepted and nested rejected/accepted throws, yielding three
+times per round from catch code (48 catch-time yields in total). Tests check
+FS binding, local I64 values, exception codes, acceptance flags, live record
+identity/counts, caller snapshots, normal completion and full reclamation.
+Report-time caller addresses are compared with Caller from the reporting frame.
+The sequential-FS public runtime fixture also checks reported caller addresses.
+
+This establishes cooperative catch-time switching for the tested bootstrap
+scheduler. Recursive throw behavior, full CTask migration, concrete debugger
+and logging UI, production boot integration and native self-hosting remain open.

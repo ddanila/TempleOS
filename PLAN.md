@@ -542,6 +542,11 @@ record heap, and installed report/fatal services. Native tests exercise two FS
 bindings, logging/no_log, nested propagation, OutMem recovery, early return and
 unhandled-hook routing. Production boot/public CTask binding, concrete debugger
 and logging hooks, caller traces and catch-time task switching remain pending.
+Public throw now records a bounded eight-address caller trace and its diagnostic
+frame pointer before reporting. Two heap-owned native workers pass 48 catch-time
+yields across creation/destruction cycles, preserving exception state, caller
+snapshots and locals with full reclamation. Full CTask migration, recursive throw
+semantics, debugger/logging UI and production boot integration remain pending.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

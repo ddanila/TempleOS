@@ -5,6 +5,7 @@
 extern class CI386Scheduler;
 extern class CI386MsgQueue;
 extern class CI386Except;
+#define I386_EXCEPT_CALLERS 8
 class CI386Task
 {
   CI386Task *addr;
@@ -22,6 +23,7 @@ class CI386Task
   CI386Except *except_top;
   I64 except_ch;
   U32 catch_except;
+  U8 *except_rbp,*except_callers[I386_EXCEPT_CALLERS];
 };
 class CI386Scheduler
 {

@@ -44,11 +44,17 @@ U0 SysUntry()
 U0 throw(I64 ch=0,Bool no_log=FALSE)
 {
   CI386Task *task=I386TaskSelf;
-  I64 status;
+  I64 status,i;
+  CI386Frame *frame=GetRBP;
   if(!i386_except_ready || !task || !task->owner ||
       task->owner->current!=task || task->finished)
     I386ExceptAbort(task,I386_EXCEPT_INVALID,ch);
   task->except_ch=ch; task->catch_except=FALSE;
+  task->except_rbp=frame;
+  for(i=0;i<I386_EXCEPT_CALLERS;i++) {
+    task->except_callers[i]=I386FrameReturn(frame,task->stack_base,task->stack_size);
+    frame=I386FrameParent(frame,task->stack_base,task->stack_size);
+  }
   if(!no_log) (*i386_except_services.report)(task,ch);
   status=I386ExceptDispatch(task,ch,i386_except_services.invoke,
     i386_except_services.resume);

@@ -2,8 +2,8 @@
 %ifndef BOOT_SECTORS
 %define BOOT_SECTORS 128
 %endif
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 256
-%error Test stage must fit below physical 0x30000
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 320
+%error Test stage must fit below physical 0x38000
 %endif
 bits 16
 org 0x7c00

@@ -2,6 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/ExceptRuntime.HH"
+#include "/Kernel/I386/Debug.HH"
 class CExceptControl {
   U0 (*save)(CI386ExceptCapture *out,U8 *catch_start,U8 *untry_start);
   U0 (*invoke)(CI386ExceptCapture *capture);
@@ -121,6 +122,9 @@ I64 ReturnCatch()
 }
 U0 Report(CI386Task *task,I64 ch)
 {
+  I64 i;
+  for(i=0;i<I386_EXCEPT_CALLERS;i++)
+    if(task->except_callers[i]!=Caller(i+2)) failures++;
   if(task!=I386TaskSelf || task!=&tasks[current_id] || task->except_ch!=ch)
     failures++;
   reports[current_id]++;
@@ -144,3 +148,5 @@ U0 Fatal(CI386Task *task,I64 status,I64 ch)
 #include "/Kernel/I386/Except.HC"
 #include "/Kernel/I386/ExceptRuntime.HC"
 #include "/Kernel/I386/Segments.HC"
+
+#include "/Kernel/I386/Debug.HC"
