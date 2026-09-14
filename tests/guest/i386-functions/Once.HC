@@ -258,6 +258,16 @@ U0 CompileTests()
     "extern I64 Value();", "I64 Value() { return 42; }");
   EmitCase("return Sum(a,b,3);",10,20,33,&cursor,
     "extern I64 Sum(I64 a,I64 b,I64 c);", "I64 Sum(I64 a,I64 b,I64 c) { return a+b+c; }");
+  EmitCase("return 0<a<=b<100;",42,43,1,&cursor);
+  EmitCase("return 0<a<=b<100;",0,43,0,&cursor);
+  EmitCase("return (0<a<b)<(b<a<100)<=1;",42,43,0,&cursor);
+  EmitCase("return (0<a<b)<(b<a<100)<=1;",43,42,1,&cursor);
+  EmitCase("return (a<b<a+10)+(b<a<b+10);",42,43,1,&cursor);
+  EmitCase("return a==b!=0;",42,42,1,&cursor);
+  EmitCase("return a==b!=0;",0,0,0,&cursor);
+  EmitCase("return a>=b>0;",42,42,1,&cursor);
+  EmitCase("return a<Add(a,b)<a+b+1;",42,1,1,&cursor,
+    "extern I64 Add(I64 a,I64 b);", "I64 Add(I64 a,I64 b) { return a+b; }");
   EmitCase("return a&&b;",0x100000000,42,1,&cursor);
   EmitCase("return a||b;",0,0x100000000,1,&cursor);
   EmitCase("return a&&b;",42,0,0,&cursor);

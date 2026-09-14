@@ -1182,3 +1182,33 @@ verification (764 files, 62 directories). Chained comparisons, remaining numeric
 operations/formatting, floating-point state, full kernel integration and native
 self-hosting remain unfinished. QEMU 486 runner success does not prove strict
 386 compatibility or a complete native OS.
+
+
+## Native chained comparisons
+
+The backend now retains each middle operand in a dedicated eight-byte frame
+slot before emitting its comparison. `IC_PUSH_CMP` reloads that value for the
+next pair, without re-evaluating its source or exposing hidden stack entries to
+short-circuit branches. Comparison results are integer booleans independently
+of their retained operand-precision metadata. Nested chains use separate slots;
+normal call-frame isolation protects retained values across calls and recursion.
+
+The native fixture passes 512 triples across signed four-operand chains,
+unsigned chains, F64 and both mixed-type middle-operand arrangements. It checks
+pairwise numerical equivalence and eager/short-circuit evaluation counts. Nine
+additional integer cases cover nested chains, constants, equality/inequality,
+descending relations, arithmetic use and a function-produced middle operand;
+all 164 integer/call cases pass. Existing 62 F64 checks, 144 condition pairs,
+12 loop cases, eight rejection cases and the software comparison corpus pass.
+
+Actual x64 checks agree for the covered integer/unsigned cases, evaluation counts,
+F64 value chains and mixed chains with F64 middle operands. The test records and
+checks 29 NaN-leading F64 branch differences and 130 mixed-integer-middle
+result differences in its 512-triple corpus. Native chains must match separate
+numeric comparisons throughout; full compatibility with these x64 quirks remains
+unresolved. See `docs/i386-f64-backend.md` for the precise boundary and example.
+
+Generated-instruction audits, CR0.EM execution, both x64 rebuild generations and
+image verification (764 files, 62 directories) pass. Remaining numerical/math/
+formatting support, full production compiler and kernel integration, native
+self-hosting, memory targets and strict 386 validation remain unfinished.

@@ -6,6 +6,7 @@
 F64 cell;
 I64 picks,mixed_cell;
 extern I64 CheckConditions();
+extern I64 CheckChains(Bool native);
 extern I64 ConditionNotArithmetic(F64 a);
 extern I64 *PickWhole();
 extern F64 *Pick();
@@ -102,6 +103,7 @@ I64 Main(I64 unused_a,I64 unused_b)
   if (whole!=0x8000000000000000) return 61;
   c=0.0; if (ConditionNotArithmetic(c)!=3) return 62;
   whole=CheckConditions(); if (whole) return 1000+whole;
+  whole=CheckChains(TRUE); if (whole) return 2000+whole;
   return 0;
 }
 F64 Add(F64 a,F64 b) { return a+b; }
@@ -121,3 +123,5 @@ I64 ReturnInt(F64 value) { return value; }
 I64 *PickWhole() { picks++; return &mixed_cell; }
 
 #include "T:/Conditions.HC"
+
+#include "T:/Chains.HC"

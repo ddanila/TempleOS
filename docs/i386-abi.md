@@ -96,8 +96,11 @@ Address-bearing static initializers and executable initializers remain pending.
 
 The shared module loader now executes on i386 with caller-owned output memory.
 Resident kernel symbol binding and lifetime management remain pending.
-Variadic calls, floating-point output, switch dispatch,
-and chained comparisons remain pending.
+Chained comparisons preserve each middle operand in an eight-byte frame slot,
+then reuse it for the next comparison. Branch chains short-circuit and value
+chains evaluate all operands. Nested chains have distinct slots; calls and
+recursion cannot overwrite another frame's retained values.
+Variadic calls, floating-point output and switch dispatch remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.
 

@@ -9,6 +9,7 @@ Bool Reject(U8 *body)
   return TRUE;
 }
 #include "T:/Conditions.HC"
+#include "T:/Chains.HC"
 Bool CheckMixedHost()
 {
   I64 whole=7,*values=MAlloc(64);
@@ -44,6 +45,16 @@ U0 CompileTests()
   i=CheckConditions();
   if (i) { Report(MStrPrint("FAIL x64 conditions %d\n",i)); return; }
   Report("PASS 144 x64 condition pairs and 12 loop cases\n");
+  Report(MStrPrint("OBSERVED x64 0.0<I64_one<minimum_subnormal: %d\n",
+    ChainMixedMiddle(0.0,1,0x0000000000000001(F64))));
+  i=CheckChains(FALSE);
+  if (i) { Report(MStrPrint("FAIL x64 chains %d\n",i)); return; }
+  Report(MStrPrint("OBSERVED x64 chain differences: branch=%d mixed-middle=%d\n",
+    chain_float_branch_differences,chain_mixed_middle_differences));
+  if (chain_float_branch_differences!=29 || chain_mixed_middle_differences!=130) {
+    Report("FAIL changed x64 chain compatibility observations\n"); return;
+  }
+  Report("PASS 512 x64 chain triples with recorded differences\n");
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -73,7 +84,7 @@ U0 CompileTests()
   if (!Reject("F64 Main(F64 a,F64 b) { return a+b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,I64 b) { return a%b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(I64 a,F64 b) { a%=b; return a; }") ||
-      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(F64 a,F64 b) { return a<b<0.0; }") ||
+      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a^b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a&b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a%b; }") ||
       !Reject("extern I64 I386F64Add(U64 a,U64 b); F64 Main(F64 a,F64 b) { return a+b; }") ||

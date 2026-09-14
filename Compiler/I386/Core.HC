@@ -111,7 +111,8 @@ CHashClass *I386ValueClass(CIntermediateCode *ic)
   if (ic->ic_flags&ICF_RES_TO_F64) return cmp.internal_types[RT_F64];
   if (ic->ic_flags&ICF_RES_TO_INT) return cmp.internal_types[RT_I64];
   if (ic->ic_code==IC_NOT || ic->ic_code==IC_AND_AND ||
-      ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR)
+      ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR ||
+      IC_EQU_EQU<=ic->ic_code<=IC_LESS_EQU)
     return cmp.internal_types[RT_I64];
   return ic->ic_class;
 }
@@ -271,6 +272,13 @@ U0 I386Bool(CI386Out *out)
     "\x31\xD2\x52\x50",14);
 }
 
+class CI386Chain
+{
+  CI386Chain *next;
+  CIntermediateCode *comparison,*push;
+  I64 slot;
+};
+
 class CI386Call
 {
   CI386Call *next;
@@ -286,6 +294,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   CCodeMisc *label;
   CI386Call *calls=NULL,*call;
   CI386Logic *logics=NULL,*logic;
+  CI386Chain *chains=NULL,*chain;
   CExternUsage *usage;
   CAOTImportExport *import_rec;
   CMemberLst *arg;
@@ -323,6 +332,21 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   OptPass012(cc);
   try {
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
+      if (ic->ic_code==IC_PUSH_CMP) {
+        chain=CAlloc(sizeof(CI386Chain));
+        chain->next=chains; chains=chain;
+        chain->push=ic;
+        chain->comparison=OptLag(ic);
+        if (chain->comparison && chain->comparison->ic_code==IC_AND_AND)
+          chain->comparison=OptLag(chain->comparison);
+        if (!chain->comparison ||
+            !(chain->comparison->ic_flags&ICF_PUSH_CMP) ||
+            !(IC_EQU_EQU<=chain->comparison->ic_code<=IC_LESS_EQU))
+          throw('Compiler');
+        stack_size=(stack_size+7)&~7;
+        stack_size+=8; chain->slot=-stack_size;
+      }
+    for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
       if (ic->ic_code==IC_BR_ZERO || ic->ic_code==IC_BR_NOT_ZERO)
         logics=I386BranchLogic(ic->t.arg1_tree,logics);
     // First pass determines label offsets; second resolves near branches.
@@ -345,7 +369,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             case IC_NOT: case IC_AND_AND: case IC_OR_OR: case IC_XOR_XOR:
             case IC_BR_ZERO: case IC_BR_NOT_ZERO:
             case IC_TO_F64: case IC_TO_I64:
-            case IC_NOP1: case IC_NOP2: case IC_IMM_F64:
+            case IC_NOP1: case IC_NOP2: case IC_IMM_F64: case IC_PUSH_CMP:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
             case IC_CALL: case IC_CALL_EXTERN: case IC_CALL_IMPORT:
             case IC_CALL_INDIRECT: case IC_LEAVE:
@@ -381,7 +405,9 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             default: throw('Compiler');
           }
         }
-        if (ic->ic_flags&(ICF_PUSH_CMP|ICF_POP_CMP)) throw('Compiler');
+        if (ic->ic_flags&(ICF_PUSH_CMP|ICF_POP_CMP) &&
+            !(IC_EQU_EQU<=ic->ic_code<=IC_LESS_EQU) &&
+            ic->ic_code!=IC_AND_AND) throw('Compiler');
         switch (ic->ic_code) {
           case IC_NOP1:
           case IC_NOP2: break;
@@ -660,9 +686,25 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               I386Bytes(&out,"\x09\xD0\x0F\x94\xC0\x0F\xB6\xC0\x31\xD2",10);
             I386Bytes(&out,"\x52\x50",2);
             break;
+          case IC_PUSH_CMP:
+            for (chain=chains;chain;chain=chain->next)
+              if (chain->push==ic) break;
+            if (!chain) throw('Compiler');
+            I386Bytes(&out,"\xFF\xB5",2); I386Dword(&out,chain->slot+4);
+            I386Bytes(&out,"\xFF\xB5",2); I386Dword(&out,chain->slot);
+            depth++;
+            break;
           case IC_EQU_EQU...IC_LESS_EQU:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A",4);
+            if (ic->ic_flags&ICF_PUSH_CMP) {
+              for (chain=chains;chain;chain=chain->next)
+                if (chain->comparison==ic) break;
+              if (!chain) throw('Compiler');
+              //Retain the middle operand once, independently of branch stack depth.
+              I386Bytes(&out,"\x89\x8D",2); I386Dword(&out,chain->slot);
+              I386Bytes(&out,"\x89\x9D",2); I386Dword(&out,chain->slot+4);
+            }
             if (I386IsF64(I386ValueClass(ic->t.arg1_tree)))
               I386F64Runtime(cc,&out,ic->ic_code,pass);
             else I386Compare(&out,ic->ic_code,ToBool(ic->ic_flags&ICF_USE_UNSIGNED));
@@ -907,10 +949,12 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
       PrintErr("i386 COC failure at opcode %X, depth %d, pass %d\n",ic->ic_code,depth,pass);
     LinkedLstDel(calls);
     LinkedLstDel(logics);
+    LinkedLstDel(chains);
     Free(out.data);
     //Leave catch_except false so the original exception propagates.
   }
   LinkedLstDel(logics);
+  LinkedLstDel(chains);
   // CMain appends U64 units; include zero padding without reading past allocation.
   result=CAlloc((out.count+7)&~7);
   MemCpy(result,out.data,out.count);
