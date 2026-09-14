@@ -19,7 +19,7 @@ U0 ProbeExpressionUnexpected() { KernelLog("UNEXPECTED EXPRESSION SERVICE\n"); K
 I64 ProbeExpressionLex(U8 *context,CCmpCtrl *cc)
 {
   CProbeExpression *state=context;
-  return state->probe->compiler->next_token_with_includes(state->heap,cc,"Expression",&state->lines,state->probe->disk_include);
+  return state->probe->compiler->parser_token(state->heap,cc,"Expression",&state->lines,state->probe->disk_include);
 }
 U0 ProbeExpressionReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {

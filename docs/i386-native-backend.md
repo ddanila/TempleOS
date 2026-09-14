@@ -58,10 +58,10 @@ calls and returns, and applies the normal 386 opcode checks.
 
 ## Interface and validation scope
 
-CompilerRuntime ABI 22 introduced `backend` in a 128-byte record. ABI 23 now
-appends the [native expression entry](i386-native-expression.md), making it 132 bytes. ABI 24 adds the
-[native type entry](i386-native-type.md) and grows the record to 136 bytes. ABI 25 adds parser allocation/release and is
-144 bytes; see [parser ownership](i386-parser-memory.md).
+CompilerRuntime ABI 26 is 148 bytes and includes `backend`, introduced in ABI 22.
+Companion services cover [expressions](i386-native-expression.md),
+[types](i386-native-type.md), [parser allocations](i386-parser-memory.md) and
+[owned token reading](i386-parser-token.md).
 FileRuntime ABI 13 validates the new dependency and keeps its 32-byte record.
 Compiler/probe imports remain 21/17; the probe remains ABI 5, 56 bytes.
 

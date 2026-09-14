@@ -840,6 +840,13 @@ temporaries. Native probes cover ordinary cleanup and both allocation-failure
 points. Existing lexer-buffer transfers, declaration/class adapters and durable
 publication remain required; see `docs/i386-parser-memory.md`.
 
+The parser now has an owned token entry (CompilerRuntime ABI 26, 148 bytes).
+Returned identifier/string buffers stay registered when parsing clears `cur_str`
+to transfer them, while ordinary lexer replacements update the tracking record.
+Native expression/type probes use this entry, with additional transfer and failure
+cleanup checks. This closes returned-token ownership plumbing; class/declaration
+adapters and durable publication remain open. See `docs/i386-parser-token.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

@@ -101,7 +101,7 @@ U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
     //Graph and lexer cleanup has finished. Reclaim detached parser temporaries.
     while((record=owned->parser_next)!=&owned->parser_next) {
       record->last->next=record->next; record->next->last=record->last;
-      if(!I386HeapFree(state->heap,record->allocation)) state->ok=FALSE;
+      if(record->allocation && !I386HeapFree(state->heap,record->allocation)) state->ok=FALSE;
       if(!I386HeapFree(state->heap,record)) state->ok=FALSE;
     }
   } else if(allocation) {

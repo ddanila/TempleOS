@@ -1,7 +1,8 @@
 # Native parser allocation ownership
 
 CompilerRuntime ABI 25 adds `parser_alloc` and `parser_free`, making the service
-record 144 bytes. Allocations retain their exact requested heap size. A separate
+record 144 bytes. ABI 26 adds [parser token ownership](i386-parser-token.md)
+and grows the record to 148 bytes. Allocations retain their exact requested heap size. A separate
 per-control registry tracks their lifetime without appending metadata to class,
 member or dimension payloads, whose validators depend on that size.
 
@@ -20,10 +21,10 @@ a second free during control deletion. Final control release reclaims registered
 allocations that were never linked into a graph. The existing IR ownership registry
 and parser-stack ownership remain separate.
 
-Only allocations made by this service are tracked automatically. Existing lexer
-strings and other transferred buffers still need explicit ownership plumbing in
-the frontend adapters. Live lexer token replacement still uses the lexer's own
-allocator; parser allocations must not be handed to that path without an adapter. Callers must unlink pointers before explicit release and
+Only allocations made by this service are tracked automatically. Returned lexer strings now have an [owned token adapter](i386-parser-token.md).
+Other transferred buffers still need explicit ownership plumbing. Raw lexer token
+replacement uses its own allocator and must not bypass that adapter for tracked
+strings. Callers must unlink pointers before explicit release and
 must not retain or publish these allocations beyond the compiler control's lifetime.
 This does not implement durable symbol/code publication or arbitrary graph aliasing.
 

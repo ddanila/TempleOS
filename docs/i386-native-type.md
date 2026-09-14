@@ -1,8 +1,7 @@
 # Native shared type parsing
 
-CompilerRuntime ABI 24 appends `parse_type` and grows the interface to 136 bytes.
-ABI 25 adds [parser allocation services](i386-parser-memory.md), growing the
-record to 144 bytes. The entry invokes the complete `PrsTypeCore.HC`, including its shared array-dimension
+CompilerRuntime ABI 26 (148 bytes) includes `parse_type`, introduced in ABI 24.
+The entry invokes the complete `PrsTypeCore.HC`, including its shared array-dimension
 and variadic-argument helpers. It borrows a populated `CPrsTypeServices` and checks
 the compiler control's current owner and task stack before parsing. Invalid setup
 returns null; grammar errors throw through the supplied diagnostic callback.

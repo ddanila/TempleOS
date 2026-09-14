@@ -1,10 +1,8 @@
 # Native shared expression parser
 
-Compiler runtime ABI 23 adds `expression(heap, cc, services, precedence, end_exp,
-stack)` in a 132-byte interface. ABI 24 now adds the
-[native type entry](i386-native-type.md) and grows it to 136 bytes. ABI 25 adds
-[parser allocation services](i386-parser-memory.md), making it 144 bytes. It executes the complete production
-`PrsExpressionCore.HC` inside the retained native module. The service environment
+CompilerRuntime ABI 26 (148 bytes) includes `expression(heap, cc, services,
+precedence, end_exp, stack)`, introduced in ABI 23. It executes the complete
+production `PrsExpressionCore.HC` inside the retained native module. The service environment
 remains caller supplied: this entry is not yet a complete native frontend or a
 public source compiler. Type/declaration, string, symbol and other callback
 providers must implement their full contracts before accepting general source.
@@ -30,7 +28,8 @@ rejected. Nonempty source bodies, symbols, generated code and other callback
 allocations have their own lifetimes; owning the parser stack does not establish
 ownership for them.
 
-The native probe provides lexer, diagnostic, IR insertion and recursive-expression
+The native probe uses [owned token reading](i386-parser-token.md) and provides
+diagnostic, IR insertion and recursive-expression
 callbacks and intentionally fails on callbacks outside its arithmetic coverage.
 It parses arithmetic source, runs the production optimizer/backend and executes
 the resulting bytes before releasing the control. This is a test environment,

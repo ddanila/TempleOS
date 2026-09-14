@@ -3767,3 +3767,36 @@ See [i386-parser-memory.md](i386-parser-memory.md). Native declaration/class
 adapters, ownership of transferred lexer buffers, compilation of the original
 public scalar unions, durable publication and the complete frontend remain open,
 along with DolDoc, self-hosting and the full `PLAN.md` acceptance requirements.
+
+## Parser token ownership
+
+CompilerRuntime ABI 26 (148 bytes) adds `parser_token`, which uses the existing
+native lexer/include implementation and registers returned identifier/string
+buffers. Clearing `cur_str` to transfer a token now leaves its allocation owned by
+the compiler control. Ordinary lexer replacement temporarily clears the tracking
+slot's payload and then reuses the slot, avoiding stale pointers or a new tracking
+allocation for each punctuation token. Empty pending slots are reclaimed if token
+reading fails. Negative raw lexer results become compiler exceptions; tracking
+allocation failure leaves the new string owned by final lexer cleanup.
+
+The 44 native expression/type cases now use this token entry. Additional probes
+pass on boot and worker tasks for detached identifier ownership, ordinary token
+replacement, quoted-string transfer into an IR payload, EOF cleanup, replacement
+failure and first-record allocation failure after successful lexing. Every path
+restores heap use/counts, active controls, task references and interrupt state.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. The complete standalone
+suite passed expression/type, parser-memory/token recovery, instruction auditing,
+module rejection and pixel-exact VGA/input checks. Dedicated lexer-state and
+task-symbol ownership suites also passed. Python syntax and whitespace checks pass.
+The guest remains an emulated 486 with 8 MiB; strict 386SX/DX acceptance is open.
+
+The kernel is 389448 bytes. The retained compiler image is 772624 bytes (772640
+heap bytes). The temporary probe image is 227520 bytes and reclaims all 227536 heap
+bytes. Compiler/probe imports remain 21/17; FileRuntime remains ABI 13/32 bytes and
+CompilerProbe ABI 5/56 bytes.
+
+See [i386-parser-token.md](i386-parser-token.md). Parser environments must use this
+entry consistently for tracked token strings. General declaration/class adapters,
+compilation of the original scalar unions, durable publication and the full native
+frontend remain required, along with DolDoc, self-hosting and `PLAN.md` acceptance.
