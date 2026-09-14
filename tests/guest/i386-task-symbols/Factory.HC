@@ -17,6 +17,8 @@ I64 FactoryRootTest()
   I64 used=heap.used,allocations=heap.allocations;
   control_services.version=I386_COMPILER_SERVICES_VERSION-1;
   control_services.bytes=sizeof(CI386CompilerServices);
+  control_services.control_enter=&I386CmpCtrlEnter; control_services.control_leave=&I386CmpCtrlLeave;
+  control_services.control_drain=&I386CmpCtrlDrain;
   control_services.control_new=&I386CmpCtrlNew; control_services.control_del=&I386CmpCtrlDel;
   if(I386TaskCmpCtrlNew(&task_compiler) ||
       I386TaskCompilerInit(&task_compiler,&control_services,"~/Tmp.DD.Z",char_bmp_alpha_numeric,char_bmp_alpha_numeric_no_at)) return 20;

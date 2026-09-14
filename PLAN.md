@@ -520,7 +520,7 @@ FileRuntime now has a checked version-3 interface and kernel-lifetime ownership.
 Boot/task reads and nested includes use owned current-task directory state; workers
 inherit directory/drive values and require bound volume sessions. The wrappers
 preserve caller IF, including enabled-IF reads and nested includes.
-The bootstrap plus loaded stage now leaves 1256 bytes in the fixed reservation,
+The bootstrap plus loaded stage now leaves 2168 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 
@@ -632,6 +632,20 @@ x86-64 rebuild regression, native control/task/exception tests and the standalon
 image check. Exception unwinding through parser and generated-code frames remains
 a separate integration requirement; successful task-exit cleanup does not satisfy
 the recoverable HolyC shell milestone.
+
+Native active-control cleanup now implements this bounded package. CompilerRuntime
+version 14 supplies enter/leave/drain in a 68-byte record; FileRuntime version 5
+validates the new compiler dependency. Task completion drains after user cleanup,
+keeps detached owner pins, and preserves the full active queue when document
+cleanup is unavailable. Recovery can delete the affected control and drain/reap
+the finished task. Six native exit scenarios cover three ownership paths with IF
+clear and set, callback yields, reentrant-operation rejection and heap accounting.
+The standalone probe exercises retained entry/leave in boot and worker phases.
+The kernel links scheduler core and task lifetime helpers separately from join
+and task allocation convenience functions; the complete helper wrappers remain
+available. The bootstrap plus stage uses 391048 of 393216 bytes. Public task/heap
+policy and parser/exception integration are still required; see
+`docs/i386-task-compiler.md`.
 
 #### Continuing integration sequence
 

@@ -6,6 +6,9 @@ extern class CI386Scheduler;
 #include "/Kernel/HashTypes.HH"
 extern class CI386MsgQueue;
 extern class CI386Except;
+#ifndef CCmpCtrl
+extern class CCmpCtrl;
+#endif
 #define I386_EXCEPT_CALLERS 8
 class CI386Task
 {
@@ -34,6 +37,9 @@ class CI386Task
   U8 *symbol_state;
   Bool (*symbol_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*symbol_destroy)(CI386Task *task);
+  CCmpCtrl *next_cc,*last_cc;
+  Bool (*compiler_cleanup)(CI386Task *task);
+  U32 active_controls,compiler_cleanup_failed,compiler_busy;
 };
 class CI386Scheduler
 {

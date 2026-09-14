@@ -7,6 +7,9 @@ class CI386CmpCtrl {
   CI386Heap *heap;
   U32 signature;
   CI386Task *task;
+  U32 active;
+  U0 (*document)(U8 *context,CDoc *document);
+  U8 *document_context;
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {
@@ -28,7 +31,7 @@ CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,
   U8 *copy=0,*prompt=0;
   I64 i,length=1,size;
   if(!name || !alpha_numeric || !I386CmpTaskOwnerValid(task,heap,symbols) ||
-      task && (task->finished || task->finishing || task->lifetime_refs==0xFFFFFFFF)) goto control_new_failed;
+      task && (task->finished || task->finishing || task->compiler_busy || task->lifetime_refs==0xFFFFFFFF)) goto control_new_failed;
   if(buffer && !(flags&(CCF_DONT_FREE_BUF|CCF_PMT))) {
     size=I386HeapSize(heap,buffer);
     if(size<1 || buffer[size-1]) goto control_new_failed;
@@ -81,32 +84,138 @@ U0 I386CmpReleaseDocument(U8 *context,CDoc *document)
   CI386CmpRelease *state=context;
   (*state->document)(state->context,document);
 }
-Bool I386CmpCtrlDel(CI386Heap *heap,CCmpCtrl *cc,
+Bool I386CmpControlValid(CI386Heap *heap,CCmpCtrl *cc)
+{
+  CI386CmpCtrl *owned=cc;
+  return cc && I386HeapSize(heap,cc)==sizeof(CI386CmpCtrl) &&
+    owned->heap==heap && owned->signature==I386_COMPILER_CONTROL_MAGIC;
+}
+Bool I386CmpActiveValid(CI386CmpCtrl *owned)
+{
+  CCmpCtrl *cc=&owned->control;
+  CI386Task *task=owned->task;
+  return task && task->owner && (task->owner->current==task || task->finished) &&
+    owned->active && task->active_controls && task->compiler_cleanup==&I386CmpCtrlDrain &&
+    cc->next && cc->last && cc->next->last==cc && cc->last->next==cc;
+}
+U0 I386CmpUnlink(CI386CmpCtrl *owned)
+{//Caller holds IRQ exclusion and has validated active links.
+  CCmpCtrl *cc=&owned->control;
+  CI386Task *task=owned->task;
+  cc->last->next=cc->next; cc->next->last=cc->last;
+  cc->next=cc->last=cc; owned->active=0;
+  owned->document=0; owned->document_context=0;
+  task->active_controls--;
+  if(!task->active_controls) {
+    task->compiler_cleanup=0; task->compiler_cleanup_failed=0;
+  }
+}
+Bool I386CmpCtrlEnter(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0)
+{
+  U32 irq=I386IrqSave;
+  CI386CmpCtrl *owned=cc;
+  CI386Task *task;
+  if(!I386CmpControlValid(heap,cc)) goto control_enter_failed;
+  task=owned->task;
+  if(!task || !I386CmpTaskOwnerValid(task,heap,task->hash_table) ||
+      task->owner->current!=task || task->finished || task->finishing || task->compiler_busy ||
+      task->active_controls==0xFFFFFFFF || owned->active || cc->next!=cc || cc->last!=cc ||
+      (task->compiler_cleanup && task->compiler_cleanup!=&I386CmpCtrlDrain)) goto control_enter_failed;
+  owned->document=document; owned->document_context=context; owned->active=1;
+  cc->next=&task->next_cc; cc->last=task->last_cc;
+  cc->last->next=cc; task->last_cc=cc;
+  task->active_controls++; task->compiler_cleanup=&I386CmpCtrlDrain;
+  I386IrqRestore(irq); return TRUE;
+control_enter_failed:
+  I386IrqRestore(irq); return FALSE;
+}
+Bool I386CmpCtrlLeave(CI386Heap *heap,CCmpCtrl *cc)
+{
+  U32 irq=I386IrqSave;
+  CI386CmpCtrl *owned=cc;
+  if(!I386CmpControlValid(heap,cc) || !I386CmpActiveValid(owned) || owned->task->compiler_busy) {
+    I386IrqRestore(irq); return FALSE;
+  }
+  I386CmpUnlink(owned);
+  I386IrqRestore(irq); return TRUE;
+}
+Bool I386CmpReleaseReady(CCmpCtrl *cc,U0 (*document)(U8 *context,CDoc *document))
+{
+  CLexFile *file;
+  for(file=cc->lex_include_stk;file;file=file->next)
+    if((file->next || !(cc->flags&CCF_DONT_FREE_BUF)) && file->flags&LFSF_DOC && file->doc && !document)
+      return FALSE;
+  return TRUE;
+}
+Bool I386CmpCtrlDelete(CI386Heap *heap,CCmpCtrl *cc,
+  U0 (*document)(U8 *context,CDoc *document),U8 *context,Bool draining)
 {
   CI386CmpCtrl *owned=cc;
   CI386Task *task;
-  CLexFile *file;
   CLexFileRelease owner;
   CI386CmpRelease state;
   U32 irq=I386IrqSave;
-  if(!cc || I386HeapSize(heap,cc)!=sizeof(CI386CmpCtrl) || owned->heap!=heap ||
-      owned->signature!=I386_COMPILER_CONTROL_MAGIC) { I386IrqRestore(irq); return FALSE; }
+  if(!I386CmpControlValid(heap,cc)) goto control_delete_failed;
   task=owned->task;
-  if(task && (!task->lifetime_refs || !I386CmpTaskOwnerValid(task,heap,task->hash_table))) {
-    I386IrqRestore(irq); return FALSE;
-  }
-  for(file=cc->lex_include_stk;file;file=file->next)
-    if((file->next || !(cc->flags&CCF_DONT_FREE_BUF)) && file->flags&LFSF_DOC && file->doc && !document) {
-      I386IrqRestore(irq); return FALSE;
-    }
+  if(task && (!task->lifetime_refs || !I386CmpTaskOwnerValid(task,heap,task->hash_table) ||
+      task->compiler_busy && !draining)) goto control_delete_failed;
+  if(owned->active && !I386CmpActiveValid(owned)) goto control_delete_failed;
+  if(!I386CmpReleaseReady(cc,document)) goto control_delete_failed;
+  if(owned->active) I386CmpUnlink(owned);
   owned->signature=0;
+  if(task) task->compiler_busy=1;
   I386IrqRestore(irq);
   state.heap=heap; state.document=document; state.context=context; state.ok=TRUE;
   owner.context=&state; owner.allocation=&I386CmpReleaseAllocation; owner.document=&I386CmpReleaseDocument;
   CmpCtrlRelease(cc,&owner);
   irq=I386IrqSave;
-  if(task) task->lifetime_refs--;
+  if(task) { task->lifetime_refs--; if(!draining) task->compiler_busy=0; }
   I386IrqRestore(irq);
   return state.ok;
+control_delete_failed:
+  I386IrqRestore(irq); return FALSE;
+}
+Bool I386CmpCtrlDel(CI386Heap *heap,CCmpCtrl *cc,
+  U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0)
+{
+  return I386CmpCtrlDelete(heap,cc,document,context,FALSE);
+}
+Bool I386CmpCtrlDrain(CI386Task *task)
+{//Preflight the whole queue before releasing anything; callbacks cannot mutate it.
+  U32 irq=I386IrqSave,count;
+  CI386CmpCtrl *owned;
+  CCmpCtrl *node;
+  CI386TaskSymbols *scope;
+  Bool ok=TRUE;
+  if(!task || !task->owner || task->compiler_busy ||
+      (task->owner->current!=task && !task->finished)) goto control_drain_failed;
+  if(!task->active_controls) {
+    ok=task->next_cc==&task->next_cc && task->last_cc==&task->next_cc && !task->compiler_cleanup;
+    I386IrqRestore(irq); return ok;
+  }
+  scope=task->symbol_state;
+  if(!scope || !I386CmpTaskOwnerValid(task,scope->heap,task->hash_table)) goto control_drain_failed;
+  node=task->last_cc;
+  for(count=0;count<task->active_controls;count++) {
+    if(node==&task->next_cc || !I386CmpControlValid(scope->heap,node)) goto control_drain_failed;
+    owned=node;
+    if(owned->task!=task || !I386CmpActiveValid(owned) ||
+        !I386CmpReleaseReady(node,owned->document)) goto control_drain_failed;
+    node=node->last;
+  }
+  if(node!=&task->next_cc) goto control_drain_failed;
+  task->compiler_busy=1;
+  I386IrqRestore(irq);
+  while(task->active_controls) {
+    owned=task->last_cc;
+    if(!I386CmpCtrlDelete(scope->heap,&owned->control,owned->document,owned->document_context,TRUE)) {
+      ok=FALSE; break;
+    }
+  }
+  irq=I386IrqSave; task->compiler_busy=0;
+  task->compiler_cleanup_failed=!ok;
+  I386IrqRestore(irq); return ok;
+control_drain_failed:
+  I386IrqRestore(irq); return FALSE;
 }

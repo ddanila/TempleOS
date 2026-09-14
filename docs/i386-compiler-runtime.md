@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 13 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 14 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-and root task-symbol initialization.
-The structure is 56 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain.
+The structure is 68 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -163,3 +163,10 @@ current-task factory and context selection. See
 [i386-task-compiler.md](i386-task-compiler.md). CompilerRuntime now uses 176336
 image bytes / 176352 heap bytes; the native kernel is 389800 bytes and leaves
 1256 bytes after its loaded stage in the unchanged bootstrap reservation.
+
+Version 14 adds active-control entry, leave and task-exit drain in the retained
+module. The interface is 68 bytes with the same twenty imports. The native task
+record owns the queue and calls back into the provider at completion; controls
+remain detached until explicitly entered. FileRuntime version 5 validates the
+new dependency. See [i386-task-compiler.md](i386-task-compiler.md) for recovery,
+callback and owner-pin contracts.

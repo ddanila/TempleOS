@@ -12,4 +12,10 @@ public extern CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *
 //Reject missing document release before mutation. No arbitrary corruption recovery.
 public extern Bool I386CmpCtrlDel(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0);
+//Active queue operations require the current owner, or a finished owner for
+//leave/drain/recovery. Callbacks must return normally; no throwing through cleanup.
+public extern Bool I386CmpCtrlEnter(CI386Heap *heap,CCmpCtrl *cc,
+  U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0);
+public extern Bool I386CmpCtrlLeave(CI386Heap *heap,CCmpCtrl *cc);
+public extern Bool I386CmpCtrlDrain(CI386Task *task);
 #endif

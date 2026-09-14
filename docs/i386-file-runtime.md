@@ -10,7 +10,7 @@ Startup and CompilerProbe.
 
 ## Interface and ownership
 
-CI386FileServices version 4 is a 32-byte i386 record: version/byte-count fields,
+CI386FileServices version 5 is a 32-byte i386 record: version/byte-count fields,
 a current-task include callback, a decoded-read function, volume binding and
 root task-state initialization, compiler configuration and current-task control
 construction.
@@ -88,15 +88,18 @@ Current images and allocations:
 
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
-| CompilerRuntime, retained | 176336 | 176352 |
-| FileRuntime, retained | 123256 | 123272 |
-| CompilerProbe, reclaimed after task check | 74760 | 74776 |
+| CompilerRuntime, retained | 189472 | 189488 |
+| FileRuntime, retained | 123560 | 123576 |
+| CompilerProbe, reclaimed after task check | 75872 | 75888 |
 
-The native bootstrap is 389800 bytes. With its 2160-byte loaded stage overhead,
-391960 bytes occupy the unchanged 393216-byte reservation, leaving 1256 bytes.
+The native bootstrap is 388888 bytes. With its 2160-byte loaded stage overhead,
+391048 bytes occupy the unchanged 393216-byte reservation, leaving 2168 bytes.
 The separate 512-byte boot sector is excluded from that reservation. Further
 bootstrap growth needs extraction or reduction; the low-memory reservation has
-not been raised. Bounded export-index tables replace repeated binding setup calls
+not been raised. Task allocation helpers and scheduler join are separately
+linkable; the current boot kernel links lifetime and scheduler core only. The full
+`Task.HC` and `Scheduler.HC` wrappers retain those helpers for other callers.
+Bounded export-index tables replace repeated binding setup calls
 and recover conventional-memory space. These are measured artifacts built with local changes before
 commit; manifests record revision and source hashes.
 

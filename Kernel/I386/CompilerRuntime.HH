@@ -4,8 +4,8 @@
 #include "/Compiler/I386/LexInclude.HH"
 #include "/Compiler/I386/Control.HH"
 #include "/Kernel/I386/TaskSymbols.HH"
-#define I386_COMPILER_SERVICES_VERSION 13
-//ABI 13: caller-owned interface, borrowing code from the retained module image.
+#define I386_COMPILER_SERVICES_VERSION 14
+//ABI 14: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;
@@ -21,5 +21,8 @@ class CI386CompilerServices {
   CCmpCtrl *(*control_new)(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,CHashTable *symbols,U32 *alpha_numeric,CI386Task *task);
   Bool (*control_del)(CI386Heap *heap,CCmpCtrl *cc,U0 (*document)(U8 *context,CDoc *document),U8 *context);
   Bool (*symbols_init)(CI386Task *task,CI386Heap *heap,CHashTable *table,I64 buckets);
+  Bool (*control_enter)(CI386Heap *heap,CCmpCtrl *cc,U0 (*document)(U8 *context,CDoc *document),U8 *context);
+  Bool (*control_leave)(CI386Heap *heap,CCmpCtrl *cc);
+  Bool (*control_drain)(CI386Task *task);
 };
 #endif

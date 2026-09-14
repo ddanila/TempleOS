@@ -8,6 +8,7 @@ Bool I386TaskCompilerInit(CI386TaskCompilerConfig *config,CI386CompilerServices 
   Bool result=FALSE;
   if(config && !config->compiler && compiler && compiler->version==I386_COMPILER_SERVICES_VERSION &&
       compiler->bytes==sizeof(CI386CompilerServices) && compiler->control_new && compiler->control_del &&
+      compiler->control_enter && compiler->control_leave && compiler->control_drain &&
       tmp_filename && alpha_numeric && alpha_numeric_no_at && task && task->owner &&
       task==task->owner->root && task==task->owner->current) {
     config->tmp_filename=tmp_filename; config->alpha_numeric=alpha_numeric;

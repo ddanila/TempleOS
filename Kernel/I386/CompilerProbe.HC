@@ -277,6 +277,8 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
       (probe->phase && (I386TaskSelf->hash_table==probe->symbols || I386TaskSelf->hash_table->next!=probe->symbols))) KernelStop;
   file=cc->lex_include_stk;
   if(StrCmp(file->full_name,"C:/Probe/Control.HC") || I386TaskSelf->lifetime_refs!=refs+1) KernelStop;
+  if(!probe->compiler->control_enter(heap,cc,0,0) || I386TaskSelf->last_cc!=cc ||
+      I386TaskSelf->active_controls!=1) KernelStop;
   {
     if(GetRFlags&0x200) KernelStop;
     for(i=1;i<=3;i++)
@@ -305,6 +307,8 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
     SetRFlags(saved_flags);
     KernelLog("DISK IF PRESERVED\n");
   }
+  if(!probe->compiler->control_leave(heap,cc) || I386TaskSelf->active_controls ||
+      I386TaskSelf->last_cc!=&I386TaskSelf->next_cc) KernelStop;
   if(!probe->compiler->control_del(heap,cc,0,0) || I386TaskSelf->lifetime_refs!=refs) KernelStop;
   if(heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
   KernelLog("DISK INCLUDE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(lines); KernelLog("\n");

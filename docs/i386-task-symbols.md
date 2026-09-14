@@ -34,7 +34,8 @@ provider callbacks are not a failure-atomic disposal contract.
 CompilerRuntime version 12 exposes root scope initialization. The retained module
 owns clone/destructor code for the kernel lifetime; it imports the kernel's native
 hash table new/validate/delete functions and shares symbol destruction code.
-The service table is 56 bytes, with twenty imports and forty kernel bindings.
+The current version 14 service table is 68 bytes, with twenty imports and forty
+kernel bindings.
 
 Root scope initialization follows compiler-module validation. Subsequent keyboard
 and compiler workers inherit local tables chained to the resident root symbols.
@@ -49,9 +50,9 @@ These fixed arenas remain a bootstrap allocation policy, not the completed publi
 Explicit unbound compiler controls still borrow their symbol table. The new
 current-task factory binds controls to the scope owner and pins it until deletion;
 see `i386-task-compiler.md`.
-Public task records, control-list cleanup on task exit, the complete constructor's
-filename/default-name and bitmap selection, parser/JIT and self-hosting remain
-required integration work.
+The factory now selects names and bitmaps, and active controls drain at task exit;
+detached controls still pin their owners. Public task records and heap/error
+policy, parser/JIT and self-hosting remain required integration work.
 
 ## Verification
 

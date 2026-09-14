@@ -38,21 +38,54 @@ the original task and its arena remain live until the reference is released.
 
 Unbound low-level controls retain the explicit borrowed-table lifetime contract.
 The new pin does not manage separate caller-retained buffers, generated code, or
-all possible references into a task arena. Automatic control-list cleanup and
-public task/code-heap policy still require integration.
+all possible references into a task arena. Public task/code-heap policy still
+requires integration.
+
+## Active controls and task completion
+
+Construction leaves the public control links pointing to itself. Enter registers a
+bound control at the tail of its current owner's active queue, optionally retaining
+a document-release callback and context. These callbacks/context must remain valid
+through cleanup, including after task finish if cleanup needs recovery. Leave can
+remove any active control and restores self-links without dropping its lifetime
+pin. Deletion also unlinks active controls after validating release requirements.
+An explicit delete uses its supplied document callback; automatic drain uses the
+callbacks registered at entry.
+
+The scheduler calls the compiler cleanup hook after the user cleanup callback and
+before marking the task finished. Drain validates the whole active queue and all
+required document callbacks before any release, then deletes controls from the
+tail. A missing callback leaves every active control and reference intact. The
+scheduler records cleanup failure but still finishes the task, allowing another
+task to supply the missing callback through explicit deletion and drain the rest.
+Reaping rejects nonempty queues, cleanup failure, busy cleanup or lifetime pins.
+Releasing the last active control clears the queue hook and failure flag.
+
+Queue operations preserve caller IF. Document callbacks may yield and must return
+normally; they must not throw or finish their executing task. A per-owner busy
+flag rejects reentrant control construction, deletion, leave and drain while
+release is underway. Owner references remain held through callbacks. Active
+operations require the current owner, with leave/delete/drain also allowed for a
+finished owner under exclusive ownership. Unbound controls cannot enter a task
+queue. This contract does not promise recovery from arbitrary graph corruption.
+
+The task-symbol fixture runs normal cleanup, non-tail detach and missing-callback
+recovery with IF initially clear and set. It checks user cleanup precedes compiler
+cleanup, LIFO document callbacks, callback yields and rejected reentrant mutation,
+rejected early reap, retained detached controls and exact final heap accounting.
+Exception unwinding through parser/generated-code frames remains separate work.
 
 ## Retained services and tests
 
-CompilerRuntime version 13 changes the constructor's calling convention to carry
-the optional owner; its record remains 56 bytes and its imports remain twenty.
-FileRuntime version 4 adds compiler configuration and a three-argument current-task
-constructor, making its record 32 bytes with six function pointers. Its eighteen
-imports are unchanged. The kernel validates all addresses, configures the factory
-once, and retains both providers for the kernel lifetime.
+CompilerRuntime version 14 retains enter, leave and drain operations alongside
+construction/destruction and symbol initialization. Its record is 68 bytes; the
+twenty imports are unchanged. FileRuntime version 5 validates that compiler
+contract; its own record stays 32 bytes with six function pointers and eighteen
+imports. Both providers remain resident for the kernel lifetime.
 
 The standalone disk probe now creates its control through FileRuntime using a
 relative filename. Boot and worker phases verify the resolved name, scope,
-lifetime reference, nested plain/compressed includes, archive-error recovery,
+lifetime reference, active queue entry/exit, nested plain/compressed includes, archive-error recovery,
 IF-set reading and exact reclamation after destruction.
 
 The task-symbol fixture checks default-name preservation, C:/ and D:/Child relative
@@ -69,11 +102,13 @@ Verification commands:
 python3 tools/test-rebuild.py
 python3 tools/test-i386.py --task-symbols
 python3 tools/test-i386.py --lex-state
+python3 tools/test-i386.py --tasks
+python3 tools/test-i386.py --except-tasks
 python3 tools/build-i386-kernel.py --test
 ```
 
 These checks pass on the QEMU/486 development profile. The factory implements the
 context-selection part of construction; it is not yet the complete public
 `CmpCtrlNew`/`CmpCtrlDel` contract. Public task records and heap/error policy,
-control-list teardown, actual prompt/document input, parser/JIT and self-hosting
+public compiler-list integration, actual prompt/document input, parser/JIT and self-hosting
 remain required.

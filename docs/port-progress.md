@@ -3012,3 +3012,52 @@ constructor calling-convention change. The scope/constructor test now uses a
 256 KiB transfer ending at its 0x50000 arena. See `docs/i386-task-compiler.md`.
 Public task/heap/error policy, automatic control-list cleanup, actual prompt/DolDoc
 input, parser/JIT, strict 386 profiles and self-hosting remain unfinished.
+
+
+## Active compiler controls and task-exit reclamation
+
+Native controls now distinguish construction from active compilation, matching
+public `CmpCtrlNew` and its callers. Construction stays detached and pins the
+owner; enter appends to the current task's active queue, leave restores self-links
+without releasing that pin, and deletion detaches an active control after release
+preflight. The scheduler invokes compiler cleanup after user cleanup and before
+finishing the task. Drain validates all document callbacks before any mutation and
+releases tail first. Missing cleanup leaves the full queue intact and records
+failure while allowing the task to finish. Explicit recovery from another task
+can supply a callback, drain remaining controls and then reap the owner.
+
+A busy flag prevents callback reentry into the same owner's control operations;
+callbacks may yield but must return normally. Pins remain held throughout shared
+release. These rules cover valid exclusively owned graphs, not arbitrary heap
+corruption or throws through destructors. Public parser/code-generation unwind,
+prompt/DolDoc input and full task/code-heap semantics remain integration work.
+
+CompilerRuntime version 14 exports enter, leave and drain in its 68-byte record,
+with twenty imports unchanged. FileRuntime version 5 validates that dependency
+without changing its own 32-byte format or eighteen imports. The standalone disk
+probe enters/leaves its control in boot and worker phases. Scheduler join and
+current-task allocation convenience functions are separately linkable; complete
+scheduler/task wrappers still include them, while the boot kernel needs only the
+scheduler core and task lifetime operations.
+
+Verification:
+
+- Both x86-64 source rebuild/reboot generations pass.
+- `--task-symbols` adds six exit scenarios: normal LIFO cleanup, non-tail detach
+  surviving owner finish, and missing-document-callback rejection/recovery, each
+  with IF initially clear and set. It checks user cleanup ordering, callback
+  yields, reentrant mutation rejection, early-reap protection and exact final
+  heap accounting, alongside the existing symbol/factory tests.
+- `--lex-state`, `--tasks` and `--except-tasks` pass with executable instruction
+  audits, covering shared release and existing scheduling/exception behavior.
+- The standalone 8 MiB QEMU/486 suite passes: retained service validation and
+  rejection, disk reads/includes, source checks, temporary-module reclamation,
+  timer/keyboard/VGA behavior and executable-region audits across all ten modules.
+
+The native kernel is 388888 bytes; its 2160-byte loaded stage brings the total to
+391048 bytes, leaving 2168 in the fixed 393216-byte reservation. CompilerRuntime
+uses 189472 image / 189488 heap bytes, FileRuntime 123560 / 123576, and the diagnostic
+probe 75872 / 75888 (reclaimed after its task phase). These are local-change build
+artifacts with source hashes in their manifests. This remains QEMU/486 development
+evidence; strict 386SX/DX/no-387 acceptance and the full native HolyC environment
+are not complete.
