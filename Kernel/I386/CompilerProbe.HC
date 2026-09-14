@@ -329,6 +329,10 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   U32 flags=GetRFlags;
   child=probe->files->control_new("#include \"C:/Probe/Bad.HC.Z\";",CCF_DONT_FREE_BUF,"Probe/Failure.HC");
   if(!child || !probe->compiler->control_enter(heap,child,0,0)) KernelStop;
+  child->last_line_num=0x100000002; child->pass_trace=1; child->lock_cnt=1;
+  if(!probe->compiler->code_add(heap,child,0x0A,0x123456789ABCDEF0,probe->i64_type,0) ||
+      !probe->compiler->code_add(heap,child,0x02,0,probe->i64_type,0) ||
+      !probe->compiler->code_misc(heap,child,CMT_LABEL)) KernelStop;
   SetRFlags((flags&~0x200)|(probe->phase*0x200));
   try {
     if(probe->compiler->next_token_with_includes(heap,child,"Probe",&lines,probe->disk_include)!=-1) KernelStop;
@@ -346,7 +350,11 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   child=probe->files->control_new("42;",CCF_DONT_FREE_BUF,"Probe/Retry.HC");
   if(!child || !probe->compiler->control_enter(heap,child,0,0) ||
       probe->compiler->next_token_with_includes(heap,child,"Probe",&lines,probe->disk_include)!=TK_I64 ||
-      child->cur_i64!=42 || !probe->compiler->control_unwind(task,outer) ||
+      child->cur_i64!=42 ||
+      !probe->compiler->code_add(heap,child,0x0A,child->cur_i64,probe->i64_type,0) ||
+      !probe->compiler->code_discard(heap,child) ||
+      child->coc.coc_head.next!=&child->coc.coc_head.next ||
+      !probe->compiler->control_unwind(task,outer) ||
       task->last_cc!=outer || task->lifetime_refs!=refs || task->active_controls!=1 ||
       heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
   SetRFlags(flags);

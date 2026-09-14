@@ -52,33 +52,15 @@ CHashFun *PrsFunNew()
   return res;
 }
 
+#include "/Compiler/CodeCtrl.HC"
 CIntermediateCode *ICAdd(CCmpCtrl *cc,
-   I64 opcode_and_precedence,I64 arg, CHashClass *c,I64 flags=0)
+   I64 opcode_and_precedence,I64 arg,CHashClass *c,I64 flags=0)
 {
-  CIntermediateCode *tmpi=MAlloc(sizeof(CIntermediateCode));
-  tmpi->ic_code=opcode_and_precedence.u16[0];
-  tmpi->ic_precedence=opcode_and_precedence.u16[1];
-  tmpi->ic_data=arg;
-  tmpi->ic_class=c;
-  if (cc->pass_trace) {
-    Bts(&cc->flags,CCf_PASS_TRACE_PRESENT);
-    flags|=ICF_PASS_TRACE;
-  }
-  if (cc->lock_cnt)
-    flags|=ICF_LOCK;
-  tmpi->ic_flags=flags;
-  tmpi->ic_line=cc->last_line_num;
-  QueIns(tmpi,cc->coc.coc_head.last);
-  return tmpi;
+  CIntermediateCode *node=MAlloc(sizeof(CIntermediateCode));
+  ICSeed(cc,node,opcode_and_precedence,arg,c,flags);
+  return node;
 }
-
-U0 COCInit(CCmpCtrl *cc)
-{
-  CCodeCtrl *tmpcbh=&cc->coc;
-  QueInit(&tmpcbh->coc_head.next);
-  QueInit(&tmpcbh->coc_next_misc);
-  tmpcbh->coc_head.ic_code=IC_END;
-}
+U0 COCInit(CCmpCtrl *cc) { COCSeed(&cc->coc); }
 
 U0 COCPush(CCmpCtrl *cc)
 {
@@ -119,9 +101,7 @@ U0 COCAppend(CCmpCtrl *cc, CCodeCtrl *tmpcbh)
 CCodeMisc *COCMiscNew(CCmpCtrl *cc,I64 ty)
 {
   CCodeMisc *res=CAlloc(sizeof(CCodeMisc));
-  res->addr=INVALID_PTR;
-  res->type=ty;
-  QueIns(res,cc->coc.coc_last_misc);
+  COCMiscSeed(cc,res,ty);
   return res;
 }
 
@@ -159,47 +139,21 @@ I64 COCFloatConstFind(CCmpCtrl *cc,F64 d)
   return cm->addr;
 }
 
+U0 COCSystemFree(U8 *context,U8 *allocation) { Free(allocation); }
+U0 COCSystemLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
+{
+  if(undefined) PrintErr("Undefined goto label %s\n",name);
+  else {
+    PrintWarn("Unused label %s\n",name);
+    LexWarn(cc,"Unused label at ");
+  }
+}
 U0 COCDel(CCmpCtrl *cc,CCodeCtrl *coc)
 {
-  CCodeMisc *cm,*cm1;
-  U8 *undef=NULL;
-  QueDel(&coc->coc_head.next);
-  cm=coc->coc_next_misc;
-  while (cm!=&coc->coc_next_misc) {
-    cm1=cm->next;
-    switch (cm->type) {
-      case CMT_GOTO_LABEL:
-      case CMT_ASM_LABEL:
-	if (!(cm->flags&CMF_DEFINED)) {
-	  undef=cm->str;
-	  cm->str=NULL;
-	} else if (!cm->use_cnt) {
-	  PrintWarn("Unused label %s\n",cm->str);
-	  LexWarn(cc,"Unused label at ");
-	}
-	break;
-      case CMT_JMP_TABLE:
-	Free(cm->jmp_table);
-	break;
-      case CMT_FLOAT_CONSTS:
-	Free(cm->float_consts);
-	break;
-      case CMT_ARRAY_DIM:
-	LinkedLstDel(cm->dim);
-	break;
-      case CMT_HASH_ENTRY:
-	HashDel(cm->h);
-	break;
-    }
-    Free(cm->str);
-    Free(cm);
-    cm=cm1;
-  }
-  if (undef) {
-    PrintErr("Undefined goto label %s\n",undef);
-    Free(undef);
+  CSymbolRelease owner;
+  owner.context=0; owner.release=&COCSystemFree;
+  if(COCRelease(cc,coc,&owner,&COCSystemLabel))
     LexExcept(cc,"Undefined goto label at ");
-  }
 }
 
 U0 COCHeaderPut(CCmpCtrl *cc,I64 pass,Bool put)

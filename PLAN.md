@@ -520,7 +520,7 @@ FileRuntime now has a checked version-3 interface and kernel-lifetime ownership.
 Boot/task reads and nested includes use owned current-task directory state; workers
 inherit directory/drive values and require bound volume sessions. The wrappers
 preserve caller IF, including enabled-IF reads and nested includes.
-The bootstrap plus loaded stage now leaves 1760 bytes in the fixed reservation,
+The bootstrap plus loaded stage now leaves 1744 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 
@@ -657,6 +657,18 @@ This runs in boot/IF-clear and worker/IF-set phases with exact temporary-memory
 reclamation. It does not install unconditional cleanup on every throw or claim
 complete parser/AOT/generated-code reclamation. The kernel plus loaded stage now
 uses 391456 of 393216 bytes; see `docs/i386-compiler-unwind.md`.
+
+The public parser and native controls now share intermediate-code initialization
+and auxiliary-payload release. Native control destruction reclaims current and
+saved code contexts during task-exit or catch-boundary cleanup. Retained compiler
+version 16 exposes temporary instruction/misc allocation and discard in an
+84-byte record; FileRuntime version 7 validates the dependency. Tests cover every
+auxiliary kind, wide metadata, allocation failures, saved contexts and all 233
+native function cases. The standalone recovery path now reclaims temporary IR
+with its failed child input. Full parser diagnostics, detached intermediate
+contexts, AOT graphs and published machine code still need their own lifetime
+integration; see `docs/i386-code-context.md`. The kernel plus loaded stage occupies
+391472 of the unchanged 393216-byte reservation.
 
 #### Continuing integration sequence
 

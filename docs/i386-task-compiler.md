@@ -79,9 +79,10 @@ Complete parser/generated-code cleanup remains separate work.
 
 ## Retained services and tests
 
-CompilerRuntime version 15 retains enter, leave, drain and bounded unwind alongside
-construction/destruction and symbol initialization. Its record is 72 bytes; the
-twenty imports are unchanged. FileRuntime version 6 validates that compiler
+CompilerRuntime version 16 retains enter, leave, drain, bounded unwind and
+temporary IR allocation/discard alongside construction/destruction and symbol
+initialization. Its record is 84 bytes; the
+twenty imports are unchanged. FileRuntime version 7 validates that compiler
 contract; its own record stays 32 bytes with six function pointers and eighteen
 imports. Both providers remain resident for the kernel lifetime.
 
@@ -95,8 +96,8 @@ names, bitmap selection, root-only/one-time configuration, ABI rejection, IF
 preservation, reference saturation and allocation failure. An owned input survives
 a failed construction and is reused successfully. Document-callback rejection
 keeps the task reference until a valid retry. A control survives its task's finish
-and is deleted from the root before final reaping. The fixture uses a 256 KiB test
-transfer ending at its 0x50000 arena; the standalone reservation is unchanged.
+and is deleted from the root before final reaping. The fixture uses a 320 KiB test
+transfer ending at its 0x60000 arena; the standalone reservation is unchanged.
 
 Verification commands:
 
@@ -114,3 +115,8 @@ context-selection part of construction; it is not yet the complete public
 `CmpCtrlNew`/`CmpCtrlDel` contract. Public task records and heap/error policy,
 public compiler-list integration, actual prompt/document input, parser/JIT and self-hosting
 remain required.
+
+Native controls now own their current and saved temporary code contexts; their
+release shares the public parser's auxiliary-payload policy. See
+[i386-code-context.md](i386-code-context.md). Full AOT/generated-code publication
+and parser diagnostics remain separate integration requirements.

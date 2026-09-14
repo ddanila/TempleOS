@@ -10,7 +10,7 @@ Startup and CompilerProbe.
 
 ## Interface and ownership
 
-CI386FileServices version 6 is a 32-byte i386 record: version/byte-count fields,
+CI386FileServices version 7 is a 32-byte i386 record: version/byte-count fields,
 a current-task include callback, a decoded-read function, volume binding and
 root task-state initialization, compiler configuration and current-task control
 construction.
@@ -88,12 +88,12 @@ Current images and allocations:
 
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
-| CompilerRuntime, retained | 190768 | 190784 |
-| FileRuntime, retained | 123664 | 123680 |
-| CompilerProbe, reclaimed after task check | 83240 | 83256 |
+| CompilerRuntime, retained | 204888 | 204904 |
+| FileRuntime, retained | 123968 | 123984 |
+| CompilerProbe, reclaimed after task check | 85608 | 85624 |
 
-The native bootstrap is 389296 bytes. With its 2160-byte loaded stage overhead,
-391456 bytes occupy the unchanged 393216-byte reservation, leaving 1760 bytes.
+The native bootstrap is 389312 bytes. With its 2160-byte loaded stage overhead,
+391472 bytes occupy the unchanged 393216-byte reservation, leaving 1744 bytes.
 The separate 512-byte boot sector is excluded from that reservation. Further
 bootstrap growth needs extraction or reduction; the low-memory reservation has
 not been raised. Task allocation helpers and scheduler join are separately

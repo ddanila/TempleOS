@@ -18,10 +18,10 @@ I64 NativeFilesTest()
   if(I386LexFilePush(0,&cc) || I386LexFilePush(&state_heap,0) ||
       I386LexFilePop(&state_heap,&cc) || I386LexFilePop(&state_heap,0)) return 31;
   for(size=24;size<80;size+=8) {
-    if(!I386HeapInit(&small,0x51000,size) || I386LexFilePush(&small,&cc) ||
+    if(!I386HeapInit(&small,0x61000,size) || I386LexFilePush(&small,&cc) ||
         small.used || small.allocations || cc.lex_include_stk) return 32;
   }
-  if(!I386HeapInit(&small,0x51000,80) || !I386LexFilePush(&small,&cc) ||
+  if(!I386HeapInit(&small,0x61000,80) || !I386LexFilePush(&small,&cc) ||
       !I386LexFilePop(&small,&cc) || small.used || small.allocations || cc.lex_include_stk) return 45;
   SetRFlags(GetRFlags|0x200);
   root=I386LexFilePush(&state_heap,&cc);
@@ -32,7 +32,7 @@ I64 NativeFilesTest()
   if(!child || child->depth!=0 || child->next!=root) return 34;
   child->flags=LFSF_DOC; child->doc=StateAlloc(32); child->full_name=StateAlloc(8);
   used=state_heap.used;
-  if(!I386HeapInit(&foreign,0x52000,512)) return 35;
+  if(!I386HeapInit(&foreign,0x62000,512)) return 35;
   other.lex_include_stk=child;
   if(I386LexFilePop(&foreign,&cc,&NativeFileDocRelease,&native_doc_releases) ||
       I386LexFilePop(&state_heap,&other,&NativeFileDocRelease,&native_doc_releases) ||

@@ -18,6 +18,7 @@ I64 FactoryRootTest()
   control_services.version=I386_COMPILER_SERVICES_VERSION-1;
   control_services.bytes=sizeof(CI386CompilerServices);
   control_services.control_enter=&I386CmpCtrlEnter; control_services.control_leave=&I386CmpCtrlLeave;
+  control_services.code_add=&I386ICAdd; control_services.code_misc=&I386COCMiscNew; control_services.code_discard=&I386COCDiscard;
   control_services.control_drain=&I386CmpCtrlDrain; control_services.control_unwind=&I386CmpCtrlUnwind;
   control_services.control_new=&I386CmpCtrlNew; control_services.control_del=&I386CmpCtrlDel;
   if(I386TaskCmpCtrlNew(&task_compiler) ||

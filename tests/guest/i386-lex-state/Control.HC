@@ -14,7 +14,7 @@ I64 NativeControlTest()
   I64 size,i,successes=0,failures=0,used;
   U32 flags=GetRFlags;
   for(size=24;size<=1024;size+=8) {
-    if(!I386HeapInit(&small,0x51000,size)) return 70;
+    if(!I386HeapInit(&small,0x61000,size)) return 70;
     cc=I386CmpCtrlNew(&small,"source",CCF_DONT_FREE_BUF,"C:/Name.HC",0,char_bmp_alpha_numeric);
     if(cc) {
       successes++;
@@ -24,7 +24,7 @@ I64 NativeControlTest()
   }
   //Owned input stays with its caller if any later constructor allocation fails.
   for(size=48;size<=1024;size+=8) {
-    if(!I386HeapInit(&small,0x51000,size) || !(source=I386HeapAlloc(&small,8,TRUE))) return 86;
+    if(!I386HeapInit(&small,0x61000,size) || !(source=I386HeapAlloc(&small,8,TRUE))) return 86;
     source[0]='X';
     cc=I386CmpCtrlNew(&small,source,0,"Owned",0,char_bmp_alpha_numeric);
     if(cc) {
@@ -51,7 +51,7 @@ I64 NativeControlTest()
   cc->ps=StateAlloc(sizeof(CPrsStk)); cc->cur_str=StateAlloc(13);
   cc->cur_help_idx=StateAlloc(9); cc->dollar_buf=StateAlloc(7);
   if(!cc->ps || !cc->cur_str || !cc->cur_help_idx || !cc->dollar_buf ||
-      !I386HeapInit(&foreign,0x52000,512) || I386CmpCtrlDel(&foreign,cc) ||
+      !I386HeapInit(&foreign,0x62000,512) || I386CmpCtrlDel(&foreign,cc) ||
       !I386CmpCtrlDel(&state_heap,cc) || state_heap.used || state_heap.allocations) return 78;
   //A missing document service rejects before changing the control or its graph.
   cc=I386CmpCtrlNew(&state_heap,0,0,"Document",0,char_bmp_alpha_numeric);
@@ -74,3 +74,5 @@ I64 NativeControlTest()
   }
   return state_free_errors;
 }
+
+#include "/Kernel/SymbolDelete.HC"

@@ -34,7 +34,7 @@ provider callbacks are not a failure-atomic disposal contract.
 CompilerRuntime version 12 exposes root scope initialization. The retained module
 owns clone/destructor code for the kernel lifetime; it imports the kernel's native
 hash table new/validate/delete functions and shares symbol destruction code.
-The current version 15 service table is 72 bytes, with twenty imports and 43
+The current version 16 service table is 84 bytes, with twenty imports and 43
 kernel bindings.
 
 Root scope initialization follows compiler-module validation. Subsequent keyboard
@@ -73,7 +73,7 @@ QEMU/486 development profile and do not establish strict 386 hardware support.
 
 Two x64 rebuild/reboot generations, native task-symbol, task, ATA/file, hash-table
 and exception checks, and the full standalone suite passed. The task fixture uses a bounded 192 KiB transfer ending at its 0x40000 arena.
-The expanded scope/constructor fixture uses 256 KiB and an arena at 0x50000.
+The expanded scope/constructor/IR fixture uses 320 KiB and an arena at 0x60000.
 The kernel links `HashTableCore.HC`; the full `HashTable.HC` still includes resizing
 for callers that need it, and the resize regression passes. Omitting that unused
 3296-byte routine from the bootstrap keeps the fixed reservation intact.

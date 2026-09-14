@@ -55,7 +55,7 @@ I64 NativeTakeTest()
   I386IrqSave;
   //Only the source allocation fits, or source plus record: neither failure transfers it.
   for(size=24;size<128;size+=8) {
-    if(!I386HeapInit(&small,0x51000,size)) return 95;
+    if(!I386HeapInit(&small,0x61000,size)) return 95;
     source=I386HeapAlloc(&small,1,TRUE); if(!source) return 96;
     used=small.used;
     cc.flags=CCF_DONT_FREE_BUF|CCF_USE_LAST_U16; cc.last_U16='Q';

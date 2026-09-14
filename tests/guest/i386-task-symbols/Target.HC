@@ -32,6 +32,7 @@ CCmpCtrl *retained_control;
 extern I64 FactoryRootTest();
 extern I64 ActiveTest();
 extern I64 UnwindRootTest();
+extern I64 CodeTest();
 extern Bool FactoryWorkerTest(I64 id);
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
@@ -56,7 +57,7 @@ I64 ScopeTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x50000,65536)) return 1;
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x60000,65536)) return 1;
   OutU8(0x21,255); OutU8(0xA1,255);
   symbols=I386HashTableNew(&heap,8);
   if(!symbols || !I386TaskSymbolsInit(&root,&heap,symbols) ||
@@ -95,6 +96,7 @@ I64 ScopeTest()
       root.lifetime_refs || heap.used!=used || heap.allocations!=allocations) return 9;
   i=ActiveTest; if(i) return i;
   i=UnwindRootTest; if(i) return i;
+  i=CodeTest; if(i) return i;
   borrow=I386TaskFilesBorrow(&root,&snapshot,&selected);
   if(!borrow || I386TaskSymbolsDestroy(&root) || !I386TaskFilesRelease(borrow) ||
       !I386TaskSymbolsDestroy(&root) || !I386TaskFilesDestroy(&root) ||
@@ -160,3 +162,5 @@ U0 Grandchild(I64 unused)
 #include "T:/Active.HC"
 
 #include "T:/Unwind.HC"
+
+#include "T:/Code.HC"

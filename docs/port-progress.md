@@ -3104,3 +3104,45 @@ leaving 1760 bytes in the unchanged 393216-byte reservation. CompilerRuntime use
 hashes used for these pre-commit builds. Public task/heap policy, complete native
 parser/JIT, DolDoc and persistent editing, strict 386SX/DX/no-387 acceptance and
 native self-hosting remain unfinished.
+
+
+## Shared parser code contexts and native IR reclamation
+
+`Compiler/CodeCtrl.HC` now shares intermediate-code/auxiliary initialization and
+payload release between the public parser and native control services. IC fields
+retain wide values/line numbers, precedence, type pointers and trace/lock flags.
+The original I64_MAX invalid-pointer marker is preserved on x64 and converted to
+the native pointer width. Release covers all eight auxiliary kinds, including
+jump/float arrays, dimension lists and detached symbol graphs. Public unused-label
+warnings and the final undefined-label diagnostic remain; earlier deferred names
+are now freed when multiple undefined labels exist.
+
+Native constructors seed an empty code context. Explicit-heap instruction/misc
+allocation leaves queues unchanged on failure; discard silently reclaims the
+current graph for recovery. Control destruction releases that graph and each
+saved enclosing context before input/control release. Saved headers follow the
+original fixed active-sentinel convention. Missing document callbacks are checked
+before graph mutation. The standalone catch/retry probe now owns temporary IR in
+the failed child and exercises fresh instruction allocation/discard after recovery.
+
+CompilerRuntime version 16 has an 84-byte record and twenty imports. FileRuntime
+version 7 validates this dependency while retaining its 32-byte format and eighteen
+imports. Kernel bindings remain 43. Public parser/AOT and detached-context error
+cleanup, diagnostics, generated-code publication and public heap/error semantics
+remain required; this does not establish a native parser/JIT.
+
+Verification passes both x86-64 rebuild/reboot generations, all 233 native function
+cases, `--task-symbols`, `--lex-state`, and the full standalone 8 MiB QEMU/486 suite
+with executable-region instruction audits and module rejection tests. The expanded
+task fixture executes all auxiliary kinds, duplicate undefined-label cleanup,
+64-bit metadata, allocation exhaustion, nested saved graphs and final reclamation
+with IF clear/set. Its test loader is now 320 KiB with heap at 0x60000; lexical
+state uses 256 KiB with heap at 0x50000 and scratch arenas at 0x61000/0x62000.
+The standalone reservation is unchanged.
+
+The kernel is 389312 bytes, or 391472 including its 2160-byte loaded stage, leaving
+1744 bytes in the fixed 393216-byte reservation. CompilerRuntime uses 204888 image /
+204904 heap bytes, FileRuntime 123968 / 123984, and the temporary probe 85608 /
+85624, reclaimed after its task phase. These pre-commit manifests record the local
+source hashes. See `docs/i386-code-context.md`; strict 386SX/DX/no-387 validation,
+DolDoc/editing and native self-hosting remain unfinished.

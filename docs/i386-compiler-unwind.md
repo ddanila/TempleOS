@@ -37,14 +37,15 @@ previous ownership and reaping rules.
 
 The shared control release sequence covers its owned input/include records,
 saved lexer and hash contexts, parser-stack allocation and temporary strings.
-It does not independently reclaim caller-owned symbol tables, generated code or
-all parser/AOT graphs. Wiring their existing release policies into native parser
+It now also releases current and saved code-context graphs using the shared
+parser payload policy; see [i386-code-context.md](i386-code-context.md). It does not
+independently reclaim caller-owned symbol tables, generated code or all AOT graphs. Wiring their existing release policies into native parser
 failure paths is still required before claiming a recoverable native compiler.
 
 ## Retained integration and verification
 
-CompilerRuntime version 15 exposes `control_unwind` in its 72-byte service table;
-its twenty imports are unchanged. FileRuntime version 6 validates the new compiler
+CompilerRuntime version 16 exposes `control_unwind` in its 84-byte service table;
+its twenty imports are unchanged. FileRuntime version 7 validates the new compiler
 dependency, retaining its 32-byte record and eighteen imports. CompilerProbe
 version 4 imports the kernel's resident `SysTry`, `SysUntry` and `throw` in addition
 to its previous thirteen bindings. The kernel export index now has 43 entries.

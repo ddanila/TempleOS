@@ -23,7 +23,7 @@ extern I64 NativeControlTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
-  if(!I386HeapInit(&state_heap,0x40000,65536)) return 8;
+  if(!I386HeapInit(&state_heap,0x50000,65536)) return 8;
   result=NativeBitIntrinsicsTest;
   if(result) return result;
   result=BitIntrinsicsTest;
@@ -73,11 +73,11 @@ I64 NativeStateTest()
   OutU8(0x21,255); OutU8(0xA1,255);
   CmpCtrlSeed(&cc,CCF_USE_LAST_U16,0,0); cc.lex_include_stk=files;
   cc.last_U16='Q'; cc.cur_buf_ptr=0x12345678; files[0].buf_ptr=0xABCD;
-  if(!I386HeapInit(&foreign,0x52000,512)) return 10;
+  if(!I386HeapInit(&foreign,0x62000,512)) return 10;
   if(I386LexPush(&state_heap,0) || I386LexPush(&state_heap,&other) ||
       I386LexPush(0,&cc) || I386LexPop(&state_heap,0) || I386LexPop(&state_heap,&cc)) return 11;
   for(size=24;size<88;size+=8) {
-    if(!I386HeapInit(&small,0x51000,size) || I386LexPush(&small,&cc) ||
+    if(!I386HeapInit(&small,0x61000,size) || I386LexPush(&small,&cc) ||
         small.used || small.allocations || cc.lex_prs_stk || cc.flags!=CCF_USE_LAST_U16 ||
         cc.last_U16!='Q' || cc.cur_buf_ptr!=0x12345678 || files[0].buf_ptr!=0xABCD) return 12;
   }

@@ -43,8 +43,8 @@ Arbitrary heap or graph corruption is not a transactional recovery contract.
 
 ## Retained integration and verification
 
-CompilerRuntime version 15 retains constructor/destructor, task-symbol, active
-queue and bounded unwind entries in its checked 72-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
+CompilerRuntime version 16 retains constructor/destructor, task-symbol, active
+queue, bounded unwind and temporary IR entries in its checked 84-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
 from the kernel, avoiding another copy of file-stack mechanisms. The kernel now
 publishes 43 bindings; the retained compiler has twenty imports.
 
@@ -57,8 +57,8 @@ lower-level routines that accept caller-owned controls.
 The lexical-state fixture checks constructor failure across small arenas with
 borrowed and owned sources, seeded state, nested files and saved positions, saved
 hash contexts, parser/string storage, foreign-heap rejection, document callback
-requirements, prompt ownership and IF preservation. Its 192 KiB loader ends at
-0x40000, the beginning of its existing arena. This test configuration does not
+requirements, prompt ownership and IF preservation. Its 256 KiB loader ends at
+0x50000, the beginning of its existing arena. This test configuration does not
 increase the standalone kernel's fixed bootstrap reservation.
 
 Commands:
@@ -86,3 +86,7 @@ rejection. Public heap/error behavior and parser unwind remain open.
 
 Explicit catch-boundary cleanup now preserves enclosing active controls; see
 [i386-compiler-unwind.md](i386-compiler-unwind.md).
+
+Native destruction now releases current and saved intermediate-code contexts
+before input/control release. Shared graph release handles all eight auxiliary
+kinds and their owned payloads; see [i386-code-context.md](i386-code-context.md).

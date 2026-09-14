@@ -1,8 +1,13 @@
-;Test stages must remain below their first heap arena at 0x40000.
+;Each test stage must remain below its selected first heap arena.
 %ifndef BOOT_SECTORS
 %define BOOT_SECTORS 128
 %endif
-%ifdef LEX_LARGE_TEST
+%ifdef COMPILER_GRAPH_TEST
+;Compiler graph fixture uses its first arena at 0x60000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 640
+%error Compiler graph test stage must fit below physical 0x60000
+%endif
+%elifdef LEX_LARGE_TEST
 ;Large fixtures use their first arena at or above 0x50000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 512
 %error Large lexer test stage must fit below physical 0x50000
