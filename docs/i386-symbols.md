@@ -266,3 +266,39 @@ heap use for table ownership, buckets, class arrays and names. This heap figure
 excludes registry globals and code, which are included in the kernel image.
 Both x86-64 rebuild/reboot generations and the expanded native symbol suite pass,
 including instruction audits, cleanup, module rejection and keyboard/VGA checks.
+
+## Compiler control records and initial state
+
+`Kernel/CompilerTypes.HH` extracts the existing compiler declarations from
+`KernelA.HH`: compiler options and tokens, intermediate-code records, parser
+stack, assembler/AOT records, lexical files, hash context, CCmpCtrl and compiler
+globals. Numeric fields and raw tags retain their widths. Embedded structures
+follow target pointer sizes; this is the actual public control record rather
+than a smaller replacement used only by the bootstrap runtime. Register constants
+remain compiler identifiers and do not authorize newer CPU instructions.
+
+`Compiler/ControlInit.HH/HC` shares the initial self-linked control/stream queues,
+flags, default warning options, symbol-table bindings and character bitmap.
+`LexFileSeed` sets a file's buffer pointers and initial line number, retaining the
+include-stack depth, name and flags set by its caller. The x86-64 CmpCtrlNew still
+selects Fs's hash table, handles filenames and prompt-buffer allocation, and uses
+the existing LexFilePush/pop and destructor path.
+
+Native callers must supply fresh zeroed, stable records and live borrowed table,
+bitmap and buffer references. These helpers do not allocate, acquire ownership,
+initialize the code-generation queues or implement compiler destruction. Native
+file/include ownership, task-selected constructors, complete lexer state and
+compiler execution remain integration work.
+
+The extracted declaration block is byte-preserved. Forward declarations use
+type-name guards: blindly repeating `extern class` would shadow already-defined
+document types in HolyC. Both x86-64 rebuild/reboot generations pass with the
+shared initializers, exercising the production compiler-control constructor.
+
+Host/native fixtures verify self/stream queue sentinels, default options, borrowed
+symbol/bitmap/buffer bindings, preserved file metadata, zeroed untouched fields
+and values beyond 32 bits in control/lexical fields, plus embedded intermediate-code fields.
+CCmpCtrl is 472 bytes on x86-64 and 344 on i386; CLexFile is 80/52 bytes and
+CCodeCtrl is 48/28 bytes. Native assertions also cover embedded record sizes and
+critical offsets. The expanded symbol fixture, instruction audit and complete
+314504-byte standalone kernel boot checks pass on the 8 MiB QEMU/486 profile.

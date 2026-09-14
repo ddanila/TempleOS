@@ -1,3 +1,5 @@
+#include "/Compiler/ControlInit.HC"
+
 CLexFile *LexFilePush(CCmpCtrl *cc)
 {//#include file push.
   CLexFile *res=CAlloc(sizeof(CLexFile));
@@ -32,26 +34,21 @@ CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL)
   //new names are used.  See $LK,"Psalmody CmpCtrlNew",A="FF:::/Apps/Psalmody/PsalmodyFile.HC,CmpCtrlNew"$.
   CCmpCtrl *cc=CAlloc(sizeof(CCmpCtrl));
   CLexFile *tmpf;
-  QueInit(cc);
-  cc->flags=flags;
-  cc->opts=1<<OPTf_WARN_UNUSED_VAR|1<<OPTf_WARN_HEADER_MISMATCH;
-  cc->htc.hash_mask=HTG_TYPE_MASK-HTT_IMPORT_SYS_SYM;
-  cc->htc.define_hash_table=cc->htc.hash_table_lst=
-	cc->htc.glbl_hash_table=cc->htc.local_hash_table=Fs->hash_table;
+  U32 *alpha_numeric;
   if (flags&CCF_KEEP_AT_SIGN)
-    cc->char_bmp_alpha_numeric=char_bmp_alpha_numeric_no_at;
+    alpha_numeric=char_bmp_alpha_numeric_no_at;
   else
-    cc->char_bmp_alpha_numeric=char_bmp_alpha_numeric;
+    alpha_numeric=char_bmp_alpha_numeric;
+  CmpCtrlSeed(cc,flags,Fs->hash_table,alpha_numeric);
   tmpf=LexFilePush(cc);
-  QueInit(&cc->next_stream_blk);
   if (filename)
     tmpf->full_name=FileNameAbs(filename);
   else
     tmpf->full_name=StrNew(blkdev.tmp_filename);
   if (flags & CCF_PMT)
     buf=CAlloc(8);
-  tmpf->buf=tmpf->buf_ptr=tmpf->line_start=cc->cur_buf_ptr=buf;
-  tmpf->line_num=1;
+  LexFileSeed(tmpf,buf);
+  cc->cur_buf_ptr=buf;
   return cc;
 }
 

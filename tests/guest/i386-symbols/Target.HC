@@ -117,6 +117,16 @@ U0 DeleteFreeRaw(U8 *allocation)
 #include "/Compiler/I386/InternalTypes.HC"
 #include "T:/InternalTypes.HC"
 #include "T:/InternalRegistry.HC"
+#include "/Compiler/ControlInit.HC"
+#assert sizeof(CCmpCtrl)==344
+#assert sizeof(CLexFile)==52
+#assert sizeof(CIntermediateCode)==216
+#assert sizeof(CLexHashTableContext)==44
+#assert offset(CCmpCtrl.flags)==16
+#assert offset(CCmpCtrl.htc)==120
+#assert offset(CCmpCtrl.coc)==292
+#assert offset(CCmpCtrl.aot_depth)==328
+#include "T:/Control.HC"
 I64 NativeSymbolDeleteTest()
 {
   U32 flags=I386IrqSave;
@@ -125,6 +135,8 @@ I64 NativeSymbolDeleteTest()
   I64 result;
   if(!I386HeapInit(&delete_heap,0x40000,65536)) return 64;
   delete_free_errors=0;
+  result=ControlSeedTest(4);
+  if(result) return result;
   result=InternalTypeSeedTest(4);
   if(result) return result;
   result=InternalRegistryTest;

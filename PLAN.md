@@ -344,6 +344,10 @@ programming environment through these concrete steps:
    A native registry now supplies the standalone kernel symbol table's parent,
    with alias-map checks, allocation-failure cleanup and a measured 7,672-byte
    heap footprint. Opcode tables and full compiler-control startup remain open.
+   Compiler/lexer/IR declarations now share a target-sized header, and the
+   existing control/file initialization runs through shared helpers. Native
+   CCmpCtrl layout, queue bindings and wide-value tests pass; file/include
+   ownership and native lexer execution remain to be connected.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 

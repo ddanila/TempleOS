@@ -1998,3 +1998,24 @@ startup-module execution/rejection, keyboard/VGA and timer behavior. The builder
 records and checks the type count and allocation footprint. Opcode tables,
 compiler-control initialization, native source execution, the full environment,
 self-hosting and strict 386 validation remain unfinished. See `i386-symbols.md`.
+
+## Shared compiler control declarations and initialization
+
+Compiler/lexer/IR/assembler declarations now live in a shared header, extracted
+byte for byte from KernelA.HH. Type-name guards avoid shadowing complete document
+types with forward declarations. Native code can now use the real CCmpCtrl and
+its embedded structures with target-width pointers and unchanged numeric fields.
+
+The production x86-64 CmpCtrlNew now calls shared helpers for control/stream queue
+sentinels, flags/options, symbol/bitmap bindings and lexical buffer/line state.
+Filename, prompt-buffer and include-stack ownership remain on its existing path.
+Both x86-64 rebuild generations pass. Host/native fixtures pass default/zeroed
+state, borrowed-reference bindings, retained file metadata, critical offsets and
+wide values. Native CCmpCtrl is 344 bytes versus 472 on x86-64, with CLexFile at
+52/80 and CCodeCtrl at 28/48. The existing symbol suites, instruction audit and
+314504-byte kernel's complete 8 MiB QEMU/486 boot checks pass.
+
+Native file/include ownership, task-selected control constructors, complete lexer
+state and source execution remain required. These initializers do not yet run
+the parser, JIT shell or self-hosted compiler. See `i386-symbols.md`.
+
