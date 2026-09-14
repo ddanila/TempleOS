@@ -2901,3 +2901,29 @@ Public task/drive and resident-file semantics, scheduler-aware ATA ownership,
 public errors, full compiler-control lifetime, parser/JIT, DolDoc/persistent editing,
 strict 386SX/DX validation and self-hosting remain open. See
 `docs/i386-file-runtime.md` for the connected path, contracts and measurements.
+
+## Current-task file ownership and retained reads
+
+Native tasks now inherit owned directory/drive state before becoming runnable.
+The retained FileRuntime version-3 interface initializes root state and resolves
+reads/includes through the FS-bound current task. Workers require bound volume
+sessions. A borrow keeps the directory alive through disk polling/yields; reap
+reclaims state before the task arena, and rejects a still-borrowed context.
+
+The ATA task fixture passes independent C:/One and D:/Two relative reads,
+allocation-failure cleanup, busy-state replacement/reap rejection, parent
+independence and final heap reclamation. The host compares both complete disk
+images and the exact command suffix, including queued poison suppression.
+The standalone kernel passes direct read success/error checks in boot and worker
+phases and repeats nested includes with interrupts enabled and preserved.
+All temporary file/codec/probe allocations are reclaimed. Two x64 rebuild/reboot
+generations, native task/exception/message/file checks and the full standalone
+rejection/VGA/keyboard suite pass; this remains QEMU/486 development evidence.
+
+The native kernel is 386320 bytes; including the 2160-byte loaded stage leaves
+4736 bytes in the unchanged 393216-byte reservation. Bounded export-index tables
+reduce repeated module-binding setup. Retained FileRuntime now uses 115592 heap
+bytes; CompilerProbe uses 74384 temporary bytes, fully reclaimed after its task
+phase. See `docs/i386-task-files.md` and `docs/i386-file-runtime.md` for contracts
+and verification scope. Public task/drive/file behavior, compiler-control
+lifetimes, parser/JIT, DolDoc and native self-hosting remain required.

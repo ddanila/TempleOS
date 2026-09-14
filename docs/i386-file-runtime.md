@@ -10,10 +10,11 @@ Startup and CompilerProbe.
 
 ## Interface and ownership
 
-CI386FileServices version 2 is a 20-byte i386 record: version/byte-count fields,
-an include callback, a decoded-read function and a volume-binding function.
+CI386FileServices version 3 is a 24-byte i386 record: version/byte-count fields,
+a current-task include callback, a decoded-read function, volume binding and
+root task-state initialization.
 Initialization writes a caller-owned candidate. The kernel validates the version,
-size and all three addresses before publication; the host independently compares
+size and all four addresses before publication; the host independently compares
 them with export offsets. The retained image owns canonical channel gates and I/O
 tables, initialized by the root-only binding service.
 
@@ -23,12 +24,13 @@ protocol functions and scheduler block/wake/yield. It retains its string/codec
 code and task/session adapters, with no duplicate PIO protocol or allocator.
 The kernel publishes 35 explicit resident bindings.
 
-The boot configuration borrows one mounted volume in drive slot C, a root current
-and home directory, and the original whitespace bitmap. Its stable path/volume
-context is passed to the include callback; the module does not retain an implicit
-current task. Both code images, the context and referenced volume/heap must remain
-live while calls use them. Kernel shutdown is the current image lifetime; general
-module unloading and arbitrary task-owned callbacks remain separate work.
+The boot configuration borrows one mounted volume in drive slot C, home/boot
+configuration and the original whitespace bitmap. The root owns its directory
+state; children inherit independent directory/drive values at spawn. Read/include
+callbacks use the FS-bound current task and borrow its state across disk polling
+and yields. The code images and shared configuration/volumes must remain live.
+Kernel shutdown is the current image lifetime; general module unloading remains
+separate work. See [i386-task-files.md](i386-task-files.md) for lifetime rules.
 
 Failed module loads and incompatible returned interfaces reclaim their allocations
 and preserve the pre-load heap baseline. Three boot mutations exercise a wrong CPU
@@ -37,7 +39,8 @@ probes/startup, with no file interface published. Disk contents remain unchanged
 
 ## Connected compiler path
 
-CompilerProbe's version-2, 48-byte borrowed record now includes the disk provider.
+CompilerProbe's version-3, 52-byte borrowed record includes the disk provider and
+file-service table.
 At boot, its version-10 retained lexer reads a root include directive, calls the
 retained file provider, loads a plain outer source through the default HC.Z
 fallback, then expands a compressed inner source. The inner archive is produced
@@ -51,13 +54,14 @@ at parent value 44. This connects the existing loader's failure policy to actual
 retained include dispatch. Source bytes and copied names follow the existing owned
 file-stack contract; the codec's controls/stacks and temporary archives are freed.
 
-Calls retain their IF-clear convention. After boot-time module loading and startup,
-the kernel binds C to the runtime's canonical channel gate before starting tasks.
-The task-phase probe now performs the same nested disk reads and archive-error
-cleanup as the boot probe. Polling yields with the file session still owned.
-It also explicitly enables IF and verifies rejection before disk access, then
-restores its original flags. See [i386-redsea-tasks.md](i386-redsea-tasks.md) for
-session scope, cancellation restrictions and remaining public integration.
+Current-task callbacks preserve caller IF. After boot-time module loading and
+startup, the kernel binds C to the runtime's canonical channel gate before starting
+tasks. The task-phase probe performs nested disk reads and archive-error cleanup,
+then repeats the nested reads with IF set and verifies flag preservation (136
+consumed lines across both traversals). Polling yields with the file session and
+path borrow still owned. Both phases also call the decoded-read entry directly,
+checking owned bytes/name and unchanged outputs after malformed-archive failure.
+See [i386-redsea-tasks.md](i386-redsea-tasks.md) for session scope and restrictions.
 
 After the task probe returns, the kernel reclaims its diagnostic module and verifies
 that both compiler and file-service images remain live allocations of their
@@ -74,7 +78,7 @@ python3 tools/build-i386-kernel.py --test
 ```
 
 Both x64 rebuild/reboot generations and the complete native boot suite pass:
-connected disk includes, malformed-archive recovery, enabled-IF rejection, image
+connected disk includes, malformed-archive recovery, enabled-IF preservation, image
 lifetime/reclamation, all module rejection cases, source checks, VGA/keyboard/timer
 checks, unchanged disks and executable-region instruction audits across all ten
 modules. This remains an 8 MiB QEMU/486 development result.
@@ -84,14 +88,15 @@ Current images and allocations:
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
 | CompilerRuntime, retained | 138664 | 138680 |
-| FileRuntime, retained | 96144 | 96160 |
-| CompilerProbe, reclaimed after task check | 68680 | 68696 |
+| FileRuntime, retained | 115576 | 115592 |
+| CompilerProbe, reclaimed after task check | 74368 | 74384 |
 
-The native bootstrap is 387432 bytes. With its 2160-byte loaded stage overhead,
-389592 bytes occupy the unchanged 393216-byte reservation, leaving 3624 bytes.
+The native bootstrap is 386320 bytes. With its 2160-byte loaded stage overhead,
+388480 bytes occupy the unchanged 393216-byte reservation, leaving 4736 bytes.
 The separate 512-byte boot sector is excluded from that reservation. Further
 bootstrap growth needs extraction or reduction; the low-memory reservation has
-not been raised. These are measured artifacts built with local changes before
+not been raised. Bounded export-index tables replace repeated binding setup calls
+and recover conventional-memory space. These are measured artifacts built with local changes before
 commit; manifests record revision and source hashes.
 
 Public task/drive binding, resident-file caching, public errors/exceptions,

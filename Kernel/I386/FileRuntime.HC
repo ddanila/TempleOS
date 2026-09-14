@@ -1,4 +1,4 @@
-//Retained file/path/expansion services. IF-clear callers; optional task-owned volume sessions.
+//Retained current-task file services. Code and borrowed configuration have kernel lifetime.
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
@@ -41,12 +41,13 @@ Bool I386FileRuntimeBind(CI386Scheduler *scheduler,CI386RedSea *volume)
   return I386RedSeaTaskBind(volume,&file_io[number]);
 }
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==20
+#assert sizeof(CI386FileServices)==24
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
-  services->include=&I386LexFileInclude; services->read=&I386FileReadAt; services->bind=&I386FileRuntimeBind;
+  services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
+  services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
   return 1;
 }
 #include "/Kernel/I386/FileNames.HC"
@@ -60,3 +61,6 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/AtaChannel.HC"
 #include "/Kernel/I386/AtaTask.HC"
 #include "/Kernel/I386/RedSeaTask.HC"
+
+#include "/Kernel/I386/TaskFiles.HC"
+#include "/Kernel/I386/TaskFileRead.HC"

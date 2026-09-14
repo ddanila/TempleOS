@@ -1,7 +1,7 @@
 #include "/Compiler/I386/LexFileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
 Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
-  CFilePathContext *paths,CI386FileVolumes *volumes,U8 *filename)
+  CFilePathContext *paths,CI386FileVolumes *volumes,U8 *filename,Bool require_session=FALSE)
 {
   U8 *extension,*name=0,*source;
   Bool attached;
@@ -13,7 +13,7 @@ Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
   name=I386FileNameAbs(heap,paths,extension);
   I386HeapFree(heap,extension);
   if(!name) return FALSE;
-  source=I386FileReadAt(heap,paths,volumes,name);
+  source=I386FileReadAt(heap,paths,volumes,name,0,0,0,require_session);
   if(!source) { I386HeapFree(heap,name); return FALSE; }
   attached=I386LexIncludeTake(heap,cc,name,source,FALSE);
   I386HeapFree(heap,name);

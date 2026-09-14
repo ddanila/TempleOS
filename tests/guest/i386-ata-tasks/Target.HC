@@ -32,6 +32,7 @@ U0 PollProbe(U8 *context)
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 DiskTest();
 extern I64 FileSessionTest();
+extern I64 TaskFilesTest();
 extern Bool FileSessionReadFailure();
 U0 Diagnostic(U32 value)
 {
@@ -103,6 +104,7 @@ I64 DiskTest()
   for(i=0;i<3;i++) if(!I386TaskDestroy(workers[i])) return 10;
   if(heap.used || heap.allocations || !I386HeapValid(&heap)) return 11;
   i=FileSessionTest; if(i) return i;
+  i=TaskFilesTest; if(i) return i;
   //One device rejects an out-of-range command after its reported limit is forged.
   //The other drive's already queued request must fail without issuing a command.
   disks[0].sectors=32769;
@@ -197,3 +199,5 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/AtaTask.HC"
 
 #include "T:/RedSea.HC"
+
+#include "T:/TaskFiles.HC"

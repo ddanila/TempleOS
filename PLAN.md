@@ -516,9 +516,11 @@ See `docs/i386-lex-includes.md`.
 
 The retained lexer now consumes nested plain/compressed disk includes, restores
 parent input after an archive error and reclaims temporary source/codec state.
-FileRuntime has a checked version-2 interface and kernel-lifetime ownership.
-Both boot and task reads pass; its IF-clear entry contract remains enforced.
-The bootstrap plus loaded stage now leaves 3624 bytes in the fixed reservation,
+FileRuntime now has a checked version-3 interface and kernel-lifetime ownership.
+Boot/task reads and nested includes use owned current-task directory state; workers
+inherit directory/drive values and require bound volume sessions. The wrappers
+preserve caller IF, including enabled-IF reads and nested includes.
+The bootstrap plus loaded stage now leaves 4736 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 
@@ -558,6 +560,15 @@ nested includes and exact temporary-memory reclamation. Follow with public API
 behavior comparisons against x86-64; private-helper tests alone do not satisfy
 steps 4–5. Measure resident and peak memory without increasing the fixed bootstrap
 reservation to accommodate routine integration growth.
+
+Native task-state ownership and retained routing now pass the private integration
+checks above. Two workers resolve relative names independently on C:/One and
+D:/Two, while tests cover inheritance failure, borrowed-state protection and reap
+reclamation. The standalone kernel exercises retained reads and nested includes
+with IF clear and set. These results leave public `CTask`/`CDrv`, `Cd`, resident
+files, exception semantics and compiler-control construction/destruction open;
+see `docs/i386-task-files.md`. Continue with steps 4–5 rather than expanding the
+private API into an application contract.
 
 #### Continuing integration sequence
 

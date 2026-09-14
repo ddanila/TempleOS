@@ -8,5 +8,5 @@ class CI386FileVolumes { CI386RedSea *letter[26]; };
 //Owned decoded bytes; optional owned name is the requested absolute name, not a found alias.
 //Failure leaves all optional outputs unchanged. This is not the public FileRead API.
 public extern U8 *I386FileReadAt(CI386Heap *heap,CFilePathContext *paths,
-  CI386FileVolumes *volumes,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0);
+  CI386FileVolumes *volumes,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0,Bool require_session=FALSE);
 #endif

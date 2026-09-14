@@ -60,7 +60,6 @@ U8 *kernel_file_image;
 I64 kernel_file_size;
 CFilePathContext kernel_paths;
 CI386FileVolumes kernel_volumes;
-CI386LexFileContext kernel_file_context;
 CI386LexIncludeService kernel_file_include;
 U8 *kernel_compiler_image;
 I64 kernel_compiler_size,kernel_compiler_span;
@@ -86,7 +85,12 @@ extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 
 extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelKeys(I64 unused);
 extern U0 KernelSymbols();
+U8 kernel_startup_bindings[3]={0,1,2};
+U8 kernel_compiler_bindings[15]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17};
+U8 kernel_probe_bindings[13]={0,18,19,12,11,20,13,14,3,15,16,9,21};
+U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
+extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)
 {
   CI386MemRange reserved,arena;
@@ -340,9 +344,7 @@ U0 KernelStartup()
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"Startup.t32m",&file)!=1)
     KernelStop;
-  KernelBinding(&bindings[0],"KernelLog");
-  KernelBinding(&bindings[1],"KernelDisplay");
-  KernelBinding(&bindings[2],"kernel_startup_count");
+  KernelBindings(bindings,kernel_startup_bindings,3,sizeof(bindings)/sizeof(CI386ModuleBinding));
   image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,3);
   if(!image || kernel_heap.allocations!=allocations+1) KernelStop;
   transient=kernel_heap.used-used;
@@ -434,25 +436,22 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
   binding->name=symbol->str; binding->kind=symbol->kind; binding->address=address;
 }
 
+U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity)
+{
+  I64 i;
+  if(!bindings || !indices || count!=capacity || count<1 || count>35) KernelStop;
+  for(i=0;i<count;i++) {
+    if(indices[i]>=35) KernelStop;
+    KernelBinding(&bindings[i],kernel_exports[indices[i]].str);
+  }
+}
+
 U0 KernelCompilerLoad()
 {//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
   CI386ModuleBinding bindings[15];
   I64 used=kernel_heap.used;
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  KernelBinding(&bindings[0],"I386LexRawChar");
-  KernelBinding(&bindings[1],"I386LexSourceRead");
-  KernelBinding(&bindings[2],"char_bmp_hex_numeric");
-  KernelBinding(&bindings[3],"char_bmp_dec_numeric");
-  KernelBinding(&bindings[4],"char_bmp_non_eol");
-  KernelBinding(&bindings[5],"HashFind"); KernelBinding(&bindings[6],"StrCmp");
-  KernelBinding(&bindings[7],"I386HeapAlloc");
-  KernelBinding(&bindings[8],"I386HeapFree");
-  KernelBinding(&bindings[9],"I386HeapSize");
-  KernelBinding(&bindings[10],"I386IrqSave");
-  KernelBinding(&bindings[11],"I386IrqRestore");
-  KernelBinding(&bindings[12],"I386LexIncludeCopy");
-  KernelBinding(&bindings[13],"HashAdd");
-  KernelBinding(&bindings[14],"char_bmp_non_eol_white_space");
+  KernelBindings(bindings,kernel_compiler_bindings,15,sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_compiler_image=KernelServiceLoad("/Modules/I386/CompilerRuntime.t32m","RUNTIME ",
     bindings,15,&kernel_compiler,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION);
   kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
@@ -466,13 +465,7 @@ U0 KernelCompilerProbe(I64 phase)
   U32 flags;
   if(phase==0) {
     if(kernel_probe_image) KernelStop;
-    KernelBinding(&bindings[0],"KernelLog"); KernelBinding(&bindings[1],"KernelHex");
-    KernelBinding(&bindings[2],"KernelStop"); KernelBinding(&bindings[3],"I386HeapSize");
-    KernelBinding(&bindings[4],"I386HeapFree"); KernelBinding(&bindings[5],"I386HeapValid");
-    KernelBinding(&bindings[6],"I386IrqSave"); KernelBinding(&bindings[7],"I386IrqRestore");
-    KernelBinding(&bindings[8],"I386LexRawChar"); KernelBinding(&bindings[9],"I386LexIncludeCopy");
-    KernelBinding(&bindings[10],"HashAdd"); KernelBinding(&bindings[11],"StrCmp");
-    KernelBinding(&bindings[12],"char_bmp_alpha_numeric");
+    KernelBindings(bindings,kernel_probe_bindings,13,sizeof(bindings)/sizeof(CI386ModuleBinding));
     if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
         !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
         !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerProbe.t32m",&file)!=1) KernelStop;
@@ -491,7 +484,7 @@ U0 KernelCompilerProbe(I64 phase)
   probe.heap=&kernel_heap; probe.compiler=&kernel_compiler; probe.symbols=kernel_symbols;
   probe.i64_type=kernel_types.by_raw[RT_I64]; probe.runtime_image=kernel_compiler_image;
   probe.runtime_size=kernel_compiler_size; probe.phase=phase;
-  probe.disk_include=&kernel_file_include;
+  probe.disk_include=&kernel_file_include; probe.files=&kernel_files;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     flags=I386IrqSave;
@@ -521,28 +514,15 @@ U0 KernelFileLoad()
 {
   CI386ModuleBinding bindings[18];
   if(kernel_file_image || kernel_files.version) KernelStop;
-  KernelBinding(&bindings[0],"I386HeapAlloc"); KernelBinding(&bindings[1],"I386HeapFree");
-  KernelBinding(&bindings[2],"I386HeapSize"); KernelBinding(&bindings[3],"I386IrqSave");
-  KernelBinding(&bindings[4],"I386IrqRestore"); KernelBinding(&bindings[5],"I386RedSeaFind");
-  KernelBinding(&bindings[6],"I386RedSeaResolve"); KernelBinding(&bindings[7],"I386RedSeaReadAll");
-  KernelBinding(&bindings[8],"I386LexIncludeTake");
-  KernelBinding(&bindings[9],"I386RedSeaBegin");
-  KernelBinding(&bindings[10],"I386RedSeaEnd");
-  KernelBinding(&bindings[11],"I386RedSeaValid");
-  KernelBinding(&bindings[12],"I386AtaIdentifyPolled");
-  KernelBinding(&bindings[13],"I386AtaTransfer");
-  KernelBinding(&bindings[14],"I386AtaFlushPolled");
-  KernelBinding(&bindings[15],"I386SchedBlock");
-  KernelBinding(&bindings[16],"I386SchedWake");
-  KernelBinding(&bindings[17],"I386SchedYield");
+  KernelBindings(bindings,kernel_files_bindings,18,sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
     bindings,18,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
   kernel_volumes.letter['C'-'A']=&kernel_volume;
-  kernel_file_context.paths=&kernel_paths; kernel_file_context.volumes=&kernel_volumes;
-  kernel_file_include.context=&kernel_file_context; kernel_file_include.push=kernel_files.include;
+  if(!kernel_files.init(&kernel_root,&kernel_heap,&kernel_paths,&kernel_volumes)) KernelStop;
+  kernel_file_include.context=0; kernel_file_include.push=kernel_files.include;
 }
 
 U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,

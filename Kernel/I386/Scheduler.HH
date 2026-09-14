@@ -25,6 +25,9 @@ class CI386Task
   U32 catch_except;
   U8 *except_rbp,*except_callers[I386_EXCEPT_CALLERS];
   U32 io_locks;
+  U8 *file_state;
+  Bool (*file_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
+  Bool (*file_destroy)(CI386Task *task);
 };
 class CI386Scheduler
 {

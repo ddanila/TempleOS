@@ -27,7 +27,7 @@ extern U0 ProbeConditional(CI386CompilerProbe *probe);
 extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
-#assert sizeof(CI386CompilerProbe)==48
+#assert sizeof(CI386CompilerProbe)==52
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
 {
   if(!probe || bytes!=sizeof(CI386CompilerProbe) || probe->bytes!=bytes ||
@@ -250,9 +250,24 @@ U0 ProbeIncludes(CI386CompilerProbe *probe)
 
 U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
 {
-  CCmpCtrl cc; CLexFile file; U8 *bytes; U32 flags,saved_flags=GetRFlags;
+  CCmpCtrl cc; CLexFile file; U8 *bytes,*name; U32 flags,saved_flags=GetRFlags;
+  I64 size,attr;
   I64 i,lines=0,used=probe->heap->used,allocations=probe->heap->allocations;
-  if(!probe->disk_include || !probe->disk_include->push) KernelStop;
+  if(!probe->disk_include || !probe->disk_include->push || !probe->files || !probe->files->read) KernelStop;
+  if(probe->phase) SetRFlags(saved_flags|0x200);
+  size=-1; attr=-1; name=0;
+  bytes=probe->files->read(probe->heap,"C:/Probe/Bad.HC",&size,&attr,&name);
+  if(!bytes || size!=3 || bytes[0]!='9' || bytes[1]!='9' || bytes[2]!=10 || bytes[3] ||
+      !name || StrCmp(name,"C:/Probe/Bad.HC") || !(attr&0x800) ||
+      (GetRFlags&0x200)!=(probe->phase*0x200)) KernelStop;
+  flags=I386IrqSave;
+  if(!I386HeapFree(probe->heap,bytes) || !I386HeapFree(probe->heap,name)) KernelStop;
+  I386IrqRestore(flags);
+  size=-1; attr=-1; name=0;
+  if(probe->files->read(probe->heap,"C:/Probe/Bad.HC.Z",&size,&attr,&name) ||
+      size!=-1 || attr!=-1 || name || (GetRFlags&0x200)!=(probe->phase*0x200)) KernelStop;
+  SetRFlags(saved_flags);
+  KernelLog("DISK READ "); KernelHex(probe->phase); KernelLog("\n");
   bytes=&cc; for(i=0;i<sizeof(CCmpCtrl);i++) bytes[i]=0;
   bytes=&file; for(i=0;i<sizeof(CLexFile);i++) bytes[i]=0;
   CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,probe->symbols,char_bmp_alpha_numeric);
@@ -275,11 +290,15 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
     cc.flags=CCF_DONT_FREE_BUF;
     LexFileSeed(&file,"#include \"C:/Probe/Outer\";"); cc.cur_buf_ptr=file.buf;
     SetRFlags(saved_flags|0x200);
-    if(!(GetRFlags&0x200) ||
-        probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,probe->disk_include)!=-1 ||
-        cc.lex_include_stk!=&file || !(GetRFlags&0x200) || lines!=68) KernelStop;
+    for(i=1;i<=3;i++)
+      if(!(GetRFlags&0x200) ||
+          probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,probe->disk_include)!=TK_I64 ||
+          cc.cur_i64!=11*i || !(GetRFlags&0x200)) KernelStop;
+    if(probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,probe->disk_include)!=59 ||
+        probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,probe->disk_include)!=TK_EOF ||
+        cc.lex_include_stk!=&file || !(GetRFlags&0x200) || lines!=136) KernelStop;
     SetRFlags(saved_flags);
-    KernelLog("DISK IF REJECT\n");
+    KernelLog("DISK IF PRESERVED\n");
   }
   flags=I386IrqSave;
   if(cc.cur_str && !I386HeapFree(probe->heap,cc.cur_str)) KernelStop;

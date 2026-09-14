@@ -5,7 +5,7 @@
 //Add the default HC.Z extension, load decoded source and publish an owned child.
 //Quiescent file service, IF clear. Failure preserves active input and reclaims temporaries.
 public extern Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
-  CFilePathContext *paths,CI386FileVolumes *volumes,U8 *filename);
+  CFilePathContext *paths,CI386FileVolumes *volumes,U8 *filename,Bool require_session=FALSE);
 //Borrowed disk-provider context for CI386LexIncludeService. The same IF-clear contract applies.
 class CI386LexFileContext { CFilePathContext *paths; CI386FileVolumes *volumes; };
 public extern Bool I386LexFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filename);

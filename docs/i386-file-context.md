@@ -98,3 +98,9 @@ adapter. `I386RedSeaFileLoad` owns the session across lookup, reading and expans
 so `I386FileReadAt` and compiler includes inherit serialization and polling yields.
 The IF-clear API convention remains. See [i386-redsea-tasks.md](i386-redsea-tasks.md)
 for binding, ownership, failure cleanup and remaining public task/file work.
+
+Current-task wrappers now live in retained FileRuntime version 3. They borrow
+owned per-task directory/drive state, require bound sessions for workers and
+preserve caller IF. The explicit-context primitives described here remain
+available with their IF-clear contract; public task/drive and file semantics
+are still an integration gate. See [i386-task-files.md](i386-task-files.md).

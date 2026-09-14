@@ -1,7 +1,7 @@
 #include "/Kernel/I386/FileContext.HH"
 #include "/Kernel/I386/Cpu.HH"
 U8 *I386FileReadAt(CI386Heap *heap,CFilePathContext *paths,
-  CI386FileVolumes *volumes,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0)
+  CI386FileVolumes *volumes,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0,Bool require_session=FALSE)
 {
   U8 *absolute,*result=0;
   CI386RedSea *volume;
@@ -13,7 +13,7 @@ U8 *I386FileReadAt(CI386Heap *heap,CFilePathContext *paths,
   if('a'<=drive<='z') drive-=32;
   if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
     volume=volumes->letter[drive-'A'];
-    if(volume) result=I386RedSeaFileLoad(volume,heap,volume->root,absolute+2,&bytes,&attributes,TRUE);
+    if(volume && (!require_session || volume->io)) result=I386RedSeaFileLoad(volume,heap,volume->root,absolute+2,&bytes,&attributes,TRUE);
   }
   if(!result) { I386HeapFree(heap,absolute); return 0; }
   if(name) *name=absolute;

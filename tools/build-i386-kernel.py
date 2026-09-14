@@ -95,16 +95,16 @@ def file_runtime_layout(module):
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexFileInclude', 'I386FileReadAt', 'I386FileRuntimeBind'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386FileRuntimeBind', 'I386TaskFilesInit'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 2:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 3:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
-        include_offset=8+exports['I386LexFileInclude'][1], read_offset=8+exports['I386FileReadAt'][1],
-        bind_offset=8+exports['I386FileRuntimeBind'][1], import_offset=imports['I386RedSeaReadAll'])
+        include_offset=8+exports['I386LexTaskFileInclude'][1], read_offset=8+exports['I386TaskFileRead'][1],
+        bind_offset=8+exports['I386FileRuntimeBind'][1], init_offset=8+exports['I386TaskFilesInit'][1], import_offset=imports['I386RedSeaReadAll'])
 
 
 def verify_file_rejection(disk, volume, out, layout):
@@ -156,7 +156,7 @@ def compiler_probe_layout(module):
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 2:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 3:
         raise ValueError('Unexpected compiler-probe version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
@@ -550,25 +550,29 @@ def main():
                 include_address != address+runtime_layout['include_offset']):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=7: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=8: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
                 file_read!=file_address+files_layout['read_offset'] or
-                file_bind!=file_address+files_layout['bind_offset']):
+                file_bind!=file_address+files_layout['bind_offset'] or
+                file_init!=file_address+files_layout['init_offset']):
             raise ValueError('File-runtime placement or service mismatch')
         disk_includes = [line.split() for line in log.splitlines() if line.startswith('DISK INCLUDE ')]
-        if ([list(map(lambda x:int(x,16),row[2:])) for row in disk_includes]!=[[0,68],[1,68]] or
+        if ([list(map(lambda x:int(x,16),row[2:])) for row in disk_includes]!=[[0,68],[1,136]] or
                 log.index('DISK INCLUDE ')>log.index('STARTUP disk module') or
                 log.rindex('DISK INCLUDE ')<log.rindex('TICK ') or
-                log.count('DISK IF REJECT\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
+                log.count('DISK READ 0000000000000000\n')!=1 or
+                log.count('DISK READ 0000000000000001\n')!=1 or
+                log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=2, image_address=file_address, image_bytes=file_size,
-            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind,
-            task_volume_bound=True,
-            disk_include_lines=68, enabled_if_rejected=True, lifetime='kernel lifetime')
+        result['file_runtime'] = dict(version=3, image_address=file_address, image_bytes=file_size,
+            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init,
+            task_volume_bound=True, task_context_inherited=True,
+            decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
+            disk_include_lines=[68,136], enabled_if_preserved=True, lifetime='kernel lifetime')
         probes = [line.split() for line in log.splitlines() if line.startswith('RUNTIME PROBE ')]
         if ([list(map(lambda x: int(x, 16), row[2:])) for row in probes] !=
                 [[0, 0x3F1A36E2EB1C432D, 65, 0x4241, 0x112, 8], [1, 0x3F1A36E2EB1C432D, 65, 0x4241, 0x112, 8]] or
@@ -622,7 +626,7 @@ def main():
                 not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
                 not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
             raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
-        result['compiler_probe'] = dict(module='CompilerProbe', version=2, image_address=probe_address,
+        result['compiler_probe'] = dict(module='CompilerProbe', version=3, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
         result['compiler_runtime'] = dict(module='CompilerRuntime', version=10, image_address=address,

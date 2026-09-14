@@ -41,7 +41,8 @@ is not crash atomicity or power-loss durability.
 
 ## Retained integration
 
-FileRuntime service version 2 adds a volume-binding function. Its retained image
+FileRuntime service version 3 retains the volume-binding function and adds
+current-task state initialization and read/include routing. Its retained image
 owns two canonical channel gates and two I/O tables. The standalone kernel binds
 its mounted C volume after boot-time compiler/probe/startup module loading and
 before starting the keyboard and pulse tasks. Boot-time includes use quiescent
@@ -66,9 +67,9 @@ the complete command suffix and both 16 MiB backing images, permitting only the
 explicit raw and file-sector writes. The fixture uses a 256 KiB test loader with
 its heap starting at 0x50000; this does not change the standalone bootstrap limit.
 
-The standalone boot test checks version-2 service ownership and all three function
+The standalone boot test checks version-3 service ownership and all four function
 addresses, volume binding before task activity, successful disk includes in both
-phases, IF-set rejection, module lifetime/reclamation and unchanged disk contents.
+phases, IF-set preservation, module lifetime/reclamation and unchanged disk contents.
 These remain QEMU 486/8 MiB development checks. Strict 386 hardware validation,
 wall-clock service latency, reset recovery and complete application workflows are
 not established by these tests.
