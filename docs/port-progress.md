@@ -1776,3 +1776,26 @@ ending at 0x70000 below the root stack; test stages retain their 160 KiB bound.
 The disk is a source/module volume, not a complete installed distribution.
 Public filesystem/task integration, startup-source execution, shell/JIT, DolDoc,
 native self-hosting and strict 386 validation remain unfinished. See `i386-kernel.md`.
+
+## Disk-loaded native startup module
+
+Standalone startup now loads `Modules/I386/Startup.t32m` from RedSea through the
+checked native loader. The separately cross-compiled module binds two resident
+functions and one data symbol, initializes VGA through the resident display
+service, increments a resident counter and returns. It is not part of the six
+resident modules linked into the boot kernel.
+
+The kernel verifies that the file-loading temporaries are freed, then releases
+the loaded image after execution and checks heap byte/allocation accounting.
+The 8 MiB QEMU/486 boot passes source reads, module execution, 232-byte image
+reclamation, all VGA pixels and timer wakeups. Copies with a wrong CPU tag or an
+unresolved import halt before startup execution without changing disk contents.
+The linked kernel is 221632 bytes; instruction audits cover it and the separate
+startup payload. Resident-binding regressions and both x86-64 rebuild/reboot
+generations pass.
+
+Startup runs synchronously with exclusive heap/disk ownership and cannot retain
+module addresses after return. The display buffer is owned by resident code.
+This is disk-loaded AOT execution; native source compilation, the shell/JIT,
+public task/filesystem interfaces, input/audio/DolDoc integration, native
+self-hosting and strict 386 verification remain required. See `i386-kernel.md`.

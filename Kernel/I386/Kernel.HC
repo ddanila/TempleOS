@@ -2,10 +2,12 @@
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
+#define U32_MAX 0xFFFFFFFF
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/BootDisk.HH"
 #include "/Kernel/I386/RedSea.HH"
+#include "/Kernel/I386/ModuleFile.HH"
 #include "/Kernel/I386/A20.HH"
 #include "/Kernel/I386/TaskPlatform.HH"
 #include "/Kernel/I386/ExceptNative.HH"
@@ -25,6 +27,7 @@ CI386SleepQueue kernel_sleep;
 U8 kernel_gdt[40],kernel_idt[2048];
 U8 *kernel_planes;
 CI386OwnedTask *kernel_pulse;
+I64 kernel_startup_count;
 extern U0 KernelLog(U8 *text);
 extern U0 KernelHex(U64 value);
 extern U0 KernelStop();
@@ -35,6 +38,7 @@ extern U0 KernelFatal(CI386Task *task,I64 status,I64 ch);
 extern U0 KernelPulse(I64 unused);
 extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
+extern U0 KernelStartup();
 I64 Main(CI386BootInfo *info,I64 unused)
 {
   CI386MemRange reserved,arena;
@@ -56,7 +60,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   if(!I386InterruptInstall(kernel_idt,256,&KernelStop,&services) ||
       !I386TimerInit(&kernel_timer,11932) ||
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
-  KernelDisplay;
+  KernelStartup;
   kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
     0x18,0x20,4096);
   if(!kernel_pulse) KernelStop;
@@ -141,7 +145,7 @@ U0 KernelDisplay()
 }
 #include "/Kernel/I386/BootMemory.HC"
 #include "/Kernel/I386/A20.HC"
-#include "/Kernel/I386/Heap.HC"
+#include "/Kernel/I386/ModuleFile.HC"
 #include "/Kernel/I386/Frame.HC"
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Except.HC"
@@ -188,3 +192,34 @@ U0 KernelStorage(CI386BootInfo *info)
 }
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/RedSea.HC"
+
+U0 KernelStartup()
+{//Startup owns ATA and the heap with IF clear. No module callbacks may survive return.
+  CI386RedSeaEntry file;
+  CI386ModuleBinding bindings[3];
+  U8 *image;
+  I64 (*entry)();
+  I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
+  I64 transient,after,result;
+  if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
+      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
+      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"Startup.t32m",&file)!=1)
+    KernelStop;
+  bindings[0].name="KernelLog"; bindings[0].kind=1;
+  bindings[0].address=(&KernelLog+0)(U64);
+  bindings[1].name="KernelDisplay"; bindings[1].kind=1;
+  bindings[1].address=(&KernelDisplay+0)(U64);
+  bindings[2].name="kernel_startup_count"; bindings[2].kind=3;
+  bindings[2].address=(&kernel_startup_count+0)(U64);
+  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,3);
+  if(!image || kernel_heap.allocations!=allocations+1) KernelStop;
+  transient=kernel_heap.used-used;
+  entry=image;
+  result=(*entry)();
+  after=kernel_heap.used; allocations=kernel_heap.allocations;
+  if(result!=1 || kernel_startup_count!=1 || !kernel_planes || transient<=0 ||
+      !I386HeapFree(&kernel_heap,image) || kernel_heap.used!=after-transient ||
+      kernel_heap.allocations!=allocations-1 || !I386HeapValid(&kernel_heap)) KernelStop;
+  KernelLog("MODULE "); KernelHex(result); KernelLog(" ");
+  KernelHex(transient); KernelLog("\n");
+}

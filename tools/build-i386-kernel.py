@@ -11,10 +11,45 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
+DISK_MODULES = MODULES + ('Startup',)
 
 
 def run(*args):
     subprocess.run(args, cwd=ROOT, check=True)
+
+
+def verify_startup_rejection(disk, volume, out):
+    """Prove startup reads and validates the disk module before invoking it."""
+    original=disk.read_bytes()
+    entry=volume['files']['/Modules/I386/Startup.t32m']
+    offset=entry['block']*512
+    module=original[offset:offset+entry['size']]
+    count,records=struct.unpack_from('<II',module,20)
+    imported=[]
+    for i in range(count):
+        kind,_,name,length=struct.unpack_from('<4I',module,records+16*i)
+        if kind==5 and module[name:name+length]==b'kernel_startup_count':
+            imported.append(name)
+    if not imported: raise ValueError('Missing startup resident-data import')
+    results=[]
+    for label,position,value in [('wrong-target',6,4),('missing-import',imported[0],ord('X'))]:
+        work=out/f'reject-{label}'
+        work.mkdir(parents=True,exist_ok=True)
+        changed=bytearray(original)
+        changed[offset+position]=value
+        candidate=work/'kernel.img'
+        candidate.write_bytes(changed)
+        with (work/'runner.log').open('w') as log:
+            result=subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
+                '--i386-disk','--out',str(work),'--timeout','60'],cwd=ROOT,stdout=log,stderr=log)
+        evidence=(work/'debug.log').read_text()
+        if (result.returncode==0 or 'FAIL native kernel\n' not in evidence
+                or 'SOURCE ' not in evidence or any(marker in evidence for marker in
+                    ('STARTUP disk module','MODULE ','READY native kernel','DONE native kernel'))):
+            raise ValueError(f'Startup did not reject {label} before execution')
+        if candidate.read_bytes()!=changed: raise ValueError('Rejected startup changed disk')
+        results.append(label)
+    return results
 
 
 def audit(exports, out):
@@ -28,16 +63,17 @@ def audit(exports, out):
         raise ValueError('Invalid native entry trampoline')
     base = 8
     listing = []
-    for index, name in enumerate(MODULES):
+    for index, name in enumerate(DISK_MODULES):
         module = (exports/f'{name}.t32m').read_bytes()
         magic, version, cpu, pointer, abi, total, size, count, records, strings = struct.unpack_from('<IHBB6I', module)
         if (magic,version,cpu,pointer,abi,total,records,strings) != (
                 0x4D323354,2,3,4,1,len(module),32+size,32+size+16*count):
             raise ValueError(f'Invalid {name} module header')
-        code = image[base:base+size]
+        resident = index < len(MODULES)
+        code = image[base:base+size] if resident else module[32:32+size]
         if len(code)!=size:
             raise ValueError('Truncated kernel')
-        if index==0:
+        if index==0 or not resident:
             starts, data = [], []
             for i in range(count):
                 kind, offset, name_offset, length = struct.unpack_from('<4I',module,records+16*i)
@@ -48,7 +84,7 @@ def audit(exports, out):
             starts.sort()
             if not starts or starts[-1]>=size or len(set(starts))!=len(starts):
                 raise ValueError('Invalid kernel function boundaries')
-            if 5+struct.unpack_from('<i',image,1)[0] not in [base+x for x in starts]:
+            if resident and 5+struct.unpack_from('<i',image,1)[0] not in [base+x for x in starts]:
                 raise ValueError('Entry is not a kernel function')
             coverage = bytearray(size)
             for begin,length in data:
@@ -69,7 +105,7 @@ def audit(exports, out):
                     if code[i] or gap>7: raise ValueError('Unclassified kernel bytes')
         else:
             spans=[(0,size)]
-        terminal='iret' if index>=4 else 'ret'
+        terminal='iret' if name in ('IrqEntry','ExceptionEntry') else 'ret'
         for start,end in spans:
             lines=disassemble(code[start:end]).splitlines()
             returns=[i for i,line in enumerate(lines) if len(line.split())>=3 and line.split()[2]==terminal]
@@ -82,7 +118,7 @@ def audit(exports, out):
             for line in lines[:last+1]:
                 if line.split()[2] not in allowed: raise ValueError(f'Unexpected instruction: {line}')
             listing.append(f'; {name} offset {start:X}\n'+'\n'.join(lines[:last+1]))
-        base+=size
+        if resident: base+=size
     if base!=len(image): raise ValueError('Unclassified trailing kernel bytes')
     (out/'kernel-assembly.txt').write_text('\n'.join(listing)+'\n')
     return image
@@ -103,7 +139,7 @@ def package_volume(disk, exports):
                 parts=path.relative_to(ROOT).parts
                 for part in parts[:-1]: node=node.setdefault(part,{})
                 node[parts[-1]]=path.read_bytes()
-    tree['Modules']={'I386':{f'{name}.t32m':(exports/f'{name}.t32m').read_bytes() for name in MODULES}}
+    tree['Modules']={'I386':{f'{name}.t32m':(exports/f'{name}.t32m').read_bytes() for name in DISK_MODULES}}
     files={}
     def entry(name,attr,block,size):
         raw=name.encode('ascii')
@@ -251,9 +287,10 @@ def main():
             'kernel_bytes':len(image),
             'kernel_sha256':hashlib.sha256(image).hexdigest(),
             'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
-            'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in MODULES},
+            'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
+            'resident_modules':list(MODULES),
             'volume':volume,
-            'scope':'Native kernel foundation with RedSea source access; shell/JIT and self-hosting unfinished',
+            'scope':'Native kernel with RedSea source access and AOT startup loading; shell/JIT and self-hosting unfinished',
             'boot_test':None}
     if args.test:
         guest=out/'boot'
@@ -270,6 +307,11 @@ def main():
         reads=[line.split() for line in log.splitlines() if line.startswith('SOURCE ')]
         if len(reads)!=1 or [int(x,16) for x in reads[0][1:]]!=[len(source),checksum]:
             raise ValueError('Native RedSea source read differs from packaged source')
+        loaded=[line.split() for line in log.splitlines() if line.startswith('MODULE ')]
+        if (log.count('STARTUP disk module\n')!=1 or len(loaded)!=1 or len(loaded[0])!=3
+                or int(loaded[0][1],16)!=1 or int(loaded[0][2],16)<=0):
+            raise ValueError('Missing disk module execution/reclamation evidence')
+        startup_reclaimed=int(loaded[0][2],16)
         if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Read-only kernel startup changed the disk')
         ticks=[int(line.split()[1],16) for line in log.splitlines() if line.startswith('TICK ')]
@@ -293,7 +335,10 @@ def main():
         if screen.tobytes()!=expected_row*480:
             raise ValueError('VGA color-bar mismatch')
         screen.save(guest/'screen.png')
+        rejected=verify_startup_rejection(disk,volume,out)
         result['boot_test']={'cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
+                             'startup_module':'Startup','startup_reclaimed_bytes':startup_reclaimed,
+                             'startup_rejected':rejected,
                              'source_bytes':len(source),'source_fnv32':checksum,'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
     result['disk_sha256']=hashlib.sha256(disk.read_bytes()).hexdigest()
     (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')

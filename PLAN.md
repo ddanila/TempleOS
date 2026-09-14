@@ -19,8 +19,9 @@ two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifi
 checks 725 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
 multicore behavior still need baseline verification. The native i386 foundation
 now boots a disk image on the 8 MiB QEMU/486 development profile, initializes
-cooperative tasks and timer interrupts, presents planar VGA, and reads its source
-from a packaged RedSea volume. These results do not establish strict 386 support
+cooperative tasks and timer interrupts, reads its source from RedSea, and loads a
+separate startup module that initializes VGA through resident imports. These
+results do not establish strict 386 support
 or an interactive HolyC environment. Component evidence and remaining limitations
 are tracked in the progress document.
 
@@ -308,14 +309,16 @@ remain required outcomes of this sequence.
 
 ### Immediate integration work after RedSea startup
 
-The standalone kernel can currently read source, but cannot compile or execute
-that source. Advance the resident programming environment through these concrete
-steps:
+The standalone kernel can read source and execute a cross-compiled startup module,
+but cannot compile or execute that source directly. Advance the resident
+programming environment through these concrete steps:
 
 1. Load a separately packaged i386 startup module from RedSea using the existing
    checked module loader. Bind its code/data imports to explicit resident kernel
    exports. Verify execution and temporary-buffer reclamation, and define image
    ownership before allowing callbacks or tasks to retain module addresses.
+   The synchronous startup path now passes execution/reclamation and wrong-target/
+   unresolved-import boot checks. Retained module callbacks/tasks remain deferred.
 2. Connect keyboard delivery and VGA text rendering to a recoverable command
    loop. Integrate public task, allocation, file and exception interfaces needed
    by the compiler; keep disk access ownership explicit as tasks become active.

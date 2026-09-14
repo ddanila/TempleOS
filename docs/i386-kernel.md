@@ -3,7 +3,8 @@
 `Kernel/I386/Kernel.HC` now supplies a native kernel entry independent of the
 arithmetic/task test runner. `tools/build-i386-kernel.py` cross-compiles it inside
 the rebuilt x86-64 TempleOS guest, links six native modules, audits generated
-executable regions and packages a bootable hard-disk image.
+executable regions and packages a bootable hard-disk image. A seventh module,
+`Startup`, is packaged separately and loaded from RedSea during native startup.
 
 ```sh
 python3 tools/test-rebuild.py
@@ -42,7 +43,8 @@ validation remains required.
 
 ## Current runtime behavior
 
-The kernel allocates a 153600-byte logical planar framebuffer and presents sixteen
+The disk-loaded startup module calls the resident display service, which allocates
+a 153600-byte logical planar framebuffer and presents sixteen
 vertical color bars at 640×480. A heap-owned task sleeps for 25 serviced ticks at
 a time while root idles and timer IRQs make it runnable. Startup diagnostics report
 the memory arena and first two wakeups on port 0xE9. After reporting startup done,
@@ -51,8 +53,9 @@ after collecting evidence. Exception/fault diagnostics currently halt on fatal
 conditions and are not the final debugger interface.
 
 The boot test verifies the extended arena bounds, RedSea mount and streamed source
-checksum, unchanged disk contents, readiness, two correctly delayed wakeups and
-every VGA pixel. The current linked image is 173512 bytes. The combined
+checksum, disk-module execution and reclamation, unchanged disk contents,
+readiness, two correctly delayed wakeups and every VGA pixel. The builder records
+the linked image size in its manifest. The combined
 task/exception/sleep regression passes through the shared BIOS path, and both
 x86-64 compiler/kernel rebuild/reboot generations pass. Tests use QEMU's 486 model
 with 8 MiB; generated-code auditing and CR0.EM are not proof of strict 386 support.
@@ -69,8 +72,8 @@ a complete installed TempleOS distribution. The 8 MiB interactive and
 
 The builder places a volume at sector 2048 of the 16 MiB image, after the reserved
 boot area. It packages Kernel/Compiler HC, HH, DD and PRJ files without modifying
-their bytes, and the six native modules under `Modules/I386`. The current build
-contains 231 files. It initializes directory self/parent records, termination,
+their bytes, and the seven native modules under `Modules/I386`. The manifest
+records the verified file count. It initializes directory self/parent records, termination,
 fixed-width extents/dates, and allocation bits including reserved/out-of-volume
 bits. An independent serialized-volume walk checks every file hash, directory
 extent and ownership bit before boot. Deliberate header, directory-size, file-byte
@@ -89,3 +92,29 @@ The memory-handoff regression checks the disk sidecar too, including the absence
 of a volume in ordinary test images. The existing RedSea reader suite and both
 x86-64 rebuild/reboot generations pass. The legacy memory/A20 and strict-386
 limitations above continue to apply.
+
+## Disk-loaded startup and resident bindings
+
+After installing task/exception/interrupt/timer services, the kernel loads
+`Modules/I386/Startup.t32m` through `I386RedSeaLoadBound`. Its explicit binding
+table exposes `KernelLog`, `KernelDisplay` and `kernel_startup_count`. The module
+initializes the display through the resident service, increments that resident
+counter, logs its execution and returns the count. It is absent from the six-module
+resident link; source and module hashes are recorded separately by the builder.
+
+Startup runs synchronously with IF clear and exclusive heap/disk access. The
+kernel checks that loading retains exactly one allocation, invokes the entry,
+then frees that image and verifies its allocation/byte accounting. The display
+buffer remains owned by resident kernel code. No callback, task entry or pointer
+into the startup image may outlive its return; unloading arbitrary modules with
+retained references is not supported by this startup contract.
+
+The `MODULE` diagnostic is emitted only after execution and reclamation succeed.
+The boot check requires it, the module's own diagnostic and the complete VGA
+pixel result. Both resident code and the separate startup payload undergo
+instruction audits. Two additional boots use copies of the image with the startup
+CPU tag changed or one resident-data import renamed; both must halt before module
+execution, with their disks unchanged. These checks run as part of `--test`.
+The linked kernel is 221632 bytes and the startup image reclaims 232 bytes on the
+current build. This executes cross-compiled native code from disk; it does
+not yet compile source on the target or provide the native shell/JIT.
