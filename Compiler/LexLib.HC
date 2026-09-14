@@ -44,84 +44,23 @@ U0 LexPopNoRestore(CCmpCtrl *cc)
 
 #include "/Compiler/MemberLookup.HC"
 
-U0 MemberAdd(CCmpCtrl *cc,CMemberLst *tmpm,CHashClass *tmpc,I64 mode)
+#include "/Compiler/MemberBuild.HC"
+U0 MemberCompilerDiagnostic(U8 *context,Bool warning)
 {
-  U8 *st=tmpm->str;
-  CMemberLst **tmpm1,*tmpm2;
-
-  if (MemberFind(st,tmpc) && StrCmp(st,"pad") &&
-	StrCmp(st,"reserved") && StrCmp(st,"_anon_"))
-    LexExcept(cc,"Duplicate member at ");
-  tmpm1=&tmpc->member_lst_and_root;
-  while (tmpm2=*tmpm1) {
-    if (StrCmp(tmpm2->str,st)<=0)
-      tmpm1=&tmpm2->left;
-    else
-      tmpm1=&tmpm2->right;
-  }
-  *tmpm1=tmpm;
-
-  if (mode==PRS1B_LOCAL_VAR) {
-    tmpm->member_class_base=
-	tmpm->member_class-tmpm->member_class->ptr_stars_cnt;
-    if (Bt(&cc->opts,OPTf_WARN_DUP_TYPES) &&
-	 MemberClassBaseFind(tmpm->member_class_base,tmpc))
-      LexWarn(cc,"Duplicate type at ");
-    tmpm1=&tmpc->member_class_base_root;
-    while (tmpm2=*tmpm1) {
-      if (tmpm->member_class_base<tmpm2->member_class_base)
-	tmpm1=&tmpm2->left_class_base;
-      else if (tmpm->member_class_base>tmpm2->member_class_base)
-	tmpm1=&tmpm2->right_class_base;
-      else {
-	tmpm1=NULL;
-	break;
-      }
-    }
-    if (tmpm1)
-      *tmpm1=tmpm;
-  } else
-    tmpm->member_class_base=NULL;
-
-  tmpm->left=NULL;
-  tmpm->right=NULL;
-  tmpm->left_class_base=NULL;
-  tmpm->right_class_base=NULL;
-  tmpm2=tmpc->last_in_member_lst;
-  tmpm2->next=tmpc->last_in_member_lst=tmpm;
+  CCmpCtrl *cc=context;
+  if(warning) LexWarn(cc,"Duplicate type at ");
+  else LexExcept(cc,"Duplicate member at ");
 }
-
+U0 MemberAdd(CCmpCtrl *cc,CMemberLst *member,CHashClass *type,I64 mode)
+{
+  MemberInsert(member,type,mode==PRS1B_LOCAL_VAR,
+    Bt(&cc->opts,OPTf_WARN_DUP_TYPES),&MemberCompilerDiagnostic,cc);
+}
 CMemberLst *MemberLstNew(I64 _reg)
 {
   CMemberLst *res=CAlloc(sizeof(CMemberLst));
   res->reg=_reg;
   return res;
-}
-
-Bool  MemberLstCmp(CMemberLst *tmpm1,CMemberLst *tmpm2,I64 cnt=I64_MAX)
-{
-  while (tmpm1 && tmpm2 && cnt--) {
-    if (StrCmp(tmpm1->str,tmpm2->str) ||
-	  tmpm1->member_class!=tmpm2->member_class ||
-	  tmpm1->member_class_base!=tmpm2->member_class_base)
-      return FALSE;
-    if (tmpm1->flags&MLF_DFT_AVAILABLE || tmpm2->flags&MLF_DFT_AVAILABLE) {
-      if (tmpm1->flags&(MLF_DFT_AVAILABLE|MLF_STR_DFT_AVAILABLE)!=
-	    tmpm2->flags&(MLF_DFT_AVAILABLE|MLF_STR_DFT_AVAILABLE))
-	return FALSE;
-      if (tmpm1->flags&MLF_STR_DFT_AVAILABLE) {
-	if (StrCmp(tmpm1->dft_val,tmpm2->dft_val))
-	  return FALSE;
-      } else if (tmpm1->dft_val!=tmpm2->dft_val)
-	return FALSE;
-    }
-    tmpm1=tmpm1->next;
-    tmpm2=tmpm2->next;
-  }
-  if (cnt<0 || !tmpm1 && !tmpm2)
-    return TRUE;
-  else
-    return FALSE;
 }
 
 #include "/Kernel/SymbolDelete.HH"

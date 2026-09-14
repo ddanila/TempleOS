@@ -16,3 +16,10 @@ public CHashFun *I386PrsFunNew(CI386Heap *heap)
   if(res) PrsFunInit(res);
   I386IrqRestore(flags); return res;
 }
+public CMemberLst *I386MemberLstNew(CI386Heap *heap,I64 reg_num)
+{
+  U32 flags=I386IrqSave;
+  CMemberLst *res=I386HeapAlloc(heap,sizeof(CMemberLst),TRUE);
+  if(res) res->reg=reg_num;
+  I386IrqRestore(flags); return res;
+}

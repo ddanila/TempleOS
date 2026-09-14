@@ -337,8 +337,11 @@ programming environment through these concrete steps:
    Target-sized class/function pointer variants and legacy symbol/member cleanup
    also pass nested ownership and reclamation tests. Cleanup requires detached,
    privately owned symbol graphs and retains borrowed code/data references.
-   Public task/code-heap selection, allocation-failure exception behavior, member
-   construction, module-code lifetime and compiler-control initialization remain.
+   Member insertion and signature comparison now share the frontend's list/tree,
+   duplicate-diagnostic and default-value semantics, with explicit-heap native
+   member allocation. Host/native fixtures cover construction and reclamation.
+   Public task/code-heap selection, allocation-failure exception behavior,
+   module-code lifetime and compiler-control initialization remain.
 
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,

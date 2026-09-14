@@ -1956,3 +1956,23 @@ arbitrary pointers or roll back failed releases. Public task-selected allocation
 module-code lifetime, compiler-control initialization, native source execution,
 the full environment, self-hosting and strict 386 verification remain unfinished.
 See `i386-symbols.md`.
+
+## Shared member construction and signature comparison
+
+Member insertion now shares the existing name tree, base-type index and ordered
+list updates between targets. A callback preserves the parser's duplicate-name
+errors and duplicate-type warnings while letting native callers use the same
+operations without a full compiler control record. Native member allocation takes
+an explicit heap, zeroes records and preserves the signed register field.
+
+Host/native tests pass direct/inherited duplicate rejection, repeatable names,
+warning counts, pointer-variant normalization, declaration/search ordering and
+lookup counters. Shared signature comparison passes I64/string defaults and
+the original finite-count boundary behavior. Allocation failure, initialization,
+destruction/reclamation and the existing symbol suites pass, including instruction
+audits. Both x86-64 rebuild generations and the standalone 292360-byte kernel's
+complete 8 MiB QEMU/486 boot checks pass.
+
+These are frontend dependencies. Full compiler-control initialization, native
+parser diagnostics, public task/code-heap selection, source execution, DolDoc,
+self-hosting and strict 386 validation remain unfinished. See `i386-symbols.md`.

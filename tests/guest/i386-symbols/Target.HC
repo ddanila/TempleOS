@@ -112,6 +112,8 @@ U0 DeleteFreeRaw(U8 *allocation)
   if(!I386HeapFree(&delete_heap,allocation)) delete_free_errors++;
 }
 #include "T:/Delete.HC"
+#include "/Compiler/MemberBuild.HC"
+#include "T:/BuildMembers.HC"
 I64 NativeSymbolDeleteTest()
 {
   U32 flags=I386IrqSave;
@@ -120,13 +122,16 @@ I64 NativeSymbolDeleteTest()
   I64 result;
   if(!I386HeapInit(&delete_heap,0x40000,65536)) return 64;
   delete_free_errors=0;
+  result=MemberBuildTest;
+  if(result) return result;
   result=SymbolDeleteTest;
   if(result) return result;
   if(delete_free_errors || delete_heap.used || delete_heap.allocations || !I386HeapValid(&delete_heap)) return 65;
   fun=I386PrsFunNew(&delete_heap);
   if(!fun) return 66;
-  member=I386HeapAlloc(&delete_heap,sizeof(CMemberLst),TRUE);
-  if(!member) return 67;
+  member=I386MemberLstNew(&delete_heap,-1);
+  if(!member || member->reg!=-1 || member->str || member->next || member->flags ||
+      member->meta || member->dim.next || member->dft_val || member->fun_ptr) return 67;
   member->str=I386HeapAlloc(&delete_heap,8,TRUE);
   if(!member->str) return 68;
   fun->member_lst_and_root=member; fun->arg_cnt=1;

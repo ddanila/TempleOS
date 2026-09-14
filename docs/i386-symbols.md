@@ -178,3 +178,48 @@ member/string and constructor tests and the executable instruction audit pass.
 Public task-selected allocation, compiler control state, native compiler startup,
 source execution and self-hosting remain required. These cleanup routines do not
 make a borrowed module image safe to unload while code or data references survive.
+
+## Member construction and signature comparison
+
+`Compiler/MemberBuild.HH/HC` shares member insertion and `MemberLstCmp` between
+compiler targets. `MemberInsert` performs the existing reversed name-tree insert,
+local-variable base-type indexing and declaration-order list append. Pointer
+variants normalize by full class-record strides. Duplicate base types keep the
+first indexed member, while every accepted member remains in declaration order.
+The parser still controls member counts, layout and register assignment.
+
+A diagnostic callback separates parser reporting from these operations. Ordinary
+duplicate names, including inherited names, report an error before insertion;
+`pad`, `reserved` and `_anon_` retain their repeatable-name exceptions. A returning
+error callback yields false. Duplicate-name lookup retains its use-counter side
+effect. Type warnings occur after name insertion and before the remaining links,
+matching the original order. Warning callbacks must return normally; callbacks
+must not mutate the graph or yield. `MemberAdd` adapts the existing LexExcept and
+LexWarn behavior. Callers retain exclusive ownership of live, fresh records and
+valid class/list roots; insertion does not allocate or synchronize access.
+
+`I386MemberLstNew` supplies explicit-heap, zeroed native member allocation and
+stores the requested register number in the existing I8 field. It restores the
+caller's interrupt state and returns zero on allocation failure. The x86-64
+constructor retains ordinary CAlloc. Public task selection and OutMem behavior
+remain separate integration work.
+
+Signature comparison retains full I64 defaults, string-content comparison,
+type-pointer identity and the original count-limit semantics. In particular,
+ending just one list exactly at the limit still returns false; reaching the
+limit while both lists have another node returns true. This extraction does not
+silently change that existing behavior.
+
+The shared host/native fixture passes declaration order, both search-tree
+orderings, base-type normalization, duplicate-type warnings, direct/inherited
+name rejection, all three repeatable-name exceptions, lookup counter effects,
+wide/string defaults and count-limit boundaries. Native allocation tests cover
+zero initialization, signed register selection, null/exhausted heaps and complete
+reclamation through the shared member destructor. Both x86-64 rebuild generations,
+the existing symbol/ownership tests, executable instruction audit and complete
+standalone kernel boot checks pass. The comparison default argument is present
+on both declaration and definition to preserve two-argument target calls.
+
+This supplies shared frontend primitives. Native compiler-control initialization,
+parser diagnostics, task-selected allocation and source execution still need
+integration before there is an operational native HolyC compiler.

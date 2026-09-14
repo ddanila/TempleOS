@@ -11,9 +11,9 @@ I64 SymbolAllocTest()
   OutU8(0x21,255); OutU8(0xA1,255);
   if(!I386HeapInit(&heap,0x40000,65536) || !I386HeapInit(&tiny,0x51000,512)) return 30;
   SetRFlags(GetRFlags|0x200);
-  if(I386PrsClassNew(0) || I386PrsFunNew(0) || !(GetRFlags&0x200)) return 31;
+  if(I386PrsClassNew(0) || I386PrsFunNew(0) || I386MemberLstNew(0,-1) || !(GetRFlags&0x200)) return 31;
   small=I386PrsClassNew(&tiny);
-  if(!small || I386PrsFunNew(&tiny) || I386PrsClassNew(&tiny) ||
+  if(!small || I386PrsFunNew(&tiny) || I386PrsClassNew(&tiny) || I386MemberLstNew(&tiny,-1) ||
       tiny.allocations!=1 || !I386HeapFree(&tiny,small) || tiny.used ||
       I386PrsFunNew(&tiny) || tiny.used || tiny.allocations || !(GetRFlags&0x200)) return 32;
   base=I386PrsClassNew(&heap); function=I386PrsFunNew(&heap);
