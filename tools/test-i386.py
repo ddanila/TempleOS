@@ -41,6 +41,41 @@ def disassemble_i386(code):
     return '\n'.join(result)+'\n'
 
 
+def exception_context_args(exports, out):
+    """Embed the relocation-free HolyC context module in the bootstrap runner."""
+    context = (exports/'ExceptContext.t32m').read_bytes()
+    magic, version, cpu, pointer, abi, total, code_size, count, records, strings = struct.unpack_from('<IHBB6I', context)
+    if (magic, version, cpu, pointer, abi, total, count, records, strings) != (
+            0x4D323354, 2, 3, 4, 1, len(context), 4, 32+code_size, 32+code_size+64):
+        raise ValueError('Unexpected HolyC exception context module layout')
+    names = {'i386_except_save', 'i386_except_invoke',
+             'i386_except_resume', 'i386_except_register'}
+    definitions = []
+    for index in range(count):
+        kind, address, name_offset, name_length = struct.unpack_from('<4I', context, records+16*index)
+        if kind != 1 or address >= code_size or name_offset < strings or name_offset+name_length >= total:
+            raise ValueError('Exception context must contain only bounded code exports')
+        name = context[name_offset:name_offset+name_length].decode('ascii')
+        if name not in names or context[name_offset+name_length] != 0:
+            raise ValueError('Unexpected exception context export')
+        names.remove(name)
+        definitions.append(f'{name} equ i386_except_context_begin+{address}')
+    body = out/'except-context.bin'
+    code = context[32:32+code_size]
+    returns = [line.split() for line in disassemble_i386(code).splitlines()
+               if len(line.split()) >= 3 and line.split()[2] == 'ret']
+    if not returns:
+        raise ValueError('Missing exception context return')
+    end = int(returns[-1][0], 16)+len(returns[-1][1])//2
+    if code[end-3:end] != b'\xc2\x28\x00' or len(code)-end > 7 or any(code[end:]):
+        raise ValueError('Unexpected exception context tail/padding')
+    body.write_bytes(code[:end])
+    include = out/'except-context.inc'
+    include.write_text('\n'.join(definitions)+
+                       f'\ni386_except_context_begin:\nincbin "{body}"\ni386_except_context_end:\n')
+    return [f'-DEXCEPT_CONTEXT_FILE="{include}"']
+
+
 def main():
     global OUT
     parser = argparse.ArgumentParser(description=__doc__)
@@ -301,9 +336,10 @@ def main():
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
+    context_args = exception_context_args(exports, OUT) if except_runner or args.except_tasks else []
     disk = OUT/'runner.img'
     run('nasm', *(['-DEXCEPT_TASK_TEST=1'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
-        f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
+        *context_args, f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if args.irq or task_runner or except_runner:
         raw = disk.read_bytes()

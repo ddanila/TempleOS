@@ -49,7 +49,7 @@ regression covers the changed task layout and ordinary lifecycle.
 
 ## Context transfer primitives
 
-`Kernel/I386/ExceptContext.asm` supplies four bootstrap assembly entries using
+`Kernel/I386/ExceptContext.HC` supplies four HolyC assembly entries using
 ordinary eight-byte argument slots and callee cleanup:
 
 | Entry | Arguments | Effect |
@@ -75,7 +75,11 @@ an enclosing 64-bit local. The compiler SysTry module supplies the enclosing fra
 returns to the invoking helper, and another resumes at the compiler's cleanup
 label, skipping the remaining try body. Native runtime service binding,
 unhandled exceptions and full public CTask integration remain required.
-NASM remains a bootstrap tool pending native assembler support.
+The fixtures compile these entries inside TempleOS into `ExceptContext.t32m`.
+The host checks its four code exports and absence of relocations, then embeds
+the generated code in the runner at the exported offsets. Only verified trailing
+module alignment padding is excluded from the executable instruction audit.
+NASM still builds the surrounding bootstrap runner.
 
 
 ## Capture and allocation boundary
@@ -166,7 +170,7 @@ the enclosing frame in a HolyC SysTry wrapper. Its environment services bind to
 the explicit test task/heap, and route registration failure through dispatch
 with an OutMem value. The FS-bound runtime below supplies the task/allocator services; production boot
 still must install runtime callbacks and unhandled-exception policy. Full native
-assembler self-hosting remains pending. Other bootstrap/context stubs and the
+assembler self-hosting remains pending. Other task/interrupt/boot stubs and the
 test runner still use NASM.
 
 The linked context suite passes nested/cross-frame propagation with this entry,

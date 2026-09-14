@@ -54,5 +54,10 @@ Top-level USE32 assembly can already use the ordinary module export and REL32
 import path. `Kernel/I386/SysTry.HC` now uses it for the real two-argument SysTry
 entry, replacing the hand-built NASM module. The exception fixtures compile this
 source inside TempleOS and link it against HolyC runtime services. This removes
-one host assembler dependency; the remaining bootstrap/context/interrupt stubs
+one host assembler dependency; the remaining bootstrap/interrupt stubs
 and full native compiler self-hosting still need migration and verification.
+
+`Kernel/I386/ExceptContext.HC` also builds through this path, exporting the save,
+invoke, resume and registration primitives as a relocation-free module. The
+runner embeds the HolyC-generated code and resolves entry offsets from its
+exports, so register/flag and task-switch checks exercise those exact bytes.

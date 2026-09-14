@@ -185,7 +185,7 @@ cases: incbin CASES_FILE
 %include "tests/i386/segments.inc"
 %include "Kernel/I386/Segments.asm"
 %ifdef EXCEPT_TASK_TEST
-%include "Kernel/I386/ExceptContext.asm"
+%include EXCEPT_CONTEXT_FILE
 %endif
 task_test_control: dd i386_irq_dispatch,i386_idle,segment_test_run
     dd i386_segments_reload,segment_test_gdt+24,segment_test_gdt+32
@@ -212,7 +212,7 @@ task_test_control: dd i386_irq_dispatch,i386_idle,segment_test_run
 %endif
 
 %ifdef EXCEPT_CONTEXT_TEST
-%include "Kernel/I386/ExceptContext.asm"
+%include EXCEPT_CONTEXT_FILE
 %include "tests/i386/except-context.inc"
 %include "tests/i386/segments.inc"
 except_context_control: dd i386_except_save,i386_except_invoke,i386_except_resume,except_context_test,i386_except_register,segment_test_run,segment_test_gdt+24

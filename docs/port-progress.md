@@ -1522,3 +1522,19 @@ rebuild/reboot generations also pass. This removes one host assembler dependency
 the cross-compiler still runs on x86-64, and context/interrupt/boot assembly,
 production kernel integration, native self-hosting and strict 386 validation
 remain unfinished.
+
+## HolyC-built exception context module
+
+`Kernel/I386/ExceptContext.HC` now provides all four exception context entries:
+save, invoke, resume and capture/registration. The NASM implementation has been
+removed. Each exception fixture builds and exports the module inside TempleOS;
+the host checks its four exports and absence of relocations before embedding
+the generated code into the protected-mode runner. The instruction audit excludes
+only checked zero alignment padding following the final callee-cleanup return.
+
+The context, public-runtime and task-switch suites pass with these generated
+entries. Coverage includes physical register/flag restoration, stack abandonment,
+record exhaustion/reclamation, propagation, caller diagnostics and catch-time
+switches. Both x86-64 compiler/kernel rebuild/reboot generations also pass.
+Task context switching, interrupt/boot assembly, full public kernel integration,
+native compiler execution and strict 386 verification remain required work.

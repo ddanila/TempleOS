@@ -23,6 +23,16 @@ U0 CompileTests()
     Report("FAIL HolyC SysTry provider compile\n"); return;
   }
   line=MStrPrint("EXPORT SysTry.t32m %X %X\n",modules[1],sizes[1]); Report(line);
+  source=FileRead("/Kernel/I386/ExceptContext.HC");
+  image=CmpI386Module(source,&loaded,&errors);
+  Free(source);
+  if(!image || errors) {
+    source=DocSave(DocPut,&size);
+    line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
+    Report("FAIL HolyC exception context compile\n"); return;
+  }
+  line=MStrPrint("EXPORT ExceptContext.t32m %X %X\n",image,loaded); Report(line);
+  Free(image);
   image=I386Link(modules,sizes,2,&loaded);
   if (!image) { Report("FAIL exception context link\n"); return; }
   Report("LINKED 0\n");
