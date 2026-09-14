@@ -22,7 +22,8 @@
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/HashTable.HH"
-class CI386KernelSymbol:CHash { U32 address,kind; };
+#include "/Kernel/HashValue.HH"
+class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
 CI386Task kernel_root;
@@ -200,6 +201,7 @@ U0 KernelDisplay()
 #include "/Kernel/I386/KeyboardSetup.HC"
 #include "/Kernel/I386/Hash.HC"
 #include "/Kernel/I386/HashTable.HC"
+#include "/Kernel/HashValue.HC"
 
 U0 KernelKeys(I64 unused)
 {//Single console/input owner. Lines are collected here; native compilation is pending.
@@ -301,16 +303,19 @@ U0 KernelSymbols()
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
   kernel_exports[0].str="KernelLog"; kernel_exports[0].kind=1;
-  kernel_exports[0].address=(&KernelLog+0)(U64);
+  kernel_exports[0].val=(&KernelLog+0)(U64);
   kernel_exports[1].str="KernelDisplay"; kernel_exports[1].kind=1;
-  kernel_exports[1].address=(&KernelDisplay+0)(U64);
+  kernel_exports[1].val=(&KernelDisplay+0)(U64);
   kernel_exports[2].str="kernel_startup_count"; kernel_exports[2].kind=3;
-  kernel_exports[2].address=(&kernel_startup_count+0)(U64);
-  for(i=0;i<3;i++) { kernel_exports[i].type=1; HashAdd(&kernel_exports[i],kernel_symbols); }
+  kernel_exports[2].val=(&kernel_startup_count+0)(U64);
+  for(i=0;i<3;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
 }
 U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
-  CI386KernelSymbol *symbol=HashFind(name,kernel_symbols,1);
+  CI386KernelSymbol *symbol=HashFind(name,kernel_symbols,HTT_EXPORT_SYS_SYM);
+  I64 address;
   if(!symbol) KernelStop;
-  binding->name=symbol->str; binding->kind=symbol->kind; binding->address=symbol->address;
+  address=HashVal(symbol);
+  if(address<=0 || address>0xFFFFFFFF) KernelStop;
+  binding->name=symbol->str; binding->kind=symbol->kind; binding->address=address;
 }

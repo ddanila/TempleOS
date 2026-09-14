@@ -1870,3 +1870,24 @@ and timer checks, including invalid-module rejection and unchanged disk contents
 Both x86-64 rebuild/reboot generations pass. Public task-selected allocation,
 typed compiler-symbol destruction, compiler initialization, native HolyC execution,
 the full environment, self-hosting and strict 386 verification remain unfinished.
+
+## Shared compiler symbol records and value access
+
+The original symbol type/flag constants and record declarations now live in
+`Kernel/SymbolTypes.HH`, shared by x86-64 and i386 without changing their fields.
+Native layout checks cover source/export/import/define/class/function/global
+records, member lists, dimensions, metadata and unions. Runtime cases preserve
+I64 fields beyond 32 bits while following target-width pointers and class arrays.
+
+One shared `HashTypeNum`/`HashVal` implementation now handles symbol value access
+on both targets. Twenty-eight value cases match a pre-refactor x86-64 capture;
+the native fixture also passes 289 type-bit pairs with flags and critical layout
+assertions. The existing hash/owned-table regression, instruction audits and both
+x86-64 rebuild/reboot generations pass.
+
+Resident loader entries now use the real `CHashExport` prefix and shared value
+access before checked conversion to 32-bit bindings. The 292144-byte standalone
+kernel passes the full 8 MiB QEMU/486 source/module/keyboard/VGA and timer checks.
+Rich-symbol construction/destruction, task ownership, compiler initialization,
+native source execution, the full environment, self-hosting and strict 386
+verification remain unfinished. See `i386-symbols.md`.

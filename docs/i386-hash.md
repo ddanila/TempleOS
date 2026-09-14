@@ -25,11 +25,11 @@ caller-owned strings, entries and table storage, power-of-two bucket counts with
 there is no NMI or multicore synchronization guarantee in this single-CPU path.
 
 The standalone kernel uses these routines for its resident loader export index.
-Its private records extend the shared `CHash` prefix with a module-binding kind
-and 32-bit address. Startup obtains the three required bindings by name through
-`HashFind`, then uses the checked disk module loader. These private records are
-not substitutes for compiler `CHashFun`/class/variable records and must not be
-inserted into a compiler symbol table as such.
+Its private records now extend the shared `CHashExport` record with a module-binding
+kind. Startup obtains the three required bindings by name through `HashFind`,
+reads each I64 value through shared `HashVal`, checks it fits a 32-bit address,
+then uses the checked disk module loader. These are export records, not substitutes
+for compiler `CHashFun`/class/variable records. See `i386-symbols.md`.
 
 ```sh
 python3 tools/test-rebuild.py
@@ -46,8 +46,8 @@ lookup, case sensitivity, use-counter rollover, insertion order, caller IF and
 four-byte bucket addressing. Exported oracle/module data and an executable-region
 instruction audit accompany the fixture.
 
-Rich compiler symbol records, task symbol-table ownership, compiler initialization
-and native source compilation remain pending.
+Construction/destruction of rich compiler symbol records, task symbol-table
+ownership, compiler initialization and native source compilation remain pending.
 The implementation does not change the x86-64 assembly primitives. The full
 standalone/self-hosting and strict 386 verification requirements still apply.
 
