@@ -471,6 +471,11 @@ programming environment through these concrete steps:
    allocation/length failures and retained version-7 boot/task calls are tested.
    Preprocessing directives still return an explicit unsupported result; directive
    processing, prompt/document input and parser/JIT integration remain required.
+   The production #define replacement-text reader is now shared with an owned
+   native builder, preserving continuations, quoting, comment/EOF quirks and
+   chunk boundaries. Original-lexer fixtures and native failure/reclamation checks
+   pass. Definition name/source metadata ownership and hash publication must still
+   connect this reader to native directive dispatch.
    Full lexical dispatch and directive processing remain required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block

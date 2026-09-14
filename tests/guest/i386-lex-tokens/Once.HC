@@ -3,6 +3,9 @@ I64 MacroNext(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
 Bool MacroTextFree(CCmpCtrl *cc) { Free(cc->cur_str); cc->cur_str=0; return TRUE; }
 #include "T:/Streams.HC"
 #include "T:/Macros.HC"
+#include "T:/DefineHost.HC"
+#include "T:/Defines.HC"
+#include "T:/DefineFailures.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -12,6 +15,8 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex tokens\n");
+  i=DefineTest; if(i) { line=MStrPrint("FAIL original define %d\n",i); Report(line); return; }
+  i=DefineFailures; if(i) { line=MStrPrint("FAIL define failures %d\n",i); Report(line); return; }
   if(StreamTest) { Report("FAIL x64 streams\n"); return; }
   if(ModeTest) { Report("FAIL x64 modes\n"); return; }
   if(MacroTest) { Report("FAIL x64 macros\n"); return; }

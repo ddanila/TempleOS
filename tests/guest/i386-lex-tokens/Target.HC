@@ -12,12 +12,18 @@ extern I64 StreamTest();
 extern I64 ModeTest();
 extern I64 MacroTest();
 extern I64 NativeTest();
+extern I64 DefineTest();
+extern I64 DefineNativeTest();
+extern I64 DefineFailures();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
   if(!I386HeapInit(&token_heap,0x60000,65536)) return 1;
   LexPunctInit(token_first,token_second,token_third);
   token_tables.first=token_first; token_tables.second=token_second; token_tables.third=token_third;
+  result=DefineTest; if(result) return result;
+  result=DefineNativeTest; if(result) return result;
+  result=DefineFailures; if(result) return result;
   result=StreamTest; if(result) return result;
   result=ModeTest; if(result) return result;
   result=MacroTest; if(result) return result;
@@ -41,6 +47,7 @@ I64 Main(I64 unused,I64 unused2)
 #include "/Compiler/I386/LexPunct.HC"
 #include "/Compiler/I386/LexIdent.HC"
 #include "/Compiler/I386/Lex.HC"
+#include "/Compiler/I386/LexDefine.HC"
 I64 MacroNext(CCmpCtrl *cc,I64 *lines) { return I386LexNext(&token_heap,cc,&token_tables,"Macro",lines); }
 Bool MacroTextFree(CCmpCtrl *cc)
 {
@@ -50,3 +57,6 @@ Bool MacroTextFree(CCmpCtrl *cc)
 #include "T:/Streams.HC"
 #include "T:/Macros.HC"
 #include "T:/Native.HC"
+#include "T:/DefineNative.HC"
+#include "T:/Defines.HC"
+#include "T:/DefineFailures.HC"

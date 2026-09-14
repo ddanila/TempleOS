@@ -2413,3 +2413,23 @@ is 382344 bytes; the retained runtime is 103368 bytes with a 103384-byte heap sp
 Both x64 rebuild/reboot generations pass. Strict 386 profiles, numerical-policy
 integration, public compiler/kernel APIs and complete native self-hosting remain
 open. See `docs/i386-lex-tokens.md` and `docs/i386-compiler-runtime.md`.
+
+## Shared #define replacement-text reading
+
+The production lexer now delegates definition-body reading to LexDefineRead, with
+its original raw reader and allocation behavior. Native I386LexDefineBody uses the
+same continuation, quoting, comment, replay and chunk-boundary logic to return an
+exact-sized owned buffer, reclaiming partial output on read/allocation failure.
+Definition recognition, source-link metadata, entry ownership and publication
+remain outside this helper; native next_token still rejects directives.
+
+Twenty-nine fixed body expectations passed against actual #define at 6841633
+before extraction, then against the shared x64 path and native construction.
+They include the original initial-double-slash and trailing-backslash EOF quirks,
+CR/LF continuations and lengths through 2048 bytes. Failure injection covers every
+read and append in all cases. Native tests verify cursor/line state, prompt
+rejection and complete success/failure reclamation across 253 small heap arenas.
+The combined mixed-token fixture and its instruction audit pass, as do both x64
+rebuild/reboot generations and the full native kernel boot/VGA/keyboard/rejection
+suite. The runtime remains version 7; full native preprocessing and the compiler/
+shell/self-hosting integration gates remain open. See `docs/i386-lex-define.md`.

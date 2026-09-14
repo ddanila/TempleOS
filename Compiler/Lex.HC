@@ -370,11 +370,27 @@ Bool LexIdentSystemPublish(U8 *context,CCmpCtrl *cc,U8 *name,I64 length,CHash *e
 }
 
 
+#include "/Compiler/LexDefine.HC"
+Bool LexDefineSystemAppend(U8 *context,U8 *text,I64 count)
+{
+  CLexDefineBuffer *buffer=context;
+  U8 *next=MAlloc(buffer->length+count);
+  if(buffer->text) {
+    MemCpy(next,buffer->text,buffer->length);
+    Free(buffer->text);
+  }
+  MemCpy(next+buffer->length,text,count);
+  buffer->text=next; buffer->length+=count-1;
+  return TRUE;
+}
+
 I64 Lex(CCmpCtrl *cc)
 {//Fetch next token.
   I64 i,j,k,l,ch;
   CHash *tmph;
-  Bool str_done,in_str,punct_finish;
+  Bool str_done,punct_finish;
+  CLexDefineBuffer define_buffer;
+  CLexDefineSink define_sink;
   CLexPunctTables punct_tables;
   CLexIdentSink ident_sink;
   CLexCharSource token_source;
@@ -482,89 +498,10 @@ lex_ident:
 	      tmph->type=HTT_DEFINE_STR;
 	      HashSrcFileSet(cc,tmph);
 
-	      do ch=LexGetChar(cc); //skip space between define name and start
-	      while (Bt(char_bmp_non_eol_white_space,ch));
-
-	      i=j=0;
-	      buf2=NULL;
-	      if (ch) {
-		in_str=FALSE;
-		do {
-		  if (ch=='\\') {
-		    if (ch=LexGetChar(cc)) {
-		      if (ch!='\r' && ch!='\n') {
-			buf[j++]='\\';
-			buf[j++]=ch;
-		      } else if (ch=='\r' && LexGetChar(cc)!='\n')
-			cc->flags|=CCF_USE_LAST_U16;
-		    } else {
-		      buf[j++]='\\';
-		      break;
-		    }
-		  } else if (ch!='\n') {
-		    if (ch=='\"')
-		      in_str=!in_str;
-		    buf[j++]=ch;
-		  } else
-		    break;
-		  while (ch=LexGetChar(cc)) {
-		    if (ch=='/') {
-		      ch=LexGetChar(cc);
-		      if (ch=='/' && !in_str) {
-			do ch=LexGetChar(cc);
-			while (Bt(char_bmp_non_eol,ch));
-			break;
-		      } else {
-			buf[j++]='/';
-			cc->flags|=CCF_USE_LAST_U16;
-		      }
-		    } else if (ch=='\\') {
-		      if (ch=LexGetChar(cc)) {
-			if (ch=='\"') {
-			  buf[j++]='\\';
-			  buf[j++]=ch;
-			} else {
-			  cc->flags|=CCF_USE_LAST_U16;
-			  ch='\\';
-			  break;
-			}
-		      }
-		    } else if (Bt(char_bmp_non_eol,ch)) {
-		      if (ch=='\"')
-			in_str=!in_str;
-		      buf[j++]=ch;
-		    } else
-		      break;
-		    if (j>=STR_LEN-4) {//Spot for ['\'][ch],[ch],[0]
-		      buf[j++]=0;
-		      buf3=MAlloc(i+j);
-		      if (buf2) {
-			MemCpy(buf3,buf2,i);
-			Free(buf2);
-			buf2=buf3;
-			MemCpy(buf2+i,buf,j);
-		      } else {
-			buf2=buf3;
-			MemCpy(buf2,buf,j);
-		      }
-		      i+=j-1;
-		      j=0;
-		    }
-		  }
-		} while (ch=='\\');
-	      }
-	      buf[j++]=0;
-	      buf3=MAlloc(i+j);
-	      if (buf2) {
-		MemCpy(buf3,buf2,i);
-		Free(buf2);
-		buf2=buf3;
-		MemCpy(buf2+i,buf,j);
-	      } else {
-		buf2=buf3;
-		MemCpy(buf2,buf,j);
-	      }
-	      tmph(CHashDefineStr *)->data=buf2;
+              define_buffer.text=0; define_buffer.length=0;
+              define_sink.context=&define_buffer; define_sink.append=&LexDefineSystemAppend;
+              if(!LexDefineRead(cc,&token_source,&define_sink)) LexExcept(cc,"Define input at ");
+	      tmph(CHashDefineStr *)->data=define_buffer.text;
 	      tmph(CHashDefineStr *)->cnt=-1;
 	      HashAdd(tmph,cc->htc.define_hash_table);
 	    }
