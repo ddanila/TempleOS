@@ -330,6 +330,9 @@ programming environment through these concrete steps:
    interface, including symbol storage, formatting, software F64, generators and
    target execution. Bring up a native compile/run path, then repeat editing,
    compilation, execution and error recovery without host assistance.
+   The base hash declarations are now shared, and native public hash primitives
+   supply the resident loader's export index. Compiler symbol record migration,
+   table lifetime/ownership and compiler initialization remain required.
 
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,

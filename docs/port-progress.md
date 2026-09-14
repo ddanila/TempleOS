@@ -1823,3 +1823,28 @@ needs vintage-CPU performance work. This console collects lines; it is not the
 HolyC shell, DolDoc editor or completion of the 8 MiB interactive-system target.
 Native compiler/JIT, full public interfaces, mouse/audio, self-hosting and strict
 386 validation remain required. See `i386-kernel.md`.
+
+## Native public hash primitives and resident export lookup
+
+`CHash` and `CHashTable` now come from one shared declaration file. Their pointer
+fields follow each target ABI while the original U32 counters and I64 table
+fields retain their widths. The x86-64 assembly remains unchanged. Native HolyC
+now supplies `HashStr`, bucket lookup, insertion, single-table lookup and chained
+lookup, preserving full-width hashes, type masks, duplicate instances, insertion
+order and use counters. Publication and selected-entry counter updates preserve
+caller IF through short interrupt-masked sections.
+
+A new `--hash` fixture compares 512 strings against actual x86-64 hash results
+and exercises collisions, parent tables, case sensitivity, masks, counter
+rollover, IF preservation and four-byte bucket addressing. Both target layouts
+are asserted. The fixture and executable instruction audit pass, as do both
+x86-64 compiler/kernel rebuild/reboot generations.
+
+Standalone startup now obtains its loader bindings by name from a private
+resident hash index. The full 8 MiB QEMU/486 boot, disk-module rejection checks,
+keyboard editing/scrolling and VGA pixel comparisons pass with a 279952-byte
+linked kernel. These records are loader exports, not compiler function/class
+metadata. Symbol-table allocation/destruction, rich compiler records, task
+ownership, compiler initialization and native source execution remain pending.
+The shell/JIT, complete environment, self-hosting and strict 386 requirements
+remain open. See `i386-hash.md`.

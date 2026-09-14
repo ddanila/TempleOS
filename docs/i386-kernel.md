@@ -117,8 +117,8 @@ pixel result. Both resident code and the separate startup payload undergo
 instruction audits. Two additional boots use copies of the image with the startup
 CPU tag changed or one resident-data import renamed; both must halt before module
 execution, with their disks unchanged. These checks run as part of `--test`.
-The linked kernel is 274160 bytes and the startup image reclaims 232 bytes on the
-current build. This executes cross-compiled native code from disk; it does
+The manifest records the linked kernel size; the startup image reclaims 232 bytes
+on the current build. This executes cross-compiled native code from disk; it does
 not yet compile source on the target or provide the native shell/JIT.
 
 ## Native keyboard console
@@ -154,3 +154,13 @@ VGA pixel at each checkpoint. The test runs under the builder's `--test` option,
 records its commands/logs/screens under `build/i386-kernel/input`, and confirms
 that the original disk remains unchanged. The existing blocking-input component
 regression and both x86-64 rebuild/reboot generations also pass.
+
+## Resident export index
+
+The kernel now stores its loader exports in a private table using the shared
+`CHash` prefix. Startup resolves the required names through native `HashFind` and
+converts the selected records to the existing checked loader's binding format.
+`HashStr`, insertion and lookup operate without allocation, with 64-bit hash
+values and target-width bucket pointers. These records describe loader addresses
+and kinds; they are not compiler function/class metadata. See `i386-hash.md` for
+the public primitives, record layouts, ownership rules and compatibility tests.

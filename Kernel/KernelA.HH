@@ -586,20 +586,7 @@ class CSema
 #define CTRL_ALT_TAB		3
 
 #help_index "Hash"
-public class CHash
-{//See $LK,"Hash",A="HI:Hash"$
-  CHash	*next;
-  U8	*str;
-  U32	type,
-	use_cnt; // inc'ed every time search found, never dec'ed.
-};
-
-public class CHashTable
-{
-  CHashTable *next;
-  I64	mask,locked_flags;
-  CHash	**body;
-};
+#include "/Kernel/HashTypes.HH"
 
 #help_index "Hash/System"
 //Hash table types: $LK,"ST_HTT_TYPES",A="FF:::/Kernel/KDefine.HC,ST_HTT_TYPES"$
