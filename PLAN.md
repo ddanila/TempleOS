@@ -774,6 +774,15 @@ parser. `docs/i386-expression-parser.md` maps the remaining native adapters,
 including separate recursive parser-stack ownership, `PrsType`, adjacent strings,
 and unresolved symbols. No native expression service is published yet.
 
+Type parsing, array dimensions and variadic member construction now also use
+shared cores with explicit lexer/snapshot, allocation, class/function, member and
+expression-evaluation services. The array-dimension traversal begins at the real
+root object, avoiding a write through the stack slot containing its pointer.
+The native helper probe checks dimension products, list links and token position;
+this is component evidence, not native declaration execution. See
+`docs/i386-type-parser.md`. Variable-list parsing, initialization and native
+class/function ownership remain needed before publishing a full frontend service.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

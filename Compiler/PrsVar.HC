@@ -245,168 +245,50 @@ U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *tmpm,I64 pass)
   }
 }
 
+#include "/Compiler/PrsTypeCore.HC"
+U0 PrsHostSnapshotDrop(U8 *context,CCmpCtrl *cc) { LexPopNoRestore(cc); }
+U0 PrsHostSnapshotPush(U8 *context,CCmpCtrl *cc) { LexPush(cc); }
+I64 PrsHostIntegerExpression(U8 *context,CCmpCtrl *cc) { return LexExpressionI64(cc); }
+CHashClass *PrsHostClassJoin(U8 *context,CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern)
+{ return PrsClass(cc,keyword,flags,is_extern); }
+CHashFun *PrsHostFunJoin(U8 *context,CCmpCtrl *cc,CHashClass *return_type,U8 *name,I64 flags)
+{ return PrsFunJoin(cc,return_type,name,flags); }
+U8 *PrsHostTypeAllocate(U8 *context,I64 bytes) { return MAlloc(bytes); }
+CMemberLst *PrsHostMemberNew(U8 *context,I64 register_hint) { return MemberLstNew(register_hint); }
+U0 PrsHostMemberAdd(U8 *context,CCmpCtrl *cc,CMemberLst *member,CHashClass *type,I64 mode)
+{ MemberAdd(cc,member,type,mode); }
+U0 PrsHostTypeServices(CPrsTypeServices *services)
+{
+  services->context=0; services->types=cmp.internal_types;
+  services->lex=&PrsHostLex; services->report=&PrsHostReport;
+  services->snapshot_drop=&PrsHostSnapshotDrop; services->snapshot_push=&PrsHostSnapshotPush;
+  services->integer_expression=&PrsHostIntegerExpression;
+  services->class_join=&PrsHostClassJoin; services->fun_join=&PrsHostFunJoin;
+  services->allocate=&PrsHostTypeAllocate; services->duplicate=&PrsHostDuplicate;
+  services->member_new=&PrsHostMemberNew; services->member_add=&PrsHostMemberAdd;
+}
+
 U0 PrsArrayDims(CCmpCtrl *cc,I64 mode,CArrayDim *dim)
-{//dim->next!=0 for array
-  CArrayDim *tmpad,*tmpad1;
-  I64 j;
-  dim->next=NULL;
-  dim->cnt=0;
-  dim->total_cnt=1;
-  tmpad1=&dim->next;
-  if (cc->token=='[') {
-    if (mode.u8[1]==PRS1B_FUN_ARG)
-      LexExcept(cc,"No arrays in fun args at ");
-    do {
-      if (Lex(cc)==']' && !dim->next) {
-        j=0;
-        if (cc->flags&CCF_TARGET_I386 &&
-            (mode.u8[1]==PRS1B_NULL || mode.u8[1]==PRS1B_STATIC_LOCAL_VAR)) j=-1;
-      }
-      else {
-	if ((j=LexExpressionI64(cc))<0)
-	  LexExcept(cc,"Invalid array size at ");
-      }
-      tmpad=MAlloc(sizeof(CArrayDim));
-      tmpad->next=NULL;
-      tmpad1=&dim;
-      do {
-	tmpad1->total_cnt*=j;
-	if (!tmpad1->next) {
-	  tmpad1->next=tmpad;
-	  break;
-	}
-	tmpad1=tmpad1->next;
-      } while (tmpad1);
-      tmpad1=tmpad;
-      tmpad->cnt=j;
-      tmpad->total_cnt=1;
-      if (cc->token!=']')
-	LexExcept(cc,"Missing ']' at ");
-    } while (Lex(cc)=='[');
-  }
+{
+  CPrsTypeServices services;
+  PrsHostTypeServices(&services);
+  PrsArrayDimsCore(&services,cc,mode,dim);
 }
 
 CHashClass *PrsType(CCmpCtrl *cc,CHashClass **_tmpc1,
   I64 *_mode,CMemberLst *tmpm,U8 **_ident,CHashFun **_fun_ptr,
   CHashExport **_tmpex,CArrayDim *tmpad,I64 fsp_flags)
 {
-  I64 k,ptr_stars_cnt,mode=*_mode;
-  CHashClass *tmpc1=*_tmpc1,*tmpc2;
-  CHashFun *fun_ptr=NULL;
-  CHashExport *tmpex=NULL;
-
-  pt_start:
-  if (!tmpc1 || !(tmpc1->type & (HTT_CLASS|HTT_INTERNAL_TYPE)))
-    LexExcept(cc,"Invalid class at ");
-
-  ptr_stars_cnt=0;
-  while (cc->token=='*') {
-    if (mode.u8[1]) {
-      LexPopNoRestore(cc);
-      LexPush(cc);
-    }
-    Lex(cc);
-    tmpc1++;
-    if (++ptr_stars_cnt>PTR_STARS_NUM)
-      LexExcept(cc,"Too many *'s at ");
-  }
-
-  k=PrsKeyWord(cc);
-  if (k==KW_UNION || k==KW_CLASS) {
-    Lex(cc);
-    tmpc2=PrsClass(cc,k,fsp_flags,mode&255==PRS0_EXTERN);
-    tmpc2->fwd_class=tmpc1;
-    tmpc1=tmpc2;
-    if (_tmpc1) *_tmpc1=tmpc1;
-    mode=PRS0_NULL|PRS1_NULL;
-    goto pt_start;
-  }
-
-  if (cc->token=='(') {
-    if (Lex(cc)!='*')
-      LexExcept(cc,"Expecting '*' at ");
-    ptr_stars_cnt=1; //fun_ptr
-    while (Lex(cc)=='*')
-      ptr_stars_cnt++; //fun_ptr
-    if (ptr_stars_cnt>PTR_STARS_NUM)
-      LexExcept(cc,"Too many *'s at ");
-  } else
-    ptr_stars_cnt=-1; //fun_ptr
-
-  if (_ident) {
-    if (cc->token==TK_IDENT) {
-      tmpex=cc->hash_entry;
-      *_ident=cc->cur_str;
-      cc->cur_str=NULL;
-      Lex(cc);
-    } else {
-      if (!mode.u8[1])
-	*_ident=NULL;
-      else if (cc->token==',' || cc->token==';' || cc->token==')') {
-	tmpex=NULL;
-	*_ident=StrNew("_anon_");
-	tmpm->flags|=MLF_NO_UNUSED_WARN;
-      } else
-	LexExcept(cc,"Expecting identifier at ");
-    }
-  }
-
-  if (ptr_stars_cnt>=0) { //fun_ptr
-    if (cc->token!=')')
-      LexExcept(cc,"Missing ')' at ");
-    if (Lex(cc)!='(')
-      LexExcept(cc,"Expecting '(' at ");
-    fun_ptr=PrsFunJoin(cc,tmpc1,NULL,fsp_flags)+ptr_stars_cnt;
-    tmpc1=cmp.internal_types[RT_PTR]+ptr_stars_cnt;
-  }
-  PrsArrayDims(cc,mode,tmpad);
-
-  tmpc2=OptClassFwd(tmpc1);
-  if (tmpc2->ptr_stars_cnt) {
-    tmpc2-=tmpc2->ptr_stars_cnt;
-    if (tmpc2->type&HTT_INTERNAL_TYPE && !tmpc2->size)
-      LexWarn(cc,"use \"U8 *\" instead of \"U0 *\" at ");
-  }
-
-  if (_mode)	*_mode=mode;
-  if (_fun_ptr)	*_fun_ptr=fun_ptr;
-  if (_tmpex)	*_tmpex=tmpex;
-  return tmpc1;
+  CPrsTypeServices services;
+  PrsHostTypeServices(&services);
+  return PrsTypeCore(&services,cc,_tmpc1,_mode,tmpm,_ident,_fun_ptr,_tmpex,tmpad,fsp_flags);
 }
 
 U0 PrsDotDotDot(CCmpCtrl *cc,CHashFun *tmpf,I64 _reg)
 {
-  CMemberLst *tmpm;
-  CArrayDim *tmpad;
-
-  Bts(&tmpf->flags,Ff_DOT_DOT_DOT);
-
-  Lex(cc);
-  tmpm=MemberLstNew(_reg);
-  tmpm->flags=MLF_DOT_DOT_DOT;
-  tmpm->member_class=cmp.internal_types[RT_I64];
-  tmpm->str=StrNew("argc");
-  tmpm->offset=tmpf->size;
-  tmpm->size=8;
-  tmpf->size+=8;
-  MemberAdd(cc,tmpm,tmpf,PRS1B_FUN_ARG);
-
-  tmpm=MemberLstNew(_reg);
-  tmpm->flags=MLF_DOT_DOT_DOT;
-  tmpm->member_class=cmp.internal_types[RT_I64];
-  tmpm->str=StrNew("argv");
-  tmpm->dim.total_cnt=127; //arbitrary
-  tmpm->dim.next=tmpad=MAlloc(sizeof(CArrayDim));
-  tmpad->next=NULL;
-  tmpad->cnt=127; //arbitrary
-  tmpad->total_cnt=1;
-  tmpm->offset=tmpf->size;
-  tmpm->size=8; //Close enough
-  tmpf->size+=8;//Close enough
-  MemberAdd(cc,tmpm,tmpf,PRS1B_FUN_ARG);
-
-  if (cc->token==')')
-    Lex(cc);
+  CPrsTypeServices services;
+  PrsHostTypeServices(&services);
+  PrsDotDotDotCore(&services,cc,tmpf,_reg);
 }
 
 U0 PrsVarLst(CCmpCtrl *cc,CHashClass *tmpc,I64 mode,I64 union_base=0)

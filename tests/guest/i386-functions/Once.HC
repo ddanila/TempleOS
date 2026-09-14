@@ -4,14 +4,18 @@ I64 case_number=0;
 U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
   U8 *prefix="",U8 *suffix="")
 {
-  I64 errors;
+  I64 errors,log_size;
   CAOT *aot;
   CAOTImportExport *ie;
   U8 *line,*source=MStrPrint("#include \"/Kernel/Types.HH\"\n%s\nI64 Test(I64 a,I64 b) { %s }\n%s",prefix,body,suffix);
   Report("CASE "); Report(body); Report("\n");
   aot=CmpI386Buf(source,&errors);
   Free(source);
-  if (!aot || errors) { Report("FAIL function compile\n"); throw; }
+  if (!aot || errors) {
+    source=DocSave(DocPut,&log_size);
+    line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,log_size); Report(line);
+    Report("FAIL function compile\n"); throw;
+  }
   for (ie=aot->next_ie;ie!=&aot->next_ie;ie=ie->next) {
     if (ie->type==IET_REL32_EXPORT) {
       line=MStrPrint("RANGE %d %X\n",case_number,ie->rip);
@@ -528,6 +532,8 @@ U0 CompileTests()
   Reject("#exe { 1+2; }");
   EmitLinkedCase(0xFFFFFFFF,1,0x100000000,&cursor,FALSE);
   EmitLinkedCase(0x100000000,42,0x10000002A,&cursor,TRUE);
+  EmitCase("return DimProbe(0,0)+DimProbe(1,0)+DimProbe(3,0)+DimProbe(1,1)+DimProbe(3,1);",0,0,5,&cursor,
+    "extern I64 DimProbe(I64 count,I64 empty_first);", "#include \"/ArrayDims.HC\"\n");
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);
   Report(line);

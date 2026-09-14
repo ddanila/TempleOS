@@ -3517,3 +3517,39 @@ VGA/input, native backend/recovery and module-rejection suite. The kernel remain
 389424 bytes and the resident service ABIs are unchanged. These checks exercise
 the extracted parser through the existing compiler, including source used to
 build native modules; they do not prove native frontend execution.
+
+## Type and array parser service extraction
+
+`PrsTypeCore.HC` now shares production type parsing and variadic member
+construction; `PrsArrayDimsCore.HC` shares the array-dimension loop. Existing
+`PrsVar.HC` entries provide host services for tokens, snapshots, expression
+execution, class/function joining, allocation, strings and members. The expression
+parser's type callback reaches this same implementation. Keyword recognition now
+lives in a shared pure helper. Pointer-depth rules, function-pointer syntax,
+class/union forwarding, identifier ownership, anonymous names, array bounds,
+warnings and argc/argv construction retain their existing behavior.
+
+The dimension traversal previously began at `&dim`, then wrote `total_cnt` through
+that pointer-containing stack slot before following its link to the root. It now
+begins at `dim`, updating only real dimension objects. A new i386 function case
+executes the shared helper for five dimension shapes: absent, one/three explicit,
+and one/three with an unsized first dimension. Bounded fixture callbacks supply
+tokens, integer bounds and dimension storage. The case checks root/suffix products,
+individual counts, exact links, allocation counts, final token position and object
+guards. It does not exercise native bound-expression execution or failed allocation.
+The function runner now exports its compiler document on compilation failure.
+
+Successful validation:
+
+- Both x64 compiler/kernel rebuild/reboot generations.
+- All 234 i386 function cases, including the native dimension helper.
+- All 16 data cases and the floating-point and inline-assembly suites.
+- The complete standalone boot, native backend/recovery, VGA/input and module
+  rejection suite; the kernel remains 389424 bytes and resident ABIs are unchanged.
+- Whitespace checks and Python runner syntax compilation.
+
+See [i386-type-parser.md](i386-type-parser.md) for the service/ownership contract.
+Native type/expression services still need task-owned adapters, variable-list and
+class/function parsing, initialization, bound evaluation and persistent code
+publication. DolDoc, native self-hosting and strict 386SX/DX validation remain
+unfinished; the full OS goal stays active.
