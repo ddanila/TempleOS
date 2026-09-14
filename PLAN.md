@@ -422,7 +422,11 @@ now retain middle operands once in frame storage and pass 512-triple native
 corpora for integer, unsigned, F64 and mixed types, plus nested-chain tests.
 Actual x64 NaN-leading branches and integer-middle mixed chains have documented
 result differences; the native corpus requires consistent pairwise numeric
-comparisons. Full x64 quirk compatibility remains unresolved. See `docs/i386-f64-backend.md`. Signed
+comparisons. Full x64 quirk compatibility remains unresolved. The `ToBool` intrinsic now
+normalizes full I64 arguments, including high-word-only values; 178 integer/call
+checks pass. The F64-to-integer corpus now includes numeric and raw-bit Boolean
+interpretations, with 4,096 native checks and 2,048 x64 Boolean outputs. Existing
+constant/variable ToBool differences are preserved and documented. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
 passes 1,024 inputs against actual x64 HolyC and an independent host oracle,

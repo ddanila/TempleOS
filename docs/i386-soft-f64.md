@@ -100,3 +100,10 @@ This proves conversion result bits for the corpus, not x87 exception-state parit
 For the wider arithmetic surface and rounding-mode terminology, see the
 [Berkeley SoftFloat interface documentation](https://www.jhauser.us/arithmetic/SoftFloat-3/doc/SoftFloat.html).
 SoftFloat is a reference here, not a linked dependency or a conformance oracle.
+
+The same `--soft-f64-to-int` fixture now also checks compiled `ToBool` for all
+1,024 inputs, both as variable F64 arguments and as raw U64 patterns. The former
+truncates through I64 before truth testing; the latter tests all original bits.
+Together with direct/compiled ToI64, this is 4,096 native checks. The host validates
+2,048 actual x64 Boolean outputs against the corresponding numeric/raw oracle.
+Constant-folding behavior is documented in `i386-f64-backend.md`.

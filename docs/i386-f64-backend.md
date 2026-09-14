@@ -98,8 +98,8 @@ compatibility remains a separate unfinished check.
 The conversion fixtures now check compiled intrinsic calls as well as direct
 runtime helpers: `--soft-f64-convert` performs 3,072 native result checks and
 checks eight signed-boundary results against actual x64 `ToF64`;
-`--soft-f64-to-int` performs 2,048 native result checks against its 1,024-input
-x64/host oracle. The main F64 fixture additionally checks nested conversions and
+`--soft-f64-to-int` performs 4,096 native result checks against its 1,024-input
+x64/host oracle: two numeric conversions and two Boolean interpretations per input. The main F64 fixture additionally checks nested conversions and
 preservation of already-correct operand types.
 
 The main F64 fixture now has 62 positive checks, including mixed operands in both
@@ -146,3 +146,18 @@ separate numeric comparisons and the native chain return false. The fixture
 checks those observed mismatch counts; native execution must match separate
 numeric comparisons for every case. Complete compatibility with these x64
 quirks and floating-point exception state remains unresolved.
+
+
+`ToBool` now lowers to an integer truth test through the standalone declaration
+in `Kernel/I386/Bool.HH`. Its I64 parameter means a variable F64 argument first
+uses the existing numeric truncation path. Thus variable -0.0 and 0.5 convert
+to false, while passing their U64 bit patterns directly tests all bits and
+returns true. Invalid numeric conversions use the existing nonzero
+integer-indefinite result. The conversion fixture compares both interpretations
+against 2,048 actual x64 ToBool outputs, as well as the independent host oracle.
+
+The shared optimizer retains an existing constant-folding distinction:
+`ToBool(0.0)` folds to false, but `ToBool(-0.0)`, `ToBool(0.5)` and
+`ToBool(-0.5)` fold to true. Actual x64 checks and a native constant-expression
+case verify these results. This preserves the observed constant/variable
+behavior; it does not make `ToBool(F64)` equivalent to a raw F64 condition.

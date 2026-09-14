@@ -1212,3 +1212,26 @@ Generated-instruction audits, CR0.EM execution, both x64 rebuild generations and
 image verification (764 files, 62 directories) pass. Remaining numerical/math/
 formatting support, full production compiler and kernel integration, native
 self-hosting, memory targets and strict 386 validation remain unfinished.
+
+
+## Native ToBool intrinsic
+
+`ToBool` now normalizes all 64 bits of its I64 argument to zero or one and
+returns through the existing Bool ABI. The standalone declaration is in
+`Kernel/I386/Bool.HH`. Native tests cover high-word/high-byte-only values,
+negative values, nested calls, side-effecting arguments, Bool storage, pointers
+and constant expressions. All 178 integer/call cases pass.
+
+The F64-to-integer corpus now runs 4,096 native checks over 1,024 inputs:
+direct and compiled ToI64, ToBool after numeric F64 argument conversion, and
+ToBool on the original U64 pattern. The host validates 2,048 actual x64 Boolean
+outputs against independent numeric/raw-bit expectations. The shared optimizer's
+constant-folding distinction is preserved: literal -0.0 and +/-0.5 yield true,
+while the corresponding variable F64 arguments truncate to integer zero and
+yield false. Four x64 constant checks and the native constant-expression case
+verify this behavior; see `docs/i386-f64-backend.md`.
+
+Generated-instruction audits, CR0.EM execution, both x64 rebuild generations and
+image verification (765 files, 62 directories) pass. Remaining numerical/math/
+formatting support, full compiler/kernel integration, native self-hosting,
+memory targets and strict 386 validation remain unfinished.

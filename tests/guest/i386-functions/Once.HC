@@ -268,6 +268,34 @@ U0 CompileTests()
   EmitCase("return a>=b>0;",42,42,1,&cursor);
   EmitCase("return a<Add(a,b)<a+b+1;",42,1,1,&cursor,
     "extern I64 Add(I64 a,I64 b);", "I64 Add(I64 a,I64 b) { return a+b; }");
+  EmitCase("return ToBool(a);",0,0,0,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a);",1,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a);",256,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a);",0x100000000,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a);",0x8000000000000000,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a);",-1,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(ToBool(a));",0x100000000,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("I64 c=a; b=ToBool(c++); return c+10*b;",0,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("I64 c=a; b=ToBool(c++); return c+10*b;",1,0,12,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("Bool c=ToBool(a); return c;",256,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(0.0)+2*ToBool(-0.0)+4*ToBool(0.5)+8*ToBool(-0.5);",0,0,14,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(0)+2*ToBool(0x100000000);",0,0,2,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a&b);",0x100000000,0x100000000,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
+  EmitCase("return ToBool(a(U8 *));",0x80000000,0,1,&cursor,
+    "#include \"/Kernel/I386/Bool.HH\"");
   EmitCase("return a&&b;",0x100000000,42,1,&cursor);
   EmitCase("return a||b;",0,0x100000000,1,&cursor);
   EmitCase("return a&&b;",42,0,0,&cursor);

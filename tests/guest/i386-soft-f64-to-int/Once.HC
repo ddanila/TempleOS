@@ -4,7 +4,7 @@ U64 conversion_special[8]={0,1,0x000FFFFFFFFFFFFF,0x0010000000000000,
   0x7FEFFFFFFFFFFFFF,0x7FF0000000000000,0x7FF0000000000001,0x7FF8000000001234};
 U0 CompileTests()
 {
-  U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
+  U8 *source=FileRead("T:/Target.HC"),*module,*image,*line,*bool_oracle=MAlloc(2048);
   I64 size,loaded,errors,i;
   U64 *oracle=MAlloc(16384),bits,seed=0x386F64C;
   CI386ModuleHeader *h;
@@ -21,8 +21,16 @@ U0 CompileTests()
     } else bits=seed;
     oracle[i*2]=bits;
     oracle[i*2+1]=ToI64(bits(F64));
+    bool_oracle[i*2]=ToBool(bits(F64));
+    bool_oracle[i*2+1]=ToBool(bits);
   }
   line=MStrPrint("EXPORT x64-to-int.bin %X %X\n",oracle,16384); Report(line);
+  line=MStrPrint("EXPORT x64-to-bool.bin %X %X\n",bool_oracle,2048); Report(line);
+  Report(MStrPrint("OBSERVED x64 ToBool constants: %d %d %d %d\n",
+    ToBool(0.0),ToBool(-0.0),ToBool(0.5),ToBool(-0.5)));
+  if (ToBool(0.0)!=0 || ToBool(-0.0)!=1 || ToBool(0.5)!=1 || ToBool(-0.5)!=1) {
+    Report("FAIL changed x64 ToBool constant folding\n"); return;
+  }
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);

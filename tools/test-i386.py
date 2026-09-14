@@ -48,7 +48,7 @@ def main():
     modes.add_argument('--soft-f64', action='store_true', help='Test integer-only binary64 addition, subtraction, multiplication and division')
     modes.add_argument('--soft-f64-convert', action='store_true', help='Test I64/U64 to binary64 conversion and rounding')
     modes.add_argument('--soft-f64-compare', action='store_true', help='Test binary64 ordering, NaNs and signed zeros')
-    modes.add_argument('--soft-f64-to-int', action='store_true', help='Test binary64 to I64 truncation against x64 HolyC')
+    modes.add_argument('--soft-f64-to-int', action='store_true', help='Test binary64 to I64/Bool conversion against x64 HolyC')
     modes.add_argument('--float', action='store_true', help='Test compiled native HolyC F64 expressions and calls')
     args = parser.parse_args()
     task_runner = args.tasks or args.input or args.messages
@@ -118,6 +118,11 @@ def main():
                 float(value-(1 << 64) if value >> 63 else value)) for value in signed_inputs)
             if (exports/'x64-from-int.bin').read_bytes() != signed_oracle:
                 raise ValueError('x64 ToF64 does not match signed I64 conversion')
+        if args.soft_f64_to_int:
+            expected_bools = bytes(truth for bits, value in struct.iter_unpack('<QQ', oracle)
+                                   for truth in (value != 0, bits != 0))
+            if (exports/'x64-to-bool.bin').read_bytes() != expected_bools:
+                raise ValueError('x64 ToBool differs from the numeric-conversion/raw-bit contract')
         if args.soft_f64_to_int and (exports/'x64-to-int.bin').read_bytes() != oracle:
             raise ValueError('x64 HolyC conversion differs from truncation/indefinite oracle')
         if length != len(oracle) or begin < 28 or begin+length > len(data)-4:
@@ -203,7 +208,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != {'data': 16, 'functions': 164, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
+    if offset != len(data) or count != {'data': 16, 'functions': 178, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
@@ -550,7 +555,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64 with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

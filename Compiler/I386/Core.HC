@@ -368,7 +368,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             //HolyC conditions test raw bits, including the F64 sign bit.
             case IC_NOT: case IC_AND_AND: case IC_OR_OR: case IC_XOR_XOR:
             case IC_BR_ZERO: case IC_BR_NOT_ZERO:
-            case IC_TO_F64: case IC_TO_I64:
+            case IC_TO_F64: case IC_TO_I64: case IC_TO_BOOL:
             case IC_NOP1: case IC_NOP2: case IC_IMM_F64: case IC_PUSH_CMP:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
             case IC_CALL: case IC_CALL_EXTERN: case IC_CALL_IMPORT:
@@ -435,6 +435,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_TO_F64:
           case IC_TO_I64:
+          case IC_TO_BOOL:
             if (!calls || calls->called || calls->indirect ||
                 !Bt(&calls->fun->flags,Ff_INTERNAL) ||
                 calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=1 ||
@@ -443,6 +444,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             if ((ic->ic_code==IC_TO_I64 && I386IsF64(I386ValueClass(ic->t.arg1_tree))) ||
                 (ic->ic_code==IC_TO_F64 && !I386IsF64(I386ValueClass(ic->t.arg1_tree))))
               I386F64Runtime(cc,&out,ic->ic_code,pass);
+            if (ic->ic_code==IC_TO_BOOL)
+              I386Bytes(&out,"\x09\xD0\x0F\x95\xC0\x0F\xB6\xC0\x31\xD2",10);
             depth=calls->depth;
             calls->called=TRUE;
             break;

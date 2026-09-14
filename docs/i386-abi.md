@@ -78,6 +78,12 @@ including nested logical conditions; value expressions evaluate both operands,
 matching the x64 backend. Boolean `^^` evaluates both operands. Truth tests use
 all 64 bits, including the sign bit when the value holds an F64 pattern.
 
+`ToBool` is now a native intrinsic, with a standalone declaration in
+`Kernel/I386/Bool.HH`. It accepts the ordinary I64 argument and normalizes all
+64 bits to zero or one before returning Bool. High-word-only and high-byte-only
+values are not discarded before normalization. Nested intrinsic calls and
+side-effecting argument expressions use the existing call tracking.
+
 Indirect fixed-arity calls share the direct-call ABI. The caller captures a
 four-byte function pointer into an eight-byte evaluation slot before evaluating
 arguments, calls through its low dword, and removes that saved slot after the
