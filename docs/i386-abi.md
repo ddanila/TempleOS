@@ -229,6 +229,23 @@ is mapped or that its lifetime is stable; the caller owns those conditions.
 Thirteen new function cases cover argument offsets EBP+8/EBP+16, a real nested
 call's parent and arguments, synthetic links and return addresses, malformed
 alignment/extent/overlap/cycles, and arithmetic at the top of the address space.
-The helpers do not restore registers or unwind stacks. Task stack-bound metadata,
-exception record ownership, register capture and nonlocal catch execution remain
+The helpers do not restore registers or unwind stacks. Exception record
+ownership, register capture and nonlocal catch execution remain
 required before native throw can use this interface.
+
+
+`Kernel/I386/Debug.HH/HC` now provides native `Caller(num=1)` using current-task
+FS binding and the task's registered stack bounds. Like the original public
+routine, depth zero returns the call site of Caller and depth one returns its
+caller's saved return address. Negative depths, impossible depths, missing bounds
+and invalid frame links return zero. Each parent access uses the checked frame
+helpers. This supports live current-task diagnostics, not inspection of another
+task's suspended context or exception unwinding.
+
+Owned-task creation registers the exact stack extent, excluding its control
+record and private heap. Reaping clears that extent. Caller-owned task records
+may supply bounds before registration; the root starts with unknown bounds and
+needs its actual boot-stack extent installed after scheduler initialization.
+The task regression verifies caller addresses before and after yields in two
+owned tasks, rejects private-heap addresses, checks missing/invalid-depth cases,
+and checks that reused caller-owned task records lose their previous bounds.

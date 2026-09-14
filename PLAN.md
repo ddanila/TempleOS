@@ -504,6 +504,13 @@ malformed-frame cases bring the function corpus to 233 cases, including a real
 nested call reading its caller's I64 argument slots. Traversal requires live
 readable stack bounds and does not perform unwinding. Task bounds, exception
 record lifetime and register capture/restore remain pending.
+Owned-task creation now records the actual stack base/size separately from the
+private arena, and reap clears those bounds. A native public Caller uses current
+FS task binding and checked frame traversal, returning zero for invalid depths,
+unknown bounds and invalid links. Task tests verify caller addresses across
+yields, stack/private-arena separation and record reuse; the message regression
+also passes with the expanded task layout. Root boot-stack registration, saved
+foreign-task inspection and exception capture/restore remain pending.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

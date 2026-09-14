@@ -366,3 +366,19 @@ see [task-addressed inboxes](i386-messages.md) for ownership and cleanup rules.
 The scheduler also retains an optional focus task. Reap rejects that task until
 focus moves or clears, independently of inbox detachment. This keeps routing
 references valid through completion; `I386FocusSet` provides the serialized update.
+
+
+Owned tasks now retain `stack_base` and `stack_size` in CI386Task. Spawn publishes
+the same exact extent passed to ContextInit, before scheduler registration;
+the private arena lies outside it. The extent remains valid through execution
+and finish cleanup, and successful reap clears it before the owner frees storage.
+Caller-owned task records can register their stack extent before SchedAdd.
+SchedInit initializes the root extent to unknown; boot code must supply its live
+stack bounds after initialization to enable root stack diagnostics.
+
+The native `Caller` implementation in `Kernel/I386/Debug.HC` reads the current
+task through FS and checks every frame against these bounds. The task fixture
+checks saved caller addresses across yields, separation from private arenas,
+missing-root-bounds handling, invalid depths and clearing metadata on record
+reuse. The message regression also passes with the expanded task record.
+These additions do not provide register restoration or catch execution.

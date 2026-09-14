@@ -16,6 +16,8 @@ class CI386Task
   U0 (*cleanup)(CI386Task *task);
   U32 finishing;
   CI386MsgQueue *messages;
+  U8 *stack_base;
+  U32 stack_size;
 };
 class CI386Scheduler
 {

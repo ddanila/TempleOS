@@ -21,13 +21,15 @@ public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
   owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
+  owned->task.stack_base=(owned+0)(U8 *)+header;
+  owned->task.stack_size=stack_size;
   if (private_size) {
     if (!I386HeapInit(&owned->local_heap,(owned+0)(U8 *)+header+stack_size,private_size)) {
       I386HeapFree(heap,owned); I386IrqRestore(flags); return 0;
     }
     owned->task.memory=&owned->local_heap;
   }
-  if (!I386ContextInit(&owned->task.context,(owned+0)(U8 *)+header,stack_size,
+  if (!I386ContextInit(&owned->task.context,owned->task.stack_base,owned->task.stack_size,
       entry,arg,&I386TaskReturn,fs,gs) || !I386SchedAdd(s,&owned->task)) {
     I386HeapFree(heap,owned);
     I386IrqRestore(flags);

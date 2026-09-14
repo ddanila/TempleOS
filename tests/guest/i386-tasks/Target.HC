@@ -6,6 +6,8 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Scheduler.HH"
 #include "/Kernel/I386/Task.HH"
+#include "/Kernel/I386/Frame.HH"
+#include "/Kernel/I386/Debug.HH"
 extern I64 OwnedTaskTest();
 extern I64 JoinTest();
 extern U0 JoinWorker(I64 id);
@@ -163,6 +165,7 @@ I64 SchedulerTest()
       p=I386HeapAlloc(&heap,8208); stacks[i]=p;
       if (!p) return 14;
       for (j=0;j<8208;j++) p[j]=0xA5;
+      tasks[i].stack_base=p+8; tasks[i].stack_size=8192;
       if (I386SchedAdd(&scheduler,&tasks[i]) ||
           !I386ContextInit(&tasks[i].context,p+8,8192,&ScheduledWorker,i,&ScheduledExit,0x18,0x20) ||
           !I386SchedAdd(&scheduler,&tasks[i]) || I386SchedAdd(&scheduler,&tasks[i]) ||
@@ -190,7 +193,8 @@ I64 SchedulerTest()
     for (i=1;i<=2;i++) {
       if (I386SchedAdd(&scheduler,&tasks[i]) || I386SchedWake(&scheduler,&tasks[i]) ||
           !I386SchedReap(&scheduler,&tasks[i]) || tasks[i].context.esp ||
-          tasks[i].owner || I386SchedReap(&scheduler,&tasks[i])) return 20;
+          tasks[i].owner || tasks[i].stack_base || tasks[i].stack_size ||
+          I386SchedReap(&scheduler,&tasks[i])) return 20;
       p=stacks[i];
       for (j=0;j<8;j++) if (p[j]!=0xA5 || p[8200+j]!=0xA5) return 21;
       if (!I386HeapFree(&heap,p)) return 22;
@@ -318,6 +322,7 @@ I64 OwnedTaskTest()
   CI386Heap heap;
   I64 cycle,i,j;
   U8 *p;
+  if(Caller(0) || Caller(-1) || Caller(0x7FFFFFFFFFFFFFFF)) return 62;
   if (!I386HeapInit(&heap,0x40000,32768) || I386TaskDestroy(0) ||
       I386TaskSpawn(0,&heap,8192,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,0,8192,&OwnedWorker,0) ||
@@ -338,7 +343,9 @@ I64 OwnedTaskTest()
       owned_progress[i]=0; private_blocks[i]=0; cleanup_progress[i]=0;
       owned_tasks[i]=I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0x100000000+i,0x18,0x20,4096);
       if (!owned_tasks[i] || I386TaskDestroy(owned_tasks[i]) ||
-          owned_tasks[i]->task.addr!=&owned_tasks[i]->task) return 41;
+          owned_tasks[i]->task.addr!=&owned_tasks[i]->task ||
+          owned_tasks[i]->task.stack_size!=8192 ||
+          owned_tasks[i]->task.stack_base+8192!=owned_tasks[i]->local_heap.base) return 41;
     }
     if (heap.allocations!=2 || I386TaskSpawn(&scheduler,&heap,32768,&OwnedWorker,0) ||
         heap.allocations!=2 || !I386HeapValid(&heap)) return 42;
@@ -369,6 +376,21 @@ I64 OwnedTaskTest()
   if (!p || !I386HeapFree(&heap,p)) return 48;
   return JoinTest;
 }
+I64 CheckCurrentFrame()
+{
+  CI386Task *task=I386TaskSelf;
+  CI386Frame *frame=GetRBP;
+  U8 *expected;
+  if(!task->stack_base || task->stack_size!=8192 ||
+      !I386FrameValid(frame,task->stack_base,task->stack_size)) return 1;
+  expected=I386FrameReturn(frame,task->stack_base,task->stack_size);
+  if(!expected || Caller(1)!=expected || Caller()!=expected || !Caller(0) ||
+      Caller(-1) || Caller(0x7FFFFFFFFFFFFFFF)) return 2;
+  if(task->memory && I386FrameValid(task->memory->base,task->stack_base,task->stack_size))
+    return 3;
+  return 0;
+}
+
 U0 OwnedWorker(I64 arg)
 {
   I64 id=arg&255,round,j;
@@ -390,8 +412,10 @@ U0 OwnedWorker(I64 arg)
   for (round=0;round<8;round++) {
     if (I386TaskSelf!=&owned_tasks[id]->task || I386TaskSelf->owner!=&scheduler ||
         I386TaskDestroy(owned_tasks[id])) errors++;
+    if(CheckCurrentFrame()) errors++;
     owned_progress[id]=round+1;
     if (!I386SchedYield(&scheduler)) errors++;
+    if(CheckCurrentFrame()) errors++;
     for (j=0;j<8;j++) if (local[j]!=id*100+j) errors++;
     for (j=0;j<512;j++) if (p[j]!=id+0x70) errors++;
     if (private_blocks[1-id] && I386TaskFree(private_blocks[1-id])) errors++;
@@ -460,3 +484,6 @@ U0 OwnedCleanup(CI386Task *task)
       !I386TaskFree(p)) errors++;
   cleanup_progress[id]=2;
 }
+
+#include "/Kernel/I386/Frame.HC"
+#include "/Kernel/I386/Debug.HC"
