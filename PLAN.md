@@ -619,6 +619,11 @@ passes catch-time switching and restores the original GDTR/selectors. Bounds,
 IF-enabled load rejection, descriptor/readback checks, task/IRQ regressions and
 x86-64 rebuilds pass. Full production task records and boot sequencing remain
 required; see `docs/i386-gdt.md`.
+The native task platform now initializes scheduler, root stack/heap, CPU record,
+GDT and the kernel binding callback together. Root exception/caller diagnostics
+and worker catch-time switching pass through it, including FS/GS identity and
+reclamation. Public CTask integration and complete boot ordering remain open;
+see `docs/i386-task-platform.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

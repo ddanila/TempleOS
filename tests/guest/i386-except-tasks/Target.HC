@@ -4,7 +4,8 @@
 #include "/Kernel/I386/ExceptRuntime.HH"
 #include "/Kernel/I386/Debug.HH"
 #include "/Kernel/I386/Gdt.HH"
-import U0 i386_context_switch(CI386Context *old,CI386Context *next);
+#include "/Kernel/I386/TaskPlatform.HH"
+_intern 0x17 CI386Cpu *CpuSelf();
 import U0 i386_segments_reload(U16 fs,U16 gs);
 class CControl {
   U8 *irq,*idle;
@@ -15,7 +16,6 @@ class CControl {
   U0 (*resume)(CI386ExceptCapture *capture);
 };
 CControl *control;
-U0 (*swap_context)(CI386Context *old,CI386Context *next);
 CI386Scheduler scheduler;
 CI386Task root;
 CI386Cpu cpu;
@@ -25,7 +25,6 @@ CI386OwnedTask *workers[2];
 U32 failures,progress[2],reports[2];
 extern Bool I386DataSegment(U8 *descriptor,U8 *base,I64 size);
 extern I64 Run();
-extern U0 Bind(CI386Task *task);
 extern U0 Worker(I64 id);
 extern U0 Report(CI386Task *task,I64 ch);
 extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
@@ -36,8 +35,7 @@ I64 Main(CControl *arg,U0 (*swap)(CI386Context *old,CI386Context *next))
   U16 old_fs,old_gs;
   U8 master_mask,slave_mask;
   I64 i,result;
-  control=arg; swap_context=&i386_context_switch;
-  root.addr=&root; cpu.addr=&cpu; cpu.scheduler=&scheduler;
+  control=arg;
   asm {
     MOV AX,FS
     MOV U16 &old_fs[EBP],AX
@@ -80,8 +78,19 @@ I64 Main(CControl *arg,U0 (*swap)(CI386Context *old,CI386Context *next))
   for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 27;
   services.invoke=control->invoke; services.resume=control->resume;
   services.report=&Report; services.fatal=&Fatal;
-  if(!I386ExceptInstall(&services) || !I386GdtLoad(table,5)) return 28;
-  i386_segments_reload(0x18,0x20);
+  if(!I386ExceptInstall(&services) || !I386HeapInit(&heap,0x40000,32768)) return 28;
+  if(I386TaskPlatformInit(0,&root,&cpu,table,0x88000,32768,&heap) ||
+      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88001,32768,&heap) ||
+      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,255,&heap) ||
+      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x40000,32768,&heap) ||
+      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,32768,0)) return 37;
+  if(scheduler.root || root.owner || cpu.scheduler ||
+      !I386GdtRead(readback)) return 38;
+  for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 39;
+  if(!I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,32768,&heap) ||
+      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,32768,&heap)) return 40;
+  if(root.stack_base!=0x88000 || root.stack_size!=32768 || root.memory!=&heap ||
+      cpu.addr!=&cpu || cpu.scheduler!=&scheduler || CpuSelf!=&cpu || !Caller(0)) return 41;
   if(!I386GdtRead(readback) || readback[0]!=39 || readback[1] ||
       (readback+2)(U32 *)[0]!=(table+0)(U64) || I386TaskSelf!=&root) result=29;
   else result=Run;
@@ -100,9 +109,13 @@ I64 Main(CControl *arg,U0 (*swap)(CI386Context *old,CI386Context *next))
 I64 Run()
 {
   I64 cycle,i,round;
-  if(!I386SchedInit(&scheduler,&root,swap_context) ||
-      !I386SchedSetBind(&scheduler,&Bind) ||
-      !I386HeapInit(&heap,0x40000,32768)) return 3;
+  try { throw(0x1234567800000001,TRUE); failures++; }
+  catch {
+    if(I386TaskSelf!=&root || root.except_ch!=0x1234567800000001 ||
+        !root.except_callers[0] || !root.except_top || root.memory!=&heap) failures++;
+    root.catch_except=TRUE;
+  }
+  if(failures || root.except_top || heap.used || heap.allocations) return 3;
   for(cycle=0;cycle<2;cycle++) {
     for(i=0;i<2;i++) {
       progress[i]=0; reports[i]=0;
@@ -122,13 +135,6 @@ I64 Run()
   }
   return 0;
 }
-U0 Bind(CI386Task *task)
-{
-  if(GetRFlags&0x200 || scheduler.current!=task ||
-      !I386DataSegment(gdt_storage+32,task,sizeof(CI386Task))) failures++;
-  i386_segments_reload(0x18,0x20);
-  if(I386TaskSelf!=task) failures++;
-}
 U0 Worker(I64 id)
 {
   CI386Task *task=I386TaskSelf;
@@ -146,7 +152,7 @@ U0 Worker(I64 id)
       if(task->except_ch!=ch || task->memory->allocations!=1) failures++;
       task->catch_except=TRUE;
       I386SchedYield(&scheduler);
-      if(I386TaskSelf!=task || task->except_top!=selected || !task->catch_except ||
+      if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || !task->catch_except ||
           task->except_ch!=ch || task->except_callers[0]!=site ||
           task->except_rbp!=throw_frame || value!=0x1234567800000000+id+i*3) failures++;
       value++;
@@ -158,7 +164,7 @@ U0 Worker(I64 id)
         selected=task->except_top;
         if(task->memory->allocations!=2) failures++;
         I386SchedYield(&scheduler);
-        if(I386TaskSelf!=task || task->except_top!=selected || task->catch_except ||
+        if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || task->catch_except ||
             task->except_ch!=ch+0x200000000) failures++;
         value++;
       }
@@ -168,7 +174,7 @@ U0 Worker(I64 id)
       task->catch_except=TRUE;
       if(task->memory->allocations!=1) failures++;
       I386SchedYield(&scheduler);
-      if(I386TaskSelf!=task || task->except_top!=selected || !task->catch_except ||
+      if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || !task->catch_except ||
           task->except_ch!=ch+0x200000000) failures++;
       value++;
     }
@@ -205,3 +211,5 @@ U0 Fatal(CI386Task *task,I64 status,I64 ch)
 #include "/Kernel/I386/Debug.HC"
 
 #include "/Kernel/I386/Gdt.HC"
+
+#include "/Kernel/I386/TaskPlatform.HC"

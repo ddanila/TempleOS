@@ -1647,3 +1647,25 @@ The exception-task suite and instruction audit pass, as do general tasks, linked
 IRQs and both x86-64 rebuild/reboot generations. Production task/CPU records,
 complete boot sequencing, exceptional-stack policy, native compiler execution and
 strict 386 verification remain unfinished. See `i386-gdt.md`.
+
+
+## Native task platform and root-stack registration
+
+`Kernel/I386/TaskPlatform.HH` and `TaskPlatform.HC` now initialize the native
+single-CPU scheduler, root stack and heap, CPU record, GDT and binding callback
+as one controlled operation. They link the context-switch/reload entries directly.
+Validation precedes mutation; unexpected post-validation failures halt instead
+of exposing partially initialized state. The platform is installed once and its
+caller-owned records/table/stack/heap remain live.
+
+The exception-task fixture no longer supplies its own binding callback. It uses
+the kernel initializer, checks rejected/repeated setup and root stack/heap/FS/GS
+identity, and handles a full-width root exception with caller diagnostics and
+record reclamation before running worker cycles. All 48 catch-time yields pass
+with task and CPU identity checks and full worker reclamation. Native instruction
+audits, general task regression and both x86-64 rebuild/reboot generations pass.
+
+These are still the standalone native task/CPU records. Public CTask integration,
+complete boot/device/interrupt ordering, NMI/exceptional-stack policy, native
+compiler execution and strict 386 verification remain unfinished. See
+`i386-task-platform.md`.

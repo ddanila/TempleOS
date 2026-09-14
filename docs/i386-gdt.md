@@ -36,3 +36,7 @@ The exception-task suite passes with this setup, including bounds/no-mutation,
 flat descriptor encoding, guard bytes, IF-enabled load rejection, GDTR readback,
 48 catch-time yields and restoration. General task and linked IRQ regressions,
 instruction audits and both x86-64 rebuild/reboot generations also pass.
+
+[Native task platform initialization](i386-task-platform.md) now owns the GDT,
+scheduler binding and root stack/heap registration sequence used by the
+exception-task fixture. It replaces that fixture's custom binding callback.
