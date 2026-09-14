@@ -72,6 +72,30 @@ CCodeMisc *I386COCMiscNew(CI386Heap *heap,CCmpCtrl *cc,I64 type)
   }
   I386IrqRestore(irq); return owned;
 }
+Bool I386ICRetire(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
+{
+  U32 irq=I386IrqSave;
+  CI386OwnedIC *owned=node;
+  if(!I386CmpCodeOwner(heap,cc) || !node || I386HeapSize(heap,node)!=sizeof(CI386OwnedIC) ||
+      owned->lifetime.control!=cc || owned->lifetime.allocation!=node || owned->lifetime.kind!=1 ||
+      !node->next || !node->last || node->next==node || node->last==node ||
+      node->next->last!=node || node->last->next!=node) {
+    I386IrqRestore(irq); return FALSE;
+  }
+  ICDetach(node); owned->lifetime.kind=4;
+  I386IrqRestore(irq); return TRUE;
+}
+U0 I386CodeRetiredCollect(CI386CmpRelease *state)
+{//A completed discard is the collection boundary. Any other record defers it.
+  CI386CmpCtrl *owned=state->control;
+  CI386CodeAllocation *record;
+  for(record=owned->code_next;record!=&owned->code_next;record=record->next)
+    if(record->kind!=4) return;
+  while((record=owned->code_next)!=&owned->code_next) {
+    I386CodeFree(state,record);
+    if(!state->ok) return;
+  }
+}
 Bool I386COCDiscard(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)=0,U8 *context=0)
 {//Only the current valid graph; callers must not restore a discarded view.
@@ -86,6 +110,7 @@ Bool I386COCDiscard(CI386Heap *heap,CCmpCtrl *cc,
   I386IrqRestore(irq);
   COCRelease(cc,&cc->coc,&owner,&I386CodeLabel,&I386CodeFreeIC,&I386CodeFreeMisc);
   irq=I386IrqSave;
+  if(state.ok) I386CodeRetiredCollect(&state);
   control->code_busy=0; if(control->task) control->task->compiler_busy=0;
   I386IrqRestore(irq); return state.ok;
 }

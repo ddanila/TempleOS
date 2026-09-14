@@ -79,10 +79,10 @@ Complete parser/generated-code cleanup remains separate work.
 
 ## Retained services and tests
 
-CompilerRuntime version 17 retains enter, leave, drain, bounded unwind and
+CompilerRuntime version 18 retains enter, leave, drain, bounded unwind and
 temporary IR allocation/discard alongside construction/destruction and symbol
-initialization. Its record is 104 bytes; the
-twenty imports are unchanged. FileRuntime version 8 validates that compiler
+initialization. Its record is 108 bytes; the
+twenty imports are unchanged. FileRuntime version 9 validates that compiler
 contract; its own record stays 32 bytes with six function pointers and eighteen
 imports. Both providers remain resident for the kernel lifetime.
 

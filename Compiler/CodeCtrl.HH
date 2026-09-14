@@ -3,6 +3,7 @@
 #include "/Kernel/CompilerTypes.HH"
 #include "/Kernel/SymbolDelete.HH"
 public extern U0 COCSeed(CCodeCtrl *coc);
+public extern U0 ICDetach(CIntermediateCode *node);
 public extern U0 COCCopy(CCodeCtrl *dst,CCodeCtrl *src);
 public extern U0 COCSave(CCmpCtrl *cc,CCodeCtrl *saved);
 public extern CCodeCtrl *COCRestore(CCmpCtrl *cc);

@@ -36,4 +36,7 @@ public extern Bool I386COCPush(CI386Heap *heap,CCmpCtrl *cc);
 public extern CCodeCtrl *I386COCPopNoFree(CI386Heap *heap,CCmpCtrl *cc);
 public extern Bool I386COCHeaderFree(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header);
 public extern Bool I386COCAppend(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header);
+//Unlink an instruction but preserve its fields for borrowed optimizer tree links.
+//Discard reclaims retired nodes only when no other native code allocations remain.
+public extern Bool I386ICRetire(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node);
 #endif

@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 17 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 18 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard and saved-header operations.
-The structure is 104 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations and instruction retirement.
+The structure is 108 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -190,3 +190,8 @@ views and exposes save/push/pop/header-free/append. Discard now accepts an optio
 diagnostic callback/context. The interface is 104 bytes with twenty imports;
 FileRuntime version 8 validates it. See [i386-code-views.md](i386-code-views.md) for
 original parser patterns, cleanup guarantees and remaining public integration.
+
+Version 18 adds native instruction retirement to preserve optimizer tree references
+after queue removal. Complete discard can reclaim retired nodes once no other code
+allocations remain. The record is 108 bytes, still with twenty imports; FileRuntime
+version 9 validates it. See [i386-ir-retirement.md](i386-ir-retirement.md).

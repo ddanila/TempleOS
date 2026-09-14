@@ -98,7 +98,7 @@ unwinds the failed child in a native catch, then tokenizes fresh input in the sa
 task. Boot and worker phases check IF, exception-record removal and exact temporary
 heap reclamation; the host requires both `COMPILER RECOVERY` records. See
 [i386-compiler-unwind.md](i386-compiler-unwind.md) for scope and remaining parser/JIT
-work. The probe currently uses 87896 image bytes and a reclaimed 87912-byte heap
+work. The probe currently uses 89256 image bytes and a reclaimed 89272-byte heap
 span; current image measurements are in [i386-file-runtime.md](i386-file-runtime.md).
 
 The recovery probe now attaches temporary intermediate-code nodes and a label to
@@ -109,3 +109,7 @@ services. See [i386-code-context.md](i386-code-context.md).
 Recovery now includes saved/detached headers aliasing the failed child IR; retry
 exercises retained header save, append, push, pop and release. See
 [i386-code-views.md](i386-code-views.md).
+
+The failed child now retains a tree link to a removed instruction through native
+retirement; retry verifies retirement followed by complete discard and collection.
+See [i386-ir-retirement.md](i386-ir-retirement.md).

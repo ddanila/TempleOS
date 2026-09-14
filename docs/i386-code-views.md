@@ -60,9 +60,9 @@ These are bootstrap compiler interfaces, not a new application allocation API.
 
 ## Integration and verification
 
-CompilerRuntime version 17 exposes save/push/pop/header-free/append in its 104-byte
+CompilerRuntime version 18 exposes save/push/pop/header-free/append in its 108-byte
 record and extends discard with diagnostic callback/context arguments. Its twenty
-imports are unchanged. FileRuntime version 8 validates this dependency without
+imports are unchanged. FileRuntime version 9 validates this dependency without
 changing its 32-byte record or eighteen imports. Kernel exports remain 43.
 
 The standalone recovery probe creates both a saved and a detached header aliasing
@@ -84,8 +84,12 @@ rejection checks and executable-region instruction audits. The test transfer and
 heap boundaries remain 320 KiB/0x60000 for task symbols and 256 KiB/0x50000 for lexical
 state. No standalone boot reservation was increased.
 
-The kernel is 389328 bytes; with its 2160-byte loaded stage it occupies 391488 of
-393216 bytes, leaving 1728. CompilerRuntime uses 223432 image / 223448 heap bytes,
-FileRuntime 124480 / 124496, and the temporary probe 87896 / 87912, reclaimed after
+The kernel is 389336 bytes; with its 2160-byte loaded stage it occupies 391496 of
+393216 bytes, leaving 1720. CompilerRuntime uses 227448 image / 227464 heap bytes,
+FileRuntime 124584 / 124600, and the temporary probe 89256 / 89272, reclaimed after
 its task phase. These pre-commit builds have source hashes in their manifests.
 Strict 386SX/DX/no-387 acceptance, full native parser/JIT and self-hosting remain open.
+
+Removed optimizer instructions can now be retired without reusing their storage.
+Discard collects them once all other code records are gone; control destruction
+always reclaims them. See [i386-ir-retirement.md](i386-ir-retirement.md).

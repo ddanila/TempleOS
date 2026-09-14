@@ -43,8 +43,8 @@ Arbitrary heap or graph corruption is not a transactional recovery contract.
 
 ## Retained integration and verification
 
-CompilerRuntime version 17 retains constructor/destructor, task-symbol, active
-queue, bounded unwind and temporary IR entries in its checked 104-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
+CompilerRuntime version 18 retains constructor/destructor, task-symbol, active
+queue, bounded unwind and temporary IR entries in its checked 108-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
 from the kernel, avoiding another copy of file-stack mechanisms. The kernel now
 publishes 43 bindings; the retained compiler has twenty imports.
 

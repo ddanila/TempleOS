@@ -59,11 +59,14 @@ now uses a 320 KiB transfer ending at its 0x60000 heap arena. The lexical-state
 fixture uses 256 KiB ending at 0x50000, with independent scratch arenas at 0x61000
 and 0x62000. These test changes do not raise the standalone boot reservation.
 
-CompilerRuntime version 17 uses a 104-byte record, still with twenty imports.
-FileRuntime version 8 validates that dependency without changing its 32-byte
+CompilerRuntime version 18 uses a 108-byte record, still with twenty imports.
+FileRuntime version 9 validates that dependency without changing its 32-byte
 record or eighteen imports. The kernel has 43 export bindings. CompilerRuntime
-uses 223432 image / 223448 heap bytes; FileRuntime uses 124480 / 124496. The probe
-uses 87896 / 87912 and is reclaimed after its task call. The kernel is 389328 bytes;
-with its 2160-byte loaded stage, 391488 of the fixed 393216 bytes are occupied.
+uses 227448 image / 227464 heap bytes; FileRuntime uses 124584 / 124600. The probe
+uses 89256 / 89272 and is reclaimed after its task call. The kernel is 389336 bytes;
+with its 2160-byte loaded stage, 391496 of the fixed 393216 bytes are occupied.
 These are local-change builds with source hashes recorded in the manifests.
 Strict 386 profiles, native parser/JIT and self-hosting remain required work.
+
+Native optimizer removal now preserves borrowed tree references through instruction
+retirement; see [i386-ir-retirement.md](i386-ir-retirement.md).

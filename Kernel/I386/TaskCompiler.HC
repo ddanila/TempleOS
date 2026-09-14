@@ -9,7 +9,7 @@ Bool I386TaskCompilerInit(CI386TaskCompilerConfig *config,CI386CompilerServices 
   if(config && !config->compiler && compiler && compiler->version==I386_COMPILER_SERVICES_VERSION &&
       compiler->bytes==sizeof(CI386CompilerServices) && compiler->control_new && compiler->control_del &&
       compiler->control_enter && compiler->control_leave && compiler->control_drain && compiler->control_unwind && compiler->code_add && compiler->code_misc && compiler->code_discard &&
-      compiler->code_save && compiler->code_push && compiler->code_pop && compiler->code_free && compiler->code_append &&
+      compiler->code_save && compiler->code_push && compiler->code_pop && compiler->code_free && compiler->code_append && compiler->code_retire &&
       tmp_filename && alpha_numeric && alpha_numeric_no_at && task && task->owner &&
       task==task->owner->root && task==task->owner->current) {
     config->tmp_filename=tmp_filename; config->alpha_numeric=alpha_numeric;

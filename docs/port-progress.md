@@ -3187,3 +3187,39 @@ in the unchanged 393216-byte reservation. CompilerRuntime uses 223432 image /
 these pre-commit builds. See `docs/i386-code-views.md`. Full native parser/JIT,
 public task/heap/error contracts, strict 386SX/DX/no-387 workflows, DolDoc and
 self-hosting remain unfinished.
+
+
+## Native optimizer instruction retirement
+
+Native instructions can now be unlinked while retaining their allocation and
+fields for borrowed optimizer tree references. The shared `ICDetach` operation
+preserves the removed node's links and is also used by public OptFree. Native
+retirement rejects foreign/sentinel/null/already-retired entries and needs no new
+allocation, including under heap exhaustion. The public optimizer's immediate
+Free policy is otherwise unchanged; routing it to native services remains work.
+
+After current-graph discard and its callbacks finish, retired entries are collected
+only if no other code records remain in the owner registry. Saved/detached headers,
+auxiliary records and live instructions defer collection. Header release alone is
+not a collection boundary. Full control deletion/catch unwind/task exit always
+reclaims the remaining owned records, including retired entries.
+
+CompilerRuntime version 18 adds retirement in a 108-byte table with twenty imports;
+FileRuntime version 9 validates it without changing its 32-byte format/eighteen
+imports. The standalone failed child retains a tree reference to a retired node
+alongside aliased headers; exception recovery reclaims it. Retry retires and
+collects an instruction through complete discard before deleting the child.
+
+Both x86-64 rebuild/reboot generations, all 233 native function cases, task-symbol
+and lexical-state ownership tests, and the full standalone 8 MiB QEMU/486 suite
+pass with instruction audits and module rejection checks. Tests cover exhausted
+fragmented heaps, preserved I64 data/links, allocation pressure, invalid transitions,
+saved-header deferral, unbound controls and 64 complete retire/discard cycles without
+heap growth. See `docs/i386-ir-retirement.md` for scope and reclamation rules.
+
+The kernel is 389336 bytes, or 391496 with the 2160-byte loaded stage, leaving 1720
+in the fixed 393216-byte reservation. CompilerRuntime uses 227448 image / 227464
+heap bytes, FileRuntime 124584 / 124600, and the temporary probe 89256 / 89272,
+reclaimed after its task phase. Test transfers remain unchanged; pre-commit build
+manifests record local source hashes. Public allocator/optimizer routing, full
+parser/JIT/AOT recovery, strict 386 workflows, DolDoc and self-hosting remain open.

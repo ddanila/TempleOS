@@ -88,6 +88,7 @@ I64 NativeControlTest()
     if(!misc || !(misc->str=I386HeapAlloc(&state_heap,8,TRUE))) return 101;
     misc->str[0]='X';
     if(!I386COCPush(&state_heap,cc) ||
+        !I386ICRetire(&state_heap,cc,cc->coc.coc_head.next) ||
         !I386COCDiscard(&state_heap,cc,&ControlCodeLabel,&control_code_labels) ||
         !I386CmpCtrlDel(&state_heap,cc) || control_code_labels!=i+1 || state_free_errors ||
         state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap) ||

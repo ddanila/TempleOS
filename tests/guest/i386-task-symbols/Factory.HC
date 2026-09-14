@@ -20,7 +20,7 @@ I64 FactoryRootTest()
   control_services.control_enter=&I386CmpCtrlEnter; control_services.control_leave=&I386CmpCtrlLeave;
   control_services.code_save=&I386COCSave; control_services.code_push=&I386COCPush;
   control_services.code_pop=&I386COCPopNoFree; control_services.code_free=&I386COCHeaderFree;
-  control_services.code_append=&I386COCAppend;
+  control_services.code_append=&I386COCAppend; control_services.code_retire=&I386ICRetire;
   control_services.code_add=&I386ICAdd; control_services.code_misc=&I386COCMiscNew; control_services.code_discard=&I386COCDiscard;
   control_services.control_drain=&I386CmpCtrlDrain; control_services.control_unwind=&I386CmpCtrlUnwind;
   control_services.control_new=&I386CmpCtrlNew; control_services.control_del=&I386CmpCtrlDel;

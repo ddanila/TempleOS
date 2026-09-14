@@ -34,7 +34,7 @@ provider callbacks are not a failure-atomic disposal contract.
 CompilerRuntime version 12 exposes root scope initialization. The retained module
 owns clone/destructor code for the kernel lifetime; it imports the kernel's native
 hash table new/validate/delete functions and shares symbol destruction code.
-The current version 17 service table is 104 bytes, with twenty imports and 43
+The current version 18 service table is 108 bytes, with twenty imports and 43
 kernel bindings.
 
 Root scope initialization follows compiler-module validation. Subsequent keyboard

@@ -44,8 +44,8 @@ failure paths is still required before claiming a recoverable native compiler.
 
 ## Retained integration and verification
 
-CompilerRuntime version 17 exposes `control_unwind` in its 104-byte service table;
-its twenty imports are unchanged. FileRuntime version 8 validates the new compiler
+CompilerRuntime version 18 exposes `control_unwind` in its 108-byte service table;
+its twenty imports are unchanged. FileRuntime version 9 validates the new compiler
 dependency, retaining its 32-byte record and eighteen imports. CompilerProbe
 version 4 imports the kernel's resident `SysTry`, `SysUntry` and `throw` in addition
 to its previous thirteen bindings. The kernel export index now has 43 entries.

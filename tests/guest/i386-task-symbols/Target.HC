@@ -34,6 +34,7 @@ extern I64 ActiveTest();
 extern I64 UnwindRootTest();
 extern I64 CodeTest();
 extern I64 CodeViewsTest();
+extern I64 CodeRetireTest();
 extern Bool FactoryWorkerTest(I64 id);
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
@@ -99,6 +100,7 @@ I64 ScopeTest()
   i=UnwindRootTest; if(i) return i;
   i=CodeTest; if(i) return i;
   i=CodeViewsTest; if(i) return i;
+  i=CodeRetireTest; if(i) return i;
   borrow=I386TaskFilesBorrow(&root,&snapshot,&selected);
   if(!borrow || I386TaskSymbolsDestroy(&root) || !I386TaskFilesRelease(borrow) ||
       !I386TaskSymbolsDestroy(&root) || !I386TaskFilesDestroy(&root) ||
@@ -168,3 +170,5 @@ U0 Grandchild(I64 unused)
 #include "T:/Code.HC"
 
 #include "T:/Views.HC"
+
+#include "T:/Retire.HC"
