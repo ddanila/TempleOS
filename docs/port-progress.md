@@ -1848,3 +1848,25 @@ metadata. Symbol-table allocation/destruction, rich compiler records, task
 ownership, compiler initialization and native source execution remain pending.
 The shell/JIT, complete environment, self-hosting and strict 386 requirements
 remain open. See `i386-hash.md`.
+
+## Owned native hash tables
+
+Native hash tables now have explicit-heap creation, validation, resizing, exact
+entry detachment and empty-table deletion. The owner record remains stable while
+resizing replaces its bucket array. Rehashing preserves equal-name instance
+order and use counters without an additional tail array. Entry/string and parent
+lifetimes remain separate; locked or nonempty deletion is rejected. These APIs
+preserve caller IF and perform no callbacks or yielding while relinking.
+
+The expanded hash fixture passes partial-creation and exhausted-heap failures,
+growth/shrink cycles, duplicate ordering, counter preservation, exact removal,
+parent survival, allocation ownership checks and full arena reclamation. Existing
+512-string compatibility checks and instruction audits still pass. Its stage is
+now 128 KiB, below the test heaps at 0x40000 and above.
+
+The standalone kernel allocates its resident export index through the new owner
+path. The 289832-byte kernel passes the 8 MiB QEMU/486 source/module/keyboard/VGA
+and timer checks, including invalid-module rejection and unchanged disk contents.
+Both x86-64 rebuild/reboot generations pass. Public task-selected allocation,
+typed compiler-symbol destruction, compiler initialization, native HolyC execution,
+the full environment, self-hosting and strict 386 verification remain unfinished.

@@ -147,7 +147,7 @@ def main():
     args = parser.parse_args()
     except_runner = args.except_context or args.except_runtime
     task_runner = args.tasks or args.input or args.messages or args.except_tasks
-    large_runner = args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
+    large_runner = args.hash or args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     #Task integration corpora use a 160 KiB transfer; their first arena is 0x40000.
     #A 160 KiB transfer from 0x10000 ends at 0x38000, below that arena.
     boot_sectors = 320 if args.tasks or args.except_tasks else 256 if large_runner else 128

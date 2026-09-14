@@ -21,6 +21,7 @@
 #include "/Kernel/I386/KeyboardRead.HH"
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/Hash.HH"
+#include "/Kernel/I386/HashTable.HH"
 class CI386KernelSymbol:CHash { U32 address,kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
@@ -39,8 +40,7 @@ U8 *kernel_planes;
 CI386OwnedTask *kernel_pulse;
 CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
-CHashTable kernel_symbols;
-CHash *kernel_symbol_buckets[8];
+CHashTable *kernel_symbols;
 CI386KernelSymbol kernel_exports[3];
 extern U0 KernelLog(U8 *text);
 extern U0 KernelHex(U64 value);
@@ -199,6 +199,7 @@ U0 KernelDisplay()
 #include "/Kernel/I386/KeyboardRead.HC"
 #include "/Kernel/I386/KeyboardSetup.HC"
 #include "/Kernel/I386/Hash.HC"
+#include "/Kernel/I386/HashTable.HC"
 
 U0 KernelKeys(I64 unused)
 {//Single console/input owner. Lines are collected here; native compilation is pending.
@@ -297,18 +298,19 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i;
-  kernel_symbols.mask=7; kernel_symbols.body=kernel_symbol_buckets;
+  kernel_symbols=I386HashTableNew(&kernel_heap,8);
+  if(!kernel_symbols) KernelStop;
   kernel_exports[0].str="KernelLog"; kernel_exports[0].kind=1;
   kernel_exports[0].address=(&KernelLog+0)(U64);
   kernel_exports[1].str="KernelDisplay"; kernel_exports[1].kind=1;
   kernel_exports[1].address=(&KernelDisplay+0)(U64);
   kernel_exports[2].str="kernel_startup_count"; kernel_exports[2].kind=3;
   kernel_exports[2].address=(&kernel_startup_count+0)(U64);
-  for(i=0;i<3;i++) { kernel_exports[i].type=1; HashAdd(&kernel_exports[i],&kernel_symbols); }
+  for(i=0;i<3;i++) { kernel_exports[i].type=1; HashAdd(&kernel_exports[i],kernel_symbols); }
 }
 U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
-  CI386KernelSymbol *symbol=HashFind(name,&kernel_symbols,1);
+  CI386KernelSymbol *symbol=HashFind(name,kernel_symbols,1);
   if(!symbol) KernelStop;
   binding->name=symbol->str; binding->kind=symbol->kind; binding->address=symbol->address;
 }

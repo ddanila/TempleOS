@@ -158,7 +158,9 @@ regression and both x86-64 rebuild/reboot generations also pass.
 ## Resident export index
 
 The kernel now stores its loader exports in a private table using the shared
-`CHash` prefix. Startup resolves the required names through native `HashFind` and
+`CHash` prefix. The owner record and buckets are allocated from the kernel heap
+through `I386HashTableNew`; the resident entry records have separate lifetime.
+Startup resolves the required names through native `HashFind` and
 converts the selected records to the existing checked loader's binding format.
 `HashStr`, insertion and lookup operate without allocation, with 64-bit hash
 values and target-width bucket pointers. These records describe loader addresses

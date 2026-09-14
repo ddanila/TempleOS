@@ -46,7 +46,53 @@ lookup, case sensitivity, use-counter rollover, insertion order, caller IF and
 four-byte bucket addressing. Exported oracle/module data and an executable-region
 instruction audit accompany the fixture.
 
-Table allocation/destruction, rich compiler symbol records, task symbol-table
-ownership, compiler initialization and native source compilation remain pending.
+Rich compiler symbol records, task symbol-table ownership, compiler initialization
+and native source compilation remain pending.
 The implementation does not change the x86-64 assembly primitives. The full
 standalone/self-hosting and strict 386 verification requirements still apply.
+
+## Heap-owned table lifetime
+
+`HashTable.HH/HC` adds explicit-heap native interfaces:
+
+- `I386HashTableNew(heap,buckets)` allocates an owner record and zeroed bucket
+  array. Bucket counts must be positive powers of two whose target-width array
+  size fits in U32. Failure returns zero and releases any unexposed allocation.
+- `I386HashTableValid(heap,table)` checks allocation extents, the private owner,
+  bucket count and array size before trusting the record. It does not validate
+  every entry, string or chain; callers own those lifetimes and invariants.
+- `I386HashTableResize(heap,table,buckets)` preserves the table address, entries,
+  parent link, use counters and equal-name instance order. It allocates the new
+  buckets before relinking; allocation failure leaves the live table unchanged.
+  It reverses each old chain and then prepends entries into the new buckets,
+  avoiding a second temporary tail array. Cached bucket/link pointers become
+  invalid after a successful resize; pointers to the entries remain valid.
+- `I386HashTableRemove(heap,table,entry)` detaches the exact entry identity and
+  clears its next pointer. It does not free that entry or its string, and does
+  not search a parent table.
+- `I386HashTableDelete(heap,table)` requires an empty, unlocked table and frees
+  both owned allocations. It does not free the parent table. The caller must
+  detach incoming references and finish all uses before deletion.
+
+All operations preserve IF and serialize heap/table changes on the single CPU.
+Resizing, removal and deletion reject a nonzero `locked_flags`. Tables, entries
+and names must be live and disjoint, chains acyclic, and indexed names immutable.
+The public record's owned body/mask must be changed through these interfaces.
+No callback or yielding occurs during relinking. A heap-corruption failure after
+relinking is not a rollback guarantee; the unchanged-table guarantee concerns
+rejected requests and failed allocation before mutation. Historical heap peak
+accounting can increase during a failed creation attempt even though all its live
+allocations are reclaimed.
+
+The standalone export index now uses `I386HashTableNew` and keeps its three
+resident entries separately. The expanded `--hash` fixture checks partial-creation
+failure, exhausted-heap resize, growth/shrink cycles, duplicate-order and counter
+preservation, locked/nonempty rejection, exact removal, parent survival, wrong
+heap/interior-pointer rejection, IF preservation and full arena reclamation.
+Its 128 KiB test stage remains below the private test heaps. Standalone startup,
+keyboard/VGA checks and both x86-64 rebuild/reboot generations also pass.
+
+These explicit-heap APIs support the native compiler integration; they do not
+implement the public `HashTableNew(size,mem_task)` task-selection contract or
+typed `HashDel` destruction of compiler symbol metadata. Those integrations
+remain required work.

@@ -332,7 +332,9 @@ programming environment through these concrete steps:
    compilation, execution and error recovery without host assistance.
    The base hash declarations are now shared, and native public hash primitives
    supply the resident loader's export index. Compiler symbol record migration,
-   table lifetime/ownership and compiler initialization remain required.
+   task ownership and compiler initialization remain required. Explicit-heap
+   table creation, resizing, detachment and empty-table deletion now pass lifecycle
+   and allocation-failure tests; compiler-aware symbol destruction remains open.
 
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,
