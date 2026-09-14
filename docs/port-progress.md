@@ -3800,3 +3800,37 @@ See [i386-parser-token.md](i386-parser-token.md). Parser environments must use t
 entry consistently for tracked token strings. General declaration/class adapters,
 compilation of the original scalar unions, durable publication and the full native
 frontend remain required, along with DolDoc, self-hosting and `PLAN.md` acceptance.
+
+## Native declaration bodies and array-bound execution
+
+CompilerRuntime ABI 27 (156 bytes) adds the complete shared declaration core
+through `parse_declarations`, with owner/service validation and the existing task
+stack reserve. The new `code_init` operation resets an active IR view while keeping
+allocation ownership available for cleanup. Native adapters in the probe supply
+lexer snapshots, owned strings and member construction/insertion. Arithmetic array
+bounds run through the native expression parser and backend, then restore the
+previous IR view.
+
+All 18 declaration checks pass across boot and worker tasks: packed fields, union
+overlap, arithmetic bounds, nested unions, comma declarations, unknown types,
+duplicate members, snapshot allocation failure and malformed bound expressions.
+Successful bound evaluation preserves pre-existing IR; failures restore exact heap
+usage/allocation counts, task references, active controls and interrupt state.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. The complete standalone
+suite passed, including the existing 44 expression/type cases, parser ownership
+and recovery, instruction auditing, module rejection and pixel-exact VGA/input
+checks. Dedicated lexer-state and task-symbol ownership suites also passed. Python
+syntax and whitespace checks pass. This remains an 8 MiB emulated 486 development
+profile; strict 386SX/DX validation is still required.
+
+The kernel is 389456 bytes. The retained compiler image is 813304 bytes (813320
+heap bytes). The temporary probe image is 276368 bytes and reclaims all 276384 heap
+bytes. Compiler/probe imports remain 21/17; FileRuntime remains ABI 13/32 bytes and
+CompilerProbe ABI 5/56 bytes.
+
+See [i386-native-declaration.md](i386-native-declaration.md). This milestone parses
+bodies into private class descriptors. Complete native class/function headers,
+local/static/default initialization providers, original public scalar unions,
+durable publication and the full interactive frontend remain open, along with
+DolDoc, self-hosting and the other `PLAN.md` acceptance requirements.

@@ -847,6 +847,14 @@ Native expression/type probes use this entry, with additional transfer and failu
 cleanup checks. This closes returned-token ownership plumbing; class/declaration
 adapters and durable publication remain open. See `docs/i386-parser-token.md`.
 
+The complete declaration core now has a native entry (CompilerRuntime ABI 27,
+156 bytes), alongside an owned active-IR initialization operation. Native probes
+construct packed class/union members with snapshots and owned strings/allocations.
+Arithmetic array bounds are parsed, compiled and executed natively while preserving
+an existing IR view. General class/function headers, initializers, publication and
+compilation of the original public scalar unions still require integration; see
+`docs/i386-native-declaration.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

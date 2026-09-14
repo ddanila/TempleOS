@@ -50,6 +50,29 @@ CHashClass *ProbeExpressionType(U8 *context,CCmpCtrl *cc,CHashClass **first,I64 
   if(!result) KernelStop;
   return result;
 }
+U0 ProbeExpressionSetup(CProbeExpression *state,CI386CompilerProbe *probe,CI386Heap *heap,U32 *binary_ops)
+{
+  CPrsExpressionServices *services=&state->services;
+  state->probe=probe; state->heap=heap; state->lines=0;
+  PrsBinaryInit(binary_ops);
+  services->context=state; services->types=probe->internal_types; services->binary_ops=binary_ops;
+  services->lex=&ProbeExpressionLex; services->report=&ProbeExpressionReport; services->add=&ProbeExpressionAdd;
+  services->expression=&ProbeExpressionNested;
+  services->retire=&ProbeExpressionUnexpected; services->misc=&ProbeExpressionUnexpected;
+  services->init=&ProbeExpressionUnexpected; services->push=&ProbeExpressionUnexpected;
+  services->pop=&ProbeExpressionUnexpected; services->append=&ProbeExpressionUnexpected;
+  services->optimize=&ProbeExpressionUnexpected; services->allocate=&ProbeExpressionUnexpected;
+  services->duplicate=&ProbeExpressionUnexpected; services->string=&ProbeExpressionUnexpected;
+  services->hash_add=&ProbeExpressionUnexpected; services->hash_after=&ProbeExpressionUnexpected;
+  services->type=&ProbeExpressionType;
+  state->types.context=state; state->types.types=probe->internal_types;
+  state->types.lex=&ProbeExpressionLex; state->types.report=&ProbeExpressionReport;
+  state->types.snapshot_drop=&ProbeExpressionUnexpected; state->types.snapshot_push=&ProbeExpressionUnexpected;
+  state->types.integer_expression=&ProbeExpressionUnexpected;
+  state->types.class_join=&ProbeExpressionUnexpected; state->types.fun_join=&ProbeExpressionUnexpected;
+  state->types.allocate=&ProbeExpressionUnexpected; state->types.duplicate=&ProbeExpressionUnexpected;
+  state->types.member_new=&ProbeExpressionUnexpected; state->types.member_add=&ProbeExpressionUnexpected;
+}
 U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CProbeExpression state;
@@ -75,25 +98,7 @@ U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   used=heap->used; allocations=heap->allocations;
   binary_ops=storage->binary_ops; deep=storage->deep; unary=storage->unary;
   fun=&storage->fun; aot=&storage->aot; aotc=&storage->aotc;
-  state.probe=probe; state.heap=heap; state.lines=0;
-  PrsBinaryInit(binary_ops);
-  services->context=&state; services->types=probe->internal_types; services->binary_ops=binary_ops;
-  services->lex=&ProbeExpressionLex; services->report=&ProbeExpressionReport; services->add=&ProbeExpressionAdd;
-  services->expression=&ProbeExpressionNested;
-  services->retire=&ProbeExpressionUnexpected; services->misc=&ProbeExpressionUnexpected;
-  services->init=&ProbeExpressionUnexpected; services->push=&ProbeExpressionUnexpected;
-  services->pop=&ProbeExpressionUnexpected; services->append=&ProbeExpressionUnexpected;
-  services->optimize=&ProbeExpressionUnexpected; services->allocate=&ProbeExpressionUnexpected;
-  services->duplicate=&ProbeExpressionUnexpected; services->string=&ProbeExpressionUnexpected;
-  services->hash_add=&ProbeExpressionUnexpected; services->hash_after=&ProbeExpressionUnexpected;
-  services->type=&ProbeExpressionType;
-  state.types.context=&state; state.types.types=probe->internal_types;
-  state.types.lex=&ProbeExpressionLex; state.types.report=&ProbeExpressionReport;
-  state.types.snapshot_drop=&ProbeExpressionUnexpected; state.types.snapshot_push=&ProbeExpressionUnexpected;
-  state.types.integer_expression=&ProbeExpressionUnexpected;
-  state.types.class_join=&ProbeExpressionUnexpected; state.types.fun_join=&ProbeExpressionUnexpected;
-  state.types.allocate=&ProbeExpressionUnexpected; state.types.duplicate=&ProbeExpressionUnexpected;
-  state.types.member_new=&ProbeExpressionUnexpected; state.types.member_add=&ProbeExpressionUnexpected;
+  ProbeExpressionSetup(&state,probe,heap,binary_ops);
   for(i=0;i<300;i++) { deep[i]='('; deep[301+i]=')'; }
   deep[300]='1'; deep[601]=';'; deep[602]=0;
   for(i=0;i<300;i++) unary[i]='~';

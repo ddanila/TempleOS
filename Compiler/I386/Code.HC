@@ -12,6 +12,13 @@ Bool I386CmpCodeOwner(CI386Heap *heap,CCmpCtrl *cc)
   return !task || (I386CmpTaskOwnerValid(task,heap,task->hash_table) &&
     task->owner->current==task && !task->finished && !task->finishing && !task->compiler_busy);
 }
+Bool I386COCInit(CI386Heap *heap,CCmpCtrl *cc)
+{
+  U32 irq=I386IrqSave;
+  if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq); return FALSE; }
+  COCSeed(&cc->coc);
+  I386IrqRestore(irq); return TRUE;
+}
 U0 I386CodeAttach(CCmpCtrl *cc,CI386CodeAllocation *record,U8 *allocation,U32 kind)
 {
   CI386CmpCtrl *owned=cc;

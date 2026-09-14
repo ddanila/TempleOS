@@ -12,8 +12,9 @@
 #include "/Compiler/I386/NativeType.HH"
 #include "/Compiler/I386/ParserMemory.HH"
 #include "/Compiler/I386/ParserToken.HH"
-#define I386_COMPILER_SERVICES_VERSION 26
-//ABI 26: caller-owned interface, borrowing code from the retained module image.
+#include "/Compiler/I386/NativeDeclaration.HH"
+#define I386_COMPILER_SERVICES_VERSION 27
+//ABI 27: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;
@@ -56,5 +57,8 @@ class CI386CompilerServices {
   Bool (*parser_free)(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation);
   I64 (*parser_token)(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
     I64 *compiled_lines,CI386LexIncludeService *includes);
+  Bool (*parse_declarations)(CI386Heap *heap,CCmpCtrl *cc,CPrsDeclarationServices *services,
+    CHashClass *type,I64 mode,I64 union_base);
+  Bool (*code_init)(CI386Heap *heap,CCmpCtrl *cc);
 };
 #endif

@@ -13,6 +13,13 @@ Bool I386ExpressionStackValid(CCmpCtrl *cc,CPrsStk *stack)
     if(record->allocation==stack && record->kind==7) return TRUE;
   return FALSE;
 }
+Bool I386ExpressionServicesValid(CPrsExpressionServices *services)
+{
+  return services && services->types && services->binary_ops && services->lex && services->report &&
+    services->add && services->retire && services->misc && services->init && services->push &&
+    services->pop && services->append && services->optimize && services->allocate && services->duplicate &&
+    services->string && services->hash_add && services->hash_after && services->type && services->expression;
+}
 Bool I386ParserStackCheck(CCmpCtrl *cc)
 {
   CI386CmpCtrl *owned=cc;
@@ -31,12 +38,8 @@ Bool I386ParseExpression(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *se
   CI386CmpRelease release;
   I64 old_flags;
   U32 irq;
-  if(!I386CmpCodeOwner(heap,cc) || !services || !services->types || !services->binary_ops ||
-      !services->lex || !services->report || !services->add || !services->retire ||
-      !services->misc || !services->init || !services->push || !services->pop ||
-      !services->append || !services->optimize || !services->allocate || !services->duplicate ||
-      !services->string || !services->hash_add || !services->hash_after || !services->type ||
-      !services->expression || stack && !I386ExpressionStackValid(cc,stack)) return FALSE;
+  if(!I386CmpCodeOwner(heap,cc) || !I386ExpressionServicesValid(services) ||
+      stack && !I386ExpressionStackValid(cc,stack)) return FALSE;
   if(!I386ParserStackCheck(cc)) return FALSE;
   old_flags=cc->flags;
   if(!ps) {
