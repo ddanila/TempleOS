@@ -1,5 +1,5 @@
 #include "/Kernel/ArcExpand.HH"
-Bool ArcExpandStep(CArcCtrl *c,I64 (*read)(CArcCtrl *c),U0 (*entry)(CArcCtrl *c))
+Bool ArcExpandStep(CArcCtrl *c,I64 (*read)(U8 *context,CArcCtrl *c),U0 (*entry)(CArcCtrl *c),U8 *context=0)
 {
   U8 *dst_ptr,*dst_limit;
   I64 basecode,lastcode,code;
@@ -13,7 +13,7 @@ Bool ArcExpandStep(CArcCtrl *c,I64 (*read)(CArcCtrl *c),U0 (*entry)(CArcCtrl *c)
 
   if (c->stk_ptr==c->stk_base && dst_ptr<dst_limit) {
     if (c->saved_basecode==0xFFFFFFFF) {
-      lastcode=(*read)(c);
+      lastcode=(*read)(context,c);
       if(lastcode<0) goto failed;
       c->src_pos+=c->next_bits_in_use;
       *dst_ptr++=lastcode;
@@ -22,7 +22,7 @@ Bool ArcExpandStep(CArcCtrl *c,I64 (*read)(CArcCtrl *c),U0 (*entry)(CArcCtrl *c)
     } else
       lastcode=c->saved_basecode;
     while (dst_ptr<dst_limit && c->src_pos+c->next_bits_in_use<=c->src_size) {
-      basecode=(*read)(c);
+      basecode=(*read)(context,c);
       if(basecode<0) goto failed;
       c->src_pos+=c->next_bits_in_use;
       if (c->cur_entry==&c->compress[basecode]) {

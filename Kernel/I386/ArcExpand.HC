@@ -11,6 +11,7 @@ I64 I386ArcReadCode(CArcCtrl *c)
   }
   return result;
 }
+I64 I386ArcRead(U8 *context,CArcCtrl *c) { return I386ArcReadCode(c); }
 Bool I386ArcExpandBuf(CArcCtrl *c)
 {
   U64 src,dst,stack;
@@ -21,5 +22,5 @@ Bool I386ArcExpandBuf(CArcCtrl *c)
   src=(c->src_buf+0)(U64); dst=(c->dst_buf+0)(U64); stack=(c->stk_base+0)(U64);
   if(src+((c->src_size+7)>>3)>0xFFFFFFFF || dst+c->dst_size>0xFFFFFFFF ||
       stack+4096>0xFFFFFFFF || c->stk_ptr<c->stk_base || c->stk_ptr>c->stk_base+4096) return FALSE;
-  return ArcExpandStep(c,&I386ArcReadCode,&I386ArcEntryGet);
+  return ArcExpandStep(c,&I386ArcRead,&I386ArcEntryGet);
 }

@@ -2686,3 +2686,30 @@ not a validator for arbitrary archive contents. Whole-archive size/type validati
 owned output and file/include integration are still required, along with the
 remaining parser/JIT, documents, strict 386 and self-hosting work. See
 `docs/i386-arc-expand.md`.
+
+## Owned checked archive expansion
+
+I386ExpandBuf now validates the declared archive extent, header sizes/type and
+output size before allocation. It copies CT_NONE data or expands compressed data
+through a per-call checked reader, returning an exact owned buffer plus NUL.
+A bitmap rejects unwritten dictionary references; bounded chain walks reject
+cycles and unsafe links before the shared loop follows them. Complete output,
+an empty pending stack and fewer than eight trailing padding bits are required.
+Temporary controls/stacks and failed output allocations are reclaimed; optional
+size output changes only on success and the caller's interrupt state is preserved.
+
+Six owned original-compressor fixtures pass byte, size, terminator and reclamation
+checks. Tests also cover binary/empty data, malformed headers, truncation, invalid
+codes, current-entry expansion, chain errors and 32 single-bit payload mutations.
+Seven exhausted arenas cover each allocation stage; an exact 102600-byte arena
+expands 32768 bytes and retains only the 32792-byte output span. All prior eighteen
+stream expansions and reader tests remain. Both x64 rebuild/reboot generations,
+archive tests/instruction audit and full kernel boot/rejection/VGA/keyboard/timer
+checks pass. The bootstrap remains 383496 bytes with 9720 bytes of headroom.
+
+The shared callback interface now takes explicit per-call context, avoiding global
+scratch state. Raw streaming remains an internal valid-state API; the checked
+whole-archive reader is available for file-service module integration. Public file
+paths, .Z fallback, resident records and include dispatch remain unconnected, as
+do the remaining parser/JIT, document, strict 386 and self-hosting workflows. See
+`docs/i386-expand-buffer.md`.

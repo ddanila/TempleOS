@@ -22,8 +22,9 @@ caller/control owner; no output terminator is added.
 Both APIs are internal codec operations requiring initialized, exclusively owned
 state, a valid dictionary/stack and well-formed compressed codes. They do not
 validate arbitrary archive contents or protect against every corrupt dictionary
-chain. The whole-archive API still needs size/type validation and output ownership
-before this can be connected to file reads.
+chain. I386ExpandBuf now supplies a checked reader, header validation and owned output
+for complete archives; see `docs/i386-expand-buffer.md`. File integration remains
+open.
 
 A true result means the loop stopped normally, not that the requested output is
 complete: inspect dst_pos. A negative read callback result makes ArcExpandStep

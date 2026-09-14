@@ -5,14 +5,15 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Ports.HH"
 public extern I64 ExpansionTest();
-I64 Main(I64 a,I64 b) { return ExpansionTest; }
+public extern I64 OwnedExpandTest();
+I64 Main(I64 a,I64 b) { I64 result=ExpansionTest; if(result) return result; return OwnedExpandTest; }
 U8 archive_vectors[131072];
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Arc.HC"
 #include "/Kernel/I386/ArcExpand.HC"
 I64 fault_reads;
-I64 FaultRead(CArcCtrl *c)
+I64 FaultRead(U8 *context,CArcCtrl *c)
 {
   if(fault_reads++) return -42;
   return I386ArcReadCode(c);
@@ -98,3 +99,6 @@ I64 ExpansionTest()
   SetRFlags(GetRFlags&~0x200);
   return 0;
 }
+
+#include "/Kernel/I386/Expand.HC"
+#include "T:/Owned.HC"

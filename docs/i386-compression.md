@@ -41,8 +41,9 @@ passes the 386 instruction audit on the QEMU/486 development profile.
 Both x64 rebuild/reboot generations and the full native kernel boot suite pass.
 The native dictionary code is not yet linked into the standalone bootstrap.
 The streaming decoder now has native coverage through the shared loop described
-in `docs/i386-arc-expand.md`. Whole-archive validation and ownership, file-service
-decompression and include dispatch remain required. This component does not yet let the native OS read .Z
+in `docs/i386-arc-expand.md`. Owned checked whole-archive expansion is now available as I386ExpandBuf; see
+`docs/i386-expand-buffer.md`. File-service decompression and include dispatch
+remain required. This component does not yet let the native OS read .Z
 source files or prove complete compression support.
 
 ## Owned controls and expansion stacks
@@ -67,5 +68,5 @@ stack, in one or two allocations respectively. Shared lifecycle checks inspect
 fresh fields and zero dictionary storage for twelve mode/stack combinations.
 Native cases additionally cover 33 exhausted arenas, exact-fit success, default
 arguments, partial-allocation reclamation, ownership rejection, borrowed buffers,
-changed decoder pointers and both interrupt states. The streaming decoder now uses these controls, but whole-archive output ownership
-and file integration remain open.
+changed decoder pointers and both interrupt states. The streaming decoder and owned whole-archive reader now use these controls.
+File integration remains open.

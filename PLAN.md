@@ -311,8 +311,10 @@ skips and chain unlinking. It remains outside the bootstrap. Owned native contro
 preserve interrupt state and reclaim partial allocations. The original stream-expansion loop now runs through architecture-specific bit
 readers and dictionary callbacks. Native full/incremental output and input
 resumption match six original-compressor fixtures, including dictionary reuse.
-Whole-archive size/type validation, output ownership and file/include integration
-remain required; see `docs/i386-compression.md` and `docs/i386-arc-expand.md`.
+Owned whole-archive expansion now validates sizes/types and codes before decoding,
+reclaims failed allocations and matches original-compressor fixtures. File/include
+integration remains required; see `docs/i386-compression.md`,
+`docs/i386-arc-expand.md` and `docs/i386-expand-buffer.md`.
 
 ### H. Meet the memory budget and recover the complete user workflow
 

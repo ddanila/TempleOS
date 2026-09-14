@@ -164,7 +164,7 @@ Bool ArcFinishCompression(CArcCtrl *c)
 }
 
 #include "/Kernel/ArcExpand.HC"
-I64 ArcSystemRead(CArcCtrl *c)
+I64 ArcSystemRead(U8 *context,CArcCtrl *c)
 {
   return BFieldExtU32(c->src_buf,c->src_pos,c->next_bits_in_use);
 }
