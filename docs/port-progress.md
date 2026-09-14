@@ -2534,3 +2534,25 @@ is 48232 bytes with a fully reclaimed 48248-byte span. Bootstrap size stays 3722
 bytes. Expressions, includes, executed directives, public compiler APIs, parser/JIT,
 DolDoc, strict 386 profiles and native self-hosting remain open. See
 `docs/i386-lex-conditional.md`.
+
+## Volume paths and owned source-file reads
+
+RedSea now walks volume-scoped absolute/relative slash paths, including repeated
+separators, dot and parent entries. Failures preserve the output record; files
+cannot be traversed as directories. Owned whole-file readers preserve raw binary
+bytes, append a NUL and reclaim allocations after incomplete I/O. Empty files
+return a one-byte allocation. Both readers reject enabled interrupts.
+
+The native storage fixture covers path/output behavior, exact binary and source
+contents, empty files, 161 exhausted heap arenas, immediate/partial disk errors,
+heap reclamation and enabled-interrupt rejection. Instruction audit and unchanged
+whole-disk checks pass. Both x64 rebuild/reboot generations and the full native
+kernel boot suite pass. KernelStorage now uses the path reader, preserving source
+hashing, lexer traversal and heap-reclamation checks. VGA/keyboard/timer and module
+rejection regressions pass. The bootstrap is 377480 bytes with 15736 bytes of
+headroom in its unchanged reservation.
+
+These are raw, volume-scoped services. Public path/extension behavior,
+decompression, include dispatch and compiler-control integration remain required,
+along with parser/JIT, documents, strict 386 hardware profiles and native
+self-hosting. See `docs/i386-file-read.md`.

@@ -8,6 +8,7 @@
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/BootDisk.HH"
 #include "/Kernel/I386/RedSea.HH"
+#include "/Kernel/I386/FileRead.HH"
 #include "/Kernel/I386/ModuleFile.HH"
 #include "/Kernel/I386/A20.HH"
 #include "/Kernel/I386/TaskPlatform.HH"
@@ -271,11 +272,10 @@ U0 KernelKeys(I64 unused)
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
-  CI386RedSeaEntry entry;
   U8 *buffer;
   CCmpCtrl *cc;
   CLexFile *file;
-  I64 i,ch,characters=0,lines=0,used=kernel_heap.used,allocations=kernel_heap.allocations,transient;
+  I64 size=0,i,ch,characters=0,lines=0,used=kernel_heap.used,allocations=kernel_heap.allocations,transient;
   U32 hash=2166136261,lex_hash=2166136261;
   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
@@ -283,17 +283,11 @@ U0 KernelStorage(CI386BootInfo *info)
       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
   KernelLog("REDSEA "); KernelHex(kernel_volume.start); KernelLog(" ");
   KernelHex(kernel_volume.sectors); KernelLog("\n");
-  if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Kernel",&entry)!=1 ||
-      !(entry.attr&0x10) || I386RedSeaFind(&kernel_volume,entry.block,"I386",&entry)!=1 ||
-      !(entry.attr&0x10) || I386RedSeaFind(&kernel_volume,entry.block,"Kernel.HC",&entry)!=1 ||
-      (entry.attr&0x310) || entry.size<1) KernelStop;
-  if(entry.size>0xFFFFFFFE) KernelStop;
-  buffer=I386HeapAlloc(&kernel_heap,entry.size+1);
+  buffer=I386RedSeaFileRead(&kernel_volume,&kernel_heap,kernel_volume.root,"/Kernel/I386/Kernel.HC",&size);
   cc=I386HeapAlloc(&kernel_heap,sizeof(CCmpCtrl),TRUE);
-  if(!buffer || !cc || I386RedSeaRead(&kernel_volume,&entry,0,buffer,entry.size)!=entry.size) KernelStop;
-  buffer[entry.size]=0;
-  for(i=0;i<entry.size;i++) hash=(hash^buffer[i])*16777619;
-  KernelLog("SOURCE "); KernelHex(entry.size); KernelLog(" ");
+  if(!buffer || !cc || size<1) KernelStop;
+  for(i=0;i<size;i++) hash=(hash^buffer[i])*16777619;
+  KernelLog("SOURCE "); KernelHex(size); KernelLog(" ");
   KernelHex(hash); KernelLog("\n");
   CmpCtrlSeed(cc,0,0,char_bmp_alpha_numeric);
   file=I386LexFilePush(&kernel_heap,cc);
@@ -303,7 +297,7 @@ U0 KernelStorage(CI386BootInfo *info)
     if(ch<0) KernelStop;
     lex_hash=(lex_hash^ch)*16777619; characters++;
   }
-  if(cc->cur_buf_ptr!=buffer+entry.size || file->line_num!=lines+1) KernelStop;
+  if(cc->cur_buf_ptr!=buffer+size || file->line_num!=lines+1) KernelStop;
   transient=kernel_heap.used-used;
   if(!I386LexFilePop(&kernel_heap,cc) || !I386HeapFree(&kernel_heap,cc) ||
       kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
@@ -312,6 +306,7 @@ U0 KernelStorage(CI386BootInfo *info)
 }
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/RedSea.HC"
+#include "/Kernel/I386/FileRead.HC"
 
 U0 KernelStartup()
 {//Startup owns ATA and the heap with IF clear. No module callbacks may survive return.

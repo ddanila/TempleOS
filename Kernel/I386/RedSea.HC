@@ -117,3 +117,36 @@ public I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset
   }
   return copied;
 }
+
+public I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386RedSeaEntry *entry)
+{//Volume-scoped slash paths. Output changes only on success; no drive syntax.
+  CI386RedSeaEntry found; U8 name[38],*src,*dst; I64 length,result,i;
+  if(!I386RedSeaValid(volume) || !path || !*path || !entry) return -1;
+  if(*path=='/') directory=volume->root;
+  while(*path=='/') path++;
+  if(!*path) return I386RedSeaFind(volume,directory,".",entry);
+  while(TRUE) {
+    length=0;
+    while(*path && *path!='/') {
+      if(length==37 || *path==':' || *path==92) return -1;
+      name[length++]=*path++;
+    }
+    name[length]=0;
+    result=I386RedSeaFind(volume,directory,name,&found);
+    if(result!=1) return result;
+    if(name[0]=='.' && name[1]=='.' && !name[2]) {
+      if(!(found.attr&0x10)) return -1;
+      result=I386RedSeaFind(volume,found.block,".",&found);
+      if(result!=1) return result;
+    }
+    if(*path) {
+      if(!(found.attr&0x10)) return -1;
+      while(*path=='/') path++;
+      if(*path) { directory=found.block; }
+      else break;
+    } else break;
+  }
+  src=&found; dst=entry;
+  for(i=0;i<sizeof(CI386RedSeaEntry);i++) dst[i]=src[i];
+  return 1;
+}

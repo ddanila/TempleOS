@@ -20,4 +20,6 @@ public extern Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count);
 public extern I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0);
 public extern I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name);
 public extern I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0);
+//1 found, 0 absent, -1 invalid/I/O failure. Resolve absolute or directory-relative slash paths.
+public extern I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386RedSeaEntry *entry);
 #endif

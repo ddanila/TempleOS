@@ -484,6 +484,12 @@ programming environment through these concrete steps:
    markers now share skipped-branch traversal with x64. Original behavior cases,
    native error/reclamation tests and version-9 boot/task conditional probes pass.
    Active if expressions, includes and executed directives remain unsupported.
+   Volume-scoped slash lookup and owned whole-file reads now support the native
+   source-loading path, with failure cleanup and exact source traversal tested.
+   Connect these lower-level services to include path/extension rules,
+   decompression and compiler file ownership next; see `docs/i386-file-read.md`.
+   The bootstrap with this reader is 377480 bytes, leaving 15736 bytes in its
+   unchanged reservation. Keep further compiler growth in extended-memory modules.
    Opcode/register initialization and remaining directives are still required.
    Compiler diagnostics now load as a temporary extended-memory module, retained
    through boot/task checks and then reclaimed. This reduces the bootstrap from
