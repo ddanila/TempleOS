@@ -3,6 +3,12 @@
 #include "/Compiler/CodeCtrl.HC"
 #include "/Kernel/I386/Cpu.HH"
 #define I386_COMPILER_CONTROL_MAGIC 0x43435431
+class CI386CodeAllocation {
+  CI386CodeAllocation *next,*last;
+  CCmpCtrl *control;
+  U8 *allocation;
+  U32 kind;
+};
 class CI386CmpCtrl {
   CCmpCtrl control;
   CI386Heap *heap;
@@ -11,6 +17,8 @@ class CI386CmpCtrl {
   U32 active;
   U0 (*document)(U8 *context,CDoc *document);
   U8 *document_context;
+  CI386CodeAllocation *code_next,*code_last;
+  U32 code_headers,code_busy;
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {
@@ -46,6 +54,7 @@ CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,
   cc=&owned->control;
   CmpCtrlSeed(cc,flags,symbols,alpha_numeric);
   COCSeed(&cc->coc);
+  owned->code_next=owned->code_last=&owned->code_next;
   file=I386LexFilePush(heap,cc);
   if(!file) goto control_new_failed;
   copy=I386HeapAlloc(heap,length,FALSE);
@@ -73,6 +82,8 @@ class CI386CmpRelease {
   U0 (*document)(U8 *context,CDoc *document);
   U8 *context;
   Bool ok;
+  CCmpCtrl *control;
+  U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined);
 };
 U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
 {
@@ -92,61 +103,7 @@ Bool I386CmpControlValid(CI386Heap *heap,CCmpCtrl *cc)
   return cc && I386HeapSize(heap,cc)==sizeof(CI386CmpCtrl) &&
     owned->heap==heap && owned->signature==I386_COMPILER_CONTROL_MAGIC;
 }
-Bool I386CmpCodeOwner(CI386Heap *heap,CCmpCtrl *cc)
-{
-  CI386CmpCtrl *owned=cc;
-  CI386Task *task;
-  if(!I386CmpControlValid(heap,cc)) return FALSE;
-  task=owned->task;
-  return !task || (I386CmpTaskOwnerValid(task,heap,task->hash_table) &&
-    task->owner->current==task && !task->finished && !task->finishing && !task->compiler_busy);
-}
-CIntermediateCode *I386ICAdd(CI386Heap *heap,CCmpCtrl *cc,
-  I64 opcode,I64 arg,CHashClass *type,I64 flags=0)
-{
-  U32 irq=I386IrqSave;
-  CIntermediateCode *node=0;
-  if(I386CmpCodeOwner(heap,cc)) {
-    node=I386HeapAlloc(heap,sizeof(CIntermediateCode),FALSE);
-    if(node) ICSeed(cc,node,opcode,arg,type,flags);
-  }
-  I386IrqRestore(irq); return node;
-}
-CCodeMisc *I386COCMiscNew(CI386Heap *heap,CCmpCtrl *cc,I64 type)
-{
-  U32 irq=I386IrqSave;
-  CCodeMisc *node=0;
-  if(type>=CMT_LABEL && type<=CMT_HASH_ENTRY && I386CmpCodeOwner(heap,cc)) {
-    node=I386HeapAlloc(heap,sizeof(CCodeMisc),TRUE);
-    if(node) COCMiscSeed(cc,node,type);
-  }
-  I386IrqRestore(irq); return node;
-}
-Bool I386COCDiscard(CI386Heap *heap,CCmpCtrl *cc)
-{//Discard the current graph; saved enclosing contexts remain owned by the control.
-  U32 irq=I386IrqSave;
-  CI386CmpRelease state;
-  CSymbolRelease owner;
-  if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq); return FALSE; }
-  state.heap=heap; state.ok=TRUE;
-  owner.context=&state; owner.release=&I386CmpReleaseAllocation;
-  COCRelease(cc,&cc->coc,&owner);
-  I386IrqRestore(irq); return state.ok;
-}
-U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
-{//Saved contexts use the original fixed active-header sentinel convention.
-  CSymbolRelease owner;
-  CCodeCtrl *saved;
-  I64 i;
-  owner.context=state; owner.release=&I386CmpReleaseAllocation;
-  while(TRUE) {
-    COCRelease(cc,&cc->coc,&owner);
-    saved=cc->coc.coc_next;
-    if(!saved) break;
-    for(i=0;i<sizeof(CCodeCtrl);i++) (&cc->coc)(U8 *)[i]=saved(U8 *)[i];
-    (*owner.release)(owner.context,saved);
-  }
-}
+#include "/Compiler/I386/Code.HC"
 Bool I386CmpActiveValid(CI386CmpCtrl *owned)
 {
   CCmpCtrl *cc=&owned->control;
@@ -213,7 +170,7 @@ Bool I386CmpCtrlDelete(CI386Heap *heap,CCmpCtrl *cc,
   CLexFileRelease owner;
   CI386CmpRelease state;
   U32 irq=I386IrqSave;
-  if(!I386CmpControlValid(heap,cc)) goto control_delete_failed;
+  if(!I386CmpControlValid(heap,cc) || owned->code_busy) goto control_delete_failed;
   task=owned->task;
   if(task && (!task->lifetime_refs || !I386CmpTaskOwnerValid(task,heap,task->hash_table) ||
       task->compiler_busy && !draining)) goto control_delete_failed;
@@ -223,7 +180,7 @@ Bool I386CmpCtrlDelete(CI386Heap *heap,CCmpCtrl *cc,
   owned->signature=0;
   if(task) task->compiler_busy=1;
   I386IrqRestore(irq);
-  state.heap=heap; state.document=document; state.context=context; state.ok=TRUE;
+  state.heap=heap; state.document=document; state.context=context; state.ok=TRUE; state.control=cc;
   owner.context=&state; owner.allocation=&I386CmpReleaseAllocation; owner.document=&I386CmpReleaseDocument;
   I386CmpCodeRelease(cc,&state);
   CmpCtrlRelease(cc,&owner);

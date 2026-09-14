@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 16 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 17 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard.
-The structure is 84 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard and saved-header operations.
+The structure is 104 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -184,3 +184,9 @@ public parser. Native control destruction now releases active and saved code
 contexts, so catch-boundary and task-exit cleanup reclaim their temporary IR too.
 FileRuntime version 7 validates the new dependency. See
 [i386-code-context.md](i386-code-context.md) for ownership, diagnostics and tests.
+
+Version 17 separates IR allocation ownership from aliased or detached code-header
+views and exposes save/push/pop/header-free/append. Discard now accepts an optional
+diagnostic callback/context. The interface is 104 bytes with twenty imports;
+FileRuntime version 8 validates it. See [i386-code-views.md](i386-code-views.md) for
+original parser patterns, cleanup guarantees and remaining public integration.

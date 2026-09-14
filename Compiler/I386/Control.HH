@@ -27,5 +27,13 @@ public extern Bool I386CmpCtrlUnwind(CI386Task *task,CCmpCtrl *boundary);
 public extern CIntermediateCode *I386ICAdd(CI386Heap *heap,CCmpCtrl *cc,
   I64 opcode,I64 arg,CHashClass *type,I64 flags=0);
 public extern CCodeMisc *I386COCMiscNew(CI386Heap *heap,CCmpCtrl *cc,I64 type);
-public extern Bool I386COCDiscard(CI386Heap *heap,CCmpCtrl *cc);
+public extern Bool I386COCDiscard(CI386Heap *heap,CCmpCtrl *cc,
+  U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)=0,U8 *context=0);
+//Header views retain the public fixed active-sentinel convention. The control
+//owns native IR allocations independently, including detached/aliased views.
+public extern CCodeCtrl *I386COCSave(CI386Heap *heap,CCmpCtrl *cc);
+public extern Bool I386COCPush(CI386Heap *heap,CCmpCtrl *cc);
+public extern CCodeCtrl *I386COCPopNoFree(CI386Heap *heap,CCmpCtrl *cc);
+public extern Bool I386COCHeaderFree(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header);
+public extern Bool I386COCAppend(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header);
 #endif

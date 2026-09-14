@@ -1,12 +1,10 @@
 //Native temporary IR graphs use shared initialization and legacy payload ownership.
 I64 code_warnings,code_undefined;
-U0 CodeFree(U8 *context,U8 *allocation)
-{
-  if(context!=&heap || allocation && !I386HeapFree(&heap,allocation)) errors++;
-}
 U0 CodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
 {
   if(context!=&heap || !name || name[0]!='L' || root.lifetime_refs!=1) errors++;
+  if(I386COCSave(&heap,cc) || I386CmpCtrlDel(&heap,cc)) errors++;
+  I386SchedYield(&scheduler);
   if(undefined) code_undefined++; else code_warnings++;
 }
 U8 *CodeName()
@@ -71,7 +69,6 @@ I64 CodeTest()
   CCodeCtrl *saved;
   CIntermediateCode *last;
   CCodeMisc *last_misc;
-  CSymbolRelease release;
   U8 *fill;
   I64 used=heap.used,allocations=heap.allocations,base_used,base_allocations,i,enabled;
   U32 flags=GetRFlags;
@@ -90,8 +87,7 @@ I64 CodeTest()
         cc->coc.coc_head.last!=last || cc->coc.coc_last_misc!=last_misc) return 67;
     cc->flags|=CCF_DONT_FREE_BUF;
     cc->lex_include_stk->flags=0; cc->lex_include_stk->doc=0;
-    release.context=&heap; release.release=&CodeFree;
-    if(!COCRelease(cc,&cc->coc,&release,&CodeLabel) || code_warnings!=1 || code_undefined!=1 ||
+    if(!I386COCDiscard(&heap,cc,&CodeLabel,&heap) || code_warnings!=1 || code_undefined!=1 ||
         errors || heap.used!=base_used || heap.allocations!=base_allocations ||
         !I386COCDiscard(&heap,cc)) return 62;
     if(!CodePopulate(cc)) return 63;
@@ -100,10 +96,8 @@ I64 CodeTest()
     if(!fill || I386ICAdd(&heap,cc,0x0A,99,0) || I386COCMiscNew(&heap,cc,CMT_LABEL) ||
         cc->coc.coc_head.last!=last || cc->coc.coc_last_misc!=last_misc ||
         !I386HeapFree(&heap,fill)) return 64;
-    saved=I386HeapAlloc(&heap,sizeof(CCodeCtrl),FALSE);
-    if(!saved) return 65;
-    for(i=0;i<sizeof(CCodeCtrl);i++) saved(U8 *)[i]=(&cc->coc)(U8 *)[i];
-    cc->coc.coc_next=saved; COCSeed(&cc->coc);
+    if(!I386COCPush(&heap,cc)) return 65;
+    saved=cc->coc.coc_next; COCSeed(&cc->coc);
     if(!CodePopulate(cc) || !I386COCDiscard(&heap,cc) || cc->coc.coc_next!=saved ||
         !CodePopulate(cc) || !I386CmpCtrlEnter(&heap,cc) || !I386CmpCtrlDrain(&root) ||
         root.lifetime_refs || root.active_controls || heap.used!=used || heap.allocations!=allocations ||

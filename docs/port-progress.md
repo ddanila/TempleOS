@@ -3146,3 +3146,44 @@ The kernel is 389312 bytes, or 391472 including its 2160-byte loaded stage, leav
 85624, reclaimed after its task phase. These pre-commit manifests record the local
 source hashes. See `docs/i386-code-context.md`; strict 386SX/DX/no-387 validation,
 DolDoc/editing and native self-hosting remain unfinished.
+
+
+## Saved code headers with independent native allocation ownership
+
+Native instructions, auxiliary records and saved headers now embed per-control
+allocation records independently of their queue links. The shared parser sometimes
+copies headers that alias a graph and detaches headers before appending their
+lists. Cleanup therefore walks allocation ownership once, not every header view.
+It reclaims IR even when all views were detached or reset, without double frees
+from aliased views. Current-graph discard unregisters its nodes; remaining header
+views must not be restored after their graph has been discarded.
+
+Copy/save/restore/append now share helpers with the public parser. Exact alias
+append leaves the active list's backlinks intact. Native save/push/pop/header-free/
+append enforce same-control ownership and reject release of a header still on the
+saved stack. Diagnostic discard guards reentry for bound and unbound controls;
+callbacks may yield and must return normally. Payload release still uses the shared
+legacy policy. Public allocator and optimizer-node replacement integration remains
+necessary; raw freeing of managed native records is not supported.
+
+CompilerRuntime version 17 has a 104-byte record and twenty imports. FileRuntime
+version 8 validates its dependency with the same 32-byte format and eighteen
+imports; kernel exports remain 43. The standalone failed child now has saved and
+detached headers aliasing its IR, and retry exercises every retained header
+operation before full reclamation.
+
+Verification passes both x86-64 rebuild/reboot generations, all 233 native function
+cases, task-symbol and lexical-state ownership tests, and the full standalone
+8 MiB QEMU/486 suite with module rejection and executable instruction audits.
+Added tests cover the original loop-increment header sequence and 1,2,3 list order,
+forward/backward links, same-list append, foreign/live-stack header rejection,
+fragmented-heap exhaustion, abandoned views, and unbound diagnostic reentry. IF
+clear/set paths pass. Existing 320 KiB task and 256 KiB lexer test transfers remain.
+
+The kernel is 389328 bytes, or 391488 with the 2160-byte loaded stage, leaving 1728
+in the unchanged 393216-byte reservation. CompilerRuntime uses 223432 image /
+223448 heap bytes, FileRuntime 124480 / 124496, and the temporary probe 87896 /
+87912, reclaimed after its task phase. Manifests record local source hashes for
+these pre-commit builds. See `docs/i386-code-views.md`. Full native parser/JIT,
+public task/heap/error contracts, strict 386SX/DX/no-387 workflows, DolDoc and
+self-hosting remain unfinished.

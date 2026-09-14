@@ -26,13 +26,13 @@ allocation succeeds. They preserve IF and require the current live task owner,
 or an exclusively owned unbound control. They return null on allocation failure;
 this remains a bootstrap boundary pending public allocation/OutMem integration.
 
-`I386COCDiscard` silently releases the current graph for recovery, preserving saved
-enclosing contexts. Native control destruction releases the current graph and
-then restores and releases each saved code context before releasing input and the
-control itself. Saved records follow the original `COCPush` convention: copied
-queue endpoints still refer to the fixed active header, and each context must be
-restored there before traversal. These saved records and every owned graph payload
-must belong to the control heap and have exclusive, acyclic ownership.
+`I386COCDiscard` releases the current graph for recovery and can report label
+messages through a callback. Copied and detached headers may alias that graph, so
+native instructions, auxiliary records and saved headers now belong to a separate
+per-control allocation registry. Control destruction walks that registry once,
+reclaiming allocations even if no queue view still references them. See
+[i386-code-views.md](i386-code-views.md) for save/pop/append operations, managed
+allocation rules and callback guards. Public object layouts remain unchanged.
 
 Silent discard does not implement successful-compilation label validation or
 public compiler diagnostics. It also does not own published machine code, every
@@ -59,11 +59,11 @@ now uses a 320 KiB transfer ending at its 0x60000 heap arena. The lexical-state
 fixture uses 256 KiB ending at 0x50000, with independent scratch arenas at 0x61000
 and 0x62000. These test changes do not raise the standalone boot reservation.
 
-CompilerRuntime version 16 uses an 84-byte record, still with twenty imports.
-FileRuntime version 7 validates that dependency without changing its 32-byte
+CompilerRuntime version 17 uses a 104-byte record, still with twenty imports.
+FileRuntime version 8 validates that dependency without changing its 32-byte
 record or eighteen imports. The kernel has 43 export bindings. CompilerRuntime
-uses 204888 image / 204904 heap bytes; FileRuntime uses 123968 / 123984. The probe
-uses 85608 / 85624 and is reclaimed after its task call. The kernel is 389312 bytes;
-with its 2160-byte loaded stage, 391472 of the fixed 393216 bytes are occupied.
+uses 223432 image / 223448 heap bytes; FileRuntime uses 124480 / 124496. The probe
+uses 87896 / 87912 and is reclaimed after its task call. The kernel is 389328 bytes;
+with its 2160-byte loaded stage, 391488 of the fixed 393216 bytes are occupied.
 These are local-change builds with source hashes recorded in the manifests.
 Strict 386 profiles, native parser/JIT and self-hosting remain required work.

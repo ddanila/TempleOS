@@ -5,6 +5,50 @@ U0 COCSeed(CCodeCtrl *coc)
   coc->coc_next_misc=coc->coc_last_misc=&coc->coc_next_misc;
   coc->coc_head.ic_code=0; //IC_END
 }
+U0 COCCopy(CCodeCtrl *dst,CCodeCtrl *src)
+{
+  I64 i;
+  for(i=0;i<sizeof(CCodeCtrl);i++) dst(U8 *)[i]=src(U8 *)[i];
+}
+U0 COCSave(CCmpCtrl *cc,CCodeCtrl *saved)
+{
+  COCCopy(saved,&cc->coc); cc->coc.coc_next=saved;
+}
+CCodeCtrl *COCRestore(CCmpCtrl *cc)
+{
+  CCodeCtrl *saved=cc->coc.coc_next;
+  COCCopy(&cc->coc,saved); return saved;
+}
+U0 COCJoin(CCmpCtrl *cc,CCodeCtrl *source)
+{//A copied view of the entire active list does not append the list to itself.
+  if(source->coc_head.next!=&cc->coc.coc_head.next &&
+      (source->coc_head.next!=cc->coc.coc_head.next || source->coc_head.last!=cc->coc.coc_head.last)) {
+    cc->coc.coc_head.last->next=source->coc_head.next;
+    source->coc_head.next->last=cc->coc.coc_head.last;
+    cc->coc.coc_head.last=source->coc_head.last;
+    source->coc_head.last->next=&cc->coc.coc_head.next;
+  }
+  if(source->coc_next_misc!=&cc->coc.coc_next_misc &&
+      (source->coc_next_misc!=cc->coc.coc_next_misc || source->coc_last_misc!=cc->coc.coc_last_misc)) {
+    cc->coc.coc_last_misc->next=source->coc_next_misc;
+    source->coc_next_misc->last=cc->coc.coc_last_misc;
+    cc->coc.coc_last_misc=source->coc_last_misc;
+    source->coc_last_misc->next=&cc->coc.coc_next_misc;
+  }
+}
+U0 COCPayloadRelease(CCodeMisc *cm,CSymbolRelease *owner)
+{
+  CArrayDim *dim,*next_dim;
+  switch(cm->type) {
+    case CMT_JMP_TABLE: (*owner->release)(owner->context,cm->jmp_table); break;
+    case CMT_FLOAT_CONSTS: (*owner->release)(owner->context,cm->float_consts); break;
+    case CMT_ARRAY_DIM:
+      dim=cm->dim;
+      while(dim) { next_dim=dim->next; (*owner->release)(owner->context,dim); dim=next_dim; }
+      break;
+    case CMT_HASH_ENTRY: SymbolHashDel(owner,cm->h); break;
+  }
+}
 U0 ICSeed(CCmpCtrl *cc,CIntermediateCode *node,I64 opcode,I64 arg,CHashClass *type,I64 flags)
 {
   node->ic_code=opcode.u16[0]; node->ic_precedence=opcode.u16[1];
@@ -22,15 +66,19 @@ U0 COCMiscSeed(CCmpCtrl *cc,CCodeMisc *node,I64 type)
   node->last->next=node; cc->coc.coc_last_misc=node;
 }
 Bool COCRelease(CCmpCtrl *cc,CCodeCtrl *coc,CSymbolRelease *owner,
-  U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)=0)
+  U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)=0,
+  U0 (*instruction)(U8 *context,CIntermediateCode *node)=0,
+  U0 (*misc)(U8 *context,CCodeMisc *node)=0)
 {
   CIntermediateCode *ic=coc->coc_head.next,*next_ic;
   CCodeMisc *cm=coc->coc_next_misc,*next_cm;
-  CArrayDim *dim,*next_dim;
   U8 *undef=0;
   Bool undefined=FALSE;
   while(ic!=&coc->coc_head.next) {
-    next_ic=ic->next; (*owner->release)(owner->context,ic); ic=next_ic;
+    next_ic=ic->next;
+    if(instruction) (*instruction)(owner->context,ic);
+    else (*owner->release)(owner->context,ic);
+    ic=next_ic;
   }
   while(cm!=&coc->coc_next_misc) {
     next_cm=cm->next;
@@ -43,18 +91,11 @@ Bool COCRelease(CCmpCtrl *cc,CCodeCtrl *coc,CSymbolRelease *owner,
           undef=cm->str; cm->str=0;
         } else if(!cm->use_cnt && label) (*label)(owner->context,cc,cm->str,FALSE);
         break;
-      case CMT_JMP_TABLE: (*owner->release)(owner->context,cm->jmp_table); break;
-      case CMT_FLOAT_CONSTS: (*owner->release)(owner->context,cm->float_consts); break;
-      case CMT_ARRAY_DIM:
-        dim=cm->dim;
-        while(dim) {
-          next_dim=dim->next; (*owner->release)(owner->context,dim); dim=next_dim;
-        }
-        break;
-      case CMT_HASH_ENTRY: SymbolHashDel(owner,cm->h); break;
     }
+    COCPayloadRelease(cm,owner);
     (*owner->release)(owner->context,cm->str);
-    (*owner->release)(owner->context,cm);
+    if(misc) (*misc)(owner->context,cm);
+    else (*owner->release)(owner->context,cm);
     cm=next_cm;
   }
   COCSeed(coc);

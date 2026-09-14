@@ -65,15 +65,12 @@ U0 COCInit(CCmpCtrl *cc) { COCSeed(&cc->coc); }
 U0 COCPush(CCmpCtrl *cc)
 {
   CCodeCtrl *tmpcbh=MAlloc(sizeof(CCodeCtrl));
-  MemCpy(tmpcbh,&cc->coc,sizeof(CCodeCtrl));
-  cc->coc.coc_next=tmpcbh;
+  COCSave(cc,tmpcbh);
 }
 
 CCmpCtrl *COCPopNoFree(CCmpCtrl *cc)
 {
-  CCodeCtrl *tmpcbh=cc->coc.coc_next;
-  MemCpy(&cc->coc,tmpcbh,sizeof(CCodeCtrl));
-  return tmpcbh;
+  return COCRestore(cc);
 }
 
 U0 COCPop(CCmpCtrl *cc)
@@ -83,18 +80,7 @@ U0 COCPop(CCmpCtrl *cc)
 
 U0 COCAppend(CCmpCtrl *cc, CCodeCtrl *tmpcbh)
 {
-  if (tmpcbh->coc_head.next!=&cc->coc.coc_head.next) {
-    cc->coc.coc_head.last->next=tmpcbh->coc_head.next;
-    tmpcbh->coc_head.next->last=cc->coc.coc_head.last;
-    cc->coc.coc_head.last=tmpcbh->coc_head.last;
-    tmpcbh->coc_head.last->next=&cc->coc.coc_head.next;
-  }
-  if (tmpcbh->coc_next_misc!=&cc->coc.coc_next_misc) {
-    cc->coc.coc_last_misc->next=tmpcbh->coc_next_misc;
-    tmpcbh->coc_next_misc->last=cc->coc.coc_last_misc;
-    cc->coc.coc_last_misc=tmpcbh->coc_last_misc;
-    tmpcbh->coc_last_misc->next=&cc->coc.coc_next_misc;
-  }
+  COCJoin(cc,tmpcbh);
   Free(tmpcbh);
 }
 

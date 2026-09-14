@@ -1,5 +1,12 @@
 #include "/Compiler/I386/Control.HC"
-I64 control_documents;
+I64 control_documents,control_code_labels;
+U0 ControlCodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
+{
+  if(context!=&control_code_labels || !undefined || !name || name[0]!='X' ||
+      I386COCSave(&state_heap,cc) || I386CmpCtrlDel(&state_heap,cc) ||
+      I386COCDiscard(&state_heap,cc)) state_free_errors++;
+  control_code_labels++;
+}
 U0 ControlDocument(U8 *context,CDoc *document)
 {
   if(context!=&control_documents || document!=0x1234) state_free_errors++;
@@ -11,6 +18,7 @@ I64 NativeControlTest()
   CI386Heap small,foreign;
   U8 *source,*prompt;
   CLexHashTableContext *hash;
+  CCodeMisc *misc;
   I64 size,i,successes=0,failures=0,used;
   U32 flags=GetRFlags;
   for(size=24;size<=1024;size+=8) {
@@ -71,6 +79,20 @@ I64 NativeControlTest()
     SetRFlags(flags);
     if(i && !I386HeapFree(&state_heap,prompt)) return 84;
     if(state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap)) return 85;
+  }
+  for(i=0;i<2;i++) {
+    SetRFlags((flags&~0x200)|(i*0x200));
+    cc=I386CmpCtrlNew(&state_heap,"IR",CCF_DONT_FREE_BUF,"IR",0,char_bmp_alpha_numeric);
+    if(!cc || !I386ICAdd(&state_heap,cc,0x0A,42,0)) return 100;
+    misc=I386COCMiscNew(&state_heap,cc,CMT_GOTO_LABEL);
+    if(!misc || !(misc->str=I386HeapAlloc(&state_heap,8,TRUE))) return 101;
+    misc->str[0]='X';
+    if(!I386COCPush(&state_heap,cc) ||
+        !I386COCDiscard(&state_heap,cc,&ControlCodeLabel,&control_code_labels) ||
+        !I386CmpCtrlDel(&state_heap,cc) || control_code_labels!=i+1 || state_free_errors ||
+        state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap) ||
+        (GetRFlags&0x200)!=(i*0x200)) return 102;
+    SetRFlags(flags);
   }
   return state_free_errors;
 }

@@ -43,8 +43,8 @@ Arbitrary heap or graph corruption is not a transactional recovery contract.
 
 ## Retained integration and verification
 
-CompilerRuntime version 16 retains constructor/destructor, task-symbol, active
-queue, bounded unwind and temporary IR entries in its checked 84-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
+CompilerRuntime version 17 retains constructor/destructor, task-symbol, active
+queue, bounded unwind and temporary IR entries in its checked 104-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
 from the kernel, avoiding another copy of file-stack mechanisms. The kernel now
 publishes 43 bindings; the retained compiler has twenty imports.
 
@@ -90,3 +90,7 @@ Explicit catch-boundary cleanup now preserves enclosing active controls; see
 Native destruction now releases current and saved intermediate-code contexts
 before input/control release. Shared graph release handles all eight auxiliary
 kinds and their owned payloads; see [i386-code-context.md](i386-code-context.md).
+
+Copied code headers can alias IR. Native cleanup now uses a separate allocation
+registry rather than traversing each header as an independent owner; see
+[i386-code-views.md](i386-code-views.md).

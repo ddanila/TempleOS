@@ -79,10 +79,10 @@ Complete parser/generated-code cleanup remains separate work.
 
 ## Retained services and tests
 
-CompilerRuntime version 16 retains enter, leave, drain, bounded unwind and
+CompilerRuntime version 17 retains enter, leave, drain, bounded unwind and
 temporary IR allocation/discard alongside construction/destruction and symbol
-initialization. Its record is 84 bytes; the
-twenty imports are unchanged. FileRuntime version 7 validates that compiler
+initialization. Its record is 104 bytes; the
+twenty imports are unchanged. FileRuntime version 8 validates that compiler
 contract; its own record stays 32 bytes with six function pointers and eighteen
 imports. Both providers remain resident for the kernel lifetime.
 
@@ -120,3 +120,7 @@ Native controls now own their current and saved temporary code contexts; their
 release shares the public parser's auxiliary-payload policy. See
 [i386-code-context.md](i386-code-context.md). Full AOT/generated-code publication
 and parser diagnostics remain separate integration requirements.
+
+Native saved and detached code headers now share the parser copy/restore/append
+operations; their aliased IR allocations have separate control ownership. See
+[i386-code-views.md](i386-code-views.md).

@@ -323,6 +323,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
 {//Use the resident exception runtime and recover without ending the compilation.
   CI386Task *task=I386TaskSelf;
   CCmpCtrl *child;
+  CCodeCtrl *saved;
   CLexFile *outer_file=outer->lex_include_stk;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   I64 lines=0,accepted=0;
@@ -332,7 +333,8 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   child->last_line_num=0x100000002; child->pass_trace=1; child->lock_cnt=1;
   if(!probe->compiler->code_add(heap,child,0x0A,0x123456789ABCDEF0,probe->i64_type,0) ||
       !probe->compiler->code_add(heap,child,0x02,0,probe->i64_type,0) ||
-      !probe->compiler->code_misc(heap,child,CMT_LABEL)) KernelStop;
+      !probe->compiler->code_misc(heap,child,CMT_LABEL) ||
+      !probe->compiler->code_save(heap,child) || !probe->compiler->code_push(heap,child)) KernelStop;
   SetRFlags((flags&~0x200)|(probe->phase*0x200));
   try {
     if(probe->compiler->next_token_with_includes(heap,child,"Probe",&lines,probe->disk_include)!=-1) KernelStop;
@@ -352,7 +354,10 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
       probe->compiler->next_token_with_includes(heap,child,"Probe",&lines,probe->disk_include)!=TK_I64 ||
       child->cur_i64!=42 ||
       !probe->compiler->code_add(heap,child,0x0A,child->cur_i64,probe->i64_type,0) ||
-      !probe->compiler->code_discard(heap,child) ||
+      !(saved=probe->compiler->code_save(heap,child)) ||
+      !probe->compiler->code_append(heap,child,saved) || !probe->compiler->code_push(heap,child) ||
+      !(saved=probe->compiler->code_pop(heap,child)) || !probe->compiler->code_free(heap,child,saved) ||
+      !probe->compiler->code_discard(heap,child,0,0) ||
       child->coc.coc_head.next!=&child->coc.coc_head.next ||
       !probe->compiler->control_unwind(task,outer) ||
       task->last_cc!=outer || task->lifetime_refs!=refs || task->active_controls!=1 ||
