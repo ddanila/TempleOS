@@ -8,7 +8,7 @@ U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i;
-  U64 *oracle=MAlloc(24576),bits,seed=0x386F64D;
+  U64 *oracle=MAlloc(32768),bits,seed=0x386F64D;
   F64 value;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
@@ -22,11 +22,12 @@ U0 CompileTests()
       seed=seed*6364136223846793005+1442695040888963407;
       bits=seed&0x7FFFFFFFFFFFFFFF;
     }
-    oracle[i*3]=bits;
-    value=Ln(bits(F64)); oracle[i*3+1]=value(U64);
-    value=Log10(bits(F64)); oracle[i*3+2]=value(U64);
+    oracle[i*4]=bits;
+    value=Ln(bits(F64)); oracle[i*4+1]=value(U64);
+    value=Log10(bits(F64)); oracle[i*4+2]=value(U64);
+    value=Log2(bits(F64)); oracle[i*4+3]=value(U64);
   }
-  line=MStrPrint("EXPORT x64-log.bin %X %X\n",oracle,24576); Report(line);
+  line=MStrPrint("EXPORT x64-log.bin %X %X\n",oracle,32768); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -39,7 +40,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"f64_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,24576); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,32768); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)

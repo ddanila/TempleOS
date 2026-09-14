@@ -38,7 +38,12 @@ def rounded_log(bits, base, precision):
     with localcontext() as context:
         context.prec = precision
         exact_input = Decimal.from_float(value)
-        result = exact_input.ln() if base == 'ln' else exact_input.log10()
+        if base == 'ln':
+            result = exact_input.ln()
+        elif base == 'log2':
+            result = exact_input.ln()/Decimal(2).ln()
+        else:
+            result = exact_input.log10()
         return struct.unpack('<Q', struct.pack('<d', float(result)))[0]
 
 
@@ -46,10 +51,10 @@ def make_log_oracle():
     rows = []
     for bits in log_inputs():
         results = []
-        for base in ('ln', 'log10'):
+        for base in ('ln', 'log10', 'log2'):
             result = rounded_log(bits, base, 160)
             if result != rounded_log(bits, base, 220):
                 raise ValueError('Logarithm rounding unstable at two oracle precisions')
             results.append(result)
-        rows.append(struct.pack('<3Q', bits, *results))
+        rows.append(struct.pack('<4Q', bits, *results))
     return b''.join(rows)

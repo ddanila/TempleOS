@@ -76,3 +76,23 @@ F64 Log10(F64 x)
   z=y*0x3D59FEF311F12B36(F64)+0x3FDBCB7B1526E50E(F64)*Ln(x);
   return z+y*0x3FD34413509F6000(F64);
 }
+
+F64 Log2(F64 x)
+{
+  U64 bits=x(U64),magnitude=bits&0x7FFFFFFFFFFFFFFF;
+  I64 k=0,hx,i;
+  if(magnitude>0x7FF0000000000000) {
+    bits|=0x0008000000000000; return bits(F64);
+  }
+  if(!magnitude) { bits=0xFFF0000000000000; return bits(F64); }
+  if(bits>>63) { bits=0xFFF8000000000000; return bits(F64); }
+  if(magnitude==0x7FF0000000000000) return x;
+  if(magnitude<0x0010000000000000) { k=-54; x*=0x4350000000000000(F64); }
+  hx=x(U64)>>32; k+=(hx>>20)-1023; hx&=0x000FFFFF;
+  //Keep the reduced value near one, including inputs immediately below one.
+  i=(hx+0x95F64)&0x100000;
+  x(U64)=(x(U64)&0xFFFFFFFF)|((hx|(i^0x3FF00000))<<32);
+  k+=i>>20;
+  //Keeping the exponent separate makes every binary power exact.
+  return ToF64(k)+Ln(x)*0x3FF71547652B82FE(F64);
+}

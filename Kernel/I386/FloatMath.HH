@@ -8,4 +8,5 @@ public extern F64 Ceil(F64 value);
 public extern F64 Pow10I64(I64 exponent);
 public extern F64 Ln(F64 x);
 public extern F64 Log10(F64 x);
+public extern F64 Log2(F64 x);
 #endif

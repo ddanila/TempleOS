@@ -465,7 +465,7 @@ FloorI64 dependency available without CPU-dependent random-number routines.
 Public software Round, Trunc, Floor and Ceil now preserve full binary64 range,
 signed zero and quieted NaN payloads, matching x64 and a Python oracle across
 1,024 inputs each. They supply whole-number rounding needed by StrPrintJoin;
-Log2, general powers and production formatting integration remain pending.
+General powers and production formatting integration remain pending.
 Native Pow10I64 now uses a generated 617-entry table of correctly rounded
 binary64 values without an FPU or allocation, preserving the -308..308 range
 contract. Every entry and extreme input branches pass; the combined unary/power
@@ -475,10 +475,12 @@ native oracle. Both x64 initialization paths and their lookup also now use
 indices 0..616, fixing the previous one-entry allocation overrun.
 Software Ln and Log10 now adapt fdlibm's range reduction and polynomial routines
 with attribution, using the existing software F64 arithmetic. A 1,024-input
-high-precision/x64 corpus checks 2,048 native results at one-ULP (Ln) and two-ULP
-(Log10) limits, with exact special-value behavior. All 617 exponent-extraction
+high-precision/x64 corpus now checks 3,072 native results at one-ULP (Ln) and two-ULP
+(Log10 and Log2) limits, with exact special-value behavior. All 617 exponent-extraction
 cases Floor(Log10(Pow10I64(i))) also pass. These are tested corpus limits, not
-universal correct-rounding or full x64 precision claims; Log2, general powers,
+universal correct-rounding or full x64 precision claims. Log2 now keeps the binary
+exponent separate from the reduced Ln calculation and passes exact-result checks
+for all 2,098 representable powers of two, including subnormals. General powers,
 exception state and production formatting integration remain pending.
 Template-call nesting and malformed-provider rejection also have tests;
 trigonometry and remaining numerical/formatting integration are still pending. See `docs/i386-f64-backend.md`. Signed
