@@ -1,6 +1,6 @@
 # Retained compiler runtime in extended memory
 
-The bootstrap kernel no longer contains the quoted-string/number decoders,
+The bootstrap kernel no longer contains the quoted-string/number/character decoders,
 software F64 implementation or power table. `Kernel/I386/CompilerRuntime.HC`
 builds them into a separate `CompilerRuntime.t32m` disk module. Native startup
 loads it through the checked RedSea/module loader into the extended-memory heap,
@@ -16,9 +16,9 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 1 of CI386CompilerServices: a U32 version,
-U32 byte count, and native function pointers for string chunks and numeric tokens.
-The structure is 16 bytes on i386. The entry receives caller-owned interface
+`CompilerRuntime.HH` defines version 2 of CI386CompilerServices: a U32 version,
+U32 byte count, and native function pointers for string chunks, numeric tokens and character constants.
+The structure is 20 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -32,9 +32,9 @@ its own numerical implementation and immutable-use power table inside its image.
 
 KernelCompilerLoad runs with IF clear and exclusive disk/heap ownership. After
 loading, the kernel verifies one retained allocation, extended-memory placement,
-interface version and byte count, and that both service pointers fall inside the
+interface version and byte count, and that all three service pointers fall inside the
 loaded image. It publishes the global interface only after these checks succeed.
-The host boot verifier independently checks both pointer values against the
+The host boot verifier independently checks all three pointer values against the
 module's actual function export offsets, not just the image's address range.
 
 The image, its code/data and the kernel providers must remain live for every
@@ -56,7 +56,7 @@ caller storage before reporting success.
 
 KernelCompilerProbe calls the actual relocated services during boot and again
 from the pulse task after startup, VGA allocation, task creation and timer IRQs.
-It parses a software-F64 numeric token and a hexadecimal string escape, checks
+It parses a software-F64 numeric token, a hexadecimal string escape and a packed character constant, checks
 returned values and input positions, verifies no transient heap allocation remains,
 and checks that the retained image is still a live allocation of the original
 size. Boot source consumption remains a separate raw-character pass.
@@ -76,13 +76,14 @@ startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-At this revision, the bootstrap image is 346912 bytes, down from 384664. The
-52520-byte runtime image is allocated at 0x11F008 in the 8 MiB development profile
-and retains a 52536-byte heap span. Both service addresses match their relocated
-export offsets, and both boot/task probes return the expected values. Raw source
-checks cover 19309 characters, 454 newlines, FNV32 0x5D4679C6 and reclamation of
-19768 temporary heap bytes. These sizes and addresses are observations recorded
-in the manifest, not fixed addresses or memory minima required by the interface.
+With character-constant parsing in interface version 2, the bootstrap image is
+349728 bytes. The 60544-byte runtime image is allocated at 0x121010 in the 8 MiB
+development profile and retains a 60560-byte heap span. All three service addresses
+match their relocated export offsets, and both boot/task probes return the expected
+values. Raw source checks cover 20046 characters, 462 newlines, FNV32 0x78FA727D and
+reclamation of 20504 temporary heap bytes. These sizes and addresses are observations
+recorded in the manifest, not fixed addresses or memory minima required by the
+interface. The kernel and runtime must be rebuilt together for the interface change.
 
 ## Import-declaration correction
 

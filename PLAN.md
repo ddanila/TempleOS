@@ -426,7 +426,10 @@ programming environment through these concrete steps:
    remain an explicit compatibility boundary. Lexer/numerical services now load
    from a retained extended-memory module with a versioned interface and explicit
    kernel function/data imports. Boot/task calls and rejection/reclamation checks
-   pass. Place the remaining compiler modules through this path while defining
+   pass. Character-constant decoding now shares packed I64, escape and replay
+   semantics and executes through a third retained service; the version-2 interface
+   requires rebuilding the kernel and runtime together. Full lexical dispatch and
+   preprocessing remain required. Place remaining compiler modules here, defining
    their code/data lifetimes; arbitrary unloading remains unsupported.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.

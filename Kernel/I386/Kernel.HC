@@ -387,10 +387,10 @@ U0 KernelCompilerLoad()
   CI386CompilerServices candidate;
   I64 (*entry)(CI386CompilerServices *services,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
-  U64 base,string_address,number_address;
+  U64 base,string_address,number_address,char_address;
   U8 *image=0,*reason="load";
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0;
+  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0;
   if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerRuntime.t32m",&file)!=1)
@@ -407,9 +407,11 @@ U0 KernelCompilerLoad()
       accepted=(*entry)(&candidate,sizeof(CI386CompilerServices));
       string_address=(candidate.string_chunk+0)(U64);
       number_address=(candidate.number_token+0)(U64);
+      char_address=(candidate.char_token+0)(U64);
       if(candidate.version!=I386_COMPILER_SERVICES_VERSION || candidate.bytes!=sizeof(CI386CompilerServices) ||
           string_address<base+8 || string_address>=base+size ||
-          number_address<base+8 || number_address>=base+size) accepted=0;
+          number_address<base+8 || number_address>=base+size ||
+          char_address<base+8 || char_address>=base+size) accepted=0;
     }
   }
   if(accepted!=1) {
@@ -419,10 +421,11 @@ U0 KernelCompilerLoad()
   }
   kernel_compiler.version=candidate.version; kernel_compiler.bytes=candidate.bytes;
   kernel_compiler.string_chunk=candidate.string_chunk; kernel_compiler.number_token=candidate.number_token;
+  kernel_compiler.char_token=candidate.char_token;
   kernel_compiler_image=image; kernel_compiler_size=size; kernel_compiler_span=kernel_heap.used-used;
   KernelLog("RUNTIME "); KernelHex((image+0)(U64)); KernelLog(" ");
   KernelHex(size); KernelLog(" "); KernelHex(kernel_compiler_span); KernelLog(" ");
-  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog("\n");
+  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog(" "); KernelHex(char_address); KernelLog("\n");
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Exercise retained module code before startup and after task/IRQ activity.
@@ -449,6 +452,11 @@ U0 KernelCompilerProbe(I64 phase)
       output[0]!='A' || output[1] || cc.cur_buf_ptr!=input+5 || lines ||
       kernel_heap.used!=used || kernel_heap.allocations!=allocations ||
       I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size || !I386HeapValid(&kernel_heap)) KernelStop;
+  input[0]=92; input[1]='x'; input[2]='4'; input[3]='1'; input[4]='B'; input[5]=39; input[6]=59; input[7]=0;
+  cc.flags=CCF_DONT_FREE_BUF; LexFileSeed(&file,input); cc.cur_buf_ptr=input;
+  if(kernel_compiler.char_token(&kernel_heap,&cc,&lines)!=TK_CHAR_CONST ||
+      cc.cur_i64!=0x4241 || cc.last_U16!=59 || cc.cur_buf_ptr!=input+7 || lines ||
+      kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
   KernelLog("RUNTIME PROBE "); KernelHex(phase); KernelLog(" ");
-  KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog("\n");
+  KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog(" "); KernelHex(cc.cur_i64); KernelLog("\n");
 }

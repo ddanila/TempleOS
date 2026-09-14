@@ -350,15 +350,16 @@ I64 LexInStr(CCmpCtrl *cc,U8 *buf,I64 size,Bool *done)
 }
 
 #include "/Compiler/LexNumber.HC"
+#include "/Compiler/LexChar.HC"
 
 I64 Lex(CCmpCtrl *cc)
 {//Fetch next token.
   I64 i,j,k,l,ch;
   CHash *tmph;
   Bool str_done,in_str;
-  CLexCharSource number_source;
+  CLexCharSource token_source;
   U8 *fbuf,*buf2,*buf3,buf[STR_LEN];
-  number_source.context=0; number_source.read=&LexSystemChar;
+  token_source.context=0; token_source.read=&LexSystemChar;
   cc->last_line_num=cc->lex_include_stk->line_num;
   while (TRUE) {
 lex_cont:
@@ -431,7 +432,7 @@ lex_ident:
 	break;
       case '0'...'9':
       case '.':
-        LexNumberBody(cc,ch,&number_source);
+        LexNumberBody(cc,ch,&token_source);
         goto lex_end;
       case '"':
 	cc->flags|=CCF_IN_QUOTES;
@@ -462,54 +463,8 @@ lex_ident:
       case '\'':
 	if (cc->flags&CCF_NO_CHAR_CONST)
 	  break;
-	k=0;
-	for (j=0;j<8;j++) {
-	  if (!(ch=LexGetChar(cc)) || ch=='\'')
-	    break;
-	  if (ch=='\\') {
-	    switch (ch=LexGetChar(cc)) {
-	      case '0':		k.u8[j]=0;	break;
-	      case '\'':	k.u8[j]='\'';	break;
-	      case '\`':	k.u8[j]='\`';	break;
-	      case '"':		k.u8[j]='"';	break;
-	      case '\\':	k.u8[j]='\\';	break;
-	      case 'd':		k.u8[j]='$$';	break;
-	      case 'n':		k.u8[j]='\n';	break;
-	      case 'r':		k.u8[j]='\r';	break;
-	      case 't':		k.u8[j]='\t';	break;
-	      case 'x':
-	      case 'X':
-		i=0;
-		for (l=0;l<2;l++) {
-		  ch=ToUpper(LexGetChar(cc));
-		  if (Bt(char_bmp_hex_numeric,ch)) {
-		    if (ch<='9')
-		      i=i<<4+ch-'0';
-		    else
-		      i=i<<4+ch-'A'+10;
-		  } else {
-		    cc->flags|=CCF_USE_LAST_U16;
-		    break;
-		  }
-		}
-		k.u8[j]=i;
-		break;
-	      default:
-		k.u8[j]='\\';
-		cc->flags|=CCF_USE_LAST_U16;
-	    }
-	  } else if (ch=='$$') {
-	    ch=LexGetChar(cc);
-	    k.u8[j]='$$';
-	    if (ch!='$$')
-	      cc->flags|=CCF_USE_LAST_U16;
-	  } else
-	    k.u8[j]=ch;
-	}
-	if (ch!='\'' && (ch=LexGetChar(cc)) && ch!='\'')
+	if(LexCharBody(cc,&token_source)==-2)
 	  LexExcept(cc,"Char const limited to 8 chars at ");
-	cc->cur_i64=k;
-	cc->token=TK_CHAR_CONST;
 	goto lex_end;
       case '#':
 	if (cc->flags&CCF_KEEP_SIGN_NUM) {

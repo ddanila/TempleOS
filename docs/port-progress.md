@@ -2210,3 +2210,31 @@ reclaimed heap bytes. The conventional boot reservation remains 384 KiB. Full
 compiler/JIT residency, target-aware literal evaluation, public runtime APIs,
 DolDoc/editing, self-hosting and strict 386 validation remain open. See
 [i386-compiler-runtime.md](i386-compiler-runtime.md).
+
+## Shared character constants in the retained runtime
+
+The production lexer and native I386LexChar now share eight-byte packed character
+constants, including escapes, shortened hexadecimal forms, dollar handling and
+legacy EOF termination. Native reader failures and overlength have distinct status
+returns. Body failures preserve token/value sentinels; final-lookahead failure can
+retain a successfully decoded token and must still be handled as an error.
+
+The existing string fixture now also passes 536 fixed character cases against
+both production Lex and native execution. These expected values and input positions
+passed the original lexer at 723d506 before extraction. Injected read failures,
+overlength, invalid native arguments, EOF, include-boundary rejection/restart and
+reclamation, and final-lookahead failure pass. Existing string/ToUpper checks and
+executable instruction audits pass. Both x86-64 rebuild/reboot generations pass.
+
+CompilerRuntime interface version 2 adds the character service, with a 20-byte
+interface. The kernel validates all three retained pointers, and boot/task probes
+execute character parsing alongside string/number decoding. The complete 8 MiB
+QEMU/486 boot suite passes, including runtime wrong-target/import/version rejection,
+reclamation, source consumption, timer activity, keyboard/VGA and unchanged disks.
+
+The bootstrap is 349728 bytes; the runtime image is 60544 bytes and retains 60560
+heap bytes, observed at 0x121010. Raw source checks cover 20046 characters, 462
+newlines, FNV32 0x78FA727D and 20504 reclaimed bytes. Full lexical dispatch,
+preprocessing, native compiler/JIT execution, public runtime integration, DolDoc,
+self-hosting and strict 386 validation remain required. See
+[i386-lex-char.md](i386-lex-char.md).

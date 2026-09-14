@@ -1,5 +1,6 @@
 #include "/Compiler/ControlInit.HH"
 #include "/Compiler/LexString.HH"
+#include "/Compiler/LexChar.HH"
 I64 StringSystemRead(U8 *context,CCmpCtrl *cc)
 {
   I64 *lines=context,before=cmp.compiled_lines,ch=LexGetChar(cc);
@@ -12,7 +13,10 @@ I64 StringChunk(CCmpCtrl *cc,U8 *buf,I64 size,Bool *done,I64 *lines)
   return LexStringChunk(cc,buf,size,done,&source);
 }
 #include "T:/Strings.HC"
+I64 CharToken(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
+#include "T:/CharTests.HC"
 #include "T:/Failures.HC"
+#include "T:/CharFailures.HC"
 #include "T:/Host.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
@@ -23,6 +27,8 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex string\n");
+  if(CharFailureTest) { Report("FAIL x64 character reader failures\n"); return; }
+  if(CharTest) { Report("FAIL x64 character constants\n"); return; }
   if(StringTest) { Report("FAIL x64 quoted strings\n"); return; }
   if(StringFailureTest) { Report("FAIL x64 string reader failures\n"); return; }
   if(HostStringTest) { Report("FAIL x64 string tokens\n"); return; }
