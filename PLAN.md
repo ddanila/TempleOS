@@ -871,10 +871,24 @@ shared symbol ownership traversal before detaching any parser allocations; name
 collisions, foreign/duplicate payloads, aliases to lexer-owned storage, scratch OOM,
 outstanding IR and compiler errors leave the private graph intact. Native probes destroy the originating
 control, compile against the six transferred scalar unions from a fresh control,
-then detach/delete them and verify full resource restoration. Permanent bootstrap
-registration and a retained frontend environment remain required, along with
-publication of executable code, functions and global data. See
+then detach/delete them and verify full resource restoration. See
 `docs/i386-class-publication.md`.
+
+The retained compiler now supplies a frontend environment for permanent scalar
+bootstrap (CompilerRuntime ABI 30, 180 bytes). Native boot reads the original
+`Kernel/Types.HH`, parses its six unions through the shared grammar, executes array
+bounds through the native backend, validates scalar layouts and help metadata,
+and publishes the complete class graphs into the root task's table. Input,
+controls and parser temporaries are reclaimed; workers inherit the same classes
+after the temporary probe module is released. Source links retain the original
+filename and declaration lines. Bootstrap failures and duplicate loads restore
+allocation/control ownership without replacing published classes. See
+`docs/i386-scalar-bootstrap.md`.
+
+Complete retained statement/global/function/default/static/initializer providers,
+executable code and data publication, interactive compilation, DolDoc integration
+and native self-hosting remain required. This bootstrap milestone does not satisfy
+the strict 386SX/DX or full native programming-environment acceptance gates.
 
 #### Continuing integration sequence
 

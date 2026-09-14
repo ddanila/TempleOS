@@ -31,6 +31,7 @@ extern U0 ProbeDefine(CI386CompilerProbe *probe);
 extern U0 ProbeConditional(CI386CompilerProbe *probe);
 extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
+extern U0 ProbeBootstrap(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeSymbols(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeDeclarations(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
@@ -390,6 +391,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   ProbeDeclarations(probe,heap,outer);
   ProbeSymbols(probe,heap,outer);
   ProbePublish(probe,heap,outer);
+  ProbeBootstrap(probe,heap,outer);
   SetRFlags(flags);
   KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }
@@ -458,3 +460,5 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 #include "/Kernel/I386/CompilerSymbolProbe.HC"
 
 #include "/Kernel/I386/CompilerPublishProbe.HC"
+
+#include "/Kernel/I386/CompilerBootstrapProbe.HC"

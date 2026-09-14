@@ -3925,3 +3925,46 @@ See [i386-class-publication.md](i386-class-publication.md). Permanent native boo
 registration and a complete retained frontend environment are still required, along
 with function/code/data publication, complete metadata and initializer providers,
 interactive compilation, DolDoc and native self-hosting under `PLAN.md`.
+
+## Permanent scalar bootstrap in the retained compiler
+
+CompilerRuntime ABI 30 (180 bytes) supplies a retained frontend environment and
+loads the original `C:/Kernel/Types.HH` during native boot. The shared expression,
+type, declaration and class/header grammar parses its six unions; array bounds
+compile and execute through the native backend. The loader validates intrinsic
+forwarding, scalar widths, member views, dimensions, pointer variants and help
+metadata before publishing the class graphs into the root task's symbol table.
+Compiler controls, input and parser temporaries are then reclaimed.
+
+Source links retain the original filename and declaration lines, and the help
+index remains `Data Types/Simple`. The root classes survive startup, worker
+inheritance and release of the temporary CompilerProbe image. The final worker
+check validates their schemas and the addresses recorded by the boot load service.
+
+All 14 bootstrap cases pass across boot and worker tasks. They cover successful
+loads and duplicate rejection, malformed array bounds, truncated input, wrong
+intrinsic signedness, missing input, exhausted heap and invalid help metadata.
+Temporary successful loads verify all twelve source links against the original
+file, then detach and delete the classes. Each case restores exact heap use and
+allocation counts, active controls, task references, exception state and interrupt
+state. Help metadata is checked before publication so invalid metadata cannot leave
+new symbols in the task's table.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. The complete standalone
+suite passed the new bootstrap cases and existing publication, symbol, declaration,
+expression/type, parser ownership/recovery, instruction-audit, module-rejection and
+pixel-exact VGA/input checks. The lexer-state suite passed the shared lexer backup
+helper split. Python syntax and whitespace checks also pass.
+
+The kernel is 391008 bytes. With the early boot stage it uses 393168 of the fixed
+393216-byte reservation, leaving 48 bytes. The retained compiler image is 934696
+bytes (934712 heap bytes); the temporary probe image is 360536 bytes and reclaims
+all 360552 heap bytes. Compiler/probe imports are 23/17: the retained loader now
+uses the existing `SysTry` and `SysUntry` exports for recovery. FileRuntime remains
+ABI 13/32 bytes and CompilerProbe ABI 5/56 bytes.
+
+See [i386-scalar-bootstrap.md](i386-scalar-bootstrap.md). Complete retained
+statement/global/default/static/initializer providers, executable function/code/
+data publication, public compiler APIs, interactive compilation, DolDoc and native
+self-hosting remain open. The 8 MiB QEMU/486 development guest does not establish
+strict 386SX/DX acceptance.

@@ -13,6 +13,8 @@
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
+import U0 SysTry(U8 *catch_start,U8 *untry_start);
+import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
 import U32 I386IrqSave();
 import U0 I386IrqRestore(U32 flags);
@@ -38,7 +40,7 @@ extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I6
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 extern U0 ICInfoInit();
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==168
+#assert sizeof(CI386CompilerServices)==180
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -74,6 +76,8 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->parse_declarations=&I386ParseDeclarations; services->code_init=&I386COCInit;
   services->parse_class=&I386ParseClass; services->parse_fun_join=&I386ParseFunJoin;
   services->publish_classes=&I386PublishClasses;
+  services->bootstrap_scalars=&I386BootstrapScalars; services->load_scalar_types=&I386LoadScalarTypes;
+  services->scalar_types_check=&I386ScalarTypesCheck;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -129,3 +133,6 @@ I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
 #include "/Compiler/I386/NativeSymbol.HC"
 
 #include "/Compiler/I386/PublishClasses.HC"
+
+#include "/Compiler/I386/Frontend.HC"
+#include "/Compiler/I386/ScalarBootstrap.HC"

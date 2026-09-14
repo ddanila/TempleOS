@@ -50,6 +50,7 @@ CI386OwnedTask *kernel_pulse;
 CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
 CHashTable *kernel_symbols;
+CHashClass *kernel_scalars[6];
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
 CI386KernelSymbol kernel_exports[43];
@@ -86,7 +87,7 @@ extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelKeys(I64 unused);
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
-U8 kernel_compiler_bindings[21]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42};
+U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
 U8 kernel_probe_bindings[17]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10};
 U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
@@ -116,6 +117,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelCompilerLoad;
   KernelFileLoad;
   KernelCompilerProbe(0);
+  if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
   KernelStartup;
   if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
   KernelLog("STORAGE TASK BOUND\n");
@@ -185,7 +187,8 @@ U0 KernelPulse(I64 unused)
       KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
       if(pulses==2) {
         KernelCompilerProbe(1);
-        KernelLog("DONE native kernel startup\n");
+        if(!kernel_compiler.scalar_types_check(kernel_scalars,FALSE)) KernelStop;
+        KernelLog("SCALAR LIVE 0000000000000001\nDONE native kernel startup\n");
       }
     }
   }

@@ -17,19 +17,20 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 22 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 30 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
 root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement, shared branch optimization and pass 0/1/2 constant folding/type analysis owned output buffers and shared function lowering.
-The structure is 128 bytes on i386. The entry receives caller-owned interface
+The current structure is 180 bytes on i386; later entries add owned parser
+services, class publication and scalar bootstrap as described below. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
 
-The module imports seventeen kernel functions: I386LexRawChar, I386LexSourceRead,
+The module imports nineteen kernel functions: I386LexRawChar, I386LexSourceRead,
 HashFind, HashAdd, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore, I386LexIncludeCopy, I386LexFilePush, LexFileReleaseTop, and
-I386HashTableNew/Valid/Delete and throw,
+I386HashTableNew/Valid/Delete, throw, SysTry and SysUntry,
 and four kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
 char_bmp_non_eol and char_bmp_non_eol_white_space. The
 latter remain the same writable public tables used by the kernel; moving the
@@ -227,3 +228,13 @@ type, allocation, folding, assembly and diagnostic services. Native temporary an
 relocation allocations belong to the compiler control. FileRuntime version 13
 validates this dependency. See [i386-native-backend.md](i386-native-backend.md) for
 the private AOT/symbol-context and output-lifetime contracts.
+
+## Retained scalar bootstrap (version 30)
+
+The current interface includes native expression/type/declaration/class parsing,
+parser allocation/token ownership and durable class publication. It adds a retained
+frontend context and services for loading the original six scalar unions into the
+root task's symbol table. Controls and temporary parser state are reclaimed while
+published class graphs remain live through worker execution and probe-module
+release. See [i386-scalar-bootstrap.md](i386-scalar-bootstrap.md) for contracts,
+source metadata, failure recovery and remaining frontend limitations.
