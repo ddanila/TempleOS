@@ -323,6 +323,44 @@ boundaries. CPU register width must not change I64/F64 semantics, serialized
 formats or the 640×480 application coordinate space. Native JIT and self-hosting
 remain required outcomes of this sequence.
 
+### Remaining architecture decisions and integration gates
+
+The current foundation already connects BIOS boot, cooperative tasks, timer
+interrupts, disk-backed module loading, keyboard line collection and VGA. A
+retained extended-memory module provides string/number parsing and software
+numerical services. Build on these paths; the next architectural goal is a
+resident HolyC compiler that consumes source and produces executable i386 code.
+
+| Order | Architectural work | Required integration evidence |
+| --- | --- | --- |
+| 1 | Finish the compiler-facing kernel contract: public task/CPU records, task/code heap selection, allocation failure, file access, exception reporting, and compiler-control construction/destruction. Keep direct calls and explicit ownership; use the existing retained-module loader. | Create and destroy compiler contexts from a running task; recover from allocation and input failures with temporary allocations reclaimed and resident symbols/code still live. |
+| 2 | Complete shared lexical dispatch, identifiers, character constants, operators/comments, macros/directives, and document/prompt input. Connect the parser and symbol lifecycle to these services instead of maintaining a second reduced language. | Tokenize and parse representative existing HolyC sources natively, including includes, save/restore and diagnostics; compare shared behavior with x86-64 fixtures. |
+| 3 | Close target-layout and numerical evaluation gaps before native code generation becomes the shell path. Specify unfinished aggregate call/return behavior, address-bearing initialization, and target F64 literal/constant evaluation. | Cross-generated and natively generated i386 programs agree on target layouts and the selected numerical policy, including fractional literals and constant expressions. Record intentional differences from x86-64 separately. |
+| 4 | Load the parser/backend and their dependencies into extended memory, then connect native JIT, inline assembly, top-level execution and compile-time generators. Keep compiler-host generators separate during cross-bootstrap. | Repeatedly compile, execute and recover from errors on i386 without a host compiler; exercise I64, F64, callbacks, globals and `#exe`, with measured transient reclamation. |
+| 5 | Connect that same command/compiler path to DolDoc, editing/help, software graphics, mouse input, persistent files and speaker audio. | Edit, save, reboot, reopen and execute a document on the 8 MiB target; measure resident and peak memory during the whole workflow. |
+| 6 | Rebuild compiler and kernel through the native environment and boot their outputs. | Complete and repeat the rebuild on the 16 MiB target, recording artifacts, peak memory and explained output differences. |
+
+Orders 1–3 may advance together where their dependencies permit, but a raw token
+scanner or a separately tested code emitter does not satisfy order 4. The existing
+compiler-runtime service table is a versioned bootstrap boundary, not a replacement
+for HolyC's public symbols and direct-call programming model. Define ownership of
+new code, data, callbacks and compiler contexts before publishing them; retaining
+the compiler at boot is acceptable while arbitrary module unloading stays deferred.
+
+Keep three checks running across every integration gate: the x86-64 rebuild
+regression, executable-region 386 instruction audits, and resident/peak memory
+accounting. Establish named 386SX/DX emulator profiles now and apply them as work
+lands; strict CPU, absent-FPU and legacy BIOS/device checks must not wait for
+self-hosting. The current QEMU/486 result is development evidence only.
+
+The largest semantic decision still open is target numerical evaluation: the
+native software policy and existing x86-64 literal parsing have recorded bit
+differences. Resolve the cross-build/native boundary explicitly rather than
+letting the compiler host choose i386 constants accidentally. The largest resource
+question is peak memory during native compilation and document editing; measure
+it before expanding startup scans or caches. Neither issue authorizes reducing
+HolyC functionality or silently raising the stated hardware requirements.
+
 ### Immediate integration work after RedSea startup
 
 The standalone kernel can read source and execute a cross-compiled startup module,
@@ -334,7 +372,9 @@ programming environment through these concrete steps:
    exports. Verify execution and temporary-buffer reclamation, and define image
    ownership before allowing callbacks or tasks to retain module addresses.
    The synchronous startup path now passes execution/reclamation and wrong-target/
-   unresolved-import boot checks. Retained module callbacks/tasks remain deferred.
+   unresolved-import boot checks. The compiler runtime now supplies retained
+   service pointers used during boot and task activity; general unloadable module
+   callbacks and module-owned tasks still need lifetime rules.
 2. Connect keyboard delivery and VGA text rendering to a recoverable command
    loop. Integrate public task, allocation, file and exception interfaces needed
    by the compiler; keep disk access ownership explicit as tasks become active.
@@ -411,10 +451,12 @@ M2's target runner and early M3 boot/interrupt work can be developed alongside
 the backend after M1. Do not require the full compiler before running backend
 tests, or the complete desktop before resolving compile-time execution.
 
-The protected-mode runner now executes HolyC-generated integer functions with
-32-bit pointers, 64-bit arithmetic, and basic control flow. Next, complete the
-integer/call backend and native module loading path needed to compile and run
-more kernel units, while closing the remaining M0/M1 gates. The architecture-tagged
+The following records foundation work in implementation order; current remaining
+priorities are the integration gates above. Detailed results and limitations are
+maintained in [port progress](docs/port-progress.md).
+
+The protected-mode runner executes HolyC-generated integer functions with
+32-bit pointers, 64-bit arithmetic, and basic control flow. The architecture-tagged
 bootstrap linker and shared module validator now have target execution tests.
 Indirect fixed-arity calls and same-module function addresses now pass target
 execution tests, including callbacks in linked modules. Global/static storage and
@@ -744,13 +786,12 @@ ATA PIO and streams its complete kernel source. Host directory/file/bitmap check
 and the native byte-count/checksum agree; the disk remains unchanged during boot.
 The first BIOS-drive/controller mapping is explicit. Public filesystem APIs,
 startup-source execution and native compiler integration remain required.
-Next, complete the software F64 runtime and compiler lowering, migrate full public
-task/CPU records and task semantics, bring up
-the production entry path, input and full
-exception handling, then task/page-pool integration and resident kernel
-symbol binding, variadic formatting integration, address-bearing initializers, and exception-safe
-runtime interfaces before attempting a full kernel link. Runner success remains an
-intermediate milestone, not the final OS.
+The current standalone image also has resident symbol binding, keyboard/VGA line
+collection and a retained lexer/numerical runtime, as recorded above. Remaining
+public task/CPU and compiler-service integration, complete frontend/JIT execution,
+target numerical evaluation and the document/self-hosting workflow are governed
+by the integration gates. Runner and component success remain intermediate
+milestones, not the final OS.
 
 ## Verification strategy
 
