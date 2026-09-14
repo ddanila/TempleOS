@@ -28,6 +28,15 @@ returns the original bit pattern while prefix returns the stored result. This
 also preserves a signaling NaN or negative zero in the postfix result when the
 updated value differs.
 
+Explicit `ToF64` and `ToI64` intrinsics now call the one-argument software
+helpers. Standalone sources include `/Kernel/I386/Float.HH` as well as the runtime
+header and implementation. `ToF64` takes I64, matching `KernelB.HH`; passing U64
+preserves the existing signed interpretation of its argument bits. True unsigned
+conversion remains available through `I386F64FromU64`. `ToI64` truncates and uses
+the documented integer-indefinite result for invalid inputs. Existing optimizer
+rules also preserve already-integer/already-F64 inputs without a lossy round trip.
+These intrinsics do not yet enable implicit mixed-type conversions.
+
 This is an initial compiler integration. Runtime mixed integer/F64 conversions,
 mixed-type relations/compound assignments, raw F64 conditions,
 remainder and math intrinsics remain unsupported and are rejected. Numeric
@@ -57,3 +66,10 @@ result. The backend distinguishes result types from retained operand metadata.
 Expected numerical ordering and
 NaN classification come from the host oracle. x64 operator/exception-state
 compatibility remains a separate unfinished check.
+
+The conversion fixtures now check compiled intrinsic calls as well as direct
+runtime helpers: `--soft-f64-convert` performs 3,072 native result checks and
+checks eight signed-boundary results against actual x64 `ToF64`;
+`--soft-f64-to-int` performs 2,048 native result checks against its 1,024-input
+x64/host oracle. The main F64 fixture additionally checks nested conversions and
+preservation of already-correct operand types.

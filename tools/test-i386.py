@@ -110,6 +110,14 @@ def main():
         oracle = (make_to_int_oracle(1024) if args.soft_f64_to_int else
                   make_comparison_oracle(1024) if args.soft_f64_compare else
                   make_conversion_oracle(1024) if args.soft_f64_convert else make_oracle(2048))
+        if args.soft_f64_convert:
+            signed_inputs = (0, 1, 0xFFFFFFFFFFFFFFFF, 0x8000000000000000,
+                             0x7FFFFFFFFFFFFFFF, 0x0020000000000001,
+                             0xFFE0000000000001, 0x8000000000000001)
+            signed_oracle = b''.join(struct.pack('<Qd', value,
+                float(value-(1 << 64) if value >> 63 else value)) for value in signed_inputs)
+            if (exports/'x64-from-int.bin').read_bytes() != signed_oracle:
+                raise ValueError('x64 ToF64 does not match signed I64 conversion')
         if args.soft_f64_to_int and (exports/'x64-to-int.bin').read_bytes() != oracle:
             raise ValueError('x64 HolyC conversion differs from truncation/indefinite oracle')
         if length != len(oracle) or begin < 28 or begin+length > len(data)-4:

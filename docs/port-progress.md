@@ -1094,3 +1094,22 @@ and nearest-even increments at 2^53. The 155-case integer/call regression,
 instruction audits, CR0.EM execution, both x64 rebuilds and image verification
 (763 files, 62 directories) pass. Mixed conversions/updates, raw F64 conditions,
 remaining math operations and complete native compiler/OS integration remain.
+
+
+## Native explicit F64 conversion intrinsics
+
+`ToF64` and `ToI64` now call one-argument software helpers through the native
+integer ABI. Standalone declarations live in `Kernel/I386/Float.HH`. `ToF64`
+retains the original I64 parameter interpretation, including U64 argument bit
+patterns; true unsigned conversion remains a separate runtime helper. Intrinsic
+call tracking handles nested calls, and existing optimizer rules preserve
+already-integer/already-F64 inputs without a lossy intermediate conversion.
+
+The conversion fixtures pass 5,120 native result checks: 3,072 integer-to-F64
+checks and 2,048 F64-to-I64 checks. Actual x64 ToF64 results match signed conversion
+at eight selected boundaries; the existing 1,024-input x64 ToI64 oracle still
+matches. The main F64 fixture passes 31 positive/eight rejection checks, including
+nested/no-op conversions. The 155-case integer regression, expanded comparison
+corpus, instruction audits, CR0.EM execution, both x64 rebuilds and image
+verification (764 files, 62 directories) pass. Implicit mixed conversions,
+floating-point state and complete native compiler/OS integration remain pending.

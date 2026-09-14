@@ -2,6 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/SoftF64.HH"
+#include "/Kernel/I386/Float.HH"
 F64 cell;
 I64 picks;
 extern F64 *Pick();
@@ -18,6 +19,7 @@ I64 Main(I64 unused_a,I64 unused_b)
   F64 a=1.5,b=2.0,c,old,*p=&cell;
   F64 (*fn)(F64 x,F64 y);
   U64 bits;
+  I64 whole;
   c=Add(a,b); if (c(U64)!=0x400C000000000000) return 1;
   c=Sub(a,b); if (c(U64)!=0xBFE0000000000000) return 2;
   c=Mul(a,b); if (c(U64)!=0x4008000000000000) return 3;
@@ -52,6 +54,11 @@ I64 Main(I64 unused_a,I64 unused_b)
   if (old(U64)!=bits || c(U64)!=0x7FF8000000000001) return 26;
   bits=0x4340000000000000; c=bits(F64); old=++c;
   if (old(U64)!=bits || c(U64)!=bits) return 27;
+  c=ToF64(a); if (c(U64)!=a(U64)) return 28;
+  whole=0x1000000000000001;
+  if (ToI64(whole)!=whole) return 29;
+  whole=17; if (ToI64(ToF64(whole))!=whole) return 30;
+  c=ToF64(ToI64(a)); if (c(U64)!=0x3FF0000000000000) return 31;
   return 0;
 }
 F64 Add(F64 a,F64 b) { return a+b; }

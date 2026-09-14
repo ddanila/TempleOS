@@ -37,9 +37,9 @@ integer values to binary64 bit patterns. Both use nearest-even rounding; zero
 converts to positive zero. The signed path computes magnitude with unsigned
 subtraction, including `I64_MIN`. Values above 2^53 may round; in particular,
 `U64_MAX` rounds to the binary64 representation of 2^64. Normalization preserves
-sticky information before the shared rounding/packing step. Mapping signed and
-unsigned helpers to existing HolyC conversion nodes still needs x64 compatibility
-tests before compiler integration.
+sticky information before the shared rounding/packing step. Explicit native `ToF64` now selects the signed helper, matching its I64
+parameter contract and x64 boundary tests. Implicit conversion mapping remains
+unimplemented.
 
 `I386F64Compare(U64 a,U64 b)` returns -1 for less, 0 for equal, 1 for
 greater, or `I386_F64_UNORDERED` (2) when either operand is a NaN. Both signed
@@ -78,7 +78,8 @@ oracle data region after cross-compilation. Function bytes pass the existing
 486 model with 8 MiB is a development check, not real-386 or full-OS proof.
 
 `python3 tools/test-i386.py --soft-f64-convert` runs a separate 1,024-input
-fixture, checking both signed and unsigned interpretations (2,048 conversions)
+fixture, checking signed/unsigned runtime interpretations and compiled `ToF64`
+(3,072 conversions)
 against Python integer-to-binary64 conversion. It covers every power-of-two
 boundary, signed extrema, even/odd halfway rounding and seeded random values.
 This fixture uses the same native instruction audit and CR0.EM trap setting.

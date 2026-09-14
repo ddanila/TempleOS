@@ -1,12 +1,22 @@
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
+U64 signed_inputs[8]={0,1,0xFFFFFFFFFFFFFFFF,0x8000000000000000,
+  0x7FFFFFFFFFFFFFFF,0x0020000000000001,0xFFE0000000000001,0x8000000000000001};
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i;
+  U64 *signed_oracle=MAlloc(128);
+  F64 value;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native integer to F64\n");
+  for (i=0;i<8;i++) {
+    signed_oracle[i*2]=signed_inputs[i];
+    value=ToF64(signed_inputs[i]);
+    signed_oracle[i*2+1]=value(U64);
+  }
+  line=MStrPrint("EXPORT x64-from-int.bin %X %X\n",signed_oracle,128); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
