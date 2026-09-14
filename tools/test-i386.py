@@ -191,6 +191,7 @@ def main():
     ranges = {}
     linked = set()
     data_ranges = {}
+    interrupt_ranges = {}
     if functions:
         for line in (exports/'debug.log').read_text().splitlines():
             if line.startswith('LINKED '):
@@ -198,6 +199,12 @@ def main():
             if line.startswith('DATA '):
                 _, case, start, size = line.split()
                 data_ranges.setdefault(int(case), []).append((int(start, 16), int(size, 16)))
+            if line.startswith('INTERRUPT '):
+                _, case, start, size = line.split()
+                key = (int(case), int(start, 16))
+                if not args.irq or key in interrupt_ranges:
+                    raise ValueError('Unexpected/duplicate interrupt code range')
+                interrupt_ranges[key] = int(size, 16)
             if line.startswith('RANGE '):
                 _, case, start = line.split()
                 ranges.setdefault(int(case), []).append(int(start, 16))
@@ -281,7 +288,7 @@ def main():
     offset = count = 0
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
-    allowed = {'lidt', 'sidt', 'push', 'pop', 'pushf', 'popf', 'mov', 'lea', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
+    allowed = {'cli', 'hlt', 'cld', 'pusha', 'popa', 'iret', 'lidt', 'sidt', 'push', 'pop', 'pushf', 'popf', 'mov', 'lea', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
                'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',
@@ -339,7 +346,12 @@ def main():
             disassembly = disassemble_i386(audited_code)
             lines = disassembly.splitlines()
             if functions:
-                returns = [index for index, line in enumerate(lines) if line.split()[2] == 'ret']
+                interrupt_size = interrupt_ranges.pop((count, start), None)
+                if interrupt_size is not None and interrupt_size != limit-start:
+                    raise ValueError('Interrupt code range does not match executable span')
+                returns = [index for index, line in enumerate(lines)
+                           if len(line.split()) >= 3 and line.split()[2] ==
+                           ('iret' if interrupt_size is not None else 'ret')]
                 if not returns:
                     raise ValueError('Missing function return')
                 last_return = returns[-1]
@@ -363,6 +375,8 @@ def main():
         count += 1
     if offset != len(data) or count != {'data': 16, 'functions': 233, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
+    if interrupt_ranges:
+        raise ValueError('Unmatched interrupt code range')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     context_args = []

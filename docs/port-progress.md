@@ -1602,3 +1602,27 @@ The runner still installs its emergency table before entering native code. Full
 production boot handoff, NMI/double-fault policy, debugger integration, native
 compiler execution and strict 386 verification remain unfinished. See
 `i386-idt.md` for ownership and gate contracts.
+
+
+## Linked native interrupt installation and dispatch
+
+`Kernel/I386/Interrupt.HH` and `Interrupt.HC` now connect IDT setup to ordinary
+module linking. The runtime imports all IRQ/exception entry addresses, while
+those modules import the runtime's dispatcher functions. Installation copies
+validated service callbacks, builds the table, publishes services and loads the
+IDTR with IF clear. It rejects invalid/repeated installation before mutations.
+The caller owns device setup, module/table lifetimes and callback behavior.
+
+The IRQ fixture now links the runtime and both entry modules together. Its
+installed gates point to linked entries rather than the runner's initial copies;
+native callbacks observe hardware IRQ delivery and all three recoverable faults.
+Tests cover invalid/IF-enabled/repeated installation, table/IDTR preservation and
+service-record lifetime independence. Instruction audits explicitly classify the
+linked interrupt blocks through their final IRET and bounded zero padding.
+The IRQ suite, exception-task regression and both x86-64 rebuild/reboot
+generations pass.
+
+This removes bootstrap callback adapters from the installed IRQ-test path.
+Production boot/device/task initialization ordering, debugger policy, native
+compiler execution and strict 386 verification remain unfinished. See
+`i386-interrupt-runtime.md`.

@@ -43,3 +43,7 @@ The IRQ fixture passes gate-byte and guard checks, invalid/bounds rejection,
 IF-enabled load rejection, IDTR readback, hardware IRQ delivery and three
 recoverable faults. Native instruction audits, the exception-task regression and
 both x86-64 compiler/kernel rebuild/reboot generations also pass.
+
+[Native interrupt installation](i386-interrupt-runtime.md) now binds the entry
+modules and dispatcher services through the native linker and uses these IDT
+operations. The IRQ fixture's final hardware/fault phase runs through that path.

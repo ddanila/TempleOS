@@ -6,6 +6,9 @@
 #include "/Kernel/I386/Exception.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Idt.HH"
+#include "/Kernel/I386/Interrupt.HH"
+extern U0 NativeIrq(CI386IrqFrame *frame);
+extern U0 NativeException(CI386ExceptionFrame *frame);
 extern I64 IdtTest();
 #include "/Kernel/I386/HeapIrq.HH"
 #include "/Kernel/I386/Kbc.HH"
@@ -30,6 +33,7 @@ class CIrqTestControl {
 };
 CIrqTestControl *control;
 I64 ticks,spurious,errors,expected_irq,exceptions;
+U32 native_irqs,native_exceptions;
 CI386RtcState rtc;
 CI386Heap shared_heap;
 U32 heap_ticks;
@@ -62,7 +66,7 @@ I64 Main(I64 a,I64 b)
   SetRFlags(GetRFlags&~0x400);
   if ((first&0x600)!=0x400 || (GetRFlags&0x600)) return 18;
   control->exception->handler=&OnException;
-  if ((*control->faults)() || errors || exceptions!=3) return 13;
+  if ((*control->faults)() || errors || exceptions!=3 || native_exceptions!=3) return 13;
   if (I386PicMaskGet!=0xFFFF || I386PicAccept(-1) || I386PicAccept(16) ||
       I386PicEoi(-1) || I386PicEoi(16)) return 1;
   if (I386PitStart(0) || I386PitStart(1) || I386PitStart(65537) ||
@@ -264,6 +268,7 @@ U0 OnIrq(CI386IrqFrame *frame)
       frame->edx!=0x44556677 || frame->esi!=0x55667788 || frame->edi!=0x66778899 ||
       frame->ebp!=0x778899AA) errors++;
   if ((GetRFlags|(*control->flags)())&0x600) errors++;
+  if(!native_irqs) errors++;
   ticks++; control->ticks++;
   I386PicEoi(frame->irq);
 }
@@ -275,11 +280,12 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/KbcQueue.HC"
 
-U8 idt_storage[2064];
+U8 idt_storage[2064],installed_idt[2048];
 I64 IdtTest()
 {
   U8 before[6],after[6],*table=idt_storage+8;
   I64 i,j;
+  CI386InterruptServices services;
   for(i=0;i<2064;i++) idt_storage[i]=0xA5;
   if(I386IdtInit(table,0,control->fallback,8) ||
       I386IdtInit(table,257,control->fallback,8) ||
@@ -317,6 +323,38 @@ I64 IdtTest()
   if(!I386IdtLoad(table,256) || !I386IdtRead(after)) return 14;
   if(after[0]!=255 || after[1]!=7 ||
       (after+2)(U32 *)[0]!=(table+0)(U64) || (GetRFlags&0x200)) return 15;
+  services.irq=&NativeIrq; services.exception=0;
+  if(I386InterruptInstall(installed_idt,256,control->fallback,&services)) return 16;
+  services.exception=&NativeException;
+  if(I386InterruptInstall(installed_idt,47,control->fallback,&services) ||
+      I386InterruptInstall(installed_idt,257,control->fallback,&services) ||
+      I386InterruptInstall(installed_idt,256,0,&services) ||
+      I386InterruptInstall(installed_idt,256,control->fallback,0) ||
+      I386InterruptInstall(0xFFFFFFF8,256,control->fallback,&services)) return 17;
+  SetRFlags(GetRFlags|0x200);
+  j=I386InterruptInstall(installed_idt,256,control->fallback,&services);
+  SetRFlags(GetRFlags&~0x200);
+  if(j || !I386IdtRead(before)) return 18;
+  for(i=0;i<6;i++) if(before[i]!=after[i]) return 19;
+  for(i=0;i<2048;i++) if(installed_idt[i]) return 20;
+  if(!I386InterruptInstall(installed_idt,256,control->fallback,&services) ||
+      I386InterruptInstall(table,256,control->fallback,&services)) return 21;
+  services.irq=0; services.exception=0;
+  if(!I386IdtRead(after) || (after+2)(U32 *)[0]!=(installed_idt+0)(U64)) return 22;
+  //Entry addresses must come from the linked modules, not the runner's copies.
+  if((installed_idt+32*8)(U16 *)[0]==((control->irq_entries[0]+0)(U64)&65535) &&
+      (installed_idt+32*8+6)(U16 *)[0]==((control->irq_entries[0]+0)(U64)>>16)) return 23;
   return 0;
 }
+U0 NativeIrq(CI386IrqFrame *frame)
+{
+  native_irqs++;
+  (*control->handler)(frame);
+}
+U0 NativeException(CI386ExceptionFrame *frame)
+{
+  native_exceptions++;
+  (*control->exception->handler)(frame);
+}
 #include "/Kernel/I386/Idt.HC"
+#include "/Kernel/I386/Interrupt.HC"

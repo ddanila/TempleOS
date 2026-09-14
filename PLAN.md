@@ -607,6 +607,12 @@ through a 256-entry table built by HolyC. Hardware IRQ and recoverable-fault tes
 use that installed table, with gate-byte, bounds, IF-state and IDTR-readback checks.
 The bootstrap emergency IDT remains; production handoff and exceptional-stack
 policy are still required. See `docs/i386-idt.md`.
+Native interrupt installation now links entry-address imports and dispatcher
+exports through the module linker, copies runtime services and loads its own IDT.
+Hardware IRQs and recoverable faults pass through this linked path; invalid and
+repeated installation checks, instruction audits and x86-64 rebuilds also pass.
+Production boot/device/task setup and debugger policy remain pending. See
+`docs/i386-interrupt-runtime.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full
