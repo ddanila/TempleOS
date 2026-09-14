@@ -11,7 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
-DISK_MODULES = MODULES + ('Startup',)
+DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime')
 
 
 def run(*args):
@@ -48,6 +48,62 @@ def verify_startup_rejection(disk, volume, out):
                     ('STARTUP disk module','MODULE ','READY native kernel','DONE native kernel'))):
             raise ValueError(f'Startup did not reject {label} before execution')
         if candidate.read_bytes()!=changed: raise ValueError('Rejected startup changed disk')
+        results.append(label)
+    return results
+
+
+def compiler_runtime_layout(module):
+    size, count, records = struct.unpack_from('<III', module, 16)
+    exports, imports = {}, []
+    for index in range(count):
+        kind, offset, name, length = struct.unpack_from('<4I', module, records+16*index)
+        if kind in (1, 2, 3, 5):
+            symbol = module[name:name+length].decode('ascii')
+            if kind in (1, 3):
+                exports[symbol] = (kind, offset)
+            else:
+                imports.append((symbol, name))
+    if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric'}:
+        raise ValueError('Unexpected compiler-runtime import contract')
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber'):
+        if name not in exports or exports[name][0] != 1:
+            raise ValueError(f'Missing compiler-runtime function {name}')
+    if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
+        raise ValueError('Missing compiler-runtime interface version')
+    version_offset = 32+exports['compiler_runtime_version'][1]
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 1:
+        raise ValueError('Unexpected compiler-runtime interface version')
+    return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
+                number_offset=8+exports['I386LexNumber'][1], version_offset=version_offset,
+                import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
+
+
+def verify_compiler_rejection(disk, volume, out, layout):
+    original = disk.read_bytes()
+    entry = volume['files']['/Modules/I386/CompilerRuntime.t32m']
+    offset = entry['block']*512
+    results = []
+    for label, position, replacement, reason in (
+            ('wrong-target', 6, b'\x04', 'load'),
+            ('missing-import', layout['import_offset'], b'X', 'load'),
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 2), 'api')):
+        work = out/f'reject-runtime-{label}'
+        work.mkdir(parents=True, exist_ok=True)
+        changed = bytearray(original)
+        changed[offset+position:offset+position+len(replacement)] = replacement
+        candidate = work/'kernel.img'
+        candidate.write_bytes(changed)
+        with (work/'runner.log').open('w') as log:
+            result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
+                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+        evidence = (work/'debug.log').read_text()
+        if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
+                f'RUNTIME REJECT {reason} reclaimed\n' not in evidence or
+                any(marker in evidence for marker in ('RUNTIME PROBE ', 'STARTUP disk module',
+                    'MODULE ', 'READY native kernel', 'DONE native kernel'))):
+            raise ValueError(f'Compiler runtime did not reject/reclaim {label} before publication')
+        if candidate.read_bytes() != changed:
+            raise ValueError('Rejected compiler runtime changed the disk')
         results.append(label)
     return results
 
@@ -269,6 +325,7 @@ def main():
     exports=out/'exports'
     run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90')
     image=audit(exports,out)
+    runtime_layout=compiler_runtime_layout((exports/'CompilerRuntime.t32m').read_bytes())
     disk=out/'kernel.img'
     run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
@@ -292,9 +349,10 @@ def main():
             'kernel_sha256':hashlib.sha256(image).hexdigest(),
             'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
-            'resident_modules':list(MODULES),
+            'bootstrap_modules':list(MODULES),
+            'resident_modules':list(MODULES)+['CompilerRuntime'],
             'volume':volume,
-            'scope':'Native kernel with RedSea source access and AOT startup loading; shell/JIT and self-hosting unfinished',
+            'scope':'Native kernel with retained extended-memory lexer/numerical runtime and AOT startup; shell/JIT and self-hosting unfinished',
             'boot_test':None}
     if args.test:
         guest=out/'boot'
@@ -340,6 +398,25 @@ def main():
         begin,length=(int(value,16) for value in arena[0][1:])
         if begin<0x110000 or begin+length>8*1024*1024:
             raise ValueError('Unexpected 8 MiB memory arena')
+        runtime = [line.split() for line in log.splitlines()
+                   if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
+        if len(runtime) != 1 or len(runtime[0]) != 6:
+            raise ValueError('Missing retained compiler-runtime image')
+        address, size, span, string_address, number_address = (int(x, 16) for x in runtime[0][1:])
+        if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
+                address < begin or address+size > begin+length or
+                string_address != address+runtime_layout['string_offset'] or
+                number_address != address+runtime_layout['number_offset']):
+            raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
+        probes = [line.split() for line in log.splitlines() if line.startswith('RUNTIME PROBE ')]
+        if ([list(map(lambda x: int(x, 16), row[2:])) for row in probes] !=
+                [[0, 0x3F1A36E2EB1C432D, 65], [1, 0x3F1A36E2EB1C432D, 65]] or
+                log.index('RUNTIME PROBE ') > log.index('STARTUP disk module') or
+                log.rindex('RUNTIME PROBE ') < log.rindex('TICK ')):
+            raise ValueError('Compiler runtime did not survive startup/task activity')
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=1, image_address=address,
+            image_bytes=size, retained_heap_bytes=span, string_address=string_address,
+            number_address=number_address, probe_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')
@@ -349,6 +426,7 @@ def main():
             raise ValueError('VGA console mismatch')
         screen.save(guest/'screen.png')
         rejected=verify_startup_rejection(disk,volume,out)
+        result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
         keyboard=console['run_input'](disk,out/'input')
         if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')

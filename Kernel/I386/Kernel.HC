@@ -26,8 +26,7 @@
 #include "/Compiler/I386/InternalTypes.HH"
 #include "/Compiler/ControlInit.HH"
 #include "/Compiler/I386/LexInput.HH"
-#include "/Compiler/I386/LexString.HH"
-#include "/Compiler/I386/LexNumber.HH"
+#include "/Kernel/I386/CompilerRuntime.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
@@ -48,7 +47,10 @@ CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
 CHashTable *kernel_symbols;
 CI386InternalTypes kernel_types;
-CI386KernelSymbol kernel_exports[3];
+CI386KernelSymbol kernel_exports[7];
+CI386CompilerServices kernel_compiler;
+U8 *kernel_compiler_image;
+I64 kernel_compiler_size,kernel_compiler_span;
 extern U0 KernelLog(U8 *text);
 extern U0 KernelHex(U64 value);
 extern U0 KernelStop();
@@ -60,6 +62,8 @@ extern U0 KernelPulse(I64 unused);
 extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
+extern U0 KernelCompilerLoad();
+extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelKeys(I64 unused);
 extern U0 KernelSymbols();
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
@@ -85,6 +89,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
       !I386TimerInit(&kernel_timer,11932) ||
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
   KernelSymbols;
+  KernelCompilerLoad;
+  KernelCompilerProbe(0);
   KernelStartup;
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
       !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
@@ -150,7 +156,10 @@ U0 KernelPulse(I64 unused)
     if(pulses<2) {
       pulses++;
       KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
-      if(pulses==2) KernelLog("DONE native kernel startup\n");
+      if(pulses==2) {
+        KernelCompilerProbe(1);
+        KernelLog("DONE native kernel startup\n");
+      }
     }
   }
 }
@@ -215,10 +224,7 @@ U0 KernelDisplay()
 #include "/Compiler/ControlInit.HC"
 #include "/Compiler/I386/LexFiles.HC"
 #include "/Compiler/I386/LexInput.HC"
-#include "/Compiler/I386/LexString.HC"
-#include "/Kernel/I386/SoftF64.HC"
-#include "/Kernel/I386/Pow10.HC"
-#include "/Compiler/I386/LexNumber.HC"
+
 
 U0 KernelKeys(I64 unused)
 {//Single console/input owner. Lines are collected here; native compilation is pending.
@@ -354,7 +360,15 @@ U0 KernelSymbols()
   kernel_exports[1].val=(&KernelDisplay+0)(U64);
   kernel_exports[2].str="kernel_startup_count"; kernel_exports[2].kind=3;
   kernel_exports[2].val=(&kernel_startup_count+0)(U64);
-  for(i=0;i<3;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
+  kernel_exports[3].str="I386LexRawChar"; kernel_exports[3].kind=1;
+  kernel_exports[3].val=(&I386LexRawChar+0)(U64);
+  kernel_exports[4].str="I386LexSourceRead"; kernel_exports[4].kind=1;
+  kernel_exports[4].val=(&I386LexSourceRead+0)(U64);
+  kernel_exports[5].str="char_bmp_hex_numeric"; kernel_exports[5].kind=3;
+  kernel_exports[5].val=(char_bmp_hex_numeric+0)(U64);
+  kernel_exports[6].str="char_bmp_dec_numeric"; kernel_exports[6].kind=3;
+  kernel_exports[6].val=(char_bmp_dec_numeric+0)(U64);
+  for(i=0;i<7;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
 }
 U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
@@ -364,4 +378,77 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
   address=HashVal(symbol);
   if(address<=0 || address>0xFFFFFFFF) KernelStop;
   binding->name=symbol->str; binding->kind=symbol->kind; binding->address=address;
+}
+
+U0 KernelCompilerLoad()
+{//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
+  CI386RedSeaEntry file;
+  CI386ModuleBinding bindings[4];
+  CI386CompilerServices candidate;
+  I64 (*entry)(CI386CompilerServices *services,I64 bytes);
+  I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
+  U64 base,string_address,number_address;
+  U8 *image=0,*reason="load";
+  if(kernel_compiler_image || kernel_compiler.version) KernelStop;
+  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0;
+  if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
+      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
+      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerRuntime.t32m",&file)!=1)
+    KernelStop;
+  KernelBinding(&bindings[0],"I386LexRawChar");
+  KernelBinding(&bindings[1],"I386LexSourceRead");
+  KernelBinding(&bindings[2],"char_bmp_hex_numeric");
+  KernelBinding(&bindings[3],"char_bmp_dec_numeric");
+  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,4);
+  if(image) {
+    reason="api"; size=I386HeapSize(&kernel_heap,image); base=(image+0)(U64);
+    if(base>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
+      entry=image;
+      accepted=(*entry)(&candidate,sizeof(CI386CompilerServices));
+      string_address=(candidate.string_chunk+0)(U64);
+      number_address=(candidate.number_token+0)(U64);
+      if(candidate.version!=I386_COMPILER_SERVICES_VERSION || candidate.bytes!=sizeof(CI386CompilerServices) ||
+          string_address<base+8 || string_address>=base+size ||
+          number_address<base+8 || number_address>=base+size) accepted=0;
+    }
+  }
+  if(accepted!=1) {
+    if(image && !I386HeapFree(&kernel_heap,image)) KernelStop;
+    if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+    KernelLog("RUNTIME REJECT "); KernelLog(reason); KernelLog(" reclaimed\n"); KernelStop;
+  }
+  kernel_compiler.version=candidate.version; kernel_compiler.bytes=candidate.bytes;
+  kernel_compiler.string_chunk=candidate.string_chunk; kernel_compiler.number_token=candidate.number_token;
+  kernel_compiler_image=image; kernel_compiler_size=size; kernel_compiler_span=kernel_heap.used-used;
+  KernelLog("RUNTIME "); KernelHex((image+0)(U64)); KernelLog(" ");
+  KernelHex(size); KernelLog(" "); KernelHex(kernel_compiler_span); KernelLog(" ");
+  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog("\n");
+}
+U0 KernelCompilerProbe(I64 phase)
+{//Exercise retained module code before startup and after task/IRQ activity.
+  CCmpCtrl cc; CLexFile file;
+  U8 input[10],output[4],*bytes;
+  I64 i,ch,lines=0,used=kernel_heap.used,allocations=kernel_heap.allocations;
+  Bool done=FALSE;
+  U64 value;
+  if(!kernel_compiler_image || I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
+      kernel_compiler.version!=I386_COMPILER_SERVICES_VERSION) KernelStop;
+  bytes=&cc; for(i=0;i<sizeof(CCmpCtrl);i++) bytes[i]=0;
+  bytes=&file; for(i=0;i<sizeof(CLexFile);i++) bytes[i]=0;
+  input[0]='0'; input[1]='.'; input[2]='0'; input[3]='0'; input[4]='0'; input[5]='1'; input[6]=';'; input[7]=0;
+  CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,kernel_symbols,char_bmp_alpha_numeric);
+  LexFileSeed(&file,input); cc.lex_include_stk=&file; cc.cur_buf_ptr=input;
+  ch=I386LexRawChar(&kernel_heap,&cc,&lines);
+  if(kernel_compiler.number_token(&kernel_heap,&cc,ch,&lines)!=TK_F64 ||
+      cc.cur_f64(U64)!=0x3F1A36E2EB1C432D || cc.last_U16!=';' || cc.cur_buf_ptr!=input+7) KernelStop;
+  value=cc.cur_f64(U64);
+  input[0]=92; input[1]='x'; input[2]='4'; input[3]='1'; input[4]=34; input[5]=';'; input[6]=0;
+  cc.flags=CCF_DONT_FREE_BUF|CCF_IN_QUOTES; cc.dollar_cnt=0;
+  LexFileSeed(&file,input); cc.cur_buf_ptr=input;
+  if(kernel_compiler.string_chunk(&kernel_heap,&cc,output,4,&done,&lines)!=2 || !done ||
+      output[0]!='A' || output[1] || cc.cur_buf_ptr!=input+5 || lines ||
+      kernel_heap.used!=used || kernel_heap.allocations!=allocations ||
+      I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size || !I386HeapValid(&kernel_heap)) KernelStop;
+  KernelLog("RUNTIME PROBE "); KernelHex(phase); KernelLog(" ");
+  KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog("\n");
 }

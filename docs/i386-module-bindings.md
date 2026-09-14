@@ -39,3 +39,10 @@ address is checked as a relocation value and never executed.
 
 The existing shared-loader corpus is rerun for unbound behavior. These are native
 runner checks, not a production kernel export table or a completed boot/JIT path.
+
+The binding consumer also redeclares a previously extern function as an import.
+PrsFunJoin may consume/free the incoming name while retaining the existing symbol;
+the import branch now copies that symbol's owned name. This fixes malformed direct
+call import names exposed by the retained compiler runtime. The expanded binding
+fixture and both x86-64 rebuild generations pass. See
+[i386-compiler-runtime.md](i386-compiler-runtime.md) for the boot lifetime contract.

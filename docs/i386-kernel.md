@@ -3,8 +3,9 @@
 `Kernel/I386/Kernel.HC` now supplies a native kernel entry independent of the
 arithmetic/task test runner. `tools/build-i386-kernel.py` cross-compiles it inside
 the rebuilt x86-64 TempleOS guest, links six native modules, audits generated
-executable regions and packages a bootable hard-disk image. A seventh module,
-`Startup`, is packaged separately and loaded from RedSea during native startup.
+executable regions and packages a bootable hard-disk image. `CompilerRuntime` and
+`Startup` are packaged separately and loaded from RedSea. The former remains in
+extended memory; the latter is reclaimed after display initialization.
 
 ```sh
 python3 tools/test-rebuild.py
@@ -31,7 +32,8 @@ stack at 0x90000, installs an emergency IDT, sets CR0.EM and calls the linked en
 with the memory handoff pointer at 0x5000. A separate version-1 disk handoff at
 0x5020 records the BIOS drive and RedSea volume start. It supplies no runtime
 function pointers. The kernel stage ends at 0x70000, below the root stack. Test
-stages retain their separate 160 KiB limit.
+stages retain their own bounds; the numeric-oracle fixture explicitly permits a
+256 KiB stage below its heap.
 
 Native startup validates the handoff, verifies/enables A20 using the legacy
 controller path, and selects an arena while reserving the boot/stage/stack and
@@ -74,7 +76,7 @@ a complete installed TempleOS distribution. The 8 MiB interactive and
 
 The builder places a volume at sector 2048 of the 16 MiB image, after the reserved
 boot area. It packages Kernel/Compiler HC, HH, DD and PRJ files without modifying
-their bytes, and the seven native modules under `Modules/I386`. The manifest
+their bytes, and the eight native modules under `Modules/I386`. The manifest
 records the verified file count. It initializes directory self/parent records, termination,
 fixed-width extents/dates, and allocation bits including reserved/out-of-volume
 bits. An independent serialized-volume walk checks every file hash, directory
@@ -101,12 +103,12 @@ limitations above continue to apply.
 
 ## Disk-loaded startup and resident bindings
 
-After installing task/exception/interrupt/timer services, the kernel loads
-`Modules/I386/Startup.t32m` through `I386RedSeaLoadBound`. Its explicit binding
+After installing task/exception/interrupt/timer services and loading the retained
+compiler runtime, the kernel loads `Modules/I386/Startup.t32m` through `I386RedSeaLoadBound`. Its explicit binding
 table exposes `KernelLog`, `KernelDisplay` and `kernel_startup_count`. The module
 initializes the display through the resident service, increments that resident
 counter, logs its execution and returns the count. It is absent from the six-module
-resident link; source and module hashes are recorded separately by the builder.
+bootstrap link; source and module hashes are recorded separately by the builder.
 
 Startup runs synchronously with IF clear and exclusive heap/disk access. The
 kernel checks that loading retains exactly one allocation, invokes the entry,
@@ -191,3 +193,14 @@ source bytes and 360 newlines and reclaims 14488 heap bytes at this revision.
 The builder derives those source-dependent expectations and the allocation
 footprint from the packaged source and records them under `lexical_source`.
 This validates character consumption, not tokenization or execution of the source.
+
+## Retained compiler runtime
+
+String/number parsing and the software numerical runtime now reside in a disk-loaded
+module above 1 MiB. Its versioned interface borrows the loaded image's function
+addresses, and the image remains allocated for the kernel lifetime. Its raw-reader
+functions and decimal/hex bitmaps are explicit kernel imports. Boot and task-time
+calls verify execution after relocation and retention across startup allocations.
+Wrong CPU, missing import and wrong interface versions are rejected with heap
+reclamation before publication. See [i386-compiler-runtime.md](i386-compiler-runtime.md)
+for the interface, measured footprint, tests and remaining compiler integration.

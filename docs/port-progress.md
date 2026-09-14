@@ -2181,3 +2181,32 @@ Boot does not yet perform full tokenization or source execution, and the current
 conventional-memory stage has little growth room. Extended-memory compiler/module
 layout, full lexer/JIT integration, DolDoc, self-hosting and strict 386 validation
 remain open. See [i386-lex-number.md](i386-lex-number.md).
+
+## Retained extended-memory compiler runtime
+
+Quoted-string/number parsing and the software numerical runtime now build as
+CompilerRuntime.t32m instead of enlarging the conventional-memory bootstrap link.
+The native RedSea loader allocates and relocates it in extended memory, binds two
+kernel reader functions and the shared decimal/hex bitmaps, validates its versioned
+service interface, and retains the image for the kernel lifetime. No unload is
+exposed while those code pointers remain borrowed.
+
+Boot calls both services before display startup and again from a task after timer/
+VGA/task activity, checking values, source state and the retained allocation. Host
+verification matches service addresses to the actual exported function offsets.
+Wrong CPU, missing import and wrong interface-version boots all reject before
+publication and verify reclamation. Existing startup rejection, keyboard/VGA,
+source, timer and unchanged-disk checks pass, as do both x86-64 rebuild generations.
+
+The split exposed a parser name-lifetime bug when an extern function is redeclared
+as an import. The import now copies the retained function symbol's name instead
+of the consumed incoming string. The expanded --redsea-bind fixture passes that
+sequence along with its previous loader/binding cases.
+
+The bootstrap shrinks from 384664 to 346912 bytes. The runtime retains 52536 heap
+bytes for a 52520-byte image, observed at 0x11F008 on the 8 MiB QEMU/486 profile.
+Raw source checks are 19309 characters, 454 newlines, FNV32 0x5D4679C6 and 19768
+reclaimed heap bytes. The conventional boot reservation remains 384 KiB. Full
+compiler/JIT residency, target-aware literal evaluation, public runtime APIs,
+DolDoc/editing, self-hosting and strict 386 validation remain open. See
+[i386-compiler-runtime.md](i386-compiler-runtime.md).

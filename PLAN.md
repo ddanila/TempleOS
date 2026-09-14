@@ -383,8 +383,11 @@ programming environment through these concrete steps:
    Numeric and dot-token bodies now share parsing and replay semantics, checked
    against original x86-64 records. Native F64 uses the established software
    numerical policy; recorded bit differences and cross-build literal evaluation
-   remain an explicit compatibility boundary. The resident stage is nearly full:
-   plan extended-memory module placement before adding the remaining compiler.
+   remain an explicit compatibility boundary. Lexer/numerical services now load
+   from a retained extended-memory module with a versioned interface and explicit
+   kernel function/data imports. Boot/task calls and rejection/reclamation checks
+   pass. Place the remaining compiler modules through this path while defining
+   their code/data lifetimes; arbitrary unloading remains unsupported.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 
