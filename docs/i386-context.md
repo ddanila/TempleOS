@@ -398,3 +398,7 @@ is still x86-64. This migration alone does not establish native self-hosting.
 The general task, blocking-input, message and exception-task suites pass with
 these generated entries, as do the instruction audits and both x86-64
 compiler/kernel rebuild/reboot generations.
+
+The exception-task fixture now links the switch/reload entries with its runtime
+and uses [native GDT setup](i386-gdt.md), replacing its temporary-GDT assembly
+wrapper. Other task fixtures retain that wrapper for independent regressions.

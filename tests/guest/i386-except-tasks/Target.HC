@@ -3,6 +3,9 @@
 #define FALSE 0
 #include "/Kernel/I386/ExceptRuntime.HH"
 #include "/Kernel/I386/Debug.HH"
+#include "/Kernel/I386/Gdt.HH"
+import U0 i386_context_switch(CI386Context *old,CI386Context *next);
+import U0 i386_segments_reload(U16 fs,U16 gs);
 class CControl {
   U8 *irq,*idle;
   I64 (*segments)(I64 callback);
@@ -16,6 +19,7 @@ U0 (*swap_context)(CI386Context *old,CI386Context *next);
 CI386Scheduler scheduler;
 CI386Task root;
 CI386Cpu cpu;
+U8 gdt_storage[56];
 CI386Heap heap;
 CI386OwnedTask *workers[2];
 U32 failures,progress[2],reports[2];
@@ -28,15 +32,71 @@ extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
 I64 Main(CControl *arg,U0 (*swap)(CI386Context *old,CI386Context *next))
 {
   CI386ExceptServices services;
-  control=arg; swap_context=swap;
+  U8 saved[6],readback[6],*table=gdt_storage+8;
+  U16 old_fs,old_gs;
+  U8 master_mask,slave_mask;
+  I64 i,result;
+  control=arg; swap_context=&i386_context_switch;
   root.addr=&root; cpu.addr=&cpu; cpu.scheduler=&scheduler;
-  if(!I386DataSegment(control->task_descriptor,&root,sizeof(root)) ||
-      !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(cpu))) return 1;
+  asm {
+    MOV AX,FS
+    MOV U16 &old_fs[EBP],AX
+    MOV AX,GS
+    MOV U16 &old_gs[EBP],AX
+  }
+  for(i=0;i<56;i++) gdt_storage[i]=0xA5;
+  if(I386GdtInit(table,0,sizeof(root),&cpu,sizeof(cpu)) ||
+      I386GdtInit(table,&root,0,&cpu,sizeof(cpu)) ||
+      I386GdtInit(table,&root,0x100001,&cpu,sizeof(cpu)) ||
+      I386GdtInit(table,&root,sizeof(root),0xFFFFFFFC,8) ||
+      I386GdtInit(0xFFFFFFF0,&root,sizeof(root),&cpu,sizeof(cpu))) return 20;
+  for(i=0;i<56;i++) if(gdt_storage[i]!=0xA5) return 21;
+  if(!I386GdtRead(saved) || I386GdtRead(0) || I386GdtRead(0xFFFFFFFC) ||
+      I386GdtLoad(0,5) || I386GdtLoad(table,2) || I386GdtLoad(table,8193) ||
+      I386GdtLoad(0xFFFFFFF8,3)) return 22;
+  if(!I386GdtInit(table,&root,sizeof(root),&cpu,sizeof(cpu))) return 23;
+  if(table(U64 *)[0] || table(U64 *)[1]!=0x00CF9A000000FFFF ||
+      table(U64 *)[2]!=0x00CF92000000FFFF) return 24;
+  for(i=0;i<8;i++) if(gdt_storage[i]!=0xA5 || gdt_storage[48+i]!=0xA5) return 25;
+  asm {
+    IN AL,0x21
+    MOV U8 &master_mask[EBP],AL
+    IN AL,0xA1
+    MOV U8 &slave_mask[EBP],AL
+    MOV AL,0xFF
+    OUT 0x21,AL
+    OUT 0xA1,AL
+  }
+  SetRFlags(GetRFlags|0x200);
+  result=I386GdtLoad(table,5);
+  SetRFlags(GetRFlags&~0x200);
+  asm {
+    MOV AL,U8 &master_mask[EBP]
+    OUT 0x21,AL
+    MOV AL,U8 &slave_mask[EBP]
+    OUT 0xA1,AL
+  }
+  if(result || !I386GdtRead(readback)) return 26;
+  for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 27;
   services.invoke=control->invoke; services.resume=control->resume;
   services.report=&Report; services.fatal=&Fatal;
-  if(!I386ExceptInstall(&services)) return 2;
-  return (*control->segments)((&Run+0)(U64));
+  if(!I386ExceptInstall(&services) || !I386GdtLoad(table,5)) return 28;
+  i386_segments_reload(0x18,0x20);
+  if(!I386GdtRead(readback) || readback[0]!=39 || readback[1] ||
+      (readback+2)(U32 *)[0]!=(table+0)(U64) || I386TaskSelf!=&root) result=29;
+  else result=Run;
+  if(GetRFlags&0x200) return 33;
+  if(saved[0]!=23 || saved[1]) return 34;
+  if(!(saved+2)(U32 *)[0]) return 35;
+  i=(saved[0]+(saved[1]<<8)+1)/8;
+  if(i!=3) return 36;
+  if(!I386GdtLoad((saved+2)(U32 *)[0],i)) return 30;
+  i386_segments_reload(old_fs,old_gs);
+  if(!I386GdtRead(readback)) return 31;
+  for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 32;
+  return result;
 }
+
 I64 Run()
 {
   I64 cycle,i,round;
@@ -65,8 +125,8 @@ I64 Run()
 U0 Bind(CI386Task *task)
 {
   if(GetRFlags&0x200 || scheduler.current!=task ||
-      !I386DataSegment(control->task_descriptor,task,sizeof(CI386Task))) failures++;
-  (*control->reload)(0x18,0x20);
+      !I386DataSegment(gdt_storage+32,task,sizeof(CI386Task))) failures++;
+  i386_segments_reload(0x18,0x20);
   if(I386TaskSelf!=task) failures++;
 }
 U0 Worker(I64 id)
@@ -143,3 +203,5 @@ U0 Fatal(CI386Task *task,I64 status,I64 ch)
 #include "/Kernel/I386/Segments.HC"
 
 #include "/Kernel/I386/Debug.HC"
+
+#include "/Kernel/I386/Gdt.HC"

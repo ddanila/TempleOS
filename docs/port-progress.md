@@ -1626,3 +1626,24 @@ This removes bootstrap callback adapters from the installed IRQ-test path.
 Production boot/device/task initialization ordering, debugger policy, native
 compiler execution and strict 386 verification remain unfinished. See
 `i386-interrupt-runtime.md`.
+
+
+## Native GDT and linked task-context setup
+
+`Kernel/I386/Gdt.HH` and `Gdt.HC` now construct the five-entry baseline GDT and
+load/read GDTR through HolyC assembly. Construction validates table and task/CPU
+extents before mutation. Loading checks table extent/count and requires IF clear;
+segment reload and lifetime remain explicit caller responsibilities.
+
+The exception-task fixture links TaskContext with its runtime, builds and loads
+its own GDT, binds FS/GS through the linked reload entry, and runs both worker
+lifecycles and 48 catch-time yields with the native descriptors. It restores the
+saved GDTR and selectors before returning, without the runner's temporary-GDT
+wrapper. Checks cover bounds/no-mutation, flat descriptor bytes, guards, actual
+GDTR values, IF-enabled load rejection and restoration. The saved packed limit
+is decoded bytewise when calculating the restoration entry count.
+
+The exception-task suite and instruction audit pass, as do general tasks, linked
+IRQs and both x86-64 rebuild/reboot generations. Production task/CPU records,
+complete boot sequencing, exceptional-stack policy, native compiler execution and
+strict 386 verification remain unfinished. See `i386-gdt.md`.

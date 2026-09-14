@@ -2,8 +2,8 @@
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
 {
-  U8 *source=FileRead("T:/Target.HC"),*module,*image,*line,*modules[2];
-  I64 size,loaded,errors,i,j,base=8,sizes[2];
+  U8 *source=FileRead("T:/Target.HC"),*module,*image,*line,*modules[3];
+  I64 size,loaded,errors,i,j,base=8,sizes[3];
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native exception tasks\n");
@@ -42,7 +42,7 @@ U0 CompileTests()
     Report("FAIL HolyC task context compile\n"); return;
   }
   line=MStrPrint("EXPORT TaskContext.t32m %X %X\n",image,loaded); Report(line);
-  Free(image);
+  modules[2]=image; sizes[2]=loaded;
   source=FileRead("/Kernel/I386/IrqEntry.HC");
   image=CmpI386Module(source,&loaded,&errors);
   Free(source);
@@ -63,10 +63,10 @@ U0 CompileTests()
   }
   line=MStrPrint("EXPORT ExceptionEntry.t32m %X %X\n",image,loaded); Report(line);
   Free(image);
-  image=I386Link(modules,sizes,2,&loaded);
+  image=I386Link(modules,sizes,3,&loaded);
   if (!image) { Report("FAIL exception tasks link\n"); return; }
   Report("LINKED 0\n");
-  for(j=0;j<2;j++) {
+  for(j=0;j<3;j++) {
   h=modules[j]; r=modules[j]+h->records_offset;
   for (i=0;i<h->record_count;i++,r++) {
     line=NULL;

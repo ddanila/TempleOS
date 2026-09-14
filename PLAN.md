@@ -613,6 +613,12 @@ Hardware IRQs and recoverable faults pass through this linked path; invalid and
 repeated installation checks, instruction audits and x86-64 rebuilds also pass.
 Production boot/device/task setup and debugger policy remain pending. See
 `docs/i386-interrupt-runtime.md`.
+Native GDT construction and LGDT/SGDT now support linked task-context setup.
+The exception-task suite creates its own table, uses linked switch/reload entries,
+passes catch-time switching and restores the original GDTR/selectors. Bounds,
+IF-enabled load rejection, descriptor/readback checks, task/IRQ regressions and
+x86-64 rebuilds pass. Full production task records and boot sequencing remain
+required; see `docs/i386-gdt.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full
