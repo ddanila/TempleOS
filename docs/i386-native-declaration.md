@@ -1,7 +1,7 @@
 # Native declaration parsing
 
-CompilerRuntime ABI 27 adds `parse_declarations` and `code_init`, growing the
-interface to 156 bytes. Declaration parsing calls the complete shared
+CompilerRuntime ABI 28 (164 bytes) includes `parse_declarations` and `code_init`,
+introduced in ABI 27. Declaration parsing calls the complete shared
 `PrsVarLstCore` in `Compiler/PrsDeclarationCore.HC` with supplied expression, type and declaration services. It
 validates the service graph and current compiler owner before entering the parser,
 and applies the existing task-stack reserve check. Invalid setup returns false;
@@ -28,7 +28,8 @@ restoration. Callbacks outside that fixture's coverage fail explicitly.
 
 The entry includes local/static/function-argument paths from the shared core, but
 these still need complete native providers and native execution coverage. Full
-class/function header integration, initializers, metadata, source attribution,
-publication and compilation of `Kernel/Types.HH` remain unfinished. No public scalar
+class/function integration, initializers, metadata, source attribution and
+publication remain unfinished. Native class/header entries and parsing of the
+original `Kernel/Types.HH` are covered in [i386-native-symbol.md](i386-native-symbol.md). No public scalar
 union is replaced by a plain alias. DolDoc, self-hosting and the rest of `PLAN.md`
 remain part of the full OS goal.

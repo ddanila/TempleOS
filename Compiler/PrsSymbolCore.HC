@@ -111,7 +111,10 @@ CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *t
     if (name) //if not fun_ptr
       (*expression->hash_add)(expression->context,tmpf,cc->htc.glbl_hash_table);
   }
-  BEqu(&tmpf->type,HTf_PUBLIC,fsp_flags&FSF_PUBLIC);
+  if (fsp_flags&FSF_PUBLIC)
+    Bts(&tmpf->type,HTf_PUBLIC);
+  else
+    Btr(&tmpf->type,HTf_PUBLIC);
   tmpf->return_class=tmp_return;
   tmpf->use_cnt=0;
   (*services->source)(services->context,cc,tmpf,0);

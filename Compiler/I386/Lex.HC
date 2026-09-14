@@ -19,6 +19,43 @@ I64 I386ConditionalSkip(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 
   tokens.context=&input; tokens.read=&I386ConditionalToken;
   return LexSkipConditional(cc,&characters,&tokens,1,stop_else);
 }
+//Match LexExtStr(...,FALSE): only an immediate backslash joins strings.
+//Keep every partial result in a control-owned slot across allocation failures.
+I64 I386LexHelpIndex(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,
+  U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes)
+{
+  I64 result,length,count,i,ch;
+  U8 *combined;
+  U32 irq;
+  result=I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,includes);
+  if(result!=TK_STR) return result;
+  irq=I386IrqSave;
+  if(cc->cur_help_idx && !I386HeapFree(heap,cc->cur_help_idx)) {
+    I386IrqRestore(irq); return -1;
+  }
+  cc->cur_help_idx=cc->cur_str; cc->cur_str=0; length=cc->cur_str_len;
+  I386IrqRestore(irq);
+  while(TRUE) {
+    ch=I386LexRawChar(heap,cc,compiled_lines);
+    if(ch<0) return -1;
+    if(ch!='\\') { cc->flags|=CCF_USE_LAST_U16; return TK_STR; }
+    result=I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,includes);
+    if(result<0) return result;
+    if(result!=TK_STR) return TK_STR;
+    count=cc->cur_str_len;
+    if(length<1 || count<1 || length>0x7FFFFFFF-count) return -1;
+    irq=I386IrqSave;
+    combined=I386HeapAlloc(heap,length+count-1,FALSE);
+    I386IrqRestore(irq);
+    if(!combined) return -1;
+    for(i=0;i<length-1;i++) combined[i]=cc->cur_help_idx[i];
+    for(i=0;i<count;i++) combined[length-1+i]=cc->cur_str[i];
+    irq=I386IrqSave;
+    I386HeapFree(heap,cc->cur_help_idx); I386HeapFree(heap,cc->cur_str);
+    cc->cur_help_idx=combined; cc->cur_str=0; length+=count-1;
+    I386IrqRestore(irq);
+  }
+}
 I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,
   U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes)
 {
@@ -58,6 +95,11 @@ I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables
             if(result<0) return result;
             if(result!=TK_STR) goto lex_finish;
             if(!(*includes->push)(includes->context,heap,cc,cc->cur_str)) return -1;
+            break;
+          case KW_HELP_INDEX:
+            result=I386LexHelpIndex(heap,cc,tables,macro_filename,compiled_lines,includes);
+            if(result<0) return result;
+            if(result!=TK_STR) goto lex_finish;
             break;
           case KW_DEFINE:
             cc->flags|=CCF_NO_DEFINES;

@@ -3,12 +3,14 @@
 I64 I386Size(CHashClass *c)
 {
   if (!c) return 0;
+  c=OptClassFwd(c);
   if (c->ptr_stars_cnt) return 4;
   return c->size;
 }
 U0 I386Normalize(CI386Out *out,CHashClass *c)
 {//Normalize EDX:EAX to the target scalar width.
   if (!c) return;
+  c=OptClassFwd(c);
   if (c->ptr_stars_cnt) {
     I386Bytes(out,"\x31\xD2",2);
     return;
@@ -101,6 +103,7 @@ U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
 
 Bool I386IsF64(CHashClass *c)
 {
+  if(c) c=OptClassFwd(c);
   return c && !c->ptr_stars_cnt && c->raw_type==RT_F64;
 }
 
@@ -112,7 +115,8 @@ CHashClass *I386ValueClass(CI386Backend *backend,CIntermediateCode *ic)
       ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR ||
       IC_EQU_EQU<=ic->ic_code<=IC_LESS_EQU)
     return backend->types[RT_I64];
-  return ic->ic_class;
+  if(ic->ic_class) return OptClassFwd(ic->ic_class);
+  return 0;
 }
 
 U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
@@ -304,6 +308,7 @@ U0 I386BackendCore(CI386Backend *backend)
           backend->status->node=ic; backend->status->depth=depth; backend->status->pass=pass;
         }
         c=ic->ic_class;
+        if(c) c=OptClassFwd(c);
         if (ic->ic_code==IC_NOT || ic->ic_code==IC_AND_AND ||
             ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR)
           c=backend->types[RT_I64];

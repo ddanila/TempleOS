@@ -99,11 +99,34 @@ I64 ProbeDeclarationInteger(U8 *context,CCmpCtrl *cc)
   cc->flags=cc->flags&~mask|old_flags&mask; cc->pass=old_pass;
   ProbeDeclarationRelease(context,bound); return result;
 }
+U0 ProbeDeclarationSetup(CProbeDeclarations *state,CI386CompilerProbe *probe,CI386Heap *heap,
+  CCmpCtrl *cc,U32 *binary_ops)
+{
+  CPrsTypeServices *types;
+  CPrsDeclarationServices *services;
+  state->cc=cc;
+  ProbeExpressionSetup(&state->expression,probe,heap,binary_ops);
+  state->expression.services.allocate=&ProbeDeclarationAllocate;
+  state->expression.services.duplicate=&ProbeDeclarationDuplicate;
+  types=&state->expression.types;
+  types->allocate=&ProbeDeclarationTypeAllocate; types->duplicate=&ProbeDeclarationDuplicate;
+  types->snapshot_push=&ProbeDeclarationSnapshot; types->snapshot_drop=&ProbeDeclarationDrop;
+  types->member_new=&ProbeDeclarationMember; types->member_add=&ProbeDeclarationMemberAdd;
+  types->integer_expression=&ProbeDeclarationInteger;
+  services=&state->declarations; services->context=state;
+  services->expression=&state->expression.services; services->types=types;
+  services->evaluate=&ProbeDeclarationInteger; services->snapshot_restore=&ProbeDeclarationRestore;
+  services->release=&ProbeDeclarationRelease;
+  //Remaining callback paths are outside this fixture's declared coverage.
+  services->define_match=&ProbeExpressionUnexpected; services->initialize_static=&ProbeExpressionUnexpected;
+  services->static_init=&ProbeExpressionUnexpected; services->store_u64=&ProbeExpressionUnexpected;
+  services->store_u8_at=&ProbeExpressionUnexpected; services->data_range=&ProbeExpressionUnexpected;
+  services->compile_expression=&ProbeExpressionUnexpected; services->execute=&ProbeExpressionUnexpected;
+}
 U0 ProbeDeclarations(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CProbeDeclarations *state;
   U32 *binary_ops;
-  CPrsTypeServices *types;
   CPrsDeclarationServices *services;
   CHashClass *type;
   CMemberLst *first,*last;
@@ -133,23 +156,8 @@ U0 ProbeDeclarations(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     type=probe->compiler->parser_alloc(heap,cc,sizeof(CHashClass)*(PTR_STARS_NUM+1),TRUE);
     if(!state || !binary_ops || !type) KernelStop;
     PrsClassInit(type); state->cc=cc;
-    ProbeExpressionSetup(&state->expression,probe,heap,binary_ops);
-    state->expression.services.allocate=&ProbeDeclarationAllocate;
-    state->expression.services.duplicate=&ProbeDeclarationDuplicate;
-    types=&state->expression.types;
-    types->allocate=&ProbeDeclarationTypeAllocate; types->duplicate=&ProbeDeclarationDuplicate;
-    types->snapshot_push=&ProbeDeclarationSnapshot; types->snapshot_drop=&ProbeDeclarationDrop;
-    types->member_new=&ProbeDeclarationMember; types->member_add=&ProbeDeclarationMemberAdd;
-    types->integer_expression=&ProbeDeclarationInteger;
-    services=&state->declarations; services->context=state;
-    services->expression=&state->expression.services; services->types=types;
-    services->evaluate=&ProbeDeclarationInteger; services->snapshot_restore=&ProbeDeclarationRestore;
-    services->release=&ProbeDeclarationRelease;
-    //Remaining callback paths are outside this fixture's declared coverage.
-    services->define_match=&ProbeExpressionUnexpected; services->initialize_static=&ProbeExpressionUnexpected;
-    services->static_init=&ProbeExpressionUnexpected; services->store_u64=&ProbeExpressionUnexpected;
-    services->store_u8_at=&ProbeExpressionUnexpected; services->data_range=&ProbeExpressionUnexpected;
-    services->compile_expression=&ProbeExpressionUnexpected; services->execute=&ProbeExpressionUnexpected;
+    ProbeDeclarationSetup(state,probe,heap,cc,binary_ops);
+    services=&state->declarations;
     prefix=0;
     if(kind==2) prefix=probe->compiler->code_add(heap,cc,IC_IMM_I64,1234,probe->i64_type,0);
     ProbeExpressionLex(state,cc); fill=0; accepted=0;

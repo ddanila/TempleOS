@@ -828,10 +828,9 @@ needs integration. See `docs/i386-native-expression.md` for the API and limits.
 Native type parsing now calls the complete shared core through a borrowed type
 service environment (CompilerRuntime ABI 24, 136 bytes). Expression casts use this
 entry with the native lexer and type registry. Native probes cover narrow integers,
-pointer width/stride/difference and invalid intrinsic types. Public scalar unions
-from `Kernel/Types.HH`, general declaration, array-bound,
-class/function and publication adapters remain required; see
-`docs/i386-native-type.md`.
+pointer width/stride/difference and invalid intrinsic types. Declaration, array-bound
+and scalar-union progress is recorded below; durable publication and complete
+parser environments remain required. See `docs/i386-native-type.md`.
 
 Native parser allocation services now retain exact payload sizes in a separate
 compiler-control registry (CompilerRuntime ABI 25, 144 bytes). IR/lexer payload
@@ -851,9 +850,20 @@ The complete declaration core now has a native entry (CompilerRuntime ABI 27,
 156 bytes), alongside an owned active-IR initialization operation. Native probes
 construct packed class/union members with snapshots and owned strings/allocations.
 Arithmetic array bounds are parsed, compiled and executed natively while preserving
-an existing IR view. General class/function headers, initializers, publication and
-compilation of the original public scalar unions still require integration; see
-`docs/i386-native-declaration.md`.
+an existing IR view. General initializers and publication still require integration;
+see `docs/i386-native-declaration.md` and the class/header milestone below.
+
+Native class and function-header entries now call the full shared symbol core
+(CompilerRuntime ABI 28, 164 bytes). The native fixture reads the unchanged
+`Kernel/Types.HH` from RedSea, handles its help-index directive, and parses all six
+public scalar unions into a private table. Checks cover their member views,
+forwarding, sizes and pointer variants; compiled expressions exercise narrowing,
+signedness, division and member-view sizes. Scalar code generation now follows
+class forwarding, and native controls select the 32-bit target before argument
+layout. Inheritance, extern completion and partial parse cleanup also pass.
+These symbols remain compiler-owned: durable bootstrap registration, full source
+metadata, complete function/default/initializer providers and interactive parsing
+remain required. See `docs/i386-native-symbol.md`.
 
 #### Continuing integration sequence
 

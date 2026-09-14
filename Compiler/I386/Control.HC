@@ -58,7 +58,7 @@ CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,
   if(!owned) goto control_new_failed;
   cc=&owned->control;
   owned->parser_next=owned->parser_last=&owned->parser_next;
-  CmpCtrlSeed(cc,flags,symbols,alpha_numeric);
+  CmpCtrlSeed(cc,flags|CCF_TARGET_I386,symbols,alpha_numeric);
   COCSeed(&cc->coc);
   owned->code_next=owned->code_last=&owned->code_next;
   file=I386LexFilePush(heap,cc);

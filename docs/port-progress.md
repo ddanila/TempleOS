@@ -3834,3 +3834,51 @@ bodies into private class descriptors. Complete native class/function headers,
 local/static/default initialization providers, original public scalar unions,
 durable publication and the full interactive frontend remain open, along with
 DolDoc, self-hosting and the other `PLAN.md` acceptance requirements.
+
+## Native scalar unions and symbol headers
+
+CompilerRuntime ABI 28 (164 bytes) adds native class and function-header joining
+through the complete shared symbol core. Native controls now select the i386 target
+at creation, before function argument layout. The shared header core uses existing
+bit-set/clear intrinsics for its public flag instead of an unavailable helper.
+The lexer supports `#help_index`, including immediate backslash continuation and
+replacement, with partial strings owned by the control through error recovery.
+
+The native fixture reads the unchanged `Kernel/Types.HH` from RedSea and parses all
+six public scalar unions into a private compiler-owned symbol table. It checks
+intrinsic forwarding, member names and lookup, overlapping offsets, array shapes,
+cross-references and 32-bit pointer variants. Eight expressions per task compile
+and execute using these types, covering scalar/pointer and member-view sizes,
+narrow signed/unsigned casts, unsigned shifts and signed/unsigned division.
+
+Those execution checks exposed a backend error: a parsed `U32` cast retained its
+high word because the union wrapper shares the raw `I64` tag. Scalar code generation
+now follows class forwarding when selecting width, signedness and floating-point
+behavior, while retaining the union's member graph. The previously failing
+`sizeof(U64)+sizeof(U64 *)+0x100000001(U32)` expression now returns 13.
+
+All 20 symbol cases and 16 scalar-expression executions pass across boot and worker
+tasks. Additional cases cover inheritance, extern completion with owned metadata,
+public function headers and 32-bit argument offsets, partial class/function errors,
+and help-index replacement/continuation/malformed-string recovery. Every case
+restores exact heap use and allocation counts, task references, active controls,
+exception state and interrupt state after full compiler-control unwind.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. The complete standalone
+suite passed, including the existing 18 declaration and 44 expression/type checks,
+parser ownership/recovery, instruction audits, module rejection and pixel-exact
+VGA/input checks. The 235 function and 19 data cases passed, as did the floating-point,
+inline-assembly, lexer-state and task-symbol suites. Python syntax and whitespace
+checks pass. The guest remains an 8 MiB emulated 486; strict 386SX/DX acceptance is
+still required.
+
+The kernel is 389920 bytes. The retained compiler image is 847880 bytes (847896
+heap bytes). The temporary probe image is 312872 bytes and reclaims all 312888 heap
+bytes. Compiler/probe imports remain 21/17; FileRuntime remains ABI 13/32 bytes and
+CompilerProbe ABI 5/56 bytes.
+
+See [i386-native-symbol.md](i386-native-symbol.md). These parsed symbols are private
+and expire with their compiler control. Durable bootstrap registration, complete
+source links/metadata and function/default/initializer providers, full statement/
+global integration, interactive compilation, DolDoc and native self-hosting remain
+open under the full `PLAN.md` goal.
