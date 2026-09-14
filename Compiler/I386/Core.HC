@@ -293,14 +293,14 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
 {
   CI386Out out;
   CIntermediateCode *ic;
-  CCodeMisc *label;
+  CCodeMisc *label,*switch_table;
   CI386Call *calls=NULL,*call;
   CI386Logic *logics=NULL,*logic;
   CI386Chain *chains=NULL,*chain;
   CExternUsage *usage;
   CAOTImportExport *import_rec;
   CMemberLst *arg;
-  I64 arg_index,arg_offset,pool_start;
+  I64 arg_index,arg_offset,pool_start,switch_base,switch_index;
   I64 depth,pass,stack_size=0,args=0;
   U8 *result=NULL;
   CHashClass *c;
@@ -949,6 +949,35 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Normalize(&out,c);
             depth--;
             break;
+          case IC_SWITCH:
+          case IC_NOBOUND_SWITCH:
+            if (depth!=2) throw('Compiler');
+            switch_table=ic->ic_data;
+            if (!switch_table || switch_table->type!=CMT_JMP_TABLE ||
+                switch_table->range<1 || switch_table->range>0xFFFF ||
+                !switch_table->jmp_table || !switch_table->dft) throw('Compiler');
+            I386Bytes(&out,"\x59\x5B\x58\x5A",4);
+            if (ic->ic_code==IC_SWITCH) {
+              label=OptLabelFwd(switch_table->dft);
+              I386Bytes(&out,"\x85\xD2\x0F\x85",4);
+              I386Dword(&out,label->addr-out.count-4);
+              I386Byte(&out,0x3D); I386Dword(&out,switch_table->range);
+              I386Bytes(&out,"\x0F\x83",2);
+              I386Dword(&out,label->addr-out.count-4);
+            }
+            //Entries are signed offsets from the table's position-independent base.
+            I386Bytes(&out,"\xE8\x00\x00\x00\x00",5); switch_base=out.count;
+            I386Bytes(&out,"\x59\x81\xC1",3);
+            I386Dword(&out,switch_table->addr-switch_base);
+            I386Bytes(&out,"\x8B\x04\x81\x01\xC8\xFF\xE0",7);
+            depth-=2;
+            break;
+          case IC_SUB_CALL:
+            if (depth) throw('Compiler');
+            label=OptLabelFwd(ic->ic_data);
+            I386Byte(&out,0xE8);
+            I386Dword(&out,label->addr-out.count-4);
+            break;
           case IC_LABEL:
             label=ic->ic_data;
             if (!pass) label->addr=out.count;
@@ -961,6 +990,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_LEAVE:
             if (depth) throw('Compiler');
+            //A return inside a switch start block discards local sub-call returns.
+            I386Bytes(&out,"\x8D\xA5",2); I386Dword(&out,-stack_size-12);
             I386Bytes(&out,"\x5F\x5E\x5B\x89\xEC\x5D\xC2",7);
             I386Byte(&out,args&255); I386Byte(&out,args>>8);
             break;
@@ -999,6 +1030,16 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           label=ic->ic_data;
           if (!pass) label->addr=out.count;
           I386Bytes(&out,label->str,label->st_len);
+        }
+      for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
+        if (ic->ic_code==IC_SWITCH || ic->ic_code==IC_NOBOUND_SWITCH) {
+          switch_table=ic->ic_data;
+          while (out.count&3) I386Byte(&out,0);
+          if (!pass) switch_table->addr=out.count;
+          for (switch_index=0;switch_index<switch_table->range;switch_index++) {
+            label=OptLabelFwd(switch_table->jmp_table[switch_index]);
+            I386Dword(&out,label->addr-switch_table->addr);
+          }
         }
       if (pass && out.count>pool_start) {
         import_rec=CAlloc(sizeof(CAOTImportExport));

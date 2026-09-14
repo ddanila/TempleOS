@@ -422,9 +422,19 @@ now retain middle operands once in frame storage and pass 512-triple native
 corpora for integer, unsigned, F64 and mixed types, plus nested-chain tests.
 Actual x64 NaN-leading branches and integer-middle mixed chains have documented
 result differences; the native corpus requires consistent pairwise numeric
-comparisons. Full x64 quirk compatibility remains unresolved. The `ToBool` intrinsic now
-normalizes full I64 arguments, including high-word-only values; 178 integer/call
-checks pass. The F64-to-integer corpus now includes numeric and raw-bit Boolean
+comparisons. Full x64 quirk compatibility remains unresolved.
+
+Integral switch dispatch now uses relocatable four-byte jump-table entries,
+including full-width selector bounds, ranges, unchecked dispatch and HolyC
+`start`/`end` local calls. Twenty native switch cases bring the integer/function
+corpus to 199 cases; nineteen also check actual x64 results. Native early return
+from a prefix restores the enclosing frame; its x64 compatibility remains under
+investigation after an oracle guest stall. This completes another control-flow
+primitive needed by kernel and compiler source, with full unit integration still
+pending. See `docs/i386-abi.md`.
+
+The `ToBool` intrinsic now normalizes full I64 arguments, including high-word-only
+values, with coverage in the integer/function corpus. The F64-to-integer corpus now includes numeric and raw-bit Boolean
 interpretations, with 4,096 native checks and 2,048 x64 Boolean outputs. Existing
 constant/variable ToBool differences are preserved and documented. Integer
 absolute/sign, signed/unsigned min/max and square intrinsics now pass 8,192

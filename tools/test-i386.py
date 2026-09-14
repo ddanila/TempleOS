@@ -20,6 +20,26 @@ def run(*args):
     subprocess.run(args, cwd=ROOT, check=True)
 
 
+def disassemble_i386(code):
+    """Keep auditing after ndisasm 3.01's failure to decode FF E0 (JMP EAX)."""
+    result = []
+    offset = 0
+    while offset < len(code):
+        listing = subprocess.check_output(
+            ['ndisasm', '-b32', '-o', str(offset), '-'], input=code[offset:]).decode()
+        for line in listing.splitlines():
+            parts = line.split()
+            address = int(parts[0], 16)
+            if parts[1:3] == ['FF', 'db'] and code[address:address+2] == b'\xff\xe0':
+                result.append(f'{address:08X}  FFE0              jmp eax')
+                offset = address+2
+                break
+            result.append(line)
+        else:
+            break
+    return '\n'.join(result)+'\n'
+
+
 def main():
     global OUT
     parser = argparse.ArgumentParser(description=__doc__)
@@ -149,7 +169,7 @@ def main():
     offset = count = 0
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
-    allowed = {'push', 'pop', 'pushf', 'popf', 'mov', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
+    allowed = {'push', 'pop', 'pushf', 'popf', 'mov', 'lea', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
                'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',
@@ -204,26 +224,32 @@ def main():
             audited_code = code[start:limit]
             binary = OUT/'case.bin'
             binary.write_bytes(audited_code)
-            disassembly = subprocess.check_output(['ndisasm', '-b32', str(binary)], text=True)
+            disassembly = disassemble_i386(audited_code)
+            lines = disassembly.splitlines()
+            if functions:
+                returns = [index for index, line in enumerate(lines) if line.split()[2] == 'ret']
+                if not returns:
+                    raise ValueError('Missing function return')
+                last_return = returns[-1]
+                parts = lines[last_return].split()
+                code_end = int(parts[0], 16)+len(parts[1])//2
+                if len(audited_code)-code_end > 7 or any(audited_code[code_end:]):
+                    raise ValueError('Unexpected function epilogue/padding')
+                #Switch start blocks can contain internal RETs; audit through the final one.
+                lines = lines[:last_return+1]
             audited_lines = []
-            code_end = None
-            for line in disassembly.splitlines():
+            for line in lines:
                 parts = line.split()
                 mnemonic = parts[2]
                 if mnemonic not in allowed:
                     raise ValueError(f'Unexpected instruction: {line}')
                 audited_lines.append(line)
-                if functions and mnemonic == 'ret':
-                    code_end = int(parts[0],16)+len(parts[1])//2
-                    break
             if functions:
-                if code_end is None or len(audited_code)-code_end > 7 or any(audited_code[code_end:]):
-                    raise ValueError('Unexpected function epilogue/padding')
                 disassembly = '\n'.join(audited_lines)+'\n'
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != {'data': 16, 'functions': 179, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
+    if offset != len(data) or count != {'data': 16, 'functions': 199, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.

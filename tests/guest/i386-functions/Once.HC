@@ -16,6 +16,9 @@ U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
     if (ie->type==IET_REL32_EXPORT) {
       line=MStrPrint("RANGE %d %X\n",case_number,ie->rip);
       Report(line); Free(line);
+    } else if (ie->type==IET_I386_DATA) {
+      line=MStrPrint("DATA %d %X %X\n",case_number,ie->rip,ie->flags);
+      Report(line); Free(line);
     }
   }
   case_number++;
@@ -25,6 +28,17 @@ U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
   (*cursor)(I64 *)[0]=b; *cursor+=8;
   MemCpy(*cursor,aot->buf,aot->aot_U8s); *cursor+=aot->aot_U8s;
   // Keep AOT metadata alive until the isolated test VM exits.
+}
+Bool switch_host_checked;
+//Run the same integral switch body on the host compiler and native backend.
+U0 EmitSwitchCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor)
+{
+  switch_host_checked=FALSE;
+  ExePrint("I64 SwitchOracle%d(I64 a,I64 b) { %s }\n"
+    "if (SwitchOracle%d(0x%X,0x%X)==0x%X) switch_host_checked=TRUE;",
+    case_number,body,case_number,a,b,expected);
+  if (!switch_host_checked) { Report("FAIL x64 switch\n"); throw; }
+  EmitCase(body,a,b,expected,cursor);
 }
 U0 Reject(U8 *source)
 {
@@ -348,6 +362,28 @@ U0 CompileTests()
   EmitCase("P p; p.value=a; return (Get(&p))->value+b;",0x100000000,3,0x100000003,&cursor,
     "class P { I64 value; P *next; U8 bytes[4]; }; extern P *Get(P *p);",
     "P *Get(P *p) { return p; }");
+  //Switch tables must retain 64-bit selectors and HolyC prefix/footer semantics.
+  EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",1,0,11,&cursor);
+  EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",3,0,33,&cursor);
+  EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",2,0,99,&cursor);
+  EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",0,0,99,&cursor);
+  EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",-1,0,99,&cursor);
+  EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",4294967297,0,99,&cursor);
+  EmitSwitchCase("switch(a) { case -3...-1: return 7; default: return 9; }",-2,0,7,&cursor);
+  EmitSwitchCase("switch(a) { case 0x100000000...0x100000002: return 7; default: return 9; }",4294967297,0,7,&cursor);
+  EmitSwitchCase("switch(a) { case 0x100000000...0x100000002: return 7; default: return 9; }",1,0,9,&cursor);
+  EmitSwitchCase("switch(a) { case 5...3: return 7; default: return 9; }",4,0,7,&cursor);
+  EmitSwitchCase("switch(a) { case: return 7; case: return 8; default: return 9; }",1,0,8,&cursor);
+  EmitSwitchCase("switch(a) { case 1: b+=10; case 2: b+=20; break; default: b=99; } return b;",1,0,30,&cursor);
+  EmitSwitchCase("switch(a) { case 1: b+=10; break; } return b;",2,42,42,&cursor);
+  EmitSwitchCase("switch(a++) { case 1: b=10; break; default: b=20; } return a+b;",1,0,12,&cursor);
+  EmitSwitchCase("switch[a] { case 2: return 12; case 3: return 13; } return 99;",3,0,13,&cursor);
+  EmitSwitchCase("switch(a) { case 1: switch(b) { case 2: return 42; default: return 7; } default: return 9; }",1,2,42,&cursor);
+  EmitSwitchCase("switch(a) { start: b+=100; case 1: b+=1; break; case 2: b+=2; break; end: b+=1000; } return b;",1,0,1101,&cursor);
+  EmitSwitchCase("switch(a) { start: b+=100; case 1: b+=1; case 2: b+=2; break; end: b+=1000; } return b;",1,0,1103,&cursor);
+  //Returning from a prefix has a native frame-restoration test.
+  EmitCase("switch(a) { start: if(b) return b+5; case 1: b+=1; break; end: b+=1000; } return b;",1,37,42,&cursor);
+  EmitSwitchCase("switch(a) { start: b+=100; start: b+=10; case 1: b+=1; break; end: b+=1000; end: b+=10000; } return b;",1,0,11111,&cursor);
   //Reserved expected value tells the isolated runner to require vector 0.
   //QEMU unassigned ports test input widths; VGA sequencer tests actual writes.
   EmitCase("return InU8(a);",1280,0,255,&cursor,

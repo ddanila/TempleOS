@@ -133,7 +133,26 @@ Chained comparisons preserve each middle operand in an eight-byte frame slot,
 then reuse it for the next comparison. Branch chains short-circuit and value
 chains evaluate all operands. Nested chains have distinct slots; calls and
 recursion cannot overwrite another frame's retained values.
-Variadic calls, floating-point output and switch dispatch remain pending.
+Integral switch dispatch uses four-byte signed offsets from an aligned,
+position-relative jump table. The shared parser retains case ranges, automatic
+case numbering, holes/defaults, fall-through and nested switches. A bounded
+switch tests both halves of the normalized 64-bit selector before indexing;
+`switch [...]` retains its unchecked dispatch contract. Tables are marked as
+module data, so moving the image needs no per-entry relocation and instruction
+auditing excludes the table bytes.
+
+HolyC `start` prefixes use local subroutine calls and bare returns. The enclosing
+function epilogue restores ESP from EBP before popping saved registers, allowing
+a native function return from inside a prefix. The function corpus has 199 cases,
+including 20 switch cases and five deliberate #DE faults. Nineteen switch bodies
+also execute on x64 with checked results. The prefix early-return case is native
+only: executing it in the x64 oracle stalled the test guest. Its x64 compatibility
+needs further investigation. Instruction auditing now includes code after internal
+returns, through the final function return. A byte-specific workaround decodes
+`FF E0` as `jmp eax` when ndisasm 3.01 rejects it; objdump independently confirms
+the instruction, and auditing resumes at the following byte.
+
+Variadic calls and floating-point output remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.
 
