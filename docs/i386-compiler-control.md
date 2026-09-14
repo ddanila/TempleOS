@@ -43,8 +43,8 @@ Arbitrary heap or graph corruption is not a transactional recovery contract.
 
 ## Retained integration and verification
 
-CompilerRuntime version 12 retains constructor/destructor entries and adds task
-symbol initialization in its checked 56-byte service record. It imports native file creation and shared file release
+CompilerRuntime version 13 retains constructor/destructor and task-symbol entries
+in its checked 56-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
 from the kernel, avoiding another copy of file-stack mechanisms. The kernel now
 publishes 40 bindings; the retained compiler has twenty imports.
 
@@ -77,3 +77,9 @@ The production disk probe now supplies the current task's symbol table and uses
 its allocation heap. Children own local tables linked to their parent; see
 [i386-task-symbols.md](i386-task-symbols.md). This connects scope selection for
 the probe, while the complete public constructor wrapper remains unfinished.
+
+The current-task factory now implements name/default-name and bitmap selection
+and pins the task while its control survives. An optional owner argument leaves
+unbound low-level construction available for isolated compiler uses. See
+[i386-task-compiler.md](i386-task-compiler.md); public heap/error behavior and
+automatic control-list teardown remain open.

@@ -1,7 +1,6 @@
 #include "/Kernel/I386/TaskSymbols.HH"
 #include "/Compiler/I386/SymbolDelete.HH"
 #include "/Kernel/I386/Cpu.HH"
-#define I386_TASK_SYMBOLS_MAGIC 0x54535931
 CI386TaskSymbols *I386TaskSymbolsValid(CI386Task *task)
 {
   CI386TaskSymbols *state;

@@ -40,14 +40,24 @@ Bool I386FileRuntimeBind(CI386Scheduler *scheduler,CI386RedSea *volume)
   if(file_channels[number].scheduler!=scheduler) return FALSE;
   return I386RedSeaTaskBind(volume,&file_io[number]);
 }
+CI386TaskCompilerConfig file_compiler;
+Bool I386FileRuntimeCompiler(CI386CompilerServices *compiler,U8 *tmp_filename,U32 *alpha_numeric,U32 *alpha_numeric_no_at)
+{
+  return I386TaskCompilerInit(&file_compiler,compiler,tmp_filename,alpha_numeric,alpha_numeric_no_at);
+}
+CCmpCtrl *I386FileRuntimeControl(U8 *buffer,I64 flags,U8 *filename)
+{
+  return I386TaskCmpCtrlNew(&file_compiler,buffer,flags,filename);
+}
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==24
+#assert sizeof(CI386FileServices)==32
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
   services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
+  services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
   return 1;
 }
 #include "/Kernel/I386/FileNames.HC"
@@ -64,3 +74,5 @@ I64 Main(CI386FileServices *services,I64 bytes)
 
 #include "/Kernel/I386/TaskFiles.HC"
 #include "/Kernel/I386/TaskFileRead.HC"
+
+#include "/Kernel/I386/TaskCompiler.HC"

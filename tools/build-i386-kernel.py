@@ -73,7 +73,7 @@ def compiler_runtime_layout(module):
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 12:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 13:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
@@ -95,16 +95,16 @@ def file_runtime_layout(module):
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386FileRuntimeBind', 'I386TaskFilesInit'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 3:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 4:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         include_offset=8+exports['I386LexTaskFileInclude'][1], read_offset=8+exports['I386TaskFileRead'][1],
-        bind_offset=8+exports['I386FileRuntimeBind'][1], init_offset=8+exports['I386TaskFilesInit'][1], import_offset=imports['I386RedSeaReadAll'])
+        bind_offset=8+exports['I386FileRuntimeBind'][1], init_offset=8+exports['I386TaskFilesInit'][1], compiler_init_offset=8+exports['I386FileRuntimeCompiler'][1], control_new_offset=8+exports['I386FileRuntimeControl'][1], import_offset=imports['I386RedSeaReadAll'])
 
 
 def verify_file_rejection(disk, volume, out, layout):
@@ -553,14 +553,16 @@ def main():
                 symbols_init_address != address+runtime_layout['symbols_init_offset']):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=8: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=10: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_control_new = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
                 file_read!=file_address+files_layout['read_offset'] or
                 file_bind!=file_address+files_layout['bind_offset'] or
-                file_init!=file_address+files_layout['init_offset']):
+                file_init!=file_address+files_layout['init_offset'] or
+                file_compiler_init!=file_address+files_layout['compiler_init_offset'] or
+                file_control_new!=file_address+files_layout['control_new_offset']):
             raise ValueError('File-runtime placement or service mismatch')
         disk_includes = [line.split() for line in log.splitlines() if line.startswith('DISK INCLUDE ')]
         if ([list(map(lambda x:int(x,16),row[2:])) for row in disk_includes]!=[[0,68],[1,136]] or
@@ -571,8 +573,8 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=3, image_address=file_address, image_bytes=file_size,
-            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init,
+        result['file_runtime'] = dict(version=4, image_address=file_address, image_bytes=file_size,
+            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, control_new_address=file_control_new,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
             disk_include_lines=[68,136], enabled_if_preserved=True, lifetime='kernel lifetime')
@@ -632,7 +634,7 @@ def main():
         result['compiler_probe'] = dict(module='CompilerProbe', version=3, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=12, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=13, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image

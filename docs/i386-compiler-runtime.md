@@ -17,7 +17,7 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 12 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 13 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
@@ -155,3 +155,11 @@ symbol-release policy. The disk compiler probe uses the current scope and its
 heap; see [i386-task-symbols.md](i386-task-symbols.md) for lifetime and allocation
 contracts. Public constructor/name/bitmap and complete task heap policy remain
 separate integration work.
+
+Version 13 adds a task-owner argument to control construction without changing
+the 56-byte record size. A successfully bound control pins the task until complete
+destruction, including document callbacks. FileRuntime version 4 now supplies the
+current-task factory and context selection. See
+[i386-task-compiler.md](i386-task-compiler.md). CompilerRuntime now uses 176336
+image bytes / 176352 heap bytes; the native kernel is 389800 bytes and leaves
+1256 bytes after its loaded stage in the unchanged bootstrap reservation.

@@ -520,7 +520,7 @@ FileRuntime now has a checked version-3 interface and kernel-lifetime ownership.
 Boot/task reads and nested includes use owned current-task directory state; workers
 inherit directory/drive values and require bound volume sessions. The wrappers
 preserve caller IF, including enabled-IF reads and nested includes.
-The bootstrap plus loaded stage now leaves 1544 bytes in the fixed reservation,
+The bootstrap plus loaded stage now leaves 1256 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 
@@ -585,6 +585,15 @@ owned definition cleanup. The compiler worker uses a 128 KiB arena for its codec
 and control allocations; the keyboard worker uses 8 KiB. This is still a bootstrap
 heap policy. Complete public task/control ownership and constructor filename,
 default-name and bitmap selection remain open; see `docs/i386-task-symbols.md`.
+
+The current-task constructor now selects the scope heap/table, resolves explicit
+filenames, preserves the unnormalized default temporary name and selects the
+original bitmap for `CCF_KEEP_AT_SIGN`. FileRuntime version 4 routes construction
+to CompilerRuntime version 13, whose optional owner pins the task through control
+destruction. Tests cover surviving task finish, failed construction and retry,
+document-release rejection, two task directories and IF preservation. Public
+heap/error policy, task/control lists and automatic teardown remain open; see
+`docs/i386-task-compiler.md`.
 
 #### Continuing integration sequence
 

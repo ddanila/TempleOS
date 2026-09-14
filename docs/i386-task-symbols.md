@@ -46,8 +46,9 @@ existing roughly 70 KiB codec workspace; the keyboard worker reserves 8 KiB.
 These fixed arenas remain a bootstrap allocation policy, not the completed public
 `CHeapCtrl`/task/code-heap implementation.
 
-Explicit compiler controls still borrow their symbol table. Arbitrary controls
-that outlive a task need an explicit lifetime binding before such use is supported.
+Explicit unbound compiler controls still borrow their symbol table. The new
+current-task factory binds controls to the scope owner and pins it until deletion;
+see `i386-task-compiler.md`.
 Public task records, control-list cleanup on task exit, the complete constructor's
 filename/default-name and bitmap selection, parser/JIT and self-hosting remain
 required integration work.
@@ -70,8 +71,8 @@ across real I/O after adding task-lifetime references. These checks remain on th
 QEMU/486 development profile and do not establish strict 386 hardware support.
 
 Two x64 rebuild/reboot generations, native task-symbol, task, ATA/file, hash-table
-and exception checks, and the full standalone suite passed. The task and scope
-fixtures use a bounded 192 KiB test transfer ending at their 0x40000 arena.
+and exception checks, and the full standalone suite passed. The task fixture uses a bounded 192 KiB transfer ending at its 0x40000 arena.
+The expanded scope/constructor fixture uses 256 KiB and an arena at 0x50000.
 The kernel links `HashTableCore.HC`; the full `HashTable.HC` still includes resizing
 for callers that need it, and the resize regression passes. Omitting that unused
 3296-byte routine from the bootstrap keeps the fixed reservation intact.

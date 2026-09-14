@@ -2986,3 +2986,29 @@ CompilerRuntime retains 173192 heap bytes, FileRuntime 116064, and the temporary
 probe reclaims 74392. See `docs/i386-task-symbols.md` for lifecycle and allocation
 contracts. Complete public task/control and heap behavior, constructor name/bitmap
 selection, parser/JIT, DolDoc, strict 386 profiles and self-hosting remain open.
+
+## Current-task compiler construction and control lifetime pins
+
+FileRuntime version 4 now constructs controls from the current task's scope heap,
+symbol table and file context. It resolves explicit filenames, copies the original
+`~/Tmp.DD.Z` default unchanged and selects the original normal/no-at bitmap using
+`CCF_KEEP_AT_SIGN`. CompilerRuntime version 13 accepts a task owner and pins its
+lifetime only after successful allocation. Destruction holds the pin through
+file/document callbacks, allowing a control to survive its task's finish safely.
+
+Two x64 rebuilds, the native lifecycle fixture, the expanded task-scope fixture
+and the complete standalone suite pass. Checks cover relative paths in C:/ and
+D:/Child, default-name preservation, bitmap selection, root-only configuration,
+ABI rejection, saturated references, failed allocation with an owned source reused
+successfully, missing-document-callback rejection and releasing a finished task's
+control before reap. The standalone boot and worker include probes now use the
+factory and verify name, scope, pin accounting and temporary reclamation.
+
+The native kernel is 389800 bytes; with the 2160-byte loaded stage it leaves 1256
+bytes in the unchanged reservation. CompilerRuntime retains 176352 heap bytes,
+FileRuntime 123272, and the temporary probe reclaims 74776. FileRuntime's six-entry
+service record is 32 bytes; compiler record size remains 56 bytes with a versioned
+constructor calling-convention change. The scope/constructor test now uses a
+256 KiB transfer ending at its 0x50000 arena. See `docs/i386-task-compiler.md`.
+Public task/heap/error policy, automatic control-list cleanup, actual prompt/DolDoc
+input, parser/JIT, strict 386 profiles and self-hosting remain unfinished.

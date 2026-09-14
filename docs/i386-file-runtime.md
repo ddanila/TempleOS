@@ -10,11 +10,12 @@ Startup and CompilerProbe.
 
 ## Interface and ownership
 
-CI386FileServices version 3 is a 24-byte i386 record: version/byte-count fields,
+CI386FileServices version 4 is a 32-byte i386 record: version/byte-count fields,
 a current-task include callback, a decoded-read function, volume binding and
-root task-state initialization.
+root task-state initialization, compiler configuration and current-task control
+construction.
 Initialization writes a caller-owned candidate. The kernel validates the version,
-size and all four addresses before publication; the host independently compares
+size and all six addresses before publication; the host independently compares
 them with export offsets. The retained image owns canonical channel gates and I/O
 tables, initialized by the root-only binding service.
 
@@ -41,7 +42,7 @@ probes/startup, with no file interface published. Disk contents remain unchanged
 
 CompilerProbe's version-3, 52-byte borrowed record includes the disk provider and
 file-service table.
-At boot, its version-12 retained lexer reads a root include directive, calls the
+At boot, its version-13 retained lexer reads a root include directive, calls the
 retained file provider, loads a plain outer source through the default HC.Z
 fallback, then expands a compressed inner source. The inner archive is produced
 by the original x64 compressor during the build. The lexer returns 11, 22 and 33,
@@ -87,12 +88,12 @@ Current images and allocations:
 
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
-| CompilerRuntime, retained | 173176 | 173192 |
-| FileRuntime, retained | 116048 | 116064 |
-| CompilerProbe, reclaimed after task check | 74376 | 74392 |
+| CompilerRuntime, retained | 176336 | 176352 |
+| FileRuntime, retained | 123256 | 123272 |
+| CompilerProbe, reclaimed after task check | 74760 | 74776 |
 
-The native bootstrap is 389512 bytes. With its 2160-byte loaded stage overhead,
-391672 bytes occupy the unchanged 393216-byte reservation, leaving 1544 bytes.
+The native bootstrap is 389800 bytes. With its 2160-byte loaded stage overhead,
+391960 bytes occupy the unchanged 393216-byte reservation, leaving 1256 bytes.
 The separate 512-byte boot sector is excluded from that reservation. Further
 bootstrap growth needs extraction or reduction; the low-memory reservation has
 not been raised. Bounded export-index tables replace repeated binding setup calls
@@ -104,3 +105,9 @@ reset recovery and latency measurement, full compiler-control lifetime, parser/J
 DolDoc and persistent editing, strict 386SX/DX profiles and native self-hosting
 remain open. The connected include path is a compiler prerequisite, not a claim
 that the full native programming environment is complete.
+
+The disk probe now constructs controls through the current-task factory in this
+module. Configuration borrows the retained compiler, default temporary filename
+and original bitmaps; controls pin the task through destruction. See
+[i386-task-compiler.md](i386-task-compiler.md) for semantics and remaining public
+API integration.

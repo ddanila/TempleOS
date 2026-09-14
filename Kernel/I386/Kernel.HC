@@ -525,6 +525,7 @@ U0 KernelFileLoad()
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
   kernel_volumes.letter['C'-'A']=&kernel_volume;
   if(!kernel_files.init(&kernel_root,&kernel_heap,&kernel_paths,&kernel_volumes)) KernelStop;
+  if(!kernel_files.compiler_init(&kernel_compiler,"~/Tmp.DD.Z",char_bmp_alpha_numeric,char_bmp_alpha_numeric_no_at)) KernelStop;
   kernel_file_include.context=0; kernel_file_include.push=kernel_files.include;
 }
 

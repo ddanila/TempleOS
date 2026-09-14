@@ -2,6 +2,7 @@
 #define I386_TASK_SYMBOLS_INCLUDED
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/HashTable.HH"
+#define I386_TASK_SYMBOLS_MAGIC 0x54535931
 class CI386TaskSymbols {
   CI386Task *task;
   CI386TaskSymbols *parent;

@@ -253,7 +253,7 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
   CI386Heap *heap=I386TaskSelf->memory;
   CCmpCtrl *cc; CLexFile *file; U8 *bytes,*name; U32 flags,saved_flags=GetRFlags;
   I64 size,attr;
-  I64 i,lines=0,used,allocations;
+  I64 i,lines=0,used,allocations,refs=I386TaskSelf->lifetime_refs;
   if(!heap) heap=probe->heap;
   used=heap->used; allocations=heap->allocations;
   if(!probe->disk_include || !probe->disk_include->push || !probe->files || !probe->files->read) KernelStop;
@@ -271,12 +271,12 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
       size!=-1 || attr!=-1 || name || (GetRFlags&0x200)!=(probe->phase*0x200)) KernelStop;
   SetRFlags(saved_flags);
   KernelLog("DISK READ "); KernelHex(probe->phase); KernelLog("\n");
-  cc=probe->compiler->control_new(heap,"#include \"C:/Probe/Outer\";",
-    CCF_DONT_FREE_BUF,"C:/Probe/Control.HC",I386TaskSelf->hash_table,char_bmp_alpha_numeric);
+  cc=probe->files->control_new("#include \"C:/Probe/Outer\";",CCF_DONT_FREE_BUF,"Probe/Control.HC");
   if(!cc || !I386TaskSelf->hash_table || cc->htc.glbl_hash_table!=I386TaskSelf->hash_table ||
       (!probe->phase && I386TaskSelf->hash_table!=probe->symbols) ||
       (probe->phase && (I386TaskSelf->hash_table==probe->symbols || I386TaskSelf->hash_table->next!=probe->symbols))) KernelStop;
   file=cc->lex_include_stk;
+  if(StrCmp(file->full_name,"C:/Probe/Control.HC") || I386TaskSelf->lifetime_refs!=refs+1) KernelStop;
   {
     if(GetRFlags&0x200) KernelStop;
     for(i=1;i<=3;i++)
@@ -305,7 +305,7 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
     SetRFlags(saved_flags);
     KernelLog("DISK IF PRESERVED\n");
   }
-  if(!probe->compiler->control_del(heap,cc,0,0)) KernelStop;
+  if(!probe->compiler->control_del(heap,cc,0,0) || I386TaskSelf->lifetime_refs!=refs) KernelStop;
   if(heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
   KernelLog("DISK INCLUDE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(lines); KernelLog("\n");
 }

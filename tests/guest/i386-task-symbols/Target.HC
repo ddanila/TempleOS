@@ -4,6 +4,8 @@
 #include "/Kernel/I386/TaskSymbols.HH"
 #include "/Compiler/I386/SymbolDelete.HH"
 #include "/Kernel/I386/TaskFiles.HH"
+#include "/Kernel/I386/TaskCompiler.HH"
+#include "/Kernel/CharBitmaps.HC"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/Irq.HH"
@@ -24,6 +26,11 @@ CHashDefineStr root_symbol;
 CFilePathContext paths;
 CI386FileVolumes volumes;
 U32 white_space[8],errors,scope_done,protected_parent;
+CI386CompilerServices control_services;
+CI386TaskCompilerConfig task_compiler,other_compiler;
+CCmpCtrl *retained_control;
+extern I64 FactoryRootTest();
+extern Bool FactoryWorkerTest(I64 id);
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
 extern U0 Worker(I64 id);
@@ -47,7 +54,7 @@ I64 ScopeTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x40000,65536)) return 1;
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x50000,65536)) return 1;
   OutU8(0x21,255); OutU8(0xA1,255);
   symbols=I386HashTableNew(&heap,8);
   if(!symbols || !I386TaskSymbolsInit(&root,&heap,symbols) ||
@@ -56,6 +63,7 @@ I64 ScopeTest()
   HashAdd(&root_symbol,symbols);
   paths.cur_dir="/"; paths.home_dir="C:/"; paths.cur_drv='C'; paths.boot_drv='C'; paths.white_space=white_space;
   if(!I386TaskFilesInit(&root,&heap,&paths,&volumes)) return 3;
+  i=FactoryRootTest; if(i) return i;
   used=heap.used; allocations=heap.allocations;
   for(i=24;i<=512;i+=8)
     if(I386TaskSpawn(&scheduler,&heap,4096,&Worker,0,0x18,0x20,i) ||
@@ -79,7 +87,9 @@ I64 ScopeTest()
   }
   if(errors || scope_done!=3 || !protected_parent || root.lifetime_refs!=2 ||
       HashFind("Shared",symbols,HTT_DEFINE_STR)!=&root_symbol) return 8;
-  if(!I386TaskDestroy(grand) || !I386TaskDestroy(workers[0]) || !I386TaskDestroy(workers[1]) ||
+  if(!I386TaskDestroy(grand) || workers[0]->task.lifetime_refs!=1 || I386TaskDestroy(workers[0]) ||
+      !I386CmpCtrlDel(workers[0]->task.memory,retained_control) ||
+      !I386TaskDestroy(workers[0]) || !I386TaskDestroy(workers[1]) ||
       root.lifetime_refs || heap.used!=used || heap.allocations!=allocations) return 9;
   borrow=I386TaskFilesBorrow(&root,&snapshot,&selected);
   if(!borrow || I386TaskSymbolsDestroy(&root) || !I386TaskFilesRelease(borrow) ||
@@ -106,6 +116,7 @@ Bool Define(U8 value)
 U0 Worker(I64 id)
 {
   if(HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR)!=&root_symbol || !Define('A'+id)) { errors++; return; }
+  if(!FactoryWorkerTest(id)) { errors++; return; }
   if(!id) {
     grand=I386TaskSpawn(&scheduler,&heap,4096,&Grandchild,0);
     if(!grand || grand->task.hash_table->next!=I386TaskSelf->hash_table) { errors++; return; }
@@ -119,7 +130,7 @@ U0 Grandchild(I64 unused)
       I386TaskSelf->memory || !Define('G')) { errors++; return; }
   I386SchedYield(&scheduler);
   entry=HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR);
-  if(!entry || entry->data[0]!='G' || workers[0]->task.lifetime_refs!=1) errors++;
+  if(!entry || entry->data[0]!='G' || workers[0]->task.lifetime_refs!=2) errors++;
   scope_done++;
 }
 #include "/Kernel/I386/Context.HC"
@@ -133,3 +144,11 @@ U0 Grandchild(I64 unused)
 #include "/Compiler/I386/SymbolDelete.HC"
 #include "/Kernel/I386/TaskSymbols.HC"
 #include "/Kernel/I386/TaskFiles.HC"
+
+#include "/Compiler/ControlInit.HC"
+#include "/Compiler/I386/LexFiles.HC"
+#include "/Compiler/I386/Control.HC"
+#include "/Kernel/BlkDev/FileNames.HC"
+#include "/Kernel/I386/FilePaths.HC"
+#include "/Kernel/I386/TaskCompiler.HC"
+#include "T:/Factory.HC"
