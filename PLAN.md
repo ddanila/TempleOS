@@ -807,8 +807,15 @@ have shared cores. Explicit services cover alias heap identity, import resolutio
 statement parsing, output compilation, trace disassembly and diagnostics. The
 non-AOT inferred-array fill uses its computed byte size rather than an uninitialized
 loop variable. Native immediate compilation still needs durable code/debug/symbol
-ownership; statement parsing and native adapters remain open. See
+ownership; native adapters remain open. See
 `docs/i386-global-function-parser.md` for contracts and validation limits.
+
+The complete statement parser now uses shared services, including stream blocks,
+nested switch sections, assembly dispatch and both target exception-call paths.
+Switch table initialization uses pointer-width stores, and case ranges stop before
+incrementing beyond `I64_MAX`. Native ownership/recovery, compile-time execution
+and assembler adapters remain required; no native frontend API is published.
+See `docs/i386-statement-parser.md`.
 
 #### Continuing integration sequence
 

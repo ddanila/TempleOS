@@ -488,6 +488,7 @@ U0 CompileTests()
   EmitSwitchCase("switch(a) { case -3...-1: return 7; default: return 9; }",-2,0,7,&cursor);
   EmitSwitchCase("switch(a) { case 0x100000000...0x100000002: return 7; default: return 9; }",4294967297,0,7,&cursor);
   EmitSwitchCase("switch(a) { case 0x100000000...0x100000002: return 7; default: return 9; }",1,0,9,&cursor);
+  EmitSwitchCase("switch(a) { case 0x7FFFFFFFFFFFFFFF...0x7FFFFFFFFFFFFFFF: return 17; default: return 23; }",0x7FFFFFFFFFFFFFFF,0,17,&cursor);
   EmitSwitchCase("switch(a) { case 5...3: return 7; default: return 9; }",4,0,7,&cursor);
   EmitSwitchCase("switch(a) { case: return 7; case: return 8; default: return 9; }",1,0,8,&cursor);
   EmitSwitchCase("switch(a) { case 1: b+=10; case 2: b+=20; break; default: b=99; } return b;",1,0,30,&cursor);

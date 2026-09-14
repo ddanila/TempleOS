@@ -3636,3 +3636,25 @@ publication and output-padding contracts. Statement parsing, native service
 adapters, assembler/AOT integration, target compile-time execution and durable
 code/data/symbol ownership remain required. The full OS goal, including DolDoc,
 self-hosting and strict 386SX/DX acceptance, remains active.
+
+## Shared statement parser
+
+`PrsStatementCore.HC` now shares the complete production statement parser,
+including loops, nested switch sections, declarations, stream execution, assembly
+dispatch and both target try/catch call paths. Existing entries supply environment
+callbacks; native frontend adapters are still required. Switch jump-table fills
+now use pointer-width assignments, and range enumeration stops before incrementing
+past `I64_MAX`. Queue operations likewise use typed pointer fields.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. All 235 function cases
+passed, including a new singleton range at `I64_MAX` executed on the host and in
+generated i386 code. All 19 data cases (with host-fill marker), floating-point and
+inline-assembly suites passed, as did the full standalone boot, recovery, VGA/input,
+module-rejection and instruction-audit checks. Kernel size remains 389424 bytes;
+retained ABIs are unchanged. Python syntax and whitespace checks passed.
+
+See [i386-statement-parser.md](i386-statement-parser.md) for callback and ownership
+contracts. The shared parser still needs native allocation registration and error
+unwind, target assembly/linking and compile-time execution adapters, and durable
+code/data/symbol publication. These results exercise host parsing and generated
+native execution, not a native frontend. The full OS goal remains active.

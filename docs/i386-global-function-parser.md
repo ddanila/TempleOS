@@ -53,7 +53,8 @@ adapter is still absent.
 
 The existing compiler exercises these shared paths during rebuilds and target
 cross-builds. No retained native frontend service is published by this change.
-Statement parsing, the native service adapters, assembler/AOT integration, target
+Statement parsing now has a [shared core](i386-statement-parser.md). Native
+service adapters, assembler/AOT integration, target
 compile-time execution and durable code/data/symbol publication remain required.
 See [declarations](i386-declaration-parser.md),
 [initializers](i386-initializer-parser.md) and `PLAN.md` for the full OS scope.

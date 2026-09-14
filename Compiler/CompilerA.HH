@@ -272,10 +272,7 @@ class COptReg
   CMemberLst *m;
 };
 
-#define CMPF_ASM_BLK		1
-#define CMPF_ONE_ASM_INS	2
-#define CMPF_LEX_FIRST		4
-#define CMPF_PRS_SEMICOLON	8
+#include "/Compiler/PrsCompileFlags.HH"
 
 #help_index ""
 
