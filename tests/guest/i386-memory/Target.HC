@@ -2,13 +2,17 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/BootMemory.HH"
+#include "/Kernel/I386/BootDisk.HH"
 extern U0 Reset(CI386BootInfo *info);
 extern Bool Rejected(CI386BootInfo *info,CI386MemRange *reserved,I64 count);
 I64 Main(I64 a,I64 b)
 {
   CI386BootInfo info,*actual=I386_BOOT_INFO_ADDRESS;
+  CI386BootDiskInfo *disk_info=I386_BOOT_DISK_INFO_ADDRESS;
   CI386MemRange r[3],out;
   I64 i;
+  if(disk_info->magic!=I386_BOOT_DISK_INFO_MAGIC || disk_info->version!=1 ||
+      disk_info->bios_drive!=0x80 || disk_info->volume_start) return 30;
   if (actual->magic!=I386_BOOT_INFO_MAGIC || actual->stage_end!=0x20000 ||
       actual->conventional_kib<576 || actual->conventional_kib>640 ||
       !I386BootArena(actual,0,0,&out)) return 1;

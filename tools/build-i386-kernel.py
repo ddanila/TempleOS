@@ -88,6 +88,128 @@ def audit(exports, out):
     return image
 
 
+def package_volume(disk, exports):
+    """Write a RedSea volume after the reserved boot area; keep source bytes exact."""
+    start, sectors = 2048, 32768-2048
+    bitmap_blocks=(sectors+4095)//4096
+    first=start+bitmap_blocks+1
+    cursor=first
+    image=bytearray(disk.read_bytes())
+    tree={}
+    for directory in ('Kernel','Compiler'):
+        for path in sorted((ROOT/directory).rglob('*')):
+            if path.is_file() and path.suffix.upper() in ('.HC','.HH','.DD','.PRJ'):
+                node=tree
+                parts=path.relative_to(ROOT).parts
+                for part in parts[:-1]: node=node.setdefault(part,{})
+                node[parts[-1]]=path.read_bytes()
+    tree['Modules']={'I386':{f'{name}.t32m':(exports/f'{name}.t32m').read_bytes() for name in MODULES}}
+    files={}
+    def entry(name,attr,block,size):
+        raw=name.encode('ascii')
+        if not raw or len(raw)>=38: raise ValueError(f'Invalid RedSea name: {name}')
+        return struct.pack('<H38sqqQ',attr,raw,block,size,0)
+    def emit(node,path='',parent=None):
+        nonlocal cursor
+        if isinstance(node,bytes):
+            if not node:
+                block=0
+            else:
+                block=cursor
+                cursor+=(len(node)+511)//512
+                if cursor>start+sectors: raise ValueError('RedSea image full')
+                image[block*512:block*512+len(node)]=node
+            files[path]={'block':block,'size':len(node),'sha256':hashlib.sha256(node).hexdigest()}
+            return block,len(node),0x800
+        block=cursor
+        size=((len(node)+3)*64+511)//512*512
+        cursor+=size//512
+        if cursor>start+sectors: raise ValueError('RedSea directory image full')
+        entries=[entry('.',0x810,block,size),entry('..',0x810,parent or block,0)]
+        for name,child in sorted(node.items()):
+            child_block,child_size,attr=emit(child,path+'/'+name,block)
+            entries.append(entry(name,attr,child_block,child_size))
+        raw=b''.join(entries)
+        image[block*512:block*512+len(raw)]=raw
+        return block,size,0x810
+    root,_,_=emit(tree)
+    header=bytearray(512)
+    header[3]=0x88
+    struct.pack_into('<5q',header,8,start,sectors,root,bitmap_blocks,1)
+    struct.pack_into('<H',header,510,0xAA55)
+    image[start*512:(start+1)*512]=header
+    allocated=cursor-(first-1)
+    bitmap=bytearray(((1<<allocated)-1).to_bytes(bitmap_blocks*512,'little'))
+    valid_bits=start+sectors-(first-1)
+    for index in range(valid_bits,len(bitmap)*8): bitmap[index//8]|=1<<(index&7)
+    image[(start+1)*512:(start+1+bitmap_blocks)*512]=bitmap
+    disk.write_bytes(image)
+    return {'start':start,'sectors':sectors,'root':root,'bitmap_sectors':bitmap_blocks,
+            'first_free':cursor,'files':files}
+
+
+def verify_volume(disk, volume):
+    """Independently walk serialized directories and verify allocation ownership."""
+    image=disk.read_bytes()
+    start=volume['start']; end=start+volume['sectors']
+    first=start+volume['bitmap_sectors']+1
+    header=image[start*512:(start+1)*512]
+    if header[3]!=0x88 or header[510:]!=b'\x55\xaa' or struct.unpack_from('<5q',header,8)!=(
+            start,volume['sectors'],volume['root'],volume['bitmap_sectors'],1):
+        raise ValueError('Invalid packaged RedSea header')
+    owned=set(); found={}
+    def claim(block,size):
+        if not size and not block: return
+        if size<0 or block<first or block+(size+511)//512>end:
+            raise ValueError('Invalid packaged extent')
+        for sector in range(block,block+(size+511)//512):
+            if sector in owned: raise ValueError('Overlapping packaged extents')
+            owned.add(sector)
+    def record(raw):
+        attr,name,block,size,date=struct.unpack('<H38sqqQ',raw)
+        name=name.split(b'\0',1)[0].decode('ascii')
+        if not name or '/' in name or date: raise ValueError('Invalid packaged directory entry')
+        return attr,name,block,size
+    def directory(block,parent,path):
+        attr,name,self_block,size=record(image[block*512:block*512+64])
+        if (attr,name,self_block)!=(0x810,'.',block) or size<512 or size%512:
+            raise ValueError('Invalid packaged self entry')
+        claim(block,size)
+        if record(image[block*512+64:block*512+128])!=(0x810,'..',parent,0):
+            raise ValueError('Invalid packaged parent entry')
+        names=set()
+        for offset in range(128,size,64):
+            raw=image[block*512+offset:block*512+offset+64]
+            if not raw[2]:
+                if any(image[block*512+offset:block*512+size]):
+                    raise ValueError('Nonzero bytes after directory terminator')
+                return
+            attr,name,child,length=record(raw)
+            if name in names or name in ('.','..'): raise ValueError('Duplicate packaged name')
+            names.add(name)
+            child_path=path+'/'+name
+            if attr==0x810:
+                if child<first or child>=end: raise ValueError('Invalid child directory')
+                directory(child,block,child_path)
+                if struct.unpack_from('<q',image,child*512+48)[0]!=length:
+                    raise ValueError('Directory extent sizes disagree')
+            elif attr==0x800:
+                claim(child,length)
+                content=image[child*512:child*512+length] if length else b''
+                found[child_path]={'block':child,'size':length,'sha256':hashlib.sha256(content).hexdigest()}
+            else: raise ValueError('Invalid packaged attributes')
+        raise ValueError('Missing packaged directory terminator')
+    directory(volume['root'],volume['root'],'')
+    if found!=volume['files']: raise ValueError('Packaged files differ from source manifest')
+    bitmap=image[(start+1)*512:first*512]
+    for index in range(len(bitmap)*8):
+        block=first-1+index
+        expected=block<first or block>=end or block in owned
+        if bool(bitmap[index//8]&(1<<(index&7)))!=expected:
+            raise ValueError('Packaged allocation bitmap disagrees with extents')
+    return len(found)
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify VGA/startup ticks')
@@ -111,9 +233,11 @@ def main():
     disk=out/'kernel.img'
     run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
-    if disk.stat().st_size>(320+1)*512:
-        raise ValueError('Kernel stage exceeds its reserved 160 KiB load area')
+    if disk.stat().st_size>(768+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 384 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
+    volume=package_volume(disk,exports)
+    volume['verified_files']=verify_volume(disk,volume)
     result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256':bootstrap['source_sha256'],
             'bootstrap':bootstrap['generations'][-1],
@@ -128,7 +252,8 @@ def main():
             'kernel_sha256':hashlib.sha256(image).hexdigest(),
             'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in MODULES},
-            'scope':'Native kernel foundation; shell/JIT, filesystem startup and self-hosting unfinished',
+            'volume':volume,
+            'scope':'Native kernel foundation with RedSea source access; shell/JIT and self-hosting unfinished',
             'boot_test':None}
     if args.test:
         guest=out/'boot'
@@ -136,6 +261,17 @@ def main():
         log=(guest/'debug.log').read_text()
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
             raise ValueError('Missing native kernel startup/timer evidence')
+        mounted=[line.split() for line in log.splitlines() if line.startswith('REDSEA ')]
+        if len(mounted)!=1 or [int(x,16) for x in mounted[0][1:]]!=[volume['start'],volume['sectors']]:
+            raise ValueError('Wrong boot volume mounted')
+        source=(ROOT/'Kernel/I386/Kernel.HC').read_bytes()
+        checksum=2166136261
+        for byte in source: checksum=((checksum^byte)*16777619)&0xFFFFFFFF
+        reads=[line.split() for line in log.splitlines() if line.startswith('SOURCE ')]
+        if len(reads)!=1 or [int(x,16) for x in reads[0][1:]]!=[len(source),checksum]:
+            raise ValueError('Native RedSea source read differs from packaged source')
+        if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
+            raise ValueError('Read-only kernel startup changed the disk')
         ticks=[int(line.split()[1],16) for line in log.splitlines() if line.startswith('TICK ')]
         if ticks[0]<25 or ticks[1]-ticks[0]<25:
             raise ValueError('Kernel task woke before its requested tick delay')
@@ -158,7 +294,7 @@ def main():
             raise ValueError('VGA color-bar mismatch')
         screen.save(guest/'screen.png')
         result['boot_test']={'cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
-                             'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
+                             'source_bytes':len(source),'source_fnv32':checksum,'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
     result['disk_sha256']=hashlib.sha256(disk.read_bytes()).hexdigest()
     (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
     print(f'Built {disk} ({len(image)} native kernel bytes); boot test: {bool(args.test)}')

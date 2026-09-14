@@ -2,8 +2,11 @@
 %ifndef BOOT_SECTORS
 %define BOOT_SECTORS 128
 %endif
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 320
-%error Test stage must fit below physical 0x38000
+%ifndef BOOT_VOLUME_SECTOR
+%define BOOT_VOLUME_SECTOR 0
+%endif
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 768
+%error Boot stage must fit below physical 0x70000
 %endif
 bits 16
 org 0x7c00
@@ -14,6 +17,12 @@ org 0x7c00
     mov sp,0x7c00
     sti
     mov [drive],dl
+    ;Separate versioned disk handoff; preserve the existing 32-byte memory ABI.
+    mov dword [0x5020],0x44323349
+    mov dword [0x5024],1
+    movzx eax,dl
+    mov [0x5028],eax
+    mov dword [0x502C],BOOT_VOLUME_SECTOR
     ; Fixed-width handoff at 0x5000; all bytes below the stage remain reserved.
     mov dword [0x5000],0x4D323349
     mov dword [0x5004],1

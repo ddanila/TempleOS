@@ -23,11 +23,14 @@ to describe such a build.
 ## Entry and memory ownership
 
 `tools/i386-bios.inc` is the shared BIOS CHS loader and fixed-width memory handoff,
-also used by the existing test fixtures. It reads a reserved 160 KiB stage at
+also used by the existing test fixtures. It reads a reserved 384 KiB stage at
 0x10000, gathers conventional/legacy extended-memory information, sets VGA mode
 0x12 and enters flat 32-bit protected mode. The new kernel stage establishes its
 stack at 0x90000, installs an emergency IDT, sets CR0.EM and calls the linked entry
-with the handoff pointer at 0x5000. It supplies no runtime function pointers.
+with the memory handoff pointer at 0x5000. A separate version-1 disk handoff at
+0x5020 records the BIOS drive and RedSea volume start. It supplies no runtime
+function pointers. The kernel stage ends at 0x70000, below the root stack. Test
+stages retain their separate 160 KiB limit.
 
 Native startup validates the handoff, verifies/enables A20 using the legacy
 controller path, and selects an arena while reserving the boot/stage/stack and
@@ -47,15 +50,42 @@ the kernel continues running; the optional boot test stops its own QEMU process
 after collecting evidence. Exception/fault diagnostics currently halt on fatal
 conditions and are not the final debugger interface.
 
-The boot test verifies the extended arena bounds, readiness, two correctly delayed
-wakeups and every VGA pixel. The current linked image is 125672 bytes. The combined
+The boot test verifies the extended arena bounds, RedSea mount and streamed source
+checksum, unchanged disk contents, readiness, two correctly delayed wakeups and
+every VGA pixel. The current linked image is 173512 bytes. The combined
 task/exception/sleep regression passes through the shared BIOS path, and both
 x86-64 compiler/kernel rebuild/reboot generations pass. Tests use QEMU's 486 model
 with 8 MiB; generated-code auditing and CR0.EM are not proof of strict 386 support.
 
 This is the first standalone native kernel foundation, not a complete TempleOS
-port. It has no HolyC shell/JIT, DolDoc startup, disk-backed RedSea startup, full
+port. It has no HolyC shell/JIT, DolDoc startup, startup-source execution, full
 public CTask/CPU integration, keyboard/mouse UI, speaker integration or native
-self-hosted compiler. The image currently contains only boot stages and the kernel;
-it is not a formatted or installed RedSea distribution. The 8 MiB interactive and
+self-hosted compiler. The image now includes a formatted RedSea source/module volume, but it is not
+a complete installed TempleOS distribution. The 8 MiB interactive and
 16 MiB self-hosting goals remain unproven. The full scope in PLAN.md is unchanged.
+
+
+## RedSea startup volume
+
+The builder places a volume at sector 2048 of the 16 MiB image, after the reserved
+boot area. It packages Kernel/Compiler HC, HH, DD and PRJ files without modifying
+their bytes, and the six native modules under `Modules/I386`. The current build
+contains 231 files. It initializes directory self/parent records, termination,
+fixed-width extents/dates, and allocation bits including reserved/out-of-volume
+bits. An independent serialized-volume walk checks every file hash, directory
+extent and ownership bit before boot. Deliberate header, directory-size, file-byte
+and bitmap corruption were all rejected by this verifier.
+
+`BootDisk.HH` defines the separate 16-byte disk handoff (magic, version, BIOS drive,
+volume start). Startup currently requires BIOS drive 0x80 to map to primary IDE
+master; it rejects other BIOS drive numbers and does not discover arbitrary BIOS
+to-controller mappings. Native ATA PIO identifies that disk, mounts RedSea and
+walks `Kernel/I386/Kernel.HC`. A 256-byte buffer streams the complete source while
+computing an FNV-32 checksum, compared with the packaged source by the boot test.
+All disk access occurs during controlled startup with IF clear. There is no full
+public CDrv/CFile interface, runtime filesystem concurrency or source execution yet.
+
+The memory-handoff regression checks the disk sidecar too, including the absence
+of a volume in ordinary test images. The existing RedSea reader suite and both
+x86-64 rebuild/reboot generations pass. The legacy memory/A20 and strict-386
+limitations above continue to apply.

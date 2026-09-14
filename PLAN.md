@@ -644,6 +644,11 @@ loader, consumes the memory handoff, enables A20 and initializes the linked
 memory/task/exception/interrupt/timer runtime. The 8 MiB QEMU boot check verifies
 VGA output and delayed task wakeups. This foundation still lacks shell/JIT,
 DolDoc, RedSea startup and native self-hosting; see `docs/i386-kernel.md`.
+Standalone startup now mounts a packaged RedSea source/module volume through
+ATA PIO and streams its complete kernel source. Host directory/file/bitmap checks
+and the native byte-count/checksum agree; the disk remains unchanged during boot.
+The first BIOS-drive/controller mapping is explicit. Public filesystem APIs,
+startup-source execution and native compiler integration remain required.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

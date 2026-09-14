@@ -1,9 +1,11 @@
-//Native kernel foundation. The HolyC shell/compiler and disk startup are pending.
+//Native kernel foundation. Resident HolyC compilation and startup execution are pending.
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/BootMemory.HH"
+#include "/Kernel/I386/BootDisk.HH"
+#include "/Kernel/I386/RedSea.HH"
 #include "/Kernel/I386/A20.HH"
 #include "/Kernel/I386/TaskPlatform.HH"
 #include "/Kernel/I386/ExceptNative.HH"
@@ -16,6 +18,8 @@ CI386Scheduler kernel_scheduler;
 CI386Task kernel_root;
 CI386Cpu kernel_cpu;
 CI386Heap kernel_heap;
+CI386Ata kernel_disk;
+CI386RedSea kernel_volume;
 CI386Timer kernel_timer;
 CI386SleepQueue kernel_sleep;
 U8 kernel_gdt[40],kernel_idt[2048];
@@ -30,6 +34,7 @@ extern U0 KernelReport(CI386Task *task,I64 ch);
 extern U0 KernelFatal(CI386Task *task,I64 status,I64 ch);
 extern U0 KernelPulse(I64 unused);
 extern U0 KernelDisplay();
+extern U0 KernelStorage(CI386BootInfo *info);
 I64 Main(CI386BootInfo *info,I64 unused)
 {
   CI386MemRange reserved,arena;
@@ -45,6 +50,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   if(!I386TaskPlatformInit(&kernel_scheduler,&kernel_root,&kernel_cpu,
       kernel_gdt,0x88000,32768,&kernel_heap) ||
       !I386ExceptInstallNative(&KernelReport,&KernelFatal)) KernelStop;
+  KernelStorage(info);
   I386PicInit;
   services.irq=&KernelIrq; services.exception=&KernelFault;
   if(!I386InterruptInstall(kernel_idt,256,&KernelStop,&services) ||
@@ -153,3 +159,32 @@ U0 KernelDisplay()
 #include "/Kernel/I386/Timer.HC"
 #include "/Kernel/I386/Sleep.HC"
 #include "/Kernel/I386/Vga.HC"
+
+U0 KernelStorage(CI386BootInfo *info)
+{//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
+  CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
+  CI386RedSeaEntry entry;
+  U8 buffer[256];
+  I64 offset=0,count,i;
+  U32 hash=2166136261;
+  if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
+      boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
+      !I386AtaIdentify(&kernel_disk,0,0) ||
+      !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
+  KernelLog("REDSEA "); KernelHex(kernel_volume.start); KernelLog(" ");
+  KernelHex(kernel_volume.sectors); KernelLog("\n");
+  if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Kernel",&entry)!=1 ||
+      !(entry.attr&0x10) || I386RedSeaFind(&kernel_volume,entry.block,"I386",&entry)!=1 ||
+      !(entry.attr&0x10) || I386RedSeaFind(&kernel_volume,entry.block,"Kernel.HC",&entry)!=1 ||
+      (entry.attr&0x310) || entry.size<1) KernelStop;
+  while(offset<entry.size) {
+    count=I386RedSeaRead(&kernel_volume,&entry,offset,buffer,256);
+    if(count<1) KernelStop;
+    for(i=0;i<count;i++) hash=(hash^buffer[i])*16777619;
+    offset+=count;
+  }
+  KernelLog("SOURCE "); KernelHex(entry.size); KernelLog(" ");
+  KernelHex(hash); KernelLog("\n");
+}
+#include "/Kernel/I386/Ata.HC"
+#include "/Kernel/I386/RedSea.HC"

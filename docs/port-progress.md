@@ -1754,3 +1754,25 @@ DolDoc, RedSea startup, public task records, input/audio integration, native
 self-hosting and strict 386 validation remain unfinished. The disk is not yet
 an installed RedSea distribution. See `i386-kernel.md` for build/run commands
 and the remaining boot assumptions.
+
+
+## RedSea-backed standalone kernel startup
+
+The standalone image now includes a formatted RedSea volume at sector 2048 with
+231 source/module files. The builder preserves source bytes and independently
+walks serialized directories, file hashes, extents and allocation ownership;
+header, directory-size, file-byte and bitmap corruption checks reject mutations.
+A separate versioned boot-disk sidecar preserves the existing memory handoff ABI.
+
+Native startup requires the initial BIOS-0x80/primary-IDE-master profile,
+identifies the disk, mounts RedSea and streams its own Kernel/I386/Kernel.HC in
+256-byte chunks. The boot check matches the complete file size/checksum and
+verifies that the disk did not change. VGA, memory selection and delayed task
+wakeups still pass. The memory-sidecar and RedSea reader regressions and both
+x86-64 rebuild/reboot generations also pass.
+
+The linked kernel is now 173512 bytes. Its reserved CHS transfer grows to 384 KiB,
+ending at 0x70000 below the root stack; test stages retain their 160 KiB bound.
+The disk is a source/module volume, not a complete installed distribution.
+Public filesystem/task integration, startup-source execution, shell/JIT, DolDoc,
+native self-hosting and strict 386 validation remain unfinished. See `i386-kernel.md`.
