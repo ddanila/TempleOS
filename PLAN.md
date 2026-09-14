@@ -459,8 +459,15 @@ RedSea loading. The compiler file-input bridge adds HC.Z, preserves the original
 two normalization steps and transfers loaded bytes into owned include records.
 Two-volume and nested-input tests cover routing, replay, I/O/allocation failures
 and reclamation. These quiescent IF-clear services still require task/public
-binding, resident-file semantics, scheduler-aware disk access and native directive
-dispatch; see `docs/i386-file-context.md`.
+binding, resident-file semantics, scheduler-aware disk access and resident service
+binding; see `docs/i386-file-context.md`.
+
+Native include dispatch now accepts an explicit synchronous provider and preserves
+that binding across recursive token reads and conditional scans. Eight original
+x64 include scenarios match native execution; disk-adapter ownership/I/O checks
+also pass. The retained compiler table still uses the providerless entry, so
+publishing and binding the resident include service remains an integration gate.
+See `docs/i386-lex-includes.md`.
 
 #### Continuing integration sequence
 

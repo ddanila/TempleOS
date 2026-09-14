@@ -5,6 +5,17 @@ Bool ConditionalFree(CCmpCtrl *cc) { Free(cc->cur_str); cc->cur_str=0; return TR
 #include "T:/Common.HC"
 #include "T:/Cases.HC"
 #include "T:/Failures.HC"
+#include "T:/IncludeSources.HC"
+Bool IncludeSourceMatch(U8 *name)
+{
+  U8 *source=FileRead(name); Bool same=source && !StrCmp(source,IncludeText(name));
+  Free(source); return same;
+}
+U0 IncludePrepare() {}
+Bool IncludeLoads(I64 count) { return TRUE; }
+I64 IncludeNext(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
+Bool IncludeSymbolFree(CHashSrcSym *entry) { HashDel(entry); return TRUE; }
+#include "T:/Includes.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -16,6 +27,13 @@ U0 CompileTests()
   Report("START native lex cond\n");
   i=ConditionalTest; if(!i) i=ConditionalEdgeTest; if(!i) i=ConditionalFailureTest;
   if(i) { line=MStrPrint("FAIL x64 conditional %d\n",i); Report(line); return; }
+  if(!IncludeSourceMatch("T:/First.HC") || !IncludeSourceMatch("T:/Second.HC") ||
+      !IncludeSourceMatch("T:/Empty.HC") || !IncludeSourceMatch("T:/Name.HC")) {
+    Report("FAIL include source fixtures differ\n"); return;
+  }
+  i=IncludeTest;
+  if(i) { line=MStrPrint("FAIL x64 includes %d\n",i); Report(line); return; }
+  Report("PASS x64 include dispatch\n");
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);

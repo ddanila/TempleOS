@@ -2,22 +2,25 @@
 #include "/Compiler/LexConditional.HC"
 class CI386ConditionalInput {
   CI386Heap *heap; CLexPunctTables *tables; U8 *macro_filename; I64 *compiled_lines;
+  CI386LexIncludeService *includes;
 };
 I64 I386ConditionalToken(U8 *context,CCmpCtrl *cc)
 {
   CI386ConditionalInput *input=context;
-  return I386LexNext(input->heap,cc,input->tables,input->macro_filename,input->compiled_lines);
+  return I386LexNextWithIncludes(input->heap,cc,input->tables,input->macro_filename,input->compiled_lines,input->includes);
 }
-I64 I386ConditionalSkip(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_filename,I64 *compiled_lines,Bool stop_else)
+I64 I386ConditionalSkip(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_filename,I64 *compiled_lines,Bool stop_else,CI386LexIncludeService *includes)
 {
   CI386ConditionalInput input; CI386LexCharSource native; CLexCharSource characters,tokens;
   input.heap=heap; input.tables=tables; input.macro_filename=macro_filename; input.compiled_lines=compiled_lines;
+  input.includes=includes;
   native.heap=heap; native.compiled_lines=compiled_lines;
   characters.context=&native; characters.read=&I386LexSourceRead;
   tokens.context=&input; tokens.read=&I386ConditionalToken;
   return LexSkipConditional(cc,&characters,&tokens,1,stop_else);
 }
-I64 I386LexNext(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_filename,I64 *compiled_lines)
+I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,
+  U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes)
 {
   I64 ch,result,keyword; Bool take;
   if(!heap || !cc || !cc->lex_include_stk || !compiled_lines || !tables ||
@@ -44,14 +47,21 @@ I64 I386LexNext(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_f
         return result;
       case '#':
         if(cc->flags&CCF_KEEP_SIGN_NUM) goto lex_literal;
-        result=I386LexNext(heap,cc,tables,macro_filename,compiled_lines);
+        result=I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,includes);
         if(result<0) return result;
         if(result!=TK_IDENT || !cc->hash_entry || !(cc->hash_entry->type&HTT_KEYWORD)) return -4;
         keyword=cc->hash_entry(CHashGeneric *)->user_data0;
         switch(keyword) {
+          case KW_INCLUDE:
+            if(!includes || !includes->push) return -4;
+            result=I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,includes);
+            if(result<0) return result;
+            if(result!=TK_STR) goto lex_finish;
+            if(!(*includes->push)(includes->context,heap,cc,cc->cur_str)) return -1;
+            break;
           case KW_DEFINE:
             cc->flags|=CCF_NO_DEFINES;
-            result=I386LexNext(heap,cc,tables,macro_filename,compiled_lines);
+            result=I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,includes);
             if(result==TK_IDENT && !I386LexDefinePublish(heap,cc,compiled_lines)) result=-1;
             cc->flags&=~CCF_NO_DEFINES;
             if(result<0) return result;
@@ -62,13 +72,13 @@ I64 I386LexNext(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_f
               goto lex_literal;
             }
             cc->flags|=CCF_NO_DEFINES;
-            result=I386LexNext(heap,cc,tables,macro_filename,compiled_lines);
+            result=I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,includes);
             cc->flags&=~CCF_NO_DEFINES;
             if(result<0) return result;
             if(result!=TK_IDENT) goto lex_finish;
             take=cc->hash_entry!=0; if(keyword==KW_IFNDEF) take=!take;
             if(!take) {
-              result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,TRUE);
+              result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,TRUE,includes);
               if(result<0) return result;
               if(!result) goto lex_finish;
             }
@@ -77,14 +87,14 @@ I64 I386LexNext(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_f
             if(cc->flags&CCF_IN_IF) { ch=TK_IFAOT; goto lex_literal; }
             take=(cc->flags&CCF_AOT_COMPILE)!=0; if(keyword==KW_IFJIT) take=!take;
             if(!take) {
-              result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,TRUE);
+              result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,TRUE,includes);
               if(result<0) return result;
               if(!result) goto lex_finish;
             }
             break;
           case KW_ELSE:
             if(cc->flags&CCF_IN_IF) { ch=TK_ELSE; goto lex_literal; }
-            result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,FALSE);
+            result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,FALSE,includes);
             if(result<0) return result;
             if(!result) goto lex_finish;
             break;
@@ -112,4 +122,9 @@ lex_finish:
         break;
     }
   }
+}
+
+I64 I386LexNext(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_filename,I64 *compiled_lines)
+{
+  return I386LexNextWithIncludes(heap,cc,tables,macro_filename,compiled_lines,0);
 }

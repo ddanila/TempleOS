@@ -80,8 +80,12 @@ arena ends below 0x82100, clear of the runner stack. These are test placements;
 the standalone bootstrap remains 383496 bytes and does not yet link these services.
 
 Remaining work includes current-task/public drive binding, resident-file caching,
-public FileRead errors/exception behavior, scheduler-aware ATA ownership, native
-include-directive dispatch and full compiler-control construction/destruction.
+public FileRead errors/exception behavior, scheduler-aware ATA ownership, resident
+include-service binding and full compiler-control construction/destruction.
 The fixed borrowed volume table is an integration input for public wrappers, not
 a replacement application API or a new device framework. Resident parser/JIT,
 DolDoc, strict 386SX/DX verification and native self-hosting remain required.
+
+Native directive dispatch now accepts this bridge through I386LexFileInclude and
+an explicit service context. See `i386-lex-includes.md` for its compatibility tests,
+callback contract and remaining resident-module integration.

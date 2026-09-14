@@ -14,6 +14,8 @@ extern I64 ConditionalTest();
 extern I64 ConditionalEdgeTest();
 extern I64 ConditionalFailureTest();
 extern I64 NativeConditionalTest();
+extern I64 IncludeTest();
+extern I64 IncludeFailureTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
@@ -24,6 +26,8 @@ I64 Main(I64 unused,I64 unused2)
   result=ConditionalEdgeTest; if(result) return result;
   result=ConditionalFailureTest; if(result) return result;
   result=NativeConditionalTest; if(result) return result;
+  result=IncludeTest; if(result) return result;
+  result=IncludeFailureTest; if(result) return result;
   if(!I386KeywordsDelete(&keywords) || token_heap.used || token_heap.allocations || !I386HeapValid(&token_heap)) return 2;
   return 0;
 }
@@ -58,3 +62,5 @@ Bool ConditionalFree(CCmpCtrl *cc)
 #include "T:/Cases.HC"
 #include "T:/Failures.HC"
 #include "T:/Native.HC"
+
+#include "T:/IncludeNative.HC"

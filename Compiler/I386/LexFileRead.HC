@@ -20,3 +20,10 @@ Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
   if(!attached) I386HeapFree(heap,source);
   return attached;
 }
+
+Bool I386LexFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filename)
+{
+  CI386LexFileContext *files=context;
+  if(!files) return FALSE;
+  return I386LexIncludeFile(heap,cc,files->paths,files->volumes,filename);
+}

@@ -1,3 +1,11 @@
+Bool ContextIncludeCall(CI386Heap *heap,CCmpCtrl *cc,CFilePathContext *paths,
+  CI386FileVolumes *volumes,U8 *filename)
+{
+  CI386LexFileContext files; CI386LexIncludeService service;
+  files.paths=paths; files.volumes=volumes;
+  service.context=&files; service.push=&I386LexFileInclude;
+  return (*service.push)(service.context,heap,cc,filename);
+}
 Bool ContextEqual(U8 *a,U8 *b)
 {
   while(*a && *a==*b) { a++; b++; }
@@ -58,13 +66,13 @@ I64 ContextIncludeTest(CI386Heap *heap,CFilePathContext *paths,CI386FileVolumes 
   root=cc.lex_include_stk; used=heap->used; count=heap->allocations;
   if(I386LexRawChar(heap,&cc,&lines)!='R') return 41;
   cc.flags|=CCF_USE_LAST_U16;
-  if(!I386LexIncludeFile(heap,&cc,paths,volumes,"D:/Source") ||
+  if(!ContextIncludeCall(heap,&cc,paths,volumes,"D:/Source") ||
       !ContextEqual(cc.lex_include_stk->full_name,"D:/Source.HC.Z") ||
       cc.lex_include_stk->next!=root || cc.lex_include_stk->flags&LFSF_DEFINE) return 42;
   outer=cc.lex_include_stk;
   if(I386LexRawChar(heap,&cc,&lines)!='I') return 43;
   cc.flags|=CCF_USE_LAST_U16;
-  if(!I386LexIncludeFile(heap,&cc,paths,volumes,"Source") ||
+  if(!ContextIncludeCall(heap,&cc,paths,volumes,"Source") ||
       !ContextEqual(cc.lex_include_stk->full_name,"C:/Read/Source.HC.Z") ||
       cc.lex_include_stk->next!=outer || heap->allocations!=count+6) return 44;
   length=64*FileNameLength(pattern)+FileNameLength(function);
@@ -78,19 +86,19 @@ I64 ContextIncludeTest(CI386Heap *heap,CFilePathContext *paths,CI386FileVolumes 
       heap->used!=used || heap->allocations!=count || lines!=66) return 47;
   if(I386LexRawChar(heap,&cc,&lines)!=TK_EOF) return 48;
   for(i=0;i<sizeof(CCmpCtrl);i++) snapshot[i]=bytes[i];
-  if(I386LexIncludeFile(heap,&cc,paths,volumes,"Missing") ||
-      I386LexIncludeFile(heap,&cc,paths,volumes,"Bad.HC.Z") ||
-      I386LexIncludeFile(heap,&cc,paths,volumes,"E:/Source") ||
-      I386LexIncludeFile(heap,&cc,paths,volumes,"C:/IO/Outside.HC.Z") ||
-      I386LexIncludeFile(heap,&cc,paths,volumes,0)) return 49;
+  if(ContextIncludeCall(heap,&cc,paths,volumes,"Missing") ||
+      ContextIncludeCall(heap,&cc,paths,volumes,"Bad.HC.Z") ||
+      ContextIncludeCall(heap,&cc,paths,volumes,"E:/Source") ||
+      ContextIncludeCall(heap,&cc,paths,volumes,"C:/IO/Outside.HC.Z") ||
+      ContextIncludeCall(heap,&cc,paths,volumes,0)) return 49;
   for(i=0;i<sizeof(CCmpCtrl);i++) if(snapshot[i]!=bytes[i]) return 50;
   if(heap->used!=used || heap->allocations!=count || !I386HeapValid(heap)) return 51;
-  if(!I386LexIncludeFile(heap,&cc,paths,volumes,"Empty") ||
+  if(!ContextIncludeCall(heap,&cc,paths,volumes,"Empty") ||
       I386LexRawChar(heap,&cc,&lines)!=TK_EOF || cc.lex_include_stk!=root || heap->used!=used) return 52;
   //Compiler names are normalized once before FileRead performs its own normalization.
   old_dir=paths->cur_dir; paths->cur_dir="/Missing/";
   if(!ContextReject(heap,paths,volumes,"Tools/Source.HC") ||
-      !I386LexIncludeFile(heap,&cc,paths,volumes,"Tools/Source") ||
+      !ContextIncludeCall(heap,&cc,paths,volumes,"Tools/Source") ||
       !ContextEqual(cc.lex_include_stk->full_name,"C:/Missing//Tools/Source.HC.Z")) return 60;
   paths->cur_dir=old_dir;
   for(i=0;function[i];i++) if(I386LexRawChar(heap,&cc,&lines)!=function[i]) return 61;
@@ -110,7 +118,7 @@ I64 ContextIncludeFailure(CFilePathContext *paths,CI386FileVolumes *volumes)
     if(!I386HeapInit(&heap,0x71000,size) || !ContextRoot(&heap,&cc)) return 54;
     used=heap.used; count=heap.allocations;
     for(i=0;i<sizeof(CCmpCtrl);i++) snapshot[i]=bytes[i];
-    attached=I386LexIncludeFile(&heap,&cc,paths,volumes,"D:/Source");
+    attached=ContextIncludeCall(&heap,&cc,paths,volumes,"D:/Source");
     if(attached) {
       successes++;
       if(!ContextEqual(cc.lex_include_stk->full_name,"D:/Source.HC.Z") ||
@@ -180,7 +188,7 @@ I64 FileContextTest(CI386RedSea *first,CI386Heap *heap)
   for(i=0;i<sizeof(CCmpCtrl);i++) snapshot[i]=bytes[i];
   OutU8(0x21,255); OutU8(0xA1,255); SetRFlags(GetRFlags|0x200);
   if(!ContextReject(heap,&paths,&volumes,"Source.HC") ||
-      I386LexIncludeFile(heap,&cc,&paths,&volumes,"Source") || !(GetRFlags&0x200)) return 29;
+      ContextIncludeCall(heap,&cc,&paths,&volumes,"Source") || !(GetRFlags&0x200)) return 29;
   SetRFlags(GetRFlags&~0x200);
   for(i=0;i<sizeof(CCmpCtrl);i++) if(snapshot[i]!=bytes[i]) return 30;
   if(heap->used!=used || heap->allocations!=count || !I386LexFilePop(heap,&cc) ||

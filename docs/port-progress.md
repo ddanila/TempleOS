@@ -2816,3 +2816,30 @@ scheduler-aware ATA ownership, native include-directive dispatch and full compil
 context lifetime remain open. Raw include-service success does not establish
 parser/JIT execution, DolDoc, strict 386 support or native self-hosting. See
 `docs/i386-file-context.md` for contracts and validation commands.
+
+## Native include dispatch with an explicit provider
+
+I386LexNextWithIncludes carries a synchronous include callback through recursive
+token reads and conditional scanning. Active string filenames publish owned
+children; parent lookahead, semicolon tokens and EOF cleanup follow the original
+lexer. The existing I386LexNext remains a providerless wrapper. Missing providers
+return -4, provider failures return -1 at the filename token, and token errors
+propagate before loading. The disk bridge has an adapter with the same signature.
+
+Eight scenarios pass against original x64 Lex with real source files and native
+owned-buffer providers. They cover nested includes, macro and recursive filename
+production, child definitions, empty input, skipped conditional branches,
+semicolons and non-string arguments. Fixture text equality is checked on the host.
+Native callback counts, failure snapshots, token/definition/file reclamation and
+providerless compatibility pass. Existing conditional regressions, disk-adapter
+routing/nested input/partial-I/O/86-arena checks, instruction audits, both x64
+rebuild/reboot generations and standalone boot checks also pass.
+
+The bootstrap remains 383496 bytes. The retained compiler module now occupies
+138168 image bytes and 138184 heap bytes, increasing resident use by 2216 bytes.
+Its version-9 service table still uses the providerless lexer entry. Publishing
+the include-capable resident interface and binding the disk provider, along with
+task-aware I/O, public file semantics, complete compiler lifetime, parser/JIT,
+DolDoc, strict 386 validation and self-hosting, remain required. The dispatcher
+and disk adapter have separate integration tests; the combined resident command
+path is still open. See `docs/i386-lex-includes.md`.
