@@ -348,6 +348,9 @@ programming environment through these concrete steps:
    existing control/file initialization runs through shared helpers. Native
    CCmpCtrl layout, queue bindings and wide-value tests pass; file/include
    ownership and native lexer execution remain to be connected.
+   Lexer save/restore now shares CLexFile snapshot semantics, with native heap,
+   control and active-file ownership checks. Native failures leave the save state
+   unchanged before publication; input loading and tokenization remain open.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 

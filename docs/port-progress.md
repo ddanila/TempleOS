@@ -2019,3 +2019,23 @@ Native file/include ownership, task-selected control constructors, complete lexe
 state and source execution remain required. These initializers do not yet run
 the parser, JIT shell or self-hosted compiler. See `i386-symbols.md`.
 
+
+## Shared lexer snapshots and native ownership
+
+Character backup, saved-position linking/detachment and CLexFile restoration now
+share one implementation. Existing x86-64 LexPush/Pop entry points retain their
+allocator and failure order. Native adapters allocate private ownership metadata,
+leave state unchanged on allocation failure, and reject wrong heap/control or a
+restore after the active-file pointer changes. Discard remains available after
+that boundary. Snapshots borrow buffers, names and document pointers.
+
+The new `--lex-state` suite passes 512 saved-byte/flag combinations on both targets,
+nested restore/discard, wide control/line values, file padding and active include
+link preservation. Native allocation failure, ownership rejection, empty/repeated
+pop, interrupt-state preservation and full heap reclamation pass too. Instruction
+audits, both x86-64 rebuild generations and the complete 314504-byte kernel's
+8 MiB QEMU/486 boot checks pass.
+
+This supplies parser backtracking state. Native file/include loading, tokenization,
+control destruction and the complete compiler/JIT environment remain required;
+strict 386 validation and self-hosting are still open. See `i386-lex-state.md`.

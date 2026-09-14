@@ -302,3 +302,7 @@ CCmpCtrl is 472 bytes on x86-64 and 344 on i386; CLexFile is 80/52 bytes and
 CCodeCtrl is 48/28 bytes. Native assertions also cover embedded record sizes and
 critical offsets. The expanded symbol fixture, instruction audit and complete
 314504-byte standalone kernel boot checks pass on the 8 MiB QEMU/486 profile.
+
+The control record's saved-position stack now also has shared host/native
+semantics and explicit native heap ownership. See `i386-lex-state.md` for shallow
+payload lifetime, include-boundary rules and save/restore verification.

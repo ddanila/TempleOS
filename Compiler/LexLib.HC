@@ -1,45 +1,18 @@
-U0 LexBackupLastChar(CCmpCtrl *cc)
-{
-  CLexFile *tmpf=cc->lex_include_stk;
-  tmpf->buf_ptr=cc->cur_buf_ptr;
-  if (cc->flags & CCF_USE_LAST_U16) {
-    tmpf->last_U16=cc->last_U16;
-    cc->flags&=~CCF_USE_LAST_U16;
-  } else
-    tmpf->last_U16=0;
-}
-
+#include "/Compiler/LexState.HC"
 U0 LexPush(CCmpCtrl *cc)
-{//Create token-stream save point.
-  CLexFile *tmpf;
-  LexBackupLastChar(cc);
-  if (cc->lex_include_stk->last_U16)
-    cc->flags|=CCF_USE_LAST_U16;
-  tmpf=MAllocIdent(cc->lex_include_stk);
-  tmpf->next=cc->lex_prs_stk;
-  cc->lex_prs_stk=tmpf;
+{//Create token-stream save point. Preserve the existing allocation/failure order.
+  CLexFile *snapshot;
+  LexPrepareSnapshot(cc);
+  snapshot=MAllocIdent(cc->lex_include_stk);
+  LexSnapshotAttach(cc,snapshot);
 }
-
 U0 LexPopRestore(CCmpCtrl *cc)
-{//Restore token-stream saved-point.
-//Bad things can happen if you cross an #include file boundary.
-  CLexFile *tmpf=cc->lex_prs_stk;
-  cc->cur_buf_ptr=tmpf->buf_ptr;
-  if (cc->last_U16=tmpf->last_U16)
-    cc->flags|=CCF_USE_LAST_U16;
-  else
-    cc->flags&=~CCF_USE_LAST_U16;
-  MemCpy(cc->lex_include_stk(U8 *)+sizeof(U8 *),tmpf(U8 *)+sizeof(U8 *),
-	sizeof(CLexFile)-sizeof(U8 *));
-  cc->lex_prs_stk=tmpf->next;
-  Free(tmpf);
+{//Caller must not cross an include-file boundary while restoring a save point.
+  Free(LexSnapshotRestore(cc));
 }
-
 U0 LexPopNoRestore(CCmpCtrl *cc)
-{//Don't restore token-stream saved-point.
-  CLexFile *tmpf=cc->lex_prs_stk;
-  cc->lex_prs_stk=tmpf->next;
-  Free(tmpf);
+{
+  Free(LexSnapshotDetach(cc));
 }
 
 #include "/Compiler/MemberLookup.HC"
