@@ -16,9 +16,9 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 5 of CI386CompilerServices: a U32 version,
-U32 byte count, and native function pointers for string chunks, numeric tokens character constants, punctuation, identifier scanning and identifier-token completion.
-The structure is 32 bytes on i386. The entry receives caller-owned interface
+`CompilerRuntime.HH` defines version 6 of CI386CompilerServices: a U32 version,
+U32 byte count, and native function pointers for string chunks, numeric tokens character constants, punctuation, identifier scanning and identifier-token completion and owned string tokens.
+The structure is 36 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -34,9 +34,9 @@ its own numerical implementation and immutable-use power table inside its image.
 
 KernelCompilerLoad runs with IF clear and exclusive disk/heap ownership. After
 loading, the kernel verifies one retained allocation, extended-memory placement,
-interface version and byte count, and that all six service pointers fall inside the
+interface version and byte count, and that all seven service pointers fall inside the
 loaded image. It publishes the global interface only after these checks succeed.
-The host boot verifier independently checks all six pointer values against the
+The host boot verifier independently checks all seven pointer values against the
 module's actual function export offsets, not just the image's address range.
 
 The image, its code/data and the kernel providers must remain live for every
@@ -70,26 +70,27 @@ Run:
 
 ```sh
 python3 tools/test-rebuild.py
+python3 tools/test-i386.py --lex-string
 python3 tools/test-i386.py --lex-ident
-python3 tools/test-i386.py --lex-punct
 python3 tools/build-i386-kernel.py --test
 ```
 
-Both x86-64 rebuild/reboot generations, the identifier/punctuation regressions and the full boot
+Both x86-64 rebuild/reboot generations, the string/identifier regressions and the full boot
 suite pass. Three runtime rejection boots alter its CPU tag, one function import,
 and its returned interface version respectively. All halt before interface use or
 startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With identifier-token completion in interface version 5, the bootstrap image is
-374992 bytes. The 92416-byte runtime image is allocated at 0x129188 in the
-8 MiB development profile and retains a 92432-byte heap span. All six service
-addresses match their exported offsets. Boot/task IDENT PROBE checks additionally
-expand a macro, publish its owned identifier and release all temporary storage.
-Raw source checks cover 25883 characters, 547 newlines, FNV32 0x264D8E35 and
-reclamation of 26344 heap bytes. Sizes/addresses are observations in the manifest,
-not fixed addresses or memory minima required by the interface.
+With owned string tokens in interface version 6, the bootstrap image is
+378800 bytes. The 97440-byte runtime image is allocated at 0x12A760 in the
+8 MiB development profile and retains a 97456-byte heap span. All seven service
+addresses match their exported offsets. Boot/task probes expand a macro, publish
+its identifier, replace that owned text with a binary string, then release it and
+verify the heap baseline. IDENT PROBE and STRING PROBE records are required.
+Source checks cover 26911 characters, 558 newlines, FNV32 0x26777991 and 27368
+reclaimed heap bytes. Sizes/addresses are observations in the manifest, not fixed
+addresses or memory minima required by the interface.
 
 ## Import-declaration correction
 

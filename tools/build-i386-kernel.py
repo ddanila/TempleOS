@@ -65,18 +65,19 @@ def compiler_runtime_layout(module):
                 imports.append((symbol, name))
     if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy'}:
         raise ValueError('Unexpected compiler-runtime import contract')
-    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken'):
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken'):
         if name not in exports or exports[name][0] != 1:
             raise ValueError(f'Missing compiler-runtime function {name}')
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 5:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 6:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
                 punct_offset=8+exports['I386RuntimePunct'][1], ident_offset=8+exports['I386LexIdentScan'][1],
-                ident_token_offset=8+exports['I386LexIdentToken'][1], version_offset=version_offset,
+                ident_token_offset=8+exports['I386LexIdentToken'][1], string_token_offset=8+exports['I386LexStringToken'][1],
+                version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
@@ -88,7 +89,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 4), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 5), 'api')):
         work = out/f'reject-runtime-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -101,7 +102,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
                 f'RUNTIME REJECT {reason} reclaimed\n' not in evidence or
-                any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ', 'STARTUP disk module',
+                any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ', 'STRING PROBE ', 'STARTUP disk module',
                     'MODULE ', 'READY native kernel', 'DONE native kernel'))):
             raise ValueError(f'Compiler runtime did not reject/reclaim {label} before publication')
         if candidate.read_bytes() != changed:
@@ -402,9 +403,9 @@ def main():
             raise ValueError('Unexpected 8 MiB memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
-        if len(runtime) != 1 or len(runtime[0]) != 10:
+        if len(runtime) != 1 or len(runtime[0]) != 11:
             raise ValueError('Missing retained compiler-runtime image')
-        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address = (int(x, 16) for x in runtime[0][1:])
+        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address = (int(x, 16) for x in runtime[0][1:])
         if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
                 address < begin or address+size > begin+length or
                 string_address != address+runtime_layout['string_offset'] or
@@ -412,7 +413,8 @@ def main():
                 char_address != address+runtime_layout['char_offset'] or
                 punct_address != address+runtime_layout['punct_offset'] or
                 ident_address != address+runtime_layout['ident_offset'] or
-                ident_token_address != address+runtime_layout['ident_token_offset']):
+                ident_token_address != address+runtime_layout['ident_token_offset'] or
+                string_token_address != address+runtime_layout['string_token_offset']):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         probes = [line.split() for line in log.splitlines() if line.startswith('RUNTIME PROBE ')]
         if ([list(map(lambda x: int(x, 16), row[2:])) for row in probes] !=
@@ -426,9 +428,15 @@ def main():
                 log.index('IDENT PROBE ') > log.index('STARTUP disk module') or
                 log.rindex('IDENT PROBE ') < log.rindex('TICK ')):
             raise ValueError('Native identifier token/macro probes failed')
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=5, image_address=address,
+        string_probes = [line.split() for line in log.splitlines() if line.startswith('STRING PROBE ')]
+        if ([list(map(lambda x: int(x, 16), row[2:])) for row in string_probes] !=
+                [[0, 0x101, 0x620061], [1, 0x101, 0x620061]] or
+                log.index('STRING PROBE ') > log.index('STARTUP disk module') or
+                log.rindex('STRING PROBE ') < log.rindex('TICK ')):
+            raise ValueError('Native owned string token probes failed')
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=6, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
-            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], lifetime='kernel lifetime')
+            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')

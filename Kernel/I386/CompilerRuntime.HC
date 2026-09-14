@@ -26,7 +26,7 @@ U32 runtime_first[TK_TKS_NUM],runtime_second[TK_TKS_NUM],runtime_third[TK_TKS_NU
 CLexPunctTables runtime_punct;
 extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==32
+#assert sizeof(CI386CompilerServices)==36
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -40,6 +40,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->punct_token=&I386RuntimePunct;
   services->ident_scan=&I386LexIdentScan;
   services->ident_token=&I386LexIdentToken;
+  services->string_token=&I386LexStringToken;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

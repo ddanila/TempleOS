@@ -79,3 +79,7 @@ heap bytes. String decoding executes in the dedicated native fixture; boot does
 not yet invoke a complete lexer. Native tokenization, macro/directive processing,
 control lifecycle, document/prompt services, compiler/JIT execution, self-hosting
 and strict 386 validation remain required.
+
+Complete native string-token construction now builds on this chunk decoder; see
+[i386-lex-string-token.md](i386-lex-string-token.md) for ownership, publication and
+failure behavior. The chunk API retains its original caller-buffer contract.

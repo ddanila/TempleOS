@@ -437,6 +437,9 @@ programming environment through these concrete steps:
    The version-5 token service expands string macros through owned inputs or
    publishes an owned identifier, preserving previous text on allocation failure.
    Chained/empty macros, NO_DEFINES, local shadowing and boot/task reclamation pass.
+   Complete native string construction now publishes exact-sized owned buffers,
+   including embedded zero bytes, and reclaims partial builders on failure. The
+   version-6 runtime tests identifier-to-string replacement during boot/task activity.
    Full lexical dispatch and directive processing remain required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block

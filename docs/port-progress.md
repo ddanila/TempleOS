@@ -2357,3 +2357,32 @@ The bootstrap is 374992 bytes; the runtime image is 92416 bytes with a
 directive creation/execution and general include lookahead, native parser/JIT,
 public runtime destruction/ownership, DolDoc, self-hosting and strict 386 validation
 remain required. See [i386-lex-ident-token.md](i386-lex-ident-token.md).
+
+## Owned native string tokens
+
+I386LexStringToken now builds complete strings through the shared chunk decoder,
+preserving embedded zeros and publishing an exact-sized owned allocation. Growth
+uses explicit byte counts and retains old token text until replacement is ready.
+Allocation/body-read failures reclaim temporary builders and preserve old token
+fields, with partial input state retained. Final-lookahead failure can leave a
+completed string published; callers must honor the error status and clean up.
+
+The string fixture passes 24 escape/EOF/dollar cases, ten lengths through 2048
+bytes, and adjacent strings preserving dollar state during replacement. Native
+checks pass 253 arena sizes spanning failure/success, old-text preservation,
+partial-builder cleanup, include restart/reclamation and final-lookahead failure.
+Identifier regressions, executable instruction audits and both x86-64 rebuild
+steps pass. The string fixture is now close to its 128 KiB stage limit.
+
+CompilerRuntime version 6 exposes string_token as its seventh service (36-byte
+interface). Boot/task probes replace an owned macro-derived identifier with
+four binary string bytes, verify metadata/allocation ownership and reclaim the
+final string. The full 8 MiB QEMU/486 runtime/startup rejection, source, timer,
+keyboard/VGA and unchanged-disk suite passes.
+
+The bootstrap is 378800 bytes; the runtime image is 97440 bytes with a
+97456-byte heap span, observed at 0x12A760. Source checks cover 26911 characters,
+558 newlines, FNV32 0x26777991 and 27368 reclaimed bytes. Full dispatch,
+directives/general include lookahead, native parser/JIT, public control destruction,
+DolDoc, native self-hosting and strict 386 validation remain required. See
+[i386-lex-string-token.md](i386-lex-string-token.md).

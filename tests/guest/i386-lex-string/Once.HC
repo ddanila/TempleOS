@@ -18,6 +18,9 @@ I64 CharToken(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
 #include "T:/Failures.HC"
 #include "T:/CharFailures.HC"
 #include "T:/Host.HC"
+I64 FullString(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
+Bool FullStringFree(CCmpCtrl *cc) { Free(cc->cur_str); cc->cur_str=0; return TRUE; }
+#include "T:/Tokens.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -27,6 +30,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex string\n");
+  if(StringTokenTest) { Report("FAIL x64 full string tokens\n"); return; }
   if(CharFailureTest) { Report("FAIL x64 character reader failures\n"); return; }
   if(CharTest) { Report("FAIL x64 character constants\n"); return; }
   if(StringTest) { Report("FAIL x64 quoted strings\n"); return; }
