@@ -3,7 +3,7 @@
 %define BOOT_SECTORS 128
 %endif
 %ifdef LEX_LARGE_TEST
-;Large lexer fixtures use their first arena at 0x60000.
+;Large fixtures use their first arena at or above 0x50000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 512
 %error Large lexer test stage must fit below physical 0x50000
 %endif

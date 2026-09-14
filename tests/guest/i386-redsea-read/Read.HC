@@ -36,7 +36,7 @@ I64 FileLoadTest()
   CI386RedSea v;
   U8 *p;
   I64 i,size,attr,old_disk,old_volume;
-  if(!I386HeapInit(&heap,0x40000,131072) || !I386AtaIdentify(&disk,0,0) ||
+  if(!I386HeapInit(&heap,0x50000,131072) || !I386AtaIdentify(&disk,0,0) ||
       !I386RedSeaMount(&v,&disk,2048)) return 1;
   if(!ReadMatch(&v,&heap,v.root,"/Read/Source.HC.Z",1,0xC00) ||
       !ReadMatch(&v,&heap,v.root,"/Read/Source.HC",1,0xC00) ||
@@ -59,9 +59,9 @@ I64 FileLoadTest()
   if(!p || !I386HeapFree(&heap,p)) return 7;
   //A small arena can resolve the name but cannot retain raw, output, control and stack.
   for(i=24;i<73728;i+=4096) {
-    if(!I386HeapInit(&small,0x61000,i) || !ReadReject(&v,&small,"/Read/Source.HC")) return 8;
+    if(!I386HeapInit(&small,0x71000,i) || !ReadReject(&v,&small,"/Read/Source.HC")) return 8;
   }
-  if(!I386HeapInit(&small,0x61000,24) || !ReadReject(&v,&small,"/Read/Plain.HC")) return 9;
+  if(!I386HeapInit(&small,0x71000,24) || !ReadReject(&v,&small,"/Read/Plain.HC")) return 9;
   old_disk=disk.sectors; old_volume=v.sectors;
   disk.sectors=32769; v.sectors=32769-v.start;
   if(!ReadReject(&v,&heap,"/IO/Outside.HC.Z")) return 12;
@@ -87,8 +87,9 @@ I64 FileLoadTest()
       !ReadReject(&v,&heap,"/Read/Nested/Self/Missing.HC",TRUE) ||
       !ReadReject(&v,&heap,"/Read/Nested/Orphan/Missing.HC",TRUE)) return 16;
   for(i=24;i<200;i+=8) {
-    if(!I386HeapInit(&small,0x61000,i) || !ReadReject(&v,&small,"/Read/Nested/Deep/DATA.BIN",TRUE)) return 17;
+    if(!I386HeapInit(&small,0x71000,i) || !ReadReject(&v,&small,"/Read/Nested/Deep/DATA.BIN",TRUE)) return 17;
   }
+  i=FileContextTest(&v,&heap); if(i) return i;
   //Reject enabled interrupts before touching the ATA channel or caller output metadata.
   OutU8(0x21,255); OutU8(0xA1,255); SetRFlags(GetRFlags|0x200);
   if(!ReadReject(&v,&heap,"/Read/Source.HC.Z") || !(GetRFlags&0x200)) return 10;

@@ -2787,3 +2787,32 @@ ownership, compiler-control lifetime and include dispatch remain open. Parser/JI
 DolDoc, strict 386SX/DX profiles and self-hosting are still required. See
 `docs/i386-file-paths.md` for contracts, original evidence and deliberate safety
 changes.
+
+## Drive-routed native file reads and owned compiler disk input
+
+I386FileReadAt combines explicit path context, a borrowed drive-letter volume table
+and decoded RedSea loading. It preserves case in names while routing letters
+case-insensitively, supports current/boot/home selection and returns owned bytes
+with optional size, attributes and requested absolute name. Failures preserve
+optional outputs and reclaim temporary paths. Two separately mounted test volumes
+provide distinct source contents for routing checks.
+
+I386LexIncludeFile adds the compiler's HC.Z default, retains its first absolute
+name, and passes that name through the reader's second normalization before
+transferring decoded bytes into the existing owned file stack. Nested plain and
+compressed sources preserve parent replay, line counts and EOF reclamation.
+Missing/corrupt/unbound input and real partial disk-read failures leave the active
+compiler control and heap unchanged. Eighty-six small arenas exercise failed and
+successful input publication with complete reclamation. The test also distinguishes
+the two normalization steps using a noncanonical current-directory context.
+
+Native integration tests and executable instruction audits pass, along with both
+x64 rebuild/reboot generations and the unchanged standalone boot regression.
+These services remain outside the standalone bootstrap/runtime and require
+quiescent volumes with IF clear. The expanded integration fixture uses a 256 KiB
+loader and separate heaps; the production bootstrap remains 383496 bytes. Public
+task/drive binding, resident-file semantics, error/exception integration,
+scheduler-aware ATA ownership, native include-directive dispatch and full compiler
+context lifetime remain open. Raw include-service success does not establish
+parser/JIT execution, DolDoc, strict 386 support or native self-hosting. See
+`docs/i386-file-context.md` for contracts and validation commands.

@@ -87,3 +87,7 @@ it. Task-to-volume routing, public native FileRead and FileNameAbs flags, reside
 file records, scheduler-aware disk ownership, include dispatch and compiler-control
 lifecycle remain required. The helpers provide string semantics for that work;
 they do not establish a resident parser/JIT, DolDoc or native self-hosting.
+
+The explicit paths now feed drive-to-volume routing and an owned compiler source
+bridge; see `docs/i386-file-context.md`. These connections still require public
+current-task binding and scheduler-aware file-service integration.

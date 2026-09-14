@@ -454,6 +454,14 @@ with native owned-buffer and allocation-failure checks. Explicit-context helpers
 remain outside the native runtime; task-to-volume binding and the remaining
 file/compiler integration above are still required. See `docs/i386-file-paths.md`.
 
+An explicit drive-to-volume reader now connects these path rules to decoded
+RedSea loading. The compiler file-input bridge adds HC.Z, preserves the original
+two normalization steps and transfers loaded bytes into owned include records.
+Two-volume and nested-input tests cover routing, replay, I/O/allocation failures
+and reclamation. These quiescent IF-clear services still require task/public
+binding, resident-file semantics, scheduler-aware disk access and native directive
+dispatch; see `docs/i386-file-context.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,
