@@ -3489,3 +3489,31 @@ contracts. These native cases cover part of the shared lowering loop. Native sou
 parsing, import resolution and persistent publication, top-level execution/`#exe`,
 public task/allocation interfaces, DolDoc, self-hosting and strict 386SX/DX acceptance
 remain unfinished. The full OS goal remains active.
+
+## Expression frontend service extraction
+
+The original full expression parser now lives in `PrsExpressionCore.HC`. Its
+operator insertion, state machine, calls, unary terms/modifiers, `sizeof` and
+`offset` all receive an explicit environment. Host allocation, lexer advancement,
+diagnostics, saved-view operations, optimization, string handling, symbol
+publication, type parsing and recursive entry use service callbacks. Existing
+`PrsExp.HC` entry points, compiler-exception handling and immediate expression
+execution remain host wrappers. Precedence/associativity and type-parser flags are
+shared headers; the complete binary-operator table has one initializer.
+
+This removes host globals and direct host allocation from the expression core
+while retaining the production grammar. It does not publish a native parser
+service yet. The next adapter needs an owned recursive parser stack separate from
+the optimizer's `cc->ps`, the original type/declaration parser, adjacent-string
+ownership, unresolved symbols/assembler references, and native diagnostics.
+See [i386-expression-parser.md](i386-expression-parser.md) for the concrete service
+mapping and failure contracts. Native declarations/statements, source-to-code
+execution, durable publication, DolDoc and self-hosting remain required.
+
+Successful verification includes both x64 compiler/kernel rebuild/reboot
+generations, 233 cross-generated function cases, 16 data cases, the existing
+floating-point and inline-assembly suites, and the complete standalone boot,
+VGA/input, native backend/recovery and module-rejection suite. The kernel remains
+389424 bytes and the resident service ABIs are unchanged. These checks exercise
+the extracted parser through the existing compiler, including source used to
+build native modules; they do not prove native frontend execution.

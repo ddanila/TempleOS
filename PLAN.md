@@ -765,6 +765,15 @@ parsing, import resolution, persistent code publication, top-level execution and
 `#exe` remain the next compiler work; the standalone image cannot yet compile its
 startup source or provide the HolyC shell.
 
+The complete production expression state machine now uses explicit services for
+lexing, types/operator tables, IR and saved views, allocation, diagnostics, strings,
+symbol insertion and type parsing. `PrsExp.HC` retains host entry/exception/execution
+behavior; precedence and type-mode constants have shared definitions. This prepares
+the original HolyC grammar for native integration without introducing a second
+parser. `docs/i386-expression-parser.md` maps the remaining native adapters,
+including separate recursive parser-stack ownership, `PrsType`, adjacent strings,
+and unresolved symbols. No native expression service is published yet.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

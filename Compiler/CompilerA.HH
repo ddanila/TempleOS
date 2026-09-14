@@ -260,28 +260,7 @@ class CIntermediateStruct
 #define CMP_TEMPLATE_TAN	0x11
 #define CMP_TEMPLATE_ATAN	0x12
 
-#define ASSOCF_LEFT	1
-#define ASSOCF_RIGHT	2
-#define ASSOC_MASK	3
-
-#define PREC_NULL		0x00
-#define PREC_TERM		0x04
-#define PREC_UNARY_POST		0x08
-#define PREC_UNARY_PRE		0x0C
-#define PREC_EXP		0x10
-#define PREC_MUL		0x14
-#define PREC_AND		0x18
-#define PREC_XOR		0x1C
-#define PREC_OR			0x20
-#define PREC_ADD		0x24
-#define PREC_CMP		0x28
-#define PREC_CMP2		0x2C
-#define PREC_AND_AND		0x30
-#define PREC_XOR_XOR		0x34
-#define PREC_OR_OR		0x38
-#define PREC_ASSIGN		0x3C
-
-#define PREC_MAX		0x40
+#include "/Compiler/PrsPrecedence.HH"
 
 //Function/static/public flags
 #define FSF_PUBLIC		0x01
@@ -295,30 +274,7 @@ class CIntermediateStruct
 #define FSG_FUN_FLAGS1 (FSF_INTERRUPT|FSF_HASERRCODE|FSF_ARGPOP|FSF_NOARGPOP)
 #define FSG_FUN_FLAGS2 (FSG_FUN_FLAGS1|FSF_PUBLIC)
 
-//Byte 0
-#define PRS0_NULL		0x000000
-#define PRS0__EXTERN		0x000001
-#define PRS0__INTERN		0x000002
-#define PRS0__IMPORT		0x000003
-#define PRS0_EXTERN		0x000004
-#define PRS0_IMPORT		0x000005
-#define PRS0_TYPECAST		0x000006
-
-//Byte 1
-#define PRS1B_NULL		0
-#define PRS1_NULL		0x000000
-#define PRS1B_LOCAL_VAR		1
-#define PRS1_LOCAL_VAR		0x000100
-#define PRS1B_FUN_ARG		2
-#define PRS1_FUN_ARG		0x000200
-#define PRS1B_CLASS		3
-#define PRS1_CLASS		0x000300
-#define PRS1B_STATIC_LOCAL_VAR	4
-#define PRS1_STATIC_LOCAL_VAR	0x000400
-#define PRS1B__EXTERN_IMPORT	5
-#define PRS1_NOT_REALLY__EXTERN	0x000500
-
-#define PRSF_UNION		0x010000
+#include "/Compiler/PrsTypeFlags.HH"
 
 class COptReg
 {
