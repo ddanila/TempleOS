@@ -1395,3 +1395,25 @@ both x64 rebuild/reboot generations.
 Production SysTry binding, registration-failure propagation and throw dispatch
 remain pending; the explicit five-argument entry does not supply those policies.
 See `i386-exceptions.md`. The complete OS and native self-hosting remain unfinished.
+
+
+## Native task-owned exception dispatch
+
+I386ExceptDispatch now stores the full exception value and acceptance flag in
+the bootstrap task record, validates the selected capture, invokes its catch,
+removes rejected records and resumes accepted catches at compiler cleanup.
+Returned statuses distinguish unhandled exceptions, invalid state and a broken
+resume provider that returned. Task lifecycle operations reset exception state.
+
+The expanded context fixture passes nested rejection/acceptance in one frame
+and across function frames, accepted inner catch with normal outer cleanup,
+full I64 exception values, unhandled cleanup, corrupt records, returning resume
+callbacks, selected-record removal and invalid task/callback arguments. It uses
+real heap records with fixture-only SysTry frame registration. The record-lifetime
+suite, task regression, generated/assembly instruction audits and both x64
+rebuild/reboot generations pass.
+
+The production two-argument SysTry entry, public throw/error policy, recursive
+throw semantics, catches that yield, debugger/logging and full CTask integration
+remain pending. The complete native OS, self-hosting, memory targets and strict
+386 validation remain unfinished. See `i386-exceptions.md`.

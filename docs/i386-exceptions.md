@@ -1,8 +1,8 @@
 # Native exception record ownership
 
 This describes record ownership and low-level context primitives for HolyC
-try/catch on the 32-bit target. Production SysTry, SysUntry, throw and propagation
-are not implemented. Compiler registration lowering and bounded frame traversal
+try/catch on the 32-bit target. Production SysTry, SysUntry and public throw integration remain incomplete.
+An explicit task dispatcher now connects record ownership to context transfer. Compiler registration lowering and bounded frame traversal
 are separate existing prerequisites; context primitives are described below.
 
 `Kernel/I386/Except.HH` defines a 32-byte capture containing EBP, ESP,
@@ -100,3 +100,42 @@ This five-argument bootstrap entry is not the two-argument compiler SysTry entry
 The latter still needs native binding to the current task, allocation provider
 and heap, together with an allocation-failure path that cannot silently enter
 an unprotected try body. Production throw dispatch and propagation remain pending.
+
+
+## Task-owned dispatch
+
+`I386ExceptDispatch(task, ch, invoke, resume)` stores the full I64 exception
+value in the current task's `except_ch` and clears `catch_except`. It validates
+each selected record's signature, owner, allocation size and capture bounds
+before invoking its catch. A rejected catch has its record popped and dispatch
+continues outward. An accepted catch (`task.catch_except=TRUE`) resumes at that
+record's compiler cleanup label, retaining the record for SysUntry to remove.
+The accepted path abandons the dispatch stack and does not return.
+
+All returned statuses require an explicit caller policy:
+
+| Status | Meaning |
+| --- | --- |
+| `I386_EXCEPT_UNHANDLED` | No record accepted; rejected records have been removed |
+| `I386_EXCEPT_INVALID` | Invalid arguments, record/capture, or task/chain changed incompatibly during the handler |
+| `I386_EXCEPT_RESUME_RETURNED` | The supplied resume callback unexpectedly returned; selected record remains owned |
+
+This is a task-context API, not an interrupt or NMI exception handler. It keeps
+interrupts available to catch code according to captured flags; only individual
+record mutations mask interrupts. A catch may use balanced nested try blocks
+and may yield, but must return with the selected record and task still current.
+Removal of the selected record before a normal catch return is rejected. The
+exception value and acceptance flag are task state, matching the existing
+shared-per-task reporting model; recursive throw semantics and debugger/logging
+integration still need dedicated work. Task initialization, attachment and
+reaping reset these fields.
+
+The context fixture now allocates actual records for compiler-generated tries.
+It verifies inner rejection and outer acceptance in one frame and across
+function frames, inner acceptance followed by normal outer cleanup, full-width
+exception values, unhandled cleanup, corrupt-record rejection, a returning
+resume callback, selected-record removal and invalid current-task/callback
+arguments. Fixture registration still supplies the enclosing frame explicitly;
+it is not the final assembly SysTry binding. Full public throw must route returned
+errors to recovery or an unhandled-exception path instead of continuing the try
+body. Task switching during catches has not yet been exercised by this fixture.

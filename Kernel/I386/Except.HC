@@ -46,3 +46,37 @@ Bool I386ExceptClear(CI386Task *task)
   while(task->except_top) if(!I386ExceptPop(task)) return FALSE;
   return TRUE;
 }
+
+//Task-context dispatch. Accepted catches resume at SysUntry and do not return.
+//A returned status requires the caller's error/unhandled policy, never success.
+I64 I386ExceptDispatch(CI386Task *task,I64 ch,
+  U0 (*invoke)(CI386ExceptCapture *capture),
+  U0 (*resume)(CI386ExceptCapture *capture))
+{
+  CI386Except *record;
+  CI386ExceptCapture *capture;
+  if(!task || !task->owner || task->owner->current!=task || task->finished ||
+      !invoke || !resume) return I386_EXCEPT_INVALID;
+  task->except_ch=ch; task->catch_except=FALSE;
+  while(record=task->except_top) {
+    if(record->signature!=I386_EXCEPT_MAGIC || record->task!=task ||
+        I386HeapSize(record->heap,record)!=sizeof(CI386Except))
+      return I386_EXCEPT_INVALID;
+    capture=&record->capture;
+    if(!capture->catch_start || !capture->untry_start ||
+        !I386FrameValid(capture->ebp,task->stack_base,task->stack_size) ||
+        capture->esp&3 || capture->esp<(task->stack_base+0)(U64) ||
+        capture->esp>capture->ebp) return I386_EXCEPT_INVALID;
+    (*invoke)(capture);
+    //A catch may run balanced nested try blocks and yield. It must return
+    //with the same live task and selected record, unless it exits nonlocally.
+    if(!task->owner || task->owner->current!=task || task->finished ||
+        task->except_top!=record) return I386_EXCEPT_INVALID;
+    if(task->catch_except) {
+      (*resume)(capture);
+      return I386_EXCEPT_RESUME_RETURNED;
+    }
+    if(!I386ExceptPop(task)) return I386_EXCEPT_INVALID;
+  }
+  return I386_EXCEPT_UNHANDLED;
+}

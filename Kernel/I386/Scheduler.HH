@@ -20,6 +20,8 @@ class CI386Task
   U8 *stack_base;
   U32 stack_size;
   CI386Except *except_top;
+  I64 except_ch;
+  U32 catch_except;
 };
 class CI386Scheduler
 {

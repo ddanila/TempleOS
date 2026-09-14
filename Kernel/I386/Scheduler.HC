@@ -12,6 +12,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   root->memory=0;
   root->cleanup=0; root->finishing=0;
   root->messages=0;
+  root->except_ch=0; root->catch_except=0;
   root->stack_base=0; root->stack_size=0;
   s->root=root; s->current=root; s->swap=swap; s->bind=0;
   s->focus=0;
@@ -27,6 +28,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   task->join_head=0; task->join_next=0; task->join_target=0;
   task->cleanup=0; task->finishing=0;
   task->messages=0;
+  task->except_ch=0; task->catch_except=0;
   task->next=s->root; task->last=s->root->last;
   task->last->next=task; s->root->last=task;
   I386IrqRestore(flags);
@@ -78,6 +80,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
       task->join_head || task->join_target || task->messages || task->except_top || s->focus==task) {
     I386IrqRestore(flags); return FALSE;
   }
+  task->except_ch=0; task->catch_except=0;
   task->addr=0; task->context.esp=0; task->owner=0; task->finished=0; task->blocked=0;
   task->memory=0;
   task->stack_base=0; task->stack_size=0;

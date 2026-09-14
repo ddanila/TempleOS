@@ -16,10 +16,15 @@ CI386Task task;
 CI386Heap heap;
 CExceptControl *active;
 CI386ExceptCapture registered;
-U32 removed,resume_requested;
+U32 removed,resume_requested,failures,trace;
 extern U0 SysTry(U8 *catch_start,U8 *untry_start);
 extern U0 SysUntry();
 extern U0 Fire();
+extern U0 NestedThrow();
+extern U0 Reject();
+extern U0 Accept();
+extern U0 BadResume(CI386ExceptCapture *capture);
+extern U0 RemoveSelected();
 I64 Main(CExceptControl *control,I64 unused)
 {
   CI386ExceptCapture capture;
@@ -55,6 +60,58 @@ I64 Main(CExceptControl *control,I64 unused)
   try { Fire; local+=100; }
   catch { local+=0x200000003; }
   if(local!=before+0x200000003 || removed!=2) return 4;
+  if(task.except_top || heap.used || failures) return 10;
+  resume_requested=2; before=local;
+  try {
+    try { Fire; failures++; }
+    catch { local+=3; }
+    failures++;
+  } catch { local+=7; task.catch_except=TRUE; }
+  if(local!=before+10 || task.except_top || heap.used || failures ||
+      task.except_ch!=0x123456789ABCDEF0) return 11;
+  before=local;
+  try { NestedThrow; failures++; }
+  catch { local+=0x300000005; task.catch_except=TRUE; }
+  if(local!=before+0x300000005 || trace!=1 || task.except_top || heap.used ||
+      failures) return 12;
+  try {
+    try { Fire; failures++; }
+    catch { task.catch_except=TRUE; }
+    trace++;
+  } catch { failures++; }
+  if(trace!=2 || failures || task.except_top || heap.used) return 13;
+  if(I386ExceptDispatch(&task,99,control->invoke,control->resume)!=
+      I386_EXCEPT_UNHANDLED || task.except_ch!=99) return 14;
+  capture.catch_start=&Reject;
+  first=I386ExceptPush(&task,&heap,&capture);
+  if(!first || I386ExceptDispatch(&task,77,control->invoke,control->resume)!=
+      I386_EXCEPT_UNHANDLED || trace!=3 || task.except_top || heap.used) return 15;
+  //Malformed records must be rejected before entering a handler.
+  first=I386ExceptPush(&task,&heap,&capture);
+  if(!first) return 16;
+  first->signature=0;
+  if(I386ExceptDispatch(&task,88,control->invoke,control->resume)!=
+      I386_EXCEPT_INVALID || task.except_top!=first || trace!=3) return 17;
+  first->signature=I386_EXCEPT_MAGIC;
+  if(!I386ExceptClear(&task) || heap.used || !I386HeapValid(&heap)) return 18;
+  capture.catch_start=&Accept;
+  first=I386ExceptPush(&task,&heap,&capture);
+  if(!first || I386ExceptDispatch(&task,123,control->invoke,&BadResume)!=
+      I386_EXCEPT_RESUME_RETURNED || task.except_top!=first || trace!=4)
+    return 19;
+  if(!I386ExceptClear(&task)) return 20;
+  capture.catch_start=&RemoveSelected;
+  first=I386ExceptPush(&task,&heap,&capture);
+  if(!first || I386ExceptDispatch(&task,124,control->invoke,control->resume)!=
+      I386_EXCEPT_INVALID || task.except_top || heap.used) return 21;
+  scheduler.current=0;
+  if(I386ExceptDispatch(&task,125,control->invoke,control->resume)!=
+      I386_EXCEPT_INVALID || task.except_ch!=124) return 22;
+  scheduler.current=&task;
+  if(I386ExceptDispatch(&task,125,0,control->resume)!=I386_EXCEPT_INVALID ||
+      I386ExceptDispatch(&task,125,control->invoke,0)!=I386_EXCEPT_INVALID ||
+      task.except_ch!=124 || failures || removed!=6 || !I386HeapValid(&heap))
+    return 23;
   return 0;
 }
 //Fixture registration only: retain the real enclosing frame and compiler labels.
@@ -66,14 +123,31 @@ U0 SysTry(U8 *catch_start,U8 *untry_start)
   registered.esp=frame+24;
   registered.catch_start=catch_start; registered.untry_start=untry_start;
   registered.eflags=2;
+  if(!I386ExceptPush(&task,&heap,&registered)) failures++;
 }
-U0 SysUntry() { removed++; }
+U0 SysUntry() { if(!I386ExceptPop(&task)) failures++; removed++; }
 U0 Fire()
 {
-  (*active->invoke)(&registered);
-  if(resume_requested) (*active->resume)(&registered);
+  if(resume_requested==2) {
+    I386ExceptDispatch(&task,0x123456789ABCDEF0,active->invoke,active->resume);
+    failures++;
+  } else {
+    (*active->invoke)(&task.except_top->capture);
+    if(resume_requested) (*active->resume)(&task.except_top->capture);
+  }
 }
 
+U0 NestedThrow()
+{
+  I64 inner=0x1234567800000000;
+  try { Fire; failures++; }
+  catch { if(inner!=0x1234567800000000) failures++; trace++; }
+  failures++;
+}
+U0 Reject() { trace++; }
+U0 Accept() { task.catch_except=TRUE; }
+U0 BadResume(CI386ExceptCapture *capture) { trace++; }
+U0 RemoveSelected() { if(!I386ExceptPop(&task)) failures++; }
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Frame.HC"
 #include "/Kernel/I386/Cpu.HC"

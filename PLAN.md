@@ -526,6 +526,11 @@ and returns a task-owned record or null. Register/flag, provider ABI, nested-rec
 allocation, exhaustion and reclamation tests pass. The five-argument bootstrap
 entry still needs the compiler's two-argument SysTry binding and a defined
 non-returning allocation-failure path before production try blocks can use it.
+An explicit native task dispatcher now propagates through rejected records and
+resumes accepted catches at compiler cleanup. Tests cover nested and cross-frame
+catches, full-width exception values, unhandled cleanup and malformed state.
+Production SysTry/public throw binding, allocation-failure policy, recursive
+throw behavior and debugger/logging integration remain pending.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

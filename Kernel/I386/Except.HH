@@ -22,4 +22,10 @@ public extern CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,
   CI386ExceptCapture *capture);
 public extern Bool I386ExceptPop(CI386Task *task);
 public extern Bool I386ExceptClear(CI386Task *task);
+#define I386_EXCEPT_UNHANDLED 0
+#define I386_EXCEPT_INVALID 1
+#define I386_EXCEPT_RESUME_RETURNED 2
+public extern I64 I386ExceptDispatch(CI386Task *task,I64 ch,
+  U0 (*invoke)(CI386ExceptCapture *capture),
+  U0 (*resume)(CI386ExceptCapture *capture));
 #endif
