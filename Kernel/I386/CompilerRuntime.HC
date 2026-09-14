@@ -25,13 +25,15 @@ import U32 char_bmp_hex_numeric[16];
 import U32 char_bmp_dec_numeric[16];
 import U32 char_bmp_non_eol[16];
 import U32 char_bmp_non_eol_white_space[16];
+import CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
+import CLexFile *LexFileReleaseTop(CCmpCtrl *cc,CLexFileRelease *owner);
 U32 runtime_first[TK_TKS_NUM],runtime_second[TK_TKS_NUM],runtime_third[TK_TKS_NUM];
 CLexPunctTables runtime_punct;
 extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
 extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines);
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==44
+#assert sizeof(CI386CompilerServices)==52
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -48,6 +50,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->string_token=&I386LexStringToken;
   services->next_token=&I386RuntimeLexNext;
   services->next_token_with_includes=&I386RuntimeLexIncludes;
+  services->control_new=&I386CmpCtrlNew; services->control_del=&I386CmpCtrlDel;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -75,3 +78,6 @@ I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
 {
   return I386LexNextWithIncludes(heap,cc,&runtime_punct,macro_filename,compiled_lines,includes);
 }
+
+#include "/Compiler/ControlInit.HC"
+#include "/Compiler/I386/Control.HC"

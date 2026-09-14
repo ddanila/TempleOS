@@ -22,7 +22,7 @@ The module imports eighteen kernel functions: the existing nine heap/interrupt/
 RedSea/lexical functions, plus RedSea begin/end/validation, the three shared ATA
 protocol functions and scheduler block/wake/yield. It retains its string/codec
 code and task/session adapters, with no duplicate PIO protocol or allocator.
-The kernel publishes 35 explicit resident bindings.
+The kernel publishes 37 explicit resident bindings.
 
 The boot configuration borrows one mounted volume in drive slot C, home/boot
 configuration and the original whitespace bitmap. The root owns its directory
@@ -41,7 +41,7 @@ probes/startup, with no file interface published. Disk contents remain unchanged
 
 CompilerProbe's version-3, 52-byte borrowed record includes the disk provider and
 file-service table.
-At boot, its version-10 retained lexer reads a root include directive, calls the
+At boot, its version-11 retained lexer reads a root include directive, calls the
 retained file provider, loads a plain outer source through the default HC.Z
 fallback, then expands a compressed inner source. The inner archive is produced
 by the original x64 compressor during the build. The lexer returns 11, 22 and 33,
@@ -87,12 +87,12 @@ Current images and allocations:
 
 | Component | Image bytes | Heap bytes |
 | --- | ---: | ---: |
-| CompilerRuntime, retained | 138664 | 138680 |
+| CompilerRuntime, retained | 151096 | 151112 |
 | FileRuntime, retained | 115576 | 115592 |
-| CompilerProbe, reclaimed after task check | 74368 | 74384 |
+| CompilerProbe, reclaimed after task check | 73688 | 73704 |
 
-The native bootstrap is 386320 bytes. With its 2160-byte loaded stage overhead,
-388480 bytes occupy the unchanged 393216-byte reservation, leaving 4736 bytes.
+The native bootstrap is 386608 bytes. With its 2160-byte loaded stage overhead,
+388768 bytes occupy the unchanged 393216-byte reservation, leaving 4448 bytes.
 The separate 512-byte boot sector is excluded from that reservation. Further
 bootstrap growth needs extraction or reduction; the low-memory reservation has
 not been raised. Bounded export-index tables replace repeated binding setup calls

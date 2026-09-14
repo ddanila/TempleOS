@@ -2,8 +2,9 @@
 #define I386_COMPILER_RUNTIME_INCLUDED
 #include "/Compiler/I386/LexInput.HH"
 #include "/Compiler/I386/LexInclude.HH"
-#define I386_COMPILER_SERVICES_VERSION 10
-//ABI 10: caller-owned interface, borrowing code from the retained module image.
+#include "/Compiler/I386/Control.HH"
+#define I386_COMPILER_SERVICES_VERSION 11
+//ABI 11: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;
@@ -16,5 +17,7 @@ class CI386CompilerServices {
   I64 (*string_token)(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines);
   I64 (*next_token)(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines);
   I64 (*next_token_with_includes)(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
+  CCmpCtrl *(*control_new)(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,CHashTable *symbols,U32 *alpha_numeric);
+  Bool (*control_del)(CI386Heap *heap,CCmpCtrl *cc,U0 (*document)(U8 *context,CDoc *document),U8 *context);
 };
 #endif

@@ -1,6 +1,7 @@
 #include "/Compiler/ControlInit.HC"
 
 #include "/Compiler/LexFiles.HC"
+#include "/Compiler/ControlRelease.HC"
 U0 LexFileSystemFree(U8 *context,U8 *allocation)
 {
   Free(allocation);
@@ -47,14 +48,9 @@ CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL)
 
 U0 CmpCtrlDel(CCmpCtrl *cc)
 {//Free CCmpCtrl.
-  while (LexFilePop(cc));
-  LinkedLstDel(cc->lex_prs_stk);
-  LinkedLstDel(cc->htc.next);
-  Free(cc->ps);
-  Free(cc->cur_str);
-  Free(cc->cur_help_idx);
-  Free(cc->dollar_buf);
-  Free(cc);
+  CLexFileRelease owner;
+  owner.context=0; owner.allocation=&LexFileSystemFree; owner.document=&LexFileSystemDocDel;
+  CmpCtrlRelease(cc,&owner);
 }
 
 I64 CmpCtrlSize(CCmpCtrl *cc)

@@ -2927,3 +2927,32 @@ bytes; CompilerProbe uses 74384 temporary bytes, fully reclaimed after its task
 phase. See `docs/i386-task-files.md` and `docs/i386-file-runtime.md` for contracts
 and verification scope. Public task/drive/file behavior, compiler-control
 lifetimes, parser/JIT, DolDoc and native self-hosting remain required.
+
+## Owned native compiler controls
+
+The x64 public destructor and native controls now share `CmpCtrlRelease`, retaining
+file/root ownership, snapshot and saved-hash-context cleanup, parser/string storage
+release and borrowed symbol-table lifetimes. Native construction allocates a full
+control, root file and copied resolved display name, with rollback that leaves an
+owned input buffer with its caller until success. Document release requirements
+are checked before destruction changes the graph.
+
+CompilerRuntime version 11 publishes checked constructor/destructor entries in its
+52-byte record. Its seventeen imports include native file creation and shared file
+release; the kernel exposes 37 bindings. Both boot and worker disk probes now use
+owned controls and reclaim their entire temporary graph after nested plain/
+compressed includes and malformed-input recovery, including IF-set reads.
+
+Two x64 rebuild/reboot generations, the extended lexical-state fixture and the
+complete standalone suite pass. The lifecycle fixture exercises small arenas with
+borrowed and owned inputs, snapshot/file graphs, saved hash contexts, parser and
+string allocations, foreign heaps, document callbacks, prompt retention and IF
+preservation. Its 192 KiB test transfer stops at its existing 0x40000 arena; the
+standalone reservation is unchanged.
+
+The native kernel is 386608 bytes, leaving 4448 bytes after its 2160-byte loaded
+stage in the 393216-byte reservation. CompilerRuntime retains 151112 heap bytes;
+CompilerProbe uses and reclaims 73704 bytes. These are QEMU/486 integration results.
+Public task/code heap and symbol selection, filename/default-name and character
+bitmap selection, parser/code-generation unwind, prompt/DolDoc input, JIT and
+self-hosting remain required. See `docs/i386-compiler-control.md`.

@@ -7,6 +7,11 @@
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 512
 %error Large lexer test stage must fit below physical 0x50000
 %endif
+%elifdef LEX_STATE_TEST
+;Compiler-control fixtures retain their arena at 0x40000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 384
+%error Compiler-control test stage must fit below physical 0x40000
+%endif
 %else
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 320
 %error Test stage must fit below physical 0x38000

@@ -65,21 +65,21 @@ def compiler_runtime_layout(module):
                 exports[symbol] = (kind, offset)
             else:
                 imports.append((symbol, name))
-    if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space'}:
+    if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space', 'I386LexFilePush', 'LexFileReleaseTop'}:
         raise ValueError('Unexpected compiler-runtime import contract')
-    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes'):
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel'):
         if name not in exports or exports[name][0] != 1:
             raise ValueError(f'Missing compiler-runtime function {name}')
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 10:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 11:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
                 punct_offset=8+exports['I386RuntimePunct'][1], ident_offset=8+exports['I386LexIdentScan'][1],
                 ident_token_offset=8+exports['I386LexIdentToken'][1], string_token_offset=8+exports['I386LexStringToken'][1],
-                next_offset=8+exports['I386RuntimeLexNext'][1], include_offset=8+exports['I386RuntimeLexIncludes'][1], version_offset=version_offset,
+                next_offset=8+exports['I386RuntimeLexNext'][1], include_offset=8+exports['I386RuntimeLexIncludes'][1], control_new_offset=8+exports['I386CmpCtrlNew'][1], control_del_offset=8+exports['I386CmpCtrlDel'][1], version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
@@ -534,9 +534,9 @@ def main():
             raise ValueError('Unexpected 8 MiB memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
-        if len(runtime) != 1 or len(runtime[0]) != 13:
+        if len(runtime) != 1 or len(runtime[0]) != 15:
             raise ValueError('Missing retained compiler-runtime image')
-        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address = (int(x, 16) for x in runtime[0][1:])
+        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address = (int(x, 16) for x in runtime[0][1:])
         if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
                 address < begin or address+size > begin+length or
                 string_address != address+runtime_layout['string_offset'] or
@@ -547,7 +547,9 @@ def main():
                 ident_token_address != address+runtime_layout['ident_token_offset'] or
                 string_token_address != address+runtime_layout['string_token_offset'] or
                 next_address != address+runtime_layout['next_offset'] or
-                include_address != address+runtime_layout['include_offset']):
+                include_address != address+runtime_layout['include_offset'] or
+                control_new_address != address+runtime_layout['control_new_offset'] or
+                control_del_address != address+runtime_layout['control_del_offset']):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
         if len(file_rows)!=1 or len(file_rows[0])!=8: raise ValueError('Missing file-runtime ownership evidence')
@@ -629,9 +631,9 @@ def main():
         result['compiler_probe'] = dict(module='CompilerProbe', version=3, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=10, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=11, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
-            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
+            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')

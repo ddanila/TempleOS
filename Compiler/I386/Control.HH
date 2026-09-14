@@ -1,0 +1,14 @@
+#ifndef I386_COMPILER_CONTROL_INCLUDED
+#define I386_COMPILER_CONTROL_INCLUDED
+#include "/Compiler/ControlInit.HH"
+#include "/Compiler/I386/LexFiles.HH"
+//Native allocation boundary. Name is already resolved and bitmap already selected.
+//Borrow name/symbols/bitmap; copy name. Transfer buffer only on success, unless
+//DONT_FREE_BUF borrows it or PMT replaces it with a fresh eight-byte input buffer.
+public extern CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,
+  CHashTable *symbols,U32 *alpha_numeric);
+//Exclusive control and allocation graph. Source/doc ownership follows public flags.
+//Reject missing document release before mutation. No arbitrary corruption recovery.
+public extern Bool I386CmpCtrlDel(CI386Heap *heap,CCmpCtrl *cc,
+  U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0);
+#endif
