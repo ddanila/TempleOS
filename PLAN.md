@@ -792,6 +792,16 @@ initializers, global declarations and statement/function-body integration remain
 See `docs/i386-declaration-parser.md`. This is frontend preparation, not a native
 parser service or interactive shell.
 
+Scalar/aggregate/array/global/static initialization now shares a service-based
+core too, preserving snapshot replay, inferred-row assembly and static passes.
+Incoming flags are captured before the AOT string path restores them, removing an
+uninitialized read. Generated-program checks now include inferred multidimensional
+and aggregate arrays and static multidimensional arrays. Native initializer
+ownership/evaluation and durable code/data relocation still require adapters;
+initialized i386 string pointers remain an explicit unfinished relocation case.
+See `docs/i386-initializer-parser.md`. Global declarations and statement/function-body
+parsing remain the next frontend extraction/integration work.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

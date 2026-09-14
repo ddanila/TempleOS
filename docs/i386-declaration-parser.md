@@ -52,8 +52,9 @@ member publication/replacement, register-name policy, snapshot integration, comp
 variable initialization and target expression execution. Default conversions also
 need the native software-F64 services when this code is compiled for i386.
 
-Function-body/statement parsing, global declarations, static/aggregate initializer
-execution and persistent AOT/JIT publication remain outside these cores. The
+Static/aggregate initializer parsing now has a [shared core](i386-initializer-parser.md).
+Function-body/statement parsing, global declarations, native initializer execution
+and persistent AOT/JIT publication remain outside these cores. The
 existing compiler exercises the shared paths, including when cross-building the
 standalone image. That is not evidence of native declaration parsing or a HolyC
 shell. See [expression parser](i386-expression-parser.md),

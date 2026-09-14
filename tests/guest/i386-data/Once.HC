@@ -97,6 +97,9 @@ U0 CompileTests()
   EmitData("I64 Main(I64 a,I64 b) { static U8 *p[2]={0,0}; if (p[0] || p[1]) return -1; p[1]=&b; *p[1]=42; return sizeof(p)+b; }",50,&cursor);
   EmitData("U8 values[2]={1,255}; I64 Main(I64 a,I64 b) { values[1]=254; values[1]+=3; values[1]<<=2; return values[0]+values[1]; }",5,&cursor);
   EmitData("I64 values[2]={7,-23}; I64 Main(I64 a,I64 b) { values[1]/=4; values[0]%=3; return values[0]+values[1]; }",-4,&cursor);
+  EmitData("I64 grid[][2]={{1,2},{3,4}}; I64 Main(I64 a,I64 b) { return sizeof(grid)+grid[0][0]+grid[0][1]+grid[1][0]+grid[1][1]; }",42,&cursor);
+  EmitData("class Pair { I64 left; I64 right; }; Pair rows[]={{1,2},{3,4}}; I64 Main(I64 a,I64 b) { return sizeof(rows)+rows[0].left+rows[1].right; }",37,&cursor);
+  EmitData("I64 Main(I64 a,I64 b) { static I64 grid[][2]={{1,2},{3,4}}; return sizeof(grid)+grid[0][0]+grid[0][1]+grid[1][0]+grid[1][1]; }",42,&cursor);
   RejectLink("I64 Main;");
   RejectLink("import I64 Add(); I64 Main() { return Add(); }","I64 Add=42;");
   RejectLink("I64 State; I64 Main() { return State; }","I64 State() { return 42; }");

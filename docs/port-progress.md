@@ -3581,3 +3581,28 @@ Native adapters, static/aggregate initialization, global declarations, statement
 function-body parsing, target evaluation and persistent publication remain required.
 No new retained parser service is published by this change; the full OS goal remains
 active, including DolDoc, self-hosting and strict 386SX/DX acceptance.
+
+## Shared initializer parsing
+
+`PrsInitializerCore.HC` now contains the production scalar, aggregate, array, global
+and static initializer paths. Existing entries compose expression, type and
+declaration services with memory copy/fill, AOT byte storage and IR compilation.
+Recursive row assembly, snapshot replay, scalar conversion and static passes use
+the same implementation. Scratch/AOT queues use explicit next/last stores.
+The scalar path now captures incoming flags before its AOT string branch; that
+branch previously read uninitialized restoration flags.
+
+The data suite adds inferred multidimensional globals, inferred aggregate arrays
+and static multidimensional arrays. Generated native programs check sizes and
+values after host-side initializer parsing. Both x64 compiler/kernel rebuild/reboot
+generations, all 234 function cases, all 19 data cases, floating-point and inline-asm
+regressions, and the full standalone boot/recovery/VGA/input/module-rejection suite
+passed. The kernel remains 389424 bytes; retained compiler ABIs are unchanged.
+Whitespace and Python runner syntax checks also pass.
+
+See [i386-initializer-parser.md](i386-initializer-parser.md) for lifetimes. Native
+initializer execution still requires adapters, owned destination/temporary storage,
+software-F64 conversion and durable code/data publication. Initialized i386 string
+pointers still require target relocation support and remain explicitly rejected.
+Global declarations, statement/function-body parsing, native source execution,
+DolDoc, self-hosting and strict 386SX/DX acceptance remain unfinished.

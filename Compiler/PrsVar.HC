@@ -1,250 +1,4 @@
-U0 PrsVarInit(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,CArrayDim *tmpad,
-	U8 *data_addr_rip,U8 **_base,Bool data_heap,I64 pass)
-{
-  U8 *dst=*_dst,*machine_code;
-  I64 i,j,r,old_flags,type,size;
-  CMemberLst *tmpm;
-  CIntermediateCode *tmpi;
-  CAOTCtrl *aotc=cc->aotc;
-  CAOTAbsAddr *tmpa;
-  CAOTImportExport *tmpie;
-  Bool is_str;
-
-  tmpc=OptClassFwd(tmpc);
-  if (tmpm=tmpc->member_lst_and_root) {
-    if (cc->token!='{')
-      LexExcept(cc,"Expecting '{' at ");
-    LexPopNoRestore(cc);
-    LexPush(cc);
-    Lex(cc);
-    while (tmpm) {
-      PrsVarInit2(cc,&dst,tmpm->member_class,&tmpm->dim,
-	    data_addr_rip,_base,data_heap,pass);
-      if (cc->token==',')
-	Lex(cc);
-      tmpm=tmpm->next;
-    }
-    LexPopNoRestore(cc);
-    if (cc->token!='}')
-      LexExcept(cc,"Missing '}' at ");
-    Lex(cc);
-  } else {
-    if (tmpc->ptr_stars_cnt==1 &&
-	  ((tmpc-1)->raw_type==RT_I8 || (tmpc-1)->raw_type==RT_U8) &&
-	  !tmpad && cc->token==TK_STR)
-      is_str=TRUE;
-    else
-      is_str=FALSE;
-    if (cc->flags&CCF_TARGET_I386 && is_str) throw('Compiler');
-    if (cc->flags&CCF_AOT_COMPILE && is_str) {
-      LexPopNoRestore(cc);
-      machine_code=LexExtStr(cc,&i);
-      if (pass==2) {
-	tmpa=CAlloc(sizeof(CAOTAbsAddr));
-	tmpa->next=aotc->abss;
-	tmpa->type=AAT_ADD_U64;
-	aotc->abss=tmpa;
-	tmpa->rip=data_addr_rip+dst-*_base;
-	*dst(I64 *)=aotc->rip;
-	for (j=0;j<i;j++)
-	  AOTStoreCodeU8(cc,machine_code[j]);
-      }
-      Free(machine_code);
-    } else {
-      old_flags=cc->flags;
-      cc->flags=CCF_NO_ABSS | cc->flags &
-	    ~(CCF_AOT_COMPILE|CCF_HAS_MISC_DATA|CCF_NOT_CONST);
-      machine_code=LexExpression2Bin(cc,&type);
-      if (old_flags&CCF_AOT_COMPILE &&
-	    cc->flags&CCF_NOT_CONST &&
-	    !Bt(&cc->opts,OPTf_GLBLS_ON_DATA_HEAP)) {
-	cc->flags=cc->flags&~CCF_NO_ABSS|CCF_AOT_COMPILE;
-	Free(machine_code);
-	if (pass==2) {
-	  MemSet(dst,0,CmpTargetSize(cc,tmpc));
-	  LexPopRestore(cc);
-	  Lex(cc);
-	  COCPush(cc);
-	  COCInit(cc);
-	  ICAdd(cc,IC_ABS_ADDR,data_addr_rip,tmpc+1);
-	  ICAdd(cc,IC_IMM_I64,dst-*_base,tmpc+1);
-	  ICAdd(cc,IC_ADD,0,tmpc+1);
-	  if (!PrsExpression(cc,NULL,TRUE))
-	    throw('Compiler');
-	  tmpi=cc->coc.coc_head.last;
-	  if (tmpi->ic_code==IC_END_EXP) {
-	    tmpi->ic_code=IC_NOP1;
-	    tmpi->ic_flags=0;
-	  }
-	  ICAdd(cc,IC_ASSIGN,0,tmpc);
-	  ICAdd(cc,IC_END_EXP,0,tmpc,ICF_RES_NOT_USED);
-	  ICAdd(cc,IC_RET,0,0);
-	  if (machine_code=COCCompile(cc,&size,NULL,NULL)) {
-	    tmpie=CAlloc(sizeof(CAOTImportExport));
-	    tmpie->type=IET_MAIN;
-	    tmpie->rip=cc->aotc->rip;
-	    QueIns(tmpie,cc->aot->last_ie);
-	    for (i=0;i<size;i++)
-	      AOTStoreCodeU8(cc,machine_code[i]);
-	    Free(machine_code);
-	  }
-	  COCPop(cc);
-	} else
-	  LexPopNoRestore(cc);
-      } else {
-	LexPopNoRestore(cc);
-	if (!machine_code)
-	  throw('Compiler');
-	r=Call(machine_code);
-	if (!(cc->flags & CCF_HAS_MISC_DATA)||pass==1)
-	  Free(machine_code);
-
-	if (type==RT_F64 &&
-	      tmpc->raw_type!=RT_F64)
-	  r=r(F64);
-	else if (type!=RT_F64 &&
-	      tmpc->raw_type==RT_F64)
-	  r(F64)=r;
-	MemCpy(dst,&r,CmpTargetSize(cc,tmpc));
-      }
-    }
-    dst+=CmpTargetSize(cc,tmpc);
-    cc->flags=cc->flags&
-	  ~CCF_NO_ABSS|old_flags&(CCF_HAS_MISC_DATA|CCF_AOT_COMPILE);
-  }
-  *_dst=dst;
-}
-
-class CVI2
-{
-  CVI2 *next,*last;
-  U0 base;
-};
-
-U0 PrsVarInit2(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,
-	CArrayDim *tmpad,U8 *data_addr_rip,U8 **_base,Bool data_heap,I64 pass)
-{
-  I64 i,j,cnt;
-  U8 *st,*_b;
-  CVI2 head,*tmpvi,*tmpvi1;
-  CArrayDim *tmpad1;
-  tmpc=OptClassFwd(tmpc);
-  if (tmpad1=tmpad->next) {
-    if (!tmpc->ptr_stars_cnt &&
-	  (tmpc->raw_type==RT_I8 || tmpc->raw_type==RT_U8) &&
-	  cc->token==TK_STR) {
-      LexPopNoRestore(cc);
-      st=LexExtStr(cc,&i);
-      if (tmpad1->cnt<0) {//[]
-	tmpad1->cnt=i;
-	tmpad->total_cnt=i*tmpad1->total_cnt;
-	Free(*_base);
-	if (data_heap)
-	  *_base=MAlloc(i);
-	else
-	  *_base=MAlloc(i,Fs->code_heap);
-	MemCpy(*_base,st,i);
-	*_dst=*_base+i;
-      } else {
-	MemCpy(*_dst,st,tmpad1->cnt);
-	*_dst+=tmpad1->cnt;
-      }
-      Free(st);
-      LexPush(cc);
-    } else {
-      if (cc->token=='{') {
-	LexPopNoRestore(cc);
-	LexPush(cc);
-	Lex(cc);
-      }
-      if (tmpad1->cnt<0) {//[]
-	QueInit(&head);
-	cnt=0;
-	while (cc->token!='}') {
-	  tmpvi=MAlloc(offset(CVI2.base)+tmpad1->total_cnt*CmpTargetSize(cc,tmpc));
-	  _b=&tmpvi->base;
-	  PrsVarInit2(cc,&_b,tmpc,tmpad1,data_addr_rip,_base,data_heap,pass);
-	  QueIns(tmpvi,head.last);
-	  if (cc->token==',')
-	    Lex(cc);
-	  cnt++;
-	}
-	Lex(cc); //skip '}'
-	tmpad1->cnt=cnt;
-	tmpad->total_cnt=cnt*tmpad1->total_cnt;
-	j=tmpad1->total_cnt*CmpTargetSize(cc,tmpc);
-	i=cnt*j;
-	Free(*_base);
-	if (data_heap)
-	  *_base=_b=MAlloc(i);
-	else
-	  *_base=_b=MAlloc(i,Fs->code_heap);
-	tmpvi=head.next;
-	while (tmpvi!=&head) {
-	  tmpvi1=tmpvi->next;
-	  MemCpy(_b,&tmpvi->base,j);
-	  _b+=j;
-	  Free(tmpvi);
-	  tmpvi=tmpvi1;
-	}
-	*_dst=_b;
-      } else {
-	for (i=0;i<tmpad1->cnt;i++) {
-	  PrsVarInit2(cc,_dst,tmpc,tmpad1,data_addr_rip,_base,data_heap,pass);
-	  if (tmpad1->cnt>1 && cc->token==',')
-	    Lex(cc);
-	}
-	if (cc->token=='}')
-	  Lex(cc);
-      }
-    }
-  } else {
-    PrsVarInit(cc,_dst,tmpc,tmpad1,data_addr_rip,_base,data_heap,pass);
-    LexPush(cc);
-  }
-}
-
-U0 PrsGlblInit(CCmpCtrl *cc,CHashGlblVar *tmpg,I64 pass)
-{
-  U8 *dst=tmpg->data_addr;
-  PrsVarInit2(cc,&dst,tmpg->var_class,&tmpg->dim,
-	tmpg->data_addr_rip,&tmpg->data_addr,
-	Bt(&cc->opts,OPTf_GLBLS_ON_DATA_HEAP)||
-	Bt(&cc->flags,CCf_AOT_COMPILE),pass);
-}
-
-U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *tmpm,I64 pass)
-{
-  U8 *machine_code,*dst=tmpm->static_data;
-  CHashClass *tmpc=tmpm->member_class;
-  I64 i,size;
-  CAOTImportExport *tmpie;
-
-  if (cc->flags&CCF_AOT_COMPILE && pass==2) {
-    COCPush(cc);
-    COCInit(cc);
-  }
-  PrsVarInit2(cc,&dst,tmpc,&tmpm->dim,tmpm->static_data_rip,
-	&tmpm->static_data,Bt(&cc->flags,CCf_AOT_COMPILE),pass);
-  if (cc->flags&CCF_AOT_COMPILE && pass==2) {
-    if (cc->coc.coc_head.next!=&cc->coc.coc_head) {
-      ICAdd(cc,IC_RET,0,0);
-      if (machine_code=COCCompile(cc,&size,NULL,NULL)) {
-	if (pass==2) {
-	  tmpie=CAlloc(sizeof(CAOTImportExport));
-	  tmpie->type=IET_MAIN;
-	  tmpie->rip=cc->aotc->rip;
-	  QueIns(tmpie,cc->aot->last_ie);
-	  for (i=0;i<size;i++)
-	    AOTStoreCodeU8(cc,machine_code[i]);
-	}
-	Free(machine_code);
-      }
-    } //TODO: else del misc?
-    COCPop(cc);
-  }
-}
-
+extern U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *member,I64 pass);
 #include "/Compiler/PrsTypeCore.HC"
 U0 PrsHostSnapshotDrop(U8 *context,CCmpCtrl *cc) { LexPopNoRestore(cc); }
 U0 PrsHostSnapshotPush(U8 *context,CCmpCtrl *cc) { LexPush(cc); }
@@ -328,4 +82,66 @@ U0 PrsVarLst(CCmpCtrl *cc,CHashClass *tmpc,I64 mode,I64 union_base=0)
   PrsHostServices(&expression); PrsHostTypeServices(&types);
   PrsHostDeclarationServices(&services,&expression,&types);
   PrsVarLstCore(&services,cc,tmpc,mode,union_base);
+}
+
+#include "/Compiler/PrsInitializerCore.HC"
+U0 PrsHostCopy(U8 *context,U8 *destination,U8 *source,I64 bytes) { MemCpy(destination,source,bytes); }
+U0 PrsHostSet(U8 *context,U8 *destination,U8 value,I64 bytes) { MemSet(destination,value,bytes); }
+U0 PrsHostStoreU8(U8 *context,CCmpCtrl *cc,U8 value) { AOTStoreCodeU8(cc,value); }
+U8 *PrsHostCompileCode(U8 *context,CCmpCtrl *cc,I64 *bytes) { return COCCompile(cc,bytes,NULL,NULL); }
+U0 PrsHostInitializerServices(CPrsInitializerServices *services,CPrsDeclarationServices *declarations)
+{
+  services->context=0; services->declarations=declarations;
+  services->copy=&PrsHostCopy; services->set=&PrsHostSet;
+  services->store_u8=&PrsHostStoreU8; services->compile_code=&PrsHostCompileCode;
+}
+
+U0 PrsVarInit(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,CArrayDim *tmpad,
+	U8 *data_addr_rip,U8 **_base,Bool data_heap,I64 pass)
+{
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsInitializerServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostInitializerServices(&services,&declarations);
+  PrsVarInitCore(&services,cc,_dst,tmpc,tmpad,data_addr_rip,_base,data_heap,pass);
+}
+
+U0 PrsVarInit2(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,
+	CArrayDim *tmpad,U8 *data_addr_rip,U8 **_base,Bool data_heap,I64 pass)
+{
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsInitializerServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostInitializerServices(&services,&declarations);
+  PrsVarInit2Core(&services,cc,_dst,tmpc,tmpad,data_addr_rip,_base,data_heap,pass);
+}
+
+U0 PrsGlblInit(CCmpCtrl *cc,CHashGlblVar *tmpg,I64 pass)
+{
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsInitializerServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostInitializerServices(&services,&declarations);
+  PrsGlblInitCore(&services,cc,tmpg,pass);
+}
+
+U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *tmpm,I64 pass)
+{
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsInitializerServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostInitializerServices(&services,&declarations);
+  PrsStaticInitCore(&services,cc,tmpm,pass);
 }
