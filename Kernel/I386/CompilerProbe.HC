@@ -7,6 +7,9 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/String.HH"
+import U0 SysTry(U8 *catch_start,U8 *untry_start);
+import U0 SysUntry();
+import U0 throw(I64 ch=0,Bool no_log=FALSE);
 import U0 KernelLog(U8 *text);
 import U0 KernelHex(U64 value);
 import U0 KernelStop();
@@ -26,6 +29,7 @@ extern U0 ProbeDefine(CI386CompilerProbe *probe);
 extern U0 ProbeConditional(CI386CompilerProbe *probe);
 extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
+extern U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
 #assert sizeof(CI386CompilerProbe)==52
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
@@ -307,9 +311,44 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
     SetRFlags(saved_flags);
     KernelLog("DISK IF PRESERVED\n");
   }
+  ProbeCompilerUnwind(probe,heap,cc);
   if(!probe->compiler->control_leave(heap,cc) || I386TaskSelf->active_controls ||
       I386TaskSelf->last_cc!=&I386TaskSelf->next_cc) KernelStop;
   if(!probe->compiler->control_del(heap,cc,0,0) || I386TaskSelf->lifetime_refs!=refs) KernelStop;
   if(heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
   KernelLog("DISK INCLUDE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(lines); KernelLog("\n");
+}
+
+U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{//Use the resident exception runtime and recover without ending the compilation.
+  CI386Task *task=I386TaskSelf;
+  CCmpCtrl *child;
+  CLexFile *outer_file=outer->lex_include_stk;
+  I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
+  I64 lines=0,accepted=0;
+  U32 flags=GetRFlags;
+  child=probe->files->control_new("#include \"C:/Probe/Bad.HC.Z\";",CCF_DONT_FREE_BUF,"Probe/Failure.HC");
+  if(!child || !probe->compiler->control_enter(heap,child,0,0)) KernelStop;
+  SetRFlags((flags&~0x200)|(probe->phase*0x200));
+  try {
+    if(probe->compiler->next_token_with_includes(heap,child,"Probe",&lines,probe->disk_include)!=-1) KernelStop;
+    throw('Compiler',TRUE);
+    KernelStop;
+  } catch {
+    if(task->except_ch!='Compiler' || task->last_cc!=child || task->active_controls!=2 ||
+        !probe->compiler->control_unwind(task,outer) ||
+        (GetRFlags&0x200)!=(probe->phase*0x200)) KernelStop;
+    task->catch_except=TRUE; accepted=1;
+  }
+  if(!accepted || task->except_top || task->last_cc!=outer || task->active_controls!=1 ||
+      task->lifetime_refs!=refs || outer->lex_include_stk!=outer_file ||
+      heap->used!=used || heap->allocations!=allocations) KernelStop;
+  child=probe->files->control_new("42;",CCF_DONT_FREE_BUF,"Probe/Retry.HC");
+  if(!child || !probe->compiler->control_enter(heap,child,0,0) ||
+      probe->compiler->next_token_with_includes(heap,child,"Probe",&lines,probe->disk_include)!=TK_I64 ||
+      child->cur_i64!=42 || !probe->compiler->control_unwind(task,outer) ||
+      task->last_cc!=outer || task->lifetime_refs!=refs || task->active_controls!=1 ||
+      heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
+  SetRFlags(flags);
+  KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }

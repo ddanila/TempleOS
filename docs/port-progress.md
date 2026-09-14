@@ -3061,3 +3061,46 @@ probe 75872 / 75888 (reclaimed after its task phase). These are local-change bui
 artifacts with source hashes in their manifests. This remains QEMU/486 development
 evidence; strict 386SX/DX/no-387 acceptance and the full native HolyC environment
 are not complete.
+
+
+## Compiler catch boundaries and native retry
+
+`I386CmpCtrlUnwind` now releases the active suffix after a preserved enclosing
+control. It validates membership and preflights every selected document callback
+before mutation, then releases tail first. Missing cleanup in the preserved prefix
+does not block a valid suffix. Detached/null boundaries reject without mutation;
+an empty suffix succeeds. Full task-exit drain delegates to this operation using
+the task sentinel. Partial recovery of a finished task keeps its cleanup-failure
+flag while active controls remain.
+
+Cleanup stays explicit in compiler catches. The public compiler uses controls
+inside exception handlers, so unconditional teardown on every throw would change
+its semantics. Owner pins and the busy guard cover callbacks and yields just as
+in full task-exit drain. Complete parser/AOT/generated-code release remains work;
+this operation reclaims the control/input state covered by shared control release.
+
+CompilerRuntime version 15 adds the unwind entry in a 72-byte record with twenty
+imports. FileRuntime version 6 validates that dependency, with its 32-byte record
+and eighteen imports unchanged. CompilerProbe version 4 adds resident SysTry,
+SysUntry and throw imports, taking the kernel export index to 43 entries.
+The probe translates a malformed compressed-include status into `Compiler`, catches
+it natively, unwinds its child control, preserves its enclosing control/input, and
+tokenizes `42;` from a new child. This verifies service reuse after recovery; it
+is not native parsing/JIT or public error reporting.
+
+Both x86-64 rebuild/reboot generations pass. Native `--task-symbols` passes added
+boundary/preflight checks with IF clear and set, including callback yields/reentry,
+a prefix document with no callback and partial finished-owner recovery.
+`--lex-state` passes the existing unbound ownership and shared-release checks.
+The complete standalone 8 MiB QEMU/486 suite passes with recovery in both boot and
+worker phases, exact exception/control reclamation, all service rejection cases,
+disk/input/VGA/timer checks and executable-region audits across ten modules.
+See `docs/i386-compiler-unwind.md` for commands and contracts.
+
+The kernel is 389296 bytes; its 2160-byte loaded stage brings the total to 391456,
+leaving 1760 bytes in the unchanged 393216-byte reservation. CompilerRuntime uses
+190768 image / 190784 heap bytes, FileRuntime 123664 / 123680, and CompilerProbe
+83240 / 83256, reclaimed after its task call. Manifests record the local source
+hashes used for these pre-commit builds. Public task/heap policy, complete native
+parser/JIT, DolDoc and persistent editing, strict 386SX/DX/no-387 acceptance and
+native self-hosting remain unfinished.

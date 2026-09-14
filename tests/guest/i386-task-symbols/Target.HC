@@ -31,6 +31,7 @@ CI386TaskCompilerConfig task_compiler,other_compiler;
 CCmpCtrl *retained_control;
 extern I64 FactoryRootTest();
 extern I64 ActiveTest();
+extern I64 UnwindRootTest();
 extern Bool FactoryWorkerTest(I64 id);
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
@@ -93,6 +94,7 @@ I64 ScopeTest()
       !I386TaskDestroy(workers[0]) || !I386TaskDestroy(workers[1]) ||
       root.lifetime_refs || heap.used!=used || heap.allocations!=allocations) return 9;
   i=ActiveTest; if(i) return i;
+  i=UnwindRootTest; if(i) return i;
   borrow=I386TaskFilesBorrow(&root,&snapshot,&selected);
   if(!borrow || I386TaskSymbolsDestroy(&root) || !I386TaskFilesRelease(borrow) ||
       !I386TaskSymbolsDestroy(&root) || !I386TaskFilesDestroy(&root) ||
@@ -156,3 +158,5 @@ U0 Grandchild(I64 unused)
 #include "T:/Factory.HC"
 
 #include "T:/Active.HC"
+
+#include "T:/Unwind.HC"

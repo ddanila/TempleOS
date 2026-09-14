@@ -73,13 +73,15 @@ The task-symbol fixture runs normal cleanup, non-tail detach and missing-callbac
 recovery with IF initially clear and set. It checks user cleanup precedes compiler
 cleanup, LIFO document callbacks, callback yields and rejected reentrant mutation,
 rejected early reap, retained detached controls and exact final heap accounting.
-Exception unwinding through parser/generated-code frames remains separate work.
+Explicit unwind to a preserved enclosing control now runs from a native compiler
+catch in the standalone probe; see [i386-compiler-unwind.md](i386-compiler-unwind.md).
+Complete parser/generated-code cleanup remains separate work.
 
 ## Retained services and tests
 
-CompilerRuntime version 14 retains enter, leave and drain operations alongside
-construction/destruction and symbol initialization. Its record is 68 bytes; the
-twenty imports are unchanged. FileRuntime version 5 validates that compiler
+CompilerRuntime version 15 retains enter, leave, drain and bounded unwind alongside
+construction/destruction and symbol initialization. Its record is 72 bytes; the
+twenty imports are unchanged. FileRuntime version 6 validates that compiler
 contract; its own record stays 32 bytes with six function pointers and eighteen
 imports. Both providers remain resident for the kernel lifetime.
 

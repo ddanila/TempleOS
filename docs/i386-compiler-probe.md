@@ -7,20 +7,21 @@ all: those six, retained CompilerRuntime and FileRuntime, synchronous Startup an
 CompilerProbe. Executable-region instruction audits cover all ten.
 
 The kernel loads CompilerProbe from RedSea before startup while it exclusively
-owns boot disk access. The checked loader binds twelve functions and one writable
+owns boot disk access. The checked loader binds fifteen functions and one writable
 data array: KernelLog/Hex/Stop, heap Size/Free/Valid, interrupt Save/Restore, raw
-lexer input, owned include attachment, HashAdd, StrCmp and char_bmp_alpha_numeric.
+lexer input, owned include attachment, HashAdd, StrCmp, SysTry/SysUntry/throw
+and char_bmp_alpha_numeric.
 The module uses the actual retained compiler interface for token services and
 borrows the kernel's symbol table and I64 type descriptor. It contains the small
 shared control/file seed routines; it does not contain a second compiler runtime.
 
-Main receives a version-2, 48-byte CI386CompilerProbe record plus its size. Every
+Main receives a version-4, 52-byte CI386CompilerProbe record plus its size. Every
 pointer is borrowed only during that synchronous call. The module rejects an
 incompatible record before running tests. It registers no persistent callbacks or tasks and
 retains no caller pointers. Include callbacks are borrowed only for synchronous
 calls into the retained compiler service. Its phase-zero call executes before Startup. Its image
 then remains live until the phase-one call from the pulse task after timer/IRQ
-activity; that call performs no disk I/O.
+activity; both phases now exercise disk reads and nested includes.
 
 After each call, the kernel verifies temporary heap allocations were reclaimed.
 After phase one returns, it frees the module image, clears its pointer, checks the
@@ -90,3 +91,12 @@ sets IF for a rejected load and restores the prior flags. The current diagnostic
 image is 68256 bytes and reclaims its complete 68272-byte span. The kernel checks
 both retained service images after that release. See `i386-file-runtime.md` for
 packaging, complete validation and updated boot-stage headroom.
+
+The current version-4 probe also recovers from a malformed include through the
+resident exception runtime. It preserves an enclosing active control, explicitly
+unwinds the failed child in a native catch, then tokenizes fresh input in the same
+task. Boot and worker phases check IF, exception-record removal and exact temporary
+heap reclamation; the host requires both `COMPILER RECOVERY` records. See
+[i386-compiler-unwind.md](i386-compiler-unwind.md) for scope and remaining parser/JIT
+work. The probe currently uses 83240 image bytes and a reclaimed 83256-byte heap
+span; current image measurements are in [i386-file-runtime.md](i386-file-runtime.md).

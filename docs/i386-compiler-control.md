@@ -43,10 +43,10 @@ Arbitrary heap or graph corruption is not a transactional recovery contract.
 
 ## Retained integration and verification
 
-CompilerRuntime version 14 retains constructor/destructor, task-symbol and active
-queue entries in its checked 68-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
+CompilerRuntime version 15 retains constructor/destructor, task-symbol, active
+queue and bounded unwind entries in its checked 72-byte record. Construction accepts an optional task owner. It imports native file creation and shared file release
 from the kernel, avoiding another copy of file-stack mechanisms. The kernel now
-publishes 40 bindings; the retained compiler has twenty imports.
+publishes 43 bindings; the retained compiler has twenty imports.
 
 The standalone disk-include probe creates a heap-owned control through this
 retained interface in both boot and worker phases. It exercises nested plain and
@@ -83,3 +83,6 @@ and pins the task while its control survives. An optional owner argument leaves
 unbound low-level construction available for isolated compiler uses. See
 [i386-task-compiler.md](i386-task-compiler.md); active controls now drain on task exit with recoverable document-callback
 rejection. Public heap/error behavior and parser unwind remain open.
+
+Explicit catch-boundary cleanup now preserves enclosing active controls; see
+[i386-compiler-unwind.md](i386-compiler-unwind.md).

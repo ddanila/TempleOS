@@ -2,7 +2,7 @@
 #define I386_COMPILER_PROBE_INCLUDED
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
-#define I386_COMPILER_PROBE_VERSION 3
+#define I386_COMPILER_PROBE_VERSION 4
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;

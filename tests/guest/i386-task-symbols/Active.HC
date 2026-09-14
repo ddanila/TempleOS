@@ -70,6 +70,10 @@ I64 ActiveTest()
             I386CmpCtrlDrain(&active_worker->task) || I386CmpCtrlDel(active_worker->task.memory,active_first)) return 35;
       }
       SetRFlags((flags&~0x200)|active_flags);
+      if(phase==2 && (!I386CmpCtrlUnwind(&active_worker->task,active_first) ||
+          active_worker->task.active_controls!=1 || active_worker->task.lifetime_refs!=1 ||
+          !active_worker->task.compiler_cleanup_failed || active_callbacks!=1 || active_order!=2 ||
+          I386TaskDestroy(active_worker))) return 40;
       if(!I386CmpCtrlDel(active_worker->task.memory,active_first,&ActiveDocument,&active_worker->task)) return 36;
       if(phase==2 && !I386CmpCtrlDrain(&active_worker->task)) return 37;
       SetRFlags(flags);

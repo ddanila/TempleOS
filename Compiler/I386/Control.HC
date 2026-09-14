@@ -181,41 +181,51 @@ Bool I386CmpCtrlDel(CI386Heap *heap,CCmpCtrl *cc,
 {
   return I386CmpCtrlDelete(heap,cc,document,context,FALSE);
 }
-Bool I386CmpCtrlDrain(CI386Task *task)
-{//Preflight the whole queue before releasing anything; callbacks cannot mutate it.
+Bool I386CmpCtrlUnwind(CI386Task *task,CCmpCtrl *boundary)
+{//Explicit compiler catch boundary. Preflight the suffix before any release.
   U32 irq=I386IrqSave,count;
   CI386CmpCtrl *owned;
   CCmpCtrl *node;
   CI386TaskSymbols *scope;
   Bool ok=TRUE;
-  if(!task || !task->owner || task->compiler_busy ||
+  if(!task || !boundary || !task->owner || task->compiler_busy ||
       (task->owner->current!=task && !task->finished)) goto control_drain_failed;
   if(!task->active_controls) {
-    ok=task->next_cc==&task->next_cc && task->last_cc==&task->next_cc && !task->compiler_cleanup;
+    ok=boundary==&task->next_cc && task->next_cc==&task->next_cc && task->last_cc==&task->next_cc && !task->compiler_cleanup;
     I386IrqRestore(irq); return ok;
   }
   scope=task->symbol_state;
   if(!scope || !I386CmpTaskOwnerValid(task,scope->heap,task->hash_table)) goto control_drain_failed;
   node=task->last_cc;
-  for(count=0;count<task->active_controls;count++) {
-    if(node==&task->next_cc || !I386CmpControlValid(scope->heap,node)) goto control_drain_failed;
+  for(count=0;node!=boundary;count++) {
+    if(count>=task->active_controls || node==&task->next_cc || !I386CmpControlValid(scope->heap,node)) goto control_drain_failed;
     owned=node;
     if(owned->task!=task || !I386CmpActiveValid(owned) ||
         !I386CmpReleaseReady(node,owned->document)) goto control_drain_failed;
     node=node->last;
   }
-  if(node!=&task->next_cc) goto control_drain_failed;
+  if(boundary!=&task->next_cc) {
+    if(!I386CmpControlValid(scope->heap,boundary)) goto control_drain_failed;
+    owned=boundary;
+    if(owned->task!=task || !I386CmpActiveValid(owned)) goto control_drain_failed;
+  }
   task->compiler_busy=1;
   I386IrqRestore(irq);
-  while(task->active_controls) {
+  while(count) {
     owned=task->last_cc;
     if(!I386CmpCtrlDelete(scope->heap,&owned->control,owned->document,owned->document_context,TRUE)) {
       ok=FALSE; break;
     }
+    count--;
   }
   irq=I386IrqSave; task->compiler_busy=0;
-  task->compiler_cleanup_failed=!ok;
+  if(!ok) task->compiler_cleanup_failed=1;
   I386IrqRestore(irq); return ok;
 control_drain_failed:
   I386IrqRestore(irq); return FALSE;
+}
+Bool I386CmpCtrlDrain(CI386Task *task)
+{
+  if(!task) return FALSE;
+  return I386CmpCtrlUnwind(task,&task->next_cc);
 }

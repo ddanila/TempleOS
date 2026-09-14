@@ -36,7 +36,7 @@ extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_li
 extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines);
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==68
+#assert sizeof(CI386CompilerServices)==72
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -56,7 +56,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->control_new=&I386CmpCtrlNew; services->control_del=&I386CmpCtrlDel;
   services->symbols_init=&I386TaskSymbolsInit;
   services->control_enter=&I386CmpCtrlEnter; services->control_leave=&I386CmpCtrlLeave;
-  services->control_drain=&I386CmpCtrlDrain;
+  services->control_drain=&I386CmpCtrlDrain; services->control_unwind=&I386CmpCtrlUnwind;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

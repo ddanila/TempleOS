@@ -18,4 +18,7 @@ public extern Bool I386CmpCtrlEnter(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0);
 public extern Bool I386CmpCtrlLeave(CI386Heap *heap,CCmpCtrl *cc);
 public extern Bool I386CmpCtrlDrain(CI386Task *task);
+//Release the active suffix after a live boundary; the boundary itself survives.
+//Use the task queue sentinel to release all. A detached/stale boundary is invalid.
+public extern Bool I386CmpCtrlUnwind(CI386Task *task,CCmpCtrl *boundary);
 #endif

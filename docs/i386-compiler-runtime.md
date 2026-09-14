@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 14 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 15 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-root task-symbol initialization, and active-control entry/leave/drain.
-The structure is 68 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain and bounded unwind.
+The structure is 72 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -170,3 +170,10 @@ record owns the queue and calls back into the provider at completion; controls
 remain detached until explicitly entered. FileRuntime version 5 validates the
 new dependency. See [i386-task-compiler.md](i386-task-compiler.md) for recovery,
 callback and owner-pin contracts.
+
+Version 15 adds explicit unwind to an enclosing active control, preserving that
+control and earlier entries. Full task-exit drain uses the same operation with
+the queue sentinel. The record is 72 bytes and imports remain twenty. The disk
+probe now recovers through native `try`/`catch`, preserves its enclosing control
+and tokenizes fresh input after a malformed include. See
+[i386-compiler-unwind.md](i386-compiler-unwind.md) for ownership and coverage.
