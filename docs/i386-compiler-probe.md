@@ -7,8 +7,8 @@ all: those six, retained CompilerRuntime and FileRuntime, synchronous Startup an
 CompilerProbe. Executable-region instruction audits cover all ten.
 
 The kernel loads CompilerProbe from RedSea before startup while it exclusively
-owns boot disk access. The checked loader binds fifteen functions and one writable
-data array: KernelLog/Hex/Stop, heap Size/Free/Valid, interrupt Save/Restore, raw
+owns boot disk access. The checked loader binds sixteen functions and one writable
+data array: KernelLog/Hex/Stop, heap Alloc/Size/Free/Valid, interrupt Save/Restore, raw
 lexer input, owned include attachment, HashAdd, StrCmp, SysTry/SysUntry/throw
 and char_bmp_alpha_numeric.
 The module uses the actual retained compiler interface for token services and
@@ -98,7 +98,7 @@ unwinds the failed child in a native catch, then tokenizes fresh input in the sa
 task. Boot and worker phases check IF, exception-record removal and exact temporary
 heap reclamation; the host requires both `COMPILER RECOVERY` records. See
 [i386-compiler-unwind.md](i386-compiler-unwind.md) for scope and remaining parser/JIT
-work. The probe currently uses 89256 image bytes and a reclaimed 89272-byte heap
+work. The probe currently uses 100000 image bytes and a reclaimed 100016-byte heap
 span; current image measurements are in [i386-file-runtime.md](i386-file-runtime.md).
 
 The recovery probe now attaches temporary intermediate-code nodes and a label to
@@ -113,3 +113,8 @@ exercises retained header save, append, push, pop and release. See
 The failed child now retains a tree link to a removed instruction through native
 retirement; retry verifies retirement followed by complete discard and collection.
 See [i386-ir-retirement.md](i386-ir-retirement.md).
+
+Shared branch-optimizer recovery now runs through the retained compiler service.
+Both phases exhaust the heap after native try registration, catch a real `OutMem`
+from fall-through-label allocation, unwind the partially rewritten graph and
+retry successfully. See [i386-branch-optimizer.md](i386-branch-optimizer.md).

@@ -81,7 +81,7 @@ header left after its graph was discarded. Both fixtures run with IF clear/set.
 Both x86-64 rebuild/reboot generations, all 233 native function cases, both ownership
 fixtures and the complete standalone 8 MiB QEMU/486 suite pass, including module
 rejection checks and executable-region instruction audits. The test transfer and
-heap boundaries remain 320 KiB/0x60000 for task symbols and 256 KiB/0x50000 for lexical
+heap boundaries remain 384 KiB/0x70000 for task symbols and 256 KiB/0x50000 for lexical
 state. No standalone boot reservation was increased.
 
 The kernel is 389336 bytes; with its 2160-byte loaded stage it occupies 391496 of

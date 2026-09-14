@@ -1017,7 +1017,7 @@ cc->pass==10 is final pass, code is placed into buf.
 	  break;
 	case IC_NOP1:
 	case IC_NOP2:
-	  OptFree(tmpi);
+	  OptFree(cc,tmpi);
 	  goto op789A_next;
 	case IC_CALL_START:
 	case IC_PUSH_REGS:

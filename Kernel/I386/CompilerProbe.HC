@@ -4,6 +4,7 @@
 #define FALSE 0
 #include "/Kernel/I386/CompilerProbe.HH"
 #include "/Compiler/ControlInit.HH"
+#include "/Compiler/CompilerA.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/String.HH"
@@ -13,6 +14,7 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
 import U0 KernelLog(U8 *text);
 import U0 KernelHex(U64 value);
 import U0 KernelStop();
+import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import Bool I386HeapValid(CI386Heap *heap);
@@ -29,6 +31,7 @@ extern U0 ProbeDefine(CI386CompilerProbe *probe);
 extern U0 ProbeConditional(CI386CompilerProbe *probe);
 extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
+extern U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
 #assert sizeof(CI386CompilerProbe)==52
@@ -368,6 +371,54 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
       !probe->compiler->control_unwind(task,outer) ||
       task->last_cc!=outer || task->lifetime_refs!=refs || task->active_controls!=1 ||
       heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
+  ProbeBranches(probe,heap,outer);
   SetRFlags(flags);
   KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
+}
+
+U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{//A failed label allocation must unwind the partially rewritten optimizer graph.
+  CI386Task *task=I386TaskSelf;
+  CCmpCtrl *cc;
+  CIntermediateCode *left,*right,*split1,*split2,*predicate,*branch;
+  CCodeMisc *target;
+  U8 *fill,*block,*next;
+  I64 attempt,size,accepted,used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
+  U32 flags=GetRFlags;
+  for(attempt=0;attempt<2;attempt++) {
+    cc=probe->files->control_new("",CCF_DONT_FREE_BUF,"Probe/Branches.HC");
+    if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
+    target=probe->compiler->code_misc(heap,cc,CMT_LABEL);
+    left=probe->compiler->code_add(heap,cc,IC_IMM_I64,1,probe->i64_type,0);
+    split1=probe->compiler->code_add(heap,cc,IC_NOP1,0,probe->i64_type,0);
+    right=probe->compiler->code_add(heap,cc,IC_IMM_I64,2,probe->i64_type,0);
+    split2=probe->compiler->code_add(heap,cc,IC_NOP1,0,probe->i64_type,0);
+    predicate=probe->compiler->code_add(heap,cc,IC_OR_OR,0,probe->i64_type,0);
+    branch=probe->compiler->code_add(heap,cc,IC_BR_ZERO,target,probe->i64_type,0);
+    if(!target || !left || !split1 || !right || !split2 || !predicate || !branch) KernelStop;
+    predicate->t.arg1_tree=left; predicate->t.arg2_tree=right;
+    predicate->t.arg1_class=predicate->t.arg2_class=probe->i64_type;
+    fill=0; accepted=0;
+    try {
+      if(!attempt)
+        for(size=8192;size>=8;size>>=1)
+          while(block=I386HeapAlloc(heap,size,FALSE)) { block(U8 **)[0]=fill; fill=block; }
+      if(probe->compiler->code_branch(heap,cc,branch)!=split2 || !attempt ||
+          branch->ic_code!=IC_LABEL || split1->ic_code!=IC_BR_NOT_ZERO ||
+          split1->ic_data!=branch->ic_data || split2->ic_code!=IC_BR_ZERO ||
+          split2->ic_data!=target || predicate->t.arg1_tree!=left) KernelStop;
+      accepted=1;
+    } catch {
+      if(attempt || task->except_ch!='OutMem' || task->last_cc!=cc ||
+          task->active_controls!=2 || predicate->t.arg2_tree!=right ||
+          I386HeapSize(heap,predicate)<sizeof(CIntermediateCode)) KernelStop;
+      task->catch_except=TRUE; accepted=1;
+    }
+    while(fill) { next=fill(U8 **)[0]; if(!I386HeapFree(heap,fill)) KernelStop; fill=next; }
+    if(!accepted || task->except_top || !probe->compiler->control_unwind(task,outer) ||
+        task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||
+        heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||
+        (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+  }
+  KernelLog("BRANCH RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }

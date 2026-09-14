@@ -17,19 +17,19 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 18 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 19 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations and instruction retirement.
-The structure is 108 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement and shared branch optimization.
+The structure is 112 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
 
-The module imports sixteen kernel functions: I386LexRawChar, I386LexSourceRead,
+The module imports seventeen kernel functions: I386LexRawChar, I386LexSourceRead,
 HashFind, HashAdd, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore, I386LexIncludeCopy, I386LexFilePush, LexFileReleaseTop, and
-I386HashTableNew/Valid/Delete,
+I386HashTableNew/Valid/Delete and throw,
 and four kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
 char_bmp_non_eol and char_bmp_non_eol_white_space. The
 latter remain the same writable public tables used by the kernel; moving the
@@ -39,9 +39,9 @@ its own numerical implementation and immutable-use power table inside its image.
 
 KernelCompilerLoad runs with IF clear and exclusive disk/heap ownership. After
 loading, the kernel verifies one retained allocation, extended-memory placement,
-interface version and byte count, and that all nine service pointers fall inside the
+interface version and byte count, and that all service pointers fall inside the
 loaded image. It publishes the global interface only after these checks succeed.
-The host boot verifier independently checks all nine pointer values against the
+The host boot verifier independently checks all pointer values against the
 module's actual function export offsets, not just the image's address range.
 
 The image, its code/data and the kernel providers must remain live for every
@@ -195,3 +195,11 @@ Version 18 adds native instruction retirement to preserve optimizer tree referen
 after queue removal. Complete discard can reclaim retired nodes once no other code
 allocations remain. The record is 108 bytes, still with twenty imports; FileRuntime
 version 9 validates it. See [i386-ir-retirement.md](i386-ir-retirement.md).
+
+## Native shared branch optimization (version 19)
+
+The 112-byte record appends `code_branch`, executing the shared zero/nonzero
+branch transformations with native instruction retirement and label allocation.
+`throw` raises the import count to twenty-one. FileRuntime version 10 validates
+the dependency. Partially rewritten graphs remain owned for exception cleanup;
+see [i386-branch-optimizer.md](i386-branch-optimizer.md).

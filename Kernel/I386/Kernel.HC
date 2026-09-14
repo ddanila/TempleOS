@@ -86,8 +86,8 @@ extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelKeys(I64 unused);
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
-U8 kernel_compiler_bindings[20]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39};
-U8 kernel_probe_bindings[16]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42};
+U8 kernel_compiler_bindings[21]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42};
+U8 kernel_probe_bindings[17]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10};
 U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
@@ -451,29 +451,29 @@ U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacit
 
 U0 KernelCompilerLoad()
 {//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
-  CI386ModuleBinding bindings[20];
+  CI386ModuleBinding bindings[sizeof(kernel_compiler_bindings)];
   I64 used=kernel_heap.used;
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  KernelBindings(bindings,kernel_compiler_bindings,20,sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_compiler_bindings,sizeof(kernel_compiler_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_compiler_image=KernelServiceLoad("/Modules/I386/CompilerRuntime.t32m","RUNTIME ",
-    bindings,20,&kernel_compiler,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION);
+    bindings,sizeof(kernel_compiler_bindings),&kernel_compiler,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION);
   kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
   kernel_compiler_span=kernel_heap.used-used;
   if(!kernel_compiler.symbols_init(&kernel_root,&kernel_heap,kernel_symbols,1024)) KernelStop;
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.
-  CI386RedSeaEntry file; CI386ModuleBinding bindings[16]; CI386CompilerProbe probe;
+  CI386RedSeaEntry file; CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)]; CI386CompilerProbe probe;
   I64 (*entry)(CI386CompilerProbe *probe,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
   U32 flags;
   if(phase==0) {
     if(kernel_probe_image) KernelStop;
-    KernelBindings(bindings,kernel_probe_bindings,16,sizeof(bindings)/sizeof(CI386ModuleBinding));
+    KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
     if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
         !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
         !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerProbe.t32m",&file)!=1) KernelStop;
-    kernel_probe_image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,16);
+    kernel_probe_image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(kernel_probe_bindings));
     if(!kernel_probe_image) {
       if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
       KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;

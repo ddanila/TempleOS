@@ -73,7 +73,7 @@ QEMU/486 development profile and do not establish strict 386 hardware support.
 
 Two x64 rebuild/reboot generations, native task-symbol, task, ATA/file, hash-table
 and exception checks, and the full standalone suite passed. The task fixture uses a bounded 192 KiB transfer ending at its 0x40000 arena.
-The expanded scope/constructor/IR fixture uses 320 KiB and an arena at 0x60000.
+The expanded scope/constructor/IR fixture uses 384 KiB and an arena at 0x70000.
 The kernel links `HashTableCore.HC`; the full `HashTable.HC` still includes resizing
 for callers that need it, and the resize regression passes. Omitting that unused
 3296-byte routine from the bootstrap keeps the fixed reservation intact.

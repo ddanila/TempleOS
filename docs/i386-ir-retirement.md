@@ -65,3 +65,7 @@ builds have source hashes in their manifests; test transfer sizes are unchanged.
 
 Public allocator/OptFree routing, optimizer execution, full parser/JIT and AOT
 recovery, strict 386SX/DX/no-387 workflows and native self-hosting remain open.
+
+The shared branch optimizer now uses this native retirement path through a
+control-aware `OptFree`; see [i386-branch-optimizer.md](i386-branch-optimizer.md).
+Other optimizer passes and the complete parser still require native integration.

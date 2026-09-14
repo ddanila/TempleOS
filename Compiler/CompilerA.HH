@@ -1,3 +1,5 @@
+#ifndef COMPILER_A_INCLUDED
+#define COMPILER_A_INCLUDED
 #help_index "Compiler/Internal"
 //Intermediate compiler codes
 #define IS_0_ARG	0
@@ -330,3 +332,5 @@ class COptReg
 #define CMPF_PRS_SEMICOLON	8
 
 #help_index ""
+
+#endif

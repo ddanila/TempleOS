@@ -153,7 +153,7 @@ pe_check_binary_ops2:
 	  else if (stk_op.u16[0]==IC_ADDR) {
 	    cc->abs_cnts.c_addres++;
 	    if (intermediate_code_table[tmpi->ic_code].type==IST_DEREF)
-	      OptFree(tmpi);
+	      OptFree(cc,tmpi);
 	    tmpc++;
 	  }
 	  tmpc=OptClassFwd(tmpc);

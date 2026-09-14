@@ -643,13 +643,13 @@ sw_cont:
 	  while (cc->token && cc->token!='}') {
 	    switch (PrsKeyWord(cc)) {
 	      case KW_END:
-		OptFree(tmpi_jmp);
+		OptFree(cc,tmpi_jmp);
 		goto sw_sub_end;
 	      case KW_START:
 	      case KW_CASE:
 	      case KW_DFT:
 		if (cc->coc.coc_head.last==tmpi_start) {
-		  OptFree(tmpi_jmp);
+		  OptFree(cc,tmpi_jmp);
 		  tmpss->lb_start=NULL;
 		} else {
 		  ICAdd(cc,IC_RET,0,0);

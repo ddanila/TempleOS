@@ -165,7 +165,7 @@ U0 OptPass6(CCmpCtrl *cc)
     }
     tmpi_next=tmpi->next;
     if (tmpi->ic_code<=IC_NOP2)
-      OptFree(tmpi);
+      OptFree(cc,tmpi);
     tmpi=tmpi_next;
   }
   if (ps->ptr>2) {

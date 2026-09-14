@@ -35,6 +35,7 @@ extern I64 UnwindRootTest();
 extern I64 CodeTest();
 extern I64 CodeViewsTest();
 extern I64 CodeRetireTest();
+extern I64 CodeBranchTest();
 extern Bool FactoryWorkerTest(I64 id);
 U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
@@ -59,7 +60,7 @@ I64 ScopeTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x60000,65536)) return 1;
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x70000,65536)) return 1;
   OutU8(0x21,255); OutU8(0xA1,255);
   symbols=I386HashTableNew(&heap,8);
   if(!symbols || !I386TaskSymbolsInit(&root,&heap,symbols) ||
@@ -101,6 +102,7 @@ I64 ScopeTest()
   i=CodeTest; if(i) return i;
   i=CodeViewsTest; if(i) return i;
   i=CodeRetireTest; if(i) return i;
+  i=CodeBranchTest; if(i) return i;
   borrow=I386TaskFilesBorrow(&root,&snapshot,&selected);
   if(!borrow || I386TaskSymbolsDestroy(&root) || !I386TaskFilesRelease(borrow) ||
       !I386TaskSymbolsDestroy(&root) || !I386TaskFilesDestroy(&root) ||
@@ -172,3 +174,10 @@ U0 Grandchild(I64 unused)
 #include "T:/Views.HC"
 
 #include "T:/Retire.HC"
+
+U0 throw(I64 ch=0,Bool no_log=FALSE)
+{//Unexpected optimizer failure terminates this fixture with an observable marker.
+  OutU8(0xE9,'!'); while(TRUE) {}
+}
+#include "/Compiler/I386/OptBranch.HC"
+#include "T:/Branch.HC"

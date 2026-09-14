@@ -13,6 +13,7 @@
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
+import U0 throw(I64 ch=0,Bool no_log=FALSE);
 import U32 I386IrqSave();
 import U0 I386IrqRestore(U32 flags);
 import Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
@@ -36,7 +37,7 @@ extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_li
 extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines);
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==108
+#assert sizeof(CI386CompilerServices)==112
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -61,7 +62,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->code_discard=&I386COCDiscard; services->code_save=&I386COCSave;
   services->code_push=&I386COCPush; services->code_pop=&I386COCPopNoFree;
   services->code_free=&I386COCHeaderFree; services->code_append=&I386COCAppend;
-  services->code_retire=&I386ICRetire;
+  services->code_retire=&I386ICRetire; services->code_branch=&I386OptBranch;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -95,3 +96,5 @@ I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
 
 #include "/Compiler/I386/SymbolDelete.HC"
 #include "/Kernel/I386/TaskSymbols.HC"
+
+#include "/Compiler/I386/OptBranch.HC"

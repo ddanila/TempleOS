@@ -3223,3 +3223,49 @@ heap bytes, FileRuntime 124584 / 124600, and the temporary probe 89256 / 89272,
 reclaimed after its task phase. Test transfers remain unchanged; pre-commit build
 manifests record local source hashes. Public allocator/optimizer routing, full
 parser/JIT/AOT recovery, strict 386 workflows, DolDoc and self-hosting remain open.
+
+
+## Native shared branch optimizer and allocation-failure recovery
+
+The resident compiler now executes the original `OptBrZero`/`OptBrNotZero`
+transformations through `code_branch`. `OptBranch.HC` and `OptCode.HC` are shared
+with the x86-64 compiler. All parser/optimizer calls to `OptFree` now pass their
+compiler control; the native branch implementation uses owned instruction
+retirement, while the public x86-64 implementation retains its `Free` policy.
+Native label allocation throws `OutMem`. Partially rewritten graphs remain
+owned for discard or control unwind, rather than being reused as valid input.
+
+The task-symbol fixture passes 136 native rewrites across both IF states:
+comparisons with zero through three negations, AND/OR short-circuit labels and
+carry/bit intrinsics. It checks queue/tree/flag/target behavior, borrowed retired
+nodes, invalid entries and exact heap reclamation. Its expanded stage uses a
+384 KiB reservation and a 64 KiB heap at 0x70000; the standalone OS memory contract
+is unchanged.
+
+The standalone disk-loaded probe fills the heap after native try registration,
+then catches an actual `OutMem` raised while the shared optimizer creates a
+fall-through label. It reclaims filler allocations, unwinds the partially
+rewritten control to the enclosing compilation and retries with a fresh control.
+Both boot and task phases pass exact heap/lifetime and IF checks.
+
+Verification completed successfully:
+
+- `python3 tools/test-rebuild.py`: both x86-64 rebuild/reboot generations.
+- `python3 tools/test-i386.py --task-symbols`: all scope/control/IR and branch cases.
+- `python3 tools/test-i386.py --functions`: all 233 generated-function cases.
+- `python3 tools/build-i386-kernel.py --test`: complete standalone boot, input,
+  module-rejection, recovery and executable instruction-audit suite.
+- `git diff --check`.
+
+CompilerRuntime ABI 19 is 112 bytes with 21 imports. FileRuntime ABI 10 keeps
+its 32-byte record and 18 imports. CompilerProbe keeps ABI 4/52 bytes and now
+uses 17 imports. Kernel binding counts derive from their index arrays.
+Measured image/heap spans: CompilerRuntime 256216/256232 bytes, FileRuntime
+124688/124704, temporary CompilerProbe 100000/100016. The kernel remains 389336
+bytes; with 2160 bytes of loaded stage overhead, it occupies 391496 of the fixed
+393216-byte reservation, leaving 1720 bytes.
+
+See [i386-branch-optimizer.md](i386-branch-optimizer.md) for the integration
+contract. Full native parser/optimizer/backend execution, public allocator and
+task/CPU integration, interactive HolyC, DolDoc/editing and self-hosting remain
+unfinished. QEMU/486 development success is not strict 386SX/DX acceptance.

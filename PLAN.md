@@ -697,6 +697,17 @@ allocator/OptFree routing and complete optimizer execution remain integration
 work; see `docs/i386-ir-retirement.md`. The kernel and loaded stage occupy 391496
 of the unchanged 393216-byte reservation.
 
+The resident compiler now executes the shared zero/nonzero branch transformations
+with native allocation and retirement. `OptFree` receives its compiler control
+throughout the parser/optimizer; the native branch implementation retires nodes
+and throws `OutMem` on failed label allocation. The full parser and remaining
+optimizer passes still require public allocation/runtime integration. See
+`docs/i386-branch-optimizer.md` for the ownership contract. All 136 native branch
+rewrites and standalone OutMem/unwind/retry checks pass, alongside both x86-64
+rebuild generations and the complete standalone suite. CompilerRuntime ABI 19
+is 112 bytes; FileRuntime ABI 10 validates it. The bootstrap reservation remains
+unchanged with 1720 bytes free.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,
