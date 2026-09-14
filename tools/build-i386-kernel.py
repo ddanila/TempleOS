@@ -453,7 +453,7 @@ def main():
         lexical_hash=2166136261
         for byte in normalized: lexical_hash=((lexical_hash^byte)*16777619)&0xFFFFFFFF
         lexical=[line.split() for line in log.splitlines() if line.startswith('LEX_SOURCE ')]
-        transient=((len(source)+1+7)&~7)+456
+        transient=((len(source)+1+7)&~7)+576
         expected_lexical=[len(normalized),source.count(b'\n'),lexical_hash,transient]
         if b'\0' in source or len(lexical)!=1 or [int(x,16) for x in lexical[0][1:]]!=expected_lexical:
             raise ValueError('Native lexical source consumption/reclamation mismatch')

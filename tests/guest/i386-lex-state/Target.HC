@@ -18,6 +18,7 @@ extern I64 LexFilesTest();
 extern I64 NativeFilesTest();
 extern I64 LexRawInputTest();
 extern I64 NativeInputTest();
+extern I64 NativeTakeTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
@@ -39,7 +40,9 @@ I64 Main(I64 unused,I64 unused2)
   if(result) return result;
   result=NativeFilesTest;
   if(result) return result;
-  return NativeInputTest;
+  result=NativeInputTest;
+  if(result) return result;
+  return NativeTakeTest;
 }
 #include "T:/NativeBits.HC"
 #include "T:/BitIntrinsics.HC"
@@ -109,3 +112,5 @@ Bool InputPop(CCmpCtrl *cc) { return I386LexFilePop(&state_heap,cc); }
 I64 InputRead(CCmpCtrl *cc,I64 *lines) { return I386LexRawChar(&state_heap,cc,lines); }
 #include "T:/Input.HC"
 #include "T:/NativeInput.HC"
+
+#include "T:/Take.HC"

@@ -2556,3 +2556,30 @@ These are raw, volume-scoped services. Public path/extension behavior,
 decompression, include dispatch and compiler-control integration remain required,
 along with parser/JIT, documents, strict 386 hardware profiles and native
 self-hosting. See `docs/i386-file-read.md`.
+
+## Transferred native source ownership
+
+I386LexIncludeTake now accepts an existing heap source allocation and prepares a
+copied filename and file record before transferring ownership. Copied and taken
+input share publication and parent lookahead backup. Failure leaves the source
+with its caller and preserves input state; known owner aliases and invalid source
+allocations are rejected. Native EOF releases the child source/name/record.
+
+KernelStorage uses this boundary for its actual disk-loaded source, without a
+second full source copy. Boot checks child line context, complete source hashing,
+EOF parent resumption, source reclamation and final heap restoration. The current
+source traverses 25561 characters and releases 26144 transient heap bytes. The
+bootstrap is 383496 bytes, leaving 9720 bytes in the fixed 393216-byte reservation.
+Further substantial services must respect the extended-memory module boundary.
+
+Both x64 rebuild/reboot generations, native state and identifier/macro suites,
+instruction audits and the full kernel boot/rejection/VGA/keyboard/timer suite
+pass. State tests cover exact source identity, two added allocations, invalid
+modes/aliases/storage, thirteen allocation-failure arenas, empty children, saved
+positions at EOF, reclamation and interrupt-state preservation. The expanded
+state fixture uses a 160 KiB loader reservation and the same separate heap.
+
+Public include path/default-extension rules, .Z fallback, parent-directory search,
+resident-file behavior, decompression and directive dispatch remain unconnected.
+Parser/JIT, complete public APIs, documents, strict 386 hardware qualification and
+native self-hosting remain open. See `docs/i386-lex-include.md`.

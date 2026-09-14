@@ -502,6 +502,13 @@ programming environment through these concrete steps:
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block
    native EOF pop; general lookahead across includes needs integration.
+   Owned-source transfer now shares publication with copied attachment and avoids
+   duplicating a disk-loaded source allocation. Kernel source traversal transfers
+   its file buffer into a child, crosses EOF and verifies reclamation and parent
+   resumption. Failure leaves ownership with the caller. Include dispatch, public
+   path/extension rules and decompression still need integration. The bootstrap
+   with transferred source input is 383496 bytes, leaving 9720 bytes in its fixed
+   reservation; place further substantial services in extended-memory modules.
    Place remaining compiler modules here, defining
    their code/data lifetimes; arbitrary unloading remains unsupported.
    Public task/code-heap selection, allocation-failure exception behavior,

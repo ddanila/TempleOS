@@ -272,7 +272,7 @@ U0 KernelKeys(I64 unused)
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
-  U8 *buffer;
+  U8 *buffer,empty[1];
   CCmpCtrl *cc;
   CLexFile *file;
   I64 size=0,i,ch,characters=0,lines=0,used=kernel_heap.used,allocations=kernel_heap.allocations,transient;
@@ -289,16 +289,19 @@ U0 KernelStorage(CI386BootInfo *info)
   for(i=0;i<size;i++) hash=(hash^buffer[i])*16777619;
   KernelLog("SOURCE "); KernelHex(size); KernelLog(" ");
   KernelHex(hash); KernelLog("\n");
-  CmpCtrlSeed(cc,0,0,char_bmp_alpha_numeric);
+  empty[0]=0;
+  CmpCtrlSeed(cc,CCF_DONT_FREE_BUF,0,char_bmp_alpha_numeric);
   file=I386LexFilePush(&kernel_heap,cc);
   if(!file) KernelStop;
-  LexFileSeed(file,buffer); cc->cur_buf_ptr=buffer;
+  LexFileSeed(file,empty); cc->cur_buf_ptr=empty;
+  if(!I386LexIncludeTake(&kernel_heap,cc,"/Kernel/I386/Kernel.HC",buffer)) KernelStop;
+  transient=kernel_heap.used-used;
   while(ch=I386LexRawChar(&kernel_heap,cc,&lines)) {
-    if(ch<0) KernelStop;
+    if(ch<0 || cc->lex_include_stk==file || cc->lex_include_stk->line_num!=lines+1) KernelStop;
     lex_hash=(lex_hash^ch)*16777619; characters++;
   }
-  if(cc->cur_buf_ptr!=buffer+size || file->line_num!=lines+1) KernelStop;
-  transient=kernel_heap.used-used;
+  if(cc->lex_include_stk!=file || cc->cur_buf_ptr!=empty || file->line_num!=1 ||
+      I386HeapSize(&kernel_heap,buffer)!=-1 || kernel_heap.allocations!=allocations+2) KernelStop;
   if(!I386LexFilePop(&kernel_heap,cc) || !I386HeapFree(&kernel_heap,cc) ||
       kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
   KernelLog("LEX_SOURCE "); KernelHex(characters); KernelLog(" "); KernelHex(lines); KernelLog(" ");

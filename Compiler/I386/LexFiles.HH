@@ -4,6 +4,9 @@
 #include "/Kernel/I386/Heap.HH"
 //Copy borrowed name/source into an owned child. Allocation failure leaves input state unchanged.
 public extern Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
+//Transfer a distinct owned, NUL-terminated source allocation on success only.
+//Name is borrowed and copied. Failure leaves source ownership and input state unchanged.
+public extern Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
 public extern CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
 //File/name and owned raw buffers belong to heap; document lifetime uses the callback.
 //Drain saved positions before popping. Caller must update its current buffer pointer.
