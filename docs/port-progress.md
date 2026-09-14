@@ -2487,3 +2487,23 @@ with startup execution. VGA/keyboard/timer and runtime rejection regressions pas
 Native preprocessing, parser/JIT, public compiler/kernel APIs, the complete document
 workflow, strict 386 profiles and self-hosting remain open. See
 `docs/i386-compiler-probe.md`.
+
+## Owned native language and assembler keywords
+
+The native kernel now initializes all 48 language and 25 assembler keywords from
+bootstrap descriptors checked against OpCodes.DD and shared KW/AKW constants.
+The x64 path still loads the original opcode source. A dedicated native fixture
+compares every descriptor with the actual x64 keyword records, then verifies all
+native mappings, owned sizes, parent/mask precedence and registry lifecycle.
+Partial initialization is reclaimed across 1021 small heap arenas; locked deletion,
+reinitialization rejection and reuse pass. The registry occupies 6208 bytes in 148
+allocations and remains live behind primitive types, preserving F64 type precedence.
+
+The compiler definition probe now inherits this real keyword namespace rather
+than injecting a define record. Both boot/task phases pass, as do source, runtime/
+probe rejection, VGA/keyboard/timer checks and both x64 rebuild/reboot generations.
+The bootstrap is 372288 bytes, leaving 20928 bytes of headroom. The temporary
+compiler-probe image is 43328 bytes with a fully reclaimed 43344-byte heap span;
+the compiler runtime and keyword registry stay resident. Opcode/register loading,
+remaining preprocessing, public compiler-control APIs, parser/JIT, DolDoc, strict
+386 profiles and native self-hosting remain open. See `docs/i386-keywords.md`.

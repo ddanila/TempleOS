@@ -53,3 +53,9 @@ a 44224-byte heap span, all reclaimed after phase one. CompilerRuntime stays at
 probes, VGA/keyboard/timers and all three probe rejection cases pass. These are
 8 MiB QEMU/486 development observations; strict 386 and full workflow memory
 validation remain required.
+
+With native keyword initialization, ProbeDefine inherits the real 73-entry registry
+through resident symbols instead of constructing a synthetic define keyword. The
+current probe image is 43328 bytes with a 43344-byte temporary heap span. Both
+phases, reclamation and rejection checks pass with this namespace; see
+`docs/i386-keywords.md` for the separate resident registry lifetime.

@@ -478,12 +478,16 @@ programming environment through these concrete steps:
    flags and publishes the complete definition before transferring name ownership.
    Definition/redefinition, expansion, metadata and failure/reclamation tests pass;
    the version-8 runtime executes definition probes at boot and after task activity.
-   General keyword initialization and remaining directives are still required.
+   All 48 language and 25 assembler keywords now initialize as an owned native
+   registry behind primitive types. The definition probes use this real namespace.
+   Opcode/register initialization and remaining directives are still required.
    Compiler diagnostics now load as a temporary extended-memory module, retained
    through boot/task checks and then reclaimed. This reduces the bootstrap from
    390760 to 364504 bytes within the unchanged 393216-byte reservation; its 44224-byte
    temporary heap span is measured separately from the retained compiler runtime.
    Preserve that placement/lifetime discipline as remaining services are integrated.
+   With keyword initialization, the bootstrap is 372288 bytes, leaving 20928 bytes
+   of headroom. The resident keyword registry uses 6208 heap bytes in 148 allocations.
    Full lexical dispatch and remaining directive processing are required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block

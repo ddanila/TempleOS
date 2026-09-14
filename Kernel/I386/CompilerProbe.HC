@@ -143,28 +143,26 @@ U0 ProbeIdent(CI386CompilerProbe *probe)
 #include "/Compiler/Keywords.HH"
 U0 ProbeDefine(CI386CompilerProbe *probe)
 {
-  CCmpCtrl cc; CLexFile file; CHashTable table; CHashGeneric keyword;
+  CCmpCtrl cc; CLexFile file; CHashTable table;
   CHash *bucket=0; CHashDefineStr *entry; U8 *bytes; U32 flags;
   I64 phase=probe->phase,i,lines=0,used=probe->heap->used,allocations=probe->heap->allocations;
   bytes=&cc; for(i=0;i<sizeof(CCmpCtrl);i++) bytes[i]=0;
   bytes=&file; for(i=0;i<sizeof(CLexFile);i++) bytes[i]=0;
   bytes=&table; for(i=0;i<sizeof(CHashTable);i++) bytes[i]=0;
-  bytes=&keyword; for(i=0;i<sizeof(CHashGeneric);i++) bytes[i]=0;
   table.body=&bucket; table.next=probe->symbols;
-  keyword.str="define"; keyword.type=HTT_KEYWORD; keyword.user_data0=KW_DEFINE; HashAdd(&keyword,&table);
   CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,&table,char_bmp_alpha_numeric);
   LexFileSeed(&file,"#define Type 3e0\nType;"); file.full_name="Probe";
   cc.lex_include_stk=&file; cc.cur_buf_ptr=file.buf;
   if(probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=TK_F64 ||
       cc.cur_f64(U64)!=0x4008000000000000) KernelStop;
   entry=bucket;
-  if(entry==&keyword || entry->next!=&keyword || entry->type!=HTT_DEFINE_STR || entry->cnt!=-1 ||
+  if(!entry || entry->next || entry->type!=HTT_DEFINE_STR || entry->cnt!=-1 ||
       StrCmp(entry->str,"Type") || StrCmp(entry->data,"3e0") || StrCmp(entry->src_link,"FL:Probe,1") ||
       entry->idx || cc.cur_str || probe->heap->allocations!=allocations+4 ||
       probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=59 ||
       probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=TK_EOF) KernelStop;
   flags=I386IrqSave;
-  bucket=&keyword; cc.hash_entry=0;
+  bucket=0; cc.hash_entry=0;
   if(!I386HeapFree(probe->heap,entry->str) || !I386HeapFree(probe->heap,entry->data) ||
       !I386HeapFree(probe->heap,entry->src_link) || !I386HeapFree(probe->heap,entry)) KernelStop;
   I386IrqRestore(flags);

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import runpy
 import struct
 import subprocess
@@ -374,6 +375,7 @@ def main():
     out=ROOT/'build/i386-kernel'
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
+    run(sys.executable,'tools/gen-compiler-keywords.py','--check')
     bootstrap=json.loads((ROOT/'build/rebuild-test/result.json').read_text())
     for name,digest in bootstrap['source_sha256'].items():
         if name.startswith(('Kernel/','Compiler/')) and hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=digest:
@@ -428,6 +430,16 @@ def main():
         if len(types)!=1 or [int(x,16) for x in types[0][1:]]!=[17,7672]:
             raise ValueError('Missing resident built-in types or unexpected allocation footprint')
         result['internal_types']={'names':17,'heap_bytes':7672}
+        keyword_names = re.findall(rb'^(?:KEYWORD|ASM_KEYWORD)\s+(\w+)\s+\d+\s*;',
+                                   (ROOT/'Compiler/OpCodes.DD').read_bytes(), re.M)
+        #Native table owner/buckets: 48+272. Each CHashGeneric: 40+16; names own an aligned block.
+        keyword_bytes = 320+sum(56+16+((len(name)+8)&~7) for name in keyword_names)
+        keywords=[line.split() for line in log.splitlines() if line.startswith('KEYWORDS ')]
+        if len(keywords)!=1 or [int(value,16) for value in keywords[0][1:]]!=[73,keyword_bytes]:
+            raise ValueError('Missing native keyword registry/footprint evidence')
+        result['keywords']={'language':48,'assembler':25,'heap_bytes':keyword_bytes,
+                            'allocations':148,'lifetime':'kernel lifetime'}
+
         mounted=[line.split() for line in log.splitlines() if line.startswith('REDSEA ')]
         if len(mounted)!=1 or [int(x,16) for x in mounted[0][1:]]!=[volume['start'],volume['sectors']]:
             raise ValueError('Wrong boot volume mounted')

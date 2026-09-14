@@ -88,7 +88,9 @@ include's EOF/pop. Cleanup uses the existing symbol destructor.
 CompilerRuntime version 8 keeps the eight-pointer, 40-byte interface and adds
 HashAdd and char_bmp_non_eol_white_space imports. Its kernel probes define a macro,
 expand it to F64, consume the parent delimiter/EOF and reclaim the definition both
-at boot and after task/timer activity. General keyword-table initialization,
-includes, conditionals, executed directives, prompt/document input and complete
+at boot and after task/timer activity. The boot kernel now supplies all 73 language/assembler keyword records through
+its owned registry; the definition probe inherits that namespace. Remaining
+opcode/register initialization, includes, conditionals, executed directives,
+prompt/document input and complete
 compiler-control lifetime still need integration before native preprocessing is
 complete.

@@ -49,4 +49,31 @@
 #define KW_ARGPOP	46
 #define KW_NOARGPOP	47
 
+#define AKW_ALIGN	64
+#define AKW_ORG		65
+#define AKW_I0		66
+#define AKW_I8		67
+#define AKW_I16		68
+#define AKW_I32		69
+#define AKW_I64		70
+#define AKW_U0		71
+#define AKW_U8		72
+#define AKW_U16		73
+#define AKW_U32		74
+#define AKW_U64		75
+#define AKW_F64		76
+#define AKW_DU8		77
+#define AKW_DU16	78
+#define AKW_DU32	79
+#define AKW_DU64	80
+#define AKW_DUP		81
+#define AKW_USE16	82
+#define AKW_USE32	83
+#define AKW_USE64	84
+#define AKW_IMPORT	85
+#define AKW_LIST	86
+#define AKW_NOLIST	87
+#define AKW_BINFILE	88
+#define KW_KWS_NUM	89
+
 #endif

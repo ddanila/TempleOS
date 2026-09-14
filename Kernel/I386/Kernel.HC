@@ -24,6 +24,7 @@
 #include "/Kernel/I386/HashTable.HH"
 #include "/Kernel/HashValue.HH"
 #include "/Compiler/I386/InternalTypes.HH"
+#include "/Compiler/I386/Keywords.HH"
 #include "/Compiler/ControlInit.HH"
 #include "/Compiler/I386/LexInput.HH"
 #include "/Kernel/I386/CompilerRuntime.HH"
@@ -48,6 +49,7 @@ CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
 CHashTable *kernel_symbols;
 CI386InternalTypes kernel_types;
+CI386Keywords kernel_keywords;
 CI386KernelSymbol kernel_exports[22];
 CI386CompilerServices kernel_compiler;
 U8 *kernel_compiler_image;
@@ -223,6 +225,7 @@ U0 KernelDisplay()
 #include "/Compiler/I386/SymbolAlloc.HC"
 #include "/Compiler/I386/SymbolDelete.HC"
 #include "/Compiler/I386/InternalTypes.HC"
+#include "/Compiler/I386/Keywords.HC"
 #include "/Kernel/CharBitmaps.HC"
 #include "/Compiler/ControlInit.HC"
 #include "/Compiler/I386/LexFiles.HC"
@@ -359,6 +362,11 @@ U0 KernelSymbols()
       HashFind("F64",kernel_symbols,HTT_INTERNAL_TYPE)!=kernel_types.by_raw[RT_F64]) KernelStop;
   KernelLog("TYPES "); KernelHex(INTERNAL_TYPES_NUM); KernelLog(" ");
   KernelHex(kernel_heap.used-used); KernelLog("\n");
+  used=kernel_heap.used;
+  if(!I386KeywordsInit(&kernel_keywords,&kernel_heap)) KernelStop;
+  kernel_types.table->next=kernel_keywords.table;
+  if(HashFind("F64",kernel_symbols,HTG_TYPE_MASK)!=kernel_types.by_raw[RT_F64]) KernelStop;
+  KernelLog("KEYWORDS "); KernelHex(COMPILER_KEYWORDS_NUM); KernelLog(" "); KernelHex(kernel_heap.used-used); KernelLog("\n");
   kernel_exports[0].str="KernelLog"; kernel_exports[0].kind=1;
   kernel_exports[0].val=(&KernelLog+0)(U64);
   kernel_exports[1].str="KernelDisplay"; kernel_exports[1].kind=1;

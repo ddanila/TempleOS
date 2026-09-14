@@ -88,8 +88,8 @@ keyboard/scrolling/cancellation pixel checks, source checks and timer checks pas
 each test's disk remains unchanged.
 
 With definition publication in interface version 8, the bootstrap image is
-364504 bytes of its 393216-byte reservation. The 126464-byte runtime image
-is allocated at 0x131DA0 in the 8 MiB development profile and retains a
+372288 bytes of its 393216-byte reservation. The 126464-byte runtime image
+is allocated at 0x1335E0 in the 8 MiB development profile and retains a
 126480-byte heap span. All eight service addresses match their exported offsets.
 Boot/task probes expand a macro, publish its identifier, replace that text with a
 binary string and free it. They also define a new macro from source, expand it to
@@ -97,15 +97,17 @@ F64, consume the delimiter/EOF, detach the definition and reclaim its owned
 record/name/body/source link. DEFINE PROBE records are required in both phases,
 alongside the existing IDENT PROBE, STRING PROBE and LEX PROBE records.
 
-Source checks cover 25145 characters, 542 newlines, FNV32 0xC77B0646 and
-25608 reclaimed heap bytes. Sizes and addresses are observations from result.json,
-not fixed addresses or memory minima required by the interface. Moving the probes
-to their temporary 44208-byte disk module reduces the bootstrap by 26256 bytes,
-leaving 28712 bytes in its unchanged reservation. The probe's 44224-byte heap span
-is released after its second call; the compiler runtime remains resident. This
-creates bootstrap code headroom while adding temporary extended-memory demand.
-See [compiler diagnostics](i386-compiler-probe.md) for the module lifetime and
-[native definition handling](i386-lex-define.md) for remaining preprocessing work.
+Source checks cover 25613 characters, 550 newlines, FNV32 0x6B3D88F3 and
+26072 reclaimed heap bytes. Sizes and addresses are observations from result.json,
+not fixed addresses or memory minima required by the interface. After native
+keyword initialization, the bootstrap has 20928 bytes of headroom. The 73 keyword
+records retain 6208 heap bytes and sit behind primitive types in symbol lookup.
+Definition probes now use that actual namespace, without a synthetic keyword.
+The temporary probe image is 43328 bytes, and its 43344-byte heap span is
+released after its second call; the compiler runtime and keyword registry remain
+resident. See [keyword initialization](i386-keywords.md),
+[compiler diagnostics](i386-compiler-probe.md) and
+[native definition handling](i386-lex-define.md) for ownership and remaining work.
 
 ## Import-declaration correction
 
