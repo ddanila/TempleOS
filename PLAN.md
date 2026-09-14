@@ -143,6 +143,13 @@ application pointers or a parallel 16-bit application ABI. Treat VGA presentatio
 as a separate hardware boundary, so drawing and DolDoc code retain their existing
 coordinates and color semantics.
 
+The 16-bit portion is limited to firmware-facing bootstrap code before the
+protected-mode handoff. The kernel, native compiler and applications use the
+32-bit ABI. “386+” sets the minimum instruction set, rather than permitting
+unconditional use of instructions from later 32-bit processors. Standard VGA
+must remain sufficient for the complete document/editor environment, not only
+the boot console.
+
 The implementation order is ABI and compiler support, kernel services, resident
 HolyC compilation and recovery, then the complete document/editor workflow and
 self-hosting. Establish strict 386 test profiles and memory measurements alongside
@@ -520,7 +527,7 @@ FileRuntime now has a checked version-3 interface and kernel-lifetime ownership.
 Boot/task reads and nested includes use owned current-task directory state; workers
 inherit directory/drive values and require bound volume sessions. The wrappers
 preserve caller IF, including enabled-IF reads and nested includes.
-The bootstrap plus loaded stage now leaves 1728 bytes in the fixed reservation,
+The bootstrap plus loaded stage now leaves 1720 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 
@@ -679,6 +686,16 @@ aliased append, fragmented allocation failure and recovery with detached views
 pass native tests and the standalone probe. Public allocation/optimization-node
 replacement and complete parser/AOT error paths still need integration; see
 `docs/i386-code-views.md`. The kernel and loaded stage occupy 391488 of 393216 bytes.
+
+Native instruction retirement now unlinks optimizer entries without reusing storage
+still referenced by tree links. A completed discard collects retired nodes only
+when no other code allocation or saved header remains; full control cleanup always
+reclaims them. CompilerRuntime version 18 exposes this in a 108-byte record and
+FileRuntime version 9 validates it. Exhausted-heap retirement, saved-view deferral,
+64 repeated retire/discard cycles and standalone exception recovery pass. Public
+allocator/OptFree routing and complete optimizer execution remain integration
+work; see `docs/i386-ir-retirement.md`. The kernel and loaded stage occupy 391496
+of the unchanged 393216-byte reservation.
 
 #### Continuing integration sequence
 
