@@ -264,12 +264,12 @@ U0 CompileTests()
   EmitCase("return a||b;",0,0,0,&cursor);
   EmitCase("return a^^b;",0x100000000,1,0,&cursor);
   EmitCase("return a^^b;",0,0x100000000,1,&cursor);
-  EmitCase("a&&b++; return b;",0,42,42,&cursor);
-  EmitCase("a||b++; return b;",1,42,42,&cursor);
+  EmitCase("a&&b++; return b;",0,42,43,&cursor);
+  EmitCase("a||b++; return b;",1,42,43,&cursor);
   EmitCase("a&&b++; return b;",1,42,43,&cursor);
   EmitCase("a||b++; return b;",0,42,43,&cursor);
-  EmitCase("return a&&(1/b);",0,0,0,&cursor);
-  EmitCase("return a||(1/b);",1,0,1,&cursor);
+  EmitCase("if (a&&(1/b)) return 1; return 0;",0,0,0,&cursor);
+  EmitCase("if (a||(1/b)) return 1; return 0;",1,0,1,&cursor);
   EmitCase("return (a&&b)||(!a&&b);",0,42,1,&cursor);
   EmitCase("if (a&&b) return 7; return 9;",1,1,7,&cursor);
   EmitCase("if (a||b) return 7; return 9;",0,0,9,&cursor);

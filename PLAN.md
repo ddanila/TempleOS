@@ -409,10 +409,15 @@ Explicit `ToF64`/`ToI64` calls now use the software runtime, with 5,120 native
 conversion checks and x64 signed-conversion evidence. Implicit conversions now
 cover supported mixed arithmetic/relations, assignments, arguments, returns and
 F64 compound updates. Integer destinations now also support the four F64
-arithmetic updates, with truncation and declared-width normalization; 61 positive
+arithmetic updates, with truncation and declared-width normalization; 62 positive
 fixture checks pass. Eight x64 checks cover wide values and addressed narrow
 storage; the register-held narrow overflow difference is documented. The remaining
-arithmetic/formatting/math surface still needs integration. See `docs/i386-f64-backend.md`. Signed
+arithmetic/formatting/math surface still needs integration. Raw F64 conditions
+and logical operators now test the complete bit pattern, including negative
+zero as true, matching x64 branch behavior. Shared x64/native tests cover 144
+condition pairs and 12 loop cases. Logical branch conditions short-circuit;
+value expressions evaluate both operands. The x64 uncast `!F64` arithmetic
+metadata quirk remains an explicit compatibility difference. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
 passes 1,024 inputs against actual x64 HolyC and an independent host oracle,

@@ -251,6 +251,20 @@ class CI386Logic
   CIntermediateCode *left,*end;
   I64 address;
 };
+CI386Logic *I386BranchLogic(CIntermediateCode *ic,CI386Logic *head)
+{//Only logical nodes directly controlling a branch short-circuit in HolyC.
+  CI386Logic *logic;
+  if (ic->ic_code==IC_NOT)
+    return I386BranchLogic(ic->t.arg1_tree,head);
+  if (ic->ic_code==IC_AND_AND || ic->ic_code==IC_OR_OR) {
+    logic=CAlloc(sizeof(CI386Logic));
+    logic->next=head; head=logic;
+    logic->left=ic->t.arg1_tree; logic->end=ic;
+    head=I386BranchLogic(ic->t.arg1_tree,head);
+    head=I386BranchLogic(ic->t.arg2_tree,head);
+  }
+  return head;
+}
 U0 I386Bool(CI386Out *out)
 {//Normalize the top evaluation slot to zero or one.
   I386Bytes(out,"\x58\x5A\x09\xD0\x0F\x95\xC0\x0F\xB6\xC0"
@@ -309,11 +323,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   OptPass012(cc);
   try {
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
-      if (ic->ic_code==IC_AND_AND || ic->ic_code==IC_OR_OR) {
-        logic=CAlloc(sizeof(CI386Logic));
-        logic->next=logics; logics=logic;
-        logic->left=ic->t.arg1_tree; logic->end=ic;
-      }
+      if (ic->ic_code==IC_BR_ZERO || ic->ic_code==IC_BR_NOT_ZERO)
+        logics=I386BranchLogic(ic->t.arg1_tree,logics);
     // First pass determines label offsets; second resolves near branches.
     for (pass=0;pass<2;pass++) {
       out.count=0;
@@ -330,6 +341,9 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             (intermediate_code_table[ic->ic_code].arg_cnt==IS_2_ARG &&
              (I386IsF64(I386ValueClass(ic->t.arg1_tree)) || I386IsF64(I386ValueClass(ic->t.arg2_tree))))) {
           switch (ic->ic_code) {
+            //HolyC conditions test raw bits, including the F64 sign bit.
+            case IC_NOT: case IC_AND_AND: case IC_OR_OR: case IC_XOR_XOR:
+            case IC_BR_ZERO: case IC_BR_NOT_ZERO:
             case IC_TO_F64: case IC_TO_I64:
             case IC_NOP1: case IC_NOP2: case IC_IMM_F64:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
@@ -538,15 +552,22 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_AND_AND:
           case IC_OR_OR:
-            if (depth<1) throw('Compiler');
-            I386Bool(&out);
             for (logic=logics;logic;logic=logic->next)
-              if (logic->end==ic && !pass) logic->address=out.count;
-            break;
+              if (logic->end==ic) break;
+            if (logic) {
+              if (depth<1) throw('Compiler');
+              I386Bool(&out);
+              if (!pass) logic->address=out.count;
+              break;
+            }
           case IC_XOR_XOR:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A\x09\xD0\x0F\x95\xC0"
-              "\x09\xD9\x0F\x95\xC1\x30\xC8\x0F\xB6\xC0\x31\xD2\x52\x50",23);
+              "\x09\xD9\x0F\x95\xC1",14);
+            if (ic->ic_code==IC_AND_AND) I386Byte(&out,0x20);
+            else if (ic->ic_code==IC_OR_OR) I386Byte(&out,0x08);
+            else I386Byte(&out,0x30);
+            I386Bytes(&out,"\xC8\x0F\xB6\xC0\x31\xD2\x52\x50",8);
             depth--;
             break;
           case IC_ENTER:

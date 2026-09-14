@@ -49,8 +49,19 @@ the result to I64 and normalizes it to the destination width before storing.
 It preserves the right operand across conversion and evaluates the destination
 address once. U64 retains the signed interpretation used by x64 HolyC.
 
-This is an initial compiler integration. Chained comparisons and raw F64 conditions,
-remainder and math intrinsics remain unsupported and are rejected. Numeric
+Raw F64 conditions and `!`, `&&`, `||`, `^^` now use the ordinary integer
+truth test on the complete binary64 pattern, matching the x64 backend. Only
+positive zero is false: negative zero, subnormals, infinities and NaNs are true.
+This differs from comparing numerically against 0.0. Logical results in the
+native backend are integer zero or one. No floating-point helper is needed.
+
+HolyC short-circuits `&&`/`||` when they directly control a branch, including
+through nested logical operators and negation. Value expressions evaluate both
+operands; `^^` evaluates both. The i386 backend now distinguishes these contexts
+instead of short-circuiting every logical expression.
+
+This is an initial compiler integration. Chained comparisons, remainder and math
+intrinsics remain unsupported and are rejected. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
 host optimizer; numerical precision compatibility across folding and runtime
@@ -85,10 +96,10 @@ checks eight signed-boundary results against actual x64 `ToF64`;
 x64/host oracle. The main F64 fixture additionally checks nested conversions and
 preservation of already-correct operand types.
 
-The main F64 fixture now has 61 positive checks, including mixed operands in both
+The main F64 fixture now has 62 positive checks, including mixed operands in both
 orders, assignment/call/return conversion, F64 compound updates with integers,
 signed interpretation of U64 bits, and conversion of comparison/logical results
-on both short-circuit paths. Integer-destination updates additionally cover all
+in nested expressions. Integer-destination updates additionally cover all
 four operations, returned values, negative truncation, narrow storage overflow,
 U64 interpretation, counted pointer destinations and NaN conversion. Eight x64
 comparison checks confirm wide-integer results and addressed I8/U8 storage.
@@ -99,4 +110,14 @@ out-of-range results (`I8 -127 -= 2.5` yielded -129 and `U8 250 += 10.5` yielded
 all stored destinations to their declared width, including stack-backed locals.
 This is a known difference for those out-of-range register temporaries, not a
 claim of complete x64 expression compatibility. Unsupported-source checks retain
-coverage for mixed remainder updates, raw F64 conditions and chained relations.
+coverage for mixed remainder updates, F64 bitwise operations and chained relations.
+
+A shared x64/native condition fixture checks 144 pairs of 12 binary64 patterns.
+Each pair checks five branch predicates, four logical values used in integer
+arithmetic, and six operand-evaluation counts, including nested short-circuit
+branches. Twelve additional cases exercise while, for and do/while conditions.
+The shared arithmetic expression explicitly bitcasts `!a` to I64: the x64 backend
+retains F64 precision metadata on uncast negation, and `return (!a)+2;` with F64
+positive zero was observed to return 2. The native backend's integer boolean
+returns 3, tested separately. This remaining x64 metadata quirk is documented
+rather than treated as evidence of complete expression compatibility.

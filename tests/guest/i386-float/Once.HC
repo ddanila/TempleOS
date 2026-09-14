@@ -8,6 +8,7 @@ Bool Reject(U8 *body)
   if (module) { Free(module); return FALSE; }
   return TRUE;
 }
+#include "T:/Conditions.HC"
 Bool CheckMixedHost()
 {
   I64 whole=7,*values=MAlloc(64);
@@ -39,6 +40,10 @@ U0 CompileTests()
   Report("START native F64 expressions\n");
   if (!CheckMixedHost()) { Report("FAIL x64 mixed update contract\n"); return; }
   Report("PASS eight x64 mixed update checks\n");
+  Report(MStrPrint("OBSERVED x64 (!F64_zero)+2: %d\n",ConditionNotArithmetic(0.0)));
+  i=CheckConditions();
+  if (i) { Report(MStrPrint("FAIL x64 conditions %d\n",i)); return; }
+  Report("PASS 144 x64 condition pairs and 12 loop cases\n");
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -69,7 +74,7 @@ U0 CompileTests()
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,I64 b) { return a%b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(I64 a,F64 b) { a%=b; return a; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(F64 a,F64 b) { return a<b<0.0; }") ||
-      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { if (a) return a; return b; }") ||
+      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a&b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a%b; }") ||
       !Reject("extern I64 I386F64Add(U64 a,U64 b); F64 Main(F64 a,F64 b) { return a+b; }") ||
       !Reject("extern U64 I386F64Add(I64 a,U64 b); F64 Main(F64 a,F64 b) { return a+b; }")) {

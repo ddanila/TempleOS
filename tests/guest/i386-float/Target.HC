@@ -5,6 +5,8 @@
 #include "/Kernel/I386/Float.HH"
 F64 cell;
 I64 picks,mixed_cell;
+extern I64 CheckConditions();
+extern I64 ConditionNotArithmetic(F64 a);
 extern I64 *PickWhole();
 extern F64 *Pick();
 extern F64 Add(F64 a,F64 b);
@@ -98,6 +100,8 @@ I64 Main(I64 unused_a,I64 unused_b)
   if (picks!=2 || mixed_cell!=3 || old_whole!=3) return 60;
   bits=0x7FF8000000001234; c=bits(F64); whole=7; whole+=c;
   if (whole!=0x8000000000000000) return 61;
+  c=0.0; if (ConditionNotArithmetic(c)!=3) return 62;
+  whole=CheckConditions(); if (whole) return 1000+whole;
   return 0;
 }
 F64 Add(F64 a,F64 b) { return a+b; }
@@ -115,3 +119,5 @@ F64 *Pick() { picks++; return &cell; }
 F64 ReturnFloat(I64 value) { return value; }
 I64 ReturnInt(F64 value) { return value; }
 I64 *PickWhole() { picks++; return &mixed_cell; }
+
+#include "T:/Conditions.HC"

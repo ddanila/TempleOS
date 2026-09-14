@@ -1153,3 +1153,32 @@ The 155-case integer/call regression, both x64 rebuild generations and image
 verification (764 files, 62 directories) pass. Raw F64 conditions, chained
 comparisons, remaining arithmetic/formatting/math, floating-point state and the
 full native compiler/OS remain unfinished.
+
+
+## Native F64 conditions and logical evaluation contexts
+
+Raw F64 conditions and logical operators now use the full 64-bit truth test:
+positive zero is false, while negative zero, subnormals, infinities and NaNs are
+true. Actual x64 execution confirms this behavior. The i386 backend also now
+matches HolyC's evaluation distinction: logical operators directly controlling
+branches short-circuit, including nested negation/AND/OR; value expressions
+evaluate both operands. The former implementation short-circuited all contexts.
+Integer regressions now check eager side effects and retain fault-skipping tests
+in branch conditions.
+
+A shared x64/native fixture passes 144 operand pairs, checking five branch
+predicates, four arithmetic Boolean values and six evaluation-count cases per
+pair. Twelve cases additionally cover while, for and do/while loops. The main
+F64 fixture passes 62 checks and eight unsupported-source rejections. The x64
+uncast `!F64` arithmetic metadata quirk remains explicit: `(!a)+2` with positive
+zero returns 2 on x64, while the native integer Boolean returns 3. Shared arithmetic
+checks bitcast the negation result to I64; native behavior is checked separately.
+See `docs/i386-f64-backend.md` for the compatibility boundary.
+
+All 155 integer/call cases, the expanded software comparison corpus and the
+RedSea-to-resident-binding integration test pass, along with generated-instruction
+audits, F64 execution with CR0.EM set, both x64 rebuild generations and image
+verification (764 files, 62 directories). Chained comparisons, remaining numerical
+operations/formatting, floating-point state, full kernel integration and native
+self-hosting remain unfinished. QEMU 486 runner success does not prove strict
+386 compatibility or a complete native OS.

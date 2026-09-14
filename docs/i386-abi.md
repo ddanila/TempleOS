@@ -73,8 +73,10 @@ queries are used during parsing and scaling. Direct calls within a compilation
 unit, forward fixups, recursion, nested calls, scalar slot extension, and integer
 default arguments are implemented. Undefined functions are rejected during AOT
 resolution. T32M objects support relative-call imports through the bootstrap
-linker described in `i386-modules.md`. Short-circuit `&&`/`||` and Boolean `^^`
-are implemented.
+linker described in `i386-modules.md`. `&&`/`||` short-circuit in branch conditions,
+including nested logical conditions; value expressions evaluate both operands,
+matching the x64 backend. Boolean `^^` evaluates both operands. Truth tests use
+all 64 bits, including the sign bit when the value holds an F64 pattern.
 
 Indirect fixed-arity calls share the direct-call ABI. The caller captures a
 four-byte function pointer into an eight-byte evaluation slot before evaluating
