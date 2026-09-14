@@ -93,6 +93,47 @@ durability or fault-injected flush recovery.
 Generated code passes the existing instruction audit.
 
 The bootstrap still reads its stage through BIOS CHS. Multi-sector requests,
-legacy cache policy, channel locking across tasks, block-device and
-RedSea integration, recovery/reset and physical 386/IDE testing remain pending.
+legacy cache policy, routing transfers through task-owned channel gates, public
+block-device integration, recovery/reset and physical 386/IDE testing remain pending.
 This is not a filesystem or a complete production disk driver.
+
+## Cooperative channel ownership
+
+`AtaChannel.HH/HC` provides a FIFO ownership gate for each compatibility channel.
+The caller must keep one canonical, initially zeroed gate per physical channel,
+shared by both drives, and keep it and its scheduler alive until it can be closed.
+An idle channel can be acquired by root or a worker. A contending worker blocks;
+root fails immediately so it remains available to run the scheduler. Recursive
+acquisition and release by another task fail. Multiple channels can be held, but
+callers must impose a consistent acquisition order to avoid deadlock.
+
+Queue changes and direct ownership handoff run with interrupts masked. Each
+waiter lives on its blocked task's stack; spurious wakeups recheck the grant and
+block again. The gate restores the caller's original IF state. An `io_locks`
+count pins the owning task against finish/reap, including the interval between
+handoff and the recipient's next execution. A held or queued gate cannot close.
+The contract is task-context use with no cancellation or exception unwinding
+through a pending acquisition; acquisition does not allocate or access hardware.
+
+This is an ownership prerequisite, not a task-aware ATA driver. Existing ATA,
+RedSea and retained file services still use their quiescent IF-clear contract.
+The next adapter must bind both drive profiles to their canonical gate, retain
+ownership through selection, command, data and completion, and yield only at
+explicit safe polling points. On timeout or device error it must establish
+quiescence/reset or poison the channel before admitting another request. Merely
+releasing the software gate is not evidence that hardware is ready.
+
+`python3 tools/test-i386.py --tasks` includes three real workers contending behind
+root, FIFO handoff across yields, spurious wake/reblock, IF-clear and IF-set
+callers, held-task finish/reap rejection, independent channel counts, overflow,
+close/reinitialization and complete stack reclamation. It performs no disk I/O;
+transfer latency, IRQ service during disk access and hardware recovery remain
+separate acceptance tests.
+
+Validation also passes the two-generation x86-64 compiler/kernel rebuild, native
+`--input`, `--messages` and `--except-tasks` regressions, and
+`python3 tools/build-i386-kernel.py --test`. The standalone native kernel is
+389,552 bytes; with its 2,160-byte stage overhead it leaves 1,504 bytes in the
+fixed 393,216-byte reservation. The gate itself is exercised in the task test,
+not linked into the standalone disk path. These are QEMU development results,
+not strict 386 or physical-machine validation.

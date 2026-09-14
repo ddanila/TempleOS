@@ -428,6 +428,14 @@ compiler interfaces through their current task.
   service time and introduce task-owned requests or bounded transfers before
   using it for interactive compiler input. Do not yield while holding an
   interrupt-masked hardware transaction or let another task interleave commands.
+  Implement this in four steps: (1) a canonical FIFO ownership gate shared by
+  both drives on a channel, with task-lifetime protection; (2) a transaction
+  adapter that retains ownership across bounded polling/yields and handles
+  timeout recovery or channel poisoning; (3) route RedSea and retained file
+  services through the adapter with explicit boot/root and task behavior;
+  (4) verify competing readers, timer/keyboard progress, error recovery and
+  latency before enabling interactive compiler reads. Gate tests alone do not
+  satisfy the disk-access acceptance criteria.
 - Transfer each successfully loaded source buffer into its lexer file record
   once. Specify ownership of the resolved name, source bytes, resident records,
   include stack and saved lexer positions. On failure, leave the active input
@@ -448,6 +456,11 @@ Record resident/peak memory on the 8 MiB development profile, run the x86-64
 behavior regression and audit executable code for the 386 baseline. Passing
 this package enables parser/JIT integration; it does not establish a working
 HolyC shell or strict 386 hardware compatibility.
+
+The FIFO channel gate now passes real-task contention, spurious-wake, interrupt
+state and task-lifetime tests. Existing ATA/RedSea/file calls do not yet use it;
+the transaction adapter, recovery policy and interactive I/O acceptance above
+remain required. See `docs/i386-ata.md` for the gate's ownership contract.
 
 The path-string extraction now passes 44 original x64 cases on both targets,
 with native owned-buffer and allocation-failure checks. Explicit-context helpers

@@ -10,6 +10,7 @@
 #include "/Kernel/I386/Debug.HH"
 extern I64 OwnedTaskTest();
 extern I64 JoinTest();
+extern I64 AtaChannelTest();
 extern U0 JoinWorker(I64 id);
 CI386OwnedTask *join_tasks[3];
 CI386Task foreign_task;
@@ -448,7 +449,7 @@ I64 JoinTest()
   for (i=0;i<3;i++) if (!I386TaskDestroy(join_tasks[i])) return 55;
   if (heap.used || heap.allocations || !I386HeapValid(&heap) ||
       tasks[0].next!=&tasks[0] || (GetRFlags&0x200)) return 56;
-  return 0;
+  return AtaChannelTest;
 }
 U0 JoinWorker(I64 id)
 {
@@ -487,3 +488,6 @@ U0 OwnedCleanup(CI386Task *task)
 
 #include "/Kernel/I386/Frame.HC"
 #include "/Kernel/I386/Debug.HC"
+
+#include "/Kernel/I386/AtaChannel.HC"
+#include "T:/AtaChannel.HC"

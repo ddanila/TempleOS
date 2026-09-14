@@ -24,6 +24,7 @@ class CI386Task
   I64 except_ch;
   U32 catch_except;
   U8 *except_rbp,*except_callers[I386_EXCEPT_CALLERS];
+  U32 io_locks;
 };
 class CI386Scheduler
 {

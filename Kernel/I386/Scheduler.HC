@@ -6,7 +6,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next))
 {
   I64 i;
-  if (!s || !root || !swap || s->root || root->owner || root->except_top) return FALSE;
+  if (!s || !root || !swap || s->root || root->owner || root->except_top || root->io_locks) return FALSE;
   root->addr=root; root->context.esp=0; root->next=root; root->last=root;
   root->owner=s; root->finished=0; root->blocked=0;
   root->join_head=0; root->join_next=0; root->join_target=0;
@@ -24,7 +24,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
 {//Append a freshly prepared context before root; caller owns its stack lifetime.
   U32 flags=I386IrqSave;
   I64 i;
-  if (!s || !s->root || !task || task->owner || task->except_top || !task->context.esp) {
+  if (!s || !s->root || !task || task->owner || task->except_top || task->io_locks || !task->context.esp) {
     I386IrqRestore(flags); return FALSE;
   }
   task->addr=task; task->owner=s; task->finished=0; task->blocked=0;
@@ -56,7 +56,7 @@ public Bool I386SchedFinish(CI386Scheduler *s)
 {//Root cannot finish. Successful completion never returns to this task.
   U32 flags=I386IrqSave;
   CI386Task *old,*next,*waiter;
-  if (!s || !s->current || s->current==s->root || s->current->finishing) {
+  if (!s || !s->current || s->current==s->root || s->current->finishing || s->current->io_locks) {
     I386IrqRestore(flags); return FALSE;
   }
   old=s->current;
@@ -82,7 +82,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   U32 flags=I386IrqSave;
   I64 i;
   if (!s || !task || task->owner!=s || !task->finished || task==s->current ||
-      task->join_head || task->join_target || task->messages || task->except_top || s->focus==task) {
+      task->join_head || task->join_target || task->messages || task->except_top || task->io_locks || s->focus==task) {
     I386IrqRestore(flags); return FALSE;
   }
   task->except_ch=0; task->catch_except=0; task->except_rbp=0;
