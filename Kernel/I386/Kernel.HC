@@ -209,6 +209,7 @@ U0 KernelDisplay()
 #include "/Compiler/I386/SymbolAlloc.HC"
 #include "/Compiler/I386/SymbolDelete.HC"
 #include "/Compiler/I386/InternalTypes.HC"
+#include "/Kernel/CharBitmaps.HC"
 #include "/Compiler/ControlInit.HC"
 #include "/Compiler/I386/LexFiles.HC"
 #include "/Compiler/I386/LexInput.HC"
@@ -276,7 +277,7 @@ U0 KernelStorage(CI386BootInfo *info)
   for(i=0;i<entry.size;i++) hash=(hash^buffer[i])*16777619;
   KernelLog("SOURCE "); KernelHex(entry.size); KernelLog(" ");
   KernelHex(hash); KernelLog("\n");
-  CmpCtrlSeed(cc,0,0,0);
+  CmpCtrlSeed(cc,0,0,char_bmp_alpha_numeric);
   file=I386LexFilePush(&kernel_heap,cc);
   if(!file) KernelStop;
   LexFileSeed(file,buffer); cc->cur_buf_ptr=buffer;

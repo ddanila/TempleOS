@@ -128,3 +128,24 @@ and newline counts and the temporary heap footprint. Both x86-64 rebuild generat
 and the full 331352-byte kernel boot checks pass on the 8 MiB QEMU/486 profile.
 This supplies raw source input; tokenization, native document/prompt services,
 general control construction/destruction and the compiler/JIT remain unfinished.
+
+## Character classification data
+
+`Kernel/CharBitmaps.HC` contains the original seventeen 512-bit character/token
+bitmaps, extracted byte for byte from StrA.HC. KernelC.HH imports their public
+declarations through `Kernel/CharBitmaps.HH`; the native kernel includes the same
+data and supplies `char_bmp_alpha_numeric` to its source compiler control.
+The tables retain extended-byte identifier membership, the alternative that
+excludes `@`, and all 256 upper token bits, including the non-EOL table's set bits.
+They remain writable globals with the existing names and U32 element widths.
+
+The lexer fixture checks a golden checksum captured from the original table
+bytes, decimal/hex membership over all 512 indices, extended identifier bytes,
+`@` policy and the upper token halves on both targets. Sharing this data supplies
+classification dependencies for the resident lexer; raw source consumption still
+does not recognize or execute tokens.
+
+The expanded fixture and both x86-64 rebuild generations pass. The standalone
+332448-byte kernel passes the complete 8 MiB QEMU/486 boot suite. Native table tests
+use explicit word/bit indexing; the shared tables do not supply the general `Bt`
+primitive still required by the production lexer.

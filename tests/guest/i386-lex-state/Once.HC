@@ -1,4 +1,5 @@
 #include "/Compiler/ControlInit.HH"
+#include "T:/Bitmaps.HC"
 U8 *StateAlloc(I64 size) { return CAlloc(size); }
 U0 StateFree(U8 *allocation) { Free(allocation); }
 Bool StatePush(CCmpCtrl *cc) { LexPush(cc); return TRUE; }
@@ -42,6 +43,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex state\n");
+  if(CharBitmapsTest) { Report("FAIL x64 character bitmaps\n"); return; }
   if(LexRawInputTest) { Report("FAIL x64 raw input\n"); return; }
   if(DocumentInputTest) { Report("FAIL x64 document input\n"); return; }
   if(LexFilesTest) { Report("FAIL x64 lexical files\n"); return; }

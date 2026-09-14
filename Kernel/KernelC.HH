@@ -28,16 +28,7 @@ public _extern C32_EDX U32 c32_edx;
 public _extern C32_EFLAGS U32 c32_eflags;
 public _extern C32_ESI U32 c32_esi;
 
-#help_index "Char/BitMaps"
-public extern U32 char_bmp_alpha[16],char_bmp_alpha_numeric[16],
-char_bmp_alpha_numeric_no_at[16],	char_bmp_word[16],
-char_bmp_dec_numeric[16],		char_bmp_hex_numeric[16],
-char_bmp_white_space[16],		char_bmp_non_eol_white_space[16],
-char_bmp_zero_cr_nl_cursor[16],	char_bmp_zero_tab_cr_nl_cursor[16],
-char_bmp_zero_tab_cr_nl_cursor_dollar[16],
-char_bmp_macro[16],			char_bmp_printable[16],
-char_bmp_displayable[16],		char_bmp_safe_dollar[16],
-char_bmp_filename[16],			char_bmp_non_eol[16];
+#include "/Kernel/CharBitmaps.HH"
 
 #help_index "Char/Conversion"
 public extern U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);

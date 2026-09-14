@@ -5,6 +5,8 @@
 #include "/Compiler/I386/LexState.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Ports.HH"
+#include "/Kernel/CharBitmaps.HC"
+extern I64 CharBitmapsTest();
 CI386Heap state_heap;
 I64 state_free_errors;
 extern I64 LexStateTest();
@@ -17,6 +19,8 @@ I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
   if(!I386HeapInit(&state_heap,0x40000,65536)) return 8;
+  result=CharBitmapsTest;
+  if(result) return result;
   result=LexRawInputTest;
   if(result) return result;
   result=LexFilesTest;
@@ -30,6 +34,7 @@ I64 Main(I64 unused,I64 unused2)
   if(result) return result;
   return NativeInputTest;
 }
+#include "T:/Bitmaps.HC"
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
 #include "/Compiler/ControlInit.HC"

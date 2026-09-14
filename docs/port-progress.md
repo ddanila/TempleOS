@@ -2084,3 +2084,23 @@ checks. Only this source file is loaded; the distribution remains on disk.
 Tokenization, native document and prompt services, general compiler-control
 lifecycle, source execution, the full environment, self-hosting and strict 386
 validation remain unfinished. See `i386-lex-state.md`.
+
+## Shared lexer character bitmaps
+
+All seventeen 512-bit character/token tables now come from the same byte-preserved
+`Kernel/CharBitmaps.HC` on x86-64 and i386. The native source compiler control uses
+the original alpha-numeric bitmap. Public names, writable storage, U32 widths,
+extended identifier bytes and the upper token halves retain their original values.
+
+Both x86-64 rebuild/reboot generations pass. The lexer fixture passes the original
+1088-byte table checksum (FNV32 0x778A63C3), decimal/hex membership over 512 indices,
+extended identifiers, `@` policy and upper token bits on both targets, alongside
+all existing input/state/ownership cases and the native instruction audit. The
+fixture uses explicit word/bit indexing; it does not establish native `Bt` support.
+
+The 332448-byte standalone kernel passes the complete 8 MiB QEMU/486 boot suite,
+including startup module rejection, keyboard/VGA and timer checks. Its source
+reader consumes 14082 characters and 361 newlines, matches FNV32 0x8C353D1A and
+reclaims 14544 heap bytes. The distribution remains on disk. General bit-test
+services, tokenization, resident compiler/JIT, document/editor integration,
+self-hosting and strict 386 validation remain unfinished.
