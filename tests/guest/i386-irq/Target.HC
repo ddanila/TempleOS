@@ -5,6 +5,8 @@
 #include "/Kernel/I386/Rtc.HH"
 #include "/Kernel/I386/Exception.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Idt.HH"
+extern I64 IdtTest();
 #include "/Kernel/I386/HeapIrq.HH"
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/KbcQueue.HH"
@@ -24,6 +26,7 @@ class CIrqTestControl {
   U0 (*handler)(CI386IrqFrame *frame); U32 ticks; U32 (*flags)();
   I64 (*faults)(); CExceptionControl *exception;
   U32 vector,error,ip,resume;
+  U8 **irq_entries,**exception_entries; U8 *fallback;
 };
 CIrqTestControl *control;
 I64 ticks,spurious,errors,expected_irq,exceptions;
@@ -42,6 +45,8 @@ I64 Main(I64 a,I64 b)
   ticks=0xFFFFFFF0; spurious=0; errors=0;
   expected_irq=0;
   I386PicInit;
+  result=IdtTest;
+  if(result) return 100+result;
   if ((GetRFlags>>32) || (GetRFlags&0x200)) return 14;
   SetRFlags(GetRFlags|0x200|0xFFFFFFFF00000000);
   outer=I386IrqSave;
@@ -269,3 +274,49 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/HeapIrq.HC"
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/KbcQueue.HC"
+
+U8 idt_storage[2064];
+I64 IdtTest()
+{
+  U8 before[6],after[6],*table=idt_storage+8;
+  I64 i,j;
+  for(i=0;i<2064;i++) idt_storage[i]=0xA5;
+  if(I386IdtInit(table,0,control->fallback,8) ||
+      I386IdtInit(table,257,control->fallback,8) ||
+      I386IdtInit(table,0x100000001,control->fallback,8) ||
+      I386IdtInit(table,256,0,8) || I386IdtInit(table,256,control->fallback,0) ||
+      I386IdtInit(table,256,control->fallback,12) ||
+      I386IdtInit(table,256,control->fallback,11) ||
+      I386IdtInit(0xFFFFFFF8,2,control->fallback,8)) return 1;
+  for(i=0;i<2064;i++) if(idt_storage[i]!=0xA5) return 2;
+  if(!I386IdtInit(table,256,0x12345678,0x1230)) return 3;
+  for(i=0;i<256;i++) {
+    if(table[i*8]!=0x78 || table[i*8+1]!=0x56 || table[i*8+2]!=0x30 ||
+        table[i*8+3]!=0x12 || table[i*8+4] || table[i*8+5]!=0x8E ||
+        table[i*8+6]!=0x34 || table[i*8+7]!=0x12) return 4;
+  }
+  if(I386IdtSet(table,256,-1,control->fallback,8) ||
+      I386IdtSet(table,256,256,control->fallback,8) ||
+      I386IdtSet(table,256,0x100000001,control->fallback,8) ||
+      I386IdtSet(table,256,0,0,8) ||
+      I386IdtSet(table,256,0,control->fallback,7)) return 5;
+  if(!I386IdtInit(table,256,control->fallback,8)) return 6;
+  for(i=0;i<17;i++)
+    if(!I386IdtSet(table,256,i,control->exception_entries[i],8)) return 7;
+  for(i=0;i<16;i++)
+    if(!I386IdtSet(table,256,i+32,control->irq_entries[i],8)) return 8;
+  for(i=0;i<8;i++)
+    if(idt_storage[i]!=0xA5 || idt_storage[i+2056]!=0xA5) return 9;
+  if(!I386IdtRead(before) || I386IdtRead(0) || I386IdtRead(0xFFFFFFFC)) return 10;
+  if(I386IdtLoad(table,0) || I386IdtLoad(0,256) || I386IdtLoad(0xFFFFFFF8,2)) return 11;
+  SetRFlags(GetRFlags|0x200);
+  j=I386IdtLoad(table,256);
+  SetRFlags(GetRFlags&~0x200);
+  if(j || !I386IdtRead(after)) return 12;
+  for(i=0;i<6;i++) if(before[i]!=after[i]) return 13;
+  if(!I386IdtLoad(table,256) || !I386IdtRead(after)) return 14;
+  if(after[0]!=255 || after[1]!=7 ||
+      (after+2)(U32 *)[0]!=(table+0)(U64) || (GetRFlags&0x200)) return 15;
+  return 0;
+}
+#include "/Kernel/I386/Idt.HC"

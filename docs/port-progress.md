@@ -1580,3 +1580,25 @@ regressions also pass, including instruction audits. Both x86-64 compiler/kernel
 rebuild/reboot generations pass. No NASM source remains under `Kernel/I386`, but
 the boot/test harness still uses NASM. Native compiler execution, production
 boot/IDT/dispatcher integration and strict 386 verification remain unfinished.
+
+
+## Native IDT construction and installation
+
+`Kernel/I386/Idt.HH` and `Idt.HC` now construct 32-bit ring-0 interrupt gates,
+replace individual vectors and load/read the actual IDTR through HolyC inline
+assembly. The API checks table bounds, full-width counts/vectors, handler and
+GDT-selector constraints. Loading requires IF clear and leaves the IDTR unchanged
+on rejected inputs. Storage ownership, executable segment validity and handler
+lifetimes remain caller responsibilities.
+
+The IRQ fixture creates and installs its own 256-entry table, populating it with
+the HolyC-generated IRQ and CPU-exception entries. Native checks cover exact gate
+bytes, surrounding sentinels, invalid/wrapping input rejection, IF-enabled load
+rejection and IDTR readback. Hardware delivery and three recoverable faults then
+pass through that table. Instruction audits, the exception-task regression and
+both x86-64 rebuild/reboot generations also pass.
+
+The runner still installs its emergency table before entering native code. Full
+production boot handoff, NMI/double-fault policy, debugger integration, native
+compiler execution and strict 386 verification remain unfinished. See
+`i386-idt.md` for ownership and gate contracts.

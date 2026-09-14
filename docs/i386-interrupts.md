@@ -196,3 +196,7 @@ strict 386 hardware verification remain separate requirements.
 The IRQ suite and the task, blocking-input, message and exception-task regressions
 pass with these generated modules and patched-code instruction audits. Both
 x86-64 compiler/kernel rebuild/reboot generations also pass.
+
+The IRQ fixture now replaces its initial bootstrap IDT with a 256-entry table
+built and loaded by native HolyC before running hardware and fault checks.
+See [native IDT operations](i386-idt.md) for the gate and ownership contracts.

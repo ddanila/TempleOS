@@ -602,6 +602,11 @@ vectors and importing dispatchers with ordinary REL32 calls. The IRQ suite and
 all four task-related suites pass with generated entry code; x86-64 rebuilds also
 pass. Kernel/I386 no longer contains NASM sources. Test boot/IDT setup still uses
 NASM, and production dispatcher binding and native compiler execution remain open.
+Native IDT construction, vector replacement and LIDT/SIDT operations now pass
+through a 256-entry table built by HolyC. Hardware IRQ and recoverable-fault tests
+use that installed table, with gate-byte, bounds, IF-state and IDTR-readback checks.
+The bootstrap emergency IDT remains; production handoff and exceptional-stack
+policy are still required. See `docs/i386-idt.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

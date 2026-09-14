@@ -263,6 +263,9 @@ exception_test_vector: dd 0
 exception_test_error: dd 0
 exception_test_ip: dd 0
 exception_test_resume: dd 0
+irq_test_irq_entries: dd i386_irq_entries
+irq_test_exception_entries: dd i386_exception_entries
+irq_test_fallback: dd failed
 i386_exception_stubs_begin:
 %include EXCEPTION_ENTRY_FILE
 ; Test-only adapter: production modules import their HolyC dispatcher directly.
