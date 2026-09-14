@@ -74,3 +74,8 @@ reclamation. The fixture's token wrapper is test scaffolding, not a native lexer
 
 Complete dispatch and preprocessing, native parser/JIT integration, public runtime
 ownership, DolDoc, native self-hosting and strict 386SX/DX verification remain open.
+
+Identifier completion now has a separate native service combining this scanner
+with shared finish dispatch and owned token/macro callbacks; see
+[i386-lex-ident-token.md](i386-lex-ident-token.md). The scan-only API retains the
+borrowed-buffer contract above.

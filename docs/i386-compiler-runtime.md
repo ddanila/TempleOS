@@ -16,15 +16,15 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 4 of CI386CompilerServices: a U32 version,
-U32 byte count, and native function pointers for string chunks, numeric tokens character constants, punctuation and identifier scanning.
-The structure is 28 bytes on i386. The entry receives caller-owned interface
+`CompilerRuntime.HH` defines version 5 of CI386CompilerServices: a U32 version,
+U32 byte count, and native function pointers for string chunks, numeric tokens character constants, punctuation, identifier scanning and identifier-token completion.
+The structure is 32 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
 
-The module imports four kernel functions: I386LexRawChar, I386LexSourceRead,
-HashFind and StrCmp,
+The module imports ten kernel functions: I386LexRawChar, I386LexSourceRead,
+HashFind, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore and I386LexIncludeCopy,
 and three kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
 char_bmp_non_eol. The
 latter remain the same writable public tables used by the kernel; moving the
@@ -34,9 +34,9 @@ its own numerical implementation and immutable-use power table inside its image.
 
 KernelCompilerLoad runs with IF clear and exclusive disk/heap ownership. After
 loading, the kernel verifies one retained allocation, extended-memory placement,
-interface version and byte count, and that all five service pointers fall inside the
+interface version and byte count, and that all six service pointers fall inside the
 loaded image. It publishes the global interface only after these checks succeed.
-The host boot verifier independently checks all five pointer values against the
+The host boot verifier independently checks all six pointer values against the
 module's actual function export offsets, not just the image's address range.
 
 The image, its code/data and the kernel providers must remain live for every
@@ -82,13 +82,13 @@ startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With owned source attachment feeding the version-4 identifier service, the
-bootstrap image is 364232 bytes. The 86328-byte runtime image is allocated at
-0x1277D8 in the 8 MiB development profile and retains a 86344-byte heap span.
-All five service addresses match their relocated export offsets, and both boot/task
-probes return expected values after reclaiming their owned source. Raw source
-checks cover 22520 characters, 494 newlines, FNV32 0xC83D98CE and reclamation of
-22984 temporary heap bytes. Sizes and addresses are observations in the manifest,
+With identifier-token completion in interface version 5, the bootstrap image is
+374992 bytes. The 92416-byte runtime image is allocated at 0x129188 in the
+8 MiB development profile and retains a 92432-byte heap span. All six service
+addresses match their exported offsets. Boot/task IDENT PROBE checks additionally
+expand a macro, publish its owned identifier and release all temporary storage.
+Raw source checks cover 25883 characters, 547 newlines, FNV32 0x264D8E35 and
+reclamation of 26344 heap bytes. Sizes/addresses are observations in the manifest,
 not fixed addresses or memory minima required by the interface.
 
 ## Import-declaration correction

@@ -8,6 +8,13 @@
 #include "/Compiler/I386/LexChar.HH"
 #include "/Compiler/I386/LexPunct.HH"
 #include "/Compiler/I386/LexIdent.HH"
+#include "/Kernel/I386/Cpu.HH"
+import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
+import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
+import U32 I386IrqSave();
+import U0 I386IrqRestore(U32 flags);
+import Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
 import CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
 import I64 StrCmp(U8 *left,U8 *right);
 import I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines);
@@ -19,7 +26,7 @@ U32 runtime_first[TK_TKS_NUM],runtime_second[TK_TKS_NUM],runtime_third[TK_TKS_NU
 CLexPunctTables runtime_punct;
 extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==28
+#assert sizeof(CI386CompilerServices)==32
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -32,6 +39,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->char_token=&I386LexChar;
   services->punct_token=&I386RuntimePunct;
   services->ident_scan=&I386LexIdentScan;
+  services->ident_token=&I386LexIdentToken;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

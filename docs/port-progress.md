@@ -2326,3 +2326,34 @@ The bootstrap is 364232 bytes; the retained runtime remains 86328 bytes with a
 full dispatch, macro/directive execution and lookahead across includes, native
 parser/JIT, public runtime ownership, DolDoc, self-hosting and strict 386 validation
 remain required. See [i386-lex-include.md](i386-lex-include.md).
+
+## Native identifier token publication and string macros
+
+LexIdentFinish now shares expansion-versus-publication dispatch with x86-64,
+whose callbacks retain its existing allocation/exception behavior. The native
+I386LexIdentToken combines scanning/lookup, copied macro input and owned identifier
+publication. Expansion returns a distinct resume-dispatch status. Publication
+allocates/copies before replacing the old string; allocation failure preserves its
+owned text, length, hash entry and token. Scanning and lookup side effects remain.
+STR_LEN now has one shared 144-byte definition.
+
+All 276 identifier cases now exercise the actual native token service, including
+allocation size and release. Host/native macro tests pass chained and empty
+expansion, NO_DEFINES, local shadowing, use counts and parent recovery. Native tests
+pass old-token retention during expansion, token/macro allocation failure,
+replacement/reclamation and overlength before publication. The punctuation suite,
+executable instruction audits and both x86-64 rebuild generations pass.
+
+CompilerRuntime interface version 5 adds a sixth service (32 bytes), importing
+explicit kernel heap, IRQ and include-copy providers. Boot/task IDENT PROBE checks
+expand Type to I64i, verify the three owned include allocations and the subsequent
+single owned token, then free it and recover the heap baseline. The full 8 MiB
+QEMU/486 runtime/startup rejection, source, timer, keyboard/VGA and unchanged-disk
+suite passes.
+
+The bootstrap is 374992 bytes; the runtime image is 92416 bytes with a
+92432-byte heap span, observed at 0x129188. Source checks cover 25883 characters,
+547 newlines, FNV32 0x264D8E35 and 26344 reclaimed bytes. Full dispatch,
+directive creation/execution and general include lookahead, native parser/JIT,
+public runtime destruction/ownership, DolDoc, self-hosting and strict 386 validation
+remain required. See [i386-lex-ident-token.md](i386-lex-ident-token.md).

@@ -38,7 +38,7 @@ extern class CTask;
 #define U64_MIN 0
 #define U64_MAX 0xFFFFFFFFFFFFFFFF
 #define INVALID_PTR	I64_MAX
-#define STR_LEN 144
+#include "/Kernel/StringLimits.HH"
 
 //(Int to F64 conversion is signed)
 //Turn off 80-bit float constants with $LK,"OPTf_NO_BUILTIN_CONST",A="MN:OPTf_NO_BUILTIN_CONST"$.

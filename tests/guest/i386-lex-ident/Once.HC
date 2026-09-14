@@ -10,6 +10,9 @@ I64 IdentToken(CCmpCtrl *cc,U8 *output,I64 *lines)
 #include "T:/Cases.HC"
 #include "T:/Lookup.HC"
 #include "T:/Failures.HC"
+I64 MacroNext(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
+Bool MacroTextFree(CCmpCtrl *cc) { Free(cc->cur_str); cc->cur_str=0; return TRUE; }
+#include "T:/Macros.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -19,6 +22,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex ident\n");
+  if(MacroTest) { Report("FAIL x64 macro tokens\n"); return; }
   if(IdentLookupTest) { Report("FAIL x64 identifier lookup\n"); return; }
   if(IdentFailureTest) { Report("FAIL x64 identifier reader failure\n"); return; }
   if(IdentTest) { Report("FAIL x64 identifiers\n"); return; }

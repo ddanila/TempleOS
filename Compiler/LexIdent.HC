@@ -25,3 +25,13 @@ CHash *LexIdentFind(CCmpCtrl *cc,U8 *name)
     return HashFind(name,cc->htc.hash_table_lst,cc->htc.hash_mask);
   return 0;
 }
+
+I64 LexIdentFinish(CCmpCtrl *cc,U8 *name,I64 length,CHash *entry,CLexIdentSink *sink)
+{
+  if(entry && entry->type&HTT_DEFINE_STR && !(cc->flags&CCF_NO_DEFINES)) {
+    if(!(*sink->include)(sink->context,cc,entry)) return -1;
+    return -2;
+  }
+  if(!(*sink->publish)(sink->context,cc,name,length,entry)) return -1;
+  return TK_IDENT;
+}

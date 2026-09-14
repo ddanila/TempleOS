@@ -433,8 +433,11 @@ programming environment through these concrete steps:
    scanning and local-before-global lookup now share a fifth retained service,
    returning caller-owned text and borrowed records without token publication or
    macro expansion. The version-4 interface requires rebuilding kernel and runtime
-   together. Full lexical dispatch, owned token strings and preprocessing remain
-   required. Owned native source attachment now prepares record/name/buffer copies
+   together. Identifier completion now also shares macro-versus-token dispatch.
+   The version-5 token service expands string macros through owned inputs or
+   publishes an owned identifier, preserving previous text on allocation failure.
+   Chained/empty macros, NO_DEFINES, local shadowing and boot/task reclamation pass.
+   Full lexical dispatch and directive processing remain required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block
    native EOF pop; general lookahead across includes needs integration.

@@ -353,6 +353,22 @@ I64 LexInStr(CCmpCtrl *cc,U8 *buf,I64 size,Bool *done)
 #include "/Compiler/LexChar.HC"
 #include "/Compiler/LexPunct.HC"
 #include "/Compiler/LexIdent.HC"
+Bool LexIdentSystemInclude(U8 *context,CCmpCtrl *cc,CHashDefineStr *entry)
+{
+  LexIncludeStr(cc,entry->str,StrNew(entry->data),FALSE);
+  cc->lex_include_stk->flags|=LFSF_DEFINE;
+  return TRUE;
+}
+Bool LexIdentSystemPublish(U8 *context,CCmpCtrl *cc,U8 *name,I64 length,CHash *entry)
+{
+  cc->hash_entry=entry;
+  Free(cc->cur_str);
+  cc->cur_str=StrNew(name);
+  cc->cur_str_len=length;
+  cc->token=TK_IDENT;
+  return TRUE;
+}
+
 
 I64 Lex(CCmpCtrl *cc)
 {//Fetch next token.
@@ -360,8 +376,10 @@ I64 Lex(CCmpCtrl *cc)
   CHash *tmph;
   Bool str_done,in_str,punct_finish;
   CLexPunctTables punct_tables;
+  CLexIdentSink ident_sink;
   CLexCharSource token_source;
   U8 *fbuf,*buf2,*buf3,buf[STR_LEN];
+  ident_sink.context=0; ident_sink.include=&LexIdentSystemInclude; ident_sink.publish=&LexIdentSystemPublish;
   token_source.context=0; token_source.read=&LexSystemChar;
   punct_tables.first=cmp.dual_U16_tokens1; punct_tables.second=cmp.dual_U16_tokens2;
   punct_tables.third=cmp.dual_U16_tokens3;
@@ -393,23 +411,8 @@ lex_ident:
         i=LexIdentRead(cc,ch,buf,STR_LEN,&token_source);
         if(i==-2) LexExcept(cc,"Ident limited to STR_LEN chars at ");
         tmph=LexIdentFind(cc,buf);
-	if (tmph)
-	  j=tmph->type;
-	else
-	  j=0;
-	if (j & HTT_DEFINE_STR && !(cc->flags & CCF_NO_DEFINES)) {
-	  LexIncludeStr(cc,
-		tmph->str,StrNew(tmph(CHashDefineStr *)->data),FALSE);
-	  cc->lex_include_stk->flags|=LFSF_DEFINE;
-	} else {
-	  cc->hash_entry=tmph;
-	  Free(cc->cur_str);
-	  cc->cur_str=StrNew(buf);
-	  cc->cur_str_len=i;
-	  cc->token=TK_IDENT;
-	  goto lex_end;
-	}
-	break;
+        if(LexIdentFinish(cc,buf,i,tmph,&ident_sink)==TK_IDENT) goto lex_end;
+        break;
       case '0'...'9':
       case '.':
         LexNumberBody(cc,ch,&token_source);
