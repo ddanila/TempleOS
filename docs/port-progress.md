@@ -1379,3 +1379,19 @@ The ndisasm 3.01 JMP-register workaround now also recognizes exact FF E2
 This does not complete exception handling or the OS. See `i386-exceptions.md`
 for the ABI, limits and remaining runtime integration. Native assembler support,
 self-hosting, memory targets and strict 386 validation remain required.
+
+
+## Native capture-to-record registration
+
+A new assembly registration entry captures preserved registers, EBP, post-return
+ESP, flags and catch/cleanup addresses before calling HolyC. It passes the
+temporary capture to an explicit task/heap provider and returns its pointer
+result, freeing the temporary stack storage with callee cleanup. Native tests
+verify physical register/flag captures, provider arguments and nested real record
+allocation, then force exhaustion and check unchanged ownership and complete
+reclamation. The expanded context fixture and instruction audits pass, as do
+both x64 rebuild/reboot generations.
+
+Production SysTry binding, registration-failure propagation and throw dispatch
+remain pending; the explicit five-argument entry does not supply those policies.
+See `i386-exceptions.md`. The complete OS and native self-hosting remain unfinished.

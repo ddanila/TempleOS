@@ -25,6 +25,31 @@ except_context_test:
     and eax,0xcd5
     cmp eax,0x45
     jne .bad
+    push dword 0x47
+    popfd
+    push dword 0
+    push dword .provider
+    push dword 0
+    push dword .resumed
+    push dword 0
+    push dword .catch
+    push dword 0
+    push dword 0x33334444
+    push dword 0
+    push dword 0x11112222
+    call i386_except_register
+    cmp eax,0x12340000
+    jne .bad
+    cmp edx,0
+    jne .bad
+    cmp ebp,0x10203040
+    jne .bad
+    cmp ebx,0x50607080
+    jne .bad
+    cmp esi,0x90a0b0c0
+    jne .bad
+    cmp edi,0xd0e0f000
+    jne .bad
     mov eax,[except_test_stack]
     cmp [except_test_capture+4],eax
     jne .bad
@@ -118,6 +143,26 @@ except_context_test:
     pop ebp
     mov edx,0
     ret
+; Test provider checks argument slots and copies the temporary capture.
+.provider:
+    cmp dword [esp+4],0x11112222
+    jne .provider_bad
+    cmp dword [esp+12],0x33334444
+    jne .provider_bad
+    mov edx,[esp+20]
+%assign capture_offset 0
+%rep 8
+    mov eax,[edx+capture_offset]
+    mov [except_test_capture+capture_offset],eax
+%assign capture_offset capture_offset+4
+%endrep
+    mov eax,0x12340000
+    mov edx,0
+    ret 24
+.provider_bad:
+    mov eax,0
+    mov edx,0
+    ret 24
 except_context_test_end:
 align 4
 except_test_stack: dd 0

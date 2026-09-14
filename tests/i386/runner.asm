@@ -205,7 +205,7 @@ task_test_control: dd i386_irq_dispatch,i386_idle,segment_test_run
 %ifdef EXCEPT_CONTEXT_TEST
 %include "Kernel/I386/ExceptContext.asm"
 %include "tests/i386/except-context.inc"
-except_context_control: dd i386_except_save,i386_except_invoke,i386_except_resume,except_context_test
+except_context_control: dd i386_except_save,i386_except_invoke,i386_except_resume,except_context_test,i386_except_register
     db 'I32E'
     dd i386_except_context_begin-$$+512,i386_except_context_end-i386_except_context_begin
     dd except_context_test_begin-$$+512,except_context_test_end-except_context_test_begin

@@ -521,6 +521,11 @@ frame and nonlocal cleanup resumption. Native tests cover physical register/flag
 restoration and compiled catch blocks reading/writing enclosing I64 locals,
 including skipping the remainder of a try body. Fixture-only registration does
 not yet connect these primitives to production SysTry or task-owned propagation.
+Native registration now captures caller state before calling the record allocator
+and returns a task-owned record or null. Register/flag, provider ABI, nested-record
+allocation, exhaustion and reclamation tests pass. The five-argument bootstrap
+entry still needs the compiler's two-argument SysTry binding and a defined
+non-returning allocation-failure path before production try blocks can use it.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

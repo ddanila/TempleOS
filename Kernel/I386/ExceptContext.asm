@@ -58,4 +58,35 @@ i386_except_resume:
     popfd
     mov esp,ecx
     jmp edx
+; CI386Except *register(task,heap,catch_start,untry_start,push_provider)
+; Five eight-byte arguments; provider has I386ExceptPush's three-argument ABI.
+; Capture on the stack before calling any HolyC code. Failure returns NULL.
+i386_except_register:
+    lea esp,[esp-32]
+    mov [esp],ebp
+    lea eax,[esp+76]
+    mov [esp+4],eax
+    mov [esp+8],ebx
+    mov [esp+12],esi
+    mov [esp+16],edi
+    pushfd
+    pop eax
+    mov [esp+20],eax
+    mov eax,[esp+52]
+    mov [esp+24],eax
+    mov eax,[esp+60]
+    mov [esp+28],eax
+    mov eax,esp
+    mov ecx,[esp+44]
+    mov edx,[esp+36]
+    push dword 0
+    push eax
+    push dword 0
+    push ecx
+    push dword 0
+    push edx
+    call [esp+92]
+    lea esp,[esp+32]
+    xor edx,edx
+    ret 40
 i386_except_context_end:

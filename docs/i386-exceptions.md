@@ -47,7 +47,7 @@ regression covers the changed task layout and ordinary lifecycle.
 
 ## Context transfer primitives
 
-`Kernel/I386/ExceptContext.asm` supplies three bootstrap assembly entries using
+`Kernel/I386/ExceptContext.asm` supplies four bootstrap assembly entries using
 ordinary eight-byte argument slots and callee cleanup:
 
 | Entry | Arguments | Effect |
@@ -55,6 +55,7 @@ ordinary eight-byte argument slots and callee cleanup:
 | `i386_except_save` | capture, catch address, cleanup address | Saves the caller's EBP, post-return ESP, EBX/ESI/EDI and EFLAGS before clobbering preserved state; returns normally |
 | `i386_except_invoke` | capture | Calls a bare-RET catch block on the invoking stack with captured EBP, EBX/ESI/EDI and flags; restores invoker state on normal catch return |
 | `i386_except_resume` | capture | Restores captured EBP, ESP, EBX/ESI/EDI and flags and jumps to cleanup without returning |
+| `i386_except_register` | task, heap, catch address, cleanup address, push provider | Captures caller state into temporary stack storage, calls the three-argument record allocator, and returns its record or null |
 
 Offsets within the capture are 0/4 for EBP/ESP, 8/12/16 for EBX/ESI/EDI,
 20 for EFLAGS and 24/28 for catch/cleanup addresses. Save's three arguments
@@ -77,3 +78,25 @@ not capture the enclosing function's full preserved-register state or allocate
 records. Native runtime entry, nested task-owned dispatch and propagation,
 allocation-failure policy, unhandled exceptions and full public CTask integration
 remain required. NASM remains a bootstrap tool pending native assembler support.
+
+
+## Capture and allocation boundary
+
+`i386_except_register` reserves a 32-byte temporary capture without changing
+flags or preserved registers. It records the caller's EBP and the ESP after
+its five argument slots have been removed (entry ESP plus 44). It then calls
+the supplied provider with task, heap and capture, using the I386ExceptPush ABI.
+The provider must copy the capture before returning: the temporary storage
+expires when registration returns. The ordinary provider validates the capture
+and publishes an owned heap record only on success. A null result leaves the
+existing record chain intact.
+
+The context fixture checks physical register and flag sentinels through this
+entry, verifies provider argument placement and pointer return normalization,
+and registers two real records through native I386ExceptPush. It tests exhaustion
+with the existing chain intact and complete heap reclamation after clearing.
+
+This five-argument bootstrap entry is not the two-argument compiler SysTry entry.
+The latter still needs native binding to the current task, allocation provider
+and heap, together with an allocation-failure path that cannot silently enter
+an unprotected try body. Production throw dispatch and propagation remain pending.
