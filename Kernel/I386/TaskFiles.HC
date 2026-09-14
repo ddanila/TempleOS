@@ -97,9 +97,9 @@ CI386TaskFiles *I386TaskFilesBorrow(CI386Task *task,CFilePathContext *paths,CI38
 {
   U32 flags=I386IrqSave;
   CI386TaskFiles *state=I386TaskFilesValid(task),*result=0;
-  if(!state || !paths || !volumes || !I386TaskFilesAccess(task) || state->busy==0xFFFFFFFF ||
+  if(!state || !paths || !volumes || !I386TaskFilesAccess(task) || state->busy==0xFFFFFFFF || task->lifetime_refs==0xFFFFFFFF ||
       !state->environment->home_dir || !state->environment->white_space) goto files_borrow_done;
-  state->busy++;
+  state->busy++; task->lifetime_refs++;
   paths->cur_dir=(state+1)(U8 *); paths->cur_drv=state->drive;
   paths->home_dir=state->environment->home_dir; paths->boot_drv=state->environment->boot_drv;
   paths->white_space=state->environment->white_space; *volumes=state->volumes;
@@ -111,6 +111,8 @@ Bool I386TaskFilesRelease(CI386TaskFiles *state)
 {
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  if(state && I386TaskFilesValid(state->task)==state && state->busy) { state->busy--; result=TRUE; }
+  if(state && I386TaskFilesValid(state->task)==state && state->busy && state->task->lifetime_refs) {
+    state->busy--; state->task->lifetime_refs--; result=TRUE;
+  }
   I386IrqRestore(flags); return result;
 }

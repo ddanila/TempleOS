@@ -17,17 +17,19 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 11 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 12 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
-with an explicit include provider, and compiler-control construction/destruction.
-The structure is 52 bytes on i386. The entry receives caller-owned interface
+with an explicit include provider, compiler-control construction/destruction,
+and root task-symbol initialization.
+The structure is 56 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
 
-The module imports thirteen kernel functions: I386LexRawChar, I386LexSourceRead,
-HashFind, HashAdd, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore, I386LexIncludeCopy, I386LexFilePush and LexFileReleaseTop,
+The module imports sixteen kernel functions: I386LexRawChar, I386LexSourceRead,
+HashFind, HashAdd, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore, I386LexIncludeCopy, I386LexFilePush, LexFileReleaseTop, and
+I386HashTableNew/Valid/Delete,
 and four kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
 char_bmp_non_eol and char_bmp_non_eol_white_space. The
 latter remain the same writable public tables used by the kernel; moving the
@@ -146,3 +148,10 @@ for source ownership, failure rollback, document callbacks and remaining public
 wrapper integration. The retained runtime is now 151096 image bytes / 151112 heap
 bytes. The native bootstrap is 386608 bytes; with the 2160-byte loaded stage it
 leaves 4448 bytes in the unchanged reservation.
+
+Version 12 installs task-owned symbol scopes. Children have independent local
+tables chained to a pinned parent, with owned entries reclaimed using the public
+symbol-release policy. The disk compiler probe uses the current scope and its
+heap; see [i386-task-symbols.md](i386-task-symbols.md) for lifetime and allocation
+contracts. Public constructor/name/bitmap and complete task heap policy remain
+separate integration work.

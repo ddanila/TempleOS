@@ -3,6 +3,7 @@
 #include "/Kernel/I386/Context.HH"
 #include "/Kernel/I386/Heap.HH"
 extern class CI386Scheduler;
+#include "/Kernel/HashTypes.HH"
 extern class CI386MsgQueue;
 extern class CI386Except;
 #define I386_EXCEPT_CALLERS 8
@@ -28,6 +29,11 @@ class CI386Task
   U8 *file_state;
   Bool (*file_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*file_destroy)(CI386Task *task);
+  U32 lifetime_refs;
+  CHashTable *hash_table;
+  U8 *symbol_state;
+  Bool (*symbol_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
+  Bool (*symbol_destroy)(CI386Task *task);
 };
 class CI386Scheduler
 {

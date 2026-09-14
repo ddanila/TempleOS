@@ -2956,3 +2956,33 @@ CompilerProbe uses and reclaims 73704 bytes. These are QEMU/486 integration resu
 Public task/code heap and symbol selection, filename/default-name and character
 bitmap selection, parser/code-generation unwind, prompt/DolDoc input, JIT and
 self-hosting remain required. See `docs/i386-compiler-control.md`.
+
+## Task-owned symbol scopes and parent lifetime
+
+Native tasks now own local symbol tables chained to a parent, matching the public
+lookup structure. Child scope ownership pins its parent task until destruction;
+file borrows use the same lifetime counter so reap checks references before
+releasing either resource. Spawn failure rolls back both file and symbol state.
+Owned local definitions are reclaimed through the existing public symbol-release
+policy, while root symbols and borrowed code remain live.
+
+CompilerRuntime version 12 has a 56-byte interface and twenty imports. It supplies
+root scope initialization and retained clone/destructor code. Forty kernel exports
+bind these services. The compiler worker constructs controls using its own scope
+and heap, so future definitions can obey the table's allocation ownership. Its
+128 KiB arena accommodates include decompression; the keyboard arena is 8 KiB.
+The combined reservation grows by 128 KiB over the prior two 4 KiB arenas.
+
+Two x64 rebuild generations and native scope, task, ATA/file, hash and exception
+checks pass. Scope tests cover local shadowing, parent/root fallback, independent
+siblings, a live grandchild with a finished parent, rejected early reap, saturated
+references, small-arena rollback and complete owned-symbol reclamation. The full
+standalone rejection/VGA/keyboard/include suite passes on QEMU/486 with 8 MiB.
+
+The native kernel is 389512 bytes, leaving 1544 bytes after the loaded stage in
+its fixed reservation. An unused 3296-byte hash resize routine is separately
+linked by general hash users; the bootstrap retains the remaining core operations.
+CompilerRuntime retains 173192 heap bytes, FileRuntime 116064, and the temporary
+probe reclaims 74392. See `docs/i386-task-symbols.md` for lifecycle and allocation
+contracts. Complete public task/control and heap behavior, constructor name/bitmap
+selection, parser/JIT, DolDoc, strict 386 profiles and self-hosting remain open.

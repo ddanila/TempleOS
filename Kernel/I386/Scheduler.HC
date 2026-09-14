@@ -7,7 +7,8 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
 {
   I64 i;
   if (!s || !root || !swap || s->root || root->owner || root->except_top || root->io_locks ||
-      root->file_state || root->file_clone || root->file_destroy) return FALSE;
+      root->file_state || root->file_clone || root->file_destroy || root->lifetime_refs ||
+      root->hash_table || root->symbol_state || root->symbol_clone || root->symbol_destroy) return FALSE;
   root->addr=root; root->context.esp=0; root->next=root; root->last=root;
   root->owner=s; root->finished=0; root->blocked=0;
   root->join_head=0; root->join_next=0; root->join_target=0;
@@ -25,7 +26,9 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
 {//Append a freshly prepared context before root; caller owns its stack lifetime.
   U32 flags=I386IrqSave;
   I64 i;
-  if (!s || !s->root || !task || task->owner || task->except_top || task->io_locks || !task->context.esp ||
+  if (!s || !s->root || !task || task->owner || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
+      ((task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) &&
+       (!task->hash_table || !task->symbol_state || !task->symbol_clone || !task->symbol_destroy)) ||
       ((task->file_state || task->file_clone || task->file_destroy) &&
        (!task->file_state || !task->file_clone || !task->file_destroy))) {
     I386IrqRestore(flags); return FALSE;
@@ -85,12 +88,18 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   U32 flags=I386IrqSave;
   I64 i;
   if (!s || !task || task->owner!=s || !task->finished || task==s->current ||
-      task->join_head || task->join_target || task->messages || task->except_top || task->io_locks || s->focus==task) {
+      task->join_head || task->join_target || task->messages || task->except_top || task->io_locks || task->lifetime_refs || s->focus==task) {
     I386IrqRestore(flags); return FALSE;
   }
   if(task->file_state || task->file_clone || task->file_destroy) {
     if(!task->file_state || !task->file_clone || !task->file_destroy ||
         !(*task->file_destroy)(task) || task->file_state || task->file_clone || task->file_destroy) {
+      I386IrqRestore(flags); return FALSE;
+    }
+  }
+  if(task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) {
+    if(!task->hash_table || !task->symbol_state || !task->symbol_clone || !task->symbol_destroy ||
+        !(*task->symbol_destroy)(task) || task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) {
       I386IrqRestore(flags); return FALSE;
     }
   }

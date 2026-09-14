@@ -52,8 +52,8 @@ I64 kernel_startup_count;
 CHashTable *kernel_symbols;
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
-CI386KernelSymbol kernel_exports[37];
-U8 kernel_export_kinds[37]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+CI386KernelSymbol kernel_exports[40];
+U8 kernel_export_kinds[40]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
 U8 *kernel_file_image;
@@ -86,7 +86,7 @@ extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelKeys(I64 unused);
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
-U8 kernel_compiler_bindings[17]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36};
+U8 kernel_compiler_bindings[20]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39};
 U8 kernel_probe_bindings[13]={0,18,19,12,11,20,13,14,3,15,16,9,21};
 U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
@@ -122,10 +122,10 @@ I64 Main(CI386BootInfo *info,I64 unused)
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
       !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
   kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelKeys,0,
-    0x18,0x20,4096);
+    0x18,0x20,8192);
   if(!kernel_keys) KernelStop;
   kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
-    0x18,0x20,4096);
+    0x18,0x20,131072);
   if(!kernel_pulse) KernelStop;
   KernelLog("READY native kernel foundation\n");
   I386PicMask(0xFFFC);
@@ -242,7 +242,7 @@ U0 KernelDisplay()
 #include "/Kernel/I386/KeyboardRead.HC"
 #include "/Kernel/I386/KeyboardSetup.HC"
 #include "/Kernel/I386/Hash.HC"
-#include "/Kernel/I386/HashTable.HC"
+#include "/Kernel/I386/HashTableCore.HC"
 #include "/Kernel/HashValue.HC"
 #include "/Compiler/I386/SymbolAlloc.HC"
 #include "/Compiler/I386/SymbolDelete.HC"
@@ -362,7 +362,7 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i,used;
-  U8 *addresses[37],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0";
+  U8 *addresses[40],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0";
   CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
@@ -419,7 +419,8 @@ U0 KernelSymbols()
   addresses[33]=&I386SchedWake;
   addresses[34]=&I386SchedYield;
   addresses[35]=&I386LexFilePush; addresses[36]=&LexFileReleaseTop;
-  for(i=0;i<37;i++) {
+  addresses[37]=&I386HashTableNew; addresses[38]=&I386HashTableValid; addresses[39]=&I386HashTableDelete;
+  for(i=0;i<40;i++) {
     kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
     kernel_exports[i].val=(addresses[i]+0)(U64); kernel_exports[i].type=HTT_EXPORT_SYS_SYM;
     HashAdd(&kernel_exports[i],kernel_symbols);
@@ -440,23 +441,24 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity)
 {
   I64 i;
-  if(!bindings || !indices || count!=capacity || count<1 || count>37) KernelStop;
+  if(!bindings || !indices || count!=capacity || count<1 || count>40) KernelStop;
   for(i=0;i<count;i++) {
-    if(indices[i]>=37) KernelStop;
+    if(indices[i]>=40) KernelStop;
     KernelBinding(&bindings[i],kernel_exports[indices[i]].str);
   }
 }
 
 U0 KernelCompilerLoad()
 {//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
-  CI386ModuleBinding bindings[17];
+  CI386ModuleBinding bindings[20];
   I64 used=kernel_heap.used;
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  KernelBindings(bindings,kernel_compiler_bindings,17,sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_compiler_bindings,20,sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_compiler_image=KernelServiceLoad("/Modules/I386/CompilerRuntime.t32m","RUNTIME ",
-    bindings,17,&kernel_compiler,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION);
+    bindings,20,&kernel_compiler,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION);
   kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
   kernel_compiler_span=kernel_heap.used-used;
+  if(!kernel_compiler.symbols_init(&kernel_root,&kernel_heap,kernel_symbols,1024)) KernelStop;
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.

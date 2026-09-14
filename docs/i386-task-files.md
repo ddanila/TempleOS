@@ -23,7 +23,9 @@ Invalid provider behavior or heap corruption is outside the rollback contract.
 A borrow produces an explicit path snapshot and pins the owned directory until
 release. Replacement and destruction reject busy state. Normal task cleanup runs
 while file state remains attached; reap invokes its destructor before freeing the
-task's arena and stack. A borrowed finished task cannot be reaped until release.
+task's arena and stack. A borrowed finished task cannot be reaped until release. Borrows now also hold
+the shared native task lifetime counter, so reap rejects before either file or
+symbol state can be destroyed.
 The root can inspect/manage task state, while a running worker operates on its own
 state. These are cooperative lifecycle rules, not isolation or access permissions.
 Cancellation or exception unwinding through an outstanding borrow is not yet

@@ -43,10 +43,10 @@ Arbitrary heap or graph corruption is not a transactional recovery contract.
 
 ## Retained integration and verification
 
-CompilerRuntime version 11 adds constructor/destructor entries to its checked
-52-byte service record. It imports native file creation and shared file release
+CompilerRuntime version 12 retains constructor/destructor entries and adds task
+symbol initialization in its checked 56-byte service record. It imports native file creation and shared file release
 from the kernel, avoiding another copy of file-stack mechanisms. The kernel now
-publishes 37 bindings; the retained compiler has seventeen imports.
+publishes 40 bindings; the retained compiler has twenty imports.
 
 The standalone disk-include probe creates a heap-owned control through this
 retained interface in both boot and worker phases. It exercises nested plain and
@@ -72,3 +72,8 @@ python3 tools/build-i386-kernel.py --test
 These are compiler-lifetime integration checks on the QEMU/486 development
 profile. Public task/code-heap policy, recoverable parser/JIT execution, actual
 prompt/document input and native self-hosting remain required work.
+
+The production disk probe now supplies the current task's symbol table and uses
+its allocation heap. Children own local tables linked to their parent; see
+[i386-task-symbols.md](i386-task-symbols.md). This connects scope selection for
+the probe, while the complete public constructor wrapper remains unfinished.

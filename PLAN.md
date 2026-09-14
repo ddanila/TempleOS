@@ -520,7 +520,7 @@ FileRuntime now has a checked version-3 interface and kernel-lifetime ownership.
 Boot/task reads and nested includes use owned current-task directory state; workers
 inherit directory/drive values and require bound volume sessions. The wrappers
 preserve caller IF, including enabled-IF reads and nested includes.
-The bootstrap plus loaded stage now leaves 4448 bytes in the fixed reservation,
+The bootstrap plus loaded stage now leaves 1544 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
 
@@ -576,6 +576,15 @@ standalone disk-include control in both boot and worker phases, reclaiming its
 root, nested input and temporary state. Public task symbol/heap selection,
 filename/default-name and bitmap selection, parser/code-generation unwind, and
 prompt/document input remain required; see `docs/i386-compiler-control.md`.
+
+Native tasks now own local symbol tables with parent lookup and lifetime pins.
+The retained compiler initializes the root scope, and worker compiler controls
+use their current scope and its heap. Tests cover sibling shadowing, a finished
+parent still needed by a grandchild, spawn rollback across file/symbol state, and
+owned definition cleanup. The compiler worker uses a 128 KiB arena for its codec
+and control allocations; the keyboard worker uses 8 KiB. This is still a bootstrap
+heap policy. Complete public task/control ownership and constructor filename,
+default-name and bitmap selection remain open; see `docs/i386-task-symbols.md`.
 
 #### Continuing integration sequence
 

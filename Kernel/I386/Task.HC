@@ -37,10 +37,18 @@ public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
     if(!s->current->file_state || !s->current->file_clone || !s->current->file_destroy ||
         !(*s->current->file_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
   }
+  if(s->current && (s->current->hash_table || s->current->symbol_state || s->current->symbol_clone || s->current->symbol_destroy)) {
+    file_heap=heap; if(owned->task.memory) file_heap=owned->task.memory;
+    if(!s->current->hash_table || !s->current->symbol_state || !s->current->symbol_clone || !s->current->symbol_destroy ||
+        !(*s->current->symbol_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
+  }
   if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
   I386IrqRestore(flags);
   return owned;
 spawn_fail:
+  if(owned->task.symbol_state && (!owned->task.symbol_destroy || !(*owned->task.symbol_destroy)(&owned->task))) {
+    I386IrqRestore(flags); return 0;
+  }
   if(owned->task.file_state && (!owned->task.file_destroy || !(*owned->task.file_destroy)(&owned->task))) {
     I386IrqRestore(flags); return 0;
   }
