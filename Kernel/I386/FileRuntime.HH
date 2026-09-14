@@ -3,7 +3,7 @@
 #include "/Compiler/I386/LexFileRead.HH"
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/TaskCompiler.HH"
-#define I386_FILE_SERVICES_VERSION 12
+#define I386_FILE_SERVICES_VERSION 13
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;

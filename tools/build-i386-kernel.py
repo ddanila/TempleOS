@@ -67,19 +67,19 @@ def compiler_runtime_layout(module):
                 imports.append((symbol, name))
     if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space', 'I386LexFilePush', 'LexFileReleaseTop', 'I386HashTableNew', 'I386HashTableValid', 'I386HashTableDelete', 'throw'}:
         raise ValueError('Unexpected compiler-runtime import contract')
-    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel'):
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel', 'I386BackendCompile'):
         if name not in exports or exports[name][0] != 1:
             raise ValueError(f'Missing compiler-runtime function {name}')
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 21:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 22:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
                 punct_offset=8+exports['I386RuntimePunct'][1], ident_offset=8+exports['I386LexIdentScan'][1],
                 ident_token_offset=8+exports['I386LexIdentToken'][1], string_token_offset=8+exports['I386LexStringToken'][1],
-                next_offset=8+exports['I386RuntimeLexNext'][1], include_offset=8+exports['I386RuntimeLexIncludes'][1], control_new_offset=8+exports['I386CmpCtrlNew'][1], control_del_offset=8+exports['I386CmpCtrlDel'][1], symbols_init_offset=8+exports['I386TaskSymbolsInit'][1], control_enter_offset=8+exports['I386CmpCtrlEnter'][1], control_leave_offset=8+exports['I386CmpCtrlLeave'][1], control_drain_offset=8+exports['I386CmpCtrlDrain'][1], control_unwind_offset=8+exports['I386CmpCtrlUnwind'][1], code_add_offset=8+exports['I386ICAdd'][1], code_misc_offset=8+exports['I386COCMiscNew'][1], code_discard_offset=8+exports['I386COCDiscard'][1], code_save_offset=8+exports['I386COCSave'][1], code_push_offset=8+exports['I386COCPush'][1], code_pop_offset=8+exports['I386COCPopNoFree'][1], code_free_offset=8+exports['I386COCHeaderFree'][1], code_append_offset=8+exports['I386COCAppend'][1], code_retire_offset=8+exports['I386ICRetire'][1], code_branch_offset=8+exports['I386OptBranch'][1], code_optimize_offset=8+exports['I386OptPass012'][1], out_new_offset=8+exports['I386OutNew'][1], out_del_offset=8+exports['I386OutDel'][1], version_offset=version_offset,
+                next_offset=8+exports['I386RuntimeLexNext'][1], include_offset=8+exports['I386RuntimeLexIncludes'][1], control_new_offset=8+exports['I386CmpCtrlNew'][1], control_del_offset=8+exports['I386CmpCtrlDel'][1], symbols_init_offset=8+exports['I386TaskSymbolsInit'][1], control_enter_offset=8+exports['I386CmpCtrlEnter'][1], control_leave_offset=8+exports['I386CmpCtrlLeave'][1], control_drain_offset=8+exports['I386CmpCtrlDrain'][1], control_unwind_offset=8+exports['I386CmpCtrlUnwind'][1], code_add_offset=8+exports['I386ICAdd'][1], code_misc_offset=8+exports['I386COCMiscNew'][1], code_discard_offset=8+exports['I386COCDiscard'][1], code_save_offset=8+exports['I386COCSave'][1], code_push_offset=8+exports['I386COCPush'][1], code_pop_offset=8+exports['I386COCPopNoFree'][1], code_free_offset=8+exports['I386COCHeaderFree'][1], code_append_offset=8+exports['I386COCAppend'][1], code_retire_offset=8+exports['I386ICRetire'][1], code_branch_offset=8+exports['I386OptBranch'][1], code_optimize_offset=8+exports['I386OptPass012'][1], out_new_offset=8+exports['I386OutNew'][1], out_del_offset=8+exports['I386OutDel'][1], backend_offset=8+exports['I386BackendCompile'][1], version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
@@ -100,7 +100,7 @@ def file_runtime_layout(module):
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 12:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 13:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         include_offset=8+exports['I386LexTaskFileInclude'][1], read_offset=8+exports['I386TaskFileRead'][1],
@@ -150,7 +150,7 @@ def compiler_probe_layout(module):
                 'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric', 'SysTry', 'SysUntry', 'throw'}
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
-    for name in ('Main', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit'):
+    for name in ('Main', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing compiler-probe function {name}')
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
@@ -222,6 +222,28 @@ def verify_compiler_rejection(disk, volume, out, layout):
     return results
 
 
+def division_template_lines(code, disassemble):
+    """Audit the named inline template as fall-through code, not a callable function."""
+    if len(code) != 185 or code[:6] != bytes.fromhex('55 8b ec 83 ec 10') or code[-3:] != bytes.fromhex('8b e5 5d'):
+        raise ValueError('Unexpected division template boundaries/prologue/epilogue')
+    lines = disassemble(code).splitlines()
+    rows = [line.split() for line in lines]
+    offsets = {int(row[0], 16) for row in rows}
+    cursor = 0
+    for row in rows:
+        if len(row) < 3 or int(row[0], 16) != cursor:
+            raise ValueError('Noncontiguous division template instructions')
+        cursor += len(row[1])//2
+        if row[2] in ('call', 'ret', 'iret'):
+            raise ValueError('Division template must fall through')
+        if row[2].startswith('j'):
+            if len(row) != 4 or not row[3].startswith('0x') or int(row[3], 16) not in offsets:
+                raise ValueError('Division template branch escapes its instruction boundaries')
+    if cursor != len(code):
+        raise ValueError('Unclassified division template bytes')
+    return lines
+
+
 def audit(exports, out):
     disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
     allowed = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
@@ -245,12 +267,24 @@ def audit(exports, out):
             raise ValueError('Truncated kernel')
         if index==0 or not resident:
             starts, data = [], []
+            template_markers = {}
             for i in range(count):
                 kind, offset, name_offset, length = struct.unpack_from('<4I',module,records+16*i)
                 if kind==1:
-                    starts.append(offset)
+                    symbol = module[name_offset:name_offset+length].decode('ascii')
+                    if name == 'CompilerRuntime' and symbol in ('_I386_DIV_BEGIN', '_I386_DIV_END'):
+                        template_markers[symbol] = offset
+                    if name != 'CompilerRuntime' or symbol != '_I386_DIV_END':
+                        starts.append(offset)
                 elif kind==4:
                     data.append((offset,name_offset))
+            template = None
+            if name == 'CompilerRuntime':
+                if set(template_markers) != {'_I386_DIV_BEGIN', '_I386_DIV_END'}:
+                    raise ValueError('Missing native backend division template markers')
+                template = (template_markers['_I386_DIV_BEGIN'], template_markers['_I386_DIV_END'])
+                if template[1]-template[0] != 185:
+                    raise ValueError('Unexpected native division template size')
             starts.sort()
             if not starts or starts[-1]>=size or len(set(starts))!=len(starts):
                 raise ValueError('Invalid kernel function boundaries')
@@ -261,7 +295,7 @@ def audit(exports, out):
                 if length<=0 or begin+length>size or any(coverage[begin:begin+length]):
                     raise ValueError('Invalid kernel data range')
                 coverage[begin:begin+length]=b'D'*length
-            boundaries=sorted(set(starts+[begin for begin,_ in data]+[size]))
+            boundaries=sorted(set(starts+[begin for begin,_ in data]+[size]+([template[1]] if template else [])))
             spans=[(start,next(end for end in boundaries if end>start)) for start in starts]
             for start,end in spans:
                 if any(coverage[start:end]):
@@ -275,16 +309,21 @@ def audit(exports, out):
                     if code[i] or gap>7: raise ValueError('Unclassified kernel bytes')
         else:
             spans=[(0,size)]
+            template=None
         terminal='iret' if name in ('IrqEntry','ExceptionEntry') else 'ret'
         for start,end in spans:
-            lines=disassemble(code[start:end]).splitlines()
-            returns=[i for i,line in enumerate(lines) if len(line.split())>=3 and line.split()[2]==terminal]
-            if not returns: raise ValueError(f'Missing {name} {terminal}')
-            last=returns[-1]
-            parts=lines[last].split()
-            used=int(parts[0],16)+len(parts[1])//2
-            if end-start-used>7 or any(code[start+used:end]):
-                raise ValueError(f'Invalid {name} code tail')
+            if template == (start,end):
+                lines=division_template_lines(code[start:end],disassemble)
+                last=len(lines)-1
+            else:
+                lines=disassemble(code[start:end]).splitlines()
+                returns=[i for i,line in enumerate(lines) if len(line.split())>=3 and line.split()[2]==terminal]
+                if not returns: raise ValueError(f'Missing {name} {terminal}')
+                last=returns[-1]
+                parts=lines[last].split()
+                used=int(parts[0],16)+len(parts[1])//2
+                if end-start-used>7 or any(code[start+used:end]):
+                    raise ValueError(f'Invalid {name} code tail')
             for line in lines[:last+1]:
                 parts = line.split()
                 locked_bit = parts[2:] in (["lock", op, "[eax],esi"] for op in ("bts", "btr", "btc"))
@@ -534,9 +573,9 @@ def main():
             raise ValueError('Unexpected 8 MiB memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
-        if len(runtime) != 1 or len(runtime[0]) != 33:
+        if len(runtime) != 1 or len(runtime[0]) != 34:
             raise ValueError('Missing retained compiler-runtime image')
-        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address, symbols_init_address, control_enter_address, control_leave_address, control_drain_address, control_unwind_address, code_add_address, code_misc_address, code_discard_address, code_save_address, code_push_address, code_pop_address, code_free_address, code_append_address, code_retire_address, code_branch_address, code_optimize_address, out_new_address, out_del_address = (int(x, 16) for x in runtime[0][1:])
+        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address, symbols_init_address, control_enter_address, control_leave_address, control_drain_address, control_unwind_address, code_add_address, code_misc_address, code_discard_address, code_save_address, code_push_address, code_pop_address, code_free_address, code_append_address, code_retire_address, code_branch_address, code_optimize_address, out_new_address, out_del_address, backend_address = (int(x, 16) for x in runtime[0][1:])
         if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
                 address < begin or address+size > begin+length or
                 string_address != address+runtime_layout['string_offset'] or
@@ -561,7 +600,7 @@ def main():
                 any(value != address+runtime_layout[key] for value,key in (
                     (code_save_address,'code_save_offset'), (code_push_address,'code_push_offset'),
                     (code_pop_address,'code_pop_offset'), (code_free_address,'code_free_offset'),
-                    (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset')))):
+                    (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
         if len(file_rows)!=1 or len(file_rows[0])!=10: raise ValueError('Missing file-runtime ownership evidence')
@@ -586,7 +625,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=12, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=13, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, control_new_address=file_control_new,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
@@ -654,9 +693,11 @@ def main():
             raise ValueError('Native shared optimizer probes failed')
         if [int(line.split()[2], 16) for line in log.splitlines() if line.startswith('EMITTER PROBE ')] != [0, 1]:
             raise ValueError('Native owned code emitter probes failed')
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=21, image_address=address,
+        if [int(line.split()[2], 16) for line in log.splitlines() if line.startswith('BACKEND PROBE ')] != [0, 1]:
+            raise ValueError('Native shared backend probes failed')
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=22, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
-            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
+            number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, backend_address=backend_address, native_backend_phases=[0,1], native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')

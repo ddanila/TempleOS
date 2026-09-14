@@ -3438,3 +3438,54 @@ latency constraints. The probe executes emitted instructions, not parsed source.
 Persistent code publication and references, the complete native backend/parser,
 interactive source execution/DolDoc, self-hosting and strict 386SX/DX acceptance
 remain unfinished.
+
+## Native shared function lowering
+
+The production target backend now lives in `Compiler/I386/BackendCore.HC`, shared
+by the cross-host compiler and retained native module. Explicit services provide
+allocation, release, internal types, folding, inline-assembly relocation and
+reporting. Native `backend` consumes valid function IR into a fresh owned output;
+control ownership covers temporary lowering records and attached relocation
+metadata. It retains private borrowed function/AOT/symbol context rather than
+publishing persistent code. The x64 wrapper retains host constant evaluation,
+assembler-expression execution, output copying and original graph cleanup.
+
+Both boot and worker probes execute 16 natively compiled functions. Argument loads
+prevent arithmetic from reducing to constant-only emission. Cases cover signed and
+unsigned 64-bit arithmetic/comparisons, division/remainder, cross-word shifts,
+short-circuit branch paths, and literal-pool bytes plus relocation metadata. Each
+control unwind restores exact heap and reference counts. Exhausting the heap after
+pass-stack allocation forces `OutMem` on the first byte emitted by the lowering
+loop, then checks full unwind, exception/control state and preserved IF.
+
+The shared 185-byte division template now uses code-marker exports. Its audit
+checks contiguous instruction coverage, frame setup/teardown and internal branch
+targets, rejects calls/returns and applies the ordinary executable opcode checks.
+The real template passes; mutations of the prologue, branch destination and return
+ending are rejected. It is an inline fragment, not a callable function.
+
+Successful verification:
+
+- `python3 tools/test-rebuild.py`: both x64 compiler/kernel rebuild generations.
+- `python3 tools/test-i386.py --functions`: all 233 cases.
+- `python3 tools/test-i386.py --float`: existing floating-point expressions,
+  bitwise/shift, remainder, destination, condition and rejection coverage.
+- `python3 tools/test-i386.py --inline-asm`: assembly and relative relocation cases.
+- `python3 tools/test-i386.py --task-symbols`: native control/symbol ownership.
+- `python3 tools/build-i386-kernel.py --test`: both backend phases, complete
+  boot/input/VGA/recovery and module-rejection suite, executable instruction audit.
+- `git diff --check` and Python build-tool syntax compilation.
+
+CompilerRuntime ABI 22 is 128 bytes, with image/span 607360/607376 bytes.
+FileRuntime ABI 13 keeps its 32-byte record, with image/span 125096/125112 bytes.
+CompilerProbe remains ABI 5/56 bytes; its 170248/170264-byte image/span are temporary
+and reclaimed after the worker phase. Compiler/probe imports remain 21/17.
+The kernel remains 389424 bytes, 391584 including loaded stage overhead, leaving
+1632 bytes in the fixed bootstrap reservation. The retained compiler grew 151864
+bytes in extended memory; self-hosting memory use remains unmeasured.
+
+See [i386-native-backend.md](i386-native-backend.md) for ownership and diagnostic
+contracts. These native cases cover part of the shared lowering loop. Native source
+parsing, import resolution and persistent publication, top-level execution/`#exe`,
+public task/allocation interfaces, DolDoc, self-hosting and strict 386SX/DX acceptance
+remain unfinished. The full OS goal remains active.

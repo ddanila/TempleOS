@@ -4,7 +4,7 @@
 // Preserves EBP/ESP; other scratch registers belong to the enclosing emitter.
 asm {
 USE32
-I386_DIV_BEGIN::
+_I386_DIV_BEGIN::
   PUSH EBP
   MOV EBP,ESP
   SUB ESP,16
@@ -86,8 +86,11 @@ I386_DIV_BEGIN::
 @@80:
   MOV ESP,EBP
   POP EBP
-I386_DIV_END::
+_I386_DIV_END::
+#ifndef I386_DIV_KEEP32
 USE64
+#endif
 }
-_extern I386_DIV_BEGIN U8 i386_div_begin[1];
-_extern I386_DIV_END U8 i386_div_end[1];
+//Code-address markers; do not call the template as a standalone function.
+_extern _I386_DIV_BEGIN U0 I386DivBegin();
+_extern _I386_DIV_END U0 I386DivEnd();

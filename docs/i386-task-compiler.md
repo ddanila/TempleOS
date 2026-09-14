@@ -79,10 +79,10 @@ Complete parser/generated-code cleanup remains separate work.
 
 ## Retained services and tests
 
-CompilerRuntime version 21 retains enter, leave, drain, bounded unwind and
-temporary IR allocation/discard, shared branch optimization, constant folding and owned output buffers alongside construction/destruction and symbol
-initialization. Its record is 124 bytes with
-twenty-one imports. FileRuntime version 12 validates that compiler
+CompilerRuntime version 22 retains enter, leave, drain, bounded unwind and
+temporary IR allocation/discard, shared branch optimization, constant folding owned output buffers and shared function lowering alongside construction/destruction and symbol
+initialization. Its record is 128 bytes with
+twenty-one imports. FileRuntime version 13 validates that compiler
 contract; its own record stays 32 bytes with six function pointers and eighteen
 imports. Both providers remain resident for the kernel lifetime.
 

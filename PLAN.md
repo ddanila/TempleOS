@@ -752,6 +752,19 @@ stage occupy 391584 of 393216 bytes. See `docs/i386-code-emitter.md`. These rema
 temporary output buffers; persistent JIT publication and complete backend/parser
 execution still require integration.
 
+The production i386 function-lowering loop now has a shared service-based core,
+used by both the x64 compiler and retained native compiler. Native `backend`
+compiles valid function IR into a fresh control-owned buffer; temporary lowering
+records and relocation metadata use the same control lifetime. Boot/task probes
+execute 32 generated functions covering arithmetic, division, shifts, comparisons,
+branches and literal pools, plus lowering allocation failure and full unwind.
+CompilerRuntime ABI 22 is 128 bytes; FileRuntime ABI 13 validates it. See
+`docs/i386-native-backend.md` for borrowed AOT/symbol context and diagnostic lifetime.
+This closes native IR-to-code integration for the tested cases. Native source
+parsing, import resolution, persistent code publication, top-level execution and
+`#exe` remain the next compiler work; the standalone image cannot yet compile its
+startup source or provide the HolyC shell.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

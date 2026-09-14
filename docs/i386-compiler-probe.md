@@ -128,3 +128,10 @@ The owned-emitter probe now generates and executes code through the shared backe
 byte writer in boot and task phases. It checks growth boundaries, preserved output
 on allocation failure, retry, and full compiler unwind with live output. See
 [i386-code-emitter.md](i386-code-emitter.md).
+
+The backend probe constructs valid function IR and invokes the retained production
+lowering service in both phases. It executes 16 generated functions per phase,
+checks literal relocation metadata, and forces allocation failure in the lowering
+loop before unwinding the control. This covers native IR-to-code execution; source
+parsing and persistent code publication are still required. See
+[i386-native-backend.md](i386-native-backend.md).
