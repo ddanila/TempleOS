@@ -2656,3 +2656,33 @@ change. Native archive helpers remain outside the 383496-byte bootstrap, leaving
 interoperability and file/include integration remain required, along with the
 remaining parser/JIT, document, strict 386 and self-hosting work. See
 `docs/i386-compression.md`.
+
+## Shared native archive stream expansion
+
+ArcExpandStep now shares the original streaming decoder between x64 and i386.
+The x64 path retains its bit-field reader and assembly dictionary allocator;
+the native path reads declared bits byte by byte and uses native dictionary
+allocation. Source positions remain bit counts, output positions byte counts,
+and pending expanded bytes remain on the owned stack. Reader failures record
+partial output without advancing the failed code; callers must discard/reset
+failed state. Native basic extent/address checks precede the shared loop.
+
+Six fixtures from the unchanged x64 compressor cover repeated/random 32768-byte
+sources and single bytes in both modes. Complete/incremental original decoding
+passed before extraction at dc55f97. Eighteen native expansions now match every
+source byte for full output, output chunks and input extended after its first
+code. Tests verify 12-bit dictionary reuse, canaries, final stack/cursor state,
+reclamation, forty unaligned bit fields, short input, invalid extents and callback
+failure after one output byte. The fixture's vector-address cast was corrected
+after disassembly showed it interpreting the array contents as a pointer.
+
+Both x64 rebuild/reboot generations, native expansion and dictionary/lifecycle
+suites, instruction audits and full kernel boot/rejection/VGA/keyboard/timer
+checks pass. The 256 KiB expansion fixture and separate 128 KiB heap are test-only;
+the standalone bootstrap remains 383496 bytes with 9720 bytes of headroom.
+
+This remains an internal codec step requiring valid state and well-formed codes,
+not a validator for arbitrary archive contents. Whole-archive size/type validation,
+owned output and file/include integration are still required, along with the
+remaining parser/JIT, documents, strict 386 and self-hosting work. See
+`docs/i386-arc-expand.md`.

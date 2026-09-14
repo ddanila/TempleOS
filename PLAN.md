@@ -308,9 +308,11 @@ Compression records are now shared, preserving the 17-byte disk header while
 using native-width in-memory pointers. A native dictionary allocator matches the
 original x64 assembly across 40000 growth/reuse updates, including occupied-slot
 skips and chain unlinking. It remains outside the bootstrap. Owned native controls and expansion stacks now share initialization with x64,
-preserve interrupt state and reclaim partial allocations. Native bitstream
-expansion and compressed-file interoperability still need implementation; see
-`docs/i386-compression.md`.
+preserve interrupt state and reclaim partial allocations. The original stream-expansion loop now runs through architecture-specific bit
+readers and dictionary callbacks. Native full/incremental output and input
+resumption match six original-compressor fixtures, including dictionary reuse.
+Whole-archive size/type validation, output ownership and file/include integration
+remain required; see `docs/i386-compression.md` and `docs/i386-arc-expand.md`.
 
 ### H. Meet the memory budget and recover the complete user workflow
 

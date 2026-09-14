@@ -163,60 +163,14 @@ Bool ArcFinishCompression(CArcCtrl *c)
     return FALSE;
 }
 
+#include "/Kernel/ArcExpand.HC"
+I64 ArcSystemRead(CArcCtrl *c)
+{
+  return BFieldExtU32(c->src_buf,c->src_pos,c->next_bits_in_use);
+}
 U0 ArcExpandBuf(CArcCtrl *c)
-{//Use $LK,"ExpandBuf",A="MN:ExpandBuf"$() unless you know what you're doing.
-  U8 *dst_ptr,*dst_limit;
-  I64 basecode,lastcode,code;
-  CArcEntry *tmp,*tmp1;
-
-  dst_ptr=c->dst_buf+c->dst_pos;
-  dst_limit=c->dst_buf+c->dst_size;
-
-  while (dst_ptr<dst_limit && c->stk_ptr!=c->stk_base)
-    *dst_ptr++ = * -- c->stk_ptr;
-
-  if (c->stk_ptr==c->stk_base && dst_ptr<dst_limit) {
-    if (c->saved_basecode==U32_MAX) {
-      lastcode=BFieldExtU32(c->src_buf,c->src_pos,
-	    c->next_bits_in_use);
-      c->src_pos+=c->next_bits_in_use;
-      *dst_ptr++=lastcode;
-      ArcEntryGet(c);
-      c->last_ch=lastcode;
-    } else
-      lastcode=c->saved_basecode;
-    while (dst_ptr<dst_limit && c->src_pos+c->next_bits_in_use<=c->src_size) {
-      basecode=BFieldExtU32(c->src_buf,c->src_pos,
-	    c->next_bits_in_use);
-      c->src_pos+=c->next_bits_in_use;
-      if (c->cur_entry==&c->compress[basecode]) {
-	*c->stk_ptr++=c->last_ch;
-	code=lastcode;
-      } else
-	code=basecode;
-      while (code>=c->min_table_entry) {
-	*c->stk_ptr++=c->compress[code].ch;
-	code=c->compress[code].basecode;
-      }
-      *c->stk_ptr++=code;
-      c->last_ch=code;
-
-      c->entry_used=TRUE;
-      tmp=c->cur_entry;
-      tmp->basecode=lastcode;
-      tmp->ch=c->last_ch;
-      tmp1=&c->hash[lastcode];
-      tmp->next=tmp1->next;
-      tmp1->next=tmp;
-
-      ArcEntryGet(c);
-      while (dst_ptr<dst_limit && c->stk_ptr!=c->stk_base)
-	*dst_ptr++ = * -- c->stk_ptr;
-      lastcode=basecode;
-    }
-    c->saved_basecode=lastcode;
-  }
-  c->dst_pos=dst_ptr-c->dst_buf;
+{//Use ExpandBuf for a complete archive. Shared loop retains streaming state.
+  if(!ArcExpandStep(c,&ArcSystemRead,&ArcEntryGet)) throw('Compress');
 }
 
 CArcCtrl *ArcCtrlNew(Bool expand,I64 compression_type=CT_8_BIT)
