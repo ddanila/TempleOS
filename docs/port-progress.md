@@ -1235,3 +1235,26 @@ Generated-instruction audits, CR0.EM execution, both x64 rebuild generations and
 image verification (765 files, 62 directories) pass. Remaining numerical/math/
 formatting support, full compiler/kernel integration, native self-hosting,
 memory targets and strict 386 validation remain unfinished.
+
+
+## Native integer math intrinsics
+
+The function backend now implements AbsI64, SignI64, signed/unsigned Min/Max and
+SqrI64/SqrU64. Standalone declarations are in `Kernel/I386/Math.HH`. The lowering
+uses register pairs and existing 386 arithmetic/comparison emission; min/max
+select with branches. It preserves x64 MIN_I64 absolute-value overflow and
+low-64-bit square results. These operations are used by existing message,
+memory and mouse code, whose full native integration remains pending.
+
+`tools/test-i386.py --integer-math` checks 8,192 results over 1,024 operand pairs
+from 32 boundary/bit-pattern values. Actual x64 intrinsic results must match the
+independent Python integer oracle before the native module executes. Three
+additional checks cover nested calls and single evaluation of side-effecting
+arguments. All cases and generated-instruction audits pass in the 8 MiB QEMU 486
+runner. The 178-case integer regression, both x64 rebuild generations and image
+verification (766 files, 62 directories) also pass.
+
+Floating-point math intrinsics, remaining compiler features and full production
+kernel integration remain unfinished, along with native self-hosting, memory
+targets and strict 386 validation. This arithmetic checkpoint does not establish
+complete native OS support.

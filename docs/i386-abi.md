@@ -84,6 +84,23 @@ all 64 bits, including the sign bit when the value holds an F64 pattern.
 values are not discarded before normalization. Nested intrinsic calls and
 side-effecting argument expressions use the existing call tracking.
 
+Integer math intrinsics now include `AbsI64`, `SignI64`, `MinI64`, `MaxI64`,
+`MinU64`, `MaxU64`, `SqrI64` and `SqrU64`, declared standalone in
+`Kernel/I386/Math.HH`. They consume ordinary eight-byte argument slots and
+return EDX:EAX. Min/max compare both words and select with branches; no CMOV or
+later instruction is required. AbsI64 preserves MIN_I64's bit pattern, and
+both square forms return the low 64 product bits, matching x64 overflow behavior.
+SignI64 returns -1, zero or one. Nested calls and side-effecting arguments retain
+the existing call evaluation rules.
+
+Run `python3 tools/test-i386.py --integer-math` after the x64 rebuild test.
+The fixture checks all eight operations over the Cartesian product of 32 boundary
+and bit-pattern values (8,192 results), including signed extrema, equality,
+high-word-only values and unsigned/signed ordering differences. Actual x64 output
+must first match an independent Python arbitrary-precision integer oracle; native
+execution then checks that oracle, plus three nested/side-effect cases. Instruction
+auditing and an 8 MiB QEMU 486 run are development evidence, not strict 386 proof.
+
 Indirect fixed-arity calls share the direct-call ABI. The caller captures a
 four-byte function pointer into an eight-byte evaluation slot before evaluating
 arguments, calls through its low dword, and removes that saved slot after the

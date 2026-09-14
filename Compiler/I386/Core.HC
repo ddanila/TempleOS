@@ -433,6 +433,35 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             calls->indirect=TRUE;
             calls->depth--;
             break;
+          case IC_ABS_I64: case IC_SIGN_I64:
+          case IC_SQR_I64: case IC_SQR_U64:
+          case IC_MIN_I64: case IC_MIN_U64: case IC_MAX_I64: case IC_MAX_U64:
+            arg_index=1;
+            if (IC_MIN_I64<=ic->ic_code<=IC_MAX_U64) arg_index=2;
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=arg_index ||
+                depth!=calls->depth+arg_index) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A",2);
+            if (arg_index==2) {
+              I386Bytes(&out,"\x59\x5B\x89\xC6\x89\xD7",6);
+              if (ic->ic_code==IC_MIN_I64 || ic->ic_code==IC_MIN_U64)
+                I386Compare(&out,IC_LESS,ic->ic_code==IC_MIN_U64);
+              else I386Compare(&out,IC_GREATER,ic->ic_code==IC_MAX_U64);
+              I386Bytes(&out,"\x85\xC0\x74\x06\x89\xF0\x89\xFA"
+                "\xEB\x04\x89\xC8\x89\xDA",14);
+            } else if (ic->ic_code==IC_ABS_I64)
+              I386Bytes(&out,"\x85\xD2\x79\x07\xF7\xD8\x83\xD2\x00\xF7\xDA",11);
+            else if (ic->ic_code==IC_SIGN_I64)
+              I386Bytes(&out,"\x89\xC1\x09\xD1\x0F\x95\xC0\x0F\xB6\xC0"
+                "\xC1\xFA\x1F\x09\xD0",15);
+            else {
+              I386Bytes(&out,"\x89\xC1\x89\xD3",4);
+              I386Binary(&out,IC_MUL);
+            }
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
           case IC_TO_F64:
           case IC_TO_I64:
           case IC_TO_BOOL:

@@ -49,15 +49,16 @@ def main():
     modes.add_argument('--soft-f64-convert', action='store_true', help='Test I64/U64 to binary64 conversion and rounding')
     modes.add_argument('--soft-f64-compare', action='store_true', help='Test binary64 ordering, NaNs and signed zeros')
     modes.add_argument('--soft-f64-to-int', action='store_true', help='Test binary64 to I64/Bool conversion against x64 HolyC')
+    modes.add_argument('--integer-math', action='store_true', help='Test integer math intrinsics against x64 and Python')
     modes.add_argument('--float', action='store_true', help='Test compiled native HolyC F64 expressions and calls')
     args = parser.parse_args()
     task_runner = args.tasks or args.input or args.messages
-    large_runner = args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
+    large_runner = args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'float'):
+    for mode in ('functions', 'data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'float')
+    data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'integer-math', 'float')
     functions = kind != 'expressions'
     if functions:
         OUT = ROOT/f'build/i386-{kind}-test'
@@ -100,16 +101,19 @@ def main():
                 _, case, start = line.split()
                 ranges.setdefault(int(case), []).append(int(start, 16))
     data = (exports/'expressions.bin').read_bytes()
-    if args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int:
+    if args.integer_math or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int:
+        from i386_integer_oracle import make_integer_math_oracle
         from i386_f64_oracle import make_oracle, make_conversion_oracle, make_comparison_oracle, make_to_int_oracle
         records = [line.split() for line in (exports/'debug.log').read_text().splitlines()
                    if line.startswith('ORACLE ')]
         if len(records) != 1:
-            raise ValueError('Missing/duplicate F64 oracle export')
+            raise ValueError('Missing/duplicate numeric oracle export')
         begin, length = (int(value, 16) for value in records[0][1:])
-        oracle = (make_to_int_oracle(1024) if args.soft_f64_to_int else
+        oracle = (make_integer_math_oracle() if args.integer_math else make_to_int_oracle(1024) if args.soft_f64_to_int else
                   make_comparison_oracle(1024) if args.soft_f64_compare else
                   make_conversion_oracle(1024) if args.soft_f64_convert else make_oracle(2048))
+        if args.integer_math and (exports/'x64-integer-math.bin').read_bytes() != oracle:
+            raise ValueError('x64 integer math differs from the Python oracle')
         if args.soft_f64_convert:
             signed_inputs = (0, 1, 0xFFFFFFFFFFFFFFFF, 0x8000000000000000,
                              0x7FFFFFFFFFFFFFFF, 0x0020000000000001,
@@ -126,9 +130,9 @@ def main():
         if args.soft_f64_to_int and (exports/'x64-to-int.bin').read_bytes() != oracle:
             raise ValueError('x64 HolyC conversion differs from truncation/indefinite oracle')
         if length != len(oracle) or begin < 28 or begin+length > len(data)-4:
-            raise ValueError('Invalid F64 oracle bounds')
+            raise ValueError('Invalid numeric oracle bounds')
         if not any(begin == 28+start and length == size for start, size in data_ranges.get(0, [])):
-            raise ValueError('F64 oracle is not an exported data region')
+            raise ValueError('numeric oracle is not an exported data region')
         data = data[:begin]+oracle+data[begin+length:]
         (exports/'expressions.bin').write_bytes(data)
     offset = count = 0
@@ -555,7 +559,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 4 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 
