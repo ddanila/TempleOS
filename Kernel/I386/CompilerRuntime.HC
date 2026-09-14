@@ -38,7 +38,7 @@ extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I6
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 extern U0 ICInfoInit();
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==132
+#assert sizeof(CI386CompilerServices)==136
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -68,6 +68,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->out_new=&I386OutNew; services->out_del=&I386OutDel;
   services->backend=&I386BackendCompile;
   services->expression=&I386ParseExpression;
+  services->parse_type=&I386ParseType;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -111,3 +112,5 @@ I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
 #include "/Compiler/I386/NativeBackend.HC"
 
 #include "/Compiler/I386/NativeExpression.HC"
+
+#include "/Compiler/I386/NativeType.HC"

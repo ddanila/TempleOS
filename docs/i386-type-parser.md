@@ -50,3 +50,8 @@ class/function/variable-list cores, initialization, symbol lifetimes, array-boun
 and connection to persistent backend output. The retained compiler publishes no
 new parser service in this change, and its ABI remains unchanged. See
 [i386-expression-parser.md](i386-expression-parser.md) and `PLAN.md`.
+
+The retained runtime now exposes the [native type entry](i386-native-type.md),
+used by native postfix-cast probes with intrinsic types. Public scalar union
+declarations, array-bound execution and general class/function adapters remain
+unfinished.

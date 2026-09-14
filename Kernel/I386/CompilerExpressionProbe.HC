@@ -5,6 +5,7 @@ class CProbeExpression {
   CI386CompilerProbe *probe;
   CI386Heap *heap;
   CPrsExpressionServices services;
+  CPrsTypeServices types;
   I64 lines;
 };
 class CProbeExpressionStorage {
@@ -22,7 +23,10 @@ I64 ProbeExpressionLex(U8 *context,CCmpCtrl *cc)
 }
 U0 ProbeExpressionReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
-  if(!kind) { cc->error_cnt++; throw('Compiler',TRUE); }
+  if(!kind) {
+    KernelLog("PARSER DIAGNOSTIC "); KernelLog(message); KernelLog("\n");
+    cc->error_cnt++; throw('Compiler',TRUE);
+  }
   cc->warning_cnt++;
 }
 CIntermediateCode *ProbeExpressionAdd(U8 *context,CCmpCtrl *cc,I64 op,I64 value,CHashClass *type,I64 flags)
@@ -36,6 +40,15 @@ Bool ProbeExpressionNested(U8 *context,CCmpCtrl *cc,I64 *precedence,Bool end_exp
 {
   CProbeExpression *state=context;
   return state->probe->compiler->expression(state->heap,cc,&state->services,precedence,end_exp,stack);
+}
+CHashClass *ProbeExpressionType(U8 *context,CCmpCtrl *cc,CHashClass **first,I64 *mode,
+  CMemberLst *member,U8 **ident,CHashFun **fun,CHashExport **export_entry,CArrayDim *dim,I64 flags)
+{
+  CProbeExpression *state=context;
+  CHashClass *result=state->probe->compiler->parse_type(state->heap,cc,&state->types,
+    first,mode,member,ident,fun,export_entry,dim,flags);
+  if(!result) KernelStop;
+  return result;
 }
 U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
@@ -73,12 +86,19 @@ U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   services->optimize=&ProbeExpressionUnexpected; services->allocate=&ProbeExpressionUnexpected;
   services->duplicate=&ProbeExpressionUnexpected; services->string=&ProbeExpressionUnexpected;
   services->hash_add=&ProbeExpressionUnexpected; services->hash_after=&ProbeExpressionUnexpected;
-  services->type=&ProbeExpressionUnexpected;
+  services->type=&ProbeExpressionType;
+  state.types.context=&state; state.types.types=probe->internal_types;
+  state.types.lex=&ProbeExpressionLex; state.types.report=&ProbeExpressionReport;
+  state.types.snapshot_drop=&ProbeExpressionUnexpected; state.types.snapshot_push=&ProbeExpressionUnexpected;
+  state.types.integer_expression=&ProbeExpressionUnexpected;
+  state.types.class_join=&ProbeExpressionUnexpected; state.types.fun_join=&ProbeExpressionUnexpected;
+  state.types.allocate=&ProbeExpressionUnexpected; state.types.duplicate=&ProbeExpressionUnexpected;
+  state.types.member_new=&ProbeExpressionUnexpected; state.types.member_add=&ProbeExpressionUnexpected;
   for(i=0;i<300;i++) { deep[i]='('; deep[301+i]=')'; }
   deep[300]='1'; deep[601]=';'; deep[602]=0;
   for(i=0;i<300;i++) unary[i]='~';
   unary[300]='1'; unary[301]=';'; unary[302]=0;
-  for(kind=0;kind<12;kind++) {
+  for(kind=0;kind<22;kind++) {
     source="1+2*3;"; expected=7;
     switch(kind) {
       case 1: source="(1+2)*3;"; expected=9; break;
@@ -92,6 +112,16 @@ U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 9: source="1+2;"; break;
       case 10: source=deep; break;
       case 11: source=unary; break;
+      case 12: source="0x100000001(U32i);"; expected=1; break;
+      case 13: source="0xFF(I8);"; expected=-1; break;
+      case 14: source="0x100000001(U8 *);"; expected=1; break;
+      case 15: source="0x1000(U8 *)+3;"; expected=0x1003; break;
+      case 16: source="0x1000(I64i *)+3;"; expected=0x1018; break;
+      case 17: source="0x1018(I64i *)-0x1000(I64i *);"; expected=3; break;
+      case 18: source="sizeof(U8 *);"; expected=4; break;
+      case 19: source="sizeof(I64i);"; expected=8; break;
+      case 20: source="1(MissingType);"; break;
+      case 21: source="1(U8 ********************************);"; break;
     }
     bytes=fun; for(i=0;i<sizeof(CHashFun);i++) bytes[i]=0;
     bytes=aot; for(i=0;i<sizeof(CAOT);i++) bytes[i]=0;
@@ -108,7 +138,7 @@ U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     try {
       if(kind==9) for(size=65536;size>=8;size=size/2)
         while(block=I386HeapAlloc(heap,size,FALSE)) { block(U8 **)[0]=fill; fill=block; }
-      if(!probe->compiler->expression(heap,cc,services,0,FALSE,0) || kind>=8 || cc->token!=';') KernelStop;
+      if(!probe->compiler->expression(heap,cc,services,0,FALSE,0) || (8<=kind<=11 || kind>=20) || cc->token!=';') KernelStop;
       ProbeExpressionAdd(&state,cc,IC_RETURN_VAL,0,probe->i64_type,0);
       ProbeExpressionAdd(&state,cc,IC_LEAVE,0,0,0);
       if(!probe->compiler->backend(heap,cc,probe->internal_types,out,&status) || !out->count || cc->error_cnt) KernelStop;
@@ -116,8 +146,8 @@ U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(actual!=expected) { KernelLog("EXPRESSION RESULT "); KernelHex(kind); KernelLog(" "); KernelHex(actual); KernelLog("\n"); KernelStop; }
       accepted=1;
     } catch {
-      if(kind<8 || kind!=9 && task->except_ch!='Compiler' || kind==9 && task->except_ch!='OutMem') {
-        KernelLog("EXPRESSION EXCEPTION "); KernelHex(kind); KernelLog(" "); KernelHex(task->except_ch); KernelLog("\n"); KernelStop;
+      if(kind<8 || 12<=kind<=19 || kind!=9 && task->except_ch!='Compiler' || kind==9 && task->except_ch!='OutMem') {
+        KernelLog("EXPRESSION EXCEPTION "); KernelHex(kind); KernelLog(" "); KernelHex(task->except_ch); KernelLog(" "); KernelHex(cc->token); KernelLog(" "); KernelHex(cc->error_cnt); KernelLog("\n"); KernelStop;
       }
       task->catch_except=TRUE; accepted=1;
     }

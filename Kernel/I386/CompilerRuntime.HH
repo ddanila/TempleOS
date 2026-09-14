@@ -9,8 +9,9 @@
 #include "/Compiler/I386/NativeBackend.HH"
 #include "/Kernel/I386/TaskSymbols.HH"
 #include "/Compiler/I386/NativeExpression.HH"
-#define I386_COMPILER_SERVICES_VERSION 23
-//ABI 23: caller-owned interface, borrowing code from the retained module image.
+#include "/Compiler/I386/NativeType.HH"
+#define I386_COMPILER_SERVICES_VERSION 24
+//ABI 24: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;
@@ -46,5 +47,8 @@ class CI386CompilerServices {
   Bool (*out_del)(CI386Heap *heap,CCmpCtrl *cc,CI386Out *out);
   Bool (*backend)(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status);
   Bool (*expression)(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *services,I64 *precedence,Bool end_exp,CPrsStk *stack);
+  CHashClass *(*parse_type)(CI386Heap *heap,CCmpCtrl *cc,CPrsTypeServices *services,
+    CHashClass **first,I64 *mode,CMemberLst *member,U8 **ident,CHashFun **fun,
+    CHashExport **export_entry,CArrayDim *dim,I64 flags);
 };
 #endif

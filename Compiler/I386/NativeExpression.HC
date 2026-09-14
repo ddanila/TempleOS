@@ -13,13 +13,20 @@ Bool I386ExpressionStackValid(CCmpCtrl *cc,CPrsStk *stack)
     if(record->allocation==stack && record->kind==7) return TRUE;
   return FALSE;
 }
+Bool I386ParserStackCheck(CCmpCtrl *cc)
+{
+  CI386CmpCtrl *owned=cc;
+  CI386Task *task=owned->task;
+  U8 *frame=GetRBP;
+  if(!task) return FALSE;
+  if(frame<task->stack_base || frame>task->stack_base+task->stack_size ||
+      frame-task->stack_base<4096) throw('Compiler',TRUE);
+  return TRUE;
+}
 Bool I386ParseExpression(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *services,
   I64 *precedence,Bool end_exp,CPrsStk *stack=0)
 {
   CPrsStk *ps=stack;
-  CI386CmpCtrl *owned=cc;
-  CI386Task *task;
-  U8 *frame;
   CI386CodeAllocation *record;
   CI386CmpRelease release;
   I64 old_flags;
@@ -30,11 +37,7 @@ Bool I386ParseExpression(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *se
       !services->append || !services->optimize || !services->allocate || !services->duplicate ||
       !services->string || !services->hash_add || !services->hash_after || !services->type ||
       !services->expression || stack && !I386ExpressionStackValid(cc,stack)) return FALSE;
-  task=owned->task;
-  if(!task) return FALSE;
-  frame=GetRBP;
-  if(frame<task->stack_base || frame>task->stack_base+task->stack_size ||
-      frame-task->stack_base<4096) throw('Compiler',TRUE);
+  if(!I386ParserStackCheck(cc)) return FALSE;
   old_flags=cc->flags;
   if(!ps) {
     irq=I386IrqSave;

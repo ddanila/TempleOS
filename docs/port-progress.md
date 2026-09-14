@@ -3694,3 +3694,37 @@ This is native source-to-code evidence for the tested expressions, not a complet
 frontend. Full type/declaration/string/symbol adapters, statement integration,
 assembler/linker execution and durable code/data publication remain required, along
 with DolDoc, self-hosting and the rest of `PLAN.md`. The full OS goal stays active.
+
+## Native shared type parsing
+
+CompilerRuntime ABI 24 (136 bytes) now exposes `parse_type`, which calls the full
+shared type core with a borrowed service environment. Expression casts connect to
+this entry through the native lexer and intrinsic type registry. Expression and
+type parsing share the current-task stack reserve check. Class/function joins,
+snapshots, array-bound execution and allocation remain callback contracts, with
+partial-graph cleanup still the provider's responsibility.
+
+The native corpus now has 22 cases on each of the boot and worker tasks: the prior
+12 expression/recovery cases plus eight successful type/width programs and two
+invalid-type cases. All 44 checks pass with exact heap, task-reference, control and
+interrupt-state restoration. New execution checks cover narrow integer casts,
+32-bit pointer truncation, pointer stride/difference and sizes; diagnostics cover
+unknown types and too many pointer stars. The fixture uses intrinsic names such as
+`U32i` and `I64i`. Public `U32`/`I64` and related scalar unions are declarations in
+`Kernel/Types.HH`, and must still be compiled natively with their member views.
+
+Both x64 compiler/kernel rebuild/reboot generations passed, as did all 235 function
+cases, 19 data cases, floating-point and inline-assembly suites. The complete
+standalone suite passed instruction auditing, pixel-exact VGA/input and module
+rejection with the emulated 486 and 8 MiB. Strict 386SX/DX acceptance is still open.
+Whitespace and Python syntax checks pass.
+
+The kernel remains 389432 bytes. The retained compiler image is 761344 bytes
+(761360 heap bytes). The temporary probe image is 197800 bytes and reclaims all
+197816 heap bytes after both phases. Imports remain 21/17 for compiler/probe;
+FileRuntime remains ABI 13/32 bytes and CompilerProbe ABI 5/56 bytes.
+
+See [i386-native-type.md](i386-native-type.md) for contracts and coverage. Complete
+native declaration/class/statement integration, compile-time execution, linking,
+durable publication, DolDoc and self-hosting remain unfinished. The full OS goal
+remains active.

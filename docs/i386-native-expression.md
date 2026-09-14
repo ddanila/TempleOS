@@ -1,7 +1,8 @@
 # Native shared expression parser
 
 Compiler runtime ABI 23 adds `expression(heap, cc, services, precedence, end_exp,
-stack)` and grows the interface to 132 bytes. It executes the complete production
+stack)` in a 132-byte interface. ABI 24 now adds the
+[native type entry](i386-native-type.md) and grows it to 136 bytes. It executes the complete production
 `PrsExpressionCore.HC` inside the retained native module. The service environment
 remains caller supplied: this entry is not yet a complete native frontend or a
 public source compiler. Type/declaration, string, symbol and other callback
@@ -40,5 +41,5 @@ the boot and worker tasks. The failure cases cover malformed input, exhausted he
 deep parentheses and excessive unary operators, with exact resource restoration.
 The standalone suite also checks instruction compatibility, module rejection and
 VGA/input behavior. Its current guest uses an emulated 486 with 8 MiB; this does not
-satisfy strict 386SX/DX acceptance. The retained compiler image is 739096 bytes
+satisfy strict 386SX/DX acceptance. At the ABI 23 expression milestone, the retained compiler image was 739096 bytes
 (739112 heap bytes), and the kernel is 389432 bytes.

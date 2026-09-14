@@ -825,6 +825,14 @@ arithmetic probes connect source tokens, shared parsing, optimization and code
 execution; a complete native environment for types, symbols and statements still
 needs integration. See `docs/i386-native-expression.md` for the API and limits.
 
+Native type parsing now calls the complete shared core through a borrowed type
+service environment (CompilerRuntime ABI 24, 136 bytes). Expression casts use this
+entry with the native lexer and type registry. Native probes cover narrow integers,
+pointer width/stride/difference and invalid intrinsic types. Public scalar unions
+from `Kernel/Types.HH`, general declaration, array-bound,
+class/function and publication adapters remain required; see
+`docs/i386-native-type.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,
