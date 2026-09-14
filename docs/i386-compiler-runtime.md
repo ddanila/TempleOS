@@ -246,3 +246,12 @@ control. Expression outputs carry their literal pools and remain registered unti
 explicit release or control unwind. Native software-F64 calls are linked to the
 retained runtime, and the shared function-header parser can evaluate numeric and
 string defaults. See [i386-frontend-expressions.md](i386-frontend-expressions.md).
+
+## Private statement and function compilation (version 32)
+
+The 188-byte interface appends `statement`, composing the complete shared
+statement/function/initializer grammar with the retained frontend. Private JIT
+functions, globals and static storage remain control-owned. Calls use private
+relocation descriptors, and successful or failed compilation must support full
+control cleanup. See [i386-native-statements.md](i386-native-statements.md) for
+the supported integration paths, lifetime rules and remaining public-shell work.

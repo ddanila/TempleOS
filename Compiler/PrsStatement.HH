@@ -4,6 +4,7 @@
 #include "/Compiler/PrsCompileFlags.HH"
 class CPrsStatementServices {
   U8 *context;
+  U0 (*stack_check)(U8 *context,CCmpCtrl *cc);
   CPrsGlobalServices *globals;
   CCodeCtrl *(*pop_saved)(U8 *context,CCmpCtrl *cc);
   U0 (*assembly)(U8 *context,CCmpCtrl *cc,I64 flags);

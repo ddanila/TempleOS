@@ -529,6 +529,7 @@ Bool PrsStmtCore(CPrsStatementServices *services,CCmpCtrl *cc,I64 try_cnt=0,
   U8 *import_name;
   CHashFun *tmp_untry;
   CAOT *tmpaot;
+  if(services->stack_check) (*services->stack_check)(services->context,cc);
   if (cmp_flags&CMPF_ONE_ASM_INS) {
     if (cc->flags&CCF_AOT_COMPILE || cc->aot_depth)
       (*services->assembly)(services->context,cc,CMPF_ONE_ASM_INS);

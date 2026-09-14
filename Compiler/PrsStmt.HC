@@ -139,7 +139,7 @@ U0 PrsHostInclude(U8 *context,CCmpCtrl *cc,U8 *name,U8 *source,Bool actual_file)
 { LexIncludeStr(cc,name,source,actual_file); }
 U0 PrsHostStatementServices(CPrsStatementServices *services,CPrsGlobalServices *globals)
 {
-  services->context=0; services->globals=globals;
+  services->context=0; services->globals=globals; services->stack_check=0;
   services->pop_saved=&PrsHostPopSaved; services->assembly=&PrsHostAssembly;
   services->join=&PrsHostJoin; services->fix_assembly=&PrsHostFixAssembly;
   services->task_symbols=&PrsHostTaskSymbols; services->execute_line=&PrsHostExecuteLine;

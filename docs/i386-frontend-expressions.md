@@ -62,11 +62,13 @@ outputs with a preserved caller IR node, exhausted heap and F64 array-bound
 conversion. Full control unwind must restore exact heap byte/allocation counts,
 task references, active controls, exception state and interrupt state.
 
-General named function/global relocations still require a native program linker.
-They are rejected before backend generation can alter borrowed symbol graphs.
-Indirect calls retain the caller's responsibility for the target's lifetime.
-Statement/function-body integration, static/global initializers, register/define
-matching, full interactive compilation, DolDoc and native self-hosting remain open.
+ABI 32 extends this environment with private statement/function compilation,
+numeric static/global initialization and calls between completed private functions;
+see [native statement integration](i386-native-statements.md). Its per-call
+descriptors keep fixups off borrowed symbol graphs. Unresolved function/global
+relocations still require a native program linker. Indirect calls retain the
+caller's responsibility for the target's lifetime. Full interactive compilation,
+code/data publication, DolDoc and native self-hosting remain open.
 The existing 386SX/DX acceptance gates in `PLAN.md` are unchanged.
 
 Run `python3 tools/test-rebuild.py`, then

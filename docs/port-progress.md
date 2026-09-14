@@ -4009,3 +4009,46 @@ global linking, full statement/function-body/static/initializer integration,
 function/code/data publication, public APIs, interactive HolyC, DolDoc and native
 self-hosting remain open. This remains an 8 MiB QEMU/486 development result;
 strict 386SX/DX acceptance is still required by `PLAN.md`.
+
+## Retained native statements, functions and initializers
+
+CompilerRuntime ABI 32 (188 bytes) appends a private JIT statement entry. The
+retained environment now composes the original shared statement, function, global
+and initializer cores. Code, globals, static storage and private function symbols
+remain owned by the active compiler control. Per-call descriptor copies hold
+temporary fixups; call-start/end identity is preserved, and recursive calls bind
+to the final generated entry address. Completed private functions can call one
+another without modifying published symbol relocation lists.
+
+All 40 native cases pass across boot and worker tasks: loops, switch ranges,
+goto, computed defaults, recursion, nested calls, F64 conversion, global arrays,
+static state, aggregate members, indirect calls, variadics and automatic register
+hints. Invalid declarations, unresolved calls/gotos, pointer-string initialization,
+explicit x64 register assignments, excessive statement nesting and automatic-local
+references in static initializers fail with complete resource recovery. Each case
+restores exact heap bytes/allocation counts, task references, active controls,
+exception state and IF. Function pointers use separate declaration and assignment,
+also verified in the x64 guest; the combined declaration/initializer experiment
+entered the x64 parser debugger.
+
+Cross-compiling the shared statement parser exposed a host constant-folding gap:
+the first pass resolves size placeholders from addition/subtraction but can leave
+the arithmetic unfinished. The host constant evaluator now folds twice, matching
+the native backend. Switch-label, array-bound and default-argument arithmetic
+regressions bring the function corpus to 238 passing cases. All 19 data cases,
+executable instruction audits and both x64 rebuild/reboot generations pass.
+
+The full standalone suite passes, including the earlier frontend/scalar/publication
+and recovery cases, module rejection, pixel-exact VGA and keyboard checks. The
+kernel is 391016 bytes; with the 2160-byte early stage it leaves 40 bytes in the
+fixed 393216-byte reservation. The retained compiler image is 1176232 bytes
+(1176248 heap bytes). The temporary probe image is 396456 bytes and reclaims all
+396472 heap bytes. FileRuntime remains ABI 13/32 bytes and CompilerProbe ABI 5/56
+bytes. These are measured development footprints, not proof of the complete
+interactive or self-hosting RAM targets.
+
+See [i386-native-statements.md](i386-native-statements.md). Assembly/stream/try
+providers, pointer-string initialization, unresolved program linking, durable
+function/code/data publication, the interactive command loop, public APIs, DolDoc
+and native self-hosting remain open. Strict 386SX/DX and physical-machine acceptance
+remain separate from this QEMU/486, 8 MiB integration result.

@@ -535,6 +535,11 @@ U0 CompileTests()
   EmitLinkedCase(0x100000000,42,0x10000002A,&cursor,TRUE);
   EmitCase("return DimProbe(0,0)+DimProbe(1,0)+DimProbe(3,0)+DimProbe(1,1)+DimProbe(3,1);",0,0,5,&cursor,
     "extern I64 DimProbe(I64 count,I64 empty_first);", "#include \"/ArrayDims.HC\"\n");
+  EmitSwitchCase("switch(a){case 89-1:return 42;default:return 0;}",88,0,42,&cursor);
+  EmitCase("I64 values[2+3];return sizeof(values);",0,0,40,&cursor);
+  EmitCase("return DefaultValue;",0,0,42,&cursor,
+    "extern I64 DefaultValue(I64 n=(89-1)/2-2);",
+    "I64 DefaultValue(I64 n){return n;}");
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);
   Report(line);

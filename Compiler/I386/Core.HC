@@ -33,6 +33,9 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
   if (cc->flags&CCF_EXE_BLK) throw('Compiler');
   cc->pass=0;
   OptPass012(cc);
+  //The first pass resolves pointer-scaling placeholders even in integer sums.
+  //Fold again after those producer rewrites, as the native backend does.
+  OptPass012(cc);
   for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
     switch (ic->ic_code) {
       case IC_NOP1:
@@ -42,7 +45,8 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
       case IC_RET: break;
       case IC_IMM_I64:
         if (++count!=1 || ic->ic_class->ptr_stars_cnt) {
-          PrintErr("i386 host constant has non-integer or multiple values\n");
+          PrintErr("i386 host constant has non-integer or multiple values: count %d, pointer depth %d, value %X\n",
+            count,ic->ic_class->ptr_stars_cnt,ic->ic_data);
           throw('Compiler');
         }
         value=ic->ic_data;

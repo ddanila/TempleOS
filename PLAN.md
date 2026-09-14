@@ -928,8 +928,18 @@ Two live outputs preserve the caller's IR, and released-code execution is reject
 Native boot/worker cases verify exact cleanup after success and parse/OOM failures.
 See `docs/i386-frontend-expressions.md`.
 
-Complete retained statement/global/function-body/static/initializer providers,
-named function/global linking, executable code and data publication, interactive
+The retained compiler now connects the shared statement, function, global and
+initializer cores through a private JIT entry (CompilerRuntime ABI 32, 188 bytes).
+Native boot/worker tests compile and execute loops, switch/goto, default arguments,
+recursive/nested calls, F64 conversion, globals, static state, aggregates,
+function pointers and variadics. Per-call descriptor copies bind generated calls
+without attaching temporary fixups to published symbols. Statement nesting checks,
+undefined-label rejection and control unwind cover failures and resource recovery.
+The host constant evaluator also needs two folding passes to resolve arithmetic
+in switch labels, array bounds and defaults. See `docs/i386-native-statements.md`.
+
+Complete assembly/stream/try and top-level execution providers, pointer-string
+initialization, unresolved function/global linking, executable code and data publication, interactive
 compilation, DolDoc integration and native self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.
 
