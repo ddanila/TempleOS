@@ -12,7 +12,9 @@ I64 on both targets; bucket slots are target-width pointers.
 Hashing retains the original assembly's 64-bit shift/add carry and final
 shift/add fold. It does not truncate the hash to the pointer width. A null
 string hashes to zero, as on x86-64; searches compare complete, case-sensitive,
-zero-terminated byte strings.
+zero-terminated byte strings through native public `StrCmp`. Its unsigned byte
+ordering and exact -1/0/1 result also support shared compiler member lookup;
+see `i386-symbols.md`.
 
 Lookup applies the type mask, searches newest insertions first, carries the
 requested match instance across parent tables, and increments only the selected

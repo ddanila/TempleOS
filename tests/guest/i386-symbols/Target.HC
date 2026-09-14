@@ -2,6 +2,8 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/HashValue.HH"
+#include "/Kernel/I386/String.HH"
+#include "/Compiler/MemberLookup.HH"
 #assert sizeof(CHashSrcSym)==36
 #assert sizeof(CHashExport)==44
 #assert sizeof(CHashImport)==44
@@ -27,6 +29,7 @@
 #assert offset(CMemberLst.dft_val)==84
 #assert offset(CMemberLst.fun_ptr)==92
 U64 value_oracle[28];
+extern I64 MemberLookupTest();
 extern I64 SymbolValueCase(I64 index);
 I64 Main(I64 unused,I64 unused2)
 {
@@ -73,7 +76,11 @@ I64 Main(I64 unused,I64 unused2)
   if(variable.data_addr_rip!=0x11223344AABBCCDD ||
       HashVal(&variable)!=(&variable.data_addr+0)(U64) ||
       variable.fun_ptr!=&function || variable.var_class!=member.member_class) return 5;
-  return 0;
+  return MemberLookupTest;
 }
 #include "T:/Values.HC"
 #include "/Kernel/HashValue.HC"
+
+#include "/Kernel/I386/String.HC"
+#include "/Compiler/MemberLookup.HC"
+#include "T:/Members.HC"

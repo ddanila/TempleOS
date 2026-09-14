@@ -1,5 +1,6 @@
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/String.HC"
 //Base records are shared with x64. Table storage, strings and entries are caller-owned.
 //Use power-of-two bucket counts, mask=count-1, and live acyclic table/entry chains.
 public I64 HashStr(U8 *st)
@@ -23,13 +24,10 @@ public U0 HashAdd(CHash *entry,CHashTable *table)
 CHash *I386HashLookup(U8 *needle,CHashTable *table,I64 mask,I64 *instance,U64 hash)
 {//Caller keeps the searched chain stable; matching preserves the public use counter.
   CHash *entry=table->body[hash&table->mask];
-  U8 *a,*b;
   U32 flags;
   while(entry) {
     if(entry->type&mask) {
-      a=needle; b=entry->str;
-      while(*a && *a==*b) { a++; b++; }
-      if(*a==*b) {
+      if(!StrCmp(needle,entry->str)) {
         *instance=*instance-1;
         if(*instance==0) {
           flags=I386IrqSave;

@@ -1891,3 +1891,25 @@ kernel passes the full 8 MiB QEMU/486 source/module/keyboard/VGA and timer check
 Rich-symbol construction/destruction, task ownership, compiler initialization,
 native source execution, the full environment, self-hosting and strict 386
 verification remain unfinished. See `i386-symbols.md`.
+
+## Shared member lookup and native string comparison
+
+The existing compiler member-name, class-base and metadata lookup routines now
+live in a shared implementation included by `LexLib.HC` and compiled unchanged
+on i386 apart from null-literal spelling. Native public `StrCmp` preserves the
+x86-64 primitive's unsigned byte ordering and exact -1/0/1 result. Resident hash
+lookup now calls it, connecting that dependency to standalone startup.
+
+The expanded symbol fixture passes inheritance/shadowing, empty-tree fallback,
+missing/case-sensitive names, member use-counter rollover, duplicate metadata
+keys, wide values and high-bit class-pointer ordering on both targets. All 65,536
+single-byte string pairs and additional prefix/embedded-NUL cases pass. Existing
+symbol/layout/legacy-value checks, the hash/owned-table regression, instruction
+audits and both x86-64 rebuild/reboot generations pass.
+
+The 292360-byte standalone kernel still passes the complete 8 MiB QEMU/486
+source/module/keyboard/VGA and timer checks. The member helpers require exclusive
+live-tree ownership and add no allocation or IRQ synchronization. Member/symbol
+construction and destruction, compiler control records and native initialization,
+the HolyC shell, full environment, self-hosting and strict 386 validation remain
+unfinished. See `i386-symbols.md`.

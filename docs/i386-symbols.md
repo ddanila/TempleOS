@@ -67,3 +67,40 @@ destruction of rich symbols, task ownership, compiler initialization, language
 runtime dependencies and compile-time execution remain required before the
 resident compiler and HolyC shell can operate. Native self-hosting and strict 386
 verification remain open.
+
+## Shared member and metadata lookup
+
+`Compiler/MemberLookup.HH/HC` now contains the existing `MemberFind`,
+`MemberClassBaseFind`, `MemberMetaData` and `MemberMetaFind` routines. `LexLib.HC`
+includes this implementation for the x86-64 compiler; the native fixture compiles
+the same source. The original bodies are preserved apart from spelling `NULL`
+as zero. They require the caller's `StrCmp` implementation and allocate no memory.
+
+Member-name lookup follows the existing tree ordering, then searches base classes
+when a name is absent. A derived member shadows a base member; only the selected
+member's U32 use counter increments. Metadata lookup returns the first matching
+linked record or its full-width I64 value. Class-base lookup searches its separate
+pointer-key tree and does not fall back to inherited classes.
+
+Native callers must supply live, acyclic trees and zero-terminated names, and keep
+lookup/counter access exclusive. These compiler helpers add no IRQ synchronization,
+ownership or reclamation policy. Empty member trees and metadata lists are handled;
+a null class/member record is not a supported input.
+
+`Kernel/I386/String.HH/HC` supplies native public `StrCmp`, using unsigned bytes
+and returning exactly -1, zero or 1 as the original x86-64 assembly does. Both
+arguments must be live zero-terminated strings. Native hash lookup now uses this
+routine too, putting it on the standalone resident export-resolution path.
+
+The expanded `--symbols` fixture runs the same member checks on x86-64 and i386.
+It covers derived/base shadowing, empty-tree fallback, missing and case-sensitive
+names, use-counter rollover, duplicate metadata keys, wide values and class-key
+ordering across bit 31. Synthetic high-address keys are compared without being
+dereferenced. All 65,536 pairs of single-byte strings, plus prefix and embedded-NUL
+cases, verify the exact `StrCmp` result. The existing symbol-value/layout and
+hash/owned-table checks, both x86-64 rebuild generations, instruction audits and
+the complete standalone keyboard/VGA boot checks also pass.
+
+Member construction, symbol destruction, compiler control records, allocation and
+native compiler initialization remain required. This is shared frontend code
+running in a native fixture, not an operational native HolyC compiler.

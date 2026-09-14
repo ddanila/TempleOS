@@ -336,6 +336,9 @@ programming environment through these concrete steps:
    construction/destruction, task ownership and compiler initialization remain required. Explicit-heap
    table creation, resizing, detachment and empty-table deletion now pass lifecycle
    and allocation-failure tests; compiler-aware symbol destruction remains open.
+   Existing member-name/class-base and metadata lookup now compile from shared
+   frontend source on both targets, with native `StrCmp` also used by resident
+   hash lookup. Member construction and compiler-control initialization remain.
 
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,

@@ -5,6 +5,7 @@
 #assert sizeof(CHashGlblVar)==136
 #assert sizeof(CMemberLst)==144
 #include "T:/Values.HC"
+#include "T:/Members.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -15,6 +16,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native symbols\n");
+  if(MemberLookupTest) { Report("FAIL x64 member lookup\n"); return; }
   for(j=0;j<28;j++) oracle[j]=SymbolValueCase(j);
   line=MStrPrint("EXPORT symbol-values.bin %X %X\n",oracle,224); Report(line);
   module=CmpI386Module(source,&size,&errors);
