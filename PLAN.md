@@ -511,6 +511,11 @@ unknown bounds and invalid links. Task tests verify caller addresses across
 yields, stack/private-arena separation and record reuse; the message regression
 also passes with the expanded task layout. Root boot-stack registration, saved
 foreign-task inspection and exception capture/restore remain pending.
+Native exception records now have explicit task and heap ownership, nested
+push/pop/clear operations and a reap guard that keeps referenced stacks alive.
+The ownership fixture uses synthetic captures; actual register capture,
+SysTry/SysUntry runtime entry, throw/catch execution and propagation remain
+required before the exception milestone can pass. See `docs/i386-exceptions.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

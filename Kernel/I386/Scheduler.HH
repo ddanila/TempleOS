@@ -4,6 +4,7 @@
 #include "/Kernel/I386/Heap.HH"
 extern class CI386Scheduler;
 extern class CI386MsgQueue;
+extern class CI386Except;
 class CI386Task
 {
   CI386Task *addr;
@@ -18,6 +19,7 @@ class CI386Task
   CI386MsgQueue *messages;
   U8 *stack_base;
   U32 stack_size;
+  CI386Except *except_top;
 };
 class CI386Scheduler
 {

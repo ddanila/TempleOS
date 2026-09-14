@@ -1334,3 +1334,25 @@ both x64 rebuild generations and image verification (766 files, 62 directories)
 pass. Full formatting/variadic calls, remaining compiler features, numerical state,
 production kernel integration, native self-hosting, memory targets and strict
 386 validation remain unfinished.
+
+
+## Native exception record lifetime
+
+Task records now retain a nested exception-record chain. Push copies an explicit
+32-bit register/handler capture after validating stack bounds and allocating
+from the supplied heap. Pop and clear enforce task ownership and retain the
+chain on failed removal. Scheduler reaping rejects records that still reference
+the task, allowing a finished task to be drained before freeing its stack.
+
+The dedicated `--except-records` fixture passes nested and separate-task/heap
+ownership, copied capture values, allocation failure, malformed capture and
+record rejection, finished-task pinning and full reclamation checks. Its first
+version used unaligned global frame storage and was correctly rejected; the
+passing fixture uses aligned local stack storage. The native task regression,
+generated-instruction audits and both x64 rebuild/reboot generations pass.
+
+These are synthetic capture and lifetime checks, not actual exception transfer.
+SysTry/SysUntry runtime entry, caller register capture, catch execution, propagation,
+nonlocal restoration and full CTask integration remain pending. See
+`i386-exceptions.md`. The complete OS, native self-hosting, memory budgets and
+strict 386 hardware compatibility remain unproven.
