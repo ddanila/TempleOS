@@ -107,10 +107,17 @@ U0 EmitLinkedCase(I64 a,I64 b,I64 expected,U8 **cursor,Bool reverse)
   I64 sizes[2],size,size2,errors,i,j,base=8;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
-  modules[0]=CmpI386Module("#include \"/Kernel/Types.HH\"\nimport I64 Add(I64 a,I64 b); I64 Main(I64 a,I64 b) { I64 (*fp)(I64 x,I64 y); fp=&Main; if (a) return (*fp)(0,Add(a,b)); return b; }",&sizes[0],&errors);
-  if (!modules[0] || errors) { Report("FAIL caller module\n"); throw; }
-  modules[1]=CmpI386Module("#include \"/Kernel/Types.HH\"\nI64 Add(I64 a,I64 b) { return a+b; }",&sizes[1],&errors);
-  if (!modules[1] || errors) { Report("FAIL provider module\n"); throw; }
+  if (reverse) {
+    modules[0]=CmpI386Module("#include \"/Kernel/Types.HH\"\nimport I64 Add(I64 a,...); I64 Main(I64 a,I64 b) { I64 (*fp)(I64 x,I64 y); fp=&Main; if (a) return (*fp)(0,Add(a,b)); return b; }",&sizes[0],&errors);
+    if (!modules[0] || errors) { Report("FAIL caller module\n"); throw; }
+    modules[1]=CmpI386Module("#include \"/Kernel/Types.HH\"\nI64 Add(I64 a,...) { return a+argv[0]; }",&sizes[1],&errors);
+    if (!modules[1] || errors) { Report("FAIL provider module\n"); throw; }
+  } else {
+    modules[0]=CmpI386Module("#include \"/Kernel/Types.HH\"\nimport I64 Add(I64 a,I64 b); I64 Main(I64 a,I64 b) { I64 (*fp)(I64 x,I64 y); fp=&Main; if (a) return (*fp)(0,Add(a,b)); return b; }",&sizes[0],&errors);
+    if (!modules[0] || errors) { Report("FAIL caller module\n"); throw; }
+    modules[1]=CmpI386Module("#include \"/Kernel/Types.HH\"\nI64 Add(I64 a,I64 b) { return a+b; }",&sizes[1],&errors);
+    if (!modules[1] || errors) { Report("FAIL provider module\n"); throw; }
+  }
   if (!reverse) ModuleRejectTests(modules[0],sizes[0],modules[1],sizes[1]);
   if (reverse) {
     saved=modules[0]; modules[0]=modules[1]; modules[1]=saved;
@@ -362,6 +369,55 @@ U0 CompileTests()
   EmitCase("P p; p.value=a; return (Get(&p))->value+b;",0x100000000,3,0x100000003,&cursor,
     "class P { I64 value; P *next; U8 bytes[4]; }; extern P *Get(P *p);",
     "P *Get(P *p) { return p; }");
+  //Variadic callers own all slots, including hidden argc; argv retains raw values.
+  EmitCase("return Sum(a);",42,0,42,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("return Sum(a,b);",4294967296,42,4294967338,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("return Sum(a,1,2,3,b);",30,6,42,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("return a+Sum(1,Sum(2,3,b),4);",10,22,42,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("I64 i,c=0; for(i=0;i<100;i++) c+=Sum(a,i,b); return c;",1,2,5250,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("return Sum(a++,a++,a++);",1,0,6,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("I64 (*fp)(I64 base,...); fp=&Sum; return (*fp)(a,b,2);",30,10,42,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("I64 (*fp)(I64 base,...); fp=&Sum; return a+(*fp)(2,(*fp)(3,b),4);",10,23,42,&cursor,
+    "extern I64 Sum(I64 base,...);",
+    "I64 Sum(I64 base,...) { I64 i; for(i=0;i<argc;i++) base+=argv[i]; return base; }");
+  EmitCase("return Count();",0,0,0,&cursor,
+    "extern I64 Count(...);",
+    "I64 Count(...) { return argc; }");
+  EmitCase("return Count(a,b,1,2,3);",0,0,5,&cursor,
+    "extern I64 Count(...);",
+    "I64 Count(...) { return argc; }");
+  EmitCase("return Small(a,b);",255,43,42,&cursor,
+    "extern I64 Small(I8 a,...);",
+    "I64 Small(I8 a,...) { return a+argv[0]; }");
+  EmitCase("return Bits(1.5);",0,0,4609434218613702656,&cursor,
+    "extern I64 Bits(...);",
+    "I64 Bits(...) { return argv[0]; }");
+  EmitCase("return Address(&a);",42,0,42,&cursor,
+    "extern I64 Address(...);",
+    "I64 Address(...) { I64 *p=argv[0]; return *p; }");
+  EmitCase("return Sum();",0,0,7,&cursor,
+    "extern I64 Sum(I64 base=7,...);",
+    "I64 Sum(I64 base=7,...) { return base+argc; }");
+  EmitCase("return Recur(a,b);",5,37,42,&cursor,
+    "extern I64 Recur(I64 n,...);",
+    "I64 Recur(I64 n,...) { if (!n) return argv[0]; return Recur(n-1,argv[0])+argc; }");
+  EmitCase("return Keep(a,b);",1,41,42,&cursor,
+    "extern I64 Keep(I64 n,...);",
+    "I64 Keep(I64 n,...) { if (!n) return argv[0]; argv[0]+=Keep(0,n); return argv[0]; }");
   //Switch tables must retain 64-bit selectors and HolyC prefix/footer semantics.
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",1,0,11,&cursor);
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",3,0,33,&cursor);

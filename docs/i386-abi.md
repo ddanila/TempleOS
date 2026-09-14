@@ -61,7 +61,7 @@ unsupported opcodes instead of falling back to x86-64 output. It currently accep
 integer expressions, not functions, pointer-layout queries, or complete modules.
 
 `Compiler/I386/Core.HC` adds the normal compiler function path through
-`CmpI386Buf`. Its current subset implements fixed-arity scalar arguments,
+`CmpI386Buf`. Its current subset implements fixed-arity and variadic scalar arguments,
 integer arithmetic, comparisons, conditional branches, loops, local loads/stores,
 increment/decrement, compound assignments, 64-bit shifts, casts and returns.
 Shift counts use the low six bits, preserving the 64-bit value model on i386.
@@ -143,7 +143,7 @@ auditing excludes the table bytes.
 
 HolyC `start` prefixes use local subroutine calls and bare returns. The enclosing
 function epilogue restores ESP from EBP before popping saved registers, allowing
-a native function return from inside a prefix. The function corpus has 199 cases,
+a native function return from inside a prefix. The function corpus has 215 cases,
 including 20 switch cases and five deliberate #DE faults. Nineteen switch bodies
 also execute on x64 with checked results. The prefix early-return case is native
 only: executing it in the x64 oracle stalled the test guest. Its x64 compatibility
@@ -152,7 +152,23 @@ returns, through the final function return. A byte-specific workaround decodes
 `FF E0` as `jmp eax` when ndisasm 3.01 rejects it; objdump independently confirms
 the instruction, and auditing resumes at the following byte.
 
-Variadic calls and floating-point output remain pending.
+Variadic definitions and direct, forward, recursive, imported and indirect calls
+now use this ABI. `arg_cnt` in compiler metadata counts fixed parameters; the
+emitter derives the complete call size from evaluation slots. The first fixed
+argument starts at EBP+8, followed by fixed arguments, one I64 `argc`, and I64
+`argv` elements. Only fixed arguments undergo declared-type normalization;
+variadic F64 values retain their binary64 bits and pointers retain zero extension.
+The callee returns without removing slots. The caller removes all argument slots
+and, for indirect calls, the saved function-pointer slot, preserving EDX:EAX.
+This cleanup happens once at the call emission point; parser cleanup IR is
+validated without emitting a second stack adjustment.
+
+Sixteen new native cases cover empty lists, counts, full-width integers, fixed
+narrow arguments, raw F64 and pointer values, defaults, nesting, recursion,
+mutable argv storage, repeated calls and indirect calls. A reversed-order module
+link additionally executes an imported variadic function. Calls to explicitly `noargpop`
+functions remain rejected, and full formatting/shell integration and
+floating-point output remain pending.
 Compile-time integer evaluation has a separately selected x86-64 host stub;
 unsupported host expressions and `#exe` must fail rather than execute target code.
 

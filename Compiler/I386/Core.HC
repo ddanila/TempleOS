@@ -285,7 +285,7 @@ class CI386Call
 {
   CI386Call *next;
   CHashFun *fun;
-  I64 depth;
+  I64 depth,slots;
   Bool called,indirect;
 };
 
@@ -320,8 +320,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   if (cc->htc.fun) {
     stack_size=-cc->htc.fun->size;
     args=cc->htc.fun->arg_cnt*8;
-    if (Bt(&cc->htc.fun->flags,Ff_DOT_DOT_DOT) || args>65535)
-      throw('Compiler');
+    if (Bt(&cc->htc.fun->flags,Ff_DOT_DOT_DOT)) args=0;
+    if (args>65535) throw('Compiler');
   }
   //Logical results are integer booleans, regardless of operand precision metadata.
   for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
@@ -420,8 +420,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             calls=call;
             call->fun=ic->ic_data;
             call->depth=depth;
-            if (!call->fun || Bt(&call->fun->flags,Ff_DOT_DOT_DOT) ||
-                Bt(&call->fun->flags,Ff_NOARGPOP)) throw('Compiler');
+            if (!call->fun || Bt(&call->fun->flags,Ff_NOARGPOP)) throw('Compiler');
+            call->slots=call->fun->arg_cnt;
             break;
           case IC_SET_RAX:
             //PrsFunCall stages an indirect target before CALL_START.
@@ -573,8 +573,11 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_CALL_EXTERN:
           case IC_CALL_IMPORT:
             if (!calls || calls->called ||
-                depth!=calls->depth+calls->fun->arg_cnt+calls->indirect ||
                 calls->indirect!=(ic->ic_code==IC_CALL_INDIRECT)) throw('Compiler');
+            calls->slots=depth-calls->depth-calls->indirect;
+            if (Bt(&calls->fun->flags,Ff_DOT_DOT_DOT)) {
+              if (calls->slots<calls->fun->arg_cnt+1) throw('Compiler');
+            } else if (calls->slots!=calls->fun->arg_cnt) throw('Compiler');
             arg=calls->fun->member_lst_and_root;
             for (arg_index=0;arg_index<calls->fun->arg_cnt;arg_index++) {
               c=arg->member_class;
@@ -590,11 +593,9 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               arg=arg->next;
             }
             if (calls->indirect) {
-              if (ic->ic_data!=calls->fun->arg_cnt*8) throw('Compiler');
+              if (ic->ic_data!=calls->slots*8) throw('Compiler');
               I386Bytes(&out,"\xFF\x94\x24",3);
               I386Dword(&out,ic->ic_data);
-              //Callee removed arguments; discard the saved pointer pair.
-              I386Bytes(&out,"\x83\xC4\x08",3);
             } else {
               I386Byte(&out,0xE8);
               if (ic->ic_code==IC_CALL) {
@@ -618,6 +619,11 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
                 I386Dword(&out,0);
               }
             }
+            //Variadic callees leave fixed slots, argc and all argv values to the caller.
+            if (Bt(&calls->fun->flags,Ff_DOT_DOT_DOT)) {
+              I386Bytes(&out,"\x81\xC4",2); I386Dword(&out,calls->slots*8);
+            }
+            if (calls->indirect) I386Bytes(&out,"\x83\xC4\x08",3);
             depth=calls->depth;
             calls->called=TRUE;
             break;
@@ -625,10 +631,10 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_ADD_RSP:
             if (!calls || !calls->called) throw('Compiler');
             if (calls->indirect && ic->ic_code==IC_ADD_RSP) {
-              if (ic->ic_data!=8 && ic->ic_data!=(calls->fun->arg_cnt+1)*8)
+              if (ic->ic_data!=8 && ic->ic_data!=(calls->slots+1)*8)
                 throw('Compiler');
-            } else if (ic->ic_data!=calls->fun->arg_cnt*8) throw('Compiler');
-            //Fixed-arity i386 callees have already removed argument slots.
+            } else if (ic->ic_data!=calls->slots*8) throw('Compiler');
+            //Argument and saved-target cleanup was handled with the call.
             break;
           case IC_CALL_END:
             if (!calls || !calls->called || calls->fun!=ic->ic_data)

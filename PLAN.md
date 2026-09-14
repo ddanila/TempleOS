@@ -433,6 +433,12 @@ investigation after an oracle guest stall. This completes another control-flow
 primitive needed by kernel and compiler source, with full unit integration still
 pending. See `docs/i386-abi.md`.
 
+Variadic definitions and direct/forward, recursive, indirect and imported calls
+now preserve HolyC's hidden argc and eight-byte argv slots with caller cleanup.
+Sixteen native cases cover stack lifetime, raw F64/pointers, defaults, recursion
+and mutable argv; a linked-module case covers variadic imports. The function
+corpus now has 215 cases. Full formatting/shell integration remains pending.
+
 The `ToBool` intrinsic now normalizes full I64 arguments, including high-word-only
 values, with coverage in the integer/function corpus. The F64-to-integer corpus now includes numeric and raw-bit Boolean
 interpretations, with 4,096 native checks and 2,048 x64 Boolean outputs. Existing
@@ -462,7 +468,7 @@ Next, complete the software F64 runtime and compiler lowering, migrate full publ
 task/CPU records and task semantics, bring up
 the production entry path, input and full
 exception handling, then task/page-pool integration and resident kernel
-symbol binding, variadic calls, address-bearing initializers, and exception-safe
+symbol binding, variadic formatting integration, address-bearing initializers, and exception-safe
 runtime interfaces before attempting a full kernel link. Runner success remains an
 intermediate milestone, not the final OS.
 
