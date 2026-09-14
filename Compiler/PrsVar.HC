@@ -291,318 +291,41 @@ U0 PrsDotDotDot(CCmpCtrl *cc,CHashFun *tmpf,I64 _reg)
   PrsDotDotDotCore(&services,cc,tmpf,_reg);
 }
 
+#include "/Compiler/PrsDeclarationCore.HC"
+I64 PrsHostDefineMatch(U8 *context,U8 *name,U8 *list) { return DefineMatch(name,list); }
+I64 PrsHostEvaluate(U8 *context,CCmpCtrl *cc) { return LexExpression(cc); }
+U0 PrsHostSnapshotRestore(U8 *context,CCmpCtrl *cc) { LexPopRestore(cc); }
+U0 PrsHostInitializeStatic(U8 *context,U8 *data,I64 bytes)
+{ if(sys_var_init_flag) MemSet(data,sys_var_init_val,bytes); }
+U0 PrsHostStaticInit(U8 *context,CCmpCtrl *cc,CMemberLst *member,I64 pass)
+{ PrsStaticInit(cc,member,pass); }
+U0 PrsHostStoreU64(U8 *context,CCmpCtrl *cc,I64 value) { AOTStoreCodeU64(cc,value); }
+U0 PrsHostStoreU8At(U8 *context,CCmpCtrl *cc,I64 address,U8 value)
+{ AOTStoreCodeU8At(cc,address,value); }
+U0 PrsHostDataRange(U8 *context,CCmpCtrl *cc,I64 address,I64 bytes)
+{ PrsI386DataRange(cc,address,bytes); }
+U8 *PrsHostCompileExpression(U8 *context,CCmpCtrl *cc,I64 *type)
+{ return LexExpression2Bin(cc,type); }
+I64 PrsHostExecute(U8 *context,U8 *code) { return Call(code); }
+U0 PrsHostRelease(U8 *context,U8 *allocation) { Free(allocation); }
+U0 PrsHostDeclarationServices(CPrsDeclarationServices *services,
+  CPrsExpressionServices *expression,CPrsTypeServices *types)
+{
+  services->context=0; services->expression=expression; services->types=types;
+  services->define_match=&PrsHostDefineMatch; services->evaluate=&PrsHostEvaluate;
+  services->snapshot_restore=&PrsHostSnapshotRestore; services->initialize_static=&PrsHostInitializeStatic;
+  services->static_init=&PrsHostStaticInit; services->store_u64=&PrsHostStoreU64;
+  services->store_u8_at=&PrsHostStoreU8At; services->data_range=&PrsHostDataRange;
+  services->compile_expression=&PrsHostCompileExpression; services->execute=&PrsHostExecute;
+  services->release=&PrsHostRelease;
+}
+
 U0 PrsVarLst(CCmpCtrl *cc,CHashClass *tmpc,I64 mode,I64 union_base=0)
 {
-  I64 i,k,old_flags=cc->flags,old_flags2,type,_reg;
-  CHashClass *tmpc1,*tmpc2;
-  CHash *tmph;
-  CMemberLst *tmpm;
-  CMemberLstMeta *tmp_meta;
-  U8 *machine_code;
-  Bool undef_array_size,first;
-  cc->flags|=CCF_DONT_MAKE_RES;
-  if (mode.u8[1]==PRS1B_CLASS)
-    cc->flags|=CCF_CLASS_DOL_OFFSET;
-  if ((mode.u8[1]!=PRS1B_LOCAL_VAR && mode.u8[1]!=PRS1B_STATIC_LOCAL_VAR ||
-	mode&PRSF_UNION) && (cc->token=='(' || cc->token=='{'))
-    Lex(cc);
-  while (TRUE) {
-    if (mode&PRSF_UNION)
-      cc->class_dol_offset=union_base;
-    else
-      cc->class_dol_offset=tmpc->size;
-    while (cc->token==';')
-      Lex(cc);
-    while (cc->token=='$$') {
-      if (Lex(cc)!='=') //skip $$
-	LexExcept(cc,"Expecting '=' at ");
-      Lex(cc); //skip =
-      cc->class_dol_offset=LexExpression(cc);
-      if (-cc->class_dol_offset>tmpc->neg_offset)
-	tmpc->neg_offset=-cc->class_dol_offset;
-      if (mode&PRSF_UNION)
-	union_base=cc->class_dol_offset;
-      else
-	tmpc->size=cc->class_dol_offset;
-      if (cc->token!=';')
-	LexExcept(cc,"Missing ';' at");
-      Lex(cc); //skip ;
-    }
-    if (cc->token==')' || cc->token=='}') {
-      Lex(cc);
-      goto pvl_done;
-    }
-    _reg=REG_UNDEF;
-pvl_restart1:
-    switch (PrsKeyWord(cc)) {
-      case KW_REG:
-	_reg=REG_ALLOC;
-	if (Lex(cc)==TK_IDENT) {
-	  k=DefineMatch(cc->cur_str,"ST_U64_REGS");
-	  if (k>=0) {
-	    _reg=k;
-	    Lex(cc);
-	  }
-	}
-	goto pvl_restart1;
-      case KW_NOREG:
-	_reg=REG_NONE;
-	Lex(cc);
-	goto pvl_restart1;
-    }
-
-    if (cc->token==TK_ELLIPSIS && mode.u8[1]==PRS1B_FUN_ARG) {
-      PrsDotDotDot(cc,tmpc,_reg);
-      goto pvl_done;
-    }
-    if (cc->token==TK_IDENT)
-      tmph=cc->hash_entry;
-    else
-      tmph=NULL;
-    if (!tmph)
-      LexExcept(cc,"Expecting type at ");
-    k=PrsKeyWord(cc);
-    if (k==KW_UNION) {
-      Lex(cc);
-      PrsVarLst(cc,tmpc,mode|PRSF_UNION,tmpc->size);
-    } else {
-      if (!(tmph->type & (HTT_CLASS|HTT_INTERNAL_TYPE)))
-	LexExcept(cc,"Expecting type at ");
-      first=TRUE;
-pvl_restart2:
-      tmpc1=tmph;
-      LexPush(cc);
-      Lex(cc); //skip type or ','
-      tmpm=MemberLstNew(_reg);
-      _reg=REG_UNDEF;
-      if (mode.u8[1]==PRS1B_STATIC_LOCAL_VAR) {
-	tmpm->flags|=MLF_STATIC;
-	tmpm->reg=REG_NONE;
-      }
-      if (mode.u8[1]==PRS1B_FUN_ARG || mode.u8[1]==PRS1B_LOCAL_VAR) {
-pvl_restart3:
-	switch (PrsKeyWord(cc)) {
-	  case KW_REG:
-	    tmpm->reg=REG_ALLOC;
-	    LexPopNoRestore(cc);
-	    LexPush(cc);
-	    if (Lex(cc)==TK_IDENT) {
-	      k=DefineMatch(cc->cur_str,"ST_U64_REGS");
-	      if (k>=0) {
-		tmpm->reg=k;
-		LexPopNoRestore(cc);
-		LexPush(cc);
-		Lex(cc);
-	      }
-	    }
-	    goto pvl_restart3;
-	  case KW_NOREG:
-	    tmpm->reg=REG_NONE;
-	    LexPopNoRestore(cc);
-	    LexPush(cc);
-	    Lex(cc);
-	    goto pvl_restart3;
-	}
-      }
-      tmpm->member_class=PrsType(cc,&tmpc1,&mode,tmpm,&tmpm->str,
-	    &tmpm->fun_ptr,NULL,&tmpm->dim,0);
-      if (tmpm->fun_ptr)
-	tmpm->flags|=MLF_FUN;
-      if (first)
-	MemberAdd(cc,tmpm,tmpc,mode.u8[1]);
-      else
-	MemberAdd(cc,tmpm,tmpc,PRS1B_NULL);
-      tmpc->member_cnt++;
-
-      tmpc2=tmpm->member_class;
-      i=CmpTargetSize(cc,tmpc2)*tmpm->dim.total_cnt;
-      switch (mode.u8[1]) {
-	case PRS1B_STATIC_LOCAL_VAR:
-	  if (i<0) {
-	    i=0;
-	    undef_array_size=TRUE;
-	  } else
-	    undef_array_size=FALSE;
-	  if (mode&PRSF_UNION)
-	    LexExcept(cc,"Static unions are not implemented ");
-	  k=(i+7)&~7;
-	  if (cc->flags&CCF_AOT_COMPILE)
-	    tmpm->static_data=MAlloc(k);
-	  else
-	    tmpm->static_data=MAlloc(k,Fs->code_heap);
-	  if (cc->flags&CCF_AOT_COMPILE)	{
-	    tmpm->static_data_rip=cc->aotc->rip;
-	    k>>=3;
-	    while (k--)
-	      AOTStoreCodeU64(cc,0);
-	  } else
-	    if (sys_var_init_flag)
-	      MemSet(tmpm->static_data,sys_var_init_val,k);
-	  LexPopNoRestore(cc);
-	  if (cc->token=='=') {
-	    cc->flags=cc->flags&
-		  ~CCF_DONT_MAKE_RES|old_flags&CCF_DONT_MAKE_RES;
-	    if (undef_array_size) {
-	      LexPush(cc);
-	      LexPush(cc);
-	      Lex(cc); //skip =
-	      PrsStaticInit(cc,tmpm,1);
-	      LexPopNoRestore(cc);
-	      i=CmpTargetSize(cc,tmpc2)*tmpm->dim.total_cnt;
-	      k=(i+7)&~7;
-	      if (cc->flags&CCF_AOT_COMPILE)	{
-		k>>=3;
-		while (k--)
-		  AOTStoreCodeU64(cc,0);
-	      } else
-		if (sys_var_init_flag)
-		  MemSet(tmpm->static_data,sys_var_init_val,k);
-	      LexPopRestore(cc);
-	    }
-	    LexPush(cc);
-	    Lex(cc); //skip =
-	    PrsStaticInit(cc,tmpm,2);
-	    LexPopNoRestore(cc);
-	    if (cc->flags&CCF_AOT_COMPILE)
-	      for (k=0;k<i;k++)
-		AOTStoreCodeU8At(cc,tmpm->static_data_rip+k,
-		      tmpm->static_data[k]);
-	    tmpm->use_cnt=0;
-	    cc->flags|=CCF_DONT_MAKE_RES;
-	  }
-          PrsI386DataRange(cc,tmpm->static_data_rip,(i+7)&~7);
-	  if (cc->flags&CCF_AOT_COMPILE)
-	    Free(tmpm->static_data);
-	  break;
-	case PRS1B_LOCAL_VAR:
-	  if (mode&PRSF_UNION) {
-	    if (union_base-tmpc->size<i)
-	      i=union_base-i-tmpc->size;
-	    else
-	      i=0;
-	  }
-	  if (i>=8)
-	    tmpc->size=(tmpc->size-i)&~7;
-	  else if (i>=4)
-	    tmpc->size=(tmpc->size-i)&~3;
-	  else if (i>=2)
-	    tmpc->size=(tmpc->size-i)&~1;
-	  else
-	    tmpc->size-=i;
-	  tmpm->offset=tmpc->size;
-	  tmpm->size=i;
-	  if (cc->token=='=') {
-	    cc->flags=cc->flags&~CCF_DONT_MAKE_RES|
-		  old_flags&CCF_DONT_MAKE_RES;
-	    LexPopRestore(cc);
-	    Lex(cc);
-	    if (!PrsExpression(cc,NULL,TRUE))
-	      throw('Compiler');
-	    tmpm->use_cnt=0;
-	    cc->flags|=CCF_DONT_MAKE_RES;
-	  } else
-	    LexPopNoRestore(cc);
-	  break;
-	case PRS1B_FUN_ARG:
-	  if (mode&PRSF_UNION) {
-	    tmpm->offset=union_base;
-	    if (tmpc->size-union_base<8)
-	      tmpc->size=8+union_base;
-	  } else {
-	    tmpm->offset=tmpc->size;
-	    tmpc->size+=8;
-	  }
-	  tmpm->size=8;
-	  if (cc->token=='=') {
-	    Lex(cc);
-	    if (PrsKeyWord(cc)==KW_LASTCLASS) {
-	      tmpm->flags|=MLF_LASTCLASS;
-	      Lex(cc);
-	    } else {
-	      old_flags2=cc->flags;
-	      cc->flags&=~CCF_HAS_MISC_DATA;
-	      machine_code=LexExpression2Bin(cc,&type);
-	      if (!machine_code)
-		throw('Compiler');
-	      tmpm->dft_val=Call(machine_code);
-	      tmpc2=OptClassFwd(tmpc2);
-	      if (tmpc2->raw_type==RT_F64) {
-		if (type!=RT_F64)
-		  tmpm->dft_val(F64)=tmpm->dft_val;
-	      } else {
-		if (type==RT_F64)
-		  tmpm->dft_val=tmpm->dft_val(F64);
-	      }
-	      if (cc->flags & CCF_HAS_MISC_DATA) {
-		tmpm->dft_val=StrNew(tmpm->dft_val);
-		tmpm->flags|=MLF_STR_DFT_AVAILABLE;
-	      }
-	      Free(machine_code);
-	      cc->flags|=old_flags2&CCF_HAS_MISC_DATA;
-	    }
-	    tmpm->flags|=MLF_DFT_AVAILABLE;
-	  }
-	  LexPopNoRestore(cc);
-	  break;
-	case PRS1B_CLASS:
-	  if (mode&PRSF_UNION) {
-	    tmpm->offset=union_base;
-	    if (tmpc->size-union_base<i)
-	      tmpc->size=i+union_base;
-	  } else {
-	    tmpm->offset=tmpc->size;
-	    tmpc->size+=i;
-	  }
-	  tmpm->size=i;
-	  if (mode&PRSF_UNION)
-	    cc->class_dol_offset=union_base;
-	  else
-	    cc->class_dol_offset=tmpc->size;
-
-	  while (cc->token==TK_IDENT) {
-	    tmp_meta=MAlloc(sizeof(CMemberLstMeta));
-	    tmp_meta->next=tmpm->meta;
-	    tmpm->meta=tmp_meta;
-	    tmp_meta->str=cc->cur_str;
-	    tmp_meta->flags=0;
-	    cc->cur_str=NULL;
-	    if (Lex(cc)==TK_STR) {
-	      tmp_meta->user_data=LexExtStr(cc);
-	      tmp_meta->flags|=MLMF_IS_STR;
-	    } else
-	      tmp_meta->user_data=LexExpression(cc);
-	  }
-	  LexPopNoRestore(cc);
-	  break;
-      }
-      switch (cc->token) {
-	case ',':
-	  if (mode.u8[1]==PRS1B_FUN_ARG && !(mode&PRSF_UNION))
-	    Lex(cc);
-	  else {
-	    first=FALSE;
-	    goto pvl_restart2;
-	  }
-	  break;
-	case ')':
-	case '}':
-	  Lex(cc);
-	  goto pvl_done;
-	case ';':
-	  cc->flags=cc->flags&~CCF_DONT_MAKE_RES|
-		old_flags&CCF_DONT_MAKE_RES;
-	  Lex(cc);
-	  cc->flags|=CCF_DONT_MAKE_RES;
-	  if ((mode.u8[1]==PRS1B_LOCAL_VAR||mode.u8[1]==
-		PRS1B_STATIC_LOCAL_VAR) && !(mode&PRSF_UNION))
-	    goto pvl_done;
-	  break;
-	default:
-	  LexExcept(cc,"Missing ';' at");
-      }
-    }
-  }
-pvl_done:
-  cc->flags=cc->flags&~(CCF_CLASS_DOL_OFFSET|CCF_DONT_MAKE_RES)|
-	old_flags&(CCF_CLASS_DOL_OFFSET|CCF_DONT_MAKE_RES);
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&services,&expression,&types);
+  PrsVarLstCore(&services,cc,tmpc,mode,union_base);
 }

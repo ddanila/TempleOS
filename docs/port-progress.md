@@ -3553,3 +3553,31 @@ Native type/expression services still need task-owned adapters, variable-list an
 class/function parsing, initialization, bound evaluation and persistent code
 publication. DolDoc, native self-hosting and strict 386SX/DX validation remain
 unfinished; the full OS goal stays active.
+
+## Shared declaration and symbol construction
+
+The production member/local/static/argument loop now lives in
+`PrsDeclarationCore.HC`; class construction and function-header joining now live in
+`PrsSymbolCore.HC`. Host entry points compose the existing expression/type services
+with explicit allocation, execution, AOT storage, source attribution, options and
+symbol lifetime callbacks. Function modifier constants have a common header.
+
+The extraction retains recursive union/class layout, explicit offsets, register
+hints, metadata/defaults, `lastclass`, static/local initialization order, inheritance,
+forward-header replacement, signature warnings and target argument offsets. Static
+fill settings and warning options are queried at the original execution points.
+Default-expression storage stays alive until conversions/string duplication finish.
+Detached old argument lists remain available for signature comparison before release.
+
+Both x64 compiler/kernel rebuild/reboot generations, all 234 function cases, all
+16 data cases and the floating-point/inline-assembly suites passed. The complete
+standalone boot, compiler recovery, VGA/input and module-rejection suite also
+passed; the kernel remains 389424 bytes and resident ABIs are unchanged. These
+checks exercise the shared parser through the existing compiler. They do not establish
+native declaration execution or ownership of published native symbols.
+
+See [i386-declaration-parser.md](i386-declaration-parser.md) for the service contracts.
+Native adapters, static/aggregate initialization, global declarations, statement and
+function-body parsing, target evaluation and persistent publication remain required.
+No new retained parser service is published by this change; the full OS goal remains
+active, including DolDoc, self-hosting and strict 386SX/DX acceptance.

@@ -1,141 +1,57 @@
+#include "/Compiler/PrsSymbolCore.HC"
+CHashClass *PrsHostClassNew(U8 *context) { return PrsClassNew; }
+CHashFun *PrsHostFunNew(U8 *context) { return PrsFunNew; }
+CHash *PrsHostSingleFind(U8 *context,U8 *name,CHashTable *table,I64 mask)
+{ return HashSingleTableFind(name,table,mask); }
+U0 PrsHostClassMembersDelete(U8 *context,CHashClass *symbol) { ClassMemberLstDel(symbol); }
+U0 PrsHostMembersDelete(U8 *context,CMemberLst *members) { MemberLstDel(members); }
+U0 PrsHostSource(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol,I64 line_adjust)
+{ HashSrcFileSet(cc,symbol,line_adjust); }
+Bool PrsHostOption(U8 *context,I64 index) { return GetOption(index); }
+U0 PrsHostSymbolWarning(U8 *context,CCmpCtrl *cc,I64 kind,CHashSrcSym *symbol)
+{
+  if(kind==0) UnusedExternWarning(cc,symbol);
+  else {
+    if(kind==1) PrintWarn("Fun Header return mismatch '%s'\n",symbol->str);
+    else PrintWarn("Fun header args mismatch '%s'\n",symbol->str);
+    cc->warning_cnt++;
+  }
+}
+U0 PrsHostSymbolServices(CPrsSymbolServices *services,CPrsDeclarationServices *declarations)
+{
+  services->context=0; services->declarations=declarations;
+  services->used_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
+  services->clobbered_mask=REGG_CLOBBERED+REGG_STK_TMP;
+  services->undefined_function=&UndefinedExtern;
+  services->class_new=&PrsHostClassNew; services->fun_new=&PrsHostFunNew;
+  services->single_find=&PrsHostSingleFind; services->class_members_delete=&PrsHostClassMembersDelete;
+  services->members_delete=&PrsHostMembersDelete; services->source=&PrsHostSource;
+  services->option=&PrsHostOption; services->warning=&PrsHostSymbolWarning;
+}
+
 CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 fsp_flags,Bool is_extern)
 {
-  CHashClass *tmpc,*base_class;
-  if (cc->token!=TK_IDENT)
-    LexExcept(cc,"Expecting identifier at ");
-  if (is_extern) {
-    tmpc=PrsClassNew;
-    tmpc->str=cc->cur_str;
-    cc->cur_str=NULL;
-    HashAdd(tmpc,cc->htc.glbl_hash_table);
-    LBts(&tmpc->flags,Cf_EXTERN);
-    HashSrcFileSet(cc,tmpc);
-    Lex(cc);
-  } else {
-    if (cc->flags&CCF_AOT_COMPILE)
-      tmpc=HashFind(cc->cur_str,cc->htc.glbl_hash_table,HTT_CLASS);
-    else
-      tmpc=HashSingleTableFind(cc->cur_str,cc->htc.glbl_hash_table,HTT_CLASS);
-    if (tmpc) {
-      if (!Bt(&tmpc->flags,Cf_EXTERN))
-	tmpc=NULL;
-      else if (tmpc->use_cnt<3)
-	UnusedExternWarning(cc,tmpc);
-    }
-    if (tmpc) {
-      Free(tmpc->src_link);
-      tmpc->src_link=NULL;
-      Free(tmpc->idx);
-      tmpc->idx=NULL;
-    } else {
-      tmpc=PrsClassNew;
-      tmpc->str=cc->cur_str;
-      cc->cur_str=NULL;
-      HashAdd(tmpc,cc->htc.glbl_hash_table);
-    }
-    LBtr(&tmpc->flags,Cf_EXTERN);
-    if (fsp_flags&FSF_PUBLIC)
-      tmpc->type|=HTF_PUBLIC;
-    tmpc->use_cnt=0;
-    if (cc->last_U16=='\n')
-      HashSrcFileSet(cc,tmpc,-1);
-    else
-      HashSrcFileSet(cc,tmpc,0);
-    if (Lex(cc)==':') {
-      if (Lex(cc)!=TK_IDENT || !(base_class=cc->hash_entry) ||
-	    !(base_class->type&HTT_CLASS))
-	LexExcept(cc,"Invalid class at ");
-      if (Lex(cc)==',')
-	LexExcept(cc,"Only one base class allowed at this time at ");
-      tmpc->base_class=base_class;
-      tmpc->size+=base_class->size;
-    }
-    if (keyword==KW_UNION)
-      PrsVarLst(cc,tmpc,PRS0_NULL|PRS1_CLASS|PRSF_UNION);
-    else
-      PrsVarLst(cc,tmpc,PRS0_NULL|PRS1_CLASS);
-    tmpc->size+=tmpc->neg_offset;
-  }
-  return tmpc;
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsSymbolServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostSymbolServices(&services,&declarations);
+  return PrsClassCore(&services,cc,keyword,fsp_flags,is_extern);
 }
 
 CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *tmp_return,
 	U8 *name,I64 fsp_flags)
 {
-  CMemberLst *tmpm,*header_lst;
-  CAOTCtrl *aotc=cc->aotc;
-  CHashClass *header_return;
-  CHashFun *tmpf;
-  I64 header_arg_cnt;
-  if (name) {//if not fun_ptr
-    if (cc->flags&CCF_AOT_COMPILE) {
-      if ((tmpf=HashFind(name,cc->htc.glbl_hash_table,HTT_FUN)) &&
-	    tmpf->type & HTF_IMPORT)
-	tmpf=NULL;
-    } else
-      if ((tmpf=HashSingleTableFind(name,cc->htc.glbl_hash_table,HTT_FUN)) &&
-	    !Bt(&tmpf->flags,Cf_EXTERN))
-	tmpf=NULL;
-    if (tmpf && tmpf->use_cnt<3)
-      UnusedExternWarning(cc,tmpf);
-  } else
-    tmpf=NULL;
-  if (tmpf) {
-    tmpf->used_reg_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
-    Free(tmpf->src_link);
-    tmpf->src_link=NULL;
-    Free(tmpf->idx);
-    tmpf->idx=NULL;
-    Free(name);
-    header_arg_cnt=tmpf->arg_cnt;
-    header_lst=tmpf->member_lst_and_root;
-    header_return=tmpf->return_class;
-    tmpf->member_lst_and_root=NULL;
-    ClassMemberLstDel(tmpf);
-  } else {
-    tmpf=PrsFunNew;
-    header_return=NULL;
-    tmpf->used_reg_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
-    tmpf->clobbered_reg_mask=REGG_CLOBBERED+REGG_STK_TMP;
-    tmpf->str=name;
-    if (cc->flags&CCF_AOT_COMPILE)
-      tmpf->exe_addr=aotc->rip;
-    else
-      tmpf->exe_addr=&UndefinedExtern;
-    LBts(&tmpf->flags,Cf_EXTERN);
-    tmpf->flags|=fsp_flags&FSG_FUN_FLAGS1;
-    if (name) //if not fun_ptr
-      HashAdd(tmpf,cc->htc.glbl_hash_table);
-  }
-  BEqu(&tmpf->type,HTf_PUBLIC,fsp_flags&FSF_PUBLIC);
-  tmpf->return_class=tmp_return;
-  tmpf->use_cnt=0;
-  HashSrcFileSet(cc,tmpf);
-  PrsVarLst(cc,tmpf,PRS0_NULL|PRS1_FUN_ARG);
-  tmpf->arg_cnt=tmpf->member_cnt;
-  if (0<tmpf->arg_cnt<<3<=I16_MAX && !Bt(&tmpf->flags,Ff_DOT_DOT_DOT))
-    LBts(&tmpf->flags,Ff_RET1);
-  tmpm=tmpf->member_lst_and_root;
-  while (tmpm) {
-    if (cc->flags&CCF_TARGET_I386) tmpm->offset+=8;
-    else tmpm->offset+=16; //Saved frame + return
-    tmpm=tmpm->next;
-  }
-  tmpf->size=0;
-  if (header_return) {
-    if (GetOption(OPTf_WARN_HEADER_MISMATCH)) {
-      if (tmpf->return_class!=header_return) {
-	PrintWarn("Fun Header return mismatch '%s'\n",tmpf->str);
-	cc->warning_cnt++;
-      }
-      if (!MemberLstCmp(tmpf->member_lst_and_root,header_lst,header_arg_cnt)) {
-	PrintWarn("Fun header args mismatch '%s'\n",tmpf->str);
-	cc->warning_cnt++;
-      }
-    }
-    MemberLstDel(header_lst);
-  }
-  return tmpf;
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsSymbolServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostSymbolServices(&services,&declarations);
+  return PrsFunJoinCore(&services,cc,tmp_return,name,fsp_flags);
 }
 
 U0 PrsFun(CCmpCtrl *cc,CHashClass *tmp_return,U8 *name,I64 fsp_flags)

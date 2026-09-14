@@ -262,17 +262,7 @@ class CIntermediateStruct
 
 #include "/Compiler/PrsPrecedence.HH"
 
-//Function/static/public flags
-#define FSF_PUBLIC		0x01
-#define FSF_ASM			0x02
-#define FSF_STATIC		0x04
-#define FSF__			0x08
-#define FSF_INTERRUPT		(1<<Ff_INTERRUPT)
-#define FSF_HASERRCODE		(1<<Ff_HASERRCODE)
-#define FSF_ARGPOP		(1<<Ff_ARGPOP)
-#define FSF_NOARGPOP		(1<<Ff_NOARGPOP)
-#define FSG_FUN_FLAGS1 (FSF_INTERRUPT|FSF_HASERRCODE|FSF_ARGPOP|FSF_NOARGPOP)
-#define FSG_FUN_FLAGS2 (FSG_FUN_FLAGS1|FSF_PUBLIC)
+#include "/Compiler/PrsFunctionFlags.HH"
 
 #include "/Compiler/PrsTypeFlags.HH"
 

@@ -10,7 +10,8 @@ The shared path retains pointer-depth checks, class/union forwarding, identifier
 transfer and anonymous names, function-pointer signatures, declaration-mode lexer
 snapshots, array bounds, pointer warnings, and argc/argv member construction.
 The existing target-specific unsized-array sentinel and 64-bit HolyC argument slots
-are preserved. Variable-list parsing and initialization are still host code.
+are preserved. Variable-list parsing and class/function-header joining now have shared cores;
+initialization and native adapters remain. See [declarations](i386-declaration-parser.md).
 
 ## Environment contract
 
@@ -44,8 +45,8 @@ links, allocator calls, terminal token/position and guard values around the fixt
 objects. This tests the shared helper on i386; it does not provide a native lexer
 or expression evaluator by itself, or exercise allocation-failure cleanup.
 
-The full native frontend still needs adapters for these services, class/function
-and variable-list parsing, initialization, symbol lifetimes, array-bound execution,
+The full native frontend still needs adapters for these services and the shared
+class/function/variable-list cores, initialization, symbol lifetimes, array-bound execution,
 and connection to persistent backend output. The retained compiler publishes no
 new parser service in this change, and its ABI remains unchanged. See
 [i386-expression-parser.md](i386-expression-parser.md) and `PLAN.md`.

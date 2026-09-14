@@ -783,6 +783,15 @@ this is component evidence, not native declaration execution. See
 `docs/i386-type-parser.md`. Variable-list parsing, initialization and native
 class/function ownership remain needed before publishing a full frontend service.
 
+The member/local/static/argument declaration loop and class/function-header
+joining now also use shared cores. Their services preserve snapshot ordering,
+layout, defaults/metadata, forward declarations and header comparisons while making
+allocation, compile-time execution, source attribution and publication explicit.
+The existing host entries call these cores; native ownership/evaluation adapters,
+initializers, global declarations and statement/function-body integration remain.
+See `docs/i386-declaration-parser.md`. This is frontend preparation, not a native
+parser service or interactive shell.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,
