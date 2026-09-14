@@ -254,3 +254,29 @@ inline assembly imports and absolute relocations remain separate pending work.
 All three suites pass with this generated provider and native instruction audits;
 both x86-64 rebuild/reboot generations also pass. These are cross-compiled
 component results, not a native compiler self-hosting result.
+
+
+## Linked native context installation
+
+`Kernel/I386/ExceptNative.HH` and `ExceptNative.HC` provide
+`I386ExceptInstallNative(report,fatal)`. Link them with `ExceptRuntime.HC`,
+`SysTry.HC` and `ExceptContext.HC`. The installer imports the invocation and
+resumption entries from the context module, supplies those addresses to the
+existing service installer and preserves its one-time installation, pointer
+validation and interrupt-state rules. The temporary service record is copied;
+its lifetime is independent of the installed service pointers. The linked code
+and caller-supplied report/fatal handlers must remain live.
+
+The exception-task fixture now links consumer, SysTry, TaskContext and
+ExceptContext as four modules. Its entry receives two zero arguments, and it
+no longer reads a runner control structure or supplied context pointers. Native
+task-platform setup provides its root stack/heap and FS/GS binding; the linked
+exception installer supplies capture invocation and recovery. The report/fatal
+handlers remain test implementations, so concrete debugger/logging integration
+is still pending.
+
+Tests pass for missing-handler/repeated installation rejection, root exception
+handling/diagnostics/reclamation and all 48 worker catch-time yields. The public
+exception-runtime and general task regressions, native instruction audits and
+both x86-64 rebuild/reboot generations also pass. The runner still provides the
+initial protected-mode environment; this is not native compiler self-hosting.

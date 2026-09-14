@@ -56,10 +56,18 @@ case_next:
     push dword 0
     push dword except_context_control
 %elifdef TASK_TEST
+%ifdef EXCEPT_TASK_TEST
+    ;This runtime links its own task/exception entries and initializes its GDT.
+    push dword 0
+    push dword 0
+    push dword 0
+    push dword 0
+%else
     push dword 0
     push dword i386_context_switch
     push dword 0
     push dword task_test_control
+%endif
 %else
     push dword [esi+24]
     push dword [esi+20]

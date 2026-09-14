@@ -1669,3 +1669,19 @@ These are still the standalone native task/CPU records. Public CTask integration
 complete boot/device/interrupt ordering, NMI/exceptional-stack policy, native
 compiler execution and strict 386 verification remain unfinished. See
 `i386-task-platform.md`.
+
+
+## Fully linked native exception context binding
+
+`ExceptNative.HH/HC` now bind the public exception services to invocation and
+resumption imports from `ExceptContext.HC`, preserving the existing one-time
+installation and report/fatal contracts. The exception-task fixture links its
+consumer, SysTry, TaskContext and ExceptContext together. It no longer accepts
+any runner runtime-function pointers; both entry arguments are explicitly zero.
+
+The fixture passes rejected/repeated installer calls, root exception diagnostics
+and reclamation, and all 48 worker catch-time yields through the linked context
+entries. Public exception-runtime and general task regressions, instruction audits
+and both x86-64 rebuild/reboot generations pass. Initial protected-mode boot,
+concrete debugger/logging handlers, full public task migration, native compiler
+execution and strict 386 verification remain unfinished. See `i386-exceptions.md`.

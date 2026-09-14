@@ -624,6 +624,11 @@ GDT and the kernel binding callback together. Root exception/caller diagnostics
 and worker catch-time switching pass through it, including FS/GS identity and
 reclamation. Public CTask integration and complete boot ordering remain open;
 see `docs/i386-task-platform.md`.
+Native exception installation now binds invocation/resumption through linked
+context imports. The exception-task fixture links all four runtime/context
+modules and passes root/worker exception tests with zero entry arguments, using
+no runner-supplied function pointers. Concrete report/debugger handlers and the
+production boot environment remain required.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

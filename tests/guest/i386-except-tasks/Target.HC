@@ -1,21 +1,12 @@
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
-#include "/Kernel/I386/ExceptRuntime.HH"
+#include "/Kernel/I386/ExceptNative.HH"
 #include "/Kernel/I386/Debug.HH"
 #include "/Kernel/I386/Gdt.HH"
 #include "/Kernel/I386/TaskPlatform.HH"
 _intern 0x17 CI386Cpu *CpuSelf();
 import U0 i386_segments_reload(U16 fs,U16 gs);
-class CControl {
-  U8 *irq,*idle;
-  I64 (*segments)(I64 callback);
-  U0 (*reload)(U16 fs,U16 gs);
-  U8 *task_descriptor,*cpu_descriptor;
-  U0 (*invoke)(CI386ExceptCapture *capture);
-  U0 (*resume)(CI386ExceptCapture *capture);
-};
-CControl *control;
 CI386Scheduler scheduler;
 CI386Task root;
 CI386Cpu cpu;
@@ -28,14 +19,12 @@ extern I64 Run();
 extern U0 Worker(I64 id);
 extern U0 Report(CI386Task *task,I64 ch);
 extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
-I64 Main(CControl *arg,U0 (*swap)(CI386Context *old,CI386Context *next))
+I64 Main(I64 unused0,I64 unused1)
 {
-  CI386ExceptServices services;
   U8 saved[6],readback[6],*table=gdt_storage+8;
   U16 old_fs,old_gs;
   U8 master_mask,slave_mask;
   I64 i,result;
-  control=arg;
   asm {
     MOV AX,FS
     MOV U16 &old_fs[EBP],AX
@@ -76,9 +65,10 @@ I64 Main(CControl *arg,U0 (*swap)(CI386Context *old,CI386Context *next))
   }
   if(result || !I386GdtRead(readback)) return 26;
   for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 27;
-  services.invoke=control->invoke; services.resume=control->resume;
-  services.report=&Report; services.fatal=&Fatal;
-  if(!I386ExceptInstall(&services) || !I386HeapInit(&heap,0x40000,32768)) return 28;
+  if(I386ExceptInstallNative(0,&Fatal) || I386ExceptInstallNative(&Report,0) ||
+      !I386ExceptInstallNative(&Report,&Fatal) ||
+      I386ExceptInstallNative(&Report,&Fatal) ||
+      !I386HeapInit(&heap,0x40000,32768)) return 28;
   if(I386TaskPlatformInit(0,&root,&cpu,table,0x88000,32768,&heap) ||
       I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88001,32768,&heap) ||
       I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,255,&heap) ||
@@ -213,3 +203,5 @@ U0 Fatal(CI386Task *task,I64 status,I64 ch)
 #include "/Kernel/I386/Gdt.HC"
 
 #include "/Kernel/I386/TaskPlatform.HC"
+
+#include "/Kernel/I386/ExceptNative.HC"
