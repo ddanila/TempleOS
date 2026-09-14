@@ -1,4 +1,5 @@
 #include "/Compiler/I386/LexInput.HH"
+#include "/Kernel/I386/Bits.HH"
 #include "/Compiler/LexInput.HC"
 I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
 {
@@ -6,8 +7,7 @@ I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
   U8 *end;
   if(!cc || !compiled_lines || !cc->lex_include_stk || cc->flags&CCF_PMT || cc->opts&OPTF_ECHO) return -1;
   if(cc->lex_include_stk->flags&LFSF_DOC) return -1;
-  if(cc->flags&CCF_USE_LAST_U16) {
-    cc->flags&=~CCF_USE_LAST_U16;
+  if(Btr(&cc->flags,CCf_USE_LAST_U16)) {
     return cc->last_U16;
   }
   while(TRUE) {

@@ -462,6 +462,40 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             } else I386F64Runtime(cc,&out,ic->ic_code,pass);
             I386Bytes(&out,"\x52\x50",2);
             break;
+          case IC_BT: case IC_BTS: case IC_BTR: case IC_BTC:
+          case IC_LBTS: case IC_LBTR: case IC_LBTC:
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=2 ||
+                depth!=calls->depth+2) throw('Compiler');
+            //EAX=base, EBX:ECX=signed I64 bit offset. Fold the full offset
+            //into a target-width dword address; ESI selects its low five bits.
+            I386Bytes(&out,"\x58\x5A\x59\x5B\x89\xCE\x83\xE6\x1F"
+              "\x0F\xAC\xD9\x05\xC1\xE1\x02\x01\xC8",18);
+            if (IC_LBTS<=ic->ic_code<=IC_LBTC) I386Byte(&out,0xF0);
+            I386Byte(&out,0x0F);
+            if (ic->ic_code==IC_BT) I386Byte(&out,0xA3);
+            else if (ic->ic_code==IC_BTS || ic->ic_code==IC_LBTS) I386Byte(&out,0xAB);
+            else if (ic->ic_code==IC_BTR || ic->ic_code==IC_LBTR) I386Byte(&out,0xB3);
+            else I386Byte(&out,0xBB);
+            I386Bytes(&out,"\x30\x0F\x92\xC0\x0F\xB6\xC0\x31\xD2",9);
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
+          case IC_BSF: case IC_BSR:
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=1 ||
+                depth!=calls->depth+1) throw('Compiler');
+            I386Bytes(&out,"\x58\x5A",2);
+            //Scan both halves; test zero explicitly because BSF/BSR leave
+            //the destination undefined for zero. CDQ widens the -1 sentinel.
+            if (ic->ic_code==IC_BSF)
+              I386Bytes(&out,"\x85\xC0\x75\x0C\x85\xD2\x74\x0D\x0F\xBC\xC2\x83\xC0\x20\xEB\x0A\x0F\xBC\xC0\xEB\x05\xB8\xFF\xFF\xFF\xFF\x99",27);
+            else I386Bytes(&out,"\x85\xD2\x74\x08\x0F\xBD\xC2\x83\xC0\x20\xEB\x0E\x85\xC0\x74\x05\x0F\xBD\xC0\xEB\x05\xB8\xFF\xFF\xFF\xFF\x99",27);
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
           case IC_MOD_U64:
             if (!calls || calls->called || calls->indirect ||
                 !Bt(&calls->fun->flags,Ff_INTERNAL) ||

@@ -2104,3 +2104,27 @@ reader consumes 14082 characters and 361 newlines, matches FNV32 0x8C353D1A and
 reclaims 14544 heap bytes. The distribution remains on disk. General bit-test
 services, tokenization, resident compiler/JIT, document/editor integration,
 self-hosting and strict 386 validation remain unfinished.
+
+## Native bit-test and bit-scan intrinsics
+
+The backend now lowers Bt/Bts/Btr/Btc, their three locked mutation variants, and
+Bsf/Bsr. Bit strings retain signed I64 indices and canonical previous-bit Bool
+results; address calculation uses both index halves before narrowing to the
+32-bit target. Scans cover full I64 values, including -1 for zero. Locked variants
+emit actual LOCK-prefixed memory instructions and preserve IF. The raw source
+reader now uses Btr on replay flag bit 33; shared character-table tests call Bt.
+
+Both x86-64 rebuild/reboot generations pass. Host/native tests cover indices
+-512..511, unchanged surrounding bytes, all mutation return values, unaligned
+bases (also locked), every scan position, 512 mixed scan inputs against a separate
+shift-loop oracle, zero, side effects and nested calls. Native cases also pass
+negative offsets beyond 32 bits and both IF states. All earlier lexer input,
+ownership, snapshot and bitmap cases pass with the instruction audit. The fixture
+requires all three locked forms to appear in audited executable code.
+
+The 332376-byte kernel passes the full 8 MiB QEMU/486 boot, startup rejection,
+keyboard/VGA and timer suite. Source character/line/hash/reclamation checks remain
+14082/361/0x8C353D1A/14544 bytes. These results do not establish strict 386 or
+multiprocessor contention behavior. Tokenization, full compiler/JIT residency,
+DolDoc/editing and native self-hosting remain required. See
+[i386-bit-intrinsics.md](i386-bit-intrinsics.md).

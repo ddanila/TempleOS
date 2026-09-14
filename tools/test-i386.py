@@ -299,7 +299,7 @@ def main():
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
     allowed = {'lgdt', 'sgdt', 'sti', 'cli', 'hlt', 'cld', 'pusha', 'popa', 'iret', 'lidt', 'sidt', 'push', 'pop', 'pushf', 'popf', 'mov', 'lea', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
-               'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
+               'bt', 'bts', 'btr', 'btc', 'bsf', 'bsr', 'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',
                'in', 'out', 'sar', 'shld', 'shrd', 'rcl', 'div', 'call', 'dec', 'jns', 'jc', 'jnc', 'ja', 'jna'}
@@ -375,7 +375,8 @@ def main():
             for line in lines:
                 parts = line.split()
                 mnemonic = parts[2]
-                if mnemonic not in allowed:
+                locked_bit = parts[2:] in (["lock", op, "[eax],esi"] for op in ("bts", "btr", "btc"))
+                if mnemonic not in allowed and not locked_bit:
                     raise ValueError(f'Unexpected instruction: {line}')
                 audited_lines.append(line)
             if functions:
@@ -388,6 +389,16 @@ def main():
     if interrupt_ranges:
         raise ValueError('Unmatched interrupt code range')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
+    if args.lex_state:
+        #Single-CPU value tests cannot prove that the locked prefix was emitted.
+        instructions = [line.split()[2:] for block in listing for line in block.splitlines()
+                        if line and not line.startswith(';')]
+        for operation in ('bts', 'btr', 'btc'):
+            if ['lock', operation, '[eax],esi'] not in instructions:
+                raise ValueError(f'Missing locked bit intrinsic: {operation}')
+        for operation in ('bt', 'bts', 'btr', 'btc', 'bsf', 'bsr'):
+            if not any(parts and parts[0] == operation for parts in instructions):
+                raise ValueError(f'Missing bit intrinsic: {operation}')
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     context_args = []
     if except_runner or args.except_tasks:

@@ -54,7 +54,7 @@ def verify_startup_rejection(disk, volume, out):
 
 def audit(exports, out):
     disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
-    allowed = set(('push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
+    allowed = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
                    'movsx movzx cdq jmp cmp jz jnz setz setnz setl setnl setg setng setc setnc '
                    'seta setna test shl shr in out sar shld shrd rcl div call dec jns jc jnc ja jna '
                    'cli sti hlt cld pusha popa iret lgdt sgdt lidt sidt').split())
@@ -116,7 +116,10 @@ def audit(exports, out):
             if end-start-used>7 or any(code[start+used:end]):
                 raise ValueError(f'Invalid {name} code tail')
             for line in lines[:last+1]:
-                if line.split()[2] not in allowed: raise ValueError(f'Unexpected instruction: {line}')
+                parts = line.split()
+                locked_bit = parts[2:] in (["lock", op, "[eax],esi"] for op in ("bts", "btr", "btc"))
+                if parts[2] not in allowed and not locked_bit:
+                    raise ValueError(f'Unexpected instruction: {line}')
             listing.append(f'; {name} offset {start:X}\n'+'\n'.join(lines[:last+1]))
         if resident: base+=size
     if base!=len(image): raise ValueError('Unclassified trailing kernel bytes')

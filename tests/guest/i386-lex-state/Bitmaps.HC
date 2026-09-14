@@ -1,4 +1,3 @@
-Bool BitmapTestBit(U32 *table,I64 ch) { return (table[ch>>5]>>(ch&31))&1; }
 // Golden FNV32 captured from the original StrA bitmap bytes before extraction.
 I64 CharBitmapsTest()
 {
@@ -29,15 +28,15 @@ I64 CharBitmapsTest()
   }
   if(hash!=0x778A63C3) return 79;
   for(ch=0;ch<512;ch++) {
-    if(BitmapTestBit(char_bmp_dec_numeric,ch)!=(ch>='0' && ch<='9')) return 80;
-    if(BitmapTestBit(char_bmp_hex_numeric,ch)!=((ch>='0' && ch<='9') ||
+    if(Bt(char_bmp_dec_numeric,ch)!=(ch>='0' && ch<='9')) return 80;
+    if(Bt(char_bmp_hex_numeric,ch)!=((ch>='0' && ch<='9') ||
         (ch>='A' && ch<='F') || (ch>='a' && ch<='f'))) return 81;
     if(ch>=256) {
-      for(i=0;i<16;i++) if(BitmapTestBit(tables[i],ch)) return 82;
-      if(!BitmapTestBit(char_bmp_non_eol,ch)) return 83;
+      for(i=0;i<16;i++) if(Bt(tables[i],ch)) return 82;
+      if(!Bt(char_bmp_non_eol,ch)) return 83;
     }
   }
-  if(!BitmapTestBit(char_bmp_alpha_numeric,'@') || BitmapTestBit(char_bmp_alpha_numeric_no_at,'@') ||
-      !BitmapTestBit(char_bmp_alpha,128) || !BitmapTestBit(char_bmp_alpha,255)) return 84;
+  if(!Bt(char_bmp_alpha_numeric,'@') || Bt(char_bmp_alpha_numeric_no_at,'@') ||
+      !Bt(char_bmp_alpha,128) || !Bt(char_bmp_alpha,255)) return 84;
   return 0;
 }

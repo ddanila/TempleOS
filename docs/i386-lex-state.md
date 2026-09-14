@@ -149,3 +149,12 @@ The expanded fixture and both x86-64 rebuild generations pass. The standalone
 332448-byte kernel passes the complete 8 MiB QEMU/486 boot suite. Native table tests
 use explicit word/bit indexing; the shared tables do not supply the general `Bt`
 primitive still required by the production lexer.
+
+## Native bit operations
+
+The subsequent [bit-intrinsic implementation](i386-bit-intrinsics.md) supplies
+Bt/Bts/Btr/Btc, their locked mutation variants, and full-I64 Bsf/Bsr. The bitmap
+fixture now uses actual Bt on both targets; the native raw reader uses Btr for
+replay flag bit 33. The suite additionally covers signed indices, untouched bytes,
+unaligned/locked operands, wide scans, nested calls, and native offsets beyond
+32 bits. It also checks that all three locked forms occur in executable output.
