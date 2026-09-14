@@ -1,5 +1,12 @@
 #include "/Kernel/I386/SoftF64.HH"
 
+U64 I386F64Abs(U64 value)
+{
+  value&=0x7FFFFFFFFFFFFFFF;
+  if (value>0x7FF0000000000000) value|=0x0008000000000000;
+  return value;
+}
+
 U64 I386F64ShiftJam(U64 value,I64 distance)
 {
   if (!distance) return value;

@@ -150,3 +150,29 @@ def make_to_int_oracle(count):
                 result = -SIGN
         records.append(struct.pack('<Qq', value, result))
     return b''.join(records)
+
+
+def make_unary_oracle(count):
+    if count != 1024:
+        raise ValueError('Unary compatibility fixture requires 1024 inputs')
+    special = [0, 1, 2, (1 << 52)-1, 1 << 52,
+               0x1E5FFFFFFFFFFFFF, 0x1E60000000000000, 0x1E60000000000001,
+               0x3FE0000000000000, 0x3FF8000000000000,
+               0x5FEFFFFFFFFFFFFF, 0x5FF0000000000000,
+               INF-1, INF, INF+1, INF+QUIET+0x1234]
+    seed = 0x386F64A
+    records = []
+    for i in range(count):
+        seed = (seed*6364136223846793005+1442695040888963407) & ((1 << 64)-1)
+        if i < 768:
+            value = (((i//6)*16 << 52)+(i%3)-1) & ((1 << 64)-1)
+            if i%6 >= 3:
+                value |= SIGN
+        elif i < 800:
+            value = special[(i-768)%16] | (SIGN if i >= 784 else 0)
+        else:
+            value = seed
+        magnitude = value & MASK
+        absolute = magnitude | (QUIET if magnitude > INF else 0)
+        records.append(struct.pack('<3Q', value, absolute, expected(value, value, 'mul')))
+    return b''.join(records)

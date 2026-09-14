@@ -66,7 +66,7 @@ integers, F64 and mixed conversions, while keeping comparison results integer
 booleans independently of operand-precision metadata. The existing logical
 context handling provides short-circuit branches and eager value expressions.
 
-This is an initial compiler integration. Remainder and math intrinsics remain
+This is an initial compiler integration. Remainder and the remaining math intrinsics remain
 unsupported and are rejected. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
@@ -161,3 +161,20 @@ The shared optimizer retains an existing constant-folding distinction:
 `ToBool(-0.5)` fold to true. Actual x64 checks and a native constant-expression
 case verify these results. This preserves the observed constant/variable
 behavior; it does not make `ToBool(F64)` equivalent to a raw F64 condition.
+
+
+F64 `Abs` and `Sqr` are declared in `Kernel/I386/Float.HH`. These template
+intrinsics have no ordinary call-start/end nodes, so the backend lowers them
+as unary expressions while preserving any surrounding call context. `Abs`
+uses the one-U64-argument `I386F64Abs` helper; `Sqr` evaluates its argument once
+and passes the same binary64 value twice to `I386F64Mul`. Integer arguments
+use the existing F64 conversion path. Both operations require their runtime
+providers and use the existing declaration/ABI validation and relocations.
+
+`python3 tools/test-i386.py --soft-f64-unary` checks 1,024 patterns against an
+independent host oracle and actual x64 Abs/Sqr output. It executes 3,072 native
+checks (both compiled intrinsics and direct Abs), plus nested templates,
+integer-argument/postfix side effects and a surrounding ToI64 call. Four negative
+compilation cases reject missing providers and malformed Abs helper declarations.
+CR0.EM execution and generated-instruction audits pass. Sqrt, trigonometry,
+remaining numerical operations and floating-point state remain unfinished.

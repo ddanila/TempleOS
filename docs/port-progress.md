@@ -1258,3 +1258,28 @@ Floating-point math intrinsics, remaining compiler features and full production
 kernel integration remain unfinished, along with native self-hosting, memory
 targets and strict 386 validation. This arithmetic checkpoint does not establish
 complete native OS support.
+
+
+## Native F64 Abs and Sqr
+
+F64 Abs and Sqr now lower as unary template expressions, which have no ordinary
+call-start/end nodes. Abs uses the one-argument software `I386F64Abs` helper;
+Sqr evaluates its operand once and calls software multiplication with duplicate
+values. Existing numeric conversion handles integer operands, and surrounding
+ordinary/intrinsic call contexts remain intact. The standalone declarations are
+in `Kernel/I386/Float.HH`.
+
+The new `--soft-f64-unary` fixture passes 3,072 native checks over 1,024 patterns,
+with 2,048 actual x64 Abs/Sqr outputs matching the independent host oracle. It
+covers signed exponent neighborhoods, square underflow/overflow boundaries,
+zeros, infinities, signaling/quiet NaNs and deterministic random values. Abs
+clears sign and quiets NaNs while preserving payloads. Four additional positive
+cases cover nested templates, integer conversion, postfix side effects and a
+surrounding ToI64 call; four rejection cases check missing/malformed providers.
+
+The expanded F64 expression/condition/chain fixture, all 178 integer/call cases,
+generated-instruction audits, coprocessor-disabled unary execution, both x64
+rebuild generations and image verification (766 files, 62 directories) pass.
+Sqrt, trigonometry, other numerical/formatting operations, floating-point state,
+full compiler/kernel integration, native self-hosting, memory targets and strict
+386 validation remain unfinished.

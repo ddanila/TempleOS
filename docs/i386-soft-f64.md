@@ -2,7 +2,7 @@
 
 `Kernel/I386/SoftF64.HH` declares `I386F64Add(U64 a,U64 b)` and
 `I386F64Sub(U64 a,U64 b)`, plus `I386F64Mul(U64 a,U64 b)` and
-`I386F64Div(U64 a,U64 b)`. Arguments and return values are binary64 **bit
+`I386F64Div(U64 a,U64 b)` and `I386F64Abs(U64 value)`. Arguments and return values are binary64 **bit
 patterns**, passed through the ordinary native integer ABI. They do not perform
 integer-to-floating-point conversion. The implementation uses only integer HolyC
 operations and requires no third-party runtime.
@@ -107,3 +107,15 @@ truncates through I64 before truth testing; the latter tests all original bits.
 Together with direct/compiled ToI64, this is 4,096 native checks. The host validates
 2,048 actual x64 Boolean outputs against the corresponding numeric/raw oracle.
 Constant-folding behavior is documented in `i386-f64-backend.md`.
+
+`I386F64Abs` clears the sign bit and quiets any NaN while preserving its payload.
+It maps negative zero to positive zero and negative infinity to positive infinity.
+This matches the tested x64 Abs result bits, including signaling NaNs; exception
+flags are still not implemented. Compiled `Sqr` reuses multiplication with equal
+operands, retaining the multiplication rounding and NaN policy.
+
+The `--soft-f64-unary` corpus includes signed exponent-boundary neighborhoods,
+subnormal and square underflow/overflow edges, infinities, NaNs and deterministic
+random bit patterns. All 2,048 actual x64 intrinsic outputs match the host oracle;
+3,072 native helper/intrinsic checks pass without a coprocessor. This corpus does
+not prove universal x87 intermediate-precision or exception-state equivalence.
