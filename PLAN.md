@@ -833,6 +833,13 @@ from `Kernel/Types.HH`, general declaration, array-bound,
 class/function and publication adapters remain required; see
 `docs/i386-native-type.md`.
 
+Native parser allocation services now retain exact payload sizes in a separate
+compiler-control registry (CompilerRuntime ABI 25, 144 bytes). IR/lexer payload
+release removes tracking records, and control deletion reclaims detached parser
+temporaries. Native probes cover ordinary cleanup and both allocation-failure
+points. Existing lexer-buffer transfers, declaration/class adapters and durable
+publication remain required; see `docs/i386-parser-memory.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

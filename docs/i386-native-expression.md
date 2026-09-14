@@ -2,7 +2,8 @@
 
 Compiler runtime ABI 23 adds `expression(heap, cc, services, precedence, end_exp,
 stack)` in a 132-byte interface. ABI 24 now adds the
-[native type entry](i386-native-type.md) and grows it to 136 bytes. It executes the complete production
+[native type entry](i386-native-type.md) and grows it to 136 bytes. ABI 25 adds
+[parser allocation services](i386-parser-memory.md), making it 144 bytes. It executes the complete production
 `PrsExpressionCore.HC` inside the retained native module. The service environment
 remains caller supplied: this entry is not yet a complete native frontend or a
 public source compiler. Type/declaration, string, symbol and other callback

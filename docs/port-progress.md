@@ -3728,3 +3728,42 @@ See [i386-native-type.md](i386-native-type.md) for contracts and coverage. Compl
 native declaration/class/statement integration, compile-time execution, linking,
 durable publication, DolDoc and self-hosting remain unfinished. The full OS goal
 remains active.
+
+## Native parser allocation registry
+
+CompilerRuntime ABI 25 (144 bytes) adds exact-size `parser_alloc`/`parser_free`
+services. Each native compiler control now has a separate parser allocation list.
+Tracking metadata is separate from payloads so existing class/member/dimension
+size checks remain valid. Failure to allocate tracking metadata releases the newly
+allocated payload before throwing. Explicit release rejects foreign or already
+released allocations.
+
+IR and final lexer cleanup remove matching tracking records when releasing a
+payload. Control deletion then frees detached parser temporaries that never became
+part of a completed graph. This covers storage allocated before or after its misc
+node without depending on allocation order. It does not automatically adopt existing
+lexer strings, support live lexer replacement of parser buffers, or make published
+symbols durable beyond the compiler control.
+
+Native boot/worker probes pass exact-size and zero-fill checks, explicit/foreign/
+double release, string-payload discard, linked array dimensions and detached
+allocation cleanup. Exhausted-heap tests separately force payload and metadata
+allocation failure, checking immediate rollback inside the catch and exact final
+heap, control, task-reference and interrupt-state restoration.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. The full standalone
+suite passed, including all 44 native expression/type cases, parser-memory probes,
+compiler recovery, module rejection and pixel-exact VGA/input. Dedicated lexer-state
+and task-symbol ownership suites also passed their native execution and instruction
+audits. Python syntax and whitespace checks pass. The guest remains an emulated
+486 with 8 MiB; strict 386SX/DX acceptance is still open.
+
+The kernel is 389440 bytes. The retained compiler image is 768184 bytes (768200
+heap bytes). The temporary probe image is 212480 bytes and reclaims all 212496 heap
+bytes after both phases. Compiler/probe imports remain 21/17; FileRuntime remains
+ABI 13/32 bytes and CompilerProbe ABI 5/56 bytes.
+
+See [i386-parser-memory.md](i386-parser-memory.md). Native declaration/class
+adapters, ownership of transferred lexer buffers, compilation of the original
+public scalar unions, durable publication and the complete frontend remain open,
+along with DolDoc, self-hosting and the full `PLAN.md` acceptance requirements.

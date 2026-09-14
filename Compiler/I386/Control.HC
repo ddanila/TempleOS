@@ -9,6 +9,10 @@ class CI386CodeAllocation {
   U8 *allocation;
   U32 kind;
 };
+class CI386ParserAllocation {
+  CI386ParserAllocation *next,*last;
+  U8 *allocation;
+};
 class CI386CmpCtrl {
   CCmpCtrl control;
   CI386Heap *heap;
@@ -19,6 +23,7 @@ class CI386CmpCtrl {
   U8 *document_context;
   CI386CodeAllocation *code_next,*code_last;
   U32 code_headers,code_busy;
+  CI386ParserAllocation *parser_next,*parser_last;
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {
@@ -52,6 +57,7 @@ CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,
   owned=I386HeapAlloc(heap,sizeof(CI386CmpCtrl),TRUE);
   if(!owned) goto control_new_failed;
   cc=&owned->control;
+  owned->parser_next=owned->parser_last=&owned->parser_next;
   CmpCtrlSeed(cc,flags,symbols,alpha_numeric);
   COCSeed(&cc->coc);
   owned->code_next=owned->code_last=&owned->code_next;
@@ -88,7 +94,25 @@ class CI386CmpRelease {
 U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
 {
   CI386CmpRelease *state=context;
+  CI386CmpCtrl *owned=state->control;
+  CI386ParserAllocation *record;
   U32 irq=I386IrqSave;
+  if(allocation==state->control) {
+    //Graph and lexer cleanup has finished. Reclaim detached parser temporaries.
+    while((record=owned->parser_next)!=&owned->parser_next) {
+      record->last->next=record->next; record->next->last=record->last;
+      if(!I386HeapFree(state->heap,record->allocation)) state->ok=FALSE;
+      if(!I386HeapFree(state->heap,record)) state->ok=FALSE;
+    }
+  } else if(allocation) {
+    //A payload release may reach tracked storage before final control cleanup.
+    for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
+      if(record->allocation==allocation) {
+        record->last->next=record->next; record->next->last=record->last;
+        if(!I386HeapFree(state->heap,record)) state->ok=FALSE;
+        break;
+      }
+  }
   if(allocation && !I386HeapFree(state->heap,allocation)) state->ok=FALSE;
   I386IrqRestore(irq);
 }
