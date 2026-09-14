@@ -277,7 +277,7 @@ U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
 	    if (mode&255==PRS0__IMPORT)
 	      tmpf->import_name=StrNew(val);
 	    else
-	      tmpf->import_name=StrNew(st);
+	      tmpf->import_name=StrNew(tmpf->str);
 	  }
 	  return;
 	default:
