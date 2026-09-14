@@ -48,7 +48,8 @@ check final sizes and values, exercising host-side recursive row assembly and
 static passes. They do not prove that initializer parsing runs natively.
 
 Native adapters, target expression execution, durable destinations and relocation
-publication remain open. Global-declaration and statement/function-body parsing
-also remain to be integrated. No new retained compiler service or ABI is introduced.
+publication remain open. Global declarations and function-body construction now
+have [shared cores](i386-global-function-parser.md); statement parsing and native
+frontend execution remain to be integrated. No new retained compiler service or ABI is introduced.
 See [declarations](i386-declaration-parser.md),
 [expression parser](i386-expression-parser.md) and `PLAN.md`.

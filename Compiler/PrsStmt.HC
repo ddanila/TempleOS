@@ -54,324 +54,78 @@ CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *tmp_return,
   return PrsFunJoinCore(&services,cc,tmp_return,name,fsp_flags);
 }
 
-U0 PrsFun(CCmpCtrl *cc,CHashClass *tmp_return,U8 *name,I64 fsp_flags)
+extern U0 PrsFun(CCmpCtrl *cc,CHashClass *tmp_return,U8 *name,I64 fsp_flags);
+
+#include "/Compiler/PrsGlobalCore.HC"
+U0 PrsHostFunction(U8 *context,CCmpCtrl *cc,CHashClass *return_type,U8 *name,I64 flags)
+{ PrsFun(cc,return_type,name,flags); }
+U0 PrsHostResolve(U8 *context,CCmpCtrl *cc,U8 *name) { SysSymImportsResolve(name); }
+Bool PrsHostSameHeap(U8 *context,U8 *left,U8 *right) { return MHeapCtrl(left)==MHeapCtrl(right); }
+U0 PrsHostAliasWarning(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol)
+{ PrintWarn("Unused extern '%s'\n",symbol->str); cc->warning_cnt++; }
+U0 PrsHostGlobalServices(CPrsGlobalServices *services,
+  CPrsSymbolServices *symbols,CPrsInitializerServices *initializers)
 {
-  CMemberLst *tmpm;
-  CCodeMisc *saved_leave_label;
-  I64 i,j,size,*r;
-  Bool old_trace;
-
-  cc->fun_lex_file=cc->lex_include_stk;
-  cc->min_line=cc->max_line=cc->lex_include_stk->line_num;
-
-  cc->flags&=~CCF_NO_REG_OPT;
-  cc->htc.local_var_lst=cc->htc.fun=PrsFunJoin(cc,tmp_return,name,fsp_flags);
-
-  COCPush(cc);
-  Btr(&cc->flags,CCf_PASS_TRACE_PRESENT);
-  COCInit(cc);
-  ICAdd(cc,IC_ENTER,0,0);
-  saved_leave_label=cc->lb_leave;
-  cc->lb_leave=COCMiscNew(cc,CMT_LABEL);
-  cc->flags&=~CCF_HAS_RETURN;
-  PrsStmt(cc,,,0);
-
-  if (cc->max_line<cc->min_line)
-    cc->max_line=cc->min_line;
-
-  if (cc->htc.fun->return_class->size && !(cc->flags&CCF_HAS_RETURN))
-    LexWarn(cc,"Function should return val ");
-  ICAdd(cc,IC_LABEL,cc->lb_leave,0);
-  cc->lb_leave=saved_leave_label;
-  ICAdd(cc,IC_LEAVE,0,cc->htc.fun->return_class);
-  cc->htc.fun->size&=~7;
-  if (cc->flags&CCF_AOT_COMPILE) {
-    if (cc->flags&CCF_TARGET_I386)
-      while (cc->aotc->rip&7) AOTStoreCodeU8(cc,0);
-    cc->htc.fun->exe_addr=cc->aotc->rip;
-    cc->htc.fun->type|=HTF_EXPORT|HTF_RESOLVE;
-    r=COCCompile(cc,&size,&cc->htc.fun->dbg_info,NULL);
-    if (r) {
-      j=(size+7)>>3;
-      for (i=0;i<j;i++)
-	AOTStoreCodeU64(cc,r[i]);
-      Free(r);
-    }
-  } else {
-    old_trace=Btr(&cc->opts,OPTf_TRACE);
-    cc->htc.fun->exe_addr=COCCompile(
-	  cc,&size,&cc->htc.fun->dbg_info,NULL);
-    if (old_trace) {
-      Bts(&cc->opts,OPTf_TRACE);
-      Un(cc->htc.fun->exe_addr,size,64);
-    }
-    SysSymImportsResolve(cc->htc.fun->str);
-  }
-  LBtr(&cc->htc.fun->flags,Cf_EXTERN);
-  COCPop(cc);
-  tmpm=cc->htc.fun->member_lst_and_root;
-  while (tmpm) {
-    if (tmpm->flags & MLF_NO_UNUSED_WARN) {
-      if (tmpm->use_cnt>1&&StrCmp(tmpm->str,"_anon_"))
-	PrintWarn("Unneeded no_warn\n $$LK,\"FL:%s,%d\"$$ '%s' in '%s'\n",
-	      cc->lex_include_stk->full_name,cc->lex_include_stk->line_num,
-	      tmpm->str,cc->htc.fun->str);
-    } else if (!tmpm->use_cnt && GetOption(OPTf_WARN_UNUSED_VAR))
-      PrintWarn("Unused var\n $$LK,\"FL:%s,%d\"$$ '%s' in '%s'\n",
-	    cc->lex_include_stk->full_name,cc->lex_include_stk->line_num,
-	    tmpm->str,cc->htc.fun->str);
-    tmpm=tmpm->next;
-  }
-  cc->htc.local_var_lst=cc->htc.fun=cc->fun_lex_file=NULL;
+  services->context=0; services->symbols=symbols; services->initializers=initializers;
+  services->function=&PrsHostFunction; services->resolve=&PrsHostResolve;
+  services->same_heap=&PrsHostSameHeap; services->alias_warning=&PrsHostAliasWarning;
 }
 
 U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
   I64 saved_val,I64 fsp_flags)
 {
-  I64 i,j,mode,k,val;
-  U8 *st;
-  CHashExport *tmpex;
-  CHashGlblVar *tmpg;
-  CAOTCtrl *aotc=cc->aotc;
-  CAOTHeapGlbl *tmphg;
-  CHashClass *tmpc;
-  CHashFun *tmpf,*tmpf_fun_ptr;
-  CArrayDim tmpad;
-  Bool has_alias,undef_array_size,is_array;
-  while (TRUE) {
-    tmpc=PrsType(cc,&saved_tmpc,&saved_mode,NULL,&st,
-	  &tmpf_fun_ptr,&tmpex,&tmpad,fsp_flags);
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsInitializerServices initializers;
+  CPrsSymbolServices symbols;
+  CPrsGlobalServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostInitializerServices(&initializers,&declarations);
+  PrsHostSymbolServices(&symbols,&declarations);
+  PrsHostGlobalServices(&services,&symbols,&initializers);
+  PrsGlblVarLstCore(&services,cc,saved_mode,saved_tmpc,saved_val,fsp_flags);
+}
 
-    if (!st) return;
-    if (tmpad.next)
-      is_array=TRUE;
-    else if (tmpad.total_cnt<0) {
-      is_array=TRUE;
-      tmpc--;
-    } else
-      is_array=FALSE;
+#include "/Compiler/PrsFunctionCore.HC"
+Bool PrsHostStatement(U8 *context,CCmpCtrl *cc,I64 try_count,CCodeMisc *break_label,I64 flags)
+{ return PrsStmt(cc,try_count,break_label,flags); }
+U8 *PrsHostCompileFunction(U8 *context,CCmpCtrl *cc,I64 *bytes,CDbgInfo **debug,I64 *type)
+{ return COCCompile(cc,bytes,debug,type); }
+U0 PrsHostDisassemble(U8 *context,U8 *code,I64 bytes) { Un(code,bytes,64); }
+U0 PrsHostMemberWarning(U8 *context,CCmpCtrl *cc,CMemberLst *member,Bool unneeded)
+{
+  if(unneeded)
+    PrintWarn("Unneeded no_warn\n $$LK,\"FL:%s,%d\"$$ '%s' in '%s'\n",
+      cc->lex_include_stk->full_name,cc->lex_include_stk->line_num,member->str,cc->htc.fun->str);
+  else
+    PrintWarn("Unused var\n $$LK,\"FL:%s,%d\"$$ '%s' in '%s'\n",
+      cc->lex_include_stk->full_name,cc->lex_include_stk->line_num,member->str,cc->htc.fun->str);
+}
+U0 PrsHostFunctionServices(CPrsFunctionServices *services,CPrsGlobalServices *globals)
+{
+  services->context=0; services->globals=globals;
+  services->statement=&PrsHostStatement; services->compile=&PrsHostCompileFunction;
+  services->disassemble=&PrsHostDisassemble; services->member_warning=&PrsHostMemberWarning;
+}
 
-    val=saved_val;
-    mode=saved_mode;
-    if (tmpex && mode&255==PRS0_EXTERN && !(cc->flags&CCF_AOT_COMPILE) &&
-	  tmpex->type&HTT_EXPORT_SYS_SYM) {
-      val=tmpex->val;
-      mode=PRS0__EXTERN|PRS1_NOT_REALLY__EXTERN;
-    }
-    if (cc->token=='(') {
-      switch (mode&255) {
-	case PRS0__INTERN:
-	  tmpf=PrsFunJoin(cc,tmpc,st,fsp_flags);
-	  tmpf->exe_addr=val;
-	  Bts(&tmpf->flags,Ff_INTERNAL);
-	  LBtr(&tmpf->flags,Cf_EXTERN);
-	  return;
-	case PRS0__EXTERN:
-	  if (!(fsp_flags&FSF__) && !(mode&PRS1_NOT_REALLY__EXTERN))
-	    LexExcept(cc,"Expecting label with underscore at ");
-	  tmpf=PrsFunJoin(cc,tmpc,st,fsp_flags);
-	  tmpf->exe_addr=val;
-	  SysSymImportsResolve(tmpf->str);
-	  LBtr(&tmpf->flags,Cf_EXTERN);
-	  if (saved_mode&255==PRS0__EXTERN)
-	    LBts(&tmpf->flags,Ff__EXTERN);
-	  if (cc->flags&CCF_AOT_COMPILE)
-	    tmpf->type|=HTF_RESOLVE;
-	  return;
-	case PRS0_EXTERN:
-	  PrsFunJoin(cc,tmpc,st,fsp_flags);
-	  return;
-	case PRS0__IMPORT:
-	  if (!(fsp_flags&FSF__))
-	    LexExcept(cc,"Expecting label with underscore at ");
-	case PRS0_IMPORT:
-	  if (!(cc->flags&CCF_AOT_COMPILE))
-	    LexExcept(cc,"import not needed at ");
-	  else {
-	    tmpf=PrsFunJoin(cc,tmpc,st,fsp_flags);
-	    tmpf->type|=HTF_IMPORT;
-	    if (mode&255==PRS0__IMPORT)
-	      tmpf->import_name=StrNew(val);
-	    else
-	      tmpf->import_name=StrNew(tmpf->str);
-	  }
-	  return;
-	default:
-	  PrsFun(cc,tmpc,st,fsp_flags);
-	  return;
-      }
-    } else {
-      if (tmpad.total_cnt<0) {
-	i=0;
-	undef_array_size=TRUE;
-      } else {
-	i=tmpad.total_cnt;
-	undef_array_size=FALSE;
-      }
-      j=CmpTargetSize(cc,tmpc);
-      j*=i;
-      has_alias=FALSE;
-      tmphg=NULL;
-      switch (mode&255) {
-	case PRS0__EXTERN:
-	  if (cc->flags&CCF_AOT_COMPILE) {
-	    tmpg=CAlloc(sizeof(CHashGlblVar));
-	    tmpg->data_addr_rip=val;
-	    tmpg->type=HTT_GLBL_VAR | HTF_EXPORT;
-	  } else {
-	    tmpg=CAlloc(sizeof(CHashGlblVar),Fs->code_heap);
-	    tmpg->data_addr=val;
-	    tmpg->type=HTT_GLBL_VAR;
-	  }
-	  tmpg->flags|=GVF_ALIAS;
-	  break;
-	case PRS0__IMPORT:
-	case PRS0_IMPORT:
-	  if (!(cc->flags&CCF_AOT_COMPILE))
-	    LexExcept(cc,"import not needed at ");
-	  else {
-	    tmpg=CAlloc(sizeof(CHashGlblVar));
-	    tmpg->type=HTT_GLBL_VAR | HTF_IMPORT;
-	    if (mode&255==PRS0__IMPORT)
-	      tmpg->import_name=StrNew(val);
-	    else
-	      tmpg->import_name=StrNew(st);
-	  }
-	  break;
-	case PRS0_EXTERN:
-	  if (cc->flags&CCF_AOT_COMPILE) {
-	    tmpg=CAlloc(sizeof(CHashGlblVar));
-	    tmpg->type=HTT_GLBL_VAR;
-	  } else {
-	    tmpg=CAlloc(sizeof(CHashGlblVar),Fs->code_heap);
-	    tmpg->type=HTT_GLBL_VAR|HTF_UNRESOLVED;
-	  }
-	  break;
-	default:
-	  if (cc->flags&CCF_AOT_COMPILE) {
-	    if (Bt(&cc->opts,OPTf_GLBLS_ON_DATA_HEAP)) {
-	      if (cc->token=='=')
-		LexExcept(cc,"Can't init glbl var on data heap in AOT module ");
-	      tmpg=CAlloc(sizeof(CHashGlblVar));
-	      tmphg=tmpg->heap_glbl=CAlloc(sizeof(CAOTHeapGlbl));
-	      tmphg->size=j;
-	      tmphg->str=StrNew(st);
-	      tmphg->next=aotc->heap_glbls;
-	      aotc->heap_glbls=tmphg;
-	      tmpg->flags=GVF_DATA_HEAP;
-	      tmpg->type=HTT_GLBL_VAR; //TODO: HTF_EXPORT
-	      if (tmpex && tmpex->type & HTT_GLBL_VAR) //TODO!! extern
-		LexExcept(cc,"Feature not implemented ");
-	    } else {
-	      tmpg=CAlloc(sizeof(CHashGlblVar));
-	      if (cc->token=='=')
-		tmpg->data_addr=CAlloc(j);
-	      if (CmpTargetSize(cc,tmpc)>=8) //align
-		while (aotc->rip&7)
-		  AOTStoreCodeU8(cc,0);
-	      else if (CmpTargetSize(cc,tmpc)==4)
-		while (aotc->rip&3)
-		  AOTStoreCodeU8(cc,0);
-	      else if (CmpTargetSize(cc,tmpc)==2)
-		while (aotc->rip&1)
-		  AOTStoreCodeU8(cc,0);
-	      tmpg->data_addr_rip=aotc->rip;
-	      tmpg->type=HTT_GLBL_VAR | HTF_EXPORT;
-	      if (tmpex && tmpex->type & HTT_GLBL_VAR)
-		has_alias=TRUE;
-	      for (k=0;k<j;k++)
-		AOTStoreCodeU8(cc,0); //Init AOT glbl to zero.
-	    }
-	  } else {
-	    if (Bt(&cc->opts,OPTf_GLBLS_ON_DATA_HEAP)) {
-	      tmpg=CAlloc(sizeof(CHashGlblVar),Fs->code_heap);
-	      tmpg->data_addr=MAlloc(j);
-	      tmpg->flags=GVF_DATA_HEAP;
-	    } else {
-	      tmpg=CAlloc(sizeof(CHashGlblVar),Fs->code_heap);
-	      tmpg->data_addr=MAlloc(j,Fs->code_heap);
-	    }
-	    tmpg->type=HTT_GLBL_VAR;
-	    if (tmpex && tmpex->type&HTT_GLBL_VAR &&
-		  tmpex->type&HTF_UNRESOLVED &&
-		  MHeapCtrl(tmpex)==MHeapCtrl(tmpg))
-	      has_alias=TRUE;
-	    if (sys_var_init_flag)
-	      MemSet(tmpg->data_addr,sys_var_init_val,j);
-	  }
-      }
-      tmpg->dim.next=tmpad.next;
-      if (fsp_flags&FSF_PUBLIC)
-	tmpg->type|=HTF_PUBLIC;
-      tmpg->var_class=tmpc;
-      tmpg->str=st;
-      tmpg->size=j;
-      tmpg->dim.total_cnt=i;
-      tmpg->use_cnt=0;
-      if (cc->last_U16=='\n')
-	HashSrcFileSet(cc,tmpg,-1);
-      else
-	HashSrcFileSet(cc,tmpg,0);
-      if (mode&255==PRS0_IMPORT || mode&255==PRS0__IMPORT)
-	tmpg->flags|=GVF_IMPORT;
-      if (mode&255==PRS0_EXTERN)
-	tmpg->flags|=GVF_EXTERN;
-      if (tmpf_fun_ptr) {
-	tmpg->fun_ptr=tmpf_fun_ptr;
-	tmpg->flags|=GVF_FUN;
-      }
-      if (is_array)
-	tmpg->flags|=GVF_ARRAY;
-      HashAdd(tmpg,cc->htc.glbl_hash_table);
-      if (!(cc->flags&CCF_AOT_COMPILE) && !(tmpg->flags&GVF_EXTERN))
-	SysSymImportsResolve(tmpg->str);
-      if (cc->token=='=') {
-	if (undef_array_size) {
-	  LexPush(cc);
-	  LexPush(cc);
-	  Lex(cc);
-	  PrsGlblInit(cc,tmpg,1);
-	  LexPopNoRestore(cc);
-	  tmpg->size=tmpg->dim.total_cnt*CmpTargetSize(cc,tmpc);
-	  if (tmphg)
-	    tmphg->size=tmpg->size;
-	  if (cc->flags&CCF_AOT_COMPILE)
-	    for (k=0;k<tmpg->size;k++)
-	      AOTStoreCodeU8(cc,0);
-	  else
-	    if (sys_var_init_flag)
-	      MemSet(tmpg->data_addr,sys_var_init_val,k);
-	  LexPopRestore(cc);
-	}
-	LexPush(cc);
-	Lex(cc);
-	PrsGlblInit(cc,tmpg,2);
-	if (cc->flags&CCF_AOT_COMPILE)
-	  for (k=0;k<tmpg->size;k++)
-	    AOTStoreCodeU8At(cc,tmpg->data_addr_rip+k,tmpg->data_addr[k]);
-	LexPopNoRestore(cc);
-      }
-      if (!(tmpg->flags&(GVF_EXTERN|GVF_IMPORT|GVF_ALIAS|GVF_DATA_HEAP)))
-        PrsI386DataRange(cc,tmpg->data_addr_rip,tmpg->size);
-      if (has_alias) {
-	if (tmpex(CHashGlblVar *)->use_cnt<2) {
-	  PrintWarn("Unused extern '%s'\n",tmpex(CHashGlblVar *)->str);
-	  cc->warning_cnt++;
-	}
-	tmpex(CHashGlblVar *)->flags|=GVF_ALIAS;
-	tmpex(CHashGlblVar *)->data_addr=tmpg->data_addr;
-	tmpex(CHashGlblVar *)->data_addr_rip=tmpg->data_addr_rip;
-      }
-      if (cc->token==',')
-	Lex(cc);
-      else {
-	if (cc->token!=';')
-	  LexExcept(cc,"Missing ';' at");
-	Lex(cc);
-	return;
-      }
-    }
-  }
+U0 PrsFun(CCmpCtrl *cc,CHashClass *tmp_return,U8 *name,I64 fsp_flags)
+{
+  CPrsExpressionServices expression;
+  CPrsTypeServices types;
+  CPrsDeclarationServices declarations;
+  CPrsInitializerServices initializers;
+  CPrsSymbolServices symbols;
+  CPrsGlobalServices globals;
+  CPrsFunctionServices services;
+  PrsHostServices(&expression); PrsHostTypeServices(&types);
+  PrsHostDeclarationServices(&declarations,&expression,&types);
+  PrsHostInitializerServices(&initializers,&declarations);
+  PrsHostSymbolServices(&symbols,&declarations);
+  PrsHostGlobalServices(&globals,&symbols,&initializers);
+  PrsHostFunctionServices(&services,&globals);
+  PrsFunCore(&services,cc,tmp_return,name,fsp_flags);
 }
 
 U0 PrsIf(CCmpCtrl *cc,I64 try_cnt,CCodeMisc *lb_break)

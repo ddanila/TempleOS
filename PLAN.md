@@ -802,6 +802,14 @@ initialized i386 string pointers remain an explicit unfinished relocation case.
 See `docs/i386-initializer-parser.md`. Global declarations and statement/function-body
 parsing remain the next frontend extraction/integration work.
 
+Global declaration handling and function-body construction/compilation now also
+have shared cores. Explicit services cover alias heap identity, import resolution,
+statement parsing, output compilation, trace disassembly and diagnostics. The
+non-AOT inferred-array fill uses its computed byte size rather than an uninitialized
+loop variable. Native immediate compilation still needs durable code/debug/symbol
+ownership; statement parsing and native adapters remain open. See
+`docs/i386-global-function-parser.md` for contracts and validation limits.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

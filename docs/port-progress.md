@@ -3606,3 +3606,33 @@ software-F64 conversion and durable code/data publication. Initialized i386 stri
 pointers still require target relocation support and remain explicitly rejected.
 Global declarations, statement/function-body parsing, native source execution,
 DolDoc, self-hosting and strict 386SX/DX acceptance remain unfinished.
+
+## Shared globals and function-body construction
+
+`PrsGlobalCore.HC` now shares the production global declaration loop, including
+function dispatch, imports/externs, alias updates, allocation/alignment, source
+attribution and initializer passes. `PrsFunctionCore.HC` shares function-body IR
+construction, leave/return handling, compilation, trace handling and final symbol
+state. Existing host entries provide composed services; statement parsing remains
+an explicit callback. No retained native frontend ABI is added.
+
+The immediate inferred-array fill previously used a loop variable uninitialized
+on that path. It now fills the computed `tmpg->size`. A host regression enables
+allocation fill, compiles and executes an explicitly sized multidimensional global,
+checks every initialized value, and restores the prior fill settings. The existing
+native data corpus covers inferred arrays through AOT compilation; these checks do
+not prove native immediate inferred-array execution.
+
+Both x64 compiler/kernel rebuild/reboot generations, all 234 function cases, all
+19 data cases (including the required host-fill marker), floating-point and
+inline-assembly suites passed. The complete standalone boot, compiler recovery,
+VGA/input and module-rejection suite also passed. Kernel size remains 389424 bytes
+and retained ABIs are unchanged. Whitespace and Python runner syntax checks pass.
+These exercise the shared frontend in the existing compiler, not a natively
+executing frontend.
+
+See [i386-global-function-parser.md](i386-global-function-parser.md) for alias,
+publication and output-padding contracts. Statement parsing, native service
+adapters, assembler/AOT integration, target compile-time execution and durable
+code/data/symbol ownership remain required. The full OS goal, including DolDoc,
+self-hosting and strict 386SX/DX acceptance, remains active.

@@ -215,6 +215,8 @@ def main():
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
         '--timeout', '90')
+    if args.data and 'PASS host global fill\n' not in (exports/'debug.log').read_text():
+        raise ValueError('Missing host global fill regression')
     ranges = {}
     linked = set()
     data_ranges = {}

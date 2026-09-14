@@ -74,10 +74,29 @@ U0 RejectSource(U8 *source)
   Free(text);
   if (aot || !errors) Report("FAIL accepted unsupported initializer\n");
 }
+Bool host_global_fill_checked;
+U0 CheckHostGlobalFill()
+{
+  U8 old_flag=sys_var_init_flag,old_value=sys_var_init_val;
+  host_global_fill_checked=FALSE;
+  sys_var_init_flag=TRUE; sys_var_init_val=0xA5;
+  try {
+    ExePrint("I64 HostGlobalFillRows[2][2]={{1,2},{3,4}}; "
+      "if(sizeof(HostGlobalFillRows)==32 && HostGlobalFillRows[0][0]==1 && "
+      "HostGlobalFillRows[0][1]==2 && HostGlobalFillRows[1][0]==3 && "
+      "HostGlobalFillRows[1][1]==4) host_global_fill_checked=TRUE;");
+  } catch {
+    sys_var_init_flag=old_flag; sys_var_init_val=old_value;
+  }
+  sys_var_init_flag=old_flag; sys_var_init_val=old_value;
+  if(!host_global_fill_checked) { Report("FAIL host global fill\n"); throw; }
+  Report("PASS host global fill\n");
+}
 U0 CompileTests()
 {
   U8 *data=MAlloc(65536),*cursor=data,*line;
   Report("START i386 data\n");
+  CheckHostGlobalFill;
   EmitData("I64 count; I64 Main(I64 a,I64 b) { return count; }",0,&cursor);
   EmitData("I64 count=0x100000000; I64 Main(I64 a,I64 b) { count+=42; return count; }",0x10000002A,&cursor);
   EmitData("U8 *ptr=0; U32 tag=0x12345678; I64 Main(I64 a,I64 b) { ptr=&tag; if (sizeof(ptr)!=4) return -1; return *ptr+tag; }",0x123456F0,&cursor);
