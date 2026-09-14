@@ -6,6 +6,7 @@
 #assert sizeof(CArcCompress)==17
 #assert sizeof(CArcEntry)==12
 #assert sizeof(CArcCtrl)==65664
+public extern I64 ArcOwnerTest();
 public extern U64 ArcCoreTest(CArcCtrl *c,I64 bits);
 I64 Main(I64 a,I64 b)
 {
@@ -20,9 +21,13 @@ I64 Main(I64 a,I64 b)
   result=ArcCoreTest(c,8);
   if(result!=ARC_EXPECTED8 || !I386HeapFree(&heap,c)) return 5;
   if(heap.used || heap.allocations || !I386HeapValid(&heap)) return 6;
-  return 0;
+  return ArcOwnerTest;
 }
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Arc.HC"
 U0 ArcStep(CArcCtrl *c) { I386ArcEntryGet(c); }
 #include "T:/Core.HC"
+
+#include "/Kernel/I386/Cpu.HC"
+#include "/Kernel/I386/Ports.HH"
+#include "T:/Owner.HC"

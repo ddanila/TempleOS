@@ -2630,3 +2630,29 @@ This is a compression prerequisite. Native stream decoding, owned controls/stack
 bounded archive expansion, original compressed-data interoperability and file/
 include integration remain open, as do parser/JIT, documents, strict 386 profiles
 and native self-hosting. See `docs/i386-compression.md`.
+
+## Owned native compression controls
+
+ArcCtrlSeed now shares fresh-control initialization with the x64 constructor.
+I386ArcCtrlNew owns a native control and optional 4096-byte expansion stack,
+reclaims a partially allocated control if stack allocation fails and publishes
+only initialized state. The private owner records the heap and actual stack
+allocation separately from mutable public decoder pointers. I386ArcCtrlDel frees
+those allocations while leaving source/destination buffers borrowed; wrong-heap,
+raw-control and repeat deletion are rejected. Both paths preserve interrupt state.
+
+The native control occupies a 65696-byte heap span, or 69808 bytes with its stack.
+Shared x64/native lifecycle checks cover twelve mode/stack combinations and zero
+initial dictionary storage. Native tests cover 33 exhausted arenas, exact-fit
+success, default arguments, partial cleanup, ownership rejection, borrowed data,
+changed decoder pointers and both IF states. A missing default argument on the
+initial native definition was corrected after the fixture exposed it.
+
+Both x64 rebuild/reboot generations, archive lifecycle and frozen 40000-update
+dictionary traces pass, along with the native instruction audit. Full kernel boot,
+module rejection and VGA/keyboard/timer checks pass with the shared initialization
+change. Native archive helpers remain outside the 383496-byte bootstrap, leaving
+9720 bytes of headroom. Stream decoding, bounded expansion, original archive
+interoperability and file/include integration remain required, along with the
+remaining parser/JIT, document, strict 386 and self-hosting work. See
+`docs/i386-compression.md`.

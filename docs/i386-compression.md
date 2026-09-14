@@ -40,7 +40,32 @@ passes the 386 instruction audit on the QEMU/486 development profile.
 
 Both x64 rebuild/reboot generations and the full native kernel boot suite pass.
 The native dictionary code is not yet linked into the standalone bootstrap.
-Native bitstream decoding, control/stack ownership, bounded archive expansion,
+Native bitstream decoding, bounded archive expansion,
 original compressed-data interoperability, file-service decompression and include
 dispatch remain required. This component does not yet let the native OS read .Z
 source files or prove complete compression support.
+
+## Owned controls and expansion stacks
+
+`ArcCtrlSeed` shares initialization of a fresh zeroed control. The x64 constructor
+still uses its allocator and assembly dictionary setup. Native `I386ArcCtrlNew`
+allocates an owned control, optionally allocates the 4096-byte expansion stack,
+then seeds and advances the native dictionary. It publishes the pointer only
+after all allocations succeed. As in the original constructor, only CT_7_BIT
+selects seven-bit literals; other mode values select eight. Archive-type validation
+belongs in the whole-buffer expansion service.
+
+The native owner stores the heap and stack allocation outside the public control.
+`I386ArcCtrlDel` validates that ownership, releases the constructor-owned stack
+and record and leaves source/destination buffers borrowed. It uses the recorded
+allocation even if decoder fields such as stk_base/stk_ptr have changed. Wrong
+heap, null, foreign raw controls and repeat deletion are rejected. Both functions
+preserve the caller's interrupt state around heap operations.
+
+Native heap spans are 65696 bytes for a control and 69808 bytes with an expansion
+stack, in one or two allocations respectively. Shared lifecycle checks inspect
+fresh fields and zero dictionary storage for twelve mode/stack combinations.
+Native cases additionally cover 33 exhausted arenas, exact-fit success, default
+arguments, partial-allocation reclamation, ownership rejection, borrowed buffers,
+changed decoder pointers and both interrupt states. These services still do not
+expand an archive; bitstream decoding and file integration remain open.

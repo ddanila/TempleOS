@@ -307,9 +307,10 @@ verification, and clean wrong-architecture module rejection.
 Compression records are now shared, preserving the 17-byte disk header while
 using native-width in-memory pointers. A native dictionary allocator matches the
 original x64 assembly across 40000 growth/reuse updates, including occupied-slot
-skips and chain unlinking. It remains outside the bootstrap. Native bitstream
-expansion, control/stack ownership and compressed-file interoperability still need
-implementation; see `docs/i386-compression.md`.
+skips and chain unlinking. It remains outside the bootstrap. Owned native controls and expansion stacks now share initialization with x64,
+preserve interrupt state and reclaim partial allocations. Native bitstream
+expansion and compressed-file interoperability still need implementation; see
+`docs/i386-compression.md`.
 
 ### H. Meet the memory budget and recover the complete user workflow
 

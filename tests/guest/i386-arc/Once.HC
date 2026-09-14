@@ -5,6 +5,9 @@ U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 #assert sizeof(CArcCtrl)==98456
 _extern _ARC_ENTRY_GET U0 ArcStep(CArcCtrl *c);
 #include "T:/Core.HC"
+CArcCtrl *ArcNew(Bool expand,I64 mode) { return ArcCtrlNew(expand,mode); }
+Bool ArcDelete(CArcCtrl *c) { ArcCtrlDel(c); return TRUE; }
+#include "T:/Lifecycle.HC"
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
@@ -14,6 +17,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native compression dictionary\n");
+  if(ArcLifecycleTest) { Report("FAIL system archive lifecycle\n"); return; }
   expected7=ArcCoreTest(c,7); MemSet(c,0,sizeof(CArcCtrl));
   expected8=ArcCoreTest(c,8); Free(c);
   if(expected7!=0xC2BBC609CFFE2505 || expected8!=0xB11B35864A95B67A) { Report("FAIL dictionary oracle\n"); return; }
