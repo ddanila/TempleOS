@@ -3658,3 +3658,39 @@ contracts. The shared parser still needs native allocation registration and erro
 unwind, target assembly/linking and compile-time execution adapters, and durable
 code/data/symbol publication. These results exercise host parsing and generated
 native execution, not a native frontend. The full OS goal remains active.
+
+## Native shared expression execution
+
+CompilerRuntime ABI 23 (132 bytes) now publishes the complete shared expression
+parser with a caller-supplied service environment. Root parser stacks register as
+control-owned allocation kind 7, remain separate from the optimizer stack, and are
+released on success or full control unwind. Recursive calls validate stack ownership.
+Shared push/pop operations reject array overflow/underflow, and native entry checks
+the task stack with a 4096-byte reserve before descending into the core. The service
+loader's temporary table now follows the compiler interface size.
+
+The native probe parses arithmetic source, runs the shared optimizer/backend and
+executes the resulting code. Eight successful programs cover precedence, parentheses,
+division, wide shifts, chained comparisons and 64-bit values. Four error cases cover
+malformed input, allocation failure, deep parentheses and excessive unary operators.
+All 12 cases pass on both boot and worker tasks, with exact heap, control, task
+reference and interrupt-state restoration. Test tables and long source fixtures
+live on the heap so they fit the worker's existing 8 KiB stack. Callback paths beyond
+this coverage deliberately fail the fixture; they are not general native adapters.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. All 235 function cases,
+19 data cases, floating-point and inline-assembly suites passed after the shared
+stack changes. The complete standalone suite passed with 8 MiB and the emulated
+486, including pixel-exact VGA/input and module rejection. Instruction audits pass;
+strict 386SX/DX acceptance remains open. Python syntax and whitespace checks pass.
+
+The kernel is 389432 bytes, within the existing reservation. The retained compiler
+image is 739096 bytes (739112 heap bytes); the temporary probe image is 193256 bytes
+and reclaims all 193272 heap bytes after both phases. Compiler/probe imports remain
+21/17. FileRuntime remains ABI 13/32 bytes; CompilerProbe remains ABI 5/56 bytes.
+
+See [i386-native-expression.md](i386-native-expression.md) for the API and limits.
+This is native source-to-code evidence for the tested expressions, not a complete
+frontend. Full type/declaration/string/symbol adapters, statement integration,
+assembler/linker execution and durable code/data publication remain required, along
+with DolDoc, self-hosting and the rest of `PLAN.md`. The full OS goal stays active.

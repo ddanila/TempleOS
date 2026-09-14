@@ -814,8 +814,16 @@ The complete statement parser now uses shared services, including stream blocks,
 nested switch sections, assembly dispatch and both target exception-call paths.
 Switch table initialization uses pointer-width stores, and case ranges stop before
 incrementing beyond `I64_MAX`. Native ownership/recovery, compile-time execution
-and assembler adapters remain required; no native frontend API is published.
+and assembler adapters remain required; general native source compilation is unfinished.
 See `docs/i386-statement-parser.md`.
+
+The retained runtime now exposes the complete shared expression parser through an
+explicit caller-supplied service environment (ABI 23, 132 bytes). Parser stacks are
+owned separately from optimizer stacks and reclaimed on control unwind. Shared
+stack bounds and a native task-stack reserve check guard parser entry. Native
+arithmetic probes connect source tokens, shared parsing, optimization and code
+execution; a complete native environment for types, symbols and statements still
+needs integration. See `docs/i386-native-expression.md` for the API and limits.
 
 #### Continuing integration sequence
 

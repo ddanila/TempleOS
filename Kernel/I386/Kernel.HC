@@ -535,7 +535,7 @@ U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
   U8 *record,I64 bytes,U32 version)
 {//Private bounded service tables. Validate a stack candidate before publication.
   CI386RedSeaEntry file;
-  U8 candidate[128],*image=0,*reason="load";
+  U8 candidate[sizeof(CI386CompilerServices)],*image=0,*reason="load";
   I64 (*entry)(U8 *services,I64 bytes);
   I64 i,used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
   if(bytes<8 || bytes>sizeof(candidate) || bytes&3) KernelStop;

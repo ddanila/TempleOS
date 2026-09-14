@@ -42,9 +42,9 @@ views must all be covered by the environment's failure cleanup.
 
 ## Remaining native integration
 
-The retained native compiler does not yet publish an expression-parser service.
-The existing production compiler now exercises this core; native execution needs
-these concrete adapters and ownership work:
+The retained native compiler now publishes the [shared expression entry](i386-native-expression.md)
+with a caller-supplied environment and an owned parser stack. A complete native
+frontend still needs these adapters and ownership work:
 
 | Dependency | Existing foundation and remaining connection |
 | --- | --- |
@@ -52,7 +52,7 @@ these concrete adapters and ownership work:
 | IR | `I386ICAdd`, `I386COCMiscNew`, `I386ICRetire` supply control-owned nodes; convert failed service returns into compiler/allocation failures consistently. |
 | Saved views | Native push/pop/header-free/append exist; preserve the argument parser's explicit view-chain rearrangement while using the ownership registry for unwind. |
 | Optimization | `I386OptPass012` already uses borrowed types and an owned pass stack. |
-| Parser stack | Recursive expression parsing needs its own owned stack lifetime; it cannot alias `cc->ps` while argument optimization is using that stack. |
+| Parser stack | The native entry owns a separate registered stack, including recursive calls and failure cleanup; it does not alias the optimizer stack in `cc->ps`. |
 | Types | `PrsTypeCore` and `PrsArrayDimsCore` now share the original type/array parser. Connect class/function joins, declaration ownership and target array-bound evaluation; see [type parser](i386-type-parser.md). |
 | Strings | Connect adjacent-string concatenation with native ownership, including failure after token-buffer transfer and embedded zero bytes. |
 | Symbols | Provide owned unresolved exports and assembler references, ordered hash insertion, and cleanup after publication or failure. |
