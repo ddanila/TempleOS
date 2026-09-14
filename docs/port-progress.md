@@ -2462,3 +2462,28 @@ VGA/keyboard and timers. Both x64 rebuild/reboot generations pass. The runtime i
 modules. General keyword initialization, includes/conditionals/executed directives,
 public compiler-control APIs, parser/JIT, DolDoc and self-hosting remain required.
 See `docs/i386-lex-define.md` and `docs/i386-compiler-runtime.md`.
+
+## Compiler diagnostics moved out of the bootstrap stage
+
+The token, identifier/string and definition boot/task probes now compile into a
+separate CompilerProbe.t32m module. The kernel loads it once during boot, calls it
+with a borrowed 44-byte context before startup and after task/timer activity, then
+reclaims its image. No callbacks, tasks or caller pointers escape these synchronous
+calls. Phase one performs no disk I/O, and the actual compiler runtime stays live.
+
+The bootstrap is now 364504 bytes, a 26256-byte reduction, leaving 28712 bytes in
+the unchanged 384 KiB reservation. The temporary probe image is 44208 bytes with a
+44224-byte heap span, all reclaimed after its task call. This is code headroom,
+not a claim of lower peak physical-memory demand. The manifest distinguishes the
+nine packaged modules, six linked bootstrap modules, persistent runtime and two
+temporary modules.
+
+Both x64 rebuild/reboot generations and the full native kernel boot suite pass.
+All previous service/value/source/metadata tests still execute. New checks enforce
+probe placement, phase order and exact reclamation, plus rejection/reclamation for
+wrong CPU, missing imports and incompatible probe API versions. Startup-rejection
+matching now checks the exact MODULE log prefix so it does not confuse PROBE MODULE
+with startup execution. VGA/keyboard/timer and runtime rejection regressions pass.
+Native preprocessing, parser/JIT, public compiler/kernel APIs, the complete document
+workflow, strict 386 profiles and self-hosting remain open. See
+`docs/i386-compiler-probe.md`.

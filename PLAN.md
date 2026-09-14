@@ -479,8 +479,11 @@ programming environment through these concrete steps:
    Definition/redefinition, expansion, metadata and failure/reclamation tests pass;
    the version-8 runtime executes definition probes at boot and after task activity.
    General keyword initialization and remaining directives are still required.
-   The bootstrap now occupies 390760 of 393216 bytes; move further service or
-   diagnostic growth into extended-memory modules before exhausting that boundary.
+   Compiler diagnostics now load as a temporary extended-memory module, retained
+   through boot/task checks and then reclaimed. This reduces the bootstrap from
+   390760 to 364504 bytes within the unchanged 393216-byte reservation; its 44224-byte
+   temporary heap span is measured separately from the retained compiler runtime.
+   Preserve that placement/lifetime discipline as remaining services are integrated.
    Full lexical dispatch and remaining directive processing are required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block

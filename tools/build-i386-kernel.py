@@ -11,7 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
-DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime')
+DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe')
 
 
 def run(*args):
@@ -44,8 +44,9 @@ def verify_startup_rejection(disk, volume, out):
                 '--i386-disk','--out',str(work),'--timeout','60'],cwd=ROOT,stdout=log,stderr=log)
         evidence=(work/'debug.log').read_text()
         if (result.returncode==0 or 'FAIL native kernel\n' not in evidence
-                or 'SOURCE ' not in evidence or any(marker in evidence for marker in
-                    ('STARTUP disk module','MODULE ','READY native kernel','DONE native kernel'))):
+                or 'SOURCE ' not in evidence or any(line.startswith('MODULE ') for line in evidence.splitlines())
+                or any(marker in evidence for marker in
+                    ('STARTUP disk module','READY native kernel','DONE native kernel'))):
             raise ValueError(f'Startup did not reject {label} before execution')
         if candidate.read_bytes()!=changed: raise ValueError('Rejected startup changed disk')
         results.append(label)
@@ -79,6 +80,64 @@ def compiler_runtime_layout(module):
                 ident_token_offset=8+exports['I386LexIdentToken'][1], string_token_offset=8+exports['I386LexStringToken'][1],
                 next_offset=8+exports['I386RuntimeLexNext'][1], version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
+
+
+def compiler_probe_layout(module):
+    size, count, records = struct.unpack_from('<III', module, 16)
+    exports, imports = {}, []
+    for index in range(count):
+        kind, offset, name, length = struct.unpack_from('<4I', module, records+16*index)
+        if kind in (1, 2, 3, 5):
+            symbol = module[name:name+length].decode('ascii')
+            if kind in (1, 3):
+                exports[symbol] = (kind, offset)
+            else:
+                imports.append((symbol, name))
+    expected = {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapSize', 'I386HeapFree',
+                'I386HeapValid', 'I386IrqSave', 'I386IrqRestore', 'I386LexRawChar',
+                'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric'}
+    if {name for name, _ in imports} != expected:
+        raise ValueError('Unexpected compiler-probe import contract')
+    for name in ('Main', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine'):
+        if exports.get(name, (0, 0))[0] != 1:
+            raise ValueError(f'Missing compiler-probe function {name}')
+    if exports.get('compiler_probe_version', (0, 0))[0] != 3:
+        raise ValueError('Missing compiler-probe version')
+    version_offset = 32+exports['compiler_probe_version'][1]
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 1:
+        raise ValueError('Unexpected compiler-probe version')
+    return dict(image_bytes=size+8, version_offset=version_offset,
+                import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
+
+
+def verify_probe_rejection(disk, volume, out, layout):
+    original = disk.read_bytes()
+    offset = volume['files']['/Modules/I386/CompilerProbe.t32m']['block']*512
+    results = []
+    for label, position, replacement, reason in (
+            ('wrong-target', 6, b'\x04', 'load'),
+            ('missing-import', layout['import_offset'], b'X', 'load'),
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 0), 'api')):
+        work = out/f'reject-probe-{label}'
+        work.mkdir(parents=True, exist_ok=True)
+        changed = bytearray(original)
+        changed[offset+position:offset+position+len(replacement)] = replacement
+        candidate = work/'kernel.img'
+        candidate.write_bytes(changed)
+        with (work/'runner.log').open('w') as log:
+            result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
+                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+        evidence = (work/'debug.log').read_text()
+        if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
+                f'PROBE REJECT {reason} reclaimed\n' not in evidence or
+                any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ',
+                    'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'PROBE MODULE ',
+                    'STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
+            raise ValueError(f'Compiler probe did not reject/reclaim {label} before use')
+        if candidate.read_bytes() != changed:
+            raise ValueError('Rejected compiler probe changed the disk')
+        results.append(label)
+    return results
 
 
 def verify_compiler_rejection(disk, volume, out, layout):
@@ -329,6 +388,7 @@ def main():
     run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90')
     image=audit(exports,out)
     runtime_layout=compiler_runtime_layout((exports/'CompilerRuntime.t32m').read_bytes())
+    probe_layout=compiler_probe_layout((exports/'CompilerProbe.t32m').read_bytes())
     disk=out/'kernel.img'
     run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
@@ -354,6 +414,7 @@ def main():
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
             'bootstrap_modules':list(MODULES),
             'resident_modules':list(MODULES)+['CompilerRuntime'],
+            'temporary_modules':['Startup', 'CompilerProbe'],
             'volume':volume,
             'scope':'Native kernel with retained extended-memory lexer/numerical runtime and AOT startup; shell/JIT and self-hosting unfinished',
             'boot_test':None}
@@ -447,6 +508,20 @@ def main():
                 log.index('DEFINE PROBE ') > log.index('STARTUP disk module') or
                 log.rindex('DEFINE PROBE ') < log.rindex('TICK ')):
             raise ValueError('Native define publication/expansion probes failed')
+        probe_modules = [line.split() for line in log.splitlines() if line.startswith('PROBE MODULE ')]
+        releases = [line.split() for line in log.splitlines() if line.startswith('PROBE RELEASE ')]
+        if len(probe_modules)!=1 or len(probe_modules[0])!=5 or len(releases)!=1 or len(releases[0])!=4:
+            raise ValueError('Missing compiler-probe lifetime evidence')
+        probe_address, probe_size, probe_span = (int(value, 16) for value in probe_modules[0][2:])
+        if (probe_size!=probe_layout['image_bytes'] or probe_span!=((probe_size+7)&~7)+16 or
+                probe_address<begin or probe_address+probe_size>begin+length or
+                [int(value, 16) for value in releases[0][2:]]!=[probe_size, probe_span] or
+                not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
+                not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
+            raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
+        result['compiler_probe'] = dict(module='CompilerProbe', version=1, image_address=probe_address,
+            image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
+            phases=['boot', 'task'], lifetime='released after task probe')
         result['compiler_runtime'] = dict(module='CompilerRuntime', version=8, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
@@ -460,6 +535,7 @@ def main():
         screen.save(guest/'screen.png')
         rejected=verify_startup_rejection(disk,volume,out)
         result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
+        result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
         keyboard=console['run_input'](disk,out/'input')
         if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')

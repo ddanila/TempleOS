@@ -8,9 +8,10 @@ initializes a versioned interface, and retains its image for the kernel lifetime
 This removes the current compiler-runtime growth from the conventional-memory
 boot stage without increasing that stage's 384 KiB reservation.
 
-The build still links six bootstrap modules. It packages two additional modules:
-CompilerRuntime is retained, while Startup initializes the display and is then
-reclaimed under its existing synchronous-entry contract. All eight modules have
+The build still links six bootstrap modules. It packages three additional modules:
+CompilerRuntime is retained, Startup is reclaimed after initializing the display,
+and CompilerProbe is retained through the boot/task checks and then reclaimed.
+All nine modules have
 separate hashes and executable-range instruction audits. The manifest distinguishes
 bootstrap modules from all resident modules.
 
@@ -57,7 +58,8 @@ caller storage before reporting success.
 
 ## Execution and verification
 
-KernelCompilerProbe calls the actual relocated services during boot and again
+KernelCompilerProbe invokes the separate CompilerProbe module, which calls the
+actual relocated services during boot and again
 from the pulse task after startup, VGA allocation, task creation and timer IRQs.
 It parses a software-F64 numeric token, a hexadecimal string escape and a packed character constant, then skips a line comment, parses a shift assignment and resolves an identifier
 from an owned copied include. The source crosses back to a cached parent delimiter
@@ -86,7 +88,7 @@ keyboard/scrolling/cancellation pixel checks, source checks and timer checks pas
 each test's disk remains unchanged.
 
 With definition publication in interface version 8, the bootstrap image is
-390760 bytes of its 393216-byte reservation. The 126464-byte runtime image
+364504 bytes of its 393216-byte reservation. The 126464-byte runtime image
 is allocated at 0x131DA0 in the 8 MiB development profile and retains a
 126480-byte heap span. All eight service addresses match their exported offsets.
 Boot/task probes expand a macro, publish its identifier, replace that text with a
@@ -95,13 +97,15 @@ F64, consume the delimiter/EOF, detach the definition and reclaim its owned
 record/name/body/source link. DEFINE PROBE records are required in both phases,
 alongside the existing IDENT PROBE, STRING PROBE and LEX PROBE records.
 
-Source checks cover 30354 characters, 613 newlines, FNV32 0x6E22816B and
-30816 reclaimed heap bytes. Sizes and addresses are observations from result.json,
-not fixed addresses or memory minima required by the interface. Only 2456 bytes
-remain in the bootstrap reservation. Further growth must move bootstrap services
-or diagnostic code into extended-memory modules; do not raise the conventional
-memory reservation as an implicit workaround. See [native definition handling](i386-lex-define.md)
-for publication, symbol lifetime and remaining preprocessing work.
+Source checks cover 25145 characters, 542 newlines, FNV32 0xC77B0646 and
+25608 reclaimed heap bytes. Sizes and addresses are observations from result.json,
+not fixed addresses or memory minima required by the interface. Moving the probes
+to their temporary 44208-byte disk module reduces the bootstrap by 26256 bytes,
+leaving 28712 bytes in its unchanged reservation. The probe's 44224-byte heap span
+is released after its second call; the compiler runtime remains resident. This
+creates bootstrap code headroom while adding temporary extended-memory demand.
+See [compiler diagnostics](i386-compiler-probe.md) for the module lifetime and
+[native definition handling](i386-lex-define.md) for remaining preprocessing work.
 
 ## Import-declaration correction
 
