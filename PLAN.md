@@ -492,6 +492,12 @@ semantics and floating-point exception state remain pending. Numerical
 comparison now passes 2,048 checks, including unordered NaNs, signed zeros and
 reversed operands; same-type relational operators now use this runtime path. See
 `docs/i386-soft-f64.md`.
+Native try-block lowering now supplies typed SysTry/SysUntry call contexts,
+position-relative catch/cleanup label addresses, and balanced cleanup calls on
+early returns. Five recording-provider cases pass for normal, nested and repeated
+registration/cleanup, bringing the function corpus to 220 cases. This is a
+compiler prerequisite only: throw, catch execution in the enclosing frame,
+propagation, exception records and task-owned lifetime are not implemented yet.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

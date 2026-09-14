@@ -158,7 +158,7 @@ auditing excludes the table bytes.
 
 HolyC `start` prefixes use local subroutine calls and bare returns. The enclosing
 function epilogue restores ESP from EBP before popping saved registers, allowing
-a native function return from inside a prefix. The function corpus has 215 cases,
+a native function return from inside a prefix. The function corpus has 220 cases,
 including 20 switch cases and five deliberate #DE faults. Nineteen switch bodies
 also execute on x64 with checked results. The prefix early-return case is native
 only: executing it in the x64 oracle stalled the test guest. Its x64 compatibility
@@ -192,3 +192,19 @@ The backend consumes each slot, uses the low 16 bits of the port and the low
 8/16/32 bits of the output value, and zero-extends unsigned input results.
 Output intrinsics have U0 return semantics. Nested intrinsic calls retain the
 normal expression-stack and callee-saved-register rules.
+
+
+The i386 parser path now gives compiler-generated SysTry/SysUntry calls ordinary
+function metadata and explicit result disposal, including cleanup calls before
+returns from nested try blocks. Forward extern calls use native forward fixups;
+actual imports retain import relocations. IC_GET_LABEL materializes a local label
+with a PC-relative calculation and zero-extends the address into an argument slot.
+The legacy x64 parser path remains in use for x64 compilation.
+
+Five function cases exercise normal and nested try exits, repeated registration,
+catch-body skipping on normal execution, and one/two cleanup calls before early
+return. The providers record registration and cleanup; they do not implement
+throw or nonlocal catch execution. These checks establish compiler lowering,
+not stack unwinding. Native exception records, capture/restore stubs, propagation,
+catch acceptance and task-owned lifetime remain required. The function corpus
+now uses the 128 KiB test transfer path; the guest still has 8 MiB RAM.

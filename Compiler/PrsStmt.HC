@@ -841,6 +841,19 @@ U0 PrsStreamBlk(CCmpCtrl *cc)
   Lex(cc); //Skip '}'
 }
 
+U0 PrsI386TryCall(CCmpCtrl *cc,CHashFun *fun,Bool begin=TRUE)
+{//Native calls use the ordinary typed call context and explicit result disposal.
+  if(begin) ICAdd(cc,IC_CALL_START,fun,0);
+  if(Bt(&fun->flags,Cf_EXTERN)) {
+    cc->abs_cnts.externs++;
+    if(fun->type&HTF_IMPORT) ICAdd(cc,IC_CALL_IMPORT,fun,fun->return_class);
+    else ICAdd(cc,IC_CALL_EXTERN,fun,fun->return_class);
+  } else ICAdd(cc,IC_CALL,fun->exe_addr,fun->return_class);
+  ICAdd(cc,IC_ADD_RSP1,fun->arg_cnt*8,fun->return_class);
+  ICAdd(cc,IC_CALL_END,fun,fun->return_class);
+  ICAdd(cc,IC_END_EXP,0,0,ICF_RES_NOT_USED);
+}
+
 U0 PrsTryBlk(CCmpCtrl *cc,I64 try_cnt)
 {
   CCodeMisc	*lb_catch,*lb_done,*lb_untry;
@@ -857,6 +870,12 @@ U0 PrsTryBlk(CCmpCtrl *cc,I64 try_cnt)
   lb_done =COCMiscNew(cc,CMT_LABEL);
   lb_untry=COCMiscNew(cc,CMT_LABEL);
 
+  if(cc->flags&CCF_TARGET_I386) {
+    ICAdd(cc,IC_CALL_START,tmp_try,0);
+    ICAdd(cc,IC_GET_LABEL,lb_untry,tmpc,ICF_PUSH_RES);
+    ICAdd(cc,IC_GET_LABEL,lb_catch,tmpc,ICF_PUSH_RES);
+    PrsI386TryCall(cc,tmp_try,FALSE);
+  } else {
   ICAdd(cc,IC_CALL_START,0,0);
   ICAdd(cc,IC_GET_LABEL,lb_untry,tmpc,ICF_PUSH_RES);
   ICAdd(cc,IC_GET_LABEL,lb_catch,tmpc,ICF_PUSH_RES);
@@ -876,9 +895,13 @@ U0 PrsTryBlk(CCmpCtrl *cc,I64 try_cnt)
   ICAdd(cc,IC_CALL_END,0,tmpc);
   ICAdd(cc,IC_END_EXP,0,0,ICF_RES_NOT_USED);
 
+  }
+
   PrsStmt(cc,try_cnt+1);
 
   ICAdd(cc,IC_LABEL,lb_untry,0);
+  if(cc->flags&CCF_TARGET_I386) PrsI386TryCall(cc,tmp_untry);
+  else {
   ICAdd(cc,IC_CALL_START,0,0);
   if (Bt(&tmp_untry->flags,Cf_EXTERN)) {
     cc->abs_cnts.externs++;
@@ -890,6 +913,8 @@ U0 PrsTryBlk(CCmpCtrl *cc,I64 try_cnt)
     ICAdd(cc,IC_CALL,tmp_untry->exe_addr,tmpc);
   ICAdd(cc,IC_CALL_END,0,tmpc);
   ICAdd(cc,IC_END_EXP,0,0,ICF_RES_NOT_USED);
+
+  }
 
   ICAdd(cc,IC_JMP,lb_done,0);
 
@@ -1095,7 +1120,8 @@ sm_import:
 		    tmp_untry=HashFind("SysUntry",
 			  cc->htc.hash_table_lst,HTT_FUN);
 		    for (i=0;i<try_cnt;i++) {
-		      if (Bt(&tmp_untry->flags,Cf_EXTERN)) {
+		      if(cc->flags&CCF_TARGET_I386) PrsI386TryCall(cc,tmp_untry);
+		      else if (Bt(&tmp_untry->flags,Cf_EXTERN)) {
 			cc->abs_cnts.externs++;
 			if (cc->flags&CCF_AOT_COMPILE)
 			  ICAdd(cc,IC_CALL_IMPORT,

@@ -158,7 +158,7 @@ U0 EmitLinkedCase(I64 a,I64 b,I64 expected,U8 **cursor,Bool reverse)
 
 U0 CompileTests()
 {
-  U8 *data=MAlloc(65536),*cursor=data,*line;
+  U8 *data=MAlloc(131072),*cursor=data,*line;
   Report("START i386 functions\n");
   EmitCase("return a+b;",0xFFFFFFFF,1,0x100000000,&cursor);
   EmitCase("return a-b;",0x100000000,1,0xFFFFFFFF,&cursor);
@@ -418,6 +418,22 @@ U0 CompileTests()
   EmitCase("return Keep(a,b);",1,41,42,&cursor,
     "extern I64 Keep(I64 n,...);",
     "I64 Keep(I64 n,...) { if (!n) return argv[0]; argv[0]+=Keep(0,n); return argv[0]; }");
+  //Native try registration/cleanup lowering; these providers do not unwind.
+  EmitCase("try { a++; } catch { State(3); } return State(0);",0,0,101,&cursor,
+    "extern U0 SysTry(U8 *c,U8 *u); extern U0 SysUntry(); extern I64 State(I64 action);",
+    "I64 State(I64 action) { static I64 entered=0,exited=0,bad=0; if(action==1) entered++; if(action==2) exited++; if(action==3) bad++; return entered*100+exited+bad*10000; } U0 SysTry(U8 *c,U8 *u) { State(1); if(!c||!u||c==u) State(3); } U0 SysUntry() { State(2); }");
+  EmitCase("try { try { a++; } catch { State(3); } } catch { State(3); } return State(0);",0,0,202,&cursor,
+    "extern U0 SysTry(U8 *c,U8 *u); extern U0 SysUntry(); extern I64 State(I64 action);",
+    "I64 State(I64 action) { static I64 entered=0,exited=0,bad=0; if(action==1) entered++; if(action==2) exited++; if(action==3) bad++; return entered*100+exited+bad*10000; } U0 SysTry(U8 *c,U8 *u) { State(1); if(!c||!u||c==u) State(3); } U0 SysUntry() { State(2); }");
+  EmitCase("return Inner()+State(0);",0,0,143,&cursor,
+    "extern U0 SysTry(U8 *c,U8 *u); extern U0 SysUntry(); extern I64 State(I64 action); extern I64 Inner();",
+    "I64 State(I64 action) { static I64 entered=0,exited=0,bad=0; if(action==1) entered++; if(action==2) exited++; if(action==3) bad++; return entered*100+exited+bad*10000; } U0 SysTry(U8 *c,U8 *u) { State(1); if(!c||!u||c==u) State(3); } U0 SysUntry() { State(2); } I64 Inner() { try { return 42; } catch { State(3); } return 0; }");
+  EmitCase("return Inner()+State(0);",0,0,244,&cursor,
+    "extern U0 SysTry(U8 *c,U8 *u); extern U0 SysUntry(); extern I64 State(I64 action); extern I64 Inner();",
+    "I64 State(I64 action) { static I64 entered=0,exited=0,bad=0; if(action==1) entered++; if(action==2) exited++; if(action==3) bad++; return entered*100+exited+bad*10000; } U0 SysTry(U8 *c,U8 *u) { State(1); if(!c||!u||c==u) State(3); } U0 SysUntry() { State(2); } I64 Inner() { try { try { return 42; } catch { State(3); } } catch { State(3); } return 0; }");
+  EmitCase("I64 i; for(i=0;i<3;i++) { try { a++; } catch { State(3); } } return State(0);",0,0,303,&cursor,
+    "extern U0 SysTry(U8 *c,U8 *u); extern U0 SysUntry(); extern I64 State(I64 action);",
+    "I64 State(I64 action) { static I64 entered=0,exited=0,bad=0; if(action==1) entered++; if(action==2) exited++; if(action==3) bad++; return entered*100+exited+bad*10000; } U0 SysTry(U8 *c,U8 *u) { State(1); if(!c||!u||c==u) State(3); } U0 SysUntry() { State(2); }");
   //Switch tables must retain 64-bit selectors and HolyC prefix/footer semantics.
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",1,0,11,&cursor);
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",3,0,33,&cursor);
