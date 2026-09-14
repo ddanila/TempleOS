@@ -2152,3 +2152,32 @@ complete 8 MiB QEMU/486 boot suite. Its raw source pass checks 14160 characters,
 executes in the dedicated native fixture. Full tokenization, resident compiler/JIT,
 DolDoc/editing, self-hosting and strict 386 validation remain open. See
 [i386-lex-string.md](i386-lex-string.md).
+
+## Shared numeric and dot-token parsing
+
+The x86-64 lexer and native I386LexNumber now share integer, fractional/exponent
+and dot/range/ellipsis parsing. String and numeric adapters also share the explicit
+native character-reader context. The native adapter performs the common final
+lookahead and propagates body/final-read failures without claiming rollback.
+
+Both x86-64 rebuild/reboot generations pass. The new `--lex-number` suite checks
+1089 original token/state captures from revision 43e619b. Integer results and
+lexical state match exactly. Native F64 values instead match an independent exact
+oracle for the previously established native power/rounding policy; all 243 F64
+bit differences from x86-64 are recorded. Cross-build host literal evaluation
+versus native numerical semantics remains a required integration boundary.
+
+The suite also passes consecutive dot tokens, injected read failures, unsupported
+modes, invalid arguments, final-lookahead failure and an owned hex-prefix input
+boundary with rejection/restart/reclamation. The existing `--lex-string` and
+`--lex-state` suites and instruction audits pass. Native numeric execution runs
+with CR0.EM set. Its dedicated 256 KiB test stage and heap at 0x60000 keep the
+larger oracle corpus separate from live allocations.
+
+The 384664-byte resident kernel includes the software numerical runtime, power
+table and parser and passes the full 8 MiB QEMU/486 boot suite. Raw source checks
+are 14306 characters, 367 newlines, FNV32 0xF8D086D1 and 14768 reclaimed heap bytes.
+Boot does not yet perform full tokenization or source execution, and the current
+conventional-memory stage has little growth room. Extended-memory compiler/module
+layout, full lexer/JIT integration, DolDoc, self-hosting and strict 386 validation
+remain open. See [i386-lex-number.md](i386-lex-number.md).

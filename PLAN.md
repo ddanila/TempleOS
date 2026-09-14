@@ -380,6 +380,11 @@ programming environment through these concrete steps:
    with the production lexer; native tests cover read failures and file-boundary
    recovery. Full token recognition, macros/directives and compiler execution
    remain required; these helpers do not establish a native shell.
+   Numeric and dot-token bodies now share parsing and replay semantics, checked
+   against original x86-64 records. Native F64 uses the established software
+   numerical policy; recorded bit differences and cross-build literal evaluation
+   remain an explicit compatibility boundary. The resident stage is nearly full:
+   plan extended-memory module placement before adding the remaining compiler.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 

@@ -31,3 +31,9 @@ I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
     }
   }
 }
+
+I64 I386LexSourceRead(U8 *context,CCmpCtrl *cc)
+{
+  CI386LexCharSource *source=context;
+  return I386LexRawChar(source->heap,cc,source->compiled_lines);
+}
