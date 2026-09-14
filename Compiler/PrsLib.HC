@@ -37,42 +37,18 @@ I64 PrsKeyWord(CCmpCtrl *cc)
     return -1;
 }
 
+#include "/Compiler/SymbolInit.HC"
 CHashClass *PrsClassNew()
-{/*Ptrs to classes are handled by
-allocating 5 structures for each
-new class and representing a pointer
-to a class by advancing 1 struct fwd
-for one * and two fwd for two **.
-*/
-  I64 i;
-  CHashClass *res=CAlloc(sizeof(CHashClass)*(PTR_STARS_NUM+1),Fs->code_heap),
-	*tmpc=res;
-  for (i=0;i<=PTR_STARS_NUM;i++) {
-    tmpc->type=HTT_CLASS;
-    tmpc->raw_type=RT_PTR;
-    tmpc->size=sizeof(U8 *);
-    tmpc->ptr_stars_cnt=i;
-    tmpc++;
-  }
-  res->last_in_member_lst=&res->member_lst_and_root;
-  res->size=0;
+{
+  CHashClass *res=CAlloc(sizeof(CHashClass)*(PTR_STARS_NUM+1),Fs->code_heap);
+  PrsClassInit(res);
   return res;
 }
 
 CHashFun *PrsFunNew()
 {
-  I64 i;
-  CHashFun *res=CAlloc(sizeof(CHashFun)*(PTR_STARS_NUM+1),Fs->code_heap),
-	*tmpf=res;
-  for (i=0;i<=PTR_STARS_NUM;i++) {
-    tmpf->type=HTT_FUN;
-    tmpf->raw_type=RT_PTR;
-    tmpf->size=sizeof(U8 *);
-    tmpf->ptr_stars_cnt=i;
-    tmpf++;
-  }
-  res->last_in_member_lst=&res->member_lst_and_root;
-  res->size=0;
+  CHashFun *res=CAlloc(sizeof(CHashFun)*(PTR_STARS_NUM+1),Fs->code_heap);
+  PrsFunInit(res);
   return res;
 }
 

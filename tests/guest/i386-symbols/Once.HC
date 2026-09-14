@@ -6,6 +6,8 @@
 #assert sizeof(CMemberLst)==144
 #include "T:/Values.HC"
 #include "T:/Members.HC"
+#include "/Compiler/SymbolInit.HH"
+#include "T:/Seeds.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -13,10 +15,16 @@ U0 CompileTests()
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i,j;
   U64 *oracle=MAlloc(224);
+  CHashClass *seed_class;
+  CHashFun *seed_fun;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native symbols\n");
   if(MemberLookupTest) { Report("FAIL x64 member lookup\n"); return; }
+  seed_class=CAlloc(sizeof(CHashClass)*5); seed_fun=CAlloc(sizeof(CHashFun)*5);
+  PrsClassInit(seed_class); PrsFunInit(seed_fun);
+  if(SymbolSeedCheck(seed_class,seed_fun,8)) { Report("FAIL x64 symbol seeds\n"); return; }
+  Free(seed_class); Free(seed_fun);
   for(j=0;j<28;j++) oracle[j]=SymbolValueCase(j);
   line=MStrPrint("EXPORT symbol-values.bin %X %X\n",oracle,224); Report(line);
   module=CmpI386Module(source,&size,&errors);

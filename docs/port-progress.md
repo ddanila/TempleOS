@@ -1913,3 +1913,23 @@ live-tree ownership and add no allocation or IRQ synchronization. Member/symbol
 construction and destruction, compiler control records and native initialization,
 the HolyC shell, full environment, self-hosting and strict 386 validation remain
 unfinished. See `i386-symbols.md`.
+
+## Shared symbol initialization and explicit-heap constructors
+
+Class/function initialization now shares the original five-record pointer-variant
+scheme between compiler targets. The x86-64 constructors keep their task code heap;
+native try constructors take an explicit heap and restore interrupt state after
+allocation and initialization. Raw-type constants are shared without changing
+their values or the legacy pointer tag.
+
+The symbol fixture passes host/native initialization, pointer stride and size,
+member-list sentinel use, inherited lookup, hash attachment/detachment, high-bit
+function values, allocation failure, rejected interior frees and full reclamation.
+Existing legacy symbol values, layouts, member/string checks and instruction audits
+pass, as do both x86-64 rebuild/reboot generations. Public task-selected allocation,
+OutMem behavior, nested symbol destruction, compiler initialization and native
+source execution remain required. See `i386-symbols.md`.
+
+The standalone 292360-byte kernel also passes its complete 8 MiB QEMU/486
+source/module, keyboard/VGA, timer and invalid-module boot checks. This remains
+a development profile, with strict 386 and native self-hosting gates open.

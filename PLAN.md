@@ -339,6 +339,10 @@ programming environment through these concrete steps:
    Existing member-name/class-base and metadata lookup now compile from shared
    frontend source on both targets, with native `StrCmp` also used by resident
    hash lookup. Member construction and compiler-control initialization remain.
+   Class/function initialization is now shared too, with target-sized pointer
+   variants and native explicit-heap allocation tested through member/hash use
+   and reclamation. Public task/code-heap selection, allocation-failure exception
+   behavior, nested symbol destruction and compiler-control initialization remain.
 
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,

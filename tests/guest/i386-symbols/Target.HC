@@ -4,6 +4,10 @@
 #include "/Kernel/HashValue.HH"
 #include "/Kernel/I386/String.HH"
 #include "/Compiler/MemberLookup.HH"
+#include "/Compiler/I386/SymbolAlloc.HH"
+#include "/Kernel/I386/HashTable.HH"
+#include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Ports.HH"
 #assert sizeof(CHashSrcSym)==36
 #assert sizeof(CHashExport)==44
 #assert sizeof(CHashImport)==44
@@ -30,6 +34,7 @@
 #assert offset(CMemberLst.fun_ptr)==92
 U64 value_oracle[28];
 extern I64 MemberLookupTest();
+extern I64 SymbolAllocTest();
 extern I64 SymbolValueCase(I64 index);
 I64 Main(I64 unused,I64 unused2)
 {
@@ -39,7 +44,7 @@ I64 Main(I64 unused,I64 unused2)
   CHashGlblVar variable;
   CMemberLst member;
   CMemberLstMeta meta;
-  I64 i,j,expected;
+  I64 i,j,expected,result;
   for(i=0;i<28;i++) if(SymbolValueCase(i)!=value_oracle[i]) return 100+i;
   if(HashTypeNum(0)!=-1) return 1;
   base.type=HTF_PUBLIC|HTF_PRIVATE|HTF_LOCAL;
@@ -76,11 +81,20 @@ I64 Main(I64 unused,I64 unused2)
   if(variable.data_addr_rip!=0x11223344AABBCCDD ||
       HashVal(&variable)!=(&variable.data_addr+0)(U64) ||
       variable.fun_ptr!=&function || variable.var_class!=member.member_class) return 5;
-  return MemberLookupTest;
+  result=MemberLookupTest;
+  if(result) return result;
+  return SymbolAllocTest;
 }
 #include "T:/Values.HC"
 #include "/Kernel/HashValue.HC"
 
-#include "/Kernel/I386/String.HC"
+#include "/Kernel/I386/Hash.HC"
+#include "/Kernel/I386/Heap.HC"
+#include "/Kernel/I386/Cpu.HC"
+#include "/Kernel/I386/HashTable.HC"
+#include "/Compiler/I386/SymbolAlloc.HC"
 #include "/Compiler/MemberLookup.HC"
 #include "T:/Members.HC"
+
+#include "T:/Seeds.HC"
+#include "T:/Allocate.HC"

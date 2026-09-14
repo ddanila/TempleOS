@@ -104,3 +104,30 @@ the complete standalone keyboard/VGA boot checks also pass.
 Member construction, symbol destruction, compiler control records, allocation and
 native compiler initialization remain required. This is shared frontend code
 running in a native fixture, not an operational native HolyC compiler.
+
+## Shared class/function initialization and native allocation
+
+`Compiler/SymbolInit.HH/HC` extracts the initialization performed by the original
+class and function constructors. The caller supplies five fresh, zeroed records:
+the root and four pointer variants, each separated by a complete typed record.
+Variants retain `RT_PTR` and use the target pointer size; the root has size zero
+and a member-list tail cursor pointing at its own list head. Raw-type constants
+now come from `Kernel/RawTypes.HH`; their values and legacy signed pointer tag
+are unchanged. The x86-64 constructors retain `CAlloc` and `Fs->code_heap`.
+
+`Compiler/I386/SymbolAlloc.HH/HC` adds explicit-heap try constructors for native
+class/function arrays. Allocation, zeroing and initialization run with interrupts
+masked and restore the caller's flags. Failure returns zero. These do not yet
+provide public task-selected allocation or the public `OutMem` failure path.
+Only the root allocation can be freed; pointer-variant interior addresses cannot.
+Callers must detach symbol references and dispose of owned nested objects before
+releasing an array. A compiler-aware destructor remains required.
+
+The `--symbols` fixture checks the same initializers on x86-64 and i386, including
+variant strides, pointer sizes, root cursors and untouched zero fields. Native
+lifecycle checks cover null/exhausted heaps, interrupt-state preservation, rejected
+interior frees, inherited member lookup through the constructor's list sentinel,
+hash insertion/removal, high-bit function values, and complete arena reclamation.
+Existing legacy value, layout, member and string checks and the instruction audit
+pass. Both x86-64 rebuild generations also pass. This supplies another compiler
+dependency; it does not initialize or run a resident native compiler.
