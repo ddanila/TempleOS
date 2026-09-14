@@ -30,6 +30,7 @@
 #include "/Compiler/I386/LexInput.HH"
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/CompilerProbe.HH"
+#include "/Kernel/I386/FileRuntime.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
@@ -51,8 +52,15 @@ I64 kernel_startup_count;
 CHashTable *kernel_symbols;
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
-CI386KernelSymbol kernel_exports[22];
+CI386KernelSymbol kernel_exports[26];
 CI386CompilerServices kernel_compiler;
+CI386FileServices kernel_files;
+U8 *kernel_file_image;
+I64 kernel_file_size;
+CFilePathContext kernel_paths;
+CI386FileVolumes kernel_volumes;
+CI386LexFileContext kernel_file_context;
+CI386LexIncludeService kernel_file_include;
 U8 *kernel_compiler_image;
 I64 kernel_compiler_size,kernel_compiler_span;
 U8 *kernel_probe_image;
@@ -69,6 +77,9 @@ extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
 extern U0 KernelCompilerLoad();
+extern U0 KernelFileLoad();
+extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version);
+extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes);
 extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelKeys(I64 unused);
 extern U0 KernelSymbols();
@@ -96,6 +107,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
   KernelSymbols;
   KernelCompilerLoad;
+  KernelFileLoad;
   KernelCompilerProbe(0);
   KernelStartup;
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
@@ -409,7 +421,15 @@ U0 KernelSymbols()
   kernel_exports[20].val=(&I386HeapValid+0)(U64);
   kernel_exports[21].str="char_bmp_alpha_numeric"; kernel_exports[21].kind=3;
   kernel_exports[21].val=(char_bmp_alpha_numeric+0)(U64);
-  for(i=0;i<22;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
+  kernel_exports[22].str="I386RedSeaFind"; kernel_exports[22].kind=1;
+  kernel_exports[22].val=(&I386RedSeaFind+0)(U64);
+  kernel_exports[23].str="I386RedSeaResolve"; kernel_exports[23].kind=1;
+  kernel_exports[23].val=(&I386RedSeaResolve+0)(U64);
+  kernel_exports[24].str="I386RedSeaReadAll"; kernel_exports[24].kind=1;
+  kernel_exports[24].val=(&I386RedSeaReadAll+0)(U64);
+  kernel_exports[25].str="I386LexIncludeTake"; kernel_exports[25].kind=1;
+  kernel_exports[25].val=(&I386LexIncludeTake+0)(U64);
+  for(i=0;i<26;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
 }
 U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
@@ -428,7 +448,7 @@ U0 KernelCompilerLoad()
   CI386CompilerServices candidate;
   I64 (*entry)(CI386CompilerServices *services,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
-  U64 base,string_address,number_address,char_address,punct_address,ident_address,ident_token_address,string_token_address,next_address,include_address;
+  U64 base;
   U8 *image=0,*reason="load";
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
   candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0; candidate.punct_token=0; candidate.ident_scan=0; candidate.ident_token=0; candidate.string_token=0; candidate.next_token=0; candidate.next_token_with_includes=0;
@@ -456,25 +476,7 @@ U0 KernelCompilerLoad()
     if(base>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
       entry=image;
       accepted=(*entry)(&candidate,sizeof(CI386CompilerServices));
-      string_address=(candidate.string_chunk+0)(U64);
-      number_address=(candidate.number_token+0)(U64);
-      char_address=(candidate.char_token+0)(U64);
-      punct_address=(candidate.punct_token+0)(U64);
-      ident_address=(candidate.ident_scan+0)(U64);
-      ident_token_address=(candidate.ident_token+0)(U64);
-      string_token_address=(candidate.string_token+0)(U64);
-      next_address=(candidate.next_token+0)(U64);
-      include_address=(candidate.next_token_with_includes+0)(U64);
-      if(candidate.version!=I386_COMPILER_SERVICES_VERSION || candidate.bytes!=sizeof(CI386CompilerServices) ||
-          string_address<base+8 || string_address>=base+size ||
-          number_address<base+8 || number_address>=base+size ||
-          char_address<base+8 || char_address>=base+size ||
-          punct_address<base+8 || punct_address>=base+size ||
-          ident_address<base+8 || ident_address>=base+size ||
-          ident_token_address<base+8 || ident_token_address>=base+size ||
-          string_token_address<base+8 || string_token_address>=base+size ||
-          next_address<base+8 || next_address>=base+size ||
-          include_address<base+8 || include_address>=base+size) accepted=0;
+      if(!KernelServiceCheck(image,size,&candidate,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION)) accepted=0;
     }
   }
   if(accepted!=1) {
@@ -489,9 +491,7 @@ U0 KernelCompilerLoad()
   kernel_compiler.string_token=candidate.string_token; kernel_compiler.next_token=candidate.next_token;
   kernel_compiler.next_token_with_includes=candidate.next_token_with_includes;
   kernel_compiler_image=image; kernel_compiler_size=size; kernel_compiler_span=kernel_heap.used-used;
-  KernelLog("RUNTIME "); KernelHex((image+0)(U64)); KernelLog(" ");
-  KernelHex(size); KernelLog(" "); KernelHex(kernel_compiler_span); KernelLog(" ");
-  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog(" "); KernelHex(char_address); KernelLog(" "); KernelHex(punct_address); KernelLog(" "); KernelHex(ident_address); KernelLog(" "); KernelHex(ident_token_address); KernelLog(" "); KernelHex(string_token_address); KernelLog(" "); KernelHex(next_address); KernelLog(" "); KernelHex(include_address); KernelLog("\n");
+  KernelServiceLog("RUNTIME ",image,size,kernel_compiler_span,&kernel_compiler,sizeof(CI386CompilerServices));
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.
@@ -526,6 +526,7 @@ U0 KernelCompilerProbe(I64 phase)
   probe.heap=&kernel_heap; probe.compiler=&kernel_compiler; probe.symbols=kernel_symbols;
   probe.i64_type=kernel_types.by_raw[RT_I64]; probe.runtime_image=kernel_compiler_image;
   probe.runtime_size=kernel_compiler_size; probe.phase=phase;
+  probe.disk_include=&kernel_file_include;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     flags=I386IrqSave;
@@ -545,7 +546,68 @@ U0 KernelCompilerProbe(I64 phase)
     kernel_probe_image=0;
     I386IrqRestore(flags);
     if(kernel_heap.used!=used-kernel_probe_span || kernel_heap.allocations!=allocations-1 ||
-        I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size || !I386HeapValid(&kernel_heap)) KernelStop;
+        I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
+        I386HeapSize(&kernel_heap,kernel_file_image)!=kernel_file_size || !I386HeapValid(&kernel_heap)) KernelStop;
     KernelLog("PROBE RELEASE "); KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
   }
+}
+
+U0 KernelFileLoad()
+{
+  CI386ModuleBinding bindings[9]; CI386RedSeaEntry file; CI386FileServices candidate;
+  I64 (*entry)(CI386FileServices *services,I64 bytes);
+  I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
+  U8 *image=0,*reason="load"; U64 base;
+  if(kernel_file_image || kernel_files.version) KernelStop;
+  candidate.version=0; candidate.bytes=0; candidate.include=0; candidate.read=0;
+  KernelBinding(&bindings[0],"I386HeapAlloc"); KernelBinding(&bindings[1],"I386HeapFree");
+  KernelBinding(&bindings[2],"I386HeapSize"); KernelBinding(&bindings[3],"I386IrqSave");
+  KernelBinding(&bindings[4],"I386IrqRestore"); KernelBinding(&bindings[5],"I386RedSeaFind");
+  KernelBinding(&bindings[6],"I386RedSeaResolve"); KernelBinding(&bindings[7],"I386RedSeaReadAll");
+  KernelBinding(&bindings[8],"I386LexIncludeTake");
+  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/FileRuntime.t32m",&file)!=1) KernelStop;
+  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,9);
+  if(image) {
+    reason="api"; base=(image+0)(U64); size=I386HeapSize(&kernel_heap,image);
+    if(base>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
+      entry=image; accepted=(*entry)(&candidate,sizeof(CI386FileServices));
+      if(!KernelServiceCheck(image,size,&candidate,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION)) accepted=0;
+    }
+  }
+  if(accepted!=1) {
+    if(image && !I386HeapFree(&kernel_heap,image)) KernelStop;
+    if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+    KernelLog("FILES REJECT "); KernelLog(reason); KernelLog(" reclaimed\n"); KernelStop;
+  }
+  kernel_files.version=candidate.version; kernel_files.bytes=candidate.bytes;
+  kernel_files.include=candidate.include; kernel_files.read=candidate.read; kernel_file_image=image; kernel_file_size=size;
+  kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
+  kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
+  kernel_volumes.letter['C'-'A']=&kernel_volume;
+  kernel_file_context.paths=&kernel_paths; kernel_file_context.volumes=&kernel_volumes;
+  kernel_file_include.context=&kernel_file_context; kernel_file_include.push=kernel_files.include;
+  KernelServiceLog("FILES ",image,size,kernel_heap.used-used,&kernel_files,sizeof(CI386FileServices));
+}
+
+Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version)
+{//Both native service records have a version/byte header followed by four-byte pointers.
+  U32 *fields=record;
+  U64 base=(image+0)(U64),address;
+  I64 i;
+  if(bytes<8 || bytes&3 || fields[0]!=version || fields[1]!=bytes) return FALSE;
+  for(i=2;i<bytes/4;i++) {
+    address=fields[i];
+    if(address<base+8 || address>=base+size) return FALSE;
+  }
+  return TRUE;
+}
+
+U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
+{
+  U32 *fields=record;
+  I64 i;
+  KernelLog(label); KernelHex((image+0)(U64)); KernelLog(" "); KernelHex(size);
+  KernelLog(" "); KernelHex(span);
+  for(i=2;i<bytes/4;i++) { KernelLog(" "); KernelHex(fields[i]); }
+  KernelLog("\n");
 }

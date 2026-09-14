@@ -2,9 +2,9 @@
 
 `CompilerProbe.t32m` contains the compiler token, identifier/string and definition
 probes previously compiled directly into Kernel32.BIN. The six bootstrap modules
-remain linked into the BIOS-loaded image. The disk now packages nine modules in
-all: those six, the retained CompilerRuntime, synchronous Startup and temporary
-CompilerProbe. Executable-region instruction audits cover all nine.
+remain linked into the BIOS-loaded image. The disk now packages ten modules in
+all: those six, retained CompilerRuntime and FileRuntime, synchronous Startup and temporary
+CompilerProbe. Executable-region instruction audits cover all ten.
 
 The kernel loads CompilerProbe from RedSea before startup while it exclusively
 owns boot disk access. The checked loader binds twelve functions and one writable
@@ -14,7 +14,7 @@ The module uses the actual retained compiler interface for token services and
 borrows the kernel's symbol table and I64 type descriptor. It contains the small
 shared control/file seed routines; it does not contain a second compiler runtime.
 
-Main receives a version-1, 44-byte CI386CompilerProbe record plus its size. Every
+Main receives a version-2, 48-byte CI386CompilerProbe record plus its size. Every
 pointer is borrowed only during that synchronous call. The module rejects an
 incompatible record before running tests. It registers no persistent callbacks or tasks and
 retains no caller pointers. Include callbacks are borrowed only for synchronous
@@ -73,12 +73,20 @@ through the retained include-capable entry. Nested children, skipped branches,
 missing-provider errors, parent recovery, interrupt state and reclamation are
 checked in both phases. The old entry also rejects includes without reusing that
 callback. The host requires INCLUDE PROBE records before startup and after ticks;
-all callback use ends before probe-module reclamation. The probe's own version-1
-record stays unchanged.
+all callback use ends before probe-module reclamation. At that stage the probe's own version-1
+record stayed unchanged; the disk-provider addition below uses version 2.
 
-The current probe image is 59760 bytes with a 59776-byte temporary heap span, all
+At compiler service version-10 introduction, the probe image was 59760 bytes with a 59776-byte temporary heap span, all
 reclaimed. The compiler runtime retains 138680 heap bytes for its 138664-byte image.
 The bootstrap is 384208 bytes with 9008 bytes of headroom. Both x64 generations,
 all native boot/value/reclamation/pixel checks, executable instruction audits and
 runtime/probe rejection boots pass. Disk-provider packaging/binding and the full
 native compiler remain open.
+
+The version-2 probe record adds the kernel's stable disk include service. Boot
+now executes plain/compressed nested disk includes through the retained lexer and
+file provider, then tests malformed-archive recovery. The task phase explicitly
+sets IF for a rejected load and restores the prior flags. The current diagnostic
+image is 68256 bytes and reclaims its complete 68272-byte span. The kernel checks
+both retained service images after that release. See `i386-file-runtime.md` for
+packaging, complete validation and updated boot-stage headroom.

@@ -2871,3 +2871,33 @@ Disk-provider packaging/binding, scheduler-aware ATA ownership, public task/file
 and resident-record semantics, full compiler-context lifetime, parser/JIT, DolDoc,
 strict 386SX/DX validation and self-hosting remain open. See
 `docs/i386-compiler-runtime.md` and `docs/i386-lex-includes.md`.
+
+## Retained file provider connected to compiler includes
+
+FileRuntime now packages path/filename rules, archive expansion, decoded loading,
+drive contexts and the compiler source bridge in extended memory. Its version-1
+16-byte interface publishes include/read entries only after ownership, version,
+size and code-range validation. The host verifies both exact export addresses.
+Nine existing kernel imports avoid duplicating ATA and allocation services.
+Shared native service-table validation/logging keeps the fixed boot reservation.
+
+CompilerProbe's version-2 record supplies the stable disk context to the retained
+lexer. Boot consumes a plain outer file and an original-compressor inner archive,
+checks 11/22/33 and 68 lines, returns to the parent, then recovers at 44 after a bad
+archive despite its valid plain alternate. All input/codec temporaries are reclaimed.
+The task check explicitly enables IF, verifies rejection before I/O and restores
+prior flags. Both retained images remain live after diagnostic-module release.
+
+Both x64 rebuild generations, the complete native boot/VGA/keyboard/timer/source
+suite, instruction audits across ten packaged modules and file-runtime rejection
+boots pass. Wrong target, missing import and wrong file-service version reclaim
+allocations before publication; every test disk remains unchanged.
+The bootstrap has 389112 bytes plus 2160 loaded-stage bytes, leaving 1944 bytes in
+the 393216-byte reservation. CompilerRuntime retains 138680 heap bytes, FileRuntime
+retains 69392, and the 68272-byte diagnostic span is reclaimed after the task check.
+Artifacts were built with local changes before commit; manifests retain hashes.
+
+Public task/drive and resident-file semantics, scheduler-aware ATA ownership,
+public errors, full compiler-control lifetime, parser/JIT, DolDoc/persistent editing,
+strict 386SX/DX validation and self-hosting remain open. See
+`docs/i386-file-runtime.md` for the connected path, contracts and measurements.

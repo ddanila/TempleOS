@@ -89,3 +89,7 @@ DolDoc, strict 386SX/DX verification and native self-hosting remain required.
 Native directive dispatch now accepts this bridge through I386LexFileInclude and
 an explicit service context. See `i386-lex-includes.md` for its compatibility tests,
 callback contract and remaining resident-module integration.
+
+The file bridge is now packaged in retained FileRuntime and bound to the retained
+compiler's include dispatcher during native boot. See `i386-file-runtime.md` for
+the connected disk tests and the remaining task/interrupt ownership restrictions.

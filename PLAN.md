@@ -466,9 +466,17 @@ Native include dispatch now accepts an explicit synchronous provider and preserv
 that binding across recursive token reads and conditional scans. Eight original
 x64 include scenarios match native execution; disk-adapter ownership/I/O checks
 also pass. Version 10 of the retained compiler table now publishes the include
-entry; boot/task callbacks verify relocated execution and reclamation. Packaging
-and binding the disk provider remains an integration gate.
+entry; boot/task callbacks verify relocated execution and reclamation. The disk provider is now packaged in retained FileRuntime and bound during boot;
+scheduler-aware disk ownership and public task/file integration remain gates.
 See `docs/i386-lex-includes.md`.
+
+The retained lexer now consumes nested plain/compressed disk includes, restores
+parent input after an archive error and reclaims temporary source/codec state.
+FileRuntime has a checked versioned interface and kernel-lifetime ownership.
+Its IF-clear disk contract is enforced; a task-phase enabled-IF call is rejected.
+The bootstrap plus loaded stage now leaves 1944 bytes in the fixed reservation,
+so further low-memory growth requires extraction or reduction. See
+`docs/i386-file-runtime.md` for evidence and remaining integration work.
 
 #### Continuing integration sequence
 

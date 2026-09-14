@@ -8,10 +8,10 @@ initializes a versioned interface, and retains its image for the kernel lifetime
 This removes the current compiler-runtime growth from the conventional-memory
 boot stage without increasing that stage's 384 KiB reservation.
 
-The build still links six bootstrap modules. It packages three additional modules:
-CompilerRuntime is retained, Startup is reclaimed after initializing the display,
+The build still links six bootstrap modules. It packages four additional modules:
+CompilerRuntime and FileRuntime are retained, Startup is reclaimed after initializing the display,
 and CompilerProbe is retained through the boot/task checks and then reclaimed.
-All nine modules have
+All ten modules have
 separate hashes and executable-range instruction audits. The manifest distinguishes
 bootstrap modules from all resident modules.
 
@@ -105,7 +105,7 @@ interrupt-state preservation, owned input/token reclamation and runtime liveness
 INCLUDE PROBE records are required before startup and after task/IRQ activity;
 all temporary callback use ends before the probe image is freed.
 
-Current 8 MiB development evidence: bootstrap 384208 bytes of the 393216-byte
+At version-10 introduction: bootstrap 384208 bytes of the 393216-byte
 reservation, leaving 9008 bytes. The retained runtime has 138664 image bytes and
 138680 heap bytes. The temporary diagnostic image has 59760 bytes and reclaims
 its entire 59776-byte heap span after the task call. Source consumption verifies
@@ -113,9 +113,10 @@ its entire 59776-byte heap span after the task call. Source consumption verifies
 measurements recorded in result.json, not fixed addresses or memory minima.
 The 73 keyword records retain 6208 bytes behind primitive types in symbol lookup.
 
-Disk-backed include loading remains a separate provider awaiting resident module
-packaging and binding. These probes use copied source and perform no disk I/O
-from the task phase. See [include dispatch](i386-lex-includes.md),
+Disk-backed include loading now uses retained FileRuntime and is exercised through
+this interface during boot. The task phase verifies enabled-IF rejection; it
+performs no disk I/O. See `i386-file-runtime.md` for current memory measurements
+and the remaining scheduler/public-file integration. See [include dispatch](i386-lex-includes.md),
 [compiler diagnostics](i386-compiler-probe.md) and
 [file input](i386-file-context.md) for the remaining integration boundaries.
 

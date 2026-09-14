@@ -1,7 +1,7 @@
 #ifndef I386_COMPILER_PROBE_INCLUDED
 #define I386_COMPILER_PROBE_INCLUDED
 #include "/Kernel/I386/CompilerRuntime.HH"
-#define I386_COMPILER_PROBE_VERSION 1
+#define I386_COMPILER_PROBE_VERSION 2
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;
@@ -11,5 +11,6 @@ class CI386CompilerProbe {
   CHashClass *i64_type;
   U8 *runtime_image;
   I64 runtime_size,phase;
+  CI386LexIncludeService *disk_include;
 };
 #endif

@@ -61,7 +61,8 @@ compatibility and failure tests remain enabled.
 The `--redsea-read` suite now calls the actual disk provider through the same
 callback signature. Its two-volume routing, nested plain/compressed raw input,
 partial-I/O failures and 86 constrained-heap cases pass. This separately verifies
-the disk adapter; a combined retained-lexer/disk command still needs integration.
+the disk adapter; the retained boot path now combines both services, as recorded in
+`i386-file-runtime.md`.
 
 Validation commands:
 
@@ -78,7 +79,7 @@ service, next_token_with_includes. Boot/task probes call that relocated service
 with a temporary callback and verify nested input, failure recovery, IF state and
 reclamation; see `i386-compiler-runtime.md`.
 
-The bootstrap is 384208 bytes. The retained compiler image is 138664 bytes
-(138680 heap bytes). Disk-provider packaging and binding, task-aware disk
-ownership, public errors and resident-file semantics, full compiler-context
+At version-10 interface introduction, the bootstrap was 384208 bytes. The retained compiler image is 138664 bytes
+(138680 heap bytes). The retained disk provider is now packaged and bound; see `i386-file-runtime.md`
+for current measurements. Task-aware disk ownership, public errors and resident-file semantics, full compiler-context
 lifetime, parser/JIT, DolDoc, strict 386 profiles and self-hosting remain open.
