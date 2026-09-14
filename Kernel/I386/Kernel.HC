@@ -26,6 +26,7 @@
 #include "/Compiler/I386/InternalTypes.HH"
 #include "/Compiler/ControlInit.HH"
 #include "/Compiler/I386/LexInput.HH"
+#include "/Compiler/I386/LexString.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
@@ -213,6 +214,7 @@ U0 KernelDisplay()
 #include "/Compiler/ControlInit.HC"
 #include "/Compiler/I386/LexFiles.HC"
 #include "/Compiler/I386/LexInput.HC"
+#include "/Compiler/I386/LexString.HC"
 
 U0 KernelKeys(I64 unused)
 {//Single console/input owner. Lines are collected here; native compilation is pending.

@@ -2128,3 +2128,27 @@ keyboard/VGA and timer suite. Source character/line/hash/reclamation checks rema
 multiprocessor contention behavior. Tokenization, full compiler/JIT residency,
 DolDoc/editing and native self-hosting remain required. See
 [i386-bit-intrinsics.md](i386-bit-intrinsics.md).
+
+## Shared quoted-string decoding
+
+The production x86-64 LexInStr and native I386LexStringChunk now share escape,
+hexadecimal, dollar and chunk decoding through a character-reader callback. The
+native adapter uses the existing raw reader and reports service failures as -1
+with done false, retaining partial-consumption semantics. The compiler also lowers
+ToUpper with the existing wide-argument behavior. These supply string-body parsing
+dependencies; they do not implement native tokenization or source execution.
+
+Both x86-64 rebuild/reboot generations pass. A new `--lex-string` fixture passes
+24 raw-byte cases at seven capacities, all 256 hex values with both prefixes at
+three capacities, long strings, guards/state checks, injected read failures,
+ToUpper boundary/wide/side-effect cases, and the production x64 string-token path.
+Native tests include invalid/unsupported requests and an escape crossing an owned
+file boundary, first rejected by a pending save point and then restarted with full
+child reclamation. The prior `--lex-state` suite and instruction audits also pass.
+
+The 340480-byte kernel includes the shared decoder/native adapter and passes the
+complete 8 MiB QEMU/486 boot suite. Its raw source pass checks 14160 characters,
+363 newlines, FNV32 0x52B06B53 and 14624 reclaimed heap bytes. String decoding itself
+executes in the dedicated native fixture. Full tokenization, resident compiler/JIT,
+DolDoc/editing, self-hosting and strict 386 validation remain open. See
+[i386-lex-string.md](i386-lex-string.md).

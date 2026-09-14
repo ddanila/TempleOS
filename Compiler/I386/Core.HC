@@ -462,6 +462,17 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             } else I386F64Runtime(cc,&out,ic->ic_code,pass);
             I386Bytes(&out,"\x52\x50",2);
             break;
+          case IC_TOUPPER:
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=1 ||
+                depth!=calls->depth+1) throw('Compiler');
+            //Match ICToUpper: only I64 values 'a' through 'z' change.
+            //The legacy intrinsic preserves wider arguments despite its U8 signature.
+            I386Bytes(&out,"\x58\x5A\x85\xD2\x75\x0D\x83\xF8\x61\x72\x08\x83\xF8\x7A\x77\x03\x83\xE8\x20",19);
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
           case IC_BT: case IC_BTS: case IC_BTR: case IC_BTC:
           case IC_LBTS: case IC_LBTR: case IC_LBTC:
             if (!calls || calls->called || calls->indirect ||

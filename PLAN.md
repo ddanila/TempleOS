@@ -375,6 +375,11 @@ programming environment through these concrete steps:
    Standalone startup reads its source into a stable buffer, consumes it through
    that path and verifies full temporary reclamation. Tokenization, general input
    services and full control destruction remain open.
+   Character tables and native bit intrinsics now support shared classification.
+   Quoted-string body decoding also shares escapes, dollar state and chunking
+   with the production lexer; native tests cover read failures and file-boundary
+   recovery. Full token recognition, macros/directives and compiler execution
+   remain required; these helpers do not establish a native shell.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 
