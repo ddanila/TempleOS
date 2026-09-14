@@ -4,7 +4,7 @@
 #include "/Kernel/I386/SoftF64.HH"
 #include "/Kernel/I386/Float.HH"
 #include "/Kernel/I386/FloatMath.HH"
-U64 f64_oracle[8192];
+U64 f64_oracle[8809];
 I64 Main(I64 a,I64 b)
 {
   I64 i;
@@ -49,6 +49,19 @@ I64 Main(I64 a,I64 b)
   if (value(U64)!=0x3FF0000000000000) return 14008;
   i=3; value=Round(i++);
   if (value(U64)!=0x4008000000000000 || i!=4) return 14009;
+  for(i=-308;i<=308;i++) {
+    value=Pow10I64(i);
+    if(value(U64)!=f64_oracle[8192+i+308]) return 15000+i+308;
+  }
+  value=Pow10I64(-309); if(value(U64)) return 16001;
+  value=Pow10I64(309); if(value(U64)!=0x7FF0000000000000) return 16002;
+  value=Pow10I64(0x8000000000000000); if(value(U64)) return 16003;
+  value=Pow10I64(0x7FFFFFFFFFFFFFFF);
+  if(value(U64)!=0x7FF0000000000000) return 16004;
+  i=0; value=Pow10I64(i++);
+  if(value(U64)!=0x3FF0000000000000 || i!=1) return 16005;
+  value=Round(Pow10I64(-1)*Pow10I64(2));
+  if(value(U64)!=0x4024000000000000) return 16006;
   return 0;
 }
 #include "/Kernel/I386/SoftF64.HC"

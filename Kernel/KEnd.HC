@@ -46,7 +46,7 @@ U0 SysGlblsInit()
 
   pow10_I64=CAlloc(sizeof(F64)*(308+308+1));
   for (i=-308;i<309;i++)
-    pow10_I64[i+309]=Pow10(i);
+    pow10_I64[i+308]=Pow10(i);
 
   snd.ona=ONA_REST;
   QueInit(&snd.record_head);

@@ -5,4 +5,5 @@ public extern F64 Round(F64 value);
 public extern F64 Trunc(F64 value);
 public extern F64 Floor(F64 value);
 public extern F64 Ceil(F64 value);
+public extern F64 Pow10I64(I64 exponent);
 #endif

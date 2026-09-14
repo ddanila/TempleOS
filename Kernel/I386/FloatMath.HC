@@ -20,3 +20,5 @@ F64 Ceil(F64 value)
   U64 result=I386F64Ceil(value(U64));
   return result(F64);
 }
+
+#include "/Kernel/I386/Pow10.HC"

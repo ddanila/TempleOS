@@ -20,8 +20,8 @@ U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i;
-  U64 *oracle=MAlloc(65536),bits,seed=0x386F64A;
-  F64 value;
+  U64 *oracle=MAlloc(70472),bits,seed=0x386F64A;
+  F64 value,direct;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native F64 unary\n");
@@ -44,6 +44,14 @@ U0 CompileTests()
     value=Ceil(bits(F64)); oracle[i*8+7]=value(U64);
   }
   line=MStrPrint("EXPORT x64-unary.bin %X %X\n",oracle,65536); Report(line);
+  for(i=-308;i<=308;i++) {
+    value=Pow10I64(i); direct=Pow10(i);
+    if(value(U64)!=direct(U64)) {
+      Report("FAIL x64 powers-of-ten table bounds\n"); return;
+    }
+    oracle[8192+i+308]=value(U64);
+  }
+  line=MStrPrint("EXPORT x64-pow10.bin %X %X\n",oracle+8192,4936); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -56,7 +64,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"f64_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,65536); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,70472); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)

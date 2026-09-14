@@ -465,7 +465,14 @@ FloorI64 dependency available without CPU-dependent random-number routines.
 Public software Round, Trunc, Floor and Ceil now preserve full binary64 range,
 signed zero and quieted NaN payloads, matching x64 and a Python oracle across
 1,024 inputs each. They supply whole-number rounding needed by StrPrintJoin;
-logarithms, powers and production formatting integration remain pending.
+logarithms, general powers and production formatting integration remain pending.
+Native Pow10I64 now uses a generated 617-entry table of correctly rounded
+binary64 values without an FPU or allocation, preserving the -308..308 range
+contract. Every entry and extreme input branches pass; the combined unary/power
+corpus has 13,929 native results. Existing x64 power approximations differ at
+607 exponents (at most 683 ULPs); this is recorded separately from the exact
+native oracle. Both x64 initialization paths and their lookup also now use
+indices 0..616, fixing the previous one-entry allocation overrun.
 Template-call nesting and malformed-provider rejection also have tests;
 trigonometry and remaining numerical/formatting integration are still pending. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including

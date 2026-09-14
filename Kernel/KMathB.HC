@@ -30,7 +30,7 @@ F64 Pow10I64(I64 i)
   else if (i<-308)
     return 0.0;
   else
-    return pow10_I64[i+309];
+    return pow10_I64[i+308];
 }
 
 #include "/Kernel/KMathInt.HC"

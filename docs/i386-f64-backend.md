@@ -218,3 +218,25 @@ and the 2^52 integral boundary. All four operations match actual x64 output and
 an independent Python oracle. Side-effecting arguments and nested public calls
 also pass. Formatting still needs logarithms/powers, exception handling and
 other production dependencies before StrPrintJoin can be integrated.
+
+
+`Pow10I64` is now provided by `Kernel/I386/Pow10.HC`, included by FloatMath.
+Its 617 U64 entries are generated from exact rational powers and rounded to
+binary64, with no runtime allocation, transcendental calculation or FPU use.
+`tools/gen-i386-pow10.py --check` verifies the checked-in table. The public
+function preserves HolyC's range contract: exponents below -308 return +0;
+exponents above 308 return +infinity. In particular, it does not extend the
+API to smaller subnormal powers. The unary fixture adds all 617 in-range values,
+four out-of-range/extreme inputs and nested/side-effect checks. Its oracle parses
+decimal powers independently of the generator's rational conversion.
+
+The x64 startup table and lookup now use index `i+308` rather than `i+309`:
+617 allocated entries map to indices 0 through 616. Both initialization sources
+were corrected, and the guest compares every public lookup with direct x64
+`Pow10`. The x64 routine's approximation differs from the exact table for 607
+exponents, with a maximum distance of 683 ULPs. The fixture pins the observed
+x64 output digest and writes every difference to `pow10-compatibility.json`.
+These differences remain explicit; native powers must match the exact oracle.
+The combined unary/power corpus now checks 13,929 native results, plus the
+existing additional call/edge cases. General Pow, Pow10 and logarithms remain
+unfinished, as does production formatting integration.

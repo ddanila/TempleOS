@@ -80,6 +80,8 @@ def main():
         if getattr(args, mode.replace('-', '_')):
             kind = mode
     data_mode = kind in ('data', 'vga', 'heap', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-unary', 'integer-math', 'float')
+    if args.soft_f64_unary:
+        run(sys.executable, 'tools/gen-i386-pow10.py', '--check')
     functions = kind != 'expressions'
     if functions:
         OUT = ROOT/f'build/i386-{kind}-test'
@@ -145,9 +147,21 @@ def main():
             x64_oracle = b''.join(struct.pack('<8Q', value, absolute,
                 x64_squares.get(value & 0x7FFFFFFFFFFFFFFF, square),
                 x64_roots.get(value, root), *integral) for value, absolute, square, root, *integral
-                in struct.iter_unpack('<8Q', oracle))
+                in struct.iter_unpack('<8Q', oracle[:65536]))
             if (exports/'x64-unary.bin').read_bytes() != x64_oracle:
                 raise ValueError('x64 unary results differ from documented precision observations')
+            powers = (exports/'x64-pow10.bin').read_bytes()
+            powers_hash = hashlib.sha256(powers).hexdigest()
+            if powers_hash != '2e249f8317610dbc84966a4c91a4b913fff7878ca21e66f3ad13cbbc68962543':
+                raise ValueError('x64 Pow10I64 results differ from documented observations')
+            differences = [dict(exponent=i-308, x64=f'{actual:016X}',
+                                native=f'{exact:016X}', ulps=abs(actual-exact))
+                for i, ((actual,), (exact,)) in enumerate(zip(
+                    struct.iter_unpack('<Q', powers), struct.iter_unpack('<Q', oracle[65536:])))
+                if actual != exact]
+            (OUT/'pow10-compatibility.json').write_text(json.dumps(dict(
+                x64_sha256=powers_hash, vectors=617, differences=differences,
+                max_ulps=max((item['ulps'] for item in differences), default=0)), indent=2)+'\n')
         if args.integer_math and (exports/'x64-integer-math.bin').read_bytes() != oracle:
             raise ValueError('x64 integer math differs from the Python oracle')
         if args.soft_f64_convert:

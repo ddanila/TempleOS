@@ -230,4 +230,6 @@ def make_unary_oracle(count):
         absolute = magnitude | (QUIET if magnitude > INF else 0)
         records.append(struct.pack('<8Q', value, absolute, expected(value, value, 'mul'), expected_sqrt(value),
                                    *(expected_integral(value, mode) for mode in ('round', 'trunc', 'floor', 'ceil'))))
+    #Decimal parsing is independent of the table generator's Fraction conversion.
+    records.extend(struct.pack('<d', float(f'1e{exponent}')) for exponent in range(-308, 309))
     return b''.join(records)
