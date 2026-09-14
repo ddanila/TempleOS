@@ -2713,3 +2713,27 @@ whole-archive reader is available for file-service module integration. Public fi
 paths, .Z fallback, resident records and include dispatch remain unconnected, as
 do the remaining parser/JIT, document, strict 386 and self-hosting workflows. See
 `docs/i386-expand-buffer.md`.
+
+## Decoded volume-scoped disk reads
+
+I386RedSeaFileLoad now connects path resolution, exact/toggled-name selection,
+raw disk reads and checked expansion. FileAttr and RedSea attribute constants are
+shared with x64. Compression follows the resolved leaf name, preserving both
+misleading stored bits and directory-dot/single-extension behavior. Success retains
+one raw/decoded allocation plus NUL; failure reclaims temporary names, archives and
+output and preserves optional size/attributes. Only an absent name triggers the
+alternate lookup; lookup, I/O, allocation or codec errors stop the load.
+
+Original x64-compressed source/binary fixtures pass native disk loading, byte,
+attribute, size and ownership checks. Exact-name precedence, both fallback
+directions, empty archives and relative directory blocks pass. A malformed archive
+and a partial-I/O file each have valid alternates but correctly fail. Eighteen
+small arenas, invalid/null paths and enabled-IF rejection restore heap/output
+baselines. The entire 16 MiB disk remains unchanged. Shared filename/attribute/raw
+regressions, both x64 rebuild/reboot generations, native instruction audits and
+full kernel boot/rejection/VGA/keyboard/timer checks pass.
+
+The new bridge remains a quiescent, IF-clear volume service outside the unchanged
+383496-byte bootstrap. Task drive/directory paths, parent search, resident caching,
+public exception behavior and include dispatch remain open, along with parser/JIT,
+documents, strict 386 profiles and native self-hosting. See `docs/i386-file-load.md`.

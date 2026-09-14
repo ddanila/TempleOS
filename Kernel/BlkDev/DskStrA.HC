@@ -207,17 +207,6 @@ CDirEntry *Cd2DirEntry(CDirEntry *tmpde,U8 *abs_name)
   return NULL;
 }
 
-I64 FileAttr(U8 *name,I64 attr=0)
-{
-  if (IsDotZ(name))
-    attr|=RS_ATTR_COMPRESSED;
-  else
-    attr&=~RS_ATTR_COMPRESSED;
-  if (IsDotC(name))
-    attr|=RS_ATTR_CONTIGUOUS;
-  return attr;
-}
-
 Bool FileNameChk(U8 *filename)
 {//Return check for valid filename, not checking existence.
   U8 *ptr=filename;

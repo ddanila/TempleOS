@@ -44,3 +44,14 @@ U8 *FileNameWriteToggle(U8 *dst,U8 *name)
   dst[i]=0;
   return dst;
 }
+
+I64 FileAttr(U8 *name,I64 attr=0)
+{
+  if (IsDotZ(name))
+    attr|=RS_ATTR_COMPRESSED;
+  else
+    attr&=~RS_ATTR_COMPRESSED;
+  if (IsDotC(name))
+    attr|=RS_ATTR_CONTIGUOUS;
+  return attr;
+}

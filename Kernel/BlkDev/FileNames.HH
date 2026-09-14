@@ -1,5 +1,7 @@
 #ifndef FILE_NAMES_INCLUDED
 #define FILE_NAMES_INCLUDED
+#include "/Kernel/BlkDev/RedSeaAttr.HH"
+public extern I64 FileAttr(U8 *name,I64 attr=0);
 public extern U8 *FileExtDot(U8 *src);
 public extern Bool IsDotZ(U8 *filename);
 public extern Bool IsDotC(U8 *filename);

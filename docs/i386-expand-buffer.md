@@ -51,8 +51,9 @@ python3 tools/test-i386.py --arc-expand
 python3 tools/build-i386-kernel.py --test
 ```
 
-Whole-archive expansion is available as a native component. It is not yet wired
-into public FileRead, .Z-name fallback, resident-file records or include dispatch.
+Whole-archive expansion now backs the decoded volume loader and its .Z-name
+fallback; see `docs/i386-file-load.md`. Public FileRead, task paths, resident-file
+records and include dispatch remain unconnected.
 The new code stays outside the standalone bootstrap pending file-service module
 integration; this does not establish the complete interactive or rebuild memory
 profile.

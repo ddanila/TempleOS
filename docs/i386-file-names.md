@@ -40,9 +40,8 @@ python3 tools/test-i386.py --redsea
 python3 tools/build-i386-kernel.py --test
 ```
 
-The native filename helpers are available for file/include integration. They are
-not yet linked into the standalone bootstrap or compiler runtime. Absolute path
-construction, task current-directory/drive rules, .Z lookup fallback, parent
-search, resident-file records, decompression and include dispatch still require
-integration. Keeping those semantics explicit avoids mistaking volume lookup for
-the full public FileRead contract.
+The native filename helpers now support the decoded volume loader described in
+`docs/i386-file-load.md`. They remain outside the standalone bootstrap and compiler
+runtime. Absolute path construction, task current-directory/drive rules, parent
+search, resident-file records and public file/include integration remain open.
+Volume lookup and decoded loading do not yet provide the complete FileRead contract.

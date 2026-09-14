@@ -40,5 +40,8 @@ I64 NameRulesTest()
       NameCase("A.HC.Z.Z","HC.Z","A.HC.Z.Z","A.HC.Z",1,TRUE)) return 62;
   if(!IsDotC("A.B.C") || IsDotC("A.C") || IsDotC("A.B.c") ||
       !IsDotC("dir.x/A.C") || IsDotC("")) return 63;
+  if(FileAttr("File.HC.Z",0x20)!=0x420 || FileAttr("File.HC",0xC20)!=0x820 ||
+      FileAttr("File.HC.C",0)!=0x800 || FileAttr("File.Z",0x420)!=0x20 ||
+      FileAttr("A.B.C",0x400)!=0x800) return 64;
   return 0;
 }

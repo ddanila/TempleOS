@@ -312,9 +312,11 @@ preserve interrupt state and reclaim partial allocations. The original stream-ex
 readers and dictionary callbacks. Native full/incremental output and input
 resumption match six original-compressor fixtures, including dictionary reuse.
 Owned whole-archive expansion now validates sizes/types and codes before decoding,
-reclaims failed allocations and matches original-compressor fixtures. File/include
-integration remains required; see `docs/i386-compression.md`,
-`docs/i386-arc-expand.md` and `docs/i386-expand-buffer.md`.
+reclaims failed allocations and matches original-compressor fixtures. Volume-scoped
+file loading now tries exact/toggled names, derives attributes from the resolved
+leaf and returns decoded owned bytes. Task paths, parent search, resident records
+and public file/include integration remain required; see `docs/i386-compression.md`,
+`docs/i386-arc-expand.md`, `docs/i386-expand-buffer.md` and `docs/i386-file-load.md`.
 
 ### H. Meet the memory budget and recover the complete user workflow
 
