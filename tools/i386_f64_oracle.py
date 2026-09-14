@@ -277,3 +277,38 @@ def make_mod_oracle(count=2048):
             result = struct.unpack('<Q', struct.pack('<d', value))[0] | (a & SIGN)
         rows.append(struct.pack('<3Q', a, b, result))
     return b''.join(rows)
+
+
+def expected_bitwise(a, b):
+    """HolyC raw F64 binary operations; compound forms truncate the RHS to I64."""
+    bits = (1 << 64)-1
+    signed = a-(1 << 64) if a & SIGN else a
+    def operations(right):
+        shift = right & 63
+        return [a & right, a | right, a ^ right,
+                (a << shift) & bits, (signed >> shift) & bits]
+    value = struct.unpack('<d', struct.pack('<Q', b))[0]
+    integer = math.trunc(value) if math.isfinite(value) else SIGN
+    if not -SIGN <= integer < SIGN:
+        integer = SIGN
+    compound = operations(integer & bits)
+    return operations(b) + compound + compound
+
+
+
+def expected_bitwise_mixed(raw, floating):
+    bits = (1 << 64)-1
+    signed = raw-(1 << 64) if raw & SIGN else raw
+    converted = struct.unpack('<Q', struct.pack('<d', float(signed)))[0]
+    value = struct.unpack('<d', struct.pack('<Q', floating))[0]
+    integer = math.trunc(value) if math.isfinite(value) else SIGN
+    if not -SIGN <= integer < SIGN: integer = SIGN
+    integer &= bits
+    def operations(a, b, unsigned=False):
+        shift = b & 63
+        signed_a = a if unsigned or not a & SIGN else a-(1 << 64)
+        return [a & b, a | b, a ^ b, (a << shift) & bits, (signed_a >> shift) & bits]
+    left = operations(converted, floating)
+    return (left + operations(floating, converted) + [left[4]] +
+            operations(raw, integer) + operations(raw, integer, True) +
+            operations(floating, raw))

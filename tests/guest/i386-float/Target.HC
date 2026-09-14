@@ -16,6 +16,9 @@ extern F64 Mul(F64 a,F64 b);
 extern F64 Div(F64 a,F64 b);
 extern F64 Neg(F64 a);
 extern I64 CheckRemainders();
+extern I64 CheckBitwisePair(U64 a,U64 b);
+extern I64 CheckMixedBitwisePair(U64 raw,U64 bits);
+extern I64 CheckBitwiseDestinations(I64 expected_narrow);
 extern I64 CheckModUpdates();
 extern F64 Store(F64 *p,F64 value);
 extern F64 LateAdd(F64 a,F64 b);
@@ -105,6 +108,7 @@ I64 Main(I64 unused_a,I64 unused_b)
   if (whole!=0x8000000000000000) return 61;
   c=0.0; if (ConditionNotArithmetic(c)!=3) return 62;
   whole=CheckRemainders(); if(whole) return 4000+whole;
+  whole=CheckBitwiseDestinations(127); if(whole) return 14000+whole;
   whole=CheckModUpdates(); if(whole) return 13000+whole;
   whole=CheckConditions(); if (whole) return 1000+whole;
   whole=CheckChains(TRUE); if (whole) return 2000+whole;
@@ -134,3 +138,9 @@ I64 *PickWhole() { picks++; return &mixed_cell; }
 
 #include "T:/Remainder.HC"
 #include "T:/ModUpdates.HC"
+
+#include "T:/Bitwise.HC"
+
+#include "T:/BitwiseMixed.HC"
+
+#include "T:/BitwiseCheck.HC"

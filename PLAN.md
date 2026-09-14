@@ -716,6 +716,15 @@ and an exact-rational oracle. Six NaN payload-selection differences are recorded
 separately. Full native pass execution still requires the remaining numerical,
 allocation and diagnostic dependencies; see `docs/i386-f64-remainder.md`.
 
+F64 bitwise and shift operations now execute natively as well. Binary forms use
+raw floating-point representations; compound forms first convert an F64 right
+operand to I64, matching the shared frontend. All 83968 x64/native matrix checks
+and four destination checks pass. Shift signedness now follows the operand's
+effective type after conversion. The known x64 narrow-temporary result difference
+is recorded explicitly in `docs/i386-f64-bitwise.md`. These close further numeric
+dependencies of the shared constant-folding pass; full pass/frontend integration
+remains the next work.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

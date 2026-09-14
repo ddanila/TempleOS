@@ -11,6 +11,8 @@ Bool Reject(U8 *body)
 #include "T:/Conditions.HC"
 #include "T:/Chains.HC"
 #include "T:/ModInputs.HC"
+#include "T:/Bitwise.HC"
+#include "T:/BitwiseMixed.HC"
 #include "T:/ModUpdates.HC"
 Bool CheckMixedHost()
 {
@@ -38,7 +40,7 @@ U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i;
-  U64 *mod_values=MAlloc(49152),mod_a,mod_b,mod_seed=0x386F64D;
+  U64 *mod_values=MAlloc(49152),*bit_values=MAlloc(245760),*mixed_bits=MAlloc(425984),mod_a,mod_b,mod_seed=0x386F64D;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native F64 expressions\n");
@@ -46,8 +48,16 @@ U0 CompileTests()
     ModInputs(i,&mod_seed,&mod_a,&mod_b);
     mod_values[i*3]=mod_a; mod_values[i*3+1]=mod_b;
     mod_values[i*3+2]=HostModBits(mod_a,mod_b);
+    BitwiseValues(mod_a,mod_b,bit_values+i*15);
+    MixedBitwiseValues(mod_a,mod_b,mixed_bits+i*26);
   }
   Report(MStrPrint("EXPORT x64-mod.bin %X %X\n",mod_values,49152));
+  Report(MStrPrint("EXPORT x64-bitwise.bin %X %X\n",bit_values,245760));
+  Report(MStrPrint("EXPORT x64-bitwise-mixed.bin %X %X\n",mixed_bits,425984));
+  i=CheckBitwiseDestinations(-129);
+  if(i) { Report(MStrPrint("FAIL x64 bitwise destinations %d picks=%d byte=%d result=%d\n",i,bitwise_picks,bitwise_byte,bitwise_result)); return; }
+  Report(MStrPrint("OBSERVED x64 narrow XOR update: stored=%d result=%d\n",bitwise_byte,bitwise_result));
+  Report("PASS four x64 bitwise destination checks\n");
   i=CheckModUpdates();
   if(i) { Report(MStrPrint("FAIL x64 remainder updates %d\n",i)); return; }
   Report("PASS eleven x64 remainder update checks\n");
@@ -98,8 +108,8 @@ U0 CompileTests()
   if (!Reject("F64 Main(F64 a,F64 b) { return a+b; }") ||
       !Reject("extern I64 I386F64Mod(U64 a,U64 b); F64 Main(F64 a,F64 b) { return a%b; }") ||
       !Reject("extern U64 I386F64Mod(I64 a,U64 b); F64 Main(F64 a,F64 b) { return a%b; }") ||
-      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a^b; }") ||
-      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a&b; }") ||
+      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a`b; }") ||
+      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a) { return ~a; }") ||
       !Reject("F64 Main(F64 a,F64 b) { return a%b; }") ||
       !Reject("extern I64 I386F64Add(U64 a,U64 b); F64 Main(F64 a,F64 b) { return a+b; }") ||
       !Reject("extern U64 I386F64Add(I64 a,U64 b); F64 Main(F64 a,F64 b) { return a+b; }")) {

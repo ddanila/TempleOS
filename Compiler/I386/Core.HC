@@ -387,6 +387,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             case IC_TO_F64: case IC_TO_I64: case IC_TO_BOOL:
             //An explicit bitwise cast can retain an I64 immediate opcode with F64 type.
             case IC_NOP1: case IC_NOP2: case IC_IMM_I64: case IC_IMM_F64: case IC_PUSH_CMP:
+            case IC_SHL_CONST: case IC_SHR_CONST:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
             case IC_CALL: case IC_CALL_EXTERN: case IC_CALL_IMPORT:
             case IC_CALL_INDIRECT: case IC_LEAVE:
@@ -403,6 +404,11 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               if (!I386IsF64(I386ValueClass(ic->t.arg2_tree)) || c->ptr_stars_cnt ||
                   I386Size(c)<1 || I386Size(c)>8) throw('Compiler');
               break;
+            case IC_AND_EQU: case IC_OR_EQU: case IC_XOR_EQU:
+            case IC_SHL_EQU: case IC_SHR_EQU:
+              //These operate on stored bits; an integer destination stays integer.
+              if (c->ptr_stars_cnt || I386Size(c)<1 || I386Size(c)>8) throw('Compiler');
+              break;
             case IC_ASSIGN:
               if (!I386IsF64(c) || !I386IsF64(I386ValueClass(ic->t.arg2_tree))) throw('Compiler');
               break;
@@ -410,6 +416,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             case IC_UNARY_MINUS:
               if (!I386IsF64(c)) throw('Compiler');
               break;
+            case IC_AND: case IC_OR: case IC_XOR: case IC_SHL: case IC_SHR:
             case IC_ADD: case IC_SUB: case IC_MUL: case IC_DIV: case IC_MOD:
               if (!I386IsF64(c) || !I386IsF64(I386ValueClass(ic->t.arg1_tree)) ||
                   !I386IsF64(I386ValueClass(ic->t.arg2_tree))) {
@@ -938,7 +945,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A",4);
             I386Shift(&out,ic->ic_code==IC_SHL,
-              ToBool(ic->t.arg1_class->raw_type&RTF_UNSIGNED));
+              ToBool(I386ValueClass(ic->t.arg1_tree)->raw_type&RTF_UNSIGNED));
             I386Bytes(&out,"\x52\x50",2);
             depth--;
             break;
@@ -948,7 +955,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Bytes(&out,"\x58\x5A\xB9",3);
             I386Dword(&out,ic->ic_data);
             I386Shift(&out,ic->ic_code==IC_SHL_CONST,
-              ToBool(ic->t.arg1_class->raw_type&RTF_UNSIGNED));
+              ToBool(I386ValueClass(ic->t.arg1_tree)->raw_type&RTF_UNSIGNED));
             I386Bytes(&out,"\x52\x50",2);
             break;
           case IC_SHL_EQU:
@@ -1012,7 +1019,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_XOR:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A",4);
-            if (I386IsF64(c)) I386F64Runtime(cc,&out,ic->ic_code,pass);
+            if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB || ic->ic_code==IC_MUL))
+              I386F64Runtime(cc,&out,ic->ic_code,pass);
             else I386Binary(&out,ic->ic_code);
             if (c && c->ptr_stars_cnt) I386Normalize(&out,c);
             I386Bytes(&out,"\x52\x50",2);

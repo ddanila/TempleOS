@@ -3311,3 +3311,46 @@ See [i386-f64-remainder.md](i386-f64-remainder.md) for semantics and oracle scop
 Floating-point status/traps, remaining numerical operations, full native parser/
 optimizer/JIT, public task/allocator integration, DolDoc/editing, self-hosting and
 strict 386SX/DX acceptance remain unfinished.
+
+
+## Native F64 bitwise/shift lowering and effective-type selection
+
+F64 binary `&`, `|`, `^`, `<<`, `>>` and their compound forms now lower through
+the existing integer-pair instructions. Ordinary forms use raw binary64 bits after
+mixed-operand promotion. The shared frontend converts an F64 right operand to I64
+for compound forms before applying the operation to stored destination bits.
+No new runtime helper, service pointer or module-interface version is introduced.
+
+Mixed tests exposed a shift-selection defect: an operand promoted from U64 to
+F64 still selected a logical right shift using its original type. Variable and
+constant shifts now query the operand's effective value class, including its
+conversion flags. The corrected promoted-F64 case matches x64 arithmetic shift.
+
+The expanded F64 suite compares actual x64 output to independent Python bit and
+conversion oracles: 30720 ordinary/compound/stored-result checks and 53248 mixed
+checks. The same 83968 checks pass natively with CR0.EM set. Four further counted
+pointer checks cover NaN bit preservation, converted counts, narrow storage and
+U64 logical shift. A known narrow result difference is exact and explicit:
+addressed `I8(-127) ^= F64(254.5)` stores 127 on both targets, but the x64 expression
+returns -129; native returns its normalized stored value, 127.
+
+Successful verification:
+
+- `python3 tools/test-rebuild.py`: both x64 rebuild/reboot generations.
+- `python3 tools/test-i386.py --float`: all bitwise/shift checks, destination checks,
+  existing 8192 remainder results, arithmetic/condition/chain cases and rejection tests.
+- `python3 tools/test-i386.py --functions`: all 233 integer/function cases.
+- `python3 tools/build-i386-kernel.py --test`: full standalone boot/input/recovery/
+  module-rejection suite and executable instruction audits.
+- `git diff --check`; the rebuilt manifest matches the final backend source hash.
+
+Measured image sizes and service ABIs are unchanged: CompilerRuntime ABI 19 is
+260080 image/260096 heap bytes; FileRuntime ABI 10 is 124688/124704; the temporary
+ABI-4 probe is 100000/100016. The kernel remains 389336 bytes, or 391496 with its
+loaded stage overhead, leaving 1720 bytes in the fixed 393216-byte reservation.
+
+See [i386-f64-bitwise.md](i386-f64-bitwise.md) for the two operand rules and oracle
+scope. These supply additional numerical dependencies for the shared optimization
+pass; complete native pass/frontend/backend integration, public task/allocator
+interfaces, interactive HolyC/DolDoc, self-hosting and strict 386SX/DX acceptance
+remain unfinished.

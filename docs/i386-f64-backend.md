@@ -66,8 +66,7 @@ integers, F64 and mixed conversions, while keeping comparison results integer
 booleans independently of operand-precision metadata. The existing logical
 context handling provides short-circuit branches and eager value expressions.
 
-This is an initial compiler integration. Remaining math intrinsics and F64 bitwise/shift operations require further
-integration. Numeric
+This is an initial compiler integration. Remaining math intrinsics and F64 complement require further integration. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
 host optimizer; numerical precision compatibility across folding and runtime
@@ -116,7 +115,7 @@ out-of-range results (`I8 -127 -= 2.5` yielded -129 and `U8 250 += 10.5` yielded
 all stored destinations to their declared width, including stack-backed locals.
 This is a known difference for those out-of-range register temporaries, not a
 claim of complete x64 expression compatibility. Unsupported-source checks retain
-coverage for missing/malformed remainder providers and F64 bitwise operations.
+coverage for missing/malformed remainder providers, F64 complement and power.
 
 A shared x64/native condition fixture checks 144 pairs of 12 binary64 patterns.
 Each pair checks five branch predicates, four logical values used in integer
@@ -285,3 +284,9 @@ F64 `%` and `%=` now use the exact integer-only `I386F64Mod` helper, including
 mixed operands and integer destinations. The expanded F64 fixture passes 8192
 remainder checks and eleven x64/native update checks, with NaN payload policy
 recorded separately. See [i386-f64-remainder.md](i386-f64-remainder.md).
+
+
+F64 bitwise/shift binary and compound forms now use native integer-pair lowering.
+Their distinct operand-conversion rules, 83968 x64/native checks, effective-type
+shift fix and narrow-result observation are documented in
+[i386-f64-bitwise.md](i386-f64-bitwise.md).

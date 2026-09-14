@@ -246,7 +246,7 @@ def main():
     if args.float or args.soft_f64_log or args.soft_f64_unary or args.integer_math or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int:
         from i386_integer_oracle import make_integer_math_oracle
         from i386_log_oracle import make_log_oracle
-        from i386_f64_oracle import make_oracle, make_conversion_oracle, make_comparison_oracle, make_to_int_oracle, make_unary_oracle, make_mod_oracle
+        from i386_f64_oracle import make_oracle, make_conversion_oracle, make_comparison_oracle, make_to_int_oracle, make_unary_oracle, make_mod_oracle, expected_bitwise, expected_bitwise_mixed
         records = [line.split() for line in (exports/'debug.log').read_text().splitlines()
                    if line.startswith('ORACLE ')]
         if len(records) != 1:
@@ -256,6 +256,20 @@ def main():
                   make_comparison_oracle(1024) if args.soft_f64_compare else
                   make_conversion_oracle(1024) if args.soft_f64_convert else make_oracle(2048))
         if args.float:
+            expected_bits = [value for a, b, _ in struct.iter_unpack('<3Q', oracle)
+                             for value in expected_bitwise(a, b)]
+            bit_oracle = struct.pack('<'+str(len(expected_bits))+'Q', *expected_bits)
+            actual_bits = (exports/'x64-bitwise.bin').read_bytes()
+            if actual_bits != bit_oracle:
+                mismatch = next((i for i, (a, b) in enumerate(zip(struct.iter_unpack('<Q', actual_bits), struct.iter_unpack('<Q', bit_oracle))) if a != b), None)
+                raise ValueError(f'x64 F64 bit operations differ from raw-bit oracle at {mismatch}')
+            mixed_expected = [value for a, b, _ in struct.iter_unpack('<3Q', oracle)
+                              for value in expected_bitwise_mixed(a, b)]
+            mixed_oracle = struct.pack('<'+str(len(mixed_expected))+'Q', *mixed_expected)
+            actual_mixed = (exports/'x64-bitwise-mixed.bin').read_bytes()
+            if actual_mixed != mixed_oracle:
+                mismatch = next((i for i, (a, b) in enumerate(zip(struct.iter_unpack('<Q', actual_mixed), struct.iter_unpack('<Q', mixed_oracle))) if a != b), None)
+                raise ValueError(f'x64 mixed F64 bit operations differ from oracle at {mismatch}')
             x64 = (exports/'x64-mod.bin').read_bytes()
             if len(x64) != len(oracle):
                 raise ValueError('Remainder oracle length mismatch')
