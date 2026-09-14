@@ -17,8 +17,12 @@ evidence and limitations. The full 32-bit OS is not yet implemented.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
 checks 725 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
-multicore behavior still need baseline verification. Experimental i386 expression
-and function backends are tracked in the progress document.
+multicore behavior still need baseline verification. The native i386 foundation
+now boots a disk image on the 8 MiB QEMU/486 development profile, initializes
+cooperative tasks and timer interrupts, presents planar VGA, and reads its source
+from a packaged RedSea volume. These results do not establish strict 386 support
+or an interactive HolyC environment. Component evidence and remaining limitations
+are tracked in the progress document.
 
 All work stays in our fork on `main`. Preserve `archive` at `c26482b`.
 
@@ -301,6 +305,30 @@ Keep shared language, document and filesystem code above small architecture
 boundaries. CPU register width must not change I64/F64 semantics, serialized
 formats or the 640×480 application coordinate space. Native JIT and self-hosting
 remain required outcomes of this sequence.
+
+### Immediate integration work after RedSea startup
+
+The standalone kernel can currently read source, but cannot compile or execute
+that source. Advance the resident programming environment through these concrete
+steps:
+
+1. Load a separately packaged i386 startup module from RedSea using the existing
+   checked module loader. Bind its code/data imports to explicit resident kernel
+   exports. Verify execution and temporary-buffer reclamation, and define image
+   ownership before allowing callbacks or tasks to retain module addresses.
+2. Connect keyboard delivery and VGA text rendering to a recoverable command
+   loop. Integrate public task, allocation, file and exception interfaces needed
+   by the compiler; keep disk access ownership explicit as tasks become active.
+3. Inventory the compiler's remaining native dependencies against that resident
+   interface, including symbol storage, formatting, software F64, generators and
+   target execution. Bring up a native compile/run path, then repeat editing,
+   compilation, execution and error recovery without host assistance.
+
+Disk-loaded cross-compiled modules are an intermediate integration check, not
+native JIT or self-hosting. At each step record resident and peak allocations,
+retain the x86-64 rebuild regression, and audit executable bytes for the 386
+instruction baseline. Select and exercise a strict 386 emulator profile alongside
+this work; the current 486 development result leaves that acceptance gate open.
 
 | Milestone | Work and required evidence |
 | --- | --- |
