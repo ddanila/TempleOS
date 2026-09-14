@@ -29,8 +29,9 @@ checks passed against the original x64 public functions at 51be92f. The same
 fixture executes against the rebuilt x64 functions and native wrappers. Native
 coverage additionally exercises null inputs, 32 exhausted heap arenas with both
 operations, unchanged input storage, exact allocation sizes, reclamation and IF
-preservation. The expanded RedSea fixture retains its 128 KiB loader and separate
-heap, existing path/file-read/partial-I/O tests and unchanged whole-disk check.
+preservation. The filename tests retain their separate heap, existing path/file-read/partial-I/O
+tests and unchanged whole-disk check. Subsequent absolute-path tests expanded this
+fixture to a 160 KiB loader; see `docs/i386-file-paths.md`.
 
 Validation commands:
 
@@ -42,7 +43,8 @@ python3 tools/build-i386-kernel.py --test
 
 The native filename helpers now support the decoded volume loader described in
 `docs/i386-file-load.md`. They remain outside the standalone bootstrap and compiler
-runtime. Absolute path construction, task current-directory/drive rules, resident-file
-records and public file/include integration remain open. The decoded volume
+runtime. Absolute path construction now shares the original string rules through explicit
+context and native owned wrappers; see `docs/i386-file-paths.md`. Task/drive binding,
+resident-file records and public file/include integration remain open. The decoded volume
 loader now provides optional parent search.
 Volume lookup and decoded loading do not yet provide the complete FileRead contract.

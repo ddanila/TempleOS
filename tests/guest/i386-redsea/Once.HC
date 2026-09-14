@@ -4,6 +4,22 @@ U8 *NameDefault(U8 *name,U8 *extension) { return ExtDft(name,extension); }
 U8 *NameToggle(U8 *name) { return ToggleZorNotZ(name); }
 U0 NameFree(U8 *name) { Free(name); }
 #include "T:/Names.HC"
+U8 *PathDir(U8 *name) { return DirNameAbs(name); }
+U8 *PathFile(U8 *name) { return FileNameAbs(name); }
+U0 PathContextSet(U8 *directory,U8 *home) { Fs->cur_dir=directory; blkdev.home_dir=home; }
+#include "T:/Paths.HC"
+I64 OriginalPathsTest()
+{
+  U8 *old_dir=Fs->cur_dir,*old_home=blkdev.home_dir;
+  I64 result,old_boot=blkdev.boot_drv_let;
+  if(Drv2Let!='T') return 99;
+  Fs->cur_dir="/Work/Here"; blkdev.home_dir="H:/Users/Test"; blkdev.boot_drv_let='B';
+  result=PathRulesTest;
+  if(!result) result=PathContextTest;
+  if(!result) result=PathLiteralTest;
+  Fs->cur_dir=old_dir; blkdev.home_dir=old_home; blkdev.boot_drv_let=old_boot;
+  return result;
+}
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
@@ -13,6 +29,9 @@ U0 CompileTests()
   Report("START native RedSea\n");
   if(NameRulesTest) { Report("FAIL original filename rules\n"); return; }
   Report("PASS original filename rules\n");
+  i=OriginalPathsTest;
+  if(i) { line=MStrPrint("FAIL original paths %d\n",i); Report(line); return; }
+  Report("PASS original paths\n");
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);

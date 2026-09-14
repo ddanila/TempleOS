@@ -74,4 +74,6 @@ I64 Main(I64 a,I64 b)
 
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/FileNames.HC"
+#include "/Kernel/CharBitmaps.HC"
+#include "/Kernel/I386/FilePaths.HC"
 #include "T:/NativeNames.HC"

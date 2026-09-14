@@ -1,4 +1,5 @@
 #include "/Kernel/BlkDev/FileNames.HC"
+#include "/Kernel/BlkDev/FilePaths.HC"
 
 U8 *FileExtRem(U8 *src,U8 *dst=NULL)
 {//Remove filename extension from str.
@@ -80,94 +81,44 @@ Bool FilesFindMatch(U8 *_test_name,U8 *files_find_mask,I64 fuf_flags=0)
   return res;
 }
 
+U0 FilePathTaskContext(CFilePathContext *context)
+{
+  context->cur_dir=Fs->cur_dir;
+  context->home_dir=blkdev.home_dir;
+  context->white_space=char_bmp_white_space;
+  context->cur_drv=0;
+  if(context->cur_dir && *context->cur_dir) context->cur_drv=Drv2Let;
+  context->boot_drv=blkdev.boot_drv_let;
+}
+
 U8 *DirNameAbs(U8 *_dirname)
 {//MAlloc absolute dir string with drv letter.
-  I64 maxlen;
-  U8 drv[3],*res,*buf,*buf2,*buf3,*buf4,*dirname,*free_dirname;
-  if (!Fs->cur_dir || !*Fs->cur_dir)
-    return StrNew(_dirname);
-  free_dirname=dirname=MStrUtil(_dirname,
-	SUF_REM_LEADING|SUF_REM_TRAILING|SUF_REM_CTRL_CHARS);
-  *drv=Drv2Let;
-  drv[1]=':';
-  drv[2]=0;
-  if (*dirname && dirname[1]==':') {
-    if (*dirname==':')
-      *drv=blkdev.boot_drv_let;
-    else if (*dirname=='~')
-      *drv=*blkdev.home_dir;
-    else
-      *drv=*dirname;
-    dirname=dirname+2;
-    buf=StrNew("/");
-  } else
-    buf=StrNew(Fs->cur_dir);
-  if (*dirname=='/') {
-    Free(buf);
-    buf=StrNew("/");
-    dirname++;
-  }
-  buf2=StrNew(dirname);
-  maxlen=StrLen(buf)+1+StrLen(buf2)+1;
-  buf3=MAlloc(maxlen);
-  buf4=MAlloc(maxlen);
-  StrCpy(buf3,buf);
-  while (*buf2) {
-    StrFirstRem(buf2,"/",buf4);
-    if (!*buf4)
-      StrCpy(buf3,"/");
-    else if (!StrCmp(buf4,"..")) {
-      StrLastRem(buf3,"/");
-      if (!*buf3)
-	StrCpy(buf3,"/");
-    } else if (!StrCmp(buf4,"~")) {
-      Free(buf3);
-      buf3=MAlloc(StrLen(blkdev.home_dir+2)+1+StrLen(buf2)+1);
-      StrCpy(buf3,blkdev.home_dir+2);
-      *drv=*blkdev.home_dir;
-    } else if (!StrCmp(buf4,"."));
-    else if (*buf4) {
-      if (StrCmp(buf3,"/"))
-	CatPrint(buf3,"/");
-      CatPrint(buf3,buf4);
-    }
-  }
-  Free(buf);
-  res=MAlloc(StrLen(buf3)+3);
-  StrCpy(res,drv);
-  StrCpy(res+2,buf3);
-  Free(buf2);
-  Free(buf3);
-  Free(buf4);
-  Free(free_dirname);
+  CFilePathContext context;
+  U8 *work,*res;
+  if(!_dirname) _dirname="";
+  FilePathTaskContext(&context);
+  work=MAlloc(StrLen(_dirname)+2);
+  res=MAlloc(FilePathCapacity(_dirname,&context));
+  FilePathCopy(work,_dirname);
+  FilePathDirWrite(res,work,&context);
+  Free(work);
   return res;
 }
 
 U8 *FileNameAbs(U8 *_filename,I64 fuf_flags=0)
 {//Absolute filename. Accepts $LK,"FUF_Z_OR_NOT_Z",A="MN:FUF_Z_OR_NOT_Z"$, $LK,"FUF_SCAN_PARENTS",A="MN:FUF_SCAN_PARENTS"$.
-  U8 *res,*filename,*buf,*buf_file,*buf_dir,*free_filename,*free_buf;
+  CFilePathContext context;
   CDirEntry de;
-  free_filename=filename=MStrUtil(_filename,
-	SUF_REM_LEADING|SUF_REM_TRAILING|SUF_REM_CTRL_CHARS);
-  free_buf=buf=StrNew(filename);
-  if (*buf && buf[1]==':') {
-    buf+=2;
-    filename+=2;
-  }
-  buf_file=MAlloc(StrLen(free_filename)+1);
-  StrLastRem(buf,"/",buf_file);
-  if (*filename=='/' && !*buf)
-    StrCpy(buf,"/");
-  buf_dir=DirNameAbs(free_buf);
-  Free(free_buf);
-  res=MAlloc(StrLen(buf_dir)+1+StrLen(buf_file)+1);
-  StrCpy(res,buf_dir);
-  if (res[StrLen(res)-1]!='/')
-    CatPrint(res,"/");
-  CatPrint(res,buf_file);
-  Free(buf_file);
-  Free(buf_dir);
-  Free(free_filename);
+  U8 *work,*res;
+  I64 length;
+  if(!_filename) _filename="";
+  FilePathTaskContext(&context);
+  length=StrLen(_filename);
+  work=MAlloc((length+2)*2);
+  res=MAlloc(FilePathCapacity(_filename,&context));
+  FilePathCopy(work,_filename);
+  FilePathFileWrite(res,work,work+length+2,&context);
+  Free(work);
   if (fuf_flags && FileFind(res,&de,fuf_flags|FUF_JUST_FILES)) {
     Free(res);
     res=de.full_name;

@@ -449,6 +449,11 @@ behavior regression and audit executable code for the 386 baseline. Passing
 this package enables parser/JIT integration; it does not establish a working
 HolyC shell or strict 386 hardware compatibility.
 
+The path-string extraction now passes 44 original x64 cases on both targets,
+with native owned-buffer and allocation-failure checks. Explicit-context helpers
+remain outside the native runtime; task-to-volume binding and the remaining
+file/compiler integration above are still required. See `docs/i386-file-paths.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

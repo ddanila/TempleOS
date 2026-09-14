@@ -2762,3 +2762,28 @@ heap unchanged. The standalone bootstrap remains 383496 bytes with 9720 bytes of
 headroom. Task drive/directory normalization, resident caching, public file/compiler
 integration, parser/JIT, documents, strict 386 profiles and native self-hosting
 remain open. See `docs/i386-file-load.md`.
+
+## Shared absolute path construction with explicit native context
+
+The original DirNameAbs/FileNameAbs string rules now run through shared helpers.
+The x64 public wrappers retain task/drive lookup and optional FileFind behavior;
+native owned wrappers accept explicit current/home directory, current/boot drive
+and whitespace context. Forty-four cases verified before extraction now pass
+against both implementations, including repeated separators, drive/home/parent
+components, filename-leaf distinctions, control and extended bytes, trailing
+context slashes and absent current directories. Literal copying also removes
+path-as-format-string processing, with a separate percent-character test.
+
+Native allocation failure leaves no temporary buffers. Tests cover 105 arenas,
+invalid inputs, borrowed input preservation, successful single-result ownership,
+reclamation and both IF states. The existing raw RedSea suite and unchanged-disk
+check pass, as do executable instruction audits, both x64 rebuild/reboot generations
+and full standalone boot checks. The fixture now uses a 160 KiB loader; the
+production bootstrap remains 383496 bytes with 9720 bytes of headroom.
+
+These are string services outside the native bootstrap/runtime. Task-to-volume
+routing, public file flags and exceptions, resident records, scheduler-aware ATA
+ownership, compiler-control lifetime and include dispatch remain open. Parser/JIT,
+DolDoc, strict 386SX/DX profiles and self-hosting are still required. See
+`docs/i386-file-paths.md` for contracts, original evidence and deliberate safety
+changes.
