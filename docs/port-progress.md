@@ -2507,3 +2507,30 @@ compiler-probe image is 43328 bytes with a fully reclaimed 43344-byte heap span;
 the compiler runtime and keyword registry stay resident. Opcode/register loading,
 remaining preprocessing, public compiler-control APIs, parser/JIT, DolDoc, strict
 386 profiles and native self-hosting remain open. See `docs/i386-keywords.md`.
+
+## Native symbol and mode conditional preprocessing
+
+The native dispatcher now handles ifdef/ifndef, ifaot/ifjit, else/endif and the
+CCF_IN_IF expression-boundary tokens. A shared LexSkipConditional replaces six
+repeated x64 loops, retaining raw-character traversal and keyword recognition
+only after a hash sign. Global-symbol existence, local shadowing, nested depth,
+AOT/JIT flags, malformed operands and legacy skipped-comment/quote behavior are
+preserved. Active if-expression evaluation still returns -4 natively; the native
+expression parser remains unconnected.
+
+Seventeen branch, seven marker and two EOF/raw-quote cases passed against the
+original lexer at f0e4307 before extraction, then through x64 and native dispatch.
+Tests also cover raw/token failures, depth/delimiter handling, name-allocation
+failure and blocked owned-include EOF cleanup. A quoted hash in the new header's
+comment initially triggered the same legacy raw-skip behavior during a repeated
+include; the comment was reworded without changing language semantics.
+
+Both x64 rebuild/reboot generations, conditional/definition/mixed-token suites and
+instruction audits pass. Runtime version 9 executes nested conditional probes at
+boot and after task/timer activity through the real namespace, reclaiming token
+text. Full kernel source, VGA/keyboard/timer and all module-rejection checks pass.
+The runtime is 135952 bytes with a 135968-byte retained span; the temporary probe
+is 48232 bytes with a fully reclaimed 48248-byte span. Bootstrap size stays 372288
+bytes. Expressions, includes, executed directives, public compiler APIs, parser/JIT,
+DolDoc, strict 386 profiles and native self-hosting remain open. See
+`docs/i386-lex-conditional.md`.

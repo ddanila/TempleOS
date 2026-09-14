@@ -17,7 +17,7 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 8 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 9 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens and mixed-token dispatch.
 The structure is 40 bytes on i386. The entry receives caller-owned interface
@@ -77,6 +77,7 @@ python3 tools/test-i386.py --lex-string
 python3 tools/test-i386.py --lex-ident
 python3 tools/test-i386.py --lex-tokens
 python3 tools/test-i386.py --lex-define
+python3 tools/test-i386.py --lex-cond
 python3 tools/build-i386-kernel.py --test
 ```
 
@@ -87,15 +88,17 @@ startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With definition publication in interface version 8, the bootstrap image is
-372288 bytes of its 393216-byte reservation. The 126464-byte runtime image
-is allocated at 0x1335E0 in the 8 MiB development profile and retains a
-126480-byte heap span. All eight service addresses match their exported offsets.
+With conditional preprocessing in interface version 9, the bootstrap image is
+372288 bytes of its 393216-byte reservation. The 135952-byte runtime image
+is allocated at 0x135B80 in the 8 MiB development profile and retains a
+135968-byte heap span. All eight service addresses match their exported offsets.
 Boot/task probes expand a macro, publish its identifier, replace that text with a
 binary string and free it. They also define a new macro from source, expand it to
 F64, consume the delimiter/EOF, detach the definition and reclaim its owned
 record/name/body/source link. DEFINE PROBE records are required in both phases,
 alongside the existing IDENT PROBE, STRING PROBE and LEX PROBE records.
+Version 9 also selects nested symbol-conditional branches through the real keyword
+and primitive namespace, with CONDITIONAL PROBE records required in both phases.
 
 Source checks cover 25613 characters, 550 newlines, FNV32 0x6B3D88F3 and
 26072 reclaimed heap bytes. Sizes and addresses are observations from result.json,
@@ -103,7 +106,7 @@ not fixed addresses or memory minima required by the interface. After native
 keyword initialization, the bootstrap has 20928 bytes of headroom. The 73 keyword
 records retain 6208 heap bytes and sit behind primitive types in symbol lookup.
 Definition probes now use that actual namespace, without a synthetic keyword.
-The temporary probe image is 43328 bytes, and its 43344-byte heap span is
+The temporary probe image is 48232 bytes, and its 48248-byte heap span is
 released after its second call; the compiler runtime and keyword registry remain
 resident. See [keyword initialization](i386-keywords.md),
 [compiler diagnostics](i386-compiler-probe.md) and

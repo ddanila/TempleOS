@@ -59,3 +59,10 @@ through resident symbols instead of constructing a synthetic define keyword. The
 current probe image is 43328 bytes with a 43344-byte temporary heap span. Both
 phases, reclamation and rejection checks pass with this namespace; see
 `docs/i386-keywords.md` for the separate resident registry lifetime.
+
+Conditional preprocessing adds ProbeConditional, which exercises a skipped outer
+branch and a selected nested symbol condition through the actual namespace. Both
+phases require CONDITIONAL PROBE records and token-text reclamation. The current
+diagnostics image is 48232 bytes with a 48248-byte temporary span; its context ABI
+remains version 1. See `docs/i386-lex-conditional.md` for the runtime version-9
+conditional services and the still-unimplemented expression path.

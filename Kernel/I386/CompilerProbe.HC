@@ -23,6 +23,7 @@ import U32 char_bmp_alpha_numeric[16];
 extern U0 ProbeTokens(CI386CompilerProbe *probe);
 extern U0 ProbeIdent(CI386CompilerProbe *probe);
 extern U0 ProbeDefine(CI386CompilerProbe *probe);
+extern U0 ProbeConditional(CI386CompilerProbe *probe);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
 #assert sizeof(CI386CompilerProbe)==44
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
@@ -88,6 +89,7 @@ U0 ProbeTokens(CI386CompilerProbe *probe)
   KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog(" "); KernelHex(cc.cur_i64); KernelLog(" "); KernelHex(cc.token); KernelLog(" "); KernelHex(ident_entry(CHashClass *)->size); KernelLog("\n");
   ProbeIdent(probe);
   ProbeDefine(probe);
+  ProbeConditional(probe);
 }
 U0 ProbeIdent(CI386CompilerProbe *probe)
 {
@@ -168,4 +170,26 @@ U0 ProbeDefine(CI386CompilerProbe *probe)
   I386IrqRestore(flags);
   if(probe->heap->used!=used || probe->heap->allocations!=allocations || !I386HeapValid(probe->heap)) KernelStop;
   KernelLog("DEFINE PROBE "); KernelHex(phase); KernelLog(" "); KernelHex(cc.cur_f64(U64)); KernelLog("\n");
+}
+
+U0 ProbeConditional(CI386CompilerProbe *probe)
+{
+  CCmpCtrl cc; CLexFile file; U8 *bytes; U32 flags;
+  I64 i,lines=0,used=probe->heap->used,allocations=probe->heap->allocations;
+  bytes=&cc; for(i=0;i<sizeof(CCmpCtrl);i++) bytes[i]=0;
+  bytes=&file; for(i=0;i<sizeof(CLexFile);i++) bytes[i]=0;
+  CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,probe->symbols,char_bmp_alpha_numeric);
+  LexFileSeed(&file,"#ifdef Missing 9 #else #ifdef I64i 3e0 #else 5e0 #endif #endif;");
+  cc.lex_include_stk=&file; cc.cur_buf_ptr=file.buf;
+  if(probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=TK_F64 ||
+      cc.cur_f64(U64)!=0x4008000000000000 ||
+      probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=59 ||
+      probe->compiler->next_token(probe->heap,&cc,"Probe",&lines)!=TK_EOF ||
+      !cc.cur_str || probe->heap->allocations!=allocations+1) KernelStop;
+  flags=I386IrqSave;
+  if(!I386HeapFree(probe->heap,cc.cur_str)) KernelStop;
+  cc.cur_str=0;
+  I386IrqRestore(flags);
+  if(probe->heap->used!=used || probe->heap->allocations!=allocations || !I386HeapValid(probe->heap)) KernelStop;
+  KernelLog("CONDITIONAL PROBE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(cc.cur_f64(U64)); KernelLog("\n");
 }

@@ -4,8 +4,9 @@
 `I386LexNext(heap, cc, tables, macro_filename, compiled_lines)`. The caller supplies
 initialized punctuation tables, a live compiler control/input stack and the heap
 that owns token text and included sources. This is a frontend integration step;
-definition directives are supported when keyword symbols and source metadata are
-available; remaining directives, prompt/document input and the parser/JIT remain open.
+definition and symbol/AOT/JIT conditional directives are supported with the
+required keyword and source services. General conditional expressions, remaining
+directives, prompt/document input and the parser/JIT remain open.
 
 The dispatcher handles whitespace, identifiers and string-macro expansion,
 number/dot tokens, owned string tokens, packed character constants, punctuation,
@@ -28,7 +29,8 @@ rules still apply, including published tokens when final lookahead fails. The
 caller eventually releases `cc.cur_str` and owned input/control records; successful
 non-text tokens do not discard the preceding text allocation. No error here is
 silently converted to EOF or a successful token. Remaining directive handling must be added before this can consume general HolyC
-source. See [definition handling](i386-lex-define.md) for publication and ownership.
+source. See [definition handling](i386-lex-define.md) for publication and ownership, and [conditional handling](i386-lex-conditional.md)
+for branch selection, legacy raw-skip behavior and expression markers.
 
 `python3 tools/test-i386.py --lex-tokens` runs shared mixed-stream expectations
 through actual x86-64 `Lex` and the native dispatcher. It exercises a wide integer,

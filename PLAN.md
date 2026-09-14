@@ -480,6 +480,10 @@ programming environment through these concrete steps:
    the version-8 runtime executes definition probes at boot and after task activity.
    All 48 language and 25 assembler keywords now initialize as an owned native
    registry behind primitive types. The definition probes use this real namespace.
+   Native ifdef/ifndef, AOT/JIT selection, else/endif and expression-boundary
+   markers now share skipped-branch traversal with x64. Original behavior cases,
+   native error/reclamation tests and version-9 boot/task conditional probes pass.
+   Active if expressions, includes and executed directives remain unsupported.
    Opcode/register initialization and remaining directives are still required.
    Compiler diagnostics now load as a temporary extended-memory module, retained
    through boot/task checks and then reclaimed. This reduces the bootstrap from

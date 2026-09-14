@@ -384,6 +384,8 @@ Bool LexDefineSystemAppend(U8 *context,U8 *text,I64 count)
   return TRUE;
 }
 
+#include "/Compiler/LexConditional.HC"
+I64 LexSystemToken(U8 *context,CCmpCtrl *cc) { return Lex(cc); }
 I64 Lex(CCmpCtrl *cc)
 {//Fetch next token.
   I64 i,j,k,l,ch;
@@ -393,10 +395,11 @@ I64 Lex(CCmpCtrl *cc)
   CLexDefineSink define_sink;
   CLexPunctTables punct_tables;
   CLexIdentSink ident_sink;
-  CLexCharSource token_source;
+  CLexCharSource token_source,conditional_tokens;
   U8 *fbuf,*buf2,*buf3,buf[STR_LEN];
   ident_sink.context=0; ident_sink.include=&LexIdentSystemInclude; ident_sink.publish=&LexIdentSystemPublish;
   token_source.context=0; token_source.read=&LexSystemChar;
+  conditional_tokens.context=0; conditional_tokens.read=&LexSystemToken;
   punct_tables.first=cmp.dual_U16_tokens1; punct_tables.second=cmp.dual_U16_tokens2;
   punct_tables.third=cmp.dual_U16_tokens3;
   cc->last_line_num=cc->lex_include_stk->line_num;
@@ -514,23 +517,9 @@ lex_ident:
 	    }
 lex_else:
 	    j=1;
-	    do {
-	      if (ch=LexGetChar(cc)) {
-		if (ch=='#') {
-		  if (!Lex(cc))
-		    goto lex_end;
-		  i=PrsKeyWord(cc);
-		  if (i==KW_IF || i==KW_IFDEF || i==KW_IFNDEF ||
-			i==KW_IFAOT || i==KW_IFJIT)
-		    j++;
-		  else if (i==KW_ENDIF)
-		    j--;
-		}
-	      } else {
-		cc->token=TK_EOF;
-		goto lex_end;
-	      }
-	    } while (j);
+	    i=LexSkipConditional(cc,&token_source,&conditional_tokens,j,FALSE);
+	    if(i<0) LexExcept(cc,"Conditional input at ");
+	    if(!i) goto lex_end;
 	    break;
 
 	  case KW_IF:
@@ -565,25 +554,9 @@ lex_if:
 		  j=2;
 		else
 		  j=1;
-		do {
-		  if (ch=LexGetChar(cc)) {
-		    if (ch=='#') {
-		      if (!Lex(cc))
-			goto lex_end;
-		      i=PrsKeyWord(cc);
-		      if (i==KW_IF || i==KW_IFDEF || i==KW_IFNDEF ||
-			    i==KW_IFAOT || i==KW_IFJIT)
-			j++;
-		      else if (i==KW_ENDIF)
-			j--;
-		      else if (i==KW_ELSE && j==1)
-			break;
-		    }
-		  } else {
-		    cc->token=TK_EOF;
-		    goto lex_end;
-		  }
-		} while (j);
+		i=LexSkipConditional(cc,&token_source,&conditional_tokens,j,TRUE);
+		if(i<0) LexExcept(cc,"Conditional input at ");
+		if(!i) goto lex_end;
 	      }
 	    }
 	    break;
@@ -604,25 +577,9 @@ lex_ifdef:
 	    if (cc->hash_entry)
 	      goto lex_cont;
 	    j=1;
-	    do {
-	      if (ch=LexGetChar(cc)) {
-		if (ch=='#') {
-		  if (!Lex(cc))
-		    goto lex_end;
-		  i=PrsKeyWord(cc);
-		  if (i==KW_IF || i==KW_IFDEF || i==KW_IFNDEF ||
-			i==KW_IFAOT || i==KW_IFJIT)
-		    j++;
-		  else if (i==KW_ENDIF)
-		    j--;
-		  else if (i==KW_ELSE && j==1)
-		    break;
-		}
-	      } else {
-		cc->token=TK_EOF;
-		goto lex_end;
-	      }
-	    } while (j);
+	    i=LexSkipConditional(cc,&token_source,&conditional_tokens,j,TRUE);
+	    if(i<0) LexExcept(cc,"Conditional input at ");
+	    if(!i) goto lex_end;
 	    break;
 	  case KW_IFNDEF:
 	    if (cc->flags & CCF_IN_IF) {
@@ -641,25 +598,9 @@ lex_ifndef:
 	    if (!cc->hash_entry)
 	      goto lex_cont;
 	    j=1;
-	    do {
-	      if (ch=LexGetChar(cc)) {
-		if (ch=='#') {
-		  if (!Lex(cc))
-		    goto lex_end;
-		  i=PrsKeyWord(cc);
-		  if (i==KW_IF || i==KW_IFDEF || i==KW_IFNDEF ||
-			i==KW_IFAOT || i==KW_IFJIT)
-		    j++;
-		  else if (i==KW_ENDIF)
-		    j--;
-		  else if (i==KW_ELSE && j==1)
-		    break;
-		}
-	      } else {
-		cc->token=TK_EOF;
-		goto lex_end;
-	      }
-	    } while (j);
+	    i=LexSkipConditional(cc,&token_source,&conditional_tokens,j,TRUE);
+	    if(i<0) LexExcept(cc,"Conditional input at ");
+	    if(!i) goto lex_end;
 	    break;
 	  case KW_IFAOT:
 	    if (cc->flags & CCF_IN_IF) {
@@ -670,25 +611,9 @@ lex_ifaot:
 	    if (cc->flags & CCF_AOT_COMPILE)
 	      goto lex_cont;
 	    j=1;
-	    do {
-	      if (ch=LexGetChar(cc)) {
-		if (ch=='#') {
-		  if (!Lex(cc))
-		    goto lex_end;
-		  i=PrsKeyWord(cc);
-		  if (i==KW_IF || i==KW_IFDEF || i==KW_IFNDEF ||
-			i==KW_IFAOT || i==KW_IFJIT)
-		    j++;
-		  else if (i==KW_ENDIF)
-		    j--;
-		  else if (i==KW_ELSE && j==1)
-		    break;
-		}
-	      } else {
-		cc->token=TK_EOF;
-		goto lex_end;
-	      }
-	    } while (j);
+	    i=LexSkipConditional(cc,&token_source,&conditional_tokens,j,TRUE);
+	    if(i<0) LexExcept(cc,"Conditional input at ");
+	    if(!i) goto lex_end;
 	    break;
 	  case KW_IFJIT:
 	    if (cc->flags & CCF_IN_IF) {
@@ -699,25 +624,9 @@ lex_ifjit:
 	    if (!(cc->flags & CCF_AOT_COMPILE))
 	      goto lex_cont;
 	    j=1;
-	    do {
-	      if (ch=LexGetChar(cc)) {
-		if (ch=='#') {
-		  if (!Lex(cc))
-		    goto lex_end;
-		  i=PrsKeyWord(cc);
-		  if (i==KW_IF || i==KW_IFDEF || i==KW_IFNDEF ||
-			i==KW_IFAOT || i==KW_IFJIT)
-		    j++;
-		  else if (i==KW_ENDIF)
-		    j--;
-		  else if (i==KW_ELSE && j==1)
-		    break;
-		}
-	      } else {
-		cc->token=TK_EOF;
-		goto lex_end;
-	      }
-	    } while (j);
+	    i=LexSkipConditional(cc,&token_source,&conditional_tokens,j,TRUE);
+	    if(i<0) LexExcept(cc,"Conditional input at ");
+	    if(!i) goto lex_end;
 	    break;
 	  case KW_ENDIF:
 	    if (cc->flags & CCF_IN_IF) {
