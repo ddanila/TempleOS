@@ -725,6 +725,20 @@ is recorded explicitly in `docs/i386-f64-bitwise.md`. These close further numeri
 dependencies of the shared constant-folding pass; full pass/frontend integration
 remains the next work.
 
+The retained compiler now runs the shared pass 0/1/2 constant-folding and type-analysis
+core through `code_optimize`. Type tables and diagnostics are explicit per-call
+services; the native parser stack belongs to its compiler control. Shared opcode
+metadata initializes before service publication, avoiding unsupported static string
+pointer initialization. Native boot/task probes cover 42 folded expressions,
+warning/error reporting and OutMem/unwind cleanup. Both x64 rebuild generations,
+the floating-point and function regressions, task/control tests and the full
+standalone suite pass. CompilerRuntime ABI 20 is 116 bytes; FileRuntime ABI 11
+validates it, and the temporary probe uses ABI 5/56 bytes. The retained compiler
+image is 444680 bytes, while the kernel and loaded stage occupy 391576 of the
+unchanged 393216-byte reservation. See `docs/i386-constant-optimizer.md`.
+Complete native parsing, later optimization passes, backend/JIT publication and
+source execution remain integration work; this is not yet a native compiler loop.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

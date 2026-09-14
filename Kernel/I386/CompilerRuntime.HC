@@ -36,11 +36,13 @@ CLexPunctTables runtime_punct;
 extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
 extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines);
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
+extern U0 ICInfoInit();
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==112
+#assert sizeof(CI386CompilerServices)==116
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
+  ICInfoInit;
   LexPunctInit(runtime_first,runtime_second,runtime_third);
   runtime_punct.first=runtime_first; runtime_punct.second=runtime_second; runtime_punct.third=runtime_third;
   services->version=compiler_runtime_version;
@@ -62,7 +64,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->code_discard=&I386COCDiscard; services->code_save=&I386COCSave;
   services->code_push=&I386COCPush; services->code_pop=&I386COCPopNoFree;
   services->code_free=&I386COCHeaderFree; services->code_append=&I386COCAppend;
-  services->code_retire=&I386ICRetire; services->code_branch=&I386OptBranch;
+  services->code_retire=&I386ICRetire; services->code_branch=&I386OptBranch; services->code_optimize=&I386OptPass012;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -98,3 +100,5 @@ I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
 #include "/Kernel/I386/TaskSymbols.HC"
 
 #include "/Compiler/I386/OptBranch.HC"
+
+#include "/Compiler/I386/OptPass012.HC"

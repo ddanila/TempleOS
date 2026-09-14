@@ -1,33 +1,4 @@
-U0 PrsPush(CPrsStk *ps,I64 val)
-{
-  ps->stk[++ps->ptr]=val;
-}
-
-I64 PrsPop(CPrsStk *ps)
-{
-  return ps->stk[ps->ptr--];
-}
-
-U0 PrsPush2(CPrsStk *ps,I64 val)
-{
-  ps->stk2[++ps->ptr2]=val;
-}
-
-I64 PrsPop2(CPrsStk *ps)
-{
-  return ps->stk2[ps->ptr2--];
-}
-
-U0 PrsPopDeref(CPrsStk *ps)
-{
-  I64 i=PrsPop(ps);
-  CHashClass *tmpc=PrsPop(ps);
-  if (i.u16[0]!=IC_DEREF) {
-    PrsPush(ps,tmpc);
-    PrsPush(ps,i);
-  }
-}
-
+#include "/Compiler/PrsStack.HC"
 I64 PrsKeyWord(CCmpCtrl *cc)
 {//Cvt cur token to $LK,"KEYWORD",A="FF:::/Compiler/OpCodes.DD,KEYWORD"$ or -1.
   CHashGeneric *tmph;
@@ -162,11 +133,7 @@ U0 COCHeaderPut(CCmpCtrl *cc,I64 pass,Bool put)
   cc->pass=pass;
 }
 
-I64 CmpTargetSize(CCmpCtrl *cc,CHashClass *c)
-{//Compiler objects retain host pointers; source layouts use the target width.
-  if (cc->flags&CCF_TARGET_I386 && c->ptr_stars_cnt) return 4;
-  return c->size;
-}
+#include "/Compiler/TargetSize.HC"
 
 U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
 {

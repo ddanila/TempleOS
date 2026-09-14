@@ -486,6 +486,7 @@ U0 KernelCompilerProbe(I64 phase)
   used=kernel_heap.used; allocations=kernel_heap.allocations;
   probe.version=I386_COMPILER_PROBE_VERSION; probe.bytes=sizeof(CI386CompilerProbe);
   probe.heap=&kernel_heap; probe.compiler=&kernel_compiler; probe.symbols=kernel_symbols;
+  probe.internal_types=kernel_types.by_raw;
   probe.i64_type=kernel_types.by_raw[RT_I64]; probe.runtime_image=kernel_compiler_image;
   probe.runtime_size=kernel_compiler_size; probe.phase=phase;
   probe.disk_include=&kernel_file_include; probe.files=&kernel_files;

@@ -15,7 +15,7 @@ The module uses the actual retained compiler interface for token services and
 borrows the kernel's symbol table and I64 type descriptor. It contains the small
 shared control/file seed routines; it does not contain a second compiler runtime.
 
-Main receives a version-4, 52-byte CI386CompilerProbe record plus its size. Every
+Main receives a version-5, 56-byte CI386CompilerProbe record plus its size. Every
 pointer is borrowed only during that synchronous call. The module rejects an
 incompatible record before running tests. It registers no persistent callbacks or tasks and
 retains no caller pointers. Include callbacks are borrowed only for synchronous
@@ -118,3 +118,8 @@ Shared branch-optimizer recovery now runs through the retained compiler service.
 Both phases exhaust the heap after native try registration, catch a real `OutMem`
 from fall-through-label allocation, unwind the partially rewritten graph and
 retry successfully. See [i386-branch-optimizer.md](i386-branch-optimizer.md).
+
+The version-5 record also borrows the internal-type array. The constant-folding
+probe executes the retained shared pass in boot and task phases, including numeric
+transforms, warnings and compiler/OutMem recovery. See
+[i386-constant-optimizer.md](i386-constant-optimizer.md).

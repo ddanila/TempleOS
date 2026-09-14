@@ -31,10 +31,11 @@ extern U0 ProbeDefine(CI386CompilerProbe *probe);
 extern U0 ProbeConditional(CI386CompilerProbe *probe);
 extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
+extern U0 ProbeOptimize(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
-#assert sizeof(CI386CompilerProbe)==52
+#assert sizeof(CI386CompilerProbe)==56
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
 {
   if(!probe || bytes!=sizeof(CI386CompilerProbe) || probe->bytes!=bytes ||
@@ -372,6 +373,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
       task->last_cc!=outer || task->lifetime_refs!=refs || task->active_controls!=1 ||
       heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
   ProbeBranches(probe,heap,outer);
+  ProbeOptimize(probe,heap,outer);
   SetRFlags(flags);
   KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }
@@ -422,3 +424,5 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   }
   KernelLog("BRANCH RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }
+
+#include "/Kernel/I386/CompilerOptProbe.HC"

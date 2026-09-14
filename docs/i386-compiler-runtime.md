@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 19 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 20 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement and shared branch optimization.
-The structure is 112 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement, shared branch optimization and pass 0/1/2 constant folding/type analysis.
+The structure is 116 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -203,3 +203,11 @@ branch transformations with native instruction retirement and label allocation.
 `throw` raises the import count to twenty-one. FileRuntime version 10 validates
 the dependency. Partially rewritten graphs remain owned for exception cleanup;
 see [i386-branch-optimizer.md](i386-branch-optimizer.md).
+
+## Native shared constant folding (version 20)
+
+The 116-byte record appends `code_optimize`, executing the shared OptPass012 core
+with native stack ownership and diagnostics. FileRuntime version 11 validates the
+new dependency. Opcode metadata initializes before service publication; numerical
+helpers and imports remain within the existing retained provider contract. See
+[i386-constant-optimizer.md](i386-constant-optimizer.md).

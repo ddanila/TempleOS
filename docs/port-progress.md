@@ -3354,3 +3354,47 @@ scope. These supply additional numerical dependencies for the shared optimizatio
 pass; complete native pass/frontend/backend integration, public task/allocator
 interfaces, interactive HolyC/DolDoc, self-hosting and strict 386SX/DX acceptance
 remain unfinished.
+
+## Shared native constant folding and type analysis
+
+The retained compiler now executes `OptPass012Core` on native owned IR. The x64
+wrapper and native wrapper share the transformation body, operand type helpers,
+parser stack helpers and target-size queries. Per-call services supply internal
+types and diagnostics; the native control owns its allocated pass stack. Opcode
+metadata now initializes explicitly from one shared list of 185 descriptors,
+avoiding native AOT static string-pointer relocations.
+
+The standalone probe runs seven folded expressions through each of passes 0, 1
+and 2 in both boot and task phases: 42 cases in total. It checks signed and unsigned
+integer arithmetic, F64 addition/remainder/raw bit operations and mixed promotion,
+with tree/NOP/stack and exact heap accounting. A U0 dereference triggers the real
+warning callback; two unconsumed values trigger the real stack diagnostic and
+`Compiler` unwind. Heap exhaustion triggers `OutMem` before stack publication;
+control cleanup restores heap counts, task references, active controls and IF.
+
+Successful verification:
+
+- `python3 tools/test-rebuild.py`: both x64 rebuild/reboot generations.
+- `python3 tools/test-i386.py --task-symbols`: native control/ownership and 136
+  existing shared branch rewrites; the factory fixture provides a rejecting full-pass
+  callback because full-pass execution is covered by the production module probe.
+- `python3 tools/test-i386.py --float`: 83968 bitwise/shift checks, 8192 remainder
+  paths, destination, condition, chain and rejection cases.
+- `python3 tools/test-i386.py --functions`: all 233 function cases.
+- `python3 tools/build-i386-kernel.py --test`: boot/task optimizer probes, complete
+  boot/input/recovery/module-rejection suite and executable instruction audits.
+- `git diff --check` and Python build-tool syntax compilation.
+
+CompilerRuntime ABI 20 is 116 bytes, retaining a 444680-byte image in a
+444696-byte heap span. FileRuntime ABI 11 remains a 32-byte record; its image/span
+are 124784/124800 bytes. CompilerProbe ABI 5 is 56 bytes and borrows the resident
+internal-type array; its temporary image/span are 120824/120840 bytes, reclaimed
+after the task phase. Compiler and probe imports remain 21 and 17 respectively.
+The kernel is 389416 bytes, or 391576 with loaded stage overhead, leaving 1640
+bytes in the fixed 393216-byte bootstrap reservation. The retained compiler grew
+184600 bytes in extended memory; low-memory self-hosting still requires measurement.
+
+See [i386-constant-optimizer.md](i386-constant-optimizer.md) for the valid-IR and
+failure contracts. The tests exercise a subset of pass behavior. Native parsing,
+later passes, backend/JIT publication, source execution, public task/allocation
+interfaces, DolDoc, self-hosting and strict 386SX/DX acceptance remain unfinished.
