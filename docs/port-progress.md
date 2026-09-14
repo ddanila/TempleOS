@@ -1709,3 +1709,24 @@ rebuild/reboot generations pass. No runner function pointers enter the combined
 runtime. Production boot/device integration, public clock/sleep APIs, full CTask
 migration, native compiler execution and strict 386 validation remain unfinished.
 See `i386-timer.md`.
+
+
+## Timer-driven cooperative sleep queue
+
+`Kernel/I386/Sleep.HH/HC` now register stack-owned waiters, block non-root tasks
+and wake due tasks from timer dispatch without IRQ-time switching or allocation.
+The queue counts delivered ticks, preserves caller IF and reblocks after spurious
+scheduler wakes. Pending tasks/stacks cannot be destroyed or abandoned; public
+cancellation and millisecond sleep APIs remain pending.
+
+The combined fixture now performs 48 timed sleeps inside catches across worker
+lifecycle cycles. Root idles when both workers block; IRQ0 advances the queue.
+Early-wake injection, no-early-return checks, IF-clear/enabled caller preservation,
+64-bit countdowns, already-runnable expiration and full queue/heap reclamation
+pass. General task and linked IRQ regressions, instruction audits and both x86-64
+rebuild/reboot generations also pass.
+
+The combined image has grown beyond 128 KiB and now uses the existing 160 KiB
+loader capacity below its 0x40000 heap arena. Full boot/desktop integration,
+public task/time interfaces, native compiler execution and strict 386 verification
+remain unfinished. See `i386-sleep.md`.

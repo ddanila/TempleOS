@@ -7,6 +7,7 @@
 #include "/Kernel/I386/TaskPlatform.HH"
 #include "/Kernel/I386/Interrupt.HH"
 #include "/Kernel/I386/Timer.HH"
+#include "/Kernel/I386/Sleep.HH"
 import U0 i386_idle();
 _intern 0x17 CI386Cpu *CpuSelf();
 import U0 i386_segments_reload(U16 fs,U16 gs);
@@ -15,6 +16,9 @@ CI386Task root;
 CI386Cpu cpu;
 U8 gdt_storage[56],runtime_idt[2048];
 CI386Timer timer,rejected_timer;
+CI386SleepQueue sleep_queue;
+U32 spurious_wakes;
+extern U0 SleepFor(I64 ticks);
 U32 irq_tasks[3];
 extern U0 OnTimer(CI386IrqFrame *frame);
 extern U0 OnFault(CI386ExceptionFrame *frame);
@@ -103,6 +107,8 @@ I64 Main(I64 unused0,I64 unused1)
     if(!I386TimerInit(&timer,11932) || I386TimerInit(&timer,11932)) return 45;
     timer.ticks=0xFFFFFFFFFFFFFFFF;
     if(!I386TimerStep(&timer) || I386TimerTicks(&timer)) return 46;
+    if(I386SleepInit(0,&scheduler) || !I386SleepInit(&sleep_queue,&scheduler) ||
+        I386SleepInit(&sleep_queue,&scheduler)) return 49;
     timer.ticks=0xFFFFFFF0;
     I386PicMask(0xFFFE);
     result=Run;
@@ -126,9 +132,11 @@ I64 Run()
 {
   I64 cycle,i,round;
   U64 previous,snapshot;
+  CI386Sleeper probe;
   WaitTick;
   SetRFlags(GetRFlags|0x200);
-  if(I386TimerStep(&timer) || I386TimerInit(&rejected_timer,11932)) failures++;
+  if(I386TimerStep(&timer) || I386TimerInit(&rejected_timer,11932) ||
+      I386SleepTick(&sleep_queue)) failures++;
   previous=I386TimerTicks(&timer);
   while(previous<=0x100000001) {
     snapshot=I386TimerTicks(&timer);
@@ -144,14 +152,30 @@ I64 Run()
     root.catch_except=TRUE;
   }
   if(failures || root.except_top || heap.used || heap.allocations) return 3;
+  if(I386SleepTicks(0,1) || I386SleepTicks(&sleep_queue,-1) ||
+      I386SleepTicks(&sleep_queue,1) || !I386SleepTicks(&sleep_queue,0) ||
+      sleep_queue.head || (GetRFlags&0x200)) return 50;
+  probe.task=&root; probe.remaining=0x100000001; probe.queued=1; probe.next=0;
+  sleep_queue.head=&probe;
+  if(!I386SleepTick(&sleep_queue) || probe.remaining!=0x100000000 ||
+      !I386SleepTick(&sleep_queue) || probe.remaining!=0xFFFFFFFF || !probe.queued) return 53;
+  probe.remaining=1;
+  if(!I386SleepTick(&sleep_queue) || probe.queued || sleep_queue.head || root.blocked) return 54;
   for(cycle=0;cycle<2;cycle++) {
     for(i=0;i<2;i++) {
       progress[i]=0; reports[i]=0;
       workers[i]=I386TaskSpawn(&scheduler,&heap,8192,&Worker,i,0x18,0x20,4096);
       if(!workers[i]) return 4;
     }
-    for(round=0;round<40;round++) {
-      if(!I386SchedYield(&scheduler) || I386TaskSelf!=&root) return 5;
+    for(round=0;round<512;round++) {
+      if(spurious_wakes==cycle && sleep_queue.head && sleep_queue.head->remaining>1) {
+        if(!I386SchedWake(&scheduler,sleep_queue.head->task)) return 51;
+        spurious_wakes++;
+      }
+      if(root.next==&root) {
+        if(!I386SchedIdle(&scheduler,&i386_idle)) return 52;
+      } else if(!I386SchedYield(&scheduler)) return 5;
+      if(I386TaskSelf!=&root) return 5;
       if(workers[0]->task.finished && workers[1]->task.finished) break;
     }
     for(i=0;i<2;i++) {
@@ -159,7 +183,8 @@ I64 Run()
           workers[i]->task.except_top || workers[i]->local_heap.used ||
           !I386TaskDestroy(workers[i])) return 6;
     }
-    if(failures || heap.used || heap.allocations || !I386HeapValid(&heap)) return 7;
+    if(failures || heap.used || heap.allocations || !I386HeapValid(&heap) ||
+        sleep_queue.head || spurious_wakes!=cycle+1) return 7;
     if(!irq_tasks[0] || !irq_tasks[1] || !irq_tasks[2] ||
         I386TimerTicks(&timer)<=0x100000000) return 48;
   }
@@ -171,6 +196,7 @@ U0 Worker(I64 id)
   CI386Except *selected;
   U8 *site,*throw_frame;
   I64 i,value=0x1234567800000000+id,ch;
+  WaitTick;
   for(i=0;i<4;i++) {
     ch=0x100000000+id*16+i;
     try { throw(ch); failures++; }
@@ -182,7 +208,7 @@ U0 Worker(I64 id)
       if(task->except_ch!=ch || task->memory->allocations!=1) failures++;
       task->catch_except=TRUE;
       I386SchedYield(&scheduler);
-      WaitTick;
+      SleepFor(id+2);
       if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || !task->catch_except ||
           task->except_ch!=ch || task->except_callers[0]!=site ||
           task->except_rbp!=throw_frame || value!=0x1234567800000000+id+i*3) failures++;
@@ -195,7 +221,7 @@ U0 Worker(I64 id)
         selected=task->except_top;
         if(task->memory->allocations!=2) failures++;
         I386SchedYield(&scheduler);
-        WaitTick;
+        SleepFor(id+2);
         if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || task->catch_except ||
             task->except_ch!=ch+0x200000000) failures++;
         value++;
@@ -206,7 +232,7 @@ U0 Worker(I64 id)
       task->catch_except=TRUE;
       if(task->memory->allocations!=1) failures++;
       I386SchedYield(&scheduler);
-      WaitTick;
+      SleepFor(id+2);
       if(I386TaskSelf!=task || CpuSelf!=&cpu || task->except_top!=selected || !task->catch_except ||
           task->except_ch!=ch+0x200000000) failures++;
       value++;
@@ -263,6 +289,7 @@ U0 OnTimer(CI386IrqFrame *frame)
   if(frame->irq || task!=scheduler.current || CpuSelf!=&cpu ||
       (GetRFlags&0x600) || (frame->fs&65535)!=0x18 || (frame->gs&65535)!=0x20 ||
       !I386TimerStep(&timer)) failures++;
+  if(!I386SleepTick(&sleep_queue)) failures++;
   if(task==&root) irq_tasks[0]++;
   else if(workers[0] && task==&workers[0]->task) irq_tasks[1]++;
   else if(workers[1] && task==&workers[1]->task) irq_tasks[2]++;
@@ -283,3 +310,15 @@ U0 Unexpected()
 #include "/Kernel/I386/Interrupt.HC"
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/Timer.HC"
+
+U0 SleepFor(I64 ticks)
+{
+  U32 flags=GetRFlags,expected=0;
+  U64 before=I386TimerTicks(&timer);
+  if(ticks==3) { expected=0x200; SetRFlags(GetRFlags|0x200); }
+  if(!I386SleepTicks(&sleep_queue,0) || !I386SleepTicks(&sleep_queue,ticks) ||
+      I386TimerTicks(&timer)-before<ticks || (GetRFlags&0x200)!=expected) failures++;
+  I386IrqRestore(flags);
+}
+
+#include "/Kernel/I386/Sleep.HC"

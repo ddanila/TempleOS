@@ -634,6 +634,11 @@ and receives PIT ticks on root and both workers. A 64-bit serviced-tick counter
 provides atomic snapshots; rollover, IF preservation and hardware delivery after
 all 48 catch-time yields pass. Public time/sleep services and production boot
 integration remain pending; see `docs/i386-timer.md`.
+A cooperative tick-sleep queue now blocks tasks with stack-owned waiters and
+wakes them from timer IRQs without switching there. Catch-time sleeps pass
+spurious-wake, IF-preservation, full-width countdown and reclamation checks.
+Public time conversion/cancellation and full boot integration remain pending;
+see `docs/i386-sleep.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

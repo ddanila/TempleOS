@@ -36,3 +36,7 @@ The combined fixture passes hardware delivery to root and both workers, all
 48 catch-time waits, IF-enabled atomic snapshots across the 32-bit rollover,
 rejected IF-enabled configuration/update, and direct U64 wrap. The linked IRQ
 regression, instruction audits and both x86-64 rebuild/reboot generations pass.
+
+[Cooperative tick sleeps](i386-sleep.md) now use this delivery path. The combined
+fixture blocks workers during catch-time waits and lets root idle while IRQ0
+advances the sleep queue and makes due tasks runnable.
