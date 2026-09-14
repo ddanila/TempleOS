@@ -516,6 +516,11 @@ push/pop/clear operations and a reap guard that keeps referenced stacks alive.
 The ownership fixture uses synthetic captures; actual register capture,
 SysTry/SysUntry runtime entry, throw/catch execution and propagation remain
 required before the exception milestone can pass. See `docs/i386-exceptions.md`.
+Bootstrap assembly now supplies exception capture, invocation with the enclosing
+frame and nonlocal cleanup resumption. Native tests cover physical register/flag
+restoration and compiled catch blocks reading/writing enclosing I64 locals,
+including skipping the remainder of a try body. Fixture-only registration does
+not yet connect these primitives to production SysTry or task-owned propagation.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

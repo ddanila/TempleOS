@@ -1,9 +1,9 @@
 # Native exception record ownership
 
-This is a runtime prerequisite for HolyC try/catch on the 32-bit target.
-It does not implement SysTry, SysUntry, throw, catch execution, propagation,
-or nonlocal register/stack restoration. Compiler registration lowering and
-bounded frame traversal are separate existing prerequisites.
+This describes record ownership and low-level context primitives for HolyC
+try/catch on the 32-bit target. Production SysTry, SysUntry, throw and propagation
+are not implemented. Compiler registration lowering and bounded frame traversal
+are separate existing prerequisites; context primitives are described below.
 
 `Kernel/I386/Except.HH` defines a 32-byte capture containing EBP, ESP,
 EBX, ESI, EDI, EFLAGS and catch/cleanup addresses. A 48-byte record adds
@@ -44,3 +44,36 @@ capture copies, separate heaps and tasks, exhaustion, malformed captures,
 rejected removal, finished-task pinning/draining and complete heap reclamation.
 It does not exercise actual catches or task switches; the separate `--tasks`
 regression covers the changed task layout and ordinary lifecycle.
+
+## Context transfer primitives
+
+`Kernel/I386/ExceptContext.asm` supplies three bootstrap assembly entries using
+ordinary eight-byte argument slots and callee cleanup:
+
+| Entry | Arguments | Effect |
+| --- | --- | --- |
+| `i386_except_save` | capture, catch address, cleanup address | Saves the caller's EBP, post-return ESP, EBX/ESI/EDI and EFLAGS before clobbering preserved state; returns normally |
+| `i386_except_invoke` | capture | Calls a bare-RET catch block on the invoking stack with captured EBP, EBX/ESI/EDI and flags; restores invoker state on normal catch return |
+| `i386_except_resume` | capture | Restores captured EBP, ESP, EBX/ESI/EDI and flags and jumps to cleanup without returning |
+
+Offsets within the capture are 0/4 for EBP/ESP, 8/12/16 for EBX/ESI/EDI,
+20 for EFLAGS and 24/28 for catch/cleanup addresses. Save's three arguments
+occupy 24 bytes, so post-return ESP is entry ESP plus 28. Resume reads every
+capture field before abandoning its stack. EAX/ECX/EDX are volatile; FS/GS and
+task binding are unchanged. These routines neither validate captures nor manage
+record ownership. Callers must supply trusted live captures, valid stack space,
+compatible flags and code addresses; the normal HolyC ABI requires DF clear.
+
+`--except-context` checks physical register and arithmetic-flag sentinels,
+callee cleanup, invoker preservation even when the catch clobbers registers,
+and resumption after abandoning 128 bytes of deeper stack. It also checks a
+HolyC caller's captured EBP/ESP and compiler-generated catch blocks accessing
+an enclosing 64-bit local. Fixture-only SysTry registration supplies the enclosing
+frame and labels: one catch returns to the invoking helper, and another resumes
+at the compiler's cleanup label, skipping the remaining try body.
+
+That fixture registration is not a production SysTry implementation: it does
+not capture the enclosing function's full preserved-register state or allocate
+records. Native runtime entry, nested task-owned dispatch and propagation,
+allocation-failure policy, unhandled exceptions and full public CTask integration
+remain required. NASM remains a bootstrap tool pending native assembler support.

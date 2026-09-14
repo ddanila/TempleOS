@@ -1356,3 +1356,26 @@ SysTry/SysUntry runtime entry, caller register capture, catch execution, propaga
 nonlocal restoration and full CTask integration remain pending. See
 `i386-exceptions.md`. The complete OS, native self-hosting, memory budgets and
 strict 386 hardware compatibility remain unproven.
+
+
+## Native exception context primitives
+
+Bootstrap assembly now captures the caller's EBP, post-return ESP, preserved
+registers, flags and handler addresses without a HolyC wrapper changing them
+first. Catch invocation supplies the saved enclosing frame on the invoking
+stack and restores invoker state after a bare-RET catch. Nonlocal resume restores
+the saved stack/registers/flags and jumps to cleanup.
+
+The dedicated `--except-context` fixture passes physical register/flag sentinel
+checks, stack abandonment, and compiled catches accessing enclosing 64-bit locals.
+One compiled case returns to its invoking helper; another resumes at cleanup
+and skips the remaining try body. Fixture-only registration supplies compiler
+labels and frame addresses; production registration and task-owned propagation
+remain pending. Both x64 rebuild/reboot generations and the native task regression
+pass, with instruction audits covering production and test assembly ranges.
+The ndisasm 3.01 JMP-register workaround now also recognizes exact FF E2
+(JMP EDX), independently checked with objdump.
+
+This does not complete exception handling or the OS. See `i386-exceptions.md`
+for the ABI, limits and remaining runtime integration. Native assembler support,
+self-hosting, memory targets and strict 386 validation remain required.

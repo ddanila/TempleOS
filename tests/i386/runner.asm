@@ -50,6 +50,11 @@ case_next:
     push dword irq_test_wait
     push dword 0
     push dword i386_irq_dispatch
+%elifdef EXCEPT_CONTEXT_TEST
+    push dword 0
+    push dword 0
+    push dword 0
+    push dword except_context_control
 %elifdef TASK_TEST
     push dword 0
     push dword i386_context_switch
@@ -195,4 +200,13 @@ task_test_control: dd i386_irq_dispatch,i386_idle,segment_test_run
     dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
     dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
     dd i386_exception_stubs_begin-$$+512,i386_exception_stubs_end-i386_exception_stubs_begin
+%endif
+
+%ifdef EXCEPT_CONTEXT_TEST
+%include "Kernel/I386/ExceptContext.asm"
+%include "tests/i386/except-context.inc"
+except_context_control: dd i386_except_save,i386_except_invoke,i386_except_resume,except_context_test
+    db 'I32E'
+    dd i386_except_context_begin-$$+512,i386_except_context_end-i386_except_context_begin
+    dd except_context_test_begin-$$+512,except_context_test_end-except_context_test_begin
 %endif

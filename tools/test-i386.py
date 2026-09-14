@@ -21,7 +21,7 @@ def run(*args):
 
 
 def disassemble_i386(code):
-    """Keep auditing after ndisasm 3.01's failure to decode FF E0 (JMP EAX)."""
+    """Keep auditing after ndisasm 3.01's failure to decode FF E0/E2 (JMP EAX/EDX)."""
     result = []
     offset = 0
     while offset < len(code):
@@ -30,8 +30,9 @@ def disassemble_i386(code):
         for line in listing.splitlines():
             parts = line.split()
             address = int(parts[0], 16)
-            if parts[1:3] == ['FF', 'db'] and code[address:address+2] == b'\xff\xe0':
-                result.append(f'{address:08X}  FFE0              jmp eax')
+            if parts[1:3] == ['FF', 'db'] and code[address:address+2] in (b'\xff\xe0', b'\xff\xe2'):
+                register = 'eax' if code[address+1] == 0xe0 else 'edx'
+                result.append(f'{address:08X}  FF{code[address+1]:02X}              jmp {register}')
                 offset = address+2
                 break
             result.append(line)
@@ -48,6 +49,7 @@ def main():
                         help='Test normal function compilation using test-rebuild.py output')
     modes.add_argument('--data', action='store_true', help='Test global/static storage and data imports')
     modes.add_argument('--vga', action='store_true', help='Test native planar VGA presentation and displayed pixels')
+    modes.add_argument('--except-context', action='store_true', help='Test native exception capture, catch invocation and resume primitives')
     modes.add_argument('--except-records', action='store_true', help='Test native task-owned exception record lifetime')
     modes.add_argument('--heap', action='store_true', help='Test native arena allocation, coalescing, exhaustion and corruption')
     modes.add_argument('--memory', action='store_true', help='Test BIOS memory handoff and reserved-range selection')
@@ -78,10 +80,10 @@ def main():
     task_runner = args.tasks or args.input or args.messages
     large_runner = args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'except-records', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
+    for mode in ('functions', 'data', 'vga', 'heap', 'except-records', 'except-context', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'except-records', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
+    data_mode = kind in ('data', 'vga', 'heap', 'except-records', 'except-context', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
     if args.soft_f64_unary:
         run(sys.executable, 'tools/gen-i386-pow10.py', '--check')
     functions = kind != 'expressions'
@@ -290,24 +292,24 @@ def main():
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
     # NASM -D string macro keeps the fixture independent of a fixed export path.
     disk = OUT/'runner.img'
-    run('nasm', *(['-DSOFT_F64_TEST=1'] if args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), *(['-DBOOT_SECTORS=256'] if large_runner else []), *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DEXCEPT_CONTEXT_TEST=1'] if args.except_context else []), *(['-DSOFT_F64_TEST=1'] if args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), *(['-DBOOT_SECTORS=256'] if large_runner else []), *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
-    if args.irq or task_runner:
+    if args.irq or task_runner or args.except_context:
         raw = disk.read_bytes()
-        trailer_size = 60 if task_runner else 28
-        if raw[-trailer_size:-trailer_size+4] != (b'I32T' if task_runner else b'I32Q'):
+        trailer_size = 20 if args.except_context else 60 if task_runner else 28
+        if raw[-trailer_size:-trailer_size+4] != (b'I32E' if args.except_context else b'I32T' if task_runner else b'I32Q'):
             raise ValueError('Missing IRQ assembly boundaries')
-        ranges = struct.unpack('<14I' if task_runner else '<6I', raw[-trailer_size+4:])
+        ranges = struct.unpack('<4I' if args.except_context else '<14I' if task_runner else '<6I', raw[-trailer_size+4:])
         irq_allowed = {'push','pop','pusha','popa','pushf','popf','mov','add','xor',
                        'shr','cmp','test','jmp','jz','jnz','jc','jnc','ja','call','ret',
-                       'cld','std','cli','sti','hlt','int','int3','div','iret','lidt','lgdt','sgdt','sub','loop','lodsd'}
+                       'and','lea','cld','std','cli','sti','hlt','int','int3','div','iret','lidt','lgdt','sgdt','sub','loop','lodsd'}
         assembly = []
         for start, length in zip(ranges[::2], ranges[1::2]):
             if start<512 or length<=0 or start+length>len(raw)-trailer_size:
                 raise ValueError('Invalid IRQ assembly boundaries')
             (OUT/'irq-body.bin').write_bytes(raw[start:start+length])
-            listing = subprocess.check_output(['ndisasm','-b32',str(OUT/'irq-body.bin')], text=True)
+            listing = disassemble_i386(raw[start:start+length])
             for line in listing.splitlines():
                 parts = line.split()
                 if len(parts)==1 and parts[0].startswith('-'):
@@ -632,7 +634,7 @@ def main():
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'cases': count, 'cpu': '486',
         'boot_variants': 2 if args.memory else 1,
-        'ram_mib': 8, 'fault_cases': 5 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_log or args.soft_f64_unary or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Software Ln/Log10/Log2 with high-precision oracle and CR0.EM set' if args.soft_f64_log else 'Software F64 Abs/Sqr/Sqrt and integral rounding with x64 oracle and CR0.EM set' if args.soft_f64_unary else 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native exception record ownership (no context transfer)' if args.except_records else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'fault_cases': 5 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_log or args.soft_f64_unary or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'scope': 'Software Ln/Log10/Log2 with high-precision oracle and CR0.EM set' if args.soft_f64_log else 'Software F64 Abs/Sqr/Sqrt and integral rounding with x64 oracle and CR0.EM set' if args.soft_f64_unary else 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount, directory lookup and raw file reads' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'native exception capture and context transfer primitives' if args.except_context else 'native exception record ownership (no context transfer)' if args.except_records else 'native arena heap' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 
