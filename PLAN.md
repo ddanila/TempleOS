@@ -466,6 +466,11 @@ programming environment through these concrete steps:
    Complete native string construction now publishes exact-sized owned buffers,
    including embedded zero bytes, and reclaims partial builders on failure. The
    version-6 runtime tests identifier-to-string replacement during boot/task activity.
+   Native token dispatch now joins these handlers, resumes string-macro expansion
+   internally and preserves lookahead and token flags. Mixed x64/native streams,
+   allocation/length failures and retained version-7 boot/task calls are tested.
+   Preprocessing directives still return an explicit unsupported result; directive
+   processing, prompt/document input and parser/JIT integration remain required.
    Full lexical dispatch and directive processing remain required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block

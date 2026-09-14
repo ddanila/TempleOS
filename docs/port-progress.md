@@ -2386,3 +2386,30 @@ The bootstrap is 378800 bytes; the runtime image is 97440 bytes with a
 directives/general include lookahead, native parser/JIT, public control destruction,
 DolDoc, native self-hosting and strict 386 validation remain required. See
 [i386-lex-string-token.md](i386-lex-string-token.md).
+
+## Native mixed-token dispatch in the retained runtime
+
+`I386LexNext` now connects identifiers/string macros, numeric/dot tokens, owned
+strings, packed characters and punctuation/comments. It retains common lookahead,
+line metadata and literal-token flags, resuming dispatch after macro expansion.
+Directives currently return -4 unless KEEP_SIGN_NUM requests a literal hash;
+unavailable reader services, allocation failures and length limits remain explicit
+errors. This does not yet provide preprocessing, the parser/JIT or the shell.
+
+The shared mixed-stream fixture passes through actual x64 Lex and native dispatch:
+wide integers, exact F64, embedded-NUL strings, nested comments, compound operators,
+flags, macro chains, empty replacement, shadowing and mixed F64/string replacement.
+Native checks cover cached binary tokens, directive/reader/length errors and
+allocation failures retaining previous owned text. All temporary allocations are
+reclaimed. `--lex-tokens` uses a 256 KiB stage, heap at 0x60000 and CR0.EM. The
+numeric regression also passes after sharing that large-stage runner guard.
+
+CompilerRuntime version 7 adds next_token as its eighth service (40-byte interface).
+The 8 MiB QEMU/486 kernel calls its relocated entry during boot and from a task
+after timer activity, checking macro expansion, parent recovery and reclamation.
+The full boot suite passes service/export offset checks, runtime CPU/import/API
+rejection, startup rejection, keyboard/VGA, timer and source checks. The bootstrap
+is 382344 bytes; the retained runtime is 103368 bytes with a 103384-byte heap span.
+Both x64 rebuild/reboot generations pass. Strict 386 profiles, numerical-policy
+integration, public compiler/kernel APIs and complete native self-hosting remain
+open. See `docs/i386-lex-tokens.md` and `docs/i386-compiler-runtime.md`.
