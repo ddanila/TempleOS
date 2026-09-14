@@ -405,6 +405,52 @@ HolyC functionality or silently raising the stated hardware requirements.
 
 ### Immediate integration work after RedSea startup
 
+#### Next bounded work package: source files to a live compiler context
+
+Complete the file/input portion of integration gate 1 before adding more isolated
+compiler services. The native volume reader, decompressor and ancestor lookup
+are prerequisites; applications must ultimately use the public HolyC file and
+compiler interfaces through their current task.
+
+- Extract the original `DirNameAbs` and `FileNameAbs` string behavior behind
+  explicit current-drive, current-directory, boot-drive and home-directory inputs.
+  Keep task lookup in the public wrappers. Capture x86-64 behavior first,
+  including drive prefixes, repeated separators, parent/home components, control
+  characters and the distinction between a directory and a final filename.
+  Do not replace these rules with a new path syntax during the port.
+- Connect absolute names to the selected drive/volume, default extensions,
+  resident-file handling and the existing exact/alternate/ancestor lookup order.
+  Keep disk offsets 64-bit and check buffer/address conversions. Define how
+  missing files, malformed archives, I/O errors and allocation failures reach
+  the public exception interface without changing lookup precedence.
+- Serialize access to each ATA channel under the cooperative scheduler. The
+  current polling reader requires interrupts disabled; measure its worst-case
+  service time and introduce task-owned requests or bounded transfers before
+  using it for interactive compiler input. Do not yield while holding an
+  interrupt-masked hardware transaction or let another task interleave commands.
+- Transfer each successfully loaded source buffer into its lexer file record
+  once. Specify ownership of the resolved name, source bytes, resident records,
+  include stack and saved lexer positions. On failure, leave the active input
+  unchanged; on EOF or compiler-context destruction, reclaim owned temporary
+  data while retaining borrowed and resident data for their declared lifetime.
+- Package these dependencies with the resident compiler services in extended
+  memory. Keep the fixed low-memory bootstrap bounded, and expose the public
+  compiler/file symbols through the existing module binding path. Avoid growing
+  a second application-facing API around the private explicit-heap helpers.
+
+Acceptance: a running native task creates a compiler context, resolves and loads
+nested plain/compressed includes through public interfaces, and destroys that
+context with measured reclamation. Exercise relative and absolute names,
+parent lookup, missing files, corrupt input, allocation failure and interrupted
+compilation. Verify independent current directories in two cooperative tasks,
+continued timer/keyboard service during reads, and unchanged resident symbols.
+Record resident/peak memory on the 8 MiB development profile, run the x86-64
+behavior regression and audit executable code for the 386 baseline. Passing
+this package enables parser/JIT integration; it does not establish a working
+HolyC shell or strict 386 hardware compatibility.
+
+#### Continuing integration sequence
+
 The standalone kernel can read source and execute a cross-compiled startup module,
 but cannot compile or execute that source directly. Advance the resident
 programming environment through these concrete steps:
