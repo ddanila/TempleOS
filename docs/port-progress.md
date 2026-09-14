@@ -2267,3 +2267,37 @@ heap bytes, observed at 0x125338. Raw source checks cover 21080 characters,
 identifiers/macros/directives, native parser/JIT execution, public kernel services,
 DolDoc, self-hosting and strict 386 validation remain required. See
 [i386-lex-punct.md](i386-lex-punct.md).
+
+## Shared identifier scanning and symbol lookup
+
+The production lexer and native I386LexIdentScan now share identifier-body reading
+and local-before-global resolution. The scan retains the production STR_LEN bound,
+script mappings, alphabet tables and replay behavior. Lookup preserves class/base
+member precedence, global hash masks/parent tables and U32 use-count increments.
+The native adapter returns caller-owned text and borrowed symbols; it does not
+publish an owned token string, expand macros or perform final lookahead.
+
+The dedicated --lex-ident fixture passes 276 cases first checked against the
+original lexer at 4cf47e0, covering lengths 1..143, all extended bytes, script
+mappings, at-sign modes, source position and output guards. Native/shared lookup,
+U32 counter rollover, read failures, capacity exhaustion, unsupported requests,
+EOF, unchanged token/string ownership and include-boundary rejection/restart/
+reclamation pass. The punctuation regression and both x86-64 rebuild generations
+also pass, including executable instruction audits.
+
+CompilerRuntime version 4 exposes identifier scanning through a fifth retained
+service (28-byte interface). It imports the kernel's HashFind and StrCmp and keeps
+member lookup in the module. Boot/task probes resolve I64i to the actual eight-byte
+primitive registry record without transient allocation. The first boot probe
+incorrectly requested the source-defined I64 class; correcting it to the existing
+primitive keeps the test faithful to the current bootstrap registry. Loading the
+full source-defined type environment remains native frontend integration work.
+
+The full 8 MiB QEMU/486 boot suite passes, including runtime/startup rejection and
+reclamation, source, timer, keyboard/VGA and unchanged disks. The bootstrap is
+357936 bytes; the runtime image is 86328 bytes and retains 86344 heap bytes,
+observed at 0x1277D8. Source checks cover 22348 characters, 491 newlines,
+FNV32 0x0F3E515A and 22808 reclaimed bytes. Full lexical dispatch, owned token
+strings, macros/directives, native parser/JIT, public runtime ownership, DolDoc,
+self-hosting and strict 386 validation remain open. See
+[i386-lex-ident.md](i386-lex-ident.md).

@@ -429,9 +429,12 @@ programming environment through these concrete steps:
    pass. Character-constant decoding now shares packed I64, escape and replay
    semantics and executes through a retained service. Operator/comment parsing and
    packed token-table initialization are now shared too; a fourth service supplies
-   skip/token/error results with the original final-lookahead behavior. The version-3
-   interface requires rebuilding kernel and runtime together. Full lexical dispatch
-   and preprocessing remain required. Place remaining compiler modules here, defining
+   skip/token/error results with the original final-lookahead behavior. Identifier
+   scanning and local-before-global lookup now share a fifth retained service,
+   returning caller-owned text and borrowed records without token publication or
+   macro expansion. The version-4 interface requires rebuilding kernel and runtime
+   together. Full lexical dispatch, owned token strings and preprocessing remain
+   required. Place remaining compiler modules here, defining
    their code/data lifetimes; arbitrary unloading remains unsupported.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.

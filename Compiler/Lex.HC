@@ -352,6 +352,7 @@ I64 LexInStr(CCmpCtrl *cc,U8 *buf,I64 size,Bool *done)
 #include "/Compiler/LexNumber.HC"
 #include "/Compiler/LexChar.HC"
 #include "/Compiler/LexPunct.HC"
+#include "/Compiler/LexIdent.HC"
 
 I64 Lex(CCmpCtrl *cc)
 {//Fetch next token.
@@ -389,34 +390,9 @@ lex_cont:
       case '_':
       case 128...255:
 lex_ident:
-	i=0;
-	buf[i++]=ch;
-	while (TRUE) {
-	  if (i>=STR_LEN)
-	    LexExcept(cc,"Ident limited to STR_LEN chars at ");
-	  else if (!(ch=LexGetChar(cc)))
-	    break;
-	  else if (Bt(cc->char_bmp_alpha_numeric,ch))
-	    buf[i++]=ch;
-	  else if (ch==TK_SUPERSCRIPT)
-	    buf[i++]='>';
-	  else if (ch==TK_SUBSCRIPT)
-	    buf[i++]='<';
-	  else if (ch==TK_NORMALSCRIPT)
-	    buf[i++]='=';
-	  else {
-	    cc->flags|=CCF_USE_LAST_U16;
-	    break;
-	  }
-	}
-	buf[i++]=0;
-	tmph=NULL;
-	if (cc->htc.local_var_lst)
-	  cc->local_var_entry=MemberFind(buf,cc->htc.local_var_lst);
-	else
-	  cc->local_var_entry=NULL;
-	if (!cc->local_var_entry && cc->htc.hash_table_lst)
-	  tmph=HashFind(buf,cc->htc.hash_table_lst,cc->htc.hash_mask);
+        i=LexIdentRead(cc,ch,buf,STR_LEN,&token_source);
+        if(i==-2) LexExcept(cc,"Ident limited to STR_LEN chars at ");
+        tmph=LexIdentFind(cc,buf);
 	if (tmph)
 	  j=tmph->type;
 	else

@@ -16,14 +16,15 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 3 of CI386CompilerServices: a U32 version,
-U32 byte count, and native function pointers for string chunks, numeric tokens character constants and punctuation.
-The structure is 24 bytes on i386. The entry receives caller-owned interface
+`CompilerRuntime.HH` defines version 4 of CI386CompilerServices: a U32 version,
+U32 byte count, and native function pointers for string chunks, numeric tokens character constants, punctuation and identifier scanning.
+The structure is 28 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
 
-The module imports two kernel functions, I386LexRawChar and I386LexSourceRead,
+The module imports four kernel functions: I386LexRawChar, I386LexSourceRead,
+HashFind and StrCmp,
 and three kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
 char_bmp_non_eol. The
 latter remain the same writable public tables used by the kernel; moving the
@@ -33,9 +34,9 @@ its own numerical implementation and immutable-use power table inside its image.
 
 KernelCompilerLoad runs with IF clear and exclusive disk/heap ownership. After
 loading, the kernel verifies one retained allocation, extended-memory placement,
-interface version and byte count, and that all four service pointers fall inside the
+interface version and byte count, and that all five service pointers fall inside the
 loaded image. It publishes the global interface only after these checks succeed.
-The host boot verifier independently checks all four pointer values against the
+The host boot verifier independently checks all five pointer values against the
 module's actual function export offsets, not just the image's address range.
 
 The image, its code/data and the kernel providers must remain live for every
@@ -57,7 +58,7 @@ caller storage before reporting success.
 
 KernelCompilerProbe calls the actual relocated services during boot and again
 from the pulse task after startup, VGA allocation, task creation and timer IRQs.
-It parses a software-F64 numeric token, a hexadecimal string escape and a packed character constant, then skips a line comment and parses a shift assignment.
+It parses a software-F64 numeric token, a hexadecimal string escape and a packed character constant, then skips a line comment, parses a shift assignment and resolves an identifier.
 It checks
 returned values and input positions, verifies no transient heap allocation remains,
 and checks that the retained image is still a live allocation of the original
@@ -67,23 +68,24 @@ Run:
 
 ```sh
 python3 tools/test-rebuild.py
+python3 tools/test-i386.py --lex-ident
 python3 tools/test-i386.py --lex-punct
 python3 tools/build-i386-kernel.py --test
 ```
 
-Both x86-64 rebuild/reboot generations, the punctuation/string regressions and the full boot
+Both x86-64 rebuild/reboot generations, the identifier/punctuation regressions and the full boot
 suite pass. Three runtime rejection boots alter its CPU tag, one function import,
 and its returned interface version respectively. All halt before interface use or
 startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With punctuation parsing in interface version 3, the bootstrap image is
-353448 bytes. The 77312-byte runtime image is allocated at 0x125338 in the
-8 MiB development profile and retains a 77328-byte heap span. All four service
+With identifier scanning in interface version 4, the bootstrap image is
+357936 bytes. The 86328-byte runtime image is allocated at 0x1277D8 in the
+8 MiB development profile and retains a 86344-byte heap span. All five service
 addresses match their relocated export offsets, and both boot/task probes return
-the expected values. Raw source checks cover 21080 characters, 474 newlines,
-FNV32 0x5DA32934 and reclamation of 21544 temporary heap bytes. These sizes and
+the expected values. Raw source checks cover 22348 characters, 491 newlines,
+FNV32 0x0F3E515A and reclamation of 22808 temporary heap bytes. These sizes and
 addresses are observations recorded in the manifest, not fixed addresses or memory
 minima required by the interface. Rebuild kernel and runtime together when changing
 this interface.
