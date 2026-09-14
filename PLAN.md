@@ -20,7 +20,9 @@ checks 725 packaged files and embedded DolDoc record lengths. Two native x86-64 
 multicore behavior still need baseline verification. The native i386 foundation
 now boots a disk image on the 8 MiB QEMU/486 development profile, initializes
 cooperative tasks and timer interrupts, reads its source from RedSea, and loads a
-separate startup module that initializes VGA through resident imports. These
+separate startup module that initializes VGA through resident imports. A dedicated
+keyboard task now collects editable lines in a console using the original 8×8
+font, with native input and rendered-pixel tests. These
 results do not establish strict 386 support
 or an interactive HolyC environment. Component evidence and remaining limitations
 are tracked in the progress document.
@@ -322,6 +324,8 @@ programming environment through these concrete steps:
 2. Connect keyboard delivery and VGA text rendering to a recoverable command
    loop. Integrate public task, allocation, file and exception interfaces needed
    by the compiler; keep disk access ownership explicit as tasks become active.
+   Keyboard line collection, cancellation and VGA scrolling now pass in the
+   standalone image. Command execution and compiler-facing public APIs remain.
 3. Inventory the compiler's remaining native dependencies against that resident
    interface, including symbol storage, formatting, software F64, generators and
    target execution. Bring up a native compile/run path, then repeat editing,

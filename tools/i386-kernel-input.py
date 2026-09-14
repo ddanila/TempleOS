@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""Check the native keyboard console through emulated hardware and VGA pixels."""
+import argparse
+import json
+from pathlib import Path
+import re
+import socket
+import struct
+import subprocess
+import time
+
+ROOT=Path(__file__).resolve().parents[1]
+
+
+def console_pixels(rows):
+    #Read the original font, independently of the native framebuffer implementation.
+    source=(ROOT/'Kernel/FontStd.HC').read_bytes()
+    glyphs=[int(value,16) for value in re.findall(rb'0x[0-9A-Fa-f]{16}',source)]
+    if len(glyphs)!=256: raise ValueError('Unexpected TempleOS font')
+    font=b''.join(struct.pack('<Q',value) for value in glyphs)
+    pixels=bytearray(b'\xff'*(640*480*3))
+    if len(rows)>60 or any(len(row)>80 for row in rows): raise ValueError('Invalid expected text grid')
+    for row,line in enumerate(rows):
+        for column,ch in enumerate(line.encode('cp437')):
+            for y in range(8):
+                for x in range(8):
+                    if font[ch*8+y]&(1<<x):
+                        offset=((row*8+y)*640+column*8+x)*3
+                        pixels[offset:offset+3]=b'\0\0\0'
+    return bytes(pixels)
+
+
+def run_input(disk,out):
+    from PIL import Image
+    out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
+    log=out/'debug.log'; log.write_text('')
+    qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
+    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486','-m','8','-nic','none',
+         '-drive',f'file={disk.resolve()},format=raw,if=ide','-display','none','-no-reboot',
+         '-debugcon',f'file:{log}','-qmp',f'unix:{qmp},server=on,wait=off']
+    (out/'command.json').write_text(json.dumps(cmd,indent=2)+'\n')
+    sock=socket.socket(socket.AF_UNIX)
+    with (out/'qemu.log').open('w') as stderr:
+        proc=subprocess.Popen(cmd,stderr=stderr)
+        try:
+            deadline=time.monotonic()+60
+            while not qmp.exists():
+                if proc.poll() is not None or time.monotonic()>deadline: raise RuntimeError('No QMP')
+                time.sleep(.05)
+            sock.connect(str(qmp)); sock.settimeout(5)
+            stream=sock.makefile('rwb',buffering=0); json.loads(stream.readline())
+
+            def command(name,**arguments):
+                stream.write((json.dumps({'execute':name,'arguments':arguments})+'\n').encode())
+                while True:
+                    reply=json.loads(stream.readline())
+                    if 'error' in reply: raise RuntimeError(reply)
+                    if 'return' in reply: return reply['return']
+
+            def wait_for(predicate):
+                stop=time.monotonic()+30
+                while time.monotonic()<stop and proc.poll() is None:
+                    if 'FAIL ' in log.read_text(): raise RuntimeError(log.read_text())
+                    if predicate(): return
+                    time.sleep(.05)
+                raise TimeoutError(f'Console check timed out; inspect {out}')
+
+            def key(name,down):
+                command('input-send-event',events=[{'type':'key','data':{
+                    'down':down,'key':{'type':'qcode','data':name}}}])
+
+            def press(name):
+                key(name,True); key(name,False)
+
+            def screen(rows,name):
+                expected=console_pixels(rows)
+                path=out/f'{name}.ppm'
+                def matches():
+                    command('screendump',filename=str(path))
+                    with Image.open(path) as image:
+                        return image.size==(640,480) and image.convert('RGB').tobytes()==expected
+                wait_for(matches)
+                with Image.open(path) as image: image.save(out/f'{name}.png')
+
+            command('qmp_capabilities')
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text())
+            heading=['TempleOS i386','Keyboard console','']
+            screen(heading+['> '],'initial')
+            for name in ('a','b','c','backspace'): press(name)
+            key('shift',True); press('d'); key('shift',False); press('ret')
+            wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
+            screen(heading+['> abD','> '],'edited')
+            press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
+            wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
+            rows=heading+['> abD','> yz^C','> ']
+            screen(rows,'cancelled')
+            #Cross a physical text row, then backspace across the wrap boundary.
+            for count in range(1,79):
+                press('a')
+                if count%6==0 or count==78:
+                    expected=rows[:-1]+['> '+'a'*count]
+                    if count==78: expected+=['']
+                    screen(expected,'typing')
+            for name in ('z','z','z','backspace','backspace','backspace','backspace','ret'): press(name)
+            wait_for(lambda:'INPUT LINE '+'a'*77+'\n' in log.read_text())
+            rows=rows[:-1]+['> '+'a'*77,'> ']
+            screen(rows,'wrapped')
+            press('tab'); press('b'); press('ret')
+            wait_for(lambda:'INPUT LINE '+' '*8+'b\n' in log.read_text())
+            rows=rows[:-1]+['> '+' '*8+'b','> ']
+            screen(rows,'tab')
+            for count in range(1,61):
+                press('ret')
+                wait_for(lambda:log.read_text().count('INPUT LINE \n')==count)
+            screen(['> ']*60,'scrolled')
+            if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
+            result={'result':'pass','cpu':'486','ram_mib':8,
+                    'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll'],
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':63}
+            (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+            return result
+        finally:
+            if proc.poll() is None: proc.terminate()
+            try: proc.wait(timeout=5)
+            except subprocess.TimeoutExpired: proc.kill(); proc.wait()
+            sock.close(); qmp.unlink(missing_ok=True)
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('disk',type=Path)
+    parser.add_argument('--out',type=Path,required=True)
+    args=parser.parse_args()
+    print(run_input(args.disk,args.out))
+
+
+if __name__=='__main__': main()

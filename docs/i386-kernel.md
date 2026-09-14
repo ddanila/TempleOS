@@ -44,8 +44,8 @@ validation remains required.
 ## Current runtime behavior
 
 The disk-loaded startup module calls the resident display service, which allocates
-a 153600-byte logical planar framebuffer and presents sixteen
-vertical color bars at 640×480. A heap-owned task sleeps for 25 serviced ticks at
+a 153600-byte logical planar framebuffer and presents an 80×60 text console at
+640×480 using the existing TempleOS 8×8 font. A heap-owned task sleeps for 25 serviced ticks at
 a time while root idles and timer IRQs make it runnable. Startup diagnostics report
 the memory arena and first two wakeups on port 0xE9. After reporting startup done,
 the kernel continues running; the optional boot test stops its own QEMU process
@@ -54,7 +54,9 @@ conditions and are not the final debugger interface.
 
 The boot test verifies the extended arena bounds, RedSea mount and streamed source
 checksum, disk-module execution and reclamation, unchanged disk contents,
-readiness, two correctly delayed wakeups and every VGA pixel. The builder records
+readiness, two correctly delayed wakeups and every VGA pixel. A separate interactive
+boot checks emulated keyboard input, editing and scrolling against rendered pixels.
+The builder records
 the linked image size in its manifest. The combined
 task/exception/sleep regression passes through the shared BIOS path, and both
 x86-64 compiler/kernel rebuild/reboot generations pass. Tests use QEMU's 486 model
@@ -62,7 +64,7 @@ with 8 MiB; generated-code auditing and CR0.EM are not proof of strict 386 suppo
 
 This is the first standalone native kernel foundation, not a complete TempleOS
 port. It has no HolyC shell/JIT, DolDoc startup, startup-source execution, full
-public CTask/CPU integration, keyboard/mouse UI, speaker integration or native
+public CTask/CPU integration, mouse UI, speaker integration or native
 self-hosted compiler. The image now includes a formatted RedSea source/module volume, but it is not
 a complete installed TempleOS distribution. The 8 MiB interactive and
 16 MiB self-hosting goals remain unproven. The full scope in PLAN.md is unchanged.
@@ -115,6 +117,40 @@ pixel result. Both resident code and the separate startup payload undergo
 instruction audits. Two additional boots use copies of the image with the startup
 CPU tag changed or one resident-data import renamed; both must halt before module
 execution, with their disks unchanged. These checks run as part of `--test`.
-The linked kernel is 221632 bytes and the startup image reclaims 232 bytes on the
+The linked kernel is 274160 bytes and the startup image reclaims 232 bytes on the
 current build. This executes cross-compiled native code from disk; it does
 not yet compile source on the target or provide the native shell/JIT.
+
+## Native keyboard console
+
+The kernel initializes the existing keyboard controller/scan-set path while IRQ1
+is masked, then unmasks IRQ0/1. IRQ1 reads and publishes raw bytes to the existing
+bounded input queue and wakes the reader without switching inside the interrupt.
+A dedicated heap-owned task blocks in `I386KeyboardRead`, decodes key-down events,
+and owns the console buffer and VGA presentation. Queue discontinuity resets the
+partial line and decoder rather than submitting ambiguous input. The auxiliary
+port remains disabled by the current keyboard setup; mouse support is pending.
+
+`Text.HH/HC` provides an allocation-free 80×60 renderer over the existing four
+planar buffers. It uses the original `Kernel/FontStd.HC` bytes, supports all 256
+glyphs at cell-rendering level, and implements newline, carriage return, tabs,
+backspace, wrapping and scrolling. A caller must exclusively own the initialized
+record, live font and framebuffer; presentation remains a separate operation.
+The console currently uploads the full framebuffer after key-down events, so
+vintage-CPU presentation cost remains to be measured and reduced.
+
+The input task collects at most 255 bytes plus a terminator. Backspace cannot
+erase the prompt; Ctrl-C cancels the partial line. Tabs add spaces at eight-column
+stops relative to the input line. Extra characters at the limit are ignored until
+space is freed or the line is submitted. Enter reports the line on debug port E9
+and starts another line. This is keyboard line collection, not command execution;
+the compiler/JIT and DolDoc remain required integration work.
+
+`tools/i386-kernel-input.py` boots the real disk image and sends QMP keyboard
+events. It checks Shift, release handling, cancellation, tab expansion and
+backspace across a wrap boundary, then submits sixty empty lines to exercise
+scrolling. An independent renderer reads the original font and compares every
+VGA pixel at each checkpoint. The test runs under the builder's `--test` option,
+records its commands/logs/screens under `build/i386-kernel/input`, and confirms
+that the original disk remains unchanged. The existing blocking-input component
+regression and both x86-64 rebuild/reboot generations also pass.

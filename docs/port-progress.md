@@ -1799,3 +1799,27 @@ module addresses after return. The display buffer is owned by resident code.
 This is disk-loaded AOT execution; native source compilation, the shell/JIT,
 public task/filesystem interfaces, input/audio/DolDoc integration, native
 self-hosting and strict 386 verification remain required. See `i386-kernel.md`.
+
+## Standalone keyboard and VGA text console
+
+The standalone kernel now initializes the existing keyboard controller and
+decoder, publishes IRQ1 bytes through the bounded input queue, and runs a
+dedicated blocking reader task. A new 80×60 text renderer uses the original
+TempleOS 8×8 font and planar framebuffer. It supplies wrapping, scrolling,
+backspace and tabs without additional allocations. The input task collects
+bounded lines, supports Ctrl-C cancellation and resets partial input after queue
+loss; native source compilation and command execution remain pending.
+
+The 8 MiB QEMU/486 boot passes the source/module/timer checks and the initial text
+screen comparison. A separate real-device input test passes make/break and Shift,
+line editing, cancellation, tab expansion, backspace across a wrapped row, and
+sixty newlines that scroll the screen. Every checkpoint matches all 640×480 pixels
+against an independent rendering of the original font. The disk remains unchanged.
+Wrong-target/unresolved-import startup rejection, the existing blocking-input
+regression and both x86-64 rebuild/reboot generations also pass.
+
+The linked kernel is 274160 bytes. Full-frame presentation per key-down still
+needs vintage-CPU performance work. This console collects lines; it is not the
+HolyC shell, DolDoc editor or completion of the 8 MiB interactive-system target.
+Native compiler/JIT, full public interfaces, mouse/audio, self-hosting and strict
+386 validation remain required. See `i386-kernel.md`.

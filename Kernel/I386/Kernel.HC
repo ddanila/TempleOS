@@ -1,5 +1,6 @@
-//Native kernel foundation. Resident HolyC compilation and startup execution are pending.
+//Native kernel foundation. Resident HolyC compilation and source execution are pending.
 #include "/Kernel/Types.HH"
+#include "/Kernel/FontStd.HC"
 #define TRUE 1
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
@@ -15,6 +16,10 @@
 #include "/Kernel/I386/Timer.HH"
 #include "/Kernel/I386/Sleep.HH"
 #include "/Kernel/I386/Vga.HH"
+#include "/Kernel/I386/Text.HH"
+#include "/Kernel/I386/KeyboardSetup.HH"
+#include "/Kernel/I386/KeyboardRead.HH"
+#include "/Kernel/I386/Kbc.HH"
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
 CI386Task kernel_root;
@@ -24,9 +29,13 @@ CI386Ata kernel_disk;
 CI386RedSea kernel_volume;
 CI386Timer kernel_timer;
 CI386SleepQueue kernel_sleep;
+CI386Text kernel_text;
+CI386KbcInput kernel_input;
+CI386KeyboardReader kernel_reader;
 U8 kernel_gdt[40],kernel_idt[2048];
 U8 *kernel_planes;
 CI386OwnedTask *kernel_pulse;
+CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
 extern U0 KernelLog(U8 *text);
 extern U0 KernelHex(U64 value);
@@ -39,6 +48,7 @@ extern U0 KernelPulse(I64 unused);
 extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
+extern U0 KernelKeys(I64 unused);
 I64 Main(CI386BootInfo *info,I64 unused)
 {
   CI386MemRange reserved,arena;
@@ -61,11 +71,16 @@ I64 Main(CI386BootInfo *info,I64 unused)
       !I386TimerInit(&kernel_timer,11932) ||
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
   KernelStartup;
+  if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
+      !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
+  kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelKeys,0,
+    0x18,0x20,4096);
+  if(!kernel_keys) KernelStop;
   kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
     0x18,0x20,4096);
   if(!kernel_pulse) KernelStop;
   KernelLog("READY native kernel foundation\n");
-  I386PicMask(0xFFFE);
+  I386PicMask(0xFFFC);
   while(1) {
     if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
     else I386SchedYield(&kernel_scheduler);
@@ -89,10 +104,13 @@ U0 KernelStop()
 }
 U0 KernelIrq(CI386IrqFrame *frame)
 {
+  U8 data,status;
   if(!I386PicAccept(frame->irq)) return;
   if(frame->irq==0) {
     if(!I386TimerStep(&kernel_timer) || !I386SleepTick(&kernel_sleep)) KernelStop;
   }
+  if(frame->irq==1 && I386KbcRead(&data,&status))
+    I386KbcInputPut(&kernel_input,data,status);
   I386PicEoi(frame->irq);
 }
 U0 KernelFault(CI386ExceptionFrame *frame)
@@ -124,7 +142,7 @@ U0 KernelPulse(I64 unused)
 U0 KernelDisplay()
 {
   U8 palette[48];
-  I64 color,plane,x,y;
+  I64 color;
   kernel_planes=I386HeapAlloc(&kernel_heap,153600,TRUE);
   if(!kernel_planes) KernelStop;
   for(color=0;color<16;color++) {
@@ -137,11 +155,10 @@ U0 KernelDisplay()
     }
     if(color==6) palette[color*3+1]=21;
   }
-  for(plane=0;plane<4;plane++)
-    for(y=0;y<480;y++)
-      for(x=0;x<80;x++)
-        if((x/5)&(1<<plane)) kernel_planes[plane*38400+y*80+x]=255;
-  I386VgaPalette(palette); I386VgaPresent(kernel_planes);
+  I386VgaPalette(palette);
+  if(!I386TextInit(&kernel_text,kernel_planes,sys_font_std)) KernelStop;
+  I386TextWrite(&kernel_text,"TempleOS i386\nKeyboard console\n\n> ");
+  I386VgaPresent(kernel_planes);
 }
 #include "/Kernel/I386/BootMemory.HC"
 #include "/Kernel/I386/A20.HC"
@@ -163,6 +180,52 @@ U0 KernelDisplay()
 #include "/Kernel/I386/Timer.HC"
 #include "/Kernel/I386/Sleep.HC"
 #include "/Kernel/I386/Vga.HC"
+#include "/Kernel/I386/Text.HC"
+#include "/Kernel/I386/Kbc.HC"
+#include "/Kernel/I386/KbcQueue.HC"
+#include "/Kernel/I386/KbcInput.HC"
+#include "/Kernel/I386/ScanSet1.HC"
+#include "/Kernel/I386/ScanChar.HC"
+#include "/Kernel/I386/ScanState.HC"
+#include "/Kernel/I386/KeyboardEvent.HC"
+#include "/Kernel/I386/KeyboardRead.HC"
+#include "/Kernel/I386/KeyboardSetup.HC"
+
+U0 KernelKeys(I64 unused)
+{//Single console/input owner. Lines are collected here; native compilation is pending.
+  CI386KeyEvent event;
+  U8 line[256];
+  I64 length=0,decoded,ch,spaces;
+  while(1) {
+    decoded=I386KeyboardRead(&kernel_reader,&event);
+    if(decoded<0) {
+      length=0;
+      I386TextWrite(&kernel_text,"\nInput reset\n> ");
+      I386VgaPresent(kernel_planes);
+      KernelLog("INPUT RESET\n");
+    } else if(decoded && event.type==2) {
+      ch=event.ch;
+      if(ch==3) {
+        length=0; I386TextWrite(&kernel_text,"^C\n> ");
+        KernelLog("INPUT CANCEL\n");
+      } else if(ch==8) {
+        if(length) { length--; I386TextPut(&kernel_text,8); }
+      } else if(ch==10) {
+        line[length]=0;
+        KernelLog("INPUT LINE "); KernelLog(line); KernelLog("\n");
+        length=0; I386TextWrite(&kernel_text,"\n> ");
+      } else if(ch==9) {
+        spaces=8-length%8;
+        while(spaces-- && length<255) {
+          line[length++]=32; I386TextPut(&kernel_text,32);
+        }
+      } else if(ch>=32 && ch<=255 && length<255) {
+        line[length++]=ch; I386TextPut(&kernel_text,ch);
+      }
+      I386VgaPresent(kernel_planes);
+    }
+  }
+}
 
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.

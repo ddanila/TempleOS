@@ -248,7 +248,7 @@ def verify_volume(disk, volume):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify VGA/startup ticks')
+    parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify startup, keyboard and VGA')
     args=parser.parse_args()
     out=ROOT/'build/i386-kernel'
     out.mkdir(parents=True,exist_ok=True)
@@ -280,7 +280,8 @@ def main():
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
-                'tools/guest/i386-kernel/Once.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py')},
+                'tools/guest/i386-kernel/Once.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+                'tools/i386-kernel-input.py')},
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
@@ -325,20 +326,19 @@ def main():
         from PIL import Image
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')
-        palette=[]
-        for c in range(16):
-            rgb=[42 if c&bit else 0 for bit in (4,2,1)]
-            if c&8: rgb=[x+21 for x in rgb]
-            if c==6: rgb[1]=21
-            palette.append(tuple((x<<2)|((x&1)*3) for x in rgb))
-        expected_row=b''.join(bytes(color)*40 for color in palette)
-        if screen.tobytes()!=expected_row*480:
-            raise ValueError('VGA color-bar mismatch')
+        console=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))
+        expected=console['console_pixels'](['TempleOS i386','Keyboard console','','> '])
+        if screen.tobytes()!=expected:
+            raise ValueError('VGA console mismatch')
         screen.save(guest/'screen.png')
         rejected=verify_startup_rejection(disk,volume,out)
+        keyboard=console['run_input'](disk,out/'input')
+        if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
+            raise ValueError('Keyboard console changed the disk')
         result['boot_test']={'cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
                              'startup_module':'Startup','startup_reclaimed_bytes':startup_reclaimed,
                              'startup_rejected':rejected,
+                             'keyboard':keyboard,
                              'source_bytes':len(source),'source_fnv32':checksum,'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
     result['disk_sha256']=hashlib.sha256(disk.read_bytes()).hexdigest()
     (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
