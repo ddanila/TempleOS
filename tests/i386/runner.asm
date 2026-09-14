@@ -180,10 +180,8 @@ test_result: dd 0
 %endif
 cases: incbin CASES_FILE
 %ifdef TASK_TEST
-%include "Kernel/I386/Context.asm"
-%include "Kernel/I386/Idle.asm"
+%include TASK_CONTEXT_FILE
 %include "tests/i386/segments.inc"
-%include "Kernel/I386/Segments.asm"
 %ifdef EXCEPT_TASK_TEST
 %include EXCEPT_CONTEXT_FILE
 %endif
@@ -193,13 +191,13 @@ task_test_control: dd i386_irq_dispatch,i386_idle,segment_test_run
     dd i386_except_invoke,i386_except_resume
 %endif
     db 'I32T'
-    dd i386_context_code_begin-$$+512,i386_context_code_end-i386_context_code_begin
+    dd i386_context_switch-$$+512,i386_context_switch_end-i386_context_switch
     dd i386_irq_stubs_begin-$$+512,i386_irq_stubs_end-i386_irq_stubs_begin
     dd irq_test_code_begin-$$+512,irq_test_code_end-irq_test_code_begin
     dd i386_exception_stubs_begin-$$+512,i386_exception_stubs_end-i386_exception_stubs_begin
-    dd i386_idle_code_begin-$$+512,i386_idle_code_end-i386_idle_code_begin
+    dd i386_idle-$$+512,i386_idle_end-i386_idle
     dd segment_test_code_begin-$$+512,segment_test_code_end-segment_test_code_begin
-    dd i386_segments_code_begin-$$+512,i386_segments_code_end-i386_segments_code_begin
+    dd i386_segments_reload-$$+512,i386_segments_reload_end-i386_segments_reload
 %ifdef EXCEPT_TASK_TEST
     dd i386_except_context_begin-$$+512,i386_except_context_end-i386_except_context_begin
 %endif

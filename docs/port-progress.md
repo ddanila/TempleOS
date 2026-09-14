@@ -1538,3 +1538,22 @@ record exhaustion/reclamation, propagation, caller diagnostics and catch-time
 switches. Both x86-64 compiler/kernel rebuild/reboot generations also pass.
 Task context switching, interrupt/boot assembly, full public kernel integration,
 native compiler execution and strict 386 verification remain required work.
+
+
+## HolyC-built task context, idle and segment reload
+
+`Kernel/I386/TaskContext.HC` replaces the three NASM task-switch, idle and FS/GS
+reload stubs with one HolyC assembly module. Task fixtures compile it inside
+TempleOS and use the exported entry offsets in the generated code. The host
+requires only the expected code exports, no relocations, complete entry coverage
+and bounded zero tail padding. Both exception and task modules share this small
+embedding helper; task entry ranges remain individually instruction-audited.
+
+The general task, blocking-input, message-delivery and exception-task suites all
+pass, including native instruction audits. They exercise stack switching and
+lifecycle, IRQ-driven idle/wakeup, FS/GS identity, keyboard delivery and catch-time
+switching with the new entries. Both x86-64 rebuild/reboot generations pass.
+
+The runner still passes entry pointers into standalone native services. Public
+CTask/Yield and production boot integration, the interrupt/boot assembler path,
+native compiler execution and strict 386 validation remain unfinished.

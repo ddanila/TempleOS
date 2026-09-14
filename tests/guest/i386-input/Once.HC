@@ -22,6 +22,16 @@ U0 CompileTests()
     line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
     Report("FAIL input compile\n"); return;
   }
+  source=FileRead("/Kernel/I386/TaskContext.HC");
+  image=CmpI386Module(source,&loaded,&errors);
+  Free(source);
+  if(!image || errors) {
+    source=DocSave(DocPut,&size);
+    line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
+    Report("FAIL HolyC task context compile\n"); return;
+  }
+  line=MStrPrint("EXPORT TaskContext.t32m %X %X\n",image,loaded); Report(line);
+  Free(image);
   image=I386Link(&module,&size,1,&loaded);
   if (!image) { Report("FAIL input link\n"); return; }
   h=module; r=module+h->records_offset;
