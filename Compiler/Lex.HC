@@ -94,6 +94,8 @@ Bool LexDollar(CCmpCtrl *cc,CDoc *doc,CDocEntry *doc_e)
     return FALSE;
 }
 
+#include "/Compiler/LexInput.HC"
+
 I64 LexGetChar(CCmpCtrl *cc)
 {//Get one char from stream. Allow put-back one.
   U8 *ptr,*src;
@@ -102,12 +104,7 @@ I64 LexGetChar(CCmpCtrl *cc)
   CDocEntry *doc_e;
   if (!Btr(&cc->flags,CCf_USE_LAST_U16)) {
 lgc_start1:
-    if (!(src=cc->cur_buf_ptr++)) {
-      cc->cur_buf_ptr=NULL;
-      goto lgc_here;
-    }
-    switch [cc->last_U16=*src++] {
-      case 0:
+    if(LexBufferStep(cc,&cmp.compiled_lines,&src)) goto lgc_done;
 lgc_here:
 	tmpf=cc->lex_include_stk;
 	if (tmpf->flags & LFSF_DOC) {
@@ -228,22 +225,8 @@ lgc_start2:
 	    cc->last_U16=TK_EOF;
 	  }
 	}
-	break;
-      case CH_CURSOR:
-	goto lgc_start1;
-      case '\n':
-	tmpf=cc->lex_include_stk;
-	if (!(tmpf->flags & LFSF_DOC)) {
-	  tmpf->line_num++;
-	  cmp.compiled_lines++;
-	  tmpf->line_start=src;
-	}
-	break;
-      case 0xFF: //nobound switch
-    }
 lgc_done:
-    if (cc->last_U16==CH_SHIFT_SPACE)
-      cc->last_U16=CH_SPACE;
+    LexNormalizeChar(cc);
     if (cc->opts & OPTF_ECHO &&
 	  cc->last_U16<256 && Bt(char_bmp_printable,cc->last_U16))
       '' cc->last_U16;

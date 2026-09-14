@@ -2059,3 +2059,28 @@ snapshot cases, instruction audits, both x86-64 rebuild generations and the
 Native source loading, document destruction, full control teardown, tokenization
 and the compiler/JIT environment remain required; self-hosting and strict 386
 validation are still open. See `i386-lex-state.md`.
+
+## Native raw source character input
+
+The x86-64 lexer and native raw-input reader now share buffer stepping, cursor
+skipping, plain-file line accounting and shift-space normalization. Character
+constants are extracted unchanged. Native raw input supports replay, stable EOF,
+null buffers and owned include returns; unavailable document/prompt/echo handling
+and rejected file pops produce an explicit error.
+
+The host/native fixture passes all nonzero byte values, replay, cursor chains,
+wide counters, repeated EOF and nested inputs with parent saved bytes. Native
+unsupported-mode and snapshot-boundary recovery cases pass. The x86-64 document
+text/tab/newline path and cleanup also pass, as do prior lexer state/ownership
+cases, instruction audits and both x86-64 rebuild/reboot generations.
+
+The standalone kernel now reads its source into a stable terminated allocation
+and consumes it through a native CCmpCtrl/CLexFile and raw character reader.
+The boot verifier independently matches 14027 source characters, 360 newlines,
+checksums and reclamation of 14488 heap bytes at this revision. Its 331352-byte
+image passes the complete 8 MiB QEMU/486 source/module, keyboard/VGA and timer
+checks. Only this source file is loaded; the distribution remains on disk.
+
+Tokenization, native document and prompt services, general compiler-control
+lifecycle, source execution, the full environment, self-hosting and strict 386
+validation remain unfinished. See `i386-lex-state.md`.

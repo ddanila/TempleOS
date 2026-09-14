@@ -52,8 +52,8 @@ the kernel continues running; the optional boot test stops its own QEMU process
 after collecting evidence. Exception/fault diagnostics currently halt on fatal
 conditions and are not the final debugger interface.
 
-The boot test verifies the extended arena bounds, RedSea mount and streamed source
-checksum, disk-module execution and reclamation, unchanged disk contents,
+The boot test verifies the extended arena bounds, RedSea mount, source checksum,
+lexical character/line counts and temporary input reclamation, disk-module execution and reclamation, unchanged disk contents,
 readiness, two correctly delayed wakeups and every VGA pixel. A separate interactive
 boot checks emulated keyboard input, editing and scrolling against rendered pixels.
 The builder records
@@ -85,8 +85,12 @@ and bitmap corruption were all rejected by this verifier.
 volume start). Startup currently requires BIOS drive 0x80 to map to primary IDE
 master; it rejects other BIOS drive numbers and does not discover arbitrary BIOS
 to-controller mappings. Native ATA PIO identifies that disk, mounts RedSea and
-walks `Kernel/I386/Kernel.HC`. A 256-byte buffer streams the complete source while
-computing an FNV-32 checksum, compared with the packaged source by the boot test.
+walks `Kernel/I386/Kernel.HC`. It reads that source into a checked, terminated heap
+buffer and verifies its FNV-32 checksum. A native compiler control and lexical
+file then consume the buffer through the raw character reader. The boot test
+compares character count, newline count and normalized checksum with the packaged
+source, and verifies reclamation of the buffer/control/file allocations. This
+loads one source file on demand; the distribution remains on disk.
 All disk access occurs during controlled startup with IF clear. There is no full
 public CDrv/CFile interface, runtime filesystem concurrency or source execution yet.
 
@@ -181,3 +185,9 @@ heap use, and records those values in the manifest. The kernel image is now
 314504 bytes and passes the full 8 MiB QEMU/486 boot, keyboard/VGA and timer checks.
 This is compiler startup groundwork: opcode tables, compiler control records,
 native parsing, source execution and the complete public type environment remain.
+
+The kernel image is now 331352 bytes. The lexical-source check consumes 14027
+source bytes and 360 newlines and reclaims 14488 heap bytes at this revision.
+The builder derives those source-dependent expectations and the allocation
+footprint from the packaged source and records them under `lexical_source`.
+This validates character consumption, not tokenization or execution of the source.

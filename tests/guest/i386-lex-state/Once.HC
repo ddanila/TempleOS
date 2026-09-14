@@ -6,6 +6,33 @@ Bool StatePop(CCmpCtrl *cc,Bool restore) { if(restore) LexPopRestore(cc); else L
 #include "T:/State.HC"
 #include "/Compiler/LexFiles.HH"
 #include "T:/Files.HC"
+#include "/Compiler/LexInput.HH"
+CLexFile *InputPush(CCmpCtrl *cc) { return LexFileAttach(cc,StateAlloc(sizeof(CLexFile))); }
+Bool InputPop(CCmpCtrl *cc)
+{
+  CLexFileRelease owner;
+  owner.context=&file_alloc_frees; owner.allocation=&FileTestFree; owner.document=&FileTestDoc;
+  LexFileReleaseTop(cc,&owner); return TRUE;
+}
+I64 InputRead(CCmpCtrl *cc,I64 *lines)
+{
+  I64 before=cmp.compiled_lines,ch=LexGetChar(cc);
+  *lines=*lines+cmp.compiled_lines-before; return ch;
+}
+#include "T:/Input.HC"
+I64 DocumentInputTest()
+{
+  CCmpCtrl *cc=CmpCtrlNew;
+  CDoc *document=DocNew;
+  U8 *expected="a\tb\nc";
+  I64 i,result=0;
+  DocPrint(document,"a\tb\nc");
+  LexAttachDoc(cc,,document);
+  if(!(cc->lex_include_stk->flags&LFSF_DOC)) result=1;
+  for(i=0;i<5;i++) if(LexGetChar(cc)!=expected[i]) result=2;
+  CmpCtrlDel(cc); return result;
+}
+
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -15,6 +42,8 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native lex state\n");
+  if(LexRawInputTest) { Report("FAIL x64 raw input\n"); return; }
+  if(DocumentInputTest) { Report("FAIL x64 document input\n"); return; }
   if(LexFilesTest) { Report("FAIL x64 lexical files\n"); return; }
   if(LexStateTest) { Report("FAIL x64 lexer snapshots\n"); return; }
   module=CmpI386Module(source,&size,&errors);

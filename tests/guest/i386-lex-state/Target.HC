@@ -11,10 +11,14 @@ extern I64 LexStateTest();
 extern I64 NativeStateTest();
 extern I64 LexFilesTest();
 extern I64 NativeFilesTest();
+extern I64 LexRawInputTest();
+extern I64 NativeInputTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
   if(!I386HeapInit(&state_heap,0x40000,65536)) return 8;
+  result=LexRawInputTest;
+  if(result) return result;
   result=LexFilesTest;
   if(result) return result;
   result=LexStateTest;
@@ -22,7 +26,9 @@ I64 Main(I64 unused,I64 unused2)
   if(state_free_errors || state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap)) return 9;
   result=NativeStateTest;
   if(result) return result;
-  return NativeFilesTest;
+  result=NativeFilesTest;
+  if(result) return result;
+  return NativeInputTest;
 }
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
@@ -82,3 +88,10 @@ I64 NativeStateTest()
 #assert sizeof(CI386LexFile)==64
 #include "T:/Files.HC"
 #include "T:/NativeFiles.HC"
+
+#include "/Compiler/I386/LexInput.HC"
+CLexFile *InputPush(CCmpCtrl *cc) { return I386LexFilePush(&state_heap,cc); }
+Bool InputPop(CCmpCtrl *cc) { return I386LexFilePop(&state_heap,cc); }
+I64 InputRead(CCmpCtrl *cc,I64 *lines) { return I386LexRawChar(&state_heap,cc,lines); }
+#include "T:/Input.HC"
+#include "T:/NativeInput.HC"

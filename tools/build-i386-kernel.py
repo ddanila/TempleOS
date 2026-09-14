@@ -312,6 +312,16 @@ def main():
         reads=[line.split() for line in log.splitlines() if line.startswith('SOURCE ')]
         if len(reads)!=1 or [int(x,16) for x in reads[0][1:]]!=[len(source),checksum]:
             raise ValueError('Native RedSea source read differs from packaged source')
+        normalized=bytes(32 if byte==31 else byte for byte in source if byte!=5)
+        lexical_hash=2166136261
+        for byte in normalized: lexical_hash=((lexical_hash^byte)*16777619)&0xFFFFFFFF
+        lexical=[line.split() for line in log.splitlines() if line.startswith('LEX_SOURCE ')]
+        transient=((len(source)+1+7)&~7)+456
+        expected_lexical=[len(normalized),source.count(b'\n'),lexical_hash,transient]
+        if b'\0' in source or len(lexical)!=1 or [int(x,16) for x in lexical[0][1:]]!=expected_lexical:
+            raise ValueError('Native lexical source consumption/reclamation mismatch')
+        result['lexical_source']={'characters':len(normalized),'lines':source.count(b'\n'),
+                                  'fnv32':lexical_hash,'reclaimed_heap_bytes':transient}
         loaded=[line.split() for line in log.splitlines() if line.startswith('MODULE ')]
         if (log.count('STARTUP disk module\n')!=1 or len(loaded)!=1 or len(loaded[0])!=3
                 or int(loaded[0][1],16)!=1 or int(loaded[0][2],16)<=0):

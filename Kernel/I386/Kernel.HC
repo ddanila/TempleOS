@@ -24,6 +24,8 @@
 #include "/Kernel/I386/HashTable.HH"
 #include "/Kernel/HashValue.HH"
 #include "/Compiler/I386/InternalTypes.HH"
+#include "/Compiler/ControlInit.HH"
+#include "/Compiler/I386/LexInput.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
@@ -207,6 +209,9 @@ U0 KernelDisplay()
 #include "/Compiler/I386/SymbolAlloc.HC"
 #include "/Compiler/I386/SymbolDelete.HC"
 #include "/Compiler/I386/InternalTypes.HC"
+#include "/Compiler/ControlInit.HC"
+#include "/Compiler/I386/LexFiles.HC"
+#include "/Compiler/I386/LexInput.HC"
 
 U0 KernelKeys(I64 unused)
 {//Single console/input owner. Lines are collected here; native compilation is pending.
@@ -248,9 +253,11 @@ U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
   CI386RedSeaEntry entry;
-  U8 buffer[256];
-  I64 offset=0,count,i;
-  U32 hash=2166136261;
+  U8 *buffer;
+  CCmpCtrl *cc;
+  CLexFile *file;
+  I64 i,ch,characters=0,lines=0,used=kernel_heap.used,allocations=kernel_heap.allocations,transient;
+  U32 hash=2166136261,lex_hash=2166136261;
   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
       !I386AtaIdentify(&kernel_disk,0,0) ||
@@ -261,14 +268,28 @@ U0 KernelStorage(CI386BootInfo *info)
       !(entry.attr&0x10) || I386RedSeaFind(&kernel_volume,entry.block,"I386",&entry)!=1 ||
       !(entry.attr&0x10) || I386RedSeaFind(&kernel_volume,entry.block,"Kernel.HC",&entry)!=1 ||
       (entry.attr&0x310) || entry.size<1) KernelStop;
-  while(offset<entry.size) {
-    count=I386RedSeaRead(&kernel_volume,&entry,offset,buffer,256);
-    if(count<1) KernelStop;
-    for(i=0;i<count;i++) hash=(hash^buffer[i])*16777619;
-    offset+=count;
-  }
+  if(entry.size>0xFFFFFFFE) KernelStop;
+  buffer=I386HeapAlloc(&kernel_heap,entry.size+1);
+  cc=I386HeapAlloc(&kernel_heap,sizeof(CCmpCtrl),TRUE);
+  if(!buffer || !cc || I386RedSeaRead(&kernel_volume,&entry,0,buffer,entry.size)!=entry.size) KernelStop;
+  buffer[entry.size]=0;
+  for(i=0;i<entry.size;i++) hash=(hash^buffer[i])*16777619;
   KernelLog("SOURCE "); KernelHex(entry.size); KernelLog(" ");
   KernelHex(hash); KernelLog("\n");
+  CmpCtrlSeed(cc,0,0,0);
+  file=I386LexFilePush(&kernel_heap,cc);
+  if(!file) KernelStop;
+  LexFileSeed(file,buffer); cc->cur_buf_ptr=buffer;
+  while(ch=I386LexRawChar(&kernel_heap,cc,&lines)) {
+    if(ch<0) KernelStop;
+    lex_hash=(lex_hash^ch)*16777619; characters++;
+  }
+  if(cc->cur_buf_ptr!=buffer+entry.size || file->line_num!=lines+1) KernelStop;
+  transient=kernel_heap.used-used;
+  if(!I386LexFilePop(&kernel_heap,cc) || !I386HeapFree(&kernel_heap,cc) ||
+      kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+  KernelLog("LEX_SOURCE "); KernelHex(characters); KernelLog(" "); KernelHex(lines); KernelLog(" ");
+  KernelHex(lex_hash); KernelLog(" "); KernelHex(transient); KernelLog("\n");
 }
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/RedSea.HC"

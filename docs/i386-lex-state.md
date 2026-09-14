@@ -94,3 +94,37 @@ retained payloads, both interrupt states and complete heap reclamation. Existing
 snapshot tests, instruction audits, both x86-64 rebuild generations and full
 standalone kernel boot checks also pass. Native document destruction itself,
 source-file loading, full control destruction and tokenization remain unfinished.
+
+## Raw source character consumption
+
+`Compiler/LexInput.HH/HC` now shares the current-buffer read loop with the
+production x86-64 LexGetChar. It skips CH_CURSOR, updates plain-file newline
+counts/line starts and reports buffer boundaries. A shared final step normalizes
+CH_SHIFT_SPACE. Character constants come from a byte-preserved extraction in
+`Kernel/CharCodes.HH`. The x86-64 document, prompt, echo and include handlers remain
+in LexGetChar; its replay path still returns the saved value without reading or
+counting it again.
+
+`I386LexRawChar` consumes raw file stacks using these helpers and owned file pop.
+It supports saved-character replay, normalization, wide line counters, repeated
+EOF at a stable terminator, null buffers and returns to parent input, including
+its saved byte. It returns -1 for unavailable document/prompt/echo handling or a
+failed include pop. A rejected include transition retains the child and parks its
+cursor at the terminator, allowing the caller to resolve the condition. This is
+not a rollback guarantee for earlier characters already consumed. Buffers must be
+live and zero-terminated; controls and counters require exclusive ownership.
+
+The shared host/native fixture passes every nonzero byte, replay without extra
+advancement/counting, cursor chains, shift-space normalization, wide line counts,
+EOF/null behavior, nested raw input returns and parent saved bytes. Native cases
+cover unsupported modes, document parents and live-snapshot pop rejection followed
+by recovery. A real x86-64 document text/tab/newline prefix and its destruction
+also pass, along with the prior state/ownership suites and instruction audit.
+
+Standalone boot now reads its source into a stable terminated buffer, initializes
+a native control/file, consumes the source with this reader and reclaims all three
+allocations. The host independently checks raw and normalized checksums, character
+and newline counts and the temporary heap footprint. Both x86-64 rebuild generations
+and the full 331352-byte kernel boot checks pass on the 8 MiB QEMU/486 profile.
+This supplies raw source input; tokenization, native document/prompt services,
+general control construction/destruction and the compiler/JIT remain unfinished.

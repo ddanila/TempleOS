@@ -355,6 +355,12 @@ programming environment through these concrete steps:
    cleanup rules. Native file records check heap/control ownership, reject pops
    with live save points and require a document release service when needed.
    Native source loading and full control destruction remain to be connected.
+   Buffer character consumption is now shared with the x86-64 lexer. The native
+   raw-input path handles replay, normalization, line accounting, EOF and include
+   returns, while explicitly rejecting unavailable document/prompt/echo services.
+   Standalone startup reads its source into a stable buffer, consumes it through
+   that path and verifies full temporary reclamation. Tokenization, general input
+   services and full control destruction remain open.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 
