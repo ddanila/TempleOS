@@ -2238,3 +2238,32 @@ newlines, FNV32 0x78FA727D and 20504 reclaimed bytes. Full lexical dispatch,
 preprocessing, native compiler/JIT execution, public runtime integration, DolDoc,
 self-hosting and strict 386 validation remain required. See
 [i386-lex-char.md](i386-lex-char.md).
+
+## Shared operator/comment parsing
+
+The production lexer and native I386LexPunct now share packed token-table lookup,
+compound operators, shift assignments, nested block comments, line comments and
+dollar-delimited text. The original table initialization is shared while preserving
+writable target-owned storage. Token, skip and reader-error returns are distinct;
+block-comment EOF preserves its original immediate return without final lookahead.
+
+A dedicated --lex-punct fixture passes 78 fixed cases first checked against the
+original x86-64 lexer at afae6fb. Tokens, source positions, final characters,
+replay flags and line counts match on the shared production and native paths.
+Injected read failures, invalid/unsupported requests, writable token and bitmap
+storage, include-boundary rejection/restart/reclamation, and a failure during final
+lookahead also pass. Existing string/character tests and both x86-64 rebuild/reboot
+generations pass, with executable instruction audits.
+
+CompilerRuntime interface version 3 adds punctuation as its fourth service and is
+24 bytes on i386. The retained image owns its token tables and imports the kernel's
+actual line-ending bitmap. Boot/task probes skip a line comment and then parse a
+shift assignment through relocated code. Full runtime/startup rejection, source,
+timer, keyboard/VGA and unchanged-disk checks pass on the 8 MiB QEMU/486 profile.
+
+The bootstrap is 353448 bytes; the runtime image is 77312 bytes and retains 77328
+heap bytes, observed at 0x125338. Raw source checks cover 21080 characters,
+474 newlines, FNV32 0x5DA32934 and 21544 reclaimed bytes. Full lexical dispatch,
+identifiers/macros/directives, native parser/JIT execution, public kernel services,
+DolDoc, self-hosting and strict 386 validation remain required. See
+[i386-lex-punct.md](i386-lex-punct.md).

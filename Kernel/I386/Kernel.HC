@@ -47,7 +47,7 @@ CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
 CHashTable *kernel_symbols;
 CI386InternalTypes kernel_types;
-CI386KernelSymbol kernel_exports[7];
+CI386KernelSymbol kernel_exports[8];
 CI386CompilerServices kernel_compiler;
 U8 *kernel_compiler_image;
 I64 kernel_compiler_size,kernel_compiler_span;
@@ -368,7 +368,9 @@ U0 KernelSymbols()
   kernel_exports[5].val=(char_bmp_hex_numeric+0)(U64);
   kernel_exports[6].str="char_bmp_dec_numeric"; kernel_exports[6].kind=3;
   kernel_exports[6].val=(char_bmp_dec_numeric+0)(U64);
-  for(i=0;i<7;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
+  kernel_exports[7].str="char_bmp_non_eol"; kernel_exports[7].kind=3;
+  kernel_exports[7].val=(char_bmp_non_eol+0)(U64);
+  for(i=0;i<8;i++) { kernel_exports[i].type=HTT_EXPORT_SYS_SYM; HashAdd(&kernel_exports[i],kernel_symbols); }
 }
 U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
@@ -383,14 +385,14 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 U0 KernelCompilerLoad()
 {//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
   CI386RedSeaEntry file;
-  CI386ModuleBinding bindings[4];
+  CI386ModuleBinding bindings[5];
   CI386CompilerServices candidate;
   I64 (*entry)(CI386CompilerServices *services,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
-  U64 base,string_address,number_address,char_address;
+  U64 base,string_address,number_address,char_address,punct_address;
   U8 *image=0,*reason="load";
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0;
+  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0; candidate.punct_token=0;
   if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
       !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerRuntime.t32m",&file)!=1)
@@ -399,7 +401,8 @@ U0 KernelCompilerLoad()
   KernelBinding(&bindings[1],"I386LexSourceRead");
   KernelBinding(&bindings[2],"char_bmp_hex_numeric");
   KernelBinding(&bindings[3],"char_bmp_dec_numeric");
-  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,4);
+  KernelBinding(&bindings[4],"char_bmp_non_eol");
+  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,5);
   if(image) {
     reason="api"; size=I386HeapSize(&kernel_heap,image); base=(image+0)(U64);
     if(base>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
@@ -408,10 +411,12 @@ U0 KernelCompilerLoad()
       string_address=(candidate.string_chunk+0)(U64);
       number_address=(candidate.number_token+0)(U64);
       char_address=(candidate.char_token+0)(U64);
+      punct_address=(candidate.punct_token+0)(U64);
       if(candidate.version!=I386_COMPILER_SERVICES_VERSION || candidate.bytes!=sizeof(CI386CompilerServices) ||
           string_address<base+8 || string_address>=base+size ||
           number_address<base+8 || number_address>=base+size ||
-          char_address<base+8 || char_address>=base+size) accepted=0;
+          char_address<base+8 || char_address>=base+size ||
+          punct_address<base+8 || punct_address>=base+size) accepted=0;
     }
   }
   if(accepted!=1) {
@@ -421,11 +426,11 @@ U0 KernelCompilerLoad()
   }
   kernel_compiler.version=candidate.version; kernel_compiler.bytes=candidate.bytes;
   kernel_compiler.string_chunk=candidate.string_chunk; kernel_compiler.number_token=candidate.number_token;
-  kernel_compiler.char_token=candidate.char_token;
+  kernel_compiler.char_token=candidate.char_token; kernel_compiler.punct_token=candidate.punct_token;
   kernel_compiler_image=image; kernel_compiler_size=size; kernel_compiler_span=kernel_heap.used-used;
   KernelLog("RUNTIME "); KernelHex((image+0)(U64)); KernelLog(" ");
   KernelHex(size); KernelLog(" "); KernelHex(kernel_compiler_span); KernelLog(" ");
-  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog(" "); KernelHex(char_address); KernelLog("\n");
+  KernelHex(string_address); KernelLog(" "); KernelHex(number_address); KernelLog(" "); KernelHex(char_address); KernelLog(" "); KernelHex(punct_address); KernelLog("\n");
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Exercise retained module code before startup and after task/IRQ activity.
@@ -457,6 +462,13 @@ U0 KernelCompilerProbe(I64 phase)
   if(kernel_compiler.char_token(&kernel_heap,&cc,&lines)!=TK_CHAR_CONST ||
       cc.cur_i64!=0x4241 || cc.last_U16!=59 || cc.cur_buf_ptr!=input+7 || lines ||
       kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+  input[0]='/'; input[1]='x'; input[2]=10; input[3]='<'; input[4]='<'; input[5]='='; input[6]=';'; input[7]=0;
+  cc.flags=CCF_DONT_FREE_BUF; LexFileSeed(&file,input); cc.cur_buf_ptr=input;
+  if(kernel_compiler.punct_token(&kernel_heap,&cc,'/',&lines)!=-2 || lines!=1) KernelStop;
+  ch=I386LexRawChar(&kernel_heap,&cc,&lines);
+  if(kernel_compiler.punct_token(&kernel_heap,&cc,ch,&lines)!=TK_SHL_EQU ||
+      cc.last_U16!=59 || cc.cur_buf_ptr!=input+7 || lines!=1 ||
+      kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
   KernelLog("RUNTIME PROBE "); KernelHex(phase); KernelLog(" ");
-  KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog(" "); KernelHex(cc.cur_i64); KernelLog("\n");
+  KernelHex(value); KernelLog(" "); KernelHex(output[0]); KernelLog(" "); KernelHex(cc.cur_i64); KernelLog(" "); KernelHex(cc.token); KernelLog("\n");
 }

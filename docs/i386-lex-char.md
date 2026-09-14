@@ -23,7 +23,8 @@ lookahead, setting replay on success. A failure during that final lookahead retu
 return status. Unsupported prompt/document/echo modes remain errors in the native
 raw reader. Full native token dispatch and those input services remain unfinished.
 
-CompilerRuntime interface version 2 adds char_token and is 20 bytes on i386. The
+CompilerRuntime interface version 2 introduced char_token in a 20-byte interface.
+Version 3 retains it alongside the added punctuation service. The
 kernel validates and retains this third code pointer alongside string/number
 services. Boot and task probes parse a hexadecimal escape followed by a literal
 byte into 0x4241, checking source position, final lookahead and heap accounting.

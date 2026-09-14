@@ -1,3 +1,4 @@
+#include "/Compiler/LexPunctInit.HC"
 #include "/Compiler/InternalTypes.HC"
 
 CIntermediateStruct intermediate_code_table[IC_ICS_NUM]={
@@ -242,34 +243,10 @@ U0 CmpFillTables()
     if (Bt(&cmp.non_ptr_vars_mask,i))
       cmp.non_ptr_vars_map[cmp.num_non_ptr_vars++]=i;
 
-  cmp.dual_U16_tokens1=d=CAlloc(sizeof(U32)*TK_TKS_NUM);
-  d['!']=TK_NOT_EQU<<16+'=';
-  d['&']=TK_AND_AND<<16+'&';
-  d['*']=TK_MUL_EQU<<16+'=';
-  d['+']=TK_PLUS_PLUS<<16+'+';
-  d['-']=TK_DEREFERENCE<<16+'>';
-  d['/']='*';
-  d[':']=TK_DBL_COLON<<16+':';
-  d['<']=TK_LESS_EQU<<16+'=';
-  d['=']=TK_EQU_EQU<<16+'=';
-  d['>']=TK_GREATER_EQU<<16+'=';
-  d['^']=TK_XOR_EQU<<16+'=';
-  d['|']=TK_OR_OR<<16+'|';
-  d['%']=TK_MOD_EQU<<16+'=';
-
-  cmp.dual_U16_tokens2=d=CAlloc(sizeof(U32)*TK_TKS_NUM);
-  d['&']=TK_AND_EQU<<16+'=';
-  d['+']=TK_ADD_EQU<<16+'=';
-  d['-']=TK_MINUS_MINUS<<16+'-';
-  d['/']='/';
-  d['<']=TK_SHL<<16+'<';
-  d['>']=TK_SHR<<16+'>';
-  d['^']=TK_XOR_XOR<<16+'^';
-  d['|']=TK_OR_EQU<<16+'=';
-
-  cmp.dual_U16_tokens3=d=CAlloc(sizeof(U32)*TK_TKS_NUM);
-  d['-']=TK_SUB_EQU<<16+'=';
-  d['/']=TK_DIV_EQU<<16+'=';
+  cmp.dual_U16_tokens1=CAlloc(sizeof(U32)*TK_TKS_NUM);
+  cmp.dual_U16_tokens2=CAlloc(sizeof(U32)*TK_TKS_NUM);
+  cmp.dual_U16_tokens3=CAlloc(sizeof(U32)*TK_TKS_NUM);
+  LexPunctInit(cmp.dual_U16_tokens1,cmp.dual_U16_tokens2,cmp.dual_U16_tokens3);
 
   cmp.binary_ops=d=CAlloc(sizeof(U32)*TK_TKS_NUM);
   d['`']   =(PREC_EXP+ASSOCF_RIGHT)<<16+IC_POWER;

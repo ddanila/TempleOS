@@ -6,20 +6,28 @@
 #include "/Compiler/I386/LexString.HH"
 #include "/Compiler/I386/LexNumber.HH"
 #include "/Compiler/I386/LexChar.HH"
+#include "/Compiler/I386/LexPunct.HH"
 import I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines);
 import I64 I386LexSourceRead(U8 *context,CCmpCtrl *cc);
 import U32 char_bmp_hex_numeric[16];
 import U32 char_bmp_dec_numeric[16];
+import U32 char_bmp_non_eol[16];
+U32 runtime_first[TK_TKS_NUM],runtime_second[TK_TKS_NUM],runtime_third[TK_TKS_NUM];
+CLexPunctTables runtime_punct;
+extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==20
+#assert sizeof(CI386CompilerServices)==24
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
+  LexPunctInit(runtime_first,runtime_second,runtime_third);
+  runtime_punct.first=runtime_first; runtime_punct.second=runtime_second; runtime_punct.third=runtime_third;
   services->version=compiler_runtime_version;
   services->bytes=sizeof(CI386CompilerServices);
   services->string_chunk=&I386LexStringChunk;
   services->number_token=&I386LexNumber;
   services->char_token=&I386LexChar;
+  services->punct_token=&I386RuntimePunct;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
@@ -27,3 +35,9 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
 #include "/Kernel/I386/Pow10.HC"
 #include "/Compiler/I386/LexNumber.HC"
 #include "/Compiler/I386/LexChar.HC"
+#include "/Compiler/LexPunctInit.HC"
+#include "/Compiler/I386/LexPunct.HC"
+I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines)
+{
+  return I386LexPunct(heap,cc,ch,&runtime_punct,compiled_lines);
+}

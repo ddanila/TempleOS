@@ -351,15 +351,19 @@ I64 LexInStr(CCmpCtrl *cc,U8 *buf,I64 size,Bool *done)
 
 #include "/Compiler/LexNumber.HC"
 #include "/Compiler/LexChar.HC"
+#include "/Compiler/LexPunct.HC"
 
 I64 Lex(CCmpCtrl *cc)
 {//Fetch next token.
   I64 i,j,k,l,ch;
   CHash *tmph;
-  Bool str_done,in_str;
+  Bool str_done,in_str,punct_finish;
+  CLexPunctTables punct_tables;
   CLexCharSource token_source;
   U8 *fbuf,*buf2,*buf3,buf[STR_LEN];
   token_source.context=0; token_source.read=&LexSystemChar;
+  punct_tables.first=cmp.dual_U16_tokens1; punct_tables.second=cmp.dual_U16_tokens2;
+  punct_tables.third=cmp.dual_U16_tokens3;
   cc->last_line_num=cc->lex_include_stk->line_num;
   while (TRUE) {
 lex_cont:
@@ -851,97 +855,10 @@ lex_ifjit:
       case ']'...'^':
       case '{'...'~':
       case '`':
-	if (!(i=cmp.dual_U16_tokens1[ch])) {
-	  if (ch=='$$') {
-	    ch=LexGetChar(cc);
-	    if (ch=='$$') {
-	      cc->token='$$';
-	      goto lex_end;
-	    } else if (ch) {
-	      do ch=LexGetChar(cc);
-	      while (ch && ch!='$$');
-	      if (!ch) {
-		cc->token=TK_EOF;
-		goto lex_end;
-	      } else
-		goto lex_cont;
-	    } else {
-	      cc->flags|=CCF_USE_LAST_U16;
-	      cc->token='$$';
-	      goto lex_end;
-	    }
-	  } else {
-	    cc->token=ch;
-	    goto lex_end;
-	  }
-	} else {
-	  j=LexGetChar(cc);
-	  if (i.u16[0]==j) {
-	    i>>=16;
-	    if (!i) {// "/*"
-	      j=1;
-	      do {
-		if (!(ch=LexGetChar(cc)))
-		  return cc->token=TK_EOF;
-lex_check_comment:
-		if (ch=='*') {
-		  if (!(ch=LexGetChar(cc)))
-		    return cc->token=TK_EOF;
-		  if (ch=='/')
-		    j--;
-		  else
-		    goto lex_check_comment;
-		} else if (ch=='/') {
-		  if (!(ch=LexGetChar(cc)))
-		    return cc->token=TK_EOF;
-		  if (ch=='*')
-		    j++;
-		  else
-		    goto lex_check_comment;
-		}
-	      } while (j);
-	      goto lex_cont;
-	    } else {
-	      cc->token=i;
-	      goto lex_end;
-	    }
-	  }
-	  if (i=cmp.dual_U16_tokens2[ch]) {
-	    if (i.u16[0]==j) {
-	      i>>=16;
-	      if (!i) {// "//"
-		LexSkipEol(cc);
-		if (cc->flags&CCF_KEEP_NEW_LINES) {
-		  cc->token='\n';
-		  goto lex_end;
-		} else
-		  goto lex_cont;
-	      } else {
-		if (i==TK_SHL || i==TK_SHR) {
-		  j=LexGetChar(cc);
-		  if (j=='=') {
-		    if (i==TK_SHL)
-		      i=TK_SHL_EQU;
-		    else
-		      i=TK_SHR_EQU;
-		  } else
-		    cc->flags|=CCF_USE_LAST_U16;
-		}
-		cc->token=i;
-		goto lex_end;
-	      }
-	    }
-	    if (i=cmp.dual_U16_tokens3[ch]) {
-	      if (i.u16[0]==j) {
-		cc->token=i.u16[1];
-		goto lex_end;
-	      }
-	    }
-	  }
-	  cc->flags|=CCF_USE_LAST_U16;
-	  cc->token=ch;
-	  goto lex_end;
-	}
+        i=LexPunctBody(cc,ch,&token_source,&punct_tables,&punct_finish);
+        if(i==-2) goto lex_cont;
+        if(!punct_finish) return cc->token;
+        goto lex_end;
       case TK_TKS_NUM:
 	break;
     }
