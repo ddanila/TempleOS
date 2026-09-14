@@ -1,5 +1,6 @@
 // Target backend entered by the normal HolyC function compiler.
 #include "/Compiler/I386/Emit.HC"
+#include "/Compiler/I386/Asm.HC"
 #include "/Compiler/I386/Divide.HC"
 
 I64 I386Size(CHashClass *c)
@@ -293,7 +294,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
 {
   CI386Out out;
   CIntermediateCode *ic;
-  CCodeMisc *label,*switch_table;
+  CCodeMisc *label,*switch_table,*asm_label;
   CI386Call *calls=NULL,*call;
   CI386Logic *logics=NULL,*logic;
   CI386Chain *chains=NULL,*chain;
@@ -309,8 +310,10 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   if (_type) *_type=RT_I64;
   if (_size) *_size=0;
   MemSet(&out,0,sizeof(out));
-  if (cc->flags&CCF_TARGET_HOST_CONST)
+  if (cc->flags&CCF_TARGET_HOST_CONST) {
+    if(cc->flags&CCF_ASM_EXPRESSIONS) return I386AsmExpression(cc,_size,_type);
     return I386HostConstant(cc,_size,_type);
+  }
   if (!(cc->flags&CCF_AOT_COMPILE) || cc->flags&CCF_EXE_BLK)
     throw('Compiler');
   if (!cc->htc.fun || cc->coc.coc_head.next->ic_code!=IC_ENTER) {
@@ -323,6 +326,15 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
     if (Bt(&cc->htc.fun->flags,Ff_DOT_DOT_DOT)) args=0;
     if (args>65535) throw('Compiler');
   }
+  //Nested assembler parsing creates its own label records. Join a prior HolyC
+  //goto placeholder to the definition before native branch offsets are assigned.
+  for(asm_label=cc->coc.coc_next_misc;asm_label!=&cc->coc.coc_next_misc;asm_label=asm_label->next)
+    if(asm_label->type==CMT_ASM_LABEL && asm_label->flags&CMF_DEFINED)
+      for(label=cc->coc.coc_next_misc;label!=&cc->coc.coc_next_misc;label=label->next)
+        if(label->type==CMT_GOTO_LABEL && !(label->flags&CMF_DEFINED) &&
+            !StrCmp(label->str,asm_label->str)) {
+          label->flags|=CMF_DEFINED; label->fwd=asm_label;
+        }
   //Logical results are integer booleans, regardless of operand precision metadata.
   for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
     if (ic->ic_code==IC_NOT || ic->ic_code==IC_AND_AND ||
@@ -1003,9 +1015,16 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Byte(&out,0xE8);
             I386Dword(&out,label->addr-out.count-4);
             break;
+          case IC_ASM:
+            if(depth || calls) throw('Compiler');
+            I386Asm(cc,&out,ic->ic_data,pass);
+            break;
           case IC_LABEL:
             label=ic->ic_data;
-            if (!pass) label->addr=out.count;
+            if (!pass) {
+              label->addr=out.count;
+              if(label->type==CMT_ASM_LABEL) label->addr+=label->rip;
+            }
             break;
           case IC_JMP:
             if (depth) throw('Compiler');
@@ -1090,6 +1109,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   MemCpy(result,out.data,out.count);
   if (_size) *_size=out.count;
   Free(out.data);
+  for(ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
+    if(ic->ic_code==IC_ASM) I386AsmFree(ic->ic_data);
   COCDel(cc,&cc->coc);
   return result;
 }

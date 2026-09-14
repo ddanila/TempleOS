@@ -1484,3 +1484,26 @@ is harness capacity, not evidence that the full OS meets its RAM targets.
 
 Recursive throw semantics, full public task/debugger integration, production
 boot, native self-hosting and strict 386 validation remain unfinished.
+
+
+## Native HolyC inline assembly
+
+The i386 backend now emits inline assembly bytes and fixes relative label
+references at native offsets, including addends. Native assembly defaults to
+USE32. The nested parser preserves label nodes and connects prior HolyC goto
+references to assembly definitions instead of discarding those definitions.
+Assembler expressions use target-size folding followed by a validated host
+expression path for integer arithmetic and known host symbol-value reads.
+Target instruction bytes are never executed as host code.
+
+The dedicated `--inline-asm` fixture passes nine native checks covering wide
+argument writes, loops, local calls, branches in both directions between HolyC
+and assembly, nonzero branch addends, constant arithmetic, named locals and bare
+assembly statements. Caller register preservation is checked by the runner.
+Seven rejection cases cover wrong modes, 64-bit/extended registers, absolute
+label addresses and inline imports. Native instruction audits, all 233 existing
+function cases and both x64 rebuild/reboot generations pass.
+
+Inline external imports/exports, absolute/storage relocations and migration of
+bootstrap assembly modules remain unfinished, as do the full compiler/kernel
+link, native self-hosting and strict 386 verification. See `i386-inline-asm.md`.

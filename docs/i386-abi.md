@@ -249,3 +249,21 @@ needs its actual boot-stack extent installed after scheduler initialization.
 The task regression verifies caller addresses before and after yields in two
 owned tasks, rejects private-heap addresses, checks missing/invalid-depth cases,
 and checks that reused caller-owned task records lose their previous bounds.
+
+
+## Inline assembly
+
+Native function assembly now defaults to USE32 and shares the enclosing frame.
+It can access eight-byte scalar argument slots and named local offsets, use
+assembly-local branches/calls, and branch between HolyC and assembly labels.
+Relative fixups use native byte positions and preserve numeric addends. Mode
+changes to USE16/USE64, 64-bit/extended general registers, absolute relocation
+and inline external symbol imports/exports are rejected. The assembler does
+not provide a blanket instruction-generation guarantee for arbitrary handwritten
+code; production 386 instruction audits remain required.
+
+Assembler symbol expressions run through a validated host-only path, including
+reads of known unresolved host symbol value fields. Their host pointers retain
+I64 width while target-size arithmetic is folded before host emission. Emitted
+32-bit instructions remain data on the x64 host. See `i386-inline-asm.md` for
+contracts, native tests and remaining assembler/self-hosting work.

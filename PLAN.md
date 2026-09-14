@@ -547,6 +547,13 @@ frame pointer before reporting. Two heap-owned native workers pass 48 catch-time
 yields across creation/destruction cycles, preserving exception state, caller
 snapshots and locals with full reclamation. Full CTask migration, recursive throw
 semantics, debugger/logging UI and production boot integration remain pending.
+The native backend now accepts HolyC inline assembly with a default USE32 mode,
+relative label fixups and branches between assembly and HolyC. Assembler symbol
+expressions execute as validated host expressions with target-size folding;
+target instruction bytes are never executed on the compiler host. Tests cover
+wide frame writes, loops, local calls, numeric branch addends and local offsets.
+Inline imports/exports, absolute/storage relocations and full native assembler/
+bootstrap integration remain unfinished; see `docs/i386-inline-asm.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

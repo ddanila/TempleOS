@@ -46,6 +46,10 @@ U0 PrsAsmArg(CCmpCtrl *cc,CAsmArg *arg,Bool rel)
       if (tmph=cc->hash_entry) {
 	if (tmph->type&HTG_TYPE_MASK==HTT_REG) {
 	  tmpr=tmph;
+          if(cc->flags&CCF_TARGET_I386 && (tmpr->reg_type==REGT_R64 ||
+              (REGT_R8<=tmpr->reg_type<=REGT_R32 && tmpr->reg_num>=8))) {
+            PrintErr("64-bit register in native i386 assembly\n"); throw('Compiler');
+          }
 	  arg->reg1_type=tmpr->reg_type;
 	  switch (tmpr->reg_type) {
 	    start:
@@ -133,6 +137,10 @@ pa_asm_direct_imm:
 	    if (tmph->type&HTG_TYPE_MASK==HTT_REG &&
 		  REGT_R16<=tmph(CHashReg *)->reg_type<=REGT_R64) {
 	      tmpr=tmph;
+              if(cc->flags&CCF_TARGET_I386 &&
+                  (tmpr->reg_type==REGT_R64 || tmpr->reg_num>=8)) {
+                PrintErr("64-bit address register in native i386 assembly\n"); throw('Compiler');
+              }
 	      arg->reg2_type=tmpr->reg_type;
 	      if (arg->reg1==REG_NONE) {
 		if (tmpr->reg_num&7==REG_RSP) {
@@ -912,6 +920,7 @@ U0 PrsAsmBlk(CCmpCtrl *cc,I64 cmp_flags)
   CCodeMisc *g_lb;
 
   aotc->seg_size=64;
+  if(cc->flags&CCF_TARGET_I386) aotc->seg_size=32;
   cc->flags|=CCF_ASM_EXPRESSIONS;
   if (!(cmp_flags&CMPF_ONE_ASM_INS)) {
     if (cc->token!='{')
@@ -994,12 +1003,14 @@ U0 PrsAsmBlk(CCmpCtrl *cc,I64 cmp_flags)
 	    aotc->lst=FALSE;
 	    break;
 	  case AKW_USE16:
+            if(cc->flags&CCF_TARGET_I386) { PrintErr("USE16 in native i386 code\n"); throw('Compiler'); }
 	    aotc->seg_size=16;
 	    break;
 	  case AKW_USE32:
 	    aotc->seg_size=32;
 	    break;
 	  case AKW_USE64:
+            if(cc->flags&CCF_TARGET_I386) { PrintErr("USE64 in native i386 code\n"); throw('Compiler'); }
 	    aotc->seg_size=64;
 	    break;
 	  default:

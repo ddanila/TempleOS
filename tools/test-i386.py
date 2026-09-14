@@ -47,6 +47,7 @@ def main():
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('--functions', action='store_true',
                         help='Test normal function compilation using test-rebuild.py output')
+    modes.add_argument('--inline-asm', action='store_true', help='Test native HolyC inline assembly and relative label fixups')
     modes.add_argument('--data', action='store_true', help='Test global/static storage and data imports')
     modes.add_argument('--vga', action='store_true', help='Test native planar VGA presentation and displayed pixels')
     modes.add_argument('--except-tasks', action='store_true', help='Test public exceptions across native task switches')
@@ -86,10 +87,10 @@ def main():
     #A 160 KiB transfer from 0x10000 ends at 0x38000, below that arena.
     boot_sectors = 320 if args.tasks else 256 if large_runner else 128
     kind = 'expressions'
-    for mode in ('functions', 'data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
+    for mode in ('functions', 'inline-asm', 'data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
+    data_mode = kind in ('inline-asm', 'data', 'vga', 'heap', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
     if args.soft_f64_unary:
         run(sys.executable, 'tools/gen-i386-pow10.py', '--check')
     functions = kind != 'expressions'
