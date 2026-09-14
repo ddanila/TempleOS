@@ -7,6 +7,37 @@ U64 I386F64Abs(U64 value)
   return value;
 }
 
+extern U64 I386F64RoundPack(U64 sign,I64 exp,U64 x);
+
+U64 I386F64Sqrt(U64 value)
+{
+  U64 magnitude=value&0x7FFFFFFFFFFFFFFF,x,high,low,root=0,remainder=0,trial;
+  I64 exp,i;
+  if (magnitude>0x7FF0000000000000) return value|0x0008000000000000;
+  if (!magnitude) return value; //Preserve both zeros.
+  if (value>>63) return 0xFFF8000000000000; //x64 indefinite for negative operands.
+  if (magnitude==0x7FF0000000000000) return value;
+  exp=value>>52; x=value&0x000FFFFFFFFFFFFF;
+  if (exp) x|=0x0010000000000000;
+  else {
+    exp=1;
+    while (x<0x0010000000000000) { x<<=1; exp--; }
+  }
+  exp-=1023;
+  if (exp&1) { x<<=1; exp--; }
+  //sqrt(x*2^58) gives 53 significand bits plus three rounding bits.
+  //Feed the 112-bit radicand two bits at a time through a 64-bit remainder.
+  high=x>>6; low=x<<58;
+  for (i=0;i<64;i++) {
+    remainder=(remainder<<2)|(high>>62);
+    high=(high<<2)|(low>>62); low<<=2;
+    trial=(root<<2)|1; root<<=1;
+    if (remainder>=trial) { remainder-=trial; root|=1; }
+  }
+  if (remainder) root|=1;
+  return I386F64RoundPack(0,(exp>>1)+1023,root);
+}
+
 U64 I386F64ShiftJam(U64 value,I64 distance)
 {
   if (!distance) return value;

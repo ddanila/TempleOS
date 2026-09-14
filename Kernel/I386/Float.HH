@@ -4,6 +4,7 @@
 //Numeric conversion is distinct from a HolyC bitwise typecast.
 public _intern 0xB2 F64 Sqr(F64 value);
 public _intern 0xB3 F64 Abs(F64 value);
+public _intern 0xB4 F64 Sqrt(F64 value);
 public _intern 0x1C F64 ToF64(I64 value);
 public _intern 0x1B I64 ToI64(F64 value);
 #endif

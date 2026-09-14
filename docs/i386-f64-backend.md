@@ -163,18 +163,35 @@ case verify these results. This preserves the observed constant/variable
 behavior; it does not make `ToBool(F64)` equivalent to a raw F64 condition.
 
 
-F64 `Abs` and `Sqr` are declared in `Kernel/I386/Float.HH`. These template
+F64 `Abs`, `Sqr` and `Sqrt` are declared in `Kernel/I386/Float.HH`. These template
 intrinsics have no ordinary call-start/end nodes, so the backend lowers them
 as unary expressions while preserving any surrounding call context. `Abs`
 uses the one-U64-argument `I386F64Abs` helper; `Sqr` evaluates its argument once
 and passes the same binary64 value twice to `I386F64Mul`. Integer arguments
-use the existing F64 conversion path. Both operations require their runtime
+use the existing F64 conversion path. `Sqrt` uses the one-argument
+`I386F64Sqrt` helper. All three operations require their runtime
 providers and use the existing declaration/ABI validation and relocations.
 
 `python3 tools/test-i386.py --soft-f64-unary` checks 1,024 patterns against an
-independent host oracle and actual x64 Abs/Sqr output. It executes 3,072 native
-checks (both compiled intrinsics and direct Abs), plus nested templates,
-integer-argument/postfix side effects and a surrounding ToI64 call. Four negative
-compilation cases reject missing providers and malformed Abs helper declarations.
-CR0.EM execution and generated-instruction audits pass. Sqrt, trigonometry,
+independent host oracle and actual x64 Abs/Sqr/Sqrt output. It executes 5,120 native
+checks (three compiled intrinsics and direct Abs/Sqrt), plus nested templates,
+integer-argument/postfix side effects and a surrounding ToI64 call. Six negative
+compilation cases reject missing providers and malformed unary helper declarations.
+CR0.EM execution and generated-instruction audits pass. Trigonometry,
 remaining numerical operations and floating-point state remain unfinished.
+
+
+Square root uses correctly rounded binary64 results. Actual x64 execution differs
+by one ULP at two tested inputs, consistent with rounding first to an x87
+64-bit significand and then to binary64. The host comparison explicitly checks
+these observations while native execution must match the exact integer oracle:
+
+| Input bits | Native binary64 root | Observed x64 root |
+| --- | --- | --- |
+| `5FEFFFFFFFFFFFFF` | `4FEFFFFFFFFFFFFF` | `4FF0000000000000` |
+| `7FEFFFFFFFFFFFFF` | `5FEFFFFFFFFFFFFF` | `5FF0000000000000` |
+
+All other unary outputs in the corpus match x64. Full x87 precision/exception-state
+compatibility remains unresolved. The main `--float` fixture now uses the existing
+128 KiB boot-transfer path because its linked code exceeded 64 KiB; its RAM stays
+8 MiB. This is runner capacity, not a change to the OS memory target.

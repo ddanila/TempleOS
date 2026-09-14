@@ -2,7 +2,8 @@
 
 `Kernel/I386/SoftF64.HH` declares `I386F64Add(U64 a,U64 b)` and
 `I386F64Sub(U64 a,U64 b)`, plus `I386F64Mul(U64 a,U64 b)` and
-`I386F64Div(U64 a,U64 b)` and `I386F64Abs(U64 value)`. Arguments and return values are binary64 **bit
+`I386F64Div(U64 a,U64 b)`, `I386F64Abs(U64 value)` and
+`I386F64Sqrt(U64 value)`. Arguments and return values are binary64 **bit
 patterns**, passed through the ordinary native integer ABI. They do not perform
 integer-to-floating-point conversion. The implementation uses only integer HolyC
 operations and requires no third-party runtime.
@@ -116,6 +117,25 @@ operands, retaining the multiplication rounding and NaN policy.
 
 The `--soft-f64-unary` corpus includes signed exponent-boundary neighborhoods,
 subnormal and square underflow/overflow edges, infinities, NaNs and deterministic
-random bit patterns. All 2,048 actual x64 intrinsic outputs match the host oracle;
-3,072 native helper/intrinsic checks pass without a coprocessor. This corpus does
+random bit patterns. The Abs/Sqr outputs match x64; square-root precision differences are recorded
+in the compiler integration document. All 5,120 native helper/intrinsic checks
+pass without a coprocessor. This corpus does
 not prove universal x87 intermediate-precision or exception-state equivalence.
+
+
+`I386F64Sqrt` preserves signed zero and positive infinity, quiets NaNs while
+retaining their sign/payload, and returns x64's negative indefinite NaN
+(`FFF8000000000000`) for negative nonzero inputs, including negative infinity.
+It does not report floating-point exception flags.
+
+Positive finite inputs are normalized to a 53-bit significand, extended to 54
+bits when making the exponent even. A two-word 112-bit radicand yields a 56-bit
+root through 64 two-bit extraction steps and a bounded U64 remainder. The final
+remainder supplies sticky information to the common nearest-even rounder. No
+floating-point instructions, division approximation or external library is used.
+
+The square-root oracle independently uses Python arbitrary-precision `isqrt`
+and compares the squared midpoint exactly before packing a 53-bit significand.
+It includes minimum subnormal, maximum finite and exponent-boundary cases. Native
+execution matches this oracle, including the two observed x64 double-rounding
+differences listed in `i386-f64-backend.md`.

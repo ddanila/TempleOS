@@ -16,7 +16,7 @@ U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i;
-  U64 *oracle=MAlloc(24576),bits,seed=0x386F64A;
+  U64 *oracle=MAlloc(32768),bits,seed=0x386F64A;
   F64 value;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
@@ -30,11 +30,12 @@ U0 CompileTests()
       bits=unary_special[(i-768)%16];
       if (i>=784) bits|=0x8000000000000000;
     } else bits=seed;
-    oracle[i*3]=bits;
-    value=Abs(bits(F64)); oracle[i*3+1]=value(U64);
-    value=Sqr(bits(F64)); oracle[i*3+2]=value(U64);
+    oracle[i*4]=bits;
+    value=Abs(bits(F64)); oracle[i*4+1]=value(U64);
+    value=Sqr(bits(F64)); oracle[i*4+2]=value(U64);
+    value=Sqrt(bits(F64)); oracle[i*4+3]=value(U64);
   }
-  line=MStrPrint("EXPORT x64-unary.bin %X %X\n",oracle,24576); Report(line);
+  line=MStrPrint("EXPORT x64-unary.bin %X %X\n",oracle,32768); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -47,7 +48,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"f64_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,24576); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,32768); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)
@@ -67,10 +68,12 @@ U0 CompileTests()
   if (!RejectUnary("F64 Main(F64 a) { return Abs(a); }") ||
       !RejectUnary("extern U64 I386F64Abs(I64 a); F64 Main(F64 a) { return Abs(a); }") ||
       !RejectUnary("extern I64 I386F64Abs(U64 a); F64 Main(F64 a) { return Abs(a); }") ||
-      !RejectUnary("F64 Main(F64 a) { return Sqr(a); }")) {
+      !RejectUnary("F64 Main(F64 a) { return Sqr(a); }") ||
+      !RejectUnary("F64 Main(F64 a) { return Sqrt(a); }") ||
+      !RejectUnary("extern U64 I386F64Sqrt(I64 a); F64 Main(F64 a) { return Sqrt(a); }")) {
     Report("FAIL malformed unary runtime accepted\n"); return;
   }
-  Report("PASS four unary runtime rejection checks\n");
+  Report("PASS six unary runtime rejection checks\n");
   Report("DONE native F64 unary\n");
 }
 CompileTests;

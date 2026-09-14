@@ -430,10 +430,12 @@ constant/variable ToBool differences are preserved and documented. Integer
 absolute/sign, signed/unsigned min/max and square intrinsics now pass 8,192
 results against actual x64 execution and an independent Python oracle, plus
 nested/side-effect checks. These unblock arithmetic used by kernel message,
-memory and mouse code; full unit integration remains pending. F64 Abs/Sqr now
-lower through the software runtime, with 3,072 native checks and 2,048 x64
-result comparisons, including NaNs, signed zero and square underflow/overflow.
-Template-call nesting and malformed-provider rejection also have tests; Sqrt,
+memory and mouse code; full unit integration remains pending. F64 Abs, Sqr
+and Sqrt now lower through the software runtime, with 5,120 native checks and 3,072
+x64 result comparisons, including NaNs, signed zero and square underflow/overflow.
+Square root uses an exact integer algorithm; two x64 intermediate-precision
+rounding differences are documented while native results match the exact oracle.
+Template-call nesting and malformed-provider rejection also have tests;
 trigonometry and remaining numerical/formatting integration are still pending. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now

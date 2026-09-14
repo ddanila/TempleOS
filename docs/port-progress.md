@@ -1283,3 +1283,30 @@ rebuild generations and image verification (766 files, 62 directories) pass.
 Sqrt, trigonometry, other numerical/formatting operations, floating-point state,
 full compiler/kernel integration, native self-hosting, memory targets and strict
 386 validation remain unfinished.
+
+
+## Native software square root
+
+`I386F64Sqrt` now normalizes positive finite inputs, makes their exponent even,
+and extracts a 56-bit root from a two-word radicand using integer operations.
+The remainder supplies sticky information to the common nearest-even rounder.
+The helper preserves both zeros, quiets NaNs with sign/payload intact, returns
+positive infinity unchanged, and returns the negative indefinite NaN for negative
+nonzero values. The compiler lowers the Sqrt template intrinsic through this
+helper without requiring a coprocessor.
+
+The unary fixture now passes 5,120 native checks over 1,024 inputs, six nesting/
+side-effect cases and six malformed-provider rejection cases. Its square-root
+oracle uses arbitrary-precision integer square root and exact midpoint comparison.
+Two observed x64 results differ by one ULP, consistent with a 64-bit-significand
+intermediate rounded again to binary64. These observations are checked separately;
+the native result must match the correctly rounded oracle. The precise input and
+result bits are documented in `docs/i386-f64-backend.md`.
+
+The F64 expression/condition/chain suite, all 178 integer/call cases, instruction
+audits, CR0.EM execution, both x64 rebuilds and image verification (766 files,
+62 directories) pass. The growing main F64 fixture now uses the existing 128 KiB
+boot-transfer path instead of 64 KiB; its RAM remains 8 MiB. This changes fixture
+capacity, not the OS memory requirement. Trigonometry, remaining numerical/
+formatting support, floating-point state, full compiler/kernel integration,
+native self-hosting, memory targets and strict 386 validation remain unfinished.

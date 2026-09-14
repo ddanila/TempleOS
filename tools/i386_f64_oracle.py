@@ -3,6 +3,7 @@
 NaN payload selection is an explicit runtime policy, checked separately from
 host NaN propagation. Finite results use Python's binary64 float operations.
 """
+import math
 import random
 import struct
 import sys
@@ -152,6 +153,35 @@ def make_to_int_oracle(count):
     return b''.join(records)
 
 
+def expected_sqrt(value):
+    magnitude = value & MASK
+    if magnitude > INF:
+        return value | QUIET
+    if magnitude == 0:
+        return value
+    if value & SIGN:
+        return SIGN | INF | QUIET
+    if magnitude == INF:
+        return value
+    exponent = value >> 52
+    significand = value & ((1 << 52)-1)
+    if exponent:
+        significand |= 1 << 52
+        power = exponent-1023-52
+    else:
+        power = -1074
+    result_exp = (significand.bit_length()-1+power)//2
+    radicand = significand << (power+104-2*result_exp)
+    root = math.isqrt(radicand)
+    #Compare against the exact half-way point using arbitrary-precision integers.
+    if 4*radicand > (2*root+1)**2:
+        root += 1
+    if root == 1 << 53:
+        root >>= 1
+        result_exp += 1
+    return ((result_exp+1023) << 52) | (root & ((1 << 52)-1))
+
+
 def make_unary_oracle(count):
     if count != 1024:
         raise ValueError('Unary compatibility fixture requires 1024 inputs')
@@ -174,5 +204,5 @@ def make_unary_oracle(count):
             value = seed
         magnitude = value & MASK
         absolute = magnitude | (QUIET if magnitude > INF else 0)
-        records.append(struct.pack('<3Q', value, absolute, expected(value, value, 'mul')))
+        records.append(struct.pack('<4Q', value, absolute, expected(value, value, 'mul'), expected_sqrt(value)))
     return b''.join(records)

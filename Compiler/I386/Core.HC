@@ -128,6 +128,7 @@ U0 I386F64Runtime(CCmpCtrl *cc,CI386Out *out,I64 op,I64 pass)
   I64 i,return_type=RT_U64,arg_type=RT_U64,arg_count=2;
   U8 condition=0x94,compare_value=0;
   switch (op) {
+    case IC_SQRT: name="I386F64Sqrt"; arg_count=1; break;
     case IC_ABS: name="I386F64Abs"; arg_count=1; break;
     case IC_ADD: name="I386F64Add"; break;
     case IC_SUB: name="I386F64Sub"; break;
@@ -369,7 +370,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             //HolyC conditions test raw bits, including the F64 sign bit.
             case IC_NOT: case IC_AND_AND: case IC_OR_OR: case IC_XOR_XOR:
             case IC_BR_ZERO: case IC_BR_NOT_ZERO:
-            case IC_SQR: case IC_ABS:
+            case IC_SQR: case IC_ABS: case IC_SQRT:
             case IC_TO_F64: case IC_TO_I64: case IC_TO_BOOL:
             case IC_NOP1: case IC_NOP2: case IC_IMM_F64: case IC_PUSH_CMP:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
@@ -437,6 +438,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             break;
           case IC_SQR:
           case IC_ABS:
+          case IC_SQRT:
             //Template intrinsics have no CALL_START/CALL_END nodes.
             if (depth<1 || !I386IsF64(c) ||
                 !I386IsF64(I386ValueClass(ic->t.arg1_tree))) throw('Compiler');
@@ -444,7 +446,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             if (ic->ic_code==IC_SQR) {
               I386Bytes(&out,"\x89\xC1\x89\xD3",4);
               I386F64Runtime(cc,&out,IC_MUL,pass);
-            } else I386F64Runtime(cc,&out,IC_ABS,pass);
+            } else I386F64Runtime(cc,&out,ic->ic_code,pass);
             I386Bytes(&out,"\x52\x50",2);
             break;
           case IC_ABS_I64: case IC_SIGN_I64:
