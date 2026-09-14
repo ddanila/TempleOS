@@ -865,6 +865,17 @@ These symbols remain compiler-owned: durable bootstrap registration, full source
 metadata, complete function/default/initializer providers and interactive parsing
 remain required. See `docs/i386-native-symbol.md`.
 
+A native class-publication operation now transfers complete owned class graphs
+into the current task's table (CompilerRuntime ABI 29, 168 bytes). It validates the
+shared symbol ownership traversal before detaching any parser allocations; name
+collisions, foreign/duplicate payloads, aliases to lexer-owned storage, scratch OOM,
+outstanding IR and compiler errors leave the private graph intact. Native probes destroy the originating
+control, compile against the six transferred scalar unions from a fresh control,
+then detach/delete them and verify full resource restoration. Permanent bootstrap
+registration and a retained frontend environment remain required, along with
+publication of executable code, functions and global data. See
+`docs/i386-class-publication.md`.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

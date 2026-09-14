@@ -3882,3 +3882,46 @@ and expire with their compiler control. Durable bootstrap registration, complete
 source links/metadata and function/default/initializer providers, full statement/
 global integration, interactive compilation, DolDoc and native self-hosting remain
 open under the full `PLAN.md` goal.
+
+## Durable class publication
+
+CompilerRuntime ABI 29 (168 bytes) adds `publish_classes`. Completed private class
+graphs can move from parser ownership into the current task's symbol table without
+changing class/member addresses. Validation collects the graph's allocation records
+before changing any ownership or table contents; successful publication detaches
+those records and moves the roots without further allocation. Private table storage
+and unrelated parser temporaries still expire with the originating control.
+
+A shared nonmutating `SymbolHashVisit` traversal now supplies the ownership policy
+for both publication and deletion. Explicit member-list deletion still resets its
+containing class/function. Borrowed type/code/static references retain their existing
+lifetime contract; this API does not publish executable bodies or global data.
+
+All 20 publication checks pass across boot and worker tasks. The success case parses
+the original `Kernel/Types.HH`, publishes all six scalar unions, destroys its control,
+and compiles/executes a member-size, pointer-size and narrowing-cast expression from
+a fresh control. After all users are gone, detachment and ordinary symbol deletion
+restore exact heap use/counts, task references, active controls, exception state and
+interrupt state. Rejection cases cover destination collisions, foreign/duplicate
+payload ownership, scratch OOM, the destination supplied as source, active IR,
+compiler errors, current-token aliases and lexer-filename aliases. Failed transfers
+preserve the private graph and allocation accounting. The filename case checks that
+lexer cleanup cannot free transferred symbol storage.
+
+Both x64 compiler/kernel rebuild/reboot generations passed. The complete standalone
+suite passed the publication cases and existing symbol/scalar execution, declaration,
+expression/type, parser ownership/recovery, instruction auditing, module rejection
+and pixel-exact VGA/input checks. The shared symbol and task-symbol suites passed,
+including nested/default/metadata/global ownership cleanup, as did all 235 function
+cases. Python syntax and whitespace checks pass. The development guest remains an
+8 MiB emulated 486; strict 386SX/DX acceptance remains open.
+
+The kernel is 390456 bytes. The retained compiler image is 863464 bytes (863480
+heap bytes). The temporary probe image is 344152 bytes and reclaims all 344168 heap
+bytes. Compiler/probe imports remain 21/17; FileRuntime remains ABI 13/32 bytes and
+CompilerProbe ABI 5/56 bytes.
+
+See [i386-class-publication.md](i386-class-publication.md). Permanent native bootstrap
+registration and a complete retained frontend environment are still required, along
+with function/code/data publication, complete metadata and initializer providers,
+interactive compilation, DolDoc and native self-hosting under `PLAN.md`.

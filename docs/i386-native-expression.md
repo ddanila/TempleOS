@@ -1,6 +1,6 @@
 # Native shared expression parser
 
-CompilerRuntime ABI 28 (164 bytes) includes `expression(heap, cc, services,
+CompilerRuntime ABI 29 (168 bytes) includes `expression(heap, cc, services,
 precedence, end_exp, stack)`, introduced in ABI 23. It executes the complete
 production `PrsExpressionCore.HC` inside the retained native module. The service environment
 remains caller supplied: this entry is not yet a complete native frontend or a

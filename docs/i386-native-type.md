@@ -1,6 +1,6 @@
 # Native shared type parsing
 
-CompilerRuntime ABI 28 (164 bytes) includes `parse_type`, introduced in ABI 24.
+CompilerRuntime ABI 29 (168 bytes) includes `parse_type`, introduced in ABI 24.
 The entry invokes the complete `PrsTypeCore.HC`, including its shared array-dimension
 and variadic-argument helpers. It borrows a populated `CPrsTypeServices` and checks
 the compiler control's current owner and task stack before parsing. Invalid setup

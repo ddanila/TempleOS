@@ -1,6 +1,6 @@
 # Native declaration parsing
 
-CompilerRuntime ABI 28 (164 bytes) includes `parse_declarations` and `code_init`,
+CompilerRuntime ABI 29 (168 bytes) includes `parse_declarations` and `code_init`,
 introduced in ABI 27. Declaration parsing calls the complete shared
 `PrsVarLstCore` in `Compiler/PrsDeclarationCore.HC` with supplied expression, type and declaration services. It
 validates the service graph and current compiler owner before entering the parser,

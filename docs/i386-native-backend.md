@@ -58,7 +58,7 @@ calls and returns, and applies the normal 386 opcode checks.
 
 ## Interface and validation scope
 
-CompilerRuntime ABI 28 is 164 bytes and includes `backend`, introduced in ABI 22.
+CompilerRuntime ABI 29 is 168 bytes and includes `backend`, introduced in ABI 22.
 Companion services cover [expressions](i386-native-expression.md),
 [types](i386-native-type.md), [parser allocations](i386-parser-memory.md) and
 [owned token reading](i386-parser-token.md).

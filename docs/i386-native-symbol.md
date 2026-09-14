@@ -1,6 +1,7 @@
 # Native class and function headers
 
-CompilerRuntime ABI 28 (164 bytes) adds `parse_class` and `parse_fun_join`.
+CompilerRuntime ABI 29 (168 bytes) includes `parse_class` and `parse_fun_join`,
+introduced in ABI 28.
 Both validate the current compiler owner, the complete supplied service graph and
 available task stack before calling the full shared `PrsSymbolCore.HC` algorithms.
 Invalid setup returns null; parser errors throw and require compiler-control unwind.
@@ -11,7 +12,9 @@ return-address size before any optimizer or backend runs.
 Class/header parsing mutates its symbol table and may complete existing forward
 symbols. The environment must supply private mutable tables and symbol graphs.
 This interface does not make updates to published symbols transactional, or extend
-parser-owned allocations beyond compiler-control destruction.
+parser-owned allocations beyond compiler-control destruction. The separate
+[class publication operation](i386-class-publication.md) can transfer completed
+class graphs into the current task table.
 
 The native fixture reads the packaged `Kernel/Types.HH` from RedSea unchanged.
 It uses the native lexer, type, class, declaration and expression parsers, plus

@@ -57,7 +57,7 @@ CHashFun *ProbeSymbolFunJoin(U8 *context,CCmpCtrl *cc,CHashClass *return_type,U8
   if(!result) KernelStop;
   return result;
 }
-U0 ProbeScalarUnions(CProbeSymbols *state,CCmpCtrl *cc)
+U0 ProbeScalarUnions(CProbeSymbols *state,CCmpCtrl *cc,Bool execute=TRUE)
 {
   CProbeExpression *expression=&state->declaration.expression;
   CHashClass *first,*result,*forward;
@@ -116,6 +116,7 @@ U0 ProbeScalarUnions(CProbeSymbols *state,CCmpCtrl *cc)
   }
   if(cc->token!=TK_EOF || state->sources!=6 || !cc->cur_help_idx ||
       StrCmp(cc->cur_help_idx,"Data Types/Simple")) KernelStop;
+  if(!execute) return;
   for(i=0;i<8;i++) {
     source="sizeof(U64)+sizeof(U64 *)+0x100000001(U32);"; expected=13;
     switch(i) {
@@ -137,15 +138,37 @@ U0 ProbeScalarUnions(CProbeSymbols *state,CCmpCtrl *cc)
     if(cc->token!=TK_EOF) KernelStop;
   }
 }
-U0 ProbeSymbols(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+CProbeSymbols *ProbeSymbolSetup(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *cc)
 {
   CProbeSymbols *state;
   CPrsSymbolServices *services;
+  U32 *binary_ops;
+  state=probe->compiler->parser_alloc(heap,cc,sizeof(CProbeSymbols),TRUE);
+  binary_ops=probe->compiler->parser_alloc(heap,cc,TK_TKS_NUM*sizeof(U32),TRUE);
+  if(!state || !binary_ops) KernelStop;
+  ProbeDeclarationSetup(&state->declaration,probe,heap,cc,binary_ops);
+  state->table=ProbeDeclarationAllocate(state,sizeof(CHashTable),TRUE,FALSE);
+  state->table->body=ProbeDeclarationAllocate(state,16*sizeof(CHash *),TRUE,FALSE);
+  state->table->mask=15; state->table->next=cc->htc.hash_table_lst;
+  cc->htc.glbl_hash_table=cc->htc.local_hash_table=cc->htc.hash_table_lst=state->table;
+  state->declaration.expression.services.hash_add=&ProbeSymbolAdd;
+  state->declaration.expression.types.class_join=&ProbeSymbolJoin;
+  state->declaration.expression.types.fun_join=&ProbeSymbolFunJoin;
+  services=&state->symbols; services->context=state; services->declarations=&state->declaration.declarations;
+  services->class_new=&ProbeSymbolClass; services->fun_new=&ProbeSymbolFun;
+  services->single_find=&ProbeSymbolFind; services->source=&ProbeSymbolSource;
+  services->option=&ProbeSymbolOption; services->warning=&ProbeSymbolWarning;
+  services->class_members_delete=&ProbeExpressionUnexpected; services->members_delete=&ProbeExpressionUnexpected;
+  cc->aotc=ProbeDeclarationAllocate(state,sizeof(CAOTCtrl),TRUE,FALSE);
+  return state;
+}
+U0 ProbeSymbols(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CProbeSymbols *state;
   CI386Task *task=I386TaskSelf;
   CCmpCtrl *cc;
   CHashClass *first,*second;
   CHashFun *fun;
-  U32 *binary_ops;
   U8 *source,*name,*fun_name;
   I64 kind,size,attr,accepted;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
@@ -173,23 +196,7 @@ U0 ProbeSymbols(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(kind) size|=CCF_DONT_FREE_BUF;
     cc=probe->files->control_new(source,size,"Probe/Symbols.HC");
     if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
-    state=probe->compiler->parser_alloc(heap,cc,sizeof(CProbeSymbols),TRUE);
-    binary_ops=probe->compiler->parser_alloc(heap,cc,TK_TKS_NUM*sizeof(U32),TRUE);
-    if(!state || !binary_ops) KernelStop;
-    ProbeDeclarationSetup(&state->declaration,probe,heap,cc,binary_ops);
-    state->table=ProbeDeclarationAllocate(state,sizeof(CHashTable),TRUE,FALSE);
-    state->table->body=ProbeDeclarationAllocate(state,16*sizeof(CHash *),TRUE,FALSE);
-    state->table->mask=15; state->table->next=cc->htc.hash_table_lst;
-    cc->htc.glbl_hash_table=cc->htc.local_hash_table=cc->htc.hash_table_lst=state->table;
-    state->declaration.expression.services.hash_add=&ProbeSymbolAdd;
-    state->declaration.expression.types.class_join=&ProbeSymbolJoin;
-    state->declaration.expression.types.fun_join=&ProbeSymbolFunJoin;
-    services=&state->symbols; services->context=state; services->declarations=&state->declaration.declarations;
-    services->class_new=&ProbeSymbolClass; services->fun_new=&ProbeSymbolFun;
-    services->single_find=&ProbeSymbolFind; services->source=&ProbeSymbolSource;
-    services->option=&ProbeSymbolOption; services->warning=&ProbeSymbolWarning;
-    services->class_members_delete=&ProbeExpressionUnexpected; services->members_delete=&ProbeExpressionUnexpected;
-    cc->aotc=ProbeDeclarationAllocate(state,sizeof(CAOTCtrl),TRUE,FALSE);
+    state=ProbeSymbolSetup(probe,heap,cc);
     accepted=0;
     try {
       ProbeExpressionLex(state,cc);
