@@ -595,6 +595,44 @@ document-release rejection, two task directories and IF preservation. Public
 heap/error policy, task/control lists and automatic teardown remain open; see
 `docs/i386-task-compiler.md`.
 
+#### Next bounded work package: active compilation and task exit
+
+Connect compiler-control lifetime to task completion before adding the resident
+parser. Preserve the distinction in the existing public compiler: construction
+returns a detached control; compilation explicitly enters the task's active
+control queue. A detached control may outlive its task while retaining its owner
+pin. Automatic cleanup applies to active controls, not every allocated control.
+
+1. Add a per-task active-control queue and a compiler cleanup hook to the native
+   task record. Keep queue manipulation in the compiler service and scheduling
+   in the kernel. These bootstrap fields must map to public `CTask` compiler-list
+   semantics when the public records are integrated.
+2. Provide enter/leave operations and permit deletion to detach an active control.
+   Reject new compilation while its owner is finishing. Keep the existing owner
+   pin until input, saved lexer state and document callbacks have been released;
+   leaving the queue alone must not release that pin.
+3. Drain active controls from the tail during task completion, after the user
+   cleanup callback and before detaching the task from the runnable list. Preserve
+   caller interrupt state around callbacks. Preflight required document-release
+   callbacks before changing the queue. If cleanup cannot proceed, record failure
+   and allow the task to finish, retaining its resources for explicit recovery.
+   Reaping must reject outstanding controls or pins and succeed after recovery.
+4. Version the retained compiler interface when adding these operations and
+   validate its consumers. Connect the standalone include probe to enter/leave;
+   keep constructor-only tests detached. Place compiler cleanup code in the
+   retained extended-memory module and measure kernel growth against the existing
+   fixed bootstrap reservation.
+
+Acceptance: nested active controls are reclaimed on normal task exit in reverse
+entry order; explicit leave preserves a detached control across owner exit;
+missing document cleanup preserves ownership and permits a successful retry;
+callbacks observe a live owner; and final reap restores heap accounting. Exercise
+these paths with cooperative tasks and both initial interrupt states. Run the
+x86-64 rebuild regression, native control/task/exception tests and the standalone
+image check. Exception unwinding through parser and generated-code frames remains
+a separate integration requirement; successful task-exit cleanup does not satisfy
+the recoverable HolyC shell milestone.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,
