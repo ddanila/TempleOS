@@ -3398,3 +3398,43 @@ See [i386-constant-optimizer.md](i386-constant-optimizer.md) for the valid-IR an
 failure contracts. The tests exercise a subset of pass behavior. Native parsing,
 later passes, backend/JIT publication, source execution, public task/allocation
 interfaces, DolDoc, self-hosting and strict 386SX/DX acceptance remain unfinished.
+
+## Native owned code emission
+
+`EmitCore.HC` now supplies the same byte/dword/string writer to the cross-host
+backend and native callers. A reserve callback supplies buffer growth; the x64
+backend initializes its host callback explicitly. Native `out_new`/`out_del`
+services allocate a compiler-control-owned builder whose current byte storage is
+reclaimed on explicit deletion or full control unwind. IR discard and saved-view
+release do not invalidate output. Growth publishes capacity only after successful
+allocation/copy, preserving output across `OutMem` and supporting retry.
+
+Boot and task probes each generate, byte-check and execute 64 native buffers.
+Each buffer crosses 64/128/256-byte boundaries and returns a distinct 64-bit value.
+They check foreign-control deletion rejection, survival across IR/view cleanup,
+failed growth and constructor allocation on a fragmented exhausted heap, successful
+retry after reclamation, overflow rejection, and native exception unwind with live
+output. Exact heap counts, references, active controls and IF return to baseline.
+
+Successful verification:
+
+- `python3 tools/test-rebuild.py`: both x64 rebuild/reboot generations.
+- `python3 tools/test-i386.py --functions`: all 233 cases.
+- `python3 tools/test-i386.py`: all nine expression cases through the other emitter entry.
+- `python3 tools/test-i386.py --task-symbols`: control lifetime and existing branch cases.
+- `python3 tools/build-i386-kernel.py --test`: both emitter phases, boot/input/VGA,
+  recovery, all module rejection checks and executable-range instruction audits.
+- `git diff --check` and Python build-tool syntax compilation.
+
+CompilerRuntime ABI 21 is 124 bytes; its image/span are 455496/455512 bytes.
+FileRuntime ABI 12 keeps its 32-byte record with a 124992/125008-byte image/span.
+The ABI-5/56-byte probe uses 140488/140504 temporary bytes, reclaimed after the task
+phase. Compiler/probe imports remain 21/17. The kernel is 389424 bytes, or 391584
+with loaded stage overhead, leaving 1632 bytes in the unchanged 393216-byte
+bootstrap reservation.
+
+See [i386-code-emitter.md](i386-code-emitter.md) for borrowing, failure and growth
+latency constraints. The probe executes emitted instructions, not parsed source.
+Persistent code publication and references, the complete native backend/parser,
+interactive source execution/DolDoc, self-hosting and strict 386SX/DX acceptance
+remain unfinished.

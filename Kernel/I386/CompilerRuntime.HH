@@ -5,9 +5,10 @@
 #include "/Compiler/I386/Control.HH"
 #include "/Compiler/I386/OptBranch.HH"
 #include "/Compiler/I386/OptPass012.HH"
+#include "/Compiler/I386/NativeEmit.HH"
 #include "/Kernel/I386/TaskSymbols.HH"
-#define I386_COMPILER_SERVICES_VERSION 20
-//ABI 20: caller-owned interface, borrowing code from the retained module image.
+#define I386_COMPILER_SERVICES_VERSION 21
+//ABI 21: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;
@@ -39,5 +40,7 @@ class CI386CompilerServices {
   CIntermediateCode *(*code_branch)(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node);
   CIntermediateCode *(*code_optimize)(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,
     U0 (*diagnostic)(CCmpCtrl *cc,CIntermediateCode *node,I64 reason));
+  CI386Out *(*out_new)(CI386Heap *heap,CCmpCtrl *cc);
+  Bool (*out_del)(CI386Heap *heap,CCmpCtrl *cc,CI386Out *out);
 };
 #endif

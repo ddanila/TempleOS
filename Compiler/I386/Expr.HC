@@ -14,7 +14,7 @@ public U8 *I386Expr(U8 *source,I64 *size)
   CI386Out out;
   I64 depth=0;
   U8 *result=NULL;
-  MemSet(&out,0,sizeof(out));
+  I386OutInit(&out);
   *size=0;
   QueIns(cc,Fs->last_cc);
   COCInit(cc);

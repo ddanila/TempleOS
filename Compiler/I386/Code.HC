@@ -1,3 +1,4 @@
+#include "/Compiler/I386/Emit.HH"
 //Included by Control.HC after its private control and release-state declarations.
 class CI386OwnedIC { CIntermediateCode node; CI386CodeAllocation lifetime; };
 class CI386OwnedMisc { CCodeMisc node; CI386CodeAllocation lifetime; };
@@ -189,6 +190,7 @@ U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
       cm=record->allocation; COCPayloadRelease(cm,&owner);
       (*owner.release)(owner.context,cm->str);
     }
+    if(record->kind==5) I386CmpReleaseAllocation(state,record->allocation(CI386Out *)->data);
     I386CodeFree(state,record);
     if(!state->ok) return;
   }

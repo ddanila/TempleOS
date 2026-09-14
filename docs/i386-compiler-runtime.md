@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 20 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 21 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
-root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement, shared branch optimization and pass 0/1/2 constant folding/type analysis.
-The structure is 116 bytes on i386. The entry receives caller-owned interface
+root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement, shared branch optimization and pass 0/1/2 constant folding/type analysis and owned output buffers.
+The structure is 124 bytes on i386. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
@@ -211,3 +211,11 @@ with native stack ownership and diagnostics. FileRuntime version 11 validates th
 new dependency. Opcode metadata initializes before service publication; numerical
 helpers and imports remain within the existing retained provider contract. See
 [i386-constant-optimizer.md](i386-constant-optimizer.md).
+
+## Native owned output buffers (version 21)
+
+The 124-byte record appends `out_new` and `out_del`. The output carries its native
+reserve callback; byte emission is shared with the cross-host backend. Control
+unwind reclaims the builder and its current byte storage. FileRuntime version 12
+validates the new compiler contract. See
+[i386-code-emitter.md](i386-code-emitter.md).

@@ -123,3 +123,8 @@ The version-5 record also borrows the internal-type array. The constant-folding
 probe executes the retained shared pass in boot and task phases, including numeric
 transforms, warnings and compiler/OutMem recovery. See
 [i386-constant-optimizer.md](i386-constant-optimizer.md).
+
+The owned-emitter probe now generates and executes code through the shared backend
+byte writer in boot and task phases. It checks growth boundaries, preserved output
+on allocation failure, retry, and full compiler unwind with live output. See
+[i386-code-emitter.md](i386-code-emitter.md).

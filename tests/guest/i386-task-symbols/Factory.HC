@@ -1,3 +1,5 @@
+CI386Out *FactoryOutNew(CI386Heap *heap,CCmpCtrl *cc) { return 0; }
+Bool FactoryOutDel(CI386Heap *heap,CCmpCtrl *cc,CI386Out *out) { return FALSE; }
 CIntermediateCode *FactoryOptimize(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,
   U0 (*diagnostic)(CCmpCtrl *cc,CIntermediateCode *node,I64 reason)) { return 0; }
 I64 factory_documents;
@@ -23,6 +25,7 @@ I64 FactoryRootTest()
   control_services.code_save=&I386COCSave; control_services.code_push=&I386COCPush;
   control_services.code_pop=&I386COCPopNoFree; control_services.code_free=&I386COCHeaderFree;
   control_services.code_append=&I386COCAppend; control_services.code_retire=&I386ICRetire; control_services.code_branch=&I386OptBranch; control_services.code_optimize=&FactoryOptimize;
+  control_services.out_new=&FactoryOutNew; control_services.out_del=&FactoryOutDel;
   control_services.code_add=&I386ICAdd; control_services.code_misc=&I386COCMiscNew; control_services.code_discard=&I386COCDiscard;
   control_services.control_drain=&I386CmpCtrlDrain; control_services.control_unwind=&I386CmpCtrlUnwind;
   control_services.control_new=&I386CmpCtrlNew; control_services.control_del=&I386CmpCtrlDel;

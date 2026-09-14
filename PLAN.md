@@ -739,6 +739,19 @@ unchanged 393216-byte reservation. See `docs/i386-constant-optimizer.md`.
 Complete native parsing, later optimization passes, backend/JIT publication and
 source execution remain integration work; this is not yet a native compiler loop.
 
+The target backend's byte writer now shares an allocator-independent core with
+native owned code buffers. The retained compiler's `out_new`/`out_del` services
+register output lifetime with the control; full unwind reclaims both builder and
+byte storage independently of IR views. Failed growth preserves existing output
+and can be retried. Boot/task probes generate, byte-check and execute 128 buffers,
+exercise growth/construction OutMem, retry, overflow rejection and unwind. Both
+x64 rebuild generations, 233 function cases, nine expression cases, native control
+tests and the complete standalone suite pass. CompilerRuntime ABI 21 is 124 bytes;
+FileRuntime ABI 12 validates it. The compiler image is 455496 bytes, and kernel plus
+stage occupy 391584 of 393216 bytes. See `docs/i386-code-emitter.md`. These remain
+temporary output buffers; persistent JIT publication and complete backend/parser
+execution still require integration.
+
 #### Continuing integration sequence
 
 The standalone kernel can read source and execute a cross-compiled startup module,

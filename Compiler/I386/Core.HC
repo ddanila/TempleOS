@@ -310,7 +310,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   if (_dbg) *_dbg=NULL;
   if (_type) *_type=RT_I64;
   if (_size) *_size=0;
-  MemSet(&out,0,sizeof(out));
+  I386OutInit(&out);
   if (cc->flags&CCF_TARGET_HOST_CONST) {
     if(cc->flags&CCF_ASM_EXPRESSIONS) return I386AsmExpression(cc,_size,_type);
     return I386HostConstant(cc,_size,_type);
