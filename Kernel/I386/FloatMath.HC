@@ -22,3 +22,4 @@ F64 Ceil(F64 value)
 }
 
 #include "/Kernel/I386/Pow10.HC"
+#include "/Kernel/I386/FloatLog.HC"

@@ -216,7 +216,7 @@ so large finite values and infinities remain representable. The 1,024-input
 corpus covers signed zeros, subnormals, NaNs, half-integers and their neighbors,
 and the 2^52 integral boundary. All four operations match actual x64 output and
 an independent Python oracle. Side-effecting arguments and nested public calls
-also pass. Formatting still needs logarithms/powers, exception handling and
+also pass. Formatting still needs exception handling and
 other production dependencies before StrPrintJoin can be integrated.
 
 
@@ -238,5 +238,34 @@ exponents, with a maximum distance of 683 ULPs. The fixture pins the observed
 x64 output digest and writes every difference to `pow10-compatibility.json`.
 These differences remain explicit; native powers must match the exact oracle.
 The combined unary/power corpus now checks 13,929 native results, plus the
-existing additional call/edge cases. General Pow, Pow10 and logarithms remain
+existing additional call/edge cases. General Pow, Pow10 and Log2 remain
 unfinished, as does production formatting integration.
+
+
+`Ln` and `Log10` now use `Kernel/I386/FloatLog.HC`, included by FloatMath.
+This is a HolyC adaptation of fdlibm's
+[e_log.c](https://www.netlib.org/fdlibm/e_log.c) and
+[e_log10.c](https://www.netlib.org/fdlibm/e_log10.c), with the Sun permission
+notice retained. It keeps the range reduction, polynomial coefficients and
+compensated reconstruction. Coefficients use explicit binary64 bit patterns;
+word extraction and insertion use U64 operations. The compiler now accepts an
+I64-immediate opcode carrying F64 type after an explicit bitwise constant cast.
+All arithmetic executes through the existing software F64 backend.
+
+Both logarithms quiet NaNs while preserving sign/payload, return -infinity for
+both zeros, preserve +infinity, and return negative indefinite NaN for negative
+nonzero values. They do not report floating-point flags or raise domain traps.
+
+Run `python3 tools/test-i386.py --soft-f64-log`. Its 1,024-input corpus covers
+exponent boundaries, subnormals, neighborhoods of one and sqrt(2), exceptional
+values and deterministic random positive patterns. An independent Decimal
+oracle computes each finite result at 160 and 220 decimal digits and requires
+both to round to the same binary64 result. The 2,048 native results must be
+within one ULP for Ln and two ULPs for Log10, with exact exceptional-result bits;
+actual x64 results are independently checked against the same limits. These are
+verified corpus limits, not a proof of correct rounding for all inputs or
+bit-for-bit x64 equivalence. Nested calls, integer conversion and argument side
+effects also pass. All 617 `Floor(Log10(Pow10I64(i)))` cases return `i`, checking
+the exponent extraction used by formatting. The runner sets CR0.EM and audits
+instructions; this remains QEMU 486 development evidence rather than strict
+physical 386 validation.

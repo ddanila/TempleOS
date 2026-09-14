@@ -372,7 +372,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             case IC_BR_ZERO: case IC_BR_NOT_ZERO:
             case IC_SQR: case IC_ABS: case IC_SQRT:
             case IC_TO_F64: case IC_TO_I64: case IC_TO_BOOL:
-            case IC_NOP1: case IC_NOP2: case IC_IMM_F64: case IC_PUSH_CMP:
+            //An explicit bitwise cast can retain an I64 immediate opcode with F64 type.
+            case IC_NOP1: case IC_NOP2: case IC_IMM_I64: case IC_IMM_F64: case IC_PUSH_CMP:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
             case IC_CALL: case IC_CALL_EXTERN: case IC_CALL_IMPORT:
             case IC_CALL_INDIRECT: case IC_LEAVE:
