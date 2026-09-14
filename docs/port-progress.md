@@ -1730,3 +1730,27 @@ The combined image has grown beyond 128 KiB and now uses the existing 160 KiB
 loader capacity below its 0x40000 heap arena. Full boot/desktop integration,
 public task/time interfaces, native compiler execution and strict 386 verification
 remain unfinished. See `i386-sleep.md`.
+
+
+## First standalone native kernel image
+
+`Kernel/I386/Kernel.HC` now boots independently of the function-test runner.
+The new cross-builder compiles/links six modules inside TempleOS, audits native
+code and packages a BIOS-CHS hard-disk image using the shared loader. Native entry
+consumes the memory handoff, enables A20, selects a heap, initializes task/CPU/GDT,
+exception and interrupt services, timer/sleep queues, and presents planar VGA.
+A heap-owned task performs periodic sleeps while root idles. No runtime function
+pointers are provided by the boot stage.
+
+The image boots on the 8 MiB QEMU/486 profile with CR0.EM set. The selected arena
+is 0x110000+0x6D0000, the linked kernel is 125672 bytes, and timer wakeups occur at
+ticks 25 and 50. All 640×480 pixels match the sixteen-color output. Source/tool,
+bootstrap, module and image hashes and boot evidence are recorded by the builder.
+The combined task/exception/sleep regression and both x86-64 rebuild/reboot
+generations also pass.
+
+This is a standalone kernel foundation, not completion of the OS: shell/JIT,
+DolDoc, RedSea startup, public task records, input/audio integration, native
+self-hosting and strict 386 validation remain unfinished. The disk is not yet
+an installed RedSea distribution. See `i386-kernel.md` for build/run commands
+and the remaining boot assumptions.

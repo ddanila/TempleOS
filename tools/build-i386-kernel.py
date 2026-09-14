@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+"""Cross-build a standalone native kernel foundation and optionally boot-check it."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import runpy
+import struct
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
+
+
+def run(*args):
+    subprocess.run(args, cwd=ROOT, check=True)
+
+
+def audit(exports, out):
+    disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
+    allowed = set(('push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
+                   'movsx movzx cdq jmp cmp jz jnz setz setnz setl setnl setg setng setc setnc '
+                   'seta setna test shl shr in out sar shld shrd rcl div call dec jns jc jnc ja jna '
+                   'cli sti hlt cld pusha popa iret lgdt sgdt lidt sidt').split())
+    image = (exports/'Kernel32.BIN').read_bytes()
+    if len(image)<8 or image[0]!=0xE9 or any(image[5:8]):
+        raise ValueError('Invalid native entry trampoline')
+    base = 8
+    listing = []
+    for index, name in enumerate(MODULES):
+        module = (exports/f'{name}.t32m').read_bytes()
+        magic, version, cpu, pointer, abi, total, size, count, records, strings = struct.unpack_from('<IHBB6I', module)
+        if (magic,version,cpu,pointer,abi,total,records,strings) != (
+                0x4D323354,2,3,4,1,len(module),32+size,32+size+16*count):
+            raise ValueError(f'Invalid {name} module header')
+        code = image[base:base+size]
+        if len(code)!=size:
+            raise ValueError('Truncated kernel')
+        if index==0:
+            starts, data = [], []
+            for i in range(count):
+                kind, offset, name_offset, length = struct.unpack_from('<4I',module,records+16*i)
+                if kind==1:
+                    starts.append(offset)
+                elif kind==4:
+                    data.append((offset,name_offset))
+            starts.sort()
+            if not starts or starts[-1]>=size or len(set(starts))!=len(starts):
+                raise ValueError('Invalid kernel function boundaries')
+            if 5+struct.unpack_from('<i',image,1)[0] not in [base+x for x in starts]:
+                raise ValueError('Entry is not a kernel function')
+            coverage = bytearray(size)
+            for begin,length in data:
+                if length<=0 or begin+length>size or any(coverage[begin:begin+length]):
+                    raise ValueError('Invalid kernel data range')
+                coverage[begin:begin+length]=b'D'*length
+            boundaries=sorted(set(starts+[begin for begin,_ in data]+[size]))
+            spans=[(start,next(end for end in boundaries if end>start)) for start in starts]
+            for start,end in spans:
+                if any(coverage[start:end]):
+                    raise ValueError('Kernel code/data overlap')
+                coverage[start:end]=b'C'*(end-start)
+            gap=0
+            for i,marker in enumerate(coverage):
+                if marker: gap=0
+                else:
+                    gap+=1
+                    if code[i] or gap>7: raise ValueError('Unclassified kernel bytes')
+        else:
+            spans=[(0,size)]
+        terminal='iret' if index>=4 else 'ret'
+        for start,end in spans:
+            lines=disassemble(code[start:end]).splitlines()
+            returns=[i for i,line in enumerate(lines) if len(line.split())>=3 and line.split()[2]==terminal]
+            if not returns: raise ValueError(f'Missing {name} {terminal}')
+            last=returns[-1]
+            parts=lines[last].split()
+            used=int(parts[0],16)+len(parts[1])//2
+            if end-start-used>7 or any(code[start+used:end]):
+                raise ValueError(f'Invalid {name} code tail')
+            for line in lines[:last+1]:
+                if line.split()[2] not in allowed: raise ValueError(f'Unexpected instruction: {line}')
+            listing.append(f'; {name} offset {start:X}\n'+'\n'.join(lines[:last+1]))
+        base+=size
+    if base!=len(image): raise ValueError('Unclassified trailing kernel bytes')
+    (out/'kernel-assembly.txt').write_text('\n'.join(listing)+'\n')
+    return image
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify VGA/startup ticks')
+    args=parser.parse_args()
+    out=ROOT/'build/i386-kernel'
+    out.mkdir(parents=True,exist_ok=True)
+    (out/'result.json').unlink(missing_ok=True)
+    bootstrap=json.loads((ROOT/'build/rebuild-test/result.json').read_text())
+    for name,digest in bootstrap['source_sha256'].items():
+        if name.startswith(('Kernel/','Compiler/')) and hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=digest:
+            raise ValueError(f'Rerun tools/test-rebuild.py: changed {name}')
+    for name,path in [('Compiler.BIN','Compiler/Compiler.BIN'),('Kernel.BIN','0000Boot/0000Kernel.BIN.C')]:
+        if hashlib.sha256((ROOT/'build/rebuild-test/overlay'/path).read_bytes()).hexdigest()!=bootstrap['generations'][-1][name]:
+            raise ValueError('Stale bootstrap binary')
+    iso=out/'compiler.iso'
+    run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
+        '--overlay','tools/guest/i386-kernel','--output',str(iso))
+    exports=out/'exports'
+    run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90')
+    image=audit(exports,out)
+    disk=out/'kernel.img'
+    run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
+        'tools/i386-kernel-stage.asm','-o',str(disk))
+    if disk.stat().st_size>(320+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 160 KiB load area')
+    with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
+    result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+            'source_sha256':bootstrap['source_sha256'],
+            'bootstrap':bootstrap['generations'][-1],
+            'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
+            'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
+                'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
+                'tools/guest/i386-kernel/Once.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py')},
+            'tools':{'python':sys.version,
+                     'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
+                     'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
+            'kernel_bytes':len(image),
+            'kernel_sha256':hashlib.sha256(image).hexdigest(),
+            'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
+            'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in MODULES},
+            'scope':'Native kernel foundation; shell/JIT, filesystem startup and self-hosting unfinished',
+            'boot_test':None}
+    if args.test:
+        guest=out/'boot'
+        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','60')
+        log=(guest/'debug.log').read_text()
+        if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
+            raise ValueError('Missing native kernel startup/timer evidence')
+        ticks=[int(line.split()[1],16) for line in log.splitlines() if line.startswith('TICK ')]
+        if ticks[0]<25 or ticks[1]-ticks[0]<25:
+            raise ValueError('Kernel task woke before its requested tick delay')
+        arena=[line.split() for line in log.splitlines() if line.startswith('ARENA ')]
+        if len(arena)!=1: raise ValueError('Missing selected memory arena')
+        begin,length=(int(value,16) for value in arena[0][1:])
+        if begin<0x110000 or begin+length>8*1024*1024:
+            raise ValueError('Unexpected 8 MiB memory arena')
+        from PIL import Image
+        screen=Image.open(guest/'screen.ppm').convert('RGB')
+        if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')
+        palette=[]
+        for c in range(16):
+            rgb=[42 if c&bit else 0 for bit in (4,2,1)]
+            if c&8: rgb=[x+21 for x in rgb]
+            if c==6: rgb[1]=21
+            palette.append(tuple((x<<2)|((x&1)*3) for x in rgb))
+        expected_row=b''.join(bytes(color)*40 for color in palette)
+        if screen.tobytes()!=expected_row*480:
+            raise ValueError('VGA color-bar mismatch')
+        screen.save(guest/'screen.png')
+        result['boot_test']={'cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
+                             'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
+    result['disk_sha256']=hashlib.sha256(disk.read_bytes()).hexdigest()
+    (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+    print(f'Built {disk} ({len(image)} native kernel bytes); boot test: {bool(args.test)}')
+
+
+if __name__=='__main__':
+    main()

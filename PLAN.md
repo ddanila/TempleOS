@@ -639,6 +639,11 @@ wakes them from timer IRQs without switching there. Catch-time sleeps pass
 spurious-wake, IF-preservation, full-width countdown and reclamation checks.
 Public time conversion/cancellation and full boot integration remain pending;
 see `docs/i386-sleep.md`.
+A first standalone native kernel image now boots through the shared BIOS-CHS
+loader, consumes the memory handoff, enables A20 and initializes the linked
+memory/task/exception/interrupt/timer runtime. The 8 MiB QEMU boot check verifies
+VGA output and delayed task wakeups. This foundation still lacks shell/JIT,
+DolDoc, RedSea startup and native self-hosting; see `docs/i386-kernel.md`.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

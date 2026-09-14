@@ -59,6 +59,19 @@ See [the architecture plan](PLAN.md), [working i386 ABI](docs/i386-abi.md), and
 [implementation progress](docs/port-progress.md) and
 [bootstrap module format](docs/i386-modules.md).
 
+Build and boot-check the standalone native kernel foundation with:
+
+```sh
+python3 tools/test-rebuild.py
+python3 tools/build-i386-kernel.py --test
+qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none \
+  -drive file=build/i386-kernel/kernel.img,format=raw,if=ide
+```
+
+This image boots the native memory/task/interrupt runtime, displays VGA color
+bars and runs a timer-driven task. It does not yet provide the HolyC shell/JIT,
+DolDoc or filesystem startup. See [kernel image details](docs/i386-kernel.md).
+
 Run isolated bootstrap/backend checks with:
 
 ```sh
