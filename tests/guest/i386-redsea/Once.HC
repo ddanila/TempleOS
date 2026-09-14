@@ -1,5 +1,9 @@
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
+U8 *NameDefault(U8 *name,U8 *extension) { return ExtDft(name,extension); }
+U8 *NameToggle(U8 *name) { return ToggleZorNotZ(name); }
+U0 NameFree(U8 *name) { Free(name); }
+#include "T:/Names.HC"
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
@@ -7,6 +11,8 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native RedSea\n");
+  if(NameRulesTest) { Report("FAIL original filename rules\n"); return; }
+  Report("PASS original filename rules\n");
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);

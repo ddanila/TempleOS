@@ -2583,3 +2583,27 @@ Public include path/default-extension rules, .Z fallback, parent-directory searc
 resident-file behavior, decompression and directive dispatch remain unconnected.
 Parser/JIT, complete public APIs, documents, strict 386 hardware qualification and
 native self-hosting remain open. See `docs/i386-lex-include.md`.
+
+## Shared filename extension and compression-suffix rules
+
+The original whole-path FileExtDot scan, uppercase .Z/.C recognition and
+extension/toggle writers now live in shared filename code. Existing x64 public
+functions use the shared behavior; owned native wrappers use an explicit heap,
+exact output sizes and interrupt-preserving allocation. This preserves legacy
+cases such as directory dots suppressing a default extension and Test.Z toggling
+to Test.Z.Z because compressed-suffix recognition requires two dots.
+
+Before extraction, 21 filename cases and five contiguous-suffix checks passed
+against the original x64 functions at 51be92f. The same cases pass against rebuilt
+x64 and native functions. Native tests cover null inputs, 32 exhausted heap arenas,
+unchanged source storage, allocation sizes, cleanup and interrupt-state retention.
+The RedSea fixture also retains its existing path, raw-read, partial-I/O and
+unchanged-disk regressions, within the existing 128 KiB test loader reservation.
+
+Both x64 rebuild/reboot generations and the full native boot, module rejection,
+VGA/keyboard/timer checks pass. Native filename helpers remain outside the
+bootstrap, whose 383496-byte size and 9720-byte headroom are unchanged. Absolute
+paths, task directory/drive rules, actual .Z fallback and parent search, resident
+file records, decompression and include dispatch remain required. The complete
+parser/JIT, document workflow, strict 386 profiles and native self-hosting remain
+open. See `docs/i386-file-names.md`.

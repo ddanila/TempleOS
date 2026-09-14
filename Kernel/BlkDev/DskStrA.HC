@@ -1,11 +1,4 @@
-U8 *FileExtDot(U8 *src)
-{//Find dot char in name.
-  I64 ch;
-  while (ch=*src++)
-    if (ch=='.' && *src!='/' && *src!='.')
-      return src-1;
-  return NULL;
-}
+#include "/Kernel/BlkDev/FileNames.HC"
 
 U8 *FileExtRem(U8 *src,U8 *dst=NULL)
 {//Remove filename extension from str.
@@ -17,24 +10,6 @@ U8 *FileExtRem(U8 *src,U8 *dst=NULL)
   } else if (dst)
     *dst=0;
   return dst;
-}
-
-Bool IsDotZ(U8 *filename)
-{//Does name end in .Z?
-  I64 i=StrLen(filename);
-  if (StrOcc(filename,'.')>1 && filename[i-1]=='Z' && filename[i-2]=='.')
-    return TRUE;
-  else
-    return FALSE;
-}
-
-Bool IsDotC(U8 *filename)
-{//Does name end in .C?
-  I64 i=StrLen(filename);
-  if (StrOcc(filename,'.')>1 && filename[i-1]=='C' && filename[i-2]=='.')
-    return TRUE;
-  else
-    return FALSE;
 }
 
 Bool FilesFindMatch(U8 *_test_name,U8 *files_find_mask,I64 fuf_flags=0)
@@ -212,10 +187,7 @@ U8 *ExtChg(U8 *filename,U8 *extension)
 U8 *ExtDft(U8 *filename,U8 *extension)
 {//Give extension if has none.
   U8 *res=MAlloc(StrLen(filename)+1+StrLen(extension)+1);
-  StrCpy(res,filename);
-  if (!FileExtDot(filename))
-    CatPrint(res,".%s",extension);
-  return res;
+  return FileNameWriteDefault(res,filename,extension);
 }
 
 CDirEntry *Cd2DirEntry(CDirEntry *tmpde,U8 *abs_name)
@@ -264,13 +236,9 @@ Bool FileNameChk(U8 *filename)
 
 U8 *ToggleZorNotZ(U8 *name)
 {//MAlloc name with Z if not Z or vice versa.
-  U8 *res;
-  if (IsDotZ(name)) {
-    res=StrNew(name);
-    res[StrLen(name)-2]=0;
-  } else
-    res=MStrPrint("%s.Z",name);
-  return res;
+  I64 size=StrLen(name)+3;
+  if(IsDotZ(name)) size-=2;
+  return FileNameWriteToggle(MAlloc(size),name);
 }
 
 U8 *FileNameTmpTxt()

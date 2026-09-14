@@ -506,7 +506,12 @@ programming environment through these concrete steps:
    duplicating a disk-loaded source allocation. Kernel source traversal transfers
    its file buffer into a child, crosses EOF and verifies reclamation and parent
    resumption. Failure leaves ownership with the caller. Include dispatch, public
-   path/extension rules and decompression still need integration. The bootstrap
+   path/extension rules and decompression still need integration. The original
+   whole-path extension-dot scan, default-extension writer and uppercase .Z/.C
+   suffix rules are now shared with owned native filename helpers. Original x64
+   cases, native allocation failures and storage regressions pass; these helpers
+   remain outside the bootstrap until file/include services are connected. See
+   `docs/i386-file-names.md`. The bootstrap
    with transferred source input is 383496 bytes, leaving 9720 bytes in its fixed
    reservation; place further substantial services in extended-memory modules.
    Place remaining compiler modules here, defining

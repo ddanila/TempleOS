@@ -3,6 +3,7 @@
 #define FALSE 0
 #include "/Kernel/I386/FileRead.HH"
 public extern I64 TestFiles(CI386RedSea *v);
+public extern I64 TestNames();
 I64 Main(I64 a,I64 b)
 {
   CI386Ata disk;
@@ -13,6 +14,7 @@ I64 Main(I64 a,I64 b)
   if (sizeof(CI386RedSeaEntry)!=64 || !I386AtaIdentify(&disk,0,0) ||
       !I386RedSeaMount(&v,&disk,2048) || v.first!=2050 || v.root!=2050 || v.sectors!=128)
     return 1;
+  i=TestNames; if(i) return i;
   i=TestFiles(&v); if(i) return i;
   p=&bad;
   for (i=0;i<sizeof(CI386RedSea);i++) p[i]=0xA5;
@@ -69,3 +71,7 @@ I64 Main(I64 a,I64 b)
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/FileRead.HC"
 #include "Files.HC"
+
+#include "/Kernel/I386/Cpu.HC"
+#include "/Kernel/I386/FileNames.HC"
+#include "T:/NativeNames.HC"
