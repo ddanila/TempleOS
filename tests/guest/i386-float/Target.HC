@@ -4,7 +4,8 @@
 #include "/Kernel/I386/SoftF64.HH"
 #include "/Kernel/I386/Float.HH"
 F64 cell;
-I64 picks;
+I64 picks,mixed_cell;
+extern I64 *PickWhole();
 extern F64 *Pick();
 extern F64 Add(F64 a,F64 b);
 extern F64 Sub(F64 a,F64 b);
@@ -21,7 +22,9 @@ I64 Main(I64 unused_a,I64 unused_b)
   F64 a=1.5,b=2.0,c,old,*p=&cell;
   F64 (*fn)(F64 x,F64 y);
   U64 bits;
-  I64 whole;
+  I64 whole,old_whole;
+  I8 narrow;
+  U8 byte_value;
   c=Add(a,b); if (c(U64)!=0x400C000000000000) return 1;
   c=Sub(a,b); if (c(U64)!=0xBFE0000000000000) return 2;
   c=Mul(a,b); if (c(U64)!=0x4008000000000000) return 3;
@@ -80,6 +83,21 @@ I64 Main(I64 unused_a,I64 unused_b)
   c=(a<whole && whole>a)+0.5; if (c(U64)!=a(U64)) return 47;
   c=(a>whole && whole>a)+0.5; if (c(U64)!=0x3FE0000000000000) return 48;
   c=(a<whole || a>whole)+0.5; if (c(U64)!=a(U64)) return 49;
+  c=2.5; whole=7; whole+=c; if (whole!=9) return 50;
+  whole-=c; if (whole!=6) return 51;
+  whole*=c; if (whole!=15) return 52;
+  whole/=c; if (whole!=6) return 53;
+  old_whole=(whole+=c); if (whole!=8 || old_whole!=8) return 54;
+  whole=-7; whole+=c; if (whole!=-4) return 55;
+  narrow=-127; narrow-=c; if (narrow!=127) return 56;
+  byte_value=250; c=10.5; byte_value+=c; if (byte_value!=4) return 57;
+  bits=0xFFFFFFFFFFFFFFFF; c=2.5; bits+=c; if (bits!=1) return 58;
+  picks=0; mixed_cell=7; old_whole=(*PickWhole())+=c;
+  if (picks!=1 || mixed_cell!=9 || old_whole!=9) return 59;
+  old_whole=(*PickWhole())/=c;
+  if (picks!=2 || mixed_cell!=3 || old_whole!=3) return 60;
+  bits=0x7FF8000000001234; c=bits(F64); whole=7; whole+=c;
+  if (whole!=0x8000000000000000) return 61;
   return 0;
 }
 F64 Add(F64 a,F64 b) { return a+b; }
@@ -96,3 +114,4 @@ F64 Literal() { return 1.5; }
 F64 *Pick() { picks++; return &cell; }
 F64 ReturnFloat(I64 value) { return value; }
 I64 ReturnInt(F64 value) { return value; }
+I64 *PickWhole() { picks++; return &mixed_cell; }

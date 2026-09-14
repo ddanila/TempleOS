@@ -1132,3 +1132,24 @@ CR0.EM execution, both x64 rebuilds and image verification (764 files, 62
 directories) pass. Integer-destination compound updates with F64 operands, raw
 F64 conditions, chained comparisons, remaining math/formatting and complete
 native compiler/OS integration remain unfinished.
+
+
+## Integer-destination compound updates with F64 operands
+
+Native `+=`, `-=`, `*=` and `/=` now convert the loaded integer to F64, perform
+software arithmetic, truncate to I64 and normalize to the destination width.
+The destination is evaluated once and retained across helper calls; the expression
+returns the stored result. U64 preserves x64 HolyC's signed interpretation.
+
+All 61 positive F64 checks and eight rejection checks pass with CR0.EM set and
+generated-instruction auditing. The added cases cover negative truncation, narrow
+overflow, U64 bits, counted pointer destinations and NaN-to-integer conversion.
+Eight x64 checks agree for wide integers and addressed narrow storage. Register-held
+x64 narrow locals retain out-of-range values in the observed overflow cases; the
+native backend normalizes stored locals. This difference is recorded explicitly
+in `docs/i386-f64-backend.md`.
+
+The 155-case integer/call regression, both x64 rebuild generations and image
+verification (764 files, 62 directories) pass. Raw F64 conditions, chained
+comparisons, remaining arithmetic/formatting/math, floating-point state and the
+full native compiler/OS remain unfinished.

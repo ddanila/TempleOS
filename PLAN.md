@@ -408,9 +408,11 @@ Same-type F64 relations now compile to integer booleans and drive branches;
 Explicit `ToF64`/`ToI64` calls now use the software runtime, with 5,120 native
 conversion checks and x64 signed-conversion evidence. Implicit conversions now
 cover supported mixed arithmetic/relations, assignments, arguments, returns and
-F64 compound updates; 49 positive F64 fixture checks pass. Integer-destination
-F64 compound updates and the remaining arithmetic/formatting/math surface still
-need integration. See `docs/i386-f64-backend.md`. Signed
+F64 compound updates. Integer destinations now also support the four F64
+arithmetic updates, with truncation and declared-width normalization; 61 positive
+fixture checks pass. Eight x64 checks cover wide values and addressed narrow
+storage; the register-held narrow overflow difference is documented. The remaining
+arithmetic/formatting/math surface still needs integration. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
 passes 1,024 inputs against actual x64 HolyC and an independent host oracle,

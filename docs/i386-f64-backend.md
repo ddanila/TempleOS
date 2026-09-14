@@ -43,8 +43,13 @@ before ABI normalization. The backend refreshes operand links after optimizer
 rewrites and treats logical results as integer booleans, including when they are
 subsequently converted to F64.
 
-This is an initial compiler integration. Integer-destination compound assignments
-with F64 operands, chained comparisons and raw F64 conditions,
+Integer destinations now accept F64 operands in `+=`, `-=`, `*=` and `/=`.
+The backend converts the loaded integer to F64, performs the operation, truncates
+the result to I64 and normalizes it to the destination width before storing.
+It preserves the right operand across conversion and evaluates the destination
+address once. U64 retains the signed interpretation used by x64 HolyC.
+
+This is an initial compiler integration. Chained comparisons and raw F64 conditions,
 remainder and math intrinsics remain unsupported and are rejected. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
@@ -80,8 +85,18 @@ checks eight signed-boundary results against actual x64 `ToF64`;
 x64/host oracle. The main F64 fixture additionally checks nested conversions and
 preservation of already-correct operand types.
 
-The main F64 fixture now has 49 positive checks, including mixed operands in both
+The main F64 fixture now has 61 positive checks, including mixed operands in both
 orders, assignment/call/return conversion, F64 compound updates with integers,
 signed interpretation of U64 bits, and conversion of comparison/logical results
-on both short-circuit paths. Unsupported-source checks retain coverage for
-integer-destination F64 compound updates, raw F64 conditions and chained relations.
+on both short-circuit paths. Integer-destination updates additionally cover all
+four operations, returned values, negative truncation, narrow storage overflow,
+U64 interpretation, counted pointer destinations and NaN conversion. Eight x64
+comparison checks confirm wide-integer results and addressed I8/U8 storage.
+
+An existing x64 quirk remains explicit: register-held narrow locals can retain
+out-of-range results (`I8 -127 -= 2.5` yielded -129 and `U8 250 += 10.5` yielded
+260); addressed storage instead yielded 127 and 4. The native backend normalizes
+all stored destinations to their declared width, including stack-backed locals.
+This is a known difference for those out-of-range register temporaries, not a
+claim of complete x64 expression compatibility. Unsupported-source checks retain
+coverage for mixed remainder updates, raw F64 conditions and chained relations.

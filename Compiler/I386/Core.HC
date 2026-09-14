@@ -196,6 +196,17 @@ U0 I386F64Runtime(CCmpCtrl *cc,CI386Out *out,I64 op,I64 pass)
 
 }
 
+U0 I386F64Update(CCmpCtrl *cc,CI386Out *out,I64 op,I64 pass,Bool integer_left)
+{//The caller keeps the destination address below the evaluation operands.
+  if (integer_left) {
+    I386Bytes(out,"\x53\x51",2);
+    I386F64Runtime(cc,out,IC_TO_F64,pass);
+    I386Bytes(out,"\x59\x5B",2);
+  }
+  I386F64Runtime(cc,out,op,pass);
+  if (integer_left) I386F64Runtime(cc,out,IC_TO_I64,pass);
+}
+
 U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
 {//Array bounds/defaults are evaluated by the running x86-64 compiler.
  //Accept only an integer constant after target-aware folding, never target code.
@@ -334,6 +345,9 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
                 throw('Compiler');
               break;
             case IC_ADD_EQU: case IC_SUB_EQU: case IC_MUL_EQU: case IC_DIV_EQU:
+              if (!I386IsF64(I386ValueClass(ic->t.arg2_tree)) || c->ptr_stars_cnt ||
+                  I386Size(c)<1 || I386Size(c)>8) throw('Compiler');
+              break;
             case IC_ASSIGN:
               if (!I386IsF64(c) || !I386IsF64(I386ValueClass(ic->t.arg2_tree))) throw('Compiler');
               break;
@@ -686,15 +700,18 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Load(&out,c);
             switch (ic->ic_code) {
               case IC_ADD_EQU:
-                if (I386IsF64(c)) I386F64Runtime(cc,&out,IC_ADD,pass);
+                if (I386IsF64(c) || I386IsF64(I386ValueClass(ic->t.arg2_tree)))
+                  I386F64Update(cc,&out,IC_ADD,pass,!I386IsF64(c));
                 else I386Binary(&out,IC_ADD);
                 break;
               case IC_SUB_EQU:
-                if (I386IsF64(c)) I386F64Runtime(cc,&out,IC_SUB,pass);
+                if (I386IsF64(c) || I386IsF64(I386ValueClass(ic->t.arg2_tree)))
+                  I386F64Update(cc,&out,IC_SUB,pass,!I386IsF64(c));
                 else I386Binary(&out,IC_SUB);
                 break;
               case IC_MUL_EQU:
-                if (I386IsF64(c)) I386F64Runtime(cc,&out,IC_MUL,pass);
+                if (I386IsF64(c) || I386IsF64(I386ValueClass(ic->t.arg2_tree)))
+                  I386F64Update(cc,&out,IC_MUL,pass,!I386IsF64(c));
                 else I386Binary(&out,IC_MUL);
                 break;
               case IC_AND_EQU: I386Binary(&out,IC_AND); break;
@@ -746,8 +763,9 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
               I386Byte(&out,0x50);
               I386Load(&out,c);
             } else c=I386ValueClass(ic->t.arg1_tree);
-            if (I386IsF64(c)) {
-              I386F64Runtime(cc,&out,IC_DIV,pass);
+            if (I386IsF64(c) || (ic->ic_code==IC_DIV_EQU &&
+                I386IsF64(I386ValueClass(ic->t.arg2_tree)))) {
+              I386F64Update(cc,&out,IC_DIV,pass,!I386IsF64(c));
               if (ic->ic_code==IC_DIV_EQU) {
                 I386Byte(&out,0x59);
                 I386Store(&out,c);

@@ -8,6 +8,28 @@ Bool Reject(U8 *body)
   if (module) { Free(module); return FALSE; }
   return TRUE;
 }
+Bool CheckMixedHost()
+{
+  I64 whole=7,*values=MAlloc(64);
+  F64 step=2.5;
+  I8 narrow=-127;
+  U8 byte_value=250;
+  U64 bits=0xFFFFFFFFFFFFFFFF;
+  I8 *narrow_ptr=&narrow;
+  U8 *byte_ptr=&byte_value;
+  U8 *line;
+  whole+=step; values[0]=whole;
+  whole-=step; values[1]=whole;
+  whole*=step; values[2]=whole;
+  whole/=step; values[3]=whole;
+  whole=-7; whole+=step; values[4]=whole;
+  *narrow_ptr-=step; values[5]=*narrow_ptr;
+  bits+=step; values[6]=bits;
+  step=10.5; *byte_ptr+=step; values[7]=*byte_ptr;
+  line=MStrPrint("EXPORT x64-mixed.bin %X %X\n",values,64); Report(line);
+  return values[0]==9 && values[1]==6 && values[2]==15 && values[3]==6 &&
+    values[4]==-4 && values[5]==127 && values[6]==1 && values[7]==4;
+}
 U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
@@ -15,6 +37,8 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native F64 expressions\n");
+  if (!CheckMixedHost()) { Report("FAIL x64 mixed update contract\n"); return; }
+  Report("PASS eight x64 mixed update checks\n");
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -43,7 +67,7 @@ U0 CompileTests()
   line=MStrPrint("EXPORT expressions.bin %X %X\n",source,loaded+32); Report(line);
   if (!Reject("F64 Main(F64 a,F64 b) { return a+b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,I64 b) { return a%b; }") ||
-      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(I64 a,F64 b) { a+=b; return a; }") ||
+      !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(I64 a,F64 b) { a%=b; return a; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nI64 Main(F64 a,F64 b) { return a<b<0.0; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { if (a) return a; return b; }") ||
       !Reject("#include \"/Kernel/I386/SoftF64.HH\"\nF64 Main(F64 a,F64 b) { return a%b; }") ||
