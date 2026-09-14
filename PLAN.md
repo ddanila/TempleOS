@@ -406,12 +406,15 @@ including single destination evaluation and preservation of original postfix bit
 Same-type F64 relations now compile to integer booleans and drive branches;
 12,288 branch predicates plus comparison-result arithmetic pass native tests.
 Explicit `ToF64`/`ToI64` calls now use the software runtime, with 5,120 native
-conversion checks and x64 signed-conversion evidence. Implicit mixed conversions
-and the remaining arithmetic/formatting/math surface still need integration. See `docs/i386-f64-backend.md`. Signed
+conversion checks and x64 signed-conversion evidence. Implicit conversions now
+cover supported mixed arithmetic/relations, assignments, arguments, returns and
+F64 compound updates; 49 positive F64 fixture checks pass. Integer-destination
+F64 compound updates and the remaining arithmetic/formatting/math surface still
+need integration. See `docs/i386-f64-backend.md`. Signed
 and unsigned integer-to-F64 helpers now pass 2,048 conversion checks, including
 64-bit extrema and nearest-even halfway cases. Signed F64-to-I64 truncation now
 passes 1,024 inputs against actual x64 HolyC and an independent host oracle,
-including invalid-result bits. Implicit language-node mapping, explicit unsigned output
+including invalid-result bits. Remaining mixed-operation cases, explicit unsigned output
 semantics and floating-point exception state remain pending. Numerical
 comparison now passes 2,048 checks, including unordered NaNs, signed zeros and
 reversed operands; same-type relational operators now use this runtime path. See

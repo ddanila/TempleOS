@@ -1113,3 +1113,22 @@ nested/no-op conversions. The 155-case integer regression, expanded comparison
 corpus, instruction audits, CR0.EM execution, both x64 rebuilds and image
 verification (764 files, 62 directories) pass. Implicit mixed conversions,
 floating-point state and complete native compiler/OS integration remain pending.
+
+
+## Native implicit integer/F64 conversions
+
+The backend now applies producer conversion flags through the software runtime
+and handles function return-type conversion before ABI normalization. Effective
+operand types include those conversions, enabling mixed arithmetic/relations,
+assignments, arguments, returns and integer operands in F64 compound updates.
+A second type pass refreshes links after optimizer rewrites; logical results are
+integer booleans, including when later converted to F64 on short-circuit paths.
+
+All 49 positive F64 fixture checks and eight rejection checks pass, including
+mixed operand order, signed U64 interpretation, call/return coercion and converted
+comparison/logical results. The 155-case integer regression, expanded comparison
+corpus, 5,120 native conversion checks with x64 evidence, instruction audits,
+CR0.EM execution, both x64 rebuilds and image verification (764 files, 62
+directories) pass. Integer-destination compound updates with F64 operands, raw
+F64 conditions, chained comparisons, remaining math/formatting and complete
+native compiler/OS integration remain unfinished.

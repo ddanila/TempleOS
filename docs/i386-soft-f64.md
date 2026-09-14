@@ -38,8 +38,8 @@ converts to positive zero. The signed path computes magnitude with unsigned
 subtraction, including `I64_MIN`. Values above 2^53 may round; in particular,
 `U64_MAX` rounds to the binary64 representation of 2^64. Normalization preserves
 sticky information before the shared rounding/packing step. Explicit native `ToF64` now selects the signed helper, matching its I64
-parameter contract and x64 boundary tests. Implicit conversion mapping remains
-unimplemented.
+parameter contract and x64 boundary tests. Supported implicit conversions use
+the same signed conversion path.
 
 `I386F64Compare(U64 a,U64 b)` returns -1 for less, 0 for equal, 1 for
 greater, or `I386_F64_UNORDERED` (2) when either operand is a NaN. Both signed
@@ -58,7 +58,7 @@ That bit pattern is also the valid result for exactly -2^63; it is not a distinc
 error code. The helper does not yet record invalid/inexact exception flags.
 
 Initial native lowering now supports same-type F64 arithmetic, storage and calls;
-see [compiler integration](i386-f64-backend.md), including same-type relations. Mixed conversions,
+see [compiler integration](i386-f64-backend.md), including relations and supported implicit conversions.
 other arithmetic, explicit unsigned output conversion, formatting, math functions,
 exception flags/traps, selectable rounding modes and optional 387 execution
 remain unimplemented. NaN policy and precision differences from the existing x64

@@ -35,10 +35,16 @@ preserves the existing signed interpretation of its argument bits. True unsigned
 conversion remains available through `I386F64FromU64`. `ToI64` truncates and uses
 the documented integer-indefinite result for invalid inputs. Existing optimizer
 rules also preserve already-integer/already-F64 inputs without a lossy round trip.
-These intrinsics do not yet enable implicit mixed-type conversions.
+Implicit conversions now also apply to supported mixed arithmetic/relations,
+assignments, function arguments and returns. F64 destinations accept integer
+operands in compound updates. Conversion runs when the producer places its value
+on the evaluation stack, before consumers use it; return-type conversion runs
+before ABI normalization. The backend refreshes operand links after optimizer
+rewrites and treats logical results as integer booleans, including when they are
+subsequently converted to F64.
 
-This is an initial compiler integration. Runtime mixed integer/F64 conversions,
-mixed-type relations/compound assignments, raw F64 conditions,
+This is an initial compiler integration. Integer-destination compound assignments
+with F64 operands, chained comparisons and raw F64 conditions,
 remainder and math intrinsics remain unsupported and are rejected. Numeric
 conversion uses different semantics from a HolyC bitwise typecast and must not be
 implemented as register normalization. Constant folding still uses the shared
@@ -73,3 +79,9 @@ checks eight signed-boundary results against actual x64 `ToF64`;
 `--soft-f64-to-int` performs 2,048 native result checks against its 1,024-input
 x64/host oracle. The main F64 fixture additionally checks nested conversions and
 preservation of already-correct operand types.
+
+The main F64 fixture now has 49 positive checks, including mixed operands in both
+orders, assignment/call/return conversion, F64 compound updates with integers,
+signed interpretation of U64 bits, and conversion of comparison/logical results
+on both short-circuit paths. Unsupported-source checks retain coverage for
+integer-destination F64 compound updates, raw F64 conditions and chained relations.

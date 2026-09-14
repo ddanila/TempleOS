@@ -106,6 +106,16 @@ Bool I386IsF64(CHashClass *c)
   return c && !c->ptr_stars_cnt && c->raw_type==RT_F64;
 }
 
+CHashClass *I386ValueClass(CIntermediateCode *ic)
+{
+  if (ic->ic_flags&ICF_RES_TO_F64) return cmp.internal_types[RT_F64];
+  if (ic->ic_flags&ICF_RES_TO_INT) return cmp.internal_types[RT_I64];
+  if (ic->ic_code==IC_NOT || ic->ic_code==IC_AND_AND ||
+      ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR)
+    return cmp.internal_types[RT_I64];
+  return ic->ic_class;
+}
+
 U0 I386F64Runtime(CCmpCtrl *cc,CI386Out *out,I64 op,I64 pass)
 {//First operand EDX:EAX, optional second EBX:ECX; integer runtime ABI.
   U8 *name;
@@ -277,7 +287,14 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
     if (Bt(&cc->htc.fun->flags,Ff_DOT_DOT_DOT) || args>65535)
       throw('Compiler');
   }
+  //Logical results are integer booleans, regardless of operand precision metadata.
+  for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
+    if (ic->ic_code==IC_NOT || ic->ic_code==IC_AND_AND ||
+        ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR)
+      ic->ic_class=ic->ic_class2=cmp.internal_types[RT_I64];
   cc->pass=0;
+  OptPass012(cc);
+  //Refresh operand links after constant/intrinsic rewrites replace producer nodes.
   OptPass012(cc);
   try {
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
@@ -292,12 +309,15 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
       depth=0;
       for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
         c=ic->ic_class;
-        //Until conversion lowering is implemented, reject conversion requests explicitly.
-        if (ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT)) throw('Compiler');
+        if (ic->ic_code==IC_NOT || ic->ic_code==IC_AND_AND ||
+            ic->ic_code==IC_OR_OR || ic->ic_code==IC_XOR_XOR)
+          c=cmp.internal_types[RT_I64];
+        if ((ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT))==
+            (ICF_RES_TO_F64|ICF_RES_TO_INT)) throw('Compiler');
         if (I386IsF64(c) ||
-            (intermediate_code_table[ic->ic_code].arg_cnt==IS_1_ARG && I386IsF64(ic->t.arg1_tree->ic_class)) ||
+            (intermediate_code_table[ic->ic_code].arg_cnt==IS_1_ARG && I386IsF64(I386ValueClass(ic->t.arg1_tree))) ||
             (intermediate_code_table[ic->ic_code].arg_cnt==IS_2_ARG &&
-             (I386IsF64(ic->t.arg1_tree->ic_class) || I386IsF64(ic->t.arg2_tree->ic_class)))) {
+             (I386IsF64(I386ValueClass(ic->t.arg1_tree)) || I386IsF64(I386ValueClass(ic->t.arg2_tree))))) {
           switch (ic->ic_code) {
             case IC_TO_F64: case IC_TO_I64:
             case IC_NOP1: case IC_NOP2: case IC_IMM_F64:
@@ -310,20 +330,25 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             case IC_CALL_END: case IC_RETURN_VAL: case IC_RETURN_VAL2:
             case IC_END_EXP: break;
             case IC_EQU_EQU...IC_LESS_EQU:
-              if (!I386IsF64(ic->t.arg1_tree->ic_class) || !I386IsF64(ic->t.arg2_tree->ic_class))
+              if (!I386IsF64(I386ValueClass(ic->t.arg1_tree)) || !I386IsF64(I386ValueClass(ic->t.arg2_tree)))
                 throw('Compiler');
               break;
             case IC_ADD_EQU: case IC_SUB_EQU: case IC_MUL_EQU: case IC_DIV_EQU:
             case IC_ASSIGN:
-              if (!I386IsF64(c) || !I386IsF64(ic->t.arg2_tree->ic_class)) throw('Compiler');
+              if (!I386IsF64(c) || !I386IsF64(I386ValueClass(ic->t.arg2_tree))) throw('Compiler');
               break;
             case IC__PP: case IC__MM: case IC_PP_: case IC_MM_:
             case IC_UNARY_MINUS:
               if (!I386IsF64(c)) throw('Compiler');
               break;
             case IC_ADD: case IC_SUB: case IC_MUL: case IC_DIV:
-              if (!I386IsF64(c) || !I386IsF64(ic->t.arg1_tree->ic_class) ||
-                  !I386IsF64(ic->t.arg2_tree->ic_class)) throw('Compiler');
+              if (!I386IsF64(c) || !I386IsF64(I386ValueClass(ic->t.arg1_tree)) ||
+                  !I386IsF64(I386ValueClass(ic->t.arg2_tree))) {
+                PrintErr("i386 float op %X: result %X, operands %X/%X, flags %X/%X\n",
+                  ic->ic_code,c->raw_type,ic->t.arg1_tree->ic_code,ic->t.arg2_tree->ic_code,
+                  ic->t.arg1_tree->ic_flags,ic->t.arg2_tree->ic_flags);
+                throw('Compiler');
+              }
               break;
             default: throw('Compiler');
           }
@@ -361,8 +386,8 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
                 calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=1 ||
                 depth!=calls->depth+1) throw('Compiler');
             I386Bytes(&out,"\x58\x5A",2);
-            if ((ic->ic_code==IC_TO_I64 && I386IsF64(ic->t.arg1_tree->ic_class)) ||
-                (ic->ic_code==IC_TO_F64 && !I386IsF64(ic->t.arg1_tree->ic_class)))
+            if ((ic->ic_code==IC_TO_I64 && I386IsF64(I386ValueClass(ic->t.arg1_tree))) ||
+                (ic->ic_code==IC_TO_F64 && !I386IsF64(I386ValueClass(ic->t.arg1_tree))))
               I386F64Runtime(cc,&out,ic->ic_code,pass);
             depth=calls->depth;
             calls->called=TRUE;
@@ -603,7 +628,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_EQU_EQU...IC_LESS_EQU:
             if (depth<2) throw('Compiler');
             I386Bytes(&out,"\x59\x5B\x58\x5A",4);
-            if (I386IsF64(ic->t.arg1_tree->ic_class))
+            if (I386IsF64(I386ValueClass(ic->t.arg1_tree)))
               I386F64Runtime(cc,&out,ic->ic_code,pass);
             else I386Compare(&out,ic->ic_code,ToBool(ic->ic_flags&ICF_USE_UNSIGNED));
             I386Bytes(&out,"\x52\x50",2);
@@ -720,7 +745,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
               I386Byte(&out,0x50);
               I386Load(&out,c);
-            } else c=ic->t.arg1_tree->ic_class;
+            } else c=I386ValueClass(ic->t.arg1_tree);
             if (I386IsF64(c)) {
               I386F64Runtime(cc,&out,IC_DIV,pass);
               if (ic->ic_code==IC_DIV_EQU) {
@@ -772,6 +797,10 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           case IC_RETURN_VAL2:
             if (depth!=1) throw('Compiler');
             I386Bytes(&out,"\x58\x5A",2);
+            if (I386IsF64(c)!=I386IsF64(I386ValueClass(ic->t.arg1_tree))) {
+              if (I386IsF64(c)) I386F64Runtime(cc,&out,IC_TO_F64,pass);
+              else I386F64Runtime(cc,&out,IC_TO_I64,pass);
+            }
             I386Normalize(&out,c);
             depth--;
             break;
@@ -796,6 +825,13 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
           default:
             PrintErr("i386 COC opcode %X not implemented\n",ic->ic_code);
             throw('Compiler');
+        }
+        if (ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT)) {
+          if (depth<1 || !intermediate_code_table[ic->ic_code].res_cnt) throw('Compiler');
+          I386Bytes(&out,"\x58\x5A",2);
+          if (ic->ic_flags&ICF_RES_TO_F64) I386F64Runtime(cc,&out,IC_TO_F64,pass);
+          else I386F64Runtime(cc,&out,IC_TO_I64,pass);
+          I386Bytes(&out,"\x52\x50",2);
         }
         for (logic=logics;logic;logic=logic->next) {
           if (logic->left==ic) {

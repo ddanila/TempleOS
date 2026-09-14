@@ -14,6 +14,8 @@ extern F64 Neg(F64 a);
 extern F64 Store(F64 *p,F64 value);
 extern F64 LateAdd(F64 a,F64 b);
 extern F64 Literal();
+extern F64 ReturnFloat(I64 value);
+extern I64 ReturnInt(F64 value);
 I64 Main(I64 unused_a,I64 unused_b)
 {
   F64 a=1.5,b=2.0,c,old,*p=&cell;
@@ -59,6 +61,25 @@ I64 Main(I64 unused_a,I64 unused_b)
   if (ToI64(whole)!=whole) return 29;
   whole=17; if (ToI64(ToF64(whole))!=whole) return 30;
   c=ToF64(ToI64(a)); if (c(U64)!=0x3FF0000000000000) return 31;
+  whole=2; c=a+whole; if (c(U64)!=0x400C000000000000) return 32;
+  c=whole-a; if (c(U64)!=0x3FE0000000000000) return 33;
+  c=whole/a; if (c(U64)!=0x3FF5555555555555) return 34;
+  if (!(a<whole) || whole<a) return 35;
+  c=whole; if (c(U64)!=b(U64)) return 36;
+  whole=a; if (whole!=1) return 37;
+  whole=2; c=a; c+=whole; if (c(U64)!=0x400C000000000000) return 38;
+  c=Add(whole,a); if (c(U64)!=0x400C000000000000) return 39;
+  c=ReturnFloat(whole); if (c(U64)!=b(U64)) return 40;
+  if (ReturnInt(a)!=1 || ReturnInt(-a)!=-1) return 41;
+  c=ReturnFloat(a); if (c(U64)!=0x3FF0000000000000) return 42;
+  whole=ReturnInt(whole); if (whole!=2) return 43;
+  bits=0xFFFFFFFFFFFFFFFF; c=bits;
+  if (c(U64)!=0xBFF0000000000000) return 44;
+  c=(a<whole)+0.5; if (c(U64)!=a(U64)) return 45;
+  c=(!(a<whole))+whole; if (c(U64)!=b(U64)) return 46;
+  c=(a<whole && whole>a)+0.5; if (c(U64)!=a(U64)) return 47;
+  c=(a>whole && whole>a)+0.5; if (c(U64)!=0x3FE0000000000000) return 48;
+  c=(a<whole || a>whole)+0.5; if (c(U64)!=a(U64)) return 49;
   return 0;
 }
 F64 Add(F64 a,F64 b) { return a+b; }
@@ -73,3 +94,5 @@ F64 Store(F64 *p,F64 value) { *p=value; return *p; }
 F64 LateAdd(F64 a,F64 b) { return a+b; }
 F64 Literal() { return 1.5; }
 F64 *Pick() { picks++; return &cell; }
+F64 ReturnFloat(I64 value) { return value; }
+I64 ReturnInt(F64 value) { return value; }
