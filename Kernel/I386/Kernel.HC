@@ -78,6 +78,8 @@ extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
 extern U0 KernelCompilerLoad();
 extern U0 KernelFileLoad();
+extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
+  U8 *record,I64 bytes,U32 version);
 extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version);
 extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes);
 extern U0 KernelCompilerProbe(I64 phase);
@@ -443,19 +445,9 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 
 U0 KernelCompilerLoad()
 {//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
-  CI386RedSeaEntry file;
   CI386ModuleBinding bindings[15];
-  CI386CompilerServices candidate;
-  I64 (*entry)(CI386CompilerServices *services,I64 bytes);
-  I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
-  U64 base;
-  U8 *image=0,*reason="load";
+  I64 used=kernel_heap.used;
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
-  candidate.version=0; candidate.bytes=0; candidate.string_chunk=0; candidate.number_token=0; candidate.char_token=0; candidate.punct_token=0; candidate.ident_scan=0; candidate.ident_token=0; candidate.string_token=0; candidate.next_token=0; candidate.next_token_with_includes=0;
-  if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
-      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
-      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerRuntime.t32m",&file)!=1)
-    KernelStop;
   KernelBinding(&bindings[0],"I386LexRawChar");
   KernelBinding(&bindings[1],"I386LexSourceRead");
   KernelBinding(&bindings[2],"char_bmp_hex_numeric");
@@ -470,28 +462,10 @@ U0 KernelCompilerLoad()
   KernelBinding(&bindings[12],"I386LexIncludeCopy");
   KernelBinding(&bindings[13],"HashAdd");
   KernelBinding(&bindings[14],"char_bmp_non_eol_white_space");
-  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,15);
-  if(image) {
-    reason="api"; size=I386HeapSize(&kernel_heap,image); base=(image+0)(U64);
-    if(base>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
-      entry=image;
-      accepted=(*entry)(&candidate,sizeof(CI386CompilerServices));
-      if(!KernelServiceCheck(image,size,&candidate,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION)) accepted=0;
-    }
-  }
-  if(accepted!=1) {
-    if(image && !I386HeapFree(&kernel_heap,image)) KernelStop;
-    if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
-    KernelLog("RUNTIME REJECT "); KernelLog(reason); KernelLog(" reclaimed\n"); KernelStop;
-  }
-  kernel_compiler.version=candidate.version; kernel_compiler.bytes=candidate.bytes;
-  kernel_compiler.string_chunk=candidate.string_chunk; kernel_compiler.number_token=candidate.number_token;
-  kernel_compiler.char_token=candidate.char_token; kernel_compiler.punct_token=candidate.punct_token;
-  kernel_compiler.ident_scan=candidate.ident_scan; kernel_compiler.ident_token=candidate.ident_token;
-  kernel_compiler.string_token=candidate.string_token; kernel_compiler.next_token=candidate.next_token;
-  kernel_compiler.next_token_with_includes=candidate.next_token_with_includes;
-  kernel_compiler_image=image; kernel_compiler_size=size; kernel_compiler_span=kernel_heap.used-used;
-  KernelServiceLog("RUNTIME ",image,size,kernel_compiler_span,&kernel_compiler,sizeof(CI386CompilerServices));
+  kernel_compiler_image=KernelServiceLoad("/Modules/I386/CompilerRuntime.t32m","RUNTIME ",
+    bindings,15,&kernel_compiler,sizeof(CI386CompilerServices),I386_COMPILER_SERVICES_VERSION);
+  kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
+  kernel_compiler_span=kernel_heap.used-used;
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.
@@ -554,39 +528,49 @@ U0 KernelCompilerProbe(I64 phase)
 
 U0 KernelFileLoad()
 {
-  CI386ModuleBinding bindings[9]; CI386RedSeaEntry file; CI386FileServices candidate;
-  I64 (*entry)(CI386FileServices *services,I64 bytes);
-  I64 used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
-  U8 *image=0,*reason="load"; U64 base;
+  CI386ModuleBinding bindings[9];
   if(kernel_file_image || kernel_files.version) KernelStop;
-  candidate.version=0; candidate.bytes=0; candidate.include=0; candidate.read=0;
   KernelBinding(&bindings[0],"I386HeapAlloc"); KernelBinding(&bindings[1],"I386HeapFree");
   KernelBinding(&bindings[2],"I386HeapSize"); KernelBinding(&bindings[3],"I386IrqSave");
   KernelBinding(&bindings[4],"I386IrqRestore"); KernelBinding(&bindings[5],"I386RedSeaFind");
   KernelBinding(&bindings[6],"I386RedSeaResolve"); KernelBinding(&bindings[7],"I386RedSeaReadAll");
   KernelBinding(&bindings[8],"I386LexIncludeTake");
-  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/FileRuntime.t32m",&file)!=1) KernelStop;
-  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,9);
-  if(image) {
-    reason="api"; base=(image+0)(U64); size=I386HeapSize(&kernel_heap,image);
-    if(base>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
-      entry=image; accepted=(*entry)(&candidate,sizeof(CI386FileServices));
-      if(!KernelServiceCheck(image,size,&candidate,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION)) accepted=0;
-    }
-  }
-  if(accepted!=1) {
-    if(image && !I386HeapFree(&kernel_heap,image)) KernelStop;
-    if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
-    KernelLog("FILES REJECT "); KernelLog(reason); KernelLog(" reclaimed\n"); KernelStop;
-  }
-  kernel_files.version=candidate.version; kernel_files.bytes=candidate.bytes;
-  kernel_files.include=candidate.include; kernel_files.read=candidate.read; kernel_file_image=image; kernel_file_size=size;
+  kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
+    bindings,9,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+  kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
   kernel_volumes.letter['C'-'A']=&kernel_volume;
   kernel_file_context.paths=&kernel_paths; kernel_file_context.volumes=&kernel_volumes;
   kernel_file_include.context=&kernel_file_context; kernel_file_include.push=kernel_files.include;
-  KernelServiceLog("FILES ",image,size,kernel_heap.used-used,&kernel_files,sizeof(CI386FileServices));
+}
+
+U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
+  U8 *record,I64 bytes,U32 version)
+{//Private bounded service tables. Validate a stack candidate before publication.
+  CI386RedSeaEntry file;
+  U8 candidate[128],*image=0,*reason="load";
+  I64 (*entry)(U8 *services,I64 bytes);
+  I64 i,used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
+  if(bytes<8 || bytes>sizeof(candidate) || bytes&3) KernelStop;
+  for(i=0;i<bytes;i++) candidate[i]=0;
+  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,path,&file)!=1) KernelStop;
+  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,count);
+  if(image) {
+    reason="api"; size=I386HeapSize(&kernel_heap,image);
+    if((image+0)(U64)>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
+      entry=image; accepted=(*entry)(candidate,bytes);
+      if(!KernelServiceCheck(image,size,candidate,bytes,version)) accepted=0;
+    }
+  }
+  if(accepted!=1) {
+    if(image && !I386HeapFree(&kernel_heap,image)) KernelStop;
+    if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+    KernelLog(label); KernelLog("REJECT "); KernelLog(reason); KernelLog(" reclaimed\n"); KernelStop;
+  }
+  for(i=0;i<bytes;i++) record[i]=candidate[i];
+  KernelServiceLog(label,image,size,kernel_heap.used-used,record,bytes);
+  return image;
 }
 
 Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version)

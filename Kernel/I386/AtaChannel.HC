@@ -11,7 +11,7 @@ Bool I386AtaChannelInit(CI386AtaChannel *channel,CI386Scheduler *scheduler,I64 n
   U32 flags=I386IrqSave;
   Bool ok=FALSE;
   if(!channel || !scheduler || !scheduler->root || !scheduler->current || number<0 || number>1) goto channel_done;
-  if(channel->signature || channel->scheduler || channel->owner || channel->head || channel->tail) goto channel_done;
+  if(channel->poisoned || channel->signature || channel->scheduler || channel->owner || channel->head || channel->tail) goto channel_done;
   channel->scheduler=scheduler; channel->io=0x1F0; channel->control=0x3F6;
   if(number) { channel->io=0x170; channel->control=0x376; }
   channel->signature=I386_ATA_CHANNEL_MAGIC; ok=TRUE;
@@ -25,7 +25,7 @@ Bool I386AtaChannelAcquire(CI386AtaChannel *channel)
   CI386Task *task;
   CI386AtaWaiter waiter,*node,*previous;
   Bool ok=FALSE;
-  if(!channel || channel->signature!=I386_ATA_CHANNEL_MAGIC || !(scheduler=channel->scheduler) ||
+  if(!channel || channel->poisoned || channel->signature!=I386_ATA_CHANNEL_MAGIC || !(scheduler=channel->scheduler) ||
       !(task=scheduler->current) || task->owner!=scheduler || task->finished || task->finishing ||
       task->blocked || task->io_locks==0xFFFFFFFF || channel->owner==task) goto channel_done;
   if(!channel->owner) {
@@ -50,6 +50,7 @@ Bool I386AtaChannelAcquire(CI386AtaChannel *channel)
     }
   }
   ok=channel->owner==task && task->io_locks!=0;
+  if(ok && channel->poisoned) { I386AtaChannelRelease(channel); ok=FALSE; }
 channel_done:
   I386IrqRestore(flags); return ok;
 }
@@ -83,7 +84,7 @@ Bool I386AtaChannelClose(CI386AtaChannel *channel)
 {
   U32 flags=I386IrqSave;
   Bool ok=FALSE;
-  if(channel && channel->signature==I386_ATA_CHANNEL_MAGIC && !channel->owner && !channel->head && !channel->tail) {
+  if(channel && !channel->poisoned && channel->signature==I386_ATA_CHANNEL_MAGIC && !channel->owner && !channel->head && !channel->tail) {
     channel->signature=0; channel->scheduler=0; channel->io=0; channel->control=0; ok=TRUE;
   }
   I386IrqRestore(flags); return ok;

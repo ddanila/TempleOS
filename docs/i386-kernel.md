@@ -204,3 +204,14 @@ calls verify execution after relocation and retention across startup allocations
 Wrong CPU, missing import and wrong interface versions are rejected with heap
 reclamation before publication. See [i386-compiler-runtime.md](i386-compiler-runtime.md)
 for the interface, measured footprint, tests and remaining compiler integration.
+
+The compiler and file service loaders share `KernelServiceLoad`. It resolves the
+module, binds the declared imports, initializes a zeroed stack candidate (at most
+128 bytes), checks the service version/size and every function pointer against
+the loaded allocation, and only then copies the candidate into the resident
+record. Failure reclaims the image and checks the original heap baseline. The
+existing wrong-target/import/version boot tests still exercise both services.
+This consolidation keeps the native kernel at 387,616 bytes after adding shared
+ATA polling hooks; including the 2,160-byte stage overhead leaves 3,440 bytes in
+the fixed 384 KiB reservation. Task-owned ATA transactions are tested separately;
+standalone RedSea/file calls still use quiescent boot-owned disk access.

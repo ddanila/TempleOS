@@ -93,7 +93,7 @@ durability or fault-injected flush recovery.
 Generated code passes the existing instruction audit.
 
 The bootstrap still reads its stage through BIOS CHS. Multi-sector requests,
-legacy cache policy, routing transfers through task-owned channel gates, public
+legacy cache policy, routing public file services through task-owned channel gates,
 block-device integration, recovery/reset and physical 386/IDE testing remain pending.
 This is not a filesystem or a complete production disk driver.
 
@@ -115,13 +115,43 @@ handoff and the recipient's next execution. A held or queued gate cannot close.
 The contract is task-context use with no cancellation or exception unwinding
 through a pending acquisition; acquisition does not allocate or access hardware.
 
-This is an ownership prerequisite, not a task-aware ATA driver. Existing ATA,
-RedSea and retained file services still use their quiescent IF-clear contract.
-The next adapter must bind both drive profiles to their canonical gate, retain
-ownership through selection, command, data and completion, and yield only at
-explicit safe polling points. On timeout or device error it must establish
-quiescence/reset or poison the channel before admitting another request. Merely
-releasing the software gate is not evidence that hardware is ready.
+`AtaTask.HH/HC` connects this gate to IDENTIFY, read, write and flush through the
+same protocol implementation used by the boot-owned entry points. Each task
+request saves IF, acquires the canonical channel, and retains it through device
+selection, register programming, the complete 256-word PIO data phase and final
+status. Worker polling opens an interrupt window and yields before the first
+status sample of each wait and every 64 unsuccessful samples thereafter. It
+returns to IF-clear protocol work after each window and restores the caller's
+original IF at request exit. Root uses the same protocol without interrupt
+windows or yields. Device IRQs remain disabled; timer/keyboard IRQs are separate.
+
+The task adapter requires an installed IRQ dispatcher, a cooperative scheduler,
+and stable channel/profile/buffer storage. IRQ handlers must not call it or use
+raw ATA commands on its channel. Callers must not change profiles concurrently,
+use a second gate for the same physical channel, bypass the gate through raw
+entry points, or unwind exceptions through a pending/held request. Poll limits
+bound status samples, not elapsed wall-clock time: other cooperative tasks must
+return control. One PIO sector and register programming remain interrupt masked;
+real-machine service latency still needs measurement.
+
+An argument rejection before hardware access leaves the channel usable. Any
+failure after the first control-register write marks it poisoned before releasing
+the lease. Queued waiters then drain without hardware access and without retaining
+task pins; new acquisitions, close and reinitialization fail. This deliberately
+conservative policy requires reboot. No reset/re-identification API yet establishes
+quiescence across both drives. Failed reads preserve the destination; failed
+writes may already have changed media. Raw boot entry points retain their prior
+quiescent ownership contract and do not acquire or poison gates.
+
+Selection now waits for both BSY and DRQ to clear before changing the selected
+device. The access restrictions and PIO state transitions are described in
+[T13/1321D revision 3, sections 7 and 9.5–9.6](https://www.seagate.com/support/disc/manuals/ata/d1153r17.pdf).
+The software's interrupt windows occur between complete port operations, with
+the channel still owned. This source review is not physical-device validation.
+
+Existing RedSea and retained file services still call the boot-owned IF-clear
+entry points. They must be bound to the task adapter before interactive compiler
+reads can use these interrupt windows.
 
 `python3 tools/test-i386.py --tasks` includes three real workers contending behind
 root, FIFO handoff across yields, spurious wake/reblock, IF-clear and IF-set
@@ -130,10 +160,27 @@ close/reinitialization and complete stack reclamation. It performs no disk I/O;
 transfer latency, IRQ service during disk access and hardware recovery remain
 separate acceptance tests.
 
+`python3 tools/test-i386.py --ata-tasks` boots two 16 MiB IDE images on one
+channel. Two workers perform 64 patterned reads, one using LBA and the other CHS,
+then two writes, flushes and readbacks, while a third task competes for CPU time.
+Root observes queued ownership and cannot steal the channel. Both IF states are
+preserved, timer IRQs and a keyboard echo are serviced with the channel owned,
+and all task stacks are reclaimed. A 130-sample unsuccessful status wait checks
+three callback visits (samples 0, 64 and 128) without issuing a command. A forged
+capacity causes a real out-of-range device error; the queued other-drive read and
+subsequent requests fail without commands or destination-buffer changes. The host
+checks the exact native command suffix and every byte of both backing images,
+allowing only the two expected sector writes. Results are recorded in
+`build/i386-ata-tasks-test/ata-task-check.json`. This covers polling cadence and
+one device-error path, not a stuck-BSY fault injection, reset recovery, write-error
+recovery, physical-media durability or wall-clock latency bounds.
+
 Validation also passes the two-generation x86-64 compiler/kernel rebuild, native
-`--input`, `--messages` and `--except-tasks` regressions, and
-`python3 tools/build-i386-kernel.py --test`. The standalone native kernel is
-389,552 bytes; with its 2,160-byte stage overhead it leaves 1,504 bytes in the
-fixed 393,216-byte reservation. The gate itself is exercised in the task test,
-not linked into the standalone disk path. These are QEMU development results,
-not strict 386 or physical-machine validation.
+`--ata`, `--tasks` and `--redsea-read` regressions, and
+`python3 tools/build-i386-kernel.py --test`. Compiler/file runtime loading now
+shares a bounded candidate-validation/publication path, preserving rejection and
+reclamation checks while reducing bootstrap duplication. The standalone native
+kernel is 387,616 bytes; its 2,160-byte stage overhead leaves 3,440 bytes in the
+fixed 393,216-byte reservation. The task adapter is exercised in its integration
+test and is not yet linked into the standalone file path. These are QEMU
+486/8 MiB development results, not strict 386 or physical-machine validation.

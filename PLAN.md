@@ -457,10 +457,14 @@ behavior regression and audit executable code for the 386 baseline. Passing
 this package enables parser/JIT integration; it does not establish a working
 HolyC shell or strict 386 hardware compatibility.
 
-The FIFO channel gate now passes real-task contention, spurious-wake, interrupt
-state and task-lifetime tests. Existing ATA/RedSea/file calls do not yet use it;
-the transaction adapter, recovery policy and interactive I/O acceptance above
-remain required. See `docs/i386-ata.md` for the gate's ownership contract.
+The FIFO channel gate and task transaction adapter now pass real-task contention,
+interrupt-state, task-lifetime and two-drive LBA/CHS tests. The adapter retains
+ownership across polling/yields and PIO completion; timer/keyboard IRQs continue.
+A touched failure poisons the channel, drains queued requests without I/O and
+requires reboot. Argument failures leave it usable. Existing RedSea/file calls
+still use the boot-owned entry points. Binding those services, reset/recovery,
+measured latency and the interactive compiler acceptance above remain required.
+See `docs/i386-ata.md` for contracts and verification limits.
 
 The path-string extraction now passes 44 original x64 cases on both targets,
 with native owned-buffer and allocation-failure checks. Explicit-context helpers

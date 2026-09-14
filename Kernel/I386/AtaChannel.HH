@@ -6,7 +6,7 @@ class CI386AtaChannel {
   CI386Scheduler *scheduler;
   CI386Task *owner;
   CI386AtaWaiter *head,*tail;
-  U32 signature;
+  U32 signature,poisoned;
   U16 io,control;
 };
 //One stable gate per physical channel, shared by both drives. Initially zeroed.
