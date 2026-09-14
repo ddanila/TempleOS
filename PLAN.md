@@ -83,6 +83,30 @@ A full floppy driver, CD installation, additional storage controllers, and
 physical installation tooling can follow the first hard-disk-image path.
 Neither El Torito CD boot nor a large RAM disk may be a baseline dependency.
 
+### Vintage hardware verification alongside implementation
+
+Maintain separate development and acceptance profiles. The current QEMU/486
+profile provides fast integration feedback; it cannot certify the 386 baseline.
+Record the emulator version/configuration or physical machine configuration with
+each result, including CPU, coprocessor presence, usable RAM, BIOS, VGA and disk
+geometry. Select and validate a strict 386 emulator profile before treating its
+results as hardware acceptance; real-machine testing remains a separate gate.
+
+| Profile | Purpose and required evidence |
+| --- | --- |
+| Development: QEMU/486, 8 MiB | Repeatable boot and integration checks, allocation accounting, disk persistence and VGA output. Keep this evidence distinct from strict CPU compatibility. |
+| 386SX and 386DX, no 387, 8 MiB | Execute the generated-code corpus and interactive workflow; exercise legacy boot/memory discovery and software F64. Reject later instructions in executable code and verify that optional firmware services are unnecessary. |
+| 386-class, no 387, 16 MiB | Rebuild the compiler and kernel natively, boot the outputs and report peak usable-memory demand and elapsed time. |
+| Named physical 386/VGA machine | Verify boot, planar display, keyboard, selected mouse, ATA persistence and speaker/timer coexistence; record differences from emulator behavior. |
+
+Run CPU and absent-coprocessor checks as compiler/runtime changes land. Exercise
+fallback boot paths with modern BIOS services unavailable, and measure input
+latency during disk access, VGA presentation and compilation. Use those results
+to choose bounded work units and scheduling points; short protected register
+operations must not become long interrupt-disabled display or disk loops.
+Instruction audits, emulator execution and physical testing provide different
+evidence and should all remain visible in release criteria.
+
 ## Architectural work packages
 
 ### Implementation boundaries
@@ -497,6 +521,43 @@ Both boot and task reads pass; its IF-clear entry contract remains enforced.
 The bootstrap plus loaded stage now leaves 3624 bytes in the fixed reservation,
 so further low-memory growth requires extraction or reduction. See
 `docs/i386-file-runtime.md` for evidence and remaining integration work.
+
+#### Next architectural seam: task-owned file and compiler state
+
+Complete current-task binding before expanding the resident compiler API. The
+public task record already carries a current drive and directory; native
+bootstrap helpers must implement the same behavior through explicit ownership:
+
+1. Give each task its own directory storage and drive selection, inherited before
+   the child becomes runnable. Define which configuration remains shared, including
+   home-directory state and mounted volumes. A failed inheritance allocation must
+   leave no published task or leaked allocation.
+2. Keep path state valid throughout a read or nested include, including scheduler
+   switches during ATA polling. Prevent replacement or reclamation while a read
+   borrows it. Define cleanup ordering relative to task exit, compiler destruction
+   and heap release, and preserve the caller's interrupt state.
+3. Route retained read/include entry points through the current task and selected
+   mounted volume. Require task-owned channel sessions for worker I/O; keep the
+   quiescent boot path explicit. Version and validate any changed service table,
+   and retain its code for as long as tasks hold callbacks into it.
+4. Connect this mechanism to public `CTask`, `CDrv`, `DirCur`, `Cd` and `FileRead`
+   semantics. A private directory setter does not implement `Cd`: retain directory
+   lookup, home/parent handling, directory creation and existing partial-progress
+   behavior on failure. Connect public exception reporting and resident-file
+   ownership before claiming file API compatibility.
+5. Construct and destroy full compiler controls using the task/code heap policy,
+   then connect the shared parser and native execution path. Input buffers, saved
+   lexer positions, symbols, generated code and callbacks need distinct lifetimes;
+   an allocation failure must leave the shell able to compile again.
+
+Acceptance for the first three steps: two cooperative tasks inherit one directory,
+one changes its directory, and both load the same relative filename from their
+own locations while timer/keyboard service continues. Verify parent independence,
+spawn/update allocation failures, state borrowed across a yield, exit/reap cleanup,
+nested includes and exact temporary-memory reclamation. Follow with public API
+behavior comparisons against x86-64; private-helper tests alone do not satisfy
+steps 4–5. Measure resident and peak memory without increasing the fixed bootstrap
+reservation to accommodate routine integration growth.
 
 #### Continuing integration sequence
 
