@@ -449,6 +449,22 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             } else I386F64Runtime(cc,&out,ic->ic_code,pass);
             I386Bytes(&out,"\x52\x50",2);
             break;
+          case IC_MOD_U64:
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt!=2 ||
+                depth!=calls->depth+2) throw('Compiler');
+            //Save the destination while the single division produces both results.
+            I386Bytes(&out,"\x58\x5A\x59\x5B\x50",5);
+            I386Load(&out,cmp.internal_types[RT_U64]);
+            I386Byte(&out,0xBE); I386Dword(&out,4);
+            I386Bytes(&out,i386_div_begin,i386_div_end-i386_div_begin);
+            I386Byte(&out,0x59);
+            I386Store(&out,cmp.internal_types[RT_U64]);
+            I386Bytes(&out,"\x89\xF0\x89\xFA",4);
+            depth=calls->depth;
+            calls->called=TRUE;
+            break;
           case IC_ABS_I64: case IC_SIGN_I64:
           case IC_SQR_I64: case IC_SQR_U64:
           case IC_MIN_I64: case IC_MIN_U64: case IC_MAX_I64: case IC_MAX_U64:

@@ -368,6 +368,8 @@ U0 CompileTests()
     "#include \"/Kernel/I386/Ports.HH\"\n");
   EmitCase("OutU8(a,InU8(a)); return b+InU8(a);",0x500,0x100000000,0x1000000FF,&cursor,
     "#include \"/Kernel/I386/Ports.HH\"\n");
+  EmitCase("U64 quotient=a; return ModU64(&quotient,b);",42,0,0xDEADBEEFCAFEBABE,&cursor,
+    "#include \"/Kernel/I386/Math.HH\"");
   EmitCase("return a/b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a%b;",42,0,0xDEADBEEFCAFEBABE,&cursor);
   EmitCase("return a/b;",0x8000000000000000,-1,0xDEADBEEFCAFEBABE,&cursor);

@@ -14,19 +14,21 @@ U0 CompileTests()
 {
   U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
   I64 size,loaded,errors,i,j;
-  U64 *oracle=MAlloc(81920),*row,a,b;
+  U64 *oracle=MAlloc(98304),*row,a,b,quotient;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native integer math\n");
   for (i=0;i<32;i++) for (j=0;j<32;j++) {
-    a=math_inputs[i]; b=math_inputs[j]; row=oracle+(i*32+j)*10;
+    a=math_inputs[i]; b=math_inputs[j]; row=oracle+(i*32+j)*12;
     row[0]=a; row[1]=b;
     row[2]=AbsI64(a); row[3]=SignI64(a);
     row[4]=MinI64(a,b); row[5]=MaxI64(a,b);
     row[6]=MinU64(a,b); row[7]=MaxU64(a,b);
     row[8]=SqrI64(a); row[9]=SqrU64(a);
+    row[10]=row[11]=0;
+    if (b) { quotient=a; row[11]=ModU64(&quotient,b); row[10]=quotient; }
   }
-  line=MStrPrint("EXPORT x64-integer-math.bin %X %X\n",oracle,81920); Report(line);
+  line=MStrPrint("EXPORT x64-integer-math.bin %X %X\n",oracle,98304); Report(line);
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
@@ -39,7 +41,7 @@ U0 CompileTests()
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_EXPORT && !StrCmp(module+r->name_offset,"math_oracle")) {
-      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,81920); Report(line); Free(line);
+      line=MStrPrint("ORACLE %X %X\n",28+8+r->offset,98304); Report(line); Free(line);
     }
     line=NULL;
     if (r->kind==I386_MODULE_EXPORT)

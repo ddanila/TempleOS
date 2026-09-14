@@ -1310,3 +1310,27 @@ boot-transfer path instead of 64 KiB; its RAM remains 8 MiB. This changes fixtur
 capacity, not the OS memory requirement. Trigonometry, remaining numerical/
 formatting support, floating-point state, full compiler/kernel integration,
 native self-hosting, memory targets and strict 386 validation remain unfinished.
+
+
+## Native ModU64 quotient/remainder intrinsic
+
+ModU64 now evaluates its destination and divisor once, reads the full U64 value,
+and computes quotient and remainder in one unsigned division. It stores the
+quotient through the saved 32-bit pointer and returns the remainder. A new private
+mode in the existing division template exposes both results without repeating the
+64-step division. Existing signed/unsigned quotient and remainder modes remain
+unchanged semantically. This supports the digit-extraction operation used by
+StrPrint and date decomposition; their full native integration is still pending.
+
+The integer-math corpus passes 10,176 result checks: the prior 8,192 intrinsic
+results and 1,984 quotient/remainder results over nonzero-divisor pairs. Actual
+x64 output matches the Python oracle before native execution. Eight additional
+checks cover nesting, side effects, shared operands and decimal extraction of all
+20 digits of U64_MAX. The function fixture now passes 179 cases, including five
+hardware #DE cases with a new zero-divisor ModU64 check.
+
+The 5,120-check F64 unary corpus, nesting/rejection checks, instruction audits,
+both x64 rebuild generations and image verification (766 files, 62 directories)
+pass. Full formatting/variadic calls, remaining compiler features, numerical state,
+production kernel integration, native self-hosting, memory targets and strict
+386 validation remain unfinished.

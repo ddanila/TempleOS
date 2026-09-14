@@ -20,8 +20,9 @@ def make_integer_math_oracle():
         signed_a = a - (1 << 64) if a >> 63 else a
         for b in INPUTS:
             signed_b = b - (1 << 64) if b >> 63 else b
+            quotient, remainder = divmod(a, b) if b else (0, 0)
             values = (a, b, abs(signed_a), (signed_a > 0) - (signed_a < 0),
                       min(signed_a, signed_b), max(signed_a, signed_b),
-                      min(a, b), max(a, b), signed_a * signed_a, a * a)
-            records.append(struct.pack('<10Q', *(value & mask for value in values)))
+                      min(a, b), max(a, b), signed_a * signed_a, a * a, quotient, remainder)
+            records.append(struct.pack('<12Q', *(value & mask for value in values)))
     return b''.join(records)

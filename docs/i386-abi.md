@@ -85,7 +85,7 @@ values are not discarded before normalization. Nested intrinsic calls and
 side-effecting argument expressions use the existing call tracking.
 
 Integer math intrinsics now include `AbsI64`, `SignI64`, `MinI64`, `MaxI64`,
-`MinU64`, `MaxU64`, `SqrI64` and `SqrU64`, declared standalone in
+`MinU64`, `MaxU64`, `SqrI64`, `SqrU64` and `ModU64`, declared standalone in
 `Kernel/I386/Math.HH`. They consume ordinary eight-byte argument slots and
 return EDX:EAX. Min/max compare both words and select with branches; no CMOV or
 later instruction is required. AbsI64 preserves MIN_I64's bit pattern, and
@@ -93,13 +93,23 @@ both square forms return the low 64 product bits, matching x64 overflow behavior
 SignI64 returns -1, zero or one. Nested calls and side-effecting arguments retain
 the existing call evaluation rules.
 
+`ModU64(U64 *quotient,U64 divisor)` reads the pointed value once, computes unsigned
+quotient and remainder in one division, stores the quotient and returns the
+remainder. Its saved destination uses the target's four-byte pointer width.
+The division emitter has an unsigned mode returning both register pairs; existing
+signed/unsigned division and remainder modes remain covered by regression tests.
+Division by zero raises #DE before the quotient store. Full exception unwinding
+is separate unfinished work.
+
 Run `python3 tools/test-i386.py --integer-math` after the x64 rebuild test.
-The fixture checks all eight operations over the Cartesian product of 32 boundary
-and bit-pattern values (8,192 results), including signed extrema, equality,
+The fixture checks absolute/sign, min/max and square operations over the Cartesian product of 32 boundary
+and bit-pattern values (8,192 results), plus 1,984 quotient/remainder results
+for the 992 nonzero-divisor pairs. This includes signed extrema, equality,
 high-word-only values and unsigned/signed ordering differences. Actual x64 output
 must first match an independent Python arbitrary-precision integer oracle; native
-execution then checks that oracle, plus three nested/side-effect cases. Instruction
-auditing and an 8 MiB QEMU 486 run are development evidence, not strict 386 proof.
+execution then checks that oracle, plus nesting, side effects, shared operands
+and decimal digit extraction. The general function fixture also verifies #DE
+for a zero divisor. Instruction auditing and an 8 MiB QEMU 486 run are development evidence, not strict 386 proof.
 
 Indirect fixed-arity calls share the direct-call ABI. The caller captures a
 four-byte function pointer into an eight-byte evaluation slot before evaluating

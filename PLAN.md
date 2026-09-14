@@ -429,7 +429,10 @@ interpretations, with 4,096 native checks and 2,048 x64 Boolean outputs. Existin
 constant/variable ToBool differences are preserved and documented. Integer
 absolute/sign, signed/unsigned min/max and square intrinsics now pass 8,192
 results against actual x64 execution and an independent Python oracle, plus
-nested/side-effect checks. These unblock arithmetic used by kernel message,
+nested/side-effect checks. ModU64 now stores the quotient and returns the
+remainder from one unsigned division, bringing the math corpus to 10,176
+result checks. Decimal digit extraction, shared operands and zero-divisor #DE
+also pass. These unblock arithmetic used by kernel message,
 memory and mouse code; full unit integration remains pending. F64 Abs, Sqr
 and Sqrt now lower through the software runtime, with 5,120 native checks and 3,072
 x64 result comparisons, including NaNs, signed zero and square underflow/overflow.

@@ -1,5 +1,6 @@
 // Relocatable i386 division template, assembled by HolyC on the compiler host.
 // EDX:EAX dividend, EBX:ECX divisor, ESI flags (bit 0 signed, bit 1 remainder).
+// Bit 2 requests unsigned quotient EDX:EAX and remainder EDI:ESI together.
 // Preserves EBP/ESP; other scratch registers belong to the enclosing emitter.
 asm {
 USE32
@@ -64,6 +65,8 @@ I386_DIV_BEGIN::
 @@60:
   DEC U32 -16[EBP]
   JNZ @@40
+  TEST U32 -4[EBP],4
+  JNZ @@80
   TEST U32 -4[EBP],2
   JZ @@70
   MOV EAX,ESI
