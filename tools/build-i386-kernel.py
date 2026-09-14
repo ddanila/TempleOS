@@ -299,6 +299,10 @@ def main():
         log=(guest/'debug.log').read_text()
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
             raise ValueError('Missing native kernel startup/timer evidence')
+        types=[line.split() for line in log.splitlines() if line.startswith('TYPES ')]
+        if len(types)!=1 or [int(x,16) for x in types[0][1:]]!=[17,7672]:
+            raise ValueError('Missing resident built-in types or unexpected allocation footprint')
+        result['internal_types']={'names':17,'heap_bytes':7672}
         mounted=[line.split() for line in log.splitlines() if line.startswith('REDSEA ')]
         if len(mounted)!=1 or [int(x,16) for x in mounted[0][1:]]!=[volume['start'],volume['sectors']]:
             raise ValueError('Wrong boot volume mounted')

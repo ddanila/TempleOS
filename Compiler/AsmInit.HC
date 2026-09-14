@@ -197,10 +197,7 @@ U0 AsmHashLoad()
   for (i=0;i<INTERNAL_TYPES_NUM;i++) {
     tmpit=&internal_types_table[i];
     tmpc=PrsClassNew;
-    tmpc->type=HTT_INTERNAL_TYPE;
-    tmpc->raw_type=tmpit->type;
-    Bts(&tmpc->flags,Cf_INTERNAL_TYPE);
-    tmpc->size=tmpit->size;
+    InternalTypeSet(tmpc,i);
     tmpc->str=AStrNew(tmpit->name);
     HashAdd(tmpc,cmp.asm_hash);
     cmp.internal_types[tmpc->raw_type]=tmpc;

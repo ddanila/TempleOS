@@ -223,3 +223,46 @@ on both declaration and definition to preserve two-argument target calls.
 This supplies shared frontend primitives. Native compiler-control initialization,
 parser diagnostics, task-selected allocation and source execution still need
 integration before there is an operational native HolyC compiler.
+
+## Built-in type registry
+
+`Compiler/InternalTypes.HH/HC` shares the original 17-entry descriptor table and
+root initialization used by `AsmHashLoad`. Descriptors retain their names, raw
+tags, sizes and ordering, including Bool's signed-I8 tag and the `I64i`/`U64i`
+internal names. Only the class root becomes `HTT_INTERNAL_TYPE`; the four pointer
+variants keep `HTT_CLASS`, `RT_PTR` and the target pointer width. The x86-64 path
+retains its original class allocator, name allocator and assembler table.
+
+`Compiler/I386/InternalTypes.HH/HC` builds an owned 32-bucket table, five-record
+class arrays and eight-byte name allocations using an explicit heap. Its
+raw-type array keeps the last descriptor for each raw tag, matching the compiler's
+original overwrite order. Unused raw slots remain zero. The caller supplies a
+zeroed registry and keeps its contents exclusively owned; external additions,
+renames and shared ownership of its entries are unsupported. Read-only lookup is
+allowed while the table is live. Before deletion, detach all incoming references.
+
+Creation failure releases every completed entry and temporary allocation and
+leaves the registry reusable. Deletion rejects a locked table. Under the live,
+owned-graph contract, ordinary deletion empties the table and resets the registry;
+it is not a validator or rollback mechanism for arbitrary corrupt graphs. Heap
+operations preserve interrupt state without masking the entire initialization.
+
+Host/native tests check the descriptor bytes against independent names, tags and
+sizes; root flag preservation; untouched pointer variants; alias-map selection;
+lookup and requested allocation sizes; reinitialization/locked-delete rejection;
+and reclamation across all 1,022 aligned arena sizes from 24 through 8,192 bytes.
+The symbol runner now transfers 160 KiB, ending at 0x38000 below its first heap
+at 0x40000.
+
+Standalone startup attaches this registry as the parent of the kernel export
+index, verifies lookup of every built-in name and checks the Bool/F64 alias map.
+The registry is retained for the kernel's lifetime. This initializes real resident
+type symbols, but does not yet initialize compiler control records, opcode tables,
+lexer/parser execution, the JIT shell or the complete public type environment.
+
+The 314504-byte standalone kernel passes the complete 8 MiB QEMU/486 boot checks.
+Its `TYPES` marker and image manifest verify 17 resident names and 7,672 bytes of
+heap use for table ownership, buckets, class arrays and names. This heap figure
+excludes registry globals and code, which are included in the kernel image.
+Both x86-64 rebuild/reboot generations and the expanded native symbol suite pass,
+including instruction audits, cleanup, module rejection and keyboard/VGA checks.

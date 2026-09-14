@@ -114,6 +114,9 @@ U0 DeleteFreeRaw(U8 *allocation)
 #include "T:/Delete.HC"
 #include "/Compiler/MemberBuild.HC"
 #include "T:/BuildMembers.HC"
+#include "/Compiler/I386/InternalTypes.HC"
+#include "T:/InternalTypes.HC"
+#include "T:/InternalRegistry.HC"
 I64 NativeSymbolDeleteTest()
 {
   U32 flags=I386IrqSave;
@@ -122,6 +125,10 @@ I64 NativeSymbolDeleteTest()
   I64 result;
   if(!I386HeapInit(&delete_heap,0x40000,65536)) return 64;
   delete_free_errors=0;
+  result=InternalTypeSeedTest(4);
+  if(result) return result;
+  result=InternalRegistryTest;
+  if(result) return result;
   result=MemberBuildTest;
   if(result) return result;
   result=SymbolDeleteTest;

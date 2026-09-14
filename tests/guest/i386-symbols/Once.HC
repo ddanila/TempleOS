@@ -14,6 +14,8 @@ U0 DeleteFreeRaw(U8 *allocation) { Free(allocation); }
 #include "T:/Delete.HC"
 #include "/Compiler/MemberBuild.HH"
 #include "T:/BuildMembers.HC"
+#include "/Compiler/InternalTypes.HH"
+#include "T:/InternalTypes.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -26,6 +28,7 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native symbols\n");
+  if(InternalTypeSeedTest(8)) { Report("FAIL x64 internal types\n"); return; }
   if(MemberBuildTest) { Report("FAIL x64 member insertion\n"); return; }
   if(SymbolDeleteTest) { Report("FAIL x64 symbol destruction\n"); return; }
   if(MemberLookupTest) { Report("FAIL x64 member lookup\n"); return; }

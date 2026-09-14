@@ -168,3 +168,16 @@ values and target-width bucket pointers. These records describe loader addresses
 and kinds; they are not compiler function/class metadata. See `i386-hash.md` for
 the public primitives and ownership rules, and `i386-symbols.md` for shared
 compiler record layouts and value compatibility tests.
+
+The export index now chains to an owned built-in type registry. Startup creates
+the original 17 internal type names as real five-record class arrays, with native
+pointer variants, and preserves the raw-type map's alias ordering. It checks every
+name through the parent-table lookup path and checks the Bool/F64 map entries.
+The registry remains resident for the kernel's lifetime. Loader export binding
+still filters for export symbols and passes the wrong-target/missing-import tests.
+
+The builder requires a `TYPES` marker reporting 17 names and 7,672 bytes of registry
+heap use, and records those values in the manifest. The kernel image is now
+314504 bytes and passes the full 8 MiB QEMU/486 boot, keyboard/VGA and timer checks.
+This is compiler startup groundwork: opcode tables, compiler control records,
+native parsing, source execution and the complete public type environment remain.

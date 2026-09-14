@@ -340,6 +340,10 @@ programming environment through these concrete steps:
    Member insertion and signature comparison now share the frontend's list/tree,
    duplicate-diagnostic and default-value semantics, with explicit-heap native
    member allocation. Host/native fixtures cover construction and reclamation.
+   The original 17 built-in type descriptors and root initialization are shared.
+   A native registry now supplies the standalone kernel symbol table's parent,
+   with alias-map checks, allocation-failure cleanup and a measured 7,672-byte
+   heap footprint. Opcode tables and full compiler-control startup remain open.
    Public task/code-heap selection, allocation-failure exception behavior,
    module-code lifetime and compiler-control initialization remain.
 

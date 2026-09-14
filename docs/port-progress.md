@@ -1976,3 +1976,25 @@ complete 8 MiB QEMU/486 boot checks pass.
 These are frontend dependencies. Full compiler-control initialization, native
 parser diagnostics, public task/code-heap selection, source execution, DolDoc,
 self-hosting and strict 386 validation remain unfinished. See `i386-symbols.md`.
+
+## Resident built-in type registry
+
+The original 17 internal type descriptors and class-root initialization now share
+one implementation between the x86-64 compiler and native runtime. Native registry
+creation owns its table, class arrays and names, preserves pointer variants and
+last-alias raw-type selection, and releases all allocations on initialization
+failure. Lookup leaves ownership intact; deletion requires detached references.
+
+Host/native fixtures pass independent descriptor expectations, root/variant
+semantics, aliases, lookup, reinitialization/locked-delete rejection and full
+reclamation across 1,022 aligned arena sizes. The symbol runner now uses a 160 KiB
+transfer ending at 0x38000, below its first heap at 0x40000. Existing symbol suites,
+instruction audits and both x86-64 rebuild generations pass.
+
+Standalone startup now chains its export table to the resident type registry and
+verifies every type name through that chain. The full 8 MiB QEMU/486 boot checks
+pass with a 314504-byte kernel and 7,672 bytes of registry heap use, including
+startup-module execution/rejection, keyboard/VGA and timer behavior. The builder
+records and checks the type count and allocation footprint. Opcode tables,
+compiler-control initialization, native source execution, the full environment,
+self-hosting and strict 386 validation remain unfinished. See `i386-symbols.md`.

@@ -23,6 +23,7 @@
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/HashTable.HH"
 #include "/Kernel/HashValue.HH"
+#include "/Compiler/I386/InternalTypes.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 CI386Scheduler kernel_scheduler;
@@ -42,6 +43,7 @@ CI386OwnedTask *kernel_pulse;
 CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
 CHashTable *kernel_symbols;
+CI386InternalTypes kernel_types;
 CI386KernelSymbol kernel_exports[3];
 extern U0 KernelLog(U8 *text);
 extern U0 KernelHex(U64 value);
@@ -202,6 +204,9 @@ U0 KernelDisplay()
 #include "/Kernel/I386/Hash.HC"
 #include "/Kernel/I386/HashTable.HC"
 #include "/Kernel/HashValue.HC"
+#include "/Compiler/I386/SymbolAlloc.HC"
+#include "/Compiler/I386/SymbolDelete.HC"
+#include "/Compiler/I386/InternalTypes.HC"
 
 U0 KernelKeys(I64 unused)
 {//Single console/input owner. Lines are collected here; native compilation is pending.
@@ -299,9 +304,22 @@ U0 KernelStartup()
 U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
-  I64 i;
+  I64 i,used;
+  CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
+  used=kernel_heap.used;
+  if(!I386InternalTypesInit(&kernel_types,&kernel_heap)) KernelStop;
+  kernel_symbols->next=kernel_types.table;
+  for(i=0;i<INTERNAL_TYPES_NUM;i++) {
+    record=HashFind(internal_types_table[i].name,kernel_symbols,HTT_INTERNAL_TYPE);
+    if(!record || record->raw_type!=internal_types_table[i].type ||
+        record->size!=internal_types_table[i].size || record[1].size!=4) KernelStop;
+  }
+  if(HashFind("Bool",kernel_symbols,HTT_INTERNAL_TYPE)!=kernel_types.by_raw[RT_I8] ||
+      HashFind("F64",kernel_symbols,HTT_INTERNAL_TYPE)!=kernel_types.by_raw[RT_F64]) KernelStop;
+  KernelLog("TYPES "); KernelHex(INTERNAL_TYPES_NUM); KernelLog(" ");
+  KernelHex(kernel_heap.used-used); KernelLog("\n");
   kernel_exports[0].str="KernelLog"; kernel_exports[0].kind=1;
   kernel_exports[0].val=(&KernelLog+0)(U64);
   kernel_exports[1].str="KernelDisplay"; kernel_exports[1].kind=1;
