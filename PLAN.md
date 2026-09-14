@@ -109,6 +109,40 @@ evidence and should all remain visible in release criteria.
 
 ## Architectural work packages
 
+### Architectural assessment and review rules
+
+The 32-bit target preserves the central programming model: a native HolyC system
+with direct calls, ring-0 execution and a shared flat address space. VGA preserves
+the existing logical display size and palette. The substantial architectural cost
+lies in compiler and runtime semantics, bootstrap execution and memory use; it is
+not primarily a display-driver project. Treat this as a native port with shared
+subsystems, rather than a rewrite of the language or document environment.
+
+Review each change against these decisions:
+
+- Separate address width from value width. Audit pointer-bearing structures and
+  interfaces individually; retain wide arithmetic, dates and floating-point
+  values. Do not mechanically replace every eight-byte field or stack slot.
+- Keep frontend grammar and user-visible behavior shared. Put target layout,
+  calling conventions, instruction selection and relocation policy behind explicit
+  compiler interfaces; keep bootstrap host execution distinguishable from native
+  target execution.
+- Keep platform mechanisms small: boot, context/interrupt state, timing, device
+  transfers and VGA presentation. Shared task, file, document and drawing behavior
+  should use the established public interfaces as bootstrap services mature.
+- Make ownership and resource limits architectural contracts. Specify which task
+  or module retains generated code, globals and callbacks, and how failed
+  compilation unwinds. Measure complete interactive and rebuild workloads against
+  the RAM targets before choosing caches or eager startup work.
+- Require end-to-end evidence at integration boundaries: native source input,
+  compilation, execution, recovery and persistence, followed by the document
+  workflow and native rebuild. Keep strict 386 compatibility and x86-64 regression
+  evidence alongside these gates.
+
+There is no separate 16-bit application port in this plan. Firmware-facing real
+mode remains a bootstrap concern. Optional newer hardware acceleration must not
+change the baseline ABI or become necessary for the complete HolyC environment.
+
 ### Implementation boundaries
 
 Organize the port around these concrete boundaries. Keep shared behavior in the
