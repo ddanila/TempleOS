@@ -2737,3 +2737,28 @@ The new bridge remains a quiescent, IF-clear volume service outside the unchange
 383496-byte bootstrap. Task drive/directory paths, parent search, resident caching,
 public exception behavior and include dispatch remain open, along with parser/JIT,
 documents, strict 386 profiles and native self-hosting. See `docs/i386-file-load.md`.
+
+## Optional native ancestor file lookup
+
+I386RedSeaFileLoad now accepts an optional scan_parents flag, defaulting to false.
+Enabled search uses local exact/alternate candidates first, then all exact-name
+ancestors and finally alternate-name ancestors. A distant exact name beats a nearer
+alternate; a local alternate beats ancestor files. Directory entries are skipped
+as file candidates in search mode. Missing/intermediate-file contexts are rejected
+without searching unrelated directories, and selected-file errors still stop the
+load rather than triggering another candidate.
+
+Parent traversal resolves on-disk parent entries, stops at the volume root and
+uses constant-storage Brent cycle detection plus bounded counters and a volume
+hop limit. Prefix and alternate allocations are reclaimed on all search exits.
+Tests cover absolute/relative bases, nearest and distant precedence, directory
+collisions, disabled search, root misses, suffix quirks, bad ancestors, missing
+parents, self/two-node cycles and 22 small prefix/name arenas. Existing decoded,
+partial-I/O and heap/output checks remain. Native tests and instruction audit,
+both x64 rebuild/reboot generations and kernel boot regressions pass.
+
+The expanded disk fixture uses a 160 KiB test loader, with its separate 128 KiB
+heap unchanged. The standalone bootstrap remains 383496 bytes with 9720 bytes of
+headroom. Task drive/directory normalization, resident caching, public file/compiler
+integration, parser/JIT, documents, strict 386 profiles and native self-hosting
+remain open. See `docs/i386-file-load.md`.

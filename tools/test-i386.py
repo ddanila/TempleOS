@@ -163,7 +163,7 @@ def main():
     large_runner = args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     #Task and symbol integration corpora use a 160 KiB transfer; their first arena is 0x40000.
     #A 160 KiB transfer from 0x10000 ends at 0x38000, below that arena.
-    boot_sectors = 512 if args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 320 if args.lex_state or args.tasks or args.except_tasks or args.symbols else 256 if large_runner else 128
+    boot_sectors = 512 if args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 320 if args.redsea_read or args.lex_state or args.tasks or args.except_tasks or args.symbols else 256 if large_runner else 128
     kind = 'expressions'
     for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
@@ -618,6 +618,7 @@ def main():
             io_directory = rs_entry('.',0x810,2110,512)+rs_entry('..',0x810,2050,0)
             io_directory += rs_entry('Outside.HC.Z',0xC00,32767,1024)+rs_entry('Outside.HC',0x800,2056,len(source))
             io_directory += bytes(512-len(io_directory))
+            root[15*64:16*64] = rs_entry('Cycle',0x810,2114,512)
             directory = bytearray(1024)
             records = [rs_entry('.',0x810,2058,1024), rs_entry('..',0x810,2050,0),
                 rs_entry('Source.HC.Z',0x800,2060,len(packed_source)),
@@ -629,12 +630,35 @@ def main():
                 rs_entry('Bad.HC.Z',0xC00,2101,17),
                 rs_entry('Bad.HC',0x800,2056,len(source)),
                 rs_entry('Single.Z',0xC00,2056,len(source)),
-                rs_entry('Only',0x800,2056,len(source))]
+                rs_entry('Only',0x800,2056,len(source)),
+                rs_entry('Nested',0x810,2112,512)]
             directory[:len(records)*64] = b''.join(records)
+            def directory_image(block, parent, records):
+                rows = [rs_entry('.',0x810,block,512)]
+                if parent is not None:
+                    rows.append(rs_entry('..',0x810,parent,0))
+                rows.extend(records)
+                content = b''.join(rows)
+                return content+bytes(512-len(content))
+            nested = directory_image(2112,2058,[
+                rs_entry('DATA.BIN.Z',0xC00,2080,len(packed_binary)),
+                rs_entry('Deep',0x810,2113,512), rs_entry('Self',0x810,2116,512),
+                rs_entry('Orphan',0x810,2117,512), rs_entry('Empty',0x800,2056,len(source)),
+                rs_entry('Bad.HC.Z',0xC00,2101,17)])
+            deep = directory_image(2113,2112,[rs_entry('Both.HC.Z',0xC00,2060,len(packed_source)),
+                rs_entry('Grand',0x810,2118,512), rs_entry('Source.HC',0x810,2119,512)])
+            grand = directory_image(2118,2113,[])
+            name_collision = directory_image(2119,2113,[])
+            cycle_a = directory_image(2114,2115,[])
+            cycle_b = directory_image(2115,2114,[])
+            self_parent = directory_image(2116,2116,[])
+            orphan = directory_image(2117,None,[])
             with disk.open('r+b') as stream:
                 for block, content in ((2050,root),(2058,directory),(2060,packed_source),
                         (2080,packed_binary),(2100,struct.pack('<qqB',17,0,1)),
-                        (2101,struct.pack('<qqB',18,1,2)),(2110,io_directory)):
+                        (2101,struct.pack('<qqB',18,1,2)),(2110,io_directory),
+                        (2112,nested),(2113,deep),(2114,cycle_a),(2115,cycle_b),
+                        (2116,self_parent),(2117,orphan),(2118,grand),(2119,name_collision)):
                     stream.seek(block*512); stream.write(content)
         redsea_before = disk.read_bytes()
     if args.vga:

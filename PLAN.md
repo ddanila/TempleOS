@@ -314,8 +314,10 @@ resumption match six original-compressor fixtures, including dictionary reuse.
 Owned whole-archive expansion now validates sizes/types and codes before decoding,
 reclaims failed allocations and matches original-compressor fixtures. Volume-scoped
 file loading now tries exact/toggled names, derives attributes from the resolved
-leaf and returns decoded owned bytes. Task paths, parent search, resident records
-and public file/include integration remain required; see `docs/i386-compression.md`,
+leaf and returns decoded owned bytes. Optional parent search preserves local
+exact/alternate precedence followed by exact ancestors before alternate ancestors;
+directory candidates are skipped and cyclic parent walks terminate. Task paths,
+resident records and public file/include integration remain required; see `docs/i386-compression.md`,
 `docs/i386-arc-expand.md`, `docs/i386-expand-buffer.md` and `docs/i386-file-load.md`.
 
 ### H. Meet the memory budget and recover the complete user workflow

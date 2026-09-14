@@ -42,6 +42,7 @@ python3 tools/build-i386-kernel.py --test
 
 The native filename helpers now support the decoded volume loader described in
 `docs/i386-file-load.md`. They remain outside the standalone bootstrap and compiler
-runtime. Absolute path construction, task current-directory/drive rules, parent
-search, resident-file records and public file/include integration remain open.
+runtime. Absolute path construction, task current-directory/drive rules, resident-file
+records and public file/include integration remain open. The decoded volume
+loader now provides optional parent search.
 Volume lookup and decoded loading do not yet provide the complete FileRead contract.
