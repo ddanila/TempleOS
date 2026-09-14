@@ -65,10 +65,12 @@ links against declaration lines in the packaged original file, then detach and
 free the class graphs. A separate `SCALAR LIVE` check compares permanent root classes after probe
 release with the addresses recorded by the boot load service.
 
-This environment is sufficient for scalar bootstrap. General statement/global
-integration, function defaults, static initialization, register/define matching,
-AOT data storage and general expression linking/execution providers remain
-unfinished; their adapters explicitly raise a compiler error. Source links and
+This environment is sufficient for scalar bootstrap. ABI 31 adds retained
+expression output and function defaults; see
+[i386-frontend-expressions.md](i386-frontend-expressions.md). General statement/global
+integration, static initialization, register/define matching, AOT data storage and
+named function/global linking remain unfinished and explicitly reject unsupported
+operations. Source links and
 help indices do not yet provide DolDoc navigation or the complete metadata system.
 There is no interactive HolyC shell or native self-hosted rebuild yet. The QEMU/486
 8 MiB development profile does not establish strict 386SX/DX compatibility.

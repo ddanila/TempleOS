@@ -3,6 +3,7 @@
 #include "/Compiler/I386/NativeSymbol.HH"
 #include "/Compiler/I386/Lex.HH"
 extern class CI386FileServices;
+extern CPrsSymbolServices *I386FrontendServices(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes);
 extern Bool I386ScalarTypesCheck(CHashClass **roots,Bool record);
 extern Bool I386LoadScalarTypes(CI386Heap *heap,CHashClass **types,
   CI386FileServices *files,CI386LexIncludeService *includes,CHashClass **roots=0);

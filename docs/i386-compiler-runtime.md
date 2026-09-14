@@ -17,12 +17,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 30 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 31 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
 root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement, shared branch optimization and pass 0/1/2 constant folding/type analysis owned output buffers and shared function lowering.
-The current structure is 180 bytes on i386; later entries add owned parser
+The current structure is 184 bytes on i386; later entries add owned parser
 services, class publication and scalar bootstrap as described below. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the
@@ -238,3 +238,11 @@ root task's symbol table. Controls and temporary parser state are reclaimed whil
 published class graphs remain live through worker execution and probe-module
 release. See [i386-scalar-bootstrap.md](i386-scalar-bootstrap.md) for contracts,
 source metadata, failure recovery and remaining frontend limitations.
+
+## Owned frontend expression output (version 31)
+
+The `frontend` entry returns the retained parser services for an owned active
+control. Expression outputs carry their literal pools and remain registered until
+explicit release or control unwind. Native software-F64 calls are linked to the
+retained runtime, and the shared function-header parser can evaluate numeric and
+string defaults. See [i386-frontend-expressions.md](i386-frontend-expressions.md).

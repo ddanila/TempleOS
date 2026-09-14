@@ -3968,3 +3968,44 @@ statement/global/default/static/initializer providers, executable function/code/
 data publication, public compiler APIs, interactive compilation, DolDoc and native
 self-hosting remain open. The 8 MiB QEMU/486 development guest does not establish
 strict 386SX/DX acceptance.
+
+## Retained expression output and function defaults
+
+CompilerRuntime ABI 31 (184 bytes) exposes its retained frontend services for an
+owned control. Its expression provider runs the shared parser, determines the
+actual result type, generates native code and retains an independent copy of code
+and literal data. The caller's saved IR and compilation context are restored.
+Outputs remain registered until explicit release or full control unwind; execution
+rejects released or foreign output pointers.
+
+Generated software-F64 calls bind to private typed helper descriptors and are
+patched against the retained runtime after final output allocation. Link records
+are freed through the backend ownership routine, including their code-registry
+links. Numeric results that used literal bytes no longer trigger the default-string
+copy path; returned addresses into the literal pool are copied before code release.
+The complete shared function-header parser now handles computed numeric defaults,
+F64/integer conversion, concatenated default strings and `lastclass` through these
+retained providers. Array bounds use numerical conversion of F64 results to I64.
+
+All 34 frontend cases pass across boot and worker tasks. Coverage includes wide
+and narrow integers, constant and generated F64 arithmetic/comparison, an integer
+update using F64, string results, six defaults in one function header, partial
+header failure after an owned string default, malformed/empty expressions,
+released-code rejection, two live outputs preserving a caller IR node, exhausted
+heap and F64 array bounds. Each case restores exact heap bytes/allocation counts,
+active controls, task references, exception state and interrupt state.
+
+Both x64 rebuild/reboot generations and the complete standalone suite passed,
+including existing scalar bootstrap/publication, parser recovery, executable
+instruction audits, module rejection and pixel-exact VGA/input checks. Python
+syntax and whitespace checks pass. The kernel remains 391008 bytes, leaving 48
+bytes in the fixed boot reservation including its early stage. The retained
+compiler image is 955840 bytes (955856 heap bytes); the temporary probe image is
+381608 bytes and reclaims all 381624 heap bytes. Compiler/probe imports remain
+23/17. FileRuntime stays ABI 13/32 bytes and CompilerProbe ABI 5/56 bytes.
+
+See [i386-frontend-expressions.md](i386-frontend-expressions.md). Named function/
+global linking, full statement/function-body/static/initializer integration,
+function/code/data publication, public APIs, interactive HolyC, DolDoc and native
+self-hosting remain open. This remains an 8 MiB QEMU/486 development result;
+strict 386SX/DX acceptance is still required by `PLAN.md`.

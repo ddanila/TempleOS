@@ -885,9 +885,18 @@ filename and declaration lines. Bootstrap failures and duplicate loads restore
 allocation/control ownership without replacing published classes. See
 `docs/i386-scalar-bootstrap.md`.
 
-Complete retained statement/global/function/default/static/initializer providers,
-executable code and data publication, interactive compilation, DolDoc integration
-and native self-hosting remain required. This bootstrap milestone does not satisfy
+The retained frontend now exposes its parser services and produces owned native
+expression output (CompilerRuntime ABI 31, 184 bytes). Result types and literal
+pools survive temporary IR cleanup; software-F64 calls bind to the retained
+runtime. The shared function-header parser evaluates numeric and string defaults,
+including mixed F64 calculations, while array bounds use numerical I64 conversion.
+Two live outputs preserve the caller's IR, and released-code execution is rejected.
+Native boot/worker cases verify exact cleanup after success and parse/OOM failures.
+See `docs/i386-frontend-expressions.md`.
+
+Complete retained statement/global/function-body/static/initializer providers,
+named function/global linking, executable code and data publication, interactive
+compilation, DolDoc integration and native self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.
 
 #### Continuing integration sequence
