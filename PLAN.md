@@ -304,6 +304,13 @@ Relevant code: `Kernel/KernelA.HH` (`CBinFile`, `CDirEntry`, `CDate`, `CDocBin`)
 Acceptance: cross-target RedSea/DolDoc round trips, compression fixtures, image
 verification, and clean wrong-architecture module rejection.
 
+Compression records are now shared, preserving the 17-byte disk header while
+using native-width in-memory pointers. A native dictionary allocator matches the
+original x64 assembly across 40000 growth/reuse updates, including occupied-slot
+skips and chain unlinking. It remains outside the bootstrap. Native bitstream
+expansion, control/stack ownership and compressed-file interoperability still need
+implementation; see `docs/i386-compression.md`.
+
 ### H. Meet the memory budget and recover the complete user workflow
 
 - Measure resident kernel/compiler code, heaps, stacks, symbol tables, documents,

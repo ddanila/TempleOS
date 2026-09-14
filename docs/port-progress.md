@@ -2607,3 +2607,26 @@ paths, task directory/drive rules, actual .Z fallback and parent search, residen
 file records, decompression and include dispatch remain required. The complete
 parser/JIT, document workflow, strict 386 profiles and native self-hosting remain
 open. See `docs/i386-file-names.md`.
+
+## Native compression dictionary allocation
+
+Compression types now share Kernel/Arc.HH. The archive header remains 17 bytes;
+native dictionary entries and controls use their 32-bit pointer layout (12 and
+65664 bytes). The x64 records retain their 16- and 98456-byte layouts and existing
+assembly allocator. I386ArcEntryGet implements native dictionary growth, 12-bit
+slot reuse and old-chain unlinking with pointer arithmetic, preserving only-bit-
+zero consumption of entry_used.
+
+A dedicated arc fixture compares 20000 updates per 7/8-bit mode with original
+x64 assembly traces captured at fd119d3. Normalized dictionary state, occupied-slot
+skips, chain reuse/traversal and higher entry_used bits are covered; both frozen
+hashes match natively. Control allocation/reclamation, layout assertions and the
+386 executable audit pass. Both x64 rebuild/reboot generations and the full native
+kernel boot, module rejection and VGA/keyboard/timer checks pass. The standalone
+bootstrap remains 383496 bytes with 9720 bytes of headroom; the new dictionary
+routine is not yet linked there.
+
+This is a compression prerequisite. Native stream decoding, owned controls/stacks,
+bounded archive expansion, original compressed-data interoperability and file/
+include integration remain open, as do parser/JIT, documents, strict 386 profiles
+and native self-hosting. See `docs/i386-compression.md`.
