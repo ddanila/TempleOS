@@ -15,9 +15,8 @@ CI386Scheduler scheduler;
 CI386Task task;
 CI386Heap heap;
 CExceptControl *active;
-CI386ExceptCapture registered;
 U32 removed,resume_requested,failures,trace;
-extern U0 SysTry(U8 *catch_start,U8 *untry_start);
+import U0 SysTry(U8 *catch_start,U8 *untry_start);
 extern U0 SysUntry();
 extern U0 Fire();
 extern U0 NestedThrow();
@@ -25,6 +24,8 @@ extern U0 Reject();
 extern U0 Accept();
 extern U0 BadResume(CI386ExceptCapture *capture);
 extern U0 RemoveSelected();
+extern I64 ReturnTry(I64 value);
+extern I64 ReturnCatch();
 I64 Main(CExceptControl *control,I64 unused)
 {
   CI386ExceptCapture capture;
@@ -112,18 +113,31 @@ I64 Main(CExceptControl *control,I64 unused)
       I386ExceptDispatch(&task,125,control->invoke,0)!=I386_EXCEPT_INVALID ||
       task.except_ch!=124 || failures || removed!=6 || !I386HeapValid(&heap))
     return 23;
+  try {
+    full=I386HeapAlloc(&heap,4016);
+    if(!full) failures++;
+    try { failures++; } catch { failures++; }
+    failures++;
+  } catch {
+    if(task.except_ch!='OutMem') failures++;
+    task.catch_except=TRUE;
+  }
+  if(failures || task.except_top || !I386HeapFree(&heap,full) || heap.used)
+    return 24;
+  if(ReturnTry(0x123456789ABCDEF0)!=0x123456789ABCDEF0 ||
+      ReturnCatch()!=0x1122334455667788 || task.except_top || heap.used || failures)
+    return 25;
   return 0;
 }
-//Fixture registration only: retain the real enclosing frame and compiler labels.
-//This does not supply the production SysTry entry or its register capture.
-U0 SysTry(U8 *catch_start,U8 *untry_start)
+//Environment providers for the production SysTry module; capture is untouched.
+Bool I386ExceptEnter(CI386ExceptCapture *capture)
 {
-  U8 *frame=GetRBP;
-  registered.ebp=*frame(U32 *);
-  registered.esp=frame+24;
-  registered.catch_start=catch_start; registered.untry_start=untry_start;
-  registered.eflags=2;
-  if(!I386ExceptPush(&task,&heap,&registered)) failures++;
+  return I386ExceptPush(&task,&heap,capture)!=0;
+}
+U0 I386ExceptRegistrationFailed()
+{
+  I386ExceptDispatch(&task,'OutMem',active->invoke,active->resume);
+  failures++;
 }
 U0 SysUntry() { if(!I386ExceptPop(&task)) failures++; removed++; }
 U0 Fire()
@@ -143,6 +157,16 @@ U0 NestedThrow()
   try { Fire; failures++; }
   catch { if(inner!=0x1234567800000000) failures++; trace++; }
   failures++;
+}
+I64 ReturnTry(I64 value)
+{
+  try { return value; } catch { failures++; }
+  return 0;
+}
+I64 ReturnCatch()
+{
+  try { Fire; failures++; } catch { return 0x1122334455667788; }
+  return 0;
 }
 U0 Reject() { trace++; }
 U0 Accept() { task.catch_except=TRUE; }

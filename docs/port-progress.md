@@ -1417,3 +1417,23 @@ The production two-argument SysTry entry, public throw/error policy, recursive
 throw semantics, catches that yield, debugger/logging and full CTask integration
 remain pending. The complete native OS, self-hosting, memory targets and strict
 386 validation remain unfinished. See `i386-exceptions.md`.
+
+
+## Compiler SysTry entry
+
+A bootstrap T32M provider now exports the actual two-argument SysTry ABI. It
+captures caller registers and the stack after callee cleanup before calling
+HolyC, then imports record publication and registration-failure services through
+normal relative module relocations. Failed registration cannot return into the
+try body, even if the failure service incorrectly returns.
+
+The context fixture now links this provider and no longer reconstructs try
+frames in a HolyC wrapper. Nested/cross-frame dispatch passes with real captures,
+as do OutMem recovery through an outer catch and early returns from both try
+and catch bodies, with record/heap reclamation. Generated, linked-provider and
+context assembly instruction audits and both x64 rebuild/reboot generations pass.
+
+The fixture still supplies environment-specific task/heap and failure services.
+Production service binding, public throw/unhandled/debug recovery, native
+assembler/self-hosting and the complete OS remain unfinished. See
+`i386-exceptions.md`.

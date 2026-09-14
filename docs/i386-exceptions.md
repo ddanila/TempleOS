@@ -1,7 +1,8 @@
 # Native exception record ownership
 
 This describes record ownership and low-level context primitives for HolyC
-try/catch on the 32-bit target. Production SysTry, SysUntry and public throw integration remain incomplete.
+try/catch on the 32-bit target. The compiler SysTry entry is available as a bootstrap module; production
+service binding, SysUntry and public throw integration remain incomplete.
 An explicit task dispatcher now connects record ownership to context transfer. Compiler registration lowering and bounded frame traversal
 are separate existing prerequisites; context primitives are described below.
 
@@ -69,15 +70,11 @@ compatible flags and code addresses; the normal HolyC ABI requires DF clear.
 callee cleanup, invoker preservation even when the catch clobbers registers,
 and resumption after abandoning 128 bytes of deeper stack. It also checks a
 HolyC caller's captured EBP/ESP and compiler-generated catch blocks accessing
-an enclosing 64-bit local. Fixture-only SysTry registration supplies the enclosing
-frame and labels: one catch returns to the invoking helper, and another resumes
-at the compiler's cleanup label, skipping the remaining try body.
-
-That fixture registration is not a production SysTry implementation: it does
-not capture the enclosing function's full preserved-register state or allocate
-records. Native runtime entry, nested task-owned dispatch and propagation,
-allocation-failure policy, unhandled exceptions and full public CTask integration
-remain required. NASM remains a bootstrap tool pending native assembler support.
+an enclosing 64-bit local. The compiler SysTry module supplies the enclosing frame and labels: one catch
+returns to the invoking helper, and another resumes at the compiler's cleanup
+label, skipping the remaining try body. Native runtime service binding,
+unhandled exceptions and full public CTask integration remain required.
+NASM remains a bootstrap tool pending native assembler support.
 
 
 ## Capture and allocation boundary
@@ -97,9 +94,9 @@ and registers two real records through native I386ExceptPush. It tests exhaustio
 with the existing chain intact and complete heap reclamation after clearing.
 
 This five-argument bootstrap entry is not the two-argument compiler SysTry entry.
-The latter still needs native binding to the current task, allocation provider
-and heap, together with an allocation-failure path that cannot silently enter
-an unprotected try body. Production throw dispatch and propagation remain pending.
+The compiler entry is supplied by the SysTry module below. Its environment
+services still need production binding to the current task, allocation provider
+and heap. Public throw integration remains pending.
 
 
 ## Task-owned dispatch
@@ -135,7 +132,41 @@ It verifies inner rejection and outer acceptance in one frame and across
 function frames, inner acceptance followed by normal outer cleanup, full-width
 exception values, unhandled cleanup, corrupt-record rejection, a returning
 resume callback, selected-record removal and invalid current-task/callback
-arguments. Fixture registration still supplies the enclosing frame explicitly;
-it is not the final assembly SysTry binding. Full public throw must route returned
+arguments. The fixture imports the assembly SysTry provider described below. Full public
+throw must route returned
 errors to recovery or an unhandled-exception path instead of continuing the try
 body. Task switching during catches has not yet been exercised by this fixture.
+
+
+## Compiler SysTry module
+
+`Kernel/I386/SysTry.asm` builds a position-independent T32M v2 provider exporting
+`SysTry(catch_start, untry_start)` with the compiler's two eight-byte argument
+slots. Build it with NASM's binary output and link it through the ordinary native
+module loader. The module has relative-call imports for two HolyC services:
+
+- `Bool I386ExceptEnter(CI386ExceptCapture *capture)` copies the temporary capture
+  into an owned record and returns true only after successful publication.
+- `U0 I386ExceptRegistrationFailed()` transfers to an existing recovery handler
+  or terminates; it must not return into the try body.
+
+The entry snapshots EBP, EBX/ESI/EDI and flags before calling HolyC. Its saved
+ESP is entry ESP plus 20, after the return address and both argument slots. The
+32-byte temporary capture remains live throughout the Enter call. Success
+releases that storage and returns with 16-byte callee cleanup. Failure calls
+the failure service; if the service erroneously returns, an infinite branch
+prevents entry into the unprotected body. This fallback is not a user-facing
+unhandled-exception or debugger implementation.
+
+The context fixture now imports this actual SysTry module. It no longer rebuilds
+the enclosing frame in a HolyC SysTry wrapper. Its environment services bind to
+the explicit test task/heap, and route registration failure through dispatch
+with an OutMem value. Production boot still must bind those services to the
+current task, allocator and unhandled-exception policy. Native assembler
+self-hosting remains pending; NASM is a bootstrap dependency.
+
+The linked context suite passes nested/cross-frame propagation with this entry,
+allocation failure caught by an outer handler, and early returns from both a
+try body and a catch body. Each path checks that exception records and heap
+allocations are reclaimed. Executable instruction auditing includes the linked
+SysTry module as well as generated HolyC and the context primitives.

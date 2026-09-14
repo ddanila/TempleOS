@@ -104,6 +104,9 @@ def main():
     overlay = OUT / 'overlay/Compiler/I386'
     overlay.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT/'Compiler/I386/Expr.HC', overlay/'Expr.HC')
+    if args.except_context:
+        run('nasm', '-f', 'bin', 'Kernel/I386/SysTry.asm',
+            '-o', str(OUT/'overlay/SysTry.T32'))
     iso = OUT/'compiler.iso'
     exports = OUT/'exports'
     build = [sys.executable, 'tools/build-iso.py', '--overlay', str(OUT/'overlay')]

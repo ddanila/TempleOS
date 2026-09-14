@@ -531,6 +531,12 @@ resumes accepted catches at compiler cleanup. Tests cover nested and cross-frame
 catches, full-width exception values, unhandled cleanup and malformed state.
 Production SysTry/public throw binding, allocation-failure policy, recursive
 throw behavior and debugger/logging integration remain pending.
+The compiler's two-argument SysTry now has a native T32M assembly provider.
+It captures the caller before HolyC runs, imports record/failure services and
+prevents failed registration from entering the try body. Linked tests now use
+this entry for nested/cross-frame catches, OutMem recovery through an outer
+catch and early returns from try/catch bodies. Current-task service binding,
+public throw, unhandled/debug recovery and native assembler integration remain.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full
