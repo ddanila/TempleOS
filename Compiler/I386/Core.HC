@@ -524,6 +524,14 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
             I386Bytes(&out,"\x31\xD2",2);
             calls->called=TRUE;
             break;
+          case IC_GET_RBP:
+            if (!calls || calls->called || calls->indirect ||
+                !Bt(&calls->fun->flags,Ff_INTERNAL) ||
+                calls->fun->exe_addr!=ic->ic_code || calls->fun->arg_cnt ||
+                depth!=calls->depth) throw('Compiler');
+            I386Bytes(&out,"\x89\xE8\x31\xD2",4);
+            calls->called=TRUE;
+            break;
           case IC_GET_RFLAGS:
           case IC_SET_RFLAGS:
             arg_index=0;

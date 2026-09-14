@@ -158,7 +158,7 @@ auditing excludes the table bytes.
 
 HolyC `start` prefixes use local subroutine calls and bare returns. The enclosing
 function epilogue restores ESP from EBP before popping saved registers, allowing
-a native function return from inside a prefix. The function corpus has 220 cases,
+a native function return from inside a prefix. The function corpus has 233 cases,
 including 20 switch cases and five deliberate #DE faults. Nineteen switch bodies
 also execute on x64 with checked results. The prefix early-return case is native
 only: executing it in the x64 oracle stalled the test guest. Its x64 compatibility
@@ -208,3 +208,27 @@ throw or nonlocal catch execution. These checks establish compiler lowering,
 not stack unwinding. Native exception records, capture/restore stubs, propagation,
 catch acceptance and task-owned lifetime remain required. The function corpus
 now uses the 128 KiB test transfer path; the guest still has 8 MiB RAM.
+
+
+`GetRBP`, declared by `Kernel/I386/Cpu.HH`, now returns the active native EBP
+as a zero-extended four-byte pointer. It uses the ordinary intrinsic call context
+without creating another frame. `Kernel/I386/Frame.HH/HC` describes the eight-byte
+frame header (four-byte parent followed by four-byte return address) and provides
+checked header, parent and return-address access for future diagnostics and
+exception handling.
+
+Callers supply the bounds of live, readable stack memory. Validation rejects
+null bounds, extents smaller than a header, extents that cross the 32-bit address
+limit, unaligned headers and headers outside the extent. Parent traversal also
+requires the parent to follow the complete current header, rejecting overlapping
+headers, backward links and cycles. Invalid traversal returns zero without
+following the link. Return-address access validates the header, not whether the
+returned address names executable code. Bounds checks do not prove that memory
+is mapped or that its lifetime is stable; the caller owns those conditions.
+
+Thirteen new function cases cover argument offsets EBP+8/EBP+16, a real nested
+call's parent and arguments, synthetic links and return addresses, malformed
+alignment/extent/overlap/cycles, and arithmetic at the top of the address space.
+The helpers do not restore registers or unwind stacks. Task stack-bound metadata,
+exception record ownership, register capture and nonlocal catch execution remain
+required before native throw can use this interface.

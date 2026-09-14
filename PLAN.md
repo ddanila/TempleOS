@@ -498,6 +498,12 @@ early returns. Five recording-provider cases pass for normal, nested and repeate
 registration/cleanup, bringing the function corpus to 220 cases. This is a
 compiler prerequisite only: throw, catch execution in the enclosing frame,
 propagation, exception records and task-owned lifetime are not implemented yet.
+Native GetRBP and bounded frame-header traversal now provide the active frame,
+parent and saved return address using four-byte pointers. Thirteen ABI and
+malformed-frame cases bring the function corpus to 233 cases, including a real
+nested call reading its caller's I64 argument slots. Traversal requires live
+readable stack bounds and does not perform unwinding. Task bounds, exception
+record lifetime and register capture/restore remain pending.
 Next, complete the software F64 runtime and compiler lowering, migrate full public
 task/CPU records and task semantics, bring up
 the production entry path, input and full

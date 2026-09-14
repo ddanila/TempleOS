@@ -434,6 +434,46 @@ U0 CompileTests()
   EmitCase("I64 i; for(i=0;i<3;i++) { try { a++; } catch { State(3); } } return State(0);",0,0,303,&cursor,
     "extern U0 SysTry(U8 *c,U8 *u); extern U0 SysUntry(); extern I64 State(I64 action);",
     "I64 State(I64 action) { static I64 entered=0,exited=0,bad=0; if(action==1) entered++; if(action==2) exited++; if(action==3) bad++; return entered*100+exited+bad*10000; } U0 SysTry(U8 *c,U8 *u) { State(1); if(!c||!u||c==u) State(3); } U0 SysUntry() { State(2); }");
+  //Frame-pointer ABI and bounded traversal for exception/diagnostic consumers.
+  EmitCase("return (&a+0)(U64)-(GetRBP+0)(U64);",0x100000000,42,8,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("return (&b+0)(U64)-(GetRBP+0)(U64);",0x100000000,42,16,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f[2]; return I386FrameValid(&f[0],f,sizeof(f))+2*I386FrameValid(&f[1],f,sizeof(f));",0x100000000,42,3,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f[2]; f[0].parent=&f[1]; return I386FrameParent(f,f,sizeof(f))==&f[1];",0x100000000,42,1,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f[2]; f[1].parent=&f[0]; return I386FrameParent(&f[1],f,sizeof(f))==NULL;",0x100000000,42,1,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f; f.parent=&f; return I386FrameParent(&f,&f,sizeof(f))==NULL;",0x100000000,42,1,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f; return I386FrameValid(&f,&f,7)+I386FrameValid(&f,&f,-1);",0x100000000,42,0,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f[2]; return I386FrameValid((f(U8 *)+1)(CI386Frame *),f,sizeof(f));",0x100000000,42,0,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("return I386FrameValid(0xFFFFFFF8,0xFFFFFFF8,8)+2*I386FrameValid(0xFFFFFFF8,0xFFFFFFF8,9);",0x100000000,42,1,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("return I386FrameParent(NULL,NULL,0)==NULL && I386FrameReturn(NULL,NULL,0)==NULL;",0x100000000,42,1,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("CI386Frame f; f.parent=NULL; f.return_address=0xFEDCBA98; return (I386FrameReturn(&f,&f,sizeof(f))+0)(U64);",0x100000000,42,4275878552,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
+  EmitCase("return Probe(a,b);",0x100000000,42,4294967338,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0\nextern I64 Probe(I64 x,I64 y);",
+    "#include \"/Kernel/I386/Frame.HC\"\nI64 Probe(I64 x,I64 y) { CI386Frame *me=GetRBP,*parent=me->parent,*found; I64 size=(parent(U8 *)+8)-me(U8 *); found=I386FrameParent(me,me,size); if(found!=parent || !I386FrameReturn(me,me,size)) return -1; return (found(U8 *)+8)(I64 *)[0]+(found(U8 *)+16)(I64 *)[0]; }");
+  EmitCase("CI386Frame f[2]; f[0].parent=(f(U8 *)+4)(CI386Frame *); return I386FrameParent(f,f,sizeof(f))==NULL;",0,0,1,&cursor,
+    "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
+    "#include \"/Kernel/I386/Frame.HC\"");
   //Switch tables must retain 64-bit selectors and HolyC prefix/footer semantics.
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",1,0,11,&cursor);
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",3,0,33,&cursor);
