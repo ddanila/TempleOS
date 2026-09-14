@@ -51,11 +51,12 @@ provides the emulated IRQ source used in the test.
 
 ## Entry ABI
 
-`Kernel/I386/Irq.asm` contains sixteen 386 entry stubs and a common entry path.
-The current bootstrap assembles it with NASM into a fixed-address stage. It is
-not yet emitted as a relocatable HolyC module. Install its entry addresses in
-32-bit interrupt gates, with code selector 8 and flat data selector 16, and set
-`i386_irq_dispatch` before unmasking anything. A missing callback halts.
+`Kernel/I386/IrqEntry.HC` contains sixteen 386 entry stubs and a common entry
+path, compiled into a HolyC module with a REL32 `I386IrqDispatch` import. Install
+its exported entry addresses in 32-bit interrupt gates, with code selector 8 and
+flat data selector 16. The dispatcher must be linked and ready before unmasking
+interrupts. The test runner binds the import to an adapter for its callback slot;
+a missing test callback halts. The module itself has no fixed-address data.
 
 The callback is `U0 handler(CI386IrqFrame *frame)` using the normal eight-byte
 HolyC argument slot. The frame contains sixteen U32 fields:
@@ -108,8 +109,8 @@ masking around actual allocator metadata operations; see the
 
 ## Exception entry
 
-`Kernel/I386/Exception.asm` supplies entries for vectors 0–16 and a separate
-`i386_exception_dispatch` callback: `U0 handler(CI386ExceptionFrame *frame)`.
+`Kernel/I386/ExceptionEntry.HC` supplies entries for vectors 0–16 and a separate
+REL32 `I386ExceptionDispatch` import: `U0 handler(CI386ExceptionFrame *frame)`.
 Install 32-bit interrupt gates with the same selectors as the IRQ path. Entries
 normalize the CPU error code: vectors 8 and 10–14 retain the hardware word; the
 others push zero. Do not invoke error-code entries using software INT, which does
@@ -121,13 +122,15 @@ The first twelve U32 fields match the IRQ frame. Offset 48 holds the vector,
 ESP points to offset 48, not the interrupted stack top. The callback runs with
 IF/DF clear and must not yield or acknowledge the PIC. It may edit saved registers
 and EIP for an explicitly recognized recovery site. Entry restores the saved frame,
-discards vector/error, and returns with IRETD. A missing callback halts.
+discards vector/error, and returns with IRETD. The linked dispatcher must be
+ready before installing the gates; a missing test callback halts in its adapter.
 
 This requires an intact ring-0 stack and does not provide stack-fault recovery,
 an emergency double-fault task/stack, safe NMI handling, page-fault address capture,
 debugger integration, or HolyC throw/catch unwinding. The table encodes 386 vectors;
 later CPUs' additional exceptions need their own entries before enabling associated
-features. As with IRQ entry, this is currently assembled by NASM at a fixed address.
+features. As with IRQ entry, the module compiles inside TempleOS and has no
+fixed-address data or absolute relocations.
 
 ## Verification
 
@@ -177,3 +180,19 @@ This passes on the QEMU 486/8 MiB runner. Timer calibration, missed-tick account
 interrupt latency on vintage CPUs, calendar reads, full exception handling, keyboard/mouse
 initialization, task integration, and production boot wiring remain pending.
 The standalone test is not a complete 32-bit kernel or physical-386 validation.
+
+
+## HolyC entry-module build
+
+IRQ and task fixtures compile and export both entry modules. Their host embedding
+step checks the expected entry exports, the single allowed REL32 CALL import,
+entry coverage and final IRET with bounded zero alignment padding. The runner
+binds that import to its callback adapter and derives the IDT entry tables from
+the exports. Audits cover the patched executable bytes and adapters, excluding
+only tables and checked padding. NASM still builds the surrounding test boot/IDT
+setup. Native compiler execution, production IDT/dispatcher integration and
+strict 386 hardware verification remain separate requirements.
+
+The IRQ suite and the task, blocking-input, message and exception-task regressions
+pass with these generated modules and patched-code instruction audits. Both
+x86-64 compiler/kernel rebuild/reboot generations also pass.

@@ -43,6 +43,26 @@ U0 CompileTests()
   }
   line=MStrPrint("EXPORT TaskContext.t32m %X %X\n",image,loaded); Report(line);
   Free(image);
+  source=FileRead("/Kernel/I386/IrqEntry.HC");
+  image=CmpI386Module(source,&loaded,&errors);
+  Free(source);
+  if(!image || errors) {
+    source=DocSave(DocPut,&size);
+    line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
+    Report("FAIL HolyC IrqEntry compile\n"); return;
+  }
+  line=MStrPrint("EXPORT IrqEntry.t32m %X %X\n",image,loaded); Report(line);
+  Free(image);
+  source=FileRead("/Kernel/I386/ExceptionEntry.HC");
+  image=CmpI386Module(source,&loaded,&errors);
+  Free(source);
+  if(!image || errors) {
+    source=DocSave(DocPut,&size);
+    line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
+    Report("FAIL HolyC ExceptionEntry compile\n"); return;
+  }
+  line=MStrPrint("EXPORT ExceptionEntry.t32m %X %X\n",image,loaded); Report(line);
+  Free(image);
   image=I386Link(modules,sizes,2,&loaded);
   if (!image) { Report("FAIL exception tasks link\n"); return; }
   Report("LINKED 0\n");

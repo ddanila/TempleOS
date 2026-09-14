@@ -41,31 +41,42 @@ def disassemble_i386(code):
     return '\n'.join(result)+'\n'
 
 
-def native_assembly_args(exports, out, module, prefix, names, cleanup, macro):
-    """Embed a relocation-free HolyC assembly module in the bootstrap runner."""
+def native_assembly_args(exports, out, module, prefix, names, cleanup, macro, imports=None):
+    """Embed HolyC assembly, binding only explicitly allowed REL32 call imports."""
+    imports = imports or {}
+    expected_count = len(names)+len(imports)
     context = (exports/f'{module}.t32m').read_bytes()
     magic, version, cpu, pointer, abi, total, code_size, count, records, strings = struct.unpack_from('<IHBB6I', context)
     if (magic, version, cpu, pointer, abi, total, count, records, strings) != (
-            0x4D323354, 2, 3, 4, 1, len(context), len(names), 32+code_size, 32+code_size+16*len(names)):
+            0x4D323354, 2, 3, 4, 1, len(context), expected_count, 32+code_size, 32+code_size+16*expected_count):
         raise ValueError(f'Unexpected {module} module layout')
-    remaining = set(names)
+    remaining = set(names) | set(imports)
     entries = []
+    patches = []
     for index in range(count):
         kind, address, name_offset, name_length = struct.unpack_from('<4I', context, records+16*index)
-        if kind != 1 or address >= code_size or name_offset < strings or name_offset+name_length >= total:
-            raise ValueError(f'{module} must contain only bounded code exports')
+        if kind not in (1, 2) or address >= code_size or name_offset < strings or name_offset+name_length >= total:
+            raise ValueError(f'{module} must contain bounded code exports/call imports')
         name = context[name_offset:name_offset+name_length].decode('ascii')
         if name not in remaining or context[name_offset+name_length] != 0:
             raise ValueError(f'Unexpected {module} export')
         remaining.remove(name)
-        entries.append((address, name))
+        if kind == 1 and name in names:
+            entries.append((address, name))
+        elif kind == 2 and name in imports and 0 < address <= code_size-4:
+            if context[32+address-1] != 0xE8:
+                raise ValueError(f'{module} import is not a relative CALL')
+            patches.append((address, imports[name]))
+        else:
+            raise ValueError(f'Unexpected {module} symbol kind')
     code = context[32:32+code_size]
     returns = [line.split() for line in disassemble_i386(code).splitlines()
-               if len(line.split()) >= 3 and line.split()[2] == 'ret']
+               if len(line.split()) >= 3 and line.split()[2] == ('iret' if cleanup is None else 'ret')]
     if not returns:
         raise ValueError(f'Missing {module} return')
     end = int(returns[-1][0], 16)+len(returns[-1][1])//2
-    if code[end-3:end] != b'\xc2'+struct.pack('<H', cleanup) or len(code)-end > 7 or any(code[end:]):
+    tail = b'\xcf' if cleanup is None else b'\xc2'+struct.pack('<H', cleanup)
+    if code[end-len(tail):end] != tail or len(code)-end > 7 or any(code[end:]):
         raise ValueError(f'Unexpected {module} tail/padding')
     entries.sort()
     if entries[0][0] != 0:
@@ -80,8 +91,17 @@ def native_assembly_args(exports, out, module, prefix, names, cleanup, macro):
     body = out/f'{module}.bin'
     body.write_bytes(code[:end])
     include = out/f'{module}.inc'
-    include.write_text('\n'.join(definitions)+
-                       f'\n{prefix}_begin:\nincbin "{body}"\n{prefix}_end:\n')
+    payload = []
+    position = 0
+    for address, symbol in sorted(patches):
+        if address < position or address+4 > end:
+            raise ValueError(f'Overlapping/out-of-range {module} call patch')
+        payload.append(f'incbin "{body}",{position},{address-position}')
+        payload.append(f'dd {symbol}-($+4)')
+        position = address+4
+    payload.append(f'incbin "{body}",{position},{end-position}')
+    include.write_text('\n'.join(definitions)+f'\n{prefix}_begin:\n'+
+                       '\n'.join(payload)+f'\n{prefix}_end:\n')
     return [f'-D{macro}="{include}"']
 
 
@@ -354,6 +374,13 @@ def main():
         context_args += native_assembly_args(exports, OUT, 'TaskContext',
             'i386_task_context', ('i386_context_switch', 'i386_idle',
             'i386_segments_reload'), 16, 'TASK_CONTEXT_FILE')
+    if args.irq or task_runner:
+        for module, stem, vectors, dispatch in (
+                ('IrqEntry', 'irq', 16, 'I386IrqDispatch'),
+                ('ExceptionEntry', 'exception', 17, 'I386ExceptionDispatch')):
+            context_args += native_assembly_args(exports, OUT, module,
+                f'i386_{stem}_module', tuple(f'i386_{stem}_{i}' for i in range(vectors)),
+                None, f'{stem.upper()}_ENTRY_FILE', {dispatch: f'i386_{stem}_callback'})
     disk = OUT/'runner.img'
     run('nasm', *(['-DEXCEPT_TASK_TEST=1'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         *context_args, f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',

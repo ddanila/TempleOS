@@ -224,7 +224,37 @@ irq_test_idtr: dw 48*8-1
     dd irq_test_idt
 irq_test_saved_sp: dd 0
 irq_test_target: dd 0
-%include "Kernel/I386/Irq.asm"
+i386_irq_stubs_begin:
+%include IRQ_ENTRY_FILE
+; Test-only adapter: production modules import their HolyC dispatcher directly.
+i386_irq_callback:
+    cmp dword [i386_irq_dispatch],0
+    je .unhandled
+    jmp [i386_irq_dispatch]
+.unhandled:
+    cli
+    hlt
+    jmp .unhandled
+i386_irq_stubs_end:
+align 4
+i386_irq_entries:
+    dd i386_irq_0
+    dd i386_irq_1
+    dd i386_irq_2
+    dd i386_irq_3
+    dd i386_irq_4
+    dd i386_irq_5
+    dd i386_irq_6
+    dd i386_irq_7
+    dd i386_irq_8
+    dd i386_irq_9
+    dd i386_irq_10
+    dd i386_irq_11
+    dd i386_irq_12
+    dd i386_irq_13
+    dd i386_irq_14
+    dd i386_irq_15
+i386_irq_dispatch: dd 0
 irq_test_ticks: dd 0 ; Follows dispatch pointer: CIrqTestControl layout.
 irq_test_flags_ptr: dd irq_test_flags
 exception_test_run_ptr: dd exception_test_run
@@ -233,4 +263,35 @@ exception_test_vector: dd 0
 exception_test_error: dd 0
 exception_test_ip: dd 0
 exception_test_resume: dd 0
-%include "Kernel/I386/Exception.asm"
+i386_exception_stubs_begin:
+%include EXCEPTION_ENTRY_FILE
+; Test-only adapter: production modules import their HolyC dispatcher directly.
+i386_exception_callback:
+    cmp dword [i386_exception_dispatch],0
+    je .unhandled
+    jmp [i386_exception_dispatch]
+.unhandled:
+    cli
+    hlt
+    jmp .unhandled
+i386_exception_stubs_end:
+align 4
+i386_exception_entries:
+    dd i386_exception_0
+    dd i386_exception_1
+    dd i386_exception_2
+    dd i386_exception_3
+    dd i386_exception_4
+    dd i386_exception_5
+    dd i386_exception_6
+    dd i386_exception_7
+    dd i386_exception_8
+    dd i386_exception_9
+    dd i386_exception_10
+    dd i386_exception_11
+    dd i386_exception_12
+    dd i386_exception_13
+    dd i386_exception_14
+    dd i386_exception_15
+    dd i386_exception_16
+i386_exception_dispatch: dd 0

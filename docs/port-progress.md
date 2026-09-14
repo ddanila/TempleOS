@@ -1557,3 +1557,26 @@ switching with the new entries. Both x86-64 rebuild/reboot generations pass.
 The runner still passes entry pointers into standalone native services. Public
 CTask/Yield and production boot integration, the interrupt/boot assembler path,
 native compiler execution and strict 386 validation remain unfinished.
+
+
+## HolyC-built IRQ and CPU exception entries
+
+`Kernel/I386/IrqEntry.HC` and `ExceptionEntry.HC` replace the remaining NASM
+kernel entry stubs. They export the sixteen PIC IRQ entries and seventeen 386
+exception entries, importing `I386IrqDispatch` and `I386ExceptionDispatch` through
+REL32 calls. Their register/segment/flags and normalized error-code contracts are
+unchanged; neither module contains fixed-address callback data.
+
+The IRQ and task fixtures compile both modules inside TempleOS. The host checks
+entry exports, the allowed CALL relocation, complete code coverage and bounded
+zero padding after IRET. It binds the imports to small test-only callback adapters
+and builds IDT address tables from exports. Instruction audits inspect the patched
+code and adapters. The production linker can bind these ordinary module imports;
+the fixtures still use the bootstrap embedding path, not a production IDT setup.
+
+The IRQ suite passes its hardware delivery, spurious IRQ, frame-restoration and
+three recoverable-fault checks. Task, blocking-input, message and exception-task
+regressions also pass, including instruction audits. Both x86-64 compiler/kernel
+rebuild/reboot generations pass. No NASM source remains under `Kernel/I386`, but
+the boot/test harness still uses NASM. Native compiler execution, production
+boot/IDT/dispatcher integration and strict 386 verification remain unfinished.
