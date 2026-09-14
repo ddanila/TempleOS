@@ -85,6 +85,20 @@ Neither El Torito CD boot nor a large RAM disk may be a baseline dependency.
 
 ## Architectural work packages
 
+### Scope decision: preserve the programming model on a smaller machine
+
+Use native 32-bit protected mode as the architectural baseline. Keep the flat
+address space and direct-call programming model; do not introduce segmented
+application pointers or a parallel 16-bit application ABI. Treat VGA presentation
+as a separate hardware boundary, so drawing and DolDoc code retain their existing
+coordinates and color semantics.
+
+The implementation order is ABI and compiler support, kernel services, resident
+HolyC compilation and recovery, then the complete document/editor workflow and
+self-hosting. Establish strict 386 test profiles and memory measurements alongside
+these stages. Each stage must preserve the shared language semantics and keep the
+x86-64 regression target usable; a bootable console is an intermediate result.
+
 ### A. Establish a trustworthy bootstrap and regression baseline
 
 Relevant code: `tools/build-iso.py`, `tools/verify-iso.py`, `Misc/DoDistro.HC`,
