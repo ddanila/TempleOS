@@ -2433,3 +2433,32 @@ The combined mixed-token fixture and its instruction audit pass, as do both x64
 rebuild/reboot generations and the full native kernel boot/VGA/keyboard/rejection
 suite. The runtime remains version 7; full native preprocessing and the compiler/
 shell/self-hosting integration gates remain open. See `docs/i386-lex-define.md`.
+
+## Native #define publication and expansion
+
+Native token dispatch now recognizes KW_DEFINE through supplied keyword symbols,
+reads the name with NO_DEFINES, builds the replacement text and publishes an owned
+CHashDefineStr. Source/help metadata is copied before body reading can pop an
+owned include. Private flags, wide source lines, duplicate-definition precedence
+and cnt=-1 match the existing lexer. Publication transfers cur_str only after all
+allocations succeed; failures leave the name and table intact and reclaim partial
+construction. The existing symbol destructor handles detached definitions.
+
+The dedicated --lex-define fixture preserves all 29 original replacement-text
+cases and read/append failure injections, and adds full definition/expansion,
+redefinition, empty/EOF/malformed-name behavior, local shadowing and metadata tests.
+Native checks cover 253 publication heap configurations, name-allocation failure
+through dispatch and owned-include source metadata lifetime. This fixture was
+split from --lex-tokens when their combined image exceeded 256 KiB; both retain
+the original loader/memory contract and pass separately with instruction audits.
+
+CompilerRuntime version 8 retains the eight-pointer, 40-byte interface and imports
+HashAdd plus the existing whitespace bitmap. Kernel boot/task probes now define
+and expand a macro, verify its metadata and reclaim all four allocations. The
+full boot suite passes these probes, runtime/startup rejection, source checks,
+VGA/keyboard and timers. Both x64 rebuild/reboot generations pass. The runtime is
+126464 bytes with a 126480-byte heap span; the bootstrap is 390760 bytes, leaving
+2456 bytes in its reservation. Move subsequent bootstrap growth to extended-memory
+modules. General keyword initialization, includes/conditionals/executed directives,
+public compiler-control APIs, parser/JIT, DolDoc and self-hosting remain required.
+See `docs/i386-lex-define.md` and `docs/i386-compiler-runtime.md`.

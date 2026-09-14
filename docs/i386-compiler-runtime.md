@@ -16,7 +16,7 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 7 of CI386CompilerServices: a U32 version,
+`CompilerRuntime.HH` defines version 8 of CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens and mixed-token dispatch.
 The structure is 40 bytes on i386. The entry receives caller-owned interface
@@ -24,10 +24,10 @@ storage and its capacity, rejects missing storage or the wrong size, and publish
 these fields only into that caller's candidate record. It does not retain the
 address of the candidate record or allocate an interface object.
 
-The module imports ten kernel functions: I386LexRawChar, I386LexSourceRead,
-HashFind, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore and I386LexIncludeCopy,
-and three kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
-char_bmp_non_eol. The
+The module imports eleven kernel functions: I386LexRawChar, I386LexSourceRead,
+HashFind, HashAdd, StrCmp, I386HeapAlloc/Free/Size, I386IrqSave/Restore and I386LexIncludeCopy,
+and four kernel data arrays: char_bmp_hex_numeric, char_bmp_dec_numeric and
+char_bmp_non_eol and char_bmp_non_eol_white_space. The
 latter remain the same writable public tables used by the kernel; moving the
 runtime does not create private copies. Kernel bindings use the existing shared
 CHashExport prefix and distinguish function from data addresses. The module keeps
@@ -74,6 +74,7 @@ python3 tools/test-rebuild.py
 python3 tools/test-i386.py --lex-string
 python3 tools/test-i386.py --lex-ident
 python3 tools/test-i386.py --lex-tokens
+python3 tools/test-i386.py --lex-define
 python3 tools/build-i386-kernel.py --test
 ```
 
@@ -84,22 +85,23 @@ startup execution and report reclamation. The existing startup rejection cases,
 keyboard/scrolling/cancellation pixel checks, source checks and timer checks pass;
 each test's disk remains unchanged.
 
-With token dispatch in interface version 7, the bootstrap image is 382344 bytes
-of its 393216-byte reservation. The 103368-byte runtime image is allocated at
-0x12BF18 in the 8 MiB development profile and retains a 103384-byte heap span.
-All eight service addresses match their exported offsets. Boot/task probes expand
-a macro, publish its identifier, replace that text with a binary string and free
-it. They then use next_token to expand another macro into F64, consume the parent
-semicolon and EOF, and verify the heap baseline. IDENT PROBE, STRING PROBE and
-LEX PROBE records are required in both phases. The new dispatcher uses the
-module-owned punctuation tables and the unchanged import contract.
+With definition publication in interface version 8, the bootstrap image is
+390760 bytes of its 393216-byte reservation. The 126464-byte runtime image
+is allocated at 0x131DA0 in the 8 MiB development profile and retains a
+126480-byte heap span. All eight service addresses match their exported offsets.
+Boot/task probes expand a macro, publish its identifier, replace that text with a
+binary string and free it. They also define a new macro from source, expand it to
+F64, consume the delimiter/EOF, detach the definition and reclaim its owned
+record/name/body/source link. DEFINE PROBE records are required in both phases,
+alongside the existing IDENT PROBE, STRING PROBE and LEX PROBE records.
 
-Source checks cover 27871 characters, 571 newlines, FNV32 0x396187B2 and 28328
-reclaimed heap bytes. Sizes and addresses are observations from result.json, not
-fixed addresses or memory minima required by the interface. The remaining 10872
-bytes in the bootstrap reservation are limited headroom; further compiler growth
-belongs in the retained extended-memory modules. See [native token dispatch](i386-lex-tokens.md)
-for supported inputs and the explicit preprocessing boundary.
+Source checks cover 30354 characters, 613 newlines, FNV32 0x6E22816B and
+30816 reclaimed heap bytes. Sizes and addresses are observations from result.json,
+not fixed addresses or memory minima required by the interface. Only 2456 bytes
+remain in the bootstrap reservation. Further growth must move bootstrap services
+or diagnostic code into extended-memory modules; do not raise the conventional
+memory reservation as an implicit workaround. See [native definition handling](i386-lex-define.md)
+for publication, symbol lifetime and remaining preprocessing work.
 
 ## Import-declaration correction
 

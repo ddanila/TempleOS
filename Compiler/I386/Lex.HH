@@ -1,5 +1,7 @@
 #ifndef I386_LEX_INCLUDED
 #define I386_LEX_INCLUDED
+#include "/Compiler/Keywords.HH"
+#include "/Compiler/I386/LexDefine.HH"
 #include "/Compiler/I386/LexIdent.HH"
 #include "/Compiler/I386/LexString.HH"
 #include "/Compiler/I386/LexNumber.HH"

@@ -469,14 +469,19 @@ programming environment through these concrete steps:
    Native token dispatch now joins these handlers, resumes string-macro expansion
    internally and preserves lookahead and token flags. Mixed x64/native streams,
    allocation/length failures and retained version-7 boot/task calls are tested.
-   Preprocessing directives still return an explicit unsupported result; directive
+   Unsupported directives return an explicit error; remaining directive
    processing, prompt/document input and parser/JIT integration remain required.
    The production #define replacement-text reader is now shared with an owned
    native builder, preserving continuations, quoting, comment/EOF quirks and
    chunk boundaries. Original-lexer fixtures and native failure/reclamation checks
-   pass. Definition name/source metadata ownership and hash publication must still
-   connect this reader to native directive dispatch.
-   Full lexical dispatch and directive processing remain required. Owned native source attachment now prepares record/name/buffer copies
+   pass. Native #define now builds copied source/help metadata, preserves private
+   flags and publishes the complete definition before transferring name ownership.
+   Definition/redefinition, expansion, metadata and failure/reclamation tests pass;
+   the version-8 runtime executes definition probes at boot and after task activity.
+   General keyword initialization and remaining directives are still required.
+   The bootstrap now occupies 390760 of 393216 bytes; move further service or
+   diagnostic growth into extended-memory modules before exhausting that boundary.
+   Full lexical dispatch and remaining directive processing are required. Owned native source attachment now prepares record/name/buffer copies
    before changing parent state, then uses the shared lookahead backup. Boot/task
    scanning crosses that include and reclaims it. Pending save points still block
    native EOF pop; general lookahead across includes needs integration.

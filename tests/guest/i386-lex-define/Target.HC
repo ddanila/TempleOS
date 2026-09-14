@@ -8,20 +8,22 @@
 CI386Heap token_heap;
 U32 token_first[TK_TKS_NUM],token_second[TK_TKS_NUM],token_third[TK_TKS_NUM];
 CLexPunctTables token_tables;
-extern I64 StreamTest();
-extern I64 ModeTest();
-extern I64 MacroTest();
-extern I64 NativeTest();
+extern I64 DefineTest();
+extern I64 DefineNativeTest();
+extern I64 DefineFailures();
+extern I64 DirectiveTest();
+extern I64 PublishNativeTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
   if(!I386HeapInit(&token_heap,0x60000,65536)) return 1;
   LexPunctInit(token_first,token_second,token_third);
   token_tables.first=token_first; token_tables.second=token_second; token_tables.third=token_third;
-  result=StreamTest; if(result) return result;
-  result=ModeTest; if(result) return result;
-  result=MacroTest; if(result) return result;
-  result=NativeTest; if(result) return result;
+  result=DirectiveTest; if(result) return result;
+  result=PublishNativeTest; if(result) return result;
+  result=DefineTest; if(result) return result;
+  result=DefineNativeTest; if(result) return result;
+  result=DefineFailures; if(result) return result;
   if(token_heap.used || token_heap.allocations || !I386HeapValid(&token_heap)) return 2;
   return 0;
 }
@@ -42,12 +44,17 @@ I64 Main(I64 unused,I64 unused2)
 #include "/Compiler/I386/LexIdent.HC"
 #include "/Compiler/I386/Lex.HC"
 #include "/Compiler/I386/LexDefine.HC"
+#include "/Compiler/I386/SymbolDelete.HC"
+Bool DirectiveFree(CHashSrcSym *entry) { return I386HashDel(&token_heap,entry); }
 I64 MacroNext(CCmpCtrl *cc,I64 *lines) { return I386LexNext(&token_heap,cc,&token_tables,"Macro",lines); }
 Bool MacroTextFree(CCmpCtrl *cc)
 {
   if(cc->cur_str && (I386HeapSize(&token_heap,cc->cur_str)!=cc->cur_str_len || !I386HeapFree(&token_heap,cc->cur_str))) return FALSE;
   cc->cur_str=0; return TRUE;
 }
-#include "T:/Streams.HC"
-#include "T:/Macros.HC"
-#include "T:/Native.HC"
+#include "T:/Common.HC"
+#include "T:/DefineNative.HC"
+#include "T:/Defines.HC"
+#include "T:/DefineFailures.HC"
+#include "T:/Directives.HC"
+#include "T:/PublishNative.HC"

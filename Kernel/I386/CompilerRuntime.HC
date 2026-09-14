@@ -17,12 +17,14 @@ import U32 I386IrqSave();
 import U0 I386IrqRestore(U32 flags);
 import Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
 import CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
+import U0 HashAdd(CHash *entry,CHashTable *table);
 import I64 StrCmp(U8 *left,U8 *right);
 import I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines);
 import I64 I386LexSourceRead(U8 *context,CCmpCtrl *cc);
 import U32 char_bmp_hex_numeric[16];
 import U32 char_bmp_dec_numeric[16];
 import U32 char_bmp_non_eol[16];
+import U32 char_bmp_non_eol_white_space[16];
 U32 runtime_first[TK_TKS_NUM],runtime_second[TK_TKS_NUM],runtime_third[TK_TKS_NUM];
 CLexPunctTables runtime_punct;
 extern I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines);
@@ -59,6 +61,7 @@ I64 I386RuntimePunct(CI386Heap *heap,CCmpCtrl *cc,I64 ch,I64 *compiled_lines)
 }
 #include "/Compiler/MemberLookup.HC"
 #include "/Compiler/I386/LexIdent.HC"
+#include "/Compiler/I386/LexDefine.HC"
 #include "/Compiler/I386/Lex.HC"
 I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines)
 {

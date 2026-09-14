@@ -26,7 +26,16 @@ I64 I386LexNext(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables,U8 *macro_f
         return result;
       case '#':
         if(cc->flags&CCF_KEEP_SIGN_NUM) goto lex_literal;
-        return -4;
+        result=I386LexNext(heap,cc,tables,macro_filename,compiled_lines);
+        if(result<0) return result;
+        if(result!=TK_IDENT || !cc->hash_entry || !(cc->hash_entry->type&HTT_KEYWORD) ||
+            cc->hash_entry(CHashGeneric *)->user_data0!=KW_DEFINE) return -4;
+        cc->flags|=CCF_NO_DEFINES;
+        result=I386LexNext(heap,cc,tables,macro_filename,compiled_lines);
+        if(result==TK_IDENT && !I386LexDefinePublish(heap,cc,compiled_lines)) result=-1;
+        cc->flags&=~CCF_NO_DEFINES;
+        if(result<0) return result;
+        break;
       case 10:
         if(!(cc->flags&CCF_KEEP_NEW_LINES)) break;
       case TK_INS_BIN: case TK_INS_BIN_SIZE:

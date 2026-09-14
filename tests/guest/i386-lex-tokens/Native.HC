@@ -2,7 +2,7 @@ I64 NativeTest()
 {
   CCmpCtrl cc; CLexFile file; CI386Heap scratch; U8 *old; I64 lines=0,i; U8 input[150];
   IdentSeed(&cc,&file,"#abc"); cc.token=77;
-  if(MacroNext(&cc,&lines)!=-4 || cc.token!=77 || cc.cur_buf_ptr!=file.buf+1) return 360;
+  if(MacroNext(&cc,&lines)!=-4 || cc.token!=TK_IDENT || StrCmp(cc.cur_str,"abc") || cc.cur_buf_ptr!=file.buf+4 || !MacroTextFree(&cc)) return 360;
   for(i=0;i<144;i++) input[i]=97; input[144]=59; input[145]=0;
   IdentSeed(&cc,&file,input);
   if(MacroNext(&cc,&lines)!=-3) return 361;

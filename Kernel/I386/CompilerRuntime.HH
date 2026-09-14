@@ -1,8 +1,8 @@
 #ifndef I386_COMPILER_RUNTIME_INCLUDED
 #define I386_COMPILER_RUNTIME_INCLUDED
 #include "/Compiler/I386/LexInput.HH"
-#define I386_COMPILER_SERVICES_VERSION 7
-//ABI 7: caller-owned interface, borrowing code from the retained module image.
+#define I386_COMPILER_SERVICES_VERSION 8
+//ABI 8: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;

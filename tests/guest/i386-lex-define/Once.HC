@@ -1,8 +1,12 @@
 #include "/Compiler/ControlInit.HH"
 I64 MacroNext(CCmpCtrl *cc,I64 *lines) { return Lex(cc); }
 Bool MacroTextFree(CCmpCtrl *cc) { Free(cc->cur_str); cc->cur_str=0; return TRUE; }
-#include "T:/Streams.HC"
-#include "T:/Macros.HC"
+Bool DirectiveFree(CHashSrcSym *entry) { HashDel(entry); return TRUE; }
+#include "T:/Common.HC"
+#include "T:/DefineHost.HC"
+#include "T:/Defines.HC"
+#include "T:/DefineFailures.HC"
+#include "T:/Directives.HC"
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
@@ -11,18 +15,18 @@ U0 CompileTests()
   I64 size,loaded,errors,i;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
-  Report("START native lex tokens\n");
-  if(StreamTest) { Report("FAIL x64 streams\n"); return; }
-  if(ModeTest) { Report("FAIL x64 modes\n"); return; }
-  if(MacroTest) { Report("FAIL x64 macros\n"); return; }
+  Report("START native lex define\n");
+  i=DirectiveTest; if(i) { line=MStrPrint("FAIL directives %d\n",i); Report(line); return; }
+  i=DefineTest; if(i) { line=MStrPrint("FAIL original define %d\n",i); Report(line); return; }
+  i=DefineFailures; if(i) { line=MStrPrint("FAIL define failures %d\n",i); Report(line); return; }
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
     line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);
-    Report("FAIL lex tokens compile\n"); return;
+    Report("FAIL lex define compile\n"); return;
   }
   image=I386Link(&module,&size,1,&loaded);
-  if (!image) { Report("FAIL lex tokens link\n"); return; }
+  if (!image) { Report("FAIL lex define link\n"); return; }
   h=module; r=module+h->records_offset;
   Report("LINKED 0\n");
   for (i=0;i<h->record_count;i++,r++) {
@@ -41,6 +45,6 @@ U0 CompileTests()
   MemCpy(source+28,image,loaded);
   (source+28+loaded)(U32 *)[0]=0;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",source,loaded+32); Report(line);
-  Report("DONE native lex tokens\n");
+  Report("DONE native lex define\n");
 }
 CompileTests;

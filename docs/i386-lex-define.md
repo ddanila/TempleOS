@@ -33,17 +33,20 @@ behaviors are retained: a double slash at the very start of replacement text is
 kept, and an EOF backslash is retained initially but dropped after ordinary text.
 These are compatibility observations, not a new language specification.
 
-The mixed-token fixture compares the same expectations with native construction.
+The dedicated --lex-define fixture compares the same expectations with native construction.
 It injects a failure at each character read and each append in all 29 cases,
 checks continuation cursor/line state, rejects prompt input, and exercises 253
 heap arenas from 32 to 2048 bytes. Both successful construction and failed partial
 construction must reclaim every allocation. The runner reports one aggregate
-Main result, containing these tests and the preceding mixed-token corpus.
+Main result containing the replacement-text and directive tests. The separate
+--lex-tokens suite retains mixed-token coverage; both keep the 256 KiB loader
+limit and heap at 0x60000.
 
 Run:
 
 ```sh
 python3 tools/test-rebuild.py
+python3 tools/test-i386.py --lex-define
 python3 tools/test-i386.py --lex-tokens
 python3 tools/build-i386-kernel.py --test
 ```
@@ -51,8 +54,41 @@ python3 tools/build-i386-kernel.py --test
 Both x86-64 rebuild/reboot generations, the expanded mixed-token fixture and its
 instruction audit, and the full native kernel boot suite pass.
 
-This makes replacement-text parsing available to native preprocessing. The native
-dispatcher still rejects directives: native definition entry/source-link ownership,
-keyword initialization, publication, includes and conditional/executed directives
-remain to be connected. The retained kernel runtime is still interface version 7;
-it does not yet expose this helper or claim a working native preprocessor.
+## Definition publication and dispatch
+
+I386LexDefinePublish requires an already recognized identifier token, live input
+with a full_name, a writable definition hash table and heap-owned cur_str. It
+builds a zeroed CHashDefineStr, copies `FL:filename,line` source metadata and any
+nonempty help index, preserves KEEP_PRIVATE and sets cnt=-1. It captures metadata
+before reading the body, so an owned include can reach EOF and be reclaimed
+without leaving a dangling filename reference. Source lines retain their I64 width
+and are clamped to one when negative or zero, matching HashSrcFileSet.
+
+The name moves from cc.cur_str to the entry only after all construction succeeds.
+HashAdd then publishes the complete entry. Allocation/input failure reclaims the
+partial entry, body and metadata while leaving the previous name and hash table
+intact. Input consumption is not rolled back. The owner must detach symbols and
+borrowed references before I386HashDel releases their storage. Redefinition keeps
+older entries in the chain with the original lookup precedence.
+
+I386LexNext now recognizes KW_DEFINE through the caller's keyword symbol table,
+uses NO_DEFINES while reading the name, invokes publication, then resumes token
+dispatch. The keyword constants are shared in Compiler/Keywords.HH. A malformed
+non-identifier name follows the existing skip-and-resume behavior; native service
+failures return an explicit error and clear NO_DEFINES. Unsupported directives
+still return -4, now after reading the directive token; any published token text
+remains owned by the caller. KEEP_SIGN_NUM continues to return a literal hash.
+
+Shared x64/native tests exercise definition and expansion, redefinition, empty
+bodies, EOF, local shadowing, source/help metadata, private flags and line numbers
+above 32 bits. Native cases cover publication failures across 253 heap arenas,
+name-allocation failure through the dispatcher, and metadata surviving an owned
+include's EOF/pop. Cleanup uses the existing symbol destructor.
+
+CompilerRuntime version 8 keeps the eight-pointer, 40-byte interface and adds
+HashAdd and char_bmp_non_eol_white_space imports. Its kernel probes define a macro,
+expand it to F64, consume the parent delimiter/EOF and reclaim the definition both
+at boot and after task/timer activity. General keyword-table initialization,
+includes, conditionals, executed directives, prompt/document input and complete
+compiler-control lifetime still need integration before native preprocessing is
+complete.
