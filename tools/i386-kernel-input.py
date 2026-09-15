@@ -33,6 +33,7 @@ def console_pixels(rows):
 def run_input(disk,out,startup_check=None):
     from PIL import Image
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
+    (out/'result.json').unlink(missing_ok=True)
     log=out/'debug.log'; log.write_text('')
     qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
     cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486','-m','8','-nic','none',
@@ -101,21 +102,28 @@ def run_input(disk,out,startup_check=None):
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={'#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={'%':'5','#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>#!')
+            shifted=set('(){}*+&_"<>#!%')
+            def typed_rows(source):
+                text='> '+source
+                #The VGA terminal wraps immediately at column 80, including a
+                #blank cursor row when the final character exactly fills a row.
+                return [text[index:index+80] for index in range(0,len(text)+1,80)]
+
             def submit(source, answers, name):
                 nonlocal rows
+                if len(source)>255: raise ValueError('Source exceeds the native input buffer')
                 for index,ch in enumerate(source):
                     shift=ch.isupper() or ch in shifted
                     if shift: key('shift',True)
                     press(plain.get(ch,ch.lower()))
                     if shift: key('shift',False)
                     if index%4==3:
-                        screen((rows[:-1]+['> '+source[:index+1]])[-60:],'command-typing')
+                        screen((rows[:-1]+typed_rows(source[:index+1]))[-60:],'command-typing')
                 press('ret')
-                rows=(rows[:-1]+['> '+source]+answers+['> '])[-60:]
+                rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
                 screen(rows,name)
             if startup_check is not None:
                 for index,(source,answers) in enumerate(startup_check['commands']):
@@ -174,6 +182,31 @@ def run_input(disk,out,startup_check=None):
                 ('Fs->gs==Gs;', ['1']),
                 ('Fs->stk->stk_size>=256;', ['1']),
                 ('Fs->data_heap!=0&&Fs->code_heap==Fs->data_heap;', ['1']),
+                ('sizeof(CHeapCtrl);', ['1088']),
+                ('Fs->data_heap->mem_task==Fs;', ['1']),
+                ('U8 *heap_p=CAlloc(64);', []),
+                ('heap_p[0]+heap_p[63];', ['0']),
+                ('heap_p[63]=42;', ['42']),
+                ('Unknown heap_bad;', ['Error: Undefined identifier at ']),
+                ('heap_p[63];', ['42']),
+                ('MHeapCtrl(heap_p)==Fs->data_heap&&MSize(heap_p)>=64;', ['1']),
+                ('MSize2(heap_p)==MSize(heap_p)+12;', ['1']),
+                ('Free(heap_p);', []),
+                ('I64 MemZero(){U8 *p=MAlloc(0);I64 ok=p!=0&&MSize(p)>=0;Free(p);return ok;}', []),
+                ('MemZero;', ['1']),
+                ('U0 MemAlign(){heap_p=MAllocAligned(2048,64,Fs,3);}MemAlign;', []),
+                ('heap_p(U64)%64;', ['3']),
+                ('MSize(heap_p)==MSize(heap_p+heap_p(I64 *)[-1]);', ['1']),
+                ('Free(heap_p);Free(0);', []),
+                ('I64 MemFail(){I64 ok=0;try{MAlloc(0x800000);}catch{ok=Fs->except_ch==\'OutMem\'&&(GetRFlags&512)!=0;Fs->catch_except=TRUE;}return ok;}', []),
+                ('MemFail;', ['1']),
+                ('MAlloc(0x100000000);', ['Out of memory']),
+                ('GetRFlags&512;', ['512']),
+                ('MAlloc(-1);', ['Out of memory']),
+                ('MAllocAligned(64,3);', ['Out of memory']),
+                ('MAllocAligned(0xFFFFFFFF,64);', ['Out of memory']),
+                ('MemFail;', ['1']),
+                ('GetRFlags&512;', ['512']),
                 ('GetRSP>=(&Fs->stk->stk_base)(U64);', ['1']),
                 ('GetRSP<(&Fs->stk->stk_base)(U64)+Fs->stk->stk_size;', ['1']),
                 ('Gs->num;', ['0']),
@@ -249,7 +282,7 @@ def run_input(disk,out,startup_check=None):
                     'vga_uploads':len(uploads()), 'vga_text_rows':sum(uploads()),
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
-                    'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','persistent definitions','error recovery','integer and F64 answers'],
+                    'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
                     'vga':'all pixels matched at each checkpoint','submitted_lines':63+len(commands), 'native_commands':len(commands)}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result

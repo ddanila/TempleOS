@@ -1,3 +1,12 @@
+Bool ProbePublicMemoryInput(CI386CompilerProbe *probe,CI386CommandInput *input,CProbeInputAnswer *answer,I64 index)
+{
+  Bool accepted=probe->compiler->input(input);
+  KernelLog("PUBLIC MEMORY STEP "); KernelHex(probe->phase); KernelLog(" "); KernelHex(index);
+  KernelLog(" "); KernelHex(accepted); KernelLog(" "); KernelHex(input->exception);
+  KernelLog(" "); KernelHex(answer->value); KernelLog(" "); KernelHex(input->commands);
+  KernelLog(" "); KernelHex(input->heap->used); KernelLog("\n");
+  return accepted;
+}
 //Load the actual public headers, retry failure, and compare every public offset.
 U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
@@ -63,6 +72,36 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.source="_intern 0x73 U8 *ProbeStackRsp();ProbeStackRsp>=(&Fs->stk->stk_base)(U64) && ProbeStackRsp<(&Fs->stk->stk_base)(U64)+Fs->stk->stk_size;";
   if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
   KernelLog("PUBLIC HEADER LIVE "); KernelHex(probe->phase); KernelLog("\n");
+  //Public allocations outlive compilation controls and survive a failed input.
+  //Use page allocations here so final Free returns backing, preserving the
+  //probe's exact bootstrap accounting. Console checks cover cached small blocks.
+  input.source="sizeof(CHeapCtrl)==1088 && sizeof(CBlkPool)==1276 && Fs->data_heap->mem_task==Fs;";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,0) || answer.value!=1) KernelStop;
+  input.source="U8 *pub_mem=MAlloc(2048);";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,1)) KernelStop;
+  input.source="pub_mem[2047]=42;";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,2) || answer.value!=42) KernelStop;
+  input.source="Unknown memory_bad;";
+  if(ProbePublicMemoryInput(probe,&input,&answer,3) || input.exception!='Compiler') KernelStop;
+  input.source="pub_mem[2047]==42 && MHeapCtrl(pub_mem)==Fs->data_heap && MSize(pub_mem)>=2048 && MSize2(pub_mem)==MSize(pub_mem)+12;";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,4) || answer.value!=1) KernelStop;
+  input.source="Free(pub_mem);";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,5)) KernelStop;
+  input.source="pub_mem=CAllocAligned(2048,64,Fs->code_heap,3);";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,6)) KernelStop;
+  input.source="pub_mem[0]==0 && pub_mem[2047]==0 && pub_mem(U64)%64==3 && MSize(pub_mem)==MSize(pub_mem+pub_mem(I64 *)[-1]);";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,7) || answer.value!=1) KernelStop;
+  input.source="Free(pub_mem);Free(0);MSize(0)==0 && MSize2(0)==0 && MHeapCtrl(0)==0;";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,8) || answer.value!=1) KernelStop;
+  input.source="extern U0 SysTry(U8 *caught,U8 *leave);extern U0 SysUntry();"
+    "_intern 0x6C I64 MemProbeFlags();";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,9)) KernelStop;
+  input.source="I64 MemFailure(){I64 ok=0,saved=MemProbeFlags&512;try{MAlloc(0x800000);}"
+    "catch{ok=Fs->except_ch=='OutMem' && (MemProbeFlags&512)==saved;Fs->catch_except=1;}return ok;}";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,10)) KernelStop;
+  input.source="MemFailure;";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,11) || answer.value!=1) KernelStop;
+  KernelLog("PUBLIC MEMORY CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(12); KernelLog("\n");
   //Reuse the AOT layout assertions as native source. Exclude private extension
   //checks and separate assertions with semicolons to bound lexer recursion.
   name=0;

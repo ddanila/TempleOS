@@ -33,7 +33,10 @@ Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
   input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
   try { accepted=console_config->compiler->input(&input); }
   catch { task->catch_except=TRUE; I386TextWrite(&console_text,"Exception\n"); diagnostics++; }
-  if(!accepted && !diagnostics) I386TextWrite(&console_text,"Compilation failed\n");
+  if(!accepted && !diagnostics) {
+    if(input.exception=='OutMem') I386TextWrite(&console_text,"Out of memory\n");
+    else I386TextWrite(&console_text,"Compilation failed\n");
+  }
   return accepted;
 }
 U0 ConsoleSubmit(U8 *line)

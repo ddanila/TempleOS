@@ -65,9 +65,10 @@ shorter critical sections still need work.
 
 ## Integration still required
 
-General device-hole discovery, page pools, task heap ownership, task teardown, and public `MAlloc`/`CAlloc`/`Free` wrappers remain
-pending. The public TempleOS interface must preserve its `OutMem` exception
-semantics; NULL-returning try-allocation here is a lower-level bootstrap API.
+General device-hole discovery and final compiler allocation policy remain
+pending. Public page pools, task heap ownership and throwing allocation wrappers
+now live in a separate [public memory layer](i386-public-memory.md). Its capacity
+queries and allocation headers differ from this exact-request bootstrap API.
 `I386LoadAlloc` now uses this heap for native module images; see
 [the module API](i386-modules.md#allocating-native-loader).
 VGA and module loading now select arenas using the [BIOS handoff](i386-boot-memory.md)

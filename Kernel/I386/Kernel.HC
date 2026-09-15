@@ -32,7 +32,7 @@
 #include "/Kernel/I386/CompilerProbe.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/MemoryRuntime.HH"
-class CI386KernelSymbol:CHashExport { U32 kind; };
+#include "/Kernel/I386/KernelSymbols.HH"
 import U0 i386_idle();
 U8 *kernel_ready_message="READY native kernel foundation\n";
 CI386Scheduler kernel_scheduler;
@@ -98,7 +98,7 @@ U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
 U8 kernel_probe_bindings[17]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10};
 U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
-U8 kernel_memory_bindings[9]={10,11,12,20,13,14,0,18,19};
+U8 kernel_memory_bindings[11]={10,11,12,20,13,14,0,18,19,16,42};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)
@@ -135,8 +135,10 @@ I64 Main(CI386BootInfo *info,I64 unused)
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
       !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
   kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
-    0x18,0x20,131072);
+    0x18,0x20,262144);
   if(!kernel_pulse) KernelStop;
+  //This diagnostic compiler arena is released with the worker after its probes.
+  //Complete public headers and retained functions exceed the former 128 KiB.
   KernelLog(kernel_ready_message);
   I386PicMask(0xFFFC);
   //Finish heap-accounting diagnostics before accepting interactive allocations.
@@ -510,7 +512,7 @@ U0 KernelMemoryLoad()
   KernelBindings(bindings,kernel_memory_bindings,sizeof(kernel_memory_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_memory_image=KernelServiceLoad("/Modules/I386/MemoryRuntime.t32m","MEMORY ",
     bindings,sizeof(kernel_memory_bindings),&kernel_memory,sizeof(CI386MemoryServices),I386_MEMORY_SERVICES_VERSION);
-  if(!kernel_memory.bind(&kernel_root,&kernel_heap)) KernelStop;
+  if(!kernel_memory.bind(&kernel_root,&kernel_heap,kernel_symbols)) KernelStop;
   kernel_memory.probe(0);
 }
 

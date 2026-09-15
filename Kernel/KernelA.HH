@@ -1726,6 +1726,8 @@ public class CFile //See $LK,"::/Demo/Dsk/DataBase.HC"$.
 #else
 #include "/Kernel/MemoryAllocTypes.HH"
 #endif
+#help_index "Memory/BlkPool"
+#help_file "::/Doc/Pags"
 #include "/Kernel/MemoryTypes.HH"
 
 #help_index "Devices;Memory/Page Tables"

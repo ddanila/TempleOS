@@ -91,11 +91,13 @@ The original public memory records are also shared, with a native allocation
 core using real `CBlkPool`/`CHeapCtrl` state. Task heap ownership now has native
 lifecycle coverage: child construction, parent retention, rollback and teardown
 after compiler/file/symbol cleanup. A retained memory service now binds the boot
-root and inherited worker heaps; the throwing public allocation interface remains
-the next public-contract work. Registered backing regions and a
-demand-growth provider now have native coverage, including return of wholly
+root and inherited worker heaps and publishes the throwing allocation interface
+through native public headers. Compiler allocation ownership and the remaining
+public memory services are the next public-contract work. Registered backing
+regions and a demand-growth provider now have native coverage, including return of wholly
 unused regions to the bootstrap allocator. Task teardown now invokes the retained
-provider after releasing heap controls; public free still needs its trim point. See
+provider after releasing heap controls; public free also notifies the provider
+after finishing its page-header reads. See
 [public memory](docs/i386-public-memory.md).
 See [shared task records](docs/i386-task-records.md) and
 [native public headers](docs/i386-public-headers.md).
@@ -132,9 +134,9 @@ those measurements.
 ### Next public-memory integration package
 
 The boot environment now loads the retained backing provider and binds public
-task heaps. Complete its public allocation interface before making the editor and compiler
-depend on public allocation services. Use the complete shared `CHeapCtrl` and
-`CBlkPool` records; the bootstrap arena descriptor is not a public heap control.
+task heaps. The basic allocation interface is implemented; complete its integration
+gates before making the editor and compiler depend on public allocation services.
+Use the complete shared `CHeapCtrl` and `CBlkPool` records; the bootstrap arena descriptor is not a public heap control.
 
 1. **Define ownership and teardown.** A retained memory service owns backing
    regions; each task owns its heap controls and allocations. Specify whether
@@ -156,8 +158,11 @@ depend on public allocation services. Use the complete shared `CHeapCtrl` and
    explicit ownership of alignment padding and pool metadata. Avoid a permanent
    fixed public arena beside a separate compiler arena that strands free memory.
    Migrate compiler, generated-code and task allocations incrementally, preserving
-   their required lifetimes. Account for fragmentation and cached pages as well
-   as live payload; complete pool accounting and reclamation before claiming the
+   their required lifetimes. The temporary diagnostic worker currently uses a
+   256 KiB private compiler arena, reclaimed at worker teardown; this is test
+   workspace, not the final compiler allocation policy. Measure fragmentation
+   and latency before changing that policy. Account for fragmentation and cached
+   pages as well as live payload; complete pool accounting and reclamation before claiming the
    8 MiB interactive target.
 4. **Validate the integration boundary.** Version runtime modules when task
    extension layouts change. Exercise root and worker allocations, explicit heap

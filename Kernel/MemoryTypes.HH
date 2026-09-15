@@ -1,7 +1,6 @@
 //Shared page-pool and heap records; caller supplies allocation records and CTask.
 
 #help_index "Memory/BlkPool"
-#help_file "::/Doc/Pags"
 
 #define MBS_USED_SIGNATURE_VAL		'MBUs'
 #define MBS_UNUSED_SIGNATURE_VAL	'MBUn'

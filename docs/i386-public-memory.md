@@ -50,16 +50,46 @@ Control records, live allocation pointers and
 their exclusively owned arena must be readable/writable as appropriate; this is
 not a memory-protection boundary for arbitrary ring-0 pointers.
 
-The core deliberately remains internal. The task ownership adapter below binds
-real controls in native lifecycle tests. Retained service loading and binding in
-the boot environment, default/current and explicit task heap selection, throwing
-`MAlloc` and public `Free`/`MSize` are still required before application exposure.
-Aligned-allocation markers, debug
-headers, heap logging, fragment tidying and adjacent-page merging are not yet
-implemented here. The region and growth providers below remain internal; full
-integration also needs public `BlkPoolInit`/`BlkPoolAdd` metadata accounting and migration of compiler
-allocation ownership to the task/code heap policy. Public service and
-low-memory/latency acceptance remain open.
+The core remains internal behind the retained public allocation interface below.
+Debug headers, heap logging, fragment tidying and adjacent-page merging are not
+yet implemented. The region and growth providers remain internal; full memory
+integration also needs public `BlkPoolInit`/`BlkPoolAdd` metadata accounting,
+remaining allocation convenience functions, and migration of compiler allocation
+ownership to the task/code heap policy. Low-memory/latency acceptance remains open.
+
+## Native public allocation interface
+
+`PublicMemory.HH`, included by `PublicKernel.HH`, loads the complete shared memory
+records and declares eight resident entry points. The original allocation aliases
+are retained for `MAlloc`, `Free`, `MSize`, `MSize2` and `MHeapCtrl`. Module-owned
+system export records also bind `CAlloc`, `MAllocAligned` and `CAllocAligned`.
+The metadata and executable addresses have kernel lifetime; a native compiler
+control owns only its declarations. Header loading uses the existing transactional
+class completion and include guards. The original `Memory/BlkPool` help-file
+registration stays in `KernelA.HH`; native-loadable shared records retain their
+help indexes without requiring native `#help_file` support.
+
+| Interface | Native contract |
+| --- | --- |
+| `MAlloc` / `CAlloc` | A null selector uses the current task's data heap. An explicit `CTask` selects its data heap; a `CHeapCtrl` selects that control directly. `CAlloc` zeros the requested bytes. Zero-byte requests still produce an owned allocation. |
+| `Free` | Null is a no-op. Resolve an aligned marker to its original allocation, free through its owning control, then notify the backing provider after all page-header reads are finished. Cached small-object pages remain owned until heap teardown. |
+| `MSize` / `MSize2` | Null returns zero. Report the original allocation's capacity, or its span including the 12-byte native used prefix. For aligned pointers this preserves the original base-capacity behavior; it does not subtract the alignment displacement. |
+| `MHeapCtrl` | Return the actual owning control after resolving any aligned marker; null returns null. |
+| Aligned allocation | Require power-of-two alignment and nonnegative size/misalignment within checked native bounds. Reserve room for the marker and displacement; `CAllocAligned` zeros the requested payload. |
+
+Exhaustion and unsupported allocation sizes throw `OutMem` after restoring the
+caller's interrupt state. An uncaught allocation failure is recorded by the
+command runner and displayed as `Out of memory`; source-level `try`/`catch` can
+handle it directly. Invalid readable heap/allocation records stop with a
+corruption diagnostic. This remains a ring-0 API with live-pointer requirements.
+The bootstrap allocator's exact-request size query and private headers are not
+interchangeable with this capacity-based public API.
+
+Aligned allocations store a negative I64 displacement immediately before the
+returned pointer. The implementation widens both addresses to I64 before
+subtracting them: native pointer arithmetic otherwise truncates that displacement
+to 32 bits and loses its negative high word. The runtime probe checks the marker
+and exercises size, owner and free operations on misaligned results.
 
 ## Regions and demand growth
 
@@ -95,8 +125,8 @@ capacity and the bootstrap allocator's exact requested size.
 allocator; other regions and live allocations remain usable. Trim is explicit
 and must run after heap/free operations finish using returned page headers.
 Calling it inside `PageFree` would invalidate a header its caller still needs.
-The retained public-memory service must arrange these trim points when it binds
-the running kernel's tasks. Provider teardown rejects remaining owned pages or
+The retained public-memory service arranges these trim points after public free
+and task heap teardown. Provider teardown rejects remaining owned pages or
 borrowed regions. An empty provider can grow again without reinitialization.
 
 The native heap fixture exercises three region lifetimes and three provider
@@ -142,7 +172,7 @@ fixture while IF preservation is checked; the existing task suite covers deliver
 Private task extensions now include heap state and callbacks. Dependent runtime
 versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
 6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
-The boot kernel now loads `MemoryRuntime` version 1 after file-service setup and
+The boot kernel now loads `MemoryRuntime` version 2 after file-service setup and
 before native compiler diagnostics or worker creation. Its 16-byte candidate
 table contains only binding and probe entry points. Module `Main` publishes no
 task state and reserves no backing memory; the kernel validates the target,
@@ -150,7 +180,9 @@ imports, version and resident entry addresses before invoking the binding call.
 The retained module owns the pool and callback code for kernel lifetime. Binding
 allocates the root heap control; children inherit distinct public heap controls
 through the existing spawn hooks. Code and data heap pointers alias within each
-task on this flat target.
+task on this flat target. Version 2 adds the borrowed kernel symbol table to the
+binding call; it publishes allocation exports only after service validation and
+root heap attachment. The candidate interface remains 16 bytes.
 
 The private pool has an optional, non-yielding reclamation notification. Task heap
 destruction saves the provider pointer, releases pages and the control, drops the
@@ -167,8 +199,9 @@ successful teardown releases backing while preserving the root allocation. Root
 detach returns all backing allocations. Native kernel probes separately allocate
 across two regions from the root and a spawned worker and check exact bootstrap
 reclamation. Console input checks that its inherited public heap pointers are
-bound. The public throwing allocation functions and compiler allocation migration
-remain unfinished; this service does not yet expose allocation calls to programs.
+bound. Native header probes exercise allocation lifetime across source inputs,
+failed compilation, aligned size semantics and allocation exceptions. Compiler
+allocation migration and the remaining full memory services are unfinished.
 
 ## Validation
 
@@ -199,3 +232,12 @@ python3 tools/build-i386-kernel.py --test
 
 Measured outcomes and remaining integration work are in
 [port progress](port-progress.md).
+
+The diagnostic worker retains a private 256 KiB compiler arena until its probes
+finish; its task teardown releases that arena. The former 128 KiB arena could
+retain the complete public headers but exhausted while compiling the exception
+probe. Sharing the bootstrap compiler heap instead passed the source cases but
+made the diagnostic startup substantially slower. Compiler allocation migration
+therefore remains a separate measured change. The console continues to use the
+bootstrap heap for compiler ownership and its distinct public heap for user
+allocations. Neither arrangement establishes the final 8 MiB workload budget.

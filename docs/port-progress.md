@@ -5025,3 +5025,63 @@ profile. All 1068 OS source hashes match the native, rebuild and layout results;
 eight native build inputs, four memory-layout inputs, three task-layout inputs
 and the native disk hash also match. This remains development evidence, not
 strict 386/no-387 or physical-machine acceptance.
+
+## Native public allocation interface
+
+The retained memory service now publishes `MAlloc`, `Free`, `MSize`, `MSize2`,
+`MHeapCtrl`, `CAlloc`, `MAllocAligned` and `CAllocAligned` through native public
+headers. It owns the export records and callable addresses for kernel lifetime;
+compiler controls own their declarations. MemoryRuntime version 2 retains its
+16-byte table and adds symbol publication to the validated binding operation.
+The original x64 help-file registration remains in `KernelA.HH`, while shared
+memory records retain native-loadable help indexes.
+
+Allocations select the current task, an explicit task or an explicit heap control.
+Size queries report base allocation capacity, including for aligned results;
+`MSize2` adds the native 12-byte used prefix. Aligned markers hold a signed I64
+base displacement, computed after widening both addresses. Public free notifies
+the retained provider only after its page-header reads finish. Exhaustion restores
+IF before throwing `OutMem`; the command runner records uncaught allocation
+failure, and the console reports `Out of memory` rather than a compilation error.
+Source-level catches can handle the original exception directly.
+
+Root and worker probes each exercise twelve public-input stages, including
+complete memory records, allocation persistence across failed compilation,
+alignment, zeroing, ownership, size queries, cleanup and caught `OutMem` with
+preserved interrupt state. The retained service also checks two-region growth and
+exact bootstrap reclamation. The worker now has a temporary 256 KiB private
+compiler arena, released at teardown. Its previous 128 KiB arena held the larger
+headers but exhausted while compiling the exception function. Sharing bootstrap
+compiler storage passed the source cases but produced a roughly 436-second
+diagnostic startup; compiler allocation migration remains a separate measured
+change. The existing whole-chain bootstrap validator is unchanged.
+
+The console harness includes 25 additional public-memory commands, a percent-key
+mapping and exact VGA expectations for source input spanning multiple text rows.
+Each run removes its previous result file so a failed run cannot leave a stale
+pass record. These changes do not establish complete public memory services,
+compiler allocation migration, the 8 MiB DolDoc workflow, native self-hosting or
+strict 386/no-387/physical VGA acceptance. Those gates remain in `PLAN.md`.
+
+The late startup/console module-rejection tests now allow 180 seconds, matching
+the full boot deadline, because those modules load after the expanded root
+compiler diagnostics. Their required rejection, reclamation and no-execution
+markers are unchanged; early runtime rejection tests retain 90-second limits.
+
+Final verification passes: two x64 rebuild/reboot generations, the 43-field memory
+and 105-field task layout checks, the existing heap/task-heap fixtures, and the
+complete native kernel suite. The console passes 107 commands across 170 submitted
+lines with exact VGA pixels; custom, syntax-error and missing-file startup cases
+also pass. All startup/runtime target, import and API rejection/reclamation checks
+pass. The final console diagnostic startup takes 178.292 seconds on QEMU/486 with
+8 MiB. This is a diagnostic workload measurement, not strict 386 hardware or final
+interactive-latency acceptance.
+
+MemoryRuntime occupies 95120 image bytes and 95136 retained heap bytes; public
+headers retain 59080 bytes in the final boot. The kernel occupies 387896 bytes
+plus the 4096-byte early stage, leaving 1224 bytes in the fixed bootstrap
+reservation. All 1072 OS source hashes match the native, rebuild and layout
+results; eight native build inputs, four memory-layout inputs, three task-layout
+inputs and the native disk hash also match. Python syntax and staged whitespace
+checks pass. Full public service semantics, compiler ownership migration, DolDoc,
+self-hosting and physical-machine acceptance remain unfinished.

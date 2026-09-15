@@ -21,6 +21,7 @@ def run(*args):
 
 def verify_startup_rejection(disk, volume, out):
     """Prove startup reads and validates the disk module before invoking it."""
+    #This module loads after the root diagnostics; allow the full boot deadline.
     original=disk.read_bytes()
     entry=volume['files']['/Modules/I386/Startup.t32m']
     offset=entry['block']*512
@@ -42,7 +43,7 @@ def verify_startup_rejection(disk, volume, out):
         candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result=subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
-                '--i386-disk','--out',str(work),'--timeout','90'],cwd=ROOT,stdout=log,stderr=log)
+                '--i386-disk','--out',str(work),'--timeout','180'],cwd=ROOT,stdout=log,stderr=log)
         evidence=(work/'debug.log').read_text()
         if (result.returncode==0 or 'FAIL native kernel\n' not in evidence
                 or 'SOURCE ' not in evidence or any(line.startswith('MODULE ') for line in evidence.splitlines())
@@ -148,7 +149,7 @@ def memory_runtime_layout(module):
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386HeapValid',
-                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop'}:
+                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw'}:
         raise ValueError('Unexpected memory-runtime import contract')
     for name in ('Main', 'MemoryBind', 'MemoryProbe'):
         if exports.get(name, (0, 0))[0] != 1:
@@ -156,7 +157,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 1:
+    if struct.unpack_from('<I', module, version_offset)[0] != 2:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -170,7 +171,7 @@ def verify_memory_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 0), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 1), 'api')):
         work = out/f'reject-memory-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -243,6 +244,7 @@ def verify_file_rejection(disk, volume, out, layout):
 
 
 def verify_console_rejection(disk, volume, out, layout):
+    #Console loading follows the expanded root diagnostics, as startup loading does.
     original = disk.read_bytes()
     offset = volume['files']['/Modules/I386/ConsoleRuntime.t32m']['block']*512
     results = []
@@ -257,7 +259,7 @@ def verify_console_rejection(disk, volume, out, layout):
         candidate = work/'kernel.img'; candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
-                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
+                '--i386-disk', '--out', str(work), '--timeout', '180'], cwd=ROOT, stdout=log, stderr=log)
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or f'CONSOLE REJECT {reason} reclaimed\n' not in evidence or
                 'FAIL native kernel\n' not in evidence or
@@ -929,8 +931,12 @@ def main():
         phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('MEMORY PROBE ')]
         if phases!=[0,1] or log.index('MEMORY PROBE ')>log.index('RUNTIME PROBE '):
             raise ValueError('Root/worker public heap growth and reclamation failed')
-        result['memory_runtime']=dict(version=1,image_address=mbase,image_bytes=msize,
-            retained_heap_bytes=mspan,validated_phases=phases,
+        public_memory=[tuple(int(value,16) for value in line.split()[3:])
+                       for line in log.splitlines() if line.startswith('PUBLIC MEMORY CASE ')]
+        if public_memory!=[(0,12),(1,12)]:
+            raise ValueError('Native public allocation/lifetime/OutMem checks failed')
+        result['memory_runtime']=dict(version=2,image_address=mbase,image_bytes=msize,
+            retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(disk,volume,out,files_layout)
         result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
