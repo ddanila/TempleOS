@@ -14,6 +14,7 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   CI386TaskStorage *storage=0,*retained;
   CI386ParserAllocation *record;
   CI386FrontendCode *code;
+  CI386FrontendResident *binding;
   CHashTable *source,*destination;
   CHashSrcSym *entry,*prior;
   CHashFun *fun;
@@ -37,6 +38,8 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
       source->mask<0 || source->mask>=0x1FFFFFFF || (source->mask+1)&source->mask ||
       !I386ParserRecord(owned,source->body) ||
       I386HeapSize(heap,source->body)!=(source->mask+1)*sizeof(CHash *)) goto done;
+  for(binding=frontend->residents;binding;binding=binding->next)
+    if(!I386FrontendResidentValid(frontend,binding)) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) capacity++;
   if(capacity<1 || capacity>0x1FFFFFFD) goto done;
   transfer.records=I386HeapAlloc(heap,capacity*sizeof(CI386ParserAllocation *),FALSE);
@@ -47,8 +50,11 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   visitor.context=&transfer; visitor.release=&I386ClassTransferVisit;
   for(i=0;i<=source->mask;i++)
     for(entry=source->body[i];entry;entry=entry->next) {
-      if(!entry->str || !I386ParserRecord(owned,entry) || entry->ie_lst ||
-          I386ClassNamePresent(destination,entry->str)) goto done;
+      binding=I386FrontendResidentFind(frontend,entry);
+      if(!entry->str || !I386ParserRecord(owned,entry) || entry->ie_lst) goto done;
+      if(binding) {
+        if(I386FrontendResidentCollision(destination,entry->str,binding->export)) goto done;
+      } else if(I386ClassNamePresent(destination,entry->str)) goto done;
       for(j=0;j<=i;j++)
         for(prior=source->body[j];prior && prior!=entry;prior=prior->next)
           if(!StrCmp(prior->str,entry->str)) goto done;
@@ -58,7 +64,7 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
             Bt(&fun->flags,Cf_EXTERN) || fun->ext_lst || fun->type&HTF_IMPORT) goto done;
         found=FALSE;
         for(code=frontend->codes;code;code=code->next) if(code->code==fun->exe_addr) found=TRUE;
-        if(!found) goto done;
+        if(!found && !binding) goto done;
       } else if(entry->type&HTT_CLASS) {
         if(I386HeapSize(heap,entry)!=sizeof(CHashClass)*(PTR_STARS_NUM+1) ||
             Bt(&entry(CHashClass *)->flags,Cf_EXTERN)) goto done;
@@ -101,7 +107,7 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   if(storage->count) {
     storage->next=scope->storage; scope->storage=storage; storage=0;
   }
-  frontend->codes=0;
+  frontend->codes=0; frontend->residents=0;
   for(i=0;i<=source->mask;i++)
     while(entry=source->body[i]) {
       source->body[i]=entry->next; entry->next=0;

@@ -6,7 +6,8 @@ input control can then be destroyed while fresh controls compile and execute cod
 using those definitions. The transfer includes classes, completed functions,
 globals and string definitions. Same-source forward calls may resolve before
 publication; remaining private call fixups and unresolved functions/imports are
-rejected.
+rejected. Declarations of visible resident system exports can publish borrowed
+code/data addresses; see [resident declarations](i386-resident-declarations.md).
 
 ## Two ownership paths
 
@@ -37,7 +38,7 @@ the retained numerical runtime and any other referenced task/ancestor symbols.
 The source must be the frontend's private table directly above the current task's
 table, with no parser error, saved lexer/context frames, active function or pending
 IR allocations. Validation rejects destination/source name collisions, incomplete
-functions, unresolved relocation lists, unregistered function bodies and invalid,
+functions, unresolved relocation lists, unregistered/nonresident function bodies and invalid,
 borrowed or duplicate owned payloads. Lexer buffers and compiler scratch objects
 cannot be transferred as symbol storage.
 
@@ -67,8 +68,8 @@ unwinds that input and verifies the earlier definitions remain usable.
 Negative cases cover collisions, foreign/duplicate metadata, heap exhaustion,
 pending IR, existing compiler errors, unresolved functions, foreign code pointers
 and aliased static storage. The fixture models a resolved borrowed alias at address
-zero and checks its address without dereferencing it; native system-symbol linking
-remains separate work. Repeating publication of an empty source must allocate no retained
+zero and checks its address without dereferencing it. The separate resident probe
+now verifies production system-symbol binding, borrowed addresses and publication. Repeating publication of an empty source must allocate no retained
 storage. Failed transfers must preserve exact heap counts and
 source-table membership. Successful transfers invalidate the old executor handle.
 The fixture exclusively removes its test roots/storage afterward and requires
@@ -83,6 +84,6 @@ Run `python3 tools/test-rebuild.py`, then
 `python3 tools/build-i386-kernel.py --test` and
 `python3 tools/test-i386.py --task-symbols`.
 
-Complete public task/answer APIs, full assembler/try/generator
+Complete public task/answer APIs and exception headers, full assembler/generator
 integration, DolDoc and native self-hosting remain required. These QEMU/486 checks
 do not establish strict 386SX/DX or physical-machine acceptance.

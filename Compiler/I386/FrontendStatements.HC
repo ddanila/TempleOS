@@ -59,9 +59,15 @@ U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
   CI386FrontendCode *code;
   I64 i;
   if(!symbol || cc->htc.glbl_hash_table!=state->table) I386FrontendUnavailable(state);
-  if(!(symbol->type&HTT_FUN)) return;
+  if(!(symbol->type&HTT_FUN)) {
+    if(symbol(CHashGlblVar *)->flags&GVF_ALIAS)
+      I386FrontendResidentBind(state,symbol,(symbol(CHashGlblVar *)->data_addr+0)(U64));
+    return;
+  }
   fun=symbol;
   if(fun->ie_lst || fun->ext_lst || !fun->exe_addr || fun->type&HTF_IMPORT) I386FrontendUnavailable(state);
+  for(code=state->codes;code && code->code!=fun->exe_addr;code=code->next);
+  if(!code) I386FrontendResidentBind(state,fun,(fun->exe_addr+0)(U64));
   //The shared function parser calls resolve before clearing Cf_EXTERN.
   while(fixup=*link) {
     if(fixup->function==fun) {

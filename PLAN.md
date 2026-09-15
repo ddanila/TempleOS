@@ -991,7 +991,13 @@ when their definitions compile, including mutual recursion. Signature checks and
 task-publication validation keep unresolved calls out of retained storage.
 See `docs/i386-native-statements.md`.
 
-Complete assembly/stream/try providers, symbolic stored-pointer relocation,
+Native declarations now bind visible resident system exports and publish their
+owned metadata while borrowing the resident code/data. Startup declares `StrCmp`,
+`SysTry`, `SysUntry` and `throw`; generated exception calls and publication lifetime
+checks pass. Complete public `CTask`/`Fs` views and original runtime headers remain
+open. See `docs/i386-resident-declarations.md`.
+
+Complete assembly/stream providers and public exception headers, symbolic stored-pointer relocation,
 unresolved cross-control function/global linking, definition replacement/unload
 rules, complete public API/console integration, DolDoc and native
 self-hosting remain required. This bootstrap milestone does not satisfy

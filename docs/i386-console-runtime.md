@@ -28,7 +28,10 @@ owns keyboard consumption and VGA writes after boot display initialization.
 
 Before the first prompt, the console task compiles and executes an include of
 `/Kernel/I386/StartOS.HC` from RedSea through the same native input service used by
-keyboard commands. The packaged default supplies `NULL`, `TRUE` and `FALSE`.
+keyboard commands. The packaged default supplies `NULL`, `TRUE` and `FALSE`,
+plus resident declarations for `StrCmp`, `SysTry`, `SysUntry` and `throw`.
+See [resident declarations](i386-resident-declarations.md) for their borrowed
+addresses and ownership checks.
 Definitions and executable commands can be added to this source; successful
 functions, globals and macros remain in the console task's scope. The compiler
 reads the disk file at boot, so changing source does not require recompiling the
@@ -66,7 +69,7 @@ The console preserves backspace, wrapping, tabs, scrolling and Ctrl+C cancellati
 of the currently edited line. Each line is limited to 255 bytes. Multiline input,
 interactive interruption of executing code, command history, full public answer
 APIs and DolDoc editing remain open. This is an initial native programming console,
-not completion of the full TempleOS environment. `Print`, native assembler/try
+not completion of the full TempleOS environment. `Print`, the complete public task/exception headers, native assembler
 providers, generators and other language/runtime integration remain separate work.
 
 String-pointer initializers now work in native globals and statics, for example

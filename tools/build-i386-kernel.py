@@ -42,7 +42,7 @@ def verify_startup_rejection(disk, volume, out):
         candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result=subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
-                '--i386-disk','--out',str(work),'--timeout','60'],cwd=ROOT,stdout=log,stderr=log)
+                '--i386-disk','--out',str(work),'--timeout','90'],cwd=ROOT,stdout=log,stderr=log)
         evidence=(work/'debug.log').read_text()
         if (result.returncode==0 or 'FAIL native kernel\n' not in evidence
                 or 'SOURCE ' not in evidence or any(line.startswith('MODULE ') for line in evidence.splitlines())
@@ -177,7 +177,7 @@ def verify_file_rejection(disk, volume, out, layout):
         candidate = work/'kernel.img'; candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
-                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or f'FILES REJECT {reason} reclaimed\n' not in evidence or
                 'FAIL native kernel\n' not in evidence or
@@ -204,7 +204,7 @@ def verify_console_rejection(disk, volume, out, layout):
         candidate = work/'kernel.img'; candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
-                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or f'CONSOLE REJECT {reason} reclaimed\n' not in evidence or
                 'FAIL native kernel\n' not in evidence or
@@ -259,7 +259,7 @@ def verify_probe_rejection(disk, volume, out, layout):
         candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
-                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
                 f'PROBE REJECT {reason} reclaimed\n' not in evidence or
@@ -290,7 +290,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
         candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
-                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
                 f'RUNTIME REJECT {reason} reclaimed\n' not in evidence or
@@ -608,7 +608,7 @@ def main():
             'boot_test':None}
     if args.test:
         guest=out/'boot'
-        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','60')
+        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','90')
         log=(guest/'debug.log').read_text()
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
             raise ValueError('Missing native kernel startup/timer evidence')
@@ -812,6 +812,9 @@ def main():
         frontend_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('FRONTEND CASE ')]
         if frontend_cases != [(phase, case) for phase in (0,1) for case in range(17)]:
             raise ValueError('Retained frontend expression/default ownership or recovery failed')
+        resident_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('RESIDENT CASE ')]
+        if resident_cases != [(phase, case) for phase in (0,1) for case in range(7)]:
+            raise ValueError('Native resident declaration binding/publication failed')
         statement_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('STATEMENT CASE ')]
         if statement_cases != [(phase, case) for phase in (0,1) for case in range(34)]:
             raise ValueError('Native statement/function compilation or recovery failed')

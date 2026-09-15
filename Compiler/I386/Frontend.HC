@@ -20,6 +20,12 @@ class CI386FrontendFixup {
   CHashClass *result_type;
   CHashClass *arguments[1];
 };
+class CI386FrontendResident {
+  CI386FrontendResident *next;
+  CHashSrcSym *declaration;
+  CHashExport *export;
+  I64 address;
+};
 class CI386Frontend {
   CI386Heap *heap;
   CCmpCtrl *cc;
@@ -37,6 +43,7 @@ class CI386Frontend {
   I64 lines;
   CI386FrontendCode *codes;
   CI386FrontendFixup *fixups;
+  CI386FrontendResident *residents;
   U8 *diagnostic_context;
   U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
 };

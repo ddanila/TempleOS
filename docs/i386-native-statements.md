@@ -49,6 +49,10 @@ functions retain their callees through the existing task storage lifetime. This
 does not add cross-control unresolved symbols, imports, symbolic stored pointers,
 or automatic dependency tracking for unloadable modules.
 
+Resident system declarations now bind kernel functions used by generated
+`try/catch` and `throw`. See [resident declarations](i386-resident-declarations.md)
+for borrowed addresses and publication checks.
+
 ## Failure boundaries
 
 Every recursive shared statement entry invokes an optional stack-check callback;
@@ -60,7 +64,8 @@ their temporary execution frame does not contain the function's runtime locals.
 Automatic register hints are accepted; explicit x86-64 register assignments fail.
 Private static allocation is zero-filled. ABI 33 adds a top-level command compiler
 using the existing output executor; see [native commands](i386-native-commands.md).
-Assembly/stream/try service integration, trace disassembly, symbolic stored pointers
+Assembly/stream service integration, the complete public task/exception headers,
+trace disassembly, symbolic stored pointers
 and deferred AOT executable initializer output remain unfinished.
 These limitations do not change the complete language and self-hosting requirements in `PLAN.md`.
 

@@ -4443,3 +4443,56 @@ checks pass. See [i386-native-statements.md](i386-native-statements.md) and
 [i386-program-publication.md](i386-program-publication.md). Full public runtime
 integration, assembler/stream/try providers, DolDoc, native self-hosting and strict
 386SX/DX/physical-machine acceptance remain required.
+
+## Native resident declarations and exception calls
+
+Native `extern` declarations now use visible system-export addresses while owning
+only their ordinary HolyC metadata. The frontend records each borrowed function
+or data binding and validates its export identity/address before publication.
+A declaration can coexist with its underlying system export in a root table;
+other destination definitions still collide. Registered frontend outputs retain
+the existing executable-storage path. Resident code/data and export records are
+never transferred to, or freed with, the compiler control.
+
+The new resident probe runs seven cases during boot and from the worker task.
+It publishes declarations, destroys their original control, and uses them from
+fresh controls, including generated `try/catch` against `SysTry`, `SysUntry` and
+`throw`. A temporary data export refers to the active task's catch flag. Changed
+function/data addresses, changed or removed exports and conflicting destination
+symbols reject publication without changing heap/storage counts; restoring them
+permits the same control to publish. A declaration-only input retains no executable
+storage. Teardown removes all owned symbols and temporary exports before the probe
+module is unloaded and restores heap, control, task-reference and interrupt state.
+
+Disk-backed `StartOS.HC` now publishes `StrCmp`, `SysTry`, `SysUntry` and `throw`
+declarations before the prompt. Public `CTask`/`Fs` views, complete original
+runtime headers, automatic provider lifetime tracking and unload/replacement rules
+remain open. The export table supplies addresses rather than function signatures;
+declarations retain the original HolyC responsibility for the resident ABI.
+See [i386-resident-declarations.md](i386-resident-declarations.md).
+
+The expanded diagnostic corpus exceeded the old 60-second observation cutoff in
+a repeated boot while still advancing through input cases. Native boot/rejection
+and keyboard-startup observation now allow 90 seconds; command and screen-response
+deadlines remain unchanged. This is a diagnostic-run allowance, not a relaxation
+of the vintage-machine performance goals. The keyboard driver harness also maps
+comma and apostrophe to their QEMU key names for multi-argument/character-literal
+source submissions.
+
+All 47 keyboard command checks and 110 submitted lines pass with exact VGA pixels,
+including `StrCmp`, a published function containing `try/catch`, explicit `throw`
+and successful execution afterward. Both x64 compiler/kernel rebuild generations
+pass. The kernel remains 380632 bytes, leaving 8488 bytes after its fixed 4096-byte
+stage prefix. CompilerRuntime remains ABI 35/200 with a 1232440-byte image and
+1232456 retained heap bytes. CompilerProbe remains ABI 5/56 with a 487688-byte image
+and 487704 temporary heap bytes. ConsoleRuntime and FileRuntime sizes and ABIs are
+unchanged. The measured diagnostic startup-to-prompt time is 53.022 seconds on
+QEMU/486 with 8 MiB; this remains development evidence, not strict vintage-hardware
+performance acceptance.
+
+The complete standalone verifier passes, including source-startup variants, module
+rejection/reclamation and executable instruction audits. All 1043 source hashes
+and eight build-input hashes match the tested files. Python syntax and whitespace
+checks pass. Full public runtime/task integration, assembler/stream providers,
+DolDoc, native self-hosting and strict 386SX/DX/physical-machine acceptance remain
+required.

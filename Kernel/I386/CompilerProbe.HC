@@ -34,6 +34,7 @@ extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCommands(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
+extern U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeFrontend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeBootstrap(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
@@ -402,6 +403,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   ProbeCommands(probe,heap,outer);
   ProbePrograms(probe,heap,outer);
   ProbeInputs(probe,heap,outer);
+  ProbeResidents(probe,heap,outer);
   SetRFlags(flags);
   KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }
@@ -479,3 +481,5 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 #include "/Kernel/I386/CompilerCommandProbe.HC"
 #include "/Kernel/I386/CompilerProgramProbe.HC"
 #include "/Kernel/I386/CompilerInputProbe.HC"
+
+#include "/Kernel/I386/CompilerResidentProbe.HC"

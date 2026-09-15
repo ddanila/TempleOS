@@ -86,7 +86,7 @@ def run_input(disk,out,startup_check=None):
             startup_started=time.monotonic()
             #The retained compiler probes run during startup; match the main boot
             #verifier's allowance while keeping input/screen deadlines unchanged.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=60)
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=90)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']
@@ -99,7 +99,7 @@ def run_input(disk,out,startup_check=None):
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
             shifted=set('(){}*+&_"')
@@ -184,6 +184,11 @@ def run_input(disk,out,startup_check=None):
                 ('G;', ['42']),
                 ('extern I64 Pending();I64 Broken(){return Pending();}', ['Compilation failed']),
                 ('G;', ['42']),
+                ('StrCmp("abc","abc");', ['0']),
+                ('I64 T(){I64 x=0;try{x=42;}catch{}return x;}', []),
+                ('T;', ['42']),
+                ("throw('Console',TRUE);", ['Exception']),
+                ('T;', ['42']),
                 ('1.5+2.25;', ['3.75']),
                 ('0x8000000000000000(I64);', ['-9223372036854775808']),
                 ('0x8000000000000000;', ['9223372036854775808']),
