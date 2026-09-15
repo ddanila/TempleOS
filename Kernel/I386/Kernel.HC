@@ -1,6 +1,6 @@
 //Native kernel foundation. Resident HolyC compilation and source execution are pending.
 #include "/Kernel/Types.HH"
-#include "/Kernel/FontStd.HC"
+
 #define TRUE 1
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
@@ -17,7 +17,7 @@
 #include "/Kernel/I386/Timer.HH"
 #include "/Kernel/I386/Sleep.HH"
 #include "/Kernel/I386/Vga.HH"
-#include "/Kernel/I386/Text.HH"
+#include "/Kernel/I386/ConsoleRuntime.HH"
 #include "/Kernel/I386/KeyboardSetup.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
 #include "/Kernel/I386/Kbc.HH"
@@ -41,11 +41,14 @@ CI386Ata kernel_disk;
 CI386RedSea kernel_volume;
 CI386Timer kernel_timer;
 CI386SleepQueue kernel_sleep;
-CI386Text kernel_text;
+CI386ConsoleServices kernel_console;
+CI386ConsoleConfig kernel_console_config;
+U8 *kernel_console_image;
+Bool kernel_display_ready,kernel_probe_ready;
 CI386KbcInput kernel_input;
 CI386KeyboardReader kernel_reader;
 U8 kernel_gdt[40],kernel_idt[2048];
-U8 *kernel_planes;
+
 CI386OwnedTask *kernel_pulse;
 CI386OwnedTask *kernel_keys;
 I64 kernel_startup_count;
@@ -84,7 +87,7 @@ extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64
 extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version);
 extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes);
 extern U0 KernelCompilerProbe(I64 phase);
-extern U0 KernelKeys(I64 unused);
+extern U0 KernelConsoleLoad();
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
@@ -118,19 +121,27 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelFileLoad;
   KernelCompilerProbe(0);
   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
+  KernelConsoleLoad;
   KernelStartup;
   if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
   KernelLog("STORAGE TASK BOUND\n");
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
       !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
-  kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelKeys,0,
-    0x18,0x20,8192);
-  if(!kernel_keys) KernelStop;
   kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
     0x18,0x20,131072);
   if(!kernel_pulse) KernelStop;
   KernelLog("READY native kernel foundation\n");
   I386PicMask(0xFFFC);
+  //Finish heap-accounting diagnostics before accepting interactive allocations.
+  while(!kernel_probe_ready) {
+    if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
+    else I386SchedYield(&kernel_scheduler);
+  }
+  kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,65536,kernel_console.keys,0,
+    0x18,0x20,0);
+  if(!kernel_keys) KernelStop;
+  kernel_keys->task.memory=&kernel_heap;
+  KernelLog("DONE native kernel startup\n");
   while(1) {
     if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
     else I386SchedYield(&kernel_scheduler);
@@ -188,31 +199,16 @@ U0 KernelPulse(I64 unused)
       if(pulses==2) {
         KernelCompilerProbe(1);
         if(!kernel_compiler.scalar_types_check(kernel_scalars,FALSE)) KernelStop;
-        KernelLog("SCALAR LIVE 0000000000000001\nDONE native kernel startup\n");
+        kernel_probe_ready=TRUE;
+        KernelLog("SCALAR LIVE 0000000000000001\n");
       }
     }
   }
 }
 U0 KernelDisplay()
 {
-  U8 palette[48];
-  I64 color;
-  kernel_planes=I386HeapAlloc(&kernel_heap,153600,TRUE);
-  if(!kernel_planes) KernelStop;
-  for(color=0;color<16;color++) {
-    palette[color*3]=0; palette[color*3+1]=0; palette[color*3+2]=0;
-    if(color&4) palette[color*3]=42;
-    if(color&2) palette[color*3+1]=42;
-    if(color&1) palette[color*3+2]=42;
-    if(color&8) {
-      palette[color*3]+=21; palette[color*3+1]+=21; palette[color*3+2]+=21;
-    }
-    if(color==6) palette[color*3+1]=21;
-  }
-  I386VgaPalette(palette);
-  if(!I386TextInit(&kernel_text,kernel_planes,sys_font_std)) KernelStop;
-  I386TextWrite(&kernel_text,"TempleOS i386\nKeyboard console\n\n> ");
-  I386VgaPresent(kernel_planes);
+  if(!kernel_console.display()) KernelStop;
+  kernel_display_ready=TRUE;
 }
 #include "/Kernel/I386/BootMemory.HC"
 #include "/Kernel/I386/A20.HC"
@@ -233,8 +229,8 @@ U0 KernelDisplay()
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/Timer.HC"
 #include "/Kernel/I386/Sleep.HC"
-#include "/Kernel/I386/Vga.HC"
-#include "/Kernel/I386/Text.HC"
+
+
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/KbcQueue.HC"
 #include "/Kernel/I386/KbcInput.HC"
@@ -256,42 +252,6 @@ U0 KernelDisplay()
 #include "/Compiler/I386/LexFiles.HC"
 #include "/Compiler/I386/LexInput.HC"
 
-
-U0 KernelKeys(I64 unused)
-{//Single console/input owner. Lines are collected here; native compilation is pending.
-  CI386KeyEvent event;
-  U8 line[256];
-  I64 length=0,decoded,ch,spaces;
-  while(1) {
-    decoded=I386KeyboardRead(&kernel_reader,&event);
-    if(decoded<0) {
-      length=0;
-      I386TextWrite(&kernel_text,"\nInput reset\n> ");
-      I386VgaPresent(kernel_planes);
-      KernelLog("INPUT RESET\n");
-    } else if(decoded && event.type==2) {
-      ch=event.ch;
-      if(ch==3) {
-        length=0; I386TextWrite(&kernel_text,"^C\n> ");
-        KernelLog("INPUT CANCEL\n");
-      } else if(ch==8) {
-        if(length) { length--; I386TextPut(&kernel_text,8); }
-      } else if(ch==10) {
-        line[length]=0;
-        KernelLog("INPUT LINE "); KernelLog(line); KernelLog("\n");
-        length=0; I386TextWrite(&kernel_text,"\n> ");
-      } else if(ch==9) {
-        spaces=8-length%8;
-        while(spaces-- && length<255) {
-          line[length++]=32; I386TextPut(&kernel_text,32);
-        }
-      } else if(ch>=32 && ch<=255 && length<255) {
-        line[length++]=ch; I386TextPut(&kernel_text,ch);
-      }
-      I386VgaPresent(kernel_planes);
-    }
-  }
-}
 
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
@@ -354,7 +314,7 @@ U0 KernelStartup()
   entry=image;
   result=(*entry)();
   after=kernel_heap.used; allocations=kernel_heap.allocations;
-  if(result!=1 || kernel_startup_count!=1 || !kernel_planes || transient<=0 ||
+  if(result!=1 || kernel_startup_count!=1 || !kernel_display_ready || transient<=0 ||
       !I386HeapFree(&kernel_heap,image) || kernel_heap.used!=after-transient ||
       kernel_heap.allocations!=allocations-1 || !I386HeapValid(&kernel_heap)) KernelStop;
   KernelLog("MODULE "); KernelHex(result); KernelLog(" ");
@@ -583,4 +543,19 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
   KernelLog(" "); KernelHex(span);
   for(i=2;i<bytes/4;i++) { KernelLog(" "); KernelHex(fields[i]); }
   KernelLog("\n");
+}
+
+U0 KernelConsoleLoad()
+{
+  CI386ModuleBinding bindings[5];
+  U8 indices[5];
+  indices[0]=0; indices[1]=19; indices[2]=10; indices[3]=40; indices[4]=41;
+  KernelBindings(bindings,indices,5,5);
+  kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
+    bindings,5,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+  kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
+  kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
+  kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
+  kernel_console_config.read=&I386KeyboardRead;
+  if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }

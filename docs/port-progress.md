@@ -4180,3 +4180,55 @@ answer formatting, multiline editing, public APIs, complete language providers,
 DolDoc and native self-hosting remain required. See
 [i386-command-input.md](i386-command-input.md). These are QEMU/486 development
 results; strict 386SX/DX and physical-machine acceptance remain open.
+
+## Retained VGA HolyC console
+
+ConsoleRuntime ABI 1 (20 bytes) now connects keyboard submissions to native
+compilation, execution, publication and recovery. The module contains the existing
+VGA/text code and original font, plus command presentation and scalar formatting.
+Its image remains resident; the temporary startup module calls a checked resident
+display wrapper and is reclaimed as before. Initialization and display are one-shot,
+and the loader validates the three service addresses before publishing them.
+
+The console task starts after boot/worker heap-accounting diagnostics finish.
+It has a 64 KiB stack and borrows the shared kernel heap, allowing compilation to
+use available memory rather than a small fixed private arena. Input takes its heap
+from the current task's symbol scope. The first integration run correctly rejected
+a mismatched heap before parsing; that exposed and corrected the caller wiring
+without weakening compiler ownership validation.
+
+All 25 hardware-keyboard command checks pass: native evaluation, four-byte pointers
+and eight-byte I64, globals/functions retained between submissions, static state,
+syntax-error recovery, integer extrema, pointers and F64 boundary values. Together
+with editing, cancellation, wrapping, tabs and scrolling, the harness submits 88
+lines and compares every VGA pixel at each checkpoint. These are source commands
+compiled inside the native guest, not host-generated answers.
+
+Scalar answers use decimal integers, hexadecimal addresses and integer-only F64
+formatting with exact expansion and nearest-even rounding to 17 significant
+digits. Tests include NaN/Inf, signed zero, the smallest subnormal, largest finite
+value and rounding-sensitive fractions. Wide-integer testing exposed a signed
+radix in the unsigned formatter; both operands now remain U64. The tests also
+preserve the shared parser's treatment of high-bit integer literals as U64, using
+an explicit I64 cast for the minimum-signed case.
+
+Both x64 rebuild/reboot generations and the full standalone verifier pass,
+including all prior compiler probes, executable instruction audits and module
+rejection/reclamation checks. Console target, import and version corruption are
+rejected before startup uses the module. All 1038 packaged source hashes and eight
+build-input hashes match the tested tree; Python syntax and whitespace checks pass.
+
+The boot kernel is 373768 bytes, down 17256 bytes. With the 2160-byte early stage it
+leaves 17288 bytes in the unchanged 393216-byte reservation. The retained console
+image is 39440 bytes (39456 heap bytes); its planar buffer remains 153600 bytes.
+CompilerRuntime remains ABI 35/200 bytes, with a 1213912-byte image (1213928 heap
+bytes). FileRuntime remains ABI 13/32 bytes. CompilerProbe remains ABI 5/56 bytes,
+with a 461288-byte image and complete reclamation of its 461304 heap bytes.
+Diagnostic startup measured 37.151 seconds in the keyboard harness.
+
+See [i386-console-runtime.md](i386-console-runtime.md). Full-frame VGA uploads and
+worst-case numerical rendering need vintage-hardware latency work. Multiline
+editing, public APIs, complete language/runtime providers, CPU-fault/debugger
+integration, DolDoc, startup-source execution and native self-hosting remain open.
+This initial console passes on QEMU/486 with 8 MiB; it does not establish complete
+interactive memory/performance acceptance or strict 386SX/DX/physical support.

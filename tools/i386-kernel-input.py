@@ -88,15 +88,15 @@ def run_input(disk,out):
             #verifier's allowance while keeping input/screen deadlines unchanged.
             wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=60)
             startup_seconds=time.monotonic()-startup_started
-            heading=['TempleOS i386','Keyboard console','']
+            heading=['TempleOS i386','HolyC console','']
             screen(heading+['> '],'initial')
             for name in ('a','b','c','backspace'): press(name)
             key('shift',True); press('d'); key('shift',False); press('ret')
             wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
-            screen(heading+['> abD','> '],'edited')
+            screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
             press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
             wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
-            rows=heading+['> abD','> yz^C','> ']
+            rows=heading+['> abD','Error: Undefined identifier at ','> yz^C','> ']
             screen(rows,'cancelled')
             #Cross a physical text row, then backspace across the wrap boundary.
             for count in range(1,79):
@@ -107,21 +107,66 @@ def run_input(disk,out):
                     screen(expected,'typing')
             for name in ('z','z','z','backspace','backspace','backspace','backspace','ret'): press(name)
             wait_for(lambda:'INPUT LINE '+'a'*77+'\n' in log.read_text())
-            rows=rows[:-1]+['> '+'a'*77,'> ']
+            rows=rows[:-1]+['> '+'a'*77,'Error: Undefined identifier at ','> ']
             screen(rows,'wrapped')
             press('tab'); press('b'); press('ret')
             wait_for(lambda:'INPUT LINE '+' '*8+'b\n' in log.read_text())
-            rows=rows[:-1]+['> '+' '*8+'b','> ']
+            rows=rows[:-1]+['> '+' '*8+'b','Error: Undefined identifier at ','> ']
             screen(rows,'tab')
             for count in range(1,61):
                 press('ret')
                 wait_for(lambda:log.read_text().count('INPUT LINE \n')==count)
             screen(['> ']*60,'scrolled')
+            rows=['> ']*60
+            plain={' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+                   '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
+                   '*':'8','+':'equal','&':'7'}
+            shifted=set('(){}*+&')
+            def submit(source, answers, name):
+                nonlocal rows
+                for index,ch in enumerate(source):
+                    shift=ch.isupper() or ch in shifted
+                    if shift: key('shift',True)
+                    press(plain.get(ch,ch.lower()))
+                    if shift: key('shift',False)
+                    if index%4==3:
+                        screen((rows[:-1]+['> '+source[:index+1]])[-60:],'command-typing')
+                press('ret')
+                rows=(rows[:-1]+['> '+source]+answers+['> '])[-60:]
+                screen(rows,name)
+            commands=[
+                ('6*7;', ['42']),
+                ('sizeof(U8 *);', ['4']),
+                ('sizeof(I64);', ['8']),
+                ('0x100000000+42;', ['4294967338']),
+                ('I64 n=40;', []),
+                ('I64 Next(){return ++n;}', []),
+                ('Next;', ['41']),
+                ('Unknown bad;', ['Error: Undefined identifier at ']),
+                ('Next;', ['42']),
+                ('I64 Count(){static I64 i=9;return ++i;}', []),
+                ('Count;', ['10']), ('Count;', ['11']),
+                ('1.5+2.25;', ['3.75']),
+                ('0x8000000000000000(I64);', ['-9223372036854775808']),
+                ('0x8000000000000000;', ['9223372036854775808']),
+                ('0xFFFFFFFFFFFFFFFF(U64);', ['18446744073709551615']),
+                ('1.0/0.0;', ['Inf']),
+                ('0.0/0.0;', ['NaN']),
+                ('1(F64);', ['4.9406564584124654e-324']),
+                ('0x7FEFFFFFFFFFFFFF(F64);', ['1.7976931348623157e+308']),
+                ('0x8000000000000000(F64);', ['-0']),
+                ('0(U8 *);', ['0x0']),
+                ('0x3FB999999999999A(F64);', ['0.10000000000000001']),
+                ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
+                ('1.0/3.0;', ['0.33333333333333331']),
+            ]
+            for index,(source,answers) in enumerate(commands):
+                submit(source,answers,f'command-{index:02}')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'startup_seconds':startup_seconds,
-                    'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':63}
+                    'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','persistent definitions','error recovery','integer and F64 answers'],
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':63+len(commands), 'native_commands':len(commands)}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

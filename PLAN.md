@@ -20,11 +20,11 @@ checks 725 packaged files and embedded DolDoc record lengths. Two native x86-64 
 multicore behavior still need baseline verification. The native i386 foundation
 now boots a disk image on the 8 MiB QEMU/486 development profile, initializes
 cooperative tasks and timer interrupts, reads its source from RedSea, and loads a
-separate startup module that initializes VGA through resident imports. A dedicated
-keyboard task now collects editable lines in a console using the original 8×8
-font, with native input and rendered-pixel tests. These
-results do not establish strict 386 support
-or an interactive HolyC environment. Component evidence and remaining limitations
+separate startup module that initializes VGA through resident imports. A retained
+HolyC console now compiles keyboard submissions, retains definitions, recovers
+from syntax errors and renders integer/pointer/software-F64 answers with the
+original 8×8 font. These results do not establish strict 386 support, the complete
+HolyC/DolDoc environment or native self-hosting. Component evidence and remaining limitations
 are tracked in the progress document.
 
 All work stays in our fork on `main`. Preserve `archive` at `c26482b`.
@@ -960,21 +960,28 @@ CompilerRuntime ABI 35 (200 bytes) adds a synchronous submitted-source entry. It
 creates a private control, compiles and optionally executes commands, forwards
 results/diagnostics, publishes completed definitions and unwinds temporary state.
 It preserves an enclosing active control and rethrows non-compiler exceptions
-after cleanup. This is the compiler-side console boundary; keyboard dispatch,
-VGA answer formatting and multiline input remain to be connected. See
-`docs/i386-command-input.md`.
+after cleanup. See `docs/i386-command-input.md`.
+
+ConsoleRuntime ABI 1 (20 bytes) now connects that input service to keyboard entry
+and VGA results/diagnostics. The console, font and scalar formatting live in a
+retained extended-memory module, releasing space in the fixed boot reservation.
+The console task starts after diagnostic heap checks, uses a 64 KiB stack and
+shared heap, and retains its own symbol scope. Keyboard-driven tests cover
+persistent definitions, recovery, wide integers and software F64 boundary values.
+Multiline editing, public APIs and the complete document workflow remain open.
+See `docs/i386-console-runtime.md`.
 
 Complete assembly/stream/try providers, pointer-string
 initialization, unresolved function/global linking, definition replacement/unload
-rules, interactive console and public API integration, DolDoc and native
+rules, complete public API/console integration, DolDoc and native
 self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.
 
 #### Continuing integration sequence
 
 Standalone startup still executes a cross-compiled module. The retained compiler
-can compile, execute and publish submitted source buffers, but keyboard input is
-not yet dispatched to it. Advance the resident programming environment through
+now compiles, executes and publishes keyboard-submitted source through the
+retained VGA console. Advance the resident programming environment through
 these concrete steps:
 
 1. Load a separately packaged i386 startup module from RedSea using the existing
@@ -990,9 +997,10 @@ these concrete steps:
    by the compiler; keep disk access ownership explicit as tasks become active.
    Keyboard line collection, cancellation and VGA scrolling now pass in the
    standalone image. A synchronous native submitted-source service now supplies
-   compilation, execution, publication and recovery. Move the console into retained
-   extended memory, connect this service and result/diagnostic rendering, and
-   integrate the compiler-facing public APIs.
+   compilation, execution, publication and recovery. The retained console now
+   connects that service and result/diagnostic rendering. Complete multiline
+   editing and the compiler-facing public APIs, and measure/reduce presentation
+   and compilation latency against the vintage hardware profiles.
 3. Inventory the compiler's remaining native dependencies against that resident
    interface, including symbol storage, formatting, software F64, generators and
    target execution. Bring up a native compile/run path, then repeat editing,

@@ -12,7 +12,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
-DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime')
+DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime')
 
 
 def run(*args):
@@ -83,6 +83,28 @@ def compiler_runtime_layout(module):
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
+def console_runtime_layout(module):
+    size, count, records = struct.unpack_from('<III', module, 16)
+    exports, imports = {}, {}
+    for index in range(count):
+        kind, offset, name, length = struct.unpack_from('<4I', module, records+16*index)
+        if kind in (1, 2, 3, 5):
+            symbol = module[name:name+length].decode('ascii')
+            if kind in (1, 3): exports[symbol] = (kind, offset)
+            else: imports[symbol] = name
+    if set(imports) != {'KernelLog', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry'}:
+        raise ValueError('Unexpected console import contract')
+    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys'):
+        if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
+    if exports.get('console_version', (0, 0))[0] != 3:
+        raise ValueError('Missing console version')
+    version_offset = 32+exports['console_version'][1]
+    if struct.unpack_from('<I', module, version_offset)[0] != 1:
+        raise ValueError('Unexpected console version')
+    return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
+                entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys')])
+
+
 def file_runtime_layout(module):
     size, count, records = struct.unpack_from('<III', module, 16)
     exports, imports = {}, {}
@@ -130,6 +152,32 @@ def verify_file_rejection(disk, volume, out, layout):
                     'STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
             raise ValueError(f'File runtime failed rejection/reclamation: {label}')
         if candidate.read_bytes() != changed: raise ValueError('Rejected file module changed disk')
+        results.append(label)
+    return results
+
+
+def verify_console_rejection(disk, volume, out, layout):
+    original = disk.read_bytes()
+    offset = volume['files']['/Modules/I386/ConsoleRuntime.t32m']['block']*512
+    results = []
+    for label, position, replacement, reason in (
+            ('wrong-target', 6, b'\x04', 'load'),
+            ('missing-import', layout['import_offset'], b'X', 'load'),
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 0), 'api')):
+        work = out/f'reject-console-{label}'
+        work.mkdir(parents=True, exist_ok=True)
+        changed = bytearray(original)
+        changed[offset+position:offset+position+len(replacement)] = replacement
+        candidate = work/'kernel.img'; candidate.write_bytes(changed)
+        with (work/'runner.log').open('w') as log:
+            result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
+                '--i386-disk', '--out', str(work), '--timeout', '60'], cwd=ROOT, stdout=log, stderr=log)
+        evidence = (work/'debug.log').read_text()
+        if (result.returncode == 0 or f'CONSOLE REJECT {reason} reclaimed\n' not in evidence or
+                'FAIL native kernel\n' not in evidence or
+                any(marker in evidence for marker in ('STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
+            raise ValueError(f'Console failed rejection/reclamation: {label}')
+        if candidate.read_bytes() != changed: raise ValueError('Rejected console module changed disk')
         results.append(label)
     return results
 
@@ -488,6 +536,7 @@ def main():
     runtime_layout=compiler_runtime_layout((exports/'CompilerRuntime.t32m').read_bytes())
     probe_layout=compiler_probe_layout((exports/'CompilerProbe.t32m').read_bytes())
     files_layout=file_runtime_layout((exports/'FileRuntime.t32m').read_bytes())
+    console_layout=console_runtime_layout((exports/'ConsoleRuntime.t32m').read_bytes())
     disk=out/'kernel.img'
     run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
@@ -512,7 +561,7 @@ def main():
             'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
             'bootstrap_modules':list(MODULES),
-            'resident_modules':list(MODULES)+['CompilerRuntime', 'FileRuntime'],
+            'resident_modules':list(MODULES)+['CompilerRuntime', 'FileRuntime', 'ConsoleRuntime'],
             'temporary_modules':['Startup', 'CompilerProbe'],
             'volume':volume,
             'scope':'Native kernel with retained extended-memory lexer/numerical runtime and AOT startup; shell/JIT and self-hosting unfinished',
@@ -749,17 +798,24 @@ def main():
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')
         console=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))
-        expected=console['console_pixels'](['TempleOS i386','Keyboard console','','> '])
+        expected=console['console_pixels'](['TempleOS i386','HolyC console','','> '])
         if screen.tobytes()!=expected:
             raise ValueError('VGA console mismatch')
         screen.save(guest/'screen.png')
+        keyboard=console['run_input'](disk,out/'input')
+        if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
+            raise ValueError('Keyboard console changed the disk')
         rejected=verify_startup_rejection(disk,volume,out)
         result['file_runtime']['rejected']=verify_file_rejection(disk,volume,out,files_layout)
         result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
         result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
-        keyboard=console['run_input'](disk,out/'input')
-        if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
-            raise ValueError('Keyboard console changed the disk')
+        rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ')]
+        if len(rows)!=1 or len(rows[0])!=7: raise ValueError('Missing retained console')
+        cbase,csize,cspan,*entries=[int(x,16) for x in rows[0][1:]]
+        if csize!=console_layout['image_bytes'] or cspan!=((csize+23)//8)*8 or entries!=[cbase+x for x in console_layout['entries']]:
+            raise ValueError('Console interface/image accounting mismatch')
+        result['console_runtime']=dict(version=1,image_bytes=csize,retained_heap_bytes=cspan,
+            rejected=verify_console_rejection(disk,volume,out,console_layout))
         result['boot_test']={'cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
                              'startup_module':'Startup','startup_reclaimed_bytes':startup_reclaimed,
                              'startup_rejected':rejected,

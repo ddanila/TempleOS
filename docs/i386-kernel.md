@@ -65,10 +65,11 @@ x86-64 compiler/kernel rebuild/reboot generations pass. Tests use QEMU's 486 mod
 with 8 MiB; generated-code auditing and CR0.EM are not proof of strict 386 support.
 
 This is the first standalone native kernel foundation, not a complete TempleOS
-port. It has no HolyC shell/JIT, DolDoc startup, startup-source execution, full
+port. It now has an initial native HolyC console, but still lacks DolDoc startup,
+startup-source execution, full
 public CTask/CPU integration, mouse UI, speaker integration or native
 self-hosted compiler. The image now includes a formatted RedSea source/module volume, but it is not
-a complete installed TempleOS distribution. The 8 MiB interactive and
+a complete installed TempleOS distribution. The complete 8 MiB interactive environment and
 16 MiB self-hosting goals remain unproven. The full scope in PLAN.md is unchanged.
 
 
@@ -124,8 +125,8 @@ instruction audits. Two additional boots use copies of the image with the startu
 CPU tag changed or one resident-data import renamed; both must halt before module
 execution, with their disks unchanged. These checks run as part of `--test`.
 The manifest records the linked kernel size; the startup image reclaims 232 bytes
-on the current build. This executes cross-compiled native code from disk; it does
-not yet compile source on the target or provide the native shell/JIT.
+on the current build. This startup path executes cross-compiled native code from disk. The retained
+console separately compiles and executes source entered at its prompt.
 
 ## Native keyboard console
 
@@ -149,13 +150,17 @@ The input task collects at most 255 bytes plus a terminator. Backspace cannot
 erase the prompt; Ctrl-C cancels the partial line. Tabs add spaces at eight-column
 stops relative to the input line. Extra characters at the limit are ignored until
 space is freed or the line is submitted. Enter reports the line on debug port E9
-and starts another line. This is keyboard line collection, not command execution;
-the compiler/JIT and DolDoc remain required integration work.
+and submits it to the retained compiler input service. Results and diagnostics
+are rendered before the next prompt; successful definitions survive subsequent
+inputs. The console/font/rendering implementation now lives in a retained module.
+See [console runtime](i386-console-runtime.md) for task/heap ownership, scalar
+formatting, limits and remaining public-API/DolDoc work.
 
 `tools/i386-kernel-input.py` boots the real disk image and sends QMP keyboard
 events. It checks Shift, release handling, cancellation, tab expansion and
 backspace across a wrap boundary, then submits sixty empty lines to exercise
-scrolling. An independent renderer reads the original font and compares every
+scrolling, then compiles commands covering persistent state, recovery, target
+widths and numerical boundary values. An independent renderer reads the original font and compares every
 VGA pixel at each checkpoint. The test runs under the builder's `--test` option,
 records its commands/logs/screens under `build/i386-kernel/input`, and confirms
 that the original disk remains unchanged. The existing blocking-input component

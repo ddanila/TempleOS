@@ -43,11 +43,10 @@ not retain references to unpublished private data across failure. Collisions are
 rejected; definition replacement and dependency-aware unloading remain pending.
 See [program publication](i386-program-publication.md) for storage ownership.
 
-The keyboard task still collects lines. Connecting this service to VGA output,
-answer formatting, multiline source editing and the public TempleOS interfaces
-remains required. The fixed boot reservation has almost no room left; console
-implementation must move into retained extended-memory code rather than grow the
-bootstrap kernel without a deliberate boot-layout change.
+The retained [VGA console](i386-console-runtime.md) now submits keyboard lines to
+this service and renders results/diagnostics. Multiline source editing, the full
+public TempleOS interfaces and complete language/document workflows remain open.
+The console implementation lives outside the fixed boot reservation.
 
 ## Verification
 

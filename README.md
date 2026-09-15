@@ -68,9 +68,20 @@ qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none \
   -drive file=build/i386-kernel/kernel.img,format=raw,if=ide
 ```
 
-This image boots the native memory/task/interrupt runtime, displays VGA color
-bars, mounts its RedSea source volume and runs a timer-driven task. It does not
-yet provide an interactive HolyC shell, DolDoc or startup-source execution. See [kernel image details](docs/i386-kernel.md).
+This image boots a native VGA HolyC console. After startup diagnostics finish,
+try `6*7;`, `sizeof(U8 *);`, or `1.5+2.25;`. Definitions persist between lines:
+
+```c
+I64 n=40;
+I64 Next(){return ++n;}
+Next;
+```
+
+The last command prints `41`. Syntax errors return to the prompt and preserve
+previous definitions. This is an initial console: multiline editing, the complete
+language/runtime, DolDoc, startup-source execution and native self-hosting remain
+unfinished. See [console details](docs/i386-console-runtime.md) and
+[kernel image details](docs/i386-kernel.md).
 
 Run isolated bootstrap/backend checks with:
 

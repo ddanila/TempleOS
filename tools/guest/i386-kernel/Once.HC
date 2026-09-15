@@ -2,10 +2,10 @@
 U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 U0 BuildKernel()
 {
-  U8 *source,*modules[10],*image,*name,*line;
-  I64 sizes[10],size,errors,i;
+  U8 *source,*modules[11],*image,*name,*line;
+  I64 sizes[11],size,errors,i;
   Report("START kernel cross-build\n");
-  for(i=0;i<10;i++) {
+  for(i=0;i<11;i++) {
     switch(i) {
       case 0: name="Kernel"; break;
       case 1: name="SysTry"; break;
@@ -17,6 +17,7 @@ U0 BuildKernel()
       case 7: name="CompilerRuntime"; break;
       case 8: name="CompilerProbe"; break;
       case 9: name="FileRuntime"; break;
+      case 10: name="ConsoleRuntime"; break;
     }
     line=MStrPrint("/Kernel/I386/%s.HC",name);
     source=FileRead(line); Free(line);
