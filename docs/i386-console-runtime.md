@@ -69,6 +69,11 @@ APIs and DolDoc editing remain open. This is an initial native programming conso
 not completion of the full TempleOS environment. `Print`, native assembler/try
 providers, generators and other language/runtime integration remain separate work.
 
+String-pointer initializers now work in native globals and statics, for example
+`U8 *text="ABC";`. Their writable literal storage survives publication and later
+commands; a failed later input leaves previously published strings intact.
+String pointers in AOT modules still require relocation support.
+
 Signed and unsigned integers render in decimal, pointers as hexadecimal addresses.
 Pointer classification uses the value class because `RT_PTR` and `RT_I64` share
 a raw-type code. Floating-point answers use an integer-only exact decimal

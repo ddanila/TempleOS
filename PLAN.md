@@ -976,8 +976,16 @@ remain full-screen. Pixel checks and invalid-range checks pass, but this payload
 reduction does not establish vintage-machine latency acceptance.
 See `docs/i386-console-runtime.md`.
 
-Complete assembly/stream/try providers, pointer-string
-initialization, unresolved function/global linking, definition replacement/unload
+Native JIT string-pointer initialization now retains literal storage through the
+existing initializer and task-publication lifetimes, including globals, statics,
+aggregate members and pointer arrays. Cross-compiled AOT stored pointers still
+need a relocation contract that uses the eventual guest address. The flat boot
+image and runtime module loader must both establish those addresses correctly;
+embedding compiler-host allocation addresses cannot satisfy that contract.
+See `docs/i386-initializer-parser.md`.
+
+Complete assembly/stream/try providers, stored-pointer relocation in AOT modules,
+unresolved function/global linking, definition replacement/unload
 rules, complete public API/console integration, DolDoc and native
 self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.

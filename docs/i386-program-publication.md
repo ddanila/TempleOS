@@ -15,7 +15,8 @@ and are released by normal symbol destruction.
 Executable code and static-member storage follow a separate task lifetime.
 `CI386TaskSymbols.storage` holds allocation groups reclaimed after the task's owned
 symbols. Publication retains every live registered frontend output, including
-anonymous command code: a global can hold a pointer into a command's literal pool.
+anonymous command and initializer code: a global or static pointer can refer
+into one of their literal pools.
 The retained group is sized for its actual payload count rather than the scratch
 validation capacity. Children retain their parent's symbol scope through the
 existing lifetime references, so inherited code and static storage stay live.
@@ -58,7 +59,7 @@ before destroying a root scope or manually deleting published definitions.
 The native probe runs publication cases during boot and from a worker task. It
 destroys the originating control, then uses fresh controls to call functions,
 recurse, mutate static state, access aggregates/default strings and read both
-function and anonymous-command literal pools. It compiles malformed later input,
+function, anonymous-command and global/static initializer literal pools. It compiles malformed later input,
 unwinds that input and verifies the earlier definitions remain usable.
 
 Negative cases cover collisions, foreign/duplicate metadata, heap exhaustion,
@@ -80,6 +81,6 @@ Run `python3 tools/test-rebuild.py`, then
 `python3 tools/build-i386-kernel.py --test` and
 `python3 tools/test-i386.py --task-symbols`.
 
-Console integration, public task/answer APIs, full assembler/try/generator
+Complete public task/answer APIs, full assembler/try/generator
 integration, DolDoc and native self-hosting remain required. These QEMU/486 checks
 do not establish strict 386SX/DX or physical-machine acceptance.

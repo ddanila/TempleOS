@@ -4306,3 +4306,46 @@ This is native console-source startup, not the complete original StartOS/DolDoc
 workflow or self-hosting. Native source editing/writing, complete public APIs and
 language providers, execution interruption, CPU-fault/debugger integration and
 strict 386SX/DX/physical-machine acceptance remain open.
+
+
+## Native JIT string-pointer initialization
+
+The shared initializer now permits i386 string-pointer initialization when parsing
+native JIT source. It uses the existing expression executor and misc-data lifetime:
+the initialized value points into registered literal storage, the scalar store is
+four bytes, and successful program publication transfers that storage to the task.
+No compiler/console service ABI changes are required. The AOT path remains rejected
+until stored pointers have a target-address relocation contract for both runtime
+modules and the flat cross-built boot image.
+
+The native statement corpus now has 26 cases per boot/worker phase. String cases
+cover empty strings, concatenation with embedded NULs, writable storage, signed-byte
+pointers, globals, statics, aggregate members and inferred pointer arrays. A failed
+source after string allocation must unwind completely. Publication tests retain
+initialized global/static strings across control destruction, read and mutate them
+from later inputs, then verify that a failed later string declaration leaves the
+earlier data usable. Existing collision, invalid-ownership and allocation-failure
+publication checks now exercise these literal pools too; fixture teardown restores
+exact heap, control, task-reference, exception and interrupt state.
+
+All 38 keyboard command checks pass, including string declarations, mutation,
+static state and failed-input recovery; the harness submits 101 lines and compares
+every displayed pixel at its checkpoints. Both x64 rebuild/reboot generations and
+the 19-case cross-compiler data suite pass. The latter retains its explicit AOT
+string-pointer rejection, rather than allowing a compiler-host address or an
+eight-byte patch to enter a four-byte target field.
+
+The boot kernel remains 374760 bytes with 16296 bytes spare in its reservation.
+CompilerRuntime remains ABI 35/200; its image is 1214040 bytes (1214056 heap bytes).
+CompilerProbe remains ABI 5/56; its image is 465040 bytes (465056 temporary heap
+bytes). ConsoleRuntime and FileRuntime image sizes and ABIs are unchanged.
+The expanded diagnostic startup measured 42.477 seconds on QEMU/486 with 8 MiB;
+this includes the larger probe corpus and is not vintage-machine latency evidence.
+The full standalone verifier passes, including source-startup variants, module
+rejection/reclamation and executable instruction audits. All 1041 source hashes and
+eight build-input hashes match the tested files, and the temporary probe reclaims
+all 465056 heap bytes. Python syntax and whitespace checks pass. See
+[i386-initializer-parser.md](i386-initializer-parser.md).
+
+AOT relocation, full language/runtime providers, public APIs, DolDoc, native
+self-hosting and strict 386SX/DX/physical-machine acceptance remain required.

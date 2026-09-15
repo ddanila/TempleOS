@@ -806,7 +806,7 @@ def main():
         if frontend_cases != [(phase, case) for phase in (0,1) for case in range(17)]:
             raise ValueError('Retained frontend expression/default ownership or recovery failed')
         statement_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('STATEMENT CASE ')]
-        if statement_cases != [(phase, case) for phase in (0,1) for case in range(20)]:
+        if statement_cases != [(phase, case) for phase in (0,1) for case in range(26)]:
             raise ValueError('Native statement/function compilation or recovery failed')
         command_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('COMMAND CASE ')]
         if command_cases != [(phase, case) for phase in (0,1) for case in range(16)]:

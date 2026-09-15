@@ -66,6 +66,8 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       "I64i DurableDefault(U8i *s=\"xy\"){return s[1];}"
       "U8i *DurableText(){return \"hello\";}"
       "U8i *DurableLiteral=0;DurableLiteral=(\"hello\");"
+      "U8i *DurableInit=\"abc\";"
+      "I64i DurableString(){static U8i *p=\"def\";return ++p[0];}"
       "U8i DurableZero;";
     if(kind==7) source="extern I64i Future();";
     cc=probe->files->control_new(source,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/Program.HC");
@@ -149,9 +151,12 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
           ProbeProgramUse(probe,heap,outer,"DurableFact(5);")!=120 ||
           ProbeProgramUse(probe,heap,outer,"DurablePairData.a+DurablePairData.b;")!=42 ||
           ProbeProgramUse(probe,heap,outer,"DurableDefault;")!=121 ||
+          ProbeProgramUse(probe,heap,outer,"DurableInit[1];")!=98 ||
+          ProbeProgramUse(probe,heap,outer,"DurableString;")!=101 ||
+          ProbeProgramUse(probe,heap,outer,"DurableInit[0]=90;")!=90 ||
           ProbeProgramUse(probe,heap,outer,"&DurableZero;")!=0 ||
           ProbeProgramUse(probe,heap,outer,"(DurableText)[1]+DurableLiteral[1];")!=202) KernelStop;
-      failed=probe->files->control_new("I64i Fresh=1;Unknown bad;",CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/ProgramFailure.HC");
+      failed=probe->files->control_new("U8i *Fresh=\"lost\";Unknown bad;",CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/ProgramFailure.HC");
       if(!failed || !probe->compiler->control_enter(heap,failed,0,0)) KernelStop;
       failed_symbols=probe->compiler->frontend(heap,failed,probe->internal_types,probe->disk_include);
       if(!failed_symbols) KernelStop;
@@ -161,7 +166,9 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(!recovered || probe->compiler->publish(heap,failed,failed_symbols) ||
           !probe->compiler->control_unwind(task,outer) || ProbeSymbolFind(0,"Fresh",task->hash_table,HTT_GLBL_VAR) ||
           ProbeProgramUse(probe,heap,outer,"DurableAdd;")!=42 ||
-          ProbeProgramUse(probe,heap,outer,"DurableNext;")!=42) KernelStop;
+          ProbeProgramUse(probe,heap,outer,"DurableNext;")!=42 ||
+          ProbeProgramUse(probe,heap,outer,"DurableInit[0]+DurableInit[2];")!=189 ||
+          ProbeProgramUse(probe,heap,outer,"DurableString;")!=102) KernelStop;
       //The fixture has exclusive references. Remove its published roots and
       //storage; production teardown is covered separately by task-symbol tests.
       for(i=0;i<count;i++)

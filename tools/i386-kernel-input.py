@@ -101,8 +101,8 @@ def run_input(disk,out,startup_check=None):
             screen(rows,'initial')
             plain={' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
-                   '*':'8','+':'equal','&':'7','_':'minus'}
-            shifted=set('(){}*+&_')
+                   '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
+            shifted=set('(){}*+&_"')
             def submit(source, answers, name):
                 nonlocal rows
                 for index,ch in enumerate(source):
@@ -171,6 +171,15 @@ def run_input(disk,out,startup_check=None):
                 ('Next;', ['42']),
                 ('I64 Count(){static I64 i=9;return ++i;}', []),
                 ('Count;', ['10']), ('Count;', ['11']),
+                ('U8 *greet="ABC";', []),
+                ('greet[1];', ['66']),
+                ('greet[1]=90;', ['90']),
+                ('U8 *lost="bad";Unknown bad;', ['Error: Undefined identifier at ']),
+                ('lost;', ['Error: Undefined identifier at ']),
+                ('greet[1];', ['90']),
+                ('U8 *lost="ok";', []), ('lost[1];', ['107']),
+                ('I64 Letter(){static U8 *s="AZ";return ++s[0];}', []),
+                ('Letter;', ['66']), ('Letter;', ['67']),
                 ('1.5+2.25;', ['3.75']),
                 ('0x8000000000000000(I64);', ['-9223372036854775808']),
                 ('0x8000000000000000;', ['9223372036854775808']),

@@ -40,7 +40,9 @@ U0 PrsVarInitCore(CPrsInitializerServices *services,CCmpCtrl *cc,U8 **_dst,CHash
       is_str=TRUE;
     else
       is_str=FALSE;
-    if (cc->flags&CCF_TARGET_I386 && is_str) throw('Compiler');
+    //Native JIT retains literal storage through the existing misc-data owner.
+    //Stored pointers in i386 AOT modules still require target-address relocation.
+    if (cc->flags&CCF_TARGET_I386 && cc->flags&CCF_AOT_COMPILE && is_str) throw('Compiler');
     if (cc->flags&CCF_AOT_COMPILE && is_str) {
       (*types->snapshot_drop)(types->context,cc);
       machine_code=(*expression->string)(expression->context,cc,&i);

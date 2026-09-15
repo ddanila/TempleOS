@@ -8,10 +8,10 @@ and initializer cores. It temporarily clears the bootstrap AOT flag and restores
 it after a successful statement. Parse or generation errors require control unwind.
 
 The same environment now handles function bodies, local declarations, control
-flow, numeric global/static storage and aggregate initialization. Generated output
+flow, global/static storage, string-pointer and aggregate initialization. Generated output
 and private symbols belong to the originating compiler control. They remain valid
-while that control is alive; this is a prerequisite for the resident programming
-environment, not yet persistent task-level code publication or a shell.
+while that control is alive, or until publication transfers them to the task.
+The retained console uses these services through its command-input entry.
 
 ## Calls and output ownership
 
@@ -41,10 +41,9 @@ their temporary execution frame does not contain the function's runtime locals.
 Automatic register hints are accepted; explicit x86-64 register assignments fail.
 Private static allocation is zero-filled. ABI 33 adds a top-level command compiler
 using the existing output executor; see [native commands](i386-native-commands.md).
-Native pointer-string initialization, assembly/stream/try service integration,
-trace disassembly, deferred AOT initializer output and console integration remain
-unfinished. These limitations do
-not change the complete language and self-hosting requirements in `PLAN.md`.
+Assembly/stream/try service integration, trace disassembly, stored-pointer
+relocation in AOT modules and deferred AOT initializer output remain unfinished.
+These limitations do not change the complete language and self-hosting requirements in `PLAN.md`.
 
 ## Bootstrap constant evaluation
 
@@ -59,8 +58,11 @@ return code. This does not execute i386 instructions on the compiler host.
 `CompilerStatementProbe.HC` compiles and executes functions during boot and from
 the worker task. Its cases cover loops, switch ranges, goto, defaults, recursion,
 nested calls, F64 conversion, global arrays, static state, aggregate fields,
-indirect calls and variadics. Negative cases cover invalid declarations, unresolved
-calls and labels, unsupported pointer strings/register assignments, excessive
+indirect calls and variadics. String cases cover four-byte pointer stores, adjacent
+scalar fields, writable/empty/concatenated/embedded-NUL strings, static pointers,
+aggregate members and inferred pointer arrays. Negative cases cover invalid declarations, unresolved
+calls and labels, failed input after allocating string storage, unsupported
+register assignments, excessive
 statement nesting and runtime-local references in static initialization. Every
 case requires exact restoration of heap bytes/allocation counts, task references,
 active controls, exception state and interrupt state after unwind.
