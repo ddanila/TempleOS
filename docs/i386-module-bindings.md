@@ -21,6 +21,19 @@ resident target's starting address is rejected, in addition to existing module,
 size-table and entry-name overlap checks. The caller must independently ensure
 the whole resident code/data regions stay live and do not overlap output storage.
 
+`I386LoadBoundAt` supplies the same contract with an explicit final load-address
+argument. A value of -1 selects the actual output address, as used by the existing
+`I386LoadBoundInto` wrapper; nonnegative values let a host build an image for a
+known future location. Invalid values and overflowing destination ranges fail
+before writes. Actual native output buffers must also fit the native address
+space, independently of the explicit relocation address. Pointer arithmetic is
+not used as an implicit overflow check because wide intermediate values can
+retain carry bits before a pointer is stored.
+
+Version-3 stored data pointers are relocated to this same destination address.
+They do not refer to the binding table; their targets are module-local data.
+Existing version-2 position-independent payloads retain their representation.
+
 `I386LoadBoundAlloc` adds heap allocation and cleanup. `I386RedSeaLoadBound` and
 `I386RedSeaLoadSetBound` add the same binding table to disk file loading. Existing
 unbound APIs retain their signatures and behavior. Tables and names are consumed

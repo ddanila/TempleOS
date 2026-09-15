@@ -165,7 +165,7 @@ def main():
     large_runner = args.redsea_alloc or args.redsea_write or args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     #Task and symbol integration corpora use a 160 KiB transfer; their first arena is 0x40000.
     #A 160 KiB transfer from 0x10000 ends at 0x38000, below that arena.
-    boot_sectors = 768 if args.task_symbols else 512 if args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.tasks else 320 if args.float or args.redsea or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner else 128
+    boot_sectors = 768 if args.task_symbols else 512 if args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.tasks else 320 if args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner else 128
     kind = 'expressions'
     for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
@@ -437,7 +437,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != {'data': 19, 'functions': 238, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
+    if offset != len(data) or count != {'data': 27, 'functions': 238, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
     if interrupt_ranges:
         raise ValueError('Unmatched interrupt code range')
@@ -453,7 +453,7 @@ def main():
             if not any(parts and parts[0] == operation for parts in instructions):
                 raise ValueError(f'Missing bit intrinsic: {operation}')
     # NASM -D string macro keeps the fixture independent of a fixed export path.
-    context_args = []
+    context_args = ['-DFIXED_IMAGE_BASE=0x40000'] if args.data else []
     if except_runner or args.except_tasks:
         context_args += native_assembly_args(exports, OUT, 'ExceptContext',
             'i386_except_context', ('i386_except_save', 'i386_except_invoke',

@@ -38,7 +38,7 @@ def main():
                     if line.startswith('RANGE '))
     if len(starts)!=2 or starts[0]!=0:
         raise ValueError('Unexpected validator function boundaries')
-    allowed = {'push','pop','mov','movzx','movsx','add','adc','sub','sbb','and','or','xor',
+    allowed = {'push','pop','mov','lea','movzx','movsx','add','adc','sub','sbb','and','or','xor',
                'neg','not','mul','imul','div','dec','rcl','shl','shr','sar','shld','shrd',
                'cmp','test','call','ret','jmp','jz','jnz','jc','jnc','ja','jna','jns',
                'setz','setnz','setl','setnl','setg','setng','setc','setnc','seta','setna','cdq'}
@@ -99,16 +99,38 @@ def main():
         table = bytearray()
         string_base = 32+len(payload)+16*len(entries)
         for kind, offset, name in entries:
-            if kind == 4:
+            if kind in (4,6):
                 table += struct.pack('<4I', kind, offset, name, 0)
             else:
                 encoded = name.encode('ascii')
                 table += struct.pack('<4I', kind, offset, string_base+len(strings), len(encoded))
                 strings += encoded+b'\0'
         header = bytearray(base[:32])
+        struct.pack_into('<H',header,4,3 if any(kind==6 for kind,_,_ in entries) else 2)
         struct.pack_into('<5I', header, 12, string_base+len(strings), len(payload),
                          len(entries), 32+len(payload), string_base)
         return bytes(header+payload+table+strings)
+
+    pointer_payload=bytes.fromhex('b82a00000031d2c3')+bytes(8)+b'ABC\0\0\0\0\0'
+    pointer_entries=[(1,0,'Main'),(4,8,8),(4,16,8),(6,8,16)]
+    pointer_module=module(pointer_payload,pointer_entries)
+    cases.append(('pointer-v3',pointer_module,len(pointer_module),1,0))
+    shared=module(pointer_payload,pointer_entries+[(6,12,16)])
+    cases.append(('pointer-shared-target',shared,len(shared),1,0))
+    for label,entries in [
+        ('pointer-overlap',pointer_entries+[(6,10,16)]),
+        ('pointer-code-slot',pointer_entries[:-1]+[(6,0,16)]),
+        ('pointer-cross-range',pointer_entries[:-1]+[(6,14,16)]),
+        ('pointer-code-target',pointer_entries[:-1]+[(6,8,0)]),
+        ('pointer-outside-target',pointer_entries[:-1]+[(6,8,24)]),
+        ('pointer-outside-slot',pointer_entries[:-1]+[(6,0xFFFFFFFF,16)])]:
+        changed=module(pointer_payload,entries)
+        cases.append((label,changed,len(changed),0,0))
+    for label,position,fmt,value in [('pointer-v2',4,'H',2),
+                                    ('pointer-placeholder',40,'I',1),
+                                    ('pointer-named',32+24+3*16+12,'I',1)]:
+        changed=bytearray(pointer_module); struct.pack_into('<'+fmt,changed,position,value)
+        cases.append((label,bytes(changed),len(changed),0,0))
 
     entries = [(kind, offset, base[name:name+n].decode('ascii'))
                for kind,offset,name,n in records]

@@ -40,9 +40,6 @@ U0 PrsVarInitCore(CPrsInitializerServices *services,CCmpCtrl *cc,U8 **_dst,CHash
       is_str=TRUE;
     else
       is_str=FALSE;
-    //Native JIT retains literal storage through the existing misc-data owner.
-    //Stored pointers in i386 AOT modules still require target-address relocation.
-    if (cc->flags&CCF_TARGET_I386 && cc->flags&CCF_AOT_COMPILE && is_str) throw('Compiler');
     if (cc->flags&CCF_AOT_COMPILE && is_str) {
       (*types->snapshot_drop)(types->context,cc);
       machine_code=(*expression->string)(expression->context,cc,&i);
@@ -50,9 +47,14 @@ U0 PrsVarInitCore(CPrsInitializerServices *services,CCmpCtrl *cc,U8 **_dst,CHash
 	tmpa=(*expression->allocate)(expression->context,sizeof(CAOTAbsAddr),TRUE,FALSE);
 	tmpa->next=aotc->abss;
 	tmpa->type=AAT_ADD_U64;
+	if(cc->flags&CCF_TARGET_I386) tmpa->type=AAT_ADD_U32;
 	aotc->abss=tmpa;
 	tmpa->rip=data_addr_rip+dst-*_base;
-	*dst(I64 *)=aotc->rip;
+	if(cc->flags&CCF_TARGET_I386) {
+          if(aotc->rip<0 || aotc->rip>U32_MAX) throw('Compiler');
+          *dst(U32 *)=aotc->rip;
+          (*declarations->data_range)(declarations->context,cc,aotc->rip,i);
+        } else *dst(I64 *)=aotc->rip;
 	for (j=0;j<i;j++)
 	  (*services->store_u8)(services->context,cc,machine_code[j]);
       }

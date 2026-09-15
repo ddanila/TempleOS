@@ -33,6 +33,7 @@
 #include "/Kernel/I386/FileRuntime.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
+U8 *kernel_ready_message="READY native kernel foundation\n";
 CI386Scheduler kernel_scheduler;
 CI386Task kernel_root;
 CI386Cpu kernel_cpu;
@@ -130,7 +131,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
     0x18,0x20,131072);
   if(!kernel_pulse) KernelStop;
-  KernelLog("READY native kernel foundation\n");
+  KernelLog(kernel_ready_message);
   I386PicMask(0xFFFC);
   //Finish heap-accounting diagnostics before accepting interactive allocations.
   while(!kernel_probe_ready) {

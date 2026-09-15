@@ -4349,3 +4349,52 @@ all 465056 heap bytes. Python syntax and whitespace checks pass. See
 
 AOT relocation, full language/runtime providers, public APIs, DolDoc, native
 self-hosting and strict 386SX/DX/physical-machine acceptance remain required.
+
+## Stored string pointers in cross-compiled modules
+
+The shared initializer now emits four-byte i386 AOT string-pointer relocations.
+Version-3 modules describe a zero-filled data slot and a module-local data target;
+version-2 modules keep their existing format. Validation rejects code targets,
+slots outside a single data range, overlapping slots, nonzero placeholders and
+invalid version/record combinations before the loader writes anything. This
+supports strings in globals, statics, packed records and inferred pointer arrays.
+Symbolic stored function/import pointers and general executable initializers
+remain open.
+
+`I386LoadBoundAt` separates the future execution address from the writable output
+buffer. Existing runtime loading APIs use the actual allocation address. The host
+flat-image linker requires an explicit address when stored pointers are present,
+even when its own heap happens to lie below 4 GiB. The BIOS stage now has a fixed
+4096-byte prefix and links the kernel at `0x11000`; the build verifies this placement
+and the flattened pointer values. The kernel ready message and retained console
+title exercise fixed-address and runtime-allocation relocation on every boot.
+Images containing stored pointers must be reloaded when moved.
+
+The boundary tests also exposed a loader range-check defect: pointer addition can
+retain a wide intermediate instead of wrapping at the target pointer width. The
+loader now compares the actual buffer base against an explicit address-space
+limit. Invalid actual or future destinations fail before output mutation.
+
+The data corpus passes 27 cases, including imported pointer globals in both module
+orders. The native loader passes 37 cases, including simultaneous allocations,
+address reuse, source-buffer destruction and malformed pointer records. The module
+validator passes 46 cases. All 238 compiler function cases and resident function/data
+binding checks pass, as do both x64 compiler/kernel rebuild generations. The binding
+test's boot transfer grows to 160 KiB, ending at `0x38000` below its `0x40000` heap.
+
+The kernel is 380632 bytes; the fixed 4096-byte early stage leaves 8488 bytes in
+the existing 393216-byte reservation. CompilerRuntime remains ABI 35/200 with a
+1214720-byte image and 1214736 retained heap bytes. ConsoleRuntime remains ABI 1/20
+with a 45488-byte image and 45504 retained heap bytes. CompilerProbe remains ABI
+5/56 at 465040 image bytes; FileRuntime remains ABI 13/32 at 125168 image bytes.
+All 38 keyboard command checks and 101 submitted lines pass with exact VGA pixels.
+Diagnostic startup-to-prompt measured 44.030 seconds on QEMU/486 with 8 MiB; this
+is development evidence, not physical-386 performance acceptance.
+
+The complete standalone verifier passes, including source-startup variants,
+module rejection/reclamation and executable instruction audits. All 1041 source
+hashes and eight build-input hashes match the tested files. Python syntax and
+whitespace checks pass. See [i386-modules.md](i386-modules.md) and
+[i386-module-bindings.md](i386-module-bindings.md). Native module generation,
+complete language/public runtime providers, DolDoc, self-hosting and strict
+386SX/DX/physical-machine acceptance remain required.

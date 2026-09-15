@@ -1,12 +1,12 @@
 # i386 bootstrap modules
 
-`CmpI386Module` compiles HolyC with the i386 backend and writes a version-2 `T32M`
-module. `I386ModuleValid` checks its structure and architecture/ABI fields.
+`CmpI386Module` compiles HolyC with the i386 backend and writes a `T32M` module: version 2 for position-independent payloads and version 3
+when stored local data pointers require relocation. `I386ModuleValid` checks its structure and architecture/ABI fields.
 `I386LoadInto` validates and loads a set of modules into caller-owned memory on
 both the x86-64 host and the native i386 target. `I386Link` provides the host
 allocation wrapper. The module format is distinct from the existing x86-64 BIN
-format. Filesystem integration, resident kernel symbols, and module lifetime
-management are still pending.
+format. Disk-backed loading and resident bindings use the same validator/loader;
+general dependency-aware unloading remains open.
 
 All fields are little endian and all offsets/counts are unsigned fixed-width
 integers. No host pointer, host class image, source link, or timestamp is stored.
@@ -17,7 +17,7 @@ The structures are defined in `Kernel/I386/Module.HH` with size assertions.
 | Offset | Field | Width | Required value or meaning |
 | --- | --- | --- | --- |
 | 0 | magic | 4 | `T32M` (`0x4D323354`) |
-| 4 | version | 2 | 2; version 1 is rejected |
+| 4 | version | 2 | 2, or 3 with at least one stored-pointer record; other versions are rejected |
 | 6 | cpu | 1 | 3, the i386 instruction baseline |
 | 7 | pointer_size | 1 | 4 |
 | 8 | abi | 4 | 1, the contract in `i386-abi.md` |
@@ -37,10 +37,10 @@ the executable-range audit in the backend tests.
 
 | Offset | Field | Meaning |
 | --- | --- | --- |
-| 0 | kind | 1: function export; 2: call import; 3: data export; 4: data range; 5: address import |
+| 0 | kind | 1: function export; 2: call import; 3: data export; 4: data range; 5: address import; 6: stored local data pointer (v3) |
 | 4 | offset | Offset within the payload, excluding the module header |
-| 8 | name_offset | Named record: file offset into strings; data range: byte length |
-| 12 | name_length | Named record: 1–255 nonzero bytes plus NUL; data range: zero |
+| 8 | name_offset | Named record: file offset into strings; data range: byte length; stored pointer: target payload offset |
+| 12 | name_length | Named record: 1–255 nonzero bytes plus NUL; data range/stored pointer: zero |
 
 A function export points outside all data ranges; a data export points inside a
 range. Ranges must be nonempty, contained in the payload, and mutually disjoint.
@@ -48,15 +48,32 @@ A call import identifies a zero dword immediately following `E8`. An address
 import identifies a zero dword following `05` (`ADD EAX,imm32`); the emitter first
 obtains a program-counter value and adjusts it to the end of that immediate.
 Both imports use `symbol_offset - (patch_offset + 4)` and occupy code bytes.
-Overlapping patches, patches touching data, invalid names, and unknown kinds are
-rejected. Names are case sensitive.
+Overlapping code patches, code patches touching data, invalid names, and unknown
+kinds are rejected. Names are case sensitive.
 
 Global and static storage occupies bytes in the payload, including zero-initialized
 storage. Fixed-width scalar, array, packed-record, and character-array initializers
 are supported. Pointer storage uses four bytes; numeric/null pointer initializers
-and pointers assigned by running code work. Absolute pointer initializers such as
-`U8 *p="text"`, executable initializers, and heap records remain unsupported.
+and pointers assigned by running code work. String-pointer initializers such as
+`U8 *p="text"` now produce version-3 records, including globals, statics, aggregate
+members and pointer arrays. General executable initializers, symbolic stored
+function/import pointers and heap records remain unsupported.
 There is no separate on-disk BSS representation yet.
+
+## Stored local data pointers
+
+Kind 6 identifies a four-byte slot wholly contained in one data range. Its
+`name_offset` is a target byte inside a data range in the same module; `name_length`
+is zero. The serialized slot must contain zero. Slots cannot overlap one another,
+straddle a range boundary or touch code. Targets outside classified data are
+rejected. Multiple slots may refer to the same target. Version 2 rejects these
+records; version 3 requires at least one, so older readers reject the extension.
+
+The compiler emits four-byte AOT absolute records and separate literal data ranges,
+then serializes the module-local target into kind 6 and zeroes the slot. Loading
+writes `load_address + module_offset_in_image + target_offset`. No host allocation
+address enters the module. The source file remains unchanged, and loaded literal
+storage belongs to the loaded image, independently of the serialized source.
 
 ## Linking
 
@@ -69,16 +86,25 @@ export for each referenced symbol and one function export for the entry name
 (default `Main`), and
 rejects duplicate exports, unresolved imports, missing entries, or an image
 exceeding the 32-bit size range. It copies code into a new allocation and patches
-each call or address import with `target_offset - (patch_offset + 4)`. Inputs remain unchanged.
+each call or address import with `target_offset - (patch_offset + 4)`. Stored local
+pointers receive absolute destination addresses. Inputs remain unchanged.
 
 The flat output begins with an eight-byte bootstrap entry area: `E9 rel32`
 followed by three zero padding bytes. Module code follows on eight-byte
 boundaries. The trampoline jumps to the selected entry without changing its
-arguments or return address. Relative calls remain valid when the entire image
-is moved. Same-module function addresses are computed relative to the executing
+arguments or return address. Module-local relative calls remain valid when the
+entire image is moved; images with stored pointers or resident bindings must be
+reloaded for the new address. Same-module function addresses are computed relative to the executing
 code, including self-references and forward declarations resolved by the compiler.
 Imported function and data addresses use address-import records. Direct calls
 must resolve to functions; address imports may resolve to either kind of symbol. This flat output is bootstrap code, not another T32M module.
+
+The host `I386Link` accepts an optional final `I64 load_address=-1`. The default
+permits position-independent module sets. A stored-pointer set requires an explicit
+future address and is rejected without one, even if the host heap happens to be
+below 4 GiB. The complete image must fit that 32-bit address range. The standalone
+kernel links at `0x11000`; its BIOS stage reserves a fixed 4096-byte prefix from
+`0x10000`, and the builder checks placement and relocated values independently.
 
 `python3 tools/test-i386.py --functions` compiles and links separate caller/provider
 modules in both orders, executes relative imports and a self-callback in the
@@ -121,10 +147,10 @@ The output begins with the entry trampoline and can be called using the entry
 function's HolyC signature. The caller controls execution and retains the buffer
 while code, data, or function pointers still refer to it. This API loads a complete
 module set; it does not yet bind imports to an existing kernel symbol registry or
-manage unloading.
+manage unloading. Resident bindings are available through `I386LoadBoundInto`.
 
 `python3 tools/test-i386-loader.py` first regenerates the data fixtures, then
-compiles this exact loader and executes it in the i386 runner. Its 23 cases cover
+compiles this exact loader and executes it in the i386 runner. Its cases cover
 loaded code/data at two output addresses, malformed/truncated modules, unresolved
 and duplicate exports, missing entries, and attempts to use data as code. Each
 valid case also checks size queries, exact/insufficient capacity, buffer overlap,
@@ -153,7 +179,8 @@ may be released: the loaded payload owns the code and data needed for execution.
 The caller must retain the image while any executing code, data pointer, callback,
 or other reference still depends on it. Once idle and unreferenced, release the
 entire image with `I386HeapFree`. No reference registry or automatic unloading is
-implied; resident kernel symbol binding and lifecycle integration remain pending.
+implied. Resident kernel bindings are supplied explicitly through the bound loader;
+automatic dependency tracking and unloading remain open.
 
 The native loader fixture exercises simultaneous allocated images, exact size
 queries, heap exhaustion, release and address reuse, and independent loaded data.
@@ -165,14 +192,16 @@ validated stable inputs and a valid nonoverlapping allocation normally make that
 second load succeed.
 
 The larger test image uses 256 single-sector CHS reads into 0x10000–0x2FFFF.
-Other compiler runners retain the 128-sector default. The heap is selected from the BIOS-reported regions after A20 verification and
+Other compiler runners select transfer sizes for their own fixtures. The heap is selected from the BIOS-reported regions after A20 verification and
 exclusion of the loaded stage, boot scratch, and the runner's scratch/stack
 reservation. The 8 MiB fixture explicitly requires high-memory allocation. This remains a test
 boot stage, not the production disk loader or a complete usable-memory map.
 
-All 23 expanded native loader cases pass on the QEMU 486/8 MiB runner, together
-with the 16 regenerated data cases and the native heap regression. This is not
-a physical-386 result or completion of native OS module/lifetime integration.
+All 37 native loader cases pass on the QEMU 486/8 MiB runner, including the
+27 regenerated data cases and malformed stored-pointer records. Loaded pointers
+are checked against each allocation address, including simultaneous images and
+source-buffer destruction. This is not a physical-386 result or completion of
+native OS module/lifetime integration.
 
 ## Function-body string literals
 

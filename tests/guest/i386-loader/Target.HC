@@ -5,9 +5,32 @@
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/A20.HH"
+#include "/Kernel/I386/ModuleBind.HH"
 extern U8 *I386LoadAlloc(CI386Heap *heap,U8 **modules,I64 *sizes,I64 count,U8 *entry_name);
 extern I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,U8 *entry_name);
 U8 entry_name[5]="Main",output[2048],other[2048],original[2048];
+Bool LoaderImagesSame(U8 *left,U8 *right,I64 bytes,U8 **modules,I64 count)
+{
+  CI386ModuleHeader *h;
+  CI386ModuleRecord *record;
+  I64 i,j,k,base;
+  for(i=0;i<bytes;i++) {
+    base=8;
+    for(j=0;j<count;j++) {
+      h=modules[j]; record=modules[j]+h->records_offset;
+      for(k=0;k<h->record_count;k++,record++)
+        if(record->kind==I386_MODULE_POINTER && base+record->offset==i) {
+          if((left+i)(U32 *)[0]!=(left+0)(U64)+base+record->name_offset ||
+              (right+i)(U32 *)[0]!=(right+0)(U64)+base+record->name_offset) return FALSE;
+          i+=3; goto compared;
+        }
+      base+=h->code_size;
+    }
+    if(left[i]!=right[i]) return FALSE;
+compared:
+  }
+  return TRUE;
+}
 I64 Main(I64 a,I64 b)
 {
   CI386Heap heap;
@@ -41,6 +64,9 @@ I64 Main(I64 a,I64 b)
         heap.allocations || heap.peak || !I386HeapValid(&heap)) return 22;
   } else {
     if (required<8 || required>2048) return 5;
+    if(I386LoadBoundAt(modules,sizes,count,output,2048,entry_name,0,0,-2) ||
+        I386LoadBoundAt(modules,sizes,count,output,2048,entry_name,0,0,0x100000000) ||
+        I386LoadBoundAt(modules,sizes,count,output,2048,entry_name,0,0,0xFFFFFFF0)) return 41;
     if (I386LoadInto(modules,sizes,count,output,required-1,entry_name)) return 6;
     if (I386LoadInto(modules,sizes,count,modules[0],required,entry_name)) return 7;
     if (I386LoadInto(modules,sizes,count,modules,required,entry_name)) return 8;
@@ -63,7 +89,7 @@ I64 Main(I64 a,I64 b)
   if (!mode) {
     if (I386LoadInto(modules,sizes,count,output,required,entry_name)!=required ||
         I386LoadInto(modules,sizes,count,other,2048,entry_name)!=required) return 14;
-    for (i=0;i<required;i++) if (output[i]!=other[i]) return 15;
+    if(!LoaderImagesSame(output,other,required,modules,count)) return 15;
     reserve=I386HeapAlloc(&heap,heap.size-16);
     if (!reserve || I386LoadAlloc(&heap,modules,sizes,count,entry_name) ||
         heap.used!=heap.size || heap.allocations!=1 || !I386HeapValid(&heap) ||
@@ -74,8 +100,8 @@ I64 Main(I64 a,I64 b)
     if (!first || !second || first==second || heap.allocations!=2 ||
         I386HeapSize(&heap,first)!=required || I386HeapSize(&heap,second)!=required)
       return 25;
-    for (i=0;i<required;i++)
-      if (first[i]!=output[i] || second[i]!=output[i]) return 26;
+    if(!LoaderImagesSame(first,output,required,modules,count) ||
+        !LoaderImagesSame(second,output,required,modules,count)) return 26;
     entry=first; if ((*entry)(0,0)!=expected) return 27;
     entry=second; if ((*entry)(0,0)!=expected) return 28;
     if (!I386HeapFree(&heap,first) || I386HeapSize(&heap,first)!=-1) return 29;

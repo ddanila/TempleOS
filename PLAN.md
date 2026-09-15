@@ -978,13 +978,15 @@ See `docs/i386-console-runtime.md`.
 
 Native JIT string-pointer initialization now retains literal storage through the
 existing initializer and task-publication lifetimes, including globals, statics,
-aggregate members and pointer arrays. Cross-compiled AOT stored pointers still
-need a relocation contract that uses the eventual guest address. The flat boot
-image and runtime module loader must both establish those addresses correctly;
-embedding compiler-host allocation addresses cannot satisfy that contract.
+aggregate members and pointer arrays. AOT string-pointer initializers now use
+version-3 module records with a four-byte data slot and module-local target. The runtime loader resolves them at the actual
+allocation address; the flat boot image links explicitly at `0x11000` behind a
+fixed 4096-byte BIOS-stage prefix. Version-2 position-independent modules remain
+supported. Symbolic stored function/import pointers and general executable
+initializers still need integration.
 See `docs/i386-initializer-parser.md`.
 
-Complete assembly/stream/try providers, stored-pointer relocation in AOT modules,
+Complete assembly/stream/try providers, symbolic stored-pointer relocation,
 unresolved function/global linking, definition replacement/unload
 rules, complete public API/console integration, DolDoc and native
 self-hosting remain required. This bootstrap milestone does not satisfy

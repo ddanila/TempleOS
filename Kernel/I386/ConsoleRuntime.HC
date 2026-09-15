@@ -13,6 +13,7 @@ import U0 KernelStop();
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
+U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386ConsoleConfig *console_config;
 CI386Text console_text;
 U8 *console_planes;
@@ -56,7 +57,7 @@ Bool ConsoleDisplay()
   }
   I386VgaPalette(palette);
   if(!I386TextInit(&console_text,console_planes,sys_font_std)) KernelStop;
-  I386TextWrite(&console_text,"TempleOS i386\nHolyC console\n\n");
+  I386TextWrite(&console_text,console_title);
   ConsolePresent;
   return TRUE;
 }

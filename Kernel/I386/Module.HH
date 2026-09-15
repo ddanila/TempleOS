@@ -2,12 +2,14 @@
 #define I386_MODULE_INCLUDED
 #define I386_MODULE_MAGIC 0x4D323354 //T32M, little endian
 #define I386_MODULE_VERSION 2
+#define I386_MODULE_POINTER_VERSION 3
 #define I386_MODULE_ABI 1
 #define I386_MODULE_EXPORT 1
 #define I386_MODULE_REL32 2
 #define I386_MODULE_DATA_EXPORT 3
 #define I386_MODULE_DATA_RANGE 4
 #define I386_MODULE_ADDRESS 5
+#define I386_MODULE_POINTER 6 //Data slot offset, local target in name_offset; no name.
 class CI386ModuleHeader
 {
   U32 magic;

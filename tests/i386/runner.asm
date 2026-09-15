@@ -74,7 +74,20 @@ case_next:
     push dword [esi+16]
     push dword [esi+12]
 %endif
+%ifdef FIXED_IMAGE_BASE
+    push esi
+    push edi
+    mov ecx,[esi]
+    lea esi,[esi+28]
+    mov edi,FIXED_IMAGE_BASE
+    cld
+    rep movsb
+    pop edi
+    pop esi
+    mov eax,FIXED_IMAGE_BASE
+%else
     lea eax,[esi+28]
+%endif
     call eax
     cmp esp,ebp
     jne failed

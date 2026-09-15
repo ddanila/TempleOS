@@ -72,7 +72,7 @@ providers, generators and other language/runtime integration remain separate wor
 String-pointer initializers now work in native globals and statics, for example
 `U8 *text="ABC";`. Their writable literal storage survives publication and later
 commands; a failed later input leaves previously published strings intact.
-String pointers in AOT modules still require relocation support.
+The retained module also uses a relocated AOT string pointer for its title.
 
 Signed and unsigned integers render in decimal, pointers as hexadecimal addresses.
 Pointer classification uses the value class because `RT_PTR` and `RT_I64` share

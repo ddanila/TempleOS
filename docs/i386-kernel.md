@@ -102,6 +102,17 @@ of a volume in ordinary test images. The existing RedSea reader suite and both
 x86-64 rebuild/reboot generations pass. The legacy memory/A20 and strict-386
 limitations above continue to apply.
 
+## Fixed boot-image placement
+
+The BIOS stage starts at `0x10000` and reserves 4096 bytes before the linked kernel
+at `0x11000`. The host linker receives that explicit destination. The builder
+checks the stage prefix and independently verifies stored-pointer values in the
+flat kernel against module records. The kernel's ready-message pointer exercises
+this path; the retained console's title pointer exercises relocation into a
+runtime-allocated image. Both use version-3 module records while existing
+position-independent modules remain version 2. The overall boot reservation
+remains 393216 bytes.
+
 ## Disk-loaded startup and resident bindings
 
 After installing task/exception/interrupt/timer services and loading the retained

@@ -339,8 +339,8 @@ def audit(exports, out):
     for index, name in enumerate(DISK_MODULES):
         module = (exports/f'{name}.t32m').read_bytes()
         magic, version, cpu, pointer, abi, total, size, count, records, strings = struct.unpack_from('<IHBB6I', module)
-        if (magic,version,cpu,pointer,abi,total,records,strings) != (
-                0x4D323354,2,3,4,1,len(module),32+size,32+size+16*count):
+        if version not in (2,3) or (magic,cpu,pointer,abi,total,records,strings) != (
+                0x4D323354,3,4,1,len(module),32+size,32+size+16*count):
             raise ValueError(f'Invalid {name} module header')
         resident = index < len(MODULES)
         code = image[base:base+size] if resident else module[32:32+size]
@@ -359,6 +359,11 @@ def audit(exports, out):
                         starts.append(offset)
                 elif kind==4:
                     data.append((offset,name_offset))
+                elif kind==6:
+                    if version!=3 or length or offset>size-4 or name_offset>=size or struct.unpack_from('<I',module,32+offset)[0]:
+                        raise ValueError(f'Invalid {name} stored pointer')
+                    if resident and struct.unpack_from('<I',code,offset)[0]!=0x11000+base+name_offset:
+                        raise ValueError('Flat kernel pointer uses the wrong load address')
             template = None
             if name == 'CompilerRuntime':
                 if set(template_markers) != {'_I386_DIV_BEGIN', '_I386_DIV_END'}:
@@ -573,6 +578,8 @@ def main():
     disk=out/'kernel.img'
     run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
+    if disk.stat().st_size!=512+4096+len(image) or disk.read_bytes()[512+4096:]!=image:
+        raise ValueError('Kernel stage and flat-image load address disagree')
     if disk.stat().st_size>(768+1)*512:
         raise ValueError('Kernel stage exceeds its reserved 384 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
@@ -589,7 +596,7 @@ def main():
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
-            'kernel_bytes':len(image),
+            'kernel_bytes':len(image),'kernel_load_address':0x11000,'early_stage_bytes':4096,
             'kernel_sha256':hashlib.sha256(image).hexdigest(),
             'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},

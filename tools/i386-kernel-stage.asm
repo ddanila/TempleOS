@@ -42,5 +42,6 @@ align 8
 early_idt: times 256 dq 0
 early_idtr: dw 256*8-1
     dd early_idt
-align 8
+;Fixed load address shared with the HolyC flat-image linker.
+times 0x1000-($-$$) db 0
 kernel_image: incbin KERNEL_FILE

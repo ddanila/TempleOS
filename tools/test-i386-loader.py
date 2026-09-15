@@ -46,8 +46,20 @@ def main():
         modules = inputs[len(cases)]
         cases.append((f'data-{len(cases)}', [modules[i] for i in sorted(modules)], expected, 0))
         offset += 28+size
-    if offset+4 != len(corpus) or len(cases)!=16:
+    if offset+4 != len(corpus) or len(cases)!=27:
         raise ValueError('Unexpected data corpus')
+    pointer_module=cases[19][1][0]
+    roff,soff=struct.unpack_from('<II',pointer_module,24)
+    pointer_record=next(pos for pos in range(roff,soff,16) if struct.unpack_from('<I',pointer_module,pos)[0]==6)
+    function_offset=next(struct.unpack_from('<I',pointer_module,pos+4)[0] for pos in range(roff,soff,16)
+                         if struct.unpack_from('<I',pointer_module,pos)[0]==1)
+    pointer_bad=[]
+    for label,position,value in [('pointer-to-code',pointer_record+8,function_offset),
+                                 ('pointer-outside',pointer_record+4,0xFFFFFFFF),
+                                 ('pointer-with-name',pointer_record+12,1)]:
+        changed=bytearray(pointer_module); struct.pack_into('<I',changed,position,value)
+        pointer_bad.append((label,[bytes(changed)],0,1))
+    cases+=pointer_bad
     consumer, provider = cases[10][1]
     bad = bytearray(consumer)
     bad[0] ^= 1
@@ -88,7 +100,7 @@ def main():
             raise ValueError('Invalid loader data')
         covered[begin:begin+length] = b'D'*length
     boundaries = sorted(set(starts+[begin for begin,_ in regions]+[len(code)]))
-    allowed = {'push','pop','mov','movzx','movsx','add','adc','sub','sbb','and','or','xor',
+    allowed = {'push','pop','mov','lea','movzx','movsx','add','adc','sub','sbb','and','or','xor',
                'in','out','neg','not','mul','imul','div','dec','rcl','shl','shr','sar','shld','shrd',
                'cmp','test','call','ret','jmp','jz','jnz','jc','jnc','ja','jna','jns',
                'setz','setnz','setl','setnl','setg','setng','setc','setnc','seta','setna','cdq'}

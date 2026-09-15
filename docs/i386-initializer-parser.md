@@ -48,11 +48,12 @@ initializer/unwind rules. Successful publication retains the pool until task
 storage is destroyed. Empty strings and embedded NUL bytes keep their lexical
 lengths; the source buffer itself is not retained as the initialized value.
 
-Cross-compiled i386 AOT string-pointer initializers remain rejected. Their stored
-pointers need target-address relocation in the module/loading format; the existing
-x64 absolute patch writes eight bytes, and a host allocation address cannot be
-embedded as the future guest pointer. Native JIT support does not change that
-separate AOT contract.
+Cross-compiled AOT string pointers now emit `AAT_ADD_U32` slots and classified
+literal data. The module writer serializes these as version-3 stored local data
+pointers, and the loader resolves them for the actual destination. The existing
+x64 path retains eight-byte absolute records. Native JIT keeps its established
+literal-pool ownership; the AOT module does not contain a compiler-host pointer.
+See [module format](i386-modules.md) for loading and placement contracts.
 
 ## Validation and remaining integration
 
@@ -70,7 +71,7 @@ Keyboard checks exercise the same source path and compare the resulting pixels.
 
 Global declarations and function-body construction use the
 [shared cores](i386-global-function-parser.md). No new retained compiler service or
-ABI is introduced. General AOT relocation and deferred initializer output remain
-required before native module generation and self-hosting.
+ABI is introduced. Symbolic stored function/import pointers and deferred executable initializer
+output remain required before native module generation and self-hosting.
 See [declarations](i386-declaration-parser.md),
 [expression parser](i386-expression-parser.md) and `PLAN.md`.
