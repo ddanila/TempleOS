@@ -86,6 +86,28 @@ under compilation and disk/display activity. Current QEMU/486 evidence remains
 development evidence. Physical-machine acceptance, full public APIs, DolDoc and
 self-hosting remain explicit gates; a working native prompt does not close them.
 
+### Next implementation slices
+
+Use the following bounded changes to turn the roadmap into reviewable work.
+Each slice must preserve the working x86-64 build and report native memory use.
+The public-contract slices precede document integration; hardware validation can
+advance independently throughout.
+
+| Slice | Concrete change | Gate before proceeding |
+| --- | --- | --- |
+| Live task/CPU layout | Embed the complete shared public records in native task/CPU records; move exception and compiler state to those fields, preserving private scheduler extensions. Version modules whose field offsets change. | Boot and worker tasks observe the same records through segment bindings; task exit and exception recovery reclaim resources; incompatible modules are rejected before callbacks run. |
+| Public header loading | Complete published forward classes transactionally and load the actual public headers through the native compiler. Publish typed `Fs`/`Gs` after their layouts and bindings agree. | Separate source submissions share class identity; failed completion preserves prior users; ordinary source reads live public task/CPU fields. |
+| Public service ownership | Connect task lists, heap selection, compiler contexts and file lifetime to the existing public API. Specify initialization and teardown for every migrated field. | Task creation, compilation, file failure and task exit leave no dangling symbols, callbacks or owned allocations. A field's presence alone does not count as an implemented service. |
+| Native language closure | Maintain a source-driven list of remaining blockers encountered when compiling the existing editor, documents and compiler. Resolve ABI, constant evaluation and assembly behavior in the shared implementation. | Representative existing sources compile and run with consistent cross-bootstrap/native results; every remaining blocker has a reproducer. |
+| VGA document workflow | Connect existing drawing and DolDoc code to planar presentation, keyboard/mouse input and RedSea persistence. Bound display and disk work so interrupts and cooperative tasks remain responsive. | Edit, execute, save, reboot and reopen an executable document at the 8 MiB design target, with measured peak memory and input latency. |
+| Native rebuild | Build compiler and kernel from source inside the resulting environment, install the generated boot artifacts and repeat the cycle. | Two native rebuild/reboot generations at the 16 MiB design target, followed by the named strict 386/no-387 acceptance profiles. |
+
+Treat the RAM figures as acceptance targets pending full-workload measurements.
+If the complete environment exceeds them, first identify retained versus temporary
+allocations and unnecessary duplication. Any proposed change to the hardware
+contract or HolyC/DolDoc behavior requires an explicit plan revision supported by
+those measurements.
+
 ## Principles and deliberate amendments
 
 Preserve:
@@ -490,10 +512,11 @@ remain required outcomes of this sequence.
 ### Remaining architecture decisions and integration gates
 
 The current foundation already connects BIOS boot, cooperative tasks, timer
-interrupts, disk-backed module loading, keyboard line collection and VGA. A
-retained extended-memory module provides string/number parsing and software
-numerical services. Build on these paths; the next architectural goal is a
-resident HolyC compiler that consumes source and produces executable i386 code.
+interrupts, disk-backed module loading, keyboard line collection and VGA. The
+resident HolyC compiler consumes startup and prompt source and produces executable
+i386 code. Build on that path to complete public services and language coverage;
+the table below describes integration requirements, some already demonstrated by
+the component evidence, rather than a new compiler bring-up from scratch.
 
 | Order | Architectural work | Required integration evidence |
 | --- | --- | --- |
