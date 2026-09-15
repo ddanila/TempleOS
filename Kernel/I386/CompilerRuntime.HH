@@ -16,8 +16,8 @@
 #include "/Compiler/I386/NativeSymbol.HH"
 #include "/Compiler/I386/PublishClasses.HH"
 #include "/Compiler/I386/Frontend.HH"
-#define I386_COMPILER_SERVICES_VERSION 33
-//ABI 33: caller-owned interface, borrowing code from the retained module image.
+#define I386_COMPILER_SERVICES_VERSION 34
+//ABI 34: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;
@@ -74,5 +74,6 @@ class CI386CompilerServices {
   CPrsSymbolServices *(*frontend)(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes);
   Bool (*statement)(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,I64 flags);
   U8 *(*command)(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,I64 *raw_type);
+  Bool (*publish)(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols);
 };
 #endif

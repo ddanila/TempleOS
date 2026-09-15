@@ -41,6 +41,7 @@ U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
 extern U0 Worker(I64 id);
 extern U0 Grandchild(I64 unused);
+extern Bool RetainStorage(U8 value);
 U0 Bind(CI386Task *task)
 {
   if((GetRFlags&0x200) || !I386DataSegment(control->task_descriptor,task,sizeof(CI386Task))) errors++;
@@ -97,6 +98,7 @@ I64 ScopeTest()
       !I386CmpCtrlDel(workers[0]->task.memory,retained_control) ||
       !I386TaskDestroy(workers[0]) || !I386TaskDestroy(workers[1]) ||
       root.lifetime_refs || heap.used!=used || heap.allocations!=allocations) return 9;
+  if(!RetainStorage('R')) return 11;
   i=ActiveTest; if(i) return i;
   i=UnwindRootTest; if(i) return i;
   i=CodeTest; if(i) return i;
@@ -123,7 +125,20 @@ Bool Define(U8 value)
   for(i=0;i<7;i++) name[i]="Shared"(U8 *)[i];
   data[0]=value; entry->str=name; entry->data=data; entry->type=HTT_DEFINE_STR;
   HashAdd(entry,I386TaskSelf->hash_table);
-  return HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR)==entry;
+  return HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR)==entry && RetainStorage(value);
+}
+Bool RetainStorage(U8 value)
+{
+  CI386TaskSymbols *state=I386TaskSelf->symbol_state;
+  CI386TaskStorage *storage=I386HeapAlloc(state->heap,sizeof(CI386TaskStorage)+sizeof(U8 *),TRUE);
+  if(!storage) return FALSE;
+  storage->count=2;
+  storage->allocations[0]=I386HeapAlloc(state->heap,24,TRUE);
+  storage->allocations[1]=I386HeapAlloc(state->heap,40,TRUE);
+  if(!storage->allocations[0] || !storage->allocations[1]) return FALSE;
+  storage->allocations[0][0]=value; storage->allocations[1][0]=value+1;
+  storage->next=state->storage; state->storage=storage;
+  return TRUE;
 }
 U0 Worker(I64 id)
 {
@@ -138,11 +153,14 @@ U0 Worker(I64 id)
 U0 Grandchild(I64 unused)
 {
   CHashDefineStr *entry=HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR);
+  CI386TaskSymbols *parent=workers[0]->task.symbol_state;
   if(!entry || entry==&root_symbol || entry->data[0]!='A' || !workers[0]->task.finished ||
-      I386TaskSelf->memory || !Define('G')) { errors++; return; }
+      !parent->storage || parent->storage->allocations[0][0]!='A' ||
+      parent->storage->allocations[1][0]!='B' || I386TaskSelf->memory || !Define('G')) { errors++; return; }
   I386SchedYield(&scheduler);
   entry=HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR);
-  if(!entry || entry->data[0]!='G' || workers[0]->task.lifetime_refs!=2) errors++;
+  if(!entry || entry->data[0]!='G' || workers[0]->task.lifetime_refs!=2 ||
+      parent->storage->allocations[0][0]!='A') errors++;
   scope_done++;
 }
 #include "/Kernel/I386/Context.HC"

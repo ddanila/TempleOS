@@ -26,7 +26,9 @@ Completed private functions may call one another, pass defaults, recurse and use
 function pointers. Unresolved extern/forward calls still fail explicitly. Generated
 software-F64 calls borrow the retained runtime's lifetime. All generated functions,
 their callees and referenced private data must remain live during execution.
-General module linking and publication into a longer-lived task scope remain open.
+ABI 34 adds publication into the current task's scope; see
+[program publication](i386-program-publication.md). General unresolved module
+linking and definition replacement/unload rules remain open.
 
 ## Failure boundaries
 

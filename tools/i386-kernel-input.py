@@ -57,8 +57,8 @@ def run_input(disk,out):
                     if 'error' in reply: raise RuntimeError(reply)
                     if 'return' in reply: return reply['return']
 
-            def wait_for(predicate):
-                stop=time.monotonic()+30
+            def wait_for(predicate, timeout=30):
+                stop=time.monotonic()+timeout
                 while time.monotonic()<stop and proc.poll() is None:
                     if 'FAIL ' in log.read_text(): raise RuntimeError(log.read_text())
                     if predicate(): return
@@ -83,7 +83,11 @@ def run_input(disk,out):
                 with Image.open(path) as image: image.save(out/f'{name}.png')
 
             command('qmp_capabilities')
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text())
+            startup_started=time.monotonic()
+            #The retained compiler probes run during startup; match the main boot
+            #verifier's allowance while keeping input/screen deadlines unchanged.
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=60)
+            startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','Keyboard console','']
             screen(heading+['> '],'initial')
             for name in ('a','b','c','backspace'): press(name)
@@ -115,6 +119,7 @@ def run_input(disk,out):
             screen(['> ']*60,'scrolled')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
+                    'startup_seconds':startup_seconds,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll'],
                     'vga':'all pixels matched at each checkpoint','submitted_lines':63}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')

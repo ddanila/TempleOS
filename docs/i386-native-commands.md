@@ -37,8 +37,9 @@ them expire when the control is unwound.
 
 This is not transactional execution: earlier executed statements may have side
 effects before a later parse error. The caller must unwind failed compiler state.
-Publishing code and data into a longer-lived program/task scope remains necessary
-for an interactive session that preserves previous definitions after errors.
+ABI 34 supplies publication into the current task's scope so earlier definitions
+survive later failed controls; see [program publication](i386-program-publication.md).
+The caller must complete that transfer before destroying the source control.
 
 ## Verification and remaining integration
 
@@ -58,7 +59,7 @@ python3 tools/test-i386.py --functions
 python3 tools/test-i386.py --float
 ```
 
-The keyboard console is not yet connected to this compiler entry. Durable code/data
-publication, answer formatting/public task integration, stream/compile-time
+The keyboard console is not yet connected to this compiler entry. Definition
+replacement/unload policy, answer formatting/public task integration, stream/compile-time
 generators, full assembler/try providers, document editing and native self-hosting
 remain required. QEMU/486 checks do not establish strict 386SX/DX acceptance.

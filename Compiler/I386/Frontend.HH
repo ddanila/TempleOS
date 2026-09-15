@@ -5,6 +5,7 @@
 extern class CI386FileServices;
 extern Bool I386FrontendStatement(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,I64 flags);
 extern U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,I64 *raw_type);
+extern Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols);
 extern CPrsSymbolServices *I386FrontendServices(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes);
 extern Bool I386ScalarTypesCheck(CHashClass **roots,Bool record);
 extern Bool I386LoadScalarTypes(CI386Heap *heap,CHashClass **types,

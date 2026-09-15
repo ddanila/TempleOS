@@ -947,9 +947,19 @@ lifetime, retained outputs, load-only mode and error cleanup. The backend's
 zero-operand `RETURN_VAL2` now preserves the statement result. See
 `docs/i386-native-commands.md`.
 
+CompilerRuntime ABI 34 (196 bytes) now publishes complete private definitions into
+the current task's table. Symbol metadata/global data use the existing ownership
+walk; code, literal pools and static storage move to a separate task-owned list.
+Fresh controls can call the published functions after the original control is
+destroyed, and a failed later input can be unwound without losing earlier
+definitions. Validation and allocation finish before ownership changes; collision,
+alias, incomplete-code and OOM cases retain the private graph. Child scope references
+protect parent storage until task teardown. See `docs/i386-program-publication.md`.
+
 Complete assembly/stream/try providers, pointer-string
-initialization, unresolved function/global linking, executable code and data publication, interactive
-compilation, DolDoc integration and native self-hosting remain required. This bootstrap milestone does not satisfy
+initialization, unresolved function/global linking, definition replacement/unload
+rules, interactive console and public API integration, DolDoc and native
+self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.
 
 #### Continuing integration sequence

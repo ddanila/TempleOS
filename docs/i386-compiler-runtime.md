@@ -264,3 +264,12 @@ use the existing execution/release providers; private definitions remain availab
 throughout the input control's lifetime. See
 [i386-native-commands.md](i386-native-commands.md) for result, load-only and failure
 semantics and the remaining persistent-session work.
+
+## Task-owned program publication (version 34)
+
+The 196-byte interface appends `publish`. Complete private symbol graphs move to
+the current task's table, and executable/static allocations move to its separate
+storage list. Definitions survive compiler-control destruction and remain usable
+after a later control fails. See
+[i386-program-publication.md](i386-program-publication.md) for transfer validation,
+teardown, retained literal pools and remaining replacement/unload constraints.

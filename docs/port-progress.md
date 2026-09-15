@@ -4094,3 +4094,45 @@ publication and error recovery that retains previous definitions, answer formatt
 and public task integration, compile-time generators, assembler/try services,
 DolDoc and native self-hosting remain required. This remains a QEMU/486 development
 result, not strict 386SX/DX or physical-machine acceptance.
+
+## Task-owned native program publication
+
+CompilerRuntime ABI 34 (196 bytes) adds publication of completed private
+definitions into the current task's symbol table. Symbol metadata and global data
+use the existing ownership traversal; executable code, literal pools and static
+storage move to a separate task-owned allocation group. Destroying the originating
+compiler control now leaves published definitions usable by fresh controls.
+Validation and allocation finish before any ownership changes. Name collisions
+and incomplete definitions are rejected; replacement and unloading remain open.
+
+All 24 native publication cases pass across boot and worker tasks. They cover
+calls/defaults, recursion, static state, aggregates, literal pools, a resolved
+borrowed alias at address zero, empty repeated publication and invalidation of old
+executor handles. Later malformed input unwinds without deleting earlier
+definitions. Collision, foreign/duplicate payload, allocation exhaustion, pending
+IR, compiler-error and unresolved-function cases preserve the private graph and
+exact allocation counts. Each complete fixture restores heap, task references,
+active controls, exception state and interrupt flags.
+
+The task-symbol suite separately verifies production storage reclamation and
+parent/child lifetime retention. Both x64 rebuild/reboot generations and the full
+standalone verifier pass, including previous compiler recovery tests, module
+rejection, pixel-exact VGA and keyboard checks. All 1031 packaged source hashes
+and eight build-input hashes match the tested tree; Python syntax and whitespace
+checks pass.
+
+The kernel is 391024 bytes; with the 2160-byte early stage it leaves 32 bytes in
+the fixed 393216-byte boot reservation. The retained compiler image is 1204760
+bytes (1204776 heap bytes). The temporary probe image is 442296 bytes and reclaims
+all 442312 heap bytes. FileRuntime remains ABI 13/32 bytes and CompilerProbe ABI
+5/56 bytes. The keyboard harness now allows 60 seconds for diagnostic startup,
+matching the main boot verifier; individual input/screen deadlines remain 30
+seconds. This run measured 36.245 seconds from the startup wait to readiness.
+These diagnostic footprints and timings do not establish the complete interactive
+or self-hosting hardware requirements.
+
+See [i386-program-publication.md](i386-program-publication.md). Publication still
+masks interrupts during validation and transfer; large-program latency needs
+measurement and bounded work. Console/public API integration, full language
+providers, DolDoc and native self-hosting remain required. Strict 386SX/DX and
+physical-machine acceptance remain separate from this QEMU/486, 8 MiB result.

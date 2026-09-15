@@ -67,8 +67,10 @@ numeric static/global initialization and calls between completed private functio
 see [native statement integration](i386-native-statements.md). Its per-call
 descriptors keep fixups off borrowed symbol graphs. Unresolved function/global
 relocations still require a native program linker. Indirect calls retain the
-caller's responsibility for the target's lifetime. Full interactive compilation,
-code/data publication, DolDoc and native self-hosting remain open.
+caller's responsibility for the target's lifetime. ABI 34 adds
+[task-owned program publication](i386-program-publication.md). Full interactive
+compilation, definition replacement/unload rules, DolDoc and native self-hosting
+remain open.
 The existing 386SX/DX acceptance gates in `PLAN.md` are unchanged.
 
 Run `python3 tools/test-rebuild.py`, then

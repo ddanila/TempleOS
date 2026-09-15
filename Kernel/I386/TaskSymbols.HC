@@ -57,6 +57,7 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
   CI386TaskSymbols *state=I386TaskSymbolsValid(task),*parent;
   CHashTable *table;
   CHash *entry;
+  CI386TaskStorage *storage;
   I64 i;
   Bool result=FALSE;
   if(!state || state->children || task->lifetime_refs ||
@@ -73,6 +74,12 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
       }
     table->next=0;
     if(!I386HashTableDelete(state->heap,table)) goto symbols_destroy_done;
+  }
+  while(storage=state->storage) {
+    state->storage=storage->next;
+    for(i=0;i<storage->count;i++)
+      if(!I386HeapFree(state->heap,storage->allocations[i])) goto symbols_destroy_done;
+    if(!I386HeapFree(state->heap,storage)) goto symbols_destroy_done;
   }
   if(!I386HeapFree(state->heap,state)) goto symbols_destroy_done;
   if(parent) { parent->children--; parent->task->lifetime_refs--; }
