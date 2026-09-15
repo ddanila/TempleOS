@@ -4720,3 +4720,69 @@ Actual public-header loading, include-guard behavior after failed input, remaini
 language providers, public kernel services, DolDoc, native self-hosting and strict
 386 hardware acceptance remain required. This transaction does not roll back
 already executed command side effects or the existing immediate macro publication.
+
+
+## Native public task/CPU header loading
+
+The console now compiles `/Kernel/I386/PublicKernel.HH` before user startup. It
+loads the actual shared task, CPU, hash, job-control and scroll records and
+publishes typed `Fs`/`Gs`. This is a separate input, so missing or invalid user
+startup does not remove the public interfaces. The complete public kernel-service
+contract remains unfinished; record access is not proof of every field's service
+semantics. See [native public headers](i386-public-headers.md).
+
+`I386_INPUT_ATOMIC_DEFINES` makes header macros and declarations commit together.
+A private macro table belongs to the compiler control, covering both ordinary
+unwind and task cleanup. Failure preserves existing guards and types; repeated
+macros keep lookup order. Ordinary input retains immediate macro publication.
+Staged class completion also preserves its prior diagnostic use count. Program
+publication still rejects a missing parent link when no private macro table exists;
+a regression checks rejection without mutation and successful retry after repair.
+
+An optional lexer directive callback connects native `#assert` to expression
+compilation and execution. False assertions warn as in the original system;
+invalid expressions fail. Recursive token reads reuse their final string's
+tracking record. The real-header probe accepts the existing count-only unused
+forward warning for `CCPU` while requiring no layout-assertion diagnostic.
+
+CompilerRuntime, FileRuntime, CompilerProbe and ConsoleRuntime now use ABI
+38/200, 16/32, 8/56 and 4/20 (version/bytes). Their outer record sizes remain
+unchanged. Lexer service records add the optional parser-directive callback;
+providers initialize it explicitly. The console import set adds `KernelHex` for
+header memory accounting.
+
+Both task phases pass real-header failure/retry, stable class identity, repeated
+include and live-field checks, followed by 108 native layout assertions and full
+reclamation. The assertions cover 103 named non-padding task offsets, four record
+sizes and the dying-task wake offset. The independent x86-64 layout fixture
+preserves all 105 original task fields. Both x86-64 rebuild/reboot generations
+pass. The command-input corpus now has 22 cases in each native phase.
+
+Focused regressions pass for conditional preprocessing, macro definitions, token
+streams, task-symbol lifetime, RedSea reads and functions (238 cases). The macro
+and token runners now allow 320 KiB of loaded test code below their existing
+`0x60000` heap, preserving explicit load/heap separation. The expanded diagnostic
+boot exceeded its former 90-second test allowance during worker checks; boot
+verification now allows 180 seconds while keyboard response deadlines stay fixed.
+
+The native kernel is 382512 bytes, leaving 6608 bytes after its 4096-byte stage
+in the existing reservation. CompilerRuntime uses 1284344 image bytes and
+1284360 retained heap bytes. CompilerProbe uses 608296 image bytes and reclaims
+its 608312 temporary heap bytes. FileRuntime remains 125168/125184;
+ConsoleRuntime uses 46680/46696 (image/retained heap bytes). The framebuffer is
+153600 bytes, and the console's public headers retain 38488 additional heap bytes.
+These measurements do not establish strict 386 performance or the complete
+low-memory document workflow.
+
+Public heap/stack/exception and task-family services, remaining language providers,
+DolDoc, native self-hosting and strict 386 hardware acceptance remain required.
+
+Final full native verification passes, including custom startup, syntax-error and
+missing-startup recovery, and all startup/runtime/file/probe/console module
+rejection and reclamation cases. The keyboard suite executes 78 commands across
+141 submitted lines with exact VGA pixels at every checkpoint. Its diagnostic
+startup takes 124.211 seconds on the QEMU/486 development profile; this is not a
+physical 386 performance measurement. All 1057 source hashes match the native,
+x86-64 rebuild and task-layout results. The eight native build inputs, three
+layout inputs and final disk hash also match. Python syntax and staged whitespace
+checks pass.

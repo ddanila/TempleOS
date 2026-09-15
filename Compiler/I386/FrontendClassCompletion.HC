@@ -79,6 +79,7 @@ U0 I386FrontendStageClass(CI386Frontend *state,CHashClass *published)
   //The name is borrowed from the stable root. Generated lastclass arguments may
   //retain its address, so neither parsing nor commit substitutes a temporary name.
   staged->str=published->str; staged->flags=published->flags;
+  staged->use_cnt=published->use_cnt;
   staged->type=published->type;
   completion->published=published; completion->staged=staged;
   completion->next=state->completions; state->completions=completion;

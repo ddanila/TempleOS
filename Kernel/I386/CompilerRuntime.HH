@@ -17,9 +17,9 @@
 #include "/Compiler/I386/PublishClasses.HH"
 #include "/Compiler/I386/Frontend.HH"
 #include "/Compiler/I386/CommandInput.HH"
-//Compiler expression services now include a private class-view callback.
-#define I386_COMPILER_SERVICES_VERSION 37
-//ABI 37: caller-owned interface, borrowing code from the retained module image.
+//Native command input supports atomic header macro publication.
+#define I386_COMPILER_SERVICES_VERSION 38
+//ABI 38: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
   U32 version,bytes;

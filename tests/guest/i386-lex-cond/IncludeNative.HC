@@ -20,6 +20,7 @@ U0 IncludePrepare()
 {
   include_state.calls=0;
   include_service.context=&include_state; include_service.push=&IncludePush;
+  include_service.directive_context=0; include_service.directive=0;
 }
 Bool IncludeLoads(I64 count) { return include_state.calls==count; }
 I64 IncludeNext(CCmpCtrl *cc,I64 *lines)

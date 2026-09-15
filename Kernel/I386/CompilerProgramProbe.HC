@@ -50,7 +50,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHashFun *fun,*static_fun;
   CHashGlblVar *alias;
   CHashClass *collision;
-  CHashTable *source_table;
+  CHashTable *source_table,*parent_table;
   CMemberLst *member;
   U8 *source,*old_index,*old_code,*old_static,*literal,*block,*fill,*next,*name;
   I64 kind,count,i,j,before_used,before_allocations;
@@ -124,6 +124,16 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 9: member->static_data=fun->str; break;
     }
     before_used=heap->used; before_allocations=heap->allocations;
+    if(!kind) {
+      //A missing parent must not match an absent private macro table.
+      parent_table=source_table->next; source_table->next=0;
+      if(probe->compiler->publish(heap,cc,symbols) || heap->used!=before_used ||
+          heap->allocations!=before_allocations || scope->storage!=old_storage) KernelStop;
+      for(i=0;i<count;i++)
+        if(ProbeSymbolFind(0,roots[i]->str,source_table,roots[i]->type)!=roots[i]) KernelStop;
+      source_table->next=parent_table;
+      KernelLog("PROGRAM PARENT REJECT "); KernelHex(probe->phase); KernelLog("\n");
+    }
     result=probe->compiler->publish(heap,cc,symbols);
     if(result!=(!kind || kind>=10)) KernelStop;
     if(!result) {

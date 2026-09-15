@@ -85,7 +85,8 @@ Private ready queues remain distinct from the public task links. The private
 lists, documents and window state remain unfinished. Complete record storage does
 not imply that every field already has working service semantics.
 
-The private compiled getter probes do not expose public `Fs`/`Gs` in startup source
-or prove native JIT loading of the full headers. Class completion across inputs now uses
-[private transactions](i386-class-completion.md) in the owning task scope. Actual
-public-header loading and service integration remain required before that step.
+Native startup now loads the complete shared headers and typed `Fs`/`Gs` through
+the JIT before user startup. Header guards and class definitions publish together
+in an opt-in input transaction. Public service integration remains incomplete;
+see [native public headers](i386-public-headers.md) for the ownership contract and
+current scope.

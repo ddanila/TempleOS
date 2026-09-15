@@ -3,8 +3,8 @@
 #include "/Compiler/I386/LexFileRead.HH"
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/TaskCompiler.HH"
-//Compiler expression services now include a private class-view callback.
-#define I386_FILE_SERVICES_VERSION 15
+//Lexer services now include an optional parser-directive callback.
+#define I386_FILE_SERVICES_VERSION 16
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;

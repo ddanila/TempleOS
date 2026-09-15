@@ -493,6 +493,7 @@ U0 KernelFileLoad()
   if(!kernel_files.init(&kernel_root,&kernel_heap,&kernel_paths,&kernel_volumes)) KernelStop;
   if(!kernel_files.compiler_init(&kernel_compiler,"~/Tmp.DD.Z",char_bmp_alpha_numeric,char_bmp_alpha_numeric_no_at)) KernelStop;
   kernel_file_include.context=0; kernel_file_include.push=kernel_files.include;
+  kernel_file_include.directive_context=0; kernel_file_include.directive=0;
 }
 
 U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
@@ -548,12 +549,12 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[5];
-  U8 indices[5];
-  indices[0]=0; indices[1]=19; indices[2]=10; indices[3]=40; indices[4]=41;
-  KernelBindings(bindings,indices,5,5);
+  CI386ModuleBinding bindings[6];
+  U8 indices[6];
+  indices[0]=0; indices[1]=19; indices[2]=10; indices[3]=40; indices[4]=41; indices[5]=18;
+  KernelBindings(bindings,indices,6,6);
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,5,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,6,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;

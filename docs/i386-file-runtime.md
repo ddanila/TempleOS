@@ -1,7 +1,7 @@
 # Retained file services and disk-backed compiler includes
 
-FileRuntime now requires ABI 15 (32 bytes), binding CompilerRuntime ABI 37 and its
-expression-service contract. See [class completion](i386-class-completion.md).
+FileRuntime now requires ABI 16 (32 bytes), binding CompilerRuntime ABI 38 and its
+lexer-service contract. See [native public headers](i386-public-headers.md).
 
 `FileRuntime.t32m` packages native path construction, filename rules, archive
 expansion, decoded file loading, drive-context routing and the compiler file-input

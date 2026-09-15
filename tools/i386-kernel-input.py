@@ -86,11 +86,13 @@ def run_input(disk,out,startup_check=None):
             startup_started=time.monotonic()
             #The retained compiler probes run during startup; match the main boot
             #verifier's allowance while keeping input/screen deadlines unchanged.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=90)
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=180)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']
             evidence=log.read_text()
+            if evidence.count('PUBLIC HEADERS ok\n')!=1:
+                raise ValueError('Missing public headers before startup')
             if evidence.count('STARTUP source begin\n')!=1 or evidence.count(f'STARTUP source {status}\n')!=1:
                 raise ValueError('Missing or repeated native source startup')
             if not (evidence.index('PROBE RELEASE ') < evidence.index('CONSOLE TASK SPAWNED') <
@@ -99,10 +101,10 @@ def run_input(disk,out,startup_check=None):
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={'<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={'#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>')
+            shifted=set('(){}*+&_"<>#!')
             def submit(source, answers, name):
                 nonlocal rows
                 for index,ch in enumerate(source):
@@ -164,6 +166,22 @@ def run_input(disk,out,startup_check=None):
                 ('6*7;', ['42']),
                 ('sizeof(U8 *);', ['4']),
                 ('sizeof(I64);', ['8']),
+                ('sizeof(CTask);', ['992']),
+                ('sizeof(CCPU);', ['232']),
+                ('sizeof(CTask.catch_except);', ['1']),
+                ('Fs->addr==Fs;', ['1']),
+                ('Gs->addr==Gs;', ['1']),
+                ('Fs->gs==Gs;', ['1']),
+                ('Gs->num;', ['0']),
+                ('Fs->task_signature==TASK_SIGNATURE_VAL;', ['1']),
+                ('Fs->hash_table->body!=0;', ['1']),
+                ('Fs->last_cc!=0;', ['1']),
+                ('U0 PubDraw(CTask *t,CDC *d){t->user_data=42;}', []),
+                ('I64 PubTest(){CTask t;t.draw_it=&PubDraw;t.draw_it(&t,0);return t.user_data;}', []),
+                ('PubTest;', ['42']),
+                ('#include "/Kernel/I386/PublicKernel.HH"', []),
+                ('PubTest;', ['42']),
+
                 ('extern class Opaque;class Holder{Opaque *p;I64 value;};', []),
                 ('sizeof(Holder);', ['12']),
                 ('Holder h;h.p=0;h.value=42;', ['0x0','42']),

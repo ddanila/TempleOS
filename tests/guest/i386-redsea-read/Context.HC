@@ -4,6 +4,7 @@ Bool ContextIncludeCall(CI386Heap *heap,CCmpCtrl *cc,CFilePathContext *paths,
   CI386LexFileContext files; CI386LexIncludeService service;
   files.paths=paths; files.volumes=volumes;
   service.context=&files; service.push=&I386LexFileInclude;
+  service.directive_context=0; service.directive=0;
   return (*service.push)(service.context,heap,cc,filename);
 }
 Bool ContextEqual(U8 *a,U8 *b)

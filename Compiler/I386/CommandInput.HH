@@ -1,6 +1,8 @@
 #ifndef I386_COMMAND_INPUT_INCLUDED
 #define I386_COMMAND_INPUT_INCLUDED
 #include "/Compiler/I386/Frontend.HH"
+//Opt-in header transaction. Ordinary input keeps immediate macro publication.
+#define I386_INPUT_ATOMIC_DEFINES 0x100000000
 //Borrowed for one synchronous input. Callbacks may inspect values only while called.
 class CI386CommandInput {
   CI386Heap *heap;

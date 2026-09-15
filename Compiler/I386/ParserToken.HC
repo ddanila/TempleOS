@@ -4,7 +4,7 @@ I64 I386ParserToken(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
   I64 *compiled_lines,CI386LexIncludeService *includes)
 {
   CI386CmpCtrl *owned=cc;
-  CI386ParserAllocation *record,*pending=0;
+  CI386ParserAllocation *record,*pending=0,*current=0;
   I64 token;
   U32 irq=I386IrqSave;
   if(!I386CmpCodeOwner(heap,cc) || !compiled_lines ||
@@ -23,6 +23,17 @@ I64 I386ParserToken(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
   if(token<0) { cc->error_cnt++; throw('Compiler',TRUE); }
   irq=I386IrqSave;
   if(cc->cur_str) {
+    //A parser-backed directive may recurse through this adapter. Its final
+    //lookahead is already tracked; do not give that payload two owners.
+    for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
+      if(record->allocation==cc->cur_str) { current=record; break; }
+    if(current) {
+      if(pending && pending!=current) {
+        pending->last->next=pending->next; pending->next->last=pending->last;
+        I386HeapFree(heap,pending);
+      }
+      pending=current;
+    }
     if(!pending) {
       pending=I386HeapAlloc(heap,sizeof(CI386ParserAllocation),TRUE);
       if(!pending) { I386IrqRestore(irq); throw('OutMem',TRUE); }

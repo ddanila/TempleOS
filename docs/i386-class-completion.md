@@ -56,7 +56,8 @@ worker phases check heap/control/task-state reclamation. The keyboard test also
 submits a failed definition, retries it, then uses the completed type through a
 holder declared in an earlier submission.
 
-Header loading must also account for the existing immediate publication of macros
-and the behavior of include guards after failed inputs. Full public-header
-loading, remaining language providers and public kernel-service
-semantics remain separate integration requirements in [PLAN.md](../PLAN.md).
+[Native public-header loading](i386-public-headers.md) now uses an explicit macro
+transaction, allowing failed include guards and class definitions to be retried
+together. Ordinary input keeps immediate macro publication. Remaining language
+providers and public kernel-service semantics are separate integration gates in
+[PLAN.md](../PLAN.md).

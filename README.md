@@ -78,7 +78,10 @@ Next;
 ```
 
 The last command prints `41`. Syntax errors return to the prompt and preserve
-previous definitions. This is an initial console: multiline editing, the complete
+previous definitions. Shared public task and CPU headers load before user startup;
+`sizeof(CTask);` returns `992`, and `Fs->gs==Gs;` returns `1`. See
+[native public headers](docs/i386-public-headers.md) for the implemented scope.
+This is an initial console: multiline editing, the complete
 language/runtime, DolDoc and native self-hosting remain
 unfinished. See [console details](docs/i386-console-runtime.md) and
 [kernel image details](docs/i386-kernel.md).

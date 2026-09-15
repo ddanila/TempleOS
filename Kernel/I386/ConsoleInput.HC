@@ -17,7 +17,7 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   if(message) I386TextWrite(&console_text,message);
   I386TextPut(&console_text,10);
 }
-Bool ConsoleSource(U8 *source,U8 *filename)
+Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
 {
   CI386CommandInput input;
   CI386Task *task=I386TaskSelf;
@@ -29,7 +29,7 @@ Bool ConsoleSource(U8 *source,U8 *filename)
   if(!scope || scope->task!=task) KernelStop;
   input.heap=scope->heap; input.types=console_config->types;
   input.files=console_config->files; input.includes=console_config->includes;
-  input.source=source; input.filename=filename; input.context=&diagnostics;
+  input.flags=flags; input.source=source; input.filename=filename; input.context=&diagnostics;
   input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
   try { accepted=console_config->compiler->input(&input); }
   catch { task->catch_except=TRUE; I386TextWrite(&console_text,"Exception\n"); diagnostics++; }

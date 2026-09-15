@@ -1,7 +1,7 @@
 # Retained native HolyC console
 
 `ConsoleRuntime.t32m` owns the VGA text console, original 8×8 font, keyboard line
-editing, command submission, diagnostics and scalar answer rendering. Its ABI 3
+editing, command submission, diagnostics and scalar answer rendering. Its ABI 4
 service record is 20 bytes: version/size followed by initialization, display and
 keyboard-task entries. The kernel validates those entry addresses inside the
 loaded image before publishing the record. The image stays resident for the
@@ -136,3 +136,7 @@ checks the resulting pixels; module bytes remain unchanged.
 
 Strict 386SX/DX, physical hardware, complete language/document workflows and native
 compiler/kernel self-hosting remain required acceptance gates.
+
+Public task and CPU headers load in a separate native compiler input before user
+startup. Typed `Fs`/`Gs` survive missing or erroneous startup source. Header macros
+and declarations commit together; see [native public headers](i386-public-headers.md).

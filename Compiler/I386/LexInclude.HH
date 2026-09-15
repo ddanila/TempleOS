@@ -7,5 +7,8 @@
 class CI386LexIncludeService {
   U8 *context;
   Bool (*push)(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *name);
+  //Optional parser directives. Return the already-fetched lookahead token.
+  U8 *directive_context;
+  I64 (*directive)(U8 *context,CCmpCtrl *cc,I64 keyword);
 };
 #endif

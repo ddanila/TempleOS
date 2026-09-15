@@ -1,9 +1,9 @@
 # Retained compiler runtime in extended memory
 
-CompilerRuntime now requires ABI 37 (200 bytes) because expression services add
-an optional private class-view callback for [class completion](i386-class-completion.md).
-The outer service-table size is unchanged; callers supplying expression services
-must initialize the new callback.
+CompilerRuntime now requires ABI 38 (200 bytes) for atomic header macro input,
+control-owned macro cleanup and parser-backed lexer directives. Lexer service
+providers initialize the optional directive callback. The outer service-table
+size is unchanged. See [native public headers](i386-public-headers.md).
 
 The bootstrap kernel no longer contains the quoted-string/number/character/operator decoders,
 software F64 implementation or power table. `Kernel/I386/CompilerRuntime.HC`

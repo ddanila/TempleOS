@@ -9,6 +9,7 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/FontStd.HC"
 import U0 KernelLog(U8 *text);
+import U0 KernelHex(U64 value);
 import U0 KernelStop();
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
@@ -22,7 +23,7 @@ extern U0 ConsolePresent();
 extern Bool ConsoleDisplay();
 extern U0 ConsoleKeys(I64 unused);
 extern U0 ConsoleSubmit(U8 *line);
-extern Bool ConsoleSource(U8 *source,U8 *filename);
+extern Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0);
 Bool ConsoleInit(CI386ConsoleConfig *config)
 {
   if(console_config || !config || !config->heap || !config->compiler ||
@@ -65,10 +66,18 @@ U0 ConsoleKeys(I64 unused)
 {//Single console/input owner. Each complete line is a recoverable compiler input.
   CI386KeyEvent event;
   U8 line[256];
-  I64 length=0,decoded,ch,spaces;
+  I64 length=0,decoded,ch,spaces,header_used;
+  CI386Task *task=I386TaskSelf;
+  CI386TaskSymbols *scope=task->symbol_state;
   //Fresh scheduler entries have IF clear. Devices and task services are ready;
   //allow timer/keyboard delivery during startup compilation and user execution.
   SetRFlags(GetRFlags|0x200);
+  header_used=scope->heap->used;
+  KernelLog("PUBLIC HEADERS begin\n");
+  if(ConsoleSource("#include \"/Kernel/I386/PublicKernel.HH\"\n","ConsoleHeaders.HC",
+      I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) KernelLog("PUBLIC HEADERS ok\n");
+  else { ConsolePresent; KernelLog("PUBLIC HEADERS error\n"); KernelStop; }
+  KernelLog("PUBLIC HEADERS MEMORY "); KernelHex(scope->heap->used-header_used); KernelLog("\n");
   KernelLog("STARTUP source begin\n");
   if(ConsoleSource("#include \"/Kernel/I386/StartOS.HC\"\n","ConsoleStartup.HC"))
     KernelLog("STARTUP source ok\n");

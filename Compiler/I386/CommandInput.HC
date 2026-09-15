@@ -7,6 +7,7 @@ Bool I386CommandInput(CI386CommandInput *input)
   CI386Frontend *state;
   CPrsSymbolServices *symbols;
   CI386FrontendCode *output;
+  CI386CmpCtrl *owned;
   U8 *code;
   I64 raw_type,value;
   Bool accepted=FALSE,raised=FALSE;
@@ -18,7 +19,7 @@ Bool I386CommandInput(CI386CommandInput *input)
       !input->filename || !input->types || !input->files ||
       input->files->version!=I386_FILE_SERVICES_VERSION ||
       input->files->bytes!=sizeof(CI386FileServices) || !input->files->control_new ||
-      input->flags&~CCF_JUST_LOAD) return FALSE;
+      input->flags&~(CCF_JUST_LOAD|I386_INPUT_ATOMIC_DEFINES)) return FALSE;
   boundary=task->last_cc;
   try {
     cc=input->files->control_new(input->source,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,input->filename);
@@ -29,6 +30,14 @@ Bool I386CommandInput(CI386CommandInput *input)
         symbols=I386FrontendServices(heap,cc,input->types,input->includes);
         if(!symbols) throw('OutMem',TRUE);
         state=symbols->context;
+        if(input->flags&I386_INPUT_ATOMIC_DEFINES) {
+          owned=cc;
+          owned->private_defines=I386HashTableNew(heap,32);
+          if(!owned->private_defines) throw('OutMem',TRUE);
+          state->defines=owned->private_defines;
+          state->defines->next=state->parent; state->table->next=state->defines;
+          cc->htc.define_hash_table=state->defines;
+        }
         state->diagnostic_context=input->context; state->diagnostic=input->diagnostic;
         I386FrontendLex(state,cc);
         while(cc->token!=TK_EOF) {

@@ -37,6 +37,7 @@ extern U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 extern U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeOpaque(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCompletions(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
+extern U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeTaskLayout(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
@@ -247,6 +248,7 @@ U0 ProbeIncludes(CI386CompilerProbe *probe)
   CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,probe->symbols,char_bmp_alpha_numeric);
   LexFileSeed(&file,"#include \"Outer\";"); cc.lex_include_stk=&file; cc.cur_buf_ptr=file.buf;
   state.calls=0; service.context=&state; service.push=&ProbeIncludePush;
+  service.directive_context=0; service.directive=0;
   for(i=1;i<=3;i++)
     if(probe->compiler->next_token_with_includes(probe->heap,&cc,"Probe",&lines,&service)!=TK_I64 ||
         cc.cur_i64!=11*i || (GetRFlags&0x200)!=initial_if) KernelStop;
@@ -412,6 +414,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   ProbeOpaque(probe,heap,outer);
   ProbeCompletions(probe,heap,outer);
   ProbeTaskLayout(probe,heap,outer);
+  ProbePublicHeaders(probe,heap,outer);
   SetRFlags(flags);
   KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }
@@ -489,6 +492,7 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 #include "/Kernel/I386/CompilerCommandProbe.HC"
 #include "/Kernel/I386/CompilerProgramProbe.HC"
 #include "/Kernel/I386/CompilerInputProbe.HC"
+#include "/Kernel/I386/CompilerHeaderProbe.HC"
 
 #include "/Kernel/I386/CompilerResidentProbe.HC"
 

@@ -70,8 +70,8 @@ classes. Top-level class parsing now uses the same ownership-aware type callback
 as nested declarations. Private forward declarations can be completed within one
 input with pointer identity preserved. Completion across published inputs now
 stages a private definition and commits into the stable descriptor in the owning
-task scope, with rollback and nested-conflict checks. Actual public-header loading
-remains required. See [class completion](docs/i386-class-completion.md) and
+task scope, with rollback and nested-conflict checks. Native startup now loads the
+shared public headers in a separate input with transactional include guards. See [class completion](docs/i386-class-completion.md) and
 [opaque class dependencies](docs/i386-opaque-classes.md).
 
 The complete public task/CPU records now live in shared headers used by
@@ -79,10 +79,12 @@ The complete public task/CPU records now live in shared headers used by
 native fixtures validate the 992-byte `CTask` and 232-byte `CCPU`, including wide
 state and callbacks. Live `CI386Task`/`CI386Cpu` now inherit those complete public
 records, sharing exception, symbol and compiler-control fields while retaining
-private scheduler extensions. Complete public service semantics and transactional
-header loading before exposing `Fs`/`Gs` in ordinary startup source; private ready
-queues remain distinct from public task links.
-See [shared task records](docs/i386-task-records.md).
+private scheduler extensions. Typed `Fs`/`Gs` now expose these complete records
+through native public-header loading. This closes the header-loading slice only:
+complete public service semantics remain part of the priority-1 gate, and private
+ready queues remain distinct from public task links.
+See [shared task records](docs/i386-task-records.md) and
+[native public headers](docs/i386-public-headers.md).
 
 Hardware acceptance runs alongside all four priorities: establish named 386SX/DX
 profiles without a coprocessor, verify the legacy BIOS/ATA path and planar VGA,

@@ -3,8 +3,8 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
-//Compiler expression services now include a private class-view callback.
-#define I386_CONSOLE_VERSION 3
+//Native command input supports atomic header macro publication.
+#define I386_CONSOLE_VERSION 4
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;

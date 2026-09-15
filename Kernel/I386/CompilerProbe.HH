@@ -2,8 +2,8 @@
 #define I386_COMPILER_PROBE_INCLUDED
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
-//Compiler expression services now include a private class-view callback.
-#define I386_COMPILER_PROBE_VERSION 7
+//Native command input supports atomic header macro publication.
+#define I386_COMPILER_PROBE_VERSION 8
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;

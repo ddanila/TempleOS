@@ -24,6 +24,7 @@ class CI386CmpCtrl {
   CI386CodeAllocation *code_next,*code_last;
   U32 code_headers,code_busy;
   CI386ParserAllocation *parser_next,*parser_last;
+  CHashTable *private_defines;
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {
@@ -96,8 +97,25 @@ U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
   CI386CmpRelease *state=context;
   CI386CmpCtrl *owned=state->control;
   CI386ParserAllocation *record;
+  CHashDefineStr *define;
+  I64 i;
   U32 irq=I386IrqSave;
   if(allocation==state->control) {
+    //Header macros belong to the control, including when task teardown drains a
+    //suspended input. Successful publication has already emptied this table.
+    if(owned->private_defines) {
+      for(i=0;i<=owned->private_defines->mask;i++)
+        while(define=owned->private_defines->body[i]) {
+          owned->private_defines->body[i]=define->next;
+          if(define->str && !I386HeapFree(state->heap,define->str)) state->ok=FALSE;
+          if(define->data && !I386HeapFree(state->heap,define->data)) state->ok=FALSE;
+          if(define->src_link && !I386HeapFree(state->heap,define->src_link)) state->ok=FALSE;
+          if(define->idx && !I386HeapFree(state->heap,define->idx)) state->ok=FALSE;
+          if(!I386HeapFree(state->heap,define)) state->ok=FALSE;
+        }
+      if(!I386HashTableDelete(state->heap,owned->private_defines)) state->ok=FALSE;
+      owned->private_defines=0;
+    }
     //Graph and lexer cleanup has finished. Reclaim detached parser temporaries.
     while((record=owned->parser_next)!=&owned->parser_next) {
       record->last->next=record->next; record->next->last=record->last;

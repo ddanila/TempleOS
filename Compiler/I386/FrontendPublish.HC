@@ -34,12 +34,30 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
       owned->code_next!=&owned->code_next) goto done;
   source=frontend->table; destination=scope->table;
   if(cc->htc.glbl_hash_table!=source || cc->htc.hash_table_lst!=source ||
-      source==destination || frontend->parent!=destination || source->next!=destination ||
+      source==destination || frontend->parent!=destination ||
+      source->next!=destination && (!frontend->defines || source->next!=frontend->defines) ||
       !I386ParserRecord(owned,source) || I386HeapSize(heap,source)!=sizeof(CHashTable) ||
       !I386HashTableValid(heap,destination) || destination->locked_flags || source->locked_flags ||
       source->mask<0 || source->mask>=0x1FFFFFFF || (source->mask+1)&source->mask ||
       !I386ParserRecord(owned,source->body) ||
       I386HeapSize(heap,source->body)!=(source->mask+1)*sizeof(CHash *)) goto done;
+  if(frontend->defines) {
+    if(frontend->defines!=owned->private_defines || !I386HashTableValid(heap,frontend->defines) ||
+        source->next!=frontend->defines || frontend->defines->next!=destination ||
+        frontend->defines->mask!=31 || frontend->defines->locked_flags ||
+        cc->htc.define_hash_table!=frontend->defines) goto done;
+    for(i=0;i<=frontend->defines->mask;i++)
+      for(entry=frontend->defines->body[i];entry;entry=entry->next) {
+        if(!(entry->type&HTT_DEFINE_STR) || !entry->str ||
+            I386HeapSize(heap,entry)!=sizeof(CHashDefineStr) ||
+            I386ClassNamePresent(source,entry->str)) goto done;
+        //Macro redefinition keeps ordinary lookup order, but a header must not
+        //hide an existing class, function or other non-macro declaration.
+        for(j=0;j<=destination->mask;j++)
+          for(prior=destination->body[j];prior;prior=prior->next)
+            if(!StrCmp(prior->str,entry->str) && !(prior->type&HTT_DEFINE_STR)) goto done;
+      }
+  }
   for(completion=frontend->completions;completion;completion=completion->next)
     if(!I386CompletionValid(frontend,completion)) goto done;
   for(binding=frontend->residents;binding;binding=binding->next)
@@ -132,6 +150,19 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
       else HashAdd(entry,destination);
     }
   frontend->completions=0;
+  if(frontend->defines)
+    for(i=0;i<=frontend->defines->mask;i++) {
+      //HashAdd prepends. Reverse first so repeated definitions keep the newest
+      //replacement first after moving into the task's table.
+      prior=0;
+      while(entry=frontend->defines->body[i]) {
+        frontend->defines->body[i]=entry->next;
+        entry->next=prior; prior=entry;
+      }
+      while(entry=prior) {
+        prior=entry->next; HashAdd(entry,destination);
+      }
+    }
   result=TRUE;
 done:
   if(storage) I386HeapFree(heap,storage);

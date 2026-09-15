@@ -34,7 +34,8 @@ class CI386Frontend {
   CI386Heap *heap;
   CCmpCtrl *cc;
   CI386LexIncludeService *includes;
-  CHashTable *table,*parent;
+  CI386LexIncludeService lex_services;
+  CHashTable *table,*parent,*defines;
   CPrsExpressionServices expression;
   CPrsTypeServices types;
   CPrsDeclarationServices declarations;
@@ -73,6 +74,7 @@ class CI386FrontendBound {
   CMemberLst arguments[20];
   U8 *addresses[10];
 };
+extern I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword);
 extern U0 I386FrontendStatementsInit(CI386Frontend *state);
 U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
@@ -498,6 +500,13 @@ I64 I386FrontendEvaluate(U8 *context,CCmpCtrl *cc)
   result=I386FrontendExecute(context,code);
   I386FrontendFree(context,code); return result;
 }
+I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword)
+{
+  if(keyword!=KW_ASSERT) I386FrontendUnavailable(context);
+  if(!I386FrontendLex(context,cc)) return TK_EOF;
+  if(!I386FrontendEvaluate(context,cc)) I386FrontendReport(context,cc,1,"Assert Failed ");
+  return cc->token;
+}
 CHashClass *I386FrontendClassNew(U8 *context)
 {
   CHashClass *type=I386FrontendAlloc(context,sizeof(CHashClass)*(PTR_STARS_NUM+1),TRUE,FALSE);
@@ -619,7 +628,10 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   if(!I386CmpCodeOwner(heap,cc) || !types || !types[RT_I64] || !types[RT_U64] || !types[RT_F64]) return 0;
   state=I386ParserAlloc(heap,cc,sizeof(CI386Frontend),TRUE);
   if(!state) return 0;
-  state->heap=heap; state->cc=cc; state->includes=includes; state->parent=cc->htc.glbl_hash_table;
+  state->heap=heap; state->cc=cc; state->parent=cc->htc.glbl_hash_table;
+  if(includes) { state->lex_services.context=includes->context; state->lex_services.push=includes->push; }
+  state->lex_services.directive_context=state; state->lex_services.directive=&I386FrontendDirective;
+  state->includes=&state->lex_services;
   state->table=I386FrontendAlloc(state,sizeof(CHashTable),TRUE,FALSE);
   state->table->body=I386FrontendAlloc(state,32*sizeof(CHash *),TRUE,FALSE);
   state->table->mask=31; state->table->next=state->parent;

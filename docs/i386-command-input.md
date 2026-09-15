@@ -1,6 +1,6 @@
 # Native source input lifecycle
 
-CompilerRuntime ABI 35 (200 bytes) adds `input`, a synchronous source-buffer
+CompilerRuntime ABI 35 (200 bytes) introduced `input`, a synchronous source-buffer
 entry for the console and other native callers. `CI386CommandInput`
 borrows the source, filename, file/include services, type descriptors and callback
 context for the duration of the call. It uses the current task's symbol scope and
@@ -15,9 +15,11 @@ formatted. A callback must consume or copy borrowed data synchronously. The
 entry has no fixed command-count limit; frontend resource/stack limits still
 apply. An empty input is valid.
 
-`CCF_JUST_LOAD` is the only accepted caller flag. It skips executable commands
-and answer callbacks while retaining the shared parser's declaration and static
-initialization behavior. The entry supplies its own input-buffer ownership flags.
+`CCF_JUST_LOAD` skips executable commands and answer callbacks while retaining
+the shared parser's declaration and static initialization behavior. ABI 38 also
+accepts `I386_INPUT_ATOMIC_DEFINES`, independently or combined with `CCF_JUST_LOAD`,
+to commit macros and declarations together for header loading. The entry supplies
+its own input-buffer ownership flags.
 Invalid arguments or flags return false before creating a control.
 
 Frontend diagnostics are forwarded synchronously with their control, severity and
@@ -37,12 +39,16 @@ exceptions (including code zero), are rethrown after cleanup so the surrounding 
 them. Input and callback storage must remain live through that cleanup.
 
 Publication of frontend classes/functions/globals is per submitted buffer.
-Preprocessor defines use the task define table immediately and can persist after
-a later failure. A later failed buffer preserves definitions
+By default, preprocessor defines use the task define table immediately and can
+persist after a later failure. With `I386_INPUT_ATOMIC_DEFINES`, a private table
+belongs to the control and moves into the task scope only on successful
+publication. Failed inputs reclaim its entries and leave existing guards intact.
+See [native public headers](i386-public-headers.md). A later failed buffer preserves definitions
 from earlier successful buffers. Execution is not transactional: assignments and
 other side effects before a later failure remain. In particular, user code must
-not retain references to unpublished private data across failure. Collisions are
-rejected; definition replacement and dependency-aware unloading remain pending.
+not retain references to unpublished private data across failure. Ordinary collisions are
+rejected; forward classes support transactional completion. General definition
+replacement and dependency-aware unloading remain pending.
 See [program publication](i386-program-publication.md) for storage ownership.
 
 The retained [VGA console](i386-console-runtime.md) now submits keyboard lines to

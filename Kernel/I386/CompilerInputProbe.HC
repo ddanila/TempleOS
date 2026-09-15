@@ -16,6 +16,9 @@ U0 ProbeInputDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   CProbeInputAnswer *answer=context;
   if(!cc || !message || !*message) KernelStop;
   answer->diagnostics++;
+  KernelLog("INPUT DIAGNOSTIC "); KernelLog(message);
+  if(cc->lex_include_stk) { KernelLog(" "); KernelLog(cc->lex_include_stk->full_name); }
+  KernelLog("\n");
 }
 U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
@@ -36,11 +39,26 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.context=&answer; input.answer=&ProbeInputAnswer; input.diagnostic=&ProbeInputDiagnostic;
   sentinel=probe->compiler->code_add(heap,outer,IC_IMM_I64,123,probe->i64_type,0);
   if(!sentinel) KernelStop;
-  for(kind=0;kind<14;kind++) {
+  for(kind=0;kind<22;kind++) {
     KernelLog("INPUT RUN START "); KernelHex(kind); KernelLog("\n");
     bytes=&answer; for(i=0;i<sizeof(CProbeInputAnswer);i++) bytes[i]=0;
     input.flags=0; input.source="6*7;"; caught=FALSE;
     switch(kind) {
+      case 18: input.flags=I386_INPUT_ATOMIC_DEFINES; answer.fail=TRUE; answer.exception='InputCb';
+        input.source="#define InputGuard 1\n6*7;"; break;
+      case 19: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 1\n#assert 1\n#assert 0\n42;"; break;
+      case 20: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 1\n#assert Unknown\n"; break;
+      case 21: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 1\nclass InputRecord{I64i value;\n#assert $$$$==8\n};sizeof(InputRecord);"; break;
+      case 14: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 1\nclass InputRecord{I64i value;};Unknown bad;"; break;
+      case 15: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#ifndef InputGuard\n#define InputGuard 1\nclass InputRecord{I64i value;};\n#endif\nsizeof(InputRecord);"; break;
+      case 16: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 20\n#define InputGuard 42\nInputGuard;"; break;
+      case 17: input.source="#define InputGuard 7\nUnknown bad;"; break;
       case 1: input.source="0x100000000+42;"; break;
       case 2: input.source="1.5+2.25;"; break;
       case 3: input.source="(\"hello\");"; break;
@@ -58,10 +76,10 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     }
     result=FALSE;
     try { result=probe->compiler->input(&input); }
-    catch { if(kind==6 && task->except_ch=='InputCb' || kind==10 && !task->except_ch) { task->catch_except=TRUE; caught=TRUE; } }
+    catch { if((kind==6 || kind==18) && task->except_ch=='InputCb' || kind==10 && !task->except_ch) { task->catch_except=TRUE; caught=TRUE; } }
     KernelLog("INPUT RUN RESULT "); KernelHex(result); KernelLog(" \n");
     KernelLog("INPUT RUN COUNTS "); KernelHex(input.commands); KernelLog(" "); KernelHex(input.answers); KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value); KernelLog(" "); KernelHex(answer.raw_type); KernelLog("\n");
-    if(result!=(kind<4 || kind==5 || kind==9 || kind==11) || caught!=(kind==6 || kind==10)) KernelStop;
+    if(result!=(kind<4 || kind==5 || kind==9 || kind==11 || kind==15 || kind==16 || kind==19 || kind==21) || caught!=(kind==6 || kind==10 || kind==18)) KernelStop;
     if(kind==0 && (answer.count!=1 || answer.value!=42 || input.answers!=1 || input.commands!=1)) KernelStop;
     if(kind==1 && (answer.value!=0x10000002A || answer.raw_type!=RT_I64)) KernelStop;
     if(kind==2 && (answer.value!=0x400E000000000000 || answer.raw_type!=RT_F64)) KernelStop;
@@ -96,6 +114,24 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       names[0]="InputAdd"; names[1]="InputPointer"; names[2]="InputValue";
       for(i=0;i<3;i++) {
         entry=ProbeSymbolFind(0,names[i],task->hash_table,HTT_FUN|HTT_GLBL_VAR);
+        if(!entry || !ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)) KernelStop;
+      }
+    }
+    if((kind==14 || kind==18 || kind==20) && (ProbeSymbolFind(0,"InputGuard",task->hash_table,HTT_DEFINE_STR) ||
+        ProbeSymbolFind(0,"InputRecord",task->hash_table,HTT_CLASS) || input.exception!='Compiler' && kind!=18)) KernelStop;
+    if(kind==19 && (input.warnings!=1 || answer.diagnostics!=1 || answer.value!=42)) KernelStop;
+    if(kind==21 && (input.warnings || answer.value!=8)) KernelStop;
+    if(kind==15 || kind==16 || kind==17 || kind==19 || kind==21) {
+      input.flags=0; input.source="InputGuard;";
+      if(!probe->compiler->input(&input) || answer.value!=1 && (kind==15 || kind==19 || kind==21) ||
+          answer.value!=42 && kind==16 || answer.value!=7 && kind==17) KernelStop;
+      while(entry=ProbeSymbolFind(0,"InputGuard",task->hash_table,HTT_DEFINE_STR))
+        if(!ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)) KernelStop;
+      if(kind==15 || kind==21) {
+        input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 2\nclass InputRecord{I64i bad;};";
+        if(probe->compiler->input(&input) || ProbeSymbolFind(0,"InputGuard",task->hash_table,HTT_DEFINE_STR)) KernelStop;
+        entry=ProbeSymbolFind(0,"InputRecord",task->hash_table,HTT_CLASS);
         if(!entry || !ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)) KernelStop;
       }
     }
