@@ -18,7 +18,7 @@ native code generation. Existing backend checks still apply. This is not a new
 instruction implementation or a complete intrinsic catalog: unsupported opcodes
 cannot be published through this path.
 
-`Kernel/I386/Intrinsic.HH` supplies 32 canonical public declarations to the
+`Kernel/I386/Intrinsic.HH` supplies 33 canonical public declarations to the
 disk-backed `StartOS.HC`: bit tests and updates, port I/O, character conversion,
 integer/F64 conversions and the supported mathematical operations, frame access,
 and flags access. Their signatures and opcode values match `Kernel/KernelB.HH`
@@ -55,3 +55,7 @@ python3 tools/build-i386-kernel.py --test
 This integration does not complete public task/CPU records, remaining language
 and runtime providers, DolDoc, native self-hosting or strict 386 hardware
 acceptance. The full scope remains in [PLAN.md](../PLAN.md).
+
+Native `GetRSP` now reports ESP through the original pointer-returning signature.
+Public-stack probes verify its range in boot and worker tasks and through the
+interactive console. See [stack ownership](i386-public-stacks.md).

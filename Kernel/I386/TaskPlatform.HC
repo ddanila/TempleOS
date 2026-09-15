@@ -21,19 +21,24 @@ U0 I386TaskPlatformBind(CI386Task *task)
 public Bool I386TaskPlatformInit(CI386Scheduler *s,CI386Task *root,
   CI386Cpu *cpu,U8 *gdt,U8 *stack,I64 stack_size,CI386Heap *heap)
 {
+  I64 prefix=(offset(CTaskStk.stk_base)+7)&~7;
   if(i386_platform_scheduler || (GetRFlags&0x200) || !s || !root || !cpu ||
       !gdt || !heap || (s+0)(U64)+sizeof(CI386Scheduler)>0x100000000 ||
       (root+0)(U64)+sizeof(CI386Task)>0x100000000 ||
       (cpu+0)(U64)+sizeof(CI386Cpu)>0x100000000 ||
       (gdt+0)(U64)+40>0x100000000 ||
       (heap+0)(U64)+sizeof(CI386Heap)>0x100000000 ||
-      !stack || ((stack+0)(U64)&7) || stack_size<256 || stack_size>0xFFFFFFFF ||
-      (stack_size&7) || !I386FrameValid(GetRBP,stack,stack_size)) return 0;
+      !stack || ((stack+0)(U64)&7) || stack_size<prefix+256 || stack_size>0xFFFFFFFF ||
+      (stack_size&7) || (stack+0)(U64)+stack_size>0xFFFFFFFF ||
+      GetRSP<(stack+0)(U64)+prefix || !I386FrameValid(GetRBP,stack+prefix,stack_size-prefix)) return 0;
   if(s->root || root->owner || root->except_top || cpu->scheduler ||
       !I386HeapValid(heap)) return 0;
   //All recoverable validation precedes scheduler/table mutation.
   if(!I386SchedInit(s,root,&i386_context_switch)) return 0;
-  root->stack_base=stack; root->stack_size=stack_size; root->memory=heap;
+  //Reserve a descriptor inside the supplied boot-stack range.
+  root->stk=stack+prefix-offset(CTaskStk.stk_base);
+  root->stk->next_stk=0; root->stk->stk_ptr=0;
+  root->stk->stk_size=stack_size-prefix; root->memory=heap;
   cpu->addr=cpu; cpu->scheduler=s; cpu->num=0;
   if(!I386GdtInit(gdt,root,sizeof(CI386Task),cpu,sizeof(CI386Cpu))) I386TaskPlatformStop;
   i386_platform_gdt=gdt; i386_platform_scheduler=s; i386_platform_cpu=cpu;

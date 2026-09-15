@@ -22,8 +22,6 @@ class CI386Task:CTask
   U0 (*cleanup)(CI386Task *task);
   U32 finishing;
   CI386MsgQueue *messages;
-  U8 *stack_base;
-  U32 stack_size;
   CI386Except *except_top;
   U32 io_locks;
   U8 *file_state;

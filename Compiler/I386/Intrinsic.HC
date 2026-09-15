@@ -22,7 +22,7 @@ Bool I386IntrinsicValid(CHashFun *fun)
       fun->type&HTF_IMPORT || fun->ie_lst || fun->ext_lst) return FALSE;
   code=(fun->exe_addr+0)(U64);
   switch(code) {
-    case IC_FS: case IC_GS: case IC_GET_RBP: count=0; result_pointers=-1; break;
+    case IC_FS: case IC_GS: case IC_GET_RBP: case IC_GET_RSP: count=0; result_pointers=-1; break;
     case IC_GET_RFLAGS: count=0; break;
     case IC_SET_RFLAGS: result=RT_U0; break;
     case IC_IN_U8: result=RT_U8; break;

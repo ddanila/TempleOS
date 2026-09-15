@@ -1,7 +1,7 @@
 # Compiler diagnostics outside the bootstrap stage
 
-CompilerProbe now requires ABI 8 (56 bytes) for the lexer directive service and
-public-header transaction probes. See [native public headers](i386-public-headers.md).
+CompilerProbe now requires ABI 9 (56 bytes) for the public task-stack layout and
+native stack inspection. See [stack ownership](i386-public-stacks.md).
 
 `CompilerProbe.t32m` contains the compiler token, identifier/string and definition
 probes previously compiled directly into Kernel32.BIN. The six bootstrap modules

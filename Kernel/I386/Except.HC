@@ -5,10 +5,10 @@ CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,CI386ExceptCapture *
   U32 flags=I386IrqSave;
   CI386Except *record;
   I64 i;
-  if(!task || !task->owner || task->owner->current!=task || task->finished ||
+  if(!task || !task->stk || !task->owner || task->owner->current!=task || task->finished ||
       !capture || !capture->catch_start || !capture->untry_start ||
-      !I386FrameValid(capture->ebp,task->stack_base,task->stack_size) ||
-      capture->esp&3 || capture->esp<(task->stack_base+0)(U64) ||
+      !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
+      capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
       capture->esp>capture->ebp) {
     I386IrqRestore(flags); return 0;
   }
@@ -55,7 +55,7 @@ I64 I386ExceptDispatch(CI386Task *task,I64 ch,
 {
   CI386Except *record;
   CI386ExceptCapture *capture;
-  if(!task || !task->owner || task->owner->current!=task || task->finished ||
+  if(!task || !task->stk || !task->owner || task->owner->current!=task || task->finished ||
       !invoke || !resume) return I386_EXCEPT_INVALID;
   task->except_ch=ch; task->catch_except=FALSE;
   while(record=task->except_top) {
@@ -64,8 +64,8 @@ I64 I386ExceptDispatch(CI386Task *task,I64 ch,
       return I386_EXCEPT_INVALID;
     capture=&record->capture;
     if(!capture->catch_start || !capture->untry_start ||
-        !I386FrameValid(capture->ebp,task->stack_base,task->stack_size) ||
-        capture->esp&3 || capture->esp<(task->stack_base+0)(U64) ||
+        !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
+        capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
         capture->esp>capture->ebp) return I386_EXCEPT_INVALID;
     (*invoke)(capture);
     //A catch may run balanced nested try blocks and yield. It must return

@@ -80,9 +80,10 @@ run. These are version-tag rejection tests, not execution tests of archived old
 module binaries.
 
 Private ready queues remain distinct from the public task links. The private
-`CI386Heap`, stack bounds and exception-chain records are not aliases for public
-`CHeapCtrl`, `CTaskStk` or `CExcept`. Their public service integration, task family
-lists, documents and window state remain unfinished. Complete record storage does
+`CI386Heap` and exception-chain records are not aliases for public `CHeapCtrl`
+or `CExcept`. Stack bounds now use the public `CTaskStk` directly; see
+[stack ownership](i386-public-stacks.md). Heap/exception service integration, task
+family lists, documents and window state remain unfinished. Complete record storage does
 not imply that every field already has working service semantics.
 
 Native startup now loads the complete shared headers and typed `Fs`/`Gs` through

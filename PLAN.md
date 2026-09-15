@@ -58,8 +58,8 @@ depend on those identities.
 
 Native intrinsic publication now distinguishes opcode-bearing declarations from
 resident addresses and ordinary generated functions. The startup header exposes
-32 original public intrinsic signatures; boot and worker probes cover 34 including
-private FS/GS getters. Pointer depth is checked separately from raw numeric type,
+33 original public intrinsic signatures; the intrinsic corpus covers 34 including
+private FS/GS getters, and public-stack probes cover `GetRSP`. Pointer depth is checked separately from raw numeric type,
 because `RT_PTR` and `RT_I64` share a value. This advances compiler binding, while
 complete public task/CPU layouts remain required. See
 [intrinsic publication](docs/i386-intrinsic-publication.md).
@@ -83,6 +83,10 @@ private scheduler extensions. Typed `Fs`/`Gs` now expose these complete records
 through native public-header loading. This closes the header-loading slice only:
 complete public service semantics remain part of the priority-1 gate, and private
 ready queues remain distinct from public task links.
+Native stack ownership now uses contiguous public `CTaskStk` descriptors for
+spawned and boot tasks. Exception validation and caller walking read those bounds;
+stack growth and the full saved-register/debugger contract remain unfinished.
+See [stack ownership](docs/i386-public-stacks.md).
 See [shared task records](docs/i386-task-records.md) and
 [native public headers](docs/i386-public-headers.md).
 

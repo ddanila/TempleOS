@@ -4786,3 +4786,54 @@ physical 386 performance measurement. All 1057 source hashes match the native,
 x86-64 rebuild and task-layout results. The eight native build inputs, three
 layout inputs and final disk hash also match. Python syntax and staged whitespace
 checks pass.
+
+
+## Public native stack ownership
+
+The scheduler's live stack bounds now come from the original shared `CTaskStk`.
+Spawned tasks place its 20-byte prefix immediately before the eight-byte-aligned
+stack payload in the task's owned allocation. The optional private heap follows
+the stack and is excluded from its public bounds. Reaping clears `task->stk`;
+the owning allocation is freed from another stack after task cleanup. The boot
+reservation contains its descriptor at `0x88004`, leaving 32744 usable bytes
+starting at `0x88018`. No independent private stack-bound fields remain.
+
+Exception registration and dispatch, caller walking and the compiler's 4096-byte
+stack-reserve check use those public bounds. Native `GetRSP` now implements the
+original pointer-returning intrinsic and is declared by both standalone CPU and
+interactive intrinsic headers. Public-header probes compile live stack access and
+stack-pointer range checks in boot and worker phases. These are actual contiguous
+stacks, not descriptors pointing at unrelated payloads. Stack growth, full public
+saved-register synchronization and the complete debugger contract remain absent.
+See [public stack ownership](i386-public-stacks.md).
+
+Module versions are CompilerRuntime 39/200, FileRuntime 17/32, CompilerProbe 9/56
+and ConsoleRuntime 5/20. The private task layout changed when its duplicate bounds
+were removed, while the public layouts and outer service-table sizes are stable.
+
+Two x86-64 rebuild/reboot generations pass, and all 105 original x86-64 task fields
+retain their layouts. Focused task, exception-record, exception-context,
+exception-runtime, exception-task, function (238 cases) and task-symbol suites
+pass. The exception-record fixture now initializes compiler-control queue heads
+before testing reaping. Exception record/context/runtime runners permit 128 KiB
+of test code, below their existing heap arenas; their previous 64 KiB allowance
+was insufficient for the expanded records and helpers.
+
+The initial full native boot passes on the 8 MiB QEMU/486 development profile.
+Both phases pass public stack checks and 108 public layout assertions. The kernel
+is 384232 bytes, leaving 4888 bytes with its 4096-byte stage in the existing
+reservation. CompilerRuntime is 1285432 image/1285448 retained heap bytes;
+CompilerProbe is 610688 image/610704 temporary heap bytes, fully reclaimed.
+FileRuntime and ConsoleRuntime remain 125168/125184 and 46680/46696 respectively.
+Public headers retain 38488 heap bytes; the framebuffer remains 153600 bytes.
+Strict 386/no-387 and physical-hardware acceptance, the full document workflow,
+public heap services and native self-hosting remain required.
+
+Final full native verification passes: 81 keyboard commands across 144 submitted
+lines, exact VGA pixels at every checkpoint, custom startup, syntax-error and
+missing-file recovery, and all incompatible module rejection/reclamation cases.
+The diagnostic keyboard boot takes 125.579 seconds on QEMU/486; this does not
+measure physical 386 performance. All 1057 OS source hashes match the native,
+x86-64 rebuild and layout results. The eight native build inputs, three layout
+inputs and final disk hash also match. Python syntax and staged whitespace checks
+pass.

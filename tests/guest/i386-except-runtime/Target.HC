@@ -40,8 +40,9 @@ I64 Main(CExceptControl *control,I64 unused)
     tasks[current_id].addr=&tasks[current_id];
     tasks[current_id].owner=&scheduler;
     tasks[current_id].memory=&heaps[current_id];
-    tasks[current_id].stack_base=frame-8192;
-    tasks[current_id].stack_size=8200;
+    tasks[current_id].stk=frame-8192-offset(CTaskStk.stk_base);
+    tasks[current_id].stk->next_stk=0; tasks[current_id].stk->stk_ptr=0;
+    tasks[current_id].stk->stk_size=8200;
     scheduler.current=&tasks[current_id];
     if(!I386DataSegment(control->descriptor,&tasks[current_id],sizeof(CI386Task)))
       return 4;

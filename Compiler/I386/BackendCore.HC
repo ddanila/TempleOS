@@ -527,11 +527,13 @@ U0 I386BackendCore(CI386Backend *backend)
             backend->calls->called=TRUE;
             break;
           case IC_GET_RBP:
+          case IC_GET_RSP:
             if (!backend->calls || backend->calls->called || backend->calls->indirect ||
                 !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||
                 backend->calls->fun->exe_addr!=ic->ic_code || backend->calls->fun->arg_cnt ||
                 depth!=backend->calls->depth) throw('Compiler');
-            I386Bytes(out,"\x89\xE8\x31\xD2",4);
+            if(ic->ic_code==IC_GET_RSP) I386Bytes(out,"\x89\xE0\x31\xD2",4);
+            else I386Bytes(out,"\x89\xE8\x31\xD2",4);
             backend->calls->called=TRUE;
             break;
           case IC_GET_RFLAGS:

@@ -130,7 +130,7 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     value=ProbeProgramUse(probe,heap,outer,source);
     KernelLog("INTRINSIC VALUE "); KernelHex(value); KernelLog("\n");
     if(kind==2) {
-      if(value<(task->stack_base+0)(U64) || value>=(task->stack_base+0)(U64)+task->stack_size) KernelStop;
+      if(!task->stk || value<((&task->stk->stk_base)(U8 *)+0)(U64) || value>=((&task->stk->stk_base)(U8 *)+0)(U64)+task->stk->stk_size) KernelStop;
     } else if(value!=expected) KernelStop;
   }
   for(i=0;i<count;i++)

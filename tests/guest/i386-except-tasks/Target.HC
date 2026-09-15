@@ -93,7 +93,8 @@ I64 Main(I64 unused0,I64 unused1)
   for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 39;
   if(!I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,32768,&heap) ||
       I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,32768,&heap)) return 40;
-  if(root.stack_base!=0x88000 || root.stack_size!=32768 || root.memory!=&heap ||
+  if(!root.stk || &root.stk->stk_base!=0x88018 || root.stk->stk_size!=32744 ||
+      root.stk->next_stk || root.stk->stk_ptr || root.memory!=&heap ||
       cpu.addr!=&cpu || cpu.scheduler!=&scheduler || CpuSelf!=&cpu || !Caller(0)) return 41;
   if(!I386GdtRead(readback) || readback[0]!=39 || readback[1] ||
       (readback+2)(U32 *)[0]!=(table+0)(U64) || I386TaskSelf!=&root) result=29;
@@ -203,7 +204,7 @@ U0 Worker(I64 id)
     catch {
       selected=task->except_top;
       site=task->except_callers[0]; throw_frame=task->except_rbp;
-      if(!site || !I386FrameValid(throw_frame,task->stack_base,task->stack_size))
+      if(!site || !I386FrameValid(throw_frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size))
         failures++;
       if(task->except_ch!=ch || task->memory->allocations!=1) failures++;
       task->catch_except=TRUE;

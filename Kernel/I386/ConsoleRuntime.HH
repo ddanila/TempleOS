@@ -3,8 +3,8 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
-//Native command input supports atomic header macro publication.
-#define I386_CONSOLE_VERSION 4
+//Native task stack bounds now use the public CTaskStk descriptor.
+#define I386_CONSOLE_VERSION 5
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;

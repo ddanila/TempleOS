@@ -40,7 +40,8 @@ I64 Main(CExceptControl *control,I64 unused)
     return 2;
   if(!I386HeapInit(&heap,0x40000,4096)) return 5;
   task.owner=&scheduler; scheduler.current=&task;
-  task.stack_base=frame-4096; task.stack_size=4104;
+  task.stk=frame-4096-offset(CTaskStk.stk_base);
+  task.stk->next_stk=0; task.stk->stk_ptr=0; task.stk->stk_size=4104;
   first=(*control->register_try)(&task,&heap,&Main,&Main,&I386ExceptPush);
   if(!first || task.except_top!=first || first->capture.ebp!=(frame+0)(U64) ||
       first->capture.esp>first->capture.ebp || first->capture.esp&3 ||

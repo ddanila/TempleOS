@@ -11,14 +11,16 @@ I64 Main(I64 a,I64 b)
   CI386ExceptCapture capture;
   CI386Except *first,*second;
   U8 *full;
-  U32 flags=GetRFlags,frames[8];
+  U32 flags=GetRFlags,frame_storage[13],*frames=frame_storage+5;
   I64 i;
   if(!I386HeapInit(&heaps[0],0x40000,4096) ||
       !I386HeapInit(&heaps[1],0x42000,4096)) return 1;
   scheduler.current=task; scheduler.root=other;
   task->owner=&scheduler; other->owner=&scheduler;
-  task->stack_base=frames; task->stack_size=sizeof(frames);
-  other->stack_base=frames; other->stack_size=sizeof(frames);
+  task->next_cc=task->last_cc=&task->next_cc;
+  other->next_cc=other->last_cc=&other->next_cc;
+  task->stk=frame_storage; task->stk->next_stk=0; task->stk->stk_ptr=0;
+  task->stk->stk_size=32; other->stk=task->stk;
   capture.ebp=&frames[4]; capture.esp=frames;
   capture.ebx=0x12345678; capture.esi=0x9ABCDEF0; capture.edi=0x87654321;
   capture.eflags=2; capture.catch_start=&Main; capture.untry_start=&Main;
@@ -27,15 +29,18 @@ I64 Main(I64 a,I64 b)
       I386ExceptPush(other,&heaps[0],&capture) || I386ExceptPop(task) ||
       !I386ExceptClear(task)) return 2;
   if(capture.ebp&3) return 46;
-  if(!capture.ebp || !task->stack_base) return 47;
-  if(task->stack_size!=32) return 48;
+  if(!capture.ebp || !task->stk) return 47;
+  if(task->stk->stk_size!=32) return 48;
   if(capture.ebp!=(frames+0)(U64)+16) return 49;
-  if(!I386FrameValid(capture.ebp,task->stack_base,task->stack_size)) return 40;
+  if(!I386FrameValid(capture.ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size)) return 40;
   if(capture.esp&3) return 41;
-  if(capture.esp<(task->stack_base+0)(U64)) return 42;
+  if(capture.esp<((&task->stk->stk_base)(U8 *)+0)(U64)) return 42;
   if(capture.esp>capture.ebp) return 43;
   if(!capture.catch_start || !capture.untry_start) return 44;
   if(task->owner!=&scheduler || task->owner->current!=task || task->finished) return 45;
+  task->stk=0;
+  if(I386ExceptPush(task,&heaps[0],&capture) || heaps[0].allocations) return 50;
+  task->stk=other->stk;
   first=I386ExceptPush(task,&heaps[0],&capture);
   if(!first) return 31;
   if(first!=task->except_top) return 32;
@@ -77,7 +82,7 @@ I64 Main(I64 a,I64 b)
   if(I386SchedReap(&scheduler,task) || task->except_top!=first ||
       I386ExceptPush(task,&heaps[0],&capture)) return 17;
   if(!I386ExceptClear(task) || !I386SchedReap(&scheduler,task) ||
-      task->owner || task->stack_base || task->stack_size) return 18;
+      task->owner || task->stk) return 18;
   if(heaps[0].used || heaps[1].used || heaps[0].allocations ||
       heaps[1].allocations || !I386HeapValid(&heaps[0]) ||
       !I386HeapValid(&heaps[1])) return 19;

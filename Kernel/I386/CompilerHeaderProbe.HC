@@ -58,6 +58,10 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
   input.source="Fs->last_cc!=0 && Fs->hash_table->body!=0;";
   if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
+  input.source="Fs->stk->stk_size>=256 && Fs->stk->next_stk==0 && Fs->stk->stk_ptr==0;";
+  if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
+  input.source="_intern 0x73 U8 *ProbeStackRsp();ProbeStackRsp>=(&Fs->stk->stk_base)(U64) && ProbeStackRsp<(&Fs->stk->stk_base)(U64)+Fs->stk->stk_size;";
+  if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
   KernelLog("PUBLIC HEADER LIVE "); KernelHex(probe->phase); KernelLog("\n");
   //Reuse the AOT layout assertions as native source. Exclude private extension
   //checks and separate assertions with semicolons to bound lexer recursion.

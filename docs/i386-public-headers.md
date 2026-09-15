@@ -74,8 +74,9 @@ explicit boot-loader bound for that memory map.
 
 Typed access exposes the live public records and their implemented fields, such
 as self pointers, task signature, CPU binding, current symbol table and compiler
-control links. Full public allocation, stack, task-family, document and debugger
-services are still incomplete. A field's presence does not establish its service
+control links. Public stack descriptors now describe the actual contiguous
+native stacks; see [stack ownership](i386-public-stacks.md). Full public allocation,
+stack growth, task-family, document and debugger services are still incomplete. A field's presence does not establish its service
 semantics. The private scheduler queues remain separate from public task links.
 
 The remaining integration and hardware gates are in [PLAN.md](../PLAN.md).
