@@ -818,6 +818,9 @@ def main():
             raise ValueError('Native intrinsic publication or execution failed')
         resident_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('RESIDENT CASE ')]
         opaque_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('OPAQUE CASE ')]
+        task_layouts = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('TASK LAYOUT ')]
+        if task_layouts != [(phase,992,232) for phase in (0,1)]:
+            raise ValueError('Shared public task/CPU layout or native access failed')
         if opaque_cases != [(phase,case) for phase in (0,1) for case in range(7)]:
             raise ValueError('Native opaque class publication or lifetime failed')
         if resident_cases != [(phase, case) for phase in (0,1) for case in range(7)]:

@@ -36,6 +36,7 @@ extern U0 ProbeCommands(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *oute
 extern U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeOpaque(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
+extern U0 ProbeTaskLayout(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeFrontend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
@@ -408,6 +409,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   ProbeResidents(probe,heap,outer);
   ProbeIntrinsics(probe,heap,outer);
   ProbeOpaque(probe,heap,outer);
+  ProbeTaskLayout(probe,heap,outer);
   SetRFlags(flags);
   KernelLog("COMPILER RECOVERY "); KernelHex(probe->phase); KernelLog("\n");
 }
@@ -490,3 +492,4 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 
 #include "/Kernel/I386/CompilerIntrinsicProbe.HC"
 #include "/Kernel/I386/CompilerOpaqueProbe.HC"
+#include "/Kernel/I386/CompilerTaskLayoutProbe.HC"

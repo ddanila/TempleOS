@@ -4350,6 +4350,46 @@ all 465056 heap bytes. Python syntax and whitespace checks pass. See
 AOT relocation, full language/runtime providers, public APIs, DolDoc, native
 self-hosting and strict 386SX/DX/physical-machine acceptance remain required.
 
+## Complete shared public task and CPU layouts
+
+`KernelA.HH` now includes the complete original records from shared task, CPU,
+job-control and window-scroll headers. The extraction retains every public task
+and CPU field, including the wide saved-register image, document/window state,
+exceptions, answers, compiler controls, jobs, callbacks and user data. An
+eight-byte slot for the dying-task queue's last pointer preserves its wake-field
+overlap on both architectures; task and CPU tail alignment is now explicit.
+
+The original x86-64 task metadata was captured before extraction. The rebuilt
+guest preserves all 105 task member entries, their order, offsets, sizes and
+pointer shapes, and the 1192-byte total size. Supporting x86-64 record sizes are
+also checked. The committed fixture records the corresponding i386 expectations;
+the native probe asserts all 103 unambiguous task offsets, the dying-task overlap,
+and sizes of 992 bytes for `CTask`, 232 for `CCPU`, 24 for `CJobCtrl` and 32 for
+`CWinScroll`. Boot and worker executions round-trip pointers and wide values,
+call a task callback, check a guard after the allocation and reclaim the records.
+
+Both x86-64 rebuild/reboot generations and `tools/check-task-layout.py` pass.
+All 56 keyboard checks and 119 submitted lines still match exact VGA pixels.
+The live kernel remains 380632 bytes with 8488 bytes spare after its 4096-byte
+prefix. CompilerRuntime remains ABI 35/200 with 1242576 image bytes and 1242592
+retained heap bytes. CompilerProbe remains ABI 5/56 with 537032 image bytes and
+537048 temporary heap bytes, reclaimed after diagnostics. ConsoleRuntime and
+FileRuntime are unchanged. Diagnostic startup measured 65.024 seconds on QEMU/486
+with 8 MiB; this is not a vintage-hardware performance acceptance result.
+
+The live scheduler still uses its private task/CPU records. Adopting the shared
+records, connecting their public state and services, and installing correctly
+typed `Fs`/`Gs` getters remain required. The fixture cross-compiles the headers;
+it does not prove their full native JIT loading or cross-input completion.
+See [shared task records](i386-task-records.md).
+
+The complete standalone verifier passes, including source-startup variants,
+module rejection/reclamation and executable instruction audits. All 1052 source
+hashes, eight native build-input hashes and the disk hash match the tested files.
+The separate x86-64 layout manifest also matches its source and three test-input
+hashes. Python syntax and whitespace checks pass. Full public service adoption,
+DolDoc, native self-hosting and strict 386/physical-machine acceptance remain open.
+
 ## Stored string pointers in cross-compiled modules
 
 The shared initializer now emits four-byte i386 AOT string-pointer relocations.

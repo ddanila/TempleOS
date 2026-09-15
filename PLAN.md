@@ -71,6 +71,14 @@ as nested declarations. Private forward declarations can be completed within one
 input with pointer identity preserved; completion across published inputs still
 needs a transaction. See [opaque class dependencies](docs/i386-opaque-classes.md).
 
+The complete public task/CPU records now live in shared headers used by
+`KernelA.HH`, with the original x86-64 task member layout preserved. Cross-compiled
+native fixtures validate the 992-byte `CTask` and 232-byte `CCPU`, including wide
+state and callbacks. Live `CI386Task`/`CI386Cpu` adoption is next: migrate shared
+state without duplicating ownership, keep private ready queues distinct from
+public task links, and only then expose `Fs`/`Gs` with the complete public types.
+See [shared task records](docs/i386-task-records.md).
+
 Hardware acceptance runs alongside all four priorities: establish named 386SX/DX
 profiles without a coprocessor, verify the legacy BIOS/ATA path and planar VGA,
 audit generated and handwritten executable code, and measure input responsiveness
