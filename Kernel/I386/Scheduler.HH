@@ -9,10 +9,10 @@ extern class CI386Except;
 #ifndef CCmpCtrl
 extern class CCmpCtrl;
 #endif
-#define I386_EXCEPT_CALLERS 8
-class CI386Task
+#include "/Kernel/I386/PublicTaskTypes.HH"
+#define I386_EXCEPT_CALLERS TASK_EXCEPT_CALLERS
+class CI386Task:CTask
 {
-  CI386Task *addr;
   CI386Context context;
   CI386Task *next,*last;
   CI386Scheduler *owner;
@@ -25,19 +25,14 @@ class CI386Task
   U8 *stack_base;
   U32 stack_size;
   CI386Except *except_top;
-  I64 except_ch;
-  U32 catch_except;
-  U8 *except_rbp,*except_callers[I386_EXCEPT_CALLERS];
   U32 io_locks;
   U8 *file_state;
   Bool (*file_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*file_destroy)(CI386Task *task);
   U32 lifetime_refs;
-  CHashTable *hash_table;
   U8 *symbol_state;
   Bool (*symbol_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*symbol_destroy)(CI386Task *task);
-  CCmpCtrl *next_cc,*last_cc;
   Bool (*compiler_cleanup)(CI386Task *task);
   U32 active_controls,compiler_cleanup_failed,compiler_busy;
 };
@@ -48,7 +43,7 @@ class CI386Scheduler
   U0 (*bind)(CI386Task *task);
   CI386Task *focus;
 };
-class CI386Cpu { CI386Cpu *addr; CI386Scheduler *scheduler; };
+class CI386Cpu:CCPU { CI386Scheduler *scheduler; };
 public extern Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next));
 public extern Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task);

@@ -1,6 +1,7 @@
 import U0 i386_context_switch(CI386Context *old,CI386Context *next);
 import U0 i386_segments_reload(U16 fs,U16 gs);
 CI386Scheduler *i386_platform_scheduler;
+CI386Cpu *i386_platform_cpu;
 U8 *i386_platform_gdt;
 U0 I386TaskPlatformStop()
 {
@@ -14,6 +15,7 @@ U0 I386TaskPlatformBind(CI386Task *task)
       i386_platform_scheduler->current!=task ||
       !I386DataSegment(i386_platform_gdt+24,task,sizeof(CI386Task)))
     I386TaskPlatformStop;
+  task->gs=i386_platform_cpu;
   i386_segments_reload(0x18,0x20);
 }
 public Bool I386TaskPlatformInit(CI386Scheduler *s,CI386Task *root,
@@ -32,9 +34,9 @@ public Bool I386TaskPlatformInit(CI386Scheduler *s,CI386Task *root,
   //All recoverable validation precedes scheduler/table mutation.
   if(!I386SchedInit(s,root,&i386_context_switch)) return 0;
   root->stack_base=stack; root->stack_size=stack_size; root->memory=heap;
-  cpu->addr=cpu; cpu->scheduler=s;
+  cpu->addr=cpu; cpu->scheduler=s; cpu->num=0;
   if(!I386GdtInit(gdt,root,sizeof(CI386Task),cpu,sizeof(CI386Cpu))) I386TaskPlatformStop;
-  i386_platform_gdt=gdt; i386_platform_scheduler=s;
+  i386_platform_gdt=gdt; i386_platform_scheduler=s; i386_platform_cpu=cpu;
   if(!I386GdtLoad(gdt,5) || !I386SchedSetBind(s,&I386TaskPlatformBind)) I386TaskPlatformStop;
   return 1;
 }

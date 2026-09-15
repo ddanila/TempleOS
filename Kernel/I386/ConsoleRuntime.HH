@@ -3,7 +3,8 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
-#define I386_CONSOLE_VERSION 1
+//Public task/CPU prefixes replace the compact native record ABI.
+#define I386_CONSOLE_VERSION 2
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;

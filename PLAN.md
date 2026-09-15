@@ -74,9 +74,11 @@ needs a transaction. See [opaque class dependencies](docs/i386-opaque-classes.md
 The complete public task/CPU records now live in shared headers used by
 `KernelA.HH`, with the original x86-64 task member layout preserved. Cross-compiled
 native fixtures validate the 992-byte `CTask` and 232-byte `CCPU`, including wide
-state and callbacks. Live `CI386Task`/`CI386Cpu` adoption is next: migrate shared
-state without duplicating ownership, keep private ready queues distinct from
-public task links, and only then expose `Fs`/`Gs` with the complete public types.
+state and callbacks. Live `CI386Task`/`CI386Cpu` now inherit those complete public
+records, sharing exception, symbol and compiler-control fields while retaining
+private scheduler extensions. Complete public service semantics and transactional
+header loading before exposing `Fs`/`Gs` in ordinary startup source; private ready
+queues remain distinct from public task links.
 See [shared task records](docs/i386-task-records.md).
 
 Hardware acceptance runs alongside all four priorities: establish named 386SX/DX

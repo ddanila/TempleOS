@@ -4621,3 +4621,51 @@ hashes, eight build-input hashes and the disk-image hash match the tested files.
 Python syntax and whitespace checks pass. Public task/CPU migration, completion
 transactions across inputs, the complete language/document environment, native
 self-hosting and strict 386SX/DX/physical-machine acceptance remain required.
+
+
+## Live public task and CPU prefixes
+
+The native scheduler now embeds the complete shared `CTask` and `CCPU` records
+as bases of `CI386Task` and `CI386Cpu`. Private context and scheduler fields follow
+the 992-byte and 232-byte public prefixes. Task identity/signature and CPU binding
+are initialized by the scheduler/platform; reaping clears the task identity.
+Exception state, symbol tables and active compiler-control links use their public
+fields without duplicate ownership. Ready queues remain private and distinct from
+public task-family and all-task links.
+
+The catch flag now uses the public one-byte `Bool`, with adjacent answer-field
+canaries in native resident-binding probes. Captured frame pointers are explicitly
+zero-extended into the public eight-byte diagnostic field. Typed private FS/GS
+probes inspect the live root and worker records, alongside the existing full
+layout, callback, wide-value and allocation-guard checks.
+
+CompilerRuntime, FileRuntime, CompilerProbe and ConsoleRuntime advance to ABI
+36/200, 14/32, 6/56 and 2/20 respectively (version/bytes). The interface sizes stay
+unchanged, but old task offsets are incompatible. Loader rejection fixtures now
+substitute the previous version tags explicitly. See
+[shared task records](i386-task-records.md).
+
+Both x86-64 rebuild/reboot generations and all 105 original task-field layout
+comparisons pass. The full standalone verifier passes: boot/worker probes,
+source-startup variants, module rejection/reclamation and all 56 keyboard commands
+(119 submitted lines) with exact VGA output. The kernel is 382368 bytes, leaving
+6752 bytes after the fixed 4096-byte stage in the 384 KiB reservation.
+CompilerRuntime uses 1242576 image bytes and 1242592 retained heap bytes;
+FileRuntime uses 125168/125184. CompilerProbe uses 539248 image bytes and fully
+reclaims its 539264 temporary heap bytes. ConsoleRuntime uses 45536/45552; its
+framebuffer remains 153600 bytes. Diagnostic startup measured 66.126 seconds on
+the QEMU/486 8 MiB development profile. All 1053 source hashes, eight native
+build-input hashes, three layout-test inputs and the disk-image hash match the
+tested files. These measurements do not establish strict 386 performance.
+
+Focused `test-i386.py` regressions also pass for `--tasks`, `--except-tasks`,
+`--task-symbols`, `--input`, `--messages` and `--ata-tasks`, including their
+executable instruction audits. These cover owned task creation/destruction,
+catch-time context switches, inherited symbol lifetime, IRQ-driven wakeups,
+message delivery and cooperative disk transactions with the enlarged records.
+Python syntax and whitespace checks pass.
+
+Public header loading and cross-input class completion, the complete heap/stack/
+exception and task-family APIs, DolDoc, native self-hosting and strict 386 hardware
+acceptance remain unfinished. The complete records and private getter probes do
+not establish those services or expose public `Fs`/`Gs` through startup source.

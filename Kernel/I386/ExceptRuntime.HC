@@ -50,7 +50,7 @@ U0 throw(I64 ch=0,Bool no_log=FALSE)
       task->owner->current!=task || task->finished)
     I386ExceptAbort(task,I386_EXCEPT_INVALID,ch);
   task->except_ch=ch; task->catch_except=FALSE;
-  task->except_rbp=frame;
+  task->except_rbp=(frame+0)(U64);
   for(i=0;i<I386_EXCEPT_CALLERS;i++) {
     task->except_callers[i]=I386FrameReturn(frame,task->stack_base,task->stack_size);
     frame=I386FrameParent(frame,task->stack_base,task->stack_size);

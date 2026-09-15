@@ -1,5 +1,9 @@
 # Retained compiler runtime in extended memory
 
+CompilerRuntime now requires ABI 36 (200 bytes) because native tasks embed the
+complete public task record. The service-table shape is unchanged from ABI 35. See
+[shared task records](i386-task-records.md) for migration and version rejection.
+
 The bootstrap kernel no longer contains the quoted-string/number/character/operator decoders,
 software F64 implementation or power table. `Kernel/I386/CompilerRuntime.HC`
 builds them into a separate `CompilerRuntime.t32m` disk module. Native startup

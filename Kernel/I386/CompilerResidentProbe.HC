@@ -15,6 +15,9 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   I64 kind,i,count,before_used,before_allocations;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
+  Bool old_answer=task->new_answer;
+  U8 old_answer_type=task->answer_type;
+  task->new_answer=TRUE; task->answer_type=0xA5;
   bytes=&service; for(i=0;i<sizeof(CHashExport);i++) bytes[i]=0;
   bytes=&catch_flag; for(i=0;i<sizeof(CHashExport);i++) bytes[i]=0;
   bytes=&collision; for(i=0;i<sizeof(CHashExport);i++) bytes[i]=0;
@@ -26,7 +29,7 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   HashAdd(&service,task->hash_table); HashAdd(&catch_flag,task->hash_table);
   for(kind=0;kind<7;kind++) {
     KernelLog("RESIDENT START "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
-    source="extern I64i ProbeResident(I64i n);extern U32i ProbeCatch;"
+    source="extern I64i ProbeResident(I64i n);extern Bool ProbeCatch;"
       "extern U0 SysTry(U8i *caught,U8i *leave);extern U0 SysUntry();"
       "extern U0 throw(I64i ch=0,Bool no_log=0);"
       "I64i ResidentMain(){I64i n=0;try{n=ProbeResident(40);throw('Resident',1);}"
@@ -77,7 +80,9 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs || task->except_top ||
         heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||
         (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+    if(!task->new_answer || task->answer_type!=0xA5) KernelStop;
     KernelLog("RESIDENT CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
   }
+  task->new_answer=old_answer; task->answer_type=old_answer_type;
   if(!ProbePublishedRemove(task->hash_table,&service) || !ProbePublishedRemove(task->hash_table,&catch_flag)) KernelStop;
 }

@@ -1,54 +1,12 @@
-//Compile the complete shared public records with native pointer layouts.
-//These are layout fixtures, not a claim that CI386Task already implements CTask.
-extern class CTask;
-extern class CCPU;
-#ifndef CJob
-extern class CJob;
-#endif
-#ifndef CHeapCtrl
-extern class CHeapCtrl;
-#endif
-#ifndef CDoc
-extern class CDoc;
-#endif
-#ifndef CDrv
-extern class CDrv;
-#endif
-#ifndef CFPU
-extern class CFPU;
-#endif
-#ifndef CDC
-extern class CDC;
-#endif
-#ifndef CExcept
-extern class CExcept;
-#endif
-#ifndef CBpt
-extern class CBpt;
-#endif
-#ifndef CCtrl
-extern class CCtrl;
-#endif
-#ifndef CMenu
-extern class CMenu;
-#endif
-#ifndef CTaskSettings
-extern class CTaskSettings;
-#endif
-#ifndef CMathODE
-extern class CMathODE;
-#endif
-#ifndef CTSS
-extern class CTSS;
-#endif
-#include "/Kernel/WindowScrollTypes.HH"
-#include "/Kernel/JobCtrlTypes.HH"
-#include "/Kernel/TaskTypes.HH"
-#include "/Kernel/CpuTypes.HH"
+//The live native scheduler embeds these complete public records.
 #assert sizeof(CTask)==992
 #assert sizeof(CCPU)==232
 #assert sizeof(CJobCtrl)==24
 #assert sizeof(CWinScroll)==32
+#assert offset(CI386Task.context)==sizeof(CTask)
+#assert offset(CI386Cpu.scheduler)==sizeof(CCPU)
+#assert sizeof(CI386Task.catch_except)==1
+#assert sizeof(CI386Task.except_rbp)==8
 #assert offset(CTaskDying.wake_jiffy)==12
 #assert offset(CTask.addr)==0
 #assert offset(CTask.task_signature)==4
@@ -153,10 +111,18 @@ extern class CTSS;
 #assert offset(CTask.horz_scroll)==916
 #assert offset(CTask.vert_scroll)==948
 #assert offset(CTask.user_data)==980
+_intern 0x15 CTask *ProbePublicFs();
+_intern 0x17 CCPU *ProbePublicGs();
 U0 ProbeTaskDraw(CTask *task,CDC *dc)
 { task->user_data=0x12345678ABCDEF01; }
 U0 ProbeTaskLayout(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
+  CI386Task *live=I386TaskSelf;
+  CTask *view=ProbePublicFs;
+  CCPU *live_cpu=ProbePublicGs;
+  if(view!=live || view->addr!=view || view->task_signature!=TASK_SIGNATURE_VAL ||
+      view->gs!=live_cpu || live_cpu->addr!=live_cpu || live_cpu->num ||
+      view->last_cc!=outer || view->hash_table!=live->hash_table) KernelStop;
   I64 used=heap->used,allocations=heap->allocations,i;
   U32 flags=I386IrqSave;
   U8 *bytes=I386HeapAlloc(heap,sizeof(CTask)+8,TRUE);

@@ -3,7 +3,8 @@
 #include "/Compiler/I386/LexFileRead.HH"
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/TaskCompiler.HH"
-#define I386_FILE_SERVICES_VERSION 13
+//Public task/CPU prefixes replace the compact native record ABI.
+#define I386_FILE_SERVICES_VERSION 14
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;

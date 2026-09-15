@@ -4,7 +4,9 @@
 extern class CAOTHeapGlbl;
 extern class CAOTImportExport;
 extern class CHashClass;
+#ifndef CHashFun
 extern class CHashFun;
+#endif
 #help_index "Hash/System"
 //Hash table types: $LK,"ST_HTT_TYPES",A="FF:::/Kernel/KDefine.HC,ST_HTT_TYPES"$
 #define HTt_EXPORT_SYS_SYM	0
