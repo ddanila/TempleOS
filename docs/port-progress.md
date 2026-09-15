@@ -4398,3 +4398,48 @@ whitespace checks pass. See [i386-modules.md](i386-modules.md) and
 [i386-module-bindings.md](i386-module-bindings.md). Native module generation,
 complete language/public runtime providers, DolDoc, self-hosting and strict
 386SX/DX/physical-machine acceptance remain required.
+
+## Native private forward function calls
+
+The native JIT now compiles calls to private forward declarations and patches them
+when their definitions arrive in the same compiler control. This includes mutual
+recursion and software-F64 arguments/results. Pending records own their call-site
+location and a snapshot of the declared return/argument classes and calling
+convention. Resolution rejects incompatible definitions before publishing code.
+The backend's temporary import records are still reclaimed after generation;
+private pending records remain in the parser's allocation ledger.
+
+Until resolution, a pending call targets the existing compiler-exception helper.
+An early call therefore raises a recoverable compiler exception, while unrelated
+constant evaluation can proceed during later function definitions. Output release
+retires its pending patches, and control unwind frees the remaining records.
+Task publication rejects outstanding fixups. Resolved callees and callers retain
+the existing task-storage lifetime; no compiler service ABI changes are required.
+Cross-control unresolved linking, module imports and definition replacement/unload
+remain separate work.
+
+The statement corpus now has 34 cases per boot/worker phase. New cases cover
+multiple forward calls, mutual recursion, F64, parameter/return mismatch rejection,
+constant array bounds in a later definition and failed source with pending work.
+The 14 submitted-input cases include load-only discard of an unresolved command,
+subsequent definition and execution, early-call recovery and syntax-error unwind.
+The publication corpus now retains a resolved forward call across control
+destruction and checks it from fresh controls after later failed input.
+
+All 42 keyboard command checks and 105 submitted lines pass with exact VGA pixels,
+including later use of a forward-defined function and recovery after rejecting an
+unresolved program. Both x64 compiler/kernel rebuild generations pass. The kernel
+remains 380632 bytes with 8488 bytes spare after the fixed stage prefix.
+CompilerRuntime remains ABI 35/200: 1222824 image bytes and 1222840 retained heap
+bytes. CompilerProbe remains ABI 5/56: 470336 image bytes and 470352 temporary heap
+bytes. ConsoleRuntime and FileRuntime sizes and ABIs are unchanged. Diagnostic
+startup-to-prompt measured 49.653 seconds on QEMU/486 with 8 MiB; the expanded corpus
+is not a vintage-machine performance acceptance result.
+
+The complete standalone verifier passes, including startup source variants, module
+rejection/reclamation and executable instruction audits. All 1041 source hashes
+and eight build-input hashes match the tested files. Python syntax and whitespace
+checks pass. See [i386-native-statements.md](i386-native-statements.md) and
+[i386-program-publication.md](i386-program-publication.md). Full public runtime
+integration, assembler/stream/try providers, DolDoc, native self-hosting and strict
+386SX/DX/physical-machine acceptance remain required.

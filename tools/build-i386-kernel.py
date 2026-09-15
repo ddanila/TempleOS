@@ -813,7 +813,7 @@ def main():
         if frontend_cases != [(phase, case) for phase in (0,1) for case in range(17)]:
             raise ValueError('Retained frontend expression/default ownership or recovery failed')
         statement_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('STATEMENT CASE ')]
-        if statement_cases != [(phase, case) for phase in (0,1) for case in range(26)]:
+        if statement_cases != [(phase, case) for phase in (0,1) for case in range(34)]:
             raise ValueError('Native statement/function compilation or recovery failed')
         command_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('COMMAND CASE ')]
         if command_cases != [(phase, case) for phase in (0,1) for case in range(16)]:
@@ -829,7 +829,7 @@ def main():
         if scalar_live != [1] or log.index('SCALAR LIVE ') < log.index('PROBE RELEASE '):
             raise ValueError('Permanent scalar bootstrap lifetime evidence missing')
         result['public_scalars'] = dict(source='Kernel/Types.HH', lifetime='root symbol table', validated_phases=scalar_live)
-        if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('INPUT RUN CASE ')]) != [[phase,kind] for phase in range(2) for kind in range(11)]:
+        if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('INPUT RUN CASE ')]) != [[phase,kind] for phase in range(2) for kind in range(14)]:
             raise ValueError('Incomplete native input run checks')
         result['compiler_runtime'] = dict(module='CompilerRuntime', version=35, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,

@@ -36,7 +36,7 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.context=&answer; input.answer=&ProbeInputAnswer; input.diagnostic=&ProbeInputDiagnostic;
   sentinel=probe->compiler->code_add(heap,outer,IC_IMM_I64,123,probe->i64_type,0);
   if(!sentinel) KernelStop;
-  for(kind=0;kind<11;kind++) {
+  for(kind=0;kind<14;kind++) {
     KernelLog("INPUT RUN START "); KernelHex(kind); KernelLog("\n");
     bytes=&answer; for(i=0;i<sizeof(CProbeInputAnswer);i++) bytes[i]=0;
     input.flags=0; input.source="6*7;"; caught=FALSE;
@@ -48,6 +48,9 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 5: input.flags=CCF_JUST_LOAD; input.source="1;2;"; break;
       case 6: answer.fail=TRUE; answer.exception='InputCb'; break;
       case 10: answer.fail=TRUE; break;
+      case 11: input.flags=CCF_JUST_LOAD;
+      case 12: input.source="extern I64i InputLater(I64i x);InputLater(1);I64i InputLater(I64i x){return x+41;}"; break;
+      case 13: input.source="extern I64i InputLater();I64i InputCaller(){return InputLater();}Unknown bad;"; break;
       case 7: input.source="I64i InputTemp=1;Unknown bad;"; break;
       case 8: input.flags=CCF_AOT_COMPILE; break;
       case 9: input.source="I64i InputValue=20;I64i *InputPointer=&InputValue;"
@@ -58,7 +61,7 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     catch { if(kind==6 && task->except_ch=='InputCb' || kind==10 && !task->except_ch) { task->catch_except=TRUE; caught=TRUE; } }
     KernelLog("INPUT RUN RESULT "); KernelHex(result); KernelLog(" \n");
     KernelLog("INPUT RUN COUNTS "); KernelHex(input.commands); KernelLog(" "); KernelHex(input.answers); KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value); KernelLog(" "); KernelHex(answer.raw_type); KernelLog("\n");
-    if(result!=(kind<4 || kind==5 || kind==9) || caught!=(kind==6 || kind==10)) KernelStop;
+    if(result!=(kind<4 || kind==5 || kind==9 || kind==11) || caught!=(kind==6 || kind==10)) KernelStop;
     if(kind==0 && (answer.count!=1 || answer.value!=42 || input.answers!=1 || input.commands!=1)) KernelStop;
     if(kind==1 && (answer.value!=0x10000002A || answer.raw_type!=RT_I64)) KernelStop;
     if(kind==2 && (answer.value!=0x400E000000000000 || answer.raw_type!=RT_F64)) KernelStop;
@@ -70,6 +73,18 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(kind==7 && (ProbeSymbolFind(0,"InputTemp",task->hash_table,HTT_GLBL_VAR) ||
         !answer.diagnostics || input.exception!='Compiler')) KernelStop;
     if(kind==8 && (input.commands || input.answers || input.exception)) KernelStop;
+    if(kind==11) {
+      if(answer.count || input.answers || input.commands!=3) KernelStop;
+      input.flags=0; input.source="InputLater(1);";
+      if(!probe->compiler->input(&input) || answer.value!=42 || answer.count!=1) KernelStop;
+      entry=ProbeSymbolFind(0,"InputLater",task->hash_table,HTT_FUN);
+      if(!entry || !ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)) KernelStop;
+    }
+    if(kind==12 || kind==13) {
+      if(input.exception!='Compiler' || answer.count ||
+          ProbeSymbolFind(0,"InputLater",task->hash_table,HTT_FUN) ||
+          ProbeSymbolFind(0,"InputCaller",task->hash_table,HTT_FUN)) KernelStop;
+    }
     if(kind==9) {
       if(answer.value!=42 || answer.count!=1) KernelStop;
       input.source="InputAdd;";

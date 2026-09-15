@@ -53,9 +53,31 @@ U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
 {
   CI386Frontend *state=context;
   CHash *symbol=I386FrontendSingleFind(state,name,state->table,HTT_FUN|HTT_GLBL_VAR);
-  //Private JIT calls use temporary descriptors; there are no published fixup lists.
+  CI386FrontendFixup **link=&state->fixups,*fixup;
+  CHashFun *fun;
+  CMemberLst *member;
+  CI386FrontendCode *code;
+  I64 i;
   if(!symbol || cc->htc.glbl_hash_table!=state->table) I386FrontendUnavailable(state);
-  if(symbol->type&HTT_FUN && (symbol(CHashFun *)->ie_lst || symbol(CHashFun *)->ext_lst)) I386FrontendUnavailable(state);
+  if(!(symbol->type&HTT_FUN)) return;
+  fun=symbol;
+  if(fun->ie_lst || fun->ext_lst || !fun->exe_addr || fun->type&HTF_IMPORT) I386FrontendUnavailable(state);
+  //The shared function parser calls resolve before clearing Cf_EXTERN.
+  while(fixup=*link) {
+    if(fixup->function==fun) {
+      if(fixup->argument_count!=fun->arg_cnt || fixup->result_type!=fun->return_class ||
+          fixup->flags!=(fun->flags&(FSG_FUN_FLAGS1|1<<Ff_DOT_DOT_DOT))) I386FrontendUnavailable(state);
+      member=fun->member_lst_and_root;
+      for(i=0;i<fun->arg_cnt;i++) {
+        if(!member || member->member_class!=fixup->arguments[i]) I386FrontendUnavailable(state);
+        member=member->next;
+      }
+      for(code=state->codes;code && code->code!=fixup->code;code=code->next);
+      if(!code || fixup->offset<0 || fixup->offset>code->bytes-4) I386FrontendUnavailable(state);
+      (code->code+fixup->offset)(U32 *)[0]=(fun->exe_addr+0)(U64)-(code->code+fixup->offset+4)(U64);
+      *link=fixup->next; I386FrontendFree(state,fixup);
+    } else link=&fixup->next;
+  }
 }
 Bool I386FrontendSameHeap(U8 *context,U8 *left,U8 *right)
 {

@@ -12,6 +12,14 @@ class CI386FrontendCode {
   I64 bytes,data_start,raw_type,prior_misc;
   CHashClass *value_class;
 };
+class CI386FrontendFixup {
+  CI386FrontendFixup *next;
+  CHashFun *function;
+  U8 *code;
+  I64 offset,argument_count,flags;
+  CHashClass *result_type;
+  CHashClass *arguments[1];
+};
 class CI386Frontend {
   CI386Heap *heap;
   CCmpCtrl *cc;
@@ -28,6 +36,7 @@ class CI386Frontend {
   U32 binary_ops[TK_TKS_NUM];
   I64 lines;
   CI386FrontendCode *codes;
+  CI386FrontendFixup *fixups;
   U8 *diagnostic_context;
   U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
 };
@@ -35,7 +44,8 @@ class CI386FrontendCall {
   CI386FrontendCall *next,*stack;
   CHashFun fun;
   U8 *target;
-  Bool recursive;
+  CHashFun *original;
+  Bool recursive,unresolved;
 };
 class CI386FrontendBound {
   CI386FrontendCall *calls;
@@ -81,6 +91,13 @@ U0 I386FrontendFree(U8 *context,U8 *allocation)
 {
   CI386Frontend *state=context;
   CI386FrontendCode **link=&state->codes,*record;
+  CI386FrontendFixup **pending=&state->fixups,*fixup;
+  while(fixup=*pending) {
+    if(fixup->code==allocation) {
+      *pending=fixup->next;
+      if(!I386ParserFree(state->heap,state->cc,fixup)) I386FrontendUnavailable(state);
+    } else pending=&fixup->next;
+  }
   while(record=*link) {
     if(record->code==allocation) {
       *link=record->next;
@@ -258,12 +275,16 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
       for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
       call->fun.ie_lst=0; call->fun.ext_lst=0;
       call->target=fun->exe_addr; call->recursive=fun==cc->htc.fun;
+      call->original=fun;
+      call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN);
       call->next=bound->calls; bound->calls=call;
       call->stack=stack; stack=call;
       node->ic_data=&call->fun;
     } else if(node->ic_code==IC_CALL || node->ic_code==IC_CALL_EXTERN ||
         node->ic_code==IC_CALL_IMPORT || node->ic_code==IC_CALL_INDIRECT2) {
-      if(!stack || !stack->recursive && (Bt(&stack->fun.flags,Cf_EXTERN) || !stack->target || stack->fun.type&HTF_IMPORT))
+      if(!stack || !stack->recursive && (!stack->target || stack->fun.type&HTF_IMPORT))
+        I386FrontendUnavailable(state);
+      if(stack->unresolved && !I386ParserRecord(state->cc,stack->original))
         I386FrontendUnavailable(state);
       node->ic_code=IC_CALL_IMPORT;
     } else if(node->ic_code==IC_CALL_END) {
@@ -279,8 +300,10 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,U8 *code,I64 
 {
   CAOTImportExport *record,*next;
   CI386FrontendCall *call,*next_call;
+  CI386FrontendFixup *fixup;
+  CMemberLst *member;
   U8 *target;
-  I64 i,offset;
+  I64 i,j,offset;
   bound->release_owner.heap=state->heap; bound->release_owner.backend.cc=state->cc;
   for(i=0;i<10;i++) {
     record=bound->functions[i].ie_lst; bound->functions[i].ie_lst=0;
@@ -302,6 +325,20 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,U8 *code,I64 
     while(record) {
       next=record->next; offset=record->rip;
       if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4) I386FrontendUnavailable(state);
+      if(call->unresolved) {
+        if(call->fun.arg_cnt<0 || call->fun.arg_cnt>4095) I386FrontendUnavailable(state);
+        fixup=I386FrontendAlloc(state,sizeof(CI386FrontendFixup)+call->fun.arg_cnt*sizeof(CHashClass *),TRUE,FALSE);
+        fixup->function=call->original; fixup->code=code; fixup->offset=offset;
+        fixup->argument_count=call->fun.arg_cnt; fixup->result_type=call->fun.return_class;
+        fixup->flags=call->fun.flags&(FSG_FUN_FLAGS1|1<<Ff_DOT_DOT_DOT);
+        member=call->fun.member_lst_and_root;
+        for(j=0;j<fixup->argument_count;j++) {
+          if(!member) I386FrontendUnavailable(state);
+          fixup->arguments[j]=member->member_class; member=member->next;
+        }
+        fixup->next=state->fixups; state->fixups=fixup;
+        target=&I386FrontendUndefined;
+      }
       (code+offset)(U32 *)[0]=(target+0)(U64)-(code+offset+4)(U64);
       I386NativeBackendFree(&bound->release_owner,record); record=next;
     }

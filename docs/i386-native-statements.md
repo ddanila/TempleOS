@@ -23,12 +23,31 @@ after final allocation; recursive calls target the new function's entry address.
 Existing task symbols are not modified to hold temporary fixups.
 
 Completed private functions may call one another, pass defaults, recurse and use
-function pointers. Unresolved extern/forward calls still fail explicitly. Generated
+function pointers. Calls to private forward declarations now retain deferred rel32
+patches until the definition is compiled, including mutually recursive functions.
+An attempted call before resolution raises the compiler exception; publication
+rejects remaining fixups. Generated
 software-F64 calls borrow the retained runtime's lifetime. All generated functions,
 their callees and referenced private data must remain live during execution.
 ABI 34 adds publication into the current task's scope; see
 [program publication](i386-program-publication.md). General unresolved module
 linking and definition replacement/unload rules remain open.
+
+## Private forward calls
+
+Pending call patches belong to the native compiler control, separately from symbol
+metadata and the backend’s temporary import lists. Each patch names its owning
+output and the private function descriptor. Resolution checks the return class,
+argument classes/count and calling convention before installing the address.
+Releasing an anonymous output also retires its pending patches; control unwind
+reclaims all remaining records. No unresolved patch moves into task storage.
+
+Function definitions may evaluate constants while unrelated calls are pending.
+Their unresolved call sites target the existing compiler-exception helper until
+resolved, so early execution cannot jump to an uninitialized address. Published
+functions retain their callees through the existing task storage lifetime. This
+does not add cross-control unresolved symbols, imports, symbolic stored pointers,
+or automatic dependency tracking for unloadable modules.
 
 ## Failure boundaries
 

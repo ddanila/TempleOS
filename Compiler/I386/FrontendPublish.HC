@@ -27,7 +27,7 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   if(!I386CmpCodeOwner(heap,cc) || !symbols || !(frontend=symbols->context) ||
       frontend->heap!=heap || frontend->cc!=cc || symbols!=&frontend->symbols ||
       !owned->task || !(scope=I386TaskSymbolsValid(owned->task)) || scope->heap!=heap ||
-      cc->error_cnt || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
+      frontend->fixups || cc->error_cnt || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
       owned->code_next!=&owned->code_next) goto done;
   source=frontend->table; destination=scope->table;
   if(cc->htc.glbl_hash_table!=source || cc->htc.hash_table_lst!=source ||

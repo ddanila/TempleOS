@@ -60,7 +60,9 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   for(kind=0;kind<12;kind++) {
     source="I64i DurableData=20;"
       "class DurablePair{I64i a,b;};DurablePair DurablePairData={20,22};"
-      "I64i DurableAdd(I64i x=22){return DurableData+x;}"
+      "extern I64i DurableLater(I64i x);"
+      "I64i DurableAdd(I64i x=22){return DurableLater(x);}"
+      "I64i DurableLater(I64i x){return DurableData+x;}"
       "I64i DurableNext(){static I64i n=40;return ++n;}"
       "I64i DurableFact(I64i n){if(n<2)return 1;return n*DurableFact(n-1);}"
       "I64i DurableDefault(U8i *s=\"xy\"){return s[1];}"
@@ -69,7 +71,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       "U8i *DurableInit=\"abc\";"
       "I64i DurableString(){static U8i *p=\"def\";return ++p[0];}"
       "U8i DurableZero;";
-    if(kind==7) source="extern I64i Future();";
+    if(kind==7) source="extern I64i Future();I64i Caller(){return Future();}";
     cc=probe->files->control_new(source,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/Program.HC");
     if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
     symbols=probe->compiler->frontend(heap,cc,probe->internal_types,probe->disk_include);

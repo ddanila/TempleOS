@@ -4,7 +4,9 @@ CompilerRuntime ABI 34 (196 bytes) adds `publish`. It transfers complete private
 definitions from a retained frontend into the current task's symbol table. The
 input control can then be destroyed while fresh controls compile and execute code
 using those definitions. The transfer includes classes, completed functions,
-globals and string definitions. Unresolved functions/imports remain unsupported.
+globals and string definitions. Same-source forward calls may resolve before
+publication; remaining private call fixups and unresolved functions/imports are
+rejected.
 
 ## Two ownership paths
 

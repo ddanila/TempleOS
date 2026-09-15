@@ -13,7 +13,7 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
   I64 (*entry)();
-  for(kind=0;kind<26;kind++) {
+  for(kind=0;kind<34;kind++) {
     source="I64i Main(){I64i i,sum=0;for(i=0;i<7;i++)sum+=i;return sum*2;}"; expected=42;
     switch(kind) {
       case 1: source="I64i Main(){I64i n=5,r=1;while(n)r*=n--;do{r++;}while(r<123);return r;}"; expected=123; break;
@@ -34,6 +34,14 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 23: source="class Strings{U8i *a;U32i tag;I8i *b;};Strings s={\"ABC\",0x12345678,\"xy\"};I64i Main(){if(sizeof(Strings)!=12 || s.tag!=0x12345678)return -1;return s.a[2]+s.b[1];}"; expected=188; break;
       case 24: source="U8i *p[]={\"ab\",\"cd\"};I64i Main(){if(sizeof(p)!=8)return -1;return p[0][1]+p[1][0];}"; expected=197; break;
       case 25: source="U8i *p=\"temporary\";Unknown bad;I64i Main(){return 42;}"; break;
+      case 26: source="extern I64i Later(I64i n);I64i Main(){return Later(20)+Later(22);}I64i Later(I64i n){return n;}"; break;
+      case 27: source="extern I64i Odd(I64i n);I64i Even(I64i n){if(!n)return 1;return Odd(n-1);}I64i Odd(I64i n){if(!n)return 0;return Even(n-1);}I64i Main(){return Even(12)*40+Odd(9)*2;}"; break;
+      case 28: source="extern F64 Later(F64 n);I64i Main(){I64i x=Later(20.5)+Later(0.5);return x;}F64 Later(F64 n){return n*2.0;}"; break;
+      case 29: source="extern I64i Later(I64i n);I64i Main(){return Later(42);}I64i Later(){return 42;}"; break;
+      case 30: source="extern I64i Later();I64i Main(){return Later();}F64 Later(){return 42.0;}"; break;
+      case 31: source="extern I64i Later(I64i n);I64i Main(){return Later(42);}Unknown bad;"; break;
+      case 32: source="extern I64i Later(I64i n);I64i Main(){return Later(40);}I64i Later(I64i n){I64i a[1+1];a[0]=n;a[1]=2;return a[0]+a[1];}"; break;
+      case 33: source="extern I64i Later(I64i n);I64i Main(){return Later(42);}I64i Later(F64 n){return 42;}"; break;
       case 14: source="I64i Main(){I64i n=5;static I64i x=n;return x;}"; break;
       case 15: source="I64i Inc(I64i x){return x+1;}I64i Main(){I64i (*f)(I64i x);f=&Inc;return f(41);}"; break;
       case 16: source="I64i Count(...){return argc;}I64i Main(){return Count(1,2,3);}"; expected=3; break;
@@ -65,7 +73,7 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       while(cc->token!=TK_EOF) {
         if(++count>32 || !probe->compiler->statement(heap,cc,symbols,CMPF_PRS_SEMICOLON)) KernelStop;
       }
-      if((kind==10 || kind==11 || kind==13 || kind==14 || kind==18 || kind==19 || kind==25)) KernelStop;
+      if((kind==10 || kind==13 || kind==14 || kind==18 || kind==19 || kind==25 || kind==29 || kind==30 || kind==31 || kind==33)) KernelStop;
       main_fun=ProbeSymbolFind(0,"Main",cc->htc.glbl_hash_table,HTT_FUN);
       if(!main_fun || !main_fun->exe_addr || Bt(&main_fun->flags,Cf_EXTERN)) KernelStop;
       entry=main_fun->exe_addr; actual=(*entry)();
@@ -73,7 +81,7 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(actual!=expected) KernelStop;
       accepted=1;
     } catch {
-      if(!((kind==10 || kind==11 || kind==13 || kind==14 || kind==18 || kind==19 || kind==25)) || task->except_ch!='Compiler') {
+      if(!((kind==10 || kind==11 || kind==13 || kind==14 || kind==18 || kind==19 || kind==25 || kind==29 || kind==30 || kind==31 || kind==33)) || task->except_ch!='Compiler') {
         KernelLog("STATEMENT EXCEPTION "); KernelHex(kind); KernelLog(" "); KernelHex(task->except_ch); KernelLog("\n");
         KernelLog("STATEMENT TOKEN "); KernelHex(cc->token); KernelLog(" ERRORS "); KernelHex(cc->error_cnt); KernelLog("\n");
         if(cc->cur_str) { KernelLog("STATEMENT IDENTIFIER "); KernelLog(cc->cur_str); KernelLog("\n"); }

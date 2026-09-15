@@ -986,8 +986,13 @@ supported. Symbolic stored function/import pointers and general executable
 initializers still need integration.
 See `docs/i386-initializer-parser.md`.
 
+Private forward function calls now retain control-owned relocations and resolve
+when their definitions compile, including mutual recursion. Signature checks and
+task-publication validation keep unresolved calls out of retained storage.
+See `docs/i386-native-statements.md`.
+
 Complete assembly/stream/try providers, symbolic stored-pointer relocation,
-unresolved function/global linking, definition replacement/unload
+unresolved cross-control function/global linking, definition replacement/unload
 rules, complete public API/console integration, DolDoc and native
 self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.
