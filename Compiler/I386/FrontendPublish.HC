@@ -64,7 +64,9 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
             Bt(&fun->flags,Cf_EXTERN) || fun->ext_lst || fun->type&HTF_IMPORT) goto done;
         found=FALSE;
         for(code=frontend->codes;code;code=code->next) if(code->code==fun->exe_addr) found=TRUE;
-        if(!found && !binding) goto done;
+        if(Bt(&fun->flags,Ff_INTERNAL)) {
+          if(found || binding || !I386IntrinsicValid(fun)) goto done;
+        } else if(!found && !binding) goto done;
       } else if(entry->type&HTT_CLASS) {
         if(I386HeapSize(heap,entry)!=sizeof(CHashClass)*(PTR_STARS_NUM+1) ||
             Bt(&entry(CHashClass *)->flags,Cf_EXTERN)) goto done;

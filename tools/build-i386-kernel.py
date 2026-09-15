@@ -812,6 +812,10 @@ def main():
         frontend_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('FRONTEND CASE ')]
         if frontend_cases != [(phase, case) for phase in (0,1) for case in range(17)]:
             raise ValueError('Retained frontend expression/default ownership or recovery failed')
+        intrinsic_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('INTRINSIC CASE ')]
+        intrinsic_rejections = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('INTRINSIC REJECT ')]
+        if intrinsic_cases != [(0,34),(1,34)] or intrinsic_rejections != [(phase,case) for phase in (0,1) for case in range(12)]:
+            raise ValueError('Native intrinsic publication or execution failed')
         resident_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('RESIDENT CASE ')]
         if resident_cases != [(phase, case) for phase in (0,1) for case in range(7)]:
             raise ValueError('Native resident declaration binding/publication failed')

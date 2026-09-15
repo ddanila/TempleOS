@@ -66,6 +66,9 @@ U0 ConsoleKeys(I64 unused)
   CI386KeyEvent event;
   U8 line[256];
   I64 length=0,decoded,ch,spaces;
+  //Fresh scheduler entries have IF clear. Devices and task services are ready;
+  //allow timer/keyboard delivery during startup compilation and user execution.
+  SetRFlags(GetRFlags|0x200);
   KernelLog("STARTUP source begin\n");
   if(ConsoleSource("#include \"/Kernel/I386/StartOS.HC\"\n","ConsoleStartup.HC"))
     KernelLog("STARTUP source ok\n");

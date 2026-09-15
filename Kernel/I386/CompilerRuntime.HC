@@ -136,6 +136,7 @@ I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
 
 #include "/Compiler/I386/PublishClasses.HC"
 
+#include "/Compiler/I386/Intrinsic.HC"
 #include "/Compiler/I386/Frontend.HC"
 #include "/Compiler/I386/FrontendResident.HC"
 #include "/Compiler/I386/FrontendStatements.HC"

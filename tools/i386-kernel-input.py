@@ -158,6 +158,7 @@ def run_input(disk,out,startup_check=None):
             if uploads()[-1]!=60: raise ValueError('Scrolling must invalidate the full screen')
             rows=['> ']*60
             commands=[
+                ('GetRFlags&0x200;', ['512']),
                 ('TRUE+FALSE;', ['1']),
                 ('NULL(U8 *);', ['0x0']),
                 ('6*7;', ['42']),
@@ -189,6 +190,10 @@ def run_input(disk,out,startup_check=None):
                 ('T;', ['42']),
                 ("throw('Console',TRUE);", ['Exception']),
                 ('T;', ['42']),
+                ('ToI64(Sqrt(Sqr(6.0))+Abs(-36.0));', ['42']),
+                ('ToBool(0x100000000);', ['1']),
+                ('GetRFlags&0x200;', ['512']),
+                ('SetRFlags(GetRFlags);', []),
                 ('1.5+2.25;', ['3.75']),
                 ('0x8000000000000000(I64);', ['-9223372036854775808']),
                 ('0x8000000000000000;', ['9223372036854775808']),

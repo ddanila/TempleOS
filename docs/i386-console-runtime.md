@@ -23,6 +23,11 @@ It has a 64 KiB stack and borrows the shared kernel heap for symbols, compilatio
 and exception records. Submitted input always takes its heap from the current
 task symbol scope; the configuration heap owns the display buffer. A single task
 owns keyboard consumption and VGA writes after boot display initialization.
+The entry enables maskable interrupts before source startup: fresh scheduler
+contexts start with IF clear, while interactive compilation and execution need
+timer and keyboard delivery. Kernel helpers retain their short critical sections.
+Startup also loads the [public intrinsic declarations](i386-intrinsic-publication.md),
+including software-F64 conversions/math, bit operations and flags access.
 
 ## Source startup
 

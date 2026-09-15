@@ -13,3 +13,5 @@ extern I64 StrCmp(U8 *left,U8 *right);
 extern U0 SysTry(U8 *catch_start,U8 *untry_start);
 extern U0 SysUntry();
 extern U0 throw(I64 ch=0,Bool no_log=FALSE);
+
+#include "/Kernel/I386/Intrinsic.HH"

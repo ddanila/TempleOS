@@ -277,6 +277,7 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
     if(node->ic_code==IC_CALL_START) {
       fun=node->ic_data;
+      if(fun && Bt(&fun->flags,Ff_INTERNAL) && !I386IntrinsicValid(fun)) I386FrontendUnavailable(state);
       call=I386FrontendAlloc(state,sizeof(CI386FrontendCall),TRUE,FALSE);
       destination=&call->fun; source=fun;
       for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];

@@ -4496,3 +4496,47 @@ and eight build-input hashes match the tested files. Python syntax and whitespac
 checks pass. Full public runtime/task integration, assembler/stream providers,
 DolDoc, native self-hosting and strict 386SX/DX/physical-machine acceptance remain
 required.
+
+## Native intrinsic publication and console interrupts
+
+The native frontend now publishes supported `_intern` declarations as owned
+metadata whose `exe_addr` holds an IR opcode. These declarations do not own
+executable storage or borrow a resident export. Signature validation checks
+argument/result types and pointer depth separately: TempleOS's `RT_PTR` shares
+the `RT_I64` value, so raw type alone cannot distinguish an address from a wide
+integer. Invalid opcodes and incompatible import, relocation and function flags
+reject publication before any ownership transfer.
+
+The startup source includes 32 canonical public intrinsic declarations, matching
+the original header signatures and opcode constants. Boot and worker probes each
+validate and publish 34 declarations, including private FS/GS getters, reject 12
+metadata mutations, and run 14 cases from fresh compiler contexts. These cover
+wide numeric/bit operations, software F64, flags, and task/CPU/frame addresses.
+Removing the symbols restores tracked heap, task-reference, compiler-control,
+storage and interrupt state. Public `CTask`/`CCPU` layouts remain unfinished; the
+private getter fixtures do not replace their APIs.
+
+The new keyboard flags check exposed a console integration bug: fresh tasks start
+with IF clear, and the console never enabled interrupts. A focused first-command
+VGA check confirmed this before any exception recovery. Keyboard input could
+still arrive during root idle, hiding disabled interrupts while commands ran.
+The initialized console now enables interrupts before source startup. Both its
+early flags check and the check after syntax/exception recovery pass.
+
+All 52 keyboard commands and 115 submitted lines pass with exact VGA pixels.
+Both x86-64 rebuild/reboot generations pass. The kernel remains 380632 bytes with
+8488 bytes spare after its 4096-byte stage prefix. CompilerRuntime remains ABI
+35/200, with a 1239720-byte image and 1239736 retained heap bytes. CompilerProbe
+remains ABI 5/56, with a 513464-byte image and 513480 temporary heap bytes, fully
+reclaimed after diagnostics. ConsoleRuntime remains ABI 1/20, with a 45528-byte
+image and 45544 retained heap bytes; its framebuffer is still 153600 bytes.
+FileRuntime is unchanged. Diagnostic startup-to-prompt measured 64.631 seconds
+on QEMU/486 with 8 MiB; no strict 386 performance claim follows from this result.
+See [intrinsic publication](i386-intrinsic-publication.md).
+
+The complete standalone verifier passes, including all source-startup variants,
+module rejection/reclamation and executable instruction audits. All 1046 source
+hashes, eight build-input hashes and the disk-image hash match the tested files.
+Python syntax and whitespace checks pass. Full public task/runtime integration,
+remaining language providers, DolDoc, native self-hosting and strict 386SX/DX and
+physical-machine acceptance remain required.

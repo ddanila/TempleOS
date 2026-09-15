@@ -56,6 +56,14 @@ state with one authoritative owner for each resource. Resolve forward class
 identity and completion across compiler contexts before publishing headers that
 depend on those identities.
 
+Native intrinsic publication now distinguishes opcode-bearing declarations from
+resident addresses and ordinary generated functions. The startup header exposes
+32 original public intrinsic signatures; boot and worker probes cover 34 including
+private FS/GS getters. Pointer depth is checked separately from raw numeric type,
+because `RT_PTR` and `RT_I64` share a value. This advances compiler binding, while
+complete public task/CPU layouts remain required. See
+[intrinsic publication](docs/i386-intrinsic-publication.md).
+
 Hardware acceptance runs alongside all four priorities: establish named 386SX/DX
 profiles without a coprocessor, verify the legacy BIOS/ATA path and planar VGA,
 audit generated and handwritten executable code, and measure input responsiveness
