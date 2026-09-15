@@ -36,6 +36,8 @@ extern Bool I386MemPoolInit(CI386PublicPool *pool,U8 *arena,I64 size);
 extern CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages);
 extern Bool I386MemPageFree(CI386PublicPool *pool,CMemBlk *block);
 extern Bool I386MemHeapInit(CHeapCtrl *hc,CI386PublicPool *pool,CTask *task=0);
+//Release cached pages only when no live allocation remains; preserve the control.
+extern Bool I386MemHeapTrim(CHeapCtrl *hc);
 extern Bool I386MemHeapDestroy(CHeapCtrl *hc);
 extern U8 *I386MemAlloc(CHeapCtrl *hc,I64 size);
 extern Bool I386MemFree(U8 *ptr);

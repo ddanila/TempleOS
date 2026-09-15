@@ -186,8 +186,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       for(i=0;i<count;i++)
         if(!ProbePublishedRemove(task->hash_table,roots[i]) || !I386HashDel(heap,roots[i])) KernelStop;
       storage=scope->storage; scope->storage=storage->next;
-      for(i=0;i<storage->count;i++) if(!I386HeapFree(heap,storage->allocations[i])) KernelStop;
-      if(!I386HeapFree(heap,storage)) KernelStop;
+      if(!I386TaskStorageRelease(heap,storage)) KernelStop;
     }
     if(task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs || task->except_top ||
         scope->storage!=old_storage || heap->used!=used || heap->allocations!=allocations ||

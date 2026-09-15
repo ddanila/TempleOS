@@ -4,5 +4,8 @@
 //Temporary parser storage; exact requested size, independently tracked until
 //explicit release or control deletion. Do not publish beyond the control lifetime.
 extern U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE);
+//Final executable buffers retain a public code-heap owner when a task is bound.
+extern U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes);
+extern I64 I386ParserSize(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation);
 extern Bool I386ParserFree(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation);
 #endif

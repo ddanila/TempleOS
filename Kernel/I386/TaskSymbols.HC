@@ -1,6 +1,7 @@
 #include "/Kernel/I386/TaskSymbols.HH"
 #include "/Compiler/I386/SymbolDelete.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/TaskStorage.HC"
 CI386TaskSymbols *I386TaskSymbolsValid(CI386Task *task)
 {
   CI386TaskSymbols *state;
@@ -62,6 +63,10 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
   Bool result=FALSE;
   if(!state || state->children || task->lifetime_refs ||
       (task->owner && !task->finished && task->owner->current!=task && task->owner->current!=task->owner->root)) goto symbols_destroy_done;
+  //A locked public code heap defers the whole symbol teardown, not just the
+  //final payload release after its names have already disappeared.
+  for(storage=state->storage;storage;storage=storage->next)
+    if(!I386TaskStorageValid(state->heap,storage)) goto symbols_destroy_done;
   parent=state->parent; table=state->table;
   if(parent) {
     if(I386TaskSymbolsValid(parent->task)!=parent || !parent->children || !parent->task->lifetime_refs ||
@@ -77,9 +82,7 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
   }
   while(storage=state->storage) {
     state->storage=storage->next;
-    for(i=0;i<storage->count;i++)
-      if(!I386HeapFree(state->heap,storage->allocations[i])) goto symbols_destroy_done;
-    if(!I386HeapFree(state->heap,storage)) goto symbols_destroy_done;
+    if(!I386TaskStorageRelease(state->heap,storage)) goto symbols_destroy_done;
   }
   if(!I386HeapFree(state->heap,state)) goto symbols_destroy_done;
   if(parent) { parent->children--; parent->task->lifetime_refs--; }

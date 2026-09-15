@@ -1,6 +1,7 @@
 #include "/Kernel/I386/Memory.HC"
 #include "/Kernel/I386/MemoryBacking.HC"
 #include "/Kernel/I386/TaskHeaps.HC"
+#include "/Kernel/I386/TaskStorage.HC"
 CI386BackingPool task_pool;
 CI386Heap task_control_storage,task_backing_storage;
 CI386OwnedTask *heap_workers[2];
@@ -15,6 +16,58 @@ extern Bool PublicHeapCompilerCleanup(CI386Task *task);
 extern Bool PublicHeapFileDestroy(CI386Task *task);
 extern Bool PublicHeapSymbolDestroy(CI386Task *task);
 extern Bool PublicHeapCloneFailure(CI386Task *source,CI386Task *target,CI386Heap *heap);
+Bool CodeProviderTest(CI386TaskHeaps *state)
+{
+  CHeapCtrl *hc=&state->control;
+  CI386TaskHeaps invalid;
+  CI386TaskStorage *retained;
+  U8 *p,*q;
+  I64 mode,i,used,pages;
+  U32 flags=GetRFlags,expected;
+  invalid.task=0;
+  if(!state->code_allocate || !state->code_release || !state->code_capacity) return FALSE;
+  for(mode=0;mode<2;mode++) {
+    expected=(flags&~0x200)|(mode<<9); SetRFlags(expected);
+    p=(*state->code_allocate)(state,64); q=(*state->code_allocate)(state,17);
+    if(!p || !q || (*state->code_capacity)(state,p)<64 ||
+        (p-offset(CMemUsed.start))(CMemUsed *)->hc!=hc) return FALSE;
+    p[0]=37; p[63]=83; used=hc->used_u8s; pages=hc->alloced_u8s;
+    if(I386MemHeapTrim(hc) || hc->used_u8s!=used || hc->alloced_u8s!=pages ||
+        (*state->code_capacity)(&invalid,p)!=-1 || (*state->code_release)(&invalid,p)) return FALSE;
+    hc->locked_flags=1;
+    if((*state->code_allocate)(state,8) || (*state->code_release)(state,q) ||
+        I386MemHeapTrim(hc) || hc->used_u8s!=used) return FALSE;
+    hc->locked_flags=0;
+    if(!(*state->code_release)(state,q) || hc->alloced_u8s!=pages || p[0]!=37 || p[63]!=83 ||
+        !(*state->code_release)(state,p) || hc->used_u8s || hc->alloced_u8s ||
+        hc->hc_signature!=HEAP_CTRL_SIGNATURE_VAL || hc->mem_task!=state->task ||
+        hc->malloc_free_lst || hc->last_mergable || hc->next_mem_blk!=&hc->next_mem_blk ||
+        hc->last_mem_blk!=&hc->next_mem_blk) return FALSE;
+    for(i=0;i<MEM_HEAP_HASH_SIZE/sizeof(U8 *);i++) if(hc->heap_hash[i]) return FALSE;
+    task_pool.locked_flags=1;
+    if(I386MemHeapTrim(hc)) return FALSE;
+    task_pool.locked_flags=0;
+    if(!I386MemHeapTrim(hc) || I386MemHeapTrim(0) ||
+        I386MemBackingTrim(&task_pool)<=0 || task_backing_storage.used || task_pool.used_u8s ||
+        (GetRFlags&0x200)!=(expected&0x200)) return FALSE;
+    //Reuse the same control after its cache was returned, including a large buffer.
+    p=(*state->code_allocate)(state,4096);
+    if(!p) return FALSE;
+    retained=I386HeapAlloc(&task_control_storage,sizeof(CI386TaskStorage),TRUE);
+    if(!retained) return FALSE;
+    retained->count=1; retained->allocations[0].allocation=p; retained->allocations[0].owner=state;
+    hc->locked_flags=1;
+    if(I386TaskStorageRelease(&task_control_storage,retained) ||
+        I386HeapSize(&task_control_storage,retained)!=sizeof(CI386TaskStorage) ||
+        (*state->code_capacity)(state,p)<4096) return FALSE;
+    hc->locked_flags=0; task_pool.locked_flags=1;
+    if((*state->code_release)(state,p) || I386TaskStorageRelease(&task_control_storage,retained)) return FALSE;
+    task_pool.locked_flags=0;
+    if(!I386TaskStorageRelease(&task_control_storage,retained) ||
+        I386MemBackingTrim(&task_pool)<=0 || task_backing_storage.used) return FALSE;
+  }
+  SetRFlags(flags); return TRUE;
+}
 I64 PublicTaskHeapTest()
 {
   CI386Heap heap;
@@ -30,6 +83,7 @@ I64 PublicTaskHeapTest()
       !I386TaskHeapsInit(root,&task_control_storage,&task_pool) ||
       I386TaskHeapsInit(root,&task_control_storage,&task_pool)) return 101;
   state=root->heap_state;
+  if(!CodeProviderTest(state)) return 120;
   task_pool.reclaim=&PublicHeapReclaim;
   if(I386MemPoolEmpty(&task_pool) || I386MemBackingDestroy(&task_pool) ||
       !I386MemBackingValid(&task_pool)) return 119;

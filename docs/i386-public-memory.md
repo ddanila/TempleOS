@@ -172,7 +172,7 @@ fixture while IF preservation is checked; the existing task suite covers deliver
 Private task extensions now include heap state and callbacks. Dependent runtime
 versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
 6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
-The boot kernel now loads `MemoryRuntime` version 2 after file-service setup and
+The boot kernel now loads `MemoryRuntime` version 3 after file-service setup and
 before native compiler diagnostics or worker creation. Its 16-byte candidate
 table contains only binding and probe entry points. Module `Main` publishes no
 task state and reserves no backing memory; the kernel validates the target,
@@ -234,10 +234,36 @@ Measured outcomes and remaining integration work are in
 [port progress](port-progress.md).
 
 The diagnostic worker retains a private 256 KiB compiler arena until its probes
-finish; its task teardown releases that arena. The former 128 KiB arena could
+finish. The initial integration did not actually exit and reap that worker;
+the current kernel exits and reaps it before console creation, checking that
+at least the arena and stack bytes return to the bootstrap heap. The former 128 KiB arena could
 retain the complete public headers but exhausted while compiling the exception
 probe. Sharing the bootstrap compiler heap instead passed the source cases but
 made the diagnostic startup substantially slower. Compiler allocation migration
 therefore remains a separate measured change. The console continues to use the
-bootstrap heap for compiler ownership and its distinct public heap for user
-allocations. Neither arrangement establishes the final 8 MiB workload budget.
+bootstrap heap for compiler metadata and working storage, and its distinct
+public heap for generated executable buffers and user allocations. Neither arrangement establishes the final 8 MiB workload budget.
+
+
+## Generated code ownership
+
+Final native executable buffers now request storage from the current task's
+public code heap. Parser tracking records carry the allocator owner and logical
+requested length; publication transfers both the buffer and its owner into task
+storage. This preserves the distinction between rounded public capacity and
+exact compiler output length. Unbound bootstrap compiler contexts continue to
+use their original arena.
+
+The retained memory service owns nonthrowing allocation, capacity and release
+callbacks. They survive temporary diagnostic modules and compiler controls.
+Release checks heap and pool locks before changing storage. An empty code heap
+can return cached pages while retaining its live control and task identity; the
+backing provider runs only after page-header reads finish. Task symbol teardown
+preflights all retained storage before deleting names, so a locked code heap can
+defer reap without losing the callable definition.
+
+Compiler metadata, intermediate representations, symbol records and global data
+still use bootstrap storage. This slice does not implement every use of the
+frontend's code-heap flag or establish the final memory budget. The native boot checks child publication, execution after compiler cleanup,
+locked-heap reap deferral, successful retry and exact bootstrap reclamation in
+both root and worker phases. See the progress log for full-suite status.

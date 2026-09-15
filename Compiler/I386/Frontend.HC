@@ -403,7 +403,8 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
     if(metadata->type!=IET_I386_DATA) I386FrontendUnavailable(state);
   result=I386FrontendAlloc(state,sizeof(CI386FrontendCode),TRUE,FALSE);
-  result->code=I386FrontendAlloc(state,out->count,FALSE,TRUE); result->bytes=out->count;
+  result->code=I386ParserCodeAlloc(state->heap,cc,out->count); result->bytes=out->count;
+  if(!result->code) I386FrontendUnavailable(state);
   result->value_class=type; result->raw_type=type->raw_type; result->prior_misc=prior_misc;
   result->data_start=out->count;
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next) {

@@ -3,9 +3,10 @@
 %define BOOT_SECTORS 128
 %endif
 %ifdef COMPILER_GRAPH_TEST
-;Compiler graph fixture uses its first arena at 0x70000.
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 768
-%error Compiler graph test stage must fit below physical 0x70000
+%define BOOT_SECTORS_LIMIT 800
+;Compiler graph fixture uses its first arena at 0x74000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 800
+%error Compiler graph test stage must fit below physical 0x74000
 %endif
 %elifdef LEX_MACRO_TEST
 ;Definition/token fixtures use their first arena at physical 0x60000.

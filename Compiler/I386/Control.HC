@@ -12,6 +12,8 @@ class CI386CodeAllocation {
 class CI386ParserAllocation {
   CI386ParserAllocation *next,*last;
   U8 *allocation;
+  CI386TaskHeaps *owner;
+  U32 requested;
 };
 class CI386CmpCtrl {
   CCmpCtrl control;
@@ -92,6 +94,14 @@ class CI386CmpRelease {
   CCmpCtrl *control;
   U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined);
 };
+Bool I386ParserPayloadRelease(CI386CmpRelease *state,CI386ParserAllocation *record)
+{
+  if(record->owner) {
+    if(!record->owner->code_release) return FALSE;
+    return (*record->owner->code_release)(record->owner,record->allocation);
+  }
+  return I386HeapFree(state->heap,record->allocation);
+}
 U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
 {
   CI386CmpRelease *state=context;
@@ -119,16 +129,17 @@ U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
     //Graph and lexer cleanup has finished. Reclaim detached parser temporaries.
     while((record=owned->parser_next)!=&owned->parser_next) {
       record->last->next=record->next; record->next->last=record->last;
-      if(record->allocation && !I386HeapFree(state->heap,record->allocation)) state->ok=FALSE;
+      if(record->allocation && !I386ParserPayloadRelease(state,record)) state->ok=FALSE;
       if(!I386HeapFree(state->heap,record)) state->ok=FALSE;
     }
   } else if(allocation) {
     //A payload release may reach tracked storage before final control cleanup.
     for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
       if(record->allocation==allocation) {
+        if(!I386ParserPayloadRelease(state,record)) state->ok=FALSE;
         record->last->next=record->next; record->next->last=record->last;
         if(!I386HeapFree(state->heap,record)) state->ok=FALSE;
-        break;
+        I386IrqRestore(irq); return;
       }
   }
   if(allocation && !I386HeapFree(state->heap,allocation)) state->ok=FALSE;

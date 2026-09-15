@@ -10,6 +10,41 @@ CI386TaskHeaps *I386TaskHeapsValid(CI386Task *task)
       I386HeapSize(state->storage,state)!=sizeof(CI386TaskHeaps)) return 0;
   return state;
 }
+U8 *I386TaskCodeAllocate(CI386TaskHeaps *owner,I64 bytes)
+{
+  U32 flags=I386IrqSave;
+  U8 *result=0;
+  if(owner && I386TaskHeapsValid(owner->task)==owner && !owner->control.bp->locked_flags)
+    result=I386MemAlloc(&owner->control,bytes);
+  I386IrqRestore(flags); return result;
+}
+I64 I386TaskCodeCapacity(CI386TaskHeaps *owner,U8 *allocation)
+{
+  CMemUsed *used;
+  U32 flags=I386IrqSave;
+  I64 result=-1;
+  if(allocation && owner && I386TaskHeapsValid(owner->task)==owner) {
+    used=allocation-offset(CMemUsed.start);
+    if(used->hc==&owner->control) result=I386MemSize(allocation);
+  }
+  I386IrqRestore(flags); return result;
+}
+Bool I386TaskCodeRelease(CI386TaskHeaps *owner,U8 *allocation)
+{
+  U32 flags=I386IrqSave;
+  CI386PublicPool *pool;
+  Bool result=FALSE;
+  if(I386TaskCodeCapacity(owner,allocation)<0) goto done;
+  pool=owner->control.bp;
+  if(owner->control.locked_flags || pool->locked_flags) goto done;
+  if(!I386MemFree(allocation)) goto done;
+  //All object/page-header reads have finished before empty arenas can disappear.
+  if(!owner->control.used_u8s && !I386MemHeapTrim(&owner->control)) goto done;
+  if(pool->reclaim) (*pool->reclaim)(pool);
+  result=TRUE;
+done:
+  I386IrqRestore(flags); return result;
+}
 Bool I386TaskHeapsAttach(CI386Task *task,CI386Heap *storage,CI386PublicPool *pool,
   CI386TaskHeaps *parent)
 {//Caller masks interrupts and validates the exclusive target and parent.
@@ -20,6 +55,8 @@ Bool I386TaskHeapsAttach(CI386Task *task,CI386Heap *storage,CI386PublicPool *poo
   }
   state->task=task; state->parent=parent; state->storage=storage;
   state->signature=I386_TASK_HEAPS_MAGIC;
+  state->code_allocate=&I386TaskCodeAllocate;
+  state->code_release=&I386TaskCodeRelease; state->code_capacity=&I386TaskCodeCapacity;
   if(parent) { parent->children++; parent->task->lifetime_refs++; }
   task->code_heap=task->data_heap=&state->control; task->heap_state=state;
   task->heap_clone=&I386TaskHeapsClone; task->heap_destroy=&I386TaskHeapsDestroy;

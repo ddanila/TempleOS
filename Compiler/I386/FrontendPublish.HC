@@ -3,7 +3,10 @@ U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storag
 {
   if(!allocation) { transfer->ok=FALSE; return; }
   I386ClassTransferVisit(transfer,allocation);
-  if(transfer->ok) storage->allocations[storage->count++]=allocation;
+  if(transfer->ok) {
+    storage->allocations[storage->count].allocation=allocation;
+    storage->allocations[storage->count++].owner=I386ParserRecord(transfer->owned,allocation)->owner;
+  }
 }
 Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols)
 {
@@ -63,9 +66,9 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   for(binding=frontend->residents;binding;binding=binding->next)
     if(!I386FrontendResidentValid(frontend,binding)) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) capacity++;
-  if(capacity<1 || capacity>0x1FFFFFFD) goto done;
+  if(capacity<1 || capacity>0xFFFFFFD) goto done;
   transfer.records=I386HeapAlloc(heap,capacity*sizeof(CI386ParserAllocation *),FALSE);
-  storage=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+(capacity-1)*sizeof(U8 *),TRUE);
+  storage=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+(capacity-1)*sizeof(CI386StoredAllocation),TRUE);
   if(!transfer.records || !storage) goto done;
   transfer.owned=owned; transfer.source=source; transfer.count=0;
   transfer.capacity=capacity; transfer.ok=TRUE;
@@ -118,15 +121,18 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   //remaining registered output, not only named function entry points.
   for(code=frontend->codes;code;code=code->next) {
     if(!I386ParserRecord(owned,code) || I386HeapSize(heap,code)!=sizeof(CI386FrontendCode) ||
-        code->bytes<1 || I386HeapSize(heap,code->code)!=code->bytes) goto done;
+        code->bytes<1 || I386ParserSize(heap,cc,code->code)!=code->bytes) goto done;
     I386ProgramStorageVisit(&transfer,storage,code->code);
     if(!transfer.ok) goto done;
   }
   if(storage->count) {
-    retained=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+(storage->count-1)*sizeof(U8 *),FALSE);
+    retained=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+(storage->count-1)*sizeof(CI386StoredAllocation),FALSE);
     if(!retained) goto done;
     retained->next=0; retained->count=storage->count;
-    for(i=0;i<storage->count;i++) retained->allocations[i]=storage->allocations[i];
+    for(i=0;i<storage->count;i++) {
+      retained->allocations[i].allocation=storage->allocations[i].allocation;
+      retained->allocations[i].owner=storage->allocations[i].owner;
+    }
     I386HeapFree(heap,storage); storage=retained;
   }
   //Validation and allocation are finished. No fallible work remains in the move.

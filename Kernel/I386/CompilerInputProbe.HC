@@ -138,8 +138,7 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     //The pure literal case also retains its returned pool until task destruction.
     while(scope->storage!=old_storage) {
       storage=scope->storage; scope->storage=storage->next;
-      for(i=0;i<storage->count;i++) if(!I386HeapFree(heap,storage->allocations[i])) KernelStop;
-      if(!I386HeapFree(heap,storage)) KernelStop;
+      if(!I386TaskStorageRelease(heap,storage)) KernelStop;
     }
     if(task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||
         task->except_top || outer->coc.coc_head.next!=sentinel || sentinel->ic_data!=123 ||

@@ -369,3 +369,26 @@ Bool I386MemHeapDestroy(CHeapCtrl *hc)
   hc->hc_signature=0; hc->locked_flags=0;
   I386IrqRestore(flags); return TRUE;
 }
+
+Bool I386MemHeapTrim(CHeapCtrl *hc)
+{//Empty heaps can return all cached pages without invalidating their public owner.
+  U32 flags=I386IrqSave;
+  CMemBlk *block,*next;
+  I64 i;
+  if(!hc || hc->hc_signature!=HEAP_CTRL_SIGNATURE_VAL || hc->locked_flags ||
+      hc->used_u8s || !I386MemPoolValid(hc->bp) || hc->bp->locked_flags) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  hc->locked_flags=1;
+  while((block=hc->next_mem_blk)!=&hc->next_mem_blk) {
+    next=block->next;
+    if(!I386MemPageFree(hc->bp,block)) {
+      hc->locked_flags=0; I386IrqRestore(flags); return FALSE;
+    }
+    hc->alloced_u8s-=(block->pags+0)(U64)*512;
+    hc->next_mem_blk=next; next->last=&hc->next_mem_blk;
+  }
+  hc->last_mergable=0; hc->malloc_free_lst=0;
+  for(i=0;i<MEM_HEAP_HASH_SIZE/sizeof(U8 *);i++) hc->heap_hash[i]=0;
+  hc->locked_flags=0; I386IrqRestore(flags); return TRUE;
+}

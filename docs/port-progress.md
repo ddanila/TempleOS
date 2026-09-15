@@ -5050,7 +5050,8 @@ complete memory records, allocation persistence across failed compilation,
 alignment, zeroing, ownership, size queries, cleanup and caught `OutMem` with
 preserved interrupt state. The retained service also checks two-region growth and
 exact bootstrap reclamation. The worker now has a temporary 256 KiB private
-compiler arena, released at teardown. Its previous 128 KiB arena held the larger
+compiler arena. Correction: this revision did not exit and reap the worker
+after its probes, so the arena remained allocated. Its previous 128 KiB arena held the larger
 headers but exhausted while compiling the exception function. Sharing bootstrap
 compiler storage passed the source cases but produced a roughly 436-second
 diagnostic startup; compiler allocation migration remains a separate measured
@@ -5085,3 +5086,59 @@ results; eight native build inputs, four memory-layout inputs, three task-layout
 inputs and the native disk hash also match. Python syntax and staged whitespace
 checks pass. Full public service semantics, compiler ownership migration, DolDoc,
 self-hosting and physical-machine acceptance remain unfinished.
+
+
+## Generated executable storage on public task heaps
+
+Final native compiler output now uses the current task's public code heap.
+Parser records retain both allocator provenance and logical byte length;
+publication moves those into task storage. Compiler metadata and working buffers
+remain on bootstrap arenas. Empty code heaps can return cached pages without
+destroying their controls, and the retained provider releases idle backing only
+after header access finishes. Symbol teardown preflights retained storage before
+deleting definitions, allowing locked heap or pool state to defer cleanup.
+
+Private ownership layouts change across the compiler, file and console modules.
+The matching versions are CompilerRuntime 41, FileRuntime 19, CompilerProbe 11,
+ConsoleRuntime 7 and MemoryRuntime 3; their public service-table sizes are unchanged.
+
+A native child compiles and publishes a function, executes it after compiler
+control cleanup, yields and exits. Its parent confirms that a locked code heap
+preserves the symbol and callable code during failed reap, then unlocks and
+reaps it with exact bootstrap allocation totals and parent references restored.
+Both root and worker phases pass in the integrated QEMU/486 boot. Source probes
+also verify that a compiled function belongs to the public code heap.
+
+The diagnostic worker now actually returns and is reaped before console creation,
+recovering 271520 bytes, including its 256 KiB compiler arena and 8 KiB stack.
+Earlier documentation incorrectly implied that this happened after its probes;
+the old worker instead continued sleeping indefinitely. The kernel now checks the
+release explicitly. This remains diagnostic workspace, not the final compiler
+memory policy.
+
+The isolated task-symbol fixture now allows 400 KiB of loaded code, ending at
+0x74000; its first 64 KiB arena starts there and ends at 0x84000, below the
+0x90000 stack. The shared BIOS loader keeps its 384 KiB kernel default and allows
+the fixture's explicit override. The OS hardware/RAM target does not change.
+
+Two x64 rebuild/reboot generations, both public-layout checks (43 memory
+fields and 105 task fields), the heap/task-heap/task-symbol fixtures and the
+complete integrated native suite pass. The console passes 108 commands across 171 submitted lines with
+all VGA pixels matched at each checkpoint. Diagnostic startup takes 169.894
+seconds on the 8 MiB QEMU/486 profile. Custom, syntax-error and missing-source
+startup cases pass, as do all 17 module rejection/reclamation cases.
+Full public services, the 8 MiB DolDoc workflow, native self-hosting and strict
+386/no-387/physical-machine acceptance remain open.
+
+The native kernel is 388872 bytes plus the 4096-byte early stage, leaving only
+248 bytes in its fixed bootstrap reservation. Further resident kernel growth
+needs an explicit layout or module decision. MemoryRuntime occupies 101216 image
+bytes and 101232 retained heap bytes; final public headers retain 59528 bytes.
+These measurements do not establish the full interactive memory budget.
+
+
+All 1074 OS source hashes match the final native, two-generation rebuild and
+public-layout results. Eight native build inputs, four memory-layout inputs,
+three task-layout inputs and the native disk hash also match. Python syntax and
+whitespace checks pass. This closes the generated-executable ownership slice,
+not the full port.

@@ -92,9 +92,11 @@ core using real `CBlkPool`/`CHeapCtrl` state. Task heap ownership now has native
 lifecycle coverage: child construction, parent retention, rollback and teardown
 after compiler/file/symbol cleanup. A retained memory service now binds the boot
 root and inherited worker heaps and publishes the throwing allocation interface
-through native public headers. Compiler allocation ownership and the remaining
-public memory services are the next public-contract work. Registered backing
-regions and a demand-growth provider now have native coverage, including return of wholly
+through native public headers. Final generated executable buffers now carry
+public task-heap ownership through compiler cleanup, publication and task reap;
+compiler metadata and working buffers still use bootstrap arenas. Complete their
+allocation policy and the remaining public memory services as the next
+public-contract work. Registered backing regions and a demand-growth provider now have native coverage, including return of wholly
 unused regions to the bootstrap allocator. Task teardown now invokes the retained
 provider after releasing heap controls; public free also notifies the provider
 after finishing its page-header reads. See
@@ -159,9 +161,10 @@ Use the complete shared `CHeapCtrl` and `CBlkPool` records; the bootstrap arena 
    fixed public arena beside a separate compiler arena that strands free memory.
    Migrate compiler, generated-code and task allocations incrementally, preserving
    their required lifetimes. The temporary diagnostic worker currently uses a
-   256 KiB private compiler arena, reclaimed at worker teardown; this is test
-   workspace, not the final compiler allocation policy. Measure fragmentation
-   and latency before changing that policy. Account for fragmentation and cached
+   256 KiB private compiler arena. Explicit worker exit and reap must release
+   it before the console starts; verify the returned bytes rather than assuming
+   teardown occurs. This is test workspace, not the final compiler allocation
+   policy. Measure fragmentation and latency before changing that policy. Account for fragmentation and cached
    pages as well as live payload; complete pool accounting and reclamation before claiming the
    8 MiB interactive target.
 4. **Validate the integration boundary.** Version runtime modules when task

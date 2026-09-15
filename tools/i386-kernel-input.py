@@ -200,6 +200,7 @@ def run_input(disk,out,startup_check=None):
                 ('Free(heap_p);Free(0);', []),
                 ('I64 MemFail(){I64 ok=0;try{MAlloc(0x800000);}catch{ok=Fs->except_ch==\'OutMem\'&&(GetRFlags&512)!=0;Fs->catch_except=TRUE;}return ok;}', []),
                 ('MemFail;', ['1']),
+                ('MHeapCtrl(&MemFail)==Fs->code_heap&&MSize(&MemFail)>0;', ['1']),
                 ('MAlloc(0x100000000);', ['Out of memory']),
                 ('GetRFlags&512;', ['512']),
                 ('MAlloc(-1);', ['Out of memory']),

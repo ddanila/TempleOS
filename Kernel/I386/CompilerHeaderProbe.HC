@@ -97,8 +97,9 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     "_intern 0x6C I64 MemProbeFlags();";
   if(!ProbePublicMemoryInput(probe,&input,&answer,9)) KernelStop;
   input.source="I64 MemFailure(){I64 ok=0,saved=MemProbeFlags&512;try{MAlloc(0x800000);}"
-    "catch{ok=Fs->except_ch=='OutMem' && (MemProbeFlags&512)==saved;Fs->catch_except=1;}return ok;}";
-  if(!ProbePublicMemoryInput(probe,&input,&answer,10)) KernelStop;
+    "catch{ok=Fs->except_ch=='OutMem' && (MemProbeFlags&512)==saved;Fs->catch_except=1;}return ok;}"
+    "MHeapCtrl(&MemFailure)==Fs->code_heap && MSize(&MemFailure)>0;";
+  if(!ProbePublicMemoryInput(probe,&input,&answer,10) || answer.value!=1) KernelStop;
   input.source="MemFailure;";
   if(!ProbePublicMemoryInput(probe,&input,&answer,11) || answer.value!=1) KernelStop;
   KernelLog("PUBLIC MEMORY CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(12); KernelLog("\n");
@@ -136,8 +137,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     }
   while(scope->storage!=old_storage) {
     storage=scope->storage; scope->storage=storage->next;
-    for(i=0;i<storage->count;i++) if(!I386HeapFree(heap,storage->allocations[i])) KernelStop;
-    if(!I386HeapFree(heap,storage)) KernelStop;
+    if(!I386TaskStorageRelease(heap,storage)) KernelStop;
   }
   if(!I386HeapFree(heap,heads) || task->last_cc!=outer || task->active_controls!=1 ||
       task->lifetime_refs!=refs || task->except_top || heap->used!=used ||

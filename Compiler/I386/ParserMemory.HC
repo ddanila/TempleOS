@@ -36,3 +36,49 @@ Bool I386ParserFree(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   I386CmpReleaseAllocation(&release,allocation);
   I386IrqRestore(irq); return release.ok;
 }
+
+U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes)
+{
+  CI386CmpCtrl *owned=cc;
+  CI386ParserAllocation *record;
+  CI386TaskHeaps *owner;
+  U8 *allocation=0;
+  U32 irq=I386IrqSave;
+  if(!I386CmpCodeOwner(heap,cc) || bytes<1 || bytes>0x7FFFFFFF) goto done;
+  if(!owned->task || !owned->task->heap_state) {
+    I386IrqRestore(irq); return I386ParserAlloc(heap,cc,bytes,FALSE);
+  }
+  owner=owned->task->heap_state;
+  if(owner->task!=owned->task || owner->signature!=I386_TASK_HEAPS_MAGIC ||
+      owned->task->code_heap!=&owner->control || !owner->code_allocate ||
+      !owner->code_release || !owner->code_capacity) goto done;
+  record=I386HeapAlloc(heap,sizeof(CI386ParserAllocation),TRUE);
+  if(!record) goto exhausted;
+  allocation=(*owner->code_allocate)(owner,bytes);
+  if(!allocation) { I386HeapFree(heap,record); goto exhausted; }
+  record->owner=owner; record->requested=bytes; record->allocation=allocation;
+  record->next=&owned->parser_next; record->last=owned->parser_last;
+  record->last->next=record; owned->parser_last=record;
+done:
+  I386IrqRestore(irq); return allocation;
+exhausted:
+  I386IrqRestore(irq); throw('OutMem',TRUE); return 0;
+}
+I64 I386ParserSize(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
+{//Publication compares logical output bytes, not rounded public allocation capacity.
+  CI386CmpCtrl *owned=cc;
+  CI386ParserAllocation *record;
+  I64 size=-1;
+  U32 irq=I386IrqSave;
+  if(!I386CmpControlValid(heap,cc)) goto done;
+  for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
+    if(record->allocation==allocation) {
+      if(!record->owner) size=I386HeapSize(heap,allocation);
+      else if(record->owner->code_capacity && record->requested &&
+          (*record->owner->code_capacity)(record->owner,allocation)>=record->requested)
+        size=record->requested;
+      break;
+    }
+done:
+  I386IrqRestore(irq); return size;
+}

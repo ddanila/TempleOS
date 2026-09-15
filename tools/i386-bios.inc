@@ -5,8 +5,12 @@
 %ifndef BOOT_VOLUME_SECTOR
 %define BOOT_VOLUME_SECTOR 0
 %endif
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 768
-%error Boot stage must fit below physical 0x70000
+%ifndef BOOT_SECTORS_LIMIT
+%define BOOT_SECTORS_LIMIT 768
+%endif
+; The isolated compiler fixture may extend to 0x74000; kernel default is unchanged.
+%if BOOT_SECTORS_LIMIT > 800 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
+%error Boot stage exceeds its declared low-memory reservation
 %endif
 bits 16
 org 0x7c00

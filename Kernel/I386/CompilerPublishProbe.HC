@@ -1,3 +1,4 @@
+#include "/Kernel/I386/TaskStorage.HC"
 //Publication must outlive the originating control and roll back failed validation.
 #include "/Compiler/I386/SymbolDelete.HC"
 Bool ProbePublishedRemove(CHashTable *table,CHash *entry)
