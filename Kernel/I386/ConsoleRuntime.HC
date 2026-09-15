@@ -4,7 +4,7 @@
 #define FALSE 0
 #include "/Kernel/I386/ConsoleRuntime.HH"
 #include "/Kernel/I386/Ports.HH"
-#include "/Kernel/I386/Text.HH"
+#include "/Kernel/I386/TextVga.HH"
 #include "/Kernel/I386/Vga.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/FontStd.HC"
@@ -17,6 +17,7 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
+extern U0 ConsolePresent();
 extern Bool ConsoleDisplay();
 extern U0 ConsoleKeys(I64 unused);
 extern U0 ConsoleSubmit(U8 *line);
@@ -55,7 +56,7 @@ Bool ConsoleDisplay()
   I386VgaPalette(palette);
   if(!I386TextInit(&console_text,console_planes,sys_font_std)) KernelStop;
   I386TextWrite(&console_text,"TempleOS i386\nHolyC console\n\n> ");
-  I386VgaPresent(console_planes);
+  ConsolePresent;
   return TRUE;
 }
 U0 ConsoleKeys(I64 unused)
@@ -68,7 +69,7 @@ U0 ConsoleKeys(I64 unused)
     if(decoded<0) {
       length=0;
       I386TextWrite(&console_text,"\nInput reset\n> ");
-      I386VgaPresent(console_planes);
+      ConsolePresent;
       KernelLog("INPUT RESET\n");
     } else if(decoded && event.type==2) {
       ch=event.ch;
@@ -90,7 +91,7 @@ U0 ConsoleKeys(I64 unused)
       } else if(ch>=32 && ch<=255 && length<255) {
         line[length++]=ch; I386TextPut(&console_text,ch);
       }
-      I386VgaPresent(console_planes);
+      ConsolePresent;
     }
   }
 }
@@ -98,5 +99,18 @@ U0 ConsoleKeys(I64 unused)
 
 #include "/Kernel/I386/Vga.HC"
 #include "/Kernel/I386/Text.HC"
+#include "/Kernel/I386/TextVga.HC"
 #include "/Kernel/I386/ConsoleNumbers.HC"
 #include "/Kernel/I386/ConsoleInput.HC"
+
+U0 ConsolePresent()
+{
+  I64 rows=I386TextPresent(&console_text),i;
+  U8 message[13],*prefix="VGA ROWS ";
+  if(rows<0) KernelStop;
+  if(rows) {
+    for(i=0;i<9;i++) message[i]=prefix[i];
+    message[9]='0'+rows/10; message[10]='0'+rows%10;
+    message[11]=10; message[12]=0; KernelLog(message);
+  }
+}

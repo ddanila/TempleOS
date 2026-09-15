@@ -11,6 +11,7 @@ public Bool I386TextInit(CI386Text *text,U8 *planes,U8 *font,
       (font+0)(U64)>0x100000000-2048) return FALSE;
   text->planes=planes; text->font=font;
   text->column=0; text->row=0;
+  text->dirty_first=0; text->dirty_last=60;
   text->foreground=foreground; text->background=background;
   for(plane=0;plane<4;plane++) {
     fill=0; if(background&(1<<plane)) fill=255;
@@ -22,6 +23,8 @@ U0 I386TextCell(CI386Text *text,U8 ch)
 {
   I64 plane,y;
   U8 glyph,value;
+  if(text->row<text->dirty_first) text->dirty_first=text->row;
+  if(text->row+1>text->dirty_last) text->dirty_last=text->row+1;
   for(plane=0;plane<4;plane++)
     for(y=0;y<8;y++) {
       glyph=text->font[ch*8+y]; value=0;
@@ -37,6 +40,7 @@ U0 I386TextNewLine(CI386Text *text)
   text->column=0;
   if(++text->row<60) return;
   text->row=59;
+  text->dirty_first=0; text->dirty_last=60;
   for(plane=0;plane<4;plane++) {
     buffer=text->planes+plane*38400;
     for(i=0;i<37760;i++) buffer[i]=buffer[i+640];

@@ -50,6 +50,29 @@ is used for decimal exponents from -4 through 16, scientific notation otherwise.
 This scalar renderer is not yet the full public formatting implementation; its
 worst-case latency on actual vintage hardware remains to be measured.
 
+## VGA update ownership and bounds
+
+The private `CI386Text` record is now 32 bytes, including `dirty_first` and
+`dirty_last` text-row bounds with an exclusive end. Its canonical clean state is
+`60,0`. Glyph writes merge their row into the pending interval; initialization
+and scrolling invalidate all 60 rows. Cursor-only changes leave pixels clean.
+Consumers of the record must rebuild; ConsoleRuntime's external ABI remains 1/20.
+
+`I386TextPresent` returns the number of uploaded text rows, zero when clean, or
+-1 on invalid state. It clears the pending interval only after success. The bridge
+calls `I386VgaRows`, whose bounds are scanlines, with eight scanlines per text row.
+The VGA function requires the complete 153600-byte logical buffer and validates
+address wrap and the range before accessing hardware. A valid empty range does
+no work. `I386VgaPresent` retains the full-screen entry point.
+
+One ordinary edited row now uploads 2560 bytes instead of 153600. Initialization
+and scrolling still upload the full screen. The console owns the text record,
+framebuffer and VGA registers; IRQ handlers do not access VGA and presentation
+does not mask interrupts for the copy. Direct framebuffer writers must invalidate
+the affected rows themselves. Debug-port `VGA ROWS NN` records expose requested
+upload spans for tests without adding display text. These counts measure payload,
+not bus timing; full-scroll cost and vintage-machine input latency remain open.
+
 ## Verification
 
 `python3 tools/test-rebuild.py` and `python3 tools/build-i386-kernel.py --test`

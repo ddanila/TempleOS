@@ -744,12 +744,12 @@ def main():
             raise ValueError(f'Unexpected VGA dimensions: {screen.size}')
         for y in range(480):
             for x in range(640):
-                expected = palette[((x//40+y//30)&15)^(x&7)]
+                expected = palette[0 if (y<8 or y==479) else ((x//40+y//30)&15)^(x&7)]
                 if screen.getpixel((x,y)) != expected:
                     raise ValueError(f'VGA pixel mismatch at {x},{y}: {screen.getpixel((x,y))} != {expected}')
         screen.save(OUT/'display/screen.png')
         (OUT/'result.json').write_text(json.dumps({'result':'pass', 'cpu':'486',
-            'ram_mib':8, 'pixels':640*480, 'scope':'native VGA palette and planar upload'}, indent=2)+'\n')
+            'ram_mib':8, 'pixels':640*480, 'scope':'native VGA palette, full/partial uploads and invalid-range rejection'}, indent=2)+'\n')
         print('PASS: native VGA upload, all 307200 displayed pixels match.')
         return
     if args.ata:

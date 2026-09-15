@@ -143,8 +143,11 @@ planar buffers. It uses the original `Kernel/FontStd.HC` bytes, supports all 256
 glyphs at cell-rendering level, and implements newline, carriage return, tabs,
 backspace, wrapping and scrolling. A caller must exclusively own the initialized
 record, live font and framebuffer; presentation remains a separate operation.
-The console currently uploads the full framebuffer after key-down events, so
-vintage-CPU presentation cost remains to be measured and reduced.
+The console tracks changed text rows and uploads only their scanlines. An ordinary
+edit transfers 2560 bytes; initialization and scrolling still transfer the full
+153600-byte framebuffer. Clean events do no VGA work. See
+[i386-console-runtime.md](i386-console-runtime.md) for ownership and invalidation
+contracts. Vintage-CPU latency and full-scroll cost remain to be measured.
 
 The input task collects at most 255 bytes plus a terminator. Backspace cannot
 erase the prompt; Ctrl-C cancels the partial line. Tabs add spaces at eight-column

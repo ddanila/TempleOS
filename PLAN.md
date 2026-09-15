@@ -969,6 +969,10 @@ The console task starts after diagnostic heap checks, uses a 64 KiB stack and
 shared heap, and retains its own symbol scope. Keyboard-driven tests cover
 persistent definitions, recovery, wide integers and software F64 boundary values.
 Multiline editing, public APIs and the complete document workflow remain open.
+The console now tracks changed text rows and presents bounded VGA scanline ranges.
+Ordinary edits upload 2560 bytes instead of 153600; initialization and scrolling
+remain full-screen. Pixel checks and invalid-range checks pass, but this payload
+reduction does not establish vintage-machine latency acceptance.
 See `docs/i386-console-runtime.md`.
 
 Complete assembly/stream/try providers, pointer-string

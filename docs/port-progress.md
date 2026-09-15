@@ -4232,3 +4232,31 @@ editing, public APIs, complete language/runtime providers, CPU-fault/debugger
 integration, DolDoc, startup-source execution and native self-hosting remain open.
 This initial console passes on QEMU/486 with 8 MiB; it does not establish complete
 interactive memory/performance acceptance or strict 386SX/DX/physical support.
+
+
+## Bounded VGA console updates
+
+The console now merges changed text rows into a pending interval and uploads only
+those scanlines. A normal character or backspace uploads 2560 bytes, compared with
+153600 for a full screen. Clean events skip presentation; initialization and
+scrolling invalidate the full screen. The 32-byte private text record clears its
+interval only after a successful upload. VGA rejects invalid ranges and wrapping
+buffer addresses before hardware access. No additional framebuffer or allocation
+is required. See [i386-console-runtime.md](i386-console-runtime.md).
+
+Both x64 rebuild/reboot generations, the targeted VGA suite and the full standalone
+verifier pass. The VGA suite checks all 307200 pixels after full and partial
+uploads, empty ranges, invalid requests and preserved pending state. The keyboard
+harness retains all 25 native command and 88 submitted-line checks, with exact
+pixels at every checkpoint, and verifies single-row edits and full-scroll updates.
+It records 544 uploads spanning 2731 text rows, or 6991360 requested payload bytes.
+These are span-based counts, not measured hardware traffic or latency.
+
+All 1040 packaged source hashes and eight build-input hashes match the tested
+files. The boot kernel remains 373768 bytes, with 17288 bytes spare after the
+2160-byte early stage in its fixed reservation. ConsoleRuntime remains ABI 1/20;
+its image is now 44688 bytes (44704 heap bytes), and its framebuffer remains
+153600 bytes. CompilerRuntime, FileRuntime and CompilerProbe versions are unchanged.
+Startup measured 37.403 seconds on QEMU/486 with 8 MiB. Full-scroll optimization,
+strict 386SX/DX and physical-machine latency checks, complete language/public API
+integration, DolDoc and native self-hosting remain open.

@@ -90,10 +90,15 @@ def run_input(disk,out):
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             screen(heading+['> '],'initial')
+            def uploads():
+                return [int(x.split()[2]) for x in log.read_text().splitlines() if x.startswith('VGA ROWS ')]
+            if uploads()!=[60]: raise ValueError('Startup must present one complete screen')
             for name in ('a','b','c','backspace'): press(name)
             key('shift',True); press('d'); key('shift',False); press('ret')
             wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
             screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
+            if uploads()!=[60,1,1,1,1,1,2]:
+                raise ValueError(f'Unexpected ordinary-edit upload spans: {uploads()}')
             press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
             wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
             rows=heading+['> abD','Error: Undefined identifier at ','> yz^C','> ']
@@ -117,6 +122,7 @@ def run_input(disk,out):
                 press('ret')
                 wait_for(lambda:log.read_text().count('INPUT LINE \n')==count)
             screen(['> ']*60,'scrolled')
+            if uploads()[-1]!=60: raise ValueError('Scrolling must invalidate the full screen')
             rows=['> ']*60
             plain={' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
@@ -165,6 +171,9 @@ def run_input(disk,out):
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'startup_seconds':startup_seconds,
+                    'vga_uploads':len(uploads()), 'vga_text_rows':sum(uploads()),
+                    'vga_payload_bytes':sum(uploads())*2560,
+                    'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','persistent definitions','error recovery','integer and F64 answers'],
                     'vga':'all pixels matched at each checkpoint','submitted_lines':63+len(commands), 'native_commands':len(commands)}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')

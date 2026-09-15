@@ -5,7 +5,8 @@
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/A20.HH"
-extern U0 I386VgaPresent(U8 *planes);
+#include "/Kernel/I386/Vga.HH"
+#include "/Kernel/I386/TextVga.HH"
 extern U0 I386VgaPalette(U8 *rgb6);
 U8 palette[]={
   0,0,0, 0,0,42, 0,42,0, 0,42,42,
@@ -15,6 +16,7 @@ U8 palette[]={
 I64 Main(I64 a,I64 b)
 {
   CI386Heap heap;
+  CI386Text text;
   CI386MemRange reserved,arena;
   CI386BootInfo *boot=I386_BOOT_INFO_ADDRESS;
   Bool extended=FALSE;
@@ -40,10 +42,25 @@ I64 Main(I64 a,I64 b)
         if (color&(1<<plane)) planes[plane*38400+index]|=1<<(x&7);
     }
   I386VgaPresent(planes);
+  for(i=0;i<153600;i++) planes[i]=0;
+  if(!I386VgaRows(planes,0,1) || !I386VgaRows(planes,7,1) ||
+      !I386VgaRows(planes,479,1) || !I386VgaRows(planes,480,0) ||
+      I386VgaRows(0,0,1) || I386VgaRows(0xFFFF0000,0,1) ||
+      I386VgaRows(planes,-1,1) || I386VgaRows(planes,0,-1) ||
+      I386VgaRows(planes,479,2) || I386VgaRows(planes,481,0)) return 5;
+  text.planes=planes; text.dirty_first=0; text.dirty_last=1;
+  if(I386TextPresent(&text)!=1 || text.dirty_first!=60 || text.dirty_last) return 6;
+  for(i=0;i<153600;i++) planes[i]=255;
+  if(I386TextPresent(&text)!=0) return 7;
+  text.dirty_first=59; text.dirty_last=61;
+  if(I386TextPresent(&text)!=-1 || text.dirty_first!=59 || text.dirty_last!=61) return 8;
+  text.dirty_first=1; text.dirty_last=2; text.planes=0xFFFF0000;
+  if(I386TextPresent(&text)!=-1 || text.dirty_first!=1 || text.dirty_last!=2) return 9;
   if (!I386HeapFree(&heap,planes) || heap.used || !I386HeapValid(&heap)) return 3;
   return 42;
 }
 #include "/Kernel/I386/Vga.HC"
+#include "/Kernel/I386/TextVga.HC"
 
 #include "/Kernel/I386/Heap.HC"
 
