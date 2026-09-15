@@ -87,6 +87,11 @@ Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.
 See [stack ownership](docs/i386-public-stacks.md).
+The original public memory records are also shared, with a native allocation
+core using real `CBlkPool`/`CHeapCtrl` state. It remains internal: retained memory
+service loading, task heap binding, the throwing public allocation interface and
+automatic teardown are the next public-contract work. See
+[public memory](docs/i386-public-memory.md).
 See [shared task records](docs/i386-task-records.md) and
 [native public headers](docs/i386-public-headers.md).
 

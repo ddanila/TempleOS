@@ -4837,3 +4837,55 @@ measure physical 386 performance. All 1057 OS source hashes match the native,
 x86-64 rebuild and layout results. The eight native build inputs, three layout
 inputs and final disk hash also match. Python syntax and staged whitespace checks
 pass.
+
+
+## Shared public memory records and native allocation core
+
+The six original allocation, block, range, pool and heap-control records now live
+in shared headers. All 43 captured x86-64 member layouts are preserved. The native
+policy keeps explicit integer widths and the 1024-byte heap hash while shrinking
+pointers. Normal `CMemUsed`/`CMemUnused` records are 12 bytes, `CMemBlk` is 16,
+`CMemRange` 28, `CBlkPool` 1276 and `CHeapCtrl` 1088. The original debug record
+source is retained, but the native core currently uses normal headers only.
+
+The native internal core uses actual public lists and counters for page bins,
+heap-owned blocks, small free fragments and size bins. Payloads remain eight-byte
+aligned by placing their 12-byte headers at four modulo eight. Page-backed large
+objects put their used header at offset 20 and payload at offset 32. No shortened
+public records or bootstrap-heap casts are involved. See
+[public memory](i386-public-memory.md) for ownership, alignment and remaining work.
+
+The heap fixture passes 49 native layout checks, page-bin reuse, larger-block
+fallback, small-bin boundary cases, two owners, 1024 allocation/free rounds with
+payload/accounting checks, and three bulk teardown/reinitialization cycles with
+live allocations. Its arena is 256 KiB below the boot stack. The fixture loader
+now permits 128 KiB of code below its existing first arena. Both x86-64 rebuild
+and reboot generations pass; memory and task layout checks preserve all 43 and
+105 original fields respectively.
+
+The existing arena test exposed reliance on pointer-expression wraparound when
+rejecting a range crossing 4 GiB. The arena allocator now checks the wide sum
+explicitly. Both crossing and exact-end boundary cases reject before mutation.
+This fix applies to the running kernel's bootstrap allocator as well.
+
+The new allocation core is not yet connected to live public task heaps or exposed
+as `MAlloc`/`Free`/`MSize`. Retained service loading, task/current/explicit heap
+selection, throwing allocation failure and automatic task teardown remain next.
+Aligned-allocation markers, debug/logging support, fragment tidying and adjacent
+page merging, full low-memory document workflows, self-hosting and strict 386
+acceptance remain unfinished.
+
+Final verification passes on the final sources, including native boot, all 81
+keyboard commands across 144 submitted lines with exact VGA pixels, custom
+startup, syntax-error and missing-file recovery, and all module rejection and
+reclamation cases. The kernel is 384200 bytes, leaving 4920 bytes after its
+4096-byte stage in the existing reservation. The diagnostic keyboard boot takes
+123.866 seconds on the 8 MiB QEMU/486 development profile, not physical 386 hardware.
+The new memory core is tested by the native heap fixture and is not linked into
+the current boot image yet.
+
+All 1062 OS source hashes match the native, rebuild and layout results. The eight
+native build inputs, four memory-layout inputs, three task-layout inputs and final
+disk hash also match. Python syntax and staged whitespace checks pass. Growing
+backing pools, original public pool metadata accounting and migration of compiler
+allocation provenance/capacity checks remain part of public service integration.

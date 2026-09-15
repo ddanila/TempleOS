@@ -3,6 +3,7 @@
 #define FALSE 0
 #include "/Kernel/I386/Heap.HH"
 extern U64 Hash(U8 *base,I64 size);
+extern I64 PublicHeapTest();
 I64 Main(I64 a,I64 b)
 {
   CI386Heap hc,other;
@@ -14,10 +15,15 @@ I64 Main(I64 a,I64 b)
   before=Hash(control,sizeof(hc));
   guard=arena-8;
   for (i=0;i<8216;i++) guard[i]=0xA5;
-  if (I386HeapInit(&hc,arena,23) || I386HeapInit(&hc,arena,-1) ||
-      I386HeapInit(&hc,arena,0x100000000) || I386HeapInit(&hc,arena+1,8192) ||
-      I386HeapInit(&hc,0,8192) || I386HeapInit(0,arena,8192) ||
-      I386HeapInit(arena,arena,8192) || I386HeapInit(&hc,0xFFFFFFF0,8192)) return 1;
+  if (I386HeapInit(&hc,arena,23)) return 201;
+  if (I386HeapInit(&hc,arena,-1)) return 202;
+  if (I386HeapInit(&hc,arena,0x100000000)) return 203;
+  if (I386HeapInit(&hc,arena+1,8192)) return 204;
+  if (I386HeapInit(&hc,0,8192)) return 205;
+  if (I386HeapInit(0,arena,8192)) return 206;
+  if (I386HeapInit(arena,arena,8192)) return 207;
+  if (I386HeapInit(&hc,0xFFFFFFF0,8192)) return 208;
+  if (I386HeapInit(&hc,0xFFFFF000,4096)) return 209;
   if (Hash(control,sizeof(hc))!=before) return 2;
   for (i=0;i<8216;i++) if (guard[i]!=0xA5) return 2;
   if (!I386HeapInit(&hc,arena,8199) || hc.size!=8192 || !I386HeapValid(&hc)) return 3;
@@ -89,7 +95,7 @@ I64 Main(I64 a,I64 b)
   if (!I386HeapFree(&hc,p) || !I386HeapValid(&hc)) return 24;
   for (i=0;i<8;i++) if (guard[i]!=0xA5) return 25;
   for (i=8200;i<8216;i++) if (guard[i]!=0xA5) return 26;
-  return 0;
+  return PublicHeapTest;
 }
 U64 Hash(U8 *base,I64 size)
 {
@@ -99,3 +105,5 @@ U64 Hash(U8 *base,I64 size)
   return h;
 }
 #include "/Kernel/I386/Heap.HC"
+
+#include "Public.HC"

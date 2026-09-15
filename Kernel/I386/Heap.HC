@@ -7,7 +7,8 @@ Bool I386HeapRegionValid(CI386Heap *hc,U8 *base,I64 size)
   U64 a=(base+0)(U64),b=(hc+0)(U64);
   if (!hc || !base || a&7 || size<24 || size>0xFFFFFFFF || size&7)
     return FALSE;
-  if ((base+size)(U64)<=a) return FALSE;
+  //Check the wide sum explicitly; pointer-expression evaluation need not wrap.
+  if (a+size>0xFFFFFFFF) return FALSE;
   if (a<=b) {
     if (b-a<size) return FALSE;
   } else if (a-b<sizeof(CI386Heap)) return FALSE;
