@@ -4136,3 +4136,47 @@ masks interrupts during validation and transfer; large-program latency needs
 measurement and bounded work. Console/public API integration, full language
 providers, DolDoc and native self-hosting remain required. Strict 386SX/DX and
 physical-machine acceptance remain separate from this QEMU/486, 8 MiB result.
+
+## Native submitted-source lifecycle
+
+CompilerRuntime ABI 35 (200 bytes) appends `input`, a synchronous entry that owns
+one private compiler control through parsing, command execution, publication and
+unwind. It forwards results and frontend diagnostics through borrowed callbacks,
+accepts load-only mode, preserves an enclosing control/IR, and publishes completed
+definitions only after the submitted buffer succeeds. Earlier execution side
+effects are not rolled back. Non-compiler exceptions are rethrown after cleanup,
+including valid exception code zero.
+
+Result callbacks receive a borrowed value-class descriptor alongside raw result
+bits. The initial test exposed why raw types alone are insufficient: `RT_PTR`
+and `RT_I64` both equal 10, so pointer depth is required before deciding to inspect
+an address. Generated output metadata now retains that descriptor for synchronous
+result delivery. Diagnostic callbacks also honor the existing parenthesis-warning
+option/define policy and receive the standard message for enabled warnings;
+suppressed parser requests are not exposed as user diagnostics.
+
+All 22 input cases pass across boot and worker tasks. They cover 64-bit integer
+and software F64 results, literal inspection, multiple results before a syntax
+error, load-only suppression, callback exceptions (named and zero), failed private
+definitions, invalid flags and published functions using pointers to global data.
+Fresh inputs reuse those definitions after another input fails. The outer IR
+sentinel survives every call, and complete fixture teardown restores exact heap,
+control, task-reference, exception and interrupt state.
+
+Both x64 rebuild/reboot generations and the full standalone verifier pass,
+including prior compiler recovery, module rejection and pixel-exact VGA/keyboard
+checks. All 1034 packaged source hashes and eight build-input hashes match the
+tested tree; Python syntax and whitespace checks pass. The kernel remains 391024
+bytes, leaving 32 bytes in the fixed reservation with the 2160-byte early stage.
+The retained compiler image is 1213912 bytes (1213928 heap bytes). The temporary
+probe image is 461288 bytes and reclaims all 461304 heap bytes. FileRuntime stays
+ABI 13/32 bytes and CompilerProbe ABI 5/56 bytes. Diagnostic startup measured
+36.950 seconds in the keyboard harness. These are development measurements, not
+complete interactive or self-hosting memory/performance acceptance.
+
+The keyboard console still collects lines without invoking this service. Moving
+the console implementation into retained extended memory, wiring input/output,
+answer formatting, multiline editing, public APIs, complete language providers,
+DolDoc and native self-hosting remain required. See
+[i386-command-input.md](i386-command-input.md). These are QEMU/486 development
+results; strict 386SX/DX and physical-machine acceptance remain open.

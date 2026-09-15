@@ -70,7 +70,7 @@ qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none \
 
 This image boots the native memory/task/interrupt runtime, displays VGA color
 bars, mounts its RedSea source volume and runs a timer-driven task. It does not
-yet provide the HolyC shell/JIT, DolDoc or startup-source execution. See [kernel image details](docs/i386-kernel.md).
+yet provide an interactive HolyC shell, DolDoc or startup-source execution. See [kernel image details](docs/i386-kernel.md).
 
 Run isolated bootstrap/backend checks with:
 

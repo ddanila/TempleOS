@@ -956,6 +956,14 @@ definitions. Validation and allocation finish before ownership changes; collisio
 alias, incomplete-code and OOM cases retain the private graph. Child scope references
 protect parent storage until task teardown. See `docs/i386-program-publication.md`.
 
+CompilerRuntime ABI 35 (200 bytes) adds a synchronous submitted-source entry. It
+creates a private control, compiles and optionally executes commands, forwards
+results/diagnostics, publishes completed definitions and unwinds temporary state.
+It preserves an enclosing active control and rethrows non-compiler exceptions
+after cleanup. This is the compiler-side console boundary; keyboard dispatch,
+VGA answer formatting and multiline input remain to be connected. See
+`docs/i386-command-input.md`.
+
 Complete assembly/stream/try providers, pointer-string
 initialization, unresolved function/global linking, definition replacement/unload
 rules, interactive console and public API integration, DolDoc and native
@@ -964,9 +972,10 @@ the strict 386SX/DX or full native programming-environment acceptance gates.
 
 #### Continuing integration sequence
 
-The standalone kernel can read source and execute a cross-compiled startup module,
-but cannot compile or execute that source directly. Advance the resident
-programming environment through these concrete steps:
+Standalone startup still executes a cross-compiled module. The retained compiler
+can compile, execute and publish submitted source buffers, but keyboard input is
+not yet dispatched to it. Advance the resident programming environment through
+these concrete steps:
 
 1. Load a separately packaged i386 startup module from RedSea using the existing
    checked module loader. Bind its code/data imports to explicit resident kernel
@@ -980,7 +989,10 @@ programming environment through these concrete steps:
    loop. Integrate public task, allocation, file and exception interfaces needed
    by the compiler; keep disk access ownership explicit as tasks become active.
    Keyboard line collection, cancellation and VGA scrolling now pass in the
-   standalone image. Command execution and compiler-facing public APIs remain.
+   standalone image. A synchronous native submitted-source service now supplies
+   compilation, execution, publication and recovery. Move the console into retained
+   extended memory, connect this service and result/diagnostic rendering, and
+   integrate the compiler-facing public APIs.
 3. Inventory the compiler's remaining native dependencies against that resident
    interface, including symbol storage, formatting, software F64, generators and
    target execution. Bring up a native compile/run path, then repeat editing,

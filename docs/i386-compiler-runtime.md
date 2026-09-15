@@ -273,3 +273,10 @@ storage list. Definitions survive compiler-control destruction and remain usable
 after a later control fails. See
 [i386-program-publication.md](i386-program-publication.md) for transfer validation,
 teardown, retained literal pools and remaining replacement/unload constraints.
+
+## Submitted source input
+
+ABI 35 (200 bytes) appends `input`, the synchronous source-buffer lifecycle entry.
+It owns a private compiler control through parsing, execution, publication and
+cleanup, with borrowed result/diagnostic callbacks and load-only support. See
+[command input](i386-command-input.md) for ownership and exception contracts.

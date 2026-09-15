@@ -10,6 +10,7 @@ class CI386FrontendCode {
   CI386FrontendCode *next;
   U8 *code;
   I64 bytes,data_start,raw_type,prior_misc;
+  CHashClass *value_class;
 };
 class CI386Frontend {
   CI386Heap *heap;
@@ -27,6 +28,8 @@ class CI386Frontend {
   U32 binary_ops[TK_TKS_NUM];
   I64 lines;
   CI386FrontendCode *codes;
+  U8 *diagnostic_context;
+  U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
 };
 class CI386FrontendCall {
   CI386FrontendCall *next,*stack;
@@ -52,8 +55,14 @@ extern U0 I386FrontendStatementsInit(CI386Frontend *state);
 U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
+  CI386Frontend *state=context;
+  if(kind==2) {
+    if(!(cc->opts&1<<OPTf_WARN_PAREN) || cc->lex_include_stk->flags&LFSF_DEFINE) return;
+    message="Unnecessary parenthesis ";
+  }
+  if(state->diagnostic) state->diagnostic(state->diagnostic_context,cc,kind,message);
   if(!kind) { cc->error_cnt++; throw('Compiler',TRUE); }
-  if(kind!=2 || (cc->opts&1<<OPTf_WARN_PAREN) && !(cc->lex_include_stk->flags&LFSF_DEFINE)) cc->warning_cnt++;
+  cc->warning_cnt++;
 }
 U0 I386FrontendUnavailable(CI386Frontend *state)
 { I386FrontendReport(state,state->cc,0,"Native frontend service unavailable"); }
@@ -328,7 +337,7 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
     if(metadata->type!=IET_I386_DATA) I386FrontendUnavailable(state);
   result=I386FrontendAlloc(state,sizeof(CI386FrontendCode),TRUE,FALSE);
   result->code=I386FrontendAlloc(state,out->count,FALSE,TRUE); result->bytes=out->count;
-  result->raw_type=type->raw_type; result->prior_misc=prior_misc;
+  result->value_class=type; result->raw_type=type->raw_type; result->prior_misc=prior_misc;
   result->data_start=out->count;
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next) {
     if(metadata->rip<0 || metadata->rip>out->count || metadata->flags<0 || metadata->flags>out->count-metadata->rip)
