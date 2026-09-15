@@ -73,8 +73,11 @@ the current buffer pointer when moving between inputs, as in the existing lexer.
 `I386LexFilePush` allocates a zeroed public CLexFile prefix with private heap/control
 ownership metadata. Its 64-byte allocation consumes an 80-byte heap span. Failure
 leaves the include stack unchanged. `I386LexFilePop` returns success/failure rather
-than the new top; it rejects a wrong heap/control, an empty stack, outstanding
-save points, or a missing service for an owned nonnull document before unlinking.
+than the new top; it rejects a wrong heap/control, an empty stack, a save point
+that borrows the file being released, or a missing service for an owned nonnull
+document before unlinking. It validates each native snapshot owner. Save points
+that borrow only parent files permit an exhausted macro/include child to be
+released, which is required for macros inside initializer expressions.
 A retained root document needs no release service. The callback receives the
 caller's document context, independently of the heap-release context.
 
@@ -84,7 +87,8 @@ their caller's interrupt state and not reenter or destroy the active control.
 Heap operations mask interrupts and restore their prior state; document callbacks
 run in the caller's state. Release failures from invalid nested ownership do not
 roll back a partially disposed file. These are ownership checks, not validation of
-arbitrary corrupt graphs. Drain snapshots and detach other references before pop.
+arbitrary corrupt graphs. Drain snapshots that borrow the file being released
+and detach other references before pop.
 
 The expanded `--lex-state` fixture passes root/nested depth, all raw/document and
 root-retention combinations, null documents, callback contexts/counts and unchanged

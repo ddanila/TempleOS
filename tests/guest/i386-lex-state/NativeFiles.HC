@@ -9,6 +9,7 @@ I64 NativeFilesTest()
   CCmpCtrl cc,other;
   CI386Heap small,foreign;
   CLexFile *root,*child;
+  CI386LexSnapshot *snapshot;
   U8 *bytes,*payload;
   I64 i,size,used;
   U32 flags=I386IrqSave;
@@ -44,6 +45,22 @@ I64 NativeFilesTest()
   if(!I386LexPop(&state_heap,&cc,FALSE) ||
       !I386LexFilePop(&state_heap,&cc,&NativeFileDocRelease,&native_doc_releases) ||
       native_doc_releases!=1 || native_doc_errors || cc.lex_include_stk!=root || !(GetRFlags&0x200)) return 39;
+  //An exhausted child can be released while snapshots borrow only its parent.
+  cc.cur_buf_ptr=payload; cc.last_U16=0; cc.flags&=~CCF_USE_LAST_U16;
+  used=state_heap.used;
+  if(!I386LexPush(&state_heap,&cc) || !I386LexPush(&state_heap,&cc)) return 46;
+  child=I386LexFilePush(&state_heap,&cc); if(!child) return 47;
+  child->buf=StateAlloc(16); child->full_name=StateAlloc(8);
+  snapshot=cc.lex_prs_stk;
+  snapshot->control=&other;
+  if(I386LexFilePop(&state_heap,&cc) || cc.lex_include_stk!=child) return 48;
+  snapshot->control=&cc;
+  if(!I386LexFilePop(&state_heap,&cc) || cc.lex_include_stk!=root ||
+      I386LexFilePop(&state_heap,&cc) || !(GetRFlags&0x200)) return 49;
+  cc.cur_buf_ptr=payload+3;
+  if(!I386LexPop(&state_heap,&cc) || cc.cur_buf_ptr!=payload ||
+      I386LexFilePop(&state_heap,&cc) || !I386LexPop(&state_heap,&cc) ||
+      cc.cur_buf_ptr!=payload || state_heap.used!=used) return 50;
   if(!I386LexFilePop(&state_heap,&cc) || cc.lex_include_stk || state_heap.allocations!=1 ||
       I386HeapSize(&state_heap,payload)!=32 || !(GetRFlags&0x200)) return 40;
   StateFree(payload);

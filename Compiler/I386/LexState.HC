@@ -1,15 +1,6 @@
 #include "/Compiler/I386/LexState.HH"
 #include "/Compiler/LexState.HC"
 #include "/Kernel/I386/Cpu.HH"
-#define I386_LEX_SNAPSHOT_MAGIC 0x4C535031
-class CI386LexSnapshot
-{
-  CLexFile file;
-  CLexFile *active;
-  CCmpCtrl *control;
-  CI386Heap *heap;
-  U32 signature;
-};
 Bool I386LexPush(CI386Heap *heap,CCmpCtrl *cc)
 {
   CI386LexSnapshot *snapshot;

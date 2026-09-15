@@ -59,7 +59,8 @@ python3 tools/test-i386.py --functions
 python3 tools/test-i386.py --float
 ```
 
-The keyboard console is not yet connected to this compiler entry. Definition
-replacement/unload policy, answer formatting/public task integration, stream/compile-time
+The retained console now uses this entry for keyboard submissions and disk-backed
+source startup, including scalar answer formatting. Definition replacement/unload
+policy, complete public task integration, stream/compile-time
 generators, full assembler/try providers, document editing and native self-hosting
 remain required. QEMU/486 checks do not establish strict 386SX/DX acceptance.

@@ -24,6 +24,34 @@ and exception records. Submitted input always takes its heap from the current
 task symbol scope; the configuration heap owns the display buffer. A single task
 owns keyboard consumption and VGA writes after boot display initialization.
 
+## Source startup
+
+Before the first prompt, the console task compiles and executes an include of
+`/Kernel/I386/StartOS.HC` from RedSea through the same native input service used by
+keyboard commands. The packaged default supplies `NULL`, `TRUE` and `FALSE`.
+Definitions and executable commands can be added to this source; successful
+functions, globals and macros remain in the console task's scope. The compiler
+reads the disk file at boot, so changing source does not require recompiling the
+console module. Repack the image to change this file until native editing and
+file-writing workflows are integrated.
+
+The source runs once, after worker heap-accounting probes and task creation, with
+the console's file context, symbol heap and recoverable input boundary. Its source
+buffers belong to the include/control lifecycle. Results and diagnostics use the
+usual console callbacks. A missing file or failed compilation still reaches the
+prompt after cleanup. Publication and side effects follow the normal input rules:
+a failed source does not publish its private classes/functions/globals, but earlier
+executed side effects are not rolled back. Preprocessor defines enter the task
+scope immediately and can remain after a later failure. Language exceptions recover through the console;
+CPU faults remain fatal and an indefinitely running startup command has no
+interactive interruption mechanism yet.
+
+The early `Startup.t32m` still performs display initialization and is reclaimed.
+It remains cross-compiled. The `DONE native kernel startup` diagnostic now comes
+from the console after source execution and prompt presentation, rather than from
+the root immediately after spawning the task. This is source-driven console
+startup, not completion of the original full StartOS/DolDoc bootstrap.
+
 ## Submitted commands
 
 Enter submits the current line through CompilerRuntime's input service. Results
@@ -85,6 +113,13 @@ pixel to an independent renderer using the original font. In addition to line
 editing it types arithmetic, persistent globals/functions/static state, malformed
 input followed by successful calls, full-width integers, pointer values and F64
 boundary values. No test injects precompiled answers into the console.
+
+Additional boots change only the startup source bytes or its directory name in
+copies of the same disk. They verify a native startup call and persistent
+function/global/macro state, syntax-error cleanup without publishing private
+definitions while preserving an earlier preprocessor define, and recovery from a
+missing file. Each case types new commands and
+checks the resulting pixels; module bytes remain unchanged.
 
 Strict 386SX/DX, physical hardware, complete language/document workflows and native
 compiler/kernel self-hosting remain required acceptance gates.

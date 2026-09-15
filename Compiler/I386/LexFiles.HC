@@ -1,4 +1,5 @@
 #include "/Compiler/I386/LexFiles.HH"
+#include "/Compiler/I386/LexState.HH"
 #include "/Compiler/LexFiles.HC"
 #include "/Kernel/I386/Cpu.HH"
 #define I386_LEX_FILE_MAGIC 0x4C464931
@@ -49,13 +50,21 @@ Bool I386LexFilePop(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0)
 {
   CI386LexFile *file;
+  CI386LexSnapshot *snapshot;
   CLexFileRelease owner;
   CI386LexFileDispatch dispatch;
   U32 flags=I386IrqSave;
   Bool valid=FALSE;
-  if(!cc || cc->lex_prs_stk || !(file=cc->lex_include_stk) ||
+  if(!cc || !(file=cc->lex_include_stk) ||
       I386HeapSize(heap,file)!=sizeof(CI386LexFile)) goto checked;
   if(file->signature!=I386_LEX_FILE_MAGIC || file->heap!=heap || file->control!=cc) goto checked;
+  //Parent save points do not own an exhausted macro/include child. Keep the
+  //actual saved file live, including when a deeper save point refers to it.
+  for(snapshot=cc->lex_prs_stk;snapshot;snapshot=snapshot->file.next) {
+    if(I386HeapSize(heap,snapshot)!=sizeof(CI386LexSnapshot) ||
+        snapshot->signature!=I386_LEX_SNAPSHOT_MAGIC || snapshot->heap!=heap ||
+        snapshot->control!=cc || snapshot->active==&file->file) goto checked;
+  }
   if((file->file.next || !(cc->flags&CCF_DONT_FREE_BUF)) &&
       file->file.flags&LFSF_DOC && file->file.doc && !document) goto checked;
   valid=TRUE;

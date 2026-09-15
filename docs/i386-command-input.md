@@ -1,7 +1,7 @@
 # Native source input lifecycle
 
 CompilerRuntime ABI 35 (200 bytes) adds `input`, a synchronous source-buffer
-entry for the forthcoming console and other native callers. `CI386CommandInput`
+entry for the console and other native callers. `CI386CommandInput`
 borrows the source, filename, file/include services, type descriptors and callback
 context for the duration of the call. It uses the current task's symbol scope and
 preserves the caller's active compiler-control boundary and IR.
@@ -36,7 +36,9 @@ exceptions return false after cleanup. Other exceptions, including callback
 exceptions (including code zero), are rethrown after cleanup so the surrounding task policy handles
 them. Input and callback storage must remain live through that cleanup.
 
-Publication is per submitted buffer. A later failed buffer preserves definitions
+Publication of frontend classes/functions/globals is per submitted buffer.
+Preprocessor defines use the task define table immediately and can persist after
+a later failure. A later failed buffer preserves definitions
 from earlier successful buffers. Execution is not transactional: assignments and
 other side effects before a later failure remain. In particular, user code must
 not retain references to unpublished private data across failure. Collisions are
@@ -44,7 +46,8 @@ rejected; definition replacement and dependency-aware unloading remain pending.
 See [program publication](i386-program-publication.md) for storage ownership.
 
 The retained [VGA console](i386-console-runtime.md) now submits keyboard lines to
-this service and renders results/diagnostics. Multiline source editing, the full
+this service and renders results/diagnostics. It also executes disk-backed startup
+source in the same scope before accepting keyboard input. Multiline source editing, the full
 public TempleOS interfaces and complete language/document workflows remain open.
 The console implementation lives outside the fixed boot reservation.
 

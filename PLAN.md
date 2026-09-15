@@ -21,7 +21,8 @@ multicore behavior still need baseline verification. The native i386 foundation
 now boots a disk image on the 8 MiB QEMU/486 development profile, initializes
 cooperative tasks and timer interrupts, reads its source from RedSea, and loads a
 separate startup module that initializes VGA through resident imports. A retained
-HolyC console now compiles keyboard submissions, retains definitions, recovers
+HolyC console now executes disk-backed startup source, compiles keyboard
+submissions, retains definitions, recovers
 from syntax errors and renders integer/pointer/software-F64 answers with the
 original 8×8 font. These results do not establish strict 386 support, the complete
 HolyC/DolDoc environment or native self-hosting. Component evidence and remaining limitations
@@ -983,9 +984,11 @@ the strict 386SX/DX or full native programming-environment acceptance gates.
 
 #### Continuing integration sequence
 
-Standalone startup still executes a cross-compiled module. The retained compiler
-now compiles, executes and publishes keyboard-submitted source through the
-retained VGA console. Advance the resident programming environment through
+Early display initialization still executes a cross-compiled module. The retained
+console now compiles, executes and publishes `/Kernel/I386/StartOS.HC` from RedSea
+before its first prompt, then accepts keyboard source in that same task scope.
+Missing or malformed startup source recovers to the prompt; complete original
+StartOS/bootstrap integration remains open. Advance the resident programming environment through
 these concrete steps:
 
 1. Load a separately packaged i386 startup module from RedSea using the existing
@@ -1466,18 +1469,15 @@ see `docs/i386-sleep.md`.
 A first standalone native kernel image now boots through the shared BIOS-CHS
 loader, consumes the memory handoff, enables A20 and initializes the linked
 memory/task/exception/interrupt/timer runtime. The 8 MiB QEMU boot check verifies
-VGA output and delayed task wakeups. This foundation still lacks shell/JIT,
-DolDoc, RedSea startup and native self-hosting; see `docs/i386-kernel.md`.
+VGA output and delayed task wakeups; see `docs/i386-kernel.md`.
 Standalone startup now mounts a packaged RedSea source/module volume through
 ATA PIO and streams its complete kernel source. Host directory/file/bitmap checks
 and the native byte-count/checksum agree; the disk remains unchanged during boot.
-The first BIOS-drive/controller mapping is explicit. Public filesystem APIs,
-startup-source execution and native compiler integration remain required.
-The current standalone image also has resident symbol binding, keyboard/VGA line
-collection and a retained lexer/numerical runtime, as recorded above. Remaining
-public task/CPU and compiler-service integration, complete frontend/JIT execution,
-target numerical evaluation and the document/self-hosting workflow are governed
-by the integration gates. Runner and component success remain intermediate
+The first BIOS-drive/controller mapping is explicit. The current standalone image
+also has resident symbol binding, native keyboard compilation/execution, retained
+definitions, software F64 and source startup from RedSea, as recorded above.
+Remaining public filesystem/task/CPU APIs, complete language providers and the
+document/self-hosting workflow are governed by the integration gates. Runner and component success remain intermediate
 milestones, not the final OS.
 
 ## Verification strategy

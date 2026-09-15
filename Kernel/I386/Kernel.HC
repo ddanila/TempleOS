@@ -1,4 +1,4 @@
-//Native kernel foundation. Resident HolyC compilation and source execution are pending.
+//Native kernel foundation with a retained compiler and source-driven HolyC console.
 #include "/Kernel/Types.HH"
 
 #define TRUE 1
@@ -141,7 +141,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
     0x18,0x20,0);
   if(!kernel_keys) KernelStop;
   kernel_keys->task.memory=&kernel_heap;
-  KernelLog("DONE native kernel startup\n");
+  KernelLog("CONSOLE TASK SPAWNED\n");
   while(1) {
     if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
     else I386SchedYield(&kernel_scheduler);

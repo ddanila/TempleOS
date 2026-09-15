@@ -4260,3 +4260,49 @@ its image is now 44688 bytes (44704 heap bytes), and its framebuffer remains
 Startup measured 37.403 seconds on QEMU/486 with 8 MiB. Full-scroll optimization,
 strict 386SX/DX and physical-machine latency checks, complete language/public API
 integration, DolDoc and native self-hosting remain open.
+
+
+## Native source startup in the console task
+
+The retained console now reads and executes `/Kernel/I386/StartOS.HC` from RedSea
+before its first prompt. It uses the native command-input service and the console
+task's symbol/file context, after worker heap-accounting diagnostics finish.
+The default source supplies `NULL`, `TRUE` and `FALSE`; custom source can execute
+commands and retain functions, globals and macros for keyboard submissions.
+The early display module remains cross-compiled and is reclaimed as before.
+The startup-complete diagnostic now follows source execution and prompt display.
+
+Changing only source bytes in a disk copy proves native compilation and startup
+execution: a macro initializes a global, a function increments it during startup,
+and subsequent keyboard calls reuse both the function and its state. Two further
+boots verify syntax-error recovery and a missing file. A failed source's private
+global is absent and can be declared afresh, while an earlier preprocessor define
+remains visible according to the existing immediate define-table behavior. All
+three cases compare every displayed pixel and verify that execution leaves their
+disks unchanged. Together they run ten follow-up keyboard commands. The ordinary
+keyboard suite now checks 27 commands and 90 submitted lines, including the default
+startup macros.
+
+The custom source exposed a lexer ownership restriction: macro expansion inside a
+global initializer could not release its exhausted child file while a parser save
+point borrowed the parent. `I386LexFilePop` now validates each native snapshot and
+rejects release only when a snapshot borrows that file (or has invalid ownership).
+The snapshot layout is unchanged. The native lexer suite verifies parent snapshot
+restoration, nested pins, invalid owners, preserved interrupt state and complete
+reclamation. Both x64 rebuild/reboot generations also pass.
+
+The boot kernel is 374760 bytes, leaving 16296 bytes after the 2160-byte early stage
+in the fixed reservation. ConsoleRuntime remains ABI 1/20, with a 45480-byte image
+and 45496 retained heap bytes. CompilerRuntime remains ABI 35/200, FileRuntime ABI
+13/32 and CompilerProbe ABI 5/56; their image sizes are unchanged. The source tree
+has 1041 packaged files. The complete standalone verifier passes, including module
+rejection/reclamation and executable instruction audits. All 1041 source hashes and
+eight build-input hashes match the tested files. The default startup-to-prompt
+measurement is 37.199 seconds on QEMU/486 with 8 MiB; this is development evidence,
+not vintage-hardware performance acceptance. Python syntax and whitespace checks
+also pass. See [i386-console-runtime.md](i386-console-runtime.md).
+
+This is native console-source startup, not the complete original StartOS/DolDoc
+workflow or self-hosting. Native source editing/writing, complete public APIs and
+language providers, execution interruption, CPU-fault/debugger integration and
+strict 386SX/DX/physical-machine acceptance remain open.

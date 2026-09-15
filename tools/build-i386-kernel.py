@@ -54,6 +54,39 @@ def verify_startup_rejection(disk, volume, out):
     return results
 
 
+def verify_source_startup(disk, volume, out, console):
+    """Change only disk source, then prove native execution, lifetime and recovery."""
+    original=disk.read_bytes()
+    entry=volume['files']['/Kernel/I386/StartOS.HC']
+    offset=entry['block']*512
+    record=struct.pack('<H38sqqQ',0x800,b'StartOS.HC',entry['block'],entry['size'],0)
+    if original.count(record)!=1: raise ValueError('Ambiguous startup directory entry')
+    cases=[
+        ('custom',b'#define BOOT_VALUE 39\nI64 BootCount=BOOT_VALUE;\nI64 BootNext(){return ++BootCount;}\nBootNext;\n',
+         {'status':'ok','answers':['40'],'commands':[
+             ('BootNext;', ['41']), ('BootNext;', ['42']), ('BOOT_VALUE;', ['39'])]}),
+        ('syntax-error',b'#define BOOT_SEEN 7\nI64 BootCount=39;\nUnknown bad;\n',
+         {'status':'error','answers':['Error: Undefined identifier at '],'commands':[
+             ('BootCount;', ['Error: Undefined identifier at ']),
+             ('I64 BootCount=41;', []), ('++BootCount;', ['42']), ('BOOT_SEEN;', ['7'])]}),
+        ('missing',None,{'status':'error','answers':['Compilation failed'],'commands':[
+            ('6*7;', ['42']), ('I64 recovered=9;', []), ('recovered;', ['9'])]}),
+    ]
+    results={}
+    for label,source,check in cases:
+        work=out/f'source-{label}'; work.mkdir(parents=True,exist_ok=True)
+        changed=bytearray(original)
+        if source is None:
+            changed[original.index(record)+2]=ord('X')
+        else:
+            if len(source)>entry['size']: raise ValueError('Startup fixture exceeds reserved source bytes')
+            changed[offset:offset+entry['size']]=source.ljust(entry['size'],b' ')
+        candidate=work/'kernel.img'; candidate.write_bytes(changed)
+        results[label]=console['run_input'](candidate,work,check)
+        if candidate.read_bytes()!=changed: raise ValueError('Source startup changed disk')
+    return results
+
+
 def compiler_runtime_layout(module):
     size, count, records = struct.unpack_from('<III', module, 16)
     exports, imports = {}, []
@@ -564,7 +597,7 @@ def main():
             'resident_modules':list(MODULES)+['CompilerRuntime', 'FileRuntime', 'ConsoleRuntime'],
             'temporary_modules':['Startup', 'CompilerProbe'],
             'volume':volume,
-            'scope':'Native kernel with retained extended-memory lexer/numerical runtime and AOT startup; shell/JIT and self-hosting unfinished',
+            'scope':'Native kernel with a retained HolyC console and disk source startup; full runtime, DolDoc and self-hosting unfinished',
             'boot_test':None}
     if args.test:
         guest=out/'boot'
@@ -805,11 +838,12 @@ def main():
         keyboard=console['run_input'](disk,out/'input')
         if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')
+        result['source_startup']=verify_source_startup(disk,volume,out,console)
         rejected=verify_startup_rejection(disk,volume,out)
         result['file_runtime']['rejected']=verify_file_rejection(disk,volume,out,files_layout)
         result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
         result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
-        rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ')]
+        rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
         if len(rows)!=1 or len(rows[0])!=7: raise ValueError('Missing retained console')
         cbase,csize,cspan,*entries=[int(x,16) for x in rows[0][1:]]
         if csize!=console_layout['image_bytes'] or cspan!=((csize+23)//8)*8 or entries!=[cbase+x for x in console_layout['entries']]:

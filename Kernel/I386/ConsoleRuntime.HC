@@ -21,6 +21,7 @@ extern U0 ConsolePresent();
 extern Bool ConsoleDisplay();
 extern U0 ConsoleKeys(I64 unused);
 extern U0 ConsoleSubmit(U8 *line);
+extern Bool ConsoleSource(U8 *source,U8 *filename);
 Bool ConsoleInit(CI386ConsoleConfig *config)
 {
   if(console_config || !config || !config->heap || !config->compiler ||
@@ -55,7 +56,7 @@ Bool ConsoleDisplay()
   }
   I386VgaPalette(palette);
   if(!I386TextInit(&console_text,console_planes,sys_font_std)) KernelStop;
-  I386TextWrite(&console_text,"TempleOS i386\nHolyC console\n\n> ");
+  I386TextWrite(&console_text,"TempleOS i386\nHolyC console\n\n");
   ConsolePresent;
   return TRUE;
 }
@@ -64,6 +65,12 @@ U0 ConsoleKeys(I64 unused)
   CI386KeyEvent event;
   U8 line[256];
   I64 length=0,decoded,ch,spaces;
+  KernelLog("STARTUP source begin\n");
+  if(ConsoleSource("#include \"/Kernel/I386/StartOS.HC\"\n","ConsoleStartup.HC"))
+    KernelLog("STARTUP source ok\n");
+  else KernelLog("STARTUP source error\n");
+  I386TextWrite(&console_text,"> "); ConsolePresent;
+  KernelLog("DONE native kernel startup\n");
   while(1) {
     decoded=console_config->read(console_config->reader,&event,TRUE);
     if(decoded<0) {

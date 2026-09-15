@@ -30,7 +30,7 @@ def console_pixels(rows):
     return bytes(pixels)
 
 
-def run_input(disk,out):
+def run_input(disk,out,startup_check=None):
     from PIL import Image
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
     log=out/'debug.log'; log.write_text('')
@@ -89,15 +89,48 @@ def run_input(disk,out):
             wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=60)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
-            screen(heading+['> '],'initial')
+            status='ok' if startup_check is None else startup_check['status']
+            evidence=log.read_text()
+            if evidence.count('STARTUP source begin\n')!=1 or evidence.count(f'STARTUP source {status}\n')!=1:
+                raise ValueError('Missing or repeated native source startup')
+            if not (evidence.index('PROBE RELEASE ') < evidence.index('CONSOLE TASK SPAWNED') <
+                    evidence.index('STARTUP source begin') < evidence.index(f'STARTUP source {status}') <
+                    evidence.index('DONE native kernel startup')):
+                raise ValueError('Source startup ran outside the console startup boundary')
+            rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
+            screen(rows,'initial')
+            plain={' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+                   '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
+                   '*':'8','+':'equal','&':'7','_':'minus'}
+            shifted=set('(){}*+&_')
+            def submit(source, answers, name):
+                nonlocal rows
+                for index,ch in enumerate(source):
+                    shift=ch.isupper() or ch in shifted
+                    if shift: key('shift',True)
+                    press(plain.get(ch,ch.lower()))
+                    if shift: key('shift',False)
+                    if index%4==3:
+                        screen((rows[:-1]+['> '+source[:index+1]])[-60:],'command-typing')
+                press('ret')
+                rows=(rows[:-1]+['> '+source]+answers+['> '])[-60:]
+                screen(rows,name)
+            if startup_check is not None:
+                for index,(source,answers) in enumerate(startup_check['commands']):
+                    submit(source,answers,f'startup-command-{index:02}')
+                result={'result':'pass','cpu':'486','ram_mib':8,'startup_status':status,
+                        'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
+                        'vga':'all pixels matched at each checkpoint'}
+                (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+                return result
             def uploads():
                 return [int(x.split()[2]) for x in log.read_text().splitlines() if x.startswith('VGA ROWS ')]
-            if uploads()!=[60]: raise ValueError('Startup must present one complete screen')
+            if uploads()!=[60,1]: raise ValueError('Startup must present the heading then the prompt')
             for name in ('a','b','c','backspace'): press(name)
             key('shift',True); press('d'); key('shift',False); press('ret')
             wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
             screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
-            if uploads()!=[60,1,1,1,1,1,2]:
+            if uploads()!=[60,1,1,1,1,1,1,2]:
                 raise ValueError(f'Unexpected ordinary-edit upload spans: {uploads()}')
             press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
             wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
@@ -124,23 +157,9 @@ def run_input(disk,out):
             screen(['> ']*60,'scrolled')
             if uploads()[-1]!=60: raise ValueError('Scrolling must invalidate the full screen')
             rows=['> ']*60
-            plain={' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
-                   '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
-                   '*':'8','+':'equal','&':'7'}
-            shifted=set('(){}*+&')
-            def submit(source, answers, name):
-                nonlocal rows
-                for index,ch in enumerate(source):
-                    shift=ch.isupper() or ch in shifted
-                    if shift: key('shift',True)
-                    press(plain.get(ch,ch.lower()))
-                    if shift: key('shift',False)
-                    if index%4==3:
-                        screen((rows[:-1]+['> '+source[:index+1]])[-60:],'command-typing')
-                press('ret')
-                rows=(rows[:-1]+['> '+source]+answers+['> '])[-60:]
-                screen(rows,name)
             commands=[
+                ('TRUE+FALSE;', ['1']),
+                ('NULL(U8 *);', ['0x0']),
                 ('6*7;', ['42']),
                 ('sizeof(U8 *);', ['4']),
                 ('sizeof(I64);', ['8']),

@@ -65,9 +65,9 @@ x86-64 compiler/kernel rebuild/reboot generations pass. Tests use QEMU's 486 mod
 with 8 MiB; generated-code auditing and CR0.EM are not proof of strict 386 support.
 
 This is the first standalone native kernel foundation, not a complete TempleOS
-port. It now has an initial native HolyC console, but still lacks DolDoc startup,
-startup-source execution, full
-public CTask/CPU integration, mouse UI, speaker integration or native
+port. It now has an initial native HolyC console and disk-backed source startup,
+but still lacks DolDoc startup, full public CTask/CPU integration, mouse UI,
+speaker integration or native
 self-hosted compiler. The image now includes a formatted RedSea source/module volume, but it is not
 a complete installed TempleOS distribution. The complete 8 MiB interactive environment and
 16 MiB self-hosting goals remain unproven. The full scope in PLAN.md is unchanged.
@@ -126,7 +126,10 @@ CPU tag changed or one resident-data import renamed; both must halt before modul
 execution, with their disks unchanged. These checks run as part of `--test`.
 The manifest records the linked kernel size; the startup image reclaims 232 bytes
 on the current build. This startup path executes cross-compiled native code from disk. The retained
-console separately compiles and executes source entered at its prompt.
+console separately compiles and executes `/Kernel/I386/StartOS.HC` before its first
+prompt, then accepts keyboard source. Source startup runs in the console task,
+after worker diagnostics. Failed or missing source returns to the prompt through
+the input cleanup path. See [i386-console-runtime.md](i386-console-runtime.md).
 
 ## Native keyboard console
 
