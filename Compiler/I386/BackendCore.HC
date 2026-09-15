@@ -965,11 +965,15 @@ U0 I386BackendCore(CI386Backend *backend)
             break;
           case IC_END_EXP:
             if (depth!=1) throw('Compiler');
-            I386Bytes(out,"\x83\xC4\x08",3);
+            if(ic->ic_flags&ICF_RES_NOT_USED) I386Bytes(out,"\x83\xC4\x08",3);
+            else I386Bytes(out,"\x58\x5A",2);
             depth--;
             break;
-          case IC_RETURN_VAL:
           case IC_RETURN_VAL2:
+            //LexStmt2Bin preserves the previous result; this opcode has no operand.
+            if(depth) throw('Compiler');
+            break;
+          case IC_RETURN_VAL:
             if (depth!=1) throw('Compiler');
             I386Bytes(out,"\x58\x5A",2);
             if (I386IsF64(c)!=I386IsF64(I386ValueClass(backend,ic->t.arg1_tree))) {

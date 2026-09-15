@@ -4052,3 +4052,45 @@ providers, pointer-string initialization, unresolved program linking, durable
 function/code/data publication, the interactive command loop, public APIs, DolDoc
 and native self-hosting remain open. Strict 386SX/DX and physical-machine acceptance
 remain separate from this QEMU/486, 8 MiB integration result.
+
+## Native top-level command compilation
+
+CompilerRuntime ABI 33 (192 bytes) appends `command`, compiling one top-level
+statement through the complete shared parser. Parsing retains global scope;
+an empty native function frame is introduced only for code generation. The
+caller's IR, pass and AOT/misc-data state are restored. Declarations return no
+command output and remain available to later statements in the same control.
+Executable outputs use the existing registered execution and release providers.
+
+The native backend now implements `IC_RETURN_VAL2` as the zero-operand operation
+defined by the shared instruction table, preserving the existing EDX:EAX result.
+A used end-of-expression node places its value into those registers instead of
+discarding the evaluation slot without extracting the result. This closes the
+statement-result path used by the original `LexStmt2Bin` convention.
+
+All 32 native command cases pass across boot and worker tasks. They cover mixed
+definitions/execution, global scope inside a block, loops, arrays, calls/recursion,
+integer and F64 results, literal ownership, malformed and partially executed
+source, invalid top-level return, two retained outputs and load-only behavior.
+Every command preserves a caller IR sentinel; each complete unwind restores exact
+heap byte/allocation counts, task references, active controls, exception state
+and IF. Load-only tests verify that runtime assignment is skipped while global
+initialization is retained.
+
+Both x64 rebuild/reboot generations, all 238 function/ABI cases and the software
+F64 expression suite pass, including executable instruction audits. The complete
+standalone verifier passes the previous parser/function/scalar recovery checks,
+module rejection, pixel-exact VGA and keyboard checks. Source and build-input
+hashes match the tested working tree; syntax and whitespace checks pass.
+
+The kernel remains 391016 bytes, leaving 40 bytes in the fixed boot reservation
+with its early stage. The retained compiler image is 1184488 bytes (1184504 heap
+bytes). The temporary probe image is 411320 bytes and reclaims all 411336 heap
+bytes. FileRuntime remains ABI 13/32 bytes and CompilerProbe ABI 5/56 bytes.
+
+See [i386-native-commands.md](i386-native-commands.md). The keyboard console still
+collects lines without invoking this compiler entry. Durable function/code/data
+publication and error recovery that retains previous definitions, answer formatting
+and public task integration, compile-time generators, assembler/try services,
+DolDoc and native self-hosting remain required. This remains a QEMU/486 development
+result, not strict 386SX/DX or physical-machine acceptance.

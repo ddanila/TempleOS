@@ -40,7 +40,7 @@ extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I6
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 extern U0 ICInfoInit();
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==188
+#assert sizeof(CI386CompilerServices)==192
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -79,6 +79,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->bootstrap_scalars=&I386BootstrapScalars; services->load_scalar_types=&I386LoadScalarTypes;
   services->scalar_types_check=&I386ScalarTypesCheck;
   services->frontend=&I386FrontendServices; services->statement=&I386FrontendStatement;
+  services->command=&I386FrontendCommand;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

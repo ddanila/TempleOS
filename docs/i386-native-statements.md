@@ -37,9 +37,11 @@ generation. Compiler-time expressions reject automatic-frame references because
 their temporary execution frame does not contain the function's runtime locals.
 
 Automatic register hints are accepted; explicit x86-64 register assignments fail.
-Private static allocation is zero-filled. Native pointer-string initialization,
-assembly/stream/try service integration, trace disassembly, deferred AOT initializer
-output and the top-level execution loop remain unfinished. These limitations do
+Private static allocation is zero-filled. ABI 33 adds a top-level command compiler
+using the existing output executor; see [native commands](i386-native-commands.md).
+Native pointer-string initialization, assembly/stream/try service integration,
+trace disassembly, deferred AOT initializer output and console integration remain
+unfinished. These limitations do
 not change the complete language and self-hosting requirements in `PLAN.md`.
 
 ## Bootstrap constant evaluation

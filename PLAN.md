@@ -938,7 +938,16 @@ undefined-label rejection and control unwind cover failures and resource recover
 The host constant evaluator also needs two folding passes to resolve arithmetic
 in switch labels, array bounds and defaults. See `docs/i386-native-statements.md`.
 
-Complete assembly/stream/try and top-level execution providers, pointer-string
+CompilerRuntime ABI 33 (192 bytes) now supplies a top-level command compiler.
+It parses with global scope before adding the native execution frame, preserves
+the caller's IR, and returns registered output for the existing executor. One
+source stream can define globals/functions and execute later commands against
+them. Native boot/worker checks cover mixed execution, F64 results, loops, literal
+lifetime, retained outputs, load-only mode and error cleanup. The backend's
+zero-operand `RETURN_VAL2` now preserves the statement result. See
+`docs/i386-native-commands.md`.
+
+Complete assembly/stream/try providers, pointer-string
 initialization, unresolved function/global linking, executable code and data publication, interactive
 compilation, DolDoc integration and native self-hosting remain required. This bootstrap milestone does not satisfy
 the strict 386SX/DX or full native programming-environment acceptance gates.

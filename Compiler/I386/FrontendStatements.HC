@@ -122,3 +122,50 @@ Bool I386FrontendStatement(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symb
   cc->flags=cc->flags&~CCF_AOT_COMPILE|old_flags&CCF_AOT_COMPILE;
   return TRUE;
 }
+U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,I64 *raw_type)
+{//Native LexStmt2Bin staging: parse globally, then give generated code a frame.
+  CI386Frontend *state;
+  CI386FrontendBound *bound;
+  CI386FrontendCode *result=0;
+  CIntermediateCode *node,*enter;
+  CHashClass *type;
+  I64 old_flags,old_pass;
+  if(!I386CmpCodeOwner(heap,cc) || !symbols || !(state=symbols->context) ||
+      state->heap!=heap || state->cc!=cc || symbols!=&state->symbols || cc->error_cnt || cc->htc.fun)
+    throw('Compiler',TRUE);
+  I386FrontendStack(state,cc);
+  if(raw_type) *raw_type=RT_U0;
+  old_flags=cc->flags; old_pass=cc->pass;
+  I386FrontendPush(state,cc); I386FrontendInit(state,cc);
+  cc->flags&=~(CCF_AOT_COMPILE|CCF_HAS_MISC_DATA|(1<<CCf_PASS_TRACE_PRESENT));
+  if(PrsStmtCore(&state->statements,cc,0,0,CMPF_PRS_SEMICOLON)) I386FrontendUnavailable(state);
+  if(cc->coc.coc_head.next!=&cc->coc.coc_head) {
+    cc->coc.coc_head.last->ic_flags&=~ICF_RES_NOT_USED;
+    bound=I386FrontendAlloc(state,sizeof(CI386FrontendBound),TRUE,FALSE);
+    bound->typer.types=state->expression.types;
+    cc->pass=0; I386FrontendOptimize(state,cc); I386FrontendOptimize(state,cc);
+    type=state->expression.types[RT_I64];
+    for(node=cc->coc.coc_head.last;node!=&cc->coc.coc_head;node=node->last)
+      if(node->ic_code>IC_END_EXP && node->ic_code!=IC_NOP2 && node->ic_class) {
+        type=I386ValueClass(&bound->typer,node); break;
+      }
+    //Do not install the dummy function until parsing has finished: declarations
+    //inside top-level blocks must retain their ordinary global scope.
+    bound->fun.return_class=type; cc->htc.fun=&bound->fun;
+    enter=I386FrontendAdd(state,cc,IC_ENTER,0,0,0);
+    ICDetach(enter);
+    enter->last=&cc->coc.coc_head; enter->next=cc->coc.coc_head.next;
+    enter->next->last=enter; cc->coc.coc_head.next=enter;
+    I386FrontendAdd(state,cc,IC_RETURN_VAL2,0,type,0);
+    I386FrontendAdd(state,cc,IC_LEAVE,0,type,0);
+    result=I386FrontendOutput(state,cc,type,0);
+    cc->htc.fun=0;
+    I386FrontendFree(state,bound);
+    if(raw_type) *raw_type=result->raw_type;
+  } else if(!I386COCDiscard(heap,cc)) I386FrontendUnavailable(state);
+  I386FrontendPop(state,cc);
+  cc->flags=cc->flags&~(CCF_AOT_COMPILE|CCF_HAS_MISC_DATA)|old_flags&(CCF_AOT_COMPILE|CCF_HAS_MISC_DATA);
+  cc->pass=old_pass;
+  if(result) return result->code;
+  return 0;
+}

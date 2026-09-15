@@ -255,3 +255,12 @@ functions, globals and static storage remain control-owned. Calls use private
 relocation descriptors, and successful or failed compilation must support full
 control cleanup. See [i386-native-statements.md](i386-native-statements.md) for
 the supported integration paths, lifetime rules and remaining public-shell work.
+
+## Top-level command compilation (version 33)
+
+The 192-byte interface appends `command`. It compiles one shared-parser statement
+while preserving global declaration scope and the caller's IR. Registered outputs
+use the existing execution/release providers; private definitions remain available
+throughout the input control's lifetime. See
+[i386-native-commands.md](i386-native-commands.md) for result, load-only and failure
+semantics and the remaining persistent-session work.
