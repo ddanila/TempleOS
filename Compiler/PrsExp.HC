@@ -41,6 +41,7 @@ U0 PrsHostServices(CPrsExpressionServices *services)
   services->optimize=&PrsHostOptimize; services->allocate=&PrsHostAllocate;
   services->duplicate=&PrsHostDuplicate; services->string=&PrsHostString;
   services->hash_add=&PrsHostHashAdd; services->hash_after=&PrsHostHashAfter;
+  services->class_view=0;
   services->type=&PrsHostType; services->expression=&PrsHostExpression;
 }
 

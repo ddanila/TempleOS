@@ -1,8 +1,7 @@
 # Compiler diagnostics outside the bootstrap stage
 
-CompilerProbe now requires ABI 6 (56 bytes) for the complete public task/CPU
-prefixes used by its live probes; the record size is unchanged. See
-[shared task records](i386-task-records.md) for migration and version rejection.
+CompilerProbe now requires ABI 7 (56 bytes) for the expression-service class-view
+callback and completion probes. See [class completion](i386-class-completion.md).
 
 `CompilerProbe.t32m` contains the compiler token, identifier/string and definition
 probes previously compiled directly into Kernel32.BIN. The six bootstrap modules

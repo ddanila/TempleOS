@@ -68,8 +68,11 @@ Native publication also accepts owned forward class declarations used through
 pointers, and checks that incomplete types are not published as values or base
 classes. Top-level class parsing now uses the same ownership-aware type callback
 as nested declarations. Private forward declarations can be completed within one
-input with pointer identity preserved; completion across published inputs still
-needs a transaction. See [opaque class dependencies](docs/i386-opaque-classes.md).
+input with pointer identity preserved. Completion across published inputs now
+stages a private definition and commits into the stable descriptor in the owning
+task scope, with rollback and nested-conflict checks. Actual public-header loading
+remains required. See [class completion](docs/i386-class-completion.md) and
+[opaque class dependencies](docs/i386-opaque-classes.md).
 
 The complete public task/CPU records now live in shared headers used by
 `KernelA.HH`, with the original x86-64 task member layout preserved. Cross-compiled
@@ -98,7 +101,7 @@ advance independently throughout.
 | Slice | Concrete change | Gate before proceeding |
 | --- | --- | --- |
 | Live task/CPU layout | Embed the complete shared public records in native task/CPU records; move exception and compiler state to those fields, preserving private scheduler extensions. Version modules whose field offsets change. | Boot and worker tasks observe the same records through segment bindings; task exit and exception recovery reclaim resources; incompatible modules are rejected before callbacks run. |
-| Public header loading | Complete published forward classes transactionally and load the actual public headers through the native compiler. Publish typed `Fs`/`Gs` after their layouts and bindings agree. | Separate source submissions share class identity; failed completion preserves prior users; ordinary source reads live public task/CPU fields. |
+| Public header loading | Use transactional class completion to load the actual public headers through the native compiler. Publish typed `Fs`/`Gs` after their layouts and bindings agree. | Separate source submissions share class identity; failed completion preserves prior users; ordinary source reads live public task/CPU fields. |
 | Public service ownership | Connect task lists, heap selection, compiler contexts and file lifetime to the existing public API. Specify initialization and teardown for every migrated field. | Task creation, compilation, file failure and task exit leave no dangling symbols, callbacks or owned allocations. A field's presence alone does not count as an implemented service. |
 | Native language closure | Maintain a source-driven list of remaining blockers encountered when compiling the existing editor, documents and compiler. Resolve ABI, constant evaluation and assembly behavior in the shared implementation. | Representative existing sources compile and run with consistent cross-bootstrap/native results; every remaining blocker has a reproducer. |
 | VGA document workflow | Connect existing drawing and DolDoc code to planar presentation, keyboard/mouse input and RedSea persistence. Bound display and disk work so interrupts and cooperative tasks remain responsive. | Edit, execute, save, reboot and reopen an executable document at the 8 MiB design target, with measured peak memory and input latency. |

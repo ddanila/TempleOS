@@ -1,5 +1,18 @@
 //Shared complete expression parsing; supplied services own effects and failures.
 #include "/Compiler/PrsExpression.HH"
+CHashClass *PrsClassView(CPrsExpressionServices *services,CHashClass *type)
+{
+  if(services->class_view) return services->class_view(services->context,type);
+  return type;
+}
+CHashClass *PrsClassFwdView(CPrsExpressionServices *services,CHashClass *type)
+{
+  type=PrsClassView(services,type);
+  while(type->fwd_class) type=PrsClassView(services,type->fwd_class);
+  return type;
+}
+I64 PrsClassViewSize(CPrsExpressionServices *services,CCmpCtrl *cc,CHashClass *type)
+{ return CmpTargetSize(cc,PrsClassView(services,type)); }
 CIntermediateCode *PrsEmit(CPrsExpressionServices *services,CCmpCtrl *cc,
   I64 op,I64 value,CHashClass *type,I64 flags=0)
 { return (*services->add)(services->context,cc,op,value,type,flags); }
@@ -59,8 +72,8 @@ CIntermediateCode *PrsAddOpCore(CPrsExpressionServices *services,CCmpCtrl *cc,I6
   }
   if (div_sizeof) {
     tmpc--;
-    if (CmpTargetSize(cc,tmpc)!=1) {
-      PrsEmit(services,cc,IC_IMM_I64,CmpTargetSize(cc,tmpc),services->types[RT_I64]);
+    if (PrsClassViewSize(services,cc,tmpc)!=1) {
+      PrsEmit(services,cc,IC_IMM_I64,PrsClassViewSize(services,cc,tmpc),services->types[RT_I64]);
       PrsEmit(services,cc,IC_DIV,0,services->types[RT_I64]);
       tmpc=services->types[RT_I64];
     }
@@ -119,7 +132,7 @@ pe_unary_term1:
 	  if (tmpi->ic_code==IC_DEREF)
 	    tmpi->ic_code=i;
 	} else {
-	  tmpc=OptClassFwd(tmpi->ic_class-1);
+	  tmpc=PrsClassFwdView(services,tmpi->ic_class-1);
 	  PrsEmit(services,cc,i,0,tmpc);
 	}
       case PE_CHECK_BINARY_OPS1:
@@ -162,7 +175,7 @@ pe_check_binary_ops2:
 	      (*services->retire)(services->context,cc,tmpi);
 	    tmpc++;
 	  }
-	  tmpc=OptClassFwd(tmpc);
+	  tmpc=PrsClassFwdView(services,tmpc);
 	  if (stk_op)
 	    PrsEmit(services,cc,stk_op,0,tmpc);
 	  goto pe_check_binary_ops2;
@@ -206,7 +219,7 @@ pe_do_binary_op:
 	left_prec=cur_op.u8[2];
 	if (intermediate_code_table[cur_op.u16[0]].type==IST_ASSIGN) {
 	  tmpi=cc->coc.coc_head.last;
-	  tmpc=OptClassFwd(tmpi->ic_class);
+	  tmpc=PrsClassFwdView(services,tmpi->ic_class);
 	  if (intermediate_code_table[tmpi->ic_code].type!=IST_DEREF ||
 		!tmpc->ptr_stars_cnt && !Bt(&tmpc->flags,Cf_INTERNAL_TYPE))
 	    (*services->report)(services->context,cc,0,"Invalid lval at ");
@@ -277,7 +290,7 @@ U0 PrsSizeOfCore(CPrsExpressionServices *services,CCmpCtrl *cc)
     (*services->report)(services->context,cc,0,"Invalid class at ");
   if (tmpm=cc->local_var_entry) {
     tmpc=tmpm->member_class;
-    i=CmpTargetSize(cc,tmpc)*tmpm->dim.total_cnt;
+    i=PrsClassViewSize(services,cc,tmpc)*tmpm->dim.total_cnt;
     if ((*services->lex)(services->context,cc)=='.')
       goto pu_sizeof_member;
   } else {
@@ -292,21 +305,21 @@ U0 PrsSizeOfCore(CPrsExpressionServices *services,CCmpCtrl *cc)
 	    -dbg_info->body[0];
       (*services->lex)(services->context,cc);
     } else {
-      i=CmpTargetSize(cc,tmpc);
+      i=PrsClassViewSize(services,cc,tmpc);
       while ((*services->lex)(services->context,cc)=='.') {
 pu_sizeof_member:
 	if (!(tmpc->type & (HTT_CLASS|HTT_GLBL_VAR)))
 	  (*services->report)(services->context,cc,0,"Invalid class at ");
 	else if (tmpc->type & HTT_GLBL_VAR)
 	  tmpc=tmpc(CHashGlblVar *)->var_class;
-	if ((*services->lex)(services->context,cc)!=TK_IDENT || !(tmpm=MemberFind(cc->cur_str,tmpc)))
+	if ((*services->lex)(services->context,cc)!=TK_IDENT || !(tmpm=MemberFind(cc->cur_str,PrsClassView(services,tmpc))))
 	  (*services->report)(services->context,cc,0,"Invalid member at ");
 	else if (cc->local_var_entry)
 	  cc->local_var_entry->use_cnt--;
 	tmpc=tmpm->member_class;
 //Probably others like this:
 	#assert offset(CHashClass.size)==offset(CHashGlblVar.size)
-	i=CmpTargetSize(cc,tmpc)*tmpm->dim.total_cnt;
+	i=PrsClassViewSize(services,cc,tmpc)*tmpm->dim.total_cnt;
       }
     }
   }
@@ -338,7 +351,7 @@ U0 PrsOffsetOfCore(CPrsExpressionServices *services,CCmpCtrl *cc)
     (*services->report)(services->context,cc,0,"Expecting '.' at ");
   i=0;
   do {
-    if ((*services->lex)(services->context,cc)!=TK_IDENT || !(tmpm=MemberFind(cc->cur_str,tmpc)))
+    if ((*services->lex)(services->context,cc)!=TK_IDENT || !(tmpm=MemberFind(cc->cur_str,PrsClassView(services,tmpc))))
       (*services->report)(services->context,cc,0,"Invalid member at ");
     else if (cc->local_var_entry)
       cc->local_var_entry->use_cnt--;
@@ -444,8 +457,8 @@ I64 PrsFunCallCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *ps,Boo
 	cc->pass=0;	 (*services->optimize)(services->context,cc);
 	cc->pass=1; tmpi=(*services->optimize)(services->context,cc);
 	(*services->pop)(services->context,cc);
-	last_class=OptClassFwd(tmpi->ic_class);
-	tmpc2=OptClassFwd(tmpm->member_class);
+	last_class=PrsClassFwdView(services,tmpi->ic_class);
+	tmpc2=PrsClassFwdView(services,tmpm->member_class);
 	if (tmpc2->raw_type==RT_F64 && !tmpm->dim.next &&
 	      last_class->raw_type!=RT_F64)
 	  tmpi->ic_flags|=ICF_RES_TO_F64;
@@ -972,7 +985,7 @@ I64 PrsUnaryModifierCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *
       if (!(tmpc->type & HTT_CLASS))
 	(*services->report)(services->context,cc,0,"Invalid class at ");
       if ((*services->lex)(services->context,cc)!=TK_IDENT ||
-	    !(tmpm=MemberFind(cc->cur_str,tmpc)))
+	    !(tmpm=MemberFind(cc->cur_str,PrsClassView(services,tmpc))))
 	(*services->report)(services->context,cc,0,"Invalid member at ");
       else if (cc->local_var_entry)
 	cc->local_var_entry->use_cnt--;
@@ -1034,18 +1047,18 @@ I64 PrsUnaryModifierCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *
       if (!*unary_post_prec)
 	*unary_post_prec=PREC_TERM;
       (*services->lex)(services->context,cc);
-      tmpc=OptClassFwd(cc->coc.coc_head.last->ic_class);
+      tmpc=PrsClassFwdView(services,cc->coc.coc_head.last->ic_class);
       if (!tmpc->ptr_stars_cnt)
 	(*services->report)(services->context,cc,0,"Not array or ptr ");
       if (!(cc->flags & (CCF_ARRAY | CCF_RAX))) {
-	tmpc=OptClassFwd(tmpc-1);
+	tmpc=PrsClassFwdView(services,tmpc-1);
 	if (!tmpc->ptr_stars_cnt)
 	  (*services->report)(services->context,cc,0,"Not array or ptr ");
 	PrsEmit(services,cc,IC_DEREF+PREC_UNARY_PRE<<16,0,tmpc);
       }
       tmpc1=tmpc-1;
       if (tmpad1=*_tmpad) {
-	PrsEmit(services,cc,IC_IMM_I64,tmpad1->total_cnt*CmpTargetSize(cc,tmpc1),tmpc);
+	PrsEmit(services,cc,IC_IMM_I64,tmpad1->total_cnt*PrsClassViewSize(services,cc,tmpc1),tmpc);
 	if (*_tmpad=tmpad1->next) {
 	  old_flags=cc->flags;
 	  if (!(*services->expression)(services->context,cc,NULL,FALSE,ps))
@@ -1062,7 +1075,7 @@ I64 PrsUnaryModifierCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *
 	  return PE_UNARY_MODIFIERS;
 	}
       } else
-	PrsEmit(services,cc,IC_IMM_I64,CmpTargetSize(cc,tmpc1),tmpc);
+	PrsEmit(services,cc,IC_IMM_I64,PrsClassViewSize(services,cc,tmpc1),tmpc);
       old_flags=cc->flags;
       if (!(*services->expression)(services->context,cc,NULL,FALSE,ps))
 	throw('Compiler');

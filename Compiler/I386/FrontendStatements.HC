@@ -71,11 +71,11 @@ U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
   //The shared function parser calls resolve before clearing Cf_EXTERN.
   while(fixup=*link) {
     if(fixup->function==fun) {
-      if(fixup->argument_count!=fun->arg_cnt || fixup->result_type!=fun->return_class ||
+      if(fixup->argument_count!=fun->arg_cnt || I386FrontendClassView(state,fixup->result_type)!=I386FrontendClassView(state,fun->return_class) ||
           fixup->flags!=(fun->flags&(FSG_FUN_FLAGS1|1<<Ff_DOT_DOT_DOT))) I386FrontendUnavailable(state);
       member=fun->member_lst_and_root;
       for(i=0;i<fun->arg_cnt;i++) {
-        if(!member || member->member_class!=fixup->arguments[i]) I386FrontendUnavailable(state);
+        if(!member || I386FrontendClassView(state,member->member_class)!=I386FrontendClassView(state,fixup->arguments[i])) I386FrontendUnavailable(state);
         member=member->next;
       }
       for(code=state->codes;code && code->code!=fixup->code;code=code->next);

@@ -26,6 +26,10 @@ class CI386FrontendResident {
   CHashExport *export;
   I64 address;
 };
+class CI386FrontendCompletion {
+  CI386FrontendCompletion *next;
+  CHashClass *published,*staged;
+};
 class CI386Frontend {
   CI386Heap *heap;
   CCmpCtrl *cc;
@@ -44,6 +48,7 @@ class CI386Frontend {
   CI386FrontendCode *codes;
   CI386FrontendFixup *fixups;
   CI386FrontendResident *residents;
+  CI386FrontendCompletion *completions;
   U8 *diagnostic_context;
   U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
 };
@@ -122,15 +127,28 @@ U8 *I386FrontendDuplicate(U8 *context,U8 *source)
   for(i=0;i<length;i++) result[i]=source[i];
   return result;
 }
+CHashClass *I386FrontendClassView(U8 *context,CHashClass *type)
+{
+  CI386Frontend *state=context;
+  CI386FrontendCompletion *completion;
+  CHashClass *base;
+  if(!type || !(type->type&HTT_CLASS)) return type;
+  base=type-type->ptr_stars_cnt;
+  for(completion=state->completions;completion;completion=completion->next)
+    if(base==completion->published) return completion->staged+type->ptr_stars_cnt;
+  return type;
+}
 I64 I386FrontendLex(U8 *context,CCmpCtrl *cc)
 {
   CI386Frontend *state=context;
-  return I386ParserToken(state->heap,cc,"Frontend",&state->lines,state->includes);
+  I64 token=I386ParserToken(state->heap,cc,"Frontend",&state->lines,state->includes);
+  cc->hash_entry=I386FrontendClassView(state,cc->hash_entry);
+  return token;
 }
 CIntermediateCode *I386FrontendAdd(U8 *context,CCmpCtrl *cc,I64 op,I64 value,CHashClass *type,I64 flags)
 {
   CI386Frontend *state=context;
-  CIntermediateCode *node=I386ICAdd(state->heap,cc,op,value,type,flags);
+  CIntermediateCode *node=I386ICAdd(state->heap,cc,op,value,I386FrontendClassView(state,type),flags);
   if(!node) throw('OutMem',TRUE);
   return node;
 }
@@ -181,7 +199,9 @@ CHashClass *I386FrontendType(U8 *context,CCmpCtrl *cc,CHashClass **first,I64 *mo
   CMemberLst *member,U8 **ident,CHashFun **fun,CHashExport **export_entry,CArrayDim *dim,I64 flags)
 {
   CI386Frontend *state=context;
-  CHashClass *result=I386ParseType(state->heap,cc,&state->types,first,mode,member,ident,fun,export_entry,dim,flags);
+  CHashClass *result;
+  if(first) *first=I386FrontendClassView(state,*first);
+  result=I386ParseType(state->heap,cc,&state->types,first,mode,member,ident,fun,export_entry,dim,flags);
   if(!result) I386FrontendUnavailable(state);
   return result;
 }
@@ -497,13 +517,22 @@ CHash *I386FrontendSingleFind(U8 *context,U8 *name,CHashTable *table,I64 mask)
       if(entry->type&mask && !StrCmp(entry->str,name)) return entry;
   return 0;
 }
+#include "/Compiler/I386/FrontendClassCompletion.HC"
 CHashClass *I386FrontendClass(U8 *context,CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern)
 {
   CI386Frontend *state=context;
   CHashClass *result;
-  //The shared AOT join can complete an extern in a parent. Never mutate published graphs.
+  //Published descriptors remain unchanged until the whole input commits.
   result=HashFind(cc->cur_str,state->parent,HTT_CLASS);
-  if(result && Bt(&result->flags,Cf_EXTERN)) I386FrontendUnavailable(state);
+  if(result && Bt(&result->flags,Cf_EXTERN) &&
+      !I386FrontendSingleFind(state,cc->cur_str,state->table,HTT_CLASS)) {
+    if(is_extern) { I386FrontendLex(state,cc); return result; }
+    I386FrontendStageClass(state,result);
+  }
+  if(!is_extern) {
+    result=I386FrontendSingleFind(state,cc->cur_str,state->table,HTT_CLASS);
+    if(result && Bt(&result->flags,Cf_EXTERN)) I386CompletionCheckPriorValues(state,result);
+  }
   result=I386ParseClass(state->heap,cc,&state->symbols,keyword,flags,is_extern);
   if(!result) I386FrontendUnavailable(state);
   return result;
@@ -602,6 +631,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   e->push=&I386FrontendPush; e->pop=&I386FrontendPop; e->append=&I386FrontendAppend;
   e->optimize=&I386FrontendOptimize; e->allocate=&I386FrontendAlloc; e->duplicate=&I386FrontendDuplicate;
   e->string=&I386FrontendString; e->hash_add=&I386FrontendHashAdd; e->hash_after=&I386FrontendHashAfter;
+  e->class_view=&I386FrontendClassView;
   e->type=&I386FrontendType; e->expression=&I386FrontendExpression;
   t=&state->types; t->context=state; t->types=types; t->lex=&I386FrontendLex; t->report=&I386FrontendReport;
   t->snapshot_push=&I386FrontendSnapshot; t->snapshot_drop=&I386FrontendDrop;

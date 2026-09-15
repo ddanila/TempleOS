@@ -67,9 +67,9 @@ U0 ProbeOpaque(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
             ProbeProgramUse(probe,heap,outer,"Holder x;x.p=0;x.value=42;x.value+(x.p!=0);")!=42) KernelStop;
         KernelLog("OPAQUE USED\n");
         if(kind==0) {
-          //Until transactional completion exists, a new input must reject the
-          //definition without changing the published class or its pointer users.
-          failed=probe->files->control_new("class Opaque{I64i value;};",CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/OpaqueFailure.HC");
+          //A later syntax error must roll back the staged definition without
+          //changing the published class or its pointer users.
+          failed=probe->files->control_new("class Opaque{I64i value;};Unknown bad;",CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/OpaqueFailure.HC");
           if(!failed || !probe->compiler->control_enter(heap,failed,0,0)) KernelStop;
           failed_symbols=probe->compiler->frontend(heap,failed,probe->internal_types,probe->disk_include);
           if(!failed_symbols) KernelStop;

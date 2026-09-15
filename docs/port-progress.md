@@ -4669,3 +4669,54 @@ Public header loading and cross-input class completion, the complete heap/stack/
 exception and task-family APIs, DolDoc, native self-hosting and strict 386 hardware
 acceptance remain unfinished. The complete records and private getter probes do
 not establish those services or expose public `Fs`/`Gs` through startup source.
+
+## Native class completion transactions
+
+Ordinary forward classes can now be completed across source submissions in the
+owning task's symbol scope. The native frontend builds a private definition and
+uses an optional expression-service class view for type/member lookup and emitted
+types. Publication validates the target again, then transfers the member graph
+into the stable public descriptor. Existing pointer variants retain their
+addresses. Private class, global, callback and function references are reconnected
+to that identity, including forward function fixups and local type indexes.
+A nested successful completion invalidates an older pending definition.
+
+Completion rejects earlier objects, members, bases and defined functions whose
+layout already used the incomplete type by value. Such storage cannot be resized
+retroactively; pointer uses and inactive forward signatures remain valid. Failed
+parsing, abandoned inputs and allocation failure preserve the old layout and
+reclaim private state. Empty classes also retain a valid member-list sentinel.
+The canonical name allocation remains live for generated `lastclass` arguments.
+See [class completion](i386-class-completion.md).
+
+CompilerRuntime, FileRuntime, CompilerProbe and ConsoleRuntime advance to ABI
+37/200, 15/32, 7/56 and 3/20 (version/bytes). Their outer record sizes are unchanged;
+expression-service providers now initialize the optional class-view callback.
+Host and isolated parser providers use the original descriptors through a null
+callback. Native completion uses the compiler control's private view.
+
+Both x86-64 rebuild/reboot generations and all 105 original task-field layout
+comparisons pass. Fourteen completion cases run in each native task phase. The
+full standalone verifier passes, including source-startup variants and previous
+module-version rejection/reclamation. All 63 keyboard commands and 126 submitted
+lines pass with exact VGA pixels; QMP input now maps shifted `<`/`>` punctuation
+for pointer-member expressions. Diagnostic startup measured 72.393 seconds on
+the QEMU/486 8 MiB development profile.
+
+The kernel remains 382368 bytes, leaving 6752 bytes after the 4096-byte stage in
+its reservation. CompilerRuntime uses 1271600 image bytes and 1271616 retained
+heap bytes. CompilerProbe uses 576248 image bytes and fully reclaims its 576264
+temporary heap bytes. FileRuntime remains 125168/125184 and ConsoleRuntime
+45536/45552 (image/retained heap bytes); the framebuffer remains 153600 bytes.
+All 1055 source hashes, eight native build-input hashes, three layout-test input
+hashes and the disk-image hash match the tested files. These measurements do not
+establish strict 386 performance or the complete low-memory document workflow.
+
+Focused regressions pass for functions (238 cases), data, inline assembly and
+task symbol lifetime, including their instruction audits. Python syntax and
+whitespace checks pass.
+
+Actual public-header loading, include-guard behavior after failed input, remaining
+language providers, public kernel services, DolDoc, native self-hosting and strict
+386 hardware acceptance remain required. This transaction does not roll back
+already executed command side effects or the existing immediate macro publication.

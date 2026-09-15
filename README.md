@@ -79,7 +79,7 @@ Next;
 
 The last command prints `41`. Syntax errors return to the prompt and preserve
 previous definitions. This is an initial console: multiline editing, the complete
-language/runtime, DolDoc, startup-source execution and native self-hosting remain
+language/runtime, DolDoc and native self-hosting remain
 unfinished. See [console details](docs/i386-console-runtime.md) and
 [kernel image details](docs/i386-kernel.md).
 

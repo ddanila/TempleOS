@@ -99,10 +99,10 @@ def run_input(disk,out,startup_check=None):
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={'<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"')
+            shifted=set('(){}*+&_"<>')
             def submit(source, answers, name):
                 nonlocal rows
                 for index,ch in enumerate(source):
@@ -168,6 +168,13 @@ def run_input(disk,out,startup_check=None):
                 ('sizeof(Holder);', ['12']),
                 ('Holder h;h.p=0;h.value=42;', ['0x0','42']),
                 ('h.value;', ['42']),
+                ('class Opaque{I64 value;};Unknown bad;', ['Error: Undefined identifier at ']),
+                ('sizeof(Opaque);', ['0']),
+                ('class Opaque{I64 value;};Opaque item;', []),
+                ('I64 Attach(){h.p=&item;item.value=42;return h.p->value;}', []),
+                ('Attach;', ['42']),
+                ('h.p->value;', ['42']),
+                ('sizeof(Opaque);', ['8']),
                 ('0x100000000+42;', ['4294967338']),
                 ('I64 n=40;', []),
                 ('I64 Next(){return ++n;}', []),

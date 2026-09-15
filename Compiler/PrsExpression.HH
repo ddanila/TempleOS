@@ -26,6 +26,8 @@ class CPrsExpressionServices {
   U0 (*hash_after)(U8 *context,CHash *entry,CHash *after,CHashTable *table);
   CHashClass *(*type)(U8 *context,CCmpCtrl *cc,CHashClass **first,I64 *mode,
     CMemberLst *member,U8 **ident,CHashFun **fun,CHashExport **export_entry,CArrayDim *dim,I64 flags);
+  //Optional private type view; NULL preserves the supplied descriptor.
+  CHashClass *(*class_view)(U8 *context,CHashClass *type);
   Bool (*expression)(U8 *context,CCmpCtrl *cc,I64 *precedence,Bool end_exp,CPrsStk *stack);
 };
 extern CIntermediateCode *PrsAddOpCore(CPrsExpressionServices *services,CCmpCtrl *cc,I64 stk_op,CHashClass *tmpc);

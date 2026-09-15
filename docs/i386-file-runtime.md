@@ -1,8 +1,7 @@
 # Retained file services and disk-backed compiler includes
 
-FileRuntime now requires ABI 14 (32 bytes) because native task field offsets
-changed when the scheduler adopted the complete public task record. See
-[shared task records](i386-task-records.md) for migration and version rejection.
+FileRuntime now requires ABI 15 (32 bytes), binding CompilerRuntime ABI 37 and its
+expression-service contract. See [class completion](i386-class-completion.md).
 
 `FileRuntime.t32m` packages native path construction, filename rules, archive
 expansion, decoded file loading, drive-context routing and the compiler file-input

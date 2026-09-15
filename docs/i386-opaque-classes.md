@@ -32,25 +32,22 @@ input. A record parsed before that definition retains the same class identity:
 extern class Node;class Link{Node *p;};class Node{I64 value;Link link;};
 ```
 
-Completing a declaration already published by an earlier input remains rejected.
-The native frontend must not let the shared AOT parser mutate a parent symbol
-graph during compilation. A failed completion leaves the existing descriptor
-and pointer users unchanged. Top-level class and extern-class statements now use
-the same type-service class callback as nested declarations, so they observe the
-native ownership boundary instead of bypassing it. The host callback continues
-to use the original shared class parser.
+Completing an ordinary forward declaration published by an earlier input now
+uses a [private completion transaction](i386-class-completion.md). The owning task
+parses against a private definition and commits its members into the stable public
+descriptor only after the whole input passes publication checks. Failed parsing,
+abandoned controls and failed publication preserve the old layout and pointer
+identities. Completing a declaration inherited from another task's scope remains
+rejected because its metadata belongs to that task's lifetime and heap.
 
-The remaining implementation needs a private
-completion transaction with stable public type identity, reference updates and
-rollback; simply replacing a hash entry or setting `fwd_class` is insufficient
-for all member lookup and class-identity operations. This work remains required
-for the full public kernel-header integration.
+Top-level class and extern-class statements use the same type-service class
+callback as nested declarations. The native callback stages published completions;
+the host callback continues to use the original shared class parser.
 
 `CompilerOpaqueProbe.HC` exercises seven cases on boot and worker tasks: ordinary
 publication, three malformed-descriptor mutations with successful retry after
 restoration, incomplete value/base rejection, and completion of mutually linked
-private classes. It checks pointer identity, use from fresh controls, failed
-cross-input completion, and exact reclamation of heap/control/task state. The
+private classes. It checks pointer identity, use from fresh controls, rollback after a later syntax error in a completion input, and exact reclamation of heap/control/task state. The
 keyboard suite independently checks the example above through VGA output.
 
 Verification commands:

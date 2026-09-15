@@ -1,22 +1,4 @@
 //Publish complete private definitions and executable/static storage atomically.
-Bool I386ProgramTypeReady(CHashClass *type)
-{
-  if(!type) return FALSE;
-  while(type->fwd_class) type=type->fwd_class;
-  return type->ptr_stars_cnt || !Bt(&type->flags,Cf_EXTERN);
-}
-Bool I386ProgramClassReady(CHashClass *type)
-{
-  if(Bt(&type->flags,Cf_EXTERN))
-    return !type->size && !type->neg_offset && !type->member_cnt &&
-      !type->ptr_stars_cnt && type->raw_type==RT_PTR &&
-      !type->member_lst_and_root && !type->member_class_base_root &&
-      type->last_in_member_lst==&type->member_lst_and_root &&
-      !type->base_class && !type->fwd_class &&
-      !(type->type&(HTF_IMPORT|HTF_UNRESOLVED));
-  return (!type->base_class || I386ProgramTypeReady(type->base_class)) &&
-    (!type->fwd_class || I386ProgramTypeReady(type->fwd_class));
-}
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
 {
   if(!allocation) { transfer->ok=FALSE; return; }
@@ -33,6 +15,8 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   CI386ParserAllocation *record;
   CI386FrontendCode *code;
   CI386FrontendResident *binding;
+  CI386FrontendCompletion *completion;
+  CI386CompletionTransfer visit;
   CHashTable *source,*destination;
   CHashSrcSym *entry,*prior;
   CHashFun *fun;
@@ -56,6 +40,8 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
       source->mask<0 || source->mask>=0x1FFFFFFF || (source->mask+1)&source->mask ||
       !I386ParserRecord(owned,source->body) ||
       I386HeapSize(heap,source->body)!=(source->mask+1)*sizeof(CHash *)) goto done;
+  for(completion=frontend->completions;completion;completion=completion->next)
+    if(!I386CompletionValid(frontend,completion)) goto done;
   for(binding=frontend->residents;binding;binding=binding->next)
     if(!I386FrontendResidentValid(frontend,binding)) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) capacity++;
@@ -65,14 +51,17 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   if(!transfer.records || !storage) goto done;
   transfer.owned=owned; transfer.source=source; transfer.count=0;
   transfer.capacity=capacity; transfer.ok=TRUE;
-  visitor.context=&transfer; visitor.release=&I386ClassTransferVisit;
+  visit.transfer=&transfer; visit.completion=0;
+  visitor.context=&visit; visitor.release=&I386CompletionVisit;
   for(i=0;i<=source->mask;i++)
     for(entry=source->body[i];entry;entry=entry->next) {
       binding=I386FrontendResidentFind(frontend,entry);
+      completion=I386CompletionFind(frontend,entry);
+      visit.completion=completion;
       if(!entry->str || !I386ParserRecord(owned,entry) || entry->ie_lst) goto done;
       if(binding) {
         if(I386FrontendResidentCollision(destination,entry->str,binding->export)) goto done;
-      } else if(I386ClassNamePresent(destination,entry->str)) goto done;
+      } else if(!completion && I386ClassNamePresent(destination,entry->str)) goto done;
       for(j=0;j<=i;j++)
         for(prior=source->body[j];prior && prior!=entry;prior=prior->next)
           if(!StrCmp(prior->str,entry->str)) goto done;
@@ -123,6 +112,9 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
     I386HeapFree(heap,storage); storage=retained;
   }
   //Validation and allocation are finished. No fallible work remains in the move.
+  if(frontend->completions)
+    for(i=0;i<=source->mask;i++)
+      for(entry=source->body[i];entry;entry=entry->next) I386CompletionRebind(frontend,entry);
   for(i=0;i<transfer.count;i++) {
     record=transfer.records[i];
     record->last->next=record->next; record->next->last=record->last;
@@ -135,8 +127,11 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   for(i=0;i<=source->mask;i++)
     while(entry=source->body[i]) {
       source->body[i]=entry->next; entry->next=0;
-      HashAdd(entry,destination);
+      completion=I386CompletionFind(frontend,entry);
+      if(completion) I386CompletionCommit(frontend,completion);
+      else HashAdd(entry,destination);
     }
+  frontend->completions=0;
   result=TRUE;
 done:
   if(storage) I386HeapFree(heap,storage);

@@ -1,8 +1,9 @@
 # Retained compiler runtime in extended memory
 
-CompilerRuntime now requires ABI 36 (200 bytes) because native tasks embed the
-complete public task record. The service-table shape is unchanged from ABI 35. See
-[shared task records](i386-task-records.md) for migration and version rejection.
+CompilerRuntime now requires ABI 37 (200 bytes) because expression services add
+an optional private class-view callback for [class completion](i386-class-completion.md).
+The outer service-table size is unchanged; callers supplying expression services
+must initialize the new callback.
 
 The bootstrap kernel no longer contains the quoted-string/number/character/operator decoders,
 software F64 implementation or power table. `Kernel/I386/CompilerRuntime.HC`

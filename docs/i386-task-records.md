@@ -86,5 +86,6 @@ lists, documents and window state remain unfinished. Complete record storage doe
 not imply that every field already has working service semantics.
 
 The private compiled getter probes do not expose public `Fs`/`Gs` in startup source
-or prove native JIT loading of the full headers. Cross-input class-completion
-transactions and actual public-header loading remain required before that step.
+or prove native JIT loading of the full headers. Class completion across inputs now uses
+[private transactions](i386-class-completion.md) in the owning task scope. Actual
+public-header loading and service integration remain required before that step.

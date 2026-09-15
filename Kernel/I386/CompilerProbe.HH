@@ -2,8 +2,8 @@
 #define I386_COMPILER_PROBE_INCLUDED
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
-//Public task/CPU prefixes replace the compact native record ABI.
-#define I386_COMPILER_PROBE_VERSION 6
+//Compiler expression services now include a private class-view callback.
+#define I386_COMPILER_PROBE_VERSION 7
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;
