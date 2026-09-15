@@ -124,6 +124,50 @@ allocations and unnecessary duplication. Any proposed change to the hardware
 contract or HolyC/DolDoc behavior requires an explicit plan revision supported by
 those measurements.
 
+### Next public-memory integration package
+
+The native allocation core is component-tested, but public task heaps are not
+yet connected. Complete this boundary before making the editor and compiler
+depend on public allocation services. Use the complete shared `CHeapCtrl` and
+`CBlkPool` records; the bootstrap arena descriptor is not a public heap control.
+
+1. **Define ownership and teardown.** A retained memory service owns backing
+   regions; each task owns its heap controls and allocations. Specify whether
+   `code_heap` and `data_heap` share a control on the flat i386 target, and destroy
+   each distinct control exactly once. Initialize child memory state before task
+   publication and unwind partial construction on failure. Reclaim task heaps
+   only after compiler controls, file state and symbol references have drained.
+   The existing task cleanup callback runs before compiler cleanup and is therefore
+   too early for final heap destruction. Keep root resources alive for the kernel
+   lifetime and retain service code while any callback can reach it.
+2. **Publish the actual allocation contract.** Load the shared memory headers,
+   preserving their help metadata, and bind current-task and explicit task/heap
+   selection through the public interfaces. Implement allocation-failure
+   exceptions with interrupt state restored, plus public free, size and aligned
+   allocation behavior. Public size queries report capacity; bootstrap size
+   queries report the exact request. Audit callers before migrating them instead
+   of substituting one allocator for the other mechanically.
+3. **Share scarce backing memory.** Add tracked backing regions and growth with
+   explicit ownership of alignment padding and pool metadata. Avoid a permanent
+   fixed public arena beside a separate compiler arena that strands free memory.
+   Migrate compiler, generated-code and task allocations incrementally, preserving
+   their required lifetimes. Account for fragmentation and cached pages as well
+   as live payload; complete pool accounting and reclamation before claiming the
+   8 MiB interactive target.
+4. **Validate the integration boundary.** Version runtime modules when task
+   extension layouts change. Exercise root and worker allocations, explicit heap
+   selection, failed spawn, allocation failure during compilation, retained
+   definitions after errors, and repeated task exit/reap. Verify incompatible
+   modules are rejected before callbacks run, and that final reclamation restores
+   the expected backing-memory totals. Preserve x86-64 layout and rebuild checks.
+
+Completion means ordinary native HolyC can allocate through the public API and
+survive compiler cleanup, with task-owned storage reclaimed at the correct final
+lifetime boundary. It does not establish the full low-memory target: measure the
+complete VGA document workflow at 8 MiB and native rebuilds at 16 MiB separately.
+Keep strict 386/no-387 execution and physical VGA acceptance alongside this work;
+the existing QEMU/486 results remain development evidence.
+
 ## Principles and deliberate amendments
 
 Preserve:
