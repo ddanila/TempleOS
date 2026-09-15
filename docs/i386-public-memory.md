@@ -22,7 +22,7 @@ The heap hash remains 1024 bytes on both targets.
 
 `Kernel/I386/Memory.HC` implements an internal allocation core over these complete
 public records. It does not cast the bootstrap `CI386Heap` into `CHeapCtrl`.
-A private pool extension records its caller-supplied arena and validation tag;
+A private pool extension records registered backing regions and a validation tag;
 the public pool fields hold the actual free lists, page bins and byte counters.
 Heap controls hold actual owned-page lists, free fragments, allocation bins,
 owner pointers and counters. The caller owns the control records and backing arena.
@@ -56,10 +56,56 @@ the boot environment, default/current and explicit task heap selection, throwing
 `MAlloc` and public `Free`/`MSize` are still required before application exposure.
 Aligned-allocation markers, debug
 headers, heap logging, fragment tidying and adjacent-page merging are not yet
-implemented here. Full integration also needs growth across backing regions,
-public `BlkPoolInit`/`BlkPoolAdd` metadata accounting, and migration of compiler
+implemented here. The region and growth providers below remain internal; full
+integration also needs public `BlkPoolInit`/`BlkPoolAdd` metadata accounting and migration of compiler
 allocation ownership to the task/code heap policy. Public service and
 low-memory/latency acceptance remain open.
+
+## Regions and demand growth
+
+Pools can start empty and register discontiguous, page-aligned regions through
+`I386MemPoolAdd`. Each `CI386PoolRegion` extends the complete shared `CMemRange`
+with a pool owner and used-page-byte count. Registration rejects overlapping
+arenas and control records before mutation. Allocations remain within one
+registered region, including when two regions are physically adjacent. Address
+membership is checked before reading a page-block header.
+
+`I386MemPoolRemove` detaches a wholly unused region. It checks the free lists
+before mutation, then removes that region's raw fragments and small/large bin
+entries. A heap's cached pages still count as owned pages and prevent removal.
+The caller may release or overwrite the backing bytes only after successful
+detach. Additional region records are borrowed; pool reinitialization rejects
+attached external records rather than discarding their ownership links.
+
+`Kernel/I386/MemoryBacking.HC` supplies an optional growth callback over the
+bootstrap allocator. It starts without reserving an arena. An exhausted page
+request invokes growth once, with a recursion guard and the pool unlocked; a
+corrupt free-list entry is rejected without invoking growth. The provider tries
+its growth quantum, falling back to the required page span if the quantum cannot
+fit. Large-bin rounding happens once before growth and is preserved on retry.
+
+Each owned region uses one bootstrap allocation containing its record, alignment
+padding and page arena. `alloced_u8s` reports usable page bytes; the provider's
+`retained` count includes the complete bootstrap allocation span, including its
+header and absorbed tail bytes. Caller-owned provider/control storage is separate
+from that count. This preserves the distinction between public allocation
+capacity and the bootstrap allocator's exact requested size.
+
+`I386MemBackingTrim` returns wholly unused owned regions to the bootstrap
+allocator; other regions and live allocations remain usable. Trim is explicit
+and must run after heap/free operations finish using returned page headers.
+Calling it inside `PageFree` would invalidate a header its caller still needs.
+The retained public-memory service must arrange these trim points when it binds
+the running kernel's tasks. Provider teardown rejects remaining owned pages or
+borrowed regions. An empty provider can grow again without reinitialization.
+
+The native heap fixture exercises three region lifetimes and three provider
+lifetimes, alongside the existing allocation corpus. It covers holes, adjacent
+regions, overlap/overflow rejection, detach from all bin kinds, cached-page
+ownership, growth under memory pressure, failed growth without retained-state
+changes, fragmentation, and immediate bootstrap reuse of returned regions.
+The fixture's loader permits 192 KiB below its existing first heap at `0x40000`;
+the OS hardware and RAM targets are unchanged.
 
 ## Task ownership
 

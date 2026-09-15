@@ -4934,3 +4934,49 @@ reclamation checks. Diagnostic console startup takes 129.812 seconds on the 8 Mi
 QEMU/486 development profile. This is not strict 386 or physical-machine evidence.
 All 1064 native source hashes, eight build-input hashes and the final disk hash
 match; the layout input hashes, Python syntax and staged whitespace checks pass.
+
+## Registered memory regions and bootstrap backing
+
+The internal public page pool now accepts discontiguous regions, using the
+complete shared `CMemRange` inside an ownership extension. Allocation and release
+validate region membership and account used pages per region. Overlapping arenas
+or metadata, overflow, foreign blocks and cross-region blocks are rejected.
+Removing an unused region unlinks its raw fragments and both page-bin kinds
+before the caller can return or overwrite its storage. Cached heap pages keep
+their region owned until heap teardown returns them.
+
+`Kernel/I386/MemoryBacking.HC` provides demand growth from the bootstrap allocator.
+It reserves no arena at initialization. Page exhaustion invokes the provider once
+with a recursion guard; growth tries the configured quantum and then the required
+page span. A region's record and alignment padding share one tracked bootstrap
+allocation. Provider accounting includes the actual allocation span, while the
+public pool reports usable page bytes. Explicit trim returns wholly unused
+regions after callers finish reading freed page headers. See
+[region ownership and growth](i386-public-memory.md#regions-and-demand-growth).
+
+The native heap fixture passes its existing 49 layout checks, 1024 churn rounds
+and three bulk heap lifetimes, plus three region and three backing-provider
+lifetimes. Tests cover live owners in separate regions, overlap and hole checks,
+all free-list bin kinds, memory pressure, smaller growth fallback, unchanged
+state after failed growth, fragmentation, one-time large-page rounding, and
+bootstrap reuse of returned memory while other allocations remain live. The
+larger fixture uses a 192 KiB loader below the unchanged first heap address.
+The task-heap lifecycle fixture also passes against this pool implementation.
+Both x86-64 rebuild/reboot generations and the 43-field memory and 105-field task
+layout checks pass.
+
+The provider is still internal and is not loaded by the boot kernel. Retained
+service integration must bind actual task heaps and place trim calls after public
+free/heap teardown, before the allocation API can be exposed to console programs.
+Original public pool metadata accounting, aligned allocation, compiler allocation
+migration and the full document/self-hosting/hardware gates remain outstanding.
+
+Final native boot/console verification passes: 81 commands across 144 submitted
+lines, exact VGA checkpoints, all startup-source variants, and all target/import/
+API rejection and reclamation checks. Diagnostic console startup takes 126.733
+seconds on the 8 MiB QEMU/486 development profile. Kernel size remains 386912 bytes
+plus the 4096-byte early stage, leaving 2208 bytes in the existing reservation.
+All 1066 OS source hashes match the native, rebuild and layout results; eight
+native build inputs, four memory-layout inputs, three task-layout inputs and the
+final disk hash also match. Python syntax and staged whitespace checks pass.
+These are development results, not strict 386/no-387 or physical-machine evidence.

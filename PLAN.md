@@ -91,8 +91,11 @@ The original public memory records are also shared, with a native allocation
 core using real `CBlkPool`/`CHeapCtrl` state. Task heap ownership now has native
 lifecycle coverage: child construction, parent retention, rollback and teardown
 after compiler/file/symbol cleanup. It remains internal: retained memory service
-loading, binding the running kernel's tasks, growing backing pools and the
-throwing public allocation interface are the next public-contract work. See
+loading, binding the running kernel's tasks and the throwing public allocation
+interface are the next public-contract work. Registered backing regions and a
+demand-growth provider now have native coverage, including return of wholly
+unused regions to the bootstrap allocator. The retained service must integrate
+their trim points into public allocation and task teardown. See
 [public memory](docs/i386-public-memory.md).
 See [shared task records](docs/i386-task-records.md) and
 [native public headers](docs/i386-public-headers.md).

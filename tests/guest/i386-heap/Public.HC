@@ -4,6 +4,7 @@
 CI386PublicPool public_pool;
 CHeapCtrl public_heaps[2];
 I64 requests[12]={0,1,4,5,100,1004,1005,1011,1024,4096,65536,131000};
+extern I64 PublicRegionTest();
 I64 PublicHeapTest()
 {
   CI386PublicPool *pool=&public_pool;
@@ -99,5 +100,7 @@ I64 PublicHeapTest()
   }
   for(i=0;i<8;i++) if(guard[i]!=0xA5 || guard[0x40008+i]!=0xA5) return 128;
   if((GetRFlags^flags)&0x200) return 129;
-  return 0;
+  return PublicRegionTest;
 }
+
+#include "Regions.HC"

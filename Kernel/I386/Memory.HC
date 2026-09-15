@@ -5,44 +5,149 @@
 //must be supplied by the retained memory service before application exposure.
 Bool I386MemPoolValid(CI386PublicPool *pool)
 {
-  return pool && pool->signature==I386_POOL_SIGNATURE && pool->arena &&
-    !((pool->arena+0)(U64)&511) && pool->size>=512 && !(pool->size&511) &&
-    (pool->arena+0)(U64)+pool->size<=0x100000000 &&
-    pool->alloced_u8s==pool->size && 0<=pool->used_u8s<=pool->size;
+  CI386PoolRegion *region,*last=0;
+  U64 total=0,used=0,base;
+  U32 count=0;
+  if(!pool || pool->signature!=I386_POOL_SIGNATURE || pool->size&511 ||
+      pool->alloced_u8s!=pool->size || !(0<=pool->used_u8s<=pool->size)) return FALSE;
+  for(region=pool->regions;region;region=region->next) {
+    if(count++>=pool->region_count || region->pool!=pool || region->last!=last ||
+        region->type!=MRT_RAM || region->flags || !region->base || region->size<512 ||
+        region->size>0xFFFFFFFF || region->size&511 || region->used&511 ||
+        region->used>region->size) return FALSE;
+    base=(region->base+0)(U64);
+    if(base&511 || base+region->size>0x100000000) return FALSE;
+    total+=region->size; used+=region->used; last=region;
+  }
+  return count==pool->region_count && total==pool->size && used==pool->used_u8s;
+}
+CI386PoolRegion *I386MemBlockRegion(CI386PublicPool *pool,CMemBlk *block)
+{//Pool shape already validated; test address membership before reading the block.
+  CI386PoolRegion *region;
+  U64 address=(block+0)(U64),base;
+  if(!block || address&511) return 0;
+  for(region=pool->regions;region;region=region->next) {
+    base=(region->base+0)(U64);
+    if(base<=address && address<=base+region->size-512) return region;
+  }
+  return 0;
 }
 Bool I386MemBlockValid(CI386PublicPool *pool,CMemBlk *block,U32 signature)
 {
-  U64 address=(block+0)(U64),base=(pool->arena+0)(U64);
-  return block && !(address&511) && base<=address && address<=base+pool->size-512 &&
-    block->mb_signature==signature && block->pags &&
-    address+(block->pags+0)(U64)*512<=base+pool->size;
+  CI386PoolRegion *region=I386MemBlockRegion(pool,block);
+  return region && block->mb_signature==signature && block->pags &&
+    (block+0)(U64)+(block->pags+0)(U64)*512<=(region->base+0)(U64)+region->size;
 }
-Bool I386MemPoolInit(CI386PublicPool *pool,U8 *arena,I64 size)
+Bool I386MemRangesOverlap(U64 a,U64 size_a,U64 b,U64 size_b)
 {
-  U64 base=(arena+0)(U64),control=(pool+0)(U64);
+  return a<b+size_b && b<a+size_a;
+}
+Bool I386MemPoolEmpty(CI386PublicPool *pool)
+{//Fresh control or an empty pool; legacy single-inline-region reinit is allowed.
   U32 flags=I386IrqSave;
   I64 i;
-  CMemBlk *block=arena;
-  if(!pool || !arena || base&511 || size<512 || size>0xFFFFFFFF || size&511 ||
-      base+size>0x100000000 || control+sizeof(CI386PublicPool)>0x100000000 ||
-      control<base+size && control+sizeof(CI386PublicPool)>base ||
-      pool->signature==I386_POOL_SIGNATURE && pool->used_u8s) {
+  if(!pool || (pool+0)(U64)+sizeof(CI386PublicPool)>0x100000000 ||
+      pool->signature==I386_POOL_SIGNATURE && (pool->locked_flags || pool->growing || pool->grow || pool->used_u8s ||
+       pool->region_count>1 || pool->regions && pool->regions!=&pool->initial)) {
     I386IrqRestore(flags); return FALSE;
   }
   for(i=0;i<sizeof(CI386PublicPool);i++) pool(U8 *)[i]=0;
-  pool->arena=arena; pool->size=size; pool->signature=I386_POOL_SIGNATURE;
-  pool->alloced_u8s=size;
-  block->next=0; block->last=0; block->mb_signature=MBS_UNUSED_SIGNATURE_VAL;
-  block->pags=size>>MEM_PAG_BITS; pool->mem_free_lst=block;
+  pool->signature=I386_POOL_SIGNATURE;
   I386IrqRestore(flags); return TRUE;
+}
+Bool I386MemPoolAdd(CI386PublicPool *pool,CI386PoolRegion *region,U8 *arena,I64 size)
+{
+  U32 flags=I386IrqSave;
+  U64 base=(arena+0)(U64),control=(region+0)(U64),pool_address=(pool+0)(U64);
+  CI386PoolRegion *other;
+  CMemBlk *block=arena;
+  Bool result=FALSE;
+  if(!I386MemPoolValid(pool) || pool->locked_flags || !region || !arena || base&511 ||
+      size<512 || size>0xFFFFFFFF || size&511 || base+size>0x100000000 ||
+      (pool->size+0)(U64)+size>0xFFFFFFFF || pool->region_count==0xFFFFFFFF ||
+      control+sizeof(CI386PoolRegion)>0x100000000 ||
+      I386MemRangesOverlap(base,size,pool_address,sizeof(CI386PublicPool)) ||
+      I386MemRangesOverlap(base,size,control,sizeof(CI386PoolRegion)) ||
+      region!=&pool->initial && I386MemRangesOverlap(control,sizeof(CI386PoolRegion),
+        pool_address,sizeof(CI386PublicPool))) goto done;
+  for(other=pool->regions;other;other=other->next)
+    if(I386MemRangesOverlap(base,size,(other->base+0)(U64),other->size) ||
+        I386MemRangesOverlap(base,size,(other+0)(U64),sizeof(CI386PoolRegion)) ||
+        I386MemRangesOverlap(control,sizeof(CI386PoolRegion),(other->base+0)(U64),other->size) ||
+        I386MemRangesOverlap(control,sizeof(CI386PoolRegion),(other+0)(U64),sizeof(CI386PoolRegion))) goto done;
+  if(region->pool) goto done;
+  pool->locked_flags=1;
+  region->base=arena; region->size=size; region->type=MRT_RAM; region->flags=0;
+  region->pool=pool; region->used=0; region->last=0; region->next=pool->regions;
+  if(pool->regions) pool->regions->last=region;
+  pool->regions=region; pool->region_count++; pool->size+=size; pool->alloced_u8s+=size;
+  block->mb_signature=MBS_UNUSED_SIGNATURE_VAL; block->pags=size>>MEM_PAG_BITS;
+  block->last=0; block->next=pool->mem_free_lst; pool->mem_free_lst=block;
+  pool->locked_flags=0; result=TRUE;
+done:
+  I386IrqRestore(flags); return result;
+}
+Bool I386MemPoolInit(CI386PublicPool *pool,U8 *arena,I64 size)
+{//Validate before touching either control or arena, including failed reinit.
+  U64 base=(arena+0)(U64),control=(pool+0)(U64);
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
+  if(pool && arena && !(base&511) && 512<=size<=0xFFFFFFFF && !(size&511) &&
+      base+size<=0x100000000 && control+sizeof(CI386PublicPool)<=0x100000000 &&
+      !I386MemRangesOverlap(control,sizeof(CI386PublicPool),base,size) && I386MemPoolEmpty(pool))
+    result=I386MemPoolAdd(pool,&pool->initial,arena,size);
+  I386IrqRestore(flags); return result;
+}
+CMemBlk **I386MemPoolFreeHead(CI386PublicPool *pool,I64 index)
+{
+  if(!index) return &pool->mem_free_lst;
+  index--;
+  if(index<MEM_FREE_PAG_HASH_SIZE) return &pool->free_pag_hash[index];
+  return &pool->free_pag_hash2[index-MEM_FREE_PAG_HASH_SIZE];
+}
+Bool I386MemPoolRemove(CI386PublicPool *pool,CI386PoolRegion *region)
+{//Return only a wholly unused region. Caller releases its record/backing storage.
+  U32 flags=I386IrqSave;
+  CI386PoolRegion *other;
+  CMemBlk *block,**link;
+  I64 i,total=0,remaining;
+  Bool found=FALSE,result=FALSE;
+  if(!I386MemPoolValid(pool) || pool->locked_flags || !region) goto done;
+  for(other=pool->regions;other;other=other->next) if(other==region) found=TRUE;
+  if(!found || region->used) goto done;
+  //Preflight every list before mutation; no dangling free-list pointer may remain.
+  remaining=pool->size/512;
+  for(i=0;i<1+MEM_FREE_PAG_HASH_SIZE+64-MEM_PAG_BITS;i++)
+    for(block=*I386MemPoolFreeHead(pool,i);block;block=block->next) {
+      if(!remaining-- || !I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL)) goto done;
+      if(I386MemBlockRegion(pool,block)==region) total+=(block->pags+0)(U64)*512;
+    }
+  if(total!=region->size) goto done;
+  pool->locked_flags=1;
+  for(i=0;i<1+MEM_FREE_PAG_HASH_SIZE+64-MEM_PAG_BITS;i++) {
+    link=I386MemPoolFreeHead(pool,i);
+    while(block=*link) {
+      if(I386MemBlockRegion(pool,block)==region) *link=block->next;
+      else link=&block->next;
+    }
+  }
+  if(region->last) region->last->next=region->next;
+  else pool->regions=region->next;
+  if(region->next) region->next->last=region->last;
+  pool->size-=region->size; pool->alloced_u8s-=region->size; pool->region_count--;
+  region->next=0; region->last=0; region->pool=0; region->used=0;
+  pool->locked_flags=0; result=TRUE;
+done:
+  I386IrqRestore(flags); return result;
 }
 CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
 {
   U32 flags=I386IrqSave;
   CMemBlk *block=0,**link;
+  CI386PoolRegion *region;
   I64 i=0,n,remaining;
-  if(!I386MemPoolValid(pool) || pool->locked_flags || pages<1 || pages>pool->size/512) goto done;
-  pool->locked_flags=1;
+  Bool retried=FALSE,grown;
+  if(!I386MemPoolValid(pool) || pool->locked_flags || pages<1 || pages>0xFFFFFFFF/512) goto done;
   if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
   else {
     n=pages-MEM_EXTRA_HASH2_PAGS;
@@ -50,6 +155,9 @@ CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
     pages=(1<<i)+MEM_EXTRA_HASH2_PAGS;
     link=&pool->free_pag_hash2[i];
   }
+retry:
+  if(!I386MemPoolValid(pool) || pool->locked_flags) goto done;
+  pool->locked_flags=1;
   if(block=*link) {
     if(!I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL) || block->pags!=pages) goto invalid;
     *link=block->next; goto found;
@@ -74,9 +182,26 @@ CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
       if(!I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL)) goto invalid;
       if(block->pags>=pages) { pool->free_pag_hash2[i]=block->next; goto found; }
     }
+  pool->locked_flags=0;
+  if(!retried && pool->grow && !pool->growing) {
+    retried=TRUE; pool->growing=1;
+    grown=(*pool->grow)(pool,pages);
+    pool->growing=0;
+    if(grown) {
+      if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
+      else {
+        n=pages-MEM_EXTRA_HASH2_PAGS; i=0;
+        while(n>>=1) i++;
+        link=&pool->free_pag_hash2[i];
+      }
+      goto retry;
+    }
+  }
 invalid:
   block=0; pool->locked_flags=0; goto done;
 found:
+  region=I386MemBlockRegion(pool,block);
+  region->used+=(block->pags+0)(U64)*512;
   block->mb_signature=MBS_USED_SIGNATURE_VAL; block->next=block->last=0;
   pool->used_u8s+=(block->pags+0)(U64)*512; pool->locked_flags=0;
 done:
@@ -87,10 +212,13 @@ Bool I386MemPageFree(CI386PublicPool *pool,CMemBlk *block)
   U32 flags=I386IrqSave;
   I64 i=0,n;
   CMemBlk **link;
+  CI386PoolRegion *region;
   Bool result=FALSE;
   if(!I386MemPoolValid(pool) || pool->locked_flags ||
       !I386MemBlockValid(pool,block,MBS_USED_SIGNATURE_VAL) ||
       pool->used_u8s<(block->pags+0)(U64)*512) goto done;
+  region=I386MemBlockRegion(pool,block);
+  if(region->used<(block->pags+0)(U64)*512) goto done;
   if(block->pags<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[block->pags];
   else {
     n=block->pags-MEM_EXTRA_HASH2_PAGS;
@@ -99,6 +227,7 @@ Bool I386MemPageFree(CI386PublicPool *pool,CMemBlk *block)
     link=&pool->free_pag_hash2[i];
   }
   pool->locked_flags=1;
+  region->used-=(block->pags+0)(U64)*512;
   pool->used_u8s-=(block->pags+0)(U64)*512;
   block->mb_signature=MBS_UNUSED_SIGNATURE_VAL; block->last=0;
   block->next=*link; *link=block;
