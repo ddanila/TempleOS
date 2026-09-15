@@ -652,7 +652,7 @@ sm_underscore_import:
 		    i=PrsKeyWord(cc);
 		    if (i==KW_CLASS||i==KW_UNION) {
 		      (*expression->lex)(expression->context,cc);
-		      PrsClassCore(globals->symbols,cc,i,fsp_flags,TRUE);
+		      (*types->class_join)(types->context,cc,i,fsp_flags,TRUE);
 		      fsp_flags&=FSF_ASM;
 		      goto sm_semicolon;
 		    }
@@ -764,7 +764,7 @@ sm_import:
 		case KW_UNION:
 		case KW_CLASS:
 		  (*expression->lex)(expression->context,cc);
-		  tmpex=PrsClassCore(globals->symbols,cc,i,fsp_flags,FALSE);
+		  tmpex=(*types->class_join)(types->context,cc,i,fsp_flags,FALSE);
 		  if (!cc->htc.fun && cc->token!=';') {
 		    PrsGlblVarLstCore(globals,cc,PRS0_NULL|PRS1_NULL,tmpex,0,fsp_flags);
 		    fsp_flags&=FSF_ASM;

@@ -64,6 +64,13 @@ because `RT_PTR` and `RT_I64` share a value. This advances compiler binding, whi
 complete public task/CPU layouts remain required. See
 [intrinsic publication](docs/i386-intrinsic-publication.md).
 
+Native publication also accepts owned forward class declarations used through
+pointers, and checks that incomplete types are not published as values or base
+classes. Top-level class parsing now uses the same ownership-aware type callback
+as nested declarations. Private forward declarations can be completed within one
+input with pointer identity preserved; completion across published inputs still
+needs a transaction. See [opaque class dependencies](docs/i386-opaque-classes.md).
+
 Hardware acceptance runs alongside all four priorities: establish named 386SX/DX
 profiles without a coprocessor, verify the legacy BIOS/ATA path and planar VGA,
 audit generated and handwritten executable code, and measure input responsiveness

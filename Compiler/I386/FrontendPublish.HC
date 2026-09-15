@@ -1,4 +1,22 @@
 //Publish complete private definitions and executable/static storage atomically.
+Bool I386ProgramTypeReady(CHashClass *type)
+{
+  if(!type) return FALSE;
+  while(type->fwd_class) type=type->fwd_class;
+  return type->ptr_stars_cnt || !Bt(&type->flags,Cf_EXTERN);
+}
+Bool I386ProgramClassReady(CHashClass *type)
+{
+  if(Bt(&type->flags,Cf_EXTERN))
+    return !type->size && !type->neg_offset && !type->member_cnt &&
+      !type->ptr_stars_cnt && type->raw_type==RT_PTR &&
+      !type->member_lst_and_root && !type->member_class_base_root &&
+      type->last_in_member_lst==&type->member_lst_and_root &&
+      !type->base_class && !type->fwd_class &&
+      !(type->type&(HTF_IMPORT|HTF_UNRESOLVED));
+  return (!type->base_class || I386ProgramTypeReady(type->base_class)) &&
+    (!type->fwd_class || I386ProgramTypeReady(type->fwd_class));
+}
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
 {
   if(!allocation) { transfer->ok=FALSE; return; }
@@ -61,7 +79,8 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
       if(entry->type&HTT_FUN) {
         fun=entry;
         if(I386HeapSize(heap,fun)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
-            Bt(&fun->flags,Cf_EXTERN) || fun->ext_lst || fun->type&HTF_IMPORT) goto done;
+            Bt(&fun->flags,Cf_EXTERN) || fun->ext_lst || fun->type&HTF_IMPORT ||
+            !I386ProgramTypeReady(fun->return_class)) goto done;
         found=FALSE;
         for(code=frontend->codes;code;code=code->next) if(code->code==fun->exe_addr) found=TRUE;
         if(Bt(&fun->flags,Ff_INTERNAL)) {
@@ -69,21 +88,24 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
         } else if(!found && !binding) goto done;
       } else if(entry->type&HTT_CLASS) {
         if(I386HeapSize(heap,entry)!=sizeof(CHashClass)*(PTR_STARS_NUM+1) ||
-            Bt(&entry(CHashClass *)->flags,Cf_EXTERN)) goto done;
+            !I386ProgramClassReady(entry)) goto done;
       } else if(entry->type&HTT_GLBL_VAR) {
         global=entry;
         if(I386HeapSize(heap,global)!=sizeof(CHashGlblVar) || global->type&(HTF_IMPORT|HTF_UNRESOLVED) ||
+            !I386ProgramTypeReady(global->var_class) ||
             global->size<0 || !(global->flags&GVF_ALIAS) &&
             (!global->data_addr || I386HeapSize(heap,global->data_addr)<global->size)) goto done;
       } else if(!(entry->type&HTT_DEFINE_STR)) goto done;
       SymbolHashVisit(&visitor,entry);
       if(!transfer.ok) goto done;
       if(entry->type&(HTT_CLASS|HTT_FUN))
-        for(member=entry(CHashClass *)->member_lst_and_root;member;member=member->next)
+        for(member=entry(CHashClass *)->member_lst_and_root;member;member=member->next) {
+          if(!I386ProgramTypeReady(member->member_class)) goto done;
           if(member->flags&MLF_STATIC) {
             I386ProgramStorageVisit(&transfer,storage,member->static_data);
             if(!transfer.ok) goto done;
           }
+        }
     }
   //Live command literal pools may be referenced by published data. Retain every
   //remaining registered output, not only named function entry points.

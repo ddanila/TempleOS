@@ -4540,3 +4540,44 @@ hashes, eight build-input hashes and the disk-image hash match the tested files.
 Python syntax and whitespace checks pass. Full public task/runtime integration,
 remaining language providers, DolDoc, native self-hosting and strict 386SX/DX and
 physical-machine acceptance remain required.
+
+## Native opaque class dependencies
+
+Native publication now transfers ordinary empty forward class declarations and
+their metadata to the task scope without creating executable storage. Pointer
+users remain valid after the defining compiler control is destroyed. Publication
+rejects unfinished classes used as values or base classes, and checks the empty
+descriptor shape before accepting an opaque declaration.
+
+Top-level class and extern-class statements now dispatch through the existing
+type-service class callback, matching nested type declarations. Previously they
+bypassed the native frontend's ownership boundary. The host callback still uses
+the original shared parser. Completing an already-published opaque declaration
+remains rejected before parsing its definition; private declarations completed
+within one input preserve pointer identity and can form mutually linked records.
+A transaction for completion across inputs remains required.
+
+Seven cases run on both boot and worker tasks. They cover ordinary publication,
+three malformed-descriptor rejections with successful retry after restoration,
+incomplete value/base rejection, and same-input completion followed by real
+pointer/member access. Failed cross-input completion preserves the published
+class and existing users. Each case restores heap usage, allocation counts,
+compiler controls, task references, retained storage and interrupt state.
+
+All 56 keyboard checks and 119 submitted lines pass with exact VGA pixels,
+including separate submissions that declare an opaque dependency, retain a
+12-byte record containing its four-byte pointer, and store/read an I64 member.
+Both x86-64 rebuild/reboot generations pass. The kernel remains 380632 bytes,
+with 8488 bytes spare after the fixed 4096-byte stage. CompilerRuntime remains
+ABI 35/200, with a 1242576-byte image and 1242592 retained heap bytes. The temporary
+CompilerProbe remains ABI 5/56, with a 530760-byte image and 530776 reclaimed heap
+bytes. ConsoleRuntime and FileRuntime are unchanged. Diagnostic startup-to-prompt
+measured 66.288 seconds on QEMU/486 with 8 MiB; this is development evidence.
+See [opaque class dependencies](i386-opaque-classes.md).
+
+The complete standalone verifier passes, including source-startup variants,
+module rejection/reclamation and executable instruction audits. All 1047 source
+hashes, eight build-input hashes and the disk-image hash match the tested files.
+Python syntax and whitespace checks pass. Public task/CPU migration, completion
+transactions across inputs, the complete language/document environment, native
+self-hosting and strict 386SX/DX/physical-machine acceptance remain required.
