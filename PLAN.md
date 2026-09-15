@@ -288,6 +288,27 @@ There is no separate 16-bit application port in this plan. Firmware-facing real
 mode remains a bootstrap concern. Optional newer hardware acceleration must not
 change the baseline ABI or become necessary for the complete HolyC environment.
 
+### Architecture decisions to validate early
+
+The CPU and display targets are settled: 32-bit 386+ and standard VGA. Keep
+implementation choices that affect the full environment subject to executable
+evidence. Prioritize the following risks before expanding peripheral support:
+
+| Risk | Architectural work | Evidence needed |
+| --- | --- | --- |
+| A working prompt hides incompatible language behavior | Drive ABI and compiler closure from existing compiler, editor and DolDoc sources. Track each unsupported construct with a small reproducer and its dependent subsystem. | Cross-bootstrap and native execution agree; wide arithmetic, callbacks, exceptions and compile-time execution work beyond isolated expressions. |
+| Private bootstrap services become a second application API | Complete public task, memory, file and compiler ownership contracts, then migrate callers incrementally. Retain private mechanisms only behind those contracts. | Existing HolyC source uses the public interfaces; failed compilation and task teardown reclaim storage without invalidating retained definitions. |
+| Separate arenas and resident copies exhaust vintage RAM | Account for retained modules, compiler scratch space, generated code, task stacks, documents, display buffers and allocator fragmentation together. Release temporary modules and share backing memory where lifetimes permit. | Measure peak use during edit/execute/save and rebuild workloads, including failure recovery; an idle boot measurement does not establish either RAM target. |
+| VGA output works but interactive documents are too slow | Preserve logical drawing semantics and bound planar presentation work. Measure dirty-region updates, compiler scheduling points and disk transfer batches before choosing optimizations. | Input remains usable during document redraw, compilation and disk activity on the named acceptance profile; record latency and workload rather than emulator wall time alone. |
+| Development hardware conceals a later CPU or firmware dependency | Establish the strict 386/no-387 execution profile while public services are integrated. Audit executable regions and exercise legacy firmware fallbacks on every affected change. | Boot and generated-code tests pass on that profile before full document integration is declared complete; physical-machine acceptance remains a separate gate. |
+
+The next implementation package remains the retained public-memory service
+described above. Follow it with a source-driven compiler/API gap inventory for
+the existing document and editor code, rather than another standalone feature
+demonstration. Keep a dependency list that connects each gap to the first blocked
+end-to-end workflow. Hardware-profile validation can proceed independently and
+must not wait until native self-hosting.
+
 ### Implementation boundaries
 
 Organize the port around these concrete boundaries. Keep shared behavior in the
