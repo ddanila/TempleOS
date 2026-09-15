@@ -33,6 +33,9 @@ class CI386Task:CTask
   Bool (*symbol_destroy)(CI386Task *task);
   Bool (*compiler_cleanup)(CI386Task *task);
   U32 active_controls,compiler_cleanup_failed,compiler_busy;
+  U8 *heap_state;
+  Bool (*heap_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
+  Bool (*heap_destroy)(CI386Task *task);
 };
 class CI386Scheduler
 {
@@ -42,6 +45,8 @@ class CI386Scheduler
   CI386Task *focus;
 };
 class CI386Cpu:CCPU { CI386Scheduler *scheduler; };
+//Internal hook shape: 0 absent, 31 complete; other masks are partial state.
+extern I64 I386TaskHeapHooks(CI386Task *task);
 public extern Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next));
 public extern Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task);

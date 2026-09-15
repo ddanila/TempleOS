@@ -3,8 +3,8 @@
 #include "/Compiler/I386/LexFileRead.HH"
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/TaskCompiler.HH"
-//Native task stack bounds now use the public CTaskStk descriptor.
-#define I386_FILE_SERVICES_VERSION 17
+//Native task extensions include public heap ownership callbacks.
+#define I386_FILE_SERVICES_VERSION 18
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;

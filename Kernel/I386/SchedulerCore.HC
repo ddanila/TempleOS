@@ -2,6 +2,11 @@
 #include "/Kernel/I386/Cpu.HH"
 //Single CPU. Only Wake may be called from a maskable IRQ; never use from NMI.
 //Records start zeroed and stay live until detached. No concurrent scheduler reset.
+I64 I386TaskHeapHooks(CI386Task *task)
+{//Readable task required. Validate all public pointers and private hooks together.
+  return (task->code_heap!=0) | (task->data_heap!=0)<<1 | (task->heap_state!=0)<<2 |
+    (task->heap_clone!=0)<<3 | (task->heap_destroy!=0)<<4;
+}
 public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next))
 {
@@ -10,7 +15,8 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
       root->file_state || root->file_clone || root->file_destroy || root->lifetime_refs ||
       root->hash_table || root->symbol_state || root->symbol_clone || root->symbol_destroy ||
       root->next_cc || root->last_cc || root->compiler_cleanup || root->active_controls ||
-      root->compiler_cleanup_failed || root->compiler_busy) return FALSE;
+      root->compiler_cleanup_failed || root->compiler_busy ||
+      I386TaskHeapHooks(root)) return FALSE;
   root->addr=root; root->context.esp=0; root->next=root; root->last=root;
   root->task_signature=TASK_SIGNATURE_VAL;
   root->owner=s; root->finished=0; root->blocked=0;
@@ -33,6 +39,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   if (!s || !s->root || !task || task->owner || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
       task->next_cc || task->last_cc || task->compiler_cleanup || task->active_controls ||
       task->compiler_cleanup_failed || task->compiler_busy ||
+      (I386TaskHeapHooks(task) && I386TaskHeapHooks(task)!=31) ||
       ((task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) &&
        (!task->hash_table || !task->symbol_state || !task->symbol_clone || !task->symbol_destroy)) ||
       ((task->file_state || task->file_clone || task->file_destroy) &&
@@ -116,6 +123,12 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   if(task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) {
     if(!task->hash_table || !task->symbol_state || !task->symbol_clone || !task->symbol_destroy ||
         !(*task->symbol_destroy)(task) || task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) {
+      I386IrqRestore(flags); return FALSE;
+    }
+  }
+  //Public heaps outlive compiler controls and file/symbol destruction.
+  if(I386TaskHeapHooks(task)) {
+    if(I386TaskHeapHooks(task)!=31 || !(*task->heap_destroy)(task) || I386TaskHeapHooks(task)) {
       I386IrqRestore(flags); return FALSE;
     }
   }

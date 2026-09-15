@@ -50,15 +50,54 @@ Control records, live allocation pointers and
 their exclusively owned arena must be readable/writable as appropriate; this is
 not a memory-protection boundary for arbitrary ring-0 pointers.
 
-The core deliberately remains internal. Retained service loading, default/current
-and explicit task heap selection, binding `CTask.code_heap`/`data_heap`, throwing
-`MAlloc`, public `Free`/`MSize`, control-record allocation and task teardown are
-still required before application exposure. Aligned-allocation markers, debug
+The core deliberately remains internal. The task ownership adapter below binds
+real controls in native lifecycle tests. Retained service loading and binding in
+the boot environment, default/current and explicit task heap selection, throwing
+`MAlloc` and public `Free`/`MSize` are still required before application exposure.
+Aligned-allocation markers, debug
 headers, heap logging, fragment tidying and adjacent-page merging are not yet
 implemented here. Full integration also needs growth across backing regions,
 public `BlkPoolInit`/`BlkPoolAdd` metadata accounting, and migration of compiler
 allocation ownership to the task/code heap policy. Public service and
 low-memory/latency acceptance remain open.
+
+## Task ownership
+
+`Kernel/I386/TaskHeaps.HC` allocates one complete public heap control per task.
+Both `code_heap` and `data_heap` point to that control on the flat i386 target.
+The owning `CI386TaskHeaps` record uses bootstrap storage with recorded allocation
+provenance. Its public control owns pages from a borrowed pool. The provider must
+retain the root pool, backing arena and callback code until all users detach.
+
+Children retain their parent's heap state through a child count and the existing
+task lifetime-reference count. Spawn attaches heap state before file and symbol
+inheritance, then publishes the task to the scheduler. Failure unwinds those
+resources and the parent reference. The scheduler rejects partially populated
+heap pointer/callback sets, using one shared shape validator to limit bootstrap
+code growth.
+
+Normal cleanup and compiler-control draining run while public allocations remain
+live. Reap destroys file and symbol state before invoking heap destruction; it
+then releases the owned task/stack allocation. Heap destruction rejects active
+dependencies and locked controls. A failed reap keeps the remaining heap state
+and task identity available for retry. Root heap detach is an explicit provider
+shutdown operation from the root task; normal root task exit remains prohibited.
+
+The standalone `--task-heaps` fixture runs four cycles with two workers each.
+It covers bootstrap-control exhaustion during spawn, a later inheritance failure
+after public allocation, partial hooks, parent-reference overflow, allocations
+surviving yields and cleanup, and a locked heap that defers final reclamation.
+Synthetic compiler/file/symbol callbacks exercise the actual scheduler ordering;
+this does not claim that the native compiler already uses public heaps. Every
+cycle restores public pool and bootstrap allocation accounting, with a root
+allocation preserved until explicit detach. Hardware IRQs are masked in this
+fixture while IF preservation is checked; the existing task suite covers delivery.
+
+Private task extensions now include heap state and callbacks. Dependent runtime
+versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
+6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
+The boot kernel includes the ownership hooks but does not yet load this heap
+provider or expose public allocation calls to console programs.
 
 ## Validation
 
@@ -82,6 +121,8 @@ python3 tools/test-rebuild.py
 python3 tools/check-memory-layout.py
 python3 tools/check-task-layout.py
 python3 tools/test-i386.py --heap
+python3 tools/test-i386.py --task-heaps
+python3 tools/test-i386.py --tasks
 python3 tools/build-i386-kernel.py --test
 ```
 

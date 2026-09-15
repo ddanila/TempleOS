@@ -106,7 +106,7 @@ def compiler_runtime_layout(module):
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 39:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 40:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
@@ -132,7 +132,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 5:
+    if struct.unpack_from('<I', module, version_offset)[0] != 6:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys')])
@@ -155,7 +155,7 @@ def file_runtime_layout(module):
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 17:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 18:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         include_offset=8+exports['I386LexTaskFileInclude'][1], read_offset=8+exports['I386TaskFileRead'][1],
@@ -169,7 +169,7 @@ def verify_file_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 16), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 17), 'api')):
         work = out/f'reject-files-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -196,7 +196,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 4), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 5), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -237,7 +237,7 @@ def compiler_probe_layout(module):
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 9:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 10:
         raise ValueError('Unexpected compiler-probe version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
@@ -250,7 +250,7 @@ def verify_probe_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 8), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 9), 'api')):
         work = out/f'reject-probe-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -281,7 +281,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 38), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 39), 'api')):
         work = out/f'reject-runtime-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -714,7 +714,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=17, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=18, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, control_new_address=file_control_new,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
@@ -772,7 +772,7 @@ def main():
                 not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
                 not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
             raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
-        result['compiler_probe'] = dict(module='CompilerProbe', version=9, image_address=probe_address,
+        result['compiler_probe'] = dict(module='CompilerProbe', version=10, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
@@ -847,7 +847,7 @@ def main():
         result['public_scalars'] = dict(source='Kernel/Types.HH', lifetime='root symbol table', validated_phases=scalar_live)
         if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('INPUT RUN CASE ')]) != [[phase,kind] for phase in range(2) for kind in range(22)]:
             raise ValueError('Incomplete native input run checks')
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=39, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=40, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, backend_address=backend_address, expression_address=expression_address, type_address=type_address, parser_alloc_address=parser_alloc_address, parser_free_address=parser_free_address, parser_token_address=parser_token_address, declarations_address=declarations_address, native_declaration_phases=[0,1], code_init_address=code_init_address, class_address=class_address, fun_join_address=fun_join_address, publish_classes_address=publish_classes_address, bootstrap_scalars_address=bootstrap_scalars_address, load_scalars_address=load_scalars_address, scalar_check_address=scalar_check_address, frontend_address=frontend_address, statement_address=statement_address, command_address=command_address, publish_address=publish_address, input_address=input_address, native_input_phases=[0,1], native_program_phases=[0,1], native_command_phases=[0,1], native_statement_phases=[0,1], native_frontend_phases=[0,1], native_publication_phases=[0,1], native_symbol_phases=[0,1], parser_token_phases=[0,1], parser_memory_phases=[0,1], native_expression_phases=[0,1], native_backend_phases=[0,1], native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
@@ -871,7 +871,7 @@ def main():
         cbase,csize,cspan,*entries=[int(x,16) for x in rows[0][1:]]
         if csize!=console_layout['image_bytes'] or cspan!=((csize+23)//8)*8 or entries!=[cbase+x for x in console_layout['entries']]:
             raise ValueError('Console interface/image accounting mismatch')
-        result['console_runtime']=dict(version=5,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=6,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

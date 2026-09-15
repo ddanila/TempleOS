@@ -57,7 +57,7 @@ extern U0 Worker(I64 arg);
 extern U0 TaskExit();
 CI386Context contexts[3];
 U0 (*swap)(CI386Context *old,CI386Context *next);
-U32 current,progress[3],done[3],errors;
+U32 current,progress[3],context_done[3],errors;
 I64 totals[3];
 I64 Main(I64 a,I64 b)
 {
@@ -91,8 +91,8 @@ I64 Main(I64 a,I64 b)
     current=0;
     if (GetRFlags&0x600 || errors) return 6;
     if (round<64) {
-      if (progress[i]!=round+1 || done[i] || totals[i]!=(round+1)*(0x100000000+i)) return 7;
-    } else if (!done[i] || progress[i]!=64) return 8;
+      if (progress[i]!=round+1 || context_done[i] || totals[i]!=(round+1)*(0x100000000+i)) return 7;
+    } else if (!context_done[i] || progress[i]!=64) return 8;
   }
   for (i=1;i<=2;i++) {
     p=stacks[i];
@@ -123,7 +123,7 @@ U0 Worker(I64 arg)
 U0 TaskExit()
 {
   I64 id=current;
-  done[id]=1;
+  context_done[id]=1;
   (*swap)(&contexts[id],&contexts[0]);
   //The scheduler must never resume a finished context.
   while (1) errors++;

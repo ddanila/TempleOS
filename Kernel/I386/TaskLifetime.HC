@@ -33,13 +33,16 @@ public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
   }
   if (!I386ContextInit(&owned->task.context,&owned->task.stk->stk_base,owned->task.stk->stk_size,
       entry,arg,&I386TaskReturn,fs,gs)) goto spawn_fail;
+  file_heap=heap; if(owned->task.memory) file_heap=owned->task.memory;
+  if(s->current && I386TaskHeapHooks(s->current)) {
+    if(I386TaskHeapHooks(s->current)!=31 ||
+        !(*s->current->heap_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
+  }
   if(s->current && (s->current->file_state || s->current->file_clone || s->current->file_destroy)) {
-    file_heap=heap; if(owned->task.memory) file_heap=owned->task.memory;
     if(!s->current->file_state || !s->current->file_clone || !s->current->file_destroy ||
         !(*s->current->file_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
   }
   if(s->current && (s->current->hash_table || s->current->symbol_state || s->current->symbol_clone || s->current->symbol_destroy)) {
-    file_heap=heap; if(owned->task.memory) file_heap=owned->task.memory;
     if(!s->current->hash_table || !s->current->symbol_state || !s->current->symbol_clone || !s->current->symbol_destroy ||
         !(*s->current->symbol_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
   }
@@ -51,6 +54,9 @@ spawn_fail:
     I386IrqRestore(flags); return 0;
   }
   if(owned->task.file_state && (!owned->task.file_destroy || !(*owned->task.file_destroy)(&owned->task))) {
+    I386IrqRestore(flags); return 0;
+  }
+  if(owned->task.heap_state && (!owned->task.heap_destroy || !(*owned->task.heap_destroy)(&owned->task))) {
     I386IrqRestore(flags); return 0;
   }
   I386HeapFree(heap,owned);

@@ -4889,3 +4889,48 @@ native build inputs, four memory-layout inputs, three task-layout inputs and fin
 disk hash also match. Python syntax and staged whitespace checks pass. Growing
 backing pools, original public pool metadata accounting and migration of compiler
 allocation provenance/capacity checks remain part of public service integration.
+
+## Public task heap ownership
+
+The internal public-memory core now has task lifetime integration in
+`Kernel/I386/TaskHeaps.HC`. Each task owns a complete `CHeapCtrl`, shared by its
+public code/data heap pointers on the flat native target. Bootstrap storage owns
+the control record; the public control owns its pages. Children retain their
+parent's heap state through the existing task lifetime-reference mechanism.
+
+Spawn constructs heap state before inheriting file and symbol resources, and
+unwinds it on failure. Normal task cleanup and compiler cleanup run with public
+allocations still live. Reap drains file and symbol state before destroying the
+heap, and leaves remaining state available for retry when a heap is locked.
+Root detach is explicit provider shutdown from the root task. See
+[public memory ownership](i386-public-memory.md#task-ownership).
+
+The dedicated native task-heap fixture passes four cycles with two workers each,
+including allocation/control exhaustion during spawn, later inheritance failure,
+parent retention, partial-hook rejection, cleanup-time allocation and yields,
+locked-heap retry and complete final reclamation. Its compiler/file/symbol
+callbacks are synthetic ordering checks around the actual scheduler; compiler
+allocation migration is still outstanding. The existing task, task-symbol and
+exception-task suites also pass with instruction audits. Both x86-64 rebuild
+and reboot generations pass, and layout verification preserves all 105 task and
+43 memory fields. All 1064 OS source hashes match those rebuild/layout results.
+
+Private task records gain heap state and two callbacks; dependent module versions
+are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime 6.
+Repeated heap-hook validation is shared to keep the kernel within its existing
+bootstrap reservation: 386912 kernel bytes plus 4096 early-stage bytes leave 2208
+bytes free. The complete shared public task and CPU layouts are unchanged.
+
+These hooks do not yet install a retained public-memory provider in the boot
+kernel. That provider, growing backing pools, public allocation/exception and
+alignment semantics, and compiler allocation migration remain required before
+console applications can use the full public heap API. Full DolDoc, native
+self-hosting and strict 386/no-387 hardware acceptance remain open.
+
+Final native verification passes on these sources: all 81 keyboard commands over
+144 submitted lines, exact VGA checkpoints, custom startup, syntax-error and
+missing-file recovery, and every startup/runtime target/import/API rejection with
+reclamation checks. Diagnostic console startup takes 129.812 seconds on the 8 MiB
+QEMU/486 development profile. This is not strict 386 or physical-machine evidence.
+All 1064 native source hashes, eight build-input hashes and the final disk hash
+match; the layout input hashes, Python syntax and staged whitespace checks pass.
