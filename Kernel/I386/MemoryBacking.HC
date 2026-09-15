@@ -90,7 +90,8 @@ Bool I386MemBackingDestroy(CI386BackingPool *pool)
 {
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  if(I386MemBackingTrim(pool)<0 || pool->owned || pool->regions || pool->used_u8s) goto done;
+  //The owner must detach its reclamation callback before provider shutdown.
+  if(!pool || pool->reclaim || I386MemBackingTrim(pool)<0 || pool->owned || pool->regions || pool->used_u8s) goto done;
   pool->grow=0;
   if(!I386MemPoolEmpty(pool)) goto done;
   pool->signature=0; pool->backing_signature=0; pool->heap=0; pool->quantum=0;

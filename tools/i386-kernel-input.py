@@ -173,6 +173,7 @@ def run_input(disk,out,startup_check=None):
                 ('Gs->addr==Gs;', ['1']),
                 ('Fs->gs==Gs;', ['1']),
                 ('Fs->stk->stk_size>=256;', ['1']),
+                ('Fs->data_heap!=0&&Fs->code_heap==Fs->data_heap;', ['1']),
                 ('GetRSP>=(&Fs->stk->stk_base)(U64);', ['1']),
                 ('GetRSP<(&Fs->stk->stk_base)(U64)+Fs->stk->stk_size;', ['1']),
                 ('Gs->num;', ['0']),

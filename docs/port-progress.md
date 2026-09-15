@@ -4980,3 +4980,48 @@ All 1066 OS source hashes match the native, rebuild and layout results; eight
 native build inputs, four memory-layout inputs, three task-layout inputs and the
 final disk hash also match. Python syntax and staged whitespace checks pass.
 These are development results, not strict 386/no-387 or physical-machine evidence.
+
+## Retained public-memory provider and live task heaps
+
+`Kernel/I386/MemoryRuntime.HC` now loads as a retained, versioned service before
+compiler diagnostics and worker creation. Its module entry only fills the
+candidate interface; the kernel validates the target, imports, version and entry
+addresses before binding the root heap. Root, pulse and console tasks now have
+real public heap controls, with code/data aliases within each task and distinct
+controls between tasks. Backing regions grow on demand from the bootstrap heap.
+
+Task heap teardown now invokes an optional provider notification after releasing
+its control, dropping the parent reference and clearing task heap hooks. The
+provider can then trim unused regions without invalidating page headers still
+being read by allocator callers. It rejects shutdown while a reclamation callback
+is attached, leaving state intact. Callback code and provider storage remain
+resident for kernel lifetime. Public allocation functions and compiler allocator
+migration remain the next integration boundary.
+
+The growing task-heap fixture passes four cycles with eight workers, failed-spawn
+rollback and explicit root detach: ten reclamation callbacks in total. Callbacks
+check that task heap fields are already cleared and interrupts masked; failed
+locked-heap teardown invokes no callback and preserves backing totals. Root data
+survives worker cleanup, and root detach returns every backing allocation. The
+existing heap corpus, ordinary task suite, both x86-64 rebuild/reboot generations,
+43-field memory layout and 105-field task layout checks pass.
+
+Native root and worker probes allocate across two backing regions, retain one
+allocation while returning the other region, then verify exact bootstrap
+reclamation. The console also checks its inherited heap binding through typed
+`Fs`. MemoryRuntime's image is 82840 bytes (82856 retained heap bytes). The
+bootstrap kernel is 387848 bytes plus the 4096-byte early stage, leaving 1272 bytes
+in the existing reservation. These are implementation footprints, not proof of
+the complete 8 MiB interactive or 16 MiB self-hosting targets. Full public memory
+semantics, DolDoc, native self-hosting and strict 386/no-387/physical acceptance
+remain unfinished.
+
+Final kernel verification passes: 82 commands across 145 submitted lines, exact
+VGA checkpoints, custom startup, syntax-error and missing-file recovery, and all
+startup/runtime rejection and reclamation checks. MemoryRuntime specifically
+rejects wrong-target, missing-import and wrong-API modules before heap binding.
+Diagnostic console startup takes 126.883 seconds on the 8 MiB QEMU/486 development
+profile. All 1068 OS source hashes match the native, rebuild and layout results;
+eight native build inputs, four memory-layout inputs, three task-layout inputs
+and the native disk hash also match. This remains development evidence, not
+strict 386/no-387 or physical-machine acceptance.

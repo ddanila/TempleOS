@@ -90,12 +90,12 @@ See [stack ownership](docs/i386-public-stacks.md).
 The original public memory records are also shared, with a native allocation
 core using real `CBlkPool`/`CHeapCtrl` state. Task heap ownership now has native
 lifecycle coverage: child construction, parent retention, rollback and teardown
-after compiler/file/symbol cleanup. It remains internal: retained memory service
-loading, binding the running kernel's tasks and the throwing public allocation
-interface are the next public-contract work. Registered backing regions and a
+after compiler/file/symbol cleanup. A retained memory service now binds the boot
+root and inherited worker heaps; the throwing public allocation interface remains
+the next public-contract work. Registered backing regions and a
 demand-growth provider now have native coverage, including return of wholly
-unused regions to the bootstrap allocator. The retained service must integrate
-their trim points into public allocation and task teardown. See
+unused regions to the bootstrap allocator. Task teardown now invokes the retained
+provider after releasing heap controls; public free still needs its trim point. See
 [public memory](docs/i386-public-memory.md).
 See [shared task records](docs/i386-task-records.md) and
 [native public headers](docs/i386-public-headers.md).
@@ -131,9 +131,8 @@ those measurements.
 
 ### Next public-memory integration package
 
-The native allocation core and task ownership hooks are component-tested, but
-the boot environment does not yet load their retained provider. Complete this
-boundary before making the editor and compiler
+The boot environment now loads the retained backing provider and binds public
+task heaps. Complete its public allocation interface before making the editor and compiler
 depend on public allocation services. Use the complete shared `CHeapCtrl` and
 `CBlkPool` records; the bootstrap arena descriptor is not a public heap control.
 

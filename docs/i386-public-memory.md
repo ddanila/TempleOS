@@ -142,8 +142,33 @@ fixture while IF preservation is checked; the existing task suite covers deliver
 Private task extensions now include heap state and callbacks. Dependent runtime
 versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
 6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
-The boot kernel includes the ownership hooks but does not yet load this heap
-provider or expose public allocation calls to console programs.
+The boot kernel now loads `MemoryRuntime` version 1 after file-service setup and
+before native compiler diagnostics or worker creation. Its 16-byte candidate
+table contains only binding and probe entry points. Module `Main` publishes no
+task state and reserves no backing memory; the kernel validates the target,
+imports, version and resident entry addresses before invoking the binding call.
+The retained module owns the pool and callback code for kernel lifetime. Binding
+allocates the root heap control; children inherit distinct public heap controls
+through the existing spawn hooks. Code and data heap pointers alias within each
+task on this flat target.
+
+The private pool has an optional, non-yielding reclamation notification. Task heap
+destruction saves the provider pointer, releases pages and the control, drops the
+parent pin and clears task hooks before notifying it with interrupts masked. The
+retained provider then returns wholly idle regions. It must not trim within
+`PageFree`, because the caller still reads the returned block header. A failed
+heap teardown does not invoke reclamation. Provider shutdown rejects an installed
+notification before changing state; the owner must detach it explicitly.
+
+The task fixture now uses growing backing storage and checks ten reclamation
+notifications across failed construction, eight worker teardowns and root detach.
+Locked heap destruction preserves both backing totals and the notification count;
+successful teardown releases backing while preserving the root allocation. Root
+detach returns all backing allocations. Native kernel probes separately allocate
+across two regions from the root and a spawned worker and check exact bootstrap
+reclamation. Console input checks that its inherited public heap pointers are
+bound. The public throwing allocation functions and compiler allocation migration
+remain unfinished; this service does not yet expose allocation calls to programs.
 
 ## Validation
 
@@ -153,7 +178,7 @@ the native layout fixture against the target policy. The heap fixture executes
 boundaries, aligned payloads, two heap owners, 1024 allocation/free rounds with
 payload and accounting checks, and three heap lifetimes reclaimed with live
 allocations. Its 256 KiB arena ends below the boot stack. Code loading allows
-128 KiB below the original first arena; the OS memory target is unchanged.
+192 KiB below the original first arena; the OS memory target is unchanged.
 
 The existing arena-heap tests also exposed a range check that relied on pointer
 expression wraparound. `I386HeapRegionValid` now checks the wide address sum

@@ -47,7 +47,7 @@ Bool I386MemPoolEmpty(CI386PublicPool *pool)
   U32 flags=I386IrqSave;
   I64 i;
   if(!pool || (pool+0)(U64)+sizeof(CI386PublicPool)>0x100000000 ||
-      pool->signature==I386_POOL_SIGNATURE && (pool->locked_flags || pool->growing || pool->grow || pool->used_u8s ||
+      pool->signature==I386_POOL_SIGNATURE && (pool->locked_flags || pool->growing || pool->grow || pool->reclaim || pool->used_u8s ||
        pool->region_count>1 || pool->regions && pool->regions!=&pool->initial)) {
     I386IrqRestore(flags); return FALSE;
   }

@@ -21,6 +21,9 @@ class CI386PublicPool:CBlkPool {
   CI386PoolRegion *regions;
   U32 size,signature,region_count,growing;
   Bool (*grow)(CI386PublicPool *pool,I64 pages);
+  //Notification after task heap teardown; never invoked while reading page headers.
+  //Provider and callback code outlive every attached task. Callback must not yield.
+  U0 (*reclaim)(CI386PublicPool *pool);
   CI386PoolRegion initial;
 };
 //Region records and their backing bytes are borrowed and must remain live until

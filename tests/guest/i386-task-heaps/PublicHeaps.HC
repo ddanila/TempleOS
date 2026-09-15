@@ -1,10 +1,14 @@
 #include "/Kernel/I386/Memory.HC"
+#include "/Kernel/I386/MemoryBacking.HC"
 #include "/Kernel/I386/TaskHeaps.HC"
-CI386PublicPool task_pool;
-CI386Heap task_control_storage;
+CI386BackingPool task_pool;
+CI386Heap task_control_storage,task_backing_storage;
 CI386OwnedTask *heap_workers[2];
 U8 *heap_payloads[2];
 U32 heap_stages[2],heap_file_failures;
+U32 heap_reclaims;
+CI386Task *heap_reclaim_target;
+extern U0 PublicHeapReclaim(CI386PublicPool *pool);
 extern U0 PublicHeapWorker(I64 id);
 extern U0 PublicHeapCleanup(CI386Task *task);
 extern Bool PublicHeapCompilerCleanup(CI386Task *task);
@@ -17,14 +21,18 @@ I64 PublicTaskHeapTest()
   CI386Task *root=scheduler.root,*worker;
   CI386TaskHeaps *state;
   U8 *root_payload;
-  I64 i,j,cycle,before,root_pages;
+  I64 i,j,cycle,before,root_pages,retained,reclaims;
   U32 flags=GetRFlags;
   if(!I386HeapInit(&heap,0x40000,32768) ||
       !I386HeapInit(&task_control_storage,0x48000,32768) ||
-      !I386MemPoolInit(&task_pool,0x50000,0x30000) ||
+      !I386HeapInit(&task_backing_storage,0x50000,0x30000) ||
+      !I386MemBackingInit(&task_pool,&task_backing_storage,8192) ||
       !I386TaskHeapsInit(root,&task_control_storage,&task_pool) ||
       I386TaskHeapsInit(root,&task_control_storage,&task_pool)) return 101;
   state=root->heap_state;
+  task_pool.reclaim=&PublicHeapReclaim;
+  if(I386MemPoolEmpty(&task_pool) || I386MemBackingDestroy(&task_pool) ||
+      !I386MemBackingValid(&task_pool)) return 119;
   if(root->code_heap!=root->data_heap || root->data_heap->mem_task!=root ||
       task_control_storage.allocations!=1 || state->parent) return 102;
   root_payload=I386MemAlloc(root->data_heap,64);
@@ -39,7 +47,7 @@ I64 PublicTaskHeapTest()
   root->file_destroy=&PublicHeapFileDestroy;
   if(I386TaskSpawn(&scheduler,&heap,8192,&PublicHeapWorker,0) ||
       heap.used!=before || root->lifetime_refs || state->children ||
-      task_pool.used_u8s!=root_pages || heap_file_failures!=1) return 105;
+      task_pool.used_u8s!=root_pages || heap_file_failures!=1 || heap_reclaims!=1) return 105;
   root->file_state=0; root->file_clone=0; root->file_destroy=0;
   //Overflow and partial hook sets are rejected without publishing a task.
   root->lifetime_refs=0xFFFFFFFF;
@@ -68,25 +76,47 @@ I64 PublicTaskHeapTest()
       if(!worker->finished || heap_stages[i]!=3 || !worker->data_heap ||
           I386MemSize(heap_payloads[i])<1024 || heap_payloads[i][1023]!=i+71) return 113;
       //Reap must defer heap destruction while file/symbol cleanup is pending.
+      retained=task_pool.retained; reclaims=heap_reclaims;
+      heap_reclaim_target=worker;
       if(I386TaskHeapsDestroy(worker)) return 114;
       worker->data_heap->locked_flags=1;
       if(I386TaskDestroy(heap_workers[i]) || heap_stages[i]!=5 ||
-          !worker->heap_state || !worker->data_heap || !worker->owner) return 115;
+          !worker->heap_state || !worker->data_heap || !worker->owner ||
+          heap_reclaims!=reclaims || task_pool.retained!=retained) return 115;
       worker->data_heap->locked_flags=0;
-      if(!I386TaskDestroy(heap_workers[i]) || root_payload[0]!=0xA7) return 116;
+      if(!I386TaskDestroy(heap_workers[i]) || root_payload[0]!=0xA7 ||
+          heap_reclaims!=reclaims+1 || task_pool.retained>=retained) return 116;
     }
     if(errors || root->lifetime_refs || state->children || heap.used || heap.allocations ||
         !I386HeapValid(&heap) || task_pool.used_u8s!=root_pages) return 117;
   }
   //Root detach is an explicit provider shutdown, not normal task exit.
+  heap_reclaim_target=root;
   if(!I386TaskHeapsDestroy(root) || task_pool.used_u8s || task_control_storage.used ||
       task_control_storage.allocations || root->data_heap || root->code_heap || root->heap_state ||
       root->heap_clone || root->heap_destroy || I386TaskHeapsDestroy(root)) return 118;
+  if(errors || task_pool.retained || task_pool.owned_count || task_backing_storage.used ||
+      task_backing_storage.allocations || heap_reclaims!=10) return 120;
+  task_pool.reclaim=0;
+  if(!I386MemBackingDestroy(&task_pool)) return 121;
   SetRFlags(flags);
   return 0;
 }
+U0 PublicHeapReclaim(CI386PublicPool *pool)
+{
+  CI386Task *task=heap_reclaim_target;
+  CI386TaskHeaps *parent=scheduler.root->heap_state;
+  if(pool!=&task_pool || GetRFlags&0x200 || pool->locked_flags || pool->growing ||
+      !task || task->code_heap || task->data_heap || task->heap_state ||
+      task->heap_clone || task->heap_destroy ||
+      task!=scheduler.root && (!parent || scheduler.root->lifetime_refs!=parent->children) ||
+      I386MemBackingTrim(&task_pool)<0) errors++;
+  heap_reclaim_target=0;
+  heap_reclaims++;
+}
 Bool PublicHeapCloneFailure(CI386Task *source,CI386Task *target,CI386Heap *heap)
 {
+  heap_reclaim_target=target;
   U8 *p=I386MemAlloc(target->data_heap,2048);
   if(!p || target->owner || !target->heap_state || !source->lifetime_refs) errors++;
   else p[0]=0x55;

@@ -51,6 +51,7 @@ Bool I386TaskHeapsDestroy(CI386Task *task)
 {
   U32 flags=I386IrqSave;
   CI386TaskHeaps *state=I386TaskHeapsValid(task),*parent;
+  CI386PublicPool *pool;
   Bool result=FALSE;
   if(!state || state->children || task->lifetime_refs || task->active_controls ||
       task->compiler_cleanup || task->compiler_cleanup_failed || task->compiler_busy ||
@@ -66,10 +67,12 @@ Bool I386TaskHeapsDestroy(CI386Task *task)
   parent=state->parent;
   if(parent && (I386TaskHeapsValid(parent->task)!=parent || !parent->children ||
       !parent->task->lifetime_refs)) goto done;
+  pool=state->control.bp;
   if(!I386MemHeapDestroy(&state->control) || !I386HeapFree(state->storage,state)) goto done;
   if(parent) { parent->children--; parent->task->lifetime_refs--; }
   task->code_heap=0; task->data_heap=0; task->heap_state=0;
   task->heap_clone=0; task->heap_destroy=0;
+  if(pool->reclaim) (*pool->reclaim)(pool);
   result=TRUE;
 done:
   I386IrqRestore(flags); return result;

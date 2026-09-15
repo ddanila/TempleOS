@@ -12,7 +12,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
-DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime')
+DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime')
 
 
 def run(*args):
@@ -136,6 +136,59 @@ def console_runtime_layout(module):
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys')])
+
+
+def memory_runtime_layout(module):
+    size, count, records = struct.unpack_from('<III', module, 16)
+    exports, imports = {}, {}
+    for index in range(count):
+        kind, offset, name, length = struct.unpack_from('<4I', module, records+16*index)
+        if kind in (1, 2, 3, 5):
+            symbol = module[name:name+length].decode('ascii')
+            if kind in (1, 3): exports[symbol] = (kind, offset)
+            else: imports[symbol] = name
+    if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386HeapValid',
+                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop'}:
+        raise ValueError('Unexpected memory-runtime import contract')
+    for name in ('Main', 'MemoryBind', 'MemoryProbe'):
+        if exports.get(name, (0, 0))[0] != 1:
+            raise ValueError(f'Missing memory service {name}')
+    if exports.get('memory_runtime_version', (0, 0))[0] != 3:
+        raise ValueError('Missing memory-runtime version')
+    version_offset = 32+exports['memory_runtime_version'][1]
+    if struct.unpack_from('<I', module, version_offset)[0] != 1:
+        raise ValueError('Unexpected memory-runtime version')
+    return dict(image_bytes=size+8, version_offset=version_offset,
+                import_offset=imports['I386HeapAlloc'],
+                entries=[8+exports[name][1] for name in ('MemoryBind', 'MemoryProbe')])
+
+
+def verify_memory_rejection(disk, volume, out, layout):
+    original = disk.read_bytes()
+    offset = volume['files']['/Modules/I386/MemoryRuntime.t32m']['block']*512
+    results = []
+    for label, position, replacement, reason in (
+            ('wrong-target', 6, b'\x04', 'load'),
+            ('missing-import', layout['import_offset'], b'X', 'load'),
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 0), 'api')):
+        work = out/f'reject-memory-{label}'
+        work.mkdir(parents=True, exist_ok=True)
+        changed = bytearray(original)
+        changed[offset+position:offset+position+len(replacement)] = replacement
+        candidate = work/'kernel.img'; candidate.write_bytes(changed)
+        with (work/'runner.log').open('w') as log:
+            result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
+                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
+        evidence = (work/'debug.log').read_text()
+        if (result.returncode == 0 or f'MEMORY REJECT {reason} reclaimed\n' not in evidence or
+                'FAIL native kernel\n' not in evidence or
+                any(marker in evidence for marker in ('MEMORY PROBE ', 'RUNTIME PROBE ',
+                    'STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
+            raise ValueError(f'Memory runtime failed rejection/reclamation: {label}')
+        if candidate.read_bytes() != changed:
+            raise ValueError('Rejected memory module changed disk')
+        results.append(label)
+    return results
 
 
 def file_runtime_layout(module):
@@ -575,6 +628,7 @@ def main():
     probe_layout=compiler_probe_layout((exports/'CompilerProbe.t32m').read_bytes())
     files_layout=file_runtime_layout((exports/'FileRuntime.t32m').read_bytes())
     console_layout=console_runtime_layout((exports/'ConsoleRuntime.t32m').read_bytes())
+    memory_layout=memory_runtime_layout((exports/'MemoryRuntime.t32m').read_bytes())
     disk=out/'kernel.img'
     run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
@@ -601,7 +655,7 @@ def main():
             'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
             'bootstrap_modules':list(MODULES),
-            'resident_modules':list(MODULES)+['CompilerRuntime', 'FileRuntime', 'ConsoleRuntime'],
+            'resident_modules':list(MODULES)+['CompilerRuntime', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime'],
             'temporary_modules':['Startup', 'CompilerProbe'],
             'volume':volume,
             'scope':'Native kernel with a retained HolyC console and disk source startup; full runtime, DolDoc and self-hosting unfinished',
@@ -863,6 +917,21 @@ def main():
             raise ValueError('Keyboard console changed the disk')
         result['source_startup']=verify_source_startup(disk,volume,out,console)
         rejected=verify_startup_rejection(disk,volume,out)
+        rows=[line.split() for line in log.splitlines()
+              if line.startswith('MEMORY ') and not line.startswith('MEMORY PROBE ')]
+        if len(rows)!=1 or len(rows[0])!=6:
+            raise ValueError('Missing retained public-memory provider')
+        mbase,msize,mspan,*entries=[int(x,16) for x in rows[0][1:]]
+        if (msize!=memory_layout['image_bytes'] or mspan!=((msize+23)//8)*8 or
+                mbase<begin or mbase+msize>begin+length or
+                entries!=[mbase+x for x in memory_layout['entries']]):
+            raise ValueError('Memory interface/image accounting mismatch')
+        phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('MEMORY PROBE ')]
+        if phases!=[0,1] or log.index('MEMORY PROBE ')>log.index('RUNTIME PROBE '):
+            raise ValueError('Root/worker public heap growth and reclamation failed')
+        result['memory_runtime']=dict(version=1,image_address=mbase,image_bytes=msize,
+            retained_heap_bytes=mspan,validated_phases=phases,
+            rejected=verify_memory_rejection(disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(disk,volume,out,files_layout)
         result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
         result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)

@@ -31,6 +31,7 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/CompilerProbe.HH"
 #include "/Kernel/I386/FileRuntime.HH"
+#include "/Kernel/I386/MemoryRuntime.HH"
 class CI386KernelSymbol:CHashExport { U32 kind; };
 import U0 i386_idle();
 U8 *kernel_ready_message="READY native kernel foundation\n";
@@ -61,6 +62,8 @@ CI386KernelSymbol kernel_exports[43];
 U8 kernel_export_kinds[43]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
+CI386MemoryServices kernel_memory;
+U8 *kernel_memory_image;
 U8 *kernel_file_image;
 I64 kernel_file_size;
 CFilePathContext kernel_paths;
@@ -83,6 +86,7 @@ extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
 extern U0 KernelCompilerLoad();
 extern U0 KernelFileLoad();
+extern U0 KernelMemoryLoad();
 extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
   U8 *record,I64 bytes,U32 version);
 extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version);
@@ -94,6 +98,7 @@ U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
 U8 kernel_probe_bindings[17]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10};
 U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
+U8 kernel_memory_bindings[9]={10,11,12,20,13,14,0,18,19};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)
@@ -120,6 +125,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelSymbols;
   KernelCompilerLoad;
   KernelFileLoad;
+  KernelMemoryLoad;
   KernelCompilerProbe(0);
   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
   KernelConsoleLoad;
@@ -198,6 +204,7 @@ U0 KernelPulse(I64 unused)
       pulses++;
       KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
       if(pulses==2) {
+        kernel_memory.probe(1);
         KernelCompilerProbe(1);
         if(!kernel_compiler.scalar_types_check(kernel_scalars,FALSE)) KernelStop;
         kernel_probe_ready=TRUE;
@@ -494,6 +501,17 @@ U0 KernelFileLoad()
   if(!kernel_files.compiler_init(&kernel_compiler,"~/Tmp.DD.Z",char_bmp_alpha_numeric,char_bmp_alpha_numeric_no_at)) KernelStop;
   kernel_file_include.context=0; kernel_file_include.push=kernel_files.include;
   kernel_file_include.directive_context=0; kernel_file_include.directive=0;
+}
+
+U0 KernelMemoryLoad()
+{
+  CI386ModuleBinding bindings[sizeof(kernel_memory_bindings)];
+  if(kernel_memory_image || kernel_memory.version) KernelStop;
+  KernelBindings(bindings,kernel_memory_bindings,sizeof(kernel_memory_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+  kernel_memory_image=KernelServiceLoad("/Modules/I386/MemoryRuntime.t32m","MEMORY ",
+    bindings,sizeof(kernel_memory_bindings),&kernel_memory,sizeof(CI386MemoryServices),I386_MEMORY_SERVICES_VERSION);
+  if(!kernel_memory.bind(&kernel_root,&kernel_heap)) KernelStop;
+  kernel_memory.probe(0);
 }
 
 U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
