@@ -30,6 +30,39 @@ are tracked in the progress document.
 
 All work stays in our fork on `main`. Preserve `archive` at `c26482b`.
 
+## Architectural roadmap at a glance
+
+The selected target is native 32-bit protected-mode HolyC on a 386+ PC with
+standard VGA. There is no separate 16-bit application target. Preserve the
+language, shared ring-0 address space, cooperative tasks, executable DolDoc
+documents and on-machine development; change the CPU implementation and hardware
+dependencies needed to make that environment practical on the smaller machine.
+
+Use this sequence to prioritize remaining integration work. The detailed work
+packages and historical component results below provide supporting context.
+
+| Priority | Architectural deliverable | Completion gate |
+| --- | --- | --- |
+| 1 | Complete native compiler bindings and the public kernel contract. Validate intrinsic declarations separately from callable resident addresses; migrate task/CPU records and their ownership rules into shared public interfaces. | Ordinary HolyC sources use the public symbols and complete record layouts; rejected declarations and failed compilation preserve existing definitions and reclaim temporary state. |
+| 2 | Close remaining ABI and native language gaps, including target layout, compile-time execution, assembly, numerical behavior and diagnostics. | Representative existing sources compile and execute natively with wide integers and software F64; cross-bootstrap and native results agree under a documented target policy. |
+| 3 | Integrate the existing document/editor and drawing implementation over VGA, task input and persistent RedSea services. | Edit, execute, save, reboot and reopen an executable document, including embedded graphics, with measured peak memory at the 8 MiB interactive target. |
+| 4 | Complete native compiler/kernel construction and installation of the resulting boot artifacts. | Rebuild on the 16 MiB target, boot the outputs and repeat; record memory use, elapsed time and output differences. |
+
+For priority 1, keep the private bootstrap task/CPU records behind the kernel
+boundary. Do not expose a shortened replacement for `CTask` or `CCPU` merely to
+make `Fs` or `Gs` declarations compile. Inventory public fields and semantics,
+define target layouts, then migrate exception, compiler, file and task-lifetime
+state with one authoritative owner for each resource. Resolve forward class
+identity and completion across compiler contexts before publishing headers that
+depend on those identities.
+
+Hardware acceptance runs alongside all four priorities: establish named 386SX/DX
+profiles without a coprocessor, verify the legacy BIOS/ATA path and planar VGA,
+audit generated and handwritten executable code, and measure input responsiveness
+under compilation and disk/display activity. Current QEMU/486 evidence remains
+development evidence. Physical-machine acceptance, full public APIs, DolDoc and
+self-hosting remain explicit gates; a working native prompt does not close them.
+
 ## Principles and deliberate amendments
 
 Preserve:
