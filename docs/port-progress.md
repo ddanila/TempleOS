@@ -5142,3 +5142,54 @@ public-layout results. Eight native build inputs, four memory-layout inputs,
 three task-layout inputs and the native disk hash also match. Python syntax and
 whitespace checks pass. This closes the generated-executable ownership slice,
 not the full port.
+
+
+## Shared allocation-copy helpers for document code
+
+The native public memory interface now binds `MemCpy`, `MemSet`, `MAllocIdent`
+and `StrNew`. The latter two use the original bodies extracted into
+`Kernel/Mem/AllocCopy.HC`, also included by the x64 implementation. Literal-zero
+defaults avoid resolving the host `NULL` symbol in native cross-compilation.
+The native byte primitives return the pointer just past the written bytes,
+clear the direction flag, copy forward, fill with the low byte of the supplied
+value and avoid pointer access for zero-length calls. This follows the original
+`_MEMCPY` and `_MEMSET` assembly rather than the C library return convention.
+`StrNew(0)` allocates an empty string; `MAllocIdent(0)` returns null. Allocation
+copy uses the source base allocation's reported capacity, with the same readable
+source requirement as the shared original implementation.
+
+The retained memory table is version 4, still 16 bytes, and owns twelve export
+records. Root and worker probes cover full-capacity copies, explicit heap
+selection, null/empty input, byte truncation, overlapping forward copies and
+exact backing reclamation. Six added console submissions exercise all four
+public declarations through the native compiler. Both x64 rebuild generations
+pass. The corrected native boot and console also pass, including end-pointer
+returns and direction-flag clearing. The console executes 114 commands across
+177 submitted lines with every VGA checkpoint matching; diagnostic startup is
+175.472 seconds on QEMU/486 with 8 MiB. All three startup-source cases and
+all 17 module rejection/reclamation cases pass.
+
+This removes direct dependencies used throughout `Adam/DolDoc/DocNew.HC`,
+`DocBin.HC` and `DocRecalc.HC`. It does not make DolDoc runnable yet. Inspection of
+`DocNew.HC` identifies the next integration dependencies: complete document
+records/constants, `StrLen` and `StrCpy`, queue operations, public yielding and
+break-lock semantics, and the document binary/undo services. Preserve the real
+entry lifecycle as these dependencies are connected. In particular, distinguish
+`CDocBin`'s fixed-width start/end serialization span from its pointer-bearing
+in-memory record and verify both target layouts before using native document
+persistence.
+
+
+The retained memory module now occupies 109480 image bytes and 109496 heap
+bytes; final public headers retain 63632 bytes. The kernel remains 388872 bytes
+plus its 4096-byte early stage, leaving 248 bytes in the bootstrap reservation.
+The preview image is independently copied from the tested disk; its SHA-256
+matches the native result. These measurements remain QEMU/486 development
+evidence, not strict 386 or full DolDoc acceptance.
+
+
+The final 43-field memory and 105-field task layout checks also pass. All 1075
+OS source hashes match the rebuild, native and layout results; the eight native,
+four memory-layout and three task-layout build inputs and both disk copies match
+as well. Python syntax and whitespace checks pass. Full public APIs, document
+integration, native self-hosting and strict 386/physical acceptance remain open.

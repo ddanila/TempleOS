@@ -60,7 +60,7 @@ ownership to the task/code heap policy. Low-memory/latency acceptance remains op
 ## Native public allocation interface
 
 `PublicMemory.HH`, included by `PublicKernel.HH`, loads the complete shared memory
-records and declares eight resident entry points. The original allocation aliases
+records and declares twelve resident entry points. The original allocation aliases
 are retained for `MAlloc`, `Free`, `MSize`, `MSize2` and `MHeapCtrl`. Module-owned
 system export records also bind `CAlloc`, `MAllocAligned` and `CAllocAligned`.
 The metadata and executable addresses have kernel lifetime; a native compiler
@@ -76,6 +76,9 @@ help indexes without requiring native `#help_file` support.
 | `MSize` / `MSize2` | Null returns zero. Report the original allocation's capacity, or its span including the 12-byte native used prefix. For aligned pointers this preserves the original base-capacity behavior; it does not subtract the alignment displacement. |
 | `MHeapCtrl` | Return the actual owning control after resolving any aligned marker; null returns null. |
 | Aligned allocation | Require power-of-two alignment and nonnegative size/misalignment within checked native bounds. Reserve room for the marker and displacement; `CAllocAligned` zeros the requested payload. |
+| `MemCpy` / `MemSet` | For a nonnegative byte count, copy forward or fill with the low byte of the value, returning the pointer just past the written bytes and clearing the direction flag. Zero-length calls do not dereference either pointer. Overlapping forward copies follow the original primitive, not move semantics. |
+| `MAllocIdent` | Null returns null. Duplicate the bytes reported by `MSize` from a live base heap allocation into the selected heap. The source must expose that full readable capacity. |
+| `StrNew` | Copy a zero-terminated string including its terminator into the selected heap. Null creates an allocated empty string. |
 
 Exhaustion and unsupported allocation sizes throw `OutMem` after restoring the
 caller's interrupt state. An uncaught allocation failure is recorded by the
@@ -172,7 +175,7 @@ fixture while IF preservation is checked; the existing task suite covers deliver
 Private task extensions now include heap state and callbacks. Dependent runtime
 versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
 6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
-The boot kernel now loads `MemoryRuntime` version 3 after file-service setup and
+The boot kernel now loads `MemoryRuntime` version 4 after file-service setup and
 before native compiler diagnostics or worker creation. Its 16-byte candidate
 table contains only binding and probe entry points. Module `Main` publishes no
 task state and reserves no backing memory; the kernel validates the target,
@@ -267,3 +270,12 @@ still use bootstrap storage. This slice does not implement every use of the
 frontend's code-heap flag or establish the final memory budget. The native boot checks child publication, execution after compiler cleanup,
 locked-heap reap deferral, successful retry and exact bootstrap reclamation in
 both root and worker phases. See the progress log for full-suite status.
+
+
+`Kernel/Mem/AllocCopy.HC` holds the shared `MAllocIdent` and `StrNew` bodies.
+The x86-64 allocation implementation includes them directly; the retained native
+memory service binds their primitive names to its own allocator, byte copy and
+string-length implementation. Native public declarations keep ordinary source
+calls unchanged. These helpers propagate allocation failure through the existing
+`OutMem` path. Adam-heap convenience wrappers and the remaining public pool and
+heap services still require integration.

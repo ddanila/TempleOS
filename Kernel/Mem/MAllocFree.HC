@@ -404,16 +404,7 @@ U8 *ACAlloc(I64 size)
   return CAlloc(size,adam_task);
 }
 
-U8 *MAllocIdent(U8 *src,CTask *mem_task=NULL)
-{//Accepts a $LK,"CTask",A="MN:CTask"$ or $LK,"CHeapCtrl",A="MN:CHeapCtrl"$.  NULL allocs off current task's heap.
-  U8 *res;
-  I64 size;
-  if (!src) return NULL;
-  size=MSize(src);
-  res=MAlloc(size,mem_task);
-  MemCpy(res,src,size);
-  return res;
-}
+#include "/Kernel/Mem/AllocCopy.HC"
 
 U8 *AMAllocIdent(U8 *src)
 {//Alloc in Adam's heap, ident copy of heap node.
@@ -440,21 +431,6 @@ U8 *CAllocAligned(I64 size,I64 alignment,
   res(I64 *)[-1]=ptr-res;
 #assert offset(CMemUsed.size)==offset(CMemUsed.start)-sizeof(I64)
   MemSet(res,0,size);
-  return res;
-}
-
-U8 *StrNew(U8 *buf,CTask *mem_task=NULL)
-{//Accepts a $LK,"CTask",A="MN:CTask"$ or $LK,"CHeapCtrl",A="MN:CHeapCtrl"$.  NULL allocs off current task's heap.
-  U8 *res;
-  I64 size;
-  if (buf) {
-    size=StrLen(buf)+1;
-    res=MAlloc(size,mem_task);
-    MemCpy(res,buf,size);
-  } else {
-    res=MAlloc(1,mem_task);
-    *res=0;
-  }
   return res;
 }
 

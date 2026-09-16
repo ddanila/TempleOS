@@ -169,6 +169,13 @@ def run_input(disk,out,startup_check=None):
             rows=['> ']*60
             commands=[
                 ('GetRFlags&0x200;', ['512']),
+                ('U8 *dup=StrNew(0);dup[0]==0&&MHeapCtrl(dup)==Fs->data_heap;', ['1']),
+                ('Free(dup);U8 *dup_text=StrNew("VGA",Fs->code_heap);dup_text[0]==86&&dup_text[1]==71&&dup_text[2]==65&&dup_text[3]==0;', ['1']),
+                ('U8 *dup2=MAllocIdent(dup_text);dup2!=dup_text&&dup2[0]==86&&dup2[3]==0;', ['1']),
+                ('MemSet(dup_text,0x141,3)==dup_text+3&&dup_text[0]==65&&dup_text[2]==65&&dup2[0]==86;', ['1']),
+                ('MemCpy(dup_text,dup2,4)==dup_text+4&&dup_text[0]==86&&dup_text[1]==71;', ['1']),
+                ('Free(dup_text);Free(dup2);MAllocIdent(0)==0&&MemCpy(0,0,0)==0&&MemSet(0,1,0)==0;', ['1']),
+
                 ('TRUE+FALSE;', ['1']),
                 ('NULL(U8 *);', ['0x0']),
                 ('6*7;', ['42']),

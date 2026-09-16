@@ -91,3 +91,32 @@ U8 *MemoryCAligned(I64 size,I64 alignment,CTask *selector=0,I64 misalignment=0)
   for(i=0;i<size;i++) ptr[i]=0;
   return ptr;
 }
+
+U8 *MemoryCopy(U8 *dst,U8 *src,I64 count)
+{//The public MemCpy primitive copies forward; it is not MemMove.
+  I64 i;
+  asm { CLD }
+  for(i=0;i<count;i++) dst[i]=src[i];
+  return dst+count;
+}
+U8 *MemorySet(U8 *dst,I64 value,I64 count)
+{
+  I64 i;
+  asm { CLD }
+  for(i=0;i<count;i++) dst[i]=value;
+  return dst+count;
+}
+I64 MemoryStrLen(U8 *src)
+{
+  I64 length=0;
+  while(src[length]) length++;
+  return length;
+}
+//This include is last: bind the original helpers to retained native primitives.
+#define MAlloc MemoryAlloc
+#define MSize MemorySize
+#define MemCpy MemoryCopy
+#define StrLen MemoryStrLen
+#define MAllocIdent MemoryIdent
+#define StrNew MemoryStrNew
+#include "/Kernel/Mem/AllocCopy.HC"

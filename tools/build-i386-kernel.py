@@ -157,7 +157,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 3:
+    if struct.unpack_from('<I', module, version_offset)[0] != 4:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -171,7 +171,7 @@ def verify_memory_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 2), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 3), 'api')):
         work = out/f'reject-memory-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -935,7 +935,7 @@ def main():
                        for line in log.splitlines() if line.startswith('PUBLIC MEMORY CASE ')]
         if public_memory!=[(0,12),(1,12)]:
             raise ValueError('Native public allocation/lifetime/OutMem checks failed')
-        result['memory_runtime']=dict(version=3,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=4,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(disk,volume,out,files_layout)
