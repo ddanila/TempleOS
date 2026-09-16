@@ -5193,3 +5193,40 @@ OS source hashes match the rebuild, native and layout results; the eight native,
 four memory-layout and three task-layout build inputs and both disk copies match
 as well. Python syntax checks pass. Full public APIs, document
 integration, native self-hosting and strict 386/physical acceptance remain open.
+
+
+## Separate interactive and diagnostic boot
+
+The default `kernel.img` now skips compiler/memory probes, the kernel-source
+lexer/checksum self-check and the temporary diagnostic worker. Necessary service
+initialization, scalar/public-header loading, startup source and runtime validity
+checks remain on the normal path. `kernel-diagnostics.img` uses the same code and
+filesystem, with one validated data byte enabling the existing full root/worker
+suite. The build locates the exported flag through module metadata, requires a
+zero default inside a declared data range, and verifies that only its selected
+byte differs in the diagnostic disk.
+
+The diagnostic boot retains all previous probe, timer and reclamation gates.
+The full keyboard/VGA suite now boots the normal image and rejects diagnostic
+execution markers. It also checks normal startup with a deliberately corrupted
+probe module. Source-recovery and ordinary runtime-rejection cases run on normal
+boot; probe-specific rejection cases run on diagnostic boot. The manifest records
+both disk hashes, the flag location and mode-specific timing/evidence.
+
+Normal startup measures 21.979 seconds, versus 175.807 seconds with diagnostics,
+on QEMU/486 with 8 MiB: approximately eight times faster.
+All 114 native console commands across 177 submitted lines pass with every VGA
+checkpoint matching. The full diagnostic boot, corrupted-probe independence
+check, all three source-recovery cases and all 17 rejection/reclamation cases
+pass. This improves manual startup while keeping
+the diagnostics available to automated tests and explicit QEMU runs.
+
+
+Both x64 rebuild/reboot generations pass. All 1075 OS source hashes and eight
+native build inputs match the tested artifacts; both disk hashes match, and the
+images differ only at boot-flag byte 6216. The preview was refreshed by atomic
+replacement so an already running VM can retain its existing open image. Python
+syntax and whitespace checks pass. The native kernel is 388928 bytes plus its
+4096-byte early stage, leaving 192 bytes in the unchanged bootstrap reservation.
+The remaining normal startup cost includes native header/source compilation;
+this separation does not claim instant startup or close the full port's gates.

@@ -161,8 +161,9 @@ Use the complete shared `CHeapCtrl` and `CBlkPool` records; the bootstrap arena 
    explicit ownership of alignment padding and pool metadata. Avoid a permanent
    fixed public arena beside a separate compiler arena that strands free memory.
    Migrate compiler, generated-code and task allocations incrementally, preserving
-   their required lifetimes. The temporary diagnostic worker currently uses a
-   256 KiB private compiler arena. Explicit worker exit and reap must release
+   their required lifetimes. Normal interactive boot skips diagnostic probes.
+   The separate diagnostic image retains all root/worker checks; its temporary
+   worker uses a 256 KiB private compiler arena. Explicit worker exit and reap must release
    it before the console starts; verify the returned bytes rather than assuming
    teardown occurs. This is test workspace, not the final compiler allocation
    policy. Measure fragmentation and latency before changing that policy. Account for fragmentation and cached

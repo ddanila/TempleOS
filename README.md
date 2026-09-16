@@ -77,12 +77,16 @@ qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none -snapshot \
   -drive file=build/TempleOS-i386-preview.img,format=raw,if=ide
 ```
 
-Allow roughly three minutes for the current startup diagnostics on the development
-machine. `-snapshot` discards disk changes when QEMU exits; console definitions
-also last only for that running session. This is the 32-bit preview; `run-qemu.sh`
+The default image boots to the interactive environment in about 22 seconds on
+the development machine (QEMU/486, 8 MiB), versus about 176 seconds with diagnostics.
+The separate
+`build/i386-kernel/kernel-diagnostics.img` runs the full boot/worker probe suite;
+use that filename in the QEMU command when you want diagnostics. `--test` verifies
+both paths automatically. `-snapshot` discards disk changes when QEMU exits;
+console definitions also last only for that running session. This is the 32-bit preview; `run-qemu.sh`
 continues to launch the existing full x86-64 environment.
 
-This image boots a native VGA HolyC console. After startup diagnostics finish,
+This image boots a native VGA HolyC console. At the prompt,
 try `6*7;`, `sizeof(U8 *);`, or `1.5+2.25;`. Definitions persist between lines:
 
 ```c

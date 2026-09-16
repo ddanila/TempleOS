@@ -46,6 +46,8 @@ CI386SleepQueue kernel_sleep;
 CI386ConsoleServices kernel_console;
 CI386ConsoleConfig kernel_console_config;
 U8 *kernel_console_image;
+//Build tooling enables this data flag only in the diagnostic disk copy.
+U32 kernel_diagnostics=0;
 Bool kernel_display_ready,kernel_probe_ready;
 CI386KbcInput kernel_input;
 CI386KeyboardReader kernel_reader;
@@ -127,7 +129,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelCompilerLoad;
   KernelFileLoad;
   KernelMemoryLoad;
-  KernelCompilerProbe(0);
+  if(kernel_diagnostics) KernelCompilerProbe(0);
   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
   KernelConsoleLoad;
   KernelStartup;
@@ -135,23 +137,25 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelLog("STORAGE TASK BOUND\n");
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler) ||
       !I386KeyboardReadInit(&kernel_reader,&kernel_input) || !I386KeyboardSetup) KernelStop;
-  kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
-    0x18,0x20,262144);
-  if(!kernel_pulse) KernelStop;
-  //This diagnostic compiler arena is released with the worker after its probes.
-  //Complete public headers and retained functions exceed the former 128 KiB.
   KernelLog(kernel_ready_message);
   I386PicMask(0xFFFC);
-  //Finish heap-accounting diagnostics before accepting interactive allocations.
-  while(!kernel_probe_ready) {
-    if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
-    else I386SchedYield(&kernel_scheduler);
+  if(kernel_diagnostics) {
+    kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
+      0x18,0x20,262144);
+    if(!kernel_pulse) KernelStop;
+    //This diagnostic compiler arena is released with the worker after its probes.
+    //Complete public headers and retained functions exceed the former 128 KiB.
+    //Finish heap-accounting diagnostics before accepting interactive allocations.
+    while(!kernel_probe_ready) {
+      if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
+      else I386SchedYield(&kernel_scheduler);
+    }
+    pulse_used=kernel_heap.used;
+    if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
+        pulse_used-kernel_heap.used<262144+8192) KernelStop;
+    kernel_pulse=0;
+    KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
   }
-  pulse_used=kernel_heap.used;
-  if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
-      pulse_used-kernel_heap.used<262144+8192) KernelStop;
-  kernel_pulse=0;
-  KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
   kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,65536,kernel_console.keys,0,
     0x18,0x20,0);
   if(!kernel_keys) KernelStop;
@@ -205,22 +209,16 @@ U0 KernelFatal(CI386Task *task,I64 status,I64 ch)
 }
 U0 KernelPulse(I64 unused)
 {
-  I64 pulses=0;
-  while(1) {
+  I64 pulses;
+  for(pulses=0;pulses<2;pulses++) {
     if(!I386SleepTicks(&kernel_sleep,25)) KernelStop;
-    if(pulses<2) {
-      pulses++;
-      KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
-      if(pulses==2) {
-        kernel_memory.probe(1);
-        KernelCompilerProbe(1);
-        if(!kernel_compiler.scalar_types_check(kernel_scalars,FALSE)) KernelStop;
-        kernel_probe_ready=TRUE;
-        KernelLog("SCALAR LIVE 0000000000000001\n");
-        return;
-      }
-    }
+    KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
   }
+  kernel_memory.probe(1);
+  KernelCompilerProbe(1);
+  if(!kernel_compiler.scalar_types_check(kernel_scalars,FALSE)) KernelStop;
+  kernel_probe_ready=TRUE;
+  KernelLog("SCALAR LIVE 0000000000000001\n");
 }
 U0 KernelDisplay()
 {
@@ -284,6 +282,7 @@ U0 KernelStorage(CI386BootInfo *info)
       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
   KernelLog("REDSEA "); KernelHex(kernel_volume.start); KernelLog(" ");
   KernelHex(kernel_volume.sectors); KernelLog("\n");
+  if(!kernel_diagnostics) return;
   buffer=I386RedSeaFileRead(&kernel_volume,&kernel_heap,kernel_volume.root,"/Kernel/I386/Kernel.HC",&size);
   cc=I386HeapAlloc(&kernel_heap,sizeof(CCmpCtrl),TRUE);
   if(!buffer || !cc || size<1) KernelStop;
@@ -521,7 +520,7 @@ U0 KernelMemoryLoad()
   kernel_memory_image=KernelServiceLoad("/Modules/I386/MemoryRuntime.t32m","MEMORY ",
     bindings,sizeof(kernel_memory_bindings),&kernel_memory,sizeof(CI386MemoryServices),I386_MEMORY_SERVICES_VERSION);
   if(!kernel_memory.bind(&kernel_root,&kernel_heap,kernel_symbols)) KernelStop;
-  kernel_memory.probe(0);
+  if(kernel_diagnostics) kernel_memory.probe(0);
 }
 
 U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,

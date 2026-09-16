@@ -30,7 +30,7 @@ def console_pixels(rows):
     return bytes(pixels)
 
 
-def run_input(disk,out,startup_check=None):
+def run_input(disk,out,startup_check=None,diagnostics=False):
     from PIL import Image
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
@@ -85,9 +85,8 @@ def run_input(disk,out,startup_check=None):
 
             command('qmp_capabilities')
             startup_started=time.monotonic()
-            #The retained compiler probes run during startup; match the main boot
-            #verifier's allowance while keeping input/screen deadlines unchanged.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=180)
+            #Normal interactive boot must not pay for the diagnostic probe suite.
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=180 if diagnostics else 60)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']
@@ -96,7 +95,15 @@ def run_input(disk,out,startup_check=None):
                 raise ValueError('Missing public headers before startup')
             if evidence.count('STARTUP source begin\n')!=1 or evidence.count(f'STARTUP source {status}\n')!=1:
                 raise ValueError('Missing or repeated native source startup')
-            if not (evidence.index('PROBE RELEASE ') < evidence.index('CONSOLE TASK SPAWNED') <
+            probe_markers=('SOURCE ', 'LEX_SOURCE ', 'MEMORY PROBE ', 'RUNTIME PROBE ',
+                           'PROBE MODULE ', 'PROBE RELEASE ', 'PROBE TASK RELEASE ', 'TICK ')
+            if diagnostics:
+                if not (evidence.index('PROBE RELEASE ') < evidence.index('PROBE TASK RELEASE ') <
+                        evidence.index('CONSOLE TASK SPAWNED')):
+                    raise ValueError('Diagnostic worker did not finish before console startup')
+            elif any(line.startswith(probe_markers) for line in evidence.splitlines()):
+                raise ValueError('Normal boot executed diagnostic probes')
+            if not (evidence.index('CONSOLE TASK SPAWNED') <
                     evidence.index('STARTUP source begin') < evidence.index(f'STARTUP source {status}') <
                     evidence.index('DONE native kernel startup')):
                 raise ValueError('Source startup ran outside the console startup boundary')
@@ -129,6 +136,7 @@ def run_input(disk,out,startup_check=None):
                 for index,(source,answers) in enumerate(startup_check['commands']):
                     submit(source,answers,f'startup-command-{index:02}')
                 result={'result':'pass','cpu':'486','ram_mib':8,'startup_status':status,
+                        'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
                         'vga':'all pixels matched at each checkpoint'}
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
@@ -286,7 +294,8 @@ def run_input(disk,out,startup_check=None):
                 submit(source,answers,f'command-{index:02}')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
-                    'startup_seconds':startup_seconds,
+                    'boot_mode':'diagnostic' if diagnostics else 'interactive',
+                        'startup_seconds':startup_seconds,
                     'vga_uploads':len(uploads()), 'vga_text_rows':sum(uploads()),
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
@@ -305,8 +314,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--diagnostics',action='store_true',help='Expect the diagnostic boot image')
     args=parser.parse_args()
-    print(run_input(args.disk,args.out))
+    print(run_input(args.disk,args.out,diagnostics=args.diagnostics))
 
 
 if __name__=='__main__': main()

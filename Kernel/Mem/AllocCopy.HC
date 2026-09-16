@@ -24,4 +24,3 @@ U8 *StrNew(U8 *buf,CTask *mem_task=0)
   }
   return res;
 }
-

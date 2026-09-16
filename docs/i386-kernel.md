@@ -22,6 +22,27 @@ build input hashes, tool versions, image/module hashes and boot evidence. A dirt
 worktree is identified explicitly, so the recorded revision alone is not claimed
 to describe such a build.
 
+## Interactive and diagnostic boot
+
+`kernel.img` is the default interactive image. It mounts RedSea, initializes the
+retained services and public headers, executes startup source, and opens the
+HolyC console. It does not load `CompilerProbe`, execute memory/source self-checks,
+or create the temporary diagnostic worker and its private compiler arena.
+
+The build also writes `kernel-diagnostics.img`. It differs from the normal disk
+in one byte of the exported `kernel_diagnostics` data word in the flat boot
+kernel. The builder validates that symbol against the module's data ranges and
+requires the normal image's value to be zero before creating the diagnostic copy.
+Both modes use the same executable code, modules and filesystem contents.
+
+`--test` runs the full existing root/worker diagnostic checks on the diagnostic
+image. Keyboard/VGA input, startup-source recovery and normal service rejection
+checks run on the default image; probe rejection tests use the diagnostic image.
+Normal startup rejects any diagnostic execution markers and is also tested with
+a deliberately invalid probe module. Both disk hashes and startup timings are
+recorded separately. The diagnostic disk is selected by filename; no rebuild or
+guest-side prompt is needed to switch modes.
+
 ## Entry and memory ownership
 
 `tools/i386-bios.inc` is the shared BIOS CHS loader and fixed-width memory handoff,
@@ -47,9 +68,11 @@ validation remains required.
 
 The disk-loaded startup module calls the resident display service, which allocates
 a 153600-byte logical planar framebuffer and presents an 80×60 text console at
-640×480 using the existing TempleOS 8×8 font. A heap-owned task sleeps for 25 serviced ticks at
-a time while root idles and timer IRQs make it runnable. Startup diagnostics report
-the memory arena and first two wakeups on port 0xE9. After reporting startup done,
+640×480 using the existing TempleOS 8×8 font. In diagnostic mode, a temporary
+heap-owned task sleeps for 25 serviced ticks at a time while root idles and timer
+IRQs make it runnable. Diagnostic output reports the memory arena and first two
+wakeups on port 0xE9; the task is reaped after its compiler probes. Normal mode
+starts the console without that worker. After reporting startup done,
 the kernel continues running; the optional boot test stops its own QEMU process
 after collecting evidence. Exception/fault diagnostics currently halt on fatal
 conditions and are not the final debugger interface.
@@ -77,7 +100,7 @@ a complete installed TempleOS distribution. The complete 8 MiB interactive envir
 
 The builder places a volume at sector 2048 of the 16 MiB image, after the reserved
 boot area. It packages Kernel/Compiler HC, HH, DD and PRJ files without modifying
-their bytes, and the eight native modules under `Modules/I386`. The manifest
+their bytes, and the twelve native modules under `Modules/I386`. The manifest
 records the verified file count. It initializes directory self/parent records, termination,
 fixed-width extents/dates, and allocation bits including reserved/out-of-volume
 bits. An independent serialized-volume walk checks every file hash, directory
@@ -87,15 +110,17 @@ and bitmap corruption were all rejected by this verifier.
 `BootDisk.HH` defines the separate 16-byte disk handoff (magic, version, BIOS drive,
 volume start). Startup currently requires BIOS drive 0x80 to map to primary IDE
 master; it rejects other BIOS drive numbers and does not discover arbitrary BIOS
-to-controller mappings. Native ATA PIO identifies that disk, mounts RedSea and
-walks `Kernel/I386/Kernel.HC`. It reads that source into a checked, terminated heap
+to-controller mappings. Native ATA PIO identifies the disk and mounts RedSea in
+both modes. Diagnostic boot additionally walks `Kernel/I386/Kernel.HC`. It reads
+that source into a checked, terminated heap
 buffer and verifies its FNV-32 checksum. A native compiler control and lexical
 file then consume the buffer through the raw character reader. The boot test
 compares character count, newline count and normalized checksum with the packaged
 source, and verifies reclamation of the buffer/control/file allocations. This
 loads one source file on demand; the distribution remains on disk.
-All disk access occurs during controlled startup with IF clear. There is no full
-public CDrv/CFile interface, runtime filesystem concurrency or source execution yet.
+Mounting and service loading happen with IF clear. The console subsequently
+executes startup source with interrupts enabled through the retained file
+services. The complete public CDrv/CFile interface remains unfinished.
 
 The memory-handoff regression checks the disk sidecar too, including the absence
 of a volume in ordinary test images. The existing RedSea reader suite and both

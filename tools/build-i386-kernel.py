@@ -9,6 +9,7 @@ import runpy
 import struct
 import subprocess
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
@@ -19,9 +20,38 @@ def run(*args):
     subprocess.run(args, cwd=ROOT, check=True)
 
 
+def diagnostic_disk(disk, exports):
+    """Copy the normal disk and enable its validated, exported boot data flag."""
+    module=(exports/'Kernel.t32m').read_bytes()
+    size,count,records=struct.unpack_from('<III',module,16)
+    flags=[]
+    data=[]
+    for index in range(count):
+        kind,offset,name,length=struct.unpack_from('<4I',module,records+16*index)
+        if kind==3 and module[name:name+length]==b'kernel_diagnostics': flags.append(offset)
+        if kind==4: data.append((offset,name))
+    if len(flags)!=1 or not any(a<=flags[0] and flags[0]+4<=a+n for a,n in data):
+        raise ValueError('Missing or non-data diagnostic boot flag')
+    offset=flags[0]
+    if offset>size-4 or struct.unpack_from('<I',module,32+offset)[0]:
+        raise ValueError('Diagnostics must be disabled in the built kernel')
+    #512-byte BIOS boot sector, 4096-byte stage, 8-byte flat-image trampoline.
+    disk_offset=512+4096+8+offset
+    original=disk.read_bytes()
+    if struct.unpack_from('<I',original,disk_offset)[0]:
+        raise ValueError('Normal disk already enables diagnostics')
+    changed=bytearray(original)
+    struct.pack_into('<I',changed,disk_offset,1)
+    if [i for i,(a,b) in enumerate(zip(original,changed)) if a!=b]!=[disk_offset]:
+        raise ValueError('Diagnostic disk changed more than its boot flag')
+    path=disk.with_name('kernel-diagnostics.img'); path.write_bytes(changed)
+    return path,dict(path=str(path.relative_to(ROOT)),flag_disk_offset=disk_offset,
+                     disk_sha256=hashlib.sha256(changed).hexdigest())
+
+
 def verify_startup_rejection(disk, volume, out):
     """Prove startup reads and validates the disk module before invoking it."""
-    #This module loads after the root diagnostics; allow the full boot deadline.
+    #Exercise rejection on the normal interactive boot path.
     original=disk.read_bytes()
     entry=volume['files']['/Modules/I386/Startup.t32m']
     offset=entry['block']*512
@@ -46,13 +76,26 @@ def verify_startup_rejection(disk, volume, out):
                 '--i386-disk','--out',str(work),'--timeout','180'],cwd=ROOT,stdout=log,stderr=log)
         evidence=(work/'debug.log').read_text()
         if (result.returncode==0 or 'FAIL native kernel\n' not in evidence
-                or 'SOURCE ' not in evidence or any(line.startswith('MODULE ') for line in evidence.splitlines())
+                or 'REDSEA ' not in evidence or any(line.startswith('MODULE ') for line in evidence.splitlines())
                 or any(marker in evidence for marker in
                     ('STARTUP disk module','READY native kernel','DONE native kernel'))):
             raise ValueError(f'Startup did not reject {label} before execution')
         if candidate.read_bytes()!=changed: raise ValueError('Rejected startup changed disk')
         results.append(label)
     return results
+
+
+def verify_normal_without_probe(disk,volume,out,console):
+    """A broken diagnostic module must not prevent interactive startup."""
+    work=out/'normal-without-probe'; work.mkdir(parents=True,exist_ok=True)
+    image=bytearray(disk.read_bytes())
+    offset=volume['files']['/Modules/I386/CompilerProbe.t32m']['block']*512
+    image[offset]^=0xFF
+    candidate=work/'kernel.img'; candidate.write_bytes(image)
+    result=console['run_input'](candidate,work,startup_check={
+        'status':'ok','answers':[],'commands':[('6*7;',['42']),('Fs->code_heap!=0;',['1'])]})
+    if candidate.read_bytes()!=image: raise ValueError('Normal probe-independence test changed disk')
+    return result
 
 
 def verify_source_startup(disk, volume, out, console):
@@ -244,7 +287,7 @@ def verify_file_rejection(disk, volume, out, layout):
 
 
 def verify_console_rejection(disk, volume, out, layout):
-    #Console loading follows the expanded root diagnostics, as startup loading does.
+    #Console rejection must also work without compiler probes initializing state.
     original = disk.read_bytes()
     offset = volume['files']['/Modules/I386/ConsoleRuntime.t32m']['block']*512
     results = []
@@ -641,6 +684,8 @@ def main():
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
     volume=package_volume(disk,exports)
     volume['verified_files']=verify_volume(disk,volume)
+    normal_disk=disk
+    diagnostic_image,diagnostics=diagnostic_disk(normal_disk,exports)
     result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256':bootstrap['source_sha256'],
             'bootstrap':bootstrap['generations'][-1],
@@ -661,10 +706,15 @@ def main():
             'temporary_modules':['Startup', 'CompilerProbe'],
             'volume':volume,
             'scope':'Native kernel with a retained HolyC console and disk source startup; full runtime, DolDoc and self-hosting unfinished',
+            'diagnostics':diagnostics,
+            'boot_mode':'interactive',
             'boot_test':None}
     if args.test:
+        disk=diagnostic_image
         guest=out/'boot'
+        diagnostic_started=time.monotonic()
         run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','180')
+        diagnostics['startup_seconds']=time.monotonic()-diagnostic_started
         log=(guest/'debug.log').read_text()
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
             raise ValueError('Missing native kernel startup/timer evidence')
@@ -706,7 +756,7 @@ def main():
                 or int(loaded[0][1],16)!=1 or int(loaded[0][2],16)<=0):
             raise ValueError('Missing disk module execution/reclamation evidence')
         startup_reclaimed=int(loaded[0][2],16)
-        if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
+        if hashlib.sha256(disk.read_bytes()).hexdigest()!=diagnostics['disk_sha256']:
             raise ValueError('Read-only kernel startup changed the disk')
         ticks=[int(line.split()[1],16) for line in log.splitlines() if line.startswith('TICK ')]
         if ticks[0]<25 or ticks[1]-ticks[0]<25:
@@ -914,11 +964,13 @@ def main():
         if screen.tobytes()!=expected:
             raise ValueError('VGA console mismatch')
         screen.save(guest/'screen.png')
-        keyboard=console['run_input'](disk,out/'input')
-        if hashlib.sha256(disk.read_bytes()).hexdigest()!=result['disk_sha256']:
+        keyboard=console['run_input'](normal_disk,out/'input')
+        if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')
-        result['source_startup']=verify_source_startup(disk,volume,out,console)
-        rejected=verify_startup_rejection(disk,volume,out)
+        result['normal_boot']=dict(keyboard=keyboard,
+            invalid_probe=verify_normal_without_probe(normal_disk,volume,out,console))
+        result['source_startup']=verify_source_startup(normal_disk,volume,out,console)
+        rejected=verify_startup_rejection(normal_disk,volume,out)
         rows=[line.split() for line in log.splitlines()
               if line.startswith('MEMORY ') and not line.startswith('MEMORY PROBE ')]
         if len(rows)!=1 or len(rows[0])!=6:
@@ -937,9 +989,9 @@ def main():
             raise ValueError('Native public allocation/lifetime/OutMem checks failed')
         result['memory_runtime']=dict(version=4,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
-            rejected=verify_memory_rejection(disk,volume,out,memory_layout))
-        result['file_runtime']['rejected']=verify_file_rejection(disk,volume,out,files_layout)
-        result['compiler_runtime']['rejected']=verify_compiler_rejection(disk,volume,out,runtime_layout)
+            rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
+        result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)
+        result['compiler_runtime']['rejected']=verify_compiler_rejection(normal_disk,volume,out,runtime_layout)
         result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
         rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
         if len(rows)!=1 or len(rows[0])!=7: raise ValueError('Missing retained console')
@@ -947,7 +999,7 @@ def main():
         if csize!=console_layout['image_bytes'] or cspan!=((csize+23)//8)*8 or entries!=[cbase+x for x in console_layout['entries']]:
             raise ValueError('Console interface/image accounting mismatch')
         result['console_runtime']=dict(version=7,image_bytes=csize,retained_heap_bytes=cspan,
-            rejected=verify_console_rejection(disk,volume,out,console_layout))
+            rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
                 raise ValueError(f'Missing public-header probe: {marker}')
@@ -965,14 +1017,16 @@ def main():
                             'locked_heap_reap':'deferred before symbol teardown'}
         result['public_headers']={'result':'pass','layout_checks_per_phase':108,
                                  'task_phases':[0,1],'retained_heap_bytes':memory[0]}
-        result['boot_test']={'cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
+        result['boot_test']={'boot_mode':'diagnostic','cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
                              'startup_module':'Startup','startup_reclaimed_bytes':startup_reclaimed,
                              'startup_rejected':rejected,
                              'keyboard':keyboard,
                              'source_bytes':len(source),'source_fnv32':checksum,'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
-    result['disk_sha256']=hashlib.sha256(disk.read_bytes()).hexdigest()
+    if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256'] or \
+            hashlib.sha256(diagnostic_image.read_bytes()).hexdigest()!=diagnostics['disk_sha256']:
+        raise ValueError('Boot images changed during verification')
     (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
-    print(f'Built {disk} ({len(image)} native kernel bytes); boot test: {bool(args.test)}')
+    print(f'Built {normal_disk} and {diagnostic_image} ({len(image)} native kernel bytes); boot test: {bool(args.test)}')
 
 
 if __name__=='__main__':

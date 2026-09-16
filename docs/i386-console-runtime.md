@@ -18,7 +18,9 @@ then reclaimed; it does not own the retained console.
 The module imports only `KernelLog`, `KernelStop`, `I386HeapAlloc`, `SysTry` and
 `SysUntry`. It compiles the existing VGA/text implementation and I/O intrinsics
 without introducing a host runtime or a newer CPU requirement. Device setup,
-keyboard interrupts and cooperative scheduling stay in the kernel. The console task starts after boot/worker heap-accounting diagnostics finish.
+keyboard interrupts and cooperative scheduling stay in the kernel. Normal boot
+starts the console without diagnostic probes. Diagnostic boot
+starts it after boot/worker heap-accounting probes finish and the worker is reaped.
 It has a 64 KiB stack and borrows the shared kernel heap for symbols, compilation
 and exception records. Submitted input always takes its heap from the current
 task symbol scope; the configuration heap owns the display buffer. A single task
@@ -43,7 +45,8 @@ reads the disk file at boot, so changing source does not require recompiling the
 console module. Repack the image to change this file until native editing and
 file-writing workflows are integrated.
 
-The source runs once, after worker heap-accounting probes and task creation, with
+The source runs once after console task creation (and after worker probes when
+diagnostic boot is enabled), with
 the console's file context, symbol heap and recoverable input boundary. Its source
 buffers belong to the include/control lifecycle. Results and diagnostics use the
 usual console callbacks. A missing file or failed compilation still reaches the
