@@ -5191,5 +5191,5 @@ evidence, not strict 386 or full DolDoc acceptance.
 The final 43-field memory and 105-field task layout checks also pass. All 1075
 OS source hashes match the rebuild, native and layout results; the eight native,
 four memory-layout and three task-layout build inputs and both disk copies match
-as well. Python syntax and whitespace checks pass. Full public APIs, document
+as well. Python syntax checks pass. Full public APIs, document
 integration, native self-hosting and strict 386/physical acceptance remain open.
