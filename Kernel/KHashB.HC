@@ -1,12 +1,11 @@
 #include "/Kernel/HashValue.HC"
 
+extern U0 SysTry(U8 *catch_start,U8 *untry_start);
+extern U0 SysUntry();
+#include "/Kernel/HashTablePublicCore.HC"
 CHashTable *HashTableNew(I64 size,CTask *mem_task=NULL)
 {//New hash table, power-of-two in size.
-  CHashTable *table;
-  table=CAlloc(sizeof(CHashTable),mem_task);
-  table->body=CAlloc(size<<3,mem_task);
-  table->mask=size-1;
-  return table;
+  return HashTableNewCore(size,mem_task,&CAlloc,&Free);
 }
 
 #include "/Kernel/SymbolDelete.HC"
@@ -22,20 +21,8 @@ U0 HashDel(CHashSrcSym *symbol)
 }
 
 U0 HashTableDel(CHashTable *table)
-{//Free std system hash table, calling $LK,"HashDel",A="MN:HashDel"$() on entries.
-  I64 i;
-  CHashSrcSym *tmph,*tmph1;
-  if (!table) return;
-  for (i=0;i<=table->mask;i++) {
-    tmph=table->body[i];
-    while (tmph) {
-      tmph1=tmph->next;
-      HashDel(tmph);
-      tmph=tmph1;
-    }
-  }
-  Free(table->body);
-  Free(table);
+{//Delete owned standard system entries; the chained parent remains borrowed.
+  HashTableDelCore(table,&HashDel,&Free);
 }
 
 I64 HashTablePurge(CHashTable *table)
@@ -117,24 +104,8 @@ CHashGeneric *HashPublic(U8 *st,I64 mask,Bool val=TRUE)
 }
 
 I64 HashLstAdd(U8 *lst,I64 type,CHashTable *table)
-{//Add a list to a hash table.
-  I64 i=0;
-  CHashGeneric *tmph;
-  if (lst) {
-    while (*lst) {
-      if (*lst=='@')
-	lst++;
-      else
-	i++;
-      tmph=CAlloc(sizeof(CHashGeneric));
-      tmph->user_data0=i-1;
-      tmph->str=StrNew(lst);
-      tmph->type=type;
-      HashAdd(tmph,table);
-      while (*lst++);
-    }
-  }
-  return i;
+{//Add a list; @ entries alias the previous ordinal.
+  return HashLstAddCore(lst,type,table,&CAlloc,&StrNew,&Free,&HashAdd);
 }
 
 I64 HashDefineLstAdd(U8 *dname,I64 type,CHashTable *table)

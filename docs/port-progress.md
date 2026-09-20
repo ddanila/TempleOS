@@ -6236,3 +6236,22 @@ Normal QEMU/486 boot at 8 MiB measured 15.003 seconds; diagnostics measured
 127.151 seconds. Native definition-list/hash services and real document globals,
 entry lifecycle, rendering/editing and persistence remain required. The usable
 native editing-session goal is still open.
+
+## Public hash tables for document initialization
+
+MemoryRuntime 8 now publishes task-owned HashTableNew, HashTableDel, HashDel and
+HashLstAdd. Original x64 and native implementations share table/list policy with
+pointer-width-correct bucket allocation and exception cleanup for unpublished
+allocations. Tests cover aliases, collisions, parent lookup/lifetime, public heap
+ownership and failure cleanup on boot and worker tasks.
+
+Both x64 rebuild generations and the full native suite pass: 168 commands / 231
+lines, seven hardware breaks, exact VGA, startup recovery and 17 module rejection
+cases. All 1117 OS hashes and nine build-input hashes match. Normal boot measured
+16.105 seconds; separate diagnostics measured 129.578 seconds. See
+[public hash tables](i386-public-hash-tables.md) for size and ownership details.
+
+The original document editor is still pending. Next: native definition lists and
+DolDoc dictionary initialization, then document creation, rendering, editing and
+the save/reboot/reopen workflow. DolDoc dictionary type bits require their own
+matching entry destructor; standard symbol deletion must not be used blindly.

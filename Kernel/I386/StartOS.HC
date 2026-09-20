@@ -17,3 +17,5 @@ extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 #include "/Kernel/I386/Intrinsic.HH"
 
 #include "/Kernel/I386/PublicDocument.HH"
+
+#include "/Kernel/I386/PublicHash.HH"

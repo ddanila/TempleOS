@@ -15,4 +15,9 @@ public class CHashTable
   CHash	**body;
 };
 
+public class CHashGeneric:CHash
+{
+  I64	user_data0,user_data1,user_data2;
+};
+
 #endif

@@ -299,6 +299,13 @@ allocations and unnecessary duplication. Any proposed change to the hardware
 contract or HolyC/DolDoc behavior requires an explicit plan revision supported by
 those measurements.
 
+Public task-owned hash tables and list insertion now have retained native
+bindings and shared original/native ownership tests; see
+[public hash tables](docs/i386-public-hash-tables.md). The next document slice is
+original definition-list and command/color dictionary initialization, followed by
+document lifecycle, rendering and editing. This does not yet provide DocInit or
+an editable document.
+
 ### Next public-memory integration package
 
 The boot environment now loads the retained backing provider and binds public
