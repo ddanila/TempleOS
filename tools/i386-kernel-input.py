@@ -348,6 +348,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             submit('I64 DocAgain(){I64 ok=DocLock(&locked_doc);return ok&&DocUnlock(&locked_doc);}', [], 'doc-again-definition')
             submit('DocAgain;', ['1'], 'doc-again')
             submit('6*7;', ['42'], 'doc-recovery')
+            submit('#include "/Kernel/I386/DocAccessCheck.HC"', [], 'doc-access-definition')
+            submit('DocAccessCheck(&DocPut,&DocDisplay,&DocBorder);', ['8'], 'doc-access-check')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
@@ -356,7 +358,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':90+len(commands), 'native_commands':len(commands)+27, 'keyboard_break_cases':7, 'document_lock_cases':11}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':92+len(commands), 'native_commands':len(commands)+29, 'keyboard_break_cases':7, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

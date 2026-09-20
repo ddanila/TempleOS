@@ -6,7 +6,9 @@ all 17 module rejections. This is the lock integration boundary, not evidence of
 a working original editor or successful document persistence.
 
 `Adam/DolDoc/DocLockCore.HC` holds the original DocLock/DocUnlock ownership policy.
-The x64 wrappers pass Fs and the original Yield/BreakLock/BreakUnlock services.
+The x64 wrappers in `Adam/DolDoc/DocLock.HC` pass Fs and the original
+Yield/BreakLock/BreakUnlock services. MakeDoc loads these before DocBin; DocNew
+uses the already supplied document-lock interface.
 Native wrappers pass the current native task and explicit adapters. The native
 adapter does not publish a partial public Yield or Break interface.
 

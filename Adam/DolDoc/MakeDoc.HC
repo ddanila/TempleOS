@@ -35,6 +35,7 @@ MemSet(&doldoc,0,sizeof(CDolDocGlbls));
 #define BIBLE_FILENAME	"::/Misc/Bible.TXT.Z"
 
 #include "DocExt"
+#include "DocLock"
 #include "DocBin"
 #include "DocNew"
 #include "DocForm"

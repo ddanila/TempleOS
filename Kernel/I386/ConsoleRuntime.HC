@@ -10,6 +10,7 @@
 #include "/Kernel/I386/ExceptRuntime.HH"
 #include "/Kernel/I386/TaskBreak.HH"
 #include "/Kernel/I386/DocLock.HH"
+#include "/Kernel/I386/DocAccess.HH"
 #include "/Kernel/I386/KernelSymbols.HH"
 #include "/Kernel/FontStd.HC"
 import Bool I386SchedYield(CI386Scheduler *scheduler);
@@ -31,7 +32,7 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[2];
+CI386KernelSymbol console_doc_exports[5];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -42,6 +43,7 @@ extern Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0);
 Bool ConsoleInit(CI386ConsoleConfig *config)
 {
   CI386Task *task=I386TaskSelf;
+  I64 i;
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
@@ -52,10 +54,17 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[0].val=(&I386DocLock+0)(U64);
   console_doc_exports[1].str="_DOC_UNLOCK";
   console_doc_exports[1].val=(&I386DocUnlock+0)(U64);
-  console_doc_exports[0].type=console_doc_exports[1].type=HTT_EXPORT_SYS_SYM;
-  console_doc_exports[0].kind=console_doc_exports[1].kind=1;
-  HashAdd(&console_doc_exports[0],task->hash_table);
-  HashAdd(&console_doc_exports[1],task->hash_table);
+  console_doc_exports[2].str="_DOC_PUT";
+  console_doc_exports[2].val=(&DocPut+0)(U64);
+  console_doc_exports[3].str="_DOC_DISPLAY";
+  console_doc_exports[3].val=(&DocDisplay+0)(U64);
+  console_doc_exports[4].str="_DOC_BORDER";
+  console_doc_exports[4].val=(&DocBorder+0)(U64);
+  for(i=0;i<5;i++) {
+    console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
+    console_doc_exports[i].kind=1;
+    HashAdd(&console_doc_exports[i],task->hash_table);
+  }
   console_config=config; return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)
@@ -192,3 +201,5 @@ U0 I386DocBreakPoll()
   console_config->compiler->break_poll();
 }
 #include "/Kernel/I386/DocLock.HC"
+
+#include "/Kernel/I386/DocAccess.HC"

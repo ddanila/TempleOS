@@ -192,6 +192,9 @@ Original document locking now shares its ownership policy with native adapters:
 contending waiters can yield and recover from a break, and an owner releases the
 document before pending-break delivery. Retained DocLock/DocUnlock bindings are
 available to native HolyC; see [document locks](docs/i386-document-locks.md).
+Original DocPut/DocDisplay/DocBorder selection is now retained natively as well,
+with shared original source and x64/native selection tests; see
+[document selection](docs/i386-document-access.md).
 Document creation, rendering/editing and persistence remain open.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,

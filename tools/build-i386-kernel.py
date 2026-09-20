@@ -176,7 +176,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 13:
+    if struct.unpack_from('<I', module, version_offset)[0] != 14:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -312,7 +312,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 12), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 13), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -1001,6 +1001,9 @@ def main():
             raise ValueError('VGA console mismatch')
         screen.save(guest/'screen.png')
         keyboard=console['run_input'](normal_disk,out/'input')
+        if keyboard['document_access_cases']!=8 or 'PASS original document selection\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/native task document selection failed')
+        result['document_access']={'cases':8,'original_x64':'pass','native_public_bindings':'pass'}
         if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')
         result['normal_boot']=dict(keyboard=keyboard,
@@ -1065,7 +1068,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=13,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=14,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

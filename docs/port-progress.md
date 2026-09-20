@@ -6168,3 +6168,37 @@ document. Original creation/copy/reset/delete still reaches real callback,
 DocTop/DocRecalc, reporting and global-state dependencies. Rendering/editing,
 execution from the original editor and persistent save/reboot/reopen acceptance
 remain open; the medium goal is not complete.
+
+
+## Original task-document selection
+
+The original DocPut, DocDisplay and DocBorder bodies are now shared through
+`Adam/DolDoc/DocAccess.HC` and compiled into retained ConsoleRuntime 14. Native
+public bindings preserve the default current-task argument, signature validation,
+one-level input-filter forwarding for DocPut, and the task's own display/border
+slots. Queries borrow pointers; they do not initialize or own documents. See
+[document selection](i386-document-access.md).
+
+The original platform lock wrappers moved to `Adam/DolDoc/DocLock.HC`, loaded by
+MakeDoc before DocBin. DocNew now consumes the supplied lock interface without
+requiring the x64 Yield/Break wrappers. The shared lock policy is unchanged.
+
+Both x64 rebuild generations, the native exception/task suite and the full native
+kernel suite pass. One eight-case corpus passes against original x64 functions,
+native AOT functions and disk-loaded HolyC calling the retained public bindings.
+The console suite covers 166 commands / 229 input lines with exact VGA checks,
+seven hardware hotkey cases and eleven document-lock commands. Startup recovery,
+normal boot with an invalid diagnostic probe and all 17 rejection cases pass.
+All 1106 OS source hashes and eight build-input hashes match; both tested disk
+hashes remain unchanged. The normal preview is refreshed from the tested image.
+
+ConsoleRuntime 14 retains 91096 bytes (91080-byte image). Kernel size remains
+363296 bytes, leaving 25824 bytes after the 4096-byte early stage. Normal QEMU/486
+boot at 8 MiB measured 15.004 seconds; diagnostics measured 127.368 seconds.
+Manifests record the pre-commit revision and exact tested hashes.
+
+The selection corpus initializes only the fields these queries read. It does not
+establish a complete live document. Real document initialization, globals,
+reporting, callbacks and DocTop/DocRecalc dependencies remain ahead, followed by
+rendering/editing and persistent save/reboot/reopen acceptance. The first usable
+native DolDoc editing-session goal remains open.
