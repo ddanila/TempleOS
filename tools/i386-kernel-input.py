@@ -86,7 +86,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             command('qmp_capabilities')
             startup_started=time.monotonic()
             #Normal interactive boot must not pay for the diagnostic probe suite.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else 90)
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else 60)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']

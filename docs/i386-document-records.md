@@ -54,8 +54,8 @@ and embedded graphics still require integrated fixtures.
 
 Loading the full records increases retained public-header storage from 71248 to
 169920 bytes. A standalone normal QEMU/486 boot measured 60.617 seconds, versus
-25.038 seconds for the preceding committed header set. The normal harness now
-allows 90 seconds (previously 60); diagnostics allow 1200 seconds for the larger
+25.038 seconds for the preceding committed header set. At that stage the normal harness
+allowed 90 seconds (previously 60); diagnostics allow 1200 seconds for the larger
 boot/worker corpus. These are harness deadlines, not responsiveness targets or
 claims of vintage hardware performance. Normal startup still skips diagnostics.
 Compiler allocation and validation cost must be addressed before the integrated
@@ -67,3 +67,8 @@ exact VGA checkpoints, startup-source recovery and all 17 module rejection cases
 Both x64 rebuild generations and the independent layout comparison passed against
 the same 1084 OS source hashes. The temporary document-enabled probe allocation
 of 656880 bytes and the worker allocation of 533664 bytes are fully reclaimed.
+
+Subsequent [heap validation optimization](i386-heap-performance.md) restores the
+normal 60-second test deadline: startup now measures 15.806 seconds with these
+same document records, and diagnostics 137.386 seconds. Public-header retention
+remains 169920 bytes. Every layout, behavior, rollback and cleanup check remains.

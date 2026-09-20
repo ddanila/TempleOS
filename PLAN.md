@@ -160,20 +160,21 @@ public task-heap ownership through compiler cleanup, publication and task reap;
 compiler metadata and working buffers still use bootstrap arenas. Complete their
 allocation policy and the remaining public memory services as the next
 public-contract work. Shared document headers raise retained public metadata to
-169920 bytes. A normal QEMU/486 boot with these records measured 60.617 seconds,
-up from 25.038 seconds with the preceding headers. The normal test deadline is
-now 90 seconds; extending that deadline is not a performance improvement.
-Before loading the complete editor, measure time and allocator traversal counts
-separately for header publication, startup, repeated short commands, failed
-compilation and task teardown. Preserve corruption detection, rollback and
-logical allocation sizes while reducing the cost; report timings against this
-header workload as well as retained and peak RAM. The bootstrap allocator scans
-and validates its whole block chain
-on allocation, free and size queries; profile those paths with the larger symbol
-graph before integrating the full editor. Migrate compiler metadata/working
-storage with explicit ownership and logical-size tracking, preserving corruption
-and rollback checks instead of substituting public MSize capacity for requested
-size. Registered backing regions and a demand-growth provider now have native coverage, including return of wholly
+169920 bytes. Profiling the complete headers attributed most header/startup
+samples to whole-chain bootstrap heap validation. An equivalent 386 assembly
+loop, retaining every invariant, reduces normal QEMU/486 startup from 60.612 to
+15.806 seconds and diagnostics from 726.823 to 137.386 seconds. The normal test
+deadline is restored to 60 seconds. Differential corruption tests and the full
+native suite pass; kernel reservation headroom grows from 184 to 2440 bytes.
+See [heap performance](docs/i386-heap-performance.md), including the native
+inline-assembly label-forwarding fix exposed by this work.
+
+This does not close compiler allocation or editor responsiveness work. Before
+loading the complete editor, measure allocator traversal counts and command,
+failed-compilation and teardown latency in addition to boot samples. Migrate
+compiler metadata/working storage with explicit ownership and logical-size
+tracking, preserving corruption and rollback checks instead of substituting
+public MSize capacity for requested size. Registered backing regions and a demand-growth provider now have native coverage, including return of wholly
 unused regions to the bootstrap allocator. Task teardown now invokes the retained
 provider after releasing heap controls; public free also notifies the provider
 after finishing its page-header reads. See

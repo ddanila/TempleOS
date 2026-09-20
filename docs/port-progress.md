@@ -5423,3 +5423,40 @@ compiler allocation work before full-editor acceptance.
 The preview image is refreshed from this tested normal image. Document lifecycle,
 locking/break semantics, palette bindings, persistent files and the integrated
 editor remain open. See [document records](i386-document-records.md).
+
+
+## Bootstrap heap performance and native assembly labels
+
+A QMP sampling tool now profiles normal startup against verified disk/module
+hashes. Caller samples of the document-enabled image locate the dominant cost
+in I386HeapValid: 297/380 header samples and 179/193 startup-source samples.
+Compiler control/task ownership, token handling, allocation and publication
+repeatedly reach that full-chain validator.
+
+The loop now uses bounded 386 register operations, preserving the original
+region checks and every block/counter invariant. It still validates the entire
+chain for all callers; no cache or early successful lookup bypasses corruption
+checks. The heap corpus compares 160 metadata/control mutations with the old
+HolyC validator, verifies arena immutability, and rejects operations when a later
+block is corrupt. Existing heap/backing and reclamation tests pass.
+
+The first valid-heap test exposed native optimizer label forwarding that skipped
+an inline-assembly prefix after a conditional. The shared pass now preserves
+assembler byte-offset targets for i386. Focused cases check the conditional's
+two outcomes and two distinct internal labels; x64 optimization is unchanged.
+Both x64 rebuild generations, the heap and inline-assembly tests, all 245 native
+function cases and their instruction audits pass.
+
+The complete native suite passes 124 commands / 187 input lines, exact VGA,
+startup recovery, independence from diagnostics, all document layout/behavior
+checks in both tasks, cleanup and 17 module rejections. Normal QEMU/486 startup
+at 8 MiB improves from 60.612 to 15.806 seconds, diagnostics from 726.823 to
+137.386 seconds. The normal harness deadline returns to 60 seconds. The kernel
+shrinks by 2256 bytes to 386680, leaving 2440 bytes of bootstrap headroom.
+CompilerRuntime ABI 42 uses 1314240 image / 1314256 retained bytes; public headers
+still retain 169920 bytes. The tested normal preview is refreshed.
+
+Post-change samples still show validation and allocation/size/free scans as
+significant costs. Compiler metadata migration, full-editor responsiveness and
+physical 386 measurements remain open. See [heap performance](i386-heap-performance.md)
+for scope, raw-artifact locations and reproduction instructions.

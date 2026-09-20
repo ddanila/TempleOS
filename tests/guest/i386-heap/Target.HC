@@ -4,6 +4,7 @@
 #include "/Kernel/I386/Heap.HH"
 extern U64 Hash(U8 *base,I64 size);
 extern I64 PublicHeapTest();
+extern I64 HeapValidationTest(CI386Heap *hc,U8 *arena);
 I64 Main(I64 a,I64 b)
 {
   CI386Heap hc,other;
@@ -95,6 +96,8 @@ I64 Main(I64 a,I64 b)
   if (!I386HeapFree(&hc,p) || !I386HeapValid(&hc)) return 24;
   for (i=0;i<8;i++) if (guard[i]!=0xA5) return 25;
   for (i=8200;i<8216;i++) if (guard[i]!=0xA5) return 26;
+  i=HeapValidationTest(&hc,arena);
+  if(i) return i;
   return PublicHeapTest;
 }
 U64 Hash(U8 *base,I64 size)
@@ -107,3 +110,5 @@ U64 Hash(U8 *base,I64 size)
 #include "/Kernel/I386/Heap.HC"
 
 #include "Public.HC"
+
+#include "Validation.HC"

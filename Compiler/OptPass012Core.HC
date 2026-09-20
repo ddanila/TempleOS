@@ -1112,6 +1112,11 @@ args.
 	ps->ptr+=tmpi->ic_data<<1;
 	break;
       case IC_LABEL:
+        //Assembler labels precede IC_ASM in IR but carry byte offsets within it.
+        //They are not coincident with adjacent HolyC/assembler labels. Native
+        //branch IR must retain these distinct targets, including an asm prefix.
+        if (cc->flags&CCF_TARGET_I386 &&
+            tmpi->ic_data(CCodeMisc *)->type==CMT_ASM_LABEL) break;
 	lb=OptLabelFwd(tmpi->ic_data);
 	lb1=tmpi->ic_data;
 	while (lb2=lb1->fwd) {
@@ -1129,6 +1134,7 @@ args.
 	    }
 	  } else if (tmpi1->ic_code==IC_LABEL) {
 	    lb1=tmpi1->ic_data;
+            if (cc->flags&CCF_TARGET_I386 && lb1->type==CMT_ASM_LABEL) break;
 	    if (!lb1->fwd)
 	      lb1->fwd=lb;
 	    if (tmpi1=OptLag(tmpi1)) {
@@ -1148,6 +1154,8 @@ args.
       case IC_JMP:
 	if (tmpi1=OptLag(tmpi)) {
 	  if (tmpi1->ic_code==IC_LABEL) {
+            if (cc->flags&CCF_TARGET_I386 &&
+                tmpi1->ic_data(CCodeMisc *)->type==CMT_ASM_LABEL) break;
 	    lb=OptLabelFwd(tmpi->ic_data);
 	    lb1=OptLabelFwd(tmpi1->ic_data);
 	    if (lb!=lb1)

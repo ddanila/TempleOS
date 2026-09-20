@@ -32,28 +32,62 @@ public Bool I386HeapInit(CI386Heap *hc,U8 *base,I64 size)
 
 public Bool I386HeapValid(CI386Heap *hc)
 {//Check the whole physical block chain before trusting metadata for mutation.
-  CI386HeapBlock *block;
-  I64 offset=0,used=0,count=0;
-  Bool last_free=FALSE;
+  //This hot loop uses bounded U32 arithmetic: each span is checked against the
+  //remaining arena before advancing, so used/count cannot overflow. The region
+  //check retains the wide address-overflow and control/arena overlap checks.
+  Bool valid=FALSE;
+  U32 last_free=0;
   if (!hc || hc->signature!=I386_HEAP_MAGIC ||
       !I386HeapRegionValid(hc,hc->base,hc->size) ||
       hc->peak>hc->size || hc->used>hc->peak) return FALSE;
-  while (offset<hc->size) {
-    if (hc->size-offset<24) return FALSE;
-    block=hc->base+offset;
-    if (block->span<24 || block->span&7 || block->span>hc->size-offset ||
-        block->reserved) return FALSE;
-    if (block->tag==I386_HEAP_FREE) {
-      if (last_free || block->requested) return FALSE;
-      last_free=TRUE;
-    } else if (block->tag==I386_HEAP_USED) {
-      if (block->requested>block->span-16) return FALSE;
-      used+=block->span; count++;
-      last_free=FALSE;
-    } else return FALSE;
-    offset+=block->span;
+  asm {
+    MOV EBX,U32 &hc[EBP]
+    MOV ESI,U32 CI386Heap.base[EBX]
+    MOV ECX,U32 CI386Heap.size[EBX]
+    XOR EDI,EDI
+    XOR EDX,EDX
+@@10:
+    CMP ECX,24
+    JB @@90
+    MOV EAX,U32 CI386HeapBlock.span[ESI]
+    CMP EAX,24
+    JB @@90
+    TEST EAX,7
+    JNZ @@90
+    CMP EAX,ECX
+    JA @@90
+    CMP U32 CI386HeapBlock.reserved[ESI],0
+    JNZ @@90
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
+    JE @@30
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_USED
+    JNE @@90
+    SUB EAX,16
+    CMP U32 CI386HeapBlock.requested[ESI],EAX
+    JA @@90
+    ADD EAX,16
+    ADD EDI,EAX
+    ADD EDX,1
+    MOV U32 &last_free[EBP],0
+    JMP @@40
+@@30:
+    CMP U32 &last_free[EBP],0
+    JNZ @@90
+    CMP U32 CI386HeapBlock.requested[ESI],0
+    JNZ @@90
+    MOV U32 &last_free[EBP],1
+@@40:
+    ADD ESI,EAX
+    SUB ECX,EAX
+    JNZ @@10
+    CMP EDI,U32 CI386Heap.used[EBX]
+    JNE @@90
+    CMP EDX,U32 CI386Heap.allocations[EBX]
+    JNE @@90
+    MOV U8 &valid[EBP],1
+@@90:
   }
-  return used==hc->used && count==hc->allocations;
+  return valid;
 }
 
 public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
