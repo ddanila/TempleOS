@@ -41,3 +41,25 @@ Bool I386LexTaskFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filenam
   }
   I386IrqRestore(flags); return result;
 }
+
+U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
+{
+  U32 flags=I386IrqSave;
+  CI386TaskFiles *state;
+  CFilePathContext paths;
+  CI386FileVolumes *volumes;
+  U8 *extended=0,*absolute=0;
+  state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
+  if(state) {
+    extended=I386ExtDft(heap,name,extension);
+    if(extended) {
+      absolute=I386FileNameAbs(heap,&paths,extended);
+      I386HeapFree(heap,extended);
+    }
+    if(!I386TaskFilesRelease(state)) {
+      if(absolute) I386HeapFree(heap,absolute);
+      absolute=0;
+    }
+  }
+  I386IrqRestore(flags); return absolute;
+}

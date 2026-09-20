@@ -2,6 +2,22 @@
 U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/StrCopyCheck.HC"
 #include "/Kernel/I386/QueueCheck.HC"
+#include "/Kernel/I386/HelpFileCheck.HH"
+Bool OriginalHelpFileCheck()
+{
+  CCmpCtrl *cc=CmpCtrlNew(I386_HELP_FILE_CHECK_SOURCE,CCF_DONT_FREE_BUF,"C:/Probe/PublicHeaders.HC");
+  CHashSrcSym *help;
+  U8 *name=FileNameAbs("::/Doc/ProbeHelp.DD.Z");
+  Bool result;
+  if(Lex(cc)!=TK_EOF) { Free(name); CmpCtrlDel(cc); return FALSE; }
+  help=HashFind(name,cc->htc.glbl_hash_table,HTT_HELP_FILE);
+  if(help) { Report("ORIGINAL HELP SOURCE "); Report(help->src_link); Report(" "); Report(help->idx); Report("\n"); }
+  result=help && help->idx && !StrCmp(help->idx,"Second") && help->src_link &&
+    !StrCmp(help->src_link,"FL:C:/Probe/PublicHeaders.HC,5") && (help->type&HTF_PUBLIC);
+  while(help=HashFind(name,cc->htc.glbl_hash_table,HTT_HELP_FILE))
+    HashRemDel(help,cc->htc.glbl_hash_table);
+  Free(name); CmpCtrlDel(cc); return result;
+}
 U0 BuildKernel()
 {
   U8 *source,*modules[12],*image,*name,*line;
@@ -11,6 +27,8 @@ U0 BuildKernel()
   Report("PASS original StrCpy\n");
   if(QueueCheck!=9) { Report("FAIL original queues\n"); return; }
   Report("PASS original queues\n");
+  if(!OriginalHelpFileCheck) { Report("FAIL original help metadata\n"); return; }
+  Report("PASS original help metadata\n");
   for(i=0;i<12;i++) {
     switch(i) {
       case 0: name="Kernel"; break;

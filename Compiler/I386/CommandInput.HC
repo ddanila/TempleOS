@@ -29,7 +29,7 @@ Bool I386CommandInput(CI386CommandInput *input)
       } else {
         symbols=I386FrontendServices(heap,cc,input->types,input->includes);
         if(!symbols) throw('OutMem',TRUE);
-        state=symbols->context;
+        state=symbols->context; state->files=input->files;
         if(input->flags&I386_INPUT_ATOMIC_DEFINES) {
           owned=cc;
           owned->private_defines=I386HashTableNew(heap,32);

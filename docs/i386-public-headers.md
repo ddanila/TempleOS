@@ -118,3 +118,13 @@ seconds and diagnostics 220.877 seconds on the same QEMU/486 8 MiB profile.
 The diagnostic worker now needs a temporary 512 KiB compiler arena; its teardown
 returns 533664 bytes including stack and task metadata before console startup.
 Shared document records and the full DolDoc workflow remain unfinished.
+
+
+## Help-file symbols
+
+The queue header now uses its original `#help_file "::/Doc/Que"` directive.
+Native command input publishes the help path, current help index and source
+link as task-owned metadata. Public-header probes compare repeated directives
+with original x64 behavior, test failed-input rollback and reclaim the complete
+symbol graphs on boot and worker tasks. The public headers retain 71248 bytes,
+200 more than before help metadata. See [help metadata](i386-help-metadata.md).

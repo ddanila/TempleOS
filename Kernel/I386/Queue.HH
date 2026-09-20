@@ -2,7 +2,7 @@
 #define I386_PUBLIC_QUEUE_INCLUDED
 #include "/Kernel/QueueTypes.HH"
 #help_index "Data Types/Circular Queue"
-//Original help file: ::/Doc/Que. Native #help_file publication remains pending.
+#help_file "::/Doc/Que"
 public _intern 0x80 U0 QueInit(CQue *head);
 public _intern 0x81 U0 QueIns(CQue *entry,CQue *pred);
 public _intern 0x82 U0 QueInsRev(CQue *entry,CQue *succ);

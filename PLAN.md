@@ -138,8 +138,9 @@ ready queues remain distinct from public task links.
 The original `CQue` record is now shared and loaded natively, with verified
 16-byte x64 and 8-byte i386 layouts. All four queue intrinsics now preserve the
 original link semantics, with shared x64/cross-generated/native execution tests.
-Shared document records, locking services and native #help_file metadata remain
-source-driven DolDoc dependencies.
+Native #help_file metadata now preserves original path and source-link semantics,
+with transactional publication and reclamation; see [help metadata](docs/i386-help-metadata.md).
+Shared document records and locking services remain source-driven DolDoc dependencies.
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.

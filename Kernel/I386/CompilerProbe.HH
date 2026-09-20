@@ -3,7 +3,7 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_COMPILER_PROBE_VERSION 11
+#define I386_COMPILER_PROBE_VERSION 12
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;

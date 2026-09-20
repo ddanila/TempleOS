@@ -82,3 +82,21 @@ I64 I386ParserSize(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
 done:
   I386IrqRestore(irq); return size;
 }
+
+Bool I386ParserTake(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
+{
+  CI386CmpCtrl *owned=cc;
+  CI386ParserAllocation *record;
+  U32 irq=I386IrqSave;
+  Bool result=FALSE;
+  if(!I386CmpCodeOwner(heap,cc) || !allocation || I386HeapSize(heap,allocation)<1) goto done;
+  for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
+    if(record->allocation==allocation) goto done;
+  record=I386HeapAlloc(heap,sizeof(CI386ParserAllocation),TRUE);
+  if(!record) goto done;
+  record->allocation=allocation; record->next=&owned->parser_next;
+  record->last=owned->parser_last; record->last->next=record; owned->parser_last=record;
+  result=TRUE;
+done:
+  I386IrqRestore(irq); return result;
+}

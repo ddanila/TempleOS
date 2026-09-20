@@ -104,5 +104,5 @@ with unchanged symbols and heap accounting.
 
 Public startup now provides 38 declarations across Intrinsic.HH and Queue.HH;
 the existing isolated 35-declaration intrinsic probe remains separate. The queue
-header retains its help index, but native #help_file parsing and publication are
-still missing. See the DolDoc dependency inventory for that integration gate.
+header now retains both its original help index and #help_file directive through
+[native help metadata](i386-help-metadata.md). Document integration remains open.

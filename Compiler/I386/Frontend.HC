@@ -1,5 +1,6 @@
 //Retained compiler environment. Private symbols and temporaries belong to one cc.
 #include "/Compiler/I386/Frontend.HH"
+#include "/Kernel/I386/FileRuntime.HH"
 #include "/Compiler/PrsFunction.HH"
 #include "/Compiler/PrsStatement.HH"
 #include "/Compiler/SymbolInit.HC"
@@ -34,6 +35,7 @@ class CI386Frontend {
   CI386Heap *heap;
   CCmpCtrl *cc;
   CI386LexIncludeService *includes;
+  CI386FileServices *files;
   CI386LexIncludeService lex_services;
   CHashTable *table,*parent,*defines;
   CPrsExpressionServices expression;
@@ -501,8 +503,28 @@ I64 I386FrontendEvaluate(U8 *context,CCmpCtrl *cc)
   result=I386FrontendExecute(context,code);
   I386FrontendFree(context,code); return result;
 }
+extern U0 I386FrontendSource(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol,I64 adjust);
 I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword)
 {
+  CI386Frontend *state=context;
+  CHashSrcSym *symbol;
+  U8 *name;
+  U32 irq;
+  if(keyword==KW_HELP_FILE) {
+    if(I386FrontendLex(context,cc)!=TK_STR) return cc->token;
+    if(!state->files || !state->files->name_abs) I386FrontendUnavailable(context);
+    symbol=I386FrontendAlloc(context,sizeof(CHashSrcSym),TRUE,FALSE);
+    name=state->files->name_abs(state->heap,cc->cur_str,"DD.Z");
+    if(!name) throw('OutMem',TRUE);
+    if(!I386ParserTake(state->heap,cc,name)) {
+      irq=I386IrqSave; I386HeapFree(state->heap,name); I386IrqRestore(irq);
+      throw('OutMem',TRUE);
+    }
+    symbol->str=name; symbol->type=HTT_HELP_FILE|HTF_PUBLIC;
+    I386FrontendSource(context,cc,symbol,0);
+    HashAdd(symbol,state->table);
+    return I386FrontendLex(context,cc);
+  }
   if(keyword!=KW_ASSERT) I386FrontendUnavailable(context);
   if(!I386FrontendLex(context,cc)) return TK_EOF;
   if(!I386FrontendEvaluate(context,cc)) I386FrontendReport(context,cc,1,"Assert Failed ");

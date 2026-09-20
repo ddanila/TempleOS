@@ -82,10 +82,11 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
       if(!entry->str || !I386ParserRecord(owned,entry) || entry->ie_lst) goto done;
       if(binding) {
         if(I386FrontendResidentCollision(destination,entry->str,binding->export)) goto done;
-      } else if(!completion && I386ClassNamePresent(destination,entry->str)) goto done;
+      } else if(!(entry->type&HTT_HELP_FILE) && !completion && I386ClassNamePresent(destination,entry->str)) goto done;
       for(j=0;j<=i;j++)
         for(prior=source->body[j];prior && prior!=entry;prior=prior->next)
-          if(!StrCmp(prior->str,entry->str)) goto done;
+          if(!StrCmp(prior->str,entry->str) &&
+              !((prior->type&HTT_HELP_FILE) && (entry->type&HTT_HELP_FILE))) goto done;
       if(entry->type&HTT_FUN) {
         fun=entry;
         if(I386HeapSize(heap,fun)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
@@ -105,6 +106,9 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
             !I386ProgramTypeReady(global->var_class) ||
             global->size<0 || !(global->flags&GVF_ALIAS) &&
             (!global->data_addr || I386HeapSize(heap,global->data_addr)<global->size)) goto done;
+      } else if(entry->type&HTT_HELP_FILE) {
+        if(I386HeapSize(heap,entry)!=sizeof(CHashSrcSym) || !(entry->type&HTF_PUBLIC) ||
+            entry->type&(HTF_IMPORT|HTF_UNRESOLVED) || !entry->src_link) goto done;
       } else if(!(entry->type&HTT_DEFINE_STR)) goto done;
       SymbolHashVisit(&visitor,entry);
       if(!transfer.ok) goto done;
@@ -148,13 +152,19 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
     storage->next=scope->storage; scope->storage=storage; storage=0;
   }
   frontend->codes=0; frontend->residents=0;
-  for(i=0;i<=source->mask;i++)
+  for(i=0;i<=source->mask;i++) {
+    //Repeated help-file entries retain original newest-first lookup order.
+    prior=0;
     while(entry=source->body[i]) {
-      source->body[i]=entry->next; entry->next=0;
+      source->body[i]=entry->next; entry->next=prior; prior=entry;
+    }
+    while(entry=prior) {
+      prior=entry->next; entry->next=0;
       completion=I386CompletionFind(frontend,entry);
       if(completion) I386CompletionCommit(frontend,completion);
       else HashAdd(entry,destination);
     }
+  }
   frontend->completions=0;
   if(frontend->defines)
     for(i=0;i<=frontend->defines->mask;i++) {

@@ -1,3 +1,4 @@
+#include "/Kernel/I386/HelpFileCheck.HH"
 Bool ProbePublicMemoryInput(CI386CompilerProbe *probe,CI386CommandInput *input,CProbeInputAnswer *answer,I64 index)
 {
   Bool accepted=probe->compiler->input(input);
@@ -17,6 +18,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHash **heads;
   CHash *entry;
   CHashClass *forward;
+  CHashSrcSym *help;
   CI386CommandInput input;
   CProbeInputAnswer answer;
   U8 *bytes,*source,*name;
@@ -60,6 +62,26 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   before_used=heap->used; before_allocations=heap->allocations;
   if(!probe->compiler->input(&input) || input.warnings || heap->used!=before_used ||
       heap->allocations!=before_allocations) KernelStop;
+  help=ProbeSymbolFind(0,"C:/Doc/Que.DD.Z",table,HTT_HELP_FILE);
+  if(!help || !(help->type&HTF_PUBLIC) || !help->src_link || !help->idx ||
+      StrCmp(help->idx,"Data Types/Circular Queue")) KernelStop;
+  input.source=I386_HELP_FILE_CHECK_SOURCE;
+  if(!probe->compiler->input(&input)) KernelStop;
+  help=ProbeSymbolFind(0,"C:/Doc/ProbeHelp.DD.Z",table,HTT_HELP_FILE);
+  if(help) { KernelLog("PUBLIC HELP SOURCE "); KernelLog(help->src_link); KernelLog(" "); KernelLog(help->idx); KernelLog("\n"); }
+  if(!help || !help->idx || StrCmp(help->idx,"Second") || !help->src_link ||
+      StrCmp(help->src_link,"FL:C:/Probe/PublicHeaders.HC,5")) KernelStop;
+  before_used=heap->used; before_allocations=heap->allocations;
+  input.source="#help_file \"::/Doc/RollbackHelp\"\nUnknown bad;";
+  if(probe->compiler->input(&input) || input.exception!='Compiler' ||
+      ProbeSymbolFind(0,"C:/Doc/RollbackHelp.DD.Z",table,HTT_HELP_FILE) ||
+      heap->used!=before_used || heap->allocations!=before_allocations) KernelStop;
+  input.source="#help_index \"Third\"\n#help_file \"::/Doc/ProbeHelp.DD\"\n#help_file \"::/Doc/ProbeHelp\"\n";
+  if(!probe->compiler->input(&input)) KernelStop;
+  help=ProbeSymbolFind(0,"C:/Doc/ProbeHelp.DD.Z",table,HTT_HELP_FILE);
+  if(!help || !help->idx || StrCmp(help->idx,"Third") ||
+      !ProbeSymbolFind(0,"C:/Doc/ProbeHelp.DD",table,HTT_HELP_FILE)) KernelStop;
+  KernelLog("PUBLIC HELP CASE "); KernelHex(probe->phase); KernelLog("\n");
   input.flags=0;
   input.source="Fs->addr==Fs && Fs->gs==Gs && Gs->addr==Gs && Gs->num==0;";
   if(!probe->compiler->input(&input) || answer.value!=1 || input.answers!=1) KernelStop;

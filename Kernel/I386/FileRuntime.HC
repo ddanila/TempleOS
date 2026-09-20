@@ -50,12 +50,13 @@ CCmpCtrl *I386FileRuntimeControl(U8 *buffer,I64 flags,U8 *filename)
   return I386TaskCmpCtrlNew(&file_compiler,buffer,flags,filename);
 }
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==32
+#assert sizeof(CI386FileServices)==36
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
+  services->name_abs=&I386TaskFileNameAbs;
   services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
   return 1;

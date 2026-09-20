@@ -5345,3 +5345,40 @@ native lexer/publication feature. The native queue header records the original
 help reference in a comment; real help-file symbols, shared document records,
 locking and document lifecycle integration remain required. The dependency
 inventory now records that reproducer and acceptance work explicitly.
+
+
+## Native help-file metadata
+
+Native command input now accepts the original #help_file directive. It resolves
+the default DD.Z extension and absolute path through the current task's retained
+file service, then publishes the help index and source link as owned metadata.
+The queue header again contains its original help-file directive. Failed inputs
+reclaim the entire private graph, and repeated directives retain original lookup
+order both within and across inputs.
+
+The shared lexer input passes against original x64 and native boot/worker tasks.
+The original comparison confirmed that newline lookahead records line five for
+a directive on line four; the initial native assertion incorrectly expected four
+and was corrected to the measured original behavior. Public-header tests cover
+explicit/default extensions, rollback, retry and full reclamation.
+
+FileRuntime is version 20 with a 36-byte service table, CompilerRuntime 42,
+CompilerProbe 12 and ConsoleRuntime 8. The host verifier checks the added resolver
+address and rejects the immediately preceding module versions. Its initial
+file-service log-width assumption was updated after successful guest startup.
+
+Both x64 rebuild generations, all 245 cross-generated function cases and their
+instruction audit pass. The full native suite covers 123 commands across 186
+input lines, exact VGA output, source-startup recovery,
+normal boot independent of diagnostics and all 17 module rejection cases.
+Normal startup is 25.038 seconds and diagnostics 222.073 seconds on QEMU/486
+with 8 MiB; the diagnostic worker still returns 533664 bytes before console startup.
+
+Public headers retain 71248 bytes, including 200 bytes for queue help metadata.
+CompilerRuntime uses 1313456 image / 1313472 retained heap bytes; FileRuntime uses
+126768 / 126784 bytes. The temporary CompilerProbe reclaims all 646816 bytes.
+The kernel is 388936 bytes, leaving 184 bytes of bootstrap reservation headroom.
+
+This closes the missing help-file metadata prerequisite identified while adding
+queues. Shared document records, locking, document lifecycle and the integrated
+editor/help workflow remain open. See [help metadata](i386-help-metadata.md).

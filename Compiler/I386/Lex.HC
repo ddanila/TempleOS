@@ -96,7 +96,7 @@ I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables
             if(result!=TK_STR) goto lex_finish;
             if(!(*includes->push)(includes->context,heap,cc,cc->cur_str)) return -1;
             break;
-          case KW_ASSERT:
+          case KW_ASSERT: case KW_HELP_FILE:
             if(!includes || !includes->directive) return -4;
             return includes->directive(includes->directive_context,cc,keyword);
           case KW_HELP_INDEX:
