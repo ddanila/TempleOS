@@ -98,7 +98,7 @@ extern U0 KernelConsoleLoad();
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
-U8 kernel_probe_bindings[20]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34};
+U8 kernel_probe_bindings[22]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35};
 U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
 U8 kernel_memory_bindings[11]={10,11,12,20,13,14,0,18,19,16,42};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
@@ -273,42 +273,14 @@ U0 KernelDisplay()
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
-  U8 *buffer,empty[1];
-  CCmpCtrl *cc;
-  CLexFile *file;
-  I64 size=0,i,ch,characters=0,lines=0,used=kernel_heap.used,allocations=kernel_heap.allocations,transient;
-  U32 hash=2166136261,lex_hash=2166136261;
   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
       !I386AtaIdentify(&kernel_disk,0,0) ||
       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
   KernelLog("REDSEA "); KernelHex(kernel_volume.start); KernelLog(" ");
   KernelHex(kernel_volume.sectors); KernelLog("\n");
-  if(!kernel_diagnostics) return;
-  buffer=I386RedSeaFileRead(&kernel_volume,&kernel_heap,kernel_volume.root,"/Kernel/I386/Kernel.HC",&size);
-  cc=I386HeapAlloc(&kernel_heap,sizeof(CCmpCtrl),TRUE);
-  if(!buffer || !cc || size<1) KernelStop;
-  for(i=0;i<size;i++) hash=(hash^buffer[i])*16777619;
-  KernelLog("SOURCE "); KernelHex(size); KernelLog(" ");
-  KernelHex(hash); KernelLog("\n");
-  empty[0]=0;
-  CmpCtrlSeed(cc,CCF_DONT_FREE_BUF,0,char_bmp_alpha_numeric);
-  file=I386LexFilePush(&kernel_heap,cc);
-  if(!file) KernelStop;
-  LexFileSeed(file,empty); cc->cur_buf_ptr=empty;
-  if(!I386LexIncludeTake(&kernel_heap,cc,"/Kernel/I386/Kernel.HC",buffer)) KernelStop;
-  transient=kernel_heap.used-used;
-  while(ch=I386LexRawChar(&kernel_heap,cc,&lines)) {
-    if(ch<0 || cc->lex_include_stk==file || cc->lex_include_stk->line_num!=lines+1) KernelStop;
-    lex_hash=(lex_hash^ch)*16777619; characters++;
-  }
-  if(cc->lex_include_stk!=file || cc->cur_buf_ptr!=empty || file->line_num!=1 ||
-      I386HeapSize(&kernel_heap,buffer)!=-1 || kernel_heap.allocations!=allocations+2) KernelStop;
-  if(!I386LexFilePop(&kernel_heap,cc) || !I386HeapFree(&kernel_heap,cc) ||
-      kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
-  KernelLog("LEX_SOURCE "); KernelHex(characters); KernelLog(" "); KernelHex(lines); KernelLog(" ");
-  KernelHex(lex_hash); KernelLog(" "); KernelHex(transient); KernelLog("\n");
 }
+
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/RedSea.HC"
 #include "/Kernel/I386/FileRead.HC"
@@ -472,6 +444,8 @@ U0 KernelCompilerProbe(I64 phase)
   probe.i64_type=kernel_types.by_raw[RT_I64]; probe.runtime_image=kernel_compiler_image;
   probe.runtime_size=kernel_compiler_size; probe.phase=phase;
   probe.disk_include=&kernel_file_include; probe.files=&kernel_files;
+  probe.volume=&kernel_volume; probe.source_read=&I386RedSeaFileRead;
+  probe.source_pop=&I386LexFilePop;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     flags=I386IrqSave;

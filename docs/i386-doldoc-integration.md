@@ -76,8 +76,9 @@ serialize the entire native record or simply remove its layout assertions.
    peaks and input responsiveness throughout, then apply the M7 hardware gates.
 
 Bootstrap headroom is a concurrent constraint: the kernel plus early
-stage leaves 208 bytes in the fixed reservation after public task-ring maintenance
-and dispatch (2440 bytes after the heap-loop optimization, 184 before it). Keep new document/runtime
+stage leaves 5944 bytes in the fixed reservation after moving source/lexer
+diagnostics into the temporary module (208 bytes after public task-ring dispatch).
+See [storage diagnostics](i386-storage-diagnostics.md). Keep new document/runtime
 code in extended-memory modules; any necessary resident additions must first
 make room deliberately and retain module rejection/lifetime tests. Preserve
 normal interactive boot independently of diagnostic probes.

@@ -175,11 +175,13 @@ loop, retaining every invariant, reduces normal QEMU/486 startup from 60.612 to
 15.806 seconds and diagnostics from 726.823 to 137.386 seconds. The normal test
 deadline is restored to 60 seconds. Differential corruption tests and the full
 native suite pass; that optimization grew kernel reservation headroom from 184
-to 2440 bytes. Live public task-ring maintenance and dispatch now use 2232 of
-those bytes, leaving 208 bytes; keep substantial new services in extended-memory
-modules. Before expanding resident scheduling policy, move the remaining
-diagnostic-only source/lexer startup work from KernelStorage into the diagnostic
-module, preserving its disk-read, character/line/hash and reclamation checks.
+to 2440 bytes. Live public task-ring maintenance and dispatch then left 208 bytes.
+Moving KernelStorage's source/lexer diagnostics into the temporary probe frees
+5736 resident bytes, leaving 5944 bytes for necessary resident additions. The
+same disk-read, character/line/hash and reclamation checks run in the boot probe;
+ABI 13 rejects older probe modules before those checks. Keep substantial new
+services in extended-memory modules; see
+[storage diagnostics](docs/i386-storage-diagnostics.md).
 See [heap performance](docs/i386-heap-performance.md), including the native
 inline-assembly label-forwarding fix exposed by this work.
 

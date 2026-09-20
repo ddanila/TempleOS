@@ -5553,3 +5553,31 @@ is 388912 bytes, leaving 208 bytes in the bootstrap reservation. The next reside
 expansion must first move the remaining diagnostic-only KernelStorage source/lexer
 checks into the diagnostic module while retaining their evidence. The normal
 preview is refreshed. See [task scheduling](i386-public-task-ring.md).
+
+## Source/lexer diagnostics moved out of the resident kernel
+
+KernelStorage now only mounts and reports the boot volume. CompilerProbe's boot
+phase owns the original raw source read, owned-buffer lexer traversal, parent
+resumption and exact allocation reclamation check. It calls the same resident
+read/pop helpers through borrowed pointers; normal boot neither loads nor runs
+this module. The worker phase leaves the polled storage check to the boot phase.
+ABI 13 adds the volume and helper pointers to the synchronous probe configuration
+(68 bytes, previously 56), and imports two existing lexer exports. The host
+checks marker ordering and rejects ABI 12 before source traversal.
+
+The kernel shrinks by 5736 bytes to 383176. Together with the unchanged 4096-byte
+early stage, it leaves 5944 bytes in the fixed 393216-byte reservation, up from
+208. CompilerProbe grows to 668824 image / 668840 heap bytes, all reclaimed after
+the task probe. This frees resident capacity without claiming lower diagnostic
+peak RAM. The worker's 541856-byte reclamation and 172504-byte retained public
+headers are unchanged.
+
+Both x64 rebuild generations and the full kernel suite pass with 1088 matching OS
+source hashes and eight matching build-input hashes. The moved check validates
+25646 characters, 566 lines and FNV 0xCF55170C, reclaiming 26224 transient bytes.
+All 128 commands / 191 input lines, exact VGA checks, three startup-source cases,
+normal boot with an invalid diagnostic module and 17 rejection cases pass.
+Normal QEMU/486 boot at 8 MiB takes 16.353 seconds; diagnostics take 156.186.
+The tested normal preview is refreshed. Public scheduling eligibility and break
+delivery remain the next integration work; see
+[storage diagnostics](i386-storage-diagnostics.md).

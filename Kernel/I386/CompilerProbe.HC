@@ -30,6 +30,9 @@ import Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,
 import U0 HashAdd(CHash *entry,CHashTable *table);
 import I64 StrCmp(U8 *left,U8 *right);
 import U32 char_bmp_alpha_numeric[16];
+import Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
+import CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
+extern U0 ProbeStorage(CI386CompilerProbe *probe);
 extern U0 ProbeTokens(CI386CompilerProbe *probe);
 extern U0 ProbeIdent(CI386CompilerProbe *probe);
 extern U0 ProbeDefine(CI386CompilerProbe *probe);
@@ -61,17 +64,20 @@ extern U0 ProbeOptimize(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *oute
 extern U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
-#assert sizeof(CI386CompilerProbe)==56
+#assert sizeof(CI386CompilerProbe)==68
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
 {
   if(!probe || bytes!=sizeof(CI386CompilerProbe) || probe->bytes!=bytes ||
       probe->version!=compiler_probe_version || !probe->heap || !probe->compiler ||
       !probe->symbols || !probe->i64_type || !probe->runtime_image ||
+      !probe->volume || !probe->source_read || !probe->source_pop ||
       probe->phase<0 || probe->phase>1) return 0;
+  if(!probe->phase) ProbeStorage(probe);
   ProbeTokens(probe);
   return 1;
 }
 #include "/Compiler/ControlInit.HC"
+#include "/Kernel/I386/CompilerStorageProbe.HC"
 U0 ProbeTokens(CI386CompilerProbe *probe)
 {//Exercise retained module code before startup and after task/IRQ activity.
   CCmpCtrl cc; CLexFile file;

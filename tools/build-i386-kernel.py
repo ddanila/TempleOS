@@ -343,16 +343,16 @@ def compiler_probe_layout(module):
                 imports.append((symbol, name))
     expected = {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapSize', 'I386HeapAlloc', 'I386HeapFree',
                 'I386HeapValid', 'I386IrqSave', 'I386IrqRestore', 'I386LexRawChar',
-                'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric', 'SysTry', 'SysUntry', 'throw', 'I386TaskSpawn', 'I386TaskDestroy', 'I386SchedYield'}
+                'I386LexIncludeTake', 'I386LexFilePush', 'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric', 'SysTry', 'SysUntry', 'throw', 'I386TaskSpawn', 'I386TaskDestroy', 'I386SchedYield'}
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
-    for name in ('Main', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend'):
+    for name in ('Main', 'ProbeStorage', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing compiler-probe function {name}')
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 12:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 13:
         raise ValueError('Unexpected compiler-probe version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
@@ -365,7 +365,7 @@ def verify_probe_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 11), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 12), 'api')):
         work = out/f'reject-probe-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -378,7 +378,7 @@ def verify_probe_rejection(disk, volume, out, layout):
         evidence = (work/'debug.log').read_text()
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
                 f'PROBE REJECT {reason} reclaimed\n' not in evidence or
-                any(marker in evidence for marker in ('RUNTIME PROBE ', 'IDENT PROBE ',
+                any(marker in evidence for marker in ('SOURCE ', 'LEX_SOURCE ', 'RUNTIME PROBE ', 'IDENT PROBE ',
                     'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'INCLUDE PROBE ', 'DISK INCLUDE ', 'PROBE MODULE ',
                     'STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
             raise ValueError(f'Compiler probe did not reject/reclaim {label} before use')
@@ -758,6 +758,9 @@ def main():
         reads=[line.split() for line in log.splitlines() if line.startswith('SOURCE ')]
         if len(reads)!=1 or [int(x,16) for x in reads[0][1:]]!=[len(source),checksum]:
             raise ValueError('Native RedSea source read differs from packaged source')
+        if not (log.index('MEMORY PROBE ') < log.index('SOURCE ') <
+                log.index('LEX_SOURCE ') < log.index('RUNTIME PROBE ')):
+            raise ValueError('Source/lexer diagnostics did not run inside the boot probe')
         normalized=bytes(32 if byte==31 else byte for byte in source if byte!=5)
         lexical_hash=2166136261
         for byte in normalized: lexical_hash=((lexical_hash^byte)*16777619)&0xFFFFFFFF
@@ -766,7 +769,8 @@ def main():
         expected_lexical=[len(normalized),source.count(b'\n'),lexical_hash,transient]
         if b'\0' in source or len(lexical)!=1 or [int(x,16) for x in lexical[0][1:]]!=expected_lexical:
             raise ValueError('Native lexical source consumption/reclamation mismatch')
-        result['lexical_source']={'characters':len(normalized),'lines':source.count(b'\n'),
+        result['lexical_source']={'owner':'CompilerProbe','phase':'boot',
+                                  'characters':len(normalized),'lines':source.count(b'\n'),
                                   'fnv32':lexical_hash,'reclaimed_heap_bytes':transient}
         loaded=[line.split() for line in log.splitlines() if line.startswith('MODULE ')]
         if (log.count('STARTUP disk module\n')!=1 or len(loaded)!=1 or len(loaded[0])!=3
@@ -896,7 +900,7 @@ def main():
                 not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
                 not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
             raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
-        result['compiler_probe'] = dict(module='CompilerProbe', version=12, image_address=probe_address,
+        result['compiler_probe'] = dict(module='CompilerProbe', version=13, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
