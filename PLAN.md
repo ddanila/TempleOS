@@ -164,8 +164,17 @@ separately tested component; the interactive console uses direct keyboard input.
 See [message wait flags](docs/i386-message-wait-flags.md).
 Pending message reads now have explicit cancellation that preserves queued
 messages and detaches the borrowed stack registration before resumption.
-Raw keyboard waits and coordinated pending-break delivery remain open. See
+Coordinated pending-break delivery remains open. See
 [message read cancellation](docs/i386-message-read-cancellation.md).
+Raw keyboard read cancellation now preserves queued byte/status pairs and
+decoder state, with the cancel callback in retained ConsoleRuntime rather than
+the bootstrap core. See [keyboard read cancellation](docs/i386-keyboard-read-cancellation.md).
+The next integration step is coordinated wait selection, break locking and
+cleanup before original Break delivery.
+The current bootstrap has only 176 bytes of headroom after keyboard integration.
+Keep additional interruption logic in retained services and consolidate resident
+loader/diagnostic scaffolding before growing the scheduler core; preserve the
+reserved load area and validate module lifetimes and rejection behavior.
 Queued ATA acquisition cancellation is implemented as a prerequisite for
 pending-break delivery: detach stack waiters before they resume, preserving
 ownership, FIFO survivors and public wait state. Active transfers and the full

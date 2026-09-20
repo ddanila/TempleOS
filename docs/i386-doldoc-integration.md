@@ -60,7 +60,9 @@ waiters safely, including a target reaped before a cancelled join resumes; see
 public Break path and message/job/popup behavior still need integration. Pending
 message reads now also detach safely without consuming queued data; see
 [message-read cancellation](i386-message-read-cancellation.md). Raw keyboard
-wait cancellation remains a prerequisite for the input broker.
+waits also have a cancellation primitive through the retained console service;
+see [keyboard-read cancellation](i386-keyboard-read-cancellation.md). Coordinated
+wait selection and cleanup before exception delivery remain the next seam.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

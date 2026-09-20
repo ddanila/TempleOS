@@ -13,6 +13,7 @@
 #include "/Kernel/I386/KeyboardEvent.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
 extern I64 ReadTest();
+extern I64 CancelInputTest();
 extern I64 EventTest();
 extern I64 StateTest();
 extern Bool StateCheck(U32 raw,U32 expected);
@@ -60,6 +61,8 @@ I64 Main(I64 a,I64 b)
       I386KbcInputInit(0,&scheduler) || I386KbcInputInit(&input,0) ||
       !I386KbcInputInit(&input,&scheduler) || I386KbcInputInit(&input,&scheduler)) return 1;
   result=ReadTest;
+  if (result) return result;
+  result=CancelInputTest;
   if (result) return result;
   if (I386KbcInputPut(&uninitialized,1,1) ||
       I386KbcInputRead(&uninitialized,&data,&status) ||
@@ -375,3 +378,7 @@ I64 ScanTest()
   if (I386ScanSet1Feed(&state,0x48,1,&scan)!=1 || scan!=0x48) return 12;
   return 0;
 }
+
+#include "/Kernel/I386/Heap.HC"
+#include "/Kernel/I386/KbcInputCancel.HC"
+#include "T:/CancelInput.HC"

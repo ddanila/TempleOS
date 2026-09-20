@@ -440,7 +440,7 @@ U0 KernelCompilerProbe(I64 phase)
   probe.runtime_size=kernel_compiler_size; probe.phase=phase;
   probe.disk_include=&kernel_file_include; probe.files=&kernel_files;
   probe.volume=&kernel_volume; probe.source_read=&I386RedSeaFileRead;
-  probe.source_pop=&I386LexFilePop;
+  probe.source_pop=&I386LexFilePop; probe.cancel_input=kernel_console.cancel_read;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     flags=I386IrqSave;
@@ -547,12 +547,13 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[6];
-  U8 indices[6];
+  CI386ModuleBinding bindings[9];
+  U8 indices[9];
   indices[0]=0; indices[1]=19; indices[2]=10; indices[3]=40; indices[4]=41; indices[5]=18;
-  KernelBindings(bindings,indices,6,6);
+  indices[6]=13; indices[7]=14; indices[8]=33;
+  KernelBindings(bindings,indices,9,9);
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,6,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,9,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;

@@ -32,7 +32,8 @@ at 0x40000.
 
 This changes the private CI386MsgQueue layout; it is not the public TempleOS
 Msg/GetMsg contract. The queue remains a component linked by the message runner,
-not the interactive kernel. Raw keyboard wait cancellation, popup/job semantics,
+not the interactive kernel. Raw keyboard waits now also have a
+[cancellation primitive](i386-keyboard-read-cancellation.md). Popup/job semantics,
 a coordinated pending-break protocol and cleanup before exception delivery are
 still required. Cancellation permits ordinary caller cleanup; it does not make
 an arbitrary jump out of a suspended call safe.

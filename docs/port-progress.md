@@ -5763,3 +5763,42 @@ the previously verified normal preview remains unchanged. This does not complete
 original Msg/GetMsg, popup/job propagation or public Break. Raw keyboard waits
 still need cancellation, and a coordinated interruption path must preserve
 file/compiler cleanup before exception delivery.
+
+
+## Raw keyboard wait cancellation through retained console services
+
+Raw input reads now borrow a stack cancellation flag while registered. Cancelling
+detaches that flag and the reader under IRQ masking, restores private runnable
+membership, and leaves queued byte/status pairs, loss accounting, public flags,
+wake deadlines and IF intact. The resumed read returns FALSE before accessing
+the stream. Decoded reads propagate zero with unchanged event output and retain
+partial scan state for the next read. See
+[keyboard-read cancellation](i386-keyboard-read-cancellation.md).
+
+Cancellation code lives in retained ConsoleRuntime ABI 9, through its fourth
+service callback, cancel_read(task). The kernel keeps its raw producer/read path.
+CompilerProbe ABI 14 (72-byte configuration) invokes the loaded callback with null
+and nonwaiting tasks only during worker diagnostics; normal boot skips it.
+Queued cancellation is exercised separately by the native input corpus.
+
+Both x64 rebuild generations and native input/message suites pass with instruction
+audits. Six input cancellation scenarios cover blocked/spurious wake, publication
+before cancellation, byte/status retention, suspension/message-bit/bit-31/wide
+wake deadlines/IF, exact stream reuse/overwrite, replacement-reader isolation and
+completion of a decoded E0 sequence. Existing keyboard controller/IRQ, scan-state,
+message broker and inbox lifecycle tests also pass. The enlarged input runner
+uses the existing 384-sector transfer profile below its heap at 0x40000.
+
+The full kernel suite passes 129 commands / 192 input lines, exact VGA, startup
+recovery, normal boot with an invalid diagnostic module and all 17 rejection
+cases, including old console and diagnostic ABIs. All 1091 OS source hashes and
+8 build-input hashes match. Kernel size is 388944 bytes, leaving only
+176 bytes after the early stage. ConsoleRuntime retains 49072 bytes;
+CompilerProbe reclaims all 671568 bytes. Normal QEMU/486 boot at 8 MiB measured
+14.200 seconds and diagnostics 125.350 seconds. The normal preview is refreshed.
+
+The plan now requires consolidation of resident loader/diagnostic scaffolding
+before growing the scheduler core further. Active-wait selection, break locking,
+file/compiler cleanup and original exception/message/job/popup behavior still
+need coordinated integration. This does not complete public Break, DolDoc,
+strict 386 compatibility or native self-hosting.

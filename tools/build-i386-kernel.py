@@ -169,17 +169,17 @@ def console_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry'}:
+    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry', 'I386IrqSave', 'I386IrqRestore', 'I386SchedWake'}:
         raise ValueError('Unexpected console import contract')
-    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys'):
+    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 8:
+    if struct.unpack_from('<I', module, version_offset)[0] != 9:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
-                entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys')])
+                entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead')])
 
 
 def memory_runtime_layout(module):
@@ -312,7 +312,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 7), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 8), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -353,7 +353,7 @@ def compiler_probe_layout(module):
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 13:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 14:
         raise ValueError('Unexpected compiler-probe version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
@@ -366,7 +366,7 @@ def verify_probe_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 12), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 13), 'api')):
         work = out/f'reject-probe-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -904,7 +904,7 @@ def main():
                 not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
                 not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
             raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
-        result['compiler_probe'] = dict(module='CompilerProbe', version=13, image_address=probe_address,
+        result['compiler_probe'] = dict(module='CompilerProbe', version=14, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
@@ -1049,11 +1049,13 @@ def main():
         result['compiler_runtime']['rejected']=verify_compiler_rejection(normal_disk,volume,out,runtime_layout)
         result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
         rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
-        if len(rows)!=1 or len(rows[0])!=7: raise ValueError('Missing retained console')
+        if len(rows)!=1 or len(rows[0])!=8: raise ValueError('Missing retained console')
         cbase,csize,cspan,*entries=[int(x,16) for x in rows[0][1:]]
         if csize!=console_layout['image_bytes'] or cspan!=((csize+23)//8)*8 or entries!=[cbase+x for x in console_layout['entries']]:
             raise ValueError('Console interface/image accounting mismatch')
-        result['console_runtime']=dict(version=8,image_bytes=csize,retained_heap_bytes=cspan,
+        if log.count('INPUT CANCEL READY\n')!=1:
+            raise ValueError('Missing retained keyboard cancellation callback probe')
+        result['console_runtime']=dict(version=9,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

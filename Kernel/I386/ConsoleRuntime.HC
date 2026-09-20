@@ -12,6 +12,9 @@ import U0 KernelLog(U8 *text);
 import U0 KernelHex(U64 value);
 import U0 KernelStop();
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import U32 I386IrqSave();
+import U0 I386IrqRestore(U32 flags);
+import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
@@ -32,11 +35,17 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
       !config->files || !config->includes || !config->types || !config->reader || !config->read) return FALSE;
   console_config=config; return TRUE;
 }
+Bool ConsoleCancelRead(CI386Task *task)
+{
+  if(!console_config || !console_config->reader) return FALSE;
+  return I386KbcInputCancel(console_config->reader->input,task);
+}
 I64 Main(CI386ConsoleServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386ConsoleServices)) return 0;
   services->version=console_version; services->bytes=bytes;
   services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
+  services->cancel_read=&ConsoleCancelRead;
   return 1;
 }
 Bool ConsoleDisplay()
@@ -134,3 +143,5 @@ U0 ConsolePresent()
     message[11]=10; message[12]=0; KernelLog(message);
   }
 }
+
+#include "/Kernel/I386/KbcInputCancel.HC"
