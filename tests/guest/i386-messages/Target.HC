@@ -231,6 +231,8 @@ I64 QueueTest()
 #include "/Kernel/I386/Focus.HC"
 #include "/Kernel/I386/KbcQueue.HC"
 #include "/Kernel/I386/KbcInput.HC"
+#include "/Kernel/I386/KbcInputRead.HC"
+#include "/Kernel/I386/KbcInputCancel.HC"
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/KeyboardSetup.HC"
 #include "/Kernel/I386/ScanSet1.HC"

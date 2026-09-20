@@ -15,6 +15,8 @@ import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import U32 I386IrqSave();
 import U0 I386IrqRestore(U32 flags);
 import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
+import Bool I386SchedBlock(CI386Scheduler *scheduler);
+import Bool I386KbcQueueGet(CI386KbcQueue *queue,U8 *data,U8 *status);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
@@ -32,7 +34,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input ||
-      !config->files || !config->includes || !config->types || !config->reader || !config->read) return FALSE;
+      !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+  if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   console_config=config; return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)
@@ -95,7 +98,7 @@ U0 ConsoleKeys(I64 unused)
   I386TextWrite(&console_text,"> "); ConsolePresent;
   KernelLog("DONE native kernel startup\n");
   while(1) {
-    decoded=console_config->read(console_config->reader,&event,TRUE);
+    decoded=I386KeyboardRead(console_config->reader,&event,TRUE);
     if(decoded<0) {
       length=0;
       I386TextWrite(&console_text,"\nInput reset\n> ");
@@ -148,3 +151,10 @@ U0 ConsolePresent()
 #include "/Kernel/I386/KbcInputCancel.HC"
 
 #include "/Kernel/I386/WaitCancel.HC"
+
+#include "/Kernel/I386/KbcInputRead.HC"
+#include "/Kernel/I386/ScanSet1.HC"
+#include "/Kernel/I386/ScanChar.HC"
+#include "/Kernel/I386/ScanState.HC"
+#include "/Kernel/I386/KeyboardEvent.HC"
+#include "/Kernel/I386/KeyboardRead.HC"

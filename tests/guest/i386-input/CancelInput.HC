@@ -6,12 +6,17 @@ U0 CancelInputWorker(I64 decoded)
 {
   U8 data=0x55,status=0xAA;
   CI386KeyEvent event;
+  CI386TaskWait guard;
   SetRFlags((GetRFlags&~0x200)|cancel_input_if);
+  tasks[1].wait=&guard;
+  if(I386KbcInputRead(cancel_stream,&data,&status) || tasks[1].wait!=&guard ||
+      data!=0x55 || status!=0xAA) errors++;
+  tasks[1].wait=0;
   if(decoded) {
     event.type=99; event.ch=98; event.scan=97;
     if(I386KeyboardRead(&cancel_decoder,&event) || event.type!=99 || event.ch!=98 || event.scan!=97) errors++;
   } else if(I386KbcInputRead(cancel_stream,&data,&status) || data!=0x55 || status!=0xAA) errors++;
-  if(tasks[1].task_flags!=1<<31 || (GetRFlags&0x200)!=cancel_input_if) errors++;
+  if(tasks[1].wait || tasks[1].task_flags!=1<<31 || (GetRFlags&0x200)!=cancel_input_if) errors++;
   cancel_input_done++;
 }
 U0 CancelInputNext(I64 unused)
@@ -27,6 +32,7 @@ I64 CancelInputTest()
   U8 data,status,*reuse;
   U32 saved=GetRFlags;
   I64 scenario,i;
+  Bool accepted;
   if(!I386HeapInit(&heap,0x40000,8192)) return 210;
   for(scenario=0;scenario<6;scenario++) {
     cancel_input_done=0; cancel_next_done=0; cancel_input_if=(scenario&1)*0x200;
@@ -41,7 +47,9 @@ I64 CancelInputTest()
       if(!I386KeyboardReadInit(&cancel_decoder,cancel_stream) || !I386KbcInputPut(cancel_stream,0xE0,1)) return 212;
     }
     if(!I386SchedYield(&scheduler) || !tasks[1].blocked || cancel_stream->waiter!=&tasks[1] ||
-        !cancel_stream->read_cancelled || *cancel_stream->read_cancelled || cancel_input_done) return 213;
+        !cancel_stream->read_cancelled || *cancel_stream->read_cancelled || cancel_input_done ||
+        !tasks[1].wait || tasks[1].wait->kind!=I386_WAIT_KEYBOARD ||
+        tasks[1].wait->object!=cancel_stream || tasks[1].wait->cancelled) return 213;
     if(I386KbcInputCancel(0,&tasks[1]) || I386KbcInputCancel(cancel_stream,0) ||
         I386KbcInputCancel(cancel_stream,&tasks[0]) || I386KbcInputCancel(cancel_stream,&cancel_foreign) ||
         !tasks[1].blocked || *cancel_stream->read_cancelled) return 214;
@@ -50,7 +58,10 @@ I64 CancelInputTest()
     if(scenario==1 && !I386SchedWake(&scheduler,&tasks[1])) return 215;
     if(scenario==2 && (!I386KbcInputPut(cancel_stream,0x1E,0x81) ||
         !I386KbcInputPut(cancel_stream,0x9E,1))) return 216;
-    if(!I386KbcInputCancel(cancel_stream,&tasks[1]) || I386KbcInputCancel(cancel_stream,&tasks[1]) ||
+    if(scenario&1) accepted=I386KbcInputCancel(cancel_stream,&tasks[1]);
+    else accepted=I386TaskCancelWait(&tasks[1]);
+    if(!accepted || !tasks[1].wait || !tasks[1].wait->cancelled ||
+        I386TaskCancelWait(&tasks[1]) || I386KbcInputCancel(cancel_stream,&tasks[1]) ||
         tasks[1].blocked || cancel_stream->waiter || cancel_stream->read_cancelled ||
         tasks[1].task_flags!=(1<<31|1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG) ||
         tasks[1].wake_jiffy!=0x100000001 || (GetRFlags&0x200)!=cancel_input_if ||
@@ -67,6 +78,7 @@ I64 CancelInputTest()
         !I386SchedAdd(&scheduler,&tasks[2]) || !I386SchedYield(&scheduler) || !tasks[2].blocked ||
         cancel_stream->waiter!=&tasks[2] || !cancel_stream->read_cancelled ||
         *cancel_stream->read_cancelled || cancel_next_done)) return 220;
+    if(I386TaskCancelWait(&tasks[1]) || !tasks[1].wait || !tasks[1].wait->cancelled) return 227;
     tasks[1].task_flags=1<<31; tasks[1].wake_jiffy=0;
     if(!I386SchedYield(&scheduler) || cancel_input_done!=1 || !tasks[1].finished || errors ||
         (GetRFlags&0x200)!=cancel_input_if) return 221;

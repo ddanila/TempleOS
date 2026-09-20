@@ -175,9 +175,12 @@ normal resumption. Task lifecycle guards prevent freeing a registered stack.
 See [task wait registration](docs/i386-task-wait-registration.md). Queued ATA
 acquisitions and message reads now register with the same dispatcher; see
 [resource wait registration](docs/i386-resource-wait-registration.md). Raw-keyboard
-registration, break locking and cleanup before original Break delivery remain.
+waits now register as well, with task-context reading and decoding retained in
+ConsoleRuntime; see [keyboard wait registration](docs/i386-keyboard-wait-registration.md).
+Break locking and cleanup before original Break delivery remain.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
-bytes. After task wait registration, 368 bytes of headroom remain. See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
+bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,
+26248 bytes of bootstrap headroom remain (362872-byte kernel plus 4096-byte early stage). See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
 Keep additional interruption logic in retained services and measure scheduler-core
 growth against this remaining space; preserve the reserved load area and validate
 module lifetimes and rejection behavior.

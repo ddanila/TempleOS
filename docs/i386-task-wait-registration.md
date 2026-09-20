@@ -2,7 +2,7 @@
 
 Native tasks now have one private pointer to a borrowed CI386TaskWait record.
 A blocking call owns that record on its stack and records its wait kind, resource
-and cancellation callback before it can switch tasks. Sleep, join, queued ATA acquisition and message reads use this
+and cancellation callback before it can switch tasks. Sleep, join, queued ATA acquisition, message and raw-keyboard reads use this
 registration; their successful, cancelled and failed-block returns clear it.
 Nested waits are rejected. Task attachment, finishing and reaping reject a live
 registration so its stack cannot be freed while another task can still find it.
@@ -42,7 +42,8 @@ also requires task heap, symbol, exception, ATA, input and message regressions.
 
 ATA and message registration is described in
 [resource wait registration](i386-resource-wait-registration.md); FileRuntime is
-now version 23. Raw-keyboard waits still need registration. Establishing ownership
+now version 23. [Keyboard wait registration](i386-keyboard-wait-registration.md)
+adds the raw input path through ConsoleRuntime 11. Establishing ownership
 of a dedicated retained task service, respecting pending-break locking, and arranging
 cleanup and original exception/message/job/popup delivery remain required. This
 is not public Break or a complete interruption coordinator.

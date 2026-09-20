@@ -5900,3 +5900,44 @@ bytes and its worker reclaims 541856 bytes. Normal boot on QEMU/486 at 8 MiB
 measured 14.301 seconds and diagnostics 126.146 seconds. The preview image is
 refreshed from the verified normal disk. These checks do not establish strict
 386 compatibility, complete DolDoc or native i386 self-hosting.
+
+
+## Registered keyboard waits and retained input decoding
+
+Raw keyboard waits now register through the common task cancellation entry.
+Direct and routed cancellation share the stack record until normal return;
+repeated cancellation does not revisit a detached stream. Input tests cover
+nested-wait rejection, registration clearing, queued byte/status preservation,
+IF/flags/deadlines, partial scan state, stream reuse and replacement readers.
+See [keyboard wait registration](i386-keyboard-wait-registration.md).
+
+Task-context raw reading and scan/event decoding now live in retained
+ConsoleRuntime. The bootstrap keeps controller setup, stream initialization,
+IRQ publication and queue primitives. ConsoleRuntime 11 initializes the decoder
+against that stream and imports blocking and raw dequeue operations. Its service
+and configuration records remain 28 bytes; the configuration now takes the raw
+stream rather than a kernel read callback. Old version 10 is rejected. Other
+service versions and task/input layouts are unchanged.
+
+Both x64 rebuild generations and native input/message suites pass. The full
+kernel suite passes 129 commands / 192 input lines with exact VGA, startup-source
+recovery, normal boot with an invalid diagnostic module, and all 17 rejection
+cases. All 1093 OS source hashes and 8 build-input hashes match; normal and
+diagnostic disk hashes remain unchanged after verification. The build records
+the pre-commit revision and dirty-worktree status alongside those exact hashes.
+
+Kernel size falls from 388752 to 362872 bytes, recovering 25880 bytes. With the
+4096-byte early stage, the existing reservation has 26248 bytes free.
+ConsoleRuntime retains 77816 bytes (77800-byte image), so this is primarily code
+relocation, not a comparable reduction in total RAM use. Public headers retain
+179280 bytes. CompilerProbe still reclaims 672064 bytes and its worker 541856.
+Normal QEMU/486 boot at 8 MiB measured 15.474 seconds, diagnostics 134.989 seconds;
+these single-run timings do not establish a performance trend. The normal preview
+image is refreshed from the tested disk.
+
+The active medium goal is the first usable original DolDoc editing session:
+edit and execute HolyC, recover from errors and interruption, save, reboot and
+reopen at 8 MiB. Its acceptance criteria are recorded in the
+[DolDoc integration inventory](i386-doldoc-integration.md). Pending-break locking,
+outer resource cleanup and original document/editor integration remain open;
+registered waits alone do not deliver that session or public Break.

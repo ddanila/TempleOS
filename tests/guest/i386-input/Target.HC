@@ -202,6 +202,7 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/Scheduler.HC"
 #include "/Kernel/I386/KbcQueue.HC"
 #include "/Kernel/I386/KbcInput.HC"
+#include "/Kernel/I386/KbcInputRead.HC"
 #include "/Kernel/I386/Kbc.HC"
 #include "/Kernel/I386/PicPit.HC"
 #include "/Kernel/I386/ScanSet1.HC"
@@ -381,4 +382,5 @@ I64 ScanTest()
 
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/KbcInputCancel.HC"
+#include "/Kernel/I386/WaitCancel.HC"
 #include "T:/CancelInput.HC"

@@ -5,6 +5,24 @@ DolDoc compiles or runs on i386. It directs the next M4/M5 changes toward the
 existing implementation in `Adam/DolDoc/MakeDoc.HC`. Keep that implementation;
 do not introduce a replacement document format or reduced editor.
 
+## Medium goal: first usable native editing session
+
+Acceptance requires a normal native i386 boot on the 8 MiB QEMU development
+profile into an environment using the original DolDoc editor. The user must be
+able to type a small HolyC program, execute it and see the output, recover from
+a syntax error, and interrupt a running program without losing the editing
+session. Save the document to RedSea, shut down and reboot the same disk, reopen
+it and execute it again. Verify persisted contents and measure peak memory,
+normal boot time and input responsiveness. Normal boot must not run the
+long diagnostic suite.
+
+Implement in three connected stages: safe interruption and resource cleanup;
+original document lifecycle, rendering and editing integration; then persistent
+save/reboot/reopen acceptance. Use the original document representation and
+editor code throughout. Component tests and the current line-oriented console
+are supporting evidence, not completion of this goal. Full M5/M7 graphics,
+help, sound and physical-machine acceptance remain part of the overall port.
+
 ## First source boundary
 
 `MakeDoc.HC` declares `CDolDocGlbls`, initializes `doldoc`, then includes
@@ -65,7 +83,9 @@ see [keyboard-read cancellation](i386-keyboard-read-cancellation.md). Coordinate
 wait selection now has task-owned registrations for sleep, join, queued ATA
 acquisitions and message reads; see
 [resource wait registration](i386-resource-wait-registration.md). Raw-keyboard
-registration and cleanup before exception delivery remain required.
+registration now uses the same dispatcher; see
+[keyboard wait registration](i386-keyboard-wait-registration.md). Break locking
+and cleanup before exception delivery remain required.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while
@@ -95,9 +115,9 @@ serialize the entire native record or simply remove its layout assertions.
    Include embedded graphics and document handler registration. Measure memory
    peaks and input responsiveness throughout, then apply the M7 hardware gates.
 
-Bootstrap headroom is a concurrent constraint: the kernel plus early
-stage leaves 1128 bytes in the fixed reservation after jiffy/wake-time integration
-(5000 after task-flag eligibility, 5944 after moving source/lexer diagnostics).
+Bootstrap headroom remains a constraint: retaining task-context keyboard reading
+and decoding in ConsoleRuntime leaves 26248 bytes in the fixed reservation,
+compared with 368 bytes before that move.
 See [storage diagnostics](i386-storage-diagnostics.md). Keep new document/runtime
 code in extended-memory modules; any necessary resident additions must first
 make room deliberately and retain module rejection/lifetime tests. Preserve

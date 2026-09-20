@@ -44,6 +44,7 @@ class CI386Task:CTask
 #define I386_WAIT_JOIN 2
 #define I386_WAIT_ATA 3
 #define I386_WAIT_MESSAGE 4
+#define I386_WAIT_KEYBOARD 5
 class CI386TaskWait {
   U32 kind;
   U8 *object;

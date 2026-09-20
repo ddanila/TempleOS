@@ -20,28 +20,3 @@ public Bool I386KbcInputPut(CI386KbcInput *input,U8 data,U8 status)
   }
   I386IrqRestore(flags); return result;
 }
-public Bool I386KbcInputRead(CI386KbcInput *input,U8 *data,U8 *status,Bool wait=TRUE)
-{//Task context, one pending reader. Outputs must not overlap the input record.
-  U32 flags=I386IrqSave;
-  CI386Scheduler *s;
-  CI386Task *self;
-  Bool cancelled=FALSE;
-  if (!input || !input->scheduler || !data || !status || data==status) {
-    I386IrqRestore(flags); return FALSE;
-  }
-  s=input->scheduler; self=s->current;
-  if (!self || (input->waiter && input->waiter!=self)) {
-    I386IrqRestore(flags); return FALSE;
-  }
-  while (!I386KbcQueueGet(&input->queue,data,status)) {
-    if (!wait || self==s->root) { I386IrqRestore(flags); return FALSE; }
-    input->waiter=self; input->read_cancelled=&cancelled;
-    if (!I386SchedBlock(s)) {
-      input->waiter=0; input->read_cancelled=0; I386IrqRestore(flags); return FALSE;
-    }
-    //A cancelled stream can be freed or handed to another reader before we run.
-    if(cancelled) { I386IrqRestore(flags); return FALSE; }
-  }
-  input->waiter=0; input->read_cancelled=0;
-  I386IrqRestore(flags); return TRUE;
-}
