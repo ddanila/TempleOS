@@ -22,7 +22,7 @@ implementations as their dependency groups become available.
 
 | Boundary | Evidence in existing source | Current native gap / next gate |
 | --- | --- | --- |
-| Public records | `Kernel/KernelA.HH` defines `CDocBin`, `CDocSettings`, `CDocEntryBase`, `CDocEntry`, `CEdFindText`, `CDocUndo`, `CDoc` and supporting records/constants. | `PublicTaskTypes.HH` only forward-declares `CDoc`. Extract shared complete document records with their dependencies; verify original x64 layouts and native layouts before loading them publicly. |
+| Public records | `Kernel/DocTypes.HH`, included by KernelA and native PublicKernel, defines all eight original document/editor records and their constants. | All 131 original x64 fields are preserved. Native layout assertions and a shared wide-field/callback/binary-span corpus cover the complete records. CDirContext remains opaque; palette constants referenced by color aliases still need native publication. Connect the original document services to these records; see [document layouts](i386-document-records.md). |
 | Allocation | `DocNew.HC` uses `MAlloc`, `CAlloc`, `Free`, `MSize2`, `MAllocIdent`, `StrNew` and `MemCpy`. | These are declared in native `PublicMemory.HH`; validate actual document copy/reset/delete ownership and reclamation, including explicit `doc->mem_task`, rather than treating symbol availability as integration. |
 | String operations | `DocEntryNewTag` calls `StrLen`; `DocNew` calls `StrCpy`; binary lookup uses `StrCmp`. | Public `StrCmp` is declared by native `StartOS.HC`. `StrLen` (opcode 0x84) now has native lowering, public startup publication and x64/native execution tests. `StrCpy` now binds the retained native routine with original null-input, void-return and direction-flag semantics; its shared behavioral corpus passes on x64 and native boot/worker tasks. |
 | Circular queues | `DocNew.HC` and `DocBin.HC` use `QueInit`, `QueIns`, `QueRem`; original public declarations use intrinsic opcodes and `CQue *`. | The canonical `CQue` record is now shared through `Kernel/QueueTypes.HH` and loaded by native public headers (8 bytes native, 16 bytes x64). All four queue opcodes, including `QueInsRev`, now validate the public signature and update four-byte native links. A shared original-x64/cross-generated/native corpus checks both directions, removal and neighboring memory. Actual document ownership integration remains open. |
@@ -55,12 +55,11 @@ serialize the entire native record or simply remove its layout assertions.
    integrating document callers; see [intrinsic publication](i386-intrinsic-publication.md)
    and [public memory/string services](i386-public-memory.md). This does not yet
    demonstrate original document creation or copying.
-2. **Queue primitives implemented; document records next.** Shared `CQue` layouts
-   and all four operations now pass on both targets, including empty, singleton
-   and multi-entry queues, retained removed-entry links, single evaluation and
-   neighboring memory. Extract shared document records, preserve x64 layouts and
-   verify native class completion through public headers. Native `#help_file`
-   metadata now supplies the directive needed by MakeDoc, with ownership and rollback.
+2. **Queue primitives and shared document records implemented.** Shared `CQue`
+   layouts and all four operations preserve original behavior. Complete document
+   records now share one header, with original x64 layouts and a fixed native
+   contract. Native `#help_file` metadata supplies the directive needed by MakeDoc,
+   with ownership and rollback. Keep these checks while integrating real callers.
 3. Connect the remaining lifecycle dependencies above and execute original
    document creation, entry insertion/copy, reset and deletion. Measure heap
    ownership and repeated-cycle reclamation. Use failed allocation and lock/break

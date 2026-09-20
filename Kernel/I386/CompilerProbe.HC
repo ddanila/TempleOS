@@ -507,5 +507,6 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 #include "/Kernel/I386/CompilerOpaqueProbe.HC"
 #include "/Kernel/I386/CompilerCompletionProbe.HC"
 #include "/Kernel/I386/CompilerTaskLayoutProbe.HC"
+#include "/Kernel/I386/DocLayoutCheck.HH"
 
 #include "/Kernel/I386/CompilerCodeLifetimeProbe.HC"

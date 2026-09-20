@@ -8,6 +8,47 @@ Bool ProbePublicMemoryInput(CI386CompilerProbe *probe,CI386CommandInput *input,C
   KernelLog(" "); KernelHex(input->heap->used); KernelLog("\n");
   return accepted;
 }
+Bool ProbeDocLayoutInput(CI386CompilerProbe *probe,CI386CommandInput *input,I64 checks)
+{
+  I64 used=input->heap->used,allocations=input->heap->allocations;
+  Bool accepted=probe->compiler->input(input);
+  KernelLog("PUBLIC DOC LAYOUT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(checks);
+  KernelLog(" "); KernelHex(accepted); KernelLog(" "); KernelHex(input->exception); KernelLog("\n");
+  return accepted && !input->warnings && !input->answers &&
+    input->heap->used==used && input->heap->allocations==allocations;
+}
+I64 ProbeDocumentLayout(CI386CompilerProbe *probe,CI386CommandInput *input)
+{
+  CI386Heap *heap=input->heap;
+  U8 *source,*name=0,*batch;
+  I64 size,attr,start=0,end,i,length=0,checks=0;
+  source=probe->files->read(heap,"C:/Kernel/I386/DocLayoutCheck.HH",&size,&attr,&name);
+  if(!source || !name || size<1) KernelStop;
+  batch=I386HeapAlloc(heap,size+1,FALSE);
+  if(!batch) KernelStop;
+  //Independent layout assertions need no shared compiler temporaries. Bound each
+  //input and verify its reclamation while retaining the published type graph.
+  while(start<size) {
+    end=start; while(end<size && source[end]!=10) end++;
+    if(end-start>7 && source[start]=='#' && source[start+1]=='a') {
+      for(i=start;i<end;i++) batch[length++]=source[i];
+      batch[length++]=10; checks++;
+      if(!(checks%16)) {
+        batch[length]=0; input->source=batch;
+        if(!ProbeDocLayoutInput(probe,input,checks)) KernelStop;
+        length=0;
+      }
+    }
+    start=end+1;
+  }
+  if(length) {
+    batch[length]=0; input->source=batch;
+    if(!ProbeDocLayoutInput(probe,input,checks)) KernelStop;
+  }
+  input->source=0;
+  if(!I386HeapFree(heap,batch) || !I386HeapFree(heap,source) || !I386HeapFree(heap,name)) KernelStop;
+  return checks;
+}
 //Load the actual public headers, retry failure, and compare every public offset.
 U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
@@ -19,6 +60,8 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHash *entry;
   CHashClass *forward;
   CHashSrcSym *help;
+  CHashClass *document_type;
+  CMemberLst *document_member;
   CI386CommandInput input;
   CProbeInputAnswer answer;
   U8 *bytes,*source,*name;
@@ -171,6 +214,19 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(checks!=113 || !probe->compiler->input(&input) || input.warnings || input.answers) KernelStop;
   if(!I386HeapFree(heap,bytes) || !I386HeapFree(heap,source) || !I386HeapFree(heap,name)) KernelStop;
   KernelLog("PUBLIC HEADER LAYOUT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(checks); KernelLog("\n");
+  checks=ProbeDocumentLayout(probe,&input);
+  if(checks!=271) KernelStop;
+  document_type=ProbeSymbolFind(0,"CEdFindText",table,HTT_CLASS);
+  if(!document_type || !(document_member=document_type->member_lst_and_root) ||
+      StrCmp(document_member->str,"find_text") || !document_member->meta ||
+      StrCmp(document_member->meta->str,"format") || !(document_member->meta->flags&MLMF_IS_STR) ||
+      StrCmp(document_member->meta->user_data,"$$DA-P,A=\"Find        :%s\"$$\n")) KernelStop;
+  input.source="#include \"/Kernel/I386/DocRecordCheck.HC\"\nDocRecordCheck;";
+  accepted=probe->compiler->input(&input);
+  KernelLog("PUBLIC DOC RESULT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(accepted);
+  KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value); KernelLog("\n");
+  if(!accepted || input.answers!=1 || answer.value!=4) KernelStop;
+  KernelLog("PUBLIC DOC CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(checks); KernelLog("\n");
   for(i=0;i<=table->mask;i++)
     while((entry=table->body[i])!=heads[i]) {
       if(!entry) KernelStop;

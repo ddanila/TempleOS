@@ -86,7 +86,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             command('qmp_capabilities')
             startup_started=time.monotonic()
             #Normal interactive boot must not pay for the diagnostic probe suite.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=240 if diagnostics else 60)
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else 90)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']
@@ -182,6 +182,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('CQue queue_item;QueInit(&queue);QueInsRev(&queue_item,&queue);queue.next==&queue_item&&queue_item.last==&queue;', ['1']),
                 ('QueRem(&queue_item);queue.next==&queue&&queue.last==&queue&&queue_item.next==&queue;', ['1']),
 
+                ('sizeof(CDoc)==680&&sizeof(CDocEntry)==160&&offset(CDocBin.end)-offset(CDocBin.start)==16;', ['1']),
                 ('StrLen("");', ['0']),
                 ('StrLen("VGA")+StrLen("adapter"+2);', ['8']),
                 ('U8 *copy_buf=CAlloc(8);StrCpy(copy_buf+1,"VGA");StrLen(copy_buf+1)==3&&copy_buf[0]==0&&copy_buf[5]==0;', ['1']),

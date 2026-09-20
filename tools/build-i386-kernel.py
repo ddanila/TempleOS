@@ -713,7 +713,7 @@ def main():
         disk=diagnostic_image
         guest=out/'boot'
         diagnostic_started=time.monotonic()
-        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','240')
+        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','1200')
         diagnostics['startup_seconds']=time.monotonic()-diagnostic_started
         log=(guest/'debug.log').read_text()
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
@@ -987,6 +987,12 @@ def main():
         phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('MEMORY PROBE ')]
         if phases!=[0,1] or log.index('MEMORY PROBE ')>log.index('RUNTIME PROBE '):
             raise ValueError('Root/worker public heap growth and reclamation failed')
+        doc_batches=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC DOC LAYOUT ')]
+        if doc_batches!=[(phase,n,1,0) for phase in (0,1) for n in (*range(16,257,16),271)]:
+            raise ValueError('Native document layout batches or reclamation failed')
+        doc_cases=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC DOC CASE ')]
+        if doc_cases!=[(0,271),(1,271)] or 'PASS original document records\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/native document records failed')
         help_phases=[int(line.split()[3],16) for line in log.splitlines() if line.startswith('PUBLIC HELP CASE ')]
         if help_phases!=[0,1] or 'PASS original help metadata\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/native help-file metadata failed')

@@ -4,6 +4,7 @@
 #include "/Kernel/I386/PublicTaskTypes.HH"
 #include "/Kernel/I386/PublicMemory.HH"
 #include "/Kernel/I386/Queue.HH"
+#include "/Kernel/DocTypes.HH"
 public _intern 0x15 CTask *Fs();
 public _intern 0x17 CCPU *Gs();
 #endif

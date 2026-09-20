@@ -5382,3 +5382,44 @@ The kernel is 388936 bytes, leaving 184 bytes of bootstrap reservation headroom.
 This closes the missing help-file metadata prerequisite identified while adding
 queues. Shared document records, locking, document lifecycle and the integrated
 editor/help workflow remain open. See [help metadata](i386-help-metadata.md).
+
+
+## Shared document/editor records
+
+The original DolDoc constants and all eight document/editor records now live in
+Kernel/DocTypes.HH, shared by x64 KernelA and native public headers. Extraction
+preserves the original bytes outside that block and every original field inside
+it. Four explicit tail-alignment directives retain the original record-size
+assertions on i386 without changing x64 layouts. CDoc is 680 bytes native,
+CDocEntry 160, and the CDocBin serialized span remains exactly 16 bytes.
+
+The pre-extraction x64 fixture captures all 131 fields. Both x64 rebuild
+generations and the rebuilt layout comparison pass. Native diagnostics execute
+271 layout assertions in each of the boot and worker tasks, check editor format
+metadata, and run a shared x64/native corpus for wide fields, callback calls,
+embedded records and saved bytes. Batches of 16 assertions verify temporary
+reclamation; the behavioral corpus still compiles as one input. Full publication,
+rollback, symbol cleanup and worker teardown checks pass.
+
+The full native suite passes 124 commands across 187 input lines, exact VGA
+checkpoints, independent normal boot with a damaged diagnostic module,
+custom/missing/invalid startup source recovery, and all 17 module rejection
+cases. All 1084 recorded OS source hashes match the rebuild and layout evidence.
+The temporary CompilerProbe uses 656864 image / 656880 heap bytes, all reclaimed;
+worker teardown returns 533664 bytes. The kernel remains 388936 bytes, with
+184 bytes of bootstrap reservation headroom. Runtime module versions are unchanged.
+
+Public headers now retain 169920 bytes, up from 71248. Normal QEMU/486 startup
+with 8 MiB takes 60.612 seconds (separate measurement 60.617), up from 25.038;
+full diagnostics take 726.823 seconds, up from 222.073. Initial runs exhausted
+240- and 600-second diagnostic deadlines; batching retained every assertion but
+did not bring diagnostics below 600 seconds. A later run passed diagnostics and
+missed the normal 60-second deadline. The final harness allows 1200 seconds for
+diagnostics and 90 for normal startup. These deadline changes do not resolve the
+performance regression. Normal boot still omits diagnostics; repeated whole-heap
+validation is a likely scaling cost that needs profiling and ownership-preserving
+compiler allocation work before full-editor acceptance.
+
+The preview image is refreshed from this tested normal image. Document lifecycle,
+locking/break semantics, palette bindings, persistent files and the integrated
+editor remain open. See [document records](i386-document-records.md).

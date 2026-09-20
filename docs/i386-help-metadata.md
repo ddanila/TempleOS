@@ -33,6 +33,6 @@ input supplies the file-service binding used by this implementation.
 
 FileRuntime is version 20 with a 36-byte service table. CompilerRuntime 42,
 CompilerProbe 12 and ConsoleRuntime 8 identify the corresponding consumers.
-Public document records, document services and the integrated DolDoc editor
-remain separate integration requirements. This change supplies metadata; it
+Public document records now share [one canonical header](i386-document-records.md).
+Document services and the integrated DolDoc editor remain separate integration requirements. This change supplies metadata; it
 does not implement the interactive help browser.

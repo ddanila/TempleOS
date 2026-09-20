@@ -140,7 +140,12 @@ The original `CQue` record is now shared and loaded natively, with verified
 original link semantics, with shared x64/cross-generated/native execution tests.
 Native #help_file metadata now preserves original path and source-link semantics,
 with transactional publication and reclamation; see [help metadata](docs/i386-help-metadata.md).
-Shared document records and locking services remain source-driven DolDoc dependencies.
+The complete document/editor records now share Kernel/DocTypes.HH, preserving
+all 131 original x64 fields and the 16-byte CDocBin saved span. The native CDoc
+record is 680 bytes; explicit tail alignment retains original record-size
+requirements. See [document records](docs/i386-document-records.md). Document
+locking, lifecycle, palette constants and the actual editor/file workflow remain
+source-driven integration work.
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.
@@ -154,7 +159,21 @@ through native public headers. Final generated executable buffers now carry
 public task-heap ownership through compiler cleanup, publication and task reap;
 compiler metadata and working buffers still use bootstrap arenas. Complete their
 allocation policy and the remaining public memory services as the next
-public-contract work. Registered backing regions and a demand-growth provider now have native coverage, including return of wholly
+public-contract work. Shared document headers raise retained public metadata to
+169920 bytes. A normal QEMU/486 boot with these records measured 60.617 seconds,
+up from 25.038 seconds with the preceding headers. The normal test deadline is
+now 90 seconds; extending that deadline is not a performance improvement.
+Before loading the complete editor, measure time and allocator traversal counts
+separately for header publication, startup, repeated short commands, failed
+compilation and task teardown. Preserve corruption detection, rollback and
+logical allocation sizes while reducing the cost; report timings against this
+header workload as well as retained and peak RAM. The bootstrap allocator scans
+and validates its whole block chain
+on allocation, free and size queries; profile those paths with the larger symbol
+graph before integrating the full editor. Migrate compiler metadata/working
+storage with explicit ownership and logical-size tracking, preserving corruption
+and rollback checks instead of substituting public MSize capacity for requested
+size. Registered backing regions and a demand-growth provider now have native coverage, including return of wholly
 unused regions to the bootstrap allocator. Task teardown now invokes the retained
 provider after releasing heap controls; public free also notifies the provider
 after finishing its page-header reads. See

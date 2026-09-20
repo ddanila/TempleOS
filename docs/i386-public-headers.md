@@ -117,7 +117,8 @@ With queue operations enabled, the full native suite passes 123 commands across
 seconds and diagnostics 220.877 seconds on the same QEMU/486 8 MiB profile.
 The diagnostic worker now needs a temporary 512 KiB compiler arena; its teardown
 returns 533664 bytes including stack and task metadata before console startup.
-Shared document records and the full DolDoc workflow remain unfinished.
+The shared document records are now available as described below; the full
+DolDoc workflow remains unfinished.
 
 
 ## Help-file symbols
@@ -128,3 +129,18 @@ link as task-owned metadata. Public-header probes compare repeated directives
 with original x64 behavior, test failed-input rollback and reclaim the complete
 symbol graphs on boot and worker tasks. The public headers retain 71248 bytes,
 200 more than before help metadata. See [help metadata](i386-help-metadata.md).
+
+
+## Complete document records
+
+PublicKernel now includes the canonical Kernel/DocTypes.HH used by the x64
+kernel. The original eight records and all 131 x64 fields are preserved; native
+CDoc is 680 bytes and CDocEntry is 160 bytes. Four original size assertions retain
+eight-byte record strides through explicit tail alignment. CDocBin's saved span
+is still 16 bytes, independently of its in-memory pointer width.
+
+The native probe checks all 271 field/size assertions in batches, with unchanged
+heap usage after each input, and runs the complete shared byte-span/callback
+corpus. The editor's retained format metadata is also checked. Public headers
+retain 169920 bytes. See [document records](i386-document-records.md) for the
+layout contract and remaining service dependencies.
