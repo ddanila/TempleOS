@@ -11,13 +11,14 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next))
 {
   I64 i;
-  if (!s || !root || !swap || s->root || root->owner || root->except_top || root->io_locks ||
+  if (!s || !root || !swap || s->root || root->owner || root->next_task || root->last_task || root->except_top || root->io_locks ||
       root->file_state || root->file_clone || root->file_destroy || root->lifetime_refs ||
       root->hash_table || root->symbol_state || root->symbol_clone || root->symbol_destroy ||
       root->next_cc || root->last_cc || root->compiler_cleanup || root->active_controls ||
       root->compiler_cleanup_failed || root->compiler_busy ||
       I386TaskHeapHooks(root)) return FALSE;
   root->addr=root; root->context.esp=0; root->next=root; root->last=root;
+  root->next_task=root; root->last_task=root;
   root->task_signature=TASK_SIGNATURE_VAL;
   root->owner=s; root->finished=0; root->blocked=0;
   root->join_head=0; root->join_next=0; root->join_target=0;
@@ -36,7 +37,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
 {//Append a freshly prepared context before root; caller owns its stack lifetime.
   U32 flags=I386IrqSave;
   I64 i;
-  if (!s || !s->root || !task || task->owner || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
+  if (!s || !s->root || !task || task->owner || task->next_task || task->last_task || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
       task->next_cc || task->last_cc || task->compiler_cleanup || task->active_controls ||
       task->compiler_cleanup_failed || task->compiler_busy ||
       (I386TaskHeapHooks(task) && I386TaskHeapHooks(task)!=31) ||
@@ -56,6 +57,10 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   for(i=0;i<I386_EXCEPT_CALLERS;i++) task->except_callers[i]=0;
   task->next=s->root; task->last=s->root->last;
   task->last->next=task; s->root->last=task;
+  //Public ring contains every attached live task, including blocked workers.
+  //Only the private next/last ring is restricted to runnable tasks.
+  task->next_task=s->root; task->last_task=s->root->last_task;
+  task->last_task->next_task=task; s->root->last_task=task;
   I386IrqRestore(flags);
   return TRUE;
 }
@@ -96,6 +101,9 @@ public Bool I386SchedFinish(CI386Scheduler *s)
   next=old->next;
   old->last->next=next; next->last=old->last;
   old->next=0; old->last=0; old->finished=1;
+  old->last_task->next_task=old->next_task;
+  old->next_task->last_task=old->last_task;
+  old->next_task=0; old->last_task=0;
   for (waiter=old->join_head;waiter;waiter=waiter->join_next)
     I386SchedWake(s,waiter);
   s->current=next;
@@ -108,7 +116,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
 {//Detach a finished task from another stack before its owner frees that stack.
   U32 flags=I386IrqSave;
   I64 i;
-  if (!s || !task || task->owner!=s || !task->finished || task==s->current ||
+  if (!s || !task || task->owner!=s || !task->finished || task==s->current || task->next_task || task->last_task ||
       task->join_head || task->join_target || task->messages || task->except_top || task->io_locks || task->lifetime_refs || task->active_controls || task->compiler_cleanup ||
       task->compiler_cleanup_failed || task->compiler_busy ||
       task->next_cc!=&task->next_cc || task->last_cc!=&task->next_cc || s->focus==task) {

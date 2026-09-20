@@ -150,6 +150,10 @@ signatures and export names, with signed I64 bit addressing and audited locked
 branches. Their shared original-x64/native corpus covers 168 vectors; this closes
 the bit-assignment prerequisite for DocLock, while public Yield and pending-break
 semantics remain required. See [bit assignment](docs/i386-bit-assignment.md).
+Native public task links now track attached live tasks, including blocked workers,
+and detach before reaping. The private runnable queue still determines dispatch;
+public Yield eligibility/order and pending-break delivery remain integration work.
+See [public task ring](docs/i386-public-task-ring.md).
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.
@@ -169,7 +173,9 @@ samples to whole-chain bootstrap heap validation. An equivalent 386 assembly
 loop, retaining every invariant, reduces normal QEMU/486 startup from 60.612 to
 15.806 seconds and diagnostics from 726.823 to 137.386 seconds. The normal test
 deadline is restored to 60 seconds. Differential corruption tests and the full
-native suite pass; kernel reservation headroom grows from 184 to 2440 bytes.
+native suite pass; that optimization grew kernel reservation headroom from 184
+to 2440 bytes. Live public task-ring maintenance now uses 1840 of those bytes,
+leaving 600 bytes; keep substantial new services in extended-memory modules.
 See [heap performance](docs/i386-heap-performance.md), including the native
 inline-assembly label-forwarding fix exposed by this work.
 

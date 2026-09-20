@@ -86,6 +86,12 @@ or `CExcept`. Stack bounds now use the public `CTaskStk` directly; see
 family lists, documents and window state remain unfinished. Complete record storage does
 not imply that every field already has working service semantics.
 
+The public next/last task links now form a live membership ring, retaining blocked
+tasks and detaching finished tasks before resource destruction. Cleanup callbacks
+still observe their task in the ring. The private ready queue continues to control
+dispatch; public Yield and task-family semantics remain unfinished. See
+[public task ring](i386-public-task-ring.md).
+
 Native startup now loads the complete shared headers and typed `Fs`/`Gs` through
 the JIT before user startup. Header guards and class definitions publish together
 in an opt-in input transaction. Public service integration remains incomplete;

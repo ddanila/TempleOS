@@ -128,6 +128,11 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.flags=0;
   input.source="Fs->addr==Fs && Fs->gs==Gs && Gs->addr==Gs && Gs->num==0;";
   if(!probe->compiler->input(&input) || answer.value!=1 || input.answers!=1) KernelStop;
+  input.source="Fs->next_task->last_task==Fs && Fs->last_task->next_task==Fs && Fs->next_task->task_signature==TASK_SIGNATURE_VAL;";
+  if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
+  input.source="Fs->next_task!=Fs;";
+  if(!probe->compiler->input(&input) || answer.value!=probe->phase) KernelStop;
+  KernelLog("PUBLIC TASK RING "); KernelHex(probe->phase); KernelLog("\n");
   input.source="Fs->task_signature==TASK_SIGNATURE_VAL;";
   if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
   input.source="Fs->last_cc!=0 && Fs->hash_table->body!=0;";

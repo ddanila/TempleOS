@@ -110,6 +110,7 @@ I64 PublicTaskHeapTest()
   root->heap_clone=0;
   if(I386TaskSpawn(&scheduler,&heap,8192,&PublicHeapWorker,0) || heap.used) return 107;
   root->heap_clone=&I386TaskHeapsClone;
+  if(root->next_task!=root || root->last_task!=root) return 121;
   for(cycle=0;cycle<4;cycle++) {
     for(i=0;i<2;i++) {
       heap_stages[i]=0; heap_payloads[i]=0;
@@ -199,6 +200,8 @@ U0 PublicHeapCleanup(CI386Task *task)
 {
   I64 id=0;
   if(task==&heap_workers[1]->task) id=1;
+  if(!task->next_task || !task->last_task || task->next_task->last_task!=task ||
+      task->last_task->next_task!=task) errors++;
   if(task!=I386TaskSelf || heap_stages[id]!=1 || !(GetRFlags&0x200) ||
       I386TaskHeapsDestroy(task) || I386MemSize(heap_payloads[id])<1024) errors++;
   heap_stages[id]=2;
@@ -209,6 +212,8 @@ Bool PublicHeapCompilerCleanup(CI386Task *task)
   I64 id=0;
   U8 *p=I386MemAlloc(task->data_heap,64);
   if(task==&heap_workers[1]->task) id=1;
+  if(!task->next_task || !task->last_task || task->next_task->last_task!=task ||
+      task->last_task->next_task!=task) errors++;
   if(!p || heap_stages[id]!=2 || !(GetRFlags&0x200) ||
       I386TaskHeapsDestroy(task) || !I386MemFree(p)) errors++;
   task->active_controls=0; task->compiler_cleanup=0;
@@ -219,6 +224,7 @@ Bool PublicHeapFileDestroy(CI386Task *task)
 {
   I64 id=0;
   if(task==&heap_workers[1]->task) id=1;
+  if(task->next_task || task->last_task) errors++;
   if(heap_stages[id]!=3 || !task->finished || !task->hash_table ||
       !task->data_heap || heap_payloads[id][0]!=id+41) errors++;
   task->file_state=0; task->file_clone=0; task->file_destroy=0;
@@ -229,6 +235,7 @@ Bool PublicHeapSymbolDestroy(CI386Task *task)
 {
   I64 id=0;
   if(task==&heap_workers[1]->task) id=1;
+  if(task->next_task || task->last_task) errors++;
   if(heap_stages[id]!=4 || task->file_state || !task->data_heap ||
       heap_payloads[id][1023]!=id+71) errors++;
   task->hash_table=0; task->symbol_state=0; task->symbol_clone=0; task->symbol_destroy=0;

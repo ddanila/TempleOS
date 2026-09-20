@@ -132,11 +132,29 @@ U0 TaskExit()
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
 
+Bool PublicRingCheck(I64 count)
+{//The public ring stays in attachment order when runnable order changes.
+  CTask *node=&tasks[0];
+  I64 i;
+  for(i=0;i<count;i++) {
+    if(node!=&tasks[i] || !node->next_task || !node->last_task ||
+        node->next_task->last_task!=node || node->last_task->next_task!=node) return FALSE;
+    node=node->next_task;
+  }
+  return node==&tasks[0];
+}
 I64 SchedulerTest()
 {
   CI386Heap heap;
   U8 *stacks[3],*p,descriptor_before[8];
   I64 i,j,round;
+  tasks[0].next_task=&tasks[1];
+  if(I386SchedInit(&scheduler,&tasks[0],swap) || scheduler.root || tasks[0].owner ||
+      tasks[0].addr || tasks[0].next_task!=&tasks[1]) return 105;
+  tasks[0].next_task=0; tasks[0].last_task=&tasks[1];
+  if(I386SchedInit(&scheduler,&tasks[0],swap) || scheduler.root || tasks[0].owner ||
+      tasks[0].addr || tasks[0].last_task!=&tasks[1]) return 106;
+  tasks[0].last_task=0;
   if (!I386HeapInit(&heap,0x40000,32768) ||
       I386SchedInit(0,&tasks[0],swap) || I386SchedInit(&scheduler,0,swap) ||
       I386SchedInit(&scheduler,&tasks[0],0) ||
@@ -144,6 +162,7 @@ I64 SchedulerTest()
       I386SchedInit(&scheduler,&tasks[0],swap) ||
       !I386SchedYield(&scheduler) || I386SchedFinish(&scheduler) ||
       I386SchedAdd(&scheduler,&tasks[0]) || I386SchedReap(&scheduler,&tasks[0])) return 13;
+  if(!PublicRingCheck(1)) return 101;
   for (i=0;i<8;i++) descriptor_before[i]=test_control->cpu_descriptor[i];
   if (I386DataSegment(0,&bound_cpu,8) ||
       I386DataSegment(test_control->cpu_descriptor,&bound_cpu,0) ||
@@ -169,30 +188,45 @@ I64 SchedulerTest()
       tasks[i].stk=p+32-offset(CTaskStk.stk_base);
       tasks[i].stk->next_stk=0; tasks[i].stk->stk_ptr=0; tasks[i].stk->stk_size=8192;
       if (I386SchedAdd(&scheduler,&tasks[i]) ||
-          !I386ContextInit(&tasks[i].context,p+32,8192,&ScheduledWorker,i,&ScheduledExit,0x18,0x20) ||
-          !I386SchedAdd(&scheduler,&tasks[i]) || I386SchedAdd(&scheduler,&tasks[i]) ||
+          !I386ContextInit(&tasks[i].context,p+32,8192,&ScheduledWorker,i,&ScheduledExit,0x18,0x20)) return 15;
+      tasks[i].next_task=&tasks[0];
+      if(I386SchedAdd(&scheduler,&tasks[i]) || tasks[i].owner || tasks[i].next || tasks[i].last ||
+          tasks[i].next_task!=&tasks[0] || !PublicRingCheck(i)) return 107;
+      tasks[i].next_task=0; tasks[i].last_task=&tasks[0];
+      if(I386SchedAdd(&scheduler,&tasks[i]) || tasks[i].owner || tasks[i].next || tasks[i].last ||
+          tasks[i].last_task!=&tasks[0] || !PublicRingCheck(i)) return 108;
+      tasks[i].last_task=0;
+      if(!I386SchedAdd(&scheduler,&tasks[i]) || I386SchedAdd(&scheduler,&tasks[i]) ||
           I386SchedReap(&scheduler,&tasks[i])) return 15;
+      if(!PublicRingCheck(i+1)) return 102;
     }
     if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] || (Fs+0)(U8 *)!=&tasks[0] || (Gs+0)(U8 *)!=&bound_cpu ||
         tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0]) return 25;
+    if(!PublicRingCheck(3)) return 103;
     for (i=1;i<=2;i++) if (!tasks[i].blocked || tasks[i].finished ||
         tasks[i].next || tasks[i].last || scheduled_progress[i] ||
         I386SchedReap(&scheduler,&tasks[i])) return 26;
     if (!I386SchedYield(&scheduler) || wake_order ||
         !I386SchedWake(&scheduler,&tasks[2]) || I386SchedWake(&scheduler,&tasks[2]) ||
         !I386SchedWake(&scheduler,&tasks[1]) || I386SchedWake(&scheduler,&tasks[1])) return 27;
+    if(!PublicRingCheck(3)) return 104;
     for (j=0;j<65;j++) {
       if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] || (Fs+0)(U8 *)!=&tasks[0] || (Gs+0)(U8 *)!=&bound_cpu ||
           (GetRFlags&0x600) || errors || wake_order!=21) return 16;
       for (i=1;i<=2;i++) {
         if (j<64) {
           if (scheduled_progress[i]!=j+1 || tasks[i].finished) return 17;
-        } else if (!tasks[i].finished || tasks[i].next || tasks[i].last) return 18;
+        } else if (!tasks[i].finished || tasks[i].next || tasks[i].last ||
+            tasks[i].next_task || tasks[i].last_task) return 18;
       }
     }
-    if (tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0] ||
+    if (!PublicRingCheck(1) || tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0] ||
         !I386SchedYield(&scheduler)) return 19;
     for (i=1;i<=2;i++) {
+      tasks[i].next_task=&tasks[0];
+      if(I386SchedReap(&scheduler,&tasks[i]) || !tasks[i].finished || tasks[i].owner!=&scheduler ||
+          tasks[i].next_task!=&tasks[0] || !PublicRingCheck(1)) return 109;
+      tasks[i].next_task=0;
       if (I386SchedAdd(&scheduler,&tasks[i]) || I386SchedWake(&scheduler,&tasks[i]) ||
           !I386SchedReap(&scheduler,&tasks[i]) || tasks[i].context.esp ||
           tasks[i].owner || tasks[i].stk ||
@@ -284,6 +318,7 @@ U0 OnTimer(CI386IrqFrame *frame)
   if (frame->irq || (GetRFlags&0x600) || (frame->eflags&0x600)!=0x200) errors++;
   events++;
   if (tasks[1].blocked) {
+    if(!PublicRingCheck(2)) errors++;
     if (!I386SchedWake(&scheduler,&tasks[1])) errors++;
     else wakes++;
   }

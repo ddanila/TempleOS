@@ -14,6 +14,7 @@ extern class CCmpCtrl;
 class CI386Task:CTask
 {
   CI386Context context;
+  //Private runnable ring. Inherited next_task/last_task cover all live tasks.
   CI386Task *next,*last;
   CI386Scheduler *owner;
   U32 finished,blocked;

@@ -5497,3 +5497,29 @@ leaving 2440 bytes of reservation headroom. The normal preview is refreshed.
 This closes DocLock's bit-assignment prerequisite. Public Yield, break delivery,
 lock contention/exception cleanup and the actual document lifecycle remain open.
 See [bit assignment](i386-bit-assignment.md).
+
+## Public live-task ring
+
+Native task attachment now maintains the original public `next_task/last_task`
+links. Blocked tasks retain membership; cleanup callbacks observe their live
+task, while file/symbol destruction sees it detached. Initialization, attachment
+and reaping reject stale public links. The private runnable queue still controls
+dispatch, so public Yield eligibility/order and pending-break delivery remain
+unfinished. See [public task ring](i386-public-task-ring.md).
+
+Both x64 rebuild generations, the native task and task-heap suites and the full
+kernel suite pass. Dedicated tests cover blocked membership, reverse-order and
+interrupt wakeups, callback yielding, failed construction, stale-link rejection
+and repeated reuse. Native JIT probes check root/worker membership through typed
+Fs. The task-heap suite completes four lifecycle cycles and ten backing reclaims.
+
+The integrated run passes 128 commands across 191 input lines, exact VGA checks,
+startup-source recovery, normal boot with an invalid diagnostic module and all
+17 module rejection cases. All 1087 OS source hashes and eight build-input hashes
+match the tested sources. Normal boot takes 16.400 seconds and diagnostics
+152.786 seconds on QEMU/486 at 8 MiB. Public headers retain 172504 bytes; the
+diagnostic worker reclaims 541856 bytes and the probe image reclaims 661520 bytes.
+The kernel grows to 388520 bytes, leaving 600 bytes after the 4096-byte early
+stage in its fixed reservation. Substantial new services must use extended-memory
+modules. The tested normal preview is refreshed; strict 386 and physical-PC
+acceptance remain open.
