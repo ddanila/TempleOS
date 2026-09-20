@@ -149,8 +149,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
     //retain the parser's 4 KiB reserve and provide 16 KiB for this worker.
     //Finish heap-accounting diagnostics before accepting interactive allocations.
     while(!kernel_probe_ready) {
-      if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
-      else I386SchedYield(&kernel_scheduler);
+      if(!I386SchedIdle(&kernel_scheduler,&i386_idle)) I386SchedYield(&kernel_scheduler);
     }
     pulse_used=kernel_heap.used;
     if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
@@ -164,8 +163,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   kernel_keys->task.memory=&kernel_heap;
   KernelLog("CONSOLE TASK SPAWNED\n");
   while(1) {
-    if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
-    else I386SchedYield(&kernel_scheduler);
+    if(!I386SchedIdle(&kernel_scheduler,&i386_idle)) I386SchedYield(&kernel_scheduler);
   }
 }
 U0 KernelLog(U8 *text)

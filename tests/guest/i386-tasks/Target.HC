@@ -15,6 +15,7 @@ extern U0 JoinWorker(I64 id);
 CI386OwnedTask *join_tasks[3];
 CI386Task foreign_task;
 U32 join_stage,join_returns;
+Bool join_suspend_root;
 extern U0 OwnedWorker(I64 arg);
 extern U0 OwnedCleanup(CI386Task *task);
 U32 cleanup_progress[2];
@@ -28,6 +29,7 @@ extern Bool I386PicAccept(I64 irq);
 extern Bool I386PicEoi(I64 irq);
 extern Bool I386PitStart(I64 divisor);
 extern I64 TimerWakeTest();
+extern I64 FlagEligibilityTest();
 extern U0 TimerWorker(I64 arg);
 extern U0 OnTimer(CI386IrqFrame *frame);
 class CTimerDispatch { U0 (*handler)(CI386IrqFrame *frame); };
@@ -66,7 +68,7 @@ I64 Main(I64 a,I64 b)
   I64 i,j,round;
   swap=b; test_control=a; timer_dispatch=test_control->irq; idle=test_control->idle;
   if ((*test_control->segments)(&SegmentCheck)) return 36;
-  if (!I386HeapInit(&heap,0x40000,32768)) return 1;
+  if (!I386HeapInit(&heap,0x60000,32768)) return 1;
   for (i=1;i<=2;i++) {
     p=I386HeapAlloc(&heap,8208,TRUE); stacks[i]=p;
     if (!p) return 2;
@@ -157,7 +159,7 @@ I64 SchedulerTest()
   if(I386SchedInit(&scheduler,&tasks[0],swap) || scheduler.root || tasks[0].owner ||
       tasks[0].addr || tasks[0].last_task!=&tasks[1]) return 106;
   tasks[0].last_task=0;
-  if (!I386HeapInit(&heap,0x40000,32768) ||
+  if (!I386HeapInit(&heap,0x60000,32768) ||
       I386SchedInit(0,&tasks[0],swap) || I386SchedInit(&scheduler,0,swap) ||
       I386SchedInit(&scheduler,&tasks[0],0) ||
       !I386SchedInit(&scheduler,&tasks[0],swap) ||
@@ -277,7 +279,7 @@ I64 TimerWakeTest()
   CI386Heap heap;
   U8 *stack;
   I64 i,loops,idles=0;
-  if (!I386HeapInit(&heap,0x40000,32768)) return 28;
+  if (!I386HeapInit(&heap,0x60000,32768)) return 28;
   stack=I386HeapAlloc(&heap,8208);
   if (!stack) return 29;
   for (i=0;i<8208;i++) stack[i]=0xA5;
@@ -305,7 +307,7 @@ I64 TimerWakeTest()
   for (i=0;i<8;i++) if (stack[i]!=0xA5 || stack[8200+i]!=0xA5) return 32;
   if (!I386HeapFree(&heap,stack) || heap.used || heap.allocations ||
       !I386HeapValid(&heap)) return 33;
-  return OwnedTaskTest;
+  return FlagEligibilityTest;
 }
 U0 TimerWorker(I64 arg)
 {
@@ -372,7 +374,7 @@ I64 OwnedTaskTest()
   I64 cycle,i,j;
   U8 *p;
   if(Caller(0) || Caller(-1) || Caller(0x7FFFFFFFFFFFFFFF)) return 62;
-  if (!I386HeapInit(&heap,0x40000,32768) || I386TaskDestroy(0) ||
+  if (!I386HeapInit(&heap,0x60000,32768) || I386TaskDestroy(0) ||
       I386TaskSpawn(0,&heap,8192,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,0,8192,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,&heap,8192,0,0) ||
@@ -479,7 +481,7 @@ I64 JoinTest()
 {
   CI386Heap heap;
   I64 i;
-  if (!I386HeapInit(&heap,0x40000,32768) ||
+  if (!I386HeapInit(&heap,0x60000,32768) ||
       I386SchedJoin(0,&tasks[0]) || I386SchedJoin(&scheduler,0) ||
       I386SchedJoin(&scheduler,&tasks[0]) || I386SchedJoin(&scheduler,&foreign_task)) return 49;
   for (i=0;i<3;i++) {
@@ -492,14 +494,40 @@ I64 JoinTest()
   //Wake a joiner before completion: it must recheck and block again.
   if (!I386SchedWake(&scheduler,&join_tasks[1]->task) || !I386SchedYield(&scheduler) ||
       join_stage!=2 || join_returns || !join_tasks[1]->task.blocked || errors) return 52;
+  //Completion wakes joiners before selecting a successor. Public suspension
+  //keeps their references live so destruction must still defer.
+  join_tasks[1]->task.task_flags|=1<<TASKf_SUSPENDED;
+  join_tasks[2]->task.task_flags|=1<<TASKf_SUSPENDED;
   if (!I386SchedYield(&scheduler) || !join_tasks[0]->task.finished ||
       join_returns || !I386SchedJoin(&scheduler,&join_tasks[0]->task) ||
+      join_tasks[1]->task.blocked || join_tasks[2]->task.blocked ||
+      !(join_tasks[1]->task.task_flags & 1<<TASKf_SUSPENDED) ||
+      !(join_tasks[2]->task.task_flags & 1<<TASKf_SUSPENDED) ||
       I386TaskDestroy(join_tasks[0]) || I386SchedReap(&scheduler,&join_tasks[0]->task)) return 53;
+  join_tasks[1]->task.task_flags&=~(1<<TASKf_SUSPENDED);
+  if(!I386SchedYield(&scheduler) || join_returns!=1 || !join_tasks[0]->task.join_head ||
+      I386TaskDestroy(join_tasks[0])) return 120;
+  join_tasks[2]->task.task_flags&=~(1<<TASKf_SUSPENDED);
   if (!I386SchedYield(&scheduler) || join_returns!=2 || errors ||
       join_tasks[0]->task.join_head) return 54;
   for (i=0;i<3;i++) if (!I386TaskDestroy(join_tasks[i])) return 55;
   if (heap.used || heap.allocations || !I386HeapValid(&heap) ||
       tasks[0].next!=&tasks[0] || (GetRFlags&0x200)) return 56;
+  //With root suspended, finishing the target must wake its joiners before
+  //selection. Otherwise every candidate is ineligible and progress stops.
+  join_stage=0; join_returns=0; join_suspend_root=TRUE;
+  for(i=0;i<3;i++) {
+    join_tasks[i]=I386TaskSpawn(&scheduler,&heap,8192,&JoinWorker,i);
+    if(!join_tasks[i]) return 136;
+  }
+  if(!I386SchedYield(&scheduler) || join_stage!=1 ||
+      !I386SchedYield(&scheduler) || join_stage!=2 || join_returns) return 137;
+  tasks[0].task_flags|=1<<TASKf_SUSPENDED;
+  if(!I386SchedYield(&scheduler) || tasks[0].task_flags || join_returns!=2 || errors ||
+      !PublicRingCheck(1)) return 138;
+  for(i=0;i<3;i++) if(!I386TaskDestroy(join_tasks[i])) return 139;
+  if(heap.used || heap.allocations || !I386HeapValid(&heap)) return 140;
+  join_suspend_root=FALSE;
   return AtaChannelTest;
 }
 U0 JoinWorker(I64 id)
@@ -517,6 +545,7 @@ U0 JoinWorker(I64 id)
         !join_tasks[0]->task.finished || I386TaskSelf->join_target ||
         !I386SchedJoin(&scheduler,&join_tasks[0]->task)) errors++;
     join_returns++;
+    if(join_suspend_root && join_returns==2) tasks[0].task_flags&=~(1<<TASKf_SUSPENDED);
   }
 }
 
@@ -542,3 +571,4 @@ U0 OwnedCleanup(CI386Task *task)
 
 #include "/Kernel/I386/AtaChannel.HC"
 #include "T:/AtaChannel.HC"
+#include "T:/Flags.HC"

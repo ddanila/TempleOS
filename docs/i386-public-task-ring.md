@@ -7,13 +7,15 @@ failed construction never publishes the worker. Initialization and attachment
 reject records that already contain public links without modifying the list.
 
 Blocked tasks remain in this list. Yield, block and finish select the next
-unblocked task in public list order. Reordering that list therefore changes
+eligible task in public list order. Reordering that list therefore changes
 round-robin dispatch, as required by the original scheduler/window ordering.
 Wakeup makes a task eligible without changing its public position. The private
 `CI386Task.next/last` queue still records runnable membership for idle checks and
 internal lifecycle checks, but its insertion order no longer controls dispatch.
-The root cannot block, so selection always reaches an eligible task. This does
-not yet implement the complete public `Yield` scheduling contract.
+The root cannot privately block, but public task flags can suspend it. Selection
+idles until an IRQ makes a task eligible when all are suspended. See
+[task eligibility](i386-task-eligibility.md). This does not yet implement the
+complete public `Yield` scheduling contract.
 
 Task and compiler cleanup callbacks run while the exiting task is still linked,
 including callbacks that yield. Finish detaches both public links before switching
@@ -56,8 +58,8 @@ console checks reciprocal links with another live task present.
 
 ## Remaining integration
 
-Public `Yield` still needs public task flags and wake-time eligibility, with
-native idle handling when those conditions suspend the root too. Parent/child/sibling links, saved-register
+Public `Yield` still needs wake-time eligibility and public message-wait flag
+transitions. Parent/child/sibling links, saved-register
 state and pending-break delivery are separate contracts. `BreakUnlock` cannot
 deliver a native break merely by writing the public `rip` field: the native
 context and any active waiters must be handled consistently before unwinding.

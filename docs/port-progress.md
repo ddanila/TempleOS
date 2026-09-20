@@ -5581,3 +5581,37 @@ Normal QEMU/486 boot at 8 MiB takes 16.353 seconds; diagnostics take 156.186.
 The tested normal preview is refreshed. Public scheduling eligibility and break
 delivery remain the next integration work; see
 [storage diagnostics](i386-storage-diagnostics.md).
+
+## Public task flags control native eligibility
+
+Native selection now skips suspended and awaiting-message tasks as well as
+privately blocked/finished tasks. Original task flag definitions are shared
+byte-for-byte through TaskFlags.HH; task_flags remains U32 and record layouts are
+unchanged. When all tasks are ineligible, selection uses STI/HLT/CLI and rescans
+after an IRQ, preserving the yielding/blocking caller's IF on return. Kernel root
+loops consult public eligibility for idle decisions.
+
+Block detaches private runnable membership before selection can enable IRQs. An
+IRQ may wake the same task, which resumes without switching its context to itself.
+Finish detaches both lists and wakes joiners before selecting a successor, so a
+suspended root cannot prevent newly released joiners from running. The task
+corpus verifies both flag bits, unrelated bit-31 preservation, root suspension
+with IF initially clear/set, all-ineligible block/yield/finish, IRQ wakeups,
+detachment, stack guards and heap recovery. Joiners suspended across completion
+prevent reaping until individually resumed; a second cycle suspends root and
+requires the target's completion to release its joiners and restore progress.
+
+Both x64 rebuild generations and six native suites pass: tasks, task heaps,
+messages, task exceptions, compiler/task symbols and ATA tasks. The expanded
+scheduler corpus exceeded its old test-loader transfer; it now uses the existing
+256 KiB transfer profile and an arena at 0x60000, above the loaded image. The
+production bootstrap reservation remains unchanged.
+
+The full kernel suite passes 128 commands / 191 input lines, exact VGA, startup
+recovery, normal boot with an invalid diagnostic module and 17 rejections. Its
+1089 OS source and eight build-input hashes match. Kernel size is 384120 bytes,
+leaving 5000 bytes after the early stage. Public headers retain 176224 bytes;
+probe/worker reclaim all 668840/541856 bytes. This QEMU/486, 8 MiB run measured
+15.455 seconds for normal boot and 124.155 for diagnostics. The normal preview
+is refreshed. Wake-time accounting, public message-wait transitions and break
+delivery remain open; see [task eligibility](i386-task-eligibility.md).

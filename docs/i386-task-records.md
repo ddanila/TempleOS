@@ -89,7 +89,8 @@ not imply that every field already has working service semantics.
 The public next/last task links now form a live membership ring, retaining blocked
 tasks and detaching finished tasks before resource destruction. Cleanup callbacks
 still observe their task in the ring. Dispatch now follows public list order and
-skips blocked tasks; public Yield eligibility and task-family semantics remain unfinished. See
+skips blocked tasks and the public suspended/awaiting-message flags; wake-time,
+message-wait transitions and task-family semantics remain unfinished. See
 [public task ring](i386-public-task-ring.md).
 
 Native startup now loads the complete shared headers and typed `Fs`/`Gs` through

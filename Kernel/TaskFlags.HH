@@ -1,0 +1,21 @@
+#ifndef TASK_FLAGS_INCLUDED
+#define TASK_FLAGS_INCLUDED
+//CTask.task_flags
+#define TASKf_TASK_LOCK		0
+#define TASKf_KILL_TASK		1
+#define TASKf_SUSPENDED		2
+#define TASKf_IDLE		3
+#define TASKf_CMD_LINE_PMT	4
+#define TASKf_INPUT_FILTER_TASK	5
+#define TASKf_FILTER_INPUT	6
+#define TASKf_HAS_SONG		7
+#define TASKf_DISABLE_BPTS	8
+#define TASKf_AWAITING_MSG	9
+#define TASKf_BREAK_LOCKED	10
+#define TASKf_PENDING_BREAK	11
+#define TASKf_BREAK_TO_SHIFT_ESC 12
+#define TASKf_KILL_AFTER_DBG	13
+
+#define TASKf_NONTIMER_RAND	14
+
+#endif

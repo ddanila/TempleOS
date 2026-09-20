@@ -64,10 +64,26 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   I386IrqRestore(flags);
   return TRUE;
 }
+Bool I386SchedReady(CI386Task *task)
+{
+  return !task->blocked && !task->finished &&
+    !(task->task_flags & (1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG));
+}
 CI386Task *I386SchedNext(CI386Task *task)
-{//Root is always runnable. Public order controls dispatch, including reordering.
-  do task=task->next_task; while(task->blocked);
-  return task;
+{//IF clear. An IRQ may make a task eligible; never return an ineligible task.
+  CI386Task *first=task;
+  while(TRUE) {
+    do {
+      task=task->next_task;
+      if(I386SchedReady(task)) return task;
+    } while(task!=first);
+    //STI's interrupt shadow closes the check/halt race. Resume with IF clear.
+    asm {
+      STI
+      HLT
+      CLI
+    }
+  }
 }
 public Bool I386SchedYield(CI386Scheduler *s)
 {
@@ -103,14 +119,15 @@ public Bool I386SchedFinish(CI386Scheduler *s)
     flags=I386IrqSave;
   }
   if(old->active_controls) old->compiler_cleanup_failed=1;
-  next=I386SchedNext(old);
   old->last->next=old->next; old->next->last=old->last;
   old->next=0; old->last=0; old->finished=1;
+  next=old->last_task;
   old->last_task->next_task=old->next_task;
   old->next_task->last_task=old->last_task;
   old->next_task=0; old->last_task=0;
   for (waiter=old->join_head;waiter;waiter=waiter->join_next)
     I386SchedWake(s,waiter);
+  next=I386SchedNext(next);
   s->current=next;
   if (s->bind) (*s->bind)(next);
   (*s->swap)(&old->context,&next->context);
@@ -163,12 +180,15 @@ public Bool I386SchedBlock(CI386Scheduler *s)
   if (!s || !s->current || s->current==s->root) {
     I386IrqRestore(flags); return FALSE;
   }
-  old=s->current; next=I386SchedNext(old);
+  old=s->current;
   old->last->next=old->next; old->next->last=old->last;
   old->next=0; old->last=0; old->blocked=1;
-  s->current=next;
-  if (s->bind) (*s->bind)(next);
-  (*s->swap)(&old->context,&next->context);
+  next=I386SchedNext(old);
+  if(next!=old) {
+    s->current=next;
+    if (s->bind) (*s->bind)(next);
+    (*s->swap)(&old->context,&next->context);
+  }
   I386IrqRestore(flags);
   return TRUE;
 }
@@ -185,11 +205,14 @@ public Bool I386SchedWake(CI386Scheduler *s,CI386Task *task)
   return TRUE;
 }
 public Bool I386SchedIdle(CI386Scheduler *s,U0 (*idle)())
-{//Root only. Keep IF clear from the queue check to the atomic enable/halt helper.
+{//Root only. Public flags may suspend tasks that remain privately runnable.
   U32 flags=I386IrqSave;
-  if (!s || !s->root || s->current!=s->root || !idle || s->root->next!=s->root) {
+  CI386Task *task;
+  if (!s || !s->root || s->current!=s->root || !idle) {
     I386IrqRestore(flags); return FALSE;
   }
+  for(task=s->root->next_task;task!=s->root;task=task->next_task)
+    if(I386SchedReady(task)) { I386IrqRestore(flags); return FALSE; }
   (*idle)();
   I386IrqRestore(flags);
   return TRUE;

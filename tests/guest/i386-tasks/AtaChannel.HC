@@ -21,7 +21,7 @@ I64 AtaChannelTest()
   CI386Heap heap;
   I64 i;
   U32 saved;
-  if(!I386HeapInit(&heap,0x40000,32768) ||
+  if(!I386HeapInit(&heap,0x60000,32768) ||
       I386AtaChannelInit(0,&scheduler,0) || I386AtaChannelInit(&ata_channel,0,0) ||
       I386AtaChannelInit(&ata_channel,&scheduler,-1) || I386AtaChannelInit(&ata_channel,&scheduler,2) ||
       I386AtaChannelAcquire(&ata_channel) || I386AtaChannelRelease(&ata_channel) ||
