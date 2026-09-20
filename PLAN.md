@@ -30,6 +30,57 @@ are tracked in the progress document.
 
 All work stays in our fork on `main`. Preserve `archive` at `c26482b`.
 
+## Final goal: a fully working TempleOS on a PC-compatible machine
+
+Deliver a standalone, self-hosting 32-bit TempleOS that a person can boot and use
+as their complete offline HolyC development environment on a named physical
+386-class PC with VGA. This is the final product milestone, M7; the current native
+console and individual subsystem tests are intermediate evidence toward it.
+"PC-compatible" means the reference hardware contract below, not the original
+8088 IBM PC or every later PC configuration. Preserve the HolyC language, shared
+ring-0 address space, cooperative tasks, executable DolDoc documents, graphics,
+sound and on-machine development described in this plan.
+
+M7 requires an integrated acceptance run with the following outcomes:
+
+1. **Boot and operate independently.** Cold-boot a published hard-disk image through
+   the machine's legacy BIOS into the normal interactive environment without a
+   host compiler, attached test harness or mandatory diagnostic suite. Publish
+   reproducible image preparation and boot instructions for the selected hardware.
+2. **Use the original programming environment.** Navigate help and files; edit,
+   compile, execute and debug HolyC; retain definitions; and recover from syntax
+   errors, caught runtime exceptions and allocation failures. Exercise I64 and
+   software F64 without a 387, public task/memory/file services, and cooperative
+   work in multiple terminals. Debugging and exception inspection must be usable
+   on the machine, rather than depend on host-only traces.
+3. **Complete the document and device workflow.** Create and edit an executable
+   DolDoc document with embedded graphics, execute it, save it to RedSea, reboot,
+   reopen and execute it again. Verify planar VGA, keyboard, the selected supported
+   mouse, and PC-speaker sound together with timer and disk activity. Check saved
+   content and directory integrity across repeated cycles.
+4. **Develop and rebuild on the machine.** Rebuild the native compiler and kernel
+   from the delivered source inside the OS, install and boot those outputs, then
+   repeat for a second generation. Record artifacts and explain output differences;
+   x86-64 bootstrap rebuilds do not satisfy this requirement.
+5. **Meet the vintage resource and compatibility gates.** Demonstrate the complete
+   interactive workflow at 8 MiB installed RAM and native rebuilds at 16 MiB,
+   reporting usable RAM, resident and peak allocations, boot/rebuild time and
+   input latency. Exercise repeated compile/error/task-exit cycles to detect
+   retained-memory growth. Establish measured responsiveness limits on the named
+   hardware before final acceptance. Pass strict 386SX/DX, no-387 emulator checks
+   and an integrated run on a named physical 386/VGA configuration; record exact
+   BIOS, CPU, RAM, storage and peripheral details for each result.
+6. **Publish a reviewable result.** Ship the boot image, matching source revision,
+   build/boot instructions, support matrix, acceptance results and known limitations.
+   Preserve the working x86-64 regression target. Remaining optional hardware and
+   application work must be distinguished from failures of the required workflow.
+
+M7 remains open until all required outcomes are demonstrated. Physical hardware
+availability may delay that evidence; emulator success must remain labelled as
+such. The existing deferrals for networking, modern devices and additional
+installation media remain in force. Any change to required functionality or RAM
+targets needs an explicit, evidence-backed plan revision.
+
 ## Architectural roadmap at a glance
 
 The selected target is native 32-bit protected-mode HolyC on a 386+ PC with
@@ -1332,6 +1383,7 @@ this work; the current 486 development result leaves that acceptance gate open.
 | M4: Interactive HolyC | Complete essential C/D: native JIT/compiler, F64 without a coprocessor, shell, storage, exceptions; no integer-only completion claim |
 | M5: TempleOS environment | F/G/H: DolDoc, editing/help, mouse, graphics, audio, persistence, portable data, measured low-memory workflow |
 | M6: Self-hosting and portability proof | Native i386 compiler/kernel rebuild and reboot; 386SX/DX and later-CPU checks; x86-64 regressions and published support matrix |
+| M7: Fully working PC system | Complete the integrated physical-PC acceptance workflow in the final-goal section: independent boot, HolyC/DolDoc development and debugging, graphics/input/sound, persistent documents, two native rebuild generations, measured RAM/latency and published artifacts. Pending; M0–M6 component evidence alone does not close this gate. |
 
 M2's target runner and early M3 boot/interrupt work can be developed alongside
 the backend after M1. Do not require the full compiler before running backend
