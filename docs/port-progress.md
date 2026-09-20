@@ -5673,3 +5673,30 @@ the early stage. Public headers retain 179280 bytes. CompilerProbe reclaims all
 measured 14.853 seconds and diagnostics 124.943 in this run. The normal preview
 is refreshed. See [jiffy clock](i386-jiffy-clock.md) for ownership, non-atomic plain
 I64 reads on 386, timing scope and the remaining public scheduling contracts.
+
+
+## Queued ATA acquisition cancellation
+
+Native ATA channels now cancel queued acquisition without aborting an active
+owner. The stack waiter is detached under IRQ masking before the task can resume;
+Acquire returns FALSE and ordinary caller cleanup can run. FIFO survivors, public
+wait flags, wake deadlines, lock counts and IF are preserved. FileRuntime ABI 21
+exposes the operation for its two physical channels through a 40-byte service
+table. Full Break delivery and cleanup of other wait types remain open; see
+[ATA wait cancellation](i386-ata-wait-cancellation.md).
+
+Both x64 rebuild generations and the native task/ATA suites pass. Six cancellation
+scenarios cover head/middle/tail/all removal, poison, suspension, wide wake
+deadlines, spurious wake, grant-before-cancel, FIFO completion and full task/heap
+reclamation. The full kernel suite passes 129 commands / 192 input lines, exact
+VGA, startup recovery, normal boot with an invalid diagnostic module and all 17
+rejection cases. Root and worker probes exercise the loaded cancellation callback
+with no queued waiter; actual queued behavior is covered by the task corpus.
+
+All 1090 OS source hashes and eight build-input hashes match the test manifest.
+Kernel size remains 387992 bytes, leaving 1128 bytes after the early stage.
+FileRuntime retains 130344 bytes (130328-byte image); CompilerProbe reclaims all
+671000 bytes. Public headers retain 179280 bytes. Normal QEMU/486 boot at 8 MiB
+measured 14.200 seconds and diagnostics 124.962 seconds. The normal preview image
+has been refreshed from the verified disk. This is still QEMU/486 evidence, not
+strict 386 compatibility, a complete DolDoc environment or native self-hosting.

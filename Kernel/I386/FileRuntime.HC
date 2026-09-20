@@ -25,6 +25,12 @@ import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
 import Bool I386SchedYield(CI386Scheduler *scheduler);
 CI386AtaChannel file_channels[2];
 CI386RedSeaIo file_io[2];
+Bool I386FileRuntimeCancelWait(CI386Task *task)
+{
+  I64 i;
+  for(i=0;i<2;i++) if(I386AtaChannelCancelWait(&file_channels[i],task)) return TRUE;
+  return FALSE;
+}
 Bool I386FileRuntimeBind(CI386Scheduler *scheduler,CI386RedSea *volume)
 {
   I64 number;
@@ -50,7 +56,7 @@ CCmpCtrl *I386FileRuntimeControl(U8 *buffer,I64 flags,U8 *filename)
   return I386TaskCmpCtrlNew(&file_compiler,buffer,flags,filename);
 }
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==36
+#assert sizeof(CI386FileServices)==40
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
@@ -59,6 +65,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->name_abs=&I386TaskFileNameAbs;
   services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
+  services->cancel_wait=&I386FileRuntimeCancelWait;
   return 1;
 }
 #include "/Kernel/I386/FileNames.HC"

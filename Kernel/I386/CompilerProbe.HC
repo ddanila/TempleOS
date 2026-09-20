@@ -72,6 +72,10 @@ I64 Main(CI386CompilerProbe *probe,I64 bytes)
       !probe->symbols || !probe->i64_type || !probe->runtime_image ||
       !probe->volume || !probe->source_read || !probe->source_pop ||
       probe->phase<0 || probe->phase>1) return 0;
+  if(!probe->files || probe->files->version!=I386_FILE_SERVICES_VERSION ||
+      !probe->files->cancel_wait || probe->files->cancel_wait(0) ||
+      probe->files->cancel_wait(I386TaskSelf)) KernelStop;
+  KernelLog("FILE CANCEL WAIT "); KernelHex(probe->phase); KernelLog("\n");
   if(!probe->phase) ProbeStorage(probe);
   ProbeTokens(probe);
   return 1;

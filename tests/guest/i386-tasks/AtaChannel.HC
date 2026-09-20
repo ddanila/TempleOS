@@ -74,5 +74,5 @@ I64 AtaChannelTest()
       !I386AtaChannelRelease(&ata_channel) || scheduler.current->io_locks ||
       !I386AtaChannelClose(&ata_channel) || !I386AtaChannelClose(&ata_other) || !(GetRFlags&0x200)) return 77;
   SetRFlags(saved);
-  return 0;
+  return AtaCancelTest;
 }

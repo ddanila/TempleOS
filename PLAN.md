@@ -162,6 +162,10 @@ The native queue component now maintains the public awaiting-message bit during
 read/send/close, including flag waits without a private reader. It remains a
 separately tested component; the interactive console uses direct keyboard input.
 See [message wait flags](docs/i386-message-wait-flags.md).
+Queued ATA acquisition cancellation is implemented as a prerequisite for
+pending-break delivery: detach stack waiters before they resume, preserving
+ownership, FIFO survivors and public wait state. Active transfers and the full
+Break/unwind contract remain open. See [ATA wait cancellation](docs/i386-ata-wait-cancellation.md).
 See [task eligibility](docs/i386-task-eligibility.md).
 See [public task ring](docs/i386-public-task-ring.md).
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for

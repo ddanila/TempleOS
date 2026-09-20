@@ -11,6 +11,7 @@
 extern I64 OwnedTaskTest();
 extern I64 JoinTest();
 extern I64 AtaChannelTest();
+extern I64 AtaCancelTest();
 extern U0 JoinWorker(I64 id);
 CI386OwnedTask *join_tasks[3];
 CI386Task foreign_task;
@@ -575,5 +576,6 @@ U0 OwnedCleanup(CI386Task *task)
 
 #include "/Kernel/I386/AtaChannel.HC"
 #include "T:/AtaChannel.HC"
+#include "T:/AtaCancel.HC"
 #include "T:/Flags.HC"
 #include "T:/WakeTime.HC"

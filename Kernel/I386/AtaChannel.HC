@@ -89,3 +89,24 @@ Bool I386AtaChannelClose(CI386AtaChannel *channel)
   }
   I386IrqRestore(flags); return ok;
 }
+Bool I386AtaChannelCancelWait(CI386AtaChannel *channel,CI386Task *task)
+{//Keep IRQs masked until the stack waiter is unlinked and marked complete.
+  U32 flags=I386IrqSave;
+  CI386AtaWaiter *node,*previous=0;
+  Bool ok=FALSE;
+  if(!channel || channel->signature!=I386_ATA_CHANNEL_MAGIC || !channel->scheduler ||
+      !channel->scheduler->root || !task || task->owner!=channel->scheduler ||
+      task->finished || channel->owner==task) goto cancel_done;
+  node=channel->head;
+  while(node && node->task!=task) { previous=node; node=node->next; }
+  if(!node || !node->queued) goto cancel_done;
+  //Wake cannot switch tasks; validate it before modifying the queue.
+  if(task->blocked && !I386SchedWake(channel->scheduler,task)) goto cancel_done;
+  if(previous) previous->next=node->next;
+  else channel->head=node->next;
+  if(channel->tail==node) channel->tail=previous;
+  node->next=0; node->queued=FALSE;
+  ok=TRUE;
+cancel_done:
+  I386IrqRestore(flags); return ok;
+}

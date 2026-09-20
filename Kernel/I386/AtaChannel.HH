@@ -12,9 +12,12 @@ class CI386AtaChannel {
 //One stable gate per physical channel, shared by both drives. Initially zeroed.
 public extern Bool I386AtaChannelInit(CI386AtaChannel *channel,CI386Scheduler *scheduler,I64 number);
 //Synchronous FIFO acquisition; root may acquire an idle channel but never blocks.
-//Task context only. No recursive acquisition, cancellation or hardware access here.
+//Task context only. No recursive acquisition or hardware access here.
 public extern Bool I386AtaChannelAcquire(CI386AtaChannel *channel);
 public extern Bool I386AtaChannelRelease(CI386AtaChannel *channel);
+//Cancel a queued acquisition only. Preserves ownership, FIFO order and IF.
+//The resumed Acquire returns FALSE; an already granted owner is never aborted.
+public extern Bool I386AtaChannelCancelWait(CI386AtaChannel *channel,CI386Task *task);
 //Only an idle gate can be closed. Caller must also establish hardware quiescence.
 public extern Bool I386AtaChannelClose(CI386AtaChannel *channel);
 #endif

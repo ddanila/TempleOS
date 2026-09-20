@@ -49,6 +49,12 @@ the original implementation changes `task->rip`; for the current task it calls
 publishing the complete `CTask` layout does not make those effects work in the
 native scheduler. Test pending-break delivery and document unlock together,
 including a task waiting for a document lock and exception cleanup.
+Queued ATA acquisitions now have an explicit cancellation path through retained
+FileRuntime; see [ATA wait cancellation](i386-ata-wait-cancellation.md). It detaches
+the stack waiter and resumes acquisition with failure, leaving granted owners
+alone. Before delivering Break, coordinate sleep/join/message waits and let file
+and compiler references unwind; removing one queue entry does not make an
+arbitrary context jump safe.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

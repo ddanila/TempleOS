@@ -4,7 +4,7 @@
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/TaskCompiler.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_FILE_SERVICES_VERSION 20
+#define I386_FILE_SERVICES_VERSION 21
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;
@@ -16,5 +16,7 @@ class CI386FileServices {
   //Owned absolute name with default extension; no disk access or existence check.
   U8 *(*name_abs)(CI386Heap *heap,U8 *name,U8 *extension);
   CCmpCtrl *(*control_new)(U8 *buffer,I64 flags,U8 *filename);
+  //Cancel a queued ATA-channel acquisition, not an active transfer or owner.
+  Bool (*cancel_wait)(CI386Task *task);
 };
 #endif
