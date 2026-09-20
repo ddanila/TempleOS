@@ -64,12 +64,17 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   I386IrqRestore(flags);
   return TRUE;
 }
+CI386Task *I386SchedNext(CI386Task *task)
+{//Root is always runnable. Public order controls dispatch, including reordering.
+  do task=task->next_task; while(task->blocked);
+  return task;
+}
 public Bool I386SchedYield(CI386Scheduler *s)
 {
   U32 flags=I386IrqSave;
   CI386Task *old,*next;
   if (!s || !s->current) { I386IrqRestore(flags); return FALSE; }
-  old=s->current; next=old->next;
+  old=s->current; next=I386SchedNext(old);
   if (next!=old) {
     s->current=next;
     if (s->bind) (*s->bind)(next);
@@ -98,8 +103,8 @@ public Bool I386SchedFinish(CI386Scheduler *s)
     flags=I386IrqSave;
   }
   if(old->active_controls) old->compiler_cleanup_failed=1;
-  next=old->next;
-  old->last->next=next; next->last=old->last;
+  next=I386SchedNext(old);
+  old->last->next=old->next; old->next->last=old->last;
   old->next=0; old->last=0; old->finished=1;
   old->last_task->next_task=old->next_task;
   old->next_task->last_task=old->last_task;
@@ -158,8 +163,8 @@ public Bool I386SchedBlock(CI386Scheduler *s)
   if (!s || !s->current || s->current==s->root) {
     I386IrqRestore(flags); return FALSE;
   }
-  old=s->current; next=old->next;
-  old->last->next=next; next->last=old->last;
+  old=s->current; next=I386SchedNext(old);
+  old->last->next=old->next; old->next->last=old->last;
   old->next=0; old->last=0; old->blocked=1;
   s->current=next;
   if (s->bind) (*s->bind)(next);

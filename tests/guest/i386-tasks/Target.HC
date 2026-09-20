@@ -132,12 +132,14 @@ U0 TaskExit()
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
 
-Bool PublicRingCheck(I64 count)
-{//The public ring stays in attachment order when runnable order changes.
+Bool PublicRingCheck(I64 count,Bool reverse=FALSE)
+{//Check attachment order or an explicitly reordered public list.
   CTask *node=&tasks[0];
-  I64 i;
+  I64 i,index;
   for(i=0;i<count;i++) {
-    if(node!=&tasks[i] || !node->next_task || !node->last_task ||
+    index=i;
+    if(reverse && i) index=count-i;
+    if(node!=&tasks[index] || !node->next_task || !node->last_task ||
         node->next_task->last_task!=node || node->last_task->next_task!=node) return FALSE;
     node=node->next_task;
   }
@@ -147,7 +149,7 @@ I64 SchedulerTest()
 {
   CI386Heap heap;
   U8 *stacks[3],*p,descriptor_before[8];
-  I64 i,j,round;
+  I64 i,j,round,expected;
   tasks[0].next_task=&tasks[1];
   if(I386SchedInit(&scheduler,&tasks[0],swap) || scheduler.root || tasks[0].owner ||
       tasks[0].addr || tasks[0].next_task!=&tasks[1]) return 105;
@@ -206,13 +208,23 @@ I64 SchedulerTest()
     for (i=1;i<=2;i++) if (!tasks[i].blocked || tasks[i].finished ||
         tasks[i].next || tasks[i].last || scheduled_progress[i] ||
         I386SchedReap(&scheduler,&tasks[i])) return 26;
+    if(round) {
+      //Reorder blocked tasks through the public links only. Private wake order
+      //is identical in both rounds; dispatch must follow the public list.
+      tasks[0].next_task=&tasks[2]; tasks[0].last_task=&tasks[1];
+      tasks[2].next_task=&tasks[1]; tasks[2].last_task=&tasks[0];
+      tasks[1].next_task=&tasks[0]; tasks[1].last_task=&tasks[2];
+      if(!PublicRingCheck(3,TRUE)) return 110;
+    }
+    expected=12;
+    if(round) expected=21;
     if (!I386SchedYield(&scheduler) || wake_order ||
         !I386SchedWake(&scheduler,&tasks[2]) || I386SchedWake(&scheduler,&tasks[2]) ||
         !I386SchedWake(&scheduler,&tasks[1]) || I386SchedWake(&scheduler,&tasks[1])) return 27;
-    if(!PublicRingCheck(3)) return 104;
+    if(!PublicRingCheck(3,round)) return 104;
     for (j=0;j<65;j++) {
       if (!I386SchedYield(&scheduler) || scheduler.current!=&tasks[0] || (Fs+0)(U8 *)!=&tasks[0] || (Gs+0)(U8 *)!=&bound_cpu ||
-          (GetRFlags&0x600) || errors || wake_order!=21) return 16;
+          (GetRFlags&0x600) || errors || wake_order!=expected) return 16;
       for (i=1;i<=2;i++) {
         if (j<64) {
           if (scheduled_progress[i]!=j+1 || tasks[i].finished) return 17;

@@ -35,10 +35,10 @@ implementations as their dependency groups become available.
 ## Two semantic hazards to resolve explicitly
 
 The [public live-task ring](i386-public-task-ring.md) now tracks attached tasks,
-including blocked workers. Public attachment order differs from the private
-runnable queue after wakeups. Integrating public `Yield` therefore requires
-dispatch and eligibility semantics, not just a callable alias for the private
-scheduler.
+including blocked workers. Native dispatch now follows public list order and
+skips blocked tasks, independently of private wakeup insertion order. Integrating
+public `Yield` still requires task-flag and wake-time eligibility, plus idle and
+break handling, before publishing its original callable contract.
 
 `BreakUnlock` in `Kernel/KExcept.HC` delivers pending breaks. For another task,
 the original implementation changes `task->rip`; for the current task it calls
@@ -76,8 +76,8 @@ serialize the entire native record or simply remove its layout assertions.
    peaks and input responsiveness throughout, then apply the M7 hardware gates.
 
 Bootstrap headroom is a concurrent constraint: the kernel plus early
-stage leaves 600 bytes in the fixed reservation after public task-ring maintenance
-(2440 bytes after the heap-loop optimization, 184 before it). Keep new document/runtime
+stage leaves 208 bytes in the fixed reservation after public task-ring maintenance
+and dispatch (2440 bytes after the heap-loop optimization, 184 before it). Keep new document/runtime
 code in extended-memory modules; any necessary resident additions must first
 make room deliberately and retain module rejection/lifetime tests. Preserve
 normal interactive boot independently of diagnostic probes.

@@ -151,8 +151,9 @@ branches. Their shared original-x64/native corpus covers 168 vectors; this close
 the bit-assignment prerequisite for DocLock, while public Yield and pending-break
 semantics remain required. See [bit assignment](docs/i386-bit-assignment.md).
 Native public task links now track attached live tasks, including blocked workers,
-and detach before reaping. The private runnable queue still determines dispatch;
-public Yield eligibility/order and pending-break delivery remain integration work.
+and detach before reaping. Native dispatch follows public list order, skipping
+blocked tasks; public Yield flag/wake-time eligibility and pending-break delivery
+remain integration work.
 See [public task ring](docs/i386-public-task-ring.md).
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
@@ -174,8 +175,11 @@ loop, retaining every invariant, reduces normal QEMU/486 startup from 60.612 to
 15.806 seconds and diagnostics from 726.823 to 137.386 seconds. The normal test
 deadline is restored to 60 seconds. Differential corruption tests and the full
 native suite pass; that optimization grew kernel reservation headroom from 184
-to 2440 bytes. Live public task-ring maintenance now uses 1840 of those bytes,
-leaving 600 bytes; keep substantial new services in extended-memory modules.
+to 2440 bytes. Live public task-ring maintenance and dispatch now use 2232 of
+those bytes, leaving 208 bytes; keep substantial new services in extended-memory
+modules. Before expanding resident scheduling policy, move the remaining
+diagnostic-only source/lexer startup work from KernelStorage into the diagnostic
+module, preserving its disk-read, character/line/hash and reclamation checks.
 See [heap performance](docs/i386-heap-performance.md), including the native
 inline-assembly label-forwarding fix exposed by this work.
 

@@ -5523,3 +5523,33 @@ The kernel grows to 388520 bytes, leaving 600 bytes after the 4096-byte early
 stage in its fixed reservation. Substantial new services must use extended-memory
 modules. The tested normal preview is refreshed; strict 386 and physical-PC
 acceptance remain open.
+
+## Dispatch follows the public task list
+
+Native yield, block and finish now select the next unblocked task in public
+`next_task` order. Wakeup changes eligibility without changing that order. The
+private runnable list remains for membership/idle checks; unlinking it uses its
+own neighbors rather than the chosen public successor. This preserves the
+original scheduler's connection between task-list order and round-robin dispatch.
+Public Yield flags, wake-time eligibility, idle behavior and break delivery still
+need integration before the original public callable interface can be published.
+
+The scheduler regression wakes task 2 before task 1 in both rounds. With the
+attachment order intact, dispatch is 1 then 2; with only the public links reordered
+while blocked, dispatch is 2 then 1. Both rounds cover repeated yield, finish and
+reap, exposing accidental use of the private successor during unlinking.
+
+Both x64 rebuild generations and six native suites pass: tasks, task heaps,
+messages, task exceptions, compiler/task symbols and ATA tasks. The first scheduler
+test attempt failed during compilation because the new test used unsupported
+C ternary syntax; ordinary HolyC conditionals fixed the test. The corrected corpus
+and instruction audit pass. The full kernel suite passes all 128 commands / 191
+input lines, exact VGA, startup recovery, diagnostic independence and 17 module
+rejections. All 1087 OS and eight build-input hashes match the tested sources.
+
+Normal boot takes 16.300 seconds and diagnostics 152.175 seconds on QEMU/486 at
+8 MiB. Header and worker/probe reclamation footprints are unchanged. The kernel
+is 388912 bytes, leaving 208 bytes in the bootstrap reservation. The next resident
+expansion must first move the remaining diagnostic-only KernelStorage source/lexer
+checks into the diagnostic module while retaining their evidence. The normal
+preview is refreshed. See [task scheduling](i386-public-task-ring.md).
