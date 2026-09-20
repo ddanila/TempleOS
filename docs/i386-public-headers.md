@@ -80,3 +80,31 @@ stack growth, task-family, document and debugger services are still incomplete. 
 semantics. The private scheduler queues remain separate from public task links.
 
 The remaining integration and hardware gates are in [PLAN.md](../PLAN.md).
+
+
+## Shared circular-queue record
+
+`Kernel/QueueTypes.HH` now holds the original complete `CQue` definition and its
+help index, used by both `KernelA.HH` and native `PublicTaskTypes.HH`. Its guarded
+include participates in the existing transactional public-header loading path.
+The extraction preserves every other byte of the legacy-encoded kernel header.
+No shortened or architecture-specific replacement record is introduced.
+
+Five layout assertions verify each target: total size, next/last offsets and
+next/last pointer widths. Original x64 values are 16, 0, 8, 8, 8; native values
+are 8, 0, 4, 4, 4. The x64 task-layout check still verifies all 105 original task
+fields. Native public-header checks now total 113 per boot/worker phase, including
+rollback, retry and final reclamation. Two console submissions create a queue
+record, set its self-links and retain a typed pointer across inputs.
+
+Both x64 rebuild generations, the x64 layout check and the full native suite
+pass. Normal boot executes 121 commands across 184 submitted lines with exact
+VGA checks; startup recovery and all 17 module rejection cases also pass. Public
+headers retain 67176 bytes (2600 more than before). Normal startup is 23.584
+seconds and diagnostic startup 187.625 seconds on QEMU/486 with 8 MiB. Kernel
+size remains 388928 bytes, leaving 192 bytes after the early stage in the fixed
+reservation.
+
+This establishes the public queue type only. Native `QueInit`, `QueIns`,
+`QueInsRev` and `QueRem` intrinsics remain unfinished, as do shared document
+records and the full DolDoc workflow.

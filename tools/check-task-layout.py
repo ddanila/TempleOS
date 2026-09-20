@@ -27,6 +27,8 @@ def main():
         '--overlay', 'build/rebuild-test/overlay', '--overlay', 'tests/guest/task-layout')
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(OUT / 'guest'))
     lines = (OUT / 'guest/debug.log').read_text().splitlines()
+    if lines.count('QUEUE LAYOUT 16 0 8 8 8') != 1:
+        raise ValueError('Shared x64 CQue layout checks did not complete')
     sizes = [int(line.split()[2]) for line in lines if line.startswith('TASK SIZE ')]
     auxiliary = [list(map(int,line.split()[2:])) for line in lines if line.startswith('TASK AUX ')]
     fields = [line.split()[2:] for line in lines if line.startswith('TASK FIELD ')]
@@ -41,7 +43,7 @@ def main():
         raise ValueError('Native offset assertions differ from the recorded layout contract')
     if sizes != [1192] or actual != expected or auxiliary != [[256,24,24,40,32]]:
         raise ValueError('Rebuilt x64 public CTask layout differs from its original fields')
-    result = dict(result='pass', task_bytes=1192, fields=len(actual), auxiliary=auxiliary[0],
+    result = dict(result='pass', queue_bytes=16, queue_layout_checks=5, task_bytes=1192, fields=len(actual), auxiliary=auxiliary[0],
                   fixture_sha256=hashlib.sha256(fixture.read_bytes()).hexdigest(),
                   source_sha256=rebuild['source_sha256'],
                   inputs_sha256={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()

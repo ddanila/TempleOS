@@ -1,5 +1,6 @@
 //Synchronous compiler diagnostics, retained only between boot and task probes.
 #include "/Kernel/Types.HH"
+#include "/Kernel/QueueTypes.HH"
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/CompilerProbe.HH"

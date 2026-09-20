@@ -50,11 +50,7 @@ public class Complex
   F64	x,y;
 };
 
-#help_index "Data Types/Circular Queue"
-public class CQue
-{
-  CQue	*next,*last;
-};
+#include "/Kernel/QueueTypes.HH"
 
 #help_index "Graphics/Data Types/D3I32;Math/Data Types/D3I32;Data Types/D3I32"
 public class CD3I32 //Three dimensional I32 pt

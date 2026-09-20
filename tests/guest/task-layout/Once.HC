@@ -1,3 +1,8 @@
+#assert sizeof(CQue)==16
+#assert offset(CQue.next)==0
+#assert offset(CQue.last)==8
+#assert sizeof(CQue.next)==8
+#assert sizeof(CQue.last)==8
 U0 Report(U8 *s) { while(*s) OutU8(0xE9,*s++); }
 U0 DumpTask()
 {
@@ -12,6 +17,7 @@ U0 DumpTask()
     s=MStrPrint("TASK FIELD %s %d %d %d %d\n",m->str,m->offset,m->size,m->member_class->ptr_stars_cnt,m->dim.total_cnt);
     Report(s); Free(s);
   }
+  Report("QUEUE LAYOUT 16 0 8 8 8\n");
   Report("DONE task layout\n");
 }
 DumpTask;

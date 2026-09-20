@@ -126,7 +126,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     start=end+1;
   }
   bytes[length]=0; input.source=bytes;
-  if(checks!=108 || !probe->compiler->input(&input) || input.warnings || input.answers) KernelStop;
+  if(checks!=113 || !probe->compiler->input(&input) || input.warnings || input.answers) KernelStop;
   if(!I386HeapFree(heap,bytes) || !I386HeapFree(heap,source) || !I386HeapFree(heap,name)) KernelStop;
   KernelLog("PUBLIC HEADER LAYOUT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(checks); KernelLog("\n");
   for(i=0;i<=table->mask;i++)

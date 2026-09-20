@@ -5284,3 +5284,30 @@ This closes the initial public string-copy dependency in DocNew. Queue intrinsic
 shared document records, document lifetime/locking and the integrated editor/file
 workflow remain required. See [public memory](i386-public-memory.md) and the
 [DolDoc dependency inventory](i386-doldoc-integration.md).
+
+
+## Shared public circular-queue record
+
+The original `CQue` definition has moved unchanged into `Kernel/QueueTypes.HH`,
+used by the x64 kernel header and native public task headers. The original
+header's non-UTF-8 bytes are preserved outside the extracted definition.
+
+Both x64 rebuild generations pass. The x64 layout check preserves all 105 task
+fields and verifies the queue's 16-byte size, link offsets 0/8 and eight-byte
+pointer members. Native cross-compiled and public-header assertions verify the
+8-byte record, offsets 0/4 and four-byte links. Boot/worker public-header coverage
+now includes 113 layout checks, with rollback/retry and final reclamation intact.
+Console tests retain the actual public type and a pointer across submissions.
+
+The full native suite passes: 121 commands across 184 lines with exact VGA
+checkpoints, source recovery and all 17 module rejection cases. Public headers
+retain 67176 bytes, up 2600 bytes. Normal startup measures 23.584 seconds and
+diagnostic startup 187.625 seconds on QEMU/486 with 8 MiB. Kernel size and its
+192-byte remaining bootstrap headroom are unchanged. The manual preview was
+refreshed from the verified normal image.
+
+This is the record prerequisite for native queue intrinsics, not their
+implementation. Original queue operations update next/last pointers directly;
+`QueRem` leaves the removed entry's own links unchanged. Preserve those semantics
+when adding target-width lowering and lifecycle tests, then integrate the shared
+DolDoc records. See [public headers](i386-public-headers.md).

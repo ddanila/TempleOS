@@ -1,4 +1,9 @@
 //The live native scheduler embeds these complete public records.
+#assert sizeof(CQue)==8
+#assert offset(CQue.next)==0
+#assert offset(CQue.last)==4
+#assert sizeof(CQue.next)==4
+#assert sizeof(CQue.last)==4
 #assert sizeof(CTask)==992
 #assert sizeof(CCPU)==232
 #assert sizeof(CJobCtrl)==24

@@ -2,6 +2,7 @@
 #define I386_PUBLIC_TASK_TYPES_INCLUDED
 //One canonical set of public records in each native compilation scope.
 #include "/Kernel/HashTypes.HH"
+#include "/Kernel/QueueTypes.HH"
 #ifndef CTask
 extern class CTask;
 #endif

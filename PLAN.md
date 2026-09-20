@@ -134,6 +134,9 @@ private scheduler extensions. Typed `Fs`/`Gs` now expose these complete records
 through native public-header loading. This closes the header-loading slice only:
 complete public service semantics remain part of the priority-1 gate, and private
 ready queues remain distinct from public task links.
+The original `CQue` record is now shared and loaded natively, with verified
+16-byte x64 and 8-byte i386 layouts. Queue intrinsic lowering and the document
+records remain the next source-driven DolDoc dependencies.
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.

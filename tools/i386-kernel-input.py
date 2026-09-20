@@ -177,6 +177,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             rows=['> ']*60
             commands=[
                 ('GetRFlags&0x200;', ['512']),
+                ('CQue queue;sizeof(CQue)==8&&(queue.next=&queue)==&queue&&(queue.last=&queue)==queue.next;', ['1']),
+                ('CQue *queue_identity=&queue;queue_identity==&queue&&offset(CQue.last)==4;', ['1']),
                 ('StrLen("");', ['0']),
                 ('StrLen("VGA")+StrLen("adapter"+2);', ['8']),
                 ('U8 *copy_buf=CAlloc(8);StrCpy(copy_buf+1,"VGA");StrLen(copy_buf+1)==3&&copy_buf[0]==0&&copy_buf[5]==0;', ['1']),

@@ -1006,7 +1006,7 @@ def main():
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
                 raise ValueError(f'Missing public-header probe: {marker}')
-        if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('PUBLIC HEADER LAYOUT ')]) != [[0,108],[1,108]]:
+        if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('PUBLIC HEADER LAYOUT ')]) != [[0,113],[1,113]]:
             raise ValueError('Missing native public-header layout checks')
         if log.count('PUBLIC HEADERS ok\n')!=1: raise ValueError('Public headers did not load')
         memory=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('PUBLIC HEADERS MEMORY ')]
@@ -1018,7 +1018,7 @@ def main():
             raise ValueError('Missing public code-heap/task reclamation evidence')
         result['code_heap']={'task_phases':lifetimes,'probe_task_reclaimed_bytes':released[0],
                             'locked_heap_reap':'deferred before symbol teardown'}
-        result['public_headers']={'result':'pass','layout_checks_per_phase':108,
+        result['public_headers']={'result':'pass','layout_checks_per_phase':113,
                                  'task_phases':[0,1],'retained_heap_bytes':memory[0]}
         result['boot_test']={'boot_mode':'diagnostic','cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
                              'startup_module':'Startup','startup_reclaimed_bytes':startup_reclaimed,
