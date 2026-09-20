@@ -22,14 +22,14 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386BackingPool memory_pool;
 CI386Task *memory_root;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[13];
+CI386KernelSymbol memory_exports[15];
 extern U0 MemoryReclaim(CI386PublicPool *pool);
 extern U0 MemoryProbe(I64 phase);
 Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//No arena is reserved until a task actually requests pages.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[13],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0";
+  U8 *addresses[15],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->owner || root->owner->root!=root ||
@@ -45,7 +45,8 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[8]=&MemoryCopy; addresses[9]=&MemorySet;
   addresses[10]=&MemoryIdent; addresses[11]=&MemoryStrNew;
   addresses[12]=&MemoryStrCopy;
-  for(i=0;i<13;i++) {
+  addresses[13]=&MemoryBitEqu; addresses[14]=&MemoryLockedBitEqu;
+  for(i=0;i<15;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1; memory_exports[i].val=(addresses[i]+0)(U64);
     HashAdd(&memory_exports[i],symbols);
@@ -66,6 +67,7 @@ U0 MemoryReclaim(CI386PublicPool *pool)
 {//TaskHeapsDestroy has released its control and stopped reading page headers.
   if(pool!=&memory_pool || I386MemBackingTrim(&memory_pool)<0) KernelStop;
 }
+#include "/Kernel/I386/Bit.HC"
 #include "/Kernel/I386/StrCopy.HC"
 #include "/Kernel/I386/StrCopyCheck.HC"
 U0 MemoryProbe(I64 phase)

@@ -14,4 +14,6 @@ extern U8 *MemorySet(U8 *dst,I64 value,I64 count);
 extern U8 *MemoryIdent(U8 *src,CTask *selector=0);
 extern U0 MemoryStrCopy(U8 *dst,U8 *src);
 extern U8 *MemoryStrNew(U8 *src,CTask *selector=0);
+extern Bool MemoryBitEqu(U8 *bit_field,I64 bit,Bool val);
+extern Bool MemoryLockedBitEqu(U8 *bit_field,I64 bit,Bool val);
 #endif

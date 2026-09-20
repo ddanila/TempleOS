@@ -2,6 +2,7 @@
 U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/StrCopyCheck.HC"
 #include "/Kernel/I386/QueueCheck.HC"
+#include "/Kernel/I386/BitEquCheck.HC"
 #include "/Kernel/I386/DocRecordCheck.HC"
 #include "/Kernel/I386/HelpFileCheck.HH"
 Bool OriginalHelpFileCheck()
@@ -26,6 +27,8 @@ U0 BuildKernel()
   Report("START kernel cross-build\n");
   if(!StrCopyCheck(&StrCpy)) { Report("FAIL original StrCpy\n"); return; }
   Report("PASS original StrCpy\n");
+  if(BitEquCheck(&BEqu,&LBEqu)!=168) { Report("FAIL original bit assignment\n"); return; }
+  Report("PASS original bit assignment\n");
   if(QueueCheck!=9) { Report("FAIL original queues\n"); return; }
   Report("PASS original queues\n");
   if(DocRecordCheck!=4) { Report("FAIL original document records\n"); return; }

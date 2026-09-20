@@ -173,9 +173,9 @@ allocation preserved until explicit detach. Hardware IRQs are masked in this
 fixture while IF preservation is checked; the existing task suite covers delivery.
 
 Private task extensions now include heap state and callbacks. Dependent runtime
-versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
-6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
-The boot kernel now loads `MemoryRuntime` version 5 after file-service setup and
+versions are CompilerRuntime 42, FileRuntime 20, CompilerProbe 12 and ConsoleRuntime
+8. Their interface table sizes and the shared public task/CPU layouts are unchanged.
+The boot kernel now loads `MemoryRuntime` version 6 after file-service setup and
 before native compiler diagnostics or worker creation. Its 16-byte candidate
 table contains only binding and probe entry points. Module `Main` publishes no
 task state and reserves no backing memory; the kernel validates the target,
@@ -316,3 +316,14 @@ in its reservation. The retained memory module is 117488 image bytes / 117504
 heap bytes, an 8008-byte increase including the shared diagnostic corpus. Public
 headers retain 64576 bytes. These are component measurements; complete document
 workflow memory and strict 386 acceptance remain open.
+
+
+## Callable bit-memory operations
+
+MemoryRuntime version 6 adds `_BEQU` and `_LBEQU` to the retained export registry,
+for fifteen public memory/string/bit bindings. Their original public declarations
+live in the separate native Bit.HH included by PublicKernel. The candidate service
+table remains 16 bytes; the version check rejects the previous provider before
+binding. The current module uses 118344 image / 118360 heap bytes. See
+[bit assignment](i386-bit-assignment.md) for original-x64/native behavior and the
+instruction-level LOCK contract. This does not supply scheduling or break services.

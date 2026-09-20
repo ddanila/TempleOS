@@ -5460,3 +5460,40 @@ Post-change samples still show validation and allocation/size/free scans as
 significant costs. Compiler metadata migration, full-editor responsiveness and
 physical 386 measurements remain open. See [heap performance](i386-heap-performance.md)
 for scope, raw-artifact locations and reproduction instructions.
+
+
+## Callable bit assignment for document locking
+
+Native public headers now expose original BEqu/LBEqu signatures and the
+_BEQU/_LBEQU callable export names. MemoryRuntime version 6 owns the code and
+publishes fifteen memory/string/bit exports; version 5 is rejected. Both routines
+return the old bit and use full signed I64 offsets with native-width addresses.
+Decoded-instruction checks require LOCK BTS and LOCK BTR on the two LBEqu paths.
+
+One shared corpus passes against original x64 and native boot/worker bindings:
+168 vectors / 504 calls per context, including negative offsets, offsets beyond
+32 bits, noncanonical nonzero Bool values, idempotence, opposite assignments,
+old-bit results and neighboring bytes. Native inputs compile the complete corpus
+and preserve the existing full publication/rollback/cleanup checks.
+
+The worker initially rejected compilation with a Compiler exception. Saved
+frames identified I386ParserStackCheck and expression/statement recursion; the
+throw frame had 3768 bytes remaining on the 8 KiB stack, below the parser's
+4 KiB reserve. The heap was valid and recovered its previous used size. The
+compiler diagnostic worker now has a 16 KiB stack and the same 512 KiB private
+arena; the reserve, whole corpus, normal console stack and 8 MiB target are
+unchanged. The larger worker reclaims all 541856 bytes at teardown. Automatic
+stack growth remains unfinished; this result does not imply arbitrary source
+nesting fits a fixed stack.
+
+Both x64 rebuild generations and the full native suite pass with 1087 matching
+OS source hashes. There are 127 console commands across 190 input lines, exact
+VGA checks, all startup-source recovery cases and 17 module rejections. Normal
+startup measures 16.401 seconds and diagnostics 151.783 on QEMU/486 at 8 MiB.
+Public headers retain 172504 bytes. MemoryRuntime uses 118344 image / 118360 heap
+bytes; CompilerProbe reclaims all 660288 bytes. The kernel remains 386680 bytes,
+leaving 2440 bytes of reservation headroom. The normal preview is refreshed.
+
+This closes DocLock's bit-assignment prerequisite. Public Yield, break delivery,
+lock contention/exception cleanup and the actual document lifecycle remain open.
+See [bit assignment](i386-bit-assignment.md).

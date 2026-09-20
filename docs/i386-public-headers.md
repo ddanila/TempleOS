@@ -142,5 +142,11 @@ is still 16 bytes, independently of its in-memory pointer width.
 The native probe checks all 271 field/size assertions in batches, with unchanged
 heap usage after each input, and runs the complete shared byte-span/callback
 corpus. The editor's retained format metadata is also checked. Public headers
-retain 169920 bytes. See [document records](i386-document-records.md) for the
+retained 169920 bytes at the document-record slice; adding the callable bit
+bindings raises that to 172504 bytes. See [document records](i386-document-records.md) for the
 layout contract and remaining service dependencies.
+
+The public Bit.HH adds BEqu/LBEqu with their original callable export names and
+Bit help metadata. Shared original/native tests cover old-bit returns and wide
+signed offsets in both task phases, followed by full scope reclamation. See
+[bit assignment](i386-bit-assignment.md) for the resident provider and stack evidence.

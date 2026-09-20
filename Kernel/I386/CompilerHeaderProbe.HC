@@ -188,6 +188,21 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog(" "); KernelHex(input.answers); KernelLog("\n");
   if(!accepted || input.answers!=1 || answer.value!=9) KernelStop;
   KernelLog("PUBLIC QUEUE CASE "); KernelHex(probe->phase); KernelLog("\n");
+  input.source="#include \"/Kernel/I386/BitEquCheck.HC\"\nBitEquCheck(&BEqu,&LBEqu);";
+  before_used=heap->used;
+  accepted=probe->compiler->input(&input);
+  KernelLog("PUBLIC BIT MEMORY "); KernelHex(probe->phase); KernelLog(" "); KernelHex(before_used);
+  KernelLog(" "); KernelHex(heap->used); KernelLog(" "); KernelHex(heap->peak);
+  KernelLog(" "); KernelHex(heap->size); KernelLog(" "); KernelHex(I386HeapValid(heap));
+  KernelLog(" "); KernelHex(input.commands); KernelLog("\n");
+  KernelLog("PUBLIC BIT EQU "); KernelHex(probe->phase); KernelLog(" "); KernelHex(accepted);
+  KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value); KernelLog("\n");
+  if(!accepted || input.exception || input.answers!=1 || answer.value!=168) {
+    KernelLog("PUBLIC BIT FAILURE "); KernelHex(task->except_rbp-(&task->stk->stk_base)(U64));
+    KernelLog(" "); KernelHex(task->stk->stk_size);
+    for(i=0;i<TASK_EXCEPT_CALLERS;i++) { KernelLog(" "); KernelHex((task->except_callers[i]+0)(U64)); }
+    KernelLog("\n"); KernelStop;
+  }
   //Reuse the AOT layout assertions as native source. Exclude private extension
   //checks and separate assertions with semicolons to bound lexer recursion.
   name=0;

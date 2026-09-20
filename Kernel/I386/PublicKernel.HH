@@ -3,6 +3,7 @@
 //Load with I386_INPUT_ATOMIC_DEFINES so failed headers remain retryable.
 #include "/Kernel/I386/PublicTaskTypes.HH"
 #include "/Kernel/I386/PublicMemory.HH"
+#include "/Kernel/I386/Bit.HH"
 #include "/Kernel/I386/Queue.HH"
 #include "/Kernel/DocTypes.HH"
 public _intern 0x15 CTask *Fs();

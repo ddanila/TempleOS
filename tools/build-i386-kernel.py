@@ -197,10 +197,27 @@ def memory_runtime_layout(module):
     for name in ('Main', 'MemoryBind', 'MemoryProbe'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing memory service {name}')
+    #A locked assignment must use one locked bit operation on either branch.
+    #Audit decoded instructions rather than accepting matching bytes in constants.
+    disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
+    boundaries = {size}
+    for index in range(count):
+        kind, offset, _, _ = struct.unpack_from('<4I', module, records+16*index)
+        if kind in (1, 4): boundaries.add(offset)
+    for name, locked in (('MemoryBitEqu', False), ('MemoryLockedBitEqu', True)):
+        if exports.get(name, (0, 0))[0] != 1:
+            raise ValueError(f'Missing bit assignment service {name}')
+        begin = exports[name][1]
+        end = min(offset for offset in boundaries if offset > begin)
+        instructions = [line.split()[2:] for line in disassemble(module[32+begin:32+end]).splitlines()]
+        actual = [parts for parts in instructions if any(op in parts for op in ('bts', 'btr'))]
+        expected = [(['lock'] if locked else []) + [op, '[eax],esi'] for op in ('bts', 'btr')]
+        if actual != expected:
+            raise ValueError(f'Bit assignment lost its locking contract: {name}')
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 5:
+    if struct.unpack_from('<I', module, version_offset)[0] != 6:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -214,7 +231,7 @@ def verify_memory_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 4), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 5), 'api')):
         work = out/f'reject-memory-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -987,6 +1004,11 @@ def main():
         phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('MEMORY PROBE ')]
         if phases!=[0,1] or log.index('MEMORY PROBE ')>log.index('RUNTIME PROBE '):
             raise ValueError('Root/worker public heap growth and reclamation failed')
+        bit_cases=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC BIT EQU ')]
+        if bit_cases!=[(phase,1,0,168) for phase in (0,1)] or 'PASS original bit assignment\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/native bit assignment failed')
+        result['bit_assignment']={'cases_per_phase':168,'task_phases':[0,1],
+                                  'old_value_and_neighbor_bytes':'pass','locked_instructions':'audited'}
         doc_batches=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC DOC LAYOUT ')]
         if doc_batches!=[(phase,n,1,0) for phase in (0,1) for n in (*range(16,257,16),271)]:
             raise ValueError('Native document layout batches or reclamation failed')
@@ -1004,7 +1026,7 @@ def main():
                        for line in log.splitlines() if line.startswith('PUBLIC MEMORY CASE ')]
         if public_memory!=[(0,12),(1,12)]:
             raise ValueError('Native public allocation/lifetime/OutMem checks failed')
-        result['memory_runtime']=dict(version=5,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=6,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)
@@ -1027,7 +1049,7 @@ def main():
         if len(memory)!=1 or memory[0]<=0: raise ValueError('Missing public-header memory accounting')
         lifetimes=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('CODE HEAP LIFETIME ')]
         released=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('PROBE TASK RELEASE ')]
-        if lifetimes!=[0,1] or len(released)!=1 or released[0]<524288+8192 or not (
+        if lifetimes!=[0,1] or len(released)!=1 or released[0]<524288+16384 or not (
                 log.index('PROBE RELEASE ') < log.index('PROBE TASK RELEASE ') < log.index('CONSOLE TASK SPAWNED')):
             raise ValueError('Missing public code-heap/task reclamation evidence')
         result['code_heap']={'task_phases':lifetimes,'probe_task_reclaimed_bytes':released[0],

@@ -183,6 +183,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('QueRem(&queue_item);queue.next==&queue&&queue.last==&queue&&queue_item.next==&queue;', ['1']),
 
                 ('sizeof(CDoc)==680&&sizeof(CDocEntry)==160&&offset(CDocBin.end)-offset(CDocBin.start)==16;', ['1']),
+                ('I64 equ_bits=0;', []),
+                ('LBEqu(&equ_bits,35,TRUE)==0&&equ_bits==0x800000000;', ['1']),
+                ('BEqu(&equ_bits,35,TRUE)==1&&BEqu(&equ_bits,35,FALSE)==1&&equ_bits==0;', ['1']),
                 ('StrLen("");', ['0']),
                 ('StrLen("VGA")+StrLen("adapter"+2);', ['8']),
                 ('U8 *copy_buf=CAlloc(8);StrCpy(copy_buf+1,"VGA");StrLen(copy_buf+1)==3&&copy_buf[0]==0&&copy_buf[5]==0;', ['1']),

@@ -140,11 +140,13 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelLog(kernel_ready_message);
   I386PicMask(0xFFFC);
   if(kernel_diagnostics) {
-    kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
+    kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,16384,&KernelPulse,0,
       0x18,0x20,524288);
     if(!kernel_pulse) KernelStop;
     //This diagnostic compiler arena is released with the worker after its probes.
     //Complete public headers and retained functions exceed the former 128 KiB.
+    //The full bit-assignment corpus needs more than the former 8 KiB stack;
+    //retain the parser's 4 KiB reserve and provide 16 KiB for this worker.
     //Finish heap-accounting diagnostics before accepting interactive allocations.
     while(!kernel_probe_ready) {
       if(kernel_root.next==&kernel_root) I386SchedIdle(&kernel_scheduler,&i386_idle);
@@ -152,7 +154,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
     }
     pulse_used=kernel_heap.used;
     if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
-        pulse_used-kernel_heap.used<524288+8192) KernelStop;
+        pulse_used-kernel_heap.used<524288+16384) KernelStop;
     kernel_pulse=0;
     KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
   }

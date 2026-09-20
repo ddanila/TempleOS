@@ -145,7 +145,11 @@ all 131 original x64 fields and the 16-byte CDocBin saved span. The native CDoc
 record is 680 bytes; explicit tail alignment retains original record-size
 requirements. See [document records](docs/i386-document-records.md). Document
 locking, lifecycle, palette constants and the actual editor/file workflow remain
-source-driven integration work.
+source-driven integration work. Callable BEqu/LBEqu now use the original public
+signatures and export names, with signed I64 bit addressing and audited locked
+branches. Their shared original-x64/native corpus covers 168 vectors; this closes
+the bit-assignment prerequisite for DocLock, while public Yield and pending-break
+semantics remain required. See [bit assignment](docs/i386-bit-assignment.md).
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.
@@ -159,8 +163,8 @@ through native public headers. Final generated executable buffers now carry
 public task-heap ownership through compiler cleanup, publication and task reap;
 compiler metadata and working buffers still use bootstrap arenas. Complete their
 allocation policy and the remaining public memory services as the next
-public-contract work. Shared document headers raise retained public metadata to
-169920 bytes. Profiling the complete headers attributed most header/startup
+public-contract work. Shared document headers and callable bit bindings retain
+172504 bytes of public metadata. Profiling the complete document headers attributed most header/startup
 samples to whole-chain bootstrap heap validation. An equivalent 386 assembly
 loop, retaining every invariant, reduces normal QEMU/486 startup from 60.612 to
 15.806 seconds and diagnostics from 726.823 to 137.386 seconds. The normal test
