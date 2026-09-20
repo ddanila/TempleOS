@@ -1,30 +1,12 @@
 #help_index "DolDoc"
-
+#include "/Adam/DolDoc/DocLockCore.HC"
 public Bool DocLock(CDoc *doc)
 {//Make this task have exclusive access to this doc.
-  if (!Bt(&doc->locked_flags,DOClf_LOCKED) || doc->owning_task!=Fs) {
-    while (LBts(&doc->locked_flags,DOClf_LOCKED))
-      Yield;
-    if (doc->owning_task!=Fs)
-      LBEqu(&doc->flags,DOCf_BREAK_UNLOCKED,BreakLock(Fs));
-    doc->owning_task=Fs;
-    return TRUE;
-  } else
-    return FALSE;
+  return DocLockCore(doc,Fs,&Yield,&BreakLock);
 }
-
 public Bool DocUnlock(CDoc *doc)
 {//Release exclusive lock on access to doc.
-  Bool unlock_break;
-  if (Bt(&doc->locked_flags,DOClf_LOCKED) && doc->owning_task==Fs) {
-    doc->owning_task=0;
-    unlock_break=Bt(&doc->flags,DOCf_BREAK_UNLOCKED);
-    LBtr(&doc->locked_flags,DOClf_LOCKED);
-    if (unlock_break)
-      BreakUnlock(Fs);
-    return TRUE;
-  } else
-    return FALSE;
+  return DocUnlockCore(doc,Fs,&BreakUnlock);
 }
 
 Bool IsEditableText(CDocEntry *doc_e)

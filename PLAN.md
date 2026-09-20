@@ -188,10 +188,15 @@ branches now provide task-context break checkpoints: while, goto and do/while
 loops can be interrupted, and a HolyC handler can catch the break and continue.
 See [loop break checkpoints](docs/i386-loop-break-checkpoints.md). Non-returning
 uninstrumented code, multi-task focus and original public Break delivery remain.
+Original document locking now shares its ownership policy with native adapters:
+contending waiters can yield and recover from a break, and an owner releases the
+document before pending-break delivery. Retained DocLock/DocUnlock bindings are
+available to native HolyC; see [document locks](docs/i386-document-locks.md).
+Document creation, rendering/editing and persistence remain open.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,
-25976 bytes of bootstrap headroom remain after keyboard break integration
-(363144-byte kernel plus 4096-byte early stage). See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
+25824 bytes of bootstrap headroom remain after document-lock bindings
+(363296-byte kernel plus 4096-byte early stage). See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
 Keep additional interruption logic in retained services and measure scheduler-core
 growth against this remaining space; preserve the reserved load area and validate
 module lifetimes and rejection behavior.

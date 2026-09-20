@@ -34,6 +34,7 @@ extern U0 Report(CI386Task *task,I64 ch);
 extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
 extern I64 TimerScaleTest();
 extern I64 BreakTest();
+extern I64 DocLockTest();
 I64 Main(I64 unused0,I64 unused1)
 {
   U8 saved[6],readback[6],saved_idt[6],*table=gdt_storage+8;
@@ -118,6 +119,7 @@ I64 Main(I64 unused0,I64 unused1)
     I386PicMask(0xFFFE);
     result=Run;
     if(!result) result=BreakTest;
+    if(!result) result=DocLockTest;
     I386PicMask(0xFFFF);
     if(!I386IdtLoad((saved_idt+2)(U32 *)[0],
         (saved_idt[0]+(saved_idt[1]<<8)+1)/8)) return 47;
@@ -334,3 +336,5 @@ U0 SleepFor(I64 ticks)
 #include "/Kernel/I386/WaitCancel.HC"
 #include "/Kernel/I386/TaskBreak.HC"
 #include "T:/Break.HC"
+
+#include "T:/DocLock.HC"

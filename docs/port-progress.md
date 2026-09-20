@@ -6124,3 +6124,47 @@ This establishes interruption of generated loops, not arbitrary uninstrumented
 code or execution with interrupts disabled. Public Break/Yield/message/job/popup
 semantics and original DolDoc lifecycle, rendering, editing and persistent saves
 remain open. The first usable native DolDoc editing-session goal is not complete.
+
+
+## Original document lock integration
+
+DocLock and DocUnlock now share their original ownership policy through
+`Adam/DolDoc/DocLockCore.HC`. The x64 wrappers retain the original platform
+services; the native wrappers use explicit scheduler and cleanup-aware break
+adapters. Contending tasks yield and can receive a break before acquisition.
+Owning tasks release the document before delivering a pending break. Nested
+acquisition, wrong-owner unlock and pre-existing task break locks retain the
+original behavior. This does not publish a partial public Yield/Break contract.
+See [document locks](i386-document-locks.md).
+
+ConsoleRuntime 13 retains the native adapters and publishes callable DocLock and
+DocUnlock bindings to the inherited root symbol scope. Native StartOS loads the
+public declarations after console initialization. The console service/config
+sizes remain 32/28 bytes; two additional imports supply I386SchedYield and
+HashAdd. CompilerRuntime 47 adds the validated break_poll callback, growing its
+service table to 204 bytes. Known active compiler controls can unwind at the
+existing input boundary; outstanding waits/resource borrows still defer breaks.
+
+Both x64 rebuild generations, the native exception-task suite and the full native
+kernel suite pass. Contention tests cover an interrupted waiter, pending delivery
+on owner unlock, wrong-owner and nested operations, preservation of caller-owned
+break locks, task destruction and full heap reclamation. Interactive tests issue
+a real Ctrl-Alt-C while a document lock is held, observe deferred delivery until
+unlock, verify cleared ownership/pending state, reacquire the lock and compile
+another command. The complete console corpus covers 164 commands / 227 input
+lines, seven hardware hotkey cases and eleven document-lock commands with exact
+VGA checks. Startup recovery, normal boot with an invalid probe and all 17 module
+rejection cases pass.
+
+All 1101 OS source hashes and eight build-input hashes match, as do both disk
+hashes. The normal preview is refreshed. Kernel size is 363296 bytes, leaving
+25824 bytes after the 4096-byte early stage. ConsoleRuntime retains 88776 bytes
+from an 88760-byte image; CompilerRuntime retains 1322096 bytes from a 1322080-byte
+image. Normal QEMU/486 boot at 8 MiB measured 15.674 seconds; diagnostics measured
+134.584 seconds. Manifests retain the pre-commit revision and exact tested hashes.
+
+The tests use a CDoc record's lock fields; they do not claim a complete initialized
+document. Original creation/copy/reset/delete still reaches real callback,
+DocTop/DocRecalc, reporting and global-state dependencies. Rendering/editing,
+execution from the original editor and persistent save/reboot/reopen acceptance
+remain open; the medium goal is not complete.
