@@ -1,4 +1,5 @@
 U32 flag_phase,flag_events,flag_seen,flag_progress,flag_idles;
+extern I64 WakeTimeTest();
 U0 FlagIdle()
 {//Observe the idle decision without enabling IRQs in this specific check.
   if(GetRFlags&0x200) errors++;
@@ -84,5 +85,5 @@ I64 FlagEligibilityTest()
   if(!I386SchedReap(&scheduler,&tasks[1]) || !PublicRingCheck(1)) return 117;
   for(i=0;i<8;i++) if(stack[i]!=0xA5 || stack[8200+i]!=0xA5) return 118;
   if(!I386HeapFree(&heap,stack) || heap.used || heap.allocations || !I386HeapValid(&heap)) return 119;
-  return OwnedTaskTest;
+  return WakeTimeTest;
 }

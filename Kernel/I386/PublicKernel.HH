@@ -6,6 +6,8 @@
 #include "/Kernel/I386/Bit.HH"
 #include "/Kernel/I386/Queue.HH"
 #include "/Kernel/DocTypes.HH"
+#include "/Kernel/TimeTypes.HH"
+public extern CCntsGlbls cnts;
 public _intern 0x15 CTask *Fs();
 public _intern 0x17 CCPU *Gs();
 #endif

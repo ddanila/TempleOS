@@ -133,6 +133,11 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.source="Fs->next_task!=Fs;";
   if(!probe->compiler->input(&input) || answer.value!=probe->phase) KernelStop;
   KernelLog("PUBLIC TASK RING "); KernelHex(probe->phase); KernelLog("\n");
+  input.source="JIFFY_FREQ==1000 && sizeof(cnts.jiffies)==8;";
+  if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
+  input.source="cnts.jiffies>0;";
+  if(!probe->compiler->input(&input) || answer.value!=probe->phase) KernelStop;
+  KernelLog("PUBLIC JIFFIES "); KernelHex(probe->phase); KernelLog("\n");
   input.source="Fs->task_signature==TASK_SIGNATURE_VAL;";
   if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
   input.source="Fs->last_cc!=0 && Fs->hash_table->body!=0;";

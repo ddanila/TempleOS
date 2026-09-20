@@ -184,6 +184,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
 
                 ('sizeof(CDoc)==680&&sizeof(CDocEntry)==160&&offset(CDocBin.end)-offset(CDocBin.start)==16;', ['1']),
                 ('Fs->next_task->last_task==Fs&&Fs->last_task->next_task==Fs&&Fs->next_task!=Fs;', ['1']),
+                ('JIFFY_FREQ==1000&&cnts.jiffies>0;', ['1']),
                 ('I64 equ_bits=0;', []),
                 ('LBEqu(&equ_bits,35,TRUE)==0&&equ_bits==0x800000000;', ['1']),
                 ('BEqu(&equ_bits,35,TRUE)==1&&BEqu(&equ_bits,35,FALSE)==1&&equ_bits==0;', ['1']),

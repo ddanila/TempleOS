@@ -44,6 +44,7 @@ class CI386Scheduler
   U0 (*swap)(CI386Context *old,CI386Context *next);
   U0 (*bind)(CI386Task *task);
   CI386Task *focus;
+  I64 *jiffies; //Borrowed persistent clock, read only with IRQs masked.
 };
 class CI386Cpu:CCPU { CI386Scheduler *scheduler; };
 //Internal hook shape: 0 absent, 31 complete; other masks are partial state.
@@ -52,6 +53,7 @@ public extern Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next));
 public extern Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedYield(CI386Scheduler *s);
+public extern Bool I386SchedSetClock(CI386Scheduler *s,I64 *jiffies);
 public extern Bool I386SchedFinish(CI386Scheduler *s);
 public extern Bool I386SchedReap(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedBlock(CI386Scheduler *s);

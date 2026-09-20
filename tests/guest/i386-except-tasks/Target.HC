@@ -32,6 +32,7 @@ extern I64 Run();
 extern U0 Worker(I64 id);
 extern U0 Report(CI386Task *task,I64 ch);
 extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
+extern I64 TimerScaleTest();
 I64 Main(I64 unused0,I64 unused1)
 {
   U8 saved[6],readback[6],saved_idt[6],*table=gdt_storage+8;
@@ -103,6 +104,8 @@ I64 Main(I64 unused0,I64 unused1)
     I386PicInit;
     irq_services.irq=&OnTimer; irq_services.exception=&OnFault;
     if(!I386InterruptInstall(runtime_idt,256,&Unexpected,&irq_services)) return 43;
+    result=TimerScaleTest;
+    if(result) return result;
     if(I386TimerInit(0,11932) || I386TimerInit(&timer,1) ||
         I386TimerInit(&timer,65537) || I386TimerStep(&timer) || I386TimerTicks(&timer)) return 44;
     if(!I386TimerInit(&timer,11932) || I386TimerInit(&timer,11932)) return 45;
@@ -323,3 +326,5 @@ U0 SleepFor(I64 ticks)
 }
 
 #include "/Kernel/I386/Sleep.HC"
+
+#include "T:/TimerScale.HC"

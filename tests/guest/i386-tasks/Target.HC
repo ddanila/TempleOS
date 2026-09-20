@@ -53,6 +53,7 @@ extern I64 SchedulerTest();
 extern U0 ScheduledWorker(I64 id);
 extern U0 ScheduledExit();
 CI386Scheduler scheduler;
+I64 test_jiffies;
 CI386Task tasks[3];
 U32 scheduled_progress[3],wake_order;
 extern U0 Worker(I64 arg);
@@ -167,6 +168,9 @@ I64 SchedulerTest()
       !I386SchedYield(&scheduler) || I386SchedFinish(&scheduler) ||
       I386SchedAdd(&scheduler,&tasks[0]) || I386SchedReap(&scheduler,&tasks[0])) return 13;
   if(!PublicRingCheck(1)) return 101;
+  if(I386SchedSetClock(0,&test_jiffies) || I386SchedSetClock(&scheduler,0) ||
+      !I386SchedSetClock(&scheduler,&test_jiffies) ||
+      I386SchedSetClock(&scheduler,&test_jiffies)) return 141;
   for (i=0;i<8;i++) descriptor_before[i]=test_control->cpu_descriptor[i];
   if (I386DataSegment(0,&bound_cpu,8) ||
       I386DataSegment(test_control->cpu_descriptor,&bound_cpu,0) ||
@@ -572,3 +576,4 @@ U0 OwnedCleanup(CI386Task *task)
 #include "/Kernel/I386/AtaChannel.HC"
 #include "T:/AtaChannel.HC"
 #include "T:/Flags.HC"
+#include "T:/WakeTime.HC"

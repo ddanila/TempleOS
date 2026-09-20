@@ -30,7 +30,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   for(i=0;i<I386_EXCEPT_CALLERS;i++) root->except_callers[i]=0;
   root->stk=0;
   s->root=root; s->current=root; s->swap=swap; s->bind=0;
-  s->focus=0;
+  s->focus=0; s->jiffies=0;
   return TRUE;
 }
 public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
@@ -66,8 +66,21 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
 }
 Bool I386SchedReady(CI386Task *task)
 {
+  I64 now=0;
+  if(task->owner->jiffies) now=*task->owner->jiffies;
   return !task->blocked && !task->finished &&
-    !(task->task_flags & (1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG));
+    !(task->task_flags & (1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG)) &&
+    task->wake_jiffy<=now;
+}
+public Bool I386SchedSetClock(CI386Scheduler *s,I64 *jiffies)
+{//Bind once, before any worker attachment or context switch.
+  U32 flags=I386IrqSave;
+  if(!s || !s->root || !jiffies || s->jiffies || s->current!=s->root ||
+      s->root->next_task!=s->root || s->root->context.esp) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  s->jiffies=jiffies;
+  I386IrqRestore(flags); return TRUE;
 }
 CI386Task *I386SchedNext(CI386Task *task)
 {//IF clear. An IRQ may make a task eligible; never return an ineligible task.

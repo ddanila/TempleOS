@@ -5639,3 +5639,37 @@ suite was not rerun for this component-only change, and the previously tested
 normal preview remains unchanged. This does not complete original Msg/GetMsg,
 job queues, popup propagation, TaskRstAwaitingMsg or break cancellation. See
 [message wait flags](i386-message-wait-flags.md).
+
+## Shared jiffy clock and native wake deadlines
+
+The original CCntsGlbls record and time constants are shared verbatim through
+TimeTypes.HH. One kernel-owned cnts instance supplies the PIT's counter pointer,
+the scheduler's borrowed clock and the native HolyC data export. Native public
+headers declare that same record/address. Only jiffies is implemented here;
+HPET/TSC calibration and the original SysTimerRead contract remain open.
+
+The PIT keeps its 11932 divisor and delivered-IRQ counter. It precomputes whole
+and fractional 1000-Hz-unit credits, then accumulates them per delivered IRQ with
+no division in the interrupt path. Missed/coalesced IRQs are not reconstructed.
+Scheduler eligibility now includes the original signed I64 wake_jiffy comparison,
+under IRQ masking, and neither expiry nor generic wake overrides other wait flags.
+All-future task selection idles until an interrupt permits progress.
+
+Both x64 rebuild generations and six native suites pass: tasks, task exceptions,
+messages, task heaps, task symbols and ATA tasks. The timer corpus checks six
+divisors against whole-interval arithmetic, 10007-step fractional accumulation,
+32-bit carry, 64-bit wrap and guards. Deadline tests cross 32 bits and cover root
+expiry, signed past deadlines, suspension beyond expiry, private wake before
+expiry and finish while root waits for its deadline. The enlarged timer corpus
+uses the existing 192 KiB test transfer profile, below its arena at 0x40000.
+
+The full kernel suite passes 129 commands / 192 input lines, exact VGA, startup
+recovery, normal boot with an invalid diagnostic module and 17 rejection cases.
+Root/worker JIT probes verify the live counter before and after IRQ delivery; the
+console reads JIFFY_FREQ and positive jiffies. All 1090 OS source and eight
+build-input hashes match. Kernel size is 387992 bytes, leaving 1128 bytes after
+the early stage. Public headers retain 179280 bytes. CompilerProbe reclaims all
+669992 bytes and its worker reclaims 541856 bytes. Normal QEMU/486 boot at 8 MiB
+measured 14.853 seconds and diagnostics 124.943 in this run. The normal preview
+is refreshed. See [jiffy clock](i386-jiffy-clock.md) for ownership, non-atomic plain
+I64 reads on 386, timing scope and the remaining public scheduling contracts.

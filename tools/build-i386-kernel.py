@@ -1012,6 +1012,10 @@ def main():
         if ring_phases != [0,1]:
             raise ValueError('Public task ring is not live in both task scopes')
         result['public_task_ring']={'phases':ring_phases,'root_self_ring':True,'worker_neighbors':True}
+        jiffy_phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('PUBLIC JIFFIES ')]
+        if jiffy_phases != [0,1]:
+            raise ValueError('Public jiffy clock did not advance between boot and worker')
+        result['public_jiffies']={'phases':jiffy_phases,'frequency':1000}
         bit_cases=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC BIT EQU ')]
         if bit_cases!=[(phase,1,0,168) for phase in (0,1)] or 'PASS original bit assignment\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/native bit assignment failed')

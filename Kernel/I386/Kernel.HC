@@ -60,8 +60,9 @@ CHashTable *kernel_symbols;
 CHashClass *kernel_scalars[6];
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
-CI386KernelSymbol kernel_exports[45];
-U8 kernel_export_kinds[45]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+CCntsGlbls cnts;
+CI386KernelSymbol kernel_exports[46];
+U8 kernel_export_kinds[46]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
 CI386MemoryServices kernel_memory;
@@ -123,7 +124,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
   I386PicInit;
   services.irq=&KernelIrq; services.exception=&KernelFault;
   if(!I386InterruptInstall(kernel_idt,256,&KernelStop,&services) ||
-      !I386TimerInit(&kernel_timer,11932) ||
+      !I386TimerInit(&kernel_timer,11932,&cnts.jiffies) ||
+      !I386SchedSetClock(&kernel_scheduler,&cnts.jiffies) ||
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
   KernelSymbols;
   KernelCompilerLoad;
@@ -313,7 +315,7 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i,used;
-  U8 *addresses[45],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0";
+  U8 *addresses[46],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0";
   CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
@@ -372,8 +374,8 @@ U0 KernelSymbols()
   addresses[35]=&I386LexFilePush; addresses[36]=&LexFileReleaseTop;
   addresses[37]=&I386HashTableNew; addresses[38]=&I386HashTableValid; addresses[39]=&I386HashTableDelete;
   addresses[40]=&SysTry; addresses[41]=&SysUntry; addresses[42]=&throw;
-  addresses[43]=&I386TaskSpawn; addresses[44]=&I386TaskDestroy;
-  for(i=0;i<45;i++) {
+  addresses[43]=&I386TaskSpawn; addresses[44]=&I386TaskDestroy; addresses[45]=&cnts;
+  for(i=0;i<46;i++) {
     kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
     kernel_exports[i].val=(addresses[i]+0)(U64); kernel_exports[i].type=HTT_EXPORT_SYS_SYM;
     HashAdd(&kernel_exports[i],kernel_symbols);
@@ -394,9 +396,9 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity)
 {
   I64 i;
-  if(!bindings || !indices || count!=capacity || count<1 || count>45) KernelStop;
+  if(!bindings || !indices || count!=capacity || count<1 || count>46) KernelStop;
   for(i=0;i<count;i++) {
-    if(indices[i]>=45) KernelStop;
+    if(indices[i]>=46) KernelStop;
     KernelBinding(&bindings[i],kernel_exports[indices[i]].str);
   }
 }

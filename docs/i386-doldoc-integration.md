@@ -38,8 +38,9 @@ The [public live-task ring](i386-public-task-ring.md) now tracks attached tasks,
 including blocked workers. Native dispatch now follows public list order and
 skips blocked, suspended and awaiting-message tasks, independently of private
 wakeup insertion order. All-ineligible selection idles for an IRQ. Integrating
-public `Yield` still requires wake-time eligibility, original message/job/popup
-services and break handling before publishing its original callable contract;
+public `Yield` still requires original message/job/popup services and break
+handling before publishing its original callable contract. Wake deadlines now use
+the [shared jiffy clock](i386-jiffy-clock.md);
 see [task eligibility](i386-task-eligibility.md).
 
 `BreakUnlock` in `Kernel/KExcept.HC` delivers pending breaks. For another task,
@@ -78,8 +79,8 @@ serialize the entire native record or simply remove its layout assertions.
    peaks and input responsiveness throughout, then apply the M7 hardware gates.
 
 Bootstrap headroom is a concurrent constraint: the kernel plus early
-stage leaves 5000 bytes in the fixed reservation after task-flag eligibility
-(5944 after moving source/lexer diagnostics, 208 after public task-ring dispatch).
+stage leaves 1128 bytes in the fixed reservation after jiffy/wake-time integration
+(5000 after task-flag eligibility, 5944 after moving source/lexer diagnostics).
 See [storage diagnostics](i386-storage-diagnostics.md). Keep new document/runtime
 code in extended-memory modules; any necessary resident additions must first
 make room deliberately and retain module rejection/lifetime tests. Preserve

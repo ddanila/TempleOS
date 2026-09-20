@@ -153,8 +153,11 @@ semantics remain required. See [bit assignment](docs/i386-bit-assignment.md).
 Native public task links now track attached live tasks, including blocked workers,
 and detach before reaping. Native dispatch follows public list order, skipping
 blocked, suspended and awaiting-message tasks. If none is eligible, it idles for
-an IRQ, including when the root is suspended. Wake-time eligibility, public
-message/job/popup integration and pending-break delivery remain integration work.
+an IRQ, including when the root is suspended. Signed I64 wake deadlines now use
+the same 1000-Hz-unit cnts.jiffies counter published to native HolyC. The PIT
+retains its IRQ rate and accumulates fractional jiffies without per-tick rounding
+loss; see [jiffy clock](docs/i386-jiffy-clock.md). Original message/job/popup
+integration and pending-break delivery remain integration work.
 The native queue component now maintains the public awaiting-message bit during
 read/send/close, including flag waits without a private reader. It remains a
 separately tested component; the interactive console uses direct keyboard input.
@@ -175,7 +178,7 @@ public task-heap ownership through compiler cleanup, publication and task reap;
 compiler metadata and working buffers still use bootstrap arenas. Complete their
 allocation policy and the remaining public memory services as the next
 public-contract work. Shared public headers, including document records, callable
-bit bindings and task flags, retain 176224 bytes of metadata. Profiling the complete document headers attributed most header/startup
+bit bindings, task flags and time counters, retain 179280 bytes of metadata. Profiling the complete document headers attributed most header/startup
 samples to whole-chain bootstrap heap validation. An equivalent 386 assembly
 loop, retaining every invariant, reduces normal QEMU/486 startup from 60.612 to
 15.806 seconds and diagnostics from 726.823 to 137.386 seconds. The normal test
@@ -184,7 +187,8 @@ native suite pass; that optimization grew kernel reservation headroom from 184
 to 2440 bytes. Live public task-ring maintenance and dispatch then left 208 bytes.
 Moving KernelStorage's source/lexer diagnostics into the temporary probe frees
 5736 resident bytes, leaving 5944 bytes for necessary resident additions. Task
-flag eligibility and idle integration now leave 5000 bytes. The
+flag eligibility and idle integration left 5000 bytes; the shared jiffy clock and
+wake deadlines now leave 1128 bytes. The
 same disk-read, character/line/hash and reclamation checks run in the boot probe;
 ABI 13 rejects older probe modules before those checks. Keep substantial new
 services in extended-memory modules; see

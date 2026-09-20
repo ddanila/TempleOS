@@ -48,9 +48,9 @@ task-symbols and ata-tasks suites, then the full native kernel suite, as listed 
 ## Remaining public scheduling work
 
 This does not publish the complete public `Yield` interface. Wake-time eligibility
-needs the original 1000-Hz jiffy contract; the current native PIT configuration
-uses roughly 100 IRQs per second and its delivered-interrupt count cannot simply
-be substituted for public jiffies. Original message/job/popup services, kill and
+now uses the shared 1000-Hz-unit counter, with fractional accounting at the
+existing PIT IRQ rate; see [jiffy clock](i386-jiffy-clock.md).
+Original message/job/popup services, kill and
 break delivery, device/waiter cancellation, single-user scheduling and debugger
 context also require integration. The native queue component now maintains the
 public awaiting-message bit around its block/wake protocol, including sends and
