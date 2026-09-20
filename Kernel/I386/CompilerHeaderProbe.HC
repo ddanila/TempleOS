@@ -68,7 +68,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   I64 i,j,start,end,length,size,attr,checks=0;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs,before_used,before_allocations;
   U32 flags=GetRFlags;
-  Bool skip,accepted;
+  Bool skip,accepted,break_caught;
   KernelLog("PUBLIC HEADER PROBE START "); KernelHex(probe->phase); KernelLog("\n");
   heads=I386HeapAlloc(heap,(table->mask+1)*sizeof(CHash *),FALSE);
   if(!heads) KernelStop;
@@ -177,6 +177,21 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(!ProbePublicMemoryInput(probe,&input,&answer,10) || answer.value!=1) KernelStop;
   input.source="MemFailure;";
   if(!ProbePublicMemoryInput(probe,&input,&answer,11) || answer.value!=1) KernelStop;
+  for(i=0;i<3;i++) {
+    before_used=heap->used; before_allocations=heap->allocations;
+    break_caught=FALSE;
+    input.source="I64 BreakPrivate(){return 99;} Fs->task_flags|=1<<TASKf_PENDING_BREAK;";
+    if(!i) task->task_flags|=1<<TASKf_PENDING_BREAK;
+    try { probe->compiler->input(&input); KernelStop; }
+    catch {
+      if(task->except_ch!='Break' || input.exception!='Break') KernelStop;
+      task->catch_except=TRUE; break_caught=TRUE;
+    }
+    if(!break_caught || task->task_flags&(1<<TASKf_PENDING_BREAK) ||
+        task->lifetime_refs!=refs || heap->used!=before_used || heap->allocations!=before_allocations ||
+        ProbeSymbolFind(0,"BreakPrivate",table,HTT_FUN) || (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+    KernelLog("INPUT BREAK CLEANUP "); KernelHex(probe->phase); KernelLog(" "); KernelHex(i); KernelLog("\n");
+  }
   KernelLog("PUBLIC MEMORY CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(12); KernelLog("\n");
   for(i=0;i<5;i++) {
     switch(i) {

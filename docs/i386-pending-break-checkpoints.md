@@ -24,10 +24,10 @@ throws the native 'Break' exception through the existing exception runtime.
 
 These guards are necessary but not a proof that arbitrary code can be interrupted.
 The caller must first release temporary allocations and other resources not
-represented by the guards. No automatic scheduler, IRQ, compiler or console
-checkpoint is installed in this change. In particular, a running compiler input
-still owns active controls; establishing its cleanup/exception boundary is a next
-integration step, not permission to bypass the guard. Public Break, message flush,
+represented by the guards. The general poll is not automatically installed in scheduler or IRQ paths.
+Compiler input now has a separate [protected cleanup boundary](i386-compiler-break-cleanup.md)
+that owns and unwinds its active controls. That does not permit bypassing the
+general poll guard at an arbitrary call site. Public Break, message flush,
 popup/job behavior, focused keyboard requests and non-yielding program interruption
 remain unfinished.
 

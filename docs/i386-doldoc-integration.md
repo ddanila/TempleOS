@@ -86,8 +86,10 @@ acquisitions and message reads; see
 registration now uses the same dispatcher; see
 [keyboard wait registration](i386-keyboard-wait-registration.md). An internal
 [pending-break checkpoint path](i386-pending-break-checkpoints.md) now has native
-exception coverage. Production cleanup boundaries and original public Break
-delivery remain required.
+exception coverage. Compiler input now has a protected
+[break cleanup boundary](i386-compiler-break-cleanup.md). Actual queued-file
+cancellation, focused keyboard requests and original public Break delivery
+remain required.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

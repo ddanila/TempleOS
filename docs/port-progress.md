@@ -5967,3 +5967,38 @@ module versions and the existing normal QEMU preview remain unchanged; the full
 kernel suite was not rerun for this component-only change. The DolDoc session
 acceptance goal remains open. Next connect actual file/compiler cleanup boundaries
 and original Break/message semantics before document-lock and editor integration.
+
+
+## Compiler input pending-break cleanup
+
+CompilerRuntime 44 checks pending breaks inside the command input catch/unwind
+boundary. It permits that boundary to release its own active controls, while
+extra lifetime references, waits, I/O ownership, locks and unsupported inbox or
+Shift-Escape behavior defer delivery. Checkpoints surround returning compiler
+and execution calls and precede publication. A successful unwind clears pending
+state and rethrows 'Break' to the caller; failed cleanup preserves the request
+and returns failure. See [compiler break cleanup](i386-compiler-break-cleanup.md).
+
+Both x64 rebuild generations and the full native kernel suite pass. Three new
+cleanup cases run on both boot and worker tasks, checking preexisting requests,
+private function rollback, exact compiler heap totals, lifetime references and
+IF. Normal console coverage is now 137 commands / 200 submitted lines, including
+pending-break recovery, unpublished-definition rejection, lock-delayed delivery
+and successful subsequent commands, with exact VGA comparisons. The keyboard
+harness gained missing mappings for vertical bar and tilde after its first run
+rejected the QEMU key name; the final full rerun passes. Startup recovery, normal
+boot with an invalid diagnostic module and all 17 module rejection cases pass,
+including CompilerRuntime 43 rejection.
+
+All 1095 OS source hashes and 8 build-input hashes match. The normal and diagnostic
+disks remain unchanged after verification; manifests identify the pre-commit
+revision, dirty worktree and exact hashes. Kernel size remains 362872 bytes,
+leaving 26248 bytes after the early stage. CompilerRuntime retains 1317280 bytes
+(1317264-byte image). CompilerProbe reclaims all 674864 bytes of its temporary
+image allocation. Normal QEMU/486 boot at 8 MiB measured 15.162 seconds and
+diagnostics 130.344 seconds. The normal preview is refreshed from the tested disk.
+
+This adds production cleanup behavior, not the finished user interruption flow.
+Focused Ctrl-Alt-C requests, non-returning code interruption, actual queued-file
+cancellation through compiler recovery, and original message/job/popup semantics
+remain. The first original DolDoc edit/execute/save/reboot session is still open.

@@ -179,7 +179,9 @@ waits now register as well, with task-context reading and decoding retained in
 ConsoleRuntime; see [keyboard wait registration](docs/i386-keyboard-wait-registration.md).
 An internal pending-break request/lock/checkpoint path now has native exception
 coverage; see [pending-break checkpoints](docs/i386-pending-break-checkpoints.md).
-Production cleanup boundaries and original public Break delivery remain.
+Compiler input now checks pending requests inside its catch/unwind boundary; see
+[compiler break cleanup](docs/i386-compiler-break-cleanup.md). Actual queued-file
+cancellation, focused keyboard requests and original public Break delivery remain.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,
 26248 bytes of bootstrap headroom remain (362872-byte kernel plus 4096-byte early stage). See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).

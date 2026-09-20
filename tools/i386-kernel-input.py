@@ -109,10 +109,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={'%':'5','#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={'|':'backslash','~':'grave_accent','%':'5','#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>#!%')
+            shifted=set('(){}*+&_"<>#!%|~')
             def typed_rows(source):
                 text='> '+source
                 #The VGA terminal wraps immediately at column 80, including a
@@ -287,6 +287,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('I64 T(){I64 x=0;try{x=42;}catch{}return x;}', []),
                 ('T;', ['42']),
                 ("throw('Console',TRUE);", ['Exception']),
+                ('Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception']),
+                ('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0']),
+                ('I64 BreakPrivate(){return 99;} Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception']),
+                ('BreakPrivate;', ['Error: Undefined identifier at ']),
+                ('U0 LockPending(){Fs->task_flags|=1<<TASKf_BREAK_LOCKED|1<<TASKf_PENDING_BREAK;}', []),
+                ('LockPending;', []),
+                ('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception']),
+                ('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0']),
                 ('T;', ['42']),
                 ('ToI64(Sqrt(Sqr(6.0))+Abs(-36.0));', ['42']),
                 ('ToBool(0x100000000);', ['1']),
