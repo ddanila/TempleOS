@@ -5829,3 +5829,42 @@ invalid diagnostic module and all 17 module-rejection/reclamation cases. All
 8 MiB measured 14.250 seconds and diagnostics 125.349 seconds. The preview is
 refreshed from the verified image. Active-wait coordination, public Break,
 DolDoc, strict 386 compatibility and native self-hosting remain open.
+
+
+## Task-owned sleep/join wait registration
+
+Sleep and join now keep a borrowed wait record on their call stack, referenced
+by the native task. It records kind, resource, callback and cancellation state.
+Both direct cancellation and the common dispatcher mark that state, so repeated
+cancellation cannot call into a resource already released. The dispatcher rejects
+recursion, preserves IF and leaves the record until the waiting call resumes.
+Task attachment/finish/reap guards prevent reclaiming a registered stack; normal
+return clears the slot. The public CTask layout is unchanged. See
+[task wait registration](i386-task-wait-registration.md).
+
+ConsoleRuntime's fifth service callback retains the common dispatcher. Its loaded
+entry is exercised by the worker diagnostic with null and nonwaiting tasks;
+registered cancellation is exercised by the task corpus. Private task-record
+and lifecycle changes advance CompilerRuntime to 43, FileRuntime to 22, MemoryRuntime to
+7, ConsoleRuntime to 10 (28-byte table) and CompilerProbe to 15 (76-byte config).
+
+Both x64 rebuild generations and seven native suites pass: tasks, task exceptions,
+task heaps, task symbols, ATA tasks, messages and input. Registration tests cover
+direct/routed cancellation, recursion rejection, repeated dispatch with a failure
+sentinel, expiry/completion races, live registration after cancellation,
+finish/reap and nested-wait guards, and target reuse before cancelled joins return.
+Existing heap, symbol, exception, disk and keyboard/message regressions pass.
+
+The full kernel suite passes 129 commands / 192 input lines, exact VGA, startup
+recovery, normal boot with an invalid diagnostic module and all 17 rejection
+cases, including the previous native ABI versions. All 1092 OS source hashes and
+8 build-input hashes match. Kernel size is 388752 bytes, leaving
+368 bytes after the early stage. ConsoleRuntime retains 50840 bytes;
+CompilerProbe reclaims 672064 bytes and its worker reclaims
+541856 bytes. Normal QEMU/486 boot at 8 MiB measured
+14.201 seconds and diagnostics 125.547 seconds. The preview is refreshed.
+
+ATA, message and raw-keyboard waits still need common registration. A dedicated
+retained task service, break-lock/pending-break policy, file/compiler cleanup and
+original exception/job/popup delivery remain required. This is not public Break,
+complete DolDoc, strict 386 compatibility or native self-hosting.

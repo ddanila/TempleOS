@@ -1,12 +1,29 @@
 CI386SleepQueue cancel_sleep;
 CI386OwnedTask *wait_tasks[4];
 U32 wait_mask,wait_done,wait_if;
+Bool CancelledAgain(U8 *object,CI386Task *task)
+{ errors++; return TRUE; }
+Bool CancelRecursion(U8 *object,CI386Task *task)
+{
+  if(I386TaskCancelWait(task)) errors++;
+  return I386SleepCancel(object,task);
+}
+U0 WaitReturnGuard()
+{
+  CI386TaskWait guard;
+  if(I386TaskSelf->wait) errors++;
+  I386TaskSelf->wait=&guard;
+  if(I386SchedFinish(&scheduler) || I386TaskSelf->finishing ||
+      I386SleepTicks(&cancel_sleep,1)) errors++;
+  I386TaskSelf->wait=0;
+}
 U0 CancelSleepWorker(I64 id)
 {
   Bool result;
   SetRFlags((GetRFlags&~0x200)|wait_if);
   result=I386SleepTicks(&cancel_sleep,2);
   if(result==((wait_mask & (1<<id))!=0) || (GetRFlags&0x200)!=wait_if) errors++;
+  WaitReturnGuard;
   wait_done++;
 }
 U0 CancelJoinWorker(I64 id)
@@ -17,6 +34,7 @@ U0 CancelJoinWorker(I64 id)
   result=I386SchedJoin(&scheduler,&wait_tasks[0]->task);
   if(result==((wait_mask & (1<<id))!=0) || I386TaskSelf->join_target ||
       I386TaskSelf->join_next || (GetRFlags&0x200)!=wait_if) errors++;
+  WaitReturnGuard;
   wait_done++;
 }
 I64 WaitCancelTest()
@@ -26,6 +44,8 @@ I64 WaitCancelTest()
   CI386Task *node;
   I64 scenario,i,count;
   U32 saved=GetRFlags,flags;
+  Bool accepted;
+  CI386TaskWait guard;
   U8 *reuse;
   if(!I386HeapInit(&heap,0x60000,49152) || !I386SleepInit(&cancel_sleep,&scheduler)) return 170;
   for(scenario=0;scenario<5;scenario++) {
@@ -42,15 +62,23 @@ I64 WaitCancelTest()
         I386SleepCancel(0,&tasks[0]) || I386SleepCancel(&cancel_sleep,0) ||
         I386SleepCancel(&cancel_sleep,&foreign_task) ||
         I386SleepCancel(&cancel_sleep,&tasks[0])) return 172;
+    for(i=0;i<3;i++) if(!wait_tasks[i]->task.wait ||
+        wait_tasks[i]->task.wait->kind!=I386_WAIT_SLEEP ||
+        wait_tasks[i]->task.wait->object!=&cancel_sleep || wait_tasks[i]->task.wait->cancelled) return 200;
     for(i=0;i<3;i++) if(wait_mask & (1<<i)) {
       count++;
       if((scenario&1) && !I386SchedWake(&scheduler,&wait_tasks[i]->task)) return 173;
       wait_tasks[i]->task.task_flags=1<<TASKf_SUSPENDED|0x80000000;
       wait_tasks[i]->task.wake_jiffy=0x100000001;
-      if(!I386SleepCancel(&cancel_sleep,&wait_tasks[i]->task) ||
+      if(!scenario) wait_tasks[i]->task.wait->cancel=&CancelRecursion;
+      if(scenario&1) accepted=I386SleepCancel(&cancel_sleep,&wait_tasks[i]->task);
+      else accepted=I386TaskCancelWait(&wait_tasks[i]->task);
+      if(!accepted || !wait_tasks[i]->task.wait || !wait_tasks[i]->task.wait->cancelled ||
           I386SleepCancel(&cancel_sleep,&wait_tasks[i]->task) ||
           wait_tasks[i]->task.blocked || wait_tasks[i]->task.task_flags!=(1<<TASKf_SUSPENDED|0x80000000) ||
           wait_tasks[i]->task.wake_jiffy!=0x100000001 || (GetRFlags&0x200)!=wait_if) return 174;
+      wait_tasks[i]->task.wait->cancel=&CancelledAgain;
+      if(I386TaskCancelWait(&wait_tasks[i]->task) || errors) return 201;
     }
     sleeper=cancel_sleep.head;
     for(i=2;i>=0;i--) if(!(wait_mask & (1<<i))) {
@@ -61,14 +89,20 @@ I64 WaitCancelTest()
     flags=I386IrqSave;
     if(!I386SleepTick(&cancel_sleep) || !I386SleepTick(&cancel_sleep) || cancel_sleep.head) return 177;
     I386IrqRestore(flags);
-    for(i=0;i<3;i++) if(I386SleepCancel(&cancel_sleep,&wait_tasks[i]->task)) return 178;
+    for(i=0;i<3;i++) if(I386TaskCancelWait(&wait_tasks[i]->task)) return 178;
     if(!I386SchedYield(&scheduler) || wait_done!=3-count || errors) return 179;
     for(i=0;i<3;i++) if(wait_mask & (1<<i)) {
       if(wait_tasks[i]->task.finished) return 180;
       wait_tasks[i]->task.task_flags=0; wait_tasks[i]->task.wake_jiffy=0;
     }
     if(!I386SchedYield(&scheduler) || wait_done!=3 || errors) return 181;
-    for(i=0;i<3;i++) if(!I386TaskDestroy(wait_tasks[i])) return 182;
+    for(i=0;i<3;i++) {
+      if(wait_tasks[i]->task.wait) return 202;
+      wait_tasks[i]->task.wait=&guard;
+      if(I386TaskDestroy(wait_tasks[i])) return 203;
+      wait_tasks[i]->task.wait=0;
+      if(!I386TaskDestroy(wait_tasks[i])) return 182;
+    }
     if(heap.used || heap.allocations || !I386HeapValid(&heap)) return 183;
   }
   for(scenario=0;scenario<5;scenario++) {
@@ -85,7 +119,9 @@ I64 WaitCancelTest()
         I386SchedCancelJoin(0,&tasks[0]) || I386SchedCancelJoin(&scheduler,0) ||
         I386SchedCancelJoin(&scheduler,&foreign_task) || I386SchedCancelJoin(&scheduler,&tasks[0])) return 185;
     for(i=1;i<4;i++) {
-      if(wait_tasks[i]->task.join_target!=&wait_tasks[0]->task || !wait_tasks[i]->task.blocked) return 186;
+      if(!wait_tasks[i]->task.wait || wait_tasks[i]->task.wait->kind!=I386_WAIT_JOIN ||
+          wait_tasks[i]->task.wait->object!=&scheduler || wait_tasks[i]->task.wait->cancelled ||
+          wait_tasks[i]->task.join_target!=&wait_tasks[0]->task || !wait_tasks[i]->task.blocked) return 186;
       if(scenario==4 || (wait_mask & (1<<i))) {
         wait_tasks[i]->task.task_flags=1<<TASKf_SUSPENDED|0x80000000;
         wait_tasks[i]->task.wake_jiffy=0x100000001;
@@ -93,7 +129,9 @@ I64 WaitCancelTest()
       if(wait_mask & (1<<i)) {
         count++;
         if((scenario&1) && !I386SchedWake(&scheduler,&wait_tasks[i]->task)) return 187;
-        if(!I386SchedCancelJoin(&scheduler,&wait_tasks[i]->task) ||
+        if(scenario&1) accepted=I386SchedCancelJoin(&scheduler,&wait_tasks[i]->task);
+        else accepted=I386TaskCancelWait(&wait_tasks[i]->task);
+        if(!accepted || !wait_tasks[i]->task.wait || !wait_tasks[i]->task.wait->cancelled ||
             I386SchedCancelJoin(&scheduler,&wait_tasks[i]->task) ||
             wait_tasks[i]->task.join_target || wait_tasks[i]->task.join_next || wait_tasks[i]->task.blocked ||
             wait_tasks[i]->task.task_flags!=(1<<TASKf_SUSPENDED|0x80000000) ||
@@ -110,7 +148,7 @@ I64 WaitCancelTest()
     if(scenario==4) {
       if(wait_done || I386TaskDestroy(wait_tasks[0])) return 191;
       for(i=1;i<4;i++) {
-        if(I386SchedCancelJoin(&scheduler,&wait_tasks[i]->task) ||
+        if(I386TaskCancelWait(&wait_tasks[i]->task) ||
             wait_tasks[i]->task.join_target!=&wait_tasks[0]->task) return 192;
         wait_tasks[i]->task.task_flags=0; wait_tasks[i]->task.wake_jiffy=0;
       }
@@ -120,7 +158,8 @@ I64 WaitCancelTest()
     if(!I386TaskDestroy(wait_tasks[0]) || !(reuse=I386HeapAlloc(&heap,8192)) || reuse!=(wait_tasks[0]+0)(U8 *)) return 195;
     for(i=0;i<8192;i++) reuse[i]=0xA5;
     for(i=1;i<4;i++) if(wait_mask & (1<<i)) {
-      if(wait_tasks[i]->task.finished) return 196;
+      if(wait_tasks[i]->task.finished || !wait_tasks[i]->task.wait ||
+          !wait_tasks[i]->task.wait->cancelled || I386TaskCancelWait(&wait_tasks[i]->task)) return 196;
       wait_tasks[i]->task.task_flags=0; wait_tasks[i]->task.wake_jiffy=0;
     }
     if(!I386SchedYield(&scheduler) || wait_done!=3 || errors) return 197;
@@ -128,6 +167,7 @@ I64 WaitCancelTest()
     if(!I386HeapFree(&heap,reuse) || heap.used || heap.allocations || !I386HeapValid(&heap) ||
         (GetRFlags&0x200)!=wait_if) return 199;
   }
+  if(I386TaskCancelWait(0) || I386TaskCancelWait(&foreign_task) || I386TaskCancelWait(&tasks[0])) return 204;
   SetRFlags(saved);
   return 0;
 }

@@ -46,6 +46,7 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
   services->version=console_version; services->bytes=bytes;
   services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
   services->cancel_read=&ConsoleCancelRead;
+  services->cancel_wait=&I386TaskCancelWait;
   return 1;
 }
 Bool ConsoleDisplay()
@@ -145,3 +146,5 @@ U0 ConsolePresent()
 }
 
 #include "/Kernel/I386/KbcInputCancel.HC"
+
+#include "/Kernel/I386/WaitCancel.HC"

@@ -4,28 +4,32 @@ public Bool I386SchedJoin(CI386Scheduler *s,CI386Task *target)
 {//Task context only. Root may observe completion but cannot block.
   U32 flags=I386IrqSave;
   CI386Task *self,*node;
+  CI386TaskWait registration;
   if (!s || !s->current || !target || target->owner!=s || target==s->current || target==s->root) {
     I386IrqRestore(flags); return FALSE;
   }
   if (target->finished) { I386IrqRestore(flags); return TRUE; }
   self=s->current;
-  if (self==s->root) { I386IrqRestore(flags); return FALSE; }
+  if (self==s->root || self->wait) { I386IrqRestore(flags); return FALSE; }
   //Reject cycles through existing join dependencies before registering a waiter.
   for (node=target;node;node=node->join_target) if (node==self) {
     I386IrqRestore(flags); return FALSE;
   }
+  registration.kind=I386_WAIT_JOIN; registration.object=s;
+  registration.cancel=&I386SchedCancelJoin; registration.cancelled=FALSE; registration.cancelling=FALSE;
+  self->wait=&registration;
   self->join_target=target; self->join_next=target->join_head; target->join_head=self;
   //A generic Wake can be spurious for a join; completion is the predicate.
   while (self->join_target && !target->finished) I386SchedBlock(s);
   //Cancellation releases the target pin. It may already have been reaped.
-  if(!self->join_target) { I386IrqRestore(flags); return FALSE; }
+  if(!self->join_target) { self->wait=0; I386IrqRestore(flags); return FALSE; }
   node=target->join_head;
   if (node==self) target->join_head=self->join_next;
   else {
     while (node->join_next!=self) node=node->join_next;
     node->join_next=self->join_next;
   }
-  self->join_next=0; self->join_target=0;
+  self->join_next=0; self->join_target=0; self->wait=0;
   I386IrqRestore(flags);
   return TRUE;
 }
@@ -44,6 +48,8 @@ public Bool I386SchedCancelJoin(CI386Scheduler *s,CI386Task *task)
   if(previous) previous->join_next=task->join_next;
   else target->join_head=task->join_next;
   task->join_target=0; task->join_next=0;
+  if(task->wait && task->wait->kind==I386_WAIT_JOIN && task->wait->object==s)
+    task->wait->cancelled=TRUE;
   ok=TRUE;
 cancel_done:
   I386IrqRestore(flags); return ok;

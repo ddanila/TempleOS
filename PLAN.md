@@ -169,10 +169,14 @@ Coordinated pending-break delivery remains open. See
 Raw keyboard read cancellation now preserves queued byte/status pairs and
 decoder state, with the cancel callback in retained ConsoleRuntime rather than
 the bootstrap core. See [keyboard read cancellation](docs/i386-keyboard-read-cancellation.md).
-The next integration step is coordinated wait selection, break locking and
+Sleep and join now publish task-owned wait registrations, and retained dispatch
+can cancel either through the same entry while keeping the registration until
+normal resumption. Task lifecycle guards prevent freeing a registered stack.
+See [task wait registration](docs/i386-task-wait-registration.md). ATA, message
+and raw-keyboard waits still need registration, followed by break locking and
 cleanup before original Break delivery.
-Shared module lookup, heap checks and reclamation now recover 2112 bootstrap
-bytes, leaving 2288 bytes of headroom. See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
+Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
+bytes. After task wait registration, 368 bytes of headroom remain. See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
 Keep additional interruption logic in retained services and measure scheduler-core
 growth against this remaining space; preserve the reserved load area and validate
 module lifetimes and rejection behavior.

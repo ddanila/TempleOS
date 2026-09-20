@@ -15,7 +15,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
       root->file_state || root->file_clone || root->file_destroy || root->lifetime_refs ||
       root->hash_table || root->symbol_state || root->symbol_clone || root->symbol_destroy ||
       root->next_cc || root->last_cc || root->compiler_cleanup || root->active_controls ||
-      root->compiler_cleanup_failed || root->compiler_busy ||
+      root->compiler_cleanup_failed || root->compiler_busy || root->wait ||
       I386TaskHeapHooks(root)) return FALSE;
   root->addr=root; root->context.esp=0; root->next=root; root->last=root;
   root->next_task=root; root->last_task=root;
@@ -39,7 +39,7 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   I64 i;
   if (!s || !s->root || !task || task->owner || task->next_task || task->last_task || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
       task->next_cc || task->last_cc || task->compiler_cleanup || task->active_controls ||
-      task->compiler_cleanup_failed || task->compiler_busy ||
+      task->compiler_cleanup_failed || task->compiler_busy || task->wait ||
       (I386TaskHeapHooks(task) && I386TaskHeapHooks(task)!=31) ||
       ((task->hash_table || task->symbol_state || task->symbol_clone || task->symbol_destroy) &&
        (!task->hash_table || !task->symbol_state || !task->symbol_clone || !task->symbol_destroy)) ||
@@ -116,7 +116,7 @@ public Bool I386SchedFinish(CI386Scheduler *s)
 {//Root cannot finish. Successful completion never returns to this task.
   U32 flags=I386IrqSave;
   CI386Task *old,*next,*waiter;
-  if (!s || !s->current || s->current==s->root || s->current->finishing || s->current->io_locks) {
+  if (!s || !s->current || s->current==s->root || s->current->finishing || s->current->io_locks || s->current->wait) {
     I386IrqRestore(flags); return FALSE;
   }
   old=s->current;
@@ -153,7 +153,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   I64 i;
   if (!s || !task || task->owner!=s || !task->finished || task==s->current || task->next_task || task->last_task ||
       task->join_head || task->join_target || task->messages || task->except_top || task->io_locks || task->lifetime_refs || task->active_controls || task->compiler_cleanup ||
-      task->compiler_cleanup_failed || task->compiler_busy ||
+      task->compiler_cleanup_failed || task->compiler_busy || task->wait ||
       task->next_cc!=&task->next_cc || task->last_cc!=&task->next_cc || s->focus==task) {
     I386IrqRestore(flags); return FALSE;
   }

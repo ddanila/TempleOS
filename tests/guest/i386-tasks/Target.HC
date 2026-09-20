@@ -579,6 +579,7 @@ U0 OwnedCleanup(CI386Task *task)
 #include "T:/AtaChannel.HC"
 #include "T:/AtaCancel.HC"
 #include "/Kernel/I386/Sleep.HC"
+#include "/Kernel/I386/WaitCancel.HC"
 #include "T:/WaitCancel.HC"
 #include "T:/Flags.HC"
 #include "T:/WakeTime.HC"

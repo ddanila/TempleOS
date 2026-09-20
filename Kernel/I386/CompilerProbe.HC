@@ -64,7 +64,7 @@ extern U0 ProbeOptimize(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *oute
 extern U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
-#assert sizeof(CI386CompilerProbe)==72
+#assert sizeof(CI386CompilerProbe)==76
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
 {
   if(!probe || bytes!=sizeof(CI386CompilerProbe) || probe->bytes!=bytes ||
@@ -79,6 +79,8 @@ I64 Main(CI386CompilerProbe *probe,I64 bytes)
   if(probe->phase) {
     if(!probe->cancel_input || probe->cancel_input(0) || probe->cancel_input(I386TaskSelf)) KernelStop;
     KernelLog("INPUT CANCEL READY\n");
+    if(!probe->cancel_wait || probe->cancel_wait(0) || probe->cancel_wait(I386TaskSelf)) KernelStop;
+    KernelLog("WAIT CANCEL READY\n");
   }
   if(!probe->phase) ProbeStorage(probe);
   ProbeTokens(probe);

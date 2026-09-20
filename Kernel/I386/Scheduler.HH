@@ -3,6 +3,7 @@
 #include "/Kernel/I386/Context.HH"
 #include "/Kernel/I386/Heap.HH"
 extern class CI386Scheduler;
+extern class CI386TaskWait;
 #include "/Kernel/HashTypes.HH"
 extern class CI386MsgQueue;
 extern class CI386Except;
@@ -37,7 +38,18 @@ class CI386Task:CTask
   U8 *heap_state;
   Bool (*heap_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*heap_destroy)(CI386Task *task);
+  CI386TaskWait *wait; //Borrowed until the waiting call resumes and returns.
 };
+#define I386_WAIT_SLEEP 1
+#define I386_WAIT_JOIN 2
+class CI386TaskWait {
+  U32 kind;
+  U8 *object;
+  Bool (*cancel)(U8 *object,CI386Task *task);
+  Bool cancelled,cancelling;
+};
+//Cancellation callbacks run with IF clear and must not switch tasks.
+public extern Bool I386TaskCancelWait(CI386Task *task);
 class CI386Scheduler
 {
   CI386Task *root,*current;

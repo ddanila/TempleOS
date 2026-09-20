@@ -13,22 +13,28 @@ public Bool I386SleepTicks(CI386SleepQueue *queue,I64 ticks)
   U32 flags=I386IrqSave;
   CI386Scheduler *s;
   CI386Sleeper waiter;
+  CI386TaskWait registration;
   if(!queue || !queue->scheduler || ticks<0) { I386IrqRestore(flags); return 0; }
   s=queue->scheduler;
   if(!s->current || s->current->owner!=s || s->current->finished) {
     I386IrqRestore(flags); return 0;
   }
   if(!ticks) { I386IrqRestore(flags); return 1; }
-  if(s->current==s->root || s->current->blocked) { I386IrqRestore(flags); return 0; }
+  if(s->current==s->root || s->current->blocked || s->current->wait) { I386IrqRestore(flags); return 0; }
+  registration.kind=I386_WAIT_SLEEP; registration.object=queue;
+  registration.cancel=&I386SleepCancel; registration.cancelled=FALSE; registration.cancelling=FALSE;
+  s->current->wait=&registration;
   waiter.task=s->current; waiter.remaining=ticks; waiter.queued=1;
   waiter.next=queue->head; queue->head=&waiter;
   //A generic Wake may be spurious. Keep the stack record live until its tick expires.
   while(waiter.queued) {
     if(!I386SchedBlock(s)) {
       I386SleepCancel(queue,waiter.task);
+      waiter.task->wait=0;
       I386IrqRestore(flags); return 0;
     }
   }
+  waiter.task->wait=0;
   I386IrqRestore(flags); return waiter.remaining==0;
 }
 public Bool I386SleepTick(CI386SleepQueue *queue)
@@ -66,6 +72,8 @@ public Bool I386SleepCancel(CI386SleepQueue *queue,CI386Task *task)
   if(previous) previous->next=node->next;
   else queue->head=node->next;
   node->next=0; node->queued=0;
+  if(task->wait && task->wait->kind==I386_WAIT_SLEEP && task->wait->object==queue)
+    task->wait->cancelled=TRUE;
   ok=TRUE;
 sleep_cancel_done:
   I386IrqRestore(flags); return ok;

@@ -4,7 +4,7 @@
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_CONSOLE_VERSION 9
+#define I386_CONSOLE_VERSION 10
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;
@@ -20,5 +20,6 @@ class CI386ConsoleServices {
   Bool (*display)();
   U0 (*keys)(I64 unused);
   Bool (*cancel_read)(CI386Task *task);
+  Bool (*cancel_wait)(CI386Task *task);
 };
 #endif
