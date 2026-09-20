@@ -6255,3 +6255,19 @@ The original document editor is still pending. Next: native definition lists and
 DolDoc dictionary initialization, then document creation, rendering, editing and
 the save/reboot/reopen workflow. DolDoc dictionary type bits require their own
 matching entry destructor; standard symbol deletion must not be used blindly.
+
+## Owned definition lists for DolDoc
+
+MemoryRuntime 9 retains DefineLstLoad and HashDefineLstAdd. The shared original/
+native constructor now indexes its owned text copy, and symbol deletion frees
+the index array. Construction is unpublished until complete and cleans up every
+allocation-failure path. Public native headers expose the unchanged definition
+records. See [definition lists](i386-define-lists.md).
+
+Both x64 rebuild generations and the full QEMU/486 8 MiB suite pass, including
+five failure points per task phase, 170 commands / 233 lines, exact VGA, startup
+recovery and all 17 module rejection checks. All 1120 source hashes, nine build
+inputs and both disk hashes match. Normal boot measured 16.708 seconds; separate
+diagnostics measured 130.147 seconds. The preview contains this tested normal
+image. Original DolDoc dictionary initialization and the editing workflow remain
+open; this is a prerequisite, not completion of the native editor goal.

@@ -52,8 +52,10 @@ U0 SymbolHashVisit(CSymbolRelease *owner,CHashSrcSym *tmph)
     if (tmph->type & (HTT_FUN | HTT_CLASS))
 //Executable storage follows its separate lifetime policy.
       SymbolMemberLstVisit(owner,tmph(CHashClass *)->member_lst_and_root);
-    else if (tmph->type&HTT_DEFINE_STR)
+    else if (tmph->type&HTT_DEFINE_STR) {
+      (*owner->release)(owner->context,tmph(CHashDefineStr *)->sub_idx);
       (*owner->release)(owner->context,tmph(CHashDefineStr *)->data);
+    }
     else if (tmph->type & HTT_GLBL_VAR) {
       if (!(tmph(CHashGlblVar *)->flags&GVF_ALIAS))
 	(*owner->release)(owner->context,tmph(CHashGlblVar *)->data_addr);

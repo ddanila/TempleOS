@@ -301,8 +301,10 @@ those measurements.
 
 Public task-owned hash tables and list insertion now have retained native
 bindings and shared original/native ownership tests; see
-[public hash tables](docs/i386-public-hash-tables.md). The next document slice is
-original definition-list and command/color dictionary initialization, followed by
+[public hash tables](docs/i386-public-hash-tables.md). Native definition-list
+construction and expansion are also retained, with owned indices and allocation
+failure cleanup; see [definition lists](docs/i386-define-lists.md). The next
+document slice is original command/color dictionary initialization, followed by
 document lifecycle, rendering and editing. This does not yet provide DocInit or
 an editable document.
 

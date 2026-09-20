@@ -13,20 +13,7 @@ extern class CHashFun;
 
 #define KERNEL_MODULE_NAME	"/Kernel/Kernel"
 
-class CDbgInfo
-{
-  U32	min_line,max_line;
-  U32	body[1]; //Code heap is 32-bit value
-};
-
-public class CHashSrcSym:CHash
-{
-  U8	*src_link,
-	*idx;
-  CDbgInfo *dbg_info;
-  U8	*import_name;
-  CAOTImportExport *ie_lst;
-};
+#include "/Kernel/DefineTypes.HH"
 
 #define REGT_NONE	0
 #define REGT_R8		1
@@ -114,12 +101,6 @@ class CExternUsage
 };
 
 #help_index "Hash/System;Compiler/Internal"
-public class CHashDefineStr:CHashSrcSym
-{
-  U8	*data,**sub_idx;
-  I64	cnt;
-};
-
 #define Cf_EXTERN		0
 #define Cf_INTERNAL_TYPE	1
 

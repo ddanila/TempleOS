@@ -10,34 +10,12 @@ CHashDefineStr *DefineLoad(U8 *dname,U8 *st)
   return tmph;
 }
 
+#include "/Kernel/DefineListCore.HC"
+U8 *DefineListSourceLink(U8 *caller) { return MStrPrint("AD:0x%X",caller); }
 CHashDefineStr *DefineLstLoad(U8 *dname,U8 *lst)
-{//Create DEFINE list. Not efficient, but handy.
-  I64 cnt=0;
-  U8 *ptr,**idx;
-  CHashDefineStr *tmph=CAlloc(sizeof(CHashDefineStr));
-  tmph->type=HTT_DEFINE_STR;
-  tmph->str=StrNew(dname);
-  tmph->src_link=MStrPrint("AD:0x%X",Caller);
-  ptr=lst;
-  while (*ptr) {
-    if (*ptr!='@')
-      cnt++;
-    while (*ptr++);
-  }
-  tmph->data=MAlloc(ptr+1-lst);
-  MemCpy(tmph->data,lst,ptr+1-lst);
-  tmph->cnt=cnt;
-
-  idx=tmph->sub_idx=MAlloc(cnt*sizeof(U8 *));
-  ptr=lst;
-  while (*ptr) {
-    if (*ptr!='@')
-      *idx++=ptr;
-    while (*ptr++);
-  }
-
-  HashAdd(tmph,Fs->hash_table);
-  return tmph;
+{//Create an owned DEFINE list, preserving alias ordinals.
+  return DefineLstLoadCore(dname,lst,Fs->hash_table,Caller,
+    &CAlloc,&StrNew,&DefineListSourceLink,&HashDel,&HashAdd);
 }
 
 U0 UndefinedDefine(U8 *dname)

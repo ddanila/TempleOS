@@ -6,4 +6,6 @@ extern U0 MemoryHashTableDel(CHashTable *table);
 extern U0 MemoryHashDel(CHashSrcSym *symbol);
 extern I64 MemoryHashLstAdd(U8 *list,I64 type,CHashTable *table);
 extern U0 MemoryHashProbe();
+extern CHashDefineStr *MemoryDefineLstLoad(U8 *name,U8 *list);
+extern I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table);
 #endif
