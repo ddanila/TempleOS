@@ -24,7 +24,7 @@ implementations as their dependency groups become available.
 | --- | --- | --- |
 | Public records | `Kernel/KernelA.HH` defines `CDocBin`, `CDocSettings`, `CDocEntryBase`, `CDocEntry`, `CEdFindText`, `CDocUndo`, `CDoc` and supporting records/constants. | `PublicTaskTypes.HH` only forward-declares `CDoc`. Extract shared complete document records with their dependencies; verify original x64 layouts and native layouts before loading them publicly. |
 | Allocation | `DocNew.HC` uses `MAlloc`, `CAlloc`, `Free`, `MSize2`, `MAllocIdent`, `StrNew` and `MemCpy`. | These are declared in native `PublicMemory.HH`; validate actual document copy/reset/delete ownership and reclamation, including explicit `doc->mem_task`, rather than treating symbol availability as integration. |
-| String operations | `DocEntryNewTag` calls `StrLen`; `DocNew` calls `StrCpy`; binary lookup uses `StrCmp`. | Public `StrCmp` is declared by native `StartOS.HC`. `StrLen` (opcode 0x84) now has native lowering, public startup publication and x64/native execution tests. `StrCpy` remains absent from the native public headers. |
+| String operations | `DocEntryNewTag` calls `StrLen`; `DocNew` calls `StrCpy`; binary lookup uses `StrCmp`. | Public `StrCmp` is declared by native `StartOS.HC`. `StrLen` (opcode 0x84) now has native lowering, public startup publication and x64/native execution tests. `StrCpy` now binds the retained native routine with original null-input, void-return and direction-flag semantics; its shared behavioral corpus passes on x64 and native boot/worker tasks. |
 | Circular queues | `DocNew.HC` and `DocBin.HC` use `QueInit`, `QueIns`, `QueRem`; original public declarations use intrinsic opcodes and `CQue *`. | Queue opcodes are absent from the native intrinsic validator/backend. Implement public target-width links, including the companion `QueInsRev`, with declaration validation and execution checks. |
 | Document locking | `DocLock`/`DocUnlock` use `Fs`, `Bt`, `LBts`, `LBtr`, `LBEqu`, `Yield`, `BreakLock`, `BreakUnlock`. | Typed `Fs` and the three bit intrinsics exist. Public `LBEqu`, scheduling and break services still need binding and semantic integration. `I386SchedYield` is an internal service, not automatically the public `Yield` contract. |
 | Globals and callbacks | Document creation reads `doldoc.dft_de_flags` and `blkdev.tmp_filename`, and stores `EdLeftClickLink`. | Initialize real globals and retain callback code for document lifetime; supplying zero-filled placeholders does not fulfill document semantics. |
@@ -49,12 +49,11 @@ serialize the entire native record or simply remove its layout assertions.
 
 ## Implementation order and acceptance
 
-1. Complete the string-copy binding; the public `StrLen` intrinsic is now implemented
-   and verified (see [intrinsic publication](i386-intrinsic-publication.md)). Cover empty and
-   embedded-terminator strings, interior pointers, high-bit bytes, long strings,
-   nested calls and single evaluation of side effects. Verify malformed intrinsic
-   declarations are rejected without damaging published definitions. Compare
-   with original x64 behavior, including register/flag conventions.
+1. **String primitives implemented.** Public `StrLen` and `StrCpy` now have native
+   bindings and original-x64 comparisons. Keep their regression coverage while
+   integrating document callers; see [intrinsic publication](i386-intrinsic-publication.md)
+   and [public memory/string services](i386-public-memory.md). This does not yet
+   demonstrate original document creation or copying.
 2. Add queue intrinsics and shared document records. Exercise empty, singleton
    and multi-entry queues, insertion in both directions and removal, validating
    both links and memory around the native four-byte pointer fields. Preserve

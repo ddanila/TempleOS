@@ -1,10 +1,13 @@
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
+#include "/Kernel/I386/StrCopyCheck.HC"
 U0 BuildKernel()
 {
   U8 *source,*modules[12],*image,*name,*line;
   I64 sizes[12],size,errors,i;
   Report("START kernel cross-build\n");
+  if(!StrCopyCheck(&StrCpy)) { Report("FAIL original StrCpy\n"); return; }
+  Report("PASS original StrCpy\n");
   for(i=0;i<12;i++) {
     switch(i) {
       case 0: name="Kernel"; break;

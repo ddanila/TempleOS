@@ -5256,3 +5256,31 @@ diagnostic startup 177.808 seconds on QEMU/486 with 8 MiB. The kernel remains
 CompilerRuntime occupies 1299168 image bytes and 1299184 retained heap bytes.
 These measurements remain development-profile evidence, not full-workflow memory
 or strict 386 acceptance. See [intrinsic publication](i386-intrinsic-publication.md).
+
+
+## Public native StrCpy binding
+
+The retained memory runtime now publishes the original void-returning `StrCpy`
+contract. Its HolyC USE32 implementation preserves null-destination no-op,
+null-source empty-string and DF-directed byte-copy behavior. Public headers bind
+`_STRCPY`; MemoryRuntime is version 5 with the same 16-byte service table.
+
+One shared corpus passes against original x64 code and native boot/worker tasks,
+covering null/empty/long strings, high-bit bytes, embedded terminators, neighboring
+bytes, self-copy, forward overlap and reverse copying with DF set. Both x64
+rebuild generations and the full native suite pass, including 119 console commands
+across 182 lines with exact VGA output, startup recovery and 17 module rejection
+cases. The keyboard setup uses CAlloc so a setup expression does not introduce an
+unrelated pointer result into the expected console output.
+
+Normal startup measures 22.428 seconds and diagnostic startup 179.421 seconds.
+The diagnostic-only observation allowance is now 240 seconds after a run reached
+source startup at the old 180-second cutoff; normal boot remains independently
+tested with a 60-second allowance. The kernel remains 388928 bytes with 192 bytes
+of reservation headroom. MemoryRuntime uses 117488 image / 117504 retained heap
+bytes, including its shared test corpus; public headers retain 64576 bytes.
+
+This closes the initial public string-copy dependency in DocNew. Queue intrinsics,
+shared document records, document lifetime/locking and the integrated editor/file
+workflow remain required. See [public memory](i386-public-memory.md) and the
+[DolDoc dependency inventory](i386-doldoc-integration.md).

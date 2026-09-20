@@ -86,7 +86,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             command('qmp_capabilities')
             startup_started=time.monotonic()
             #Normal interactive boot must not pay for the diagnostic probe suite.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=180 if diagnostics else 60)
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=240 if diagnostics else 60)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']
@@ -95,7 +95,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 raise ValueError('Missing public headers before startup')
             if evidence.count('STARTUP source begin\n')!=1 or evidence.count(f'STARTUP source {status}\n')!=1:
                 raise ValueError('Missing or repeated native source startup')
-            probe_markers=('SOURCE ', 'LEX_SOURCE ', 'MEMORY PROBE ', 'RUNTIME PROBE ',
+            probe_markers=('SOURCE ', 'LEX_SOURCE ', 'MEMORY PROBE ', 'STRING COPY PROBE ', 'RUNTIME PROBE ',
                            'PROBE MODULE ', 'PROBE RELEASE ', 'PROBE TASK RELEASE ', 'TICK ')
             if diagnostics:
                 if not (evidence.index('PROBE RELEASE ') < evidence.index('PROBE TASK RELEASE ') <
@@ -179,6 +179,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('GetRFlags&0x200;', ['512']),
                 ('StrLen("");', ['0']),
                 ('StrLen("VGA")+StrLen("adapter"+2);', ['8']),
+                ('U8 *copy_buf=CAlloc(8);StrCpy(copy_buf+1,"VGA");StrLen(copy_buf+1)==3&&copy_buf[0]==0&&copy_buf[5]==0;', ['1']),
+                ('StrCpy(0,1);StrCpy(copy_buf+1,0);copy_buf[1]==0&&copy_buf[2]==71;', ['1']),
+                ('Free(copy_buf);', []),
                 ('U8 *dup=StrNew(0);dup[0]==0&&MHeapCtrl(dup)==Fs->data_heap;', ['1']),
                 ('Free(dup);U8 *dup_text=StrNew("VGA",Fs->code_heap);dup_text[0]==86&&dup_text[1]==71&&dup_text[2]==65&&dup_text[3]==0;', ['1']),
                 ('U8 *dup2=MAllocIdent(dup_text);dup2!=dup_text&&dup2[0]==86&&dup2[3]==0;', ['1']),

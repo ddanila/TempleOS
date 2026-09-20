@@ -175,7 +175,7 @@ fixture while IF preservation is checked; the existing task suite covers deliver
 Private task extensions now include heap state and callbacks. Dependent runtime
 versions are CompilerRuntime 40, FileRuntime 18, CompilerProbe 10 and ConsoleRuntime
 6. Their interface table sizes and the shared public task/CPU layouts are unchanged.
-The boot kernel now loads `MemoryRuntime` version 4 after file-service setup and
+The boot kernel now loads `MemoryRuntime` version 5 after file-service setup and
 before native compiler diagnostics or worker creation. Its 16-byte candidate
 table contains only binding and probe entry points. Module `Main` publishes no
 task state and reserves no backing memory; the kernel validates the target,
@@ -279,3 +279,40 @@ string-length implementation. Native public declarations keep ordinary source
 calls unchanged. These helpers propagate allocation failure through the existing
 `OutMem` path. Adam-heap convenience wrappers and the remaining public pool and
 heap services still require integration.
+
+
+## Public string copying
+
+MemoryRuntime version 5 publishes a thirteenth export, `_STRCPY`, through
+`public _extern _STRCPY U0 StrCpy(U8 *dst,U8 *src)` in the native public header.
+Its service-table size remains 16 bytes. Version-4 providers are rejected before
+binding, and wrong-target/missing-import cases retain reclamation coverage.
+
+`Kernel/I386/StrCopy.HC` adapts the original `Kernel/StrA.HC` byte-copy loop to
+four-byte pointers and eight-byte argument slots, using HolyC inline USE32
+assembly inside a normal function. The compiler supplies its function frame and
+callee cleanup; the loop preserves ESI/EDI and inherits DF. A null destination
+returns without accessing the source. A null source writes a zero byte. Other
+inputs copy through the terminator. The function returns U0 and allocates nothing;
+it does not supply a capacity check or arbitrary-overlap handling.
+
+The same `StrCopyCheck.HC` corpus executes against original x64 `StrCpy` during
+cross-build and against the native routine on boot and worker tasks. It covers
+null destination/source, empty strings, high-bit bytes, embedded termination,
+self-copy, forward overlap into an earlier destination, a 1024-byte string,
+neighbor-byte preservation and reverse copying with DF set. Normal keyboard tests
+exercise the public declaration and preserve exact VGA output. The executable
+instruction audit includes the original 386-compatible LODSB/STOSB operations.
+
+Both x64 rebuild generations and the full native suite pass: 119 console commands
+across 182 submitted lines, startup recovery and all 17 module rejection cases.
+Normal startup measures 22.428 seconds; diagnostic startup 179.421 seconds on
+QEMU/486 with 8 MiB. A previous diagnostic run hit the 180-second observation
+limit during source startup, so diagnostic-only boot/input observation now allows
+240 seconds; normal input boot retains its 60-second limit and skips the probes.
+
+The kernel remains 388928 bytes plus its 4096-byte early stage, leaving 192 bytes
+in its reservation. The retained memory module is 117488 image bytes / 117504
+heap bytes, an 8008-byte increase including the shared diagnostic corpus. Public
+headers retain 64576 bytes. These are component measurements; complete document
+workflow memory and strict 386 acceptance remain open.

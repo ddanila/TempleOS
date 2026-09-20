@@ -196,7 +196,7 @@ those measurements.
 
 The boot environment now loads the retained backing provider and binds public
 task heaps. The basic allocation interface and the document-facing `MemCpy`, `MemSet`,
-`MAllocIdent` and `StrNew` bindings are implemented; complete their integration
+`MAllocIdent`, `StrNew` and `StrCpy` bindings are implemented; complete their integration
 gates before making the editor and compiler depend on public allocation services.
 Use the complete shared `CHeapCtrl` and `CBlkPool` records; the bootstrap arena descriptor is not a public heap control.
 

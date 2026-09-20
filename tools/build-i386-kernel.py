@@ -200,7 +200,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 4:
+    if struct.unpack_from('<I', module, version_offset)[0] != 5:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -214,7 +214,7 @@ def verify_memory_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 3), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 4), 'api')):
         work = out/f'reject-memory-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -428,7 +428,7 @@ def audit(exports, out):
     allowed = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
                    'movsx movzx cdq jmp cmp jz jnz setz setnz setl setnl setg setng setc setnc '
                    'seta setna test shl shr in out sar shld shrd rcl div call dec jns jc jnc ja jna '
-                   'cli sti hlt cld pusha popa iret lgdt sgdt lidt sidt').split())
+                   'cli sti hlt cld lodsb stosb pusha popa iret lgdt sgdt lidt sidt').split())
     image = (exports/'Kernel32.BIN').read_bytes()
     if len(image)<8 or image[0]!=0xE9 or any(image[5:8]):
         raise ValueError('Invalid native entry trampoline')
@@ -713,7 +713,7 @@ def main():
         disk=diagnostic_image
         guest=out/'boot'
         diagnostic_started=time.monotonic()
-        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','180')
+        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','240')
         diagnostics['startup_seconds']=time.monotonic()-diagnostic_started
         log=(guest/'debug.log').read_text()
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
@@ -980,6 +980,9 @@ def main():
                 mbase<begin or mbase+msize>begin+length or
                 entries!=[mbase+x for x in memory_layout['entries']]):
             raise ValueError('Memory interface/image accounting mismatch')
+        copies=[int(line.split()[3],16) for line in log.splitlines() if line.startswith('STRING COPY PROBE ')]
+        if copies!=[0,1] or 'PASS original StrCpy\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/native string-copy behavior failed')
         phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('MEMORY PROBE ')]
         if phases!=[0,1] or log.index('MEMORY PROBE ')>log.index('RUNTIME PROBE '):
             raise ValueError('Root/worker public heap growth and reclamation failed')
@@ -987,7 +990,7 @@ def main():
                        for line in log.splitlines() if line.startswith('PUBLIC MEMORY CASE ')]
         if public_memory!=[(0,12),(1,12)]:
             raise ValueError('Native public allocation/lifetime/OutMem checks failed')
-        result['memory_runtime']=dict(version=4,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=5,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)

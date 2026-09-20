@@ -12,5 +12,6 @@ extern U8 *MemoryCAligned(I64 size,I64 alignment,CTask *selector=0,I64 misalignm
 extern U8 *MemoryCopy(U8 *dst,U8 *src,I64 count);
 extern U8 *MemorySet(U8 *dst,I64 value,I64 count);
 extern U8 *MemoryIdent(U8 *src,CTask *selector=0);
+extern U0 MemoryStrCopy(U8 *dst,U8 *src);
 extern U8 *MemoryStrNew(U8 *src,CTask *selector=0);
 #endif
