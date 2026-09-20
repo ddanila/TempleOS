@@ -24,7 +24,8 @@ Bool I386AtaChannelAcquire(CI386AtaChannel *channel)
   CI386Scheduler *scheduler;
   CI386Task *task;
   CI386AtaWaiter waiter,*node,*previous;
-  Bool ok=FALSE;
+  CI386TaskWait registration;
+  Bool ok=FALSE,registered=FALSE;
   if(!channel || channel->poisoned || channel->signature!=I386_ATA_CHANNEL_MAGIC || !(scheduler=channel->scheduler) ||
       !(task=scheduler->current) || task->owner!=scheduler || task->finished || task->finishing ||
       task->blocked || task->io_locks==0xFFFFFFFF || channel->owner==task) goto channel_done;
@@ -32,7 +33,11 @@ Bool I386AtaChannelAcquire(CI386AtaChannel *channel)
     if(channel->head || channel->tail) goto channel_done;
     channel->owner=task; task->io_locks++; ok=TRUE; goto channel_done;
   }
-  if(task==scheduler->root) goto channel_done;
+  if(task==scheduler->root || task->wait) goto channel_done;
+  registration.kind=I386_WAIT_ATA; registration.object=channel;
+  registration.cancel=&I386AtaChannelCancelWait;
+  registration.cancelled=FALSE; registration.cancelling=FALSE;
+  task->wait=&registration; registered=TRUE;
   waiter.next=0; waiter.task=task; waiter.queued=TRUE;
   if(channel->tail) channel->tail->next=&waiter;
   else channel->head=&waiter;
@@ -52,6 +57,7 @@ Bool I386AtaChannelAcquire(CI386AtaChannel *channel)
   ok=channel->owner==task && task->io_locks!=0;
   if(ok && channel->poisoned) { I386AtaChannelRelease(channel); ok=FALSE; }
 channel_done:
+  if(registered) task->wait=0;
   I386IrqRestore(flags); return ok;
 }
 Bool I386AtaChannelRelease(CI386AtaChannel *channel)
@@ -106,6 +112,8 @@ Bool I386AtaChannelCancelWait(CI386AtaChannel *channel,CI386Task *task)
   else channel->head=node->next;
   if(channel->tail==node) channel->tail=previous;
   node->next=0; node->queued=FALSE;
+  if(task->wait && task->wait->kind==I386_WAIT_ATA && task->wait->object==channel)
+    task->wait->cancelled=TRUE;
   ok=TRUE;
 cancel_done:
   I386IrqRestore(flags); return ok;

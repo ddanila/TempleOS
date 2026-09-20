@@ -4,7 +4,7 @@
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/TaskCompiler.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_FILE_SERVICES_VERSION 22
+#define I386_FILE_SERVICES_VERSION 23
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;

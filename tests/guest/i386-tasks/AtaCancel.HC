@@ -2,9 +2,13 @@ U32 cancel_mask,cancel_order,cancel_done,cancel_if;
 U0 AtaCancelWorker(I64 id)
 {
   Bool acquired;
+  CI386TaskWait guard;
   SetRFlags((GetRFlags&~0x200)|cancel_if);
+  I386TaskSelf->wait=&guard;
+  if(I386AtaChannelAcquire(&ata_channel) || I386TaskSelf->wait!=&guard) errors++;
+  I386TaskSelf->wait=0;
   acquired=I386AtaChannelAcquire(&ata_channel);
-  if((GetRFlags&0x200)!=cancel_if) errors++;
+  if(I386TaskSelf->wait || (GetRFlags&0x200)!=cancel_if) errors++;
   if(cancel_mask & (1<<id)) {
     if(acquired || I386TaskSelf->io_locks) errors++;
   } else {
@@ -21,6 +25,7 @@ I64 AtaCancelTest()
   CI386Task *owner;
   I64 scenario,i,expected,seen,cancel_count;
   U32 saved=GetRFlags;
+  Bool accepted;
   if(!I386HeapInit(&heap,0x60000,32768)) return 150;
   for(scenario=0;scenario<6;scenario++) {
     cancel_mask=2; expected=13;
@@ -35,7 +40,9 @@ I64 AtaCancelTest()
       if(!ata_tasks[i]) return 152;
     }
     if(!I386SchedYield(&scheduler) || cancel_done || cancel_order) return 153;
-    for(i=0;i<3;i++) if(!ata_tasks[i]->task.blocked) return 154;
+    for(i=0;i<3;i++) if(!ata_tasks[i]->task.blocked || !ata_tasks[i]->task.wait ||
+        ata_tasks[i]->task.wait->kind!=I386_WAIT_ATA || ata_tasks[i]->task.wait->object!=&ata_channel ||
+        ata_tasks[i]->task.wait->cancelled) return 154;
     if(scenario==4) {
       //Release has already granted the first worker ownership, before it runs.
       if(!I386AtaChannelRelease(&ata_channel) || ata_channel.owner!=&ata_tasks[0]->task ||
@@ -44,7 +51,7 @@ I64 AtaCancelTest()
     owner=ata_channel.owner;
     if(I386AtaChannelCancelWait(0,owner) || I386AtaChannelCancelWait(&ata_channel,0) ||
         I386AtaChannelCancelWait(&ata_channel,&foreign_task) ||
-        I386AtaChannelCancelWait(&ata_channel,owner)) return 156;
+        I386AtaChannelCancelWait(&ata_channel,owner) || I386TaskCancelWait(owner)) return 156;
     if(scenario==5) ata_channel.poisoned=TRUE;
     for(i=0;i<3;i++) if(cancel_mask & (1<<i)) {
       //A spurious private wake and public suspension must both survive safely.
@@ -52,7 +59,10 @@ I64 AtaCancelTest()
       if((scenario&1) && !I386SchedWake(&scheduler,&ata_tasks[i]->task)) return 157;
       ata_tasks[i]->task.task_flags|=1<<TASKf_SUSPENDED;
       ata_tasks[i]->task.wake_jiffy=0x100000001;
-      if(!I386AtaChannelCancelWait(&ata_channel,&ata_tasks[i]->task) ||
+      if(scenario&1) accepted=I386AtaChannelCancelWait(&ata_channel,&ata_tasks[i]->task);
+      else accepted=I386TaskCancelWait(&ata_tasks[i]->task);
+      if(!accepted || !ata_tasks[i]->task.wait || !ata_tasks[i]->task.wait->cancelled ||
+          I386TaskCancelWait(&ata_tasks[i]->task) ||
           I386AtaChannelCancelWait(&ata_channel,&ata_tasks[i]->task) ||
           ata_tasks[i]->task.blocked || ata_tasks[i]->task.io_locks ||
           !(ata_tasks[i]->task.task_flags & (1<<TASKf_SUSPENDED)) ||
@@ -70,7 +80,8 @@ I64 AtaCancelTest()
     if(scenario!=4 && !I386AtaChannelRelease(&ata_channel)) return 162;
     if(!I386SchedYield(&scheduler) || errors || cancel_done!=3-cancel_count) return 163;
     for(i=0;i<3;i++) if(cancel_mask & (1<<i)) {
-      if(ata_tasks[i]->task.finished) return 164;
+      if(ata_tasks[i]->task.finished || !ata_tasks[i]->task.wait ||
+          !ata_tasks[i]->task.wait->cancelled) return 164;
       ata_tasks[i]->task.task_flags&=~(1<<TASKf_SUSPENDED);
       ata_tasks[i]->task.wake_jiffy=0;
     }

@@ -4,10 +4,15 @@ U32 read_cancel_done,read_next_done,read_cancel_if;
 U0 CancelReader(I64 unused)
 {
   CI386Message message;
+  CI386TaskWait guard;
   SetRFlags((GetRFlags&~0x200)|read_cancel_if);
   message.type=99; message.arg1=98; message.arg2=97;
+  tasks[1].wait=&guard;
+  if(I386MsgRead(cancel_queue,&message,1<<2) || tasks[1].wait!=&guard ||
+      message.type!=99 || message.arg1!=98 || message.arg2!=97) errors++;
+  tasks[1].wait=0;
   if(I386MsgRead(cancel_queue,&message,1<<2) || message.type!=99 ||
-      message.arg1!=98 || message.arg2!=97 || tasks[1].task_flags!=1<<31 ||
+      message.arg1!=98 || message.arg2!=97 || tasks[1].wait || tasks[1].task_flags!=1<<31 ||
       (GetRFlags&0x200)!=read_cancel_if) errors++;
   read_cancel_done++;
 }
@@ -22,7 +27,7 @@ I64 CancelReadTest()
 {
   CI386Heap heap;
   CI386Message message;
-  Bool bound;
+  Bool bound,accepted;
   U8 *reuse;
   I64 scenario,i;
   U32 saved=GetRFlags;
@@ -39,7 +44,8 @@ I64 CancelReadTest()
     if(bound && !I386MsgAttach(cancel_queue,&tasks[1])) return 62;
     if(!I386SchedYield(&scheduler) || read_cancel_done || !tasks[1].blocked ||
         cancel_queue->waiter!=&tasks[1] || !cancel_queue->read_cancelled ||
-        *cancel_queue->read_cancelled || tasks[1].task_flags!=(1<<31|1<<TASKf_AWAITING_MSG)) return 63;
+        *cancel_queue->read_cancelled || !tasks[1].wait || tasks[1].wait->kind!=I386_WAIT_MESSAGE ||
+        tasks[1].wait->object!=cancel_queue || tasks[1].wait->cancelled || tasks[1].task_flags!=(1<<31|1<<TASKf_AWAITING_MSG)) return 63;
     if(I386MsgCancelRead(0,&tasks[1]) || I386MsgCancelRead(cancel_queue,0) ||
         I386MsgCancelRead(cancel_queue,&tasks[0]) || I386MsgCancelRead(cancel_queue,&cancel_foreign) ||
         !tasks[1].blocked || *cancel_queue->read_cancelled) return 64;
@@ -47,7 +53,10 @@ I64 CancelReadTest()
     if(scenario==1 && !I386SchedWake(&scheduler,&tasks[1])) return 65;
     if((scenario==2 || scenario==3) && !I386MsgSend(cancel_queue,2,42,43)) return 66;
     if(scenario==3 && !I386MsgClose(cancel_queue)) return 67;
-    if(!I386MsgCancelRead(cancel_queue,&tasks[1]) ||
+    if(scenario&1) accepted=I386MsgCancelRead(cancel_queue,&tasks[1]);
+    else accepted=I386TaskCancelWait(&tasks[1]);
+    if(!accepted || !tasks[1].wait || !tasks[1].wait->cancelled ||
+        I386TaskCancelWait(&tasks[1]) ||
         I386MsgCancelRead(cancel_queue,&tasks[1]) || cancel_queue->waiter ||
         cancel_queue->read_cancelled || tasks[1].blocked ||
         tasks[1].task_flags!=(1<<31|1<<TASKf_SUSPENDED) ||
@@ -69,6 +78,7 @@ I64 CancelReadTest()
           !tasks[2].blocked || cancel_queue->waiter!=&tasks[2] ||
           !cancel_queue->read_cancelled || *cancel_queue->read_cancelled || read_next_done) return 72;
     }
+    if(I386TaskCancelWait(&tasks[1]) || !tasks[1].wait || !tasks[1].wait->cancelled) return 80;
     tasks[1].task_flags&=~(1<<TASKf_SUSPENDED); tasks[1].wake_jiffy=0;
     if(!I386SchedYield(&scheduler) || read_cancel_done!=1 || !tasks[1].finished || errors ||
         tasks[1].task_flags!=1<<31 || (GetRFlags&0x200)!=read_cancel_if) return 73;

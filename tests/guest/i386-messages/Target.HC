@@ -225,6 +225,7 @@ I64 QueueTest()
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Scheduler.HC"
 #include "/Kernel/I386/Message.HC"
+#include "/Kernel/I386/WaitCancel.HC"
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Inbox.HC"
 #include "/Kernel/I386/Focus.HC"

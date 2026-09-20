@@ -42,15 +42,18 @@ public I64 I386MsgRead(CI386MsgQueue *queue,CI386Message *message,U64 mask=~1,Bo
   CI386Task *self;
   CI386Message *slot;
   I64 type;
-  Bool cancelled=FALSE;
+  CI386TaskWait registration;
   if (!queue || !queue->scheduler || !message || !(mask&~1)) {
     I386IrqRestore(flags); return 0;
   }
   s=queue->scheduler; self=s->current;
-  if (!self || (queue->recipient && queue->recipient!=self) ||
+  if (!self || self->wait || (queue->recipient && queue->recipient!=self) ||
       (queue->waiter && queue->waiter!=self)) {
     I386IrqRestore(flags); return 0;
   }
+  registration.kind=I386_WAIT_MESSAGE; registration.object=queue;
+  registration.cancel=&I386MsgCancelRead;
+  registration.cancelled=FALSE; registration.cancelling=FALSE;
   while (TRUE) {
     while (queue->count) {
       slot=&queue->messages[queue->head];
@@ -59,22 +62,23 @@ public I64 I386MsgRead(CI386MsgQueue *queue,CI386Message *message,U64 mask=~1,Bo
       if (mask&(1<<type)) {
         message->type=type; message->arg1=slot->arg1; message->arg2=slot->arg2;
         if(queue->waiter==self) self->task_flags&=~(1<<TASKf_AWAITING_MSG);
-        queue->waiter=0; queue->read_cancelled=0;
+        queue->waiter=0; queue->read_cancelled=0; self->wait=0;
         I386IrqRestore(flags); return type;
       }
     }
     if (!wait || queue->closed || self==s->root) {
       if(queue->waiter==self) self->task_flags&=~(1<<TASKf_AWAITING_MSG);
-      queue->waiter=0; queue->read_cancelled=0; I386IrqRestore(flags); return 0;
+      queue->waiter=0; queue->read_cancelled=0; self->wait=0; I386IrqRestore(flags); return 0;
     }
-    queue->waiter=self; queue->read_cancelled=&cancelled;
+    self->wait=&registration;
+    queue->waiter=self; queue->read_cancelled=&registration.cancelled;
     self->task_flags|=1<<TASKf_AWAITING_MSG;
     if (!I386SchedBlock(s)) {
       self->task_flags&=~(1<<TASKf_AWAITING_MSG);
-      queue->waiter=0; queue->read_cancelled=0; I386IrqRestore(flags); return 0;
+      queue->waiter=0; queue->read_cancelled=0; self->wait=0; I386IrqRestore(flags); return 0;
     }
     //Cancellation detaches the registration; the queue may have been reused.
-    if(cancelled) { I386IrqRestore(flags); return 0; }
+    if(registration.cancelled) { self->wait=0; I386IrqRestore(flags); return 0; }
   }
 }
 public Bool I386MsgClose(CI386MsgQueue *queue)

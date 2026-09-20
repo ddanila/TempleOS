@@ -62,9 +62,10 @@ message reads now also detach safely without consuming queued data; see
 [message-read cancellation](i386-message-read-cancellation.md). Raw keyboard
 waits also have a cancellation primitive through the retained console service;
 see [keyboard-read cancellation](i386-keyboard-read-cancellation.md). Coordinated
-wait selection now has task-owned registrations for sleep and join; see
-[task wait registration](i386-task-wait-registration.md). Registration of the
-other wait types and cleanup before exception delivery remain required.
+wait selection now has task-owned registrations for sleep, join, queued ATA
+acquisitions and message reads; see
+[resource wait registration](i386-resource-wait-registration.md). Raw-keyboard
+registration and cleanup before exception delivery remain required.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

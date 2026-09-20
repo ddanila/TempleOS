@@ -172,9 +172,10 @@ the bootstrap core. See [keyboard read cancellation](docs/i386-keyboard-read-can
 Sleep and join now publish task-owned wait registrations, and retained dispatch
 can cancel either through the same entry while keeping the registration until
 normal resumption. Task lifecycle guards prevent freeing a registered stack.
-See [task wait registration](docs/i386-task-wait-registration.md). ATA, message
-and raw-keyboard waits still need registration, followed by break locking and
-cleanup before original Break delivery.
+See [task wait registration](docs/i386-task-wait-registration.md). Queued ATA
+acquisitions and message reads now register with the same dispatcher; see
+[resource wait registration](docs/i386-resource-wait-registration.md). Raw-keyboard
+registration, break locking and cleanup before original Break delivery remain.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After task wait registration, 368 bytes of headroom remain. See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
 Keep additional interruption logic in retained services and measure scheduler-core

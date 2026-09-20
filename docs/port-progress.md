@@ -5868,3 +5868,35 @@ ATA, message and raw-keyboard waits still need common registration. A dedicated
 retained task service, break-lock/pending-break policy, file/compiler cleanup and
 original exception/job/popup delivery remain required. This is not public Break,
 complete DolDoc, strict 386 compatibility or native self-hosting.
+
+
+## Task-owned ATA and message wait registration
+
+Queued ATA acquisitions and blocking message reads now publish their cancellation
+record through the waiting task. Direct and common-dispatch cancellation share
+that record, and repeated dispatch avoids the resource after cancellation.
+Normal return clears the slot; existing lifecycle guards protect the registered
+stack. Granted ATA ownership wins over late cancellation. Message cancellation
+preserves queued data and permits queue reuse or a replacement reader before the
+old reader returns. See [resource wait registration](i386-resource-wait-registration.md).
+
+FileRuntime is now version 23 with the same 40-byte table. Other service versions
+and private/public record layouts are unchanged. Raw-keyboard registration,
+a dedicated retained task service, pending-break locking, outer file/compiler
+cleanup and original exception/job/popup delivery remain open.
+
+Both x64 rebuild generations and the native tasks, messages and ATA-task suites
+pass. The full kernel suite passes 129 commands / 192 input lines, exact VGA,
+startup recovery, normal boot with an invalid diagnostic module and all 17 module
+rejection/reclamation cases, including FileRuntime 22 rejection. All 1092 OS
+source hashes and 8 build-input hashes match the tested worktree; both boot disk
+hashes are unchanged after tests. The build records the pre-commit revision plus
+dirty-worktree status and exact input hashes.
+
+Kernel size remains 388752 bytes, leaving 368 bytes after the 4096-byte early
+stage. FileRuntime retains 131704 bytes (131688-byte image); public headers retain
+179296 bytes. ConsoleRuntime retains 50840 bytes; CompilerProbe reclaims 672064
+bytes and its worker reclaims 541856 bytes. Normal boot on QEMU/486 at 8 MiB
+measured 14.301 seconds and diagnostics 126.146 seconds. The preview image is
+refreshed from the verified normal disk. These checks do not establish strict
+386 compatibility, complete DolDoc or native i386 self-hosting.
