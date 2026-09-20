@@ -141,7 +141,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   I386PicMask(0xFFFC);
   if(kernel_diagnostics) {
     kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,8192,&KernelPulse,0,
-      0x18,0x20,262144);
+      0x18,0x20,524288);
     if(!kernel_pulse) KernelStop;
     //This diagnostic compiler arena is released with the worker after its probes.
     //Complete public headers and retained functions exceed the former 128 KiB.
@@ -152,7 +152,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
     }
     pulse_used=kernel_heap.used;
     if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
-        pulse_used-kernel_heap.used<262144+8192) KernelStop;
+        pulse_used-kernel_heap.used<524288+8192) KernelStop;
     kernel_pulse=0;
     KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
   }

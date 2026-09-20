@@ -83,5 +83,26 @@ checks. Normal startup measures 22.178 seconds; diagnostics measure 177.808
 seconds on QEMU/486 with 8 MiB. Both x64 rebuild generations pass. The kernel
 remains 388928 bytes, with 192 bytes free after the early stage in its reservation;
 CompilerRuntime is 1299168 image bytes / 1299184 retained heap bytes. This closes
-one DolDoc dependency; public string copy, queue intrinsics and document lifecycle
-integration remain open.
+one DolDoc dependency. Public string copy and queues were subsequently added;
+document lifecycle integration remains open.
+
+
+## Public queue intrinsics
+
+`Kernel/I386/Queue.HH` publishes the original U0 signatures for opcodes 0x80–0x83:
+`QueInit`, `QueIns`, `QueInsRev` and `QueRem`. Validation requires a single pointer
+to the complete eight-byte CQue with self-typed next/last members at offsets 0/4.
+Lowering uses four-byte loads/stores, evaluates arguments once and allocates no
+memory. Removal updates neighbors and leaves the entry's own links unchanged.
+
+The same nine-stage corpus runs under original x64 intrinsics, cross-generated
+i386 code and native boot/worker compilation. It checks empty/singleton/multiple
+entries, both insertion directions, removal, 32 churn rounds, side effects and
+wide markers adjacent to links. The backend suite now has 245 cases and retains
+its instruction audit. Native probes reject five malformed signatures per phase
+with unchanged symbols and heap accounting.
+
+Public startup now provides 38 declarations across Intrinsic.HH and Queue.HH;
+the existing isolated 35-declaration intrinsic probe remains separate. The queue
+header retains its help index, but native #help_file parsing and publication are
+still missing. See the DolDoc dependency inventory for that integration gate.

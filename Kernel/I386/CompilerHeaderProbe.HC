@@ -103,6 +103,26 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.source="MemFailure;";
   if(!ProbePublicMemoryInput(probe,&input,&answer,11) || answer.value!=1) KernelStop;
   KernelLog("PUBLIC MEMORY CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(12); KernelLog("\n");
+  for(i=0;i<5;i++) {
+    switch(i) {
+      case 0: input.source="_intern 0x80 U0 QueueBad(U8 *head);"; break;
+      case 1: input.source="_intern 0x83 U0 QueueBad(CQue **head);"; break;
+      case 2: input.source="_intern 0x81 U0 QueueBad(CQue *entry,U8 *pred);"; break;
+      case 3: input.source="_intern 0x82 I64 QueueBad(CQue *entry,CQue *succ);"; break;
+      case 4: input.source="_intern 0x80 U0 QueueBad(CQue *head,CQue *extra);"; break;
+    }
+    before_used=heap->used; before_allocations=heap->allocations;
+    if(probe->compiler->input(&input) || ProbeSymbolFind(0,"QueueBad",table,HTT_FUN) ||
+        heap->used!=before_used || heap->allocations!=before_allocations) KernelStop;
+    KernelLog("PUBLIC QUEUE REJECT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(i); KernelLog("\n");
+  }
+  input.source="#include \"/Kernel/I386/QueueCheck.HC\"\nQueueCheck;";
+  accepted=probe->compiler->input(&input);
+  KernelLog("PUBLIC QUEUE RESULT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(accepted);
+  KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value);
+  KernelLog(" "); KernelHex(input.answers); KernelLog("\n");
+  if(!accepted || input.answers!=1 || answer.value!=9) KernelStop;
+  KernelLog("PUBLIC QUEUE CASE "); KernelHex(probe->phase); KernelLog("\n");
   //Reuse the AOT layout assertions as native source. Exclude private extension
   //checks and separate assertions with semicolons to bound lexer recursion.
   name=0;

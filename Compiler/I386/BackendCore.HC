@@ -407,6 +407,31 @@ U0 I386BackendCore(CI386Backend *backend)
             } else I386F64Runtime(backend,out,ic->ic_code,pass);
             I386Bytes(out,"\x52\x50",2);
             break;
+          case IC_QUE_INIT: case IC_QUE_REM:
+          case IC_QUE_INS: case IC_QUE_INS_REV:
+            arg_index=1;
+            if(ic->ic_code==IC_QUE_INS || ic->ic_code==IC_QUE_INS_REV) arg_index=2;
+            if (!backend->calls || backend->calls->called || backend->calls->indirect ||
+                !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||
+                backend->calls->fun->exe_addr!=ic->ic_code || backend->calls->fun->arg_cnt!=arg_index ||
+                depth!=backend->calls->depth+arg_index) throw('Compiler');
+            //EAX=entry; ECX=predecessor/successor. Links have target pointer width.
+            I386Bytes(out,"\x58\x5A",2);
+            if(arg_index==2) I386Bytes(out,"\x59\x5A",2);
+            switch(ic->ic_code) {
+              case IC_QUE_INIT:
+                I386Bytes(out,"\x89\x00\x89\x40\x04",5); break;
+              case IC_QUE_INS:
+                I386Bytes(out,"\x8B\x11\x89\x01\x89\x10\x89\x48\x04\x89\x42\x04",12); break;
+              case IC_QUE_INS_REV:
+                I386Bytes(out,"\x8B\x51\x04\x89\x02\x89\x08\x89\x50\x04\x89\x41\x04",13); break;
+              case IC_QUE_REM:
+                //Unlink neighbors without clearing the removed entry's own links.
+                I386Bytes(out,"\x8B\x08\x8B\x50\x04\x89\x0A\x89\x51\x04",10); break;
+            }
+            depth=backend->calls->depth;
+            backend->calls->called=TRUE;
+            break;
           case IC_STRLEN:
             if (!backend->calls || backend->calls->called || backend->calls->indirect ||
                 !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||

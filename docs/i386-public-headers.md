@@ -105,6 +105,16 @@ seconds and diagnostic startup 187.625 seconds on QEMU/486 with 8 MiB. Kernel
 size remains 388928 bytes, leaving 192 bytes after the early stage in the fixed
 reservation.
 
-This establishes the public queue type only. Native `QueInit`, `QueIns`,
-`QueInsRev` and `QueRem` intrinsics remain unfinished, as do shared document
-records and the full DolDoc workflow.
+The record work is now followed by public `QueInit`, `QueIns`, `QueInsRev` and
+`QueRem` in `Kernel/I386/Queue.HH`. These preserve the original U0 signatures and
+four-byte links, including the removed entry's unchanged next/last values.
+Five malformed declarations per boot/worker phase fail without publication or
+heap changes. The shared nine-stage queue corpus passes on original x64, the
+cross-generated runner and native boot/worker tasks.
+
+With queue operations enabled, the full native suite passes 123 commands across
+186 input lines. Public headers retain 71048 bytes. Normal startup is 24.988
+seconds and diagnostics 220.877 seconds on the same QEMU/486 8 MiB profile.
+The diagnostic worker now needs a temporary 512 KiB compiler arena; its teardown
+returns 533664 bytes including stack and task metadata before console startup.
+Shared document records and the full DolDoc workflow remain unfinished.

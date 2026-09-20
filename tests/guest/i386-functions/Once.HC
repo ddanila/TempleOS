@@ -547,6 +547,9 @@ U0 CompileTests()
   EmitSwitchCase("U8 s[3];s[0]=65;s[1]=66;s[2]=0;U8 *p=s;return StrLen(p++)*10+(p-s);",0,0,21,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
   EmitSwitchCase("U8 s[1025];I64 i;for(i=0;i<1024;i++)s[i]=255;s[1024]=0;return StrLen(s)+StrLen(s+1024);",0,0,1024,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
   EmitSwitchCase("U8 s[3];s[0]=65;s[1]=0;s[2]=66;return 0x100000000+StrLen(s+StrLen(s));",0,0,0x100000000,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
+  EmitCase("return QueueCheck;",0,0,9,&cursor,
+    "#include \"/Kernel/I386/Queue.HH\"\nextern I64 QueueCheck();",
+    "#include \"/Kernel/I386/QueueCheck.HC\"\n");
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);
   Report(line);

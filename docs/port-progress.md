@@ -5311,3 +5311,37 @@ implementation. Original queue operations update next/last pointers directly;
 `QueRem` leaves the removed entry's own links unchanged. Preserve those semantics
 when adding target-width lowering and lifecycle tests, then integrate the shared
 DolDoc records. See [public headers](i386-public-headers.md).
+
+
+## Public native queue operations
+
+Native `QueInit`, `QueIns`, `QueInsRev` and `QueRem` now use the shared CQue record
+and original void-returning signatures. The backend writes four-byte links and
+preserves removed entries' own links. Public declaration validation checks the
+complete queue layout and self-typed pointer members.
+
+A shared nine-stage corpus passes against original x64 intrinsics, the
+cross-generated i386 runner and native compilation in boot and worker tasks.
+It covers empty/singleton/multiple entries, both insertion directions, removal,
+32 churn rounds, single argument evaluation and adjacent wide markers. Five
+malformed declarations per native phase leave symbols and heap counters intact.
+Both x64 rebuild generations and the 245-case backend instruction audit pass.
+The full native suite passes 123 commands/186 lines with exact VGA output,
+startup recovery, probe-independent normal boot and 17 module rejection cases.
+
+The full corpus exposed OutMem in the worker's 256 KiB private compiler arena.
+The diagnostic-only arena is now 512 KiB; the same corpus passes and task reap
+returns 533664 bytes before console startup. Compiler working-buffer migration
+remains open; this is not full-workflow memory acceptance. Normal startup is
+24.988 seconds and diagnostic startup 220.877 seconds on QEMU/486 with 8 MiB.
+
+Public headers retain 71048 bytes. CompilerRuntime uses 1307008 image / 1307024
+retained heap bytes. CompilerProbe uses 641520 image bytes and reclaims its entire
+641536-byte allocation. Kernel size remains 388928 bytes, with 192 bytes of
+bootstrap headroom.
+
+Trying the original queue #help_file directive exposed a separate missing
+native lexer/publication feature. The native queue header records the original
+help reference in a comment; real help-file symbols, shared document records,
+locking and document lifecycle integration remain required. The dependency
+inventory now records that reproducer and acceptance work explicitly.

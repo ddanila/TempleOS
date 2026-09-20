@@ -109,7 +109,8 @@ depend on those identities.
 
 Native intrinsic publication now distinguishes opcode-bearing declarations from
 resident addresses and ordinary generated functions. The startup header exposes
-34 original public intrinsic signatures; the intrinsic corpus covers 35 including
+38 original public intrinsic signatures (34 in Intrinsic.HH and four queue
+operations in Queue.HH); the isolated intrinsic corpus covers 35 including
 private FS/GS getters, and public-stack probes cover `GetRSP`. Pointer depth is checked separately from raw numeric type,
 because `RT_PTR` and `RT_I64` share a value. This advances compiler binding, while
 complete public task/CPU layouts remain required. See
@@ -135,8 +136,10 @@ through native public-header loading. This closes the header-loading slice only:
 complete public service semantics remain part of the priority-1 gate, and private
 ready queues remain distinct from public task links.
 The original `CQue` record is now shared and loaded natively, with verified
-16-byte x64 and 8-byte i386 layouts. Queue intrinsic lowering and the document
-records remain the next source-driven DolDoc dependencies.
+16-byte x64 and 8-byte i386 layouts. All four queue intrinsics now preserve the
+original link semantics, with shared x64/cross-generated/native execution tests.
+Shared document records, locking services and native #help_file metadata remain
+source-driven DolDoc dependencies.
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for
 spawned and boot tasks. Exception validation and caller walking read those bounds;
 stack growth and the full saved-register/debugger contract remain unfinished.
@@ -225,7 +228,8 @@ Use the complete shared `CHeapCtrl` and `CBlkPool` records; the bootstrap arena 
    Migrate compiler, generated-code and task allocations incrementally, preserving
    their required lifetimes. Normal interactive boot skips diagnostic probes.
    The separate diagnostic image retains all root/worker checks; its temporary
-   worker uses a 256 KiB private compiler arena. Explicit worker exit and reap must release
+   worker uses a 512 KiB private compiler arena after the complete queue corpus
+   demonstrated OutMem at 256 KiB. Explicit worker exit and reap must release
    it before the console starts; verify the returned bytes rather than assuming
    teardown occurs. This is test workspace, not the final compiler allocation
    policy. Measure fragmentation and latency before changing that policy. Account for fragmentation and cached

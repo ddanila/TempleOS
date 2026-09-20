@@ -25,7 +25,8 @@ implementations as their dependency groups become available.
 | Public records | `Kernel/KernelA.HH` defines `CDocBin`, `CDocSettings`, `CDocEntryBase`, `CDocEntry`, `CEdFindText`, `CDocUndo`, `CDoc` and supporting records/constants. | `PublicTaskTypes.HH` only forward-declares `CDoc`. Extract shared complete document records with their dependencies; verify original x64 layouts and native layouts before loading them publicly. |
 | Allocation | `DocNew.HC` uses `MAlloc`, `CAlloc`, `Free`, `MSize2`, `MAllocIdent`, `StrNew` and `MemCpy`. | These are declared in native `PublicMemory.HH`; validate actual document copy/reset/delete ownership and reclamation, including explicit `doc->mem_task`, rather than treating symbol availability as integration. |
 | String operations | `DocEntryNewTag` calls `StrLen`; `DocNew` calls `StrCpy`; binary lookup uses `StrCmp`. | Public `StrCmp` is declared by native `StartOS.HC`. `StrLen` (opcode 0x84) now has native lowering, public startup publication and x64/native execution tests. `StrCpy` now binds the retained native routine with original null-input, void-return and direction-flag semantics; its shared behavioral corpus passes on x64 and native boot/worker tasks. |
-| Circular queues | `DocNew.HC` and `DocBin.HC` use `QueInit`, `QueIns`, `QueRem`; original public declarations use intrinsic opcodes and `CQue *`. | The canonical `CQue` record is now shared through `Kernel/QueueTypes.HH` and loaded by native public headers (8 bytes native, 16 bytes x64). Queue opcodes are still absent from the native intrinsic validator/backend. Implement public target-width links, including the companion `QueInsRev`, with declaration validation and execution checks. |
+| Circular queues | `DocNew.HC` and `DocBin.HC` use `QueInit`, `QueIns`, `QueRem`; original public declarations use intrinsic opcodes and `CQue *`. | The canonical `CQue` record is now shared through `Kernel/QueueTypes.HH` and loaded by native public headers (8 bytes native, 16 bytes x64). All four queue opcodes, including `QueInsRev`, now validate the public signature and update four-byte native links. A shared original-x64/cross-generated/native corpus checks both directions, removal and neighboring memory. Actual document ownership integration remains open. |
+| Help metadata | `MakeDoc.HC` uses `#help_file`; original lexer creates public `HTT_HELP_FILE` source symbols. | Native `Lex.HC` handles `#help_index` but not `#help_file`, and native publication does not accept help-file symbols. Loading a header containing `#help_file "::/Doc/Que"` fails. Implement path resolution, symbol ownership, transactional publication and rollback before loading unchanged document sources. |
 | Document locking | `DocLock`/`DocUnlock` use `Fs`, `Bt`, `LBts`, `LBtr`, `LBEqu`, `Yield`, `BreakLock`, `BreakUnlock`. | Typed `Fs` and the three bit intrinsics exist. Public `LBEqu`, scheduling and break services still need binding and semantic integration. `I386SchedYield` is an internal service, not automatically the public `Yield` contract. |
 | Globals and callbacks | Document creation reads `doldoc.dft_de_flags` and `blkdev.tmp_filename`, and stores `EdLeftClickLink`. | Initialize real globals and retain callback code for document lifetime; supplying zero-filled placeholders does not fulfill document semantics. |
 | Reporting | `DocEntryDel` and binary validation use `RawPrint` on invalid state. | Provide the real reporting path and its formatting/timing dependencies; a silent stub would conceal integration failures. |
@@ -54,11 +55,12 @@ serialize the entire native record or simply remove its layout assertions.
    integrating document callers; see [intrinsic publication](i386-intrinsic-publication.md)
    and [public memory/string services](i386-public-memory.md). This does not yet
    demonstrate original document creation or copying.
-2. Add queue intrinsics and shared document records. The shared `CQue` layout is
-   now verified on both targets; the four queue operations remain to be lowered. Exercise empty, singleton
-   and multi-entry queues, insertion in both directions and removal, validating
-   both links and memory around the native four-byte pointer fields. Preserve
-   x64 record layouts and verify native class completion through public headers.
+2. **Queue primitives implemented; document records next.** Shared `CQue` layouts
+   and all four operations now pass on both targets, including empty, singleton
+   and multi-entry queues, retained removed-entry links, single evaluation and
+   neighboring memory. Extract shared document records, preserve x64 layouts and
+   verify native class completion through public headers. Implement native
+   `#help_file` metadata with ownership and rollback before loading MakeDoc.
 3. Connect the remaining lifecycle dependencies above and execute original
    document creation, entry insertion/copy, reset and deletion. Measure heap
    ownership and repeated-cycle reclamation. Use failed allocation and lock/break

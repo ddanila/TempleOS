@@ -986,6 +986,10 @@ def main():
         phases=[int(line.split()[2],16) for line in log.splitlines() if line.startswith('MEMORY PROBE ')]
         if phases!=[0,1] or log.index('MEMORY PROBE ')>log.index('RUNTIME PROBE '):
             raise ValueError('Root/worker public heap growth and reclamation failed')
+        queues=[int(line.split()[3],16) for line in log.splitlines() if line.startswith('PUBLIC QUEUE CASE ')]
+        queue_rejects=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC QUEUE REJECT ')]
+        if queues!=[0,1] or queue_rejects!=[(phase,case) for phase in (0,1) for case in range(5)] or 'PASS original queues\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/native queue behavior failed')
         public_memory=[tuple(int(value,16) for value in line.split()[3:])
                        for line in log.splitlines() if line.startswith('PUBLIC MEMORY CASE ')]
         if public_memory!=[(0,12),(1,12)]:
@@ -1013,7 +1017,7 @@ def main():
         if len(memory)!=1 or memory[0]<=0: raise ValueError('Missing public-header memory accounting')
         lifetimes=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('CODE HEAP LIFETIME ')]
         released=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('PROBE TASK RELEASE ')]
-        if lifetimes!=[0,1] or len(released)!=1 or released[0]<262144+8192 or not (
+        if lifetimes!=[0,1] or len(released)!=1 or released[0]<524288+8192 or not (
                 log.index('PROBE RELEASE ') < log.index('PROBE TASK RELEASE ') < log.index('CONSOLE TASK SPAWNED')):
             raise ValueError('Missing public code-heap/task reclamation evidence')
         result['code_heap']={'task_phases':lifetimes,'probe_task_reclaimed_bytes':released[0],

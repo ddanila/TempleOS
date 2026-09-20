@@ -438,7 +438,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != {'data': 27, 'functions': 244, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
+    if offset != len(data) or count != {'data': 27, 'functions': 245, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
     if interrupt_ranges:
         raise ValueError('Unmatched interrupt code range')
