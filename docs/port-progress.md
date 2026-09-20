@@ -6202,3 +6202,37 @@ establish a complete live document. Real document initialization, globals,
 reporting, callbacks and DocTop/DocRecalc dependencies remain ahead, followed by
 rendering/editing and persistent save/reboot/reopen acceptance. The first usable
 native DolDoc editing-session goal remains open.
+
+
+## Shared document defaults
+
+DocInit now delegates fixed entry/type defaults and derived masks to a shared
+DocDefaultsInit helper. The original dictionary setup and document parser remain
+unchanged. The helper preserves the dictionary pointer and adds required clean
+scan codes without removing caller-added bits. CDolDocGlbls/dictionary kinds and
+scan-code constants now have shared headers with unchanged field order and
+values. See [document defaults](i386-document-defaults.md).
+
+The former hard-coded default string and parser calculation are retained as an
+independent x64 oracle. It compares every byte of the table span, including
+repeat-initialization behavior. The native exception/task fixture runs the shared
+initializer, preserves an injected dictionary pointer and extra clean-code bit,
+and matches the x64 pointer-free fingerprint `c98dfea78567acec`. The fixture's
+expected-result slot is verified; the earlier argument-slot error was corrected
+before final validation. Native dictionary construction/publication remains open;
+this is table initialization, not a complete native DocInit.
+
+Both x64 rebuild generations, the native exception/task suite and the full native
+kernel suite pass. The console corpus remains 166 commands / 229 input lines,
+with exact VGA, seven hardware breaks, document locking/selection, startup
+recovery, normal boot with an invalid probe and all 17 rejection cases passing.
+All 1110 OS source hashes and nine build-input hashes match, including the new
+independent oracle; both disk hashes remain unchanged. The normal preview is
+refreshed. Manifests retain the pre-commit revision and exact tested hashes.
+
+Kernel size remains 363296 bytes, with 25824 bytes of bootstrap headroom after
+the 4096-byte early stage. ConsoleRuntime 14 remains 91080 bytes / 91096 retained.
+Normal QEMU/486 boot at 8 MiB measured 15.003 seconds; diagnostics measured
+127.151 seconds. Native definition-list/hash services and real document globals,
+entry lifecycle, rendering/editing and persistence remain required. The usable
+native editing-session goal is still open.

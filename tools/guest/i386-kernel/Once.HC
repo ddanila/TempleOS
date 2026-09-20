@@ -5,6 +5,7 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/BitEquCheck.HC"
 #include "/Kernel/I386/DocRecordCheck.HC"
 #include "/Kernel/I386/DocAccessCheck.HC"
+#include "T:/DocDefaultsOracle.HC"
 #include "/Kernel/I386/HelpFileCheck.HH"
 Bool OriginalHelpFileCheck()
 {
@@ -36,6 +37,8 @@ U0 BuildKernel()
   Report("PASS original document records\n");
   if(DocAccessCheck(&DocPut,&DocDisplay,&DocBorder)!=8) { Report("FAIL original document selection\n"); return; }
   Report("PASS original document selection\n");
+  if(!OriginalDocDefaultsCheck) { Report("FAIL original document defaults\n"); return; }
+  Report("PASS original document defaults\n");
   if(!OriginalHelpFileCheck) { Report("FAIL original help metadata\n"); return; }
   Report("PASS original help metadata\n");
   for(i=0;i<12;i++) {

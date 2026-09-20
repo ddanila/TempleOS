@@ -35,6 +35,7 @@ extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
 extern I64 TimerScaleTest();
 extern I64 BreakTest();
 extern I64 DocLockTest();
+extern U64 DocDefaultsRun();
 #include "/Kernel/I386/DocAccess.HH"
 extern I64 DocAccessCheck(CDoc *(*put)(CTask *task),CDoc *(*display)(CTask *task),CDoc *(*border)(CTask *task));
 I64 Main(I64 unused0,I64 unused1)
@@ -136,7 +137,8 @@ I64 Main(I64 unused0,I64 unused1)
   i386_segments_reload(old_fs,old_gs);
   if(!I386GdtRead(readback)) return 31;
   for(i=0;i<6;i++) if(saved[i]!=readback[i]) return 32;
-  return result;
+  if(result) return result;
+  return DocDefaultsRun;
 }
 
 I64 Run()
@@ -344,3 +346,18 @@ U0 SleepFor(I64 ticks)
 
 #include "/Kernel/I386/DocAccess.HC"
 #include "/Kernel/I386/DocAccessCheck.HC"
+
+#include "/Adam/DolDoc/DocDefaults.HC"
+#include "/Kernel/I386/DocDefaultsCheck.HC"
+CDolDocGlbls doc_defaults;
+U64 DocDefaultsRun()
+{
+  doc_defaults.hash=0x12345678;
+  DocDefaultsInit(&doc_defaults);
+  if(doc_defaults.hash!=0x12345678) return 79;
+  doc_defaults.clean_scan_codes[0]|=1;
+  DocDefaultsInit(&doc_defaults);
+  if(!(doc_defaults.clean_scan_codes[0]&1) || doc_defaults.hash!=0x12345678) return 80;
+  doc_defaults.clean_scan_codes[0]&=~1;
+  return DocDefaultsFingerprint(&doc_defaults);
+}

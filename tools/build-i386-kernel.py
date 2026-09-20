@@ -710,7 +710,7 @@ def main():
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
-                'tools/guest/i386-kernel/Once.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                 'tools/i386-kernel-input.py')},
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
@@ -1004,6 +1004,9 @@ def main():
         if keyboard['document_access_cases']!=8 or 'PASS original document selection\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/native task document selection failed')
         result['document_access']={'cases':8,'original_x64':'pass','native_public_bindings':'pass'}
+        if 'PASS original document defaults\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Fixed document defaults differ from original parser')
+        result['document_defaults']={'original_parser_comparison':'pass'}
         if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')
         result['normal_boot']=dict(keyboard=keyboard,

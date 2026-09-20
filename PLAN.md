@@ -195,7 +195,11 @@ available to native HolyC; see [document locks](docs/i386-document-locks.md).
 Original DocPut/DocDisplay/DocBorder selection is now retained natively as well,
 with shared original source and x64/native selection tests; see
 [document selection](docs/i386-document-access.md).
-Document creation, rendering/editing and persistence remain open.
+Fixed document policy tables now have a shared initializer verified against the
+original parser and a native/x64 table fingerprint; see
+[document defaults](docs/i386-document-defaults.md). Native dictionaries and
+full global initialization remain open alongside document creation,
+rendering/editing and persistence.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,
 25824 bytes of bootstrap headroom remain after document-lock bindings

@@ -1,4 +1,5 @@
 #include "/Kernel/I386/Module.HH"
+#include "/Kernel/I386/DocDefaultsCheck.HC"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
 {
@@ -85,7 +86,7 @@ U0 CompileTests()
   }
   source=MAlloc(loaded+32);
   source(U32 *)[0]=loaded;
-  (source+4)(I64 *)[0]=0;
+  (source+4)(I64 *)[0]=DocDefaultsFingerprint(&doldoc);
   (source+12)(I64 *)[0]=0;
   (source+20)(I64 *)[0]=0;
   MemCpy(source+28,image,loaded);
