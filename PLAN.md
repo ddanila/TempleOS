@@ -169,6 +169,14 @@ Each slice must preserve the working x86-64 build and report native memory use.
 The public-contract slices precede document integration; hardware validation can
 advance independently throughout.
 
+Drive those public-contract slices with the existing document sources. The
+[DolDoc dependency inventory](docs/i386-doldoc-integration.md) identifies the
+initial record, intrinsic, allocation, locking and file boundaries from
+`MakeDoc.HC`, `DocNew.HC`, `DocBin.HC` and `DocFile.HC`. Integrate available
+dependency groups incrementally; completing every unrelated public API is not a
+prerequisite for starting this work. The complete public contract remains a final
+acceptance requirement.
+
 | Slice | Concrete change | Gate before proceeding |
 | --- | --- | --- |
 | Live task/CPU layout | Embed the complete shared public records in native task/CPU records; move exception and compiler state to those fields, preserving private scheduler extensions. Version modules whose field offsets change. | Boot and worker tasks observe the same records through segment bindings; task exit and exception recovery reclaim resources; incompatible modules are rejected before callbacks run. |
