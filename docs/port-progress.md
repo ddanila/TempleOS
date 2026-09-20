@@ -5941,3 +5941,29 @@ reopen at 8 MiB. Its acceptance criteria are recorded in the
 [DolDoc integration inventory](i386-doldoc-integration.md). Pending-break locking,
 outer resource cleanup and original document/editor integration remain open;
 registered waits alone do not deliver that session or public Break.
+
+
+## Internal pending-break checkpoints
+
+Added internal task break request, lock, unlock and cooperative poll operations.
+An unlocked request cancels a registered wait and clears its deadline; delivery
+occurs only after normal return at an explicit current-task cleanup checkpoint.
+The pending bit remains set while locked or while tracked wait/I/O/lifetime/
+compiler ownership prevents delivery. Inbox and Shift-Escape paths defer until
+the original message behavior is integrated. See
+[pending-break checkpoints](i386-pending-break-checkpoints.md) for the contract
+and differences from the original public Break API.
+
+Both x64 rebuild generations and native exception tasks pass. Three sleeping
+worker scenarios cover direct request, locked/unlock request and deferred
+Shift-Escape, repeated requests, both IF settings, real native 'Break' catch and
+recovery, and complete task/exception heap reclamation. Injected ownership guards
+check premature-delivery rejection; real file/compiler unwinding still needs
+integration. The exception fixture now uses a 512-sector transfer, a 0x50000 heap
+and 0x70000 temporary segment records to avoid code/data overlap.
+
+No production checkpoint or public Break binding is installed yet. Production
+module versions and the existing normal QEMU preview remain unchanged; the full
+kernel suite was not rerun for this component-only change. The DolDoc session
+acceptance goal remains open. Next connect actual file/compiler cleanup boundaries
+and original Break/message semantics before document-lock and editor integration.

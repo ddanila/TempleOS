@@ -177,7 +177,9 @@ acquisitions and message reads now register with the same dispatcher; see
 [resource wait registration](docs/i386-resource-wait-registration.md). Raw-keyboard
 waits now register as well, with task-context reading and decoding retained in
 ConsoleRuntime; see [keyboard wait registration](docs/i386-keyboard-wait-registration.md).
-Break locking and cleanup before original Break delivery remain.
+An internal pending-break request/lock/checkpoint path now has native exception
+coverage; see [pending-break checkpoints](docs/i386-pending-break-checkpoints.md).
+Production cleanup boundaries and original public Break delivery remain.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,
 26248 bytes of bootstrap headroom remain (362872-byte kernel plus 4096-byte early stage). See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).

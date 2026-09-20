@@ -33,6 +33,7 @@ extern U0 Worker(I64 id);
 extern U0 Report(CI386Task *task,I64 ch);
 extern U0 Fatal(CI386Task *task,I64 status,I64 ch);
 extern I64 TimerScaleTest();
+extern I64 BreakTest();
 I64 Main(I64 unused0,I64 unused1)
 {
   U8 saved[6],readback[6],saved_idt[6],*table=gdt_storage+8;
@@ -83,11 +84,11 @@ I64 Main(I64 unused0,I64 unused1)
   if(I386ExceptInstallNative(0,&Fatal) || I386ExceptInstallNative(&Report,0) ||
       !I386ExceptInstallNative(&Report,&Fatal) ||
       I386ExceptInstallNative(&Report,&Fatal) ||
-      !I386HeapInit(&heap,0x40000,32768)) return 28;
+      !I386HeapInit(&heap,0x50000,32768)) return 28;
   if(I386TaskPlatformInit(0,&root,&cpu,table,0x88000,32768,&heap) ||
       I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88001,32768,&heap) ||
       I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,255,&heap) ||
-      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x40000,32768,&heap) ||
+      I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x50000,32768,&heap) ||
       I386TaskPlatformInit(&scheduler,&root,&cpu,table,0x88000,32768,0)) return 37;
   if(scheduler.root || root.owner || cpu.scheduler ||
       !I386GdtRead(readback)) return 38;
@@ -116,6 +117,7 @@ I64 Main(I64 unused0,I64 unused1)
     timer.ticks=0xFFFFFFF0;
     I386PicMask(0xFFFE);
     result=Run;
+    if(!result) result=BreakTest;
     I386PicMask(0xFFFF);
     if(!I386IdtLoad((saved_idt+2)(U32 *)[0],
         (saved_idt[0]+(saved_idt[1]<<8)+1)/8)) return 47;
@@ -328,3 +330,7 @@ U0 SleepFor(I64 ticks)
 #include "/Kernel/I386/Sleep.HC"
 
 #include "T:/TimerScale.HC"
+
+#include "/Kernel/I386/WaitCancel.HC"
+#include "/Kernel/I386/TaskBreak.HC"
+#include "T:/Break.HC"

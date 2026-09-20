@@ -84,8 +84,10 @@ wait selection now has task-owned registrations for sleep, join, queued ATA
 acquisitions and message reads; see
 [resource wait registration](i386-resource-wait-registration.md). Raw-keyboard
 registration now uses the same dispatcher; see
-[keyboard wait registration](i386-keyboard-wait-registration.md). Break locking
-and cleanup before exception delivery remain required.
+[keyboard wait registration](i386-keyboard-wait-registration.md). An internal
+[pending-break checkpoint path](i386-pending-break-checkpoints.md) now has native
+exception coverage. Production cleanup boundaries and original public Break
+delivery remain required.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while
