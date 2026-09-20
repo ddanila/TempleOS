@@ -33,6 +33,7 @@ Bool I386IntrinsicValid(CHashFun *fun)
     case IC_LBTS: case IC_LBTR: case IC_LBTC:
       count=2; result=RT_I8; first=RT_U8; first_pointers=1; break;
     case IC_TOUPPER: first=RT_U8; break;
+    case IC_STRLEN: first=RT_U8; first_pointers=1; break;
     case IC_TO_BOOL: result=RT_I8; break;
     case IC_TO_F64: result=RT_F64; break;
     case IC_TO_I64: first=RT_F64; break;

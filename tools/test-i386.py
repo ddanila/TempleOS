@@ -352,7 +352,7 @@ def main():
     offset = count = 0
     listing = []
     # Validate only executable ranges: never disassemble record headers as code.
-    allowed = {'lgdt', 'sgdt', 'sti', 'cli', 'hlt', 'cld', 'pusha', 'popa', 'iret', 'lidt', 'sidt', 'push', 'pop', 'pushf', 'popf', 'mov', 'lea', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
+    allowed = {'lgdt', 'sgdt', 'sti', 'cli', 'hlt', 'cld', 'pusha', 'popa', 'iret', 'lidt', 'sidt', 'push', 'pop', 'pushf', 'popf', 'mov', 'lea', 'inc', 'add', 'adc', 'sub', 'sbb', 'and', 'or',
                'bt', 'bts', 'btr', 'btc', 'bsf', 'bsr', 'xor', 'mul', 'imul', 'neg', 'not', 'ret', 'movsx', 'movzx', 'cdq', 'jmp',
                'cmp', 'jz', 'jnz', 'setz', 'setnz', 'setl', 'setnl', 'setg',
                'setng', 'setc', 'setnc', 'seta', 'setna', 'test', 'shl', 'shr',
@@ -438,7 +438,7 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != {'data': 27, 'functions': 238, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
+    if offset != len(data) or count != {'data': 27, 'functions': 244, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
     if interrupt_ranges:
         raise ValueError('Unmatched interrupt code range')

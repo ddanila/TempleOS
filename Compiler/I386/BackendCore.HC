@@ -407,6 +407,19 @@ U0 I386BackendCore(CI386Backend *backend)
             } else I386F64Runtime(backend,out,ic->ic_code,pass);
             I386Bytes(out,"\x52\x50",2);
             break;
+          case IC_STRLEN:
+            if (!backend->calls || backend->calls->called || backend->calls->indirect ||
+                !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||
+                backend->calls->fun->exe_addr!=ic->ic_code || backend->calls->fun->arg_cnt!=1 ||
+                depth!=backend->calls->depth+1) throw('Compiler');
+            //Read one byte at a time, including only the terminating byte.
+            //ECX is the target pointer; EDX:EAX is the zero-extended length.
+            //Like the original template, this does not depend on or alter DF.
+            I386Bytes(out,"\x58\x5A\x89\xC1\x31\xC0\x31\xD2"
+              "\x80\x3C\x01\x00\x74\x03\x40\xEB\xF7",17);
+            depth=backend->calls->depth;
+            backend->calls->called=TRUE;
+            break;
           case IC_TOUPPER:
             if (!backend->calls || backend->calls->called || backend->calls->indirect ||
                 !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||

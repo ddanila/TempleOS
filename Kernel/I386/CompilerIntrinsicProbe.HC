@@ -9,8 +9,8 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CCmpCtrl *cc;
   CPrsSymbolServices *symbols;
   CHashSrcSym *roots[40],*entry;
-  CHashFun *fun,*sqrt_fun,*input_fun,*bool_fun;
-  CHashClass *return_type,*argument_type,*sqrt_type,*input_type;
+  CHashFun *fun,*sqrt_fun,*input_fun,*bool_fun,*length_fun;
+  CHashClass *return_type,*argument_type,*sqrt_type,*input_type,*length_type;
   U8 *source,*code;
   I64 i,kind,count=0,type,commands=0,value,expected,before_used,before_allocations;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
@@ -26,6 +26,7 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       "_intern 0x7C Bool LBtr( U8i *bit_field,I64i bit);"
       "_intern 0x7B Bool LBts( U8i *bit_field,I64i bit);"
       "_intern 0x1E I64i ToUpper(U8i ch);"
+      "_intern 0x84 I64i StrLen(U8i *st);"
       "_intern 0x67 U16i InU16(I64i port);"
       "_intern 0x68 U32i InU32(I64i port);"
       "_intern 0x66 U8i InU8(I64i port);"
@@ -65,7 +66,7 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(count>=40 || !(entry->type&HTT_FUN)) KernelStop;
       roots[count++]=entry;
     }
-  if(count!=34) KernelStop;
+  if(count!=35) KernelStop;
   for(i=0;i<count;i++) {
     fun=roots[i];
     if(!I386IntrinsicValid(fun)) {
@@ -78,10 +79,12 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   sqrt_fun=ProbeSymbolFind(0,"Sqrt",cc->htc.glbl_hash_table,HTT_FUN);
   input_fun=ProbeSymbolFind(0,"InU8",cc->htc.glbl_hash_table,HTT_FUN);
   bool_fun=ProbeSymbolFind(0,"ToBool",cc->htc.glbl_hash_table,HTT_FUN);
-  if(!fun || !sqrt_fun || !input_fun || !bool_fun) KernelStop;
+  length_fun=ProbeSymbolFind(0,"StrLen",cc->htc.glbl_hash_table,HTT_FUN);
+  if(!fun || !sqrt_fun || !input_fun || !bool_fun || !length_fun) KernelStop;
   return_type=fun->return_class; sqrt_type=sqrt_fun->return_class;
   input_type=input_fun->return_class; argument_type=bool_fun->member_lst_and_root->member_class;
-  for(kind=0;kind<12;kind++) {
+  length_type=length_fun->member_lst_and_root->member_class;
+  for(kind=0;kind<15;kind++) {
     switch(kind) {
       case 0: fun->exe_addr=IC_ADD; break;
       case 1: fun->return_class=probe->i64_type; break;
@@ -95,6 +98,9 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 9: sqrt_fun->return_class=probe->i64_type; break;
       case 10: input_fun->return_class=probe->i64_type; break;
       case 11: bool_fun->member_lst_and_root->member_class=probe->i64_type+1; break;
+      case 12: length_fun->member_lst_and_root->member_class=length_type-1; break;
+      case 13: length_fun->member_lst_and_root->member_class=length_type+1; break;
+      case 14: length_fun->return_class=probe->i64_type+1; break;
     }
     before_used=heap->used; before_allocations=heap->allocations;
     if(probe->compiler->publish(heap,cc,symbols) || heap->used!=before_used ||
@@ -104,11 +110,13 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     fun->type&=~HTF_IMPORT; fun->ie_lst=0;
     sqrt_fun->return_class=sqrt_type; input_fun->return_class=input_type;
     bool_fun->member_lst_and_root->member_class=argument_type;
+    length_fun->member_lst_and_root->member_class=length_type;
+    length_fun->return_class=probe->i64_type;
     KernelLog("INTRINSIC REJECT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
   }
   if(!probe->compiler->publish(heap,cc,symbols) || scope->storage!=old_storage ||
       !probe->compiler->control_unwind(task,outer)) { KernelLog("INTRINSIC PUBLICATION REJECT\n"); KernelStop; }
-  for(kind=0;kind<14;kind++) {
+  for(kind=0;kind<18;kind++) {
     expected=42;
     switch(kind) {
       case 0: source="ProbeFs;"; expected=(task+0)(U64); break;
@@ -125,6 +133,10 @@ U0 ProbeIntrinsics(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 11: source="U64i b=0;Bts(&b,35);I64i seen=Bt(&b,35);I64i old=Btc(&b,35);seen*40+old*2;"; break;
       case 12: source="U64i b=0;LBts(&b,63);LBtc(&b,63);Bts(&b,3);Btr(&b,3);LBts(&b,2);LBtr(&b,2);b+42;"; break;
       case 13: source="ToUpper('a');"; expected='A'; break;
+      case 14: source="StrLen(\"\");"; expected=0; break;
+      case 15: source="StrLen(\"VGA\")+StrLen(\"adapter\"+2);"; expected=8; break;
+      case 16: source="U8i s[4];s[0]=128;s[1]=255;s[2]=0;s[3]=1;StrLen(s);"; expected=2; break;
+      case 17: source="U8i s[3];s[0]=65;s[1]=66;s[2]=0;U8i *p=s;StrLen(p++)*10+(p-s);"; expected=21; break;
     }
     KernelLog("INTRINSIC RUN "); KernelHex(kind); KernelLog(" "); KernelLog(source); KernelLog("\n");
     value=ProbeProgramUse(probe,heap,outer,source);

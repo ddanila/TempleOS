@@ -109,7 +109,7 @@ depend on those identities.
 
 Native intrinsic publication now distinguishes opcode-bearing declarations from
 resident addresses and ordinary generated functions. The startup header exposes
-33 original public intrinsic signatures; the intrinsic corpus covers 34 including
+34 original public intrinsic signatures; the intrinsic corpus covers 35 including
 private FS/GS getters, and public-stack probes cover `GetRSP`. Pointer depth is checked separately from raw numeric type,
 because `RT_PTR` and `RT_I64` share a value. This advances compiler binding, while
 complete public task/CPU layouts remain required. See

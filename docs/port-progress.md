@@ -5230,3 +5230,29 @@ syntax and whitespace checks pass. The native kernel is 388928 bytes plus its
 4096-byte early stage, leaving 192 bytes in the unchanged bootstrap reservation.
 The remaining normal startup cost includes native header/source compilation;
 this separation does not claim instant startup or close the full port's gates.
+
+
+## Public native StrLen intrinsic
+
+The native compiler now validates and lowers the original public `StrLen`
+intrinsic (0x84), and startup publishes its canonical `I64 StrLen(U8 *st)`
+declaration. A byte scan returns a full-width length without allocation or
+reading past the terminating byte. This unblocks the string-length dependency in
+`DocEntryNewTag` and binary document handling; DolDoc integration remains open.
+
+Both x64 rebuild generations and all 244 backend cases pass. Six new backend
+cases compare native results with original x64 execution, including empty/long
+strings, interior pointers, high-bit bytes, embedded terminators, side effects,
+nested calls and wide arithmetic. The native intrinsic corpus now publishes 35
+declarations, rejects 15 malformed variants, and executes 18 cases on each of the
+boot and worker tasks with full cleanup checks. Normal startup exposes 34 public
+intrinsic declarations.
+
+The full native suite passes: 116 console commands across 179 submitted lines,
+exact VGA checks, startup-source recovery, probe-independent normal boot and all
+17 module rejection/reclamation cases. Normal startup is 22.178 seconds and
+diagnostic startup 177.808 seconds on QEMU/486 with 8 MiB. The kernel remains
+388928 bytes plus its 4096-byte early stage (192 bytes of reservation headroom).
+CompilerRuntime occupies 1299168 image bytes and 1299184 retained heap bytes.
+These measurements remain development-profile evidence, not full-workflow memory
+or strict 386 acceptance. See [intrinsic publication](i386-intrinsic-publication.md).

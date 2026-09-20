@@ -35,14 +35,14 @@ U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
 }
 Bool switch_host_checked;
 //Run the same integral switch body on the host compiler and native backend.
-U0 EmitSwitchCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor)
+U0 EmitSwitchCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,U8 *prefix="")
 {
   switch_host_checked=FALSE;
   ExePrint("I64 SwitchOracle%d(I64 a,I64 b) { %s }\n"
     "if (SwitchOracle%d(0x%X,0x%X)==0x%X) switch_host_checked=TRUE;",
     case_number,body,case_number,a,b,expected);
   if (!switch_host_checked) { Report("FAIL x64 switch\n"); throw; }
-  EmitCase(body,a,b,expected,cursor);
+  EmitCase(body,a,b,expected,cursor,prefix);
 }
 U0 Reject(U8 *source)
 {
@@ -540,6 +540,13 @@ U0 CompileTests()
   EmitCase("return DefaultValue;",0,0,42,&cursor,
     "extern I64 DefaultValue(I64 n=(89-1)/2-2);",
     "I64 DefaultValue(I64 n){return n;}");
+  //Original x64 execution is the oracle for these public string intrinsics.
+  EmitSwitchCase("return StrLen(\"\");",0,0,0,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
+  EmitSwitchCase("return StrLen(\"VGA\")+StrLen(\"adapter\"+2);",0,0,8,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
+  EmitSwitchCase("U8 s[4];s[0]=128;s[1]=255;s[2]=0;s[3]=1;return StrLen(s);",0,0,2,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
+  EmitSwitchCase("U8 s[3];s[0]=65;s[1]=66;s[2]=0;U8 *p=s;return StrLen(p++)*10+(p-s);",0,0,21,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
+  EmitSwitchCase("U8 s[1025];I64 i;for(i=0;i<1024;i++)s[i]=255;s[1024]=0;return StrLen(s)+StrLen(s+1024);",0,0,1024,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
+  EmitSwitchCase("U8 s[3];s[0]=65;s[1]=0;s[2]=66;return 0x100000000+StrLen(s+StrLen(s));",0,0,0x100000000,&cursor,"_intern 0x84 I64 StrLen(U8 *st);");
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);
   Report(line);

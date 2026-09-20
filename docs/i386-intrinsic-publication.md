@@ -18,18 +18,18 @@ native code generation. Existing backend checks still apply. This is not a new
 instruction implementation or a complete intrinsic catalog: unsupported opcodes
 cannot be published through this path.
 
-`Kernel/I386/Intrinsic.HH` supplies 33 canonical public declarations to the
+`Kernel/I386/Intrinsic.HH` supplies 34 canonical public declarations to the
 disk-backed `StartOS.HC`: bit tests and updates, port I/O, character conversion,
 integer/F64 conversions and the supported mathematical operations, frame access,
-and flags access. Their signatures and opcode values match `Kernel/KernelB.HH`
+string length, and flags access. Their signatures and opcode values match `Kernel/KernelB.HH`
 and `Compiler/CompilerA.HH`. The validator additionally supports FS and GS
-getters, but public `Fs`/`Gs` declarations await complete `CTask`/`CCPU` migration.
-The test's private byte-pointer getters do not establish those public APIs.
+getters. Public `Fs`/`Gs` now use the shared complete task/CPU records through
+native public-header loading; the test also retains private byte-pointer getters.
 
-`CompilerIntrinsicProbe.HC` exercises a 34-declaration input on both boot and
+`CompilerIntrinsicProbe.HC` exercises a 35-declaration input on both boot and
 worker tasks. It checks valid metadata before mutating declarations to exercise
-12 rejection cases, then restores and publishes the same input. Fresh compiler
-contexts execute 14 cases covering task/CPU/frame identity, flags preservation,
+15 rejection cases, then restores and publishes the same input. Fresh compiler
+contexts execute 18 cases covering task/CPU/frame identity, flags preservation,
 wide Boolean and integer operations, software F64 and bit operations above bit
 31. Port-I/O declarations are validated here without issuing device transactions.
 After removing the published symbols, heap usage, allocation counts, task
@@ -59,3 +59,29 @@ acceptance. The full scope remains in [PLAN.md](../PLAN.md).
 Native `GetRSP` now reports ESP through the original pointer-returning signature.
 Public-stack probes verify its range in boot and worker tasks and through the
 interactive console. See [stack ownership](i386-public-stacks.md).
+
+## Public string length
+
+`StrLen(U8 *st)` now lowers opcode 0x84 to a native byte scan, returns a
+zero-extended I64 length, and evaluates its pointer argument once. The scan reads
+through the terminating byte without wider loads or allocation and neither uses
+nor changes DF, matching the original template's direction-independent behavior.
+As in the original API, the caller must supply a readable zero-terminated string.
+The generated function retains the normal i386 register/stack convention.
+
+The 244-case backend suite includes six cases also executed by the original x64
+compiler: empty strings, interior pointers, bytes above 127, embedded terminators,
+single evaluation, a 1024-byte string, nested calls and wide result arithmetic.
+The cross-target fixture explicitly declares the intrinsic in its compilation
+scope. Its instruction audit now accepts the 386 `INC` instruction used by the
+scan. Native boot/worker probes add four execution cases and reject scalar or
+pointer-to-pointer arguments and pointer return types without changing published
+state. Normal-boot keyboard tests exercise the actual startup declaration.
+
+The full native suite passes with 116 commands/179 input lines and exact VGA
+checks. Normal startup measures 22.178 seconds; diagnostics measure 177.808
+seconds on QEMU/486 with 8 MiB. Both x64 rebuild generations pass. The kernel
+remains 388928 bytes, with 192 bytes free after the early stage in its reservation;
+CompilerRuntime is 1299168 image bytes / 1299184 retained heap bytes. This closes
+one DolDoc dependency; public string copy, queue intrinsics and document lifecycle
+integration remain open.

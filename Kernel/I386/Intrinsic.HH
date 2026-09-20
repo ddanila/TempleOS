@@ -10,6 +10,7 @@ public _intern 0x7D Bool LBtc( U8 *bit_field,I64 bit);
 public _intern 0x7C Bool LBtr( U8 *bit_field,I64 bit);
 public _intern 0x7B Bool LBts( U8 *bit_field,I64 bit);
 public _intern 0x1E I64 ToUpper(U8 ch);
+public _intern 0x84 I64 StrLen(U8 *st);
 public _intern 0x67 U16 InU16(I64 port);
 public _intern 0x68 U32 InU32(I64 port);
 public _intern 0x66 U8 InU8(I64 port);
