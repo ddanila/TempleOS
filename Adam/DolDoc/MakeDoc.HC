@@ -13,9 +13,7 @@ intensive on big documents.
 See $LK,"::/Doc/DolDocOverview.DD"$
 */
 
-#include "/Kernel/DocGlobals.HH"
-public CDolDocGlbls doldoc;
-MemSet(&doldoc,0,sizeof(CDolDocGlbls));
+#include "/Adam/DolDoc/DocGlobals.HC"
 
 #help_index "God"
 #define BIBLE_FILENAME	"::/Misc/Bible.TXT.Z"

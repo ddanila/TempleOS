@@ -6271,3 +6271,24 @@ inputs and both disk hashes match. Normal boot measured 16.708 seconds; separate
 diagnostics measured 130.147 seconds. The preview contains this tested normal
 image. Original DolDoc dictionary initialization and the editing workflow remain
 open; this is a prerequisite, not completion of the native editor goal.
+
+## Original DolDoc initialization on native startup
+
+Normal native source startup now declares the original doldoc global and runs
+DocInit using shared color names and the retained definition/hash services. The
+disk includes the 33 original DolDoc source files. A dictionary-specific destructor
+handles DHT entries safely and cleans partially constructed dictionaries.
+
+Both x64 rebuild generations and the full native suite pass. Original/native
+checks cover all 137 definition entries, 121 dictionary entries, the defaults
+fingerprint and three dictionary create/delete cycles with unchanged heap usage.
+Interactive validation passes 172 commands / 235 lines and exact VGA; startup
+recovery and 17 module rejection checks also pass. All 1123 source hashes, nine
+build inputs and both disk hashes match.
+
+Normal startup measured 29.401 seconds, up from 16.708 seconds due to compiling
+and running the document initialization sources; diagnostics remain separate
+(141.982 seconds). The preview contains the tested normal image. See
+[document initialization](i386-document-initialization.md). Document creation,
+rendering, editing and save/reboot/reopen remain open; this does not complete the
+usable native editing-session goal.

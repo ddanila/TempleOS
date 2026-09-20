@@ -1,6 +1,32 @@
 #include "/Adam/DolDoc/DocDefaults.HC"
 #help_index "DolDoc"
 
+U0 DocDictionaryDel(CHashTable *table)
+{//DHT bits describe generic document entries, not standard HTT source symbols.
+  I64 i;
+  CHash *entry,*next;
+  if(!table) return;
+  for(i=0;i<=table->mask;i++) {
+    entry=table->body[i];
+    while(entry) {
+      next=entry->next;
+      Free(entry->str); Free(entry); entry=next;
+    }
+  }
+  Free(table->body); Free(table);
+}
+CHashTable *DocDictionaryNew()
+{
+  CHashTable *table=0;
+  try {
+    table=HashTableNew(512);
+    HashDefineLstAdd("ST_DOC_CMDS",DHT_DOC_CMD,table);
+    HashDefineLstAdd("ST_DOC_FLAGS",DHT_DOC_FLAG,table);
+    HashDefineLstAdd("ST_COLORS",DHT_COLOR,table);
+  } catch { DocDictionaryDel(table); }
+  return table;
+}
+
 U0 DocInit()
 {//$LK-UL,"CMD Defines",A="MN:DOCT_TEXT"$
 
@@ -17,10 +43,7 @@ U0 DocInit()
   DefineLstLoad("ST_LINK_TYPES",
 	"FI\0FA\0FF\0FL\0MN\0PI\0PF\0PL\0BF\0DN\0HI\0AD\0AI\0AA\0AF\0AL\0");
 
-  doldoc.hash=HashTableNew(512);
-  HashDefineLstAdd("ST_DOC_CMDS",DHT_DOC_CMD,doldoc.hash);
-  HashDefineLstAdd("ST_DOC_FLAGS",DHT_DOC_FLAG,doldoc.hash);
-  HashDefineLstAdd("ST_COLORS",DHT_COLOR,doldoc.hash);
+  doldoc.hash=DocDictionaryNew;
 
   DocDefaultsInit(&doldoc);
 }

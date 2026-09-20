@@ -303,10 +303,12 @@ Public task-owned hash tables and list insertion now have retained native
 bindings and shared original/native ownership tests; see
 [public hash tables](docs/i386-public-hash-tables.md). Native definition-list
 construction and expansion are also retained, with owned indices and allocation
-failure cleanup; see [definition lists](docs/i386-define-lists.md). The next
-document slice is original command/color dictionary initialization, followed by
-document lifecycle, rendering and editing. This does not yet provide DocInit or
-an editable document.
+failure cleanup; see [definition lists](docs/i386-define-lists.md). Native startup
+now runs the original DocInit, with all 137 definition and 121 dictionary entries
+verified; see [document initialization](docs/i386-document-initialization.md).
+Next is original document lifecycle and its rendering/editor callback dependencies,
+then editing and persistence. Initialized dictionaries do not yet provide an
+editable document.
 
 ### Next public-memory integration package
 

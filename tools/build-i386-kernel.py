@@ -546,7 +546,7 @@ def package_volume(disk, exports):
     cursor=first
     image=bytearray(disk.read_bytes())
     tree={}
-    for directory in ('Kernel','Compiler'):
+    for directory in ('Kernel','Compiler','Adam/DolDoc'):
         for path in sorted((ROOT/directory).rglob('*')):
             if path.is_file() and path.suffix.upper() in ('.HC','.HH','.DD','.PRJ'):
                 node=tree
@@ -1007,6 +1007,10 @@ def main():
         if 'PASS original document defaults\n' not in (exports/'debug.log').read_text():
             raise ValueError('Fixed document defaults differ from original parser')
         result['document_defaults']={'original_parser_comparison':'pass'}
+        if 'PASS original document initialization\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original document initialization failed')
+        result['document_initialization']={'definition_entries':137,'dictionary_entries':121,
+            'original_x64':'pass','native_startup':'pass','dictionary_reclamation_cycles':3}
         if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256']:
             raise ValueError('Keyboard console changed the disk')
         result['normal_boot']=dict(keyboard=keyboard,
