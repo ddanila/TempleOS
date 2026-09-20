@@ -38,8 +38,8 @@ The [public live-task ring](i386-public-task-ring.md) now tracks attached tasks,
 including blocked workers. Native dispatch now follows public list order and
 skips blocked, suspended and awaiting-message tasks, independently of private
 wakeup insertion order. All-ineligible selection idles for an IRQ. Integrating
-public `Yield` still requires wake-time eligibility, public message-wait flag
-transitions and break handling before publishing its original callable contract;
+public `Yield` still requires wake-time eligibility, original message/job/popup
+services and break handling before publishing its original callable contract;
 see [task eligibility](i386-task-eligibility.md).
 
 `BreakUnlock` in `Kernel/KExcept.HC` delivers pending breaks. For another task,

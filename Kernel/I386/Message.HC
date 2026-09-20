@@ -11,6 +11,14 @@ public Bool I386MsgInit(CI386MsgQueue *queue,CI386Scheduler *scheduler)
   queue->head=0; queue->count=0; queue->closed=0;
   I386IrqRestore(flags); return TRUE;
 }
+U0 I386MsgReady(CI386MsgQueue *queue)
+{//IF clear. A public flag wait need not have a private queue-reader waiter.
+  if(queue->recipient) queue->recipient->task_flags&=~(1<<TASKf_AWAITING_MSG);
+  if(queue->waiter) {
+    queue->waiter->task_flags&=~(1<<TASKf_AWAITING_MSG);
+    if(queue->waiter->blocked) I386SchedWake(queue->scheduler,queue->waiter);
+  }
+}
 public Bool I386MsgSend(CI386MsgQueue *queue,I64 type,I64 arg1,I64 arg2)
 {//Bounded nonblocking send; caller owns retry/drop policy when full.
   U32 flags=I386IrqSave;
@@ -24,7 +32,7 @@ public Bool I386MsgSend(CI386MsgQueue *queue,I64 type,I64 arg1,I64 arg2)
   slot=&queue->messages[(queue->head+queue->count)&15];
   slot->type=type; slot->arg1=arg1; slot->arg2=arg2;
   queue->count++;
-  if (queue->waiter) I386SchedWake(queue->scheduler,queue->waiter);
+  I386MsgReady(queue);
   I386IrqRestore(flags); return TRUE;
 }
 public I64 I386MsgRead(CI386MsgQueue *queue,CI386Message *message,U64 mask=~1,Bool wait=TRUE)
@@ -49,15 +57,19 @@ public I64 I386MsgRead(CI386MsgQueue *queue,CI386Message *message,U64 mask=~1,Bo
       type=slot->type;
       if (mask&(1<<type)) {
         message->type=type; message->arg1=slot->arg1; message->arg2=slot->arg2;
+        if(queue->waiter==self) self->task_flags&=~(1<<TASKf_AWAITING_MSG);
         queue->waiter=0;
         I386IrqRestore(flags); return type;
       }
     }
     if (!wait || queue->closed || self==s->root) {
+      if(queue->waiter==self) self->task_flags&=~(1<<TASKf_AWAITING_MSG);
       queue->waiter=0; I386IrqRestore(flags); return 0;
     }
     queue->waiter=self;
+    self->task_flags|=1<<TASKf_AWAITING_MSG;
     if (!I386SchedBlock(s)) {
+      self->task_flags&=~(1<<TASKf_AWAITING_MSG);
       queue->waiter=0; I386IrqRestore(flags); return 0;
     }
   }
@@ -69,7 +81,7 @@ public Bool I386MsgClose(CI386MsgQueue *queue)
     I386IrqRestore(flags); return FALSE;
   }
   queue->closed=1;
-  if (queue->waiter) I386SchedWake(queue->scheduler,queue->waiter);
+  I386MsgReady(queue);
   I386IrqRestore(flags); return TRUE;
 }
 public Bool I386MsgAttach(CI386MsgQueue *queue,CI386Task *task)

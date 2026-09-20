@@ -30,6 +30,7 @@ extern U0 Consumer(I64 unused);
 extern U0 EndTask();
 extern U0 OnKeyboard(CI386IrqFrame *frame);
 extern I64 QueueTest();
+extern I64 WaitFlagsTest();
 extern U0 EmptyWorker(I64 unused);
 extern I64 InboxTest();
 extern U0 InboxSelfWorker(I64 arg);
@@ -43,6 +44,8 @@ I64 Main(I64 a,I64 b)
   if (!I386SchedInit(&scheduler,&tasks[0],swap)) return 1;
   result=QueueTest;
   if (result) return result;
+  result=WaitFlagsTest;
+  if(result) return result;
   if (!I386MsgInit(&messages,&scheduler) || !I386KbcInputInit(&input,&scheduler) ||
       !I386KeyboardSetup) return 2;
   control->irq->handler=&OnKeyboard;
@@ -62,10 +65,12 @@ I64 Main(I64 a,I64 b)
       !I386MsgClose(&root_inbox) || !I386MsgDetach(&root_inbox)) return 22;
   message.type=99;
   if (I386MsgRead(&messages,&message,~1,FALSE) || message.type!=99 || messages.count!=1 ||
-      !I386SchedYield(&scheduler) || !tasks[1].blocked || !tasks[2].blocked) return 3;
+      !I386SchedYield(&scheduler) || !tasks[1].blocked || !tasks[2].blocked ||
+      !(tasks[2].task_flags & 1<<TASKf_AWAITING_MSG)) return 3;
   //An unrelated wake does not satisfy the consumer's message predicate.
   if (!I386SchedWake(&scheduler,&tasks[2]) || !I386SchedYield(&scheduler) ||
-      !tasks[2].blocked || consumed) return 4;
+      tasks[2].blocked || consumed ||
+      !(tasks[2].task_flags & 1<<TASKf_AWAITING_MSG)) return 4;
   for (i=0;i<9;i++) {
     p="KEY "; while (*p) OutU8(0xE9,*p++);
     OutU8(0xE9,'0'+i); OutU8(0xE9,10);
@@ -162,13 +167,15 @@ U0 Consumer(I64 unused)
   SetRFlags(GetRFlags|0x200);
   while (type=I386MsgRead(scheduler.current->messages,&message,(1<<2)|(1<<3))) {
     if (consumed>=9 || type!=message.type || type!=2+((expected[consumed]>>8)&1) ||
-        (message.arg2>>32)!=expected[consumed] || !(GetRFlags&0x200)) { errors++; return; }
+        (message.arg2>>32)!=expected[consumed] || !(GetRFlags&0x200) ||
+        scheduler.current->task_flags & 1<<TASKf_AWAITING_MSG) { errors++; return; }
     if (consumed<2) { if (message.arg1!='a') errors++; }
     else if (consumed<4) { if (message.arg1!=10) errors++; }
     else if (message.arg1) errors++;
     consumed++;
   }
-  if (!messages.closed || consumed!=9 || !(GetRFlags&0x200)) errors++;
+  if (!messages.closed || consumed!=9 || !(GetRFlags&0x200) ||
+      scheduler.current->task_flags & 1<<TASKf_AWAITING_MSG) errors++;
 }
 U0 EndTask() { I386SchedFinish(&scheduler); while (TRUE) {} }
 U0 OnKeyboard(CI386IrqFrame *frame)
@@ -227,3 +234,4 @@ I64 QueueTest()
 #include "/Kernel/I386/ScanChar.HC"
 #include "/Kernel/I386/KeyboardEvent.HC"
 #include "/Kernel/I386/PicPit.HC"
+#include "T:/WaitFlags.HC"

@@ -154,7 +154,11 @@ Native public task links now track attached live tasks, including blocked worker
 and detach before reaping. Native dispatch follows public list order, skipping
 blocked, suspended and awaiting-message tasks. If none is eligible, it idles for
 an IRQ, including when the root is suspended. Wake-time eligibility, public
-message-wait transitions and pending-break delivery remain integration work.
+message/job/popup integration and pending-break delivery remain integration work.
+The native queue component now maintains the public awaiting-message bit during
+read/send/close, including flag waits without a private reader. It remains a
+separately tested component; the interactive console uses direct keyboard input.
+See [message wait flags](docs/i386-message-wait-flags.md).
 See [task eligibility](docs/i386-task-eligibility.md).
 See [public task ring](docs/i386-public-task-ring.md).
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for

@@ -5615,3 +5615,27 @@ probe/worker reclaim all 668840/541856 bytes. This QEMU/486, 8 MiB run measured
 15.455 seconds for normal boot and 124.155 for diagnostics. The normal preview
 is refreshed. Wake-time accounting, public message-wait transitions and break
 delivery remain open; see [task eligibility](i386-task-eligibility.md).
+
+## Native message queues maintain the public wait bit
+
+Empty blocking reads now set TASKf_AWAITING_MSG before registering their scheduler
+wait. Accepted sends and close clear that bit on the registered reader and any
+attached recipient, preserving suspension and unrelated flags. An attached task
+can therefore use a public flag wait without entering the private queue reader.
+Only the queue's registered reader receives a private wake, so unrelated blocking
+conditions remain intact. Generic scheduler wake alone leaves the public bit set;
+the message reader remains ineligible until a send or close releases it.
+
+The focused native message suite passes with new bound/unbound queue cases,
+unmatched-message re-wait, queued-data and empty close, suspension, invalid sends,
+public-only flag waits, unrelated private blocking and bit-31/IF preservation.
+The existing keyboard IRQ/broker/focus/consumer, inbox ownership and reclamation
+checks also pass, with an instruction audit. Both x64 rebuild generations pass;
+all 1089 OS source hashes match the rebuild manifest.
+
+Message.HC is currently linked by this dedicated component runner, not by the
+interactive kernel console, which uses direct keyboard input. The full kernel
+suite was not rerun for this component-only change, and the previously tested
+normal preview remains unchanged. This does not complete original Msg/GetMsg,
+job queues, popup propagation, TaskRstAwaitingMsg or break cancellation. See
+[message wait flags](i386-message-wait-flags.md).

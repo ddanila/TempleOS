@@ -58,8 +58,8 @@ console checks reciprocal links with another live task present.
 
 ## Remaining integration
 
-Public `Yield` still needs wake-time eligibility and public message-wait flag
-transitions. Parent/child/sibling links, saved-register
+Public `Yield` still needs wake-time eligibility and original public message/job
+services. Parent/child/sibling links, saved-register
 state and pending-break delivery are separate contracts. `BreakUnlock` cannot
 deliver a native break merely by writing the public `rip` field: the native
 context and any active waiters must be handled consistently before unwinding.

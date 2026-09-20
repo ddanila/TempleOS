@@ -50,8 +50,10 @@ task-symbols and ata-tasks suites, then the full native kernel suite, as listed 
 This does not publish the complete public `Yield` interface. Wake-time eligibility
 needs the original 1000-Hz jiffy contract; the current native PIT configuration
 uses roughly 100 IRQs per second and its delivered-interrupt count cannot simply
-be substituted for public jiffies. Public message-wait flag transitions, kill and
+be substituted for public jiffies. Original message/job/popup services, kill and
 break delivery, device/waiter cancellation, single-user scheduling and debugger
-context also require integration. The private message queue still uses its
-existing block/wake protocol. Keep those contracts explicit when connecting the
-original document-locking routines.
+context also require integration. The native queue component now maintains the
+public awaiting-message bit around its block/wake protocol, including sends and
+close, but it is not yet the original public message/job/popup implementation.
+See [message wait flags](i386-message-wait-flags.md). Keep those contracts explicit
+when connecting the original document-locking routines.
