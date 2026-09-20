@@ -5802,3 +5802,30 @@ before growing the scheduler core further. Active-wait selection, break locking,
 file/compiler cleanup and original exception/message/job/popup behavior still
 need coordinated integration. This does not complete public Break, DolDoc,
 strict 386 compatibility or native self-hosting.
+
+
+## Shared bootstrap module loading and reclamation
+
+The kernel now shares module path resolution/loading, heap accounting checks and
+image reclamation across startup, retained-service rejection and temporary
+compiler diagnostics. Expected totals remain caller-supplied: rejected services
+must return to their pre-load snapshot, probes must leave no transient allocation,
+and startup may retain its display allocation while releasing only its image.
+The release helper clears the caller's image pointer and checks the heap under
+IRQ masking before restoring IF. Retained compiler/file images are still checked
+after probe release. No service ABI, publication or rejection contract changed;
+see [bootstrap module lifecycle](i386-bootstrap-module-lifecycle.md).
+
+This reduces the kernel from 388944 to 386832 bytes, recovering
+2112 bytes and increasing headroom after the early stage from 176 to
+2288 bytes within the existing 384 KiB reservation. Additional interruption
+logic should remain in retained services where possible; scheduler-core growth
+still needs explicit size checks.
+
+Both x64 rebuild generations and the full kernel suite pass. Coverage includes
+129 commands / 192 input lines, exact VGA, startup recovery, normal boot with an
+invalid diagnostic module and all 17 module-rejection/reclamation cases. All
+1091 OS source hashes and 8 build-input hashes match. Normal QEMU/486 boot at
+8 MiB measured 14.250 seconds and diagnostics 125.349 seconds. The preview is
+refreshed from the verified image. Active-wait coordination, public Break,
+DolDoc, strict 386 compatibility and native self-hosting remain open.

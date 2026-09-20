@@ -171,10 +171,11 @@ decoder state, with the cancel callback in retained ConsoleRuntime rather than
 the bootstrap core. See [keyboard read cancellation](docs/i386-keyboard-read-cancellation.md).
 The next integration step is coordinated wait selection, break locking and
 cleanup before original Break delivery.
-The current bootstrap has only 176 bytes of headroom after keyboard integration.
-Keep additional interruption logic in retained services and consolidate resident
-loader/diagnostic scaffolding before growing the scheduler core; preserve the
-reserved load area and validate module lifetimes and rejection behavior.
+Shared module lookup, heap checks and reclamation now recover 2112 bootstrap
+bytes, leaving 2288 bytes of headroom. See [module lifecycle](docs/i386-bootstrap-module-lifecycle.md).
+Keep additional interruption logic in retained services and measure scheduler-core
+growth against this remaining space; preserve the reserved load area and validate
+module lifetimes and rejection behavior.
 Queued ATA acquisition cancellation is implemented as a prerequisite for
 pending-break delivery: detach stack waiters before they resume, preserving
 ownership, FIFO survivors and public wait state. Active transfers and the full

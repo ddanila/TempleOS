@@ -285,25 +285,41 @@ U0 KernelStorage(CI386BootInfo *info)
 #include "/Kernel/I386/RedSea.HC"
 #include "/Kernel/I386/FileRead.HC"
 
+U8 *KernelModuleLoad(U8 *path,CI386ModuleBinding *bindings,I64 count)
+{//Boot disk ownership is established by the caller.
+  CI386RedSeaEntry file;
+  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,path,&file)!=1) KernelStop;
+  return I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,count);
+}
+U0 KernelHeapCheck(I64 used,I64 allocations)
+{
+  if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+}
+U0 KernelModuleRelease(U8 **image,I64 used,I64 allocations)
+{//Expected totals come from the caller, before untrusted module callbacks.
+  U32 flags=I386IrqSave;
+  if(*image && !I386HeapFree(&kernel_heap,*image)) KernelStop;
+  *image=0;
+  KernelHeapCheck(used,allocations);
+  I386IrqRestore(flags);
+}
+
 U0 KernelStartup()
 {//Startup owns ATA and the heap with IF clear. No module callbacks may survive return.
-  CI386RedSeaEntry file;
   CI386ModuleBinding bindings[3];
   U8 *image;
   I64 (*entry)();
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
   I64 transient,after,result;
-  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/Startup.t32m",&file)!=1) KernelStop;
   KernelBindings(bindings,kernel_startup_bindings,3,sizeof(bindings)/sizeof(CI386ModuleBinding));
-  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,3);
+  image=KernelModuleLoad("/Modules/I386/Startup.t32m",bindings,3);
   if(!image || kernel_heap.allocations!=allocations+1) KernelStop;
   transient=kernel_heap.used-used;
   entry=image;
   result=(*entry)();
   after=kernel_heap.used; allocations=kernel_heap.allocations;
-  if(result!=1 || kernel_startup_count!=1 || !kernel_display_ready || transient<=0 ||
-      !I386HeapFree(&kernel_heap,image) || kernel_heap.used!=after-transient ||
-      kernel_heap.allocations!=allocations-1 || !I386HeapValid(&kernel_heap)) KernelStop;
+  if(result!=1 || kernel_startup_count!=1 || !kernel_display_ready || transient<=0) KernelStop;
+  KernelModuleRelease(&image,after-transient,allocations-1);
   KernelLog("MODULE "); KernelHex(result); KernelLog(" ");
   KernelHex(transient); KernelLog("\n");
 }
@@ -414,17 +430,15 @@ U0 KernelCompilerLoad()
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.
-  CI386RedSeaEntry file; CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)]; CI386CompilerProbe probe;
+  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)]; CI386CompilerProbe probe;
   I64 (*entry)(CI386CompilerProbe *probe,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
-  U32 flags;
   if(phase==0) {
     if(kernel_probe_image) KernelStop;
     KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
-    if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1) KernelStop;
-    kernel_probe_image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(kernel_probe_bindings));
+    kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
     if(!kernel_probe_image) {
-      if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+      KernelHeapCheck(used,allocations);
       KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
     }
     kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
@@ -443,25 +457,17 @@ U0 KernelCompilerProbe(I64 phase)
   probe.source_pop=&I386LexFilePop; probe.cancel_input=kernel_console.cancel_read;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
-    flags=I386IrqSave;
-    if(!I386HeapFree(&kernel_heap,kernel_probe_image)) KernelStop;
-    kernel_probe_image=0;
-    I386IrqRestore(flags);
-    if(kernel_heap.used!=used-kernel_probe_span || kernel_heap.allocations!=allocations-1 || !I386HeapValid(&kernel_heap)) KernelStop;
+    KernelModuleRelease(&kernel_probe_image,used-kernel_probe_span,allocations-1);
     KernelLog("PROBE REJECT api reclaimed\n"); KernelStop;
   }
-  if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+  KernelHeapCheck(used,allocations);
   if(!phase) {
     KernelLog("PROBE MODULE "); KernelHex((kernel_probe_image+0)(U64)); KernelLog(" ");
     KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
   } else {
-    flags=I386IrqSave;
-    if(!I386HeapFree(&kernel_heap,kernel_probe_image)) KernelStop;
-    kernel_probe_image=0;
-    I386IrqRestore(flags);
-    if(kernel_heap.used!=used-kernel_probe_span || kernel_heap.allocations!=allocations-1 ||
-        I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
-        I386HeapSize(&kernel_heap,kernel_file_image)!=kernel_file_size || !I386HeapValid(&kernel_heap)) KernelStop;
+    KernelModuleRelease(&kernel_probe_image,used-kernel_probe_span,allocations-1);
+    if(I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
+        I386HeapSize(&kernel_heap,kernel_file_image)!=kernel_file_size) KernelStop;
     KernelLog("PROBE RELEASE "); KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
   }
 }
@@ -497,14 +503,12 @@ U0 KernelMemoryLoad()
 U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
   U8 *record,I64 bytes,U32 version)
 {//Private bounded service tables. Validate a stack candidate before publication.
-  CI386RedSeaEntry file;
   U8 candidate[sizeof(CI386CompilerServices)],*image=0,*reason="load";
   I64 (*entry)(U8 *services,I64 bytes);
   I64 i,used=kernel_heap.used,allocations=kernel_heap.allocations,size=0,accepted=0;
   if(bytes<8 || bytes>sizeof(candidate) || bytes&3) KernelStop;
   for(i=0;i<bytes;i++) candidate[i]=0;
-  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,path,&file)!=1) KernelStop;
-  image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,count);
+  image=KernelModuleLoad(path,bindings,count);
   if(image) {
     reason="api"; size=I386HeapSize(&kernel_heap,image);
     if((image+0)(U64)>=0x110000 && size>8 && kernel_heap.allocations==allocations+1) {
@@ -513,8 +517,7 @@ U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
     }
   }
   if(accepted!=1) {
-    if(image && !I386HeapFree(&kernel_heap,image)) KernelStop;
-    if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
+    KernelModuleRelease(&image,used,allocations);
     KernelLog(label); KernelLog("REJECT "); KernelLog(reason); KernelLog(" reclaimed\n"); KernelStop;
   }
   for(i=0;i<bytes;i++) record[i]=candidate[i];
