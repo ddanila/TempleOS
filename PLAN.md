@@ -306,9 +306,12 @@ construction and expansion are also retained, with owned indices and allocation
 failure cleanup; see [definition lists](docs/i386-define-lists.md). Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).
-Next is original document lifecycle and its rendering/editor callback dependencies,
-then editing and persistence. Initialized dictionaries do not yet provide an
-editable document.
+Original entry allocation/copy/size and form-navigation helpers now run natively
+with shared x64 tests; see [document entries](docs/i386-document-entries.md).
+Next is the remaining document lifecycle, reporting, recalculation and editor
+callbacks, then editing and persistence. Retaining compiled document services
+should control the growing source-startup cost. These helpers and initialized
+dictionaries do not yet provide an editable document.
 
 ### Next public-memory integration package
 

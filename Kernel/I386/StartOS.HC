@@ -26,3 +26,6 @@ U0 NativeDocColorsInit() { DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST); }
 NativeDocColorsInit;
 #include "/Adam/DolDoc/DocGlobals.HC"
 #include "/Adam/DolDoc/DocInit.HC"
+
+#include "/Adam/DolDoc/DocEntryAlloc.HC"
+#include "/Adam/DolDoc/DocFormNav.HC"

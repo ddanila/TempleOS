@@ -1009,6 +1009,9 @@ def main():
         result['document_defaults']={'original_parser_comparison':'pass'}
         if 'PASS original document initialization\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original document initialization failed')
+        if 'PASS original document entries\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original document entry/navigation checks failed')
+        result['document_entries']={'allocation_cases':8,'form_navigation_cases':8,'original_x64':'pass','native_source':'pass'}
         result['document_initialization']={'definition_entries':137,'dictionary_entries':121,
             'original_x64':'pass','native_startup':'pass','dictionary_reclamation_cycles':3}
         if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256']:

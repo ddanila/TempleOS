@@ -6292,3 +6292,22 @@ and running the document initialization sources; diagnostics remain separate
 [document initialization](i386-document-initialization.md). Document creation,
 rendering, editing and save/reboot/reopen remain open; this does not complete the
 usable native editing-session goal.
+
+## Original document entry helpers and form navigation
+
+Native startup now loads seven original functions shared with DocNew/DocForm:
+text editability, base/tag allocation, entry size/copy, and forward/backward form
+navigation. Extracted function bodies match the original source exactly. Shared
+original/native tests cover independent text/binary copies, binary numbering and
+queue insertion, task heap ownership, size accounting, reclamation and navigation
+through forms, links, skips and sentinel recovery. See
+[document entries](i386-document-entries.md).
+
+Both x64 rebuild generations and the full native suite pass: 176 commands / 239
+lines, exact VGA, startup recovery and 17 module rejection checks. All 1127 source
+hashes, nine build-input hashes and both disks match. The preview is refreshed.
+Normal boot measured 41.141 seconds (previously 29.401); separate diagnostics
+measured 154.589 seconds. Retaining compiled document services should address
+this growing startup cost. Full DocNew/reset/delete, reporting, recalculation,
+rendering, editor callbacks and persistence remain open; the editing-session
+goal is not complete.
