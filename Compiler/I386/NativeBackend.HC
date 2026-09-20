@@ -68,7 +68,7 @@ U0 I386NativeBackendListFree(CI386NativeBackend *state,U8 *head)
   U8 *next;
   while(head) { next=head(U8 **)[0]; I386NativeBackendFree(state,head); head=next; }
 }
-Bool I386BackendCompile(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status=0)
+Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status,U0 (*poll)())
 {
   CI386NativeBackend state;
   CI386Backend *backend=&state.backend;
@@ -82,7 +82,9 @@ Bool I386BackendCompile(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out
   for(i=0;i<sizeof(state);i++) bytes[i]=0;
   state.heap=heap;
   if(status) { status->node=0; status->depth=0; status->pass=-2; status->reason=0; }
-  backend->status=status;
+  backend->status=status; backend->break_poll=poll;
+  backend->break_flags_offset=offset(CI386Task.task_flags);
+  #assert TASKf_PENDING_BREAK==11
   backend->cc=cc; backend->out=out; backend->types=types; backend->context=&state;
   backend->allocate=&I386NativeBackendAlloc; backend->release=&I386NativeBackendFree;
   backend->fold=&I386NativeBackendFold; backend->assembly=&I386NativeBackendAsm;
@@ -95,4 +97,9 @@ Bool I386BackendCompile(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out
   I386NativeBackendListFree(&state,backend->chains);
   if(status) status->reason=0;
   return TRUE;
+}
+
+Bool I386BackendCompile(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status=0)
+{//Standalone/native backend service retains its existing uninstrumented contract.
+  return I386BackendCompileWithBreak(heap,cc,types,out,status,0);
 }

@@ -89,8 +89,10 @@ registration now uses the same dispatcher; see
 exception coverage. Compiler input now has a protected
 [break cleanup boundary](i386-compiler-break-cleanup.md). The [queued-file break path](i386-file-break-cleanup.md) exercises a real
 borrowed file context through cancellation and compiler recovery. An [IRQ-side keyboard request path](i386-keyboard-break-requests.md) now targets
-active console submissions. Arbitrary non-returning execution, multi-task focus
-and original public Break delivery remain required.
+active console submissions. [Generated loop checkpoints](i386-loop-break-checkpoints.md)
+now interrupt native while/goto/do-while loops and allow a HolyC handler to catch
+the break. Uninstrumented non-returning calls, multi-task focus and original
+public Break delivery remain required.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

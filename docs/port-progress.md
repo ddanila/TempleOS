@@ -6085,3 +6085,42 @@ reclaims 697928 bytes and its worker 541856. Normal QEMU/486 boot at 8 MiB measu
 refreshed from the tested image. Execution-safe delivery for non-returning code,
 multi-task focus, original message/job/popup semantics and original DolDoc
 integration remain required for the editing-session goal.
+
+
+## Native generated-loop break delivery
+
+Native JIT backward branches now test pending break state and call a retained
+CompilerRuntime poll only when a request exists. The 24-byte checkpoint preserves
+registers, flags and stacked expression operands; label order determines the same
+placement in both compiler passes. IRQ code continues to request only. Eligible
+polls consume the pending bit and throw in task context, so the nearest HolyC
+handler can catch and continue. Uncaught breaks unwind the compiler boundary;
+failed cleanup restores pending state and prevents outward delivery. See
+[loop break checkpoints](i386-loop-break-checkpoints.md).
+
+CompilerRuntime is now version 46, retaining 1322016 bytes from a 1322000-byte
+image. The standalone backend ABI is unchanged and emits no checkpoints unless
+the internal frontend entry supplies the poll callback. Both x64 rebuild
+generations and the full native kernel suite pass. Native root/worker bit tests
+still fit the unchanged 512 KiB worker heap; instrumentation of forward branches
+was rejected after exceeding that limit.
+
+QEMU keyboard tests cover 153 commands / 216 input lines and six actual
+Ctrl-Alt-C cases. Infinite while, backward goto and runtime-conditioned do/while
+loops recover to the prompt; a user catch handler receives Break and continues.
+Pending state clears and subsequent compilation/execution returns 42. The harness
+now types colons for goto labels. Exact VGA, compiler/file cleanup, source startup
+recovery, normal boot with an invalid probe and all 17 rejection cases pass.
+All 1097 OS source hashes and eight build-input hashes match; both disk hashes
+remain unchanged. Manifests record the pre-commit revision and exact tested hashes.
+
+Kernel size remains 363144 bytes, with 25976 bytes of bootstrap headroom after
+the 4096-byte early stage. ConsoleRuntime 12 remains 84608 bytes / 84624 retained.
+The temporary probe reclaims 697928 bytes and its worker 541856. Normal QEMU/486
+boot at 8 MiB measured 15.531 seconds; diagnostics measured 132.803 seconds. The
+normal preview is refreshed from the tested image.
+
+This establishes interruption of generated loops, not arbitrary uninstrumented
+code or execution with interrupts disabled. Public Break/Yield/message/job/popup
+semantics and original DolDoc lifecycle, rendering, editing and persistent saves
+remain open. The first usable native DolDoc editing-session goal is not complete.

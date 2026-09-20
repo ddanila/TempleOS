@@ -10,6 +10,16 @@ Bool I386CommandInputBreakReady(CI386Task *task)
     task->lifetime_refs==task->active_controls;
   I386IrqRestore(irq); return ready;
 }
+U0 I386ExecutionBreakPoll()
+{//Entered by generated branches, never from IRQ context. The nearest HolyC
+//handler may catch the break; an uncaught break reaches compiler input cleanup.
+  U32 irq=I386IrqSave;
+  CI386Task *task=I386TaskSelf;
+  Bool ready=I386CommandInputBreakReady(task);
+  if(ready) task->task_flags&=~(1<<TASKf_PENDING_BREAK);
+  I386IrqRestore(irq);
+  if(ready) throw('Break',TRUE);
+}
 U0 I386CommandInputCheckpoint(CI386Task *task,Bool *interrupted)
 {
   Bool ready=I386CommandInputBreakReady(task);
@@ -99,6 +109,10 @@ Bool I386CommandInput(CI386CommandInput *input)
   if(cc) { input->errors=cc->error_cnt; input->warnings=cc->warning_cnt; }
   unwound=I386CmpCtrlUnwind(task,boundary);
   if(!unwound) accepted=FALSE;
+  if(!unwound && input->exception=='Break') {
+    irq=I386IrqSave; task->task_flags|=1<<TASKf_PENDING_BREAK; I386IrqRestore(irq);
+    raised=FALSE;
+  }
   if(interrupted) {
     if(unwound) {
       irq=I386IrqSave;

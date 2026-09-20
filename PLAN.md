@@ -183,8 +183,11 @@ Compiler input now checks pending requests inside its catch/unwind boundary; see
 [compiler break cleanup](docs/i386-compiler-break-cleanup.md). Queued disk includes now have a compiler error-to-break cleanup path and an
 end-to-end diagnostic; see [file break cleanup](docs/i386-file-break-cleanup.md).
 IRQ-side Ctrl-Alt-C now requests a break for an active console submission; see
-[keyboard break requests](docs/i386-keyboard-break-requests.md). Arbitrary
-non-returning execution, multi-task focus and original public Break delivery remain.
+[keyboard break requests](docs/i386-keyboard-break-requests.md). Native JIT backward
+branches now provide task-context break checkpoints: while, goto and do/while
+loops can be interrupted, and a HolyC handler can catch the break and continue.
+See [loop break checkpoints](docs/i386-loop-break-checkpoints.md). Non-returning
+uninstrumented code, multi-task focus and original public Break delivery remain.
 Shared module lookup, heap checks and reclamation recovered 2112 bootstrap
 bytes. After moving task-context keyboard reading and decoding into ConsoleRuntime,
 25976 bytes of bootstrap headroom remain after keyboard break integration

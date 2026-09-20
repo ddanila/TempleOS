@@ -232,6 +232,24 @@ U0 I386Bool(CI386Out *out)
     "\x31\xD2\x52\x50",14);
 }
 
+U0 I386BackendBreakPoll(CI386Backend *backend,CI386Out *out)
+{//JIT-only checkpoint. Preserve expression registers and conditional flags.
+  CIntermediateCode *node;
+  CCodeMisc *target;
+  if(!backend->break_poll) return;
+  //Use IR order, not addresses left over from the sizing pass. Only backedges
+  //need a checkpoint; forward branches cannot sustain a non-returning loop.
+  target=OptLabelFwd(backend->current->ic_data);
+  for(node=backend->current->last;node!=&backend->cc->coc.coc_head;node=node->last)
+    if(node->ic_code==IC_LABEL && OptLabelFwd(node->ic_data)==target) break;
+  if(node==&backend->cc->coc.coc_head) return;
+  I386Bytes(out,"\x9C\x64\xF7\x05",4); //PUSHFD; TEST dword FS:[flags],pending
+  I386Dword(out,backend->break_flags_offset);
+  I386Dword(out,1<<11); //TASKf_PENDING_BREAK, checked by the native adapter.
+  I386Bytes(out,"\x74\x09\x60\xB8",4); //JZ restore; PUSHAD; MOV EAX,poll
+  I386Dword(out,(backend->break_poll+0)(U64));
+  I386Bytes(out,"\xFF\xD0\x61\x9D",4); //CALL EAX; POPAD; POPFD
+}
 U0 I386BackendCore(CI386Backend *backend)
 {
   CCmpCtrl *cc=backend->cc;
@@ -845,6 +863,7 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_BR_ZERO:
           case IC_BR_NOT_ZERO:
             if (depth!=1) throw('Compiler');
+            I386BackendBreakPoll(backend,out);
             I386Bytes(out,"\x58\x5A\x09\xD0\x0F",5);
             if (ic->ic_code==IC_BR_ZERO) I386Byte(out,0x84);
             else I386Byte(out,0x85);
@@ -1065,6 +1084,7 @@ U0 I386BackendCore(CI386Backend *backend)
             break;
           case IC_JMP:
             if (depth) throw('Compiler');
+            I386BackendBreakPoll(backend,out);
             label=OptLabelFwd(ic->ic_data);
             I386Byte(out,0xE9);
             I386Dword(out,label->addr-out->count-4);

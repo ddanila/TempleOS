@@ -112,7 +112,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             plain={'|':'backslash','~':'grave_accent','%':'5','#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>#!%|~')
+            shifted=set('(){}*+&_"<>#!%|~:')
+            plain[':']='semicolon'
             def typed_rows(source):
                 text='> '+source
                 #The VGA terminal wraps immediately at column 80, including a
@@ -326,6 +327,16 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             submit('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception'], 'hotkey-unlock')
             submit('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0'], 'hotkey-consumed')
             submit('6*7;', ['42'], 'hotkey-recovery')
+            submit('U0 Forever(){OutU8(0xE9,64);while(1){}}', [], 'loop-definition')
+            submit('Forever;', ['Exception'], 'loop-break', hotkey=True)
+            submit('U0 GotoLoop(){OutU8(0xE9,64);hotkey_spin:goto hotkey_spin;}', [], 'goto-definition')
+            submit('GotoLoop;', ['Exception'], 'goto-break', hotkey=True)
+            submit('U0 DoLoop(I64 again){OutU8(0xE9,64);do{}while(again);}', [], 'do-loop-definition')
+            submit('DoLoop(1);', ['Exception'], 'do-loop-break', hotkey=True)
+            submit("I64 CatchLoop(){I64 value=0;try{OutU8(0xE9,64);while(1){}}catch{value=Fs->except_ch=='Break';Fs->catch_except=TRUE;}return value;}", [], 'catch-loop-definition')
+            submit('CatchLoop;', ['1'], 'catch-loop-break', hotkey=True)
+            submit('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0'], 'loop-consumed')
+            submit('6*7;', ['42'], 'loop-recovery')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
@@ -334,7 +345,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':69+len(commands), 'native_commands':len(commands)+6, 'keyboard_break_cases':2}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':79+len(commands), 'native_commands':len(commands)+16, 'keyboard_break_cases':6}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

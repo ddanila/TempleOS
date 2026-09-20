@@ -1,3 +1,4 @@
+extern U0 I386ExecutionBreakPoll();
 //Retained compiler environment. Private symbols and temporaries belong to one cc.
 #include "/Compiler/I386/Frontend.HH"
 #include "/Kernel/I386/FileRuntime.HH"
@@ -401,7 +402,7 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   out=I386OutNew(state->heap,cc);
   if(!out) throw('OutMem',TRUE);
   I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
-  if(!I386BackendCompile(state->heap,cc,state->expression.types,out,&bound->status)) I386FrontendUnavailable(state);
+  if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll)) I386FrontendUnavailable(state);
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
     if(metadata->type!=IET_I386_DATA) I386FrontendUnavailable(state);
   result=I386FrontendAlloc(state,sizeof(CI386FrontendCode),TRUE,FALSE);

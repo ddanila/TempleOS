@@ -39,9 +39,10 @@ commands; the host never writes the pending flag or guest memory.
 
 The test program cooperates by observing the request and returning. This proves
 IRQ-side request production during running HolyC, not interruption of arbitrary
-non-returning code. Execution-safe delivery, focused multi-task routing, original
-message/job/popup semantics and original DolDoc integration remain required for
-the editing-session goal.
+non-returning code. The subsequent [generated loop checkpoints](i386-loop-break-checkpoints.md)
+add delivery for native while/goto/do-while loops, including a user catch handler.
+Focused multi-task routing, original message/job/popup semantics and original
+DolDoc integration remain required for the editing-session goal.
 
 Validation passed both x64 rebuild generations, the native input suite and the
 full kernel suite: 143 console commands, 206 input lines, two real keyboard-break
