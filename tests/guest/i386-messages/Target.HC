@@ -31,6 +31,7 @@ extern U0 EndTask();
 extern U0 OnKeyboard(CI386IrqFrame *frame);
 extern I64 QueueTest();
 extern I64 WaitFlagsTest();
+extern I64 CancelReadTest();
 extern U0 EmptyWorker(I64 unused);
 extern I64 InboxTest();
 extern U0 InboxSelfWorker(I64 arg);
@@ -45,6 +46,8 @@ I64 Main(I64 a,I64 b)
   result=QueueTest;
   if (result) return result;
   result=WaitFlagsTest;
+  if(result) return result;
+  result=CancelReadTest;
   if(result) return result;
   if (!I386MsgInit(&messages,&scheduler) || !I386KbcInputInit(&input,&scheduler) ||
       !I386KeyboardSetup) return 2;
@@ -235,3 +238,5 @@ I64 QueueTest()
 #include "/Kernel/I386/KeyboardEvent.HC"
 #include "/Kernel/I386/PicPit.HC"
 #include "T:/WaitFlags.HC"
+
+#include "T:/CancelRead.HC"

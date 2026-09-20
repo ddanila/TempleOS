@@ -57,7 +57,10 @@ and compiler references unwind; removing one queue entry does not make an
 arbitrary context jump safe. Native sleep and join cancellation now detach their
 waiters safely, including a target reaped before a cancelled join resumes; see
 [sleep/join cancellation](i386-sleep-join-cancellation.md). The coordinated
-public Break path and message/job/popup behavior still need integration.
+public Break path and message/job/popup behavior still need integration. Pending
+message reads now also detach safely without consuming queued data; see
+[message-read cancellation](i386-message-read-cancellation.md). Raw keyboard
+wait cancellation remains a prerequisite for the input broker.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

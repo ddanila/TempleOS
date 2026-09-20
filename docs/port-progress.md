@@ -5734,3 +5734,32 @@ QEMU/486 boot at 8 MiB measured 14.200 seconds and diagnostics
 125.159 seconds. The preview is refreshed from the verified disk. Strict
 386 compatibility, full DolDoc, public interruption handling and native
 self-hosting remain open.
+
+
+## Pending message-read cancellation
+
+The native message queue now supports cancellation of its pending blocking read.
+It clears the owned awaiting-message bit and detaches the borrowed stack flag
+under IRQ masking, preserving messages, recipient, close state, other flags,
+wake deadline and IF. The resumed read returns zero with output untouched and
+checks its local cancellation flag before touching the queue. An unbound queue
+can therefore be reused, or accept another reader, before the cancelled task
+resumes. Send/close wakeup is not final read completion; cancellation may still
+win without consuming the queued data. See
+[message-read cancellation](i386-message-read-cancellation.md).
+
+Both x64 rebuild generations and the native message suite pass with instruction
+audits. All 1090 OS source hashes match the rebuild manifest. Six new scenarios
+cover blocked/spurious wake, attached/unbound queues, send/close races, output
+preservation, suspension/bit-31/deadlines/IF, exact allocation reuse/overwrite and
+replacement-reader isolation. Existing message filtering, inbox allocation and
+cleanup, keyboard IRQ/broker/focus delivery and public wait-flag tests also pass.
+The expanded component runner uses the existing 384-sector profile below its
+heap at 0x40000.
+
+Message.HC remains a separately linked component, not part of the interactive
+kernel. The full kernel suite was not rerun for this component-only change, and
+the previously verified normal preview remains unchanged. This does not complete
+original Msg/GetMsg, popup/job propagation or public Break. Raw keyboard waits
+still need cancellation, and a coordinated interruption path must preserve
+file/compiler cleanup before exception delivery.

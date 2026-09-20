@@ -162,6 +162,10 @@ The native queue component now maintains the public awaiting-message bit during
 read/send/close, including flag waits without a private reader. It remains a
 separately tested component; the interactive console uses direct keyboard input.
 See [message wait flags](docs/i386-message-wait-flags.md).
+Pending message reads now have explicit cancellation that preserves queued
+messages and detaches the borrowed stack registration before resumption.
+Raw keyboard waits and coordinated pending-break delivery remain open. See
+[message read cancellation](docs/i386-message-read-cancellation.md).
 Queued ATA acquisition cancellation is implemented as a prerequisite for
 pending-break delivery: detach stack waiters before they resume, preserving
 ownership, FIFO survivors and public wait state. Active transfers and the full
