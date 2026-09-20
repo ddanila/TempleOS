@@ -119,7 +119,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 #blank cursor row when the final character exactly fills a row.
                 return [text[index:index+80] for index in range(0,len(text)+1,80)]
 
-            def submit(source, answers, name):
+            def submit(source, answers, name, hotkey=False):
                 nonlocal rows
                 if len(source)>255: raise ValueError('Source exceeds the native input buffer')
                 for index,ch in enumerate(source):
@@ -129,7 +129,11 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     if shift: key('shift',False)
                     if index%4==3:
                         screen((rows[:-1]+typed_rows(source[:index+1]))[-60:],'command-typing')
+                marks=log.read_text().count('@')
                 press('ret')
+                if hotkey:
+                    wait_for(lambda:log.read_text().count('@')>marks)
+                    key('ctrl',True); key('alt',True); press('c'); key('alt',False); key('ctrl',False)
                 rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
                 screen(rows,name)
             if startup_check is not None:
@@ -316,6 +320,12 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             ]
             for index,(source,answers) in enumerate(commands):
                 submit(source,answers,f'command-{index:02}')
+            submit("U0 HotkeyWait(I64 locked){if(locked) Fs->task_flags|=1<<TASKf_BREAK_LOCKED;OutU8(0xE9,64);while(!Bt(&Fs->task_flags,TASKf_PENDING_BREAK)){}}", [], 'hotkey-definition')
+            submit('HotkeyWait(0);', ['Exception'], 'hotkey-break', hotkey=True)
+            submit('HotkeyWait(1);', [], 'hotkey-locked', hotkey=True)
+            submit('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception'], 'hotkey-unlock')
+            submit('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0'], 'hotkey-consumed')
+            submit('6*7;', ['42'], 'hotkey-recovery')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
@@ -324,7 +334,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':63+len(commands), 'native_commands':len(commands)}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':69+len(commands), 'native_commands':len(commands)+6, 'keyboard_break_cases':2}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

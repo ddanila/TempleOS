@@ -88,8 +88,9 @@ registration now uses the same dispatcher; see
 [pending-break checkpoint path](i386-pending-break-checkpoints.md) now has native
 exception coverage. Compiler input now has a protected
 [break cleanup boundary](i386-compiler-break-cleanup.md). The [queued-file break path](i386-file-break-cleanup.md) exercises a real
-borrowed file context through cancellation and compiler recovery. Focused keyboard
-requests and original public Break delivery remain required.
+borrowed file context through cancellation and compiler recovery. An [IRQ-side keyboard request path](i386-keyboard-break-requests.md) now targets
+active console submissions. Arbitrary non-returning execution, multi-task focus
+and original public Break delivery remain required.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while
@@ -120,7 +121,8 @@ serialize the entire native record or simply remove its layout assertions.
    peaks and input responsiveness throughout, then apply the M7 hardware gates.
 
 Bootstrap headroom remains a constraint: retaining task-context keyboard reading
-and decoding in ConsoleRuntime leaves 26248 bytes in the fixed reservation,
+and decoding in ConsoleRuntime leaves 25976 bytes in the fixed reservation
+after keyboard-break integration,
 compared with 368 bytes before that move.
 See [storage diagnostics](i386-storage-diagnostics.md). Keep new document/runtime
 code in extended-memory modules; any necessary resident additions must first

@@ -7,6 +7,8 @@
 #include "/Kernel/I386/TextVga.HH"
 #include "/Kernel/I386/Vga.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/ExceptRuntime.HH"
+#include "/Kernel/I386/TaskBreak.HH"
 #include "/Kernel/FontStd.HC"
 import U0 KernelLog(U8 *text);
 import U0 KernelHex(U64 value);
@@ -19,9 +21,12 @@ import Bool I386SchedBlock(CI386Scheduler *scheduler);
 import Bool I386KbcQueueGet(CI386KbcQueue *queue,U8 *data,U8 *status);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
+import U0 throw(I64 ch=0,Bool no_log=FALSE);
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386ConsoleConfig *console_config;
 CI386Text console_text;
+CI386KeyboardState console_hotkeys;
+CI386Task *console_break_task;
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -36,6 +41,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input ||
       !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
+  I386KeyboardReset(&console_hotkeys);
   console_config=config; return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)
@@ -43,13 +49,18 @@ Bool ConsoleCancelRead(CI386Task *task)
   if(!console_config || !console_config->reader) return FALSE;
   return I386KbcInputCancel(console_config->reader->input,task);
 }
+Bool ConsoleKeyIrq(U8 data,U8 status)
+{//Called with IF clear; request only, never allocate, switch or throw here.
+  if(!I386KeyboardBreakKey(&console_hotkeys,data,status) || !console_break_task) return FALSE;
+  return I386TaskBreakRequest(console_break_task);
+}
 I64 Main(CI386ConsoleServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386ConsoleServices)) return 0;
   services->version=console_version; services->bytes=bytes;
   services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
   services->cancel_read=&ConsoleCancelRead;
-  services->cancel_wait=&I386TaskCancelWait;
+  services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
   return 1;
 }
 Bool ConsoleDisplay()
@@ -158,3 +169,6 @@ U0 ConsolePresent()
 #include "/Kernel/I386/ScanState.HC"
 #include "/Kernel/I386/KeyboardEvent.HC"
 #include "/Kernel/I386/KeyboardRead.HC"
+
+#include "/Kernel/I386/KeyboardBreak.HC"
+#include "/Kernel/I386/TaskBreak.HC"

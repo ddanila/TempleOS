@@ -25,14 +25,27 @@ Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
   U8 *bytes=&input;
   I64 i,diagnostics=0;
   Bool accepted=FALSE;
+  U32 irq;
   for(i=0;i<sizeof(CI386CommandInput);i++) bytes[i]=0;
   if(!scope || scope->task!=task) KernelStop;
   input.heap=scope->heap; input.types=console_config->types;
   input.files=console_config->files; input.includes=console_config->includes;
   input.flags=flags; input.source=source; input.filename=filename; input.context=&diagnostics;
   input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
-  try { accepted=console_config->compiler->input(&input); }
-  catch { task->catch_except=TRUE; I386TextWrite(&console_text,"Exception\n"); diagnostics++; }
+  //Required public-header publication must finish before an interactive target exists.
+  irq=I386IrqSave;
+  if(!(flags&CCF_JUST_LOAD)) console_break_task=task;
+  I386IrqRestore(irq);
+  try {
+    accepted=console_config->compiler->input(&input);
+    irq=I386IrqSave; console_break_task=0; I386IrqRestore(irq);
+    //A request arriving after the compiler's last checkpoint belongs here.
+    I386TaskBreakPoll;
+  } catch {
+    irq=I386IrqSave; console_break_task=0; I386IrqRestore(irq);
+    task->catch_except=TRUE; accepted=FALSE;
+    I386TextWrite(&console_text,"Exception\n"); diagnostics++;
+  }
   if(!accepted && !diagnostics) {
     if(input.exception=='OutMem') I386TextWrite(&console_text,"Out of memory\n");
     else I386TextWrite(&console_text,"Compilation failed\n");

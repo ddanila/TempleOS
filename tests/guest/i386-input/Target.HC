@@ -14,6 +14,7 @@
 #include "/Kernel/I386/KeyboardRead.HH"
 extern I64 ReadTest();
 extern I64 CancelInputTest();
+extern I64 BreakKeyTest();
 extern I64 EventTest();
 extern I64 StateTest();
 extern Bool StateCheck(U32 raw,U32 expected);
@@ -62,6 +63,8 @@ I64 Main(I64 a,I64 b)
       !I386KbcInputInit(&input,&scheduler) || I386KbcInputInit(&input,&scheduler)) return 1;
   result=ReadTest;
   if (result) return result;
+  result=BreakKeyTest;
+  if(result) return result;
   result=CancelInputTest;
   if (result) return result;
   if (I386KbcInputPut(&uninitialized,1,1) ||
@@ -384,3 +387,6 @@ I64 ScanTest()
 #include "/Kernel/I386/KbcInputCancel.HC"
 #include "/Kernel/I386/WaitCancel.HC"
 #include "T:/CancelInput.HC"
+
+#include "/Kernel/I386/KeyboardBreak.HC"
+#include "T:/BreakKey.HC"

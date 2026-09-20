@@ -6043,3 +6043,45 @@ The normal preview is refreshed from the tested image.
 Focused keyboard requests, interruption of non-returning execution, original
 message/job/popup semantics and original DolDoc integration remain required.
 These cleanup results do not complete the editing-session goal.
+
+
+## Ctrl-Alt-C requests during active console submissions
+
+The retained console now observes keyboard bytes in IRQ context with a separate
+copy of the existing decoder state. An unextended C make with Ctrl and Alt requests
+a break on the active executable submission. The handler may cancel a registered
+wait, but does not allocate, switch or throw; existing compiler/task checkpoints
+deliver after cleanup. Triggering C makes are consumed, while releases continue
+through the buffered reader. Idle-prompt input behavior is preserved. Required
+public-header loading is not a break target. See
+[keyboard break requests](i386-keyboard-break-requests.md).
+
+ConsoleRuntime 12 adds the validated key_irq callback, making its six-entry service
+table 32 bytes. Configuration stays 28 bytes. The console imports throw for its
+task-context poll and clears the active task pointer under IRQ masking on normal
+return and catch. A poll inside the outer console try handles requests arriving
+after the compiler's last checkpoint. Other module versions remain unchanged.
+
+Both x64 rebuild generations, the native input suite and the full kernel suite
+pass. Component coverage includes both left/right modifier combinations, repeat
+makes, missing modifiers, releases, auxiliary/no-data bytes, corrupt input and
+extended/wrong keys. QEMU sends real Ctrl-Alt-C events after observing a marker
+emitted by running HolyC. Immediate and lock-delayed requests recover with exact
+VGA output; pending state clears and a subsequent 6*7 returns 42. The test program
+cooperates by checking the pending flag: arbitrary non-returning execution is
+not yet interruptible by this path.
+
+The console suite now covers 143 commands / 206 input lines and two hardware
+hotkey cases. Existing compiler/file break cleanup, startup recovery, normal boot
+with an invalid probe and all 17 module rejection cases pass, including console
+version 11 rejection. All 1097 OS source hashes and 8 build-input hashes match;
+both disk hashes are unchanged after tests. Manifests record the pre-commit
+revision, dirty worktree and exact hashes.
+
+Kernel size is 363144 bytes, leaving 25976 bytes after the 4096-byte early stage.
+ConsoleRuntime retains 84624 bytes (84608-byte image). The temporary probe still
+reclaims 697928 bytes and its worker 541856. Normal QEMU/486 boot at 8 MiB measured
+14.816 seconds; diagnostics measured 128.760 seconds. The normal preview is
+refreshed from the tested image. Execution-safe delivery for non-returning code,
+multi-task focus, original message/job/popup semantics and original DolDoc
+integration remain required for the editing-session goal.
