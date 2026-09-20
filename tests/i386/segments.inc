@@ -1,3 +1,6 @@
+%ifndef SEGMENT_RECORD_BASE
+%define SEGMENT_RECORD_BASE 0x50000
+%endif
 ; Test-only temporary GDT: retain flat code/data and add FS/GS records in low RAM.
 segment_test_code_begin:
 segment_test_run:
@@ -30,9 +33,9 @@ align 8
 segment_test_gdt:
     dq 0,0x00cf9a000000ffff,0x00cf92000000ffff
     dw 0xFFFF,0
-    db 5,0x92,0x40,0
+    db (SEGMENT_RECORD_BASE>>16)&0xFF,0x92,0x40,0
     dw 0xFFFF,0x100
-    db 5,0x92,0x40,0
+    db (SEGMENT_RECORD_BASE>>16)&0xFF,0x92,0x40,0
 segment_test_gdtr:
     dw 5*8-1
     dd segment_test_gdt

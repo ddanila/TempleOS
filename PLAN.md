@@ -166,6 +166,10 @@ Queued ATA acquisition cancellation is implemented as a prerequisite for
 pending-break delivery: detach stack waiters before they resume, preserving
 ownership, FIFO survivors and public wait state. Active transfers and the full
 Break/unwind contract remain open. See [ATA wait cancellation](docs/i386-ata-wait-cancellation.md).
+Sleep and join cancellation are implemented alongside that path. A cancelled
+join must release its target pin and return without dereferencing a target that
+may already have been reaped; completed joins and expired sleeps win over late
+cancellation. See [sleep/join cancellation](docs/i386-sleep-join-cancellation.md).
 See [task eligibility](docs/i386-task-eligibility.md).
 See [public task ring](docs/i386-public-task-ring.md).
 Native stack ownership now uses contiguous public `CTaskStk` descriptors for

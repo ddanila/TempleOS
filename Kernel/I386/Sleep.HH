@@ -17,6 +17,9 @@ class CI386SleepQueue
 public extern Bool I386SleepInit(CI386SleepQueue *queue,CI386Scheduler *s);
 //Task context only. Zero returns immediately; root cannot block. Preserves IF.
 public extern Bool I386SleepTicks(CI386SleepQueue *queue,I64 ticks);
+//Cancel a queued sleep, preserving IF and public wait flags/deadlines.
+//The resumed sleep returns FALSE; an already expired sleep is not cancelled.
+public extern Bool I386SleepCancel(CI386SleepQueue *queue,CI386Task *task);
 //Once per serviced timer tick, IF clear. Wakes due tasks without switching.
 public extern Bool I386SleepTick(CI386SleepQueue *queue);
 #endif

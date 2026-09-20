@@ -83,5 +83,5 @@ I64 AtaCancelTest()
     if(!I386AtaChannelClose(&ata_channel) || (GetRFlags&0x200)!=cancel_if) return 168;
   }
   SetRFlags(saved);
-  return 0;
+  return WaitCancelTest;
 }

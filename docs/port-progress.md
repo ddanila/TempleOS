@@ -5700,3 +5700,37 @@ FileRuntime retains 130344 bytes (130328-byte image); CompilerProbe reclaims all
 measured 14.200 seconds and diagnostics 124.962 seconds. The normal preview image
 has been refreshed from the verified disk. This is still QEMU/486 evidence, not
 strict 386 compatibility, a complete DolDoc environment or native self-hosting.
+
+
+## Native sleep and join cancellation
+
+Sleep cancellation detaches its stack waiter under IRQ masking and resumes the
+call with FALSE, retaining a nonzero remaining count to distinguish cancellation
+from expiry. Join cancellation removes the target registration and returns FALSE
+without dereferencing a target that may already have been reaped. Completed
+joins and expired sleeps win over late cancellation. Both preserve public wait
+flags, wake deadlines and IF. These are internal prerequisites for coordinated
+Break delivery, not public Break or task killing; see
+[sleep/join cancellation](i386-sleep-join-cancellation.md).
+
+Both x64 rebuild generations and native tasks, task exceptions and ATA tasks
+pass, including instruction audits. Ten new sleep/join scenarios cover queue
+positions, complete removal, spurious wake, suspension/bit-31/deadline preservation,
+expiry/completion races and heap reclamation. Cancelled joiners resume after the
+exact target allocation is freed, reused and overwritten. The task fixture now
+uses the existing 640-sector transfer profile below its heap at 0x60000; segment
+records move beyond the heap to 0x70000/0x70100. Default fixture segment placement
+is unchanged and the ATA task runner passes with that default.
+
+The initial resident addition exceeded the bootstrap reservation. Sharing sleep
+unlinking and replacing repeated startup/probe directory walks with the existing
+RedSea path resolver keeps the kernel at 388120 bytes, leaving
+1000 bytes after the early stage. No service-record layouts changed.
+
+The full kernel suite passes 129 commands / 192 input lines, exact VGA, startup
+recovery, normal boot with an invalid diagnostic module and all 17 rejection
+cases. All 1090 OS source hashes and eight build-input hashes match. Normal
+QEMU/486 boot at 8 MiB measured 14.200 seconds and diagnostics
+125.159 seconds. The preview is refreshed from the verified disk. Strict
+386 compatibility, full DolDoc, public interruption handling and native
+self-hosting remain open.

@@ -12,6 +12,7 @@ extern I64 OwnedTaskTest();
 extern I64 JoinTest();
 extern I64 AtaChannelTest();
 extern I64 AtaCancelTest();
+extern I64 WaitCancelTest();
 extern U0 JoinWorker(I64 id);
 CI386OwnedTask *join_tasks[3];
 CI386Task foreign_task;
@@ -348,8 +349,8 @@ U0 OnTimer(CI386IrqFrame *frame)
 
 I64 SegmentCheck()
 {
-  CSegmentTask *task=0x50000;
-  CSegmentCpu *cpu=0x50100;
+  CSegmentTask *task=0x70000;
+  CSegmentCpu *cpu=0x70100;
   task->addr=task; task->tag=0x12345678; task->wide=0x123456789ABCDEF0;
   task->ptr=&task->bytes[0]; task->bytes[0]=42;
   cpu->addr=cpu; cpu->tag=0x87654321; cpu->task=task;
@@ -360,7 +361,7 @@ I64 SegmentCheck()
   Gs->task->tag=93;
   Fs->bytes[1]=71;
   if (task->wide!=0x123456799ABCDEF1 || task->tag!=93 || task->bytes[1]!=71 ||
-      (Fs+0)(U64)!=0x50000 || (Gs+0)(U64)!=0x50100) return 2;
+      (Fs+0)(U64)!=0x70000 || (Gs+0)(U64)!=0x70100) return 2;
   return 0;
 }
 
@@ -577,5 +578,7 @@ U0 OwnedCleanup(CI386Task *task)
 #include "/Kernel/I386/AtaChannel.HC"
 #include "T:/AtaChannel.HC"
 #include "T:/AtaCancel.HC"
+#include "/Kernel/I386/Sleep.HC"
+#include "T:/WaitCancel.HC"
 #include "T:/Flags.HC"
 #include "T:/WakeTime.HC"

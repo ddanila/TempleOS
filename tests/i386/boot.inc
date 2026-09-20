@@ -9,7 +9,7 @@
 %error Compiler graph test stage must fit below physical 0x74000
 %endif
 %elifdef LEX_MACRO_TEST
-;Definition/token fixtures use their first arena at physical 0x60000.
+;Definition/token/task fixtures use their first arena at physical 0x60000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 640
 %error Macro lexer test stage must fit below physical 0x60000
 %endif

@@ -54,7 +54,10 @@ FileRuntime; see [ATA wait cancellation](i386-ata-wait-cancellation.md). It deta
 the stack waiter and resumes acquisition with failure, leaving granted owners
 alone. Before delivering Break, coordinate sleep/join/message waits and let file
 and compiler references unwind; removing one queue entry does not make an
-arbitrary context jump safe.
+arbitrary context jump safe. Native sleep and join cancellation now detach their
+waiters safely, including a target reaped before a cancelled join resumes; see
+[sleep/join cancellation](i386-sleep-join-cancellation.md). The coordinated
+public Break path and message/job/popup behavior still need integration.
 
 `DocFile.HC` serializes only the span between `CDocBin.start` and `CDocBin.end`,
 followed by payload bytes. That span contains four U32 fields (16 bytes), while

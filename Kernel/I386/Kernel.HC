@@ -293,10 +293,7 @@ U0 KernelStartup()
   I64 (*entry)();
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
   I64 transient,after,result;
-  if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
-      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
-      !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"Startup.t32m",&file)!=1)
-    KernelStop;
+  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/Startup.t32m",&file)!=1) KernelStop;
   KernelBindings(bindings,kernel_startup_bindings,3,sizeof(bindings)/sizeof(CI386ModuleBinding));
   image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,3);
   if(!image || kernel_heap.allocations!=allocations+1) KernelStop;
@@ -424,9 +421,7 @@ U0 KernelCompilerProbe(I64 phase)
   if(phase==0) {
     if(kernel_probe_image) KernelStop;
     KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
-    if(I386RedSeaFind(&kernel_volume,kernel_volume.root,"Modules",&file)!=1 ||
-        !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"I386",&file)!=1 ||
-        !(file.attr&0x10) || I386RedSeaFind(&kernel_volume,file.block,"CompilerProbe.t32m",&file)!=1) KernelStop;
+    if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1) KernelStop;
     kernel_probe_image=I386RedSeaLoadBound(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(kernel_probe_bindings));
     if(!kernel_probe_image) {
       if(kernel_heap.used!=used || kernel_heap.allocations!=allocations || !I386HeapValid(&kernel_heap)) KernelStop;
