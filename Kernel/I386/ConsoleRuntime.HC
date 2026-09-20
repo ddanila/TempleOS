@@ -27,12 +27,13 @@ import Bool I386KbcQueueGet(CI386KbcQueue *queue,U8 *data,U8 *status);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
+#include "/Kernel/I386/DocumentRuntime.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[5];
+CI386KernelSymbol console_doc_exports[19];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -60,9 +61,38 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[3].val=(&DocDisplay+0)(U64);
   console_doc_exports[4].str="_DOC_BORDER";
   console_doc_exports[4].val=(&DocBorder+0)(U64);
-  for(i=0;i<5;i++) {
+  console_doc_exports[5].str="_DOC_EDITABLE";
+  console_doc_exports[5].val=(&IsEditableText+0)(U64);
+  console_doc_exports[6].str="_DOC_ENTRY_BASE";
+  console_doc_exports[6].val=(&DocEntryNewBase+0)(U64);
+  console_doc_exports[7].str="_DOC_ENTRY_TAG";
+  console_doc_exports[7].val=(&DocEntryNewTag+0)(U64);
+  console_doc_exports[8].str="_DOC_ENTRY_SIZE";
+  console_doc_exports[8].val=(&DocEntrySize+0)(U64);
+  console_doc_exports[9].str="_DOC_ENTRY_COPY";
+  console_doc_exports[9].val=(&DocEntryCopy+0)(U64);
+  console_doc_exports[10].str="_DOC_FORM_FWD";
+  console_doc_exports[10].val=(&DocFormFwd+0)(U64);
+  console_doc_exports[11].str="_DOC_FORM_BWD";
+  console_doc_exports[11].val=(&DocFormBwd+0)(U64);
+  console_doc_exports[12].str="_DOC_DEFAULTS_INIT";
+  console_doc_exports[12].val=(&DocDefaultsInit+0)(U64);
+  console_doc_exports[13].str="_DOC_INIT";
+  console_doc_exports[13].val=(&DocInit+0)(U64);
+  console_doc_exports[14].str="_DOC_DICTIONARY_NEW";
+  console_doc_exports[14].val=(&DocDictionaryNew+0)(U64);
+  console_doc_exports[15].str="_DOC_DICTIONARY_DEL";
+  console_doc_exports[15].val=(&DocDictionaryDel+0)(U64);
+  console_doc_exports[16].str="_DOC_GLOBALS_INIT";
+  console_doc_exports[16].val=(&DocGlobalsInit+0)(U64);
+  console_doc_exports[17].str="_DOC_START";
+  console_doc_exports[17].val=(&ConsoleDocumentStart+0)(U64);
+  console_doc_exports[18].str="doldoc";
+  console_doc_exports[18].val=(&doldoc+0)(U64);
+  for(i=0;i<19;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
+    if(i==18) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   console_config=config; return TRUE;

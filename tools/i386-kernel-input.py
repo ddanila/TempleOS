@@ -360,6 +360,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             submit('DocEntryAllocCheck;', ['8'], 'doc-entry-check')
             submit('#include "/Kernel/I386/DocFormNavCheck.HC"', [], 'doc-form-definition')
             submit('DocFormNavCheck;', ['8'], 'doc-form-check')
+            submit('Bool DocStartAgain(){CHashTable *p=doldoc.hash;I64 used=Fs->data_heap->used_u8s;ConsoleDocumentStart;return p==doldoc.hash&&used==Fs->data_heap->used_u8s;}', [], 'doc-start-repeat-definition')
+            submit('DocStartAgain;', ['1'], 'doc-start-repeat-check')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
@@ -368,7 +370,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':102+len(commands), 'native_commands':len(commands)+39, 'keyboard_break_cases':7, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':104+len(commands), 'native_commands':len(commands)+41, 'keyboard_break_cases':7, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

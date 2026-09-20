@@ -20,12 +20,5 @@ extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 
 #include "/Kernel/I386/PublicHash.HH"
 
-//Original document policy and dictionaries, retained in this task's scope.
-#include "/Kernel/ColorNames.HH"
-U0 NativeDocColorsInit() { DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST); }
-NativeDocColorsInit;
-#include "/Adam/DolDoc/DocGlobals.HC"
-#include "/Adam/DolDoc/DocInit.HC"
-
-#include "/Adam/DolDoc/DocEntryAlloc.HC"
-#include "/Adam/DolDoc/DocFormNav.HC"
+//Initialize task-owned dictionaries through retained original document code.
+ConsoleDocumentStart;

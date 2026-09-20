@@ -1,5 +1,8 @@
 # Native original DolDoc initialization
 
+Current integration uses [retained document services](i386-retained-document-services.md);
+the source-loading measurements below record the earlier integration stage.
+
 Native StartOS now loads the original DocInit source,
 after publishing ST_COLORS from the same color-name list used by SysDefinesLoad.
 The original and native paths share the zeroed public doldoc global declaration.

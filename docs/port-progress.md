@@ -6311,3 +6311,24 @@ measured 154.589 seconds. Retaining compiled document services should address
 this growing startup cost. Full DocNew/reset/delete, reporting, recalculation,
 rendering, editor callbacks and persistence remain open; the editing-session
 goal is not complete.
+
+## Retained document code and shorter normal startup
+
+ConsoleRuntime 15 now retains the original document global, initialization,
+dictionary, entry allocation/copy/size and form-navigation services. StartOS loads
+public declarations and invokes initialization in the console task, avoiding
+recompilation of these bodies at each boot. The loader binds eleven validated
+public memory/hash services. The original x64 path still runs the shared bodies
+in its existing order. See [retained document services](i386-retained-document-services.md).
+
+Both x64 rebuild generations and the full native suite pass. All document corpora
+now pass through retained bindings, including a repeated initialization that
+preserves dictionary identity and heap usage. The prompt suite passes 178 commands
+/ 241 lines, exact VGA, startup recovery and all 17 module rejections. All 1130
+source hashes, nine build-input hashes and both disk hashes match.
+
+Normal boot improved from 41.141 to 19.067 seconds; separate diagnostics measured
+132.162 seconds. ConsoleRuntime retains 117160 bytes. Kernel size is 364664 bytes
+with 24456 bytes of reserved-load headroom. The preview is refreshed. This removes
+the growing startup compilation cost; full document lifecycle, reporting,
+recalculation, rendering, editor callbacks and persistence still remain open.

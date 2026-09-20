@@ -1,5 +1,8 @@
 # Original entry allocation and form navigation on i386
 
+Current integration uses [retained document services](i386-retained-document-services.md);
+the source-loading measurements below record the earlier integration stage.
+
 Native startup loads DocEntryAlloc.HC and
 DocFormNav.HC after the original DocInit. These are extracted original bodies,
 shared with DocNew.HC and DocForm.HC on x64, rather than replacements for DocNew

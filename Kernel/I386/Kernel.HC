@@ -547,14 +547,22 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[14];
+  CI386ModuleBinding bindings[25];
   U8 indices[14];
+  U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
+  U8 *local_names="MAlloc\0CAlloc\0Free\0MSize2\0MAllocIdent\0StrNew\0MemCpy\0MemSet\0HashTableNew\0HashDefineLstAdd\0DefineLstLoad\0";
+  I64 i;
   indices[0]=0; indices[1]=19; indices[2]=10; indices[3]=40; indices[4]=41; indices[5]=18;
   indices[6]=13; indices[7]=14; indices[8]=33; indices[9]=32; indices[10]=46; indices[11]=42;
   indices[12]=34; indices[13]=16;
   KernelBindings(bindings,indices,14,14);
+  for(i=14;i<25;i++) {
+    KernelBinding(&bindings[i],public_names); bindings[i].name=local_names;
+    while(*public_names++);
+    while(*local_names++);
+  }
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,14,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,25,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;

@@ -308,9 +308,11 @@ now runs the original DocInit, with all 137 definition and 121 dictionary entrie
 verified; see [document initialization](docs/i386-document-initialization.md).
 Original entry allocation/copy/size and form-navigation helpers now run natively
 with shared x64 tests; see [document entries](docs/i386-document-entries.md).
+Those document services now execute from retained ConsoleRuntime 15, reducing
+normal startup from 41.141 to 19.067 seconds; see
+[retained document services](docs/i386-retained-document-services.md).
 Next is the remaining document lifecycle, reporting, recalculation and editor
-callbacks, then editing and persistence. Retaining compiled document services
-should control the growing source-startup cost. These helpers and initialized
+callbacks, then editing and persistence. These helpers and initialized
 dictionaries do not yet provide an editable document.
 
 ### Next public-memory integration package
