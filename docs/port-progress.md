@@ -6002,3 +6002,44 @@ This adds production cleanup behavior, not the finished user interruption flow.
 Focused Ctrl-Alt-C requests, non-returning code interruption, actual queued-file
 cancellation through compiler recovery, and original message/job/popup semantics
 remain. The first original DolDoc edit/execute/save/reboot session is still open.
+
+
+## Queued-file cancellation through compiler recovery
+
+CompilerRuntime 45 converts parser/allocation failure into a pending ordinary
+break only after the file call has released borrowed state and the protected
+compiler boundary is ready. Conversion records the exception in the existing
+catch; control unwind still precedes pending-bit consumption and outer delivery.
+This closes the path where a cancelled include reports a compiler error before
+reaching a normal-return checkpoint. See
+[file break cleanup](i386-file-break-cleanup.md).
+
+The worker diagnostic now holds a real RedSea lease in the parent and blocks a
+child compiler include behind that ATA owner. Two cases cover immediate and
+lock-delayed cancellation, both IF settings, repeated requests and preservation
+of the parent's disk ownership. The cancelled child's file borrow remains live
+until resumption; the outer catch checks its release along with compiler-control,
+wait, I/O and lifetime cleanup. Private definitions stay unpublished and compiler
+heap totals return to baseline. The same child then reads the file successfully
+and evaluates 6*7. Reaping it restores the parent's full heap/reference/channel
+baseline. The added disk lease imports remain diagnostic-only.
+
+Both x64 rebuild generations and the full native kernel suite pass, including
+the two queued-file cases, six prior input-break cases, 137 console commands /
+200 input lines, exact VGA, startup recovery, normal boot with an invalid probe,
+and all 17 module rejection cases (including CompilerRuntime 44). Initial
+validation found a probe include-order issue that hid the imported throw symbol,
+then a recovery-test filename missing its .HC extension; both were corrected
+before the final successful rebuild and full suite.
+
+All 1096 OS source hashes and 8 build-input hashes match, as do both post-test
+disk hashes. Manifests record the pre-commit revision, dirty worktree and exact
+hashes. Kernel size remains 362872 bytes, leaving 26248 bytes after the early
+stage. CompilerRuntime retains 1317960 bytes (1317944-byte image). The temporary
+probe reclaims all 697928 bytes, and its worker reclaims 541856 bytes. Normal
+QEMU/486 boot at 8 MiB measured 14.705 seconds and diagnostics 138.000 seconds.
+The normal preview is refreshed from the tested image.
+
+Focused keyboard requests, interruption of non-returning execution, original
+message/job/popup semantics and original DolDoc integration remain required.
+These cleanup results do not complete the editing-session goal.

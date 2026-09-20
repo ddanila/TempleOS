@@ -9,11 +9,14 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/String.HH"
+#include "/Kernel/I386/ExceptRuntime.HH"
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
 import CI386OwnedTask *I386TaskSpawn(CI386Scheduler *scheduler,CI386Heap *heap,
   I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20,I64 private_size=0);
+import Bool I386RedSeaBegin(CI386RedSea *volume);
+import Bool I386RedSeaEnd(CI386RedSea *volume);
 import Bool I386TaskDestroy(CI386OwnedTask *owned);
 import Bool I386SchedYield(CI386Scheduler *scheduler);
 import U0 KernelLog(U8 *text);
@@ -40,6 +43,7 @@ extern U0 ProbeConditional(CI386CompilerProbe *probe);
 extern U0 ProbeIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeDiskIncludes(CI386CompilerProbe *probe);
 extern U0 ProbeCodeLifetime(CI386CompilerProbe *probe);
+extern U0 ProbeFileBreak(CI386CompilerProbe *probe);
 extern U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCommands(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
@@ -145,6 +149,7 @@ U0 ProbeTokens(CI386CompilerProbe *probe)
   ProbeIncludes(probe);
   ProbeDiskIncludes(probe);
   ProbeCodeLifetime(probe);
+  if(probe->phase) ProbeFileBreak(probe);
 }
 U0 ProbeIdent(CI386CompilerProbe *probe)
 {
@@ -526,3 +531,7 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 #include "/Kernel/I386/DocLayoutCheck.HH"
 
 #include "/Kernel/I386/CompilerCodeLifetimeProbe.HC"
+
+#include "/Kernel/I386/WaitCancel.HC"
+#include "/Kernel/I386/TaskBreak.HC"
+#include "/Kernel/I386/CompilerFileBreakProbe.HC"

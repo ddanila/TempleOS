@@ -1,6 +1,6 @@
 //Only active controls are owned by this catch/unwind boundary. Other lifetime
 //references (for example a borrowed file context) must return normally first.
-U0 I386CommandInputCheckpoint(CI386Task *task,Bool *interrupted)
+Bool I386CommandInputBreakReady(CI386Task *task)
 {
   U32 irq=I386IrqSave;
   Bool ready=(task->task_flags&(1<<TASKf_PENDING_BREAK)) &&
@@ -8,8 +8,12 @@ U0 I386CommandInputCheckpoint(CI386Task *task,Bool *interrupted)
     !task->wait && !task->blocked && !task->io_locks && !task->compiler_busy &&
     !task->compiler_cleanup_failed && !task->messages &&
     task->lifetime_refs==task->active_controls;
+  I386IrqRestore(irq); return ready;
+}
+U0 I386CommandInputCheckpoint(CI386Task *task,Bool *interrupted)
+{
+  Bool ready=I386CommandInputBreakReady(task);
   if(ready) *interrupted=TRUE;
-  I386IrqRestore(irq);
   if(ready) throw('Break',TRUE);
 }
 //One submitted buffer: compile/execute, publish, then unwind its private control.
@@ -85,6 +89,12 @@ Bool I386CommandInput(CI386CommandInput *input)
     }
   } catch {
     raised=TRUE; input->exception=task->except_ch; task->catch_except=TRUE;
+    //Cancelled includes can report a parser/allocation failure before returning
+    //to a checkpoint. File borrows must already be released before conversion.
+    if((input->exception=='Compiler' || input->exception=='OutMem') &&
+        I386CommandInputBreakReady(task)) {
+      interrupted=TRUE; input->exception='Break';
+    }
   }
   if(cc) { input->errors=cc->error_cnt; input->warnings=cc->warning_cnt; }
   unwound=I386CmpCtrlUnwind(task,boundary);

@@ -34,9 +34,9 @@ requests after private function compilation/execution, on boot and worker tasks.
 It checks the real outer catch, pending-bit clearing, caller IF, exact compiler
 heap allocation totals, lifetime references and absence of the unpublished
 function. Console cases exercise recovery, private-definition rollback and
-lock-delayed delivery followed by another successful command. These tests do not
-by themselves establish cancellation while an actual file read is queued, or
-native editor interruption. Those integration cases remain required.
+lock-delayed delivery followed by another successful command. The follow-on [queued-file diagnostic](i386-file-break-cleanup.md) exercises
+cancellation while a real file read is queued and checks compiler error-to-break
+conversion in version 45. Native editor interruption remains required.
 
 Validation passed both x64 rebuild generations and the full native kernel suite:
 six boot/worker cleanup cases, 137 console commands, exact VGA, startup recovery
