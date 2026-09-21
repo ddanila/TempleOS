@@ -6354,3 +6354,23 @@ ConsoleRuntime retains 137464 bytes; kernel reserved-load headroom is 24256 byte
 The preview contains the validated normal image. Full document construction,
 reset/delete, general formatting, recalculation, rendering, editor callbacks and
 save/reboot/reopen acceptance remain open.
+
+## Native text-base drawing primitives
+
+ConsoleRuntime 17 publishes the original TextChar, TextLenStr, TextLenAttrStr and
+TextLenAttr signatures over a native 80-by-60 U32 staging surface. Portable HolyC
+preserves the original x64 assembly's window/screen clipping, scroll, border,
+source-offset, attribute and occupied-cell fill behavior. The original assembly
+remains an independent oracle. The surface is not yet attached to document
+presentation or the full gr global; see [text base](i386-text-base.md).
+
+Both x64 rebuild generations and the full native suite pass, including 256
+original-assembly comparisons and 12 shared native cases with bounds guards.
+Interactive validation passes 186 commands / 249 lines and exact VGA. Startup
+recovery and all 17 module rejections pass. All 1142 source hashes, ten build
+inputs and both disk hashes match. The preview contains the tested normal disk.
+
+Normal boot measured 21.725 seconds; separate diagnostics measured 134.178.
+ConsoleRuntime retains 168024 bytes, including the guarded cell surface. Kernel
+reserved-load headroom remains 24256 bytes. Document presentation, construction,
+recalculation, editor input and persistent editing-session acceptance remain open.

@@ -22,3 +22,5 @@ extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 
 //Initialize task-owned dictionaries through retained original document code.
 ConsoleDocumentStart;
+
+#include "/Kernel/I386/PublicTextBase.HH"

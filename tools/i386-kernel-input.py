@@ -371,6 +371,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 started=time.monotonic()
                 submit(source, [answer], label)
                 if time.monotonic()-started<3: raise ValueError('Document diagnostic pause missing')
+            submit('#include "/Kernel/I386/TextBaseCheck.HC"', [], 'text-base-definition')
+            submit('TextBaseCheck(i386_text_base,&TextChar,&TextLenStr,&TextLenAttrStr,&TextLenAttr);', ['12'], 'text-base-check')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
@@ -379,7 +381,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':110+len(commands), 'native_commands':len(commands)+47, 'keyboard_break_cases':7, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':112+len(commands), 'native_commands':len(commands)+49, 'keyboard_break_cases':7, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

@@ -314,10 +314,12 @@ normal startup from 41.141 to 19.067 seconds; see
 Original entry insertion/deletion, binary lifetime/validation, soft-line removal
 and undo cleanup now run through ConsoleRuntime 16, with visible literal
 reporting and original/native lifetime tests; see
-[entry lifetime](docs/i386-document-entry-lifetime.md). Next are complete document
-construction/reset/delete, general formatting, recalculation and editor callbacks,
-then editing and persistence. These services do not yet provide an editable
-document.
+[entry lifetime](docs/i386-document-entry-lifetime.md). The four text-base write
+primitives now have retained native bindings, checked against original x64
+assembly; see [text base](docs/i386-text-base.md). Their cell surface still needs
+presentation integration. Next are complete document construction/reset/delete,
+general formatting, recalculation and editor callbacks, then editing and
+persistence. These services do not yet provide an editable document.
 
 ### Next public-memory integration package
 

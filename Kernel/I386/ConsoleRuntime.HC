@@ -28,12 +28,13 @@ import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
 #include "/Kernel/I386/DocumentRuntime.HC"
+#include "/Kernel/I386/TextBase.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[29];
+CI386KernelSymbol console_doc_exports[34];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -109,10 +110,21 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[27].val=(&DocRemSoftNewLines+0)(U64);
   console_doc_exports[28].str="_DOC_INS_ENTRY";
   console_doc_exports[28].val=(&DocInsEntry+0)(U64);
-  for(i=0;i<29;i++) {
+  NativeTextBaseInit;
+  console_doc_exports[29].str="_TEXT_CHAR";
+  console_doc_exports[29].val=(&TextChar+0)(U64);
+  console_doc_exports[30].str="_TEXT_LEN_STR";
+  console_doc_exports[30].val=(&TextLenStr+0)(U64);
+  console_doc_exports[31].str="_TEXT_LEN_ATTR_STR";
+  console_doc_exports[31].val=(&TextLenAttrStr+0)(U64);
+  console_doc_exports[32].str="_TEXT_LEN_ATTR";
+  console_doc_exports[32].val=(&TextLenAttr+0)(U64);
+  console_doc_exports[33].str="i386_text_base";
+  console_doc_exports[33].val=(&i386_text_base+0)(U64);
+  for(i=0;i<34;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==18) console_doc_exports[i].kind=3;
+    if(i==18 || i==33) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   console_config=config; return TRUE;
