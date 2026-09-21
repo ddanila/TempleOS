@@ -29,12 +29,13 @@ import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/TextBase.HC"
+#include "/Kernel/I386/Window.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[73];
+CI386KernelSymbol console_doc_exports[79];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -203,10 +204,22 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[71].val=(&NativeGraphicsStart+0)(U64);
   console_doc_exports[72].str="_GRAPHICS_PRESENT";
   console_doc_exports[72].val=(&NativeGraphicsPresent+0)(U64);
-  for(i=0;i<73;i++) {
+  console_doc_exports[73].str="_TEXT_BORDER";
+  console_doc_exports[73].val=(&TextBorder+0)(U64);
+  console_doc_exports[74].str="_TEXT_RECT";
+  console_doc_exports[74].val=(&TextRect+0)(U64);
+  console_doc_exports[75].str="_WIN_SCROLL_NULL";
+  console_doc_exports[75].val=(&WinScrollNull+0)(U64);
+  console_doc_exports[76].str="_WIN_SCROLL_RESTORE";
+  console_doc_exports[76].val=(&WinScrollRestore+0)(U64);
+  console_doc_exports[77].str="_WIN_DERIVED_VALS_UPDATE";
+  console_doc_exports[77].val=(&WinDerivedValsUpdate+0)(U64);
+  console_doc_exports[78].str="text";
+  console_doc_exports[78].val=(&text+0)(U64);
+  for(i=0;i<79;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==18 || i==33 || i==51 || i==69 || i==70) console_doc_exports[i].kind=3;
+    if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   console_config=config; return TRUE;

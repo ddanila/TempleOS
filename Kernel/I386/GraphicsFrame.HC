@@ -27,6 +27,11 @@ Bool NativeGraphicsStart()
   graphics_planes=planes; graphics_owner=Fs;
   gr.dc=graphics_persistent=persistent; gr.dc2=graphics_frame=frame;
   gr.text_base=i386_text_base; gr.scrn_zoom=1;
+  Fs->win_left=0; Fs->win_right=79;
+  Fs->win_top=0; Fs->win_bottom=59;
+  LBts(&Fs->task_flags,TASKf_TASK_LOCK);
+  WinDerivedValsUpdate(Fs);
+  LBtr(&Fs->task_flags,TASKf_TASK_LOCK);
   return TRUE;
 }
 Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
@@ -41,7 +46,7 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
   gr.pan_text_y=MinI64(7,MaxI64(-7,gr.pan_text_y));
   graphics_presenting=TRUE;
   try {
-    GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,sys_font_std,blink,
+    GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
       gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,gr.fp_final_scrn_update);
     GraphicsPlanarCore(graphics_planes,gr.dc2->body);
     result=I386VgaRows(graphics_planes,0,480);

@@ -7,7 +7,7 @@ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
   Bool result=FALSE;
   try {
     pixels=CAlloc(307200); planes=CAlloc(153600);
-    TextRenderCore(pixels,i386_text_base,sys_font_std,80,60,blink,pan_x,pan_y,hide_col,hide_row);
+    TextRenderCore(pixels,i386_text_base,text.font,80,60,blink,pan_x,pan_y,hide_col,hide_row);
     GraphicsPlanarCore(planes,pixels);
     result=I386VgaRows(planes,0,480);
   } catch { Free(planes); Free(pixels); }

@@ -6449,3 +6449,30 @@ responsiveness remains work for the editor integration.
 Original document layout, window/sprite services, the formatter/save/recalculation
 cycle and the edit/execute/save/reboot/reopen acceptance workflow remain open.
 This is a visible graphics integration step, not completion of the editing goal.
+
+## Window geometry and original text borders
+
+ConsoleRuntime 23 retains original text borders, clipped rectangle fills and
+window scroll save/restore. Original and native geometry updates now share the
+same arithmetic while preserving interrupt state. Startup initializes the actual
+console viewport to 80 by 60 cells / 640 by 480 pixels. The full original
+text-global record, both fonts and border glyphs are shared; document text uses
+`gr.text_base`, and native frame presentation reads `text.font`.
+See [window and text services](i386-window-text.md).
+
+Both x64 rebuild generations and the full native suite pass: 217 commands /
+280 lines, ten original/native window-text groups, all existing VGA comparisons,
+startup/interruption recovery and 17 module rejections. All 1182 source hashes,
+20 build inputs and both disk hashes match. The validated preview is refreshed.
+
+ConsoleRuntime retains 253888 bytes, up 12584 bytes. The kernel remains
+366496 bytes with 22624 bytes of bootstrap headroom. Normal startup measured
+36.677 seconds and separate diagnostics 150.387 seconds. Graphics backing
+allocations remain 1314792 bytes; demo frames measured 490–500 ms, with the
+same 545256-byte temporary heap measurement and successful reclamation.
+
+The shared rectangle fill now rejects empty bounds after clipping, preventing a
+wholly offscreen rectangle from passing a negative count to the original fill
+primitive. Full window-manager controls/z-order, sprite rendering, document
+construction/formatting/layout, editor input and save/reboot/reopen remain open.
+The native editing-session goal is not complete.

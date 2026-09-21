@@ -176,10 +176,10 @@ def console_runtime_layout(module):
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc', 'NativeGraphicsStart', 'NativeGraphicsPresent'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc', 'NativeGraphicsStart', 'NativeGraphicsPresent', 'TextBorder', 'TextRect', 'WinScrollNull', 'WinScrollRestore', 'WinDerivedValsUpdate'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
-    for name in ('gr', 'gr_palette_std'):
+    for name in ('gr', 'gr_palette_std', 'text'):
         if exports.get(name, (0,0))[0]!=3:
             raise ValueError(f'Missing retained graphics global {name}')
     if exports.get('local_time_offset', (0,0))[0]!=3:
@@ -191,7 +191,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 22:
+    if struct.unpack_from('<I', module, version_offset)[0] != 23:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -327,7 +327,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 21), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 22), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -1056,6 +1056,9 @@ def main():
         if len(resident)!=1 or resident[0]<768000:
             raise ValueError('Missing graphics backing memory measurement')
         result['graphics_frames']={'resident_heap_bytes':resident[0],'original_frames':12,'native_frames':4,'recovery_cases':5,'allocation_cases':2,'frame_jiffies_and_heap_bytes':metrics}
+        if 'PASS original window text\n' not in (exports/'debug.log').read_text() or keyboard.get('window_text_cases')!=10:
+            raise ValueError('Original/native window text checks failed')
+        result['window_text']={'shared_cases':10,'console_viewport':[80,60,640,480]}
         result['graphics_context']={'shared_cases':20,'saved_prefix_bytes':32}
         result['date_conversion']={'native_checks':1333,'original_vectors':146,'december_boundary':'fixed'}
         result['public_math']={'exports':13,'runtime_helpers':10,'native_checks':4107,'no_fpu':True}
@@ -1136,7 +1139,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=22,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=23,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

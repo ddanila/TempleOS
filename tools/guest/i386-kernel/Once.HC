@@ -20,6 +20,7 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 extern I64 Bcd2Bin(U64 value);
 #include "/Kernel/I386/DateCheck.HC"
 #include "/Kernel/I386/GraphicsContextCheck.HC"
+#include "/Kernel/I386/WindowTextCheck.HC"
 #include "T:/DateOracle.HC"
 #include "/Kernel/I386/HelpFileCheck.HH"
 Bool OriginalHelpFileCheck()
@@ -68,6 +69,9 @@ U0 BuildKernel()
   i=OriginalGraphicsFrameCheck; errors=GraphicsAllocationCheck;
   if(i!=12 || errors!=2) { line=MStrPrint("FAIL graphics frame %d %d\n",i,errors); Report(line); Free(line); return; }
   Report("PASS original graphics frame\n");
+  i=WindowTextCheck;
+  if(i!=10) { line=MStrPrint("FAIL window text %d\n",i); Report(line); Free(line); return; }
+  Report("PASS original window text\n");
   i=GraphicsContextCheck;
   if(i!=20) { line=MStrPrint("FAIL graphics context %d\n",i); Report(line); Free(line); return; }
   Report("PASS original graphics context\n");
