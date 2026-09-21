@@ -20,6 +20,7 @@ See $LK,"::/Doc/DolDocOverview.DD"$
 
 #include "DocExt"
 #include "DocLock"
+#include "DocReport"
 #include "DocBin"
 #include "DocNew"
 #include "DocForm"

@@ -7,6 +7,7 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/DocInitCheck.HC"
 #include "/Kernel/I386/DocEntryAllocCheck.HC"
 #include "/Kernel/I386/DocFormNavCheck.HC"
+#include "/Kernel/I386/DocEntryLifeCheck.HC"
 #include "/Kernel/I386/BitEquCheck.HC"
 #include "/Kernel/I386/DocRecordCheck.HC"
 #include "/Kernel/I386/DocAccessCheck.HC"
@@ -46,6 +47,8 @@ U0 BuildKernel()
   Report("PASS original document initialization\n");
   if(DocEntryAllocCheck!=8 || DocFormNavCheck!=8) { Report("FAIL original document entries\n"); return; }
   Report("PASS original document entries\n");
+  if(DocEntryLifeCheck!=8) { Report("FAIL original document entry lifetime\n"); return; }
+  Report("PASS original document entry lifetime\n");
   if(DocRecordCheck!=4) { Report("FAIL original document records\n"); return; }
   Report("PASS original document records\n");
   if(DocAccessCheck(&DocPut,&DocDisplay,&DocBorder)!=8) { Report("FAIL original document selection\n"); return; }

@@ -20,6 +20,14 @@ import CHashDefineStr *DefineLstLoad(U8 *name,U8 *list);
 #include "/Adam/DolDoc/DocInitCore.HC"
 #include "/Adam/DolDoc/DocEntryAlloc.HC"
 #include "/Adam/DolDoc/DocFormNav.HC"
+extern U0 DocReportLiteral(I64 mS,U8 *message);
+extern U0 DocEntryDel(CDoc *doc,CDocEntry *doc_e);
+import I64 StrCmp(U8 *left,U8 *right);
+#define I32_MAX 0x7FFFFFFF
+Bool DocLock(CDoc *doc) { return I386DocLock(doc); }
+Bool DocUnlock(CDoc *doc) { return I386DocUnlock(doc); }
+#include "/Adam/DolDoc/DocBinLife.HC"
+#include "/Adam/DolDoc/DocEntryLife.HC"
 CTask *console_document_owner;
 U0 ConsoleDocumentStart()
 {//Data belongs to the live console task; code and global record are retained.

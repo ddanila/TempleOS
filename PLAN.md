@@ -311,9 +311,13 @@ with shared x64 tests; see [document entries](docs/i386-document-entries.md).
 Those document services now execute from retained ConsoleRuntime 15, reducing
 normal startup from 41.141 to 19.067 seconds; see
 [retained document services](docs/i386-retained-document-services.md).
-Next is the remaining document lifecycle, reporting, recalculation and editor
-callbacks, then editing and persistence. These helpers and initialized
-dictionaries do not yet provide an editable document.
+Original entry insertion/deletion, binary lifetime/validation, soft-line removal
+and undo cleanup now run through ConsoleRuntime 16, with visible literal
+reporting and original/native lifetime tests; see
+[entry lifetime](docs/i386-document-entry-lifetime.md). Next are complete document
+construction/reset/delete, general formatting, recalculation and editor callbacks,
+then editing and persistence. These services do not yet provide an editable
+document.
 
 ### Next public-memory integration package
 

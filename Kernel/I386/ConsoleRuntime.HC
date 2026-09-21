@@ -33,7 +33,7 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[19];
+CI386KernelSymbol console_doc_exports[29];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -48,7 +48,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
-      !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+      config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   I386KeyboardReset(&console_hotkeys);
   console_doc_exports[0].str="_DOC_LOCK";
@@ -89,7 +89,27 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[17].val=(&ConsoleDocumentStart+0)(U64);
   console_doc_exports[18].str="doldoc";
   console_doc_exports[18].val=(&doldoc+0)(U64);
-  for(i=0;i<19;i++) {
+  console_doc_exports[19].str="_DOC_REPORT_LITERAL";
+  console_doc_exports[19].val=(&DocReportLiteral+0)(U64);
+  console_doc_exports[20].str="_DOC_BIN_FIND_NUM";
+  console_doc_exports[20].val=(&DocBinFindNum+0)(U64);
+  console_doc_exports[21].str="_DOC_BIN_FIND_TAG";
+  console_doc_exports[21].val=(&DocBinFindTag+0)(U64);
+  console_doc_exports[22].str="_DOC_BINS_VALIDATE";
+  console_doc_exports[22].val=(&DocBinsValidate+0)(U64);
+  console_doc_exports[23].str="_DOC_BIN_DEL";
+  console_doc_exports[23].val=(&DocBinDel+0)(U64);
+  console_doc_exports[24].str="_DOC_ENTRY_DEL";
+  console_doc_exports[24].val=(&DocEntryDel+0)(U64);
+  console_doc_exports[25].str="_DOC_UNDO_DEL";
+  console_doc_exports[25].val=(&DocUndoDel+0)(U64);
+  console_doc_exports[26].str="_DOC_UNDO_COUNT";
+  console_doc_exports[26].val=(&DocUndoCntSet+0)(U64);
+  console_doc_exports[27].str="_DOC_REM_SOFT";
+  console_doc_exports[27].val=(&DocRemSoftNewLines+0)(U64);
+  console_doc_exports[28].str="_DOC_INS_ENTRY";
+  console_doc_exports[28].val=(&DocInsEntry+0)(U64);
+  for(i=0;i<29;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18) console_doc_exports[i].kind=3;
@@ -233,3 +253,5 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/DocLock.HC"
 
 #include "/Kernel/I386/DocAccess.HC"
+
+#include "/Kernel/I386/DocumentReport.HC"

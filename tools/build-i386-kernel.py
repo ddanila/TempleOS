@@ -169,7 +169,7 @@ def console_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry', 'I386IrqSave', 'I386IrqRestore', 'I386SchedWake', 'I386SchedBlock', 'I386KbcQueueGet', 'throw', 'I386SchedYield', 'HashAdd', 'MAlloc', 'CAlloc', 'Free', 'MSize2', 'MAllocIdent', 'StrNew', 'MemCpy', 'MemSet', 'HashTableNew', 'HashDefineLstAdd', 'DefineLstLoad'}:
+    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry', 'I386IrqSave', 'I386IrqRestore', 'I386SchedWake', 'I386SchedBlock', 'I386KbcQueueGet', 'throw', 'I386SchedYield', 'HashAdd', 'MAlloc', 'CAlloc', 'Free', 'MSize2', 'MAllocIdent', 'StrNew', 'MemCpy', 'MemSet', 'HashTableNew', 'HashDefineLstAdd', 'DefineLstLoad', 'StrCmp'}:
         raise ValueError('Unexpected console import contract')
     for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
@@ -183,7 +183,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 15:
+    if struct.unpack_from('<I', module, version_offset)[0] != 16:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -319,7 +319,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 14), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 15), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -1018,6 +1018,9 @@ def main():
             raise ValueError('Original document initialization failed')
         if 'PASS original document entries\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original document entry/navigation checks failed')
+        if 'PASS original document entry lifetime\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original document entry lifetime checks failed')
+        result['document_entry_lifetime']={'cases':8,'original_x64':'pass','native_retained_bindings':'pass','visible_error_paths':2,'report_state_restoration':'pass'}
         result['document_entries']={'allocation_cases':8,'form_navigation_cases':8,'original_x64':'pass','native_retained_bindings':'pass'}
         result['document_initialization']={'definition_entries':137,'dictionary_entries':121,
             'original_x64':'pass','native_startup':'pass','dictionary_reclamation_cycles':3}
@@ -1091,7 +1094,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=15,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=16,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

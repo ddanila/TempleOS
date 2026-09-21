@@ -6332,3 +6332,25 @@ Normal boot improved from 41.141 to 19.067 seconds; separate diagnostics measure
 with 24456 bytes of reserved-load headroom. The preview is refreshed. This removes
 the growing startup compilation cost; full document lifecycle, reporting,
 recalculation, rendering, editor callbacks and persistence still remain open.
+
+## Original entry and binary lifetime with visible diagnostics
+
+ConsoleRuntime 16 now retains original entry insertion/deletion, soft-line
+removal, undo counting/cleanup and binary lookup/validation/deletion. A literal
+reporting boundary uses original RawPrint on x64 and direct native text output
+with a PIT-based timed pause and restored IF/display/input-filter state. This
+does not publish a reduced substitute for the full RawPrint/formatter API. See
+[entry lifetime](i386-document-entry-lifetime.md).
+
+Both x64 rebuild generations and the full native suite pass. The shared lifetime
+corpus checks insertion/splitting, cursor/queue state, binary cleanup and full
+heap reclamation. Native checks cover visible invalid-deletion messages, their
+three-second pauses and report-state restoration. Interactive validation passes
+184 commands / 247 lines, exact VGA, startup recovery and 17 module rejections.
+All 1138 source hashes, nine build inputs and both disk hashes match.
+
+Normal boot measured 20.270 seconds; separate diagnostics measured 132.778.
+ConsoleRuntime retains 137464 bytes; kernel reserved-load headroom is 24256 bytes.
+The preview contains the validated normal image. Full document construction,
+reset/delete, general formatting, recalculation, rendering, editor callbacks and
+save/reboot/reopen acceptance remain open.

@@ -21,4 +21,14 @@ public _extern _DOC_DICTIONARY_NEW CHashTable *DocDictionaryNew();
 public _extern _DOC_DICTIONARY_DEL U0 DocDictionaryDel(CHashTable *table);
 public _extern _DOC_GLOBALS_INIT U0 DocGlobalsInit();
 public _extern _DOC_START U0 ConsoleDocumentStart();
+public _extern _DOC_REPORT_LITERAL U0 DocReportLiteral(I64 mS,U8 *message);
+public _extern _DOC_BIN_FIND_NUM CDocBin *DocBinFindNum(CDoc *doc,I64 num);
+public _extern _DOC_BIN_FIND_TAG CDocBin *DocBinFindTag(CDoc *doc,U8 *tag);
+public _extern _DOC_BINS_VALIDATE U0 DocBinsValidate(CDoc *doc);
+public _extern _DOC_BIN_DEL U0 DocBinDel(CDoc *doc,CDocBin *bin);
+public _extern _DOC_ENTRY_DEL U0 DocEntryDel(CDoc *doc,CDocEntry *entry);
+public _extern _DOC_UNDO_DEL U0 DocUndoDel(CDoc *doc,CDocUndo *undo);
+public _extern _DOC_UNDO_COUNT U0 DocUndoCntSet(CDoc *doc);
+public _extern _DOC_REM_SOFT U0 DocRemSoftNewLines(CDoc *doc=0,CDocEntry *entry=0);
+public _extern _DOC_INS_ENTRY U0 DocInsEntry(CDoc *doc,CDocEntry *entry);
 #endif

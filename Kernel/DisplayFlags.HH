@@ -1,0 +1,11 @@
+#ifndef KERNEL_DISPLAY_FLAGS_INCLUDED
+#define KERNEL_DISPLAY_FLAGS_INCLUDED
+//CTask.display_flags
+#define DISPLAYf_SHOW			0
+#define DISPLAYf_NOT_RAW		1
+#define DISPLAYf_SILENT			2
+#define DISPLAYf_NO_BORDER		3
+#define DISPLAYf_WIN_ON_TOP		4
+#define DISPLAYf_CHILDREN_NOT_ON_TOP	5
+
+#endif
