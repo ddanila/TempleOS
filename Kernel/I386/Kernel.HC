@@ -423,6 +423,13 @@ U0 KernelCompilerLoad()
   kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
   kernel_compiler_span=kernel_heap.used-used;
   if(!kernel_compiler.symbols_init(&kernel_root,&kernel_heap,kernel_symbols,1024)) KernelStop;
+  if(!kernel_compiler.math_bind(kernel_symbols)) KernelStop;
+  KernelLog("PUBLIC MATH BOUND\n");
+  if(kernel_diagnostics) {
+    if(!kernel_compiler.math_bind(kernel_symbols) || kernel_compiler.math_bind(0) ||
+        HashFind("_ROUND",kernel_symbols,HTT_EXPORT_SYS_SYM,2)) KernelStop;
+    KernelLog("PUBLIC MATH REBIND CHECK\n");
+  }
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Load once with boot disk ownership; the task call performs no disk I/O.

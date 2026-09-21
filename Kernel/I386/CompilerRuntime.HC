@@ -41,7 +41,8 @@ extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filenam
 extern U0 ICInfoInit();
 extern U0 I386ExecutionBreakPoll();
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
-#assert sizeof(CI386CompilerServices)==204
+extern Bool I386MathBind(CHashTable *symbols);
+#assert sizeof(CI386CompilerServices)==208
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -82,11 +83,13 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->frontend=&I386FrontendServices; services->statement=&I386FrontendStatement;
   services->command=&I386FrontendCommand; services->publish=&I386FrontendPublish; services->input=&I386CommandInput;
   services->break_poll=&I386ExecutionBreakPoll;
+  services->math_bind=&I386MathBind;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
 #include "/Kernel/I386/SoftF64.HC"
-#include "/Kernel/I386/Pow10.HC"
+#include "/Kernel/I386/FloatMath.HC"
+#include "/Kernel/I386/MathPublic.HC"
 #include "/Compiler/I386/LexNumber.HC"
 #include "/Compiler/I386/LexChar.HC"
 #include "/Compiler/LexPunctInit.HC"

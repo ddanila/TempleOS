@@ -18,7 +18,7 @@
 #include "/Compiler/I386/Frontend.HH"
 #include "/Compiler/I386/CommandInput.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_COMPILER_SERVICES_VERSION 47
+#define I386_COMPILER_SERVICES_VERSION 48
 //ABI 40: caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
@@ -79,5 +79,6 @@ class CI386CompilerServices {
   Bool (*publish)(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols);
   Bool (*input)(CI386CommandInput *input);
   U0 (*break_poll)();
+  Bool (*math_bind)(CHashTable *symbols);
 };
 #endif

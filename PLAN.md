@@ -306,7 +306,11 @@ construction and expansion are also retained, with owned indices and allocation
 failure cleanup; see [definition lists](docs/i386-define-lists.md). Original list
 lookup/matching and definition lookup now have retained native bindings, with
 alias/ambiguity, table inheritance/shadowing and missing-definition recovery
-checks; see [definition lookup](docs/i386-definition-lookup.md). Native startup
+checks; see [definition lookup](docs/i386-definition-lookup.md). The existing
+software F64 rounding/logarithm/power-of-ten helpers and original integer-multiple
+operations now have retained public bindings; 4107 native numerical checks cover
+this production path. See [public numerical providers](docs/i386-public-math.md).
+Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).
 Original entry allocation/copy/size and form-navigation helpers now run natively

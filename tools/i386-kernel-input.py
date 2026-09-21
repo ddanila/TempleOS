@@ -73,14 +73,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             def press(name):
                 key(name,True); key(name,False)
 
-            def screen(rows,name):
+            def screen(rows,name,timeout=30):
                 expected=console_pixels(rows)
                 path=out/f'{name}.ppm'
                 def matches():
                     command('screendump',filename=str(path))
                     with Image.open(path) as image:
                         return image.size==(640,480) and image.convert('RGB').tobytes()==expected
-                wait_for(matches)
+                wait_for(matches,timeout=timeout)
                 with Image.open(path) as image: image.save(out/f'{name}.png')
 
             command('qmp_capabilities')
@@ -95,7 +95,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 raise ValueError('Missing public headers before startup')
             if evidence.count('STARTUP source begin\n')!=1 or evidence.count(f'STARTUP source {status}\n')!=1:
                 raise ValueError('Missing or repeated native source startup')
-            probe_markers=('SOURCE ', 'LEX_SOURCE ', 'MEMORY PROBE ', 'STRING COPY PROBE ', 'RUNTIME PROBE ',
+            probe_markers=('PUBLIC MATH REBIND CHECK', 'SOURCE ', 'LEX_SOURCE ', 'MEMORY PROBE ', 'STRING COPY PROBE ', 'RUNTIME PROBE ',
                            'PROBE MODULE ', 'PROBE RELEASE ', 'PROBE TASK RELEASE ', 'TICK ')
             if diagnostics:
                 if not (evidence.index('PROBE RELEASE ') < evidence.index('PROBE TASK RELEASE ') <
@@ -120,7 +120,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 #blank cursor row when the final character exactly fills a row.
                 return [text[index:index+80] for index in range(0,len(text)+1,80)]
 
-            def submit(source, answers, name, hotkey=False, frame=None):
+            def submit(source, answers, name, hotkey=False, frame=None, timeout=30):
                 nonlocal rows
                 if len(source)>255: raise ValueError('Source exceeds the native input buffer')
                 for index,ch in enumerate(source):
@@ -146,10 +146,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                         with Image.open(path) as image: image.save(out/f'{name}-frame.png')
                     key('ctrl',True); key('alt',True); press('c'); key('alt',False); key('ctrl',False)
                 rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
-                screen(rows,name)
+                screen(rows,name,timeout=timeout)
             if startup_check is not None:
                 for index,(source,answers) in enumerate(startup_check['commands']):
-                    submit(source,answers,f'startup-command-{index:02}')
+                    submit(source,answers,f'startup-command-{index:02}',timeout=startup_check.get('command_timeout',30))
                 result={'result':'pass','cpu':'486','ram_mib':8,'startup_status':status,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
@@ -329,6 +329,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            submit('#include "/Kernel/I386/PublicMathCheck.HC"', [], 'public-math-source', timeout=120)
+            submit('PublicMathCheck;', ['4107'], 'public-math-check')
+            submit('HashFind("_ROUND",Fs->hash_table,HTT_EXPORT_SYS_SYM)!=0&&HashFind("_ROUND",Fs->hash_table,HTT_EXPORT_SYS_SYM,2)==0;', ['1'], 'public-math-single-binding')
             submit('#include "/Kernel/I386/DefineLookupCheck.HC"', [], 'definition-lookup-source')
             submit('I64 LookupReclaim(){I64 n=Fs->data_heap->used_u8s,r=DefineLookupCheck;if(Fs->data_heap->used_u8s!=n)return -17;return r;}', [], 'definition-lookup-reclaim')
             submit('LookupReclaim;', ['16'], 'definition-lookup-check')
@@ -399,7 +402,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':124+len(commands), 'native_commands':len(commands)+61, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':127+len(commands), 'native_commands':len(commands)+64, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

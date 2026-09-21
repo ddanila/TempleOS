@@ -58,9 +58,11 @@ The original list/definition lookup group is now shared and retained natively:
 `LstSub`, `LstMatch`, `Define`, `DefineSub`, `DefineCnt` and `DefineMatch`.
 See [definition lookup](i386-definition-lookup.md). This closes the definition
 substitution dependency of `StrPrintJoin`, including inherited tables and
-`UndefDef` recovery. Full formatting still needs production integration of its
-numeric helpers, date conversion/time offset, file/document serialization,
-address-to-symbol formatting and output boundary. These dependencies must be
+`UndefDef` recovery. Its numerical helpers now have retained public bindings,
+including software rounding, logarithms, powers of ten and original integer
+multiples; see [public numerical providers](i386-public-math.md). Full formatting
+still needs date conversion/time offset, file/document serialization,
+address-to-symbol formatting and the output boundary. These dependencies must be
 connected to their actual providers before publishing a complete formatter or
 claiming that `DocDataFmt` and `DocRecalc` are integrated.
 

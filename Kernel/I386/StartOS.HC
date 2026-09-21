@@ -24,3 +24,5 @@ extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 ConsoleDocumentStart;
 
 #include "/Kernel/I386/PublicTextBase.HH"
+
+#include "/Kernel/I386/PublicMath.HH"
