@@ -46,3 +46,5 @@ U0 ConsoleDocumentStart()
   DocInit;
   console_document_owner=task;
 }
+
+#include "/Kernel/I386/Date.HC"

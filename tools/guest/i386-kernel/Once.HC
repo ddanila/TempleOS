@@ -15,6 +15,9 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "T:/DocDefaultsOracle.HC"
 #include "T:/TextBaseOracle.HC"
 #include "T:/TextRenderOracle.HC"
+extern I64 Bcd2Bin(U64 value);
+#include "/Kernel/I386/DateCheck.HC"
+#include "T:/DateOracle.HC"
 #include "/Kernel/I386/HelpFileCheck.HH"
 Bool OriginalHelpFileCheck()
 {
@@ -59,6 +62,10 @@ U0 BuildKernel()
   Report("PASS original text base\n");
   if(OriginalTextRenderCheck!=12) { Report("FAIL original text rendering\n"); return; }
   Report("PASS original text rendering\n");
+  i=DateCheck; errors=OriginalDateCheck;
+  line=MStrPrint("DATE RESULTS %d %d\n",i,errors); Report(line); Free(line);
+  if(i!=1333 || errors!=146) { Report("FAIL date conversion\n"); return; }
+  Report("PASS date conversion\n");
   if(DocRecordCheck!=4) { Report("FAIL original document records\n"); return; }
   Report("PASS original document records\n");
   if(DocAccessCheck(&DocPut,&DocDisplay,&DocBorder)!=8) { Report("FAIL original document selection\n"); return; }

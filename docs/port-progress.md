@@ -6374,3 +6374,26 @@ Normal boot measured 21.725 seconds; separate diagnostics measured 134.178.
 ConsoleRuntime retains 168024 bytes, including the guarded cell surface. Kernel
 reserved-load headroom remains 24256 bytes. Document presentation, construction,
 recalculation, editor input and persistent editing-session acceptance remain open.
+
+## Calendar provider for original formatting
+
+ConsoleRuntime 20 retains the original calendar conversion, month/year boundary,
+day-of-week and BCD routines plus the writable time offset. Shared declarations
+preserve the CDate/CDateStruct layouts. Explicit arithmetic shifting preserves
+original negative-year behavior across backends; month scanning and December
+rollover now avoid the original out-of-bounds accesses. See
+[calendar conversion](i386-date-conversion.md) for quantization and wrapping rules.
+
+Both original x64 rebuild generations and the full native suite pass, including
+1333 native calendar checks and 146 original comparison vectors. The full run
+passes 203 commands / 266 lines, exact VGA and recovery checks, and all 17 module
+rejections. All 1160 source hashes, 18 build inputs and both disk hashes match.
+ConsoleRuntime retains 200744 bytes; kernel size remains 365760 bytes. Normal
+boot measured 25.386 seconds and separate diagnostics 138.591 seconds. The
+validated normal preview is refreshed.
+
+The original formatter still needs real file/document serialization, address
+formatting and output providers. Document save and recalculation form a dependency
+cycle with formatting and must be integrated together. Full document lifecycle,
+editor input and save/reboot/reopen acceptance remain open; the native editing
+session goal is not complete.

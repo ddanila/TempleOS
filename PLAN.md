@@ -310,6 +310,10 @@ checks; see [definition lookup](docs/i386-definition-lookup.md). The existing
 software F64 rounding/logarithm/power-of-ten helpers and original integer-multiple
 operations now have retained public bindings; 4107 native numerical checks cover
 this production path. See [public numerical providers](docs/i386-public-math.md).
+Original calendar conversion and the writable time offset now have retained
+native bindings, with 1333 checks covering signed dates, leap boundaries and
+fractional time behavior; see [calendar conversion](docs/i386-date-conversion.md).
+The formatter/document-save/recalculation dependency cycle still needs integration.
 Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).

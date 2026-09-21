@@ -60,11 +60,16 @@ See [definition lookup](i386-definition-lookup.md). This closes the definition
 substitution dependency of `StrPrintJoin`, including inherited tables and
 `UndefDef` recovery. Its numerical helpers now have retained public bindings,
 including software rounding, logarithms, powers of ten and original integer
-multiples; see [public numerical providers](i386-public-math.md). Full formatting
-still needs date conversion/time offset, file/document serialization,
+multiples; see [public numerical providers](i386-public-math.md). Calendar
+conversion and the writable time offset now also have retained native bindings,
+with 1333 native checks; see [calendar conversion](i386-date-conversion.md).
+Full formatting still needs file/document serialization,
 address-to-symbol formatting and the output boundary. These dependencies must be
 connected to their actual providers before publishing a complete formatter or
-claiming that `DocDataFmt` and `DocRecalc` are integrated.
+claiming that `DocDataFmt` and `DocRecalc` are integrated. `StrPrintJoin` calls
+`DocSave` for document substitution, while `DocSave` calls `DocRecalc`, which
+uses `DocDataFmt` and formatting. Integrate this cycle with real providers;
+do not break it with placeholder serialization or recalculation.
 
 ## Two semantic hazards to resolve explicitly
 

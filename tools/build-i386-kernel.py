@@ -176,9 +176,11 @@ def console_runtime_layout(module):
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
+    if exports.get('local_time_offset', (0,0))[0]!=3:
+        raise ValueError('Missing native date offset global')
     if exports.get('i386_text_base', (0, 0))[0] != 3:
         raise ValueError('Missing native text-base surface')
     if exports.get('doldoc', (0, 0))[0] != 3:
@@ -186,7 +188,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 19:
+    if struct.unpack_from('<I', module, version_offset)[0] != 20:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -322,7 +324,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 18), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 19), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -685,6 +687,7 @@ def main():
     (out/'result.json').unlink(missing_ok=True)
     run(sys.executable,'tools/gen-compiler-keywords.py','--check')
     run(sys.executable,'tools/gen-i386-public-math.py','--check')
+    run(sys.executable,'tools/gen-i386-date.py','--check')
     bootstrap=json.loads((ROOT/'build/rebuild-test/result.json').read_text())
     for name,digest in bootstrap['source_sha256'].items():
         if name.startswith(('Kernel/','Compiler/')) and hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=digest:
@@ -721,9 +724,9 @@ def main():
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
-                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                 'tools/i386-kernel-input.py','tools/i386-text-frame.py','tools/gen-i386-public-math.py',
-                'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py')},
+                'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
@@ -1037,6 +1040,9 @@ def main():
         if (log.count('PUBLIC MATH BOUND\n')!=1 or log.count('PUBLIC MATH REBIND CHECK\n')!=1 or
                 keyboard.get('public_math_checks')!=4107):
             raise ValueError('Retained public math integration checks failed')
+        if 'PASS date conversion\n' not in (exports/'debug.log').read_text() or keyboard.get('date_checks')!=1333:
+            raise ValueError('Original/native calendar checks failed')
+        result['date_conversion']={'native_checks':1333,'original_vectors':146,'december_boundary':'fixed'}
         result['public_math']={'exports':13,'native_checks':4107,'no_fpu':True}
         result['definition_lookup']={'shared_cases':16,'missing_definition_cases':4,'native_retained_bindings':'pass'}
         result['text_rendering']={'original_frame_comparisons':12,'native_vga_frames':4}
@@ -1115,7 +1121,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=19,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=20,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

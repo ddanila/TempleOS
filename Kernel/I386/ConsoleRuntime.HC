@@ -34,7 +34,7 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[42];
+CI386KernelSymbol console_doc_exports[52];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
@@ -139,10 +139,30 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[40].val=(&DefineCnt+0)(U64);
   console_doc_exports[41].str="_DEFINE_MATCH";
   console_doc_exports[41].val=(&DefineMatch+0)(U64);
-  for(i=0;i<42;i++) {
+  console_doc_exports[42].str="_YEAR_START_DATE";
+  console_doc_exports[42].val=(&YearStartDate+0)(U64);
+  console_doc_exports[43].str="_STRUCT_TO_DATE";
+  console_doc_exports[43].val=(&Struct2Date+0)(U64);
+  console_doc_exports[44].str="_DAY_OF_WEEK";
+  console_doc_exports[44].val=(&DayOfWeek+0)(U64);
+  console_doc_exports[45].str="_DATE_TO_STRUCT";
+  console_doc_exports[45].val=(&Date2Struct+0)(U64);
+  console_doc_exports[46].str="_FIRST_DAY_MONTH";
+  console_doc_exports[46].val=(&FirstDayOfMon+0)(U64);
+  console_doc_exports[47].str="_LAST_DAY_MONTH";
+  console_doc_exports[47].val=(&LastDayOfMon+0)(U64);
+  console_doc_exports[48].str="_FIRST_DAY_YEAR";
+  console_doc_exports[48].val=(&FirstDayOfYear+0)(U64);
+  console_doc_exports[49].str="_LAST_DAY_YEAR";
+  console_doc_exports[49].val=(&LastDayOfYear+0)(U64);
+  console_doc_exports[50].str="_BCD_TO_BIN";
+  console_doc_exports[50].val=(&Bcd2Bin+0)(U64);
+  console_doc_exports[51].str="local_time_offset";
+  console_doc_exports[51].val=(&local_time_offset+0)(U64);
+  for(i=0;i<52;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==18 || i==33) console_doc_exports[i].kind=3;
+    if(i==18 || i==33 || i==51) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   console_config=config; return TRUE;
