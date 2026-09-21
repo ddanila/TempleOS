@@ -95,77 +95,12 @@ U0 GrSetUpTables()
 
 #help_index "Graphics/Scrn;Windows"
 
-U0 WinZBufFill(CTask *task)
-{//Not public
-  I64 y,t,b,l,r,w;
-  if (!Bt(&task->display_flags,DISPLAYf_NO_BORDER)) {
-    if (task->win_top-1>0)
-      t=task->win_top-1;
-    else
-      t=0;
-    if (task->win_bottom+1<TEXT_ROWS)
-      b=task->win_bottom+1;
-    else
-      b=TEXT_ROWS-1;
-    if (task->win_left-1>0)
-      l=task->win_left-1;
-    else
-      l=0;
-    if (task->win_right+1<TEXT_COLS)
-      r=task->win_right+1;
-    else
-      r=TEXT_COLS-1;
-  } else {
-    if (task->win_top>0)
-      t=task->win_top;
-    else
-      t=0;
-    if (task->win_bottom<TEXT_ROWS)
-      b=task->win_bottom;
-    else
-      b=TEXT_ROWS-1;
-    if (task->win_left>0)
-      l=task->win_left;
-    else
-      l=0;
-    if (task->win_right<TEXT_COLS)
-      r=task->win_right;
-    else
-      r=TEXT_COLS-1;
-  }
-  t=ClampI64(t,0,TEXT_ROWS-1);
-  b=ClampI64(b,t,TEXT_ROWS-1);
-  l=ClampI64(l,0,TEXT_COLS-1);
-  r=ClampI64(r,l,TEXT_COLS-1);
-  if (w=r-l+1)
-    for (y=t;y<=b;y++)
-      MemSetU16(gr.win_z_buf(U8 *)+(y*TEXT_COLS+l)*sizeof(U16),
-	    task->win_z_num,w);
-}
-
+#include "/Adam/Gr/GrWindowVisibility.HC"
 public U0 WinZBufUpdate()
-{//Might have to call if doing graphics outside winmgr callback routines.
-//Call it if, for example, when a pop-up window closes and you need to refresh
-  //before graphics.
-  I64 i,z=1;
-  U16 *ptr;
-  CTask *task,*task1;
-  if (gr.win_z_buf) {
+{//Refresh the visibility map before drawing outside a winmgr callback.
+  if(gr.win_z_buf) {
     LBtr(&sys_semas[SEMA_UPDATE_WIN_Z_BUF],0);
-    task1=task=sys_winmgr_task;
-    do {
-      if (!TaskValidate(task)) break;
-      if (Bt(&task->display_flags,DISPLAYf_SHOW)) {
-	task->win_z_num=z++;
-	WinZBufFill(task);
-      }
-      task=task->next_task;
-    } while (task!=task1 && z<0x10000);
-
-    MemSet(gr.win_uncovered_bitmap,0,(gr.highest_uncovered+7)>>3+1);
-    gr.highest_uncovered=z-1;
-    for (ptr=gr.win_z_buf,i=TEXT_ROWS*TEXT_COLS;i;i--)
-      Bts(gr.win_uncovered_bitmap,*ptr++);
+    WindowVisibilityCore(sys_winmgr_task);
   }
 }
 

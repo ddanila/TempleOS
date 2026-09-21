@@ -29,8 +29,10 @@ returning. A native command separately verifies the actual console viewport.
 These checks run only in the test harness, not during normal startup.
 
 This is a dependency of original document layout, including DolDoc text-button
-borders. It does not provide `TaskDerivedValsUpdate`, control callbacks,
-window z-order, `WinHorz`/`WinVert`, or the complete original window manager.
+borders. The subsequent [window-services integration](i386-window-services.md) supplies
+`TaskDerivedValsUpdate`, control coordinate callbacks, `WinHorz`/`WinVert`,
+hit testing and the visibility map. The complete original window manager
+remains unfinished.
 Full document construction, formatting, layout, editing and persistence remain
 required for the usable editing-session milestone.
 

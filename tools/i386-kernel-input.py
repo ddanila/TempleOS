@@ -332,6 +332,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            submit('#include "/Kernel/I386/WindowServiceCheck.HC"', [], 'window-service-source')
+            submit('WindowServiceCheck;', ['14'], 'window-service-check')
+            submit('#include "/Kernel/I386/WindowVisibilityCheck.HC"', [], 'window-visibility-source')
+            submit('WindowVisibilityCheck(Fs);', ['6'], 'window-visibility-check')
             submit('#include "/Kernel/I386/WindowTextCheck.HC"', [], 'window-text-source')
             submit('WindowTextCheck;', ['10'], 'window-text-check')
             submit('Fs->win_width==80 && Fs->win_height==60 && Fs->pix_width==640 && Fs->pix_height==480;', ['1'], 'console-viewport')
@@ -419,7 +423,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':143+len(commands), 'native_commands':len(commands)+80, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':147+len(commands), 'native_commands':len(commands)+84, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

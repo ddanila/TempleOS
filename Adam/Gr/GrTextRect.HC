@@ -33,4 +33,3 @@ public U0 TextRect(I64 l,I64 r,I64 t,I64 b,I64 d)
     for (y=t;y<=b;y++)
       MemSetU32(gr.text_base(U8 *)+(y*TEXT_COLS+l)*sizeof(U32),d,w);
 }
-

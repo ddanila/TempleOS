@@ -19,14 +19,7 @@ U0 Exit()
   }
 }
 
-Bool TaskValidate(CTask *task)
-{//return TRUE if task looks valid.
-  if (!(0<task<=I32_MAX) || task->addr!=task ||
-	task->task_signature!=TASK_SIGNATURE_VAL)
-    return FALSE;
-  else
-    return TRUE;
-}
+#include "/Kernel/TaskValidate.HC"
 
 I64 BirthWait(CTask **_task,I64 task_num=-1)
 {//Wait for task valid and not task_num.
@@ -283,20 +276,14 @@ CTask *Spawn(U0 (*fp_start_addr)(U8 *data),U8 *data=NULL,U8 *task_name=NULL,
   return task;
 }
 
+#include "/Kernel/TaskWindowCore.HC"
+U0 TaskWindowInvalidate()
+{ LBts(&sys_semas[SEMA_UPDATE_WIN_Z_BUF],0); }
 U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE)
-{//Those things calculated from other variables.
-  if (!task) task=Fs;
-  PUSHFD
-  CLI
-  while (LBts(&task->task_flags,TASKf_TASK_LOCK))
-    PAUSE
-  WinDerivedValsUpdate(task);
-  if (fp_update_ctrls)
-    (*fp_update_ctrls)(task);
-  if (update_z_buf && Bt(&task->display_flags,DISPLAYf_SHOW))
-    LBts(&sys_semas[SEMA_UPDATE_WIN_Z_BUF],0);
-  LBtr(&task->task_flags,TASKf_TASK_LOCK);
-  POPFD
+{
+  if(!task) task=Fs;
+  if(update_z_buf) TaskWindowDerivedCore(task,fp_update_ctrls,&TaskWindowInvalidate);
+  else TaskWindowDerivedCore(task,fp_update_ctrls,NULL);
 }
 
 I64 ExeCmdLine(CCmpCtrl *cc)

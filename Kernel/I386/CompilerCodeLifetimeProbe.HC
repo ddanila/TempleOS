@@ -48,6 +48,7 @@ U0 ProbeCodeLifetime(CI386CompilerProbe *probe)
   CI386TaskSymbols *scope;
   CI386OwnedTask *child;
   CProbeCodeLifetime state;
+  CQue control;
   I64 used=probe->heap->used,allocations=probe->heap->allocations,refs=parent->lifetime_refs;
   U32 flags=GetRFlags;
   state.probe=probe; state.flags=flags; state.answer=0; state.stage=0; state.code=0;
@@ -64,6 +65,12 @@ U0 ProbeCodeLifetime(CI386CompilerProbe *probe)
       child->task.hash_table!=scope->table || !scope->storage || (*state.code)()!=42) KernelStop;
   KernelLog("CODE CHILD DEFERRED\n");
   child->task.code_heap->locked_flags=0;
+  child->task.next_ctrl=child->task.last_ctrl=&control;
+  control.next=control.last=&child->task.next_ctrl;
+  if(I386TaskDestroy(child) || child->task.symbol_state!=scope ||
+      child->task.hash_table!=scope->table || (*state.code)()!=42) KernelStop;
+  child->task.next_ctrl=child->task.last_ctrl=&child->task.next_ctrl;
+  KernelLog("CONTROL CHILD DEFERRED\n");
   if(!I386TaskDestroy(child) || probe->heap->used!=used || probe->heap->allocations!=allocations ||
       parent->lifetime_refs!=refs || !I386HeapValid(probe->heap) ||
       (GetRFlags&0x200)!=(flags&0x200)) KernelStop;

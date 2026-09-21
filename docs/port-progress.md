@@ -6476,3 +6476,34 @@ wholly offscreen rectangle from passing a negative count to the original fill
 primitive. Full window-manager controls/z-order, sprite rendering, document
 construction/formatting/layout, editor input and save/reboot/reopen remain open.
 The native editing-session goal is not complete.
+
+## Native resizing, control updates and visibility
+
+ConsoleRuntime 24 retains the original task validation, window resizing and hit
+testing, control lookup/update/hit testing, and visibility-map services. The
+full original CCtrl record is shared. Every attached native task has an initialized
+control-list sentinel, and reaping rejects attached controls before releasing
+symbols or heaps. Shared resize cleanup restores locks and interrupt state when
+a control callback throws. See [window services](i386-window-services.md).
+
+Normal graphics startup owns the cell visibility map and uncovered-window
+bitmap. Presentation refreshes them from the live public task ring; clearing the
+old cell map prevents stale ownership after windows are hidden or shrunk.
+
+Two original x64 rebuild/reboot generations, the focused native run and the full
+QEMU/486 suite at 8 MiB passed. The full run covers 221 commands / 284 input lines,
+fourteen shared resize/control groups, six visibility groups, both control-lifetime
+rejections, all existing VGA comparisons, recovery and 17 module rejections.
+All 1192 source hashes, 20 build inputs and both disks match. The validated normal
+preview is refreshed.
+
+ConsoleRuntime retains 275968 bytes, up 22080 bytes. Graphics backing allocations
+consume 1333176 bytes, up 18384 bytes for the visibility resources. The kernel is
+367816 bytes with 21304 bytes of bootstrap headroom. Normal startup measured
+40.173 seconds, separate diagnostics 153.589 seconds. Demo frames measured
+490–500 ms with 545256 temporary heap bytes, reclaimed after interruption.
+
+Complete control construction/drawing, scrollbar and mouse integration, the
+original window manager, sprite rendering, document construction/formatting/layout,
+editor input and save/reboot/reopen remain open. The native editing-session goal
+is not complete.

@@ -14,4 +14,3 @@ public U0 WinScrollRestore(CTask *task,CD3I64 *s)
   task->scroll_y=s->y;
   task->scroll_z=s->z;
 }
-

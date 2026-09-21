@@ -4,7 +4,10 @@ Normal native startup now creates the original `gr.dc` persistent overlay and
 `gr.dc2` working surface at 640 by 480, with packed 8-bit pixels. The persistent
 surface starts transparent and carries the original screen/on-top flags. The
 working surface carries the original screen flag. `gr.text_base` points to the
-existing native text-cell surface, and screen zoom starts at one.
+existing native text-cell surface, and screen zoom starts at one. Native startup
+also allocates the original cell visibility map and uncovered-window bitmap;
+[window services](i386-window-services.md) describes their task-ring ownership
+and refresh policy.
 
 This is the framebuffer/presentation boundary for subsequent original DolDoc
 integration. It does not install the complete original window manager, sprite

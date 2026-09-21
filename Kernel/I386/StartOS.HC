@@ -31,4 +31,6 @@ ConsoleDocumentStart;
 
 #include "/Kernel/I386/PublicGraphicsContext.HH"
 
+#include "/Kernel/I386/PublicWindow.HH"
+
 if(!NativeGraphicsStart) throw('Graphics',TRUE);

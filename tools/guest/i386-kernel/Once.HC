@@ -21,6 +21,8 @@ extern I64 Bcd2Bin(U64 value);
 #include "/Kernel/I386/DateCheck.HC"
 #include "/Kernel/I386/GraphicsContextCheck.HC"
 #include "/Kernel/I386/WindowTextCheck.HC"
+#include "/Kernel/I386/WindowServiceCheck.HC"
+#include "/Kernel/I386/WindowVisibilityCheck.HC"
 #include "T:/DateOracle.HC"
 #include "/Kernel/I386/HelpFileCheck.HH"
 Bool OriginalHelpFileCheck()
@@ -69,6 +71,9 @@ U0 BuildKernel()
   i=OriginalGraphicsFrameCheck; errors=GraphicsAllocationCheck;
   if(i!=12 || errors!=2) { line=MStrPrint("FAIL graphics frame %d %d\n",i,errors); Report(line); Free(line); return; }
   Report("PASS original graphics frame\n");
+  i=WindowServiceCheck; errors=WindowVisibilityCheck(sys_winmgr_task);
+  if(i!=14 || errors!=6) { line=MStrPrint("FAIL window services %d %d\n",i,errors); Report(line); Free(line); return; }
+  Report("PASS original window services\n");
   i=WindowTextCheck;
   if(i!=10) { line=MStrPrint("FAIL window text %d\n",i); Report(line); Free(line); return; }
   Report("PASS original window text\n");

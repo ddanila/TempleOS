@@ -127,6 +127,7 @@ U0 ProbeTaskLayout(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CCPU *live_cpu=ProbePublicGs;
   if(view!=live || view->addr!=view || view->task_signature!=TASK_SIGNATURE_VAL ||
       view->gs!=live_cpu || live_cpu->addr!=live_cpu || live_cpu->num ||
+      view->next_ctrl!=&view->next_ctrl || view->last_ctrl!=&view->next_ctrl ||
       view->last_cc!=outer || view->hash_table!=live->hash_table ||
       !view->stk || view->stk->next_stk || view->stk->stk_ptr ||
       view->stk->stk_size<256 || ((&view->stk->stk_base)(U64)&7) ||

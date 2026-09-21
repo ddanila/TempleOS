@@ -323,8 +323,11 @@ exact pixel and recovery checks; see [graphics frames](docs/i386-graphics-frame.
 Original text borders, clipped rectangle fills, scroll save/restore and window
 geometry now have retained native bindings. Startup initializes the real console
 viewport; the original text-global record, fonts and border glyphs are shared.
-See [window and text services](docs/i386-window-text.md).
-Sprites, window-manager controls and full document layout remain required.
+See [window and text services](docs/i386-window-text.md). Original resizing,
+control updates/hit testing and window visibility now also have retained native
+providers, including callback failure cleanup and control lifetime checks; see
+[window services](docs/i386-window-services.md). Sprite drawing, complete control
+and window-manager integration, and full document layout remain required.
 Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).
