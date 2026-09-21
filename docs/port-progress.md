@@ -6422,3 +6422,30 @@ added about nine seconds to normal startup. The validated preview is refreshed.
 Default framebuffers, sprite rendering, window integration and complete document
 layout remain open, alongside the formatter/save/recalculation dependency cycle.
 The native edit/execute/save/reboot/reopen goal is not complete.
+
+## Native layered graphics frames on VGA
+
+Normal startup now initializes the original persistent and working screen
+contexts and connects the native text base. A retained presenter preserves the
+original text/task/persistent/final-callback order, then converts packed pixels
+to VGA planes. Graphics owns a separate plane buffer so restoring the raw
+console preserves its contents. Context construction and temporary frame aliases
+unwind on allocation/callback exceptions. See [graphics frames](i386-graphics-frame.md)
+for the QEMU demo and ownership contract.
+
+Both x64 rebuild generations and the full native suite pass: 214 commands /
+277 lines, twelve original-renderer comparisons, four composed native RGB frames,
+four existing text frames, allocation/callback recovery and all 17 module
+rejections. All 1176 source hashes, 20 build inputs and both disks match.
+The validated normal preview is refreshed.
+
+The screen backing allocations consume 1314792 heap bytes, including rounding.
+ConsoleRuntime 22 retains 241304 bytes; kernel size remains 366496 bytes with
+22624 bytes of bootstrap headroom. Normal boot measured 35.121 seconds, separate
+diagnostics 152.385 seconds. Demo frames measured 480–490 ms and 545256 temporary
+heap bytes at the draw callback, reclaimed after Ctrl-Alt-C. Full-frame redraw
+responsiveness remains work for the editor integration.
+
+Original document layout, window/sprite services, the formatter/save/recalculation
+cycle and the edit/execute/save/reboot/reopen acceptance workflow remain open.
+This is a visible graphics integration step, not completion of the editing goal.

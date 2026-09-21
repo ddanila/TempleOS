@@ -3,8 +3,9 @@
 Document recalculation uses device-context aliases for cursor location and
 screen drawing, including sprite-bearing documents. ConsoleRuntime 21 now
 retains the original context lifecycle and its default transform and lighting
-callbacks. These are the 17 functions extracted byte-for-byte from the beginning
-of `Adam/Gr/GrDC.HC` into `GrDCCore.HC`, through `DCDepthBufAlloc`.
+callbacks. These are the 17 functions extracted from the beginning of `Adam/Gr/GrDC.HC`
+into `GrDCCore.HC`, through `DCDepthBufAlloc`. Construction now also releases
+partially allocated resources when an allocation throws.
 
 Shared headers preserve the original geometry, color, device-context and graphics
 global records. `CDC` keeps its 32-byte saved bitmap prefix independent of pointer
@@ -13,11 +14,9 @@ record invariant; original x64 layout is unchanged. The standard palette is
 shared verbatim with the original graphics implementation.
 
 Native public declarations expose the retained functions, `gr` and
-`gr_palette_std`. The global graphics record initially contains zeroes. This
-step does not run the original graphics startup or install default framebuffers:
-callers must supply a valid explicit context, or establish `gr.dc` before using
-functions with a default context. Full framebuffer/window/sprite integration
-remains required before document recalculation can draw the editor.
+`gr_palette_std`. Normal startup now initializes the persistent and working screen contexts and
+connects the text base through the [native frame boundary](i386-graphics-frame.md).
+Full window/sprite integration and original document recalculation remain open.
 
 ## Ownership and numerical behavior
 

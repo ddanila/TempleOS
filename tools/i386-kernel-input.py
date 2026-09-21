@@ -136,7 +136,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     wait_for(lambda:log.read_text().count('@')>marks)
                     if frame is not None:
                         import runpy
-                        expected=runpy.run_path(str(ROOT/'tools/i386-text-frame.py'))['text_frame_pixels'](frame)
+                        if isinstance(frame,tuple):
+                            expected=runpy.run_path(str(ROOT/'tools/i386-graphics-frame.py'))['graphics_frame_pixels'](frame[1])
+                        else:
+                            expected=runpy.run_path(str(ROOT/'tools/i386-text-frame.py'))['text_frame_pixels'](frame)
                         path=out/f'{name}-frame.ppm'
                         def frame_matches():
                             command('screendump',filename=str(path))
@@ -329,6 +332,13 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            submit('#include "/Kernel/I386/GraphicsAllocationCheck.HC"', [], 'graphics-allocation-source')
+            submit('GraphicsAllocationCheck;', ['2'], 'graphics-allocation-check')
+            submit('#include "/Kernel/I386/GraphicsFrameCheck.HC"', [], 'graphics-frame-source')
+            submit('GraphicsFrameCheck;', ['5'], 'graphics-frame-check')
+            submit('#include "/Kernel/I386/GraphicsFrameDemo.HC"', [], 'graphics-frame-definition', timeout=120)
+            for mode in range(4):
+                submit(f'GraphicsFrameDemo({mode});', ['1'], f'graphics-frame-{mode}', hotkey=True, frame=('graphics',mode))
             submit('#include "/Kernel/I386/GraphicsContextCheck.HC"', [], 'graphics-context-source', timeout=120)
             submit('GraphicsContextCheck;', ['20'], 'graphics-context-check')
             submit('#include "/Kernel/I386/DateCheck.HC"', [], 'date-source', timeout=120)
@@ -406,7 +416,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':131+len(commands), 'native_commands':len(commands)+68, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':140+len(commands), 'native_commands':len(commands)+77, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

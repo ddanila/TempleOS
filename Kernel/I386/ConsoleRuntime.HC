@@ -34,10 +34,12 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[71];
+CI386KernelSymbol console_doc_exports[73];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
+extern Bool NativeGraphicsStart();
+extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
 extern Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,Bool hide_col=FALSE,Bool hide_row=FALSE);
 extern U0 NativeTextBaseRestore();
 extern Bool ConsoleDisplay();
@@ -197,7 +199,11 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[69].val=(&gr+0)(U64);
   console_doc_exports[70].str="gr_palette_std";
   console_doc_exports[70].val=(&gr_palette_std+0)(U64);
-  for(i=0;i<71;i++) {
+  console_doc_exports[71].str="_GRAPHICS_START";
+  console_doc_exports[71].val=(&NativeGraphicsStart+0)(U64);
+  console_doc_exports[72].str="_GRAPHICS_PRESENT";
+  console_doc_exports[72].val=(&NativeGraphicsPresent+0)(U64);
+  for(i=0;i<73;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70) console_doc_exports[i].kind=3;
@@ -345,3 +351,4 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/DocumentReport.HC"
 
 #include "/Kernel/I386/TextRender.HC"
+#include "/Kernel/I386/GraphicsFrame.HC"

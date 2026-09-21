@@ -176,7 +176,7 @@ def console_runtime_layout(module):
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc', 'NativeGraphicsStart', 'NativeGraphicsPresent'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
     for name in ('gr', 'gr_palette_std'):
@@ -191,7 +191,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 21:
+    if struct.unpack_from('<I', module, version_offset)[0] != 22:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -327,7 +327,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 20), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 21), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -727,8 +727,8 @@ def main():
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
-                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
-                'tools/i386-kernel-input.py','tools/i386-text-frame.py','tools/gen-i386-public-math.py',
+                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+                'tools/i386-kernel-input.py','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                 'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
@@ -1047,6 +1047,15 @@ def main():
             raise ValueError('Original/native calendar checks failed')
         if 'PASS original graphics context\n' not in (exports/'debug.log').read_text() or keyboard.get('graphics_context_cases')!=20:
             raise ValueError('Original/native graphics context checks failed')
+        if 'PASS original graphics frame\n' not in (exports/'debug.log').read_text() or keyboard.get('graphics_frames')!=4 or keyboard.get('graphics_frame_cases')!=5 or keyboard.get('graphics_allocation_cases')!=2:
+            raise ValueError('Original/native graphics frame checks failed')
+        metrics=[tuple(int(v,16) for v in line.split()[1:]) for line in (out/'input/debug.log').read_text().splitlines() if line.startswith('GFRAME ')]
+        if len(metrics)!=4 or any(len(v)!=2 or v[0]<=0 or v[1]<=0 for v in metrics):
+            raise ValueError('Missing graphics frame measurements')
+        resident=[int(line.split()[-1],16) for line in (out/'input/debug.log').read_text().splitlines() if line.startswith('GRAPHICS BUFFERS ')]
+        if len(resident)!=1 or resident[0]<768000:
+            raise ValueError('Missing graphics backing memory measurement')
+        result['graphics_frames']={'resident_heap_bytes':resident[0],'original_frames':12,'native_frames':4,'recovery_cases':5,'allocation_cases':2,'frame_jiffies_and_heap_bytes':metrics}
         result['graphics_context']={'shared_cases':20,'saved_prefix_bytes':32}
         result['date_conversion']={'native_checks':1333,'original_vectors':146,'december_boundary':'fixed'}
         result['public_math']={'exports':13,'runtime_helpers':10,'native_checks':4107,'no_fpu':True}
@@ -1127,7 +1136,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=21,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=22,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

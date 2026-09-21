@@ -15,6 +15,8 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "T:/DocDefaultsOracle.HC"
 #include "T:/TextBaseOracle.HC"
 #include "T:/TextRenderOracle.HC"
+#include "T:/GraphicsFrameOracle.HC"
+#include "/Kernel/I386/GraphicsAllocationCheck.HC"
 extern I64 Bcd2Bin(U64 value);
 #include "/Kernel/I386/DateCheck.HC"
 #include "/Kernel/I386/GraphicsContextCheck.HC"
@@ -63,6 +65,9 @@ U0 BuildKernel()
   Report("PASS original text base\n");
   if(OriginalTextRenderCheck!=12) { Report("FAIL original text rendering\n"); return; }
   Report("PASS original text rendering\n");
+  i=OriginalGraphicsFrameCheck; errors=GraphicsAllocationCheck;
+  if(i!=12 || errors!=2) { line=MStrPrint("FAIL graphics frame %d %d\n",i,errors); Report(line); Free(line); return; }
+  Report("PASS original graphics frame\n");
   i=GraphicsContextCheck;
   if(i!=20) { line=MStrPrint("FAIL graphics context %d\n",i); Report(line); Free(line); return; }
   Report("PASS original graphics context\n");

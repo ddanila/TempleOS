@@ -317,7 +317,10 @@ The formatter/document-save/recalculation dependency cycle still needs integrati
 Original graphics device-context lifecycle, transform/lighting callbacks and
 depth-buffer operations now have retained native bindings, with shared x64/native
 ownership and arithmetic checks; see [graphics contexts](docs/i386-graphics-context.md).
-Default framebuffer startup, sprites and full document layout remain required.
+Normal startup now creates the two working screen contexts and a retained VGA
+conversion buffer. Native presentation preserves the original layering with
+exact pixel and recovery checks; see [graphics frames](docs/i386-graphics-frame.md).
+Sprites, window integration and full document layout remain required.
 Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).

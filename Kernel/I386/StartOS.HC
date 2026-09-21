@@ -30,3 +30,5 @@ ConsoleDocumentStart;
 #include "/Kernel/I386/PublicDate.HH"
 
 #include "/Kernel/I386/PublicGraphicsContext.HH"
+
+if(!NativeGraphicsStart) throw('Graphics',TRUE);

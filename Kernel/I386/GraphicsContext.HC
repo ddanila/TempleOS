@@ -21,3 +21,5 @@ U32 *MemSetU32(U32 *dst,I64 value,I64 count)
   return dst;
 }
 #include "/Adam/Gr/GrDCCore.HC"
+
+#include "/Adam/Gr/GrBlotColor8.HC"

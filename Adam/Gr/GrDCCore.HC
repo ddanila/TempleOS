@@ -176,8 +176,11 @@ public CDC *DCAlias(CDC *dc=NULL,CTask *task=NULL)
   res=MAlloc(sizeof(CDC),task);
   MemCpy(res,dc,sizeof(CDC));
   res->win_task=res->mem_task=task;
-  res->r=MAlloc(16*sizeof(I64),task);
-  DCRst(res);
+  res->r=NULL;
+  try {
+    res->r=MAlloc(16*sizeof(I64),task);
+    DCRst(res);
+  } catch { Free(res->r); Free(res); }
   res->flags|=DCF_ALIAS;
   res->alias=dc;
   return res;
@@ -190,18 +193,20 @@ public CDC *DCNew(I64 width,I64 height,CTask *task=NULL,Bool null_bitmap=FALSE)
   CDC *res;
   if (!task) task=Fs;
   res=CAlloc(sizeof(CDC),task);
-  res->win_task=task;
-  res->mem_task=task;
-  res->width=width;
-  res->width_internal=(width+7)&~7;
-  res->height=height;
-  if (null_bitmap)
-    res->flags|=DCF_DONT_DRAW;
-  else
-    res->body=CAlloc(res->width_internal*res->height,task);
-  res->r=MAlloc(16*sizeof(I64),task);
-  DCRst(res);
-  res->dc_signature=DCS_SIGNATURE_VAL;
+  try {
+    res->win_task=task;
+    res->mem_task=task;
+    res->width=width;
+    res->width_internal=(width+7)&~7;
+    res->height=height;
+    if (null_bitmap)
+      res->flags|=DCF_DONT_DRAW;
+    else
+      res->body=CAlloc(res->width_internal*res->height,task);
+    res->r=MAlloc(16*sizeof(I64),task);
+    DCRst(res);
+    res->dc_signature=DCS_SIGNATURE_VAL;
+  } catch { Free(res->r); Free(res->body); Free(res); }
   return res;
 }
 
