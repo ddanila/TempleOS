@@ -314,6 +314,10 @@ Original calendar conversion and the writable time offset now have retained
 native bindings, with 1333 checks covering signed dates, leap boundaries and
 fractional time behavior; see [calendar conversion](docs/i386-date-conversion.md).
 The formatter/document-save/recalculation dependency cycle still needs integration.
+Original graphics device-context lifecycle, transform/lighting callbacks and
+depth-buffer operations now have retained native bindings, with shared x64/native
+ownership and arithmetic checks; see [graphics contexts](docs/i386-graphics-context.md).
+Default framebuffer startup, sprites and full document layout remain required.
 Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).

@@ -48,3 +48,5 @@ U0 ConsoleDocumentStart()
 }
 
 #include "/Kernel/I386/Date.HC"
+
+#include "/Kernel/I386/GraphicsContext.HC"

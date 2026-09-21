@@ -6397,3 +6397,28 @@ formatting and output providers. Document save and recalculation form a dependen
 cycle with formatting and must be integrated together. Full document lifecycle,
 editor input and save/reboot/reopen acceptance remain open; the native editing
 session goal is not complete.
+
+## Original graphics context lifecycle for document rendering
+
+ConsoleRuntime 21 retains 17 original device-context functions, including
+construction, aliasing, deletion, reset, depth buffers, transforms and lighting.
+Geometry/color/context/global declarations are shared with x64; the native CDC
+is 376 bytes and preserves the 32-byte saved bitmap prefix. The standard palette
+is shared unchanged. CompilerRuntime 49 supplies the existing software-F64
+helpers to retained modules without copying the arithmetic implementation.
+See [graphics contexts](i386-graphics-context.md).
+
+Both original x64 rebuild generations and the full native suite pass. The
+205-command / 268-line run includes 20 context ownership/behavior groups,
+calendar/math regressions, exact VGA, interruption/startup recovery and all
+17 module rejections. All 1169 source hashes, 18 build inputs and both disks
+match. The native disk now includes all 29 original/shared graphics source files.
+
+ConsoleRuntime retains 231712 bytes and CompilerRuntime 1342672 bytes. Kernel
+size is 366496 bytes with 22624 bytes of bootstrap headroom. Normal boot measured
+34.269 seconds; diagnostics measured 147.790 seconds. Public graphics headers
+added about nine seconds to normal startup. The validated preview is refreshed.
+
+Default framebuffers, sprite rendering, window integration and complete document
+layout remain open, alongside the formatter/save/recalculation dependency cycle.
+The native edit/execute/save/reboot/reopen goal is not complete.

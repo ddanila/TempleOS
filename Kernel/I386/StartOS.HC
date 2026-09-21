@@ -28,3 +28,5 @@ ConsoleDocumentStart;
 #include "/Kernel/I386/PublicMath.HH"
 
 #include "/Kernel/I386/PublicDate.HH"
+
+#include "/Kernel/I386/PublicGraphicsContext.HH"

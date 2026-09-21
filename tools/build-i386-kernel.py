@@ -150,7 +150,7 @@ def compiler_runtime_layout(module):
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 48:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 49:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
@@ -169,16 +169,19 @@ def console_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry', 'I386IrqSave', 'I386IrqRestore', 'I386SchedWake', 'I386SchedBlock', 'I386KbcQueueGet', 'throw', 'I386SchedYield', 'HashAdd', 'MAlloc', 'CAlloc', 'Free', 'MSize2', 'MAllocIdent', 'StrNew', 'MemCpy', 'MemSet', 'HashTableNew', 'HashDefineLstAdd', 'DefineLstLoad', 'StrCmp', 'HashFind'}:
+    if set(imports) != {'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'StrCmp', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew'}:
         raise ValueError('Unexpected console import contract')
     for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
+    for name in ('gr', 'gr_palette_std'):
+        if exports.get(name, (0,0))[0]!=3:
+            raise ValueError(f'Missing retained graphics global {name}')
     if exports.get('local_time_offset', (0,0))[0]!=3:
         raise ValueError('Missing native date offset global')
     if exports.get('i386_text_base', (0, 0))[0] != 3:
@@ -188,7 +191,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 20:
+    if struct.unpack_from('<I', module, version_offset)[0] != 21:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -324,7 +327,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 19), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 20), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -409,7 +412,7 @@ def verify_compiler_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 47), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 48), 'api')):
         work = out/f'reject-runtime-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -558,7 +561,7 @@ def package_volume(disk, exports):
     cursor=first
     image=bytearray(disk.read_bytes())
     tree={}
-    for directory in ('Kernel','Compiler','Adam/DolDoc'):
+    for directory in ('Kernel','Compiler','Adam/DolDoc','Adam/Gr'):
         for path in sorted((ROOT/directory).rglob('*')):
             if path.is_file() and path.suffix.upper() in ('.HC','.HH','.DD','.PRJ'):
                 node=tree
@@ -1004,7 +1007,7 @@ def main():
             raise ValueError('Missing queued-file compiler break cleanup')
         result['file_break_cleanup']={'cases':2,'result':'pass'}
         result['input_break_cleanup']={'phases':[0,1],'cases_per_phase':3,'result':'pass'}
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=48, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=49, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, backend_address=backend_address, expression_address=expression_address, type_address=type_address, parser_alloc_address=parser_alloc_address, parser_free_address=parser_free_address, parser_token_address=parser_token_address, declarations_address=declarations_address, native_declaration_phases=[0,1], code_init_address=code_init_address, class_address=class_address, fun_join_address=fun_join_address, publish_classes_address=publish_classes_address, bootstrap_scalars_address=bootstrap_scalars_address, load_scalars_address=load_scalars_address, scalar_check_address=scalar_check_address, frontend_address=frontend_address, statement_address=statement_address, command_address=command_address, publish_address=publish_address, input_address=input_address, break_poll_address=break_poll_address, math_bind_address=math_bind_address, native_input_phases=[0,1], native_program_phases=[0,1], native_command_phases=[0,1], native_statement_phases=[0,1], native_frontend_phases=[0,1], native_publication_phases=[0,1], native_symbol_phases=[0,1], parser_token_phases=[0,1], parser_memory_phases=[0,1], native_expression_phases=[0,1], native_backend_phases=[0,1], native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
@@ -1042,8 +1045,11 @@ def main():
             raise ValueError('Retained public math integration checks failed')
         if 'PASS date conversion\n' not in (exports/'debug.log').read_text() or keyboard.get('date_checks')!=1333:
             raise ValueError('Original/native calendar checks failed')
+        if 'PASS original graphics context\n' not in (exports/'debug.log').read_text() or keyboard.get('graphics_context_cases')!=20:
+            raise ValueError('Original/native graphics context checks failed')
+        result['graphics_context']={'shared_cases':20,'saved_prefix_bytes':32}
         result['date_conversion']={'native_checks':1333,'original_vectors':146,'december_boundary':'fixed'}
-        result['public_math']={'exports':13,'native_checks':4107,'no_fpu':True}
+        result['public_math']={'exports':13,'runtime_helpers':10,'native_checks':4107,'no_fpu':True}
         result['definition_lookup']={'shared_cases':16,'missing_definition_cases':4,'native_retained_bindings':'pass'}
         result['text_rendering']={'original_frame_comparisons':12,'native_vga_frames':4}
         result['text_base']={'original_assembly_comparisons':256,'shared_cases':12,'native_retained_bindings':'pass'}
@@ -1121,7 +1127,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=20,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=21,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

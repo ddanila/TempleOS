@@ -329,6 +329,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            submit('#include "/Kernel/I386/GraphicsContextCheck.HC"', [], 'graphics-context-source', timeout=120)
+            submit('GraphicsContextCheck;', ['20'], 'graphics-context-check')
             submit('#include "/Kernel/I386/DateCheck.HC"', [], 'date-source', timeout=120)
             submit('DateCheck;', ['1333'], 'date-check')
             submit('#include "/Kernel/I386/PublicMathCheck.HC"', [], 'public-math-source', timeout=120)
@@ -404,7 +406,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':129+len(commands), 'native_commands':len(commands)+66, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':131+len(commands), 'native_commands':len(commands)+68, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:
