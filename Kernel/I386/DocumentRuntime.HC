@@ -21,6 +21,11 @@ import CHashDefineStr *DefineLstLoad(U8 *name,U8 *list);
 #include "/Adam/DolDoc/DocEntryAlloc.HC"
 #include "/Adam/DolDoc/DocFormNav.HC"
 extern U0 DocReportLiteral(I64 mS,U8 *message);
+import CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
+extern U0 UndefinedDefine(U8 *name);
+#include "/Kernel/ListFlags.HH"
+#include "/Kernel/ListCore.HC"
+#include "/Kernel/DefineLookupCore.HC"
 extern U0 DocEntryDel(CDoc *doc,CDocEntry *doc_e);
 import I64 StrCmp(U8 *left,U8 *right);
 #define I32_MAX 0x7FFFFFFF

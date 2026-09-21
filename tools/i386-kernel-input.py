@@ -329,6 +329,11 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            submit('#include "/Kernel/I386/DefineLookupCheck.HC"', [], 'definition-lookup-source')
+            submit('I64 LookupReclaim(){I64 n=Fs->data_heap->used_u8s,r=DefineLookupCheck;if(Fs->data_heap->used_u8s!=n)return -17;return r;}', [], 'definition-lookup-reclaim')
+            submit('LookupReclaim;', ['16'], 'definition-lookup-check')
+            for kind in range(4):
+                submit(f'DefineMissingCheck({kind},TRUE);', ["ERROR: Undefined Define: 'Missing%sLookup'.", '1'], f'definition-missing-{kind}')
             submit('#include "/Kernel/I386/TextFrameDemo.HC"', [], 'text-frame-definition')
             for mode in range(4):
                 submit(f'TextFrameDemo({mode});', ['1'], f'text-frame-{mode}', hotkey=True, frame=mode)
@@ -394,7 +399,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':117+len(commands), 'native_commands':len(commands)+54, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':124+len(commands), 'native_commands':len(commands)+61, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

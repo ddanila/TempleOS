@@ -21,3 +21,11 @@ U0 DocReportLiteral(I64 mS,U8 *message)
   if(windowed) LBts(&task->display_flags,DISPLAYf_NOT_RAW);
   I386IrqRestore(irq);
 }
+
+U0 UndefinedDefine(U8 *name)
+{//Keep the original diagnostic text and exception without interpreting the name.
+  DocReportLiteral(0,"ERROR: Undefined Define: '");
+  DocReportLiteral(0,name);
+  DocReportLiteral(0,"'.\n");
+  throw('UndefDef');
+}

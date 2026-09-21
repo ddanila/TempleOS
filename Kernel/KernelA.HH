@@ -1810,9 +1810,7 @@ public class CDC
 #define SFF_WHOLE_LABELS_AFTER	4
 #define SFG_WHOLE_LABELS	(SFF_WHOLE_LABELS_BEFORE|SFF_WHOLE_LABELS_AFTER)
 
-//Flags for LstMatch
-#define LMF_IGNORE_CASE		1
-#define LMF_EXACT		2
+#include "/Kernel/ListFlags.HH"
 
 #help_index "Keyboard Devices/System"
 #define KDF_HAS_DESCS	1

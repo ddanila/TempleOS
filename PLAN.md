@@ -303,7 +303,10 @@ Public task-owned hash tables and list insertion now have retained native
 bindings and shared original/native ownership tests; see
 [public hash tables](docs/i386-public-hash-tables.md). Native definition-list
 construction and expansion are also retained, with owned indices and allocation
-failure cleanup; see [definition lists](docs/i386-define-lists.md). Native startup
+failure cleanup; see [definition lists](docs/i386-define-lists.md). Original list
+lookup/matching and definition lookup now have retained native bindings, with
+alias/ambiguity, table inheritance/shadowing and missing-definition recovery
+checks; see [definition lookup](docs/i386-definition-lookup.md). Native startup
 now runs the original DocInit, with all 137 definition and 121 dictionary entries
 verified; see [document initialization](docs/i386-document-initialization.md).
 Original entry allocation/copy/size and form-navigation helpers now run natively

@@ -169,14 +169,14 @@ def console_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry', 'I386IrqSave', 'I386IrqRestore', 'I386SchedWake', 'I386SchedBlock', 'I386KbcQueueGet', 'throw', 'I386SchedYield', 'HashAdd', 'MAlloc', 'CAlloc', 'Free', 'MSize2', 'MAllocIdent', 'StrNew', 'MemCpy', 'MemSet', 'HashTableNew', 'HashDefineLstAdd', 'DefineLstLoad', 'StrCmp'}:
+    if set(imports) != {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapAlloc', 'SysTry', 'SysUntry', 'I386IrqSave', 'I386IrqRestore', 'I386SchedWake', 'I386SchedBlock', 'I386KbcQueueGet', 'throw', 'I386SchedYield', 'HashAdd', 'MAlloc', 'CAlloc', 'Free', 'MSize2', 'MAllocIdent', 'StrNew', 'MemCpy', 'MemSet', 'HashTableNew', 'HashDefineLstAdd', 'DefineLstLoad', 'StrCmp', 'HashFind'}:
         raise ValueError('Unexpected console import contract')
     for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
     if exports.get('i386_text_base', (0, 0))[0] != 3:
@@ -186,7 +186,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 18:
+    if struct.unpack_from('<I', module, version_offset)[0] != 19:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -322,7 +322,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 17), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 18), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -1029,6 +1029,10 @@ def main():
             raise ValueError('Original/portable text rendering comparison failed')
         if keyboard.get('text_frames')!=4:
             raise ValueError('Native VGA text frames were not verified')
+        if ('PASS original definition lookup\n' not in (exports/'debug.log').read_text() or
+                keyboard.get('definition_lookup_cases')!=16 or keyboard.get('definition_missing_cases')!=4):
+            raise ValueError('Original/native definition lookup checks failed')
+        result['definition_lookup']={'shared_cases':16,'missing_definition_cases':4,'native_retained_bindings':'pass'}
         result['text_rendering']={'original_frame_comparisons':12,'native_vga_frames':4}
         result['text_base']={'original_assembly_comparisons':256,'shared_cases':12,'native_retained_bindings':'pass'}
         result['document_entry_lifetime']={'cases':8,'original_x64':'pass','native_retained_bindings':'pass','visible_error_paths':2,'report_state_restoration':'pass'}
@@ -1105,7 +1109,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=18,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=19,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

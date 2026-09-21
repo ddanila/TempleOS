@@ -52,6 +52,18 @@ implementations as their dependency groups become available.
 | Reporting and entry lifetime | Entry/binary deletion and validation report invalid state through a shared literal boundary. | Original entry insertion/deletion, binary lifetime and undo cleanup now have retained native bindings. x64 calls RawPrint; native reporting is visible, timed by the PIT and restores IF/display/input-filter state. Original/native lifetime and native invalid-path tests pass; see [entry lifetime](i386-document-entry-lifetime.md). General formatting and full document construction/reset/delete remain open. |
 | Files | `DocFile.HC` calls `FileRead` and `FileWrite` and packs/unpacks binary entries. | Connect public file operations to the persistent document workflow; standalone ATA/RedSea fixture success is insufficient. |
 
+## Formatting dependency progress
+
+The original list/definition lookup group is now shared and retained natively:
+`LstSub`, `LstMatch`, `Define`, `DefineSub`, `DefineCnt` and `DefineMatch`.
+See [definition lookup](i386-definition-lookup.md). This closes the definition
+substitution dependency of `StrPrintJoin`, including inherited tables and
+`UndefDef` recovery. Full formatting still needs production integration of its
+numeric helpers, date conversion/time offset, file/document serialization,
+address-to-symbol formatting and output boundary. These dependencies must be
+connected to their actual providers before publishing a complete formatter or
+claiming that `DocDataFmt` and `DocRecalc` are integrated.
+
 ## Two semantic hazards to resolve explicitly
 
 The [public live-task ring](i386-public-task-ring.md) now tracks attached tasks,

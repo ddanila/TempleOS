@@ -4,6 +4,7 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/QueueCheck.HC"
 #include "/Kernel/I386/HashTableCheck.HC"
 #include "/Kernel/I386/DefineListCheck.HC"
+#include "/Kernel/I386/DefineLookupCheck.HC"
 #include "/Kernel/I386/DocInitCheck.HC"
 #include "/Kernel/I386/DocEntryAllocCheck.HC"
 #include "/Kernel/I386/DocFormNavCheck.HC"
@@ -45,6 +46,9 @@ U0 BuildKernel()
   Report("PASS original public tables\n");
   if(DefineListCheck(&DefineLstLoad,&HashDefineLstAdd,&HashTableNew,&HashTableDel,&HashDel,&HashFind)!=6) { Report("FAIL original define list\n"); return; }
   Report("PASS original define list\n");
+  if(DefineLookupCheck!=16) { Report("FAIL original definition lookup\n"); return; }
+  for(i=0;i<4;i++) if(DefineMissingCheck(i)!=1) { Report("FAIL original missing definition\n"); return; }
+  Report("PASS original definition lookup\n");
   if(DocInitCheck!=137) { Report("FAIL original document initialization\n"); return; }
   Report("PASS original document initialization\n");
   if(DocEntryAllocCheck!=8 || DocFormNavCheck!=8) { Report("FAIL original document entries\n"); return; }
