@@ -120,7 +120,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 #blank cursor row when the final character exactly fills a row.
                 return [text[index:index+80] for index in range(0,len(text)+1,80)]
 
-            def submit(source, answers, name, hotkey=False):
+            def submit(source, answers, name, hotkey=False, frame=None):
                 nonlocal rows
                 if len(source)>255: raise ValueError('Source exceeds the native input buffer')
                 for index,ch in enumerate(source):
@@ -134,6 +134,16 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 press('ret')
                 if hotkey:
                     wait_for(lambda:log.read_text().count('@')>marks)
+                    if frame is not None:
+                        import runpy
+                        expected=runpy.run_path(str(ROOT/'tools/i386-text-frame.py'))['text_frame_pixels'](frame)
+                        path=out/f'{name}-frame.ppm'
+                        def frame_matches():
+                            command('screendump',filename=str(path))
+                            with Image.open(path) as image:
+                                return image.size==(640,480) and image.convert('RGB').tobytes()==expected
+                        wait_for(frame_matches)
+                        with Image.open(path) as image: image.save(out/f'{name}-frame.png')
                     key('ctrl',True); key('alt',True); press('c'); key('alt',False); key('ctrl',False)
                 rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
                 screen(rows,name)
@@ -319,6 +329,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            submit('#include "/Kernel/I386/TextFrameDemo.HC"', [], 'text-frame-definition')
+            for mode in range(4):
+                submit(f'TextFrameDemo({mode});', ['1'], f'text-frame-{mode}', hotkey=True, frame=mode)
             for index,(source,answers) in enumerate(commands):
                 submit(source,answers,f'command-{index:02}')
             submit("U0 HotkeyWait(I64 locked){if(locked) Fs->task_flags|=1<<TASKf_BREAK_LOCKED;OutU8(0xE9,64);while(!Bt(&Fs->task_flags,TASKf_PENDING_BREAK)){}}", [], 'hotkey-definition')
@@ -381,7 +394,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':112+len(commands), 'native_commands':len(commands)+49, 'keyboard_break_cases':7, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':117+len(commands), 'native_commands':len(commands)+54, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

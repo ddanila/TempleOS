@@ -34,10 +34,12 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[34];
+CI386KernelSymbol console_doc_exports[36];
 U8 *console_planes;
 U32 console_version=I386_CONSOLE_VERSION;
 extern U0 ConsolePresent();
+extern Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,Bool hide_col=FALSE,Bool hide_row=FALSE);
+extern U0 NativeTextBaseRestore();
 extern Bool ConsoleDisplay();
 extern U0 ConsoleKeys(I64 unused);
 extern U0 ConsoleSubmit(U8 *line);
@@ -121,7 +123,11 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[32].val=(&TextLenAttr+0)(U64);
   console_doc_exports[33].str="i386_text_base";
   console_doc_exports[33].val=(&i386_text_base+0)(U64);
-  for(i=0;i<34;i++) {
+  console_doc_exports[34].str="_TEXT_BASE_PRESENT";
+  console_doc_exports[34].val=(&NativeTextBasePresent+0)(U64);
+  console_doc_exports[35].str="_TEXT_BASE_RESTORE";
+  console_doc_exports[35].val=(&NativeTextBaseRestore+0)(U64);
+  for(i=0;i<36;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33) console_doc_exports[i].kind=3;
@@ -267,3 +273,5 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/DocAccess.HC"
 
 #include "/Kernel/I386/DocumentReport.HC"
+
+#include "/Kernel/I386/TextRender.HC"

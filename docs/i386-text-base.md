@@ -50,3 +50,11 @@ ConsoleRuntime 17 retains 168024 bytes (168008-byte image), including the guarde
 19200-byte cell surface. Kernel size remains 364864 bytes with 24256 bytes of
 reserved-load headroom. Service/configuration records remain 32/32 bytes. These
 are QEMU/486 results; strict 386 and physical-PC acceptance remain outstanding.
+
+## Subsequent presentation integration
+
+ConsoleRuntime 18 adds VGA presentation of this surface with original text-layer
+colors/attributes, panning and glyph offsets. See [text rendering](i386-text-rendering.md)
+for the frame comparisons, manual demo and current cost. The figures above
+record the initial primitive integration; complete document layout and editing
+remain unfinished.

@@ -316,8 +316,12 @@ and undo cleanup now run through ConsoleRuntime 16, with visible literal
 reporting and original/native lifetime tests; see
 [entry lifetime](docs/i386-document-entry-lifetime.md). The four text-base write
 primitives now have retained native bindings, checked against original x64
-assembly; see [text base](docs/i386-text-base.md). Their cell surface still needs
-presentation integration. Next are complete document construction/reset/delete,
+assembly; see [text base](docs/i386-text-base.md). The cell surface now has a
+retained VGA presentation boundary, preserving the original text-layer attributes,
+panning and glyph offsets. Twelve original-renderer frame comparisons and four
+native VGA frames cover this boundary, including hardware-break restoration;
+see [text rendering and manual demo](docs/i386-text-rendering.md).
+Next are complete document construction/reset/delete,
 general formatting, recalculation and editor callbacks, then editing and
 persistence. These services do not yet provide an editable document.
 

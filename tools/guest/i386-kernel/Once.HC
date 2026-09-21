@@ -13,6 +13,7 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/DocAccessCheck.HC"
 #include "T:/DocDefaultsOracle.HC"
 #include "T:/TextBaseOracle.HC"
+#include "T:/TextRenderOracle.HC"
 #include "/Kernel/I386/HelpFileCheck.HH"
 Bool OriginalHelpFileCheck()
 {
@@ -52,6 +53,8 @@ U0 BuildKernel()
   Report("PASS original document entry lifetime\n");
   if(OriginalTextBaseCheck!=256) { Report("FAIL original text base\n"); return; }
   Report("PASS original text base\n");
+  if(OriginalTextRenderCheck!=12) { Report("FAIL original text rendering\n"); return; }
+  Report("PASS original text rendering\n");
   if(DocRecordCheck!=4) { Report("FAIL original document records\n"); return; }
   Report("PASS original document records\n");
   if(DocAccessCheck(&DocPut,&DocDisplay,&DocBorder)!=8) { Report("FAIL original document selection\n"); return; }

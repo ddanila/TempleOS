@@ -176,7 +176,7 @@ def console_runtime_layout(module):
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
     if exports.get('i386_text_base', (0, 0))[0] != 3:
@@ -186,7 +186,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 17:
+    if struct.unpack_from('<I', module, version_offset)[0] != 18:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -322,7 +322,7 @@ def verify_console_rejection(disk, volume, out, layout):
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
-            ('wrong-api', layout['version_offset'], struct.pack('<I', 16), 'api')):
+            ('wrong-api', layout['version_offset'], struct.pack('<I', 17), 'api')):
         work = out/f'reject-console-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
@@ -720,8 +720,8 @@ def main():
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
-                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
-                'tools/i386-kernel-input.py')},
+                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+                'tools/i386-kernel-input.py','tools/i386-text-frame.py')},
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
@@ -1025,6 +1025,11 @@ def main():
             raise ValueError('Original document entry lifetime checks failed')
         if 'PASS original text base\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/portable text-base comparison failed')
+        if 'PASS original text rendering\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/portable text rendering comparison failed')
+        if keyboard.get('text_frames')!=4:
+            raise ValueError('Native VGA text frames were not verified')
+        result['text_rendering']={'original_frame_comparisons':12,'native_vga_frames':4}
         result['text_base']={'original_assembly_comparisons':256,'shared_cases':12,'native_retained_bindings':'pass'}
         result['document_entry_lifetime']={'cases':8,'original_x64':'pass','native_retained_bindings':'pass','visible_error_paths':2,'report_state_restoration':'pass'}
         result['document_entries']={'allocation_cases':8,'form_navigation_cases':8,'original_x64':'pass','native_retained_bindings':'pass'}
@@ -1100,7 +1105,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=17,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=18,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
