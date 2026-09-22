@@ -9,6 +9,13 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/DocEntryAllocCheck.HC"
 #include "/Kernel/I386/DocFormNavCheck.HC"
 #include "/Kernel/I386/DocEntryLifeCheck.HC"
+#include "/Kernel/I386/DocLifecycleCheck.HC"
+#include "/Adam/DolDoc/DocBasicEditCore.HC"
+#include "/Kernel/I386/DocBasicEditCheck.HC"
+#include "/Adam/DolDoc/DocBasicSaveCore.HC"
+#include "/Kernel/I386/DocBasicSaveCheck.HC"
+#include "/Adam/DolDoc/DocBasicLoadCore.HC"
+#include "/Kernel/I386/DocBasicRoundTripCheck.HC"
 #include "/Kernel/I386/BitEquCheck.HC"
 #include "/Kernel/I386/DocRecordCheck.HC"
 #include "/Kernel/I386/DocAccessCheck.HC"
@@ -64,6 +71,19 @@ U0 BuildKernel()
   Report("PASS original document entries\n");
   if(DocEntryLifeCheck!=8) { Report("FAIL original document entry lifetime\n"); return; }
   Report("PASS original document entry lifetime\n");
+  i=DocLifecycleCheck;
+  if(i!=7) { line=MStrPrint("FAIL original document lifecycle %d %d\n",i,doc_lifecycle_delta); Report(line); Free(line); return; }
+  Report("PASS original document lifecycle\n");
+  if(DocBasicEditCheck(&DocPutKey)!=5) { Report("FAIL original basic editing\n"); return; }
+  if(DocBasicEditCheck(&DocBasicEditCore)!=5) { Report("FAIL shared basic editing\n"); return; }
+  Report("PASS original/shared basic editing\n");
+  i=DocBasicSaveCheck(&DocSave);
+  if(i!=5) { line=MStrPrint("FAIL original basic save %d\n",i); Report(line); Free(line); return; }
+  i=DocBasicSaveCheck(&DocBasicSaveCore);
+  if(i!=5) { line=MStrPrint("FAIL shared basic save %d\n",i); Report(line); Free(line); return; }
+  Report("PASS original/shared basic save\n");
+  if(DocBasicRoundTripCheck(&DocSave)!=5) { Report("FAIL shared document round trip\n"); return; }
+  Report("PASS shared document round trip\n");
   if(OriginalTextBaseCheck!=256) { Report("FAIL original text base\n"); return; }
   Report("PASS original text base\n");
   if(OriginalTextRenderCheck!=12) { Report("FAIL original text rendering\n"); return; }

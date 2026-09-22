@@ -77,8 +77,8 @@ qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none -snapshot \
   -drive file=build/TempleOS-i386-preview.img,format=raw,if=ide
 ```
 
-The default image boots to the interactive environment in about 22 seconds on
-the development machine (QEMU/486, 8 MiB), versus about 176 seconds with diagnostics.
+The current image boots to the interactive environment in about 43 seconds on
+the development machine (QEMU/486, 8 MiB); diagnostic boot takes several minutes.
 The separate
 `build/i386-kernel/kernel-diagnostics.img` runs the full boot/worker probe suite;
 use that filename in the QEMU command when you want diagnostics. `--test` verifies
@@ -103,6 +103,28 @@ This is an initial console: multiline editing, the complete
 language/runtime, DolDoc and native self-hosting remain
 unfinished. See [console details](docs/i386-console-runtime.md) and
 [kernel image details](docs/i386-kernel.md).
+
+The first native ordinary-text DolDoc session is also available from that
+HolyC prompt. Escape returns to the live prompt, where the document can be
+saved or reopened:
+
+```c
+CDoc *d=DocNew("C:/MyDoc.DD",Fs);
+DocEd(d);
+DocWrite(d);
+DocDel(d);
+d=DocRead("C:/MyDoc.DD");
+DocEd(d);
+```
+
+This initial editor accepts printable bytes, Backspace and Cursor Left. It uses
+the canonical `CDoc` model and persistent RedSea files; full DolDoc commands,
+layout, mouse input and executable-document integration remain in progress.
+To keep saved files across QEMU exits, omit `-snapshot` when running your separate
+preview copy. The prototype does not yet support multiline documents.
+
+For selectable console test groups and checks that deliberate faults are detected,
+see the [TDD test workflow](docs/i386-test-workflow.md).
 
 Run isolated bootstrap/backend checks with:
 

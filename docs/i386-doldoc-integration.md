@@ -1,9 +1,9 @@
 # Native DolDoc integration dependencies
 
-This is a source inspection of the current native boundary, not evidence that
-DolDoc compiles or runs on i386. It directs the next M4/M5 changes toward the
-existing implementation in `Adam/DolDoc/MakeDoc.HC`. Keep that implementation;
-do not introduce a replacement document format or reduced editor.
+This records the original integration boundary and subsequent native progress.
+A limited ordinary-text editor now runs on i386 using canonical document records;
+the full original `Adam/DolDoc/MakeDoc.HC` integration remains the target. The
+prototype below is an intermediate step, not completion of the medium goal.
 
 ## Medium goal: first usable native editing session
 
@@ -153,3 +153,41 @@ See [storage diagnostics](i386-storage-diagnostics.md). Keep new document/runtim
 code in extended-memory modules; any necessary resident additions must first
 make room deliberately and retain module rejection/lifetime tests. Preserve
 normal interactive boot independently of diagnostic probes.
+
+### Native lifecycle progress
+
+The first part of step 3 is now executable. `DocNew`, `DocRst`, `DocDel`, and
+`DocSize` are retained public i386 services using the canonical `CDoc`, entry,
+undo, and binary records and task-owned heaps. The shared `DocLifecycleCheck`
+runs against both the original x86-64 implementation and the retained native
+implementation. It creates a named document, verifies its queues and editor
+buffers, inserts a tagged text entry, measures it, resets and reuses it, then
+deletes it and checks bounded heap growth. The original recalc path lazily
+retains a 48-byte cache; the native lifecycle itself returns to its starting
+heap use.
+
+This does not yet make the line console a DolDoc editor. The next TDD increment
+now exercises the canonical document through retained `DocPutKey`, `DocSave`,
+`DocWrite`, and `DocRead` services. Shared original/native checks cover plain
+text insertion, cursor-left, backspace and serialization of the original cursor
+byte. The original-x64 round-trip corpus checks the shared loader against original
+`DocSave`; native round-trip evidence comes from the separate two-boot acceptance. `tools/test-i386-doldoc-session.py` boots a
+writable copy of the normal 8 MiB image, creates and edits `NativeEdit.DD`, writes
+it through the native RedSea service, boots that same image again, and verifies
+the reopened bytes. It also verifies that the source image was not changed.
+
+The same acceptance now enters retained `DocEd` from the interactive HolyC
+prompt and sends hardware keyboard events through QEMU. It verifies the VGA
+cursor and text after typing, cursor-left navigation, insertion and backspace,
+returns with Escape, saves, reboots, reopens the file in `DocEd`, and returns to
+the same live HolyC environment. The accepted first-session key subset is
+ordinary printable text, cursor-left, and backspace. Full `DocPutKey`, document
+layout, editor callbacks, mouse input, executable-document behavior, and
+embedded records remain later DolDoc integration work.
+
+The retained `DocEd` is currently a small native keyboard/render loop, not the
+original complete editor. It redraws serialized text on each key and displays the
+cursor as an extra block cell. Newlines, tabs, right/up/down navigation, full
+recalculation, editor exception cleanup and executing from a document remain
+unimplemented. The persistence acceptance covers a root-directory plain-text
+file; it does not establish nested-directory or embedded-record compatibility.

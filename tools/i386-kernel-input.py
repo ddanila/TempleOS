@@ -2,6 +2,7 @@
 """Check the native keyboard console through emulated hardware and VGA pixels."""
 import argparse
 import json
+import hashlib
 from pathlib import Path
 import re
 import socket
@@ -30,14 +31,30 @@ def console_pixels(rows):
     return bytes(pixels)
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False):
+GROUPS=('keyboard','windows','graphics','date','math','definitions','text-frames',
+        'compiler','breaks','documents','text')
+
+
+class MutationDetected(AssertionError):
+    """The unchanged assertion observed the specified faulty result on VGA."""
+
+
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True):
     from PIL import Image
+    if groups is not None and (not groups or set(groups)-set(GROUPS)):
+        raise ValueError('Select one or more known test groups')
+    if startup_check is not None and (groups is not None or mutation is not None):
+        raise ValueError('Startup checks cannot be combined with groups or mutations')
+    active_group=None
+    submitted=0
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
     log=out/'debug.log'; log.write_text('')
     qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
     cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486','-m','8','-nic','none',
-         '-drive',f'file={disk.resolve()},format=raw,if=ide','-display','none','-no-reboot',
+         '-drive',f'file={disk.resolve()},format=raw,if=ide']
+    if snapshot: cmd+=['-snapshot']
+    cmd += ['-display','none','-no-reboot',
          '-debugcon',f'file:{log}','-qmp',f'unix:{qmp},server=on,wait=off']
     (out/'command.json').write_text(json.dumps(cmd,indent=2)+'\n')
     sock=socket.socket(socket.AF_UNIX)
@@ -73,13 +90,18 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             def press(name):
                 key(name,True); key(name,False)
 
-            def screen(rows,name,timeout=30):
+            def screen(rows,name,timeout=30,rejected_rows=None):
                 expected=console_pixels(rows)
+                rejected=console_pixels(rejected_rows) if rejected_rows is not None else None
                 path=out/f'{name}.ppm'
                 def matches():
                     command('screendump',filename=str(path))
                     with Image.open(path) as image:
-                        return image.size==(640,480) and image.convert('RGB').tobytes()==expected
+                        pixels=image.convert('RGB').tobytes()
+                        if image.size==(640,480) and rejected is not None and pixels==rejected:
+                            image.save(out/f'{name}-detected.png')
+                            raise MutationDetected(f'{name}: observed injected faulty answer')
+                        return image.size==(640,480) and pixels==expected
                 wait_for(matches,timeout=timeout)
                 with Image.open(path) as image: image.save(out/f'{name}.png')
 
@@ -120,8 +142,13 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 #blank cursor row when the final character exactly fills a row.
                 return [text[index:index+80] for index in range(0,len(text)+1,80)]
 
-            def submit(source, answers, name, hotkey=False, frame=None, timeout=30):
-                nonlocal rows
+            def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
+                       interaction=None):
+                nonlocal rows,submitted
+                if groups is not None and active_group is not None and active_group not in groups:
+                    return
+                submitted+=1
+                (out/'checkpoint.json').write_text(json.dumps({'group':active_group,'name':name,'source':source})+'\n')
                 if len(source)>255: raise ValueError('Source exceeds the native input buffer')
                 for index,ch in enumerate(source):
                     shift=ch.isupper() or ch in shifted
@@ -132,6 +159,21 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                         screen((rows[:-1]+typed_rows(source[:index+1]))[-60:],'command-typing')
                 marks=log.read_text().count('@')
                 press('ret')
+                if interaction is not None:
+                    wait_for(lambda:interaction['begin'] in log.read_text(),timeout=timeout)
+                    screen(interaction['initial_rows'],name+'-initial',timeout=timeout)
+                    for action in interaction['events']:
+                        if 'text' in action:
+                            for ch in action['text']:
+                                shift=ch.isupper() or ch in shifted
+                                if shift: key('shift',True)
+                                press(plain.get(ch,ch.lower()))
+                                if shift: key('shift',False)
+                        else:
+                            press(action['key'])
+                    screen(interaction['final_rows'],name+'-edited',timeout=timeout)
+                    press('esc')
+                    wait_for(lambda:interaction['end'] in log.read_text(),timeout=timeout)
                 if hotkey:
                     wait_for(lambda:log.read_text().count('@')>marks)
                     if frame is not None:
@@ -148,11 +190,20 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                         wait_for(frame_matches)
                         with Image.open(path) as image: image.save(out/f'{name}-frame.png')
                     key('ctrl',True); key('alt',True); press('c'); key('alt',False); key('ctrl',False)
-                rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
-                screen(rows,name,timeout=timeout)
+                rejected_rows=None
+                if mutation is not None and name==mutation['checkpoint']:
+                    rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
+                if interaction is not None:
+                    rows=(heading+answers+['> '])[-60:]
+                else:
+                    rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
+                screen(rows,name,timeout=timeout,rejected_rows=rejected_rows)
             if startup_check is not None:
-                for index,(source,answers) in enumerate(startup_check['commands']):
-                    submit(source,answers,f'startup-command-{index:02}',timeout=startup_check.get('command_timeout',30))
+                for index,command_spec in enumerate(startup_check['commands']):
+                    source,answers=command_spec[:2]
+                    interaction=command_spec[2] if len(command_spec)>2 else None
+                    submit(source,answers,f'startup-command-{index:02}',
+                           timeout=startup_check.get('command_timeout',30),interaction=interaction)
                 result={'result':'pass','cpu':'486','ram_mib':8,'startup_status':status,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
@@ -161,38 +212,42 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 return result
             def uploads():
                 return [int(x.split()[2]) for x in log.read_text().splitlines() if x.startswith('VGA ROWS ')]
-            if uploads()!=[60,1]: raise ValueError('Startup must present the heading then the prompt')
-            for name in ('a','b','c','backspace'): press(name)
-            key('shift',True); press('d'); key('shift',False); press('ret')
-            wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
-            screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
-            if uploads()!=[60,1,1,1,1,1,1,2]:
-                raise ValueError(f'Unexpected ordinary-edit upload spans: {uploads()}')
-            press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
-            wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
-            rows=heading+['> abD','Error: Undefined identifier at ','> yz^C','> ']
-            screen(rows,'cancelled')
-            #Cross a physical text row, then backspace across the wrap boundary.
-            for count in range(1,79):
-                press('a')
-                if count%6==0 or count==78:
-                    expected=rows[:-1]+['> '+'a'*count]
-                    if count==78: expected+=['']
-                    screen(expected,'typing')
-            for name in ('z','z','z','backspace','backspace','backspace','backspace','ret'): press(name)
-            wait_for(lambda:'INPUT LINE '+'a'*77+'\n' in log.read_text())
-            rows=rows[:-1]+['> '+'a'*77,'Error: Undefined identifier at ','> ']
-            screen(rows,'wrapped')
-            press('tab'); press('b'); press('ret')
-            wait_for(lambda:'INPUT LINE '+' '*8+'b\n' in log.read_text())
-            rows=rows[:-1]+['> '+' '*8+'b','Error: Undefined identifier at ','> ']
-            screen(rows,'tab')
-            for count in range(1,61):
-                press('ret')
-                wait_for(lambda:log.read_text().count('INPUT LINE \n')==count)
-            screen(['> ']*60,'scrolled')
-            if uploads()[-1]!=60: raise ValueError('Scrolling must invalidate the full screen')
-            rows=['> ']*60
+            if mutation is not None:
+                submit(mutation['source'],['1'],'mutation-installed')
+            active_group='keyboard'
+            if groups is None or 'keyboard' in groups:
+                if uploads()!=[60,1]: raise ValueError('Startup must present the heading then the prompt')
+                for name in ('a','b','c','backspace'): press(name)
+                key('shift',True); press('d'); key('shift',False); press('ret')
+                wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
+                screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
+                if uploads()!=[60,1,1,1,1,1,1,2]:
+                    raise ValueError(f'Unexpected ordinary-edit upload spans: {uploads()}')
+                press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
+                wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
+                rows=heading+['> abD','Error: Undefined identifier at ','> yz^C','> ']
+                screen(rows,'cancelled')
+                #Cross a physical text row, then backspace across the wrap boundary.
+                for count in range(1,79):
+                    press('a')
+                    if count%6==0 or count==78:
+                        expected=rows[:-1]+['> '+'a'*count]
+                        if count==78: expected+=['']
+                        screen(expected,'typing')
+                for name in ('z','z','z','backspace','backspace','backspace','backspace','ret'): press(name)
+                wait_for(lambda:'INPUT LINE '+'a'*77+'\n' in log.read_text())
+                rows=rows[:-1]+['> '+'a'*77,'Error: Undefined identifier at ','> ']
+                screen(rows,'wrapped')
+                press('tab'); press('b'); press('ret')
+                wait_for(lambda:'INPUT LINE '+' '*8+'b\n' in log.read_text())
+                rows=rows[:-1]+['> '+' '*8+'b','Error: Undefined identifier at ','> ']
+                screen(rows,'tab')
+                for count in range(1,61):
+                    press('ret')
+                    wait_for(lambda:log.read_text().count('INPUT LINE \n')==count)
+                screen(['> ']*60,'scrolled')
+                if uploads()[-1]!=60: raise ValueError('Scrolling must invalidate the full screen')
+                rows=['> ']*60
             commands=[
                 ('GetRFlags&0x200;', ['512']),
                 ('CQue queue;sizeof(CQue)==8&&(queue.next=&queue)==&queue&&(queue.last=&queue)==queue.next;', ['1']),
@@ -332,6 +387,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 ('0x3FEFFFFFFFFFFFFF(F64);', ['0.99999999999999989']),
                 ('1.0/3.0;', ['0.33333333333333331']),
             ]
+            active_group='windows'
             submit('#include "/Kernel/I386/WindowServiceCheck.HC"', [], 'window-service-source')
             submit('WindowServiceCheck;', ['14'], 'window-service-check')
             submit('#include "/Kernel/I386/WindowVisibilityCheck.HC"', [], 'window-visibility-source')
@@ -339,6 +395,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             submit('#include "/Kernel/I386/WindowTextCheck.HC"', [], 'window-text-source')
             submit('WindowTextCheck;', ['10'], 'window-text-check')
             submit('Fs->win_width==80 && Fs->win_height==60 && Fs->pix_width==640 && Fs->pix_height==480;', ['1'], 'console-viewport')
+            active_group='graphics'
             submit('#include "/Kernel/I386/GraphicsAllocationCheck.HC"', [], 'graphics-allocation-source')
             submit('GraphicsAllocationCheck;', ['2'], 'graphics-allocation-check')
             submit('#include "/Kernel/I386/GraphicsFrameCheck.HC"', [], 'graphics-frame-source')
@@ -348,21 +405,27 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                 submit(f'GraphicsFrameDemo({mode});', ['1'], f'graphics-frame-{mode}', hotkey=True, frame=('graphics',mode))
             submit('#include "/Kernel/I386/GraphicsContextCheck.HC"', [], 'graphics-context-source', timeout=120)
             submit('GraphicsContextCheck;', ['20'], 'graphics-context-check')
+            active_group='date'
             submit('#include "/Kernel/I386/DateCheck.HC"', [], 'date-source', timeout=120)
             submit('DateCheck;', ['1333'], 'date-check')
+            active_group='math'
             submit('#include "/Kernel/I386/PublicMathCheck.HC"', [], 'public-math-source', timeout=120)
             submit('PublicMathCheck;', ['4107'], 'public-math-check')
             submit('HashFind("_ROUND",Fs->hash_table,HTT_EXPORT_SYS_SYM)!=0&&HashFind("_ROUND",Fs->hash_table,HTT_EXPORT_SYS_SYM,2)==0;', ['1'], 'public-math-single-binding')
+            active_group='definitions'
             submit('#include "/Kernel/I386/DefineLookupCheck.HC"', [], 'definition-lookup-source')
             submit('I64 LookupReclaim(){I64 n=Fs->data_heap->used_u8s,r=DefineLookupCheck;if(Fs->data_heap->used_u8s!=n)return -17;return r;}', [], 'definition-lookup-reclaim')
             submit('LookupReclaim;', ['16'], 'definition-lookup-check')
             for kind in range(4):
                 submit(f'DefineMissingCheck({kind},TRUE);', ["ERROR: Undefined Define: 'Missing%sLookup'.", '1'], f'definition-missing-{kind}')
+            active_group='text-frames'
             submit('#include "/Kernel/I386/TextFrameDemo.HC"', [], 'text-frame-definition')
             for mode in range(4):
                 submit(f'TextFrameDemo({mode});', ['1'], f'text-frame-{mode}', hotkey=True, frame=mode)
+            active_group='compiler'
             for index,(source,answers) in enumerate(commands):
                 submit(source,answers,f'command-{index:02}')
+            active_group='breaks'
             submit("U0 HotkeyWait(I64 locked){if(locked) Fs->task_flags|=1<<TASKf_BREAK_LOCKED;OutU8(0xE9,64);while(!Bt(&Fs->task_flags,TASKf_PENDING_BREAK)){}}", [], 'hotkey-definition')
             submit('HotkeyWait(0);', ['Exception'], 'hotkey-break', hotkey=True)
             submit('HotkeyWait(1);', [], 'hotkey-locked', hotkey=True)
@@ -379,6 +442,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             submit('CatchLoop;', ['1'], 'catch-loop-break', hotkey=True)
             submit('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0'], 'loop-consumed')
             submit('6*7;', ['42'], 'loop-recovery')
+            active_group='documents'
             submit('CDoc locked_doc;', [], 'doc-record')
             submit('DocLock(&locked_doc);', ['1'], 'doc-lock')
             submit('DocLock(&locked_doc);', ['0'], 'doc-lock-nested')
@@ -406,16 +470,31 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
             submit('DocStartAgain;', ['1'], 'doc-start-repeat-check')
             submit('#include "/Kernel/I386/DocEntryLifeCheck.HC"', [], 'doc-life-definition')
             submit('DocEntryLifeCheck;', ['8'], 'doc-life-check')
+            submit('#include "/Kernel/I386/DocLifecycleCheck.HC"', [], 'doc-lifecycle-definition')
+            submit('DocLifecycleCheck;', ['7'], 'doc-lifecycle-check')
+            submit('#include "/Kernel/I386/DocBasicEditCheck.HC"', [], 'doc-basic-edit-definition')
+            submit('DocBasicEditCheck(&DocPutKey);', ['5'], 'doc-basic-edit-check')
+            submit('#include "/Kernel/I386/DocBasicSaveCheck.HC"', [], 'doc-basic-save-definition')
+            submit('DocBasicSaveCheck(&DocSave);', ['5'], 'doc-basic-save-check')
             submit('#include "/Kernel/I386/DocReportCheck.HC"', [], 'doc-report-definition')
             submit('DocReportStateCheck;', ['Doc report', 'IRQ-off report', '1'], 'doc-report-check')
             for source,answer,label in [('DocEntryDel(0,0);42;', 'DocEntryDel42', 'doc-entry-error'),
                                         ('DocBinDel(0,0);42;', 'DocBinDel42', 'doc-bin-error')]:
                 started=time.monotonic()
                 submit(source, [answer], label)
-                if time.monotonic()-started<3: raise ValueError('Document diagnostic pause missing')
+                if (groups is None or 'documents' in groups) and time.monotonic()-started<3: raise ValueError('Document diagnostic pause missing')
+            active_group='text'
             submit('#include "/Kernel/I386/TextBaseCheck.HC"', [], 'text-base-definition')
             submit('TextBaseCheck(i386_text_base,&TextChar,&TextLenStr,&TextLenAttrStr,&TextLenAttr);', ['12'], 'text-base-check')
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
+            if groups is not None:
+                result={'result':'pass','groups':list(groups),'native_commands':submitted,
+                        'cpu':'486','ram_mib':8,'startup_seconds':startup_seconds,
+                        'boot_mode':'diagnostic' if diagnostics else 'interactive',
+                        'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
+                        'vga':'all pixels matched at each checkpoint'}
+                (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+                return result
             result={'result':'pass','cpu':'486','ram_mib':8,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,
@@ -423,7 +502,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
                     'vga_payload_bytes':sum(uploads())*2560,
                     'ordinary_edit_payload_bytes':2560,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers'],
-                    'vga':'all pixels matched at each checkpoint','submitted_lines':147+len(commands), 'native_commands':len(commands)+84, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8}
+                    'vga':'all pixels matched at each checkpoint','submitted_lines':153+len(commands), 'native_commands':len(commands)+90, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_save_cases':5}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:
@@ -435,11 +514,15 @@ def run_input(disk,out,startup_check=None,diagnostics=False):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('disk',type=Path)
-    parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('disk',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
+    parser.add_argument('--out',type=Path,default=ROOT/'build/i386-focused')
+    parser.add_argument('--group',action='append',choices=GROUPS,help='Repeat to select groups; omitted runs the full console suite')
+    parser.add_argument('--list-groups',action='store_true')
     parser.add_argument('--diagnostics',action='store_true',help='Expect the diagnostic boot image')
     args=parser.parse_args()
-    print(run_input(args.disk,args.out,diagnostics=args.diagnostics))
+    if args.list_groups:
+        print('\n'.join(GROUPS)); return
+    print(run_input(args.disk,args.out,diagnostics=args.diagnostics,groups=args.group))
 
 
 if __name__=='__main__': main()

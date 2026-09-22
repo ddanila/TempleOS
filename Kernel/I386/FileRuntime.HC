@@ -23,6 +23,15 @@ import Bool I386AtaFlushPolled(CI386Ata *disk,I64 polls,CI386AtaPoll *poll);
 import Bool I386SchedBlock(CI386Scheduler *scheduler);
 import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
 import Bool I386SchedYield(CI386Scheduler *scheduler);
+extern Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0);
+import Bool I386RedSeaSectorRead(CI386RedSea *volume,I64 block,U8 *buffer);
+import Bool I386RedSeaSectorWrite(CI386RedSea *volume,I64 block,U8 *buffer);
+import Bool I386RedSeaFlush(CI386RedSea *volume);
+import I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count);
+import Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count);
+import I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
+import Bool I386RedSeaDirectory(CI386RedSea *volume,I64 block,U8 *sector,I64 *size);
+import U0 I386RedSeaPutWord(U8 *p,U64 value);
 CI386AtaChannel file_channels[2];
 CI386RedSeaIo file_io[2];
 Bool I386FileRuntimeCancelWait(CI386Task *task)
@@ -56,7 +65,7 @@ CCmpCtrl *I386FileRuntimeControl(U8 *buffer,I64 flags,U8 *filename)
   return I386TaskCmpCtrlNew(&file_compiler,buffer,flags,filename);
 }
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==40
+#assert sizeof(CI386FileServices)==44
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
@@ -66,6 +75,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
   services->cancel_wait=&I386FileRuntimeCancelWait;
+  services->write=&I386TaskFileWrite;
   return 1;
 }
 #include "/Kernel/I386/FileNames.HC"
@@ -82,5 +92,8 @@ I64 Main(CI386FileServices *services,I64 bytes)
 
 #include "/Kernel/I386/TaskFiles.HC"
 #include "/Kernel/I386/TaskFileRead.HC"
-
+#define I386_REDSEA_MUTATION_IMPORTS 1
+#include "/Kernel/I386/RedSeaCreate.HC"
+#include "/Kernel/I386/RedSeaReplace.HC"
+#include "/Kernel/I386/TaskFileWrite.HC"
 #include "/Kernel/I386/TaskCompiler.HC"

@@ -1946,3 +1946,28 @@ Repository sources are authoritative for the existing implementation:
 - [Intel IA-32 architecture manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) — check feature generation; modern IA-32 does not imply 386 support.
 - [QEMU CPU model documentation](https://www.qemu.org/docs/master/system/qemu-cpu-models.html)
 - [86Box 5.0 release notes, including 386SX/DX machine models](https://86box.net/2025/08/24/86box-v5-0.html)
+
+## Focused TDD infrastructure
+
+The console harness now exposes eleven selectable groups through `--group`;
+omitting it retains the complete console suite. See
+[the test workflow](docs/i386-test-workflow.md) for commands and scope. A separate
+mutation runner requires a clean windows baseline and injects two representative
+public-runtime faults in disposable guest RAM. Only the expected behavioral
+failure counts as detection; survivors and infrastructure failures fail the run.
+This strengthens the test feedback loop without changing native OS behavior or
+advancing the still-unfinished native DolDoc editing milestone. Complete build
+validation and original-target comparisons remain the integration gate.
+
+The DolDoc TDD work now has shared lifecycle, ordinary-text editing,
+serialization, and load/save round-trip corpora plus retained native `DocNew`,
+`DocRst`, `DocDel`, `DocSize`, `DocPutKey`, `DocSave`, `DocWrite`, and `DocRead`
+services. A writable-disk acceptance enters retained `DocEd` from the live
+HolyC prompt, drives hardware key events, verifies VGA text/cursor state, saves,
+boots the normal 8 MiB image again, and reopens the document in `DocEd` from the
+same RedSea image. This establishes an ordinary-text editing/persistence
+prototype; the medium goal requiring the original editor and edit/execute/reopen
+remains open.
+Full document layout, the remaining original `DocPutKey` commands and editor
+callbacks, executable documents, embedded records, mouse input, and execution
+after reopen remain later M5 work.

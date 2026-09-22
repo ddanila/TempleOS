@@ -31,4 +31,13 @@ public _extern _DOC_UNDO_DEL U0 DocUndoDel(CDoc *doc,CDocUndo *undo);
 public _extern _DOC_UNDO_COUNT U0 DocUndoCntSet(CDoc *doc);
 public _extern _DOC_REM_SOFT U0 DocRemSoftNewLines(CDoc *doc=0,CDocEntry *entry=0);
 public _extern _DOC_INS_ENTRY U0 DocInsEntry(CDoc *doc,CDocEntry *entry);
+public _extern _DOC_NEW CDoc *DocNew(U8 *filename=0,CTask *task=0);
+public _extern _DOC_RST U0 DocRst(CDoc *doc,Bool is_old);
+public _extern _DOC_DEL U0 DocDel(CDoc *doc);
+public _extern _DOC_SIZE I64 DocSize(CDoc *doc);
+public _extern _DOC_PUT_KEY U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0);
+public _extern _DOC_SAVE U8 *DocSave(CDoc *doc,I64 *size=0);
+public _extern _DOC_WRITE Bool DocWrite(CDoc *doc,Bool prompt=FALSE);
+public _extern _DOC_READ CDoc *DocRead(U8 *name=0,I64 flags=0);
+public _extern _DOC_ED Bool DocEd(CDoc *doc,I64 flags=0);
 #endif

@@ -1,7 +1,9 @@
 #include "/Kernel/I386/RedSea.HH"
+#ifndef I386_REDSEA_MUTATION_IMPORTS
 extern Bool I386RedSeaValid(CI386RedSea *v);
 extern Bool I386RedSeaDirectory(CI386RedSea *v,I64 block,U8 *sector,I64 *size);
 extern U0 I386RedSeaPutWord(U8 *p,U64 value);
+#endif
 public I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0)
 {//1 replaced, 0 absent/full, -1 invalid/I/O. Requires exclusive file ownership.
   U8 sector[512],*raw;

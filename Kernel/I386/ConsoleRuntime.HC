@@ -19,6 +19,7 @@ import U0 KernelLog(U8 *text);
 import U0 KernelHex(U64 value);
 import U0 KernelStop();
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import U32 I386IrqSave();
 import U0 I386IrqRestore(U32 flags);
 import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
@@ -27,18 +28,18 @@ import Bool I386KbcQueueGet(CI386KbcQueue *queue,U8 *data,U8 *status);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
+CI386ConsoleConfig *console_config;
+CI386Text console_text;
+U8 *console_planes;
+extern U0 ConsolePresent();
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/TextBase.HC"
 #include "/Kernel/I386/Window.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
-CI386ConsoleConfig *console_config;
-CI386Text console_text;
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[88];
-U8 *console_planes;
+CI386KernelSymbol console_doc_exports[97];
 U32 console_version=I386_CONSOLE_VERSION;
-extern U0 ConsolePresent();
 extern Bool NativeGraphicsStart();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
 extern Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,Bool hide_col=FALSE,Bool hide_row=FALSE);
@@ -234,7 +235,25 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[86].val=(&WinZBufUpdate+0)(U64);
   console_doc_exports[87].str="_WIN_INSIDE";
   console_doc_exports[87].val=(&WinInside+0)(U64);
-  for(i=0;i<88;i++) {
+  console_doc_exports[88].str="_DOC_NEW";
+  console_doc_exports[88].val=(&DocNew+0)(U64);
+  console_doc_exports[89].str="_DOC_RST";
+  console_doc_exports[89].val=(&DocRst+0)(U64);
+  console_doc_exports[90].str="_DOC_DEL";
+  console_doc_exports[90].val=(&DocDel+0)(U64);
+  console_doc_exports[91].str="_DOC_SIZE";
+  console_doc_exports[91].val=(&DocSize+0)(U64);
+  console_doc_exports[92].str="_DOC_PUT_KEY";
+  console_doc_exports[92].val=(&DocPutKey+0)(U64);
+  console_doc_exports[93].str="_DOC_SAVE";
+  console_doc_exports[93].val=(&DocSave+0)(U64);
+  console_doc_exports[94].str="_DOC_WRITE";
+  console_doc_exports[94].val=(&DocWrite+0)(U64);
+  console_doc_exports[95].str="_DOC_READ";
+  console_doc_exports[95].val=(&DocRead+0)(U64);
+  console_doc_exports[96].str="_DOC_ED";
+  console_doc_exports[96].val=(&DocEd+0)(U64);
+  for(i=0;i<97;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78) console_doc_exports[i].kind=3;

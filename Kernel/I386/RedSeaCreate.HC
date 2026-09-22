@@ -1,6 +1,8 @@
 #include "/Kernel/I386/RedSea.HH"
+#ifndef I386_REDSEA_MUTATION_IMPORTS
 extern Bool I386RedSeaValid(CI386RedSea *v);
 extern Bool I386RedSeaDirectory(CI386RedSea *v,I64 block,U8 *sector,I64 *size);
+#endif
 Bool I386RedSeaNewName(U8 *name)
 {//Existing filename character bitmap; creation excludes the two traversal names.
   I64 i=0,ch,group;
@@ -18,7 +20,9 @@ Bool I386RedSeaNewName(U8 *name)
   }
   return i<38;
 }
+#ifndef I386_REDSEA_MUTATION_IMPORTS
 extern U0 I386RedSeaPutWord(U8 *p,U64 value);
+#endif
 public I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0)
 {//1 created, 0 exists/full, -1 invalid/I/O. Failure after reservation can leak space.
   U8 sector[512],*raw;

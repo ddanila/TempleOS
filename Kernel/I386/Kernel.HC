@@ -61,8 +61,8 @@ CHashClass *kernel_scalars[6];
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
 CCntsGlbls cnts;
-CI386KernelSymbol kernel_exports[47];
-U8 kernel_export_kinds[47]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1};
+CI386KernelSymbol kernel_exports[55];
+U8 kernel_export_kinds[55]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
 CI386MemoryServices kernel_memory;
@@ -100,7 +100,7 @@ extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
 U8 kernel_probe_bindings[24]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27};
-U8 kernel_files_bindings[18]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34};
+U8 kernel_files_bindings[26]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54};
 U8 kernel_memory_bindings[14]={10,11,12,20,13,14,0,18,19,16,42,40,41,8};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
@@ -280,6 +280,8 @@ U0 KernelStorage(CI386BootInfo *info)
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/RedSea.HC"
 #include "/Kernel/I386/FileRead.HC"
+#include "/Kernel/I386/RedSeaAlloc.HC"
+#include "/Kernel/I386/RedSeaWrite.HC"
 
 U8 *KernelModuleLoad(U8 *path,CI386ModuleBinding *bindings,I64 count)
 {//Boot disk ownership is established by the caller.
@@ -324,7 +326,7 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i,used;
-  U8 *addresses[47],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0";
+  U8 *addresses[55],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0";
   CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
@@ -384,7 +386,10 @@ U0 KernelSymbols()
   addresses[37]=&I386HashTableNew; addresses[38]=&I386HashTableValid; addresses[39]=&I386HashTableDelete;
   addresses[40]=&SysTry; addresses[41]=&SysUntry; addresses[42]=&throw;
   addresses[43]=&I386TaskSpawn; addresses[44]=&I386TaskDestroy; addresses[45]=&cnts; addresses[46]=&I386KbcQueueGet;
-  for(i=0;i<47;i++) {
+  addresses[47]=&I386RedSeaSectorRead; addresses[48]=&I386RedSeaSectorWrite;
+  addresses[49]=&I386RedSeaFlush; addresses[50]=&I386RedSeaAlloc; addresses[51]=&I386RedSeaFree;
+  addresses[52]=&I386RedSeaWrite; addresses[53]=&I386RedSeaDirectory; addresses[54]=&I386RedSeaPutWord;
+  for(i=0;i<55;i++) {
     kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
     kernel_exports[i].val=(addresses[i]+0)(U64); kernel_exports[i].type=HTT_EXPORT_SYS_SYM;
     HashAdd(&kernel_exports[i],kernel_symbols);
@@ -405,9 +410,9 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity)
 {
   I64 i;
-  if(!bindings || !indices || count!=capacity || count<1 || count>47) KernelStop;
+  if(!bindings || !indices || count!=capacity || count<1 || count>55) KernelStop;
   for(i=0;i<count;i++) {
-    if(indices[i]>=47) KernelStop;
+    if(indices[i]>=55) KernelStop;
     KernelBinding(&bindings[i],kernel_exports[indices[i]].str);
   }
 }
@@ -478,11 +483,11 @@ U0 KernelCompilerProbe(I64 phase)
 
 U0 KernelFileLoad()
 {
-  CI386ModuleBinding bindings[18];
+  CI386ModuleBinding bindings[26];
   if(kernel_file_image || kernel_files.version) KernelStop;
-  KernelBindings(bindings,kernel_files_bindings,18,sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_files_bindings,26,sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
-    bindings,18,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+    bindings,26,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
@@ -554,7 +559,7 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[37];
+  CI386ModuleBinding bindings[39];
   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
   U8 indices[14];
   U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
@@ -575,8 +580,10 @@ U0 KernelConsoleLoad()
     KernelBinding(&bindings[i],float_name);
     while(*float_name++);
   }
+  KernelBinding(&bindings[37],"_STRCPY"); bindings[37].name="StrCpy";
+  KernelBinding(&bindings[38],"I386HeapFree");
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,37,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,39,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;

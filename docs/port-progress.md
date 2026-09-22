@@ -6507,3 +6507,48 @@ Complete control construction/drawing, scrollbar and mouse integration, the
 original window manager, sprite rendering, document construction/formatting/layout,
 editor input and save/reboot/reopen remain open. The native editing-session goal
 is not complete.
+
+## Ordinary-text DolDoc prototype and focused TDD (2026-09-22)
+
+Native normal boot now supports `DocNew`, `DocEd`, `DocWrite`, `DocRead` and
+`DocDel` from the HolyC prompt. The editor uses canonical document records and
+accepts printable text, cursor-left and backspace; Escape returns to the prompt.
+RedSea writes permit saving and reopening a plain-text document across boots.
+See [manual commands](../README.md) and [integration scope](i386-doldoc-integration.md).
+
+The harness now offers eleven focused groups and a mutation runner that first
+requires a clean baseline. Two representative runtime faults must produce their
+specific wrong answers; timeouts and crashes do not count as detection. A separate
+writable-copy acceptance drives QEMU keyboard input, compares editor VGA pixels,
+saves, reboots the same copy, reopens and checks the serialized text/cursor bytes.
+Normal boot remains independent of startup diagnostics.
+
+Validation before wrap-up passed both x64 rebuild generations and the full native
+build/boot suite on QEMU/486 at 8 MiB: 227 native commands / 290 submitted lines.
+All 1200 recorded OS source hashes match the final implementation. The kernel is
+382888 bytes; ConsoleRuntime retains 312232 bytes. Normal startup measured
+43.020 seconds and separate diagnostic startup 157.564 seconds. The tooling's
+initial mutation run detected both injected faults; its recorded image and scope
+are listed in [the TDD workflow](i386-test-workflow.md).
+
+During wrap-up, reporting was corrected: the five-point shared-loader round-trip
+check runs under original x64 with original `DocSave`. The full native console
+suite does not run that corpus; native persistence is checked separately through
+the two-boot acceptance. The source-disk hash check now fails acceptance if the
+source changes. Six host tests cover mutation verdicts and that protection.
+The reporting gate was checked against the retained cross-build log, and Python
+syntax/whitespace checks passed. These host-only corrections followed the full
+build run; no OS source changed afterward.
+
+A fresh wrap-up acceptance passed both boots on the final built image, including
+all editor VGA checkpoints and persisted bytes. The source disk remained unchanged
+(SHA-256 `73b05923a7943d1b007452c4ea46ef285fa2260295a70e542c6d5a98a150b9af`).
+Evidence is in `build/i386-doldoc-wrapup/result.json`; startup measured 45.071 and
+46.465 seconds. Generated reports and disk images remain local build artifacts.
+
+This is an intermediate prototype, not completion of the original-editor medium
+goal or M5. Original layout/recalculation, multiline editing, other navigation,
+callbacks and exception cleanup, mouse interaction, executable documents and
+embedded-record compatibility remain open. The acceptance covers a root-directory
+file; nested-directory persistence is not established. Strict 386 and physical-PC
+acceptance also remain open; current evidence is QEMU's 486 development profile.
