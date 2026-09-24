@@ -2131,8 +2131,9 @@ image useful on its own:
    the bottom screen edge now advances the viewport and canonical selection;
    dragging into the fixed header advances it toward earlier rows. Dragging at
    either horizontal edge also advances the viewport and selection
-   on a long unwrapped line. Stationary-hold scrolling and keyboard-only fallback
-   acceptance remain. Keep wheel and serial-mouse support optional
+   on a long unwrapped line. Held-edge scrolling now repeats on the timer without
+   another PS/2 packet; keyboard-only fallback acceptance remains. Keep wheel
+   and serial-mouse support optional
    until the core workflow is stable.
 2. Replace the remaining reduced editor actions with the original DocEd/ExeDoc
    paths needed by create, open, edit, diagnose, save and execute. Expand DolDoc

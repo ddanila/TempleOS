@@ -216,6 +216,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         elif 'wait_log_after' in action:
                             marker=action['wait_log_after']
                             wait_for(lambda:log.read_text().count(marker)>interaction_marks[marker],timeout=timeout)
+                        elif 'expect_log_unchanged' in action:
+                            marker=action['expect_log_unchanged']
+                            if log.read_text().count(marker)!=interaction_marks[marker]:
+                                raise ValueError(f'{name}: unexpected {marker.strip()} after release')
                         elif 'wait_log' in action:
                             wait_for(lambda:action['wait_log'] in log.read_text(),timeout=timeout)
                         elif 'expect_rows' in action:
@@ -1204,6 +1208,30 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
               'final_pointer':[120,32]})
             submit('I64 MouseScrollUpCheck(){Free(mouse_scroll_saved);mouse_scroll_saved=DocSave(mouse_scroll,&mouse_size);return mouse_size==179&&mouse_scroll_saved[0]==48&&mouse_scroll_saved[1]==48&&mouse_scroll_saved[2]==10;}', [], 'doc-mouse-autoscroll-up-canonical-definition')
             submit('MouseScrollUpCheck;', ['1'], 'doc-mouse-autoscroll-up-canonical-check')
+            submit('DocEd(mouse_scroll);', ['1'], 'doc-mouse-autoscroll-held-editor',interaction={
+              'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
+              'initial_rows':mouse_scroll_auto_up,
+              'initial_colors':mouse_scroll_up_colors,
+              'initial_backgrounds':mouse_scroll_up_backgrounds,
+              'events':[{'mouse_to':[4,36]},
+                        {'mark_log':'DOC EDIT mouse cursor\n'},
+                        {'mouse_button':'left','down':True},
+                        {'wait_log_after':'DOC EDIT mouse cursor\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_to':[20,479]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_button':'left','down':False},
+                        {'delay':0.7},
+                        {'expect_log_unchanged':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_to':[120,479]}],
+              'final_rows':mouse_scroll_auto,
+              'final_colors':mouse_scroll_auto_colors,
+              'final_backgrounds':mouse_scroll_auto_backgrounds,
+              'final_pointer':[120,479]})
+            submit('MouseScrollAutoCheck;', ['1'], 'doc-mouse-autoscroll-held-canonical-check')
             submit('Free(mouse_scroll_saved);DocDel(mouse_scroll);', [], 'doc-mouse-scroll-delete')
             submit('CDoc *mouse_wide=DocNew("C:/MouseWide.HC",Fs);I64 mouse_wide_i;', [], 'doc-mouse-wide-new')
             submit("for(mouse_wide_i=0;mouse_wide_i<100;mouse_wide_i++)DocPutKey(mouse_wide,'a');", ['0'], 'doc-mouse-wide-fill')

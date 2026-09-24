@@ -19,15 +19,15 @@ Current-source validation is recorded in the local build artifacts:
 - `build/rebuild-test/result.json`: two x86-64 rebuild/reboot generations.
 - `build/i386-kernel/result.json`: native cross-build, 429600-byte kernel;
   the latest build did not run the complete `--test` promotion gate.
-- `build/i386-mouse-horizontal-both-stepped/result.json`: 44 native commands,
-  including repeated vertical and horizontal edge drags, exact VGA cells and
-  canonical save bytes; QEMU `486,-fpu`, 8 MiB, 49.671-second startup.
-- `build/i386-mouse-horizontal-combined/result.json`: 202 native commands,
+- `build/i386-mouse-held-green-attempt/result.json`: 46 native commands,
+  including timer-driven held-edge scrolling, exact VGA cells and canonical
+  save bytes; QEMU `486,-fpu`, 8 MiB, 48.178-second startup.
+- `build/i386-mouse-held-combined/result.json`: 204 native commands,
   mouse plus document editing, exact VGA frames, QEMU `486,-fpu`, 8 MiB,
-  49.976-second startup.
+  48.132-second startup; release stops the held-edge repeat.
 
 The current disk SHA-256 is
-`add1e106a2d162cc1463ab64b12e260cdafae2e74bcbc631d9c13a2c13256143`.
+`18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`.
 Both build manifests' recorded source hashes match the checkpoint's guest source.
 Their revision field names the pre-commit base because the builds ran in the
 working tree. Earlier sections preserve evidence for intermediate images; those
@@ -36,8 +36,7 @@ results do not constitute a full promotion run on this final image.
 The standalone-development goal remains open. Original DocEd/ExeDoc integration,
 full document layout, complete public programming/debugging services, integrated
 resource acceptance and the QEMU 386 instruction audit remain required.
-Edge dragging currently advances on mouse packets rather than a stationary-hold
-timer. Native self-hosting remains the following major goal.
+Native self-hosting remains the following major goal.
 
 ## Bootstrap evidence
 
@@ -8436,3 +8435,19 @@ The tested disk SHA-256 is
 The combined mouse and document-editing regression passes 202 native commands
 with exact VGA checks on the same image; startup took 49.976 seconds.
 Stationary-hold scrolling remains open.
+
+## Native editor held-edge autoscroll (2026-09-25)
+
+The mouse drag path previously advanced only when `MouseGet` reported a new
+PS/2 packet. A QEMU test holding the left button at the bottom edge without
+further packets timed out waiting for a second viewport advance. `DocEd` now
+arms a 350 ms timer while an active drag rests on a vertical or horizontal
+edge, then repeats at 250 ms intervals. The timer is canceled when the button
+is released or the pointer leaves the edge, and a repeat redraws only when the
+canonical insertion point moves. The new test verifies the second advance,
+selected VGA frame, saved cursor, and absence of further scroll events during
+a 700 ms post-release wait. The focused `mouse` group passes 46 native commands
+on QEMU `486,-fpu` with 8 MiB and exact VGA checks; startup took 48.178
+seconds. The combined mouse and document-editing regression passes 204 native
+commands on the same image with 48.132-second startup. The tested disk
+SHA-256 is `18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`.

@@ -1682,7 +1682,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
       undo_kind,mouse_x,mouse_y,mouse_buttons=0,mouse_packets=0,
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets,
       mouse_anchor=0,mouse_endpoint,mouse_scroll_rows,mouse_scroll_columns,
-      mouse_hit_y;
+      mouse_hit_y,mouse_hold_due=0,mouse_now,mouse_old_endpoint;
   Bool done=FALSE,changed,redraw,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
   I64 save_status=0;
   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL || flags) return FALSE;
@@ -1854,6 +1854,34 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
           NativeDocMouseMove(doc,mouse_x,mouse_y,next_mouse_x,next_mouse_y);
         mouse_x=next_mouse_x; mouse_y=next_mouse_y;
         mouse_buttons=next_mouse_buttons; mouse_packets=next_mouse_packets;
+        if(mouse_dragging && mouse_buttons&1 && console_config &&
+            console_config->jiffies && (mouse_y<=32 || mouse_y==479 ||
+            mouse_x==0 || mouse_x==639))
+          mouse_hold_due=*console_config->jiffies+350;
+        else mouse_hold_due=0;
+      }
+      if(mouse_hold_due && console_config && console_config->jiffies &&
+          *console_config->jiffies>=mouse_hold_due) {
+        mouse_now=*console_config->jiffies;
+        mouse_hold_due=mouse_now+250;
+        mouse_scroll_rows=0; mouse_scroll_columns=0;
+        if(mouse_y<=32) mouse_scroll_rows=-1;
+        else if(mouse_y==479) mouse_scroll_rows=1;
+        if(mouse_x==0) mouse_scroll_columns=-1;
+        else if(mouse_x==639) mouse_scroll_columns=2;
+        mouse_hit_y=mouse_y;
+        if(mouse_hit_y<32) mouse_hit_y=32;
+        mouse_old_endpoint=NativeDocCursorOffset(doc);
+        if(NativeDocEditMouseCursor(doc,mouse_x,mouse_hit_y,
+            mouse_scroll_rows,mouse_scroll_columns)) {
+          mouse_endpoint=NativeDocCursorOffset(doc);
+          NativeDocMouseSelect(doc,mouse_anchor,mouse_endpoint);
+          if(mouse_endpoint!=mouse_old_endpoint) {
+            undo_group_kind=0; save_status=0; redraw=TRUE;
+            KernelLog("DOC EDIT mouse selection\n");
+            KernelLog("DOC EDIT mouse autoscroll\n");
+          }
+        }
       }
       if(changed) save_status=0;
       next_blink_phase=NativeDocEditBlinkPhase;
