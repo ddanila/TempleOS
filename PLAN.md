@@ -2,6 +2,16 @@
 
 ## Objective and status
 
+**Acceptance revision (2026-09-24):** QEMU/TCG is the required execution
+platform for the current port milestones, including the standalone development
+environment and M7 self-hosting. Physical-PC verification and dedicated 386SX/DX
+emulator certification are deferred follow-up work, not completion blockers.
+Keep the 80386 instruction baseline, no-FPU runtime, VGA/legacy-device design,
+8 MiB interactive and 16 MiB native-rebuild targets. Passing this plan establishes
+a QEMU-verified system with audited 386-targeted code; it does not certify a real
+386 motherboard or vintage timing. This revision supersedes earlier hardware
+promotion requirements in historical progress records.
+
 Build a native, standalone 32-bit TempleOS variant for 386-class and later
 PC-compatible machines with VGA. Preserve the interactive HolyC programming
 system, ring-0 execution, one shared flat address space, DolDoc, and simple
@@ -40,8 +50,8 @@ All work stays in our fork on `main`. Preserve `archive` at `c26482b`.
 ## Final goal: a fully working TempleOS on a PC-compatible machine
 
 Deliver a standalone, self-hosting 32-bit TempleOS that a person can boot and use
-as their complete offline HolyC development environment on a named physical
-386-class PC with VGA. This is the final product milestone, M7; the current native
+as their complete offline HolyC development environment on the documented
+QEMU PC profile with VGA and a 386-targeted instruction baseline. This is the final product milestone, M7; the current native
 console and individual subsystem tests are intermediate evidence toward it.
 "PC-compatible" means the reference hardware contract below, not the original
 8088 IBM PC or every later PC configuration. Preserve the HolyC language, shared
@@ -53,7 +63,7 @@ M7 requires an integrated acceptance run with the following outcomes:
 1. **Boot and operate independently.** Cold-boot a published hard-disk image through
    the machine's legacy BIOS into the normal interactive environment without a
    host compiler, attached test harness or mandatory diagnostic suite. Publish
-   reproducible image preparation and boot instructions for the selected hardware.
+   reproducible image preparation and boot instructions for the pinned QEMU profile.
 2. **Use the original programming environment.** Navigate help and files; edit,
    compile, execute and debug HolyC; retain definitions; and recover from syntax
    errors, caught runtime exceptions and allocation failures. Exercise I64 and
@@ -73,18 +83,18 @@ M7 requires an integrated acceptance run with the following outcomes:
    interactive workflow at 8 MiB installed RAM and native rebuilds at 16 MiB,
    reporting usable RAM, resident and peak allocations, boot/rebuild time and
    input latency. Exercise repeated compile/error/task-exit cycles to detect
-   retained-memory growth. Establish measured responsiveness limits on the named
-   hardware before final acceptance. Pass strict 386SX/DX, no-387 emulator checks
-   and an integrated run on a named physical 386/VGA configuration; record exact
-   BIOS, CPU, RAM, storage and peripheral details for each result.
+   retained-memory growth. Establish responsiveness budgets on the recorded host
+   and QEMU configuration. Pass QEMU no-FPU execution and executable-region 386
+   instruction audits; record QEMU version, machine type, BIOS, CPU, RAM, storage
+   and peripherals. Timings describe this emulator setup, not a physical 386.
 6. **Publish a reviewable result.** Ship the boot image, matching source revision,
    build/boot instructions, support matrix, acceptance results and known limitations.
    Preserve the working x86-64 regression target. Remaining optional hardware and
    application work must be distinguished from failures of the required workflow.
 
-M7 remains open until all required outcomes are demonstrated. Physical hardware
-availability may delay that evidence; emulator success must remain labelled as
-such. The existing deferrals for networking, modern devices and additional
+M7 remains open until all required functional and resource outcomes are
+demonstrated in QEMU. Physical hardware and strict SX/DX certification do not
+block it; label the published support matrix as QEMU-verified. The existing deferrals for networking, modern devices and additional
 installation media remain in force. Any change to required functionality or RAM
 targets needs an explicit, evidence-backed plan revision.
 
@@ -294,18 +304,17 @@ after finishing its page-header reads. See
 See [shared task records](docs/i386-task-records.md) and
 [native public headers](docs/i386-public-headers.md).
 
-Hardware acceptance runs alongside all four priorities: establish named 386SX/DX
-profiles without a coprocessor, verify the legacy BIOS/ATA path and planar VGA,
-audit generated and handwritten executable code, and measure input responsiveness
-under compilation and disk/display activity. Current QEMU/486 evidence remains
-development evidence. Physical-machine acceptance, full public APIs, DolDoc and
-self-hosting remain explicit gates; a working native prompt does not close them.
+QEMU acceptance runs alongside all four priorities: use the no-FPU profile,
+verify emulated legacy BIOS/ATA paths and planar VGA, audit generated and
+handwritten code for the 386 instruction baseline, and measure input response
+under compilation and disk/display activity. Full public APIs, DolDoc and
+self-hosting remain required; physical-machine acceptance is deferred.
 
 ### Next implementation slices
 
 Use the following bounded changes to turn the roadmap into reviewable work.
 Each slice must preserve the working x86-64 build and report native memory use.
-The public-contract slices precede document integration; hardware validation can
+The public-contract slices precede document integration; emulated-device validation can
 advance independently throughout.
 
 Drive those public-contract slices with the existing document sources. The
@@ -323,7 +332,7 @@ acceptance requirement.
 | Public service ownership | Connect task lists, heap selection, compiler contexts and file lifetime to the existing public API. Specify initialization and teardown for every migrated field. | Task creation, compilation, file failure and task exit leave no dangling symbols, callbacks or owned allocations. A field's presence alone does not count as an implemented service. |
 | Native language closure | Maintain a source-driven list of remaining blockers encountered when compiling the existing editor, documents and compiler. Resolve ABI, constant evaluation and assembly behavior in the shared implementation. | Representative existing sources compile and run with consistent cross-bootstrap/native results; every remaining blocker has a reproducer. |
 | VGA document workflow | Connect existing drawing and DolDoc code to planar presentation, keyboard/mouse input and RedSea persistence. Bound display and disk work so interrupts and cooperative tasks remain responsive. | Edit, execute, save, reboot and reopen an executable document at the 8 MiB design target, with measured peak memory and input latency. |
-| Native rebuild | Build compiler and kernel from source inside the resulting environment, install the generated boot artifacts and repeat the cycle. | Two native rebuild/reboot generations at the 16 MiB design target, followed by the named strict 386/no-387 acceptance profiles. |
+| Native rebuild | Build compiler and kernel from source inside the resulting environment, install the generated boot artifacts and repeat the cycle. | Two native rebuild/reboot generations at the 16 MiB design target, with QEMU no-FPU execution and 386 instruction audits. |
 
 Treat the RAM figures as acceptance targets pending full-workload measurements.
 If the complete environment exceeds them, first identify retained versus temporary
@@ -430,8 +439,8 @@ Completion means ordinary native HolyC can allocate through the public API and
 survive compiler cleanup, with task-owned storage reclaimed at the correct final
 lifetime boundary. It does not establish the full low-memory target: measure the
 complete VGA document workflow at 8 MiB and native rebuilds at 16 MiB separately.
-Keep strict 386/no-387 execution and physical VGA acceptance alongside this work;
-the existing QEMU/486 results remain development evidence.
+Keep QEMU no-FPU execution, VGA checks and 386 instruction audits alongside
+this work. Physical VGA acceptance is deferred.
 
 ## Principles and deliberate amendments
 
@@ -464,7 +473,7 @@ These are design targets to verify, not measured minimum requirements:
 
 | Component | Baseline decision |
 | --- | --- |
-| CPU | 80386 instruction set, 32-bit protected mode, one CPU; validate SX and DX profiles |
+| CPU | 80386 instruction set, 32-bit protected mode, one CPU; SX/DX certification deferred |
 | RAM | Aim for an interactive system at 8 MiB and self-hosted rebuilds at 16 MiB installed RAM; usable RAM excludes firmware/device holes |
 | Floating point | No coprocessor required: software F64 baseline; optional 387 acceleration later |
 | Graphics | Standard planar VGA, BIOS mode 0x12, 640×480 and 16 colors; no VBE/GPU requirement |
@@ -487,29 +496,38 @@ A full floppy driver, CD installation, additional storage controllers, and
 physical installation tooling can follow the first hard-disk-image path.
 Neither El Torito CD boot nor a large RAM disk may be a baseline dependency.
 
-### Vintage hardware verification alongside implementation
+### QEMU acceptance now; physical verification deferred
 
-Maintain separate development and acceptance profiles. The current QEMU/486
-profile provides fast integration feedback; it cannot certify the 386 baseline.
-Record the emulator version/configuration or physical machine configuration with
-each result, including CPU, coprocessor presence, usable RAM, BIOS, VGA and disk
-geometry. Select and validate a strict 386 emulator profile before treating its
-results as hardware acceptance; real-machine testing remains a separate gate.
+QEMU is the functional acceptance platform. Pin its version, resolved machine
+version, CPU flags, BIOS and VGA firmware hashes, RAM, storage geometry and
+peripherals in build/test manifests. Use TCG, not host-CPU passthrough. The local
+QEMU CPU list starts at 486 and has no 386 model: `486,-fpu` exercises the software
+floating-point path but does not enforce every 80386 instruction restriction.
 
-| Profile | Purpose and required evidence |
+| Profile | Required evidence |
 | --- | --- |
-| Development: QEMU/486, 8 MiB | Repeatable boot and integration checks, allocation accounting, disk persistence and VGA output. Keep this evidence distinct from strict CPU compatibility. |
-| 386SX and 386DX, no 387, 8 MiB | Execute the generated-code corpus and interactive workflow; exercise legacy boot/memory discovery and software F64. Reject later instructions in executable code and verify that optional firmware services are unnecessary. |
-| 386-class, no 387, 16 MiB | Rebuild the compiler and kernel natively, boot the outputs and report peak usable-memory demand and elapsed time. |
-| Named physical 386/VGA machine | Verify boot, planar display, keyboard, selected mouse, ATA persistence and speaker/timer coexistence; record differences from emulator behavior. |
+| QEMU/TCG `486,-fpu`, 8 MiB | Normal boot, complete HolyC/DolDoc workflow, VGA and input, emulated speaker/timer activity, writable-disk reboot persistence, failure recovery, memory and latency measurements. |
+| QEMU/TCG `486,-fpu`, 16 MiB | Native compiler/kernel build, installation onto a fresh disk, boot and second native rebuild generation; peak memory and elapsed time. |
+| QEMU/TCG later 32-bit CPU, explicit model | Regression of the same public behavior and saved formats; no host CPU dependency. |
+| Existing x86-64 QEMU target | Preserve the original-system regression and source rebuild checks. |
 
-Run CPU and absent-coprocessor checks as compiler/runtime changes land. Exercise
-fallback boot paths with modern BIOS services unavailable, and measure input
-latency during disk access, VGA presentation and compilation. Use those results
-to choose bounded work units and scheduling points; short protected register
-operations must not become long interrupt-disabled display or disk loops.
-Instruction audits, emulator execution and physical testing provide different
-evidence and should all remain visible in release criteria.
+Keep executable-region 386 instruction audits for boot code, runtime helpers,
+cross-generated code, native JIT output and inline assembly. Combine these with
+absent-FPU runs and forced legacy BIOS fallbacks; none alone proves universal
+386 compatibility. Exercise missing optional BIOS calls, absent mouse, failed
+I/O, low memory and timer wrap through automated tests.
+
+QEMU measurements set reproducible development budgets on a recorded host; do
+not infer real 386 clock speed, device timing or electrical behavior from them.
+Verify speaker programming and emulated audio output; physical audibility is
+not required. A normal manual QEMU session still must demonstrate usability
+without the automated harness or mandatory startup diagnostics.
+
+Deferred follow-up: validated 386SX/DX emulator profiles, a named physical VGA PC,
+real BIOS/controller quirks, speaker audibility and vintage-machine performance.
+These remain future compatibility evidence, not M0–M7 completion requirements.
+See [QEMU system emulation](https://www.qemu.org/docs/master/system/introduction.html)
+and [TCG implementation](https://www.qemu.org/docs/master/devel/tcg.html).
 
 ## Architectural work packages
 
@@ -540,8 +558,8 @@ Review each change against these decisions:
   the RAM targets before choosing caches or eager startup work.
 - Require end-to-end evidence at integration boundaries: native source input,
   compilation, execution, recovery and persistence, followed by the document
-  workflow and native rebuild. Keep strict 386 compatibility and x86-64 regression
-  evidence alongside these gates.
+  workflow and native rebuild. Keep 386 instruction audits, QEMU no-FPU execution
+  and x86-64 regression evidence alongside these gates.
 
 There is no separate 16-bit application port in this plan. Firmware-facing real
 mode remains a bootstrap concern. Optional newer hardware acceleration must not
@@ -559,7 +577,7 @@ evidence. Prioritize the following risks before expanding peripheral support:
 | Private bootstrap services become a second application API | Complete public task, memory, file and compiler ownership contracts, then migrate callers incrementally. Retain private mechanisms only behind those contracts. | Existing HolyC source uses the public interfaces; failed compilation and task teardown reclaim storage without invalidating retained definitions. |
 | Separate arenas and resident copies exhaust vintage RAM | Account for retained modules, compiler scratch space, generated code, task stacks, documents, display buffers and allocator fragmentation together. Release temporary modules and share backing memory where lifetimes permit. | Measure peak use during edit/execute/save and rebuild workloads, including failure recovery; an idle boot measurement does not establish either RAM target. |
 | VGA output works but interactive documents are too slow | Preserve logical drawing semantics and bound planar presentation work. Measure dirty-region updates, compiler scheduling points and disk transfer batches before choosing optimizations. | Input remains usable during document redraw, compilation and disk activity on the named acceptance profile; record latency and workload rather than emulator wall time alone. |
-| Development hardware conceals a later CPU or firmware dependency | Establish the strict 386/no-387 execution profile while public services are integrated. Audit executable regions and exercise legacy firmware fallbacks on every affected change. | Boot and generated-code tests pass on that profile before full document integration is declared complete; physical-machine acceptance remains a separate gate. |
+| Development hardware conceals a later CPU or firmware dependency | Run QEMU without an FPU and audit 386 instructions while public services are integrated. Audit executable regions and exercise legacy firmware fallbacks on every affected change. | Boot and generated-code tests pass on that profile before full document integration is declared complete; physical-machine acceptance is deferred. |
 
 The next implementation package remains the retained public-memory service
 described above. Follow it with a source-driven compiler/API gap inventory for
@@ -611,7 +629,7 @@ the boot console.
 
 The implementation order is ABI and compiler support, kernel services, resident
 HolyC compilation and recovery, then the complete document/editor workflow and
-self-hosting. Establish strict 386 test profiles and memory measurements alongside
+self-hosting. Establish QEMU no-FPU profiles, 386 instruction audits and memory measurements alongside
 these stages. Each stage must preserve the shared language semantics and keep the
 x86-64 regression target usable; a bootable console is an intermediate result.
 
@@ -847,8 +865,8 @@ prerequisites rather than substitutes for a working OS:
    services. Measure resident and peak memory against the 8 MiB interactive
    target throughout integration, including allocation-failure recovery.
 5. Rebuild and boot the compiler/kernel on the 16 MiB target, then close the
-   strict 386SX/DX and no-coprocessor verification gates. Establish that emulator
-   profile early enough to test each preceding stage, not only the final image.
+   QEMU no-coprocessor and 386 instruction-audit gates. Use that profile throughout
+   the preceding stages; strict SX/DX certification is deferred.
 
 Keep shared language, document and filesystem code above small architecture
 boundaries. CPU register width must not change I64/F64 semantics, serialized
@@ -882,9 +900,9 @@ the compiler at boot is acceptable while arbitrary module unloading stays deferr
 
 Keep three checks running across every integration gate: the x86-64 rebuild
 regression, executable-region 386 instruction audits, and resident/peak memory
-accounting. Establish named 386SX/DX emulator profiles now and apply them as work
-lands; strict CPU, absent-FPU and legacy BIOS/device checks must not wait for
-self-hosting. The current QEMU/486 result is development evidence only.
+accounting. Apply QEMU no-FPU and legacy BIOS/device checks as work lands.
+QEMU/486 is the current execution acceptance profile; strict SX/DX certification
+is deferred.
 
 The largest semantic decision still open is target numerical evaluation: the
 native software policy and existing x86-64 literal parsing have recorded bit
@@ -1426,7 +1444,8 @@ Complete assembly/stream providers and public exception headers, symbolic stored
 unresolved cross-control function/global linking, definition replacement/unload
 rules, complete public API/console integration, DolDoc and native
 self-hosting remain required. This bootstrap milestone does not satisfy
-the strict 386SX/DX or full native programming-environment acceptance gates.
+the full native programming-environment acceptance gate; strict SX/DX
+certification is deferred.
 
 #### Continuing integration sequence
 
@@ -1570,19 +1589,19 @@ these concrete steps:
 Disk-loaded cross-compiled modules are an intermediate integration check, not
 native JIT or self-hosting. At each step record resident and peak allocations,
 retain the x86-64 rebuild regression, and audit executable bytes for the 386
-instruction baseline. Select and exercise a strict 386 emulator profile alongside
-this work; the current 486 development result leaves that acceptance gate open.
+instruction baseline. Exercise the QEMU no-FPU acceptance profile alongside this
+work; strict SX/DX certification is deferred.
 
 | Milestone | Work and required evidence |
 | --- | --- |
-| M0: Verified starting point | A: source rebuild and regression baseline; select exact 386SX/DX emulator, BIOS, VGA, storage, and memory profiles |
+| M0: Verified starting point | A: source rebuild and regression baseline; pin QEMU/TCG CPU, machine, BIOS, VGA, storage, and memory profiles |
 | M1: Architecture contract | B and G: ABI/data-layout specification, module identification, format fixtures, memory accounting plan, instruction policy |
 | M2: Compiled 32-bit code | C and initial D: cross-generated integer/I64 code executed by a minimal protected-mode runner; numerical and ABI tests underway |
 | M3: Bootable 386 kernel | E and minimum F: CHS disk boot, VGA, keyboard, PIC/PIT, memory allocation, task switching; strict instruction checks |
 | M4: Interactive HolyC | Complete essential C/D: native JIT/compiler, F64 without a coprocessor, shell, storage, exceptions; no integer-only completion claim |
 | M5: TempleOS environment | F/G/H: DolDoc, editing/help, mouse, graphics, audio, persistence, portable data, measured low-memory workflow |
-| M6: Self-hosting and portability proof | Native i386 compiler/kernel rebuild and reboot; 386SX/DX and later-CPU checks; x86-64 regressions and published support matrix |
-| M7: Fully working PC system | Complete the integrated physical-PC acceptance workflow in the final-goal section: independent boot, HolyC/DolDoc development and debugging, graphics/input/sound, persistent documents, two native rebuild generations, measured RAM/latency and published artifacts. Pending; M0–M6 component evidence alone does not close this gate. |
+| M6: Self-hosting and portability proof | Native i386 compiler/kernel rebuild and reboot; QEMU no-FPU and later-CPU checks plus 386 instruction audits; x86-64 regressions and published support matrix |
+| M7: Fully working PC system | Complete the integrated QEMU-PC acceptance workflow in the final-goal section: independent boot, HolyC/DolDoc development and debugging, graphics/input/sound, persistent documents, two native rebuild generations, measured RAM/latency and published artifacts. Pending; M0–M6 component evidence alone does not close this gate. |
 
 M2's target runner and early M3 boot/interrupt work can be developed alongside
 the backend after M1. Do not require the full compiler before running backend
@@ -1932,23 +1951,21 @@ milestones, not the final OS.
 
 ## Verification strategy
 
-- Retain QEMU/TCG for fast development and x86-64 regression checks. On this machine,
-  `qemu-system-i386 -cpu help` lists 486 and newer models but no 386 model.
-  `qemu32` is not a 386 compatibility specification. A 486 QEMU boot is only a
-  development result, even with feature flags disabled.
-- Validate in a selected 386-capable emulator such as 86Box using explicit SX/DX,
-  coprocessor-absent, VGA, RAM, BIOS, and IDE settings. Check its CPU enforcement
-  and combine this with executable instruction audits; emulator success alone
-  cannot establish compatibility with every real 386.
+- Use the QEMU profiles above for required M0–M7 execution acceptance. The
+  installed QEMU lists 486 and newer CPUs, not 386; `qemu32` is not a 386
+  compatibility specification. Retain executable-region 386 instruction audits.
 - Test missing optional BIOS calls, absent mouse/FPU, failed disk reads, constrained
-  RAM, timer wrap, arithmetic boundary cases, and repeated task/exception transitions.
-- Exercise both cross-generated and natively generated code, including JIT and
+  RAM, timer wrap, arithmetic boundaries and repeated task/exception transitions.
+- Exercise cross-generated and natively generated code, including JIT and
   compiler-generated assembly blocks; inspect runtime helpers and boot code too.
-- Validate on an actual named 386 machine when available. Until then, label support
-  as emulator-verified, not physical-hardware-verified. No claim of universal PC
-  compatibility follows from either result.
-- Record bootable artifacts, source/tool versions, commands, results, memory peaks,
-  and timing. Every milestone must preserve the existing x86-64 working target.
+- Run the complete normal-boot development workflow both automatically and in a
+  documented manual QEMU session. Require writable-disk persistence, recovery,
+  public API semantics and two native self-hosted generations for M7.
+- Record bootable artifacts, source/tool versions, configuration, commands,
+  results, memory peaks and host-qualified timing. Preserve the x86-64 target.
+- Defer physical PCs and dedicated 386SX/DX emulator certification. Publish the
+  achieved scope as QEMU-verified; those deferred checks cannot block current
+  completion and remain necessary before claiming physical 386 compatibility.
 
 ## Principal risks and decision discipline
 
@@ -2058,13 +2075,13 @@ Deliver it through four test-driven workstreams:
 4. **Integrated workstation acceptance.** Add embedded graphics, mouse and
    PC-speaker use; measure peak memory, retained growth and input/interrupt
    latency under editing, compilation and disk activity. Pass a normal manual
-   QEMU session at 8 MiB plus strict 386/no-387 checks. Native self-rebuild at
+   QEMU session at 8 MiB, no-FPU execution and 386 instruction audits. Native self-rebuild at
    16 MiB remains the following major goal and M7 gate.
    The normal HolyC scope now exports `Snd` and `SndRst`. `Snd` maps the
    original Ona note scale to PIT channel 2, gates the PC speaker through port
    `0x61` and preserves interrupt state. QEMU/486-no-FPU checks latch the 440 Hz
-   divisor and verify on/off/reset gate transitions. Audible validation and
-   speaker coexistence on named physical hardware remain promotion evidence.
+   divisor and verify on/off/reset gate transitions. Emulated audio output and
+   timer coexistence remain integration checks; physical speaker tests are deferred.
    The boot kernel now enables the auxiliary 8042 port and IRQ12, decodes
    standard three-byte PS/2 packets and exposes bounded VGA coordinates, three
    buttons and a packet counter through `MouseGet` in normal HolyC. QEMU hardware
@@ -2126,9 +2143,9 @@ image useful on its own:
 4. Run the workflow on a writable disk over several boots, then add concurrent
    task, graphics, speaker and disk activity while measuring input latency, peak
    memory and post-session heap use on the 8 MiB no-FPU profile.
-5. Audit all executed code for the 386 instruction contract and repeat the final
-   workflow in a true 386-capable emulator and on the named physical VGA machine.
-   Record hardware-specific gaps before beginning the following self-hosting goal.
+5. Audit executable code for the 386 instruction contract and repeat the final
+   workflow on the pinned QEMU no-FPU profile. Record memory and responsiveness
+   before beginning self-hosting; physical and SX/DX certification are deferred.
 
 ## Following big goal: M7 self-hosting 32-bit TempleOS workstation
 
@@ -2155,13 +2172,11 @@ The standalone-development goal above is the entry gate. M7 then requires:
    Generation 1; Generation 1 boots and produces Generation 2. Generation 2
    has equivalent public behavior and persistent formats, and can rebuild the
    same source tree again without retained host-built compiler state.
-4. **PC-class acceptance.** Automated promotion covers a true 386SX/DX model in
-   a selected 386-capable emulator, QEMU 486, and a later 32-bit CPU profile,
-   all without an FPU dependency. QEMU itself is not 386 evidence because its
-   current minimum x86 CPU model is 486. The complete build runs
-   in 16 MiB; 8 MiB is a follow-on memory target. At least one physical 386+
-   VGA machine passes boot, editing, compilation, storage, graphics, speaker
-   and native-build smoke tests.
+4. **QEMU PC-class acceptance.** Automated promotion covers the pinned QEMU/TCG
+   `486,-fpu` profile and a later 32-bit CPU profile, with executable-region
+   audits preserving the 386 instruction baseline. Interactive acceptance uses
+   8 MiB and the complete native build uses 16 MiB. Dedicated SX/DX emulators
+   and physical 386+ VGA machines are deferred and do not block M7.
 5. **Release evidence.** Compiler semantics, allocation ownership, task and
    exception recovery, persistent compatibility and installation interruption
    are automated. A documented manual session creates and fixes a program,
@@ -2222,7 +2237,7 @@ Develop this as one vertical acceptance with smaller red/green contracts:
 5. **Promotion.** Repeat the complete workflow after reboot, run twenty bounded
    edit/run/error/save cycles, and record live/peak memory, input and interrupt
    latency. Finish with a documented manual QEMU session on the normal image,
-   strict 386/no-387 instruction checks and the complete build/rebuild gates.
+   386 instruction audits, QEMU no-FPU execution and the complete build/rebuild gates.
 
 Use the focused group for the current failing contract during development. A
 matching image hash qualifies a prior exhaustive interactive result for the same
@@ -2238,7 +2253,7 @@ error and an interrupted program, save it to RedSea, reboot the same disk,
 reopen it and execute it again. Preserve canonical documents, shared ring-0
 execution, task ownership, and the original file format. This completes the
 editing-session medium goal in [the dependency analysis](docs/i386-doldoc-integration.md)
-and advances M4/M5; it does not complete all of M5, self-hosting or physical-PC
+and advances M4/M5; it does not complete all of M5, self-hosting or full QEMU-PC
 acceptance. Status: **in progress; multiline editing, navigation, executable
 documents, replacement persistence, relative/deep project paths, timed blink
 rendering, file-level `Ed` save/cancel, direct Ctrl-S save and allocation integrity pass, while original-editor integration,
@@ -2499,9 +2514,10 @@ addresses, allocation order or the prototype's extra cursor cell.
   manually without startup diagnostics or host assistance. Keep all six slices
   open until their evidence exists; the current prototype does not close them.
 
-The development gate remains QEMU/486 with VGA and 8 MiB. Continue instruction
-audits and strict 386/no-387 checks as relevant code changes land; track unavailable
-hardware evidence explicitly. QEMU success cannot close 386SX/DX or physical-PC
-acceptance. Full help layout, mouse/window-manager integration, physical speaker
-evidence, broader DolDoc features and native rebuilds retain their existing
-M5–M7 gates.
+The current acceptance gate is QEMU/TCG with VGA and 8 MiB, with native rebuilds
+at 16 MiB. Continue 386 instruction audits and no-FPU execution as relevant code
+changes land. Physical-machine and dedicated SX/DX certification are deferred;
+QEMU success is sufficient for current milestones once their complete functional
+and resource gates pass. Full help layout, mouse/window-manager integration,
+emulated speaker behavior, broader DolDoc features and native rebuilds retain
+their M5–M7 gates.
