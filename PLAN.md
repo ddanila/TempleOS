@@ -521,6 +521,9 @@ cross-generated code, native JIT output and inline assembly. Combine these with
 absent-FPU runs and forced legacy BIOS fallbacks; none alone proves universal
 386 compatibility. Exercise missing optional BIOS calls, absent mouse, failed
 I/O, low memory and timer wrap through automated tests.
+The current i386 build audits the exact 16-bit BIOS and 32-bit protected-mode
+boot ranges and classifies linked T32M code/data before applying its instruction
+allowlist. Comprehensive live JIT output coverage remains open.
 
 QEMU measurements set reproducible development budgets on a recorded host; do
 not infer real 386 clock speed, device timing or electrical behavior from them.

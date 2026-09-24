@@ -18,7 +18,8 @@ Current-source validation is recorded in the local build artifacts:
 
 - `build/rebuild-test/result.json`: two x86-64 rebuild/reboot generations.
 - `build/i386-kernel/result.json`: native cross-build, 429600-byte kernel;
-  the latest build did not run the complete `--test` promotion gate.
+  the latest build did not run the complete `--test` promotion gate. The new
+  boot audit covers 96 BIOS and 33 protected-mode instructions.
 - `build/i386-mouse-held-green-attempt/result.json`: 46 native commands,
   including timer-driven held-edge scrolling, exact VGA cells and canonical
   save bytes; QEMU `486,-fpu`, 8 MiB, 48.178-second startup.
@@ -8488,3 +8489,18 @@ The tested QEMU profiles and open compatibility gates are published in
 `docs/i386-support-matrix.md`. This verifies that the workflow is not tied to
 one emulated CPU model; it does not establish the 80386 instruction baseline or
 native self-hosting.
+
+## 386 boot executable-region audit (2026-09-25)
+
+The i386 build now emits a NASM listing and derives the exact executable
+boundaries before the BIOS loader's drive data and before the protected-mode
+stage's early IDT. `tools/audit-i386-boot.py` disassembles all 325 16-bit code
+bytes and 104 32-bit stage code bytes, checks contiguous decoding and rejects
+instructions outside the boot's 386 allowlist. The gate passes 96 BIOS and 33
+protected-mode instructions in the current image; `result.json` records the
+range hashes and counts. Four host mutation tests pass, and injected BSWAP,
+CPUID and x87 bytes in the actual image are rejected. The rebuilt image passes
+a normal QEMU `486,-fpu` keyboard/VGA boot check at 8 MiB. The existing kernel
+build also classifies and audits linked T32M code. Live native JIT output and
+other executable paths still need comprehensive audit coverage before the full
+386 instruction baseline can be claimed.

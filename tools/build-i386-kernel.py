@@ -918,10 +918,16 @@ def main():
     console_layout=console_runtime_layout((exports/'ConsoleRuntime.t32m').read_bytes())
     memory_layout=memory_runtime_layout((exports/'MemoryRuntime.t32m').read_bytes())
     disk=out/'kernel.img'
-    run('nasm','-f','bin',f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
+    stage_listing=out/'kernel-stage.lst'
+    run('nasm','-f','bin','-l',str(stage_listing),
+        f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
         'tools/i386-kernel-stage.asm','-o',str(disk))
     if disk.stat().st_size!=512+4096+len(image) or disk.read_bytes()[512+4096:]!=image:
         raise ValueError('Kernel stage and flat-image load address disagree')
+    boot_audit_path=out/'boot-instruction-audit.json'
+    run(sys.executable,'tools/audit-i386-boot.py',str(disk),str(stage_listing),
+        '--out',str(boot_audit_path))
+    boot_audit=json.loads(boot_audit_path.read_text())
     if disk.stat().st_size>(848+1)*512:
         raise ValueError('Kernel stage exceeds its reserved 424 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
@@ -934,10 +940,11 @@ def main():
             'bootstrap':bootstrap['generations'][-1],
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
-                'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
+                'tools/build-i386-kernel.py','tools/audit-i386-boot.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
                 'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                 'tools/i386-kernel-input.py','tools/test-i386-doc-compat.py','tests/guest/i386-doc-compat/Once.HC','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                 'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
+            'boot_instruction_audit':boot_audit,
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},

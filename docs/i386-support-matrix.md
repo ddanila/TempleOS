@@ -47,8 +47,14 @@ python3 tools/test-i386-doldoc-session.py --cpu 486,-fpu
 python3 tools/test-i386-doldoc-session.py --cpu pentium3,-fpu --out build/i386-doldoc-session-pentium3-no-fpu
 ```
 
-The 80386 instruction baseline still needs an executable-region audit of boot
-code, resident and loaded modules, native JIT output and inline assembly.
+The normal i386 build now audits the exact 325-byte 16-bit BIOS code and
+104-byte 32-bit protected-mode stage, using NASM label boundaries and a 386
+instruction allowlist. Its existing T32M classifier audits resident and loaded
+module code separately. The boot result is recorded in
+`build/i386-kernel/boot-instruction-audit.json` and `result.json`; mutation
+checks reject injected BSWAP, CPUID and x87 instructions. Comprehensive audit
+coverage of live native JIT output and any remaining executable paths is still
+needed before claiming the 80386 instruction baseline.
 QEMU on this host does not offer a 386 CPU model; neither a no-FPU 486 run nor a
 later-CPU run proves strict 386 compatibility. Complete 8 MiB resource and
 latency acceptance, integrated graphics/speaker activity, the 16 MiB native

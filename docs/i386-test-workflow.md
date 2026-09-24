@@ -19,6 +19,7 @@ python3 tools/i386-kernel-input.py --cpu 486,-fpu --group keyboard \
 python3 tools/test-i386-mutations.py
 python3 tools/test-i386-mutations.py --mutation control-hit-test
 python3 tools/test-i386-test-runner.py  # host verdict checks, no QEMU
+python3 tools/test-i386-boot-audit.py  # boot ISA rejection cases, no QEMU
 python3 tools/test-i386-doldoc-session.py  # writable three-boot acceptance
 ```
 
@@ -28,6 +29,10 @@ to `486,-fpu`. The local QEMU has no 386 model, so `486,-fpu`
 checks the no-coprocessor runtime contract but does not establish 386 ISA
 compatibility. Use the separate instruction audit and a true 386-capable
 emulator or physical machine for that promotion gate.
+`build-i386-kernel.py` audits its BIOS and protected-mode boot executable
+ranges during every build; `build/i386-kernel/boot-instruction-audit.json`
+records byte counts, instruction counts and hashes. The build also audits its
+linked module code. Live JIT output remains a separate coverage requirement.
 
 The `mouse` group checks raw PS/2 movement and button packets and the exact XOR
 pointer over the idle HolyC prompt, then drives two real `DocEd` sessions. It
