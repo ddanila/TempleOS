@@ -14,6 +14,10 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
 DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime')
+I386_ALLOWED = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
+                    'movsx movzx cdq jmp cmp jz jnz setz setnz setl setnl setg setng setc setnc '
+                    'seta setna test shl shr in out sar shld shrd rcl div call inc dec jns jc jnc ja jna '
+                    'cli sti hlt cld lodsb stosb pusha popa iret lgdt sgdt lidt sidt').split())
 
 
 def run(*args):
@@ -487,10 +491,7 @@ def division_template_lines(code, disassemble):
 
 def audit(exports, out):
     disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
-    allowed = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
-                   'movsx movzx cdq jmp cmp jz jnz setz setnz setl setnl setg setng setc setnc '
-                   'seta setna test shl shr in out sar shld shrd rcl div call inc dec jns jc jnc ja jna '
-                   'cli sti hlt cld lodsb stosb pusha popa iret lgdt sgdt lidt sidt').split())
+    allowed = I386_ALLOWED
     image = (exports/'Kernel32.BIN').read_bytes()
     if len(image)<8 or image[0]!=0xE9 or any(image[5:8]):
         raise ValueError('Invalid native entry trampoline')
@@ -580,6 +581,62 @@ def audit(exports, out):
     if base!=len(image): raise ValueError('Unclassified trailing kernel bytes')
     (out/'kernel-assembly.txt').write_text('\n'.join(listing)+'\n')
     return image
+
+
+def audit_live_jit(log, out):
+    """Audit bytes emitted by the native compiler during both QEMU probe phases."""
+    disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
+    names=('DurableAdd','DurableFact','DurableDefault','DurableText','DurableNext','DurableString')
+    spans={}; payloads={}; result=[]
+    for line in log.splitlines():
+        if line.startswith('JIT SPAN '):
+            fields=line.split()
+            if len(fields)!=6: raise ValueError('Malformed live JIT span')
+            phase,index,extent,split=(int(field,16) for field in fields[2:])
+            key=(phase,index)
+            if key in spans or phase not in (0,1) or index>=len(names) or not 1<=split<=extent<=4096:
+                raise ValueError('Invalid or duplicate live JIT span')
+            spans[key]=(extent,split)
+        elif line.startswith('JIT BYTES '):
+            fields=line.split()
+            if len(fields)<4: raise ValueError('Malformed live JIT payload')
+            phase,index=(int(field,16) for field in fields[2:4])
+            key=(phase,index)
+            if key in payloads or phase not in (0,1) or index>=len(names) or any(
+                    len(value)!=16 or not re.fullmatch('[0-9A-F]{16}',value) or int(value,16)>255
+                    for value in fields[4:]):
+                raise ValueError('Invalid or duplicate live JIT payload')
+            payloads[key]=bytes(int(value,16) for value in fields[4:])
+    expected={(phase,index) for phase in (0,1) for index in range(len(names))}
+    if set(spans)!=expected or set(payloads)!=expected:
+        raise ValueError('Incomplete live JIT audit corpus')
+    for phase,index in sorted(expected):
+        extent,split=spans[phase,index]
+        payload=payloads[phase,index]
+        if len(payload)!=extent: raise ValueError('Live JIT allocation length mismatch')
+        code=payload[:split]
+        lines=disassemble(code).splitlines()
+        offset=0; last_return=-1; instructions=0
+        for line in lines:
+            parts=line.split()
+            if len(parts)<3 or int(parts[0],16)!=offset or not re.fullmatch('[0-9A-Fa-f]+',parts[1]):
+                raise ValueError(f'Unclassified live JIT bytes: {line}')
+            mnemonic=parts[2]
+            locked_bit=parts[2:] in (["lock", op, "[eax],esi"] for op in ("bts", "btr", "btc"))
+            if mnemonic not in I386_ALLOWED and not locked_bit:
+                #Only alignment after the final return may decode as data.
+                if last_return<0 or offset-last_return>7 or any(code[offset:]):
+                    raise ValueError(f'Non-386 live JIT instruction: {line}')
+                break
+            offset+=len(parts[1])//2; instructions+=1
+            if mnemonic=='ret': last_return=offset
+        if last_return<1 or split-last_return>7 or any(code[last_return:]):
+            raise ValueError(f'Invalid live JIT epilogue: {names[index]} phase {phase}')
+        result.append({'phase':phase,'function':names[index],'allocation_bytes':extent,
+                       'code_bytes':split,'instructions':instructions,
+                       'sha256':hashlib.sha256(payload).hexdigest()})
+    (out/'live-jit-audit.json').write_text(json.dumps(result,indent=2)+'\n')
+    return result
 
 
 def package_volume(disk, exports):
@@ -968,6 +1025,7 @@ def main():
         run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','1200')
         diagnostics['startup_seconds']=time.monotonic()-diagnostic_started
         log=(guest/'debug.log').read_text()
+        result['live_jit_audit']=audit_live_jit(log,out)
         if 'READY native kernel foundation\n' not in log or log.count('TICK ')!=2:
             raise ValueError('Missing native kernel startup/timer evidence')
         types=[line.split() for line in log.splitlines() if line.startswith('TYPES ')]

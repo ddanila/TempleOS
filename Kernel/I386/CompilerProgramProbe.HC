@@ -39,6 +39,20 @@ I64 ProbeProgramUse(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer,U8
   if(!probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
   return value;
 }
+U0 ProbeProgramJitSpan(CI386CompilerProbe *probe,CPrsSymbolServices *symbols,
+  CHashTable *table,U8 *name,I64 phase,I64 index)
+{
+  CHashFun *function=ProbeSymbolFind(0,name,table,HTT_FUN);
+  I64 bytes,*data_start,i;
+  if(!function || !function->exe_addr ||
+      !probe->compiler->code_span(symbols,function->exe_addr,&bytes,&data_start) ||
+      bytes<1 || bytes>4096 || *data_start<1 || *data_start>bytes) KernelStop;
+  KernelLog("JIT SPAN "); KernelHex(phase); KernelLog(" "); KernelHex(index);
+  KernelLog(" "); KernelHex(bytes); KernelLog(" "); KernelHex(*data_start); KernelLog("\n");
+  KernelLog("JIT BYTES "); KernelHex(phase); KernelLog(" "); KernelHex(index);
+  for(i=0;i<bytes;i++) { KernelLog(" "); KernelHex(function->exe_addr[i]); }
+  KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -128,6 +142,14 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 9: member->static_data=fun->str; break;
       case 12: *generated_split=0; break;
       case 13: *generated_split=generated_bytes+1; break;
+    }
+    if(kind==10) {
+      ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
+      ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
+      ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);
+      ProbeProgramJitSpan(probe,symbols,source_table,"DurableText",probe->phase,3);
+      ProbeProgramJitSpan(probe,symbols,source_table,"DurableNext",probe->phase,4);
+      ProbeProgramJitSpan(probe,symbols,source_table,"DurableString",probe->phase,5);
     }
     before_used=heap->used; before_allocations=heap->allocations;
     if(!kind) {

@@ -8520,3 +8520,19 @@ pass. The latter boots the 8 MiB diagnostic image, observes all 14 program
 publication cases in both probe phases, runs the normal interactive suite and
 file-recovery matrix, and confirms original TempleOS can read and reproduce a
 native i386 document.
+
+## First live native JIT instruction audit (2026-09-25)
+
+The diagnostic compiler probe now exports exact allocation bytes and code/data
+boundaries for six functions compiled inside the i386 guest: a direct call,
+recursion, a default argument, a literal-returning function, static state and
+a static string initializer. The host checks that both probe phases provide
+all twelve captures, disassembles only the executable ranges and applies the
+same 386 instruction allowlist as the linked-module audit. The current QEMU
+diagnostic run passes 1,238 code bytes and 622 instructions; `DurableText` has
+six literal-pool bytes excluded by the recorded boundary. Five host mutation
+checks reject forbidden opcodes, an incorrect code/data boundary, mismatched
+payload length and missing capture metadata. The 8 MiB normal QEMU boot also
+passes all 137 compiler-group commands with matching VGA pixels. This is direct
+evidence for the sampled live JIT paths, not a claim
+that every possible generated function has been audited.

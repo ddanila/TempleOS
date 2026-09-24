@@ -54,7 +54,10 @@ module code separately. The boot result is recorded in
 `build/i386-kernel/boot-instruction-audit.json` and `result.json`; mutation
 checks reject injected BSWAP, CPUID and x87 instructions. Comprehensive audit
 coverage of live native JIT output and any remaining executable paths is still
-needed before claiming the 80386 instruction baseline.
+needed before claiming the 80386 instruction baseline. A diagnostic QEMU boot
+now exports and audits twelve sampled native JIT functions across two compiler
+probe phases (1,238 executable bytes and 622 instructions); the exact captures
+are recorded in `build/i386-jit-live-boot/live-jit-audit.json`.
 QEMU on this host does not offer a 386 CPU model; neither a no-FPU 486 run nor a
 later-CPU run proves strict 386 compatibility. Complete 8 MiB resource and
 latency acceptance, integrated graphics/speaker activity, the 16 MiB native
