@@ -84,6 +84,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->command=&I386FrontendCommand; services->publish=&I386FrontendPublish; services->input=&I386CommandInput;
   services->break_poll=&I386ExecutionBreakPoll;
   services->math_bind=&I386MathBind;
+  services->code_span=&I386FrontendCodeSpan;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

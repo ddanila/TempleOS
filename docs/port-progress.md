@@ -8504,3 +8504,19 @@ a normal QEMU `486,-fpu` keyboard/VGA boot check at 8 MiB. The existing kernel
 build also classifies and audits linked T32M code. Live native JIT output and
 other executable paths still need comprehensive audit coverage before the full
 386 instruction baseline can be claimed.
+
+## Native JIT code-span contract (2026-09-25)
+
+The native compiler now exposes each generated function's allocation length
+and executable/data split through version 50 of its service table while the
+compilation control remains live. Publication checks that the split is inside
+the allocation before transferring code to task-owned storage. The program
+publication probe corrupts the split to zero and past the allocation, then
+checks that both attempts are rejected without publishing symbols or leaking
+storage. This establishes bounds for a future QEMU capture of live JIT bytes;
+it does not yet audit those bytes or prove full 386 ISA coverage.
+The x86-64 two-generation rebuild and `python3 tools/build-i386-kernel.py --test`
+pass. The latter boots the 8 MiB diagnostic image, observes all 14 program
+publication cases in both probe phases, runs the normal interactive suite and
+file-recovery matrix, and confirms original TempleOS can read and reproduce a
+native i386 document.

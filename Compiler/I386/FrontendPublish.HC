@@ -1,4 +1,17 @@
 //Publish complete private definitions and executable/static storage atomically.
+Bool I386FrontendCodeSpan(CPrsSymbolServices *symbols,U8 *address,I64 *bytes,I64 **data_start)
+{
+  CI386Frontend *frontend;
+  CI386FrontendCode *code;
+  if(!symbols || !address || !bytes || !data_start || !(frontend=symbols->context) ||
+      symbols!=&frontend->symbols) return FALSE;
+  for(code=frontend->codes;code;code=code->next)
+    if(code->code==address) {
+      *bytes=code->bytes; *data_start=&code->data_start;
+      return TRUE;
+    }
+  return FALSE;
+}
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
 {
   if(!allocation) { transfer->ok=FALSE; return; }
@@ -125,7 +138,8 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   //remaining registered output, not only named function entry points.
   for(code=frontend->codes;code;code=code->next) {
     if(!I386ParserRecord(owned,code) || I386HeapSize(heap,code)!=sizeof(CI386FrontendCode) ||
-        code->bytes<1 || I386ParserSize(heap,cc,code->code)!=code->bytes) goto done;
+        code->bytes<1 || code->data_start<1 || code->data_start>code->bytes ||
+        I386ParserSize(heap,cc,code->code)!=code->bytes) goto done;
     I386ProgramStorageVisit(&transfer,storage,code->code);
     if(!transfer.ok) goto done;
   }

@@ -53,11 +53,12 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHashTable *source_table,*parent_table;
   CMemberLst *member;
   U8 *source,*old_index,*old_code,*old_static,*literal,*block,*fill,*next,*name;
-  I64 kind,count,i,j,before_used,before_allocations;
+  I64 *generated_split;
+  I64 kind,count,i,j,before_used,before_allocations,generated_bytes,old_data_start=0;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 irq,flags=GetRFlags;
   Bool result,recovered;
-  for(kind=0;kind<12;kind++) {
+  for(kind=0;kind<14;kind++) {
     source="I64i DurableData=20;"
       "class DurablePair{I64i a,b;};DurablePair DurablePairData={20,22};"
       "extern I64i DurableLater(I64i x);"
@@ -93,6 +94,9 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         roots[count++]=entry;
       }
     fun=ProbeSymbolFind(0,"DurableAdd",source_table,HTT_FUN);
+    if(kind!=7 && (!probe->compiler->code_span(symbols,fun->exe_addr,&generated_bytes,&generated_split) ||
+        *generated_split<1 || *generated_split>generated_bytes)) KernelStop;
+    if(kind!=7) old_data_start=*generated_split;
     static_fun=ProbeSymbolFind(0,"DurableNext",source_table,HTT_FUN);
     member=0; old_index=0; old_code=0; old_static=0;
     if(kind!=7) {
@@ -122,6 +126,8 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 6: cc->error_cnt=1; break;
       case 8: fun->exe_addr="Foreign"; break;
       case 9: member->static_data=fun->str; break;
+      case 12: *generated_split=0; break;
+      case 13: *generated_split=generated_bytes+1; break;
     }
     before_used=heap->used; before_allocations=heap->allocations;
     if(!kind) {
@@ -135,11 +141,12 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       KernelLog("PROGRAM PARENT REJECT "); KernelHex(probe->phase); KernelLog("\n");
     }
     result=probe->compiler->publish(heap,cc,symbols);
-    if(result!=(!kind || kind>=10)) KernelStop;
+    if(result!=(!kind || kind==10 || kind==11)) KernelStop;
     if(!result) {
       if(heap->used!=before_used || heap->allocations!=before_allocations || scope->storage!=old_storage) KernelStop;
       for(i=0;i<count;i++) if(ProbeSymbolFind(0,roots[i]->str,source_table,roots[i]->type)!=roots[i]) KernelStop;
       if(kind!=7) { fun->idx=old_index; fun->exe_addr=old_code; member->static_data=old_static; }
+      if(kind!=7) *generated_split=old_data_start;
       if(collision && (!ProbePublishedRemove(task->hash_table,collision) || !I386HashDel(heap,collision))) KernelStop;
       while(fill) { next=fill(U8 **)[0]; if(!I386HeapFree(heap,fill)) KernelStop; fill=next; }
     } else {
