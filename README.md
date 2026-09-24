@@ -198,8 +198,8 @@ the clicked insertion point. Holding the left button while moving selects text;
 copy, cut, deletion and typed replacement use the same canonical selection as
 Shift+cursor commands. Continuing to drag against the bottom screen edge extends
 the selection into the next row per mouse packet. Dragging into the fixed header
-likewise scrolls upward from the first text row. Horizontal edge behavior still
-needs dedicated validation.
+likewise scrolls upward from the first text row. Dragging against either
+horizontal screen edge pans a long unwrapped line while extending the selection.
 The file picker also displays the pointer and selects a visible file or directory
 row on left click; Enter or a double-click opens the selected item through its
 existing path.

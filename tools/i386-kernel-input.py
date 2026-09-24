@@ -1205,6 +1205,67 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('I64 MouseScrollUpCheck(){Free(mouse_scroll_saved);mouse_scroll_saved=DocSave(mouse_scroll,&mouse_size);return mouse_size==179&&mouse_scroll_saved[0]==48&&mouse_scroll_saved[1]==48&&mouse_scroll_saved[2]==10;}', [], 'doc-mouse-autoscroll-up-canonical-definition')
             submit('MouseScrollUpCheck;', ['1'], 'doc-mouse-autoscroll-up-canonical-check')
             submit('Free(mouse_scroll_saved);DocDel(mouse_scroll);', [], 'doc-mouse-scroll-delete')
+            submit('CDoc *mouse_wide=DocNew("C:/MouseWide.HC",Fs);I64 mouse_wide_i;', [], 'doc-mouse-wide-new')
+            submit("for(mouse_wide_i=0;mouse_wide_i<100;mouse_wide_i++)DocPutKey(mouse_wide,'a');", ['0'], 'doc-mouse-wide-fill')
+            submit('DocPutKey(mouse_wide,0,0x47);', [], 'doc-mouse-wide-home')
+            mouse_wide_start=['TempleOS i386','DolDoc editor','C:/MouseWide.HC','',
+                              mouse_block+'a'*79]
+            mouse_wide_right=['TempleOS i386','DolDoc editor','C:/MouseWide.HC','',
+                              'a'*79+mouse_block]
+            mouse_wide_colors={(4,column):15 for column in range(79)}
+            mouse_wide_backgrounds={(4,column):0 for column in range(79)}
+            submit('DocEd(mouse_wide);', ['1'], 'doc-mouse-autoscroll-right-editor',interaction={
+              'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
+              'initial_rows':mouse_wide_start,
+              'events':[{'mouse_to':[4,36]},
+                        {'mark_log':'DOC EDIT mouse cursor\n'},
+                        {'mouse_button':'left','down':True},
+                        {'wait_log_after':'DOC EDIT mouse cursor\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_to':[639,36]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_rel':[8,0]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_button':'left','down':False}],
+              'final_rows':mouse_wide_right,
+              'final_colors':mouse_wide_colors,
+              'final_backgrounds':mouse_wide_backgrounds,
+              'final_pointer':[639,36]})
+            submit('I64 MouseWideRightCheck(){I64 n,i;U8 *s=DocSave(mouse_wide,&n);for(i=0;i<n&&s[i]!=5;i++);Free(s);return n*1000+i;}', [], 'doc-mouse-autoscroll-right-canonical-definition')
+            submit('MouseWideRightCheck;', ['101081'], 'doc-mouse-autoscroll-right-canonical-check')
+            mouse_wide_left=['TempleOS i386','DolDoc editor','C:/MouseWide.HC','',
+                             mouse_block+'a'*79]
+            mouse_wide_left_colors={(4,column):15 for column in range(80)}
+            mouse_wide_left_backgrounds={(4,column):0 for column in range(80)}
+            submit('DocEd(mouse_wide);', ['1'], 'doc-mouse-autoscroll-left-editor',interaction={
+              'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
+              'initial_rows':mouse_wide_right,
+              'initial_colors':mouse_wide_colors,
+              'initial_backgrounds':mouse_wide_backgrounds,
+              'events':[{'mouse_to':[636,36]},
+                        {'mark_log':'DOC EDIT mouse cursor\n'},
+                        {'mouse_button':'left','down':True},
+                        {'wait_log_after':'DOC EDIT mouse cursor\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_to':[500,36]},
+                        {'mouse_to':[400,36]},
+                        {'mouse_to':[300,36]},
+                        {'mouse_to':[200,36]},
+                        {'mouse_to':[100,36]},
+                        {'mouse_to':[0,36]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_rel':[-8,0]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_button':'left','down':False}],
+              'final_rows':mouse_wide_left,
+              'final_colors':mouse_wide_left_colors,
+              'final_backgrounds':mouse_wide_left_backgrounds,
+              'final_pointer':[0,36]})
+            submit('I64 MouseWideLeftCheck(){I64 n;U8 *s=DocSave(mouse_wide,&n);Free(s);return n;}', [], 'doc-mouse-autoscroll-left-canonical-definition')
+            submit('MouseWideLeftCheck;', ['100'], 'doc-mouse-autoscroll-left-canonical-check')
+            submit('DocDel(mouse_wide);', [], 'doc-mouse-wide-delete')
             submit('CDoc *mouse_drag=DocNew("C:/MouseDrag.HC",Fs);U8 *mouse_drag_source="abcdef";for(mouse_at=0;mouse_drag_source[mouse_at];mouse_at++)DocPutKey(mouse_drag,mouse_drag_source[mouse_at]);', ['0'], 'doc-mouse-drag-new')
             mouse_drag_initial=['TempleOS i386','DolDoc editor','C:/MouseDrag.HC','',
                                 'abcdef'+mouse_block]

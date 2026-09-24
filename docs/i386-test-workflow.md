@@ -41,6 +41,9 @@ sends another downward packet, and checks a second viewport advance, the exact
 selected VGA cells and the canonical endpoint bytes. It then drags back to the
 first text row and into the fixed header, checking two upward advances, the
 selected VGA frame and the canonical bytes at the start of the document.
+The group also drags across both horizontal edges of a 100-column unwrapped
+line, comparing exact VGA selection frames and saved cursor positions after
+repeated edge packets.
 The group also creates a two-file RedSea directory, selects the second row with
 the mouse, opens it by double-click through public `EdDir`, verifies the selected file in
 `DocEd`, and checks pointer restoration when returning to the picker. It then

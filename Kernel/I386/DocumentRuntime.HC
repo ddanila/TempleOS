@@ -1834,7 +1834,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
           if(next_mouse_y<=32) mouse_scroll_rows=-1;
           else if(next_mouse_y==479) mouse_scroll_rows=1;
           if(next_mouse_x==0) mouse_scroll_columns=-1;
-          else if(next_mouse_x==639) mouse_scroll_columns=1;
+          else if(next_mouse_x==639) mouse_scroll_columns=2;
           mouse_hit_y=next_mouse_y;
           if(mouse_hit_y<32) mouse_hit_y=32;
           if((next_mouse_x!=mouse_x || next_mouse_y!=mouse_y ||

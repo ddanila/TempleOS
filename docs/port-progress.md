@@ -12,22 +12,22 @@ navigation, PC-speaker output, and PS/2 mouse integration. The native editor now
 supports selection, clipboard, search/replace, undo, styles, scrolling, save and
 execution with return to editing. Mouse input reaches the editor, file picker,
 help viewer and idle console, including double-click activation and verified
-downward and upward edge-drag paths.
+vertical and horizontal edge-drag paths.
 
 Current-source validation is recorded in the local build artifacts:
 
 - `build/rebuild-test/result.json`: two x86-64 rebuild/reboot generations.
 - `build/i386-kernel/result.json`: native cross-build, 429600-byte kernel;
   the latest build did not run the complete `--test` promotion gate.
-- `build/i386-mouse-autoscroll-up-function/result.json`: 34 native commands,
-  including repeated upward dragging into the fixed header, exact VGA cells and
-  canonical save bytes; QEMU `486,-fpu`, 8 MiB, 48.738-second startup.
-- `build/i386-mouse-autoscroll-up-combined/result.json`: 192 native commands,
+- `build/i386-mouse-horizontal-both-stepped/result.json`: 44 native commands,
+  including repeated vertical and horizontal edge drags, exact VGA cells and
+  canonical save bytes; QEMU `486,-fpu`, 8 MiB, 49.671-second startup.
+- `build/i386-mouse-horizontal-combined/result.json`: 202 native commands,
   mouse plus document editing, exact VGA frames, QEMU `486,-fpu`, 8 MiB,
-  50.082-second startup.
+  49.976-second startup.
 
 The current disk SHA-256 is
-`10e71c170e264825e59063a36b221ec61ea93ef6a4cfdf41ce8867764eea98b3`.
+`add1e106a2d162cc1463ab64b12e260cdafae2e74bcbc631d9c13a2c13256143`.
 Both build manifests' recorded source hashes match the checkpoint's guest source.
 Their revision field names the pre-commit base because the builds ran in the
 working tree. Earlier sections preserve evidence for intermediate images; those
@@ -37,8 +37,7 @@ The standalone-development goal remains open. Original DocEd/ExeDoc integration,
 full document layout, complete public programming/debugging services, integrated
 resource acceptance and the QEMU 386 instruction audit remain required.
 Edge dragging currently advances on mouse packets rather than a stationary-hold
-timer. Horizontal edge behavior still needs dedicated
-acceptance coverage. Native self-hosting remains the following major goal.
+timer. Native self-hosting remains the following major goal.
 
 ## Bootstrap evidence
 
@@ -8418,3 +8417,22 @@ and document-editing regression passes 192 native commands on the same image,
 with exact VGA checks and 50.082-second startup. The tested disk
 SHA-256 is `10e71c170e264825e59063a36b221ec61ea93ef6a4cfdf41ce8867764eea98b3`.
 Stationary-hold and horizontal edge behavior remain open.
+
+## Native editor horizontal drag autoscroll (2026-09-25)
+
+A 100-column unwrapped document exposed a false positive in the right-edge
+logging: the hit test accounted for the visible block caret and stopped at
+logical column 79, so repeated packets logged autoscroll without moving the
+selection or viewport. The right-edge projection now reaches the first
+offscreen insertion point. A QEMU case drags to x=639, sends another clamped
+rightward packet, and verifies the exact selected VGA frame and a `DocSave`
+cursor marker at column 81. It then reverses across the left edge in bounded
+PS/2 moves, sends another clamped packet, checks the restored start viewport
+and verifies the 100-byte canonical save with no start-of-document cursor
+marker. The focused `mouse` group passes 44 native commands on QEMU
+`486,-fpu` with 8 MiB and exact VGA checks; startup took 49.671 seconds.
+The tested disk SHA-256 is
+`add1e106a2d162cc1463ab64b12e260cdafae2e74bcbc631d9c13a2c13256143`.
+The combined mouse and document-editing regression passes 202 native commands
+with exact VGA checks on the same image; startup took 49.976 seconds.
+Stationary-hold scrolling remains open.
