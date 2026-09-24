@@ -55,7 +55,8 @@ python3 tools/verify-iso.py
 ## 32-bit port development
 
 The native 386+/VGA port is underway; the normal launcher still runs x86-64.
-See [the architecture plan](PLAN.md), [working i386 ABI](docs/i386-abi.md), and
+See [the architecture plan](PLAN.md), [working i386 ABI](docs/i386-abi.md),
+[QEMU support matrix](docs/i386-support-matrix.md),
 [implementation progress](docs/port-progress.md) and
 [bootstrap module format](docs/i386-modules.md).
 

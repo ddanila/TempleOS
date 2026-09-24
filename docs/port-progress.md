@@ -29,6 +29,9 @@ Current-source validation is recorded in the local build artifacts:
   project acceptance, 107/56/15 guest commands on QEMU `486,-fpu`, 8 MiB;
   F1 help return, F5 execution, revision across reboots, and independent
   RedSea extent/bitmap integrity all pass.
+- `build/i386-doldoc-session-pentium3-no-fpu/result.json`: the same three-boot
+  project acceptance passes on QEMU `pentium3,-fpu`, 8 MiB, with the same final
+  candidate disk SHA-256 and independent filesystem audit.
 
 The current disk SHA-256 is
 `18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`.
@@ -8471,3 +8474,17 @@ the source image remains unchanged. The source disk SHA-256 is
 This proves the tested project workflow across three boots, while the broader
 graphics/sound concurrency, resource limits and native self-hosted rebuilds
 remain open.
+
+## Later 32-bit QEMU project regression (2026-09-25)
+
+The same writable three-boot project test also passes on QEMU
+`pentium3,-fpu` at 8 MiB: 107, 56 and 15 guest commands, including help return,
+F5 execution, project revision after reboot and the independent RedSea
+extent/bitmap audit. It starts from the same source disk SHA-256
+`18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`
+and produces the same final candidate SHA-256
+`2ed9539fa5e61967ecd300eae91dc8c21ed74a50741633ccc7f722157a9c0bb4`.
+The tested QEMU profiles and open compatibility gates are published in
+`docs/i386-support-matrix.md`. This verifies that the workflow is not tied to
+one emulated CPU model; it does not establish the 80386 instruction baseline or
+native self-hosting.

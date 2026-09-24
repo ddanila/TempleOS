@@ -22,8 +22,9 @@ python3 tools/test-i386-test-runner.py  # host verdict checks, no QEMU
 python3 tools/test-i386-doldoc-session.py  # writable three-boot acceptance
 ```
 
-`--cpu` selects the QEMU CPU model and is recorded verbatim in `result.json`;
-the default remains `486`. The local QEMU has no 386 model, so `486,-fpu`
+`--cpu` selects the QEMU CPU model and is recorded verbatim in `result.json`.
+`i386-kernel-input.py` defaults to `486`; the writable three-boot runner defaults
+to `486,-fpu`. The local QEMU has no 386 model, so `486,-fpu`
 checks the no-coprocessor runtime contract but does not establish 386 ISA
 compatibility. Use the separate instruction audit and a true 386-capable
 emulator or physical machine for that promotion gate.

@@ -511,6 +511,11 @@ floating-point path but does not enforce every 80386 instruction restriction.
 | QEMU/TCG later 32-bit CPU, explicit model | Regression of the same public behavior and saved formats; no host CPU dependency. |
 | Existing x86-64 QEMU target | Preserve the original-system regression and source rebuild checks. |
 
+The writable three-boot project workflow now passes on both `486,-fpu` and
+`pentium3,-fpu` at 8 MiB. The tested configuration and the remaining limits
+are recorded in `docs/i386-support-matrix.md`; this does not close the native
+rebuild, resource or 386 instruction-audit gates.
+
 Keep executable-region 386 instruction audits for boot code, runtime helpers,
 cross-generated code, native JIT output and inline assembly. Combine these with
 absent-FPU runs and forced legacy BIOS fallbacks; none alone proves universal
