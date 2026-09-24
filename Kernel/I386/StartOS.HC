@@ -17,6 +17,7 @@ extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 #include "/Kernel/I386/Intrinsic.HH"
 
 #include "/Kernel/I386/PublicDocument.HH"
+#include "/Kernel/I386/PublicFiles.HH"
 
 #include "/Kernel/I386/PublicHash.HH"
 
@@ -32,5 +33,9 @@ ConsoleDocumentStart;
 #include "/Kernel/I386/PublicGraphicsContext.HH"
 
 #include "/Kernel/I386/PublicWindow.HH"
+
+#include "/Kernel/I386/PublicSound.HH"
+
+#include "/Kernel/I386/PublicMouse.HH"
 
 if(!NativeGraphicsStart) throw('Graphics',TRUE);

@@ -12,6 +12,10 @@ U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
 #include "/Kernel/I386/DocLifecycleCheck.HC"
 #include "/Adam/DolDoc/DocBasicEditCore.HC"
 #include "/Kernel/I386/DocBasicEditCheck.HC"
+#include "/Kernel/I386/DocBasicMultilineCheck.HC"
+#include "/Kernel/I386/DocBasicNavigationCheck.HC"
+#include "/Kernel/I386/DocBasicVerticalCheck.HC"
+#include "/Kernel/I386/DocBasicBoundaryCheck.HC"
 #include "/Adam/DolDoc/DocBasicSaveCore.HC"
 #include "/Kernel/I386/DocBasicSaveCheck.HC"
 #include "/Adam/DolDoc/DocBasicLoadCore.HC"
@@ -47,6 +51,27 @@ Bool OriginalHelpFileCheck()
     HashRemDel(help,cc->htc.glbl_hash_table);
   Free(name); CmpCtrlDel(cc); return result;
 }
+U8 *OriginalDocCompatibilityFixture(I64 *size)
+{
+  CDoc *doc=DocNew("C:/OriginalCompat.DD",Fs);
+  CDocBin *bin=CAlloc(sizeof(CDocBin));
+  CDocEntry *entry=CAlloc(sizeof(CDocEntry));
+  U8 *result;
+  doc->flags|=DOCF_NO_CURSOR;
+  DocPutKey(doc,'O'); DocPutKey(doc,'r'); DocPutKey(doc,'i'); DocPutKey(doc,'g');
+  DocPutKey(doc,'i'); DocPutKey(doc,'n'); DocPutKey(doc,'a'); DocPutKey(doc,'l');
+  DocPutKey(doc,'\n');
+  bin->num=1; bin->flags=0x1234; bin->size=5; bin->use_cnt=1;
+  bin->data=MAlloc(5);
+  bin->data[0]=1; bin->data[1]=2; bin->data[2]=0; bin->data[3]=0xFF; bin->data[4]=42;
+  QueIns(bin,doc->bin_head.last);
+  entry->type=DOCT_SPRITE; entry->de_flags=DOCEF_TAG|DOCEF_HAS_BIN;
+  entry->tag=StrNew("cross"); entry->bin_num=1; entry->bin_data=bin;
+  DocInsEntry(doc,entry);
+  result=DocSave(doc,size);
+  DocDel(doc);
+  return result;
+}
 U0 BuildKernel()
 {
   U8 *source,*modules[12],*image,*name,*line;
@@ -77,12 +102,50 @@ U0 BuildKernel()
   if(DocBasicEditCheck(&DocPutKey)!=5) { Report("FAIL original basic editing\n"); return; }
   if(DocBasicEditCheck(&DocBasicEditCore)!=5) { Report("FAIL shared basic editing\n"); return; }
   Report("PASS original/shared basic editing\n");
+  i=DocBasicMultilineCheck(&DocPutKey,&DocSave);
+  if(i!=7) { line=MStrPrint("FAIL original multiline editing %d\n",i); Report(line); Free(line); return; }
+  i=DocBasicMultilineCheck(&DocBasicEditCore,&DocBasicSaveCore);
+  if(i!=7) { line=MStrPrint("FAIL shared multiline editing %d\n",i); Report(line); Free(line); return; }
+  Report("PASS original/shared multiline editing\n");
+  i=DocBasicNavigationCheck(&DocPutKey,&DocSave);
+  if(i!=8) { line=MStrPrint("FAIL original document navigation %d %d %X %X %X %X %X\n",i,
+        doc_basic_navigation_size,doc_basic_navigation_data[0],doc_basic_navigation_data[1],
+        doc_basic_navigation_data[2],doc_basic_navigation_data[3],doc_basic_navigation_data[4]);
+    Report(line); Free(line); return; }
+  i=DocBasicNavigationCheck(&DocBasicEditCore,&DocBasicSaveCore);
+  if(i!=8) { line=MStrPrint("FAIL shared document navigation %d %d %X %X %X %X %X\n",i,
+        doc_basic_navigation_size,doc_basic_navigation_data[0],doc_basic_navigation_data[1],
+        doc_basic_navigation_data[2],doc_basic_navigation_data[3],doc_basic_navigation_data[4]);
+    Report(line); Free(line); return; }
+  Report("PASS original/shared document navigation\n");
+  i=DocBasicVerticalCheck(&DocPutKey,&DocSave,TRUE);
+  if(i!=8) { line=MStrPrint("FAIL original document vertical %d %d %X %X %X %X %X %X\n",i,
+        doc_basic_vertical_size,doc_basic_vertical_data[0],doc_basic_vertical_data[1],
+        doc_basic_vertical_data[2],doc_basic_vertical_data[3],doc_basic_vertical_data[4],
+        doc_basic_vertical_data[5]); Report(line); Free(line); return; }
+  i=DocBasicVerticalCheck(&DocBasicEditCore,&DocBasicSaveCore,FALSE);
+  if(i!=8) { line=MStrPrint("FAIL shared document vertical %d %d %X %X %X %X %X %X\n",i,
+        doc_basic_vertical_size,doc_basic_vertical_data[0],doc_basic_vertical_data[1],
+        doc_basic_vertical_data[2],doc_basic_vertical_data[3],doc_basic_vertical_data[4],
+        doc_basic_vertical_data[5]); Report(line); Free(line); return; }
+  Report("PASS original/shared document vertical\n");
+  i=DocBasicBoundaryCheck(&DocPutKey,&DocSave,TRUE);
+  if(i!=13) { line=MStrPrint("FAIL original document boundaries %d %d %X %X %X %X %X %X\n",i,
+        doc_basic_boundary_size,doc_basic_boundary_data[0],doc_basic_boundary_data[1],
+        doc_basic_boundary_data[2],doc_basic_boundary_data[3],doc_basic_boundary_data[4],
+        doc_basic_boundary_data[5]); Report(line); Free(line); return; }
+  i=DocBasicBoundaryCheck(&DocBasicEditCore,&DocBasicSaveCore,FALSE);
+  if(i!=13) { line=MStrPrint("FAIL shared document boundaries %d %d %X %X %X %X %X %X\n",i,
+        doc_basic_boundary_size,doc_basic_boundary_data[0],doc_basic_boundary_data[1],
+        doc_basic_boundary_data[2],doc_basic_boundary_data[3],doc_basic_boundary_data[4],
+        doc_basic_boundary_data[5]); Report(line); Free(line); return; }
+  Report("PASS original/shared document boundaries\n");
   i=DocBasicSaveCheck(&DocSave);
   if(i!=5) { line=MStrPrint("FAIL original basic save %d\n",i); Report(line); Free(line); return; }
   i=DocBasicSaveCheck(&DocBasicSaveCore);
   if(i!=5) { line=MStrPrint("FAIL shared basic save %d\n",i); Report(line); Free(line); return; }
   Report("PASS original/shared basic save\n");
-  if(DocBasicRoundTripCheck(&DocSave)!=5) { Report("FAIL shared document round trip\n"); return; }
+  if(DocBasicRoundTripCheck(&DocSave)!=6) { Report("FAIL shared document round trip\n"); return; }
   Report("PASS shared document round trip\n");
   if(OriginalTextBaseCheck!=256) { Report("FAIL original text base\n"); return; }
   Report("PASS original text base\n");
@@ -112,6 +175,10 @@ U0 BuildKernel()
   Report("PASS original document defaults\n");
   if(!OriginalHelpFileCheck) { Report("FAIL original help metadata\n"); return; }
   Report("PASS original help metadata\n");
+  source=OriginalDocCompatibilityFixture(&size);
+  if(!source || size!=48) { Report("FAIL original document compatibility fixture\n"); return; }
+  line=MStrPrint("EXPORT OriginalCompat.DD %X %X\n",source,size); Report(line); Free(line);
+  Report("PASS original document compatibility fixture\n");
   for(i=0;i<12;i++) {
     switch(i) {
       case 0: name="Kernel"; break;

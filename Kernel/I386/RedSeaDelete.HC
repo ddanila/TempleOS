@@ -1,6 +1,4 @@
 #include "/Kernel/I386/RedSea.HH"
-extern Bool I386RedSeaValid(CI386RedSea *v);
-extern Bool I386RedSeaDirectory(CI386RedSea *v,I64 block,U8 *sector,I64 *size);
 public I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name)
 {//1 removed, 0 absent, -1 invalid/I/O. Caller must retire all references first.
   U8 sector[512],*raw;

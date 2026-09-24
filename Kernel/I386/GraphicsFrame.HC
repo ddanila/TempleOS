@@ -8,6 +8,11 @@ Bool NativeGraphicsReady()
     gr.dc==graphics_persistent && gr.dc2==graphics_frame && gr.text_base==i386_text_base &&
     gr.win_z_buf==graphics_zbuffer && gr.win_uncovered_bitmap==graphics_uncovered;
 }
+U8 *NativeGraphicsPlanes()
+{
+  if(NativeGraphicsReady) return graphics_planes;
+  return NULL;
+}
 Bool NativeGraphicsStart()
 {//Commit both real working contexts only after all allocations succeed.
   CDC *persistent=NULL,*frame=NULL;

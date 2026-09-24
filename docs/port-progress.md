@@ -3,6 +3,42 @@
 The full objective and acceptance gates remain in `PLAN.md`. The standalone
 32-bit TempleOS environment is not yet implemented.
 
+## Progress checkpoint (2026-09-24)
+
+This checkpoint collects the work since `c7af3bd`: expanded canonical document
+editing, structured/binary DolDoc persistence and cross-reading, save failure
+recovery, project file navigation and RedSea rename/move recovery, packaged help
+navigation, PC-speaker output, and PS/2 mouse integration. The native editor now
+supports selection, clipboard, search/replace, undo, styles, scrolling, save and
+execution with return to editing. Mouse input reaches the editor, file picker,
+help viewer and idle console, including double-click activation and a verified
+downward edge-drag path.
+
+Current-source validation is recorded in the local build artifacts:
+
+- `build/rebuild-test/result.json`: two x86-64 rebuild/reboot generations.
+- `build/i386-kernel/result.json`: native cross-build, 429600-byte kernel;
+  the latest build did not run the complete `--test` promotion gate.
+- `build/i386-mouse-autoscroll/result.json`: 31 native commands.
+- `build/i386-mouse-autoscroll-combined/result.json`: 189 native commands,
+  mouse plus document editing, exact VGA frames, QEMU `486,-fpu`, 8 MiB,
+  48.437-second startup.
+
+The current disk SHA-256 is
+`3d4ec2c78bb98427bb293e7544e8943cb3190efe551561b88e1ef92f29357cac`.
+Both build manifests' recorded source hashes match the checkpoint's guest source.
+Their revision field names the pre-commit base because the builds ran in the
+working tree. Earlier sections preserve evidence for intermediate images; those
+results do not constitute a full promotion run on this final image.
+
+The standalone-development goal remains open. Original DocEd/ExeDoc integration,
+full document layout, complete public programming/debugging services, integrated
+resource acceptance and strict 386/physical-machine validation remain required.
+Edge dragging currently advances on mouse packets rather than a stationary-hold
+timer. Upward scrolling needs correction: the hit test rejects the y=0 coordinate
+used by its top-edge branch. Horizontal edge behavior still needs dedicated
+acceptance coverage. Native self-hosting remains the following major goal.
+
 ## Bootstrap evidence
 
 `python3 tools/test-rebuild.py` packages an isolated test ISO, builds the compiler
@@ -6552,3 +6588,1815 @@ callbacks and exception cleanup, mouse interaction, executable documents and
 embedded-record compatibility remain open. The acceptance covers a root-directory
 file; nested-directory persistence is not established. Strict 386 and physical-PC
 acceptance also remain open; current evidence is QEMU's 486 development profile.
+
+## Multiline editing TDD slice (2026-09-22)
+
+The first TDD slice for the larger native development-session goal is green. A
+seven-point original/shared oracle types `ab`, newline and `cd`, moves left twice,
+inserts and removes `X`, backspaces across the line boundary, and inserts `Z` at
+the join. Its intended red result was `-5` at the final insertion; newline entry
+creation and canonical newline deletion then made the original and shared paths
+agree. The focused native `document-editing` group executes the same stable byte
+and cursor assertions through retained `DocPutKey`/`DocSave`; 13 commands passed
+on QEMU/486 with 8 MiB.
+
+The keyboard/VGA acceptance now creates a second document, enters a visible
+two-line state through QEMU key events, joins it back to `abZ<cursor>cd`, saves
+both documents and reopens both after a fresh boot of the same copied disk. This
+exposed a real storage limit: the original one-sector root had no slot after the
+first new file. Native RedSea creation now grows a full root by relocating it to
+a contiguous extent one sector larger, updating `.`/`..` and the boot-sector root,
+then freeing the old extent. Both acceptance boots passed with exact VGA pixels
+and serialized bytes; the source image stayed unchanged. Final evidence against
+the full-gate image is in `build/i386-doldoc-multiline-final2/result.json`: the
+source disk SHA-256 is
+`f89b93acd5bcd6e1ea2b599906acf857a9c2d2f1ff1ce662cf92cadcc8a2d7a9`,
+with 43.483 and 44.377 second startup measurements.
+
+The complete native build gate also passes on that revision: both normal and
+diagnostic boots, all console groups, original comparisons, module rejection
+checks and source/image provenance. The full console log contains 299 submitted
+lines and 236 harness commands; reporting now derives both values from the run
+rather than relying on constants that predated this slice. The kernel remains
+382888 bytes. Normal startup measured 43.404 seconds and diagnostic startup
+159.003 seconds.
+
+This adds basic multiline text to the prototype but does not complete original
+`DocPutKey`, `DocRecalc`, `DocEd` or `MakeDoc` integration. Tabs, other navigation,
+undo, original layout/callbacks, executable documents, nested-directory writes,
+failure-atomic root growth and embedded records remain open. Strict 386 and
+physical-PC evidence also remain open.
+
+## Horizontal navigation TDD slice (2026-09-23)
+
+The next part of editing slice 2 is green. An eight-point original/shared oracle
+now covers Home, Right, Delete, Tab and End, including crossing a structural tab
+entry. The native `document-editing` group repeats stable byte/cursor assertions
+through retained bindings; its focused run passed 20 commands on QEMU/486 with
+8 MiB. The full interactive console run passed 243 commands and 306 submitted
+lines, including all eight reported navigation cases.
+
+The writable acceptance adds `NativeNavigation.DD` and sends every new key through
+QEMU's emulated keyboard. It verifies the tab-expanded VGA row, saves the
+canonical tab and cursor bytes, reboots the same copied disk, reopens the file and
+checks the display and bytes again. This exposed two loader defects: tabs were
+rejected, then a cursor following a structural entry was restored onto an entry
+that the serializer cannot mark. The loader now accepts tabs and normalizes such
+a cursor to the following editable entry. A six-point original-`DocSave`/shared-
+loader round trip protects that case. Final two-boot evidence is in
+`build/i386-doldoc-navigation-final4/result.json`; startup measured 43.021 and
+43.372 seconds, the source disk stayed unchanged, and its SHA-256 was
+`0310d46fd271a07ac2bacf26e49c696a704b26ad20f368ed04231ea76dd2919b`.
+
+At that point, slice 2 still lacked Up/Down and empty-line coverage. It also
+remained open for allocation-failure recovery and integration of the complete original
+`DocPutKey` dependency path are next. Original layout/recalculation, executable
+documents, strict 386 and physical-PC acceptance also remain open.
+
+## Vertical navigation and empty-line TDD slice (2026-09-23)
+
+Vertical editing now has an eight-point original/shared oracle. It checks
+preserved columns while moving between lines of unequal length, repeated Up and
+Down, and both document limits. The first red result left the cursor on the
+original line. Logical-line traversal now computes visual columns, including tab
+widths, and selects the nearest valid position on the adjacent line without
+requiring the full layout engine.
+
+A separate thirteen-point boundary oracle covers an empty document, navigation and
+editing keys on that document, an empty middle line, cursor serialization at a
+newline, movement into and out of that line, and insertion there. It exposed a
+backward traversal that skipped an empty line; the shared core now treats the
+terminating newline as the empty line's cursor position. The serializer also
+emits the cursor before structural entries, matching original `DocSave`, while
+`DOCF_NO_CURSOR` suppresses it without overrunning the output allocation. Five
+additional cases remove an insertion from the empty line, join it in both
+directions, and verify Backspace at the top and Delete at the end are no-ops.
+The intended red result occurred when a zero-length text entry prevented the
+second join. Backspace now advances after erasing a final character and skips
+empty text entries while crossing a line boundary, matching original `EdCharDel`.
+
+The native `document-editing` group passes 51 commands on QEMU/486 with 8 MiB,
+including eight vertical and thirteen boundary cases. The writable acceptance sends
+Up and Down through the emulated keyboard in a three-line document, compares VGA
+pixels, saves five documents, reboots the copied disk, and reopens all five.
+Evidence is in `build/i386-doldoc-boundary-matrix/result.json`: startup
+measured 43.422 and 43.870 seconds, the source disk stayed unchanged, and its
+SHA-256 was
+`8147df9f6943006ee376446490453b9f3773893302f7ef176d83f2ad3a50cf0c`.
+
+The complete native gate passes on the same image: normal and diagnostic boot,
+all console groups, original comparisons, source provenance, and module rejection
+checks. The full interactive run completed 288 harness commands and 351 submitted
+lines; normal startup measured 43.122 seconds. Both x86-64 rebuild generations
+also pass against the final source inputs.
+
+Editing slice 2 is still open for integration of the complete original
+`DocPutKey` dependency path. Layout/recalculation and executable-document work
+remain in later slices.
+
+## Deterministic document allocation recovery (2026-09-23)
+
+The retained ordinary-text document path now routes its allocations through a
+normally transparent fault injector. `DocNew` reclaims partial construction;
+tagged-entry construction reclaims its base record; editing releases `DocLock`
+and partial entry/text allocations; and serialization releases the lock if its
+output allocation throws. The shared x86-64 entry helper retains its original
+successful behavior and now has the same partial-construction cleanup.
+
+`DocAllocationCheck` initially exercised ten recovery outcomes without running at startup:
+all three constructor allocations; base-entry and tag allocation for the first
+character; replacement-text allocation; newline allocation; save allocation;
+then a successful edit/save and final heap balance. Each failed locked operation
+also checks that ownership and `DOClf_LOCKED` are clear and that document content
+is unchanged. The focused `document-editing` run passed 66 commands on QEMU/486
+with 8 MiB and exact VGA checkpoints. Startup measured 43.221 seconds and the
+disk SHA-256 was
+`9f40718be5491dda6a18528200f838c707e16215a7aac9a05db8bae01ecc72da`;
+evidence is in `build/i386-doc-allocation-1/result.json`. Both x86-64 rebuild
+generations and the original/shared oracles also pass.
+
+The subsequent complete gate passes against the same source and disk: normal and
+diagnostic boot, every console group, original comparisons, module rejection and
+source/image provenance. The interactive run completed 289 harness commands and
+352 submitted lines; normal startup measured 43.171 seconds and diagnostic
+startup 157.379 seconds. The kernel remains 382888 bytes. The full result records
+the same normal-disk SHA-256 above in `build/i386-kernel/result.json`.
+
+That checkpoint closed allocation recovery for construction, the retained basic
+editing operations and serialization; disk-backed loading was the next gap.
+
+The check now adds two disk-backed outcomes. `DocRead` catches a load-time
+`OutMem`, frees the owned RedSea read buffer and deletes its partial document.
+The test writes `C:/AllocRead.DD`, fails the first loaded entry after successful
+document construction, verifies exact heap balance, then reopens and serializes
+the same content and cursor successfully. The intended first red result was the
+oracle's assumption that adjacent characters occupy one entry; comparing public
+serialized bytes instead captures the persistent contract. The twelve-outcome
+focused run passed 66 commands on QEMU/486 with 8 MiB, 43.320-second startup and
+disk SHA-256
+`726d5f35f8b1c68addfae36c62a8e47ca451460e7d90d760883eab7277ebbd51`.
+Evidence is in `build/i386-doc-read-allocation-3/result.json`. Persistent
+file-replacement failure and the complete original editor graph remain open.
+
+The final complete gate passes on the resulting image: 289 interactive harness
+commands / 352 submitted lines, all console groups, normal and diagnostic boot,
+original comparisons, module rejection and source/image provenance. Normal
+startup measured 43.172 seconds, diagnostic startup 158.779 seconds, and the
+kernel remains 382888 bytes. The normal disk SHA-256 is
+`99a2de8deefafc3bb8d4092cd1a2bd93bc6d9d6c9592624f98f4af6c14f0c765`.
+
+The writable five-document acceptance also passes after the `DocRead` cleanup
+change. Its create/edit/save boot measured 42.968 seconds; its fresh reopen boot
+measured 43.472 seconds. Every hardware-keyboard/VGA and persisted-byte assertion
+passed, and the source image stayed unchanged. Evidence is in
+`build/i386-doldoc-read-recovery-final/result.json`.
+
+## First executable document and reboot (2026-09-23)
+
+The retained public `DocExe` adapter now locks a canonical document, temporarily
+suppresses cursor serialization, restores its flags and lock on every path, and
+executes the resulting source through the live console compiler. This preserves
+the console's definition scope, diagnostics and break boundary while the complete
+original `ExeDoc` dependency graph remains open.
+
+The intended red run reached normal startup and document construction, then
+failed because `DocExe` was undefined. The focused green run constructs a
+multiline function document, executes it with visible result `42`, and calls the
+retained definition afterward. All 75 `document-editing` commands passed on
+QEMU/486 with 8 MiB and exact VGA checkpoints; startup measured 43.521 seconds.
+Evidence is in `build/i386-doc-execute-green-5/result.json` and the normal disk
+SHA-256 is
+`8fb30b9dc374dd8d638d66c772eea5bf1de266ffe93998980f858f64eb856232`.
+
+Native compiler statement case 34 now retains the DolDoc investigation's queue
+boundary. Generated i386 code walks four mixed-type records in a circular linked
+list, snapshots each next pointer, dispatches on an eight-bit type and returns the
+expected aggregate 19. Both root and worker compiler phases pass, showing that
+ordinary generated queue traversal did not cause the abandoned foreground-record
+serializer to emit only its first text entry. The full QEMU/486 8 MiB gate passes
+with all 35 statement cases in both phases, 298 interactive commands and 361
+submitted lines; normal startup measured 43.824 seconds. The kernel remains
+382888 bytes, its SHA-256 remains
+`2c5d325753ea202b5a39b7df79cffa3d587ab72f1d6fb682b30654f82acc8500`, and the
+new normal-disk SHA-256 is
+`ebc3aeda01a6ddcf7fa7df780badf6beb3938717a2730c5f16643b9161105b79`.
+
+## First structured DolDoc persistence (2026-09-23)
+
+Native `DocSave` and `DocRead` now preserve foreground and background color
+records in addition to the ordinary-text subset. The supported `FG` and `BG`
+encodings accept attributes 0 through 15 or the default attribute; literal
+dollar bytes are doubled on save and collapsed on load so text cannot become a
+record after reopen.
+
+The first fixture corrupted the public heap because `DocEntryNewBase` allocates
+only `CDocEntryBase`, while foreground `attr` lives in the larger `CDocEntry`.
+The corrected fixture and loader follow the original parser's full-record
+allocation contract. `DocAllocationCheck` now performs an exact 37-byte
+foreground/background save, structured load and second save, then verifies heap
+balance. A focused normal boot passed that check on QEMU/486 with 8 MiB.
+
+The full gate passes after connecting the record-aware functions to public file
+I/O: both x86-64 rebuild generations, both native compiler phases, normal and
+diagnostic boots, 298 interactive commands / 361 submitted lines, exact VGA
+checks, provenance and rejection cases. The kernel remains 382888 bytes. Normal
+startup measured 43.974 seconds; the normal disk SHA-256 is
+`629de2b7a1741ebdf33d794be57d873372358099aaf50c489f45d040c3a75c0d`.
+The native editor now renders this first structured record directly from the
+canonical entry queue. It changes `CI386Text.foreground` and
+`CI386Text.background` for subsequent glyphs and restores the respective
+document defaults at reset records, while retaining the existing cursor behavior
+for text and structural entries. The routine no longer shows color-record
+serialization syntax in the editing view.
+
+A focused eight-command boot compares the complete framebuffer: only `red` is
+VGA red and the following ` plain` plus cursor are black. The regular
+`document-editing` group passes 83 commands with the same colored-pixel oracle
+at 43.875-second startup. The writable acceptance passes three QEMU/486 8 MiB
+boots at 43.624, 43.826 and 43.825 seconds. It writes `NativeColor.DD`, reopens
+and renders it after reboot, verifies its exact 20 serialized bytes, and audits
+the same bytes independently from RedSea. The final image contains 17
+directories, 720 files and 12516 uniquely owned sectors with a matching bitmap;
+the source image is unchanged and the writable candidate SHA-256 is
+`2fe21d6380ea791a5844057a1a093709a89402c135cae1c1111dbadf57df7677`.
+
+Background color then extended the same gate. The regular `document-editing`
+group passes 87 commands: `red` has VGA-red foreground, ` blue` has VGA-blue
+background, and both following text and cursor return to their defaults. The
+three-boot writable acceptance passes at 43.523, 43.772 and 43.771 seconds. Its
+independent disk walk finds the exact 39-byte color document, 17 directories,
+720 files and 12531 uniquely owned sectors with a matching bitmap. The source
+image is unchanged; the writable candidate SHA-256 is
+`28f82f3c6f5152e7f14210e93504e566ac89acd269e584810bd05d87dfc38cab`.
+
+Invert and underline now use the same serializer/loader pipeline through `IV`
+and `UL` records with boolean attributes. The renderer keeps logical foreground
+and background state so inversion swaps the current pair without losing later
+color resets. `CI386Text` now draws underline as the eighth glyph scanline and
+initializes that state for every console/editor frame.
+
+The expanded 76-byte core fixture survives an exact structured round trip with
+heap balance. The regular `document-editing` group passes 95 commands with exact
+pixels for red foreground, blue background, inverted text, underlined text and
+all four resets; startup measured 43.873 seconds. The three-boot writable
+acceptance passes at 43.472, 43.925 and 43.973 seconds, reopens the styled file,
+and independently verifies its exact 78 persisted bytes. The resulting RedSea
+image has 17 directories, 720 files and 12561 uniquely owned sectors with a
+matching bitmap. Its SHA-256 is
+`c687712bc9472f14051f2e96d457889285cebd3e6792c1a12cc0777dcafee3be`;
+the source image remained unchanged.
+
+Other DolDoc commands, blink/highlight behavior, binary records and
+original/native cross-reading remain open.
+
+The native editor can now author two of those styles through the original
+keyboard contract. Ctrl-U and Ctrl-Z insert underline/invert-on records;
+Shift-Ctrl-U and Shift-Ctrl-Z insert their off records. Record construction uses
+the full canonical `CDocEntry`, task-owned allocation and normal `DocInsEntry`
+cursor semantics. The focused hardware-keyboard group creates styled text from
+an empty document, verifies its pixels and exact 39-byte serialization, and now
+passes 101 commands at 43.922-second startup.
+
+The three-boot acceptance also saves this keyboard-authored document, reopens it
+after reboot and repeats the pixel comparison. Its boots pass at 43.572, 43.772
+and 43.925 seconds. The independent disk audit finds the exact record stream,
+17 directories, 721 files and 12569 uniquely owned sectors with a matching
+bitmap. The candidate SHA-256 is
+`5668958e65d955225d374274c0b580a631ebca7c91c61b88e27955a2cc0401c8`;
+the source image remained unchanged.
+
+## Editor execution and recovery (2026-09-23)
+
+Native `DocEd` now uses F5 to open a clean document-execution view and Escape to
+return to the unchanged editor. `DocExe` copies the cursor-free source and
+filename while locked, then releases `DocLock` before entering generated code.
+This corrects the first implementation's interruption deadlock: document locks
+set `TASKf_BREAK_LOCKED`, so retaining that lock around an infinite program
+prevented pending breaks from being delivered.
+
+The hardware acceptance first failed on the old image precisely at the missing
+F5 action. It now exercises three recovery paths within live editor sessions: a
+syntax error is displayed, corrected with keyboard edits and rerun to produce
+`42`; a thrown runtime exception returns to the document, which is replaced with
+a successful expression; and a program emits a runtime marker, loops, and is
+interrupted with Ctrl+Alt+C before the console proves continued execution. The
+multiline saved program also executes through F5 before writing and again after
+reboot.
+
+The final acceptance adds a software-F64 document whose F5 result is exactly
+`3.75`. Evidence is in `build/i386-doldoc-editor-complete-green-1/result.json`.
+Its create/edit/save boot ran 46 commands in 44.075 seconds; its reopen boot ran
+31 commands in 46.179 seconds. Every keyboard/VGA checkpoint passed on QEMU/486
+with 8 MiB, the source disk SHA-256 was
+`939228ce9c47bdbe09cb56dd1713f8c051e51923969363a4c53bb75bea575d4f`,
+the source disk remained unchanged, and the writable candidate SHA-256 was
+`f58c26dc6fc6471bf71768046cb1706d4745d60c2a556b76951fa4a8fb3c3bb5`.
+
+The complete gate passes on the final editor-execution source. Both x86-64
+rebuild generations, original/shared comparisons, normal and diagnostic native
+boot, all console groups, source provenance and module rejection checks pass.
+The interactive run completed 298 commands and 361 submitted lines with
+43.372-second startup; diagnostic startup measured 157.570 seconds. The kernel
+remains 382888 bytes and the normal-disk SHA-256 is
+`97b8b0ef80ef43fd040f6b2cb565183158f844ca27b5bbcb984aedae38001353`.
+
+F5 now follows the original editor's save-before-execute order. The intended red
+run executed the program but failed after reboot at `saved_program!=0`, proving
+that persistence no longer depended on a harness-side `DocWrite`. The green
+two-boot run in `build/i386-doldoc-f5-save-green-1/result.json` passed every exact
+VGA and keyboard checkpoint on QEMU/486 with 8 MiB. Its first boot ran 46 commands
+in 43.874 seconds and its reopen boot ran 31 commands in 43.672 seconds. The
+source disk remained unchanged with SHA-256
+`97b8b0ef80ef43fd040f6b2cb565183158f844ca27b5bbcb984aedae38001353`;
+the writable candidate SHA-256 was
+`85c467173d14a99b33c1f65955678e2635b6008f6f6af47905785718a2398044`.
+
+The writable acceptance now proves replacement persistence across three boots.
+It creates a multiline program that returns `42`, reopens it, changes the literal
+to produce `48` using hardware-keyboard events, and saves the replacement through
+F5. The third boot reopens the exact revised source and executes `48` again. The
+three QEMU/486 8 MiB startups measured 43.723, 43.773 and 43.672 seconds; every
+VGA checkpoint passed. Evidence is in
+`build/i386-doldoc-revision-green-4/result.json`; the source image remained
+unchanged and the candidate SHA-256 was
+`30b8b42eb85cf002dc85da4ab592f12896980f0d31fed3d26bb9476e7f841d70`.
+
+F5 save failure is now user-visible. A document at the deliberately missing-parent
+path `C:/Missing/Unsaved.HC` reports `Save failed` in the result view, still
+executes its in-memory source as `42`, returns to the unchanged editor and passes
+an exact serialization check. The intended red run logged the failure but omitted
+the VGA message. The green case is part of
+`build/i386-doldoc-save-failure-green-1/result.json`: its three startups measured
+43.626, 43.672 and 43.621 seconds, and its writable candidate SHA-256 was
+`089c414f0d276239d3de649cd5360f1af6b7ef022d082f41a92eb60780646a94`.
+This proves application-level recovery from a rejected path; injected device I/O
+failure and crash-safe replacement remain open.
+
+Public native `DirMk` and nested project persistence now pass. FileRuntime ABI 25
+adds a directory callback and uses the original RedSea `0x810` directory layout
+with `.` and `..` entries. File create/replace now owns the ATA session across
+parent resolution as well as mutation; resolving before acquisition was the
+defect exposed by the first nested-file test. The three-boot acceptance creates
+`C:/Project/Sub/Main.HC`, executes `49`, and reopens and executes it after reboot.
+Evidence is in `build/i386-doldoc-deep-integrity-green-1/result.json`; its
+startups were 43.574, 43.773 and 43.874 seconds, all VGA checkpoints passed, the
+source disk remained unchanged, and the candidate SHA-256 was
+`bcc9dda8236d5853a9427f498d4fdcc21310dc10f042f7fc56514e48fc879a4b`.
+
+The same acceptance now independently walks the resulting RedSea image. Before
+the fix, that audit found direct child directories whose `..` records referenced
+freed historical root extents after root growth. Root relocation now repairs all
+direct child parent records after publishing the new root and before reclaiming
+the old extent. The green disk contains 17 directories, 716 files and 12441
+uniquely owned sectors; every reachable extent agrees with the allocation bitmap,
+and `Project/Sub/Main.HC` contains the exact five serialized bytes.
+
+Relative project paths now pass the same three-boot acceptance. The first boot
+creates `Project/Sub/Relative.HC` through F5 and executes `64`; the third boot
+reopens it with the same user-visible relative name and executes `64` again. The
+disk walk resolves it at `/Project/Sub/Relative.HC` with exact serialized bytes.
+Evidence is in `build/i386-doldoc-relative-green-2/result.json`: startups were
+43.824, 43.925 and 43.777 seconds, all VGA checkpoints passed, the source image
+was unchanged, and the candidate SHA-256 was
+`e772adc675204815c7d27d72b4596fc2cb9dc895580e738582190a19dcee7ded`.
+
+The complete gate passes with root-parent repair and the directory service in the
+retained FileRuntime ownership evidence. Both x86-64 rebuild generations, normal
+and diagnostic native boot, all console groups, source provenance and module
+rejection checks pass. The interactive QEMU/486 run at 8 MiB completed 298
+native commands and 361 submitted lines with 43.773-second startup; diagnostic
+startup measured 156.980 seconds. The kernel is 382888 bytes, the normal-disk
+SHA-256 is `9ffca1f65a83ac6c4a7abb9a77f5963c483444e75cf5d0c3c30c7a3cfb606695`,
+FileRuntime retains 179336 bytes from a 179320-byte image, and the kernel SHA-256 is
+`2c5d325753ea202b5a39b7df79cffa3d587ab72f1d6fb682b30654f82acc8500`.
+
+The complete gate passes on the save-failure source: both x86-64 rebuild
+generations, all original/shared comparisons, normal and diagnostic native boot,
+every console group, source provenance and module rejection. The interactive run
+completed 298 native commands and 361 submitted lines with 43.424-second normal
+startup; diagnostic startup measured 157.969 seconds. The kernel remains 382888
+bytes and the normal-disk SHA-256 is
+`5bec532c6c6eba2eaf0fbec0d702e98dd5a54a184188ddac6fdebbcd2108c435`.
+
+The writable acceptance also creates and executes `C:/NativeProgram.HC`, saves
+it to RedSea, boots the modified disk copy, reopens it and executes it again.
+Both visible results are `42`, and the definition is callable after reopen. Its
+create/save boot measured 43.673 seconds and its reopen boot 43.828 seconds; all
+61 commands and VGA checkpoints passed, and the source disk stayed unchanged.
+Evidence is in `build/i386-doldoc-execute-session-1/result.json`; the candidate
+disk SHA-256 is
+`e9fecca74fd3a555818641ecfee0d6599eb069e19999a43a1f4f48deb3658943`.
+
+The complete gate passes on the final source: both x86-64 rebuild generations,
+all original/shared comparisons, normal and diagnostic native boot, every
+console group, source provenance and module rejection. The interactive run
+completed 298 native commands and 361 submitted lines with 43.472-second normal
+startup; diagnostic startup measured 157.770 seconds. The kernel remains 382888
+bytes and the final normal-disk SHA-256 is
+`8fb30b9dc374dd8d638d66c772eea5bf1de266ffe93998980f858f64eb856232`.
+
+## Timed blinking DolDoc text (2026-09-23)
+
+The retained editor now supports original Ctrl-K and Shift-Ctrl-K blink-on/off
+authoring. `BK` entries pass through the record serializer and loader alongside
+color, invert and underline records. The renderer follows TempleOS text-layer
+semantics by swapping foreground and background during the active half of a
+500 ms clock phase. `DocEd` polls the keyboard cooperatively and redraws only on
+an edit or phase transition, so blinking continues while the editor is idle.
+
+The clock crosses the retained module boundary explicitly: ConsoleRuntime ABI
+25 receives the kernel jiffy pointer in `CI386ConsoleConfig`. This avoids direct
+console-module relocation against the kernel `cnts` global. The exact record
+round-trip check includes both `BK,1` and `BK,0`, including the `BG`/`BK` prefix
+distinction that the first reboot test exposed.
+
+The writable three-boot acceptance in
+`build/i386-doldoc-blink-session/result.json` creates blinking text with the
+hardware Ctrl-K sequence, observes both opposite VGA frames, writes it to
+RedSea, reboots, reloads it and observes both frames again. All pixel checkpoints
+passed at 43.624, 43.875 and 43.776 seconds. The independent filesystem audit
+found 17 directories, 722 files and 12588 uniquely owned sectors with a matching
+bitmap; the source disk was unchanged and the candidate SHA-256 is
+`735ffbc83ba2a991698e3efb437fedede1e4b4d1b583af13d53f2b2fc0e6699f`.
+The focused `document-editing` run also passed 106 native commands at 43.924
+seconds with exact pixels for both phases. Two x86-64 rebuild generations, the
+native build, Python runner tests and source-format checks pass.
+
+## Direct editor save command (2026-09-23)
+
+Native `DocEd` now implements the original Ctrl-S save binding. It calls the
+public `DocWrite` path without executing the document and reports `Saved` or
+`Save failed` in the editor heading. Editing after either result clears the
+status and continues in the same canonical document.
+
+The focused hardware-keyboard test writes `C:/CtrlSave.DD` with Ctrl-S, exits the
+editor, reopens it from RedSea and compares the exact cursor-bearing bytes. A
+second case targets a missing parent, checks the visible failure, continues
+editing the unchanged in-memory document and confirms no file appeared. The
+expanded `document-editing` group passed 116 native commands at 43.977 seconds
+with every VGA checkpoint exact. The three-boot writable acceptance also saves
+the blinking fixture through Ctrl-S rather than a harness-side `DocWrite`; its
+boots measured 43.624, 43.824 and 43.873 seconds, its independent RedSea audit
+found 17 directories, 722 files and 12592 owned sectors, and its candidate
+SHA-256 is `c49e2903cff48bf083297ae041c71b31b7a515cd3dd0316b75f9acef15f97cb6`.
+
+The complete gate passes on this source. The normal interactive QEMU/486 run at
+8 MiB completed 339 native commands and 402 submitted lines with 43.925-second
+startup; diagnostic startup measured 157.376 seconds. Original/shared oracles,
+normal and diagnostic native boots, all console groups, source provenance and
+module rejection checks passed. The kernel is 382936 bytes, its SHA-256 is
+`cdfdc84628aacfc0909f08d9c011ff83c819b21df66c9026e988b65b2706a9e4`,
+and the normal disk SHA-256 is
+`dfa69c6a3b580dcd56b533cb54197de114330a472ab23d79d06794a3aa1a298c`.
+
+## Standalone file editor workflow (2026-09-23)
+
+The native prompt now exports `Ed(path)` as a file-level editor service through
+ConsoleRuntime ABI 26. It loads an existing document or creates a new one,
+enters `DocEd`, saves and releases it after Escape, and releases it without a
+write after Shift-Escape. `DocEd` now returns the original accept/cancel result
+instead of treating both exit keys alike.
+
+The focused hardware-keyboard group creates `C:/FileEditor.DD` with `Ed`, exits
+with Escape and verifies its exact disk bytes. It then visibly appends a byte,
+exits with Shift-Escape, receives a false result and proves the stored bytes did
+not change. The expanded group passed 124 native commands at 44.176 seconds with
+all VGA checkpoints exact.
+
+The writable three-boot acceptance repeats the workflow on
+`C:/StandaloneEdit.DD`: the first boot creates and saves `standalone`, the second
+boot appends a visible `X` and cancels, and the independent final disk walk still
+finds exactly `standalone` plus the cursor marker. All checkpoints passed at
+43.771, 44.074 and 44.073 seconds. The audited image contains 17 directories,
+723 files and 12597 uniquely owned sectors with a matching bitmap; its SHA-256
+is `2a9d2a925d7919999f44494ea93dc97792a010be48dd8a95e2cabd18000cc146`.
+
+The complete gate passes with ConsoleRuntime ABI 26. The normal interactive
+QEMU/486 run at 8 MiB completed 347 native commands and 410 submitted lines with
+44.175-second startup; diagnostic startup measured 157.776 seconds. All
+original/shared comparisons, normal and diagnostic boots, console groups,
+source-provenance checks and module rejection checks passed. ConsoleRuntime
+retains 413232 bytes from a 413216-byte image. The kernel SHA-256 is
+`13d325b857d7a7528cd00e3c7d0db1b427bb9ceebd9016c5974594aa6bab61b2`;
+the normal disk SHA-256 is
+`797fb4e6b7c88d04533ec623cc0dc06fd1aa666a9d533d079d50337705358837`.
+
+## Cursor-following document viewport (2026-09-23)
+
+The retained editor no longer feeds an arbitrarily long document into the
+whole-screen terminal scroller. It first measures the canonical cursor row,
+chooses a 56-row body viewport, and then renders only that range beneath the
+four fixed heading rows. Both passes share tab expansion, newline handling and
+80-column wrapping. Color, blink, invert and underline state still advances
+through clipped entries before visible text is drawn.
+
+The hardware/VGA acceptance constructs a 65-line document with numbered lines.
+At entry it shows lines 09 through 64 with the cursor after `64`; one Up key
+shows lines 08 through 63 with the cursor after `63`. In both exact 60-row
+captures the TempleOS/editor/path heading remains fixed. The expanded focused
+`document-editing` group passed 128 native commands at 44.073 seconds. This is a
+bounded native viewport; original `DocRecalc`, horizontal scrolling and embedded
+graphics remain part of the open editor-integration slice.
+
+The complete gate passes on the viewport source. The normal interactive QEMU/486
+run at 8 MiB completed 351 native commands and 414 submitted lines with
+44.025-second startup; diagnostic startup measured 157.570 seconds. All
+original/shared comparisons, boot modes, console groups, provenance checks and
+module rejection checks passed. ConsoleRuntime ABI 26 retains 422424 bytes from
+a 422408-byte image. The kernel SHA-256 is
+`9083b8f67d1235c75d4c43ca4d185e0c921149b73ff911ce6ee27264da5750ae`;
+the normal disk SHA-256 is
+`9b939c98521c1c9ac4be6702a38327eda5b1d437c85f26029dadb10ef420fd3b`.
+
+## Cursor-following horizontal viewport (2026-09-23)
+
+The same two-pass document renderer now respects `DOCF_WORD_WRAP`. Wrapped
+documents retain 80-column row advancement; unwrapped documents keep their
+logical line and choose an 80-column horizontal viewport that contains the
+cursor. Clipped prefixes still update style and tab state before visible cells.
+
+The hardware/VGA check creates one 100-character line. At End it shows the final
+79 characters followed by the cursor block; Home pans back to show the cursor
+followed by the first 79 characters. The heading remains fixed and both frames
+match exactly. The expanded focused `document-editing` group passed 132 native
+commands at 44.075 seconds.
+
+The complete gate passes on the horizontal-viewport source. The normal
+interactive QEMU/486 run at 8 MiB completed 355 native commands and 418
+submitted lines with 44.072-second startup; diagnostic startup measured
+157.576 seconds. All original/shared comparisons, boot modes, console groups,
+provenance checks and module rejection checks passed. ConsoleRuntime ABI 26
+retains 425216 bytes from a 425200-byte image. The 382936-byte kernel SHA-256 is
+`13d325b857d7a7528cd00e3c7d0db1b427bb9ceebd9016c5974594aa6bab61b2`;
+the normal disk SHA-256 is
+`b4e12b8adc9d3a5aeb5cf23d5cc1c4b8fbeaf1f7ac99c55639b8a44ee2228053`.
+
+## Bounded repeated development sessions (2026-09-23)
+
+A native resource acceptance now performs one warm-up followed by 20 complete
+document-development cycles. Each cycle creates and saves a HolyC document,
+deletes it, reopens it from RedSea, edits and serializes the cursor-bearing
+source, saves it again, executes it in the live compiler, and deletes it. It
+then executes a separate document that throws at runtime and verifies recovery.
+The program increments retained state exactly once per cycle, proving execution
+rather than merely successful parsing.
+
+After warm-up, every cycle must return both `Fs->data_heap->used_u8s` and
+`Fs->code_heap->used_u8s` to their exact baselines. The check also records both
+warmed live-byte counts and their reserved heap capacities, requiring each
+capacity to cover its live allocations. The focused `document-resources`
+hardware/VGA group passes all 20 measured cycles, observes all 21 caught
+exceptions including warm-up, and ends with the expected 21 executions. The
+expanded three-command group starts QEMU/486 at 8 MiB in 44.189 seconds and
+matches every VGA checkpoint exactly. The two heap handles currently alias one
+shared task heap; they are not independent pools.
+
+The complete gate passes with the resource acceptance in the accumulated
+interactive session. It completed 357 native commands and 420 submitted lines
+with 44.407-second normal startup; diagnostic startup measured 159.598 seconds.
+All original/shared comparisons, boot modes, console groups, provenance checks
+and module rejection checks passed. ConsoleRuntime ABI 26 retains 425216 bytes
+from a 425200-byte image. The 382936-byte kernel SHA-256 is
+`13d325b857d7a7528cd00e3c7d0db1b427bb9ceebd9016c5974594aa6bab61b2`;
+the normal disk SHA-256 is
+`7e1b1fdbdd70ac06146b7524dc156aeddd6242449cefdbb720ab1618705912c3`.
+
+MemoryRuntime ABI 10 adds scoped high-water measurement at the public allocator
+boundary, so document and compiler temporaries are observed at allocation time
+rather than sampled after `DocExe` has already released them. After the warm-up
+cycle, the 20-cycle workflow starts from 1,352,216 live bytes, reaches a
+1,355,832-byte live peak (3,616 bytes temporary growth), and reaches a
+1,356,800-byte reserved-capacity peak. It returns to the exact live baseline
+after every cycle. The expanded four-command `document-resources` group passes
+at 44.287-second startup with exact VGA output, and the compiler/kernel
+self-rebuild provenance gate passes. Full-gate evidence for ABI 10 remains open.
+
+The complete ABI 10 gate passes. Its normal QEMU/486 run at 8 MiB completed 359
+native commands and 422 submitted lines with 44.125-second startup; diagnostic
+startup measured 158.783 seconds. All original/shared comparisons, boot modes,
+console groups, provenance checks and module rejection checks passed. The
+382936-byte kernel SHA-256 is
+`67e8b01ac75a8c85209f8b8975f4072664274b3d780c1e2a0a30b20a398ffdc2`;
+the normal disk SHA-256 is
+`ecf9449c12182da81f1a4d3eb17bb8663eb633b5a5746aea33e5866b4ea4fe35`.
+MemoryRuntime retains 161552 bytes from a 161536-byte image.
+
+A focused `document-latency` hardware/VGA group now times the complete path from
+an injected Up-key event to the exact 60-row long-document frame. On the
+QEMU/486, 8 MiB development profile it measured 0.204 seconds and passed a
+one-second key-to-visible-update budget; startup measured 44.173 seconds. This
+includes QMP injection, guest keyboard handling, document traversal, redraw and
+host screendump comparison, so it is a conservative end-to-end measurement.
+The existing nonterminating-program acceptance now applies the same method from
+Ctrl-Alt-C injection through the exact recovered execution frame. It measures
+0.217 seconds, passes the one-second budget, returns to the intact editor and
+then evaluates `6*7` as `42`, proving continued compiler usability.
+
+The complete writable acceptance also passes with latency recording enabled.
+Its create/edit/save, reopen and revised boots measured 43.674, 43.884 and
+43.672 seconds; the accumulated interrupt-to-recovered-VGA measurement was
+0.275 seconds. It ran 90, 52 and 13 commands, matched every VGA checkpoint, and
+left the source disk unchanged. The independent RedSea walk found 17
+directories, 724 files and 12640 uniquely owned sectors with a matching bitmap.
+The writable candidate SHA-256 is
+`7ffc17b542ea4bce4c7fccf34acbacfd052dc3f07d3b2b71dce7b2eff752d79d`.
+A repeatable human long-document checklist is now in the test workflow; an
+observed human run remains open.
+
+## Page-sized document navigation (2026-09-23)
+
+The canonical ordinary-text edit core and native `DocEd` now handle Page Up and
+Page Down. Because four rows are reserved for the fixed heading, each key moves
+55 logical lines through the 56-row body while preserving the desired column.
+The existing 65-line hardware/VGA fixture first moves from line 64 to 63, Page
+Up lands exactly on line 08, and Page Down returns to line 63. All three
+60-row frames match exactly. The focused `document-latency` group passes four
+commands at 44.173-second startup; its single-line Up path measured 0.263
+seconds against the one-second budget.
+
+The corresponding complete gate passes 359 native commands and 422 submitted
+lines. Normal startup measured 44.176 seconds, diagnostic startup 158.980
+seconds, and the accumulated long-document Up path measured 0.258 seconds. The
+kernel SHA-256 is
+`ecb594d5d15c15141e0c945216971bd89f4694e8852960b9d050cb2189357421`;
+the normal disk SHA-256 is
+`111bb929482659cc384f8f02a4c9687dcf35558747232628263b0b28d33bc5d1`.
+
+Original Ctrl-Up and Ctrl-Down document-boundary navigation is now present as
+well. The native core admits only those two Ctrl-modified scan codes, mapping
+them to document start and end while continuing to reject unsupported modified
+navigation. The 65-line hardware sequence proves Page Down to line 63,
+Ctrl-Up to the cursor before line 00, and Ctrl-Down to the cursor after line 64.
+The expanded exact-frame group passes at 44.124-second startup with 0.203-second
+single-line Up latency.
+
+The corresponding complete gate passes 359 native commands and 422 submitted
+lines. Normal startup measured 44.177 seconds, diagnostic startup 158.782
+seconds, and the accumulated long-document Up path measured 0.257 seconds.
+All original/shared comparisons, boot modes, console groups, provenance checks
+and module rejection checks passed. The kernel SHA-256 is
+`580425fd6155522e4bcbf9fc89574e64a8cc5f001b064395ad7d57dc5dfacd36`;
+the normal disk SHA-256 is
+`98ab69aa5666c0450927b34db1dc7470f46b067b5682babafec08fd3560e681f`.
+
+## Exceptional editor exit recovery (2026-09-23)
+
+The native editor now places its keyboard/VGA loop inside an exception cleanup
+boundary. A propagated exception restores the task's previous put and display
+documents and reconstructs the HolyC console surface before the outer console
+handler reports the error. Its idle loop also provides an explicit pending-break
+checkpoint, allowing Ctrl-Alt-C to interrupt an editor waiting for input.
+
+The focused hardware test enters an empty document through `DocEd`, sends a real
+Ctrl-Alt-C key chord, observes the editor exception boundary and the recovered
+console, and then verifies the exact prior document pointers, an unlocked
+document, a consumed pending break and a subsequent `6*7` result of `42`. The
+expanded `document-editing` group passes 132 commands with exact VGA output at
+44.172-second startup. Original border/input handlers and the complete original
+editor path remain open; this result covers the native task state currently
+installed by `DocEd`.
+
+The complete gate passes 363 native commands and 426 submitted lines. Normal
+startup measured 44.511 seconds, diagnostic startup 162.208 seconds, and the
+accumulated long-document Up path measured 0.432 seconds, within its one-second
+budget. All original/shared comparisons, boot modes, console groups, provenance
+checks and module rejection checks passed. ConsoleRuntime ABI 26 retains 428992
+bytes from a 428976-byte image. The kernel SHA-256 is
+`ecb594d5d15c15141e0c945216971bd89f4694e8852960b9d050cb2189357421`;
+the normal disk SHA-256 is
+`149620e810331ef400408fc7b25f53f62c11fcfd756850d8a9760c499fd914f9`.
+
+The writable three-boot acceptance also remains green on this source. Its boots
+measured 43.673, 43.872 and 43.623 seconds, with 90, 52 and 13 commands and exact
+VGA checkpoints; interrupt-to-recovered-VGA measured 0.277 seconds. The final
+walk found 17 directories, 724 files and 12650 uniquely owned sectors with a
+matching bitmap. The writable candidate SHA-256 is
+`b9a4094f09204d0469ee60e9812028a42761b8c415893956d3ab7d6b632ffa2e`.
+
+## Embedded binary-record persistence (2026-09-23)
+
+The native document reader and writer now preserve the original binary trailer
+used by embedded graphics: a NUL after the textual DolDoc stream, the fixed
+16-byte `CDocBin` saved span (`num`, `flags`, `size`, `use_cnt`), and the exact
+payload bytes. The bounded command parser accepts the canonical
+`$SP,"tag",BI=n$` form, validates and renumbers the referenced binary, and
+reconnects the loaded entry to its payload. Other sprite command flags and the
+sprite renderer remain open.
+
+The internal exact-byte check uses a five-byte payload containing zero and
+`0xFF`, verifies the 37-byte serialized document, loads and serializes it a
+second time byte-for-byte, and rejects a one-byte-truncated trailer. Injected
+allocation failures cover sprite entry, tag, binary header and payload creation;
+each path unwinds to its exact heap baseline. A separate native source check
+writes the same document through `DocWrite`, reopens it from RedSea, verifies
+the restored link and bytes, and returns to its exact task-heap baseline. The
+focused three-command normal boot passes at 45.238-second startup, and the
+expanded 134-command `document-editing` group passed the initial persistence
+implementation at 44.566 seconds.
+
+The allocation-complete version passes the full gate with 365 native commands
+and 428 submitted lines. Normal startup measured 44.561 seconds, diagnostic
+startup 160.394 seconds, and the long-document Up path measured 0.259 seconds.
+All original/shared comparisons, boot modes, console groups, provenance checks
+and module rejection checks passed. ConsoleRuntime ABI 26 retains 457600 bytes
+from a 457584-byte image. The kernel SHA-256 is
+`ecb594d5d15c15141e0c945216971bd89f4694e8852960b9d050cb2189357421`;
+the normal disk SHA-256 is
+`979f68fc2c971f835d7a7664574cf3f536962bf872fc0be759e53fcf76564c80`.
+
+The writable three-boot acceptance remains green. Its boots measured 44.690,
+44.635 and 43.949 seconds; the interrupt-to-recovered-VGA path measured 0.277
+seconds. It ran 90, 52 and 13 commands with exact VGA checkpoints. The final
+walk found 17 directories, 725 files and 12723 uniquely owned sectors with a
+matching bitmap. The writable candidate SHA-256 is
+`7baf2b53fc5617041fa333f473e158f6ac532e243b4d69fdf64dbd80ac72c411`.
+
+## First persisted sprite rendering (2026-09-23)
+
+The native document editor now renders a bounded subset of original sprite
+payloads through the retained graphics compositor. It supports color changes,
+points, Bresenham lines and filled rectangles, rejects truncated or unsupported
+operations, clips every pixel, and places each sprite at its current document
+text cell. The editor decodes its proven planar text surface into the graphics
+frame before drawing the sprite, preserving the normal heading and body text.
+
+A native fixture creates an original `SPT_COLOR`/`SPT_RECT` payload, saves it to
+RedSea, destroys the source document, reopens it and enters `DocEd`. The focused
+`document-sprites` QEMU group independently constructs the expected font frame
+and verifies the exact 16x8 red VGA rectangle at `(0,32)`. This is the first
+end-to-end persisted embedded graphic; full `Sprite3`, arbitrary sprite records,
+original `DocRecalc` layout, selection and mouse interaction remain open.
+
+The focused group passes four native commands at 44.617-second startup. The
+expanded normal 8 MiB QEMU/486 run passes 369 native commands and 432 submitted
+lines at 44.614-second startup; every VGA checkpoint matched, and the measured
+long-document input-to-VGA path was 0.262 seconds. Both native x86-64 rebuild
+generations and all cross-build source checks also pass. The kernel SHA-256 is
+`ecb594d5d15c15141e0c945216971bd89f4694e8852960b9d050cb2189357421`;
+the normal disk SHA-256 is
+`5739b0f5552ae2fb0476918af0e3627fc09cc1d3e558a0be61b113b663d1eb55`.
+
+The writable three-boot development session also remains green. Its boots took
+44.061, 44.613 and 44.062 seconds, running 90, 52 and 13 commands with exact VGA
+checkpoints; interrupt-to-recovered-VGA measured 0.276 seconds. The final RedSea
+walk found 17 directories, 726 files and 12761 uniquely owned sectors with a
+matching bitmap. The writable candidate SHA-256 is
+`e73435a4a860f84e0932936099127e05607b9ee355af7b0559f8bafe5f0e57fb`.
+
+## Native directory browsing (2026-09-24)
+
+The retained FileRuntime ABI 26 now supplies bounded two-pass directory
+enumeration through the current task's drive and directory context. It keeps the
+task-owned ATA session across resolution and every sector read, skips deleted
+records, preserves RedSea order and marks directories with `/`. The public
+`Dir(path)` command prints the owned result at the live HolyC console and frees
+its temporary buffer afterward.
+
+The focused QEMU test creates a nested project and source file, compares exact
+VGA output for absolute and relative paths, and checks missing-path recovery. It
+passes seven commands at 44.667-second startup. The complete normal gate passes
+376 commands and 439 submitted lines at 44.719-second startup; all pixels match
+and long-document input latency is 0.258 seconds. The diagnostic boot, all module
+rejection cases and both native x86-64 rebuild generations pass as well.
+FileRuntime retains 189880 bytes from a 189864-byte image. The kernel SHA-256 is
+`50713aae8ff9ab962558de8fea0ad88eed795373a7159fab6973800aa1831d0b`;
+the disk SHA-256 is
+`ea60fdc47658acd5947cfe9d70aa999410458bef77886e0d7bcc165f042f8dd6`.
+
+`EdDir(path)` now supplies an interactive VGA file picker. Up/Down changes the
+selection, Enter descends into a directory or opens a file through `Ed`, Backspace
+returns to the parent, returning from the editor redraws the picker, and Escape
+returns to the prompt. Each directory reload allocates its replacement listing
+before releasing the current view, so an allocation or read failure leaves the
+existing picker usable. Synthetic `./` and `../` records stay hidden.
+
+The focused test creates two files and a nested `Sub/Nested.HC`, checks exact
+initial and moved-selection frames, enters `Sub`, returns to `Browse`, opens
+`Main.HC`, and checks both editor and prompt return paths. Its ten native commands
+pass at 44.670-second startup with exact pixels. Wildcards, sorting, original help
+browsing and the original file browser remain part of the standalone
+development-environment goal.
+
+The picker now also provides an integrated file-creation path. `N` enters a
+bounded filename mode with a visible cursor; Backspace edits the name, Escape
+cancels it, and Enter opens the joined path through `Ed`. Path separators and a
+drive delimiter are rejected. Returning from the editor reloads the directory
+transactionally and selects the new file when it was saved. The expanded focused
+test creates `New.HC`, types and saves `6*7;`, checks the refreshed exact VGA
+frame, and reads back the five canonical document bytes. All eleven commands pass
+at 45.022-second startup with exact pixels.
+
+The complete build gate with picker-based creation passes 380 commands and 443
+submitted lines at 45.028-second normal startup; all pixels match and measured
+long-document input latency is 0.375 seconds. Diagnostic startup takes 161.812
+seconds, and all module rejection cases plus both native x86-64 rebuild
+generations pass. ConsoleRuntime retains 502376 bytes from a 502360-byte image.
+The kernel SHA-256
+is `50713aae8ff9ab962558de8fea0ad88eed795373a7159fab6973800aa1831d0b`;
+the normal disk SHA-256 is
+`e3fa89cdc9f8b6c55c0c09b73f326e11461236d83e55aaa242a20cea82539d67`.
+
+The writable three-boot session remains green with picker-based creation. Its
+boots took 44.524, 44.473 and 44.572 seconds and ran 90, 52 and 13 commands with
+exact VGA checkpoints; interrupt recovery measured 0.278 seconds. The final
+RedSea walk found 17 directories, 726 files and 12866 uniquely owned sectors with
+a matching bitmap. The source image remained unchanged, and the writable
+candidate SHA-256 is
+`4c04d44b81d49532f7ab65e8054742590a24aea1d24992c850c0a204eded59f8`.
+
+## Confirmed file deletion and FileRuntime ABI 27 (2026-09-24)
+
+FileRuntime ABI 27 appends a regular-file delete service to its 56-byte public
+record. `I386TaskFileDelete` resolves through the calling task's drive and current
+directory, owns one RedSea session across lookup and mutation, and restores the
+borrowed task-file state on every exit. RedSea deletion publishes and flushes the
+tombstoned directory record before releasing the file's sectors. Directories are
+rejected.
+
+Public `FileDel(path)` exposes the service to native HolyC. In `EdDir`, Delete on
+a regular file enters a visible `Y/N` confirmation; `Y` deletes and transactionally
+reloads the listing, while `N` or Escape returns without changing the disk.
+Delete on a directory does nothing. The focused `file-navigation` QEMU/486 test
+creates and saves `New.HC`, reads its exact five bytes, reopens the picker, confirms
+deletion, checks the exact refreshed VGA frame, then proves `DocRead` and a repeated
+`FileDel` both report absence. It passes 14 commands at 46.729-second startup.
+
+The rebuilt normal image passes the exhaustive interactive suite with 383 native
+commands and 446 submitted lines at 46.581-second startup; all VGA checkpoints
+match and long-document input-to-VGA latency is 0.379 seconds. The complete build
+gate passes on the same sources. The writable three-boot test starts in 45.879,
+45.778 and 45.778 seconds, runs 90, 52 and 13 commands, and measures 0.276-second
+interrupt recovery. Its final walk finds 17 directories, 726 files and 12904
+owned sectors with a bitmap matching reachable extents. The source disk SHA-256
+is `e3ee1a40ee030c41f4115f8e5f9e2cd36fdd8cca143dbafae0e384c24b11b565`;
+the writable candidate is
+`c3c56ef2acaf945cbbcf0e2eb257deb9a1cf50b0740a011ec68bc8677a8884f1`.
+
+## Same-parent entry rename and FileRuntime ABI 28 (2026-09-24)
+
+FileRuntime ABI 28 extends its service record to 60 bytes with a file/directory
+rename entry. `I386TaskFileRename` resolves both names through the current task,
+requires the same mounted volume and parent directory, and owns one RedSea
+session through mutation and flush. The RedSea operation rejects missing sources,
+existing destinations and invalid names, rewrites only the 38-byte name field,
+and flushes the directory sector. File and directory extents and the allocation
+bitmap do not change. A directory's internal `.` and `..` records refer to blocks,
+so a same-parent name change requires no child rewrite. Cross-directory moves are
+deliberately outside this atomic operation.
+
+Public `FileRename(old,new)` exposes the operation to native HolyC. In `EdDir`,
+`R` on a file or directory opens a bounded `New name:` mode, performs the rename
+and transactionally reloads and selects the new entry. The focused QEMU/486 group
+verifies exact file entry and refreshed VGA frames, exact bytes under the new
+name, absence of the old name, and missing-source, collision and cross-directory
+rejection. It then renames `Sub/` to `Code/`, enters it, returns to the parent,
+proves the old path is absent and lists the intact nested file through the new
+path. The expanded group passes 23 native commands at 45.829-second startup.
+
+The writable three-boot acceptance creates a temporary nested source, renames
+and reads it, deletes it, and proves both names remain absent after reboot. It
+also renames `/Project/MoveMe` to `/Project/Moved`; after reboot the new empty
+directory retains canonical `.`/`..` records and the old path is absent. The host
+walk finds 18 directories, 727 files and 12960 uniquely owned sectors; all extents
+are nonoverlapping and the bitmap matches the reachable tree. Boots took 45.779,
+45.931 and 45.880 seconds, running 98, 55 and 13 commands; interrupt recovery
+measured 0.279 seconds. The candidate SHA-256 is
+`fe7c859414a7d8aeeb0476870a2065469ea5850e3935b073ef03243c4518eb27`.
+
+The complete ABI-28 gate passes 392 native commands and 455 submitted lines at
+45.830-second normal startup. Every VGA checkpoint matches and long-document
+input latency is 0.375 seconds. FileRuntime retains 213784 bytes from a 213768-byte
+image, and wrong-target, missing-import and wrong-ABI mutations are rejected.
+The native kernel SHA-256 is
+`8fe150877d5403b4755990aebaaa7701671e891900bed980843a5b11c7d5051b`;
+the normal disk SHA-256 is
+`5b547640e31dd2c281c9e5c035ed099a9f8da4c5810eae6d3018a833be62db9c`.
+
+## Empty-directory deletion and FileRuntime ABI 29 (2026-09-24)
+
+FileRuntime ABI 29 extends its service record to 64 bytes with an empty-directory
+delete entry. `I386RedSeaDirDelete` rejects root, traversal names, regular files
+and nonempty directories. It validates the directory terminator after `.` and
+`..`, ignores deleted slots, publishes and flushes the parent tombstone, then
+releases and flushes the directory extent. `I386TaskDirDelete` supplies the same
+task-relative path, volume-session and cleanup guarantees as file deletion, and
+public `DirDel(path)` exposes it to native HolyC.
+
+Delete in `EdDir` now accepts directories. Its confirmation says `Delete empty`
+to make the constraint visible; a rejected nonempty delete redraws the unchanged
+listing. The focused QEMU/486 group rejects deletion of populated `Code/`, creates
+`Empty/`, verifies the exact confirmation and refreshed VGA frames, deletes it
+and proves repeated absence. It passes 27 commands at 46.081-second startup with
+all pixels matching.
+
+The writable acceptance persists `/Project/MoveMe` renamed as `/Project/Moved`
+into its second boot, rejects `DirDel` on populated `/Project/Sub`, deletes the
+empty renamed directory, and proves both names absent in the third boot. The host
+walker now correctly skips RedSea tombstones while retaining terminator, live
+attribute, extent-overlap and bitmap checks. It finds 17 directories, 728 files
+and 12997 live owned sectors with a bitmap exactly matching reachable extents.
+Boots took 46.132, 46.131 and 46.081 seconds, running 98, 56 and 15 commands;
+interrupt recovery measured 0.279 seconds. The candidate SHA-256 is
+`e6581057218bbe36bced5dedf4c43aaea1ffed05c0266dfb7ccc44396de311f5`.
+
+The complete ABI-29 gate passes 396 native commands and 459 submitted lines at
+46.031-second startup. Every VGA checkpoint matches and long-document input
+latency is 0.434 seconds. FileRuntime retains 225784 bytes from a 225768-byte
+image, and all module rejection gates pass. The native kernel SHA-256 is
+`108069d1b8bca9b04bc62530c6291db8ef325061e89ff96d68f313400664eb22`;
+the normal disk SHA-256 is
+`91f6d7d1c9d925ac707718548a987c0f377cb2ca3f2e64fe3bc3f04ae31e2e05`.
+
+## Cross-directory regular-file move and FileRuntime ABI 30 (2026-09-24)
+
+FileRuntime ABI 30 extends its service record to 68 bytes with a move entry.
+Public `FileMove(old,new)` resolves both names through the current task and
+requires one mounted volume. Same-parent moves retain the atomic rename path.
+For different parents, `I386TaskFileMove` accepts regular files, reads the source
+into task-owned memory, creates and publishes the destination with the original
+date and attributes, and then deletes the source. A failed source delete triggers
+a best-effort destination rollback. Missing sources, collisions, directory
+sources and cross-volume paths are rejected. Because publication and deletion
+are separate filesystem mutations, this is not yet a crash-atomic move; the
+failure-injection milestone remains open.
+
+The focused QEMU/486 group creates `Archive/`, moves `Other.HC` to
+`Archive/Moved.HC`, reads its exact two bytes, proves the old path is absent and
+checks all rejection cases. It moves the file back and removes the now-empty
+directory. The group passes 35 native commands with exact VGA checks at
+46.133-second startup.
+
+The writable three-boot acceptance moves a newly written source from
+`/Project/Sub/Renamed.HC` to `/Project/Moved/Transferred.HC`, verifies its exact
+bytes and source absence, deletes the destination, and proves all temporary names
+remain absent across later boots. Boots took 46.133, 45.982 and 46.084 seconds,
+running 101, 56 and 15 commands; interrupt recovery remained covered. The final
+walk finds 17 directories, 728 files and 13031 live owned sectors with a bitmap
+exactly matching reachable extents. The source image remains unchanged and the
+writable candidate SHA-256 is
+`3e6244faeb512a6d469b38eb8a11f8b93c2c4ebb254ac1de46ecae76fc9e71fa`.
+
+The complete ABI-30 gate passes 404 native commands and 467 submitted lines at
+45.679-second normal startup. Every VGA checkpoint matches and long-document
+input latency is 0.256 seconds. FileRuntime retains 237872 bytes from a
+237856-byte image, and wrong-target, missing-import and wrong-ABI module mutations
+are rejected. The native kernel SHA-256 is
+`501a11241a8b18cceab69d325d6860106a5eb6c55563341ce75da767bc9a8b40`;
+the normal disk SHA-256 is
+`21e6d823fddf885724308d3f795fc5530b0b5aed226da4e6c59532dd480db834`.
+
+## Move failure recovery and FileRuntime ABI 31 (2026-09-24)
+
+FileRuntime ABI 31 grows its private service record to 72 bytes with an internal
+move-probe callback. The public `FileMove` API and its normal path are unchanged.
+The internal staged implementation can stop before source reading, before
+destination creation, after destination publication or before source deletion.
+At the two post-publication boundaries it removes the destination before
+returning failure. A native diagnostic worker verifies the exact four-byte source
+and absent destination after every injected stage, then completes a normal move
+and removes all fixtures.
+
+Mutation testing uses a dedicated writable image. Build tooling validates and
+enables separate exported diagnostic and file-mutation data flags, runs the
+probe, clears both flags, independently walks the resulting RedSea tree and
+compares every allocation bit with reachable extents, then boots that same disk
+normally. The reboot runs three native absence checks, matches every VGA
+checkpoint and leaves the disk unchanged. The post-probe tree has 15 directories,
+712 files and 13030 live owned sectors with an exact bitmap; its SHA-256 is
+`3cc4d2b880e288bb2377c7e9f525b2c9093a360c5ea58b2bc4aa226b206de2ad`.
+The ordinary diagnostic image explicitly rejects any mutation marker and remains
+byte-for-byte read-only.
+
+The first probe run also forced root-directory growth and exposed a stale parent
+block in `I386TaskDirMk`: after `I386RedSeaCreate` relocated the root, directory
+initialization searched the old block. `DirMk` now records a root parent and
+refreshes it from `volume->root` before locating and writing the new directory's
+`.` and `..` entries. The dedicated mutation boot and subsequent normal reboot
+exercise this relocation path.
+
+The complete ABI-31 gate passes 404 native commands and 467 submitted lines at
+45.479-second normal startup. Every VGA checkpoint matches and long-document
+input latency is 0.370 seconds. FileRuntime retains 243952 bytes from a
+243936-byte image, and all module rejection gates pass. The native kernel
+SHA-256 is
+`818eba2ff43612244af5b1c6af2f232582a4060c0f982ba805b3cde6fcd8f35a`;
+the normal disk SHA-256 is
+`a6c05097992d1b0e354feae71b491b0383bee65ebbca013f0311994f00e72cdc`.
+
+## Raw move I/O recovery and FileRuntime ABI 32 (2026-09-24)
+
+FileRuntime ABI 32 extends the private service record from 72 to 76 bytes with a
+disposable-image move callback that can fail an exact task-owned sector write or
+flush. The initial gate interrupted all five writes and four flushes used by the
+two-byte cross-directory move fixture, always after fixture setup. Each case
+then boots the same writable image in a recovery-only mode and an independent
+host walker validates directory structure, complete file contents, all live
+extents and every allocation bit.
+
+The recovery boot reconstructs the bitmap from the reachable tree before task
+I/O is bound. It rejects malformed entries, cycles, overlapping extents, invalid
+parent records and disagreement between a child directory entry's size and the
+child's self record. It marks reserved and out-of-volume bits, writes only
+bitmap sectors that differ, and flushes before exposing the volume to normal
+allocation. This repairs the unreachable reserved or released extent left by
+an interrupted bitmap update without trusting the damaged bitmap as ownership
+truth.
+
+All nine cases pass and retain only complete `IO` contents. Write failures 1–3
+leave the source; write 5 leaves the destination. Flush 1 leaves the source;
+flushes 3–4 leave the destination. Write 4 and flush 2 leave both complete
+names, exposing the next TDD contract: persist move intent and require exactly
+one name after recovery. Bitmap ownership matches reachable extents in every
+case, with 15 directories, 714 files and 13090 owned sectors for single-name
+outcomes, and 715 files/13091 sectors for the two duplicate-name outcomes.
+
+The larger kernel now reserves an explicit 800-sector BIOS stage; its 403768
+native bytes still end below the fixed low-memory task-stack reservation. The
+complete ABI-32 promotion passes both self-rebuild generations, the diagnostic
+boot, all module rejection gates, 404 native console commands and 467 submitted
+lines. Normal startup took 45.980 seconds and long-document input latency was
+0.370 seconds. The kernel SHA-256 is
+`1cc328a7a38d8097dbf36cd81ed2820b742fd6f1b3a415d8f661019e62a0b9e6`;
+the normal disk SHA-256 is
+`0552005028856741a81f21b03f81a5b5d9ba3cbffeb3b9881c4cd95500e69975`.
+
+The next TDD increment closes the duplicate-name gap with a checksummed move
+intent in the otherwise unused RedSea volume-header bytes. The intent records
+root-aware source and destination parents, both names, and the source extent,
+size, timestamp and attributes before destination publication. Normal success
+clears it only after the source tombstone and extent reclamation are durable.
+Mount recovery validates the record and both live entries, rolls back the
+destination if the source still exists, or accepts the destination if the
+source is absent.
+
+The expanded matrix covers all seven writes and six flushes, including intent
+publication and clearing. All thirteen fresh-image cases recover to exactly one
+complete `IO` file and an allocation bitmap matching reachable extents. Write
+failures 1–5 and flush failures 1–3 recover the source; writes 6–7 and flushes
+4–6 recover the destination. The kernel export table and bounded FileRuntime
+binding set now include the two intent services. The final 422008-byte image
+uses an 848-sector stage ending at `0x7A000`, still 56 KiB below the fixed
+`0x88000` task-stack reservation.
+
+The complete journal promotion passes both self-rebuild generations, diagnostic
+and normal boots, every module rejection gate, the four-stage logical rollback
+probe and all thirteen raw interruption cases. The normal suite runs 404 native
+commands and 467 submitted lines with exact VGA pixels; startup took 46.184
+seconds and long-document input latency was 0.427 seconds. The kernel SHA-256 is
+`af6354255464d55c1528f93eb3f98950a25ff1c13d2a9048b316579a774f42d2`;
+the normal disk SHA-256 is
+`ff812ec0247e07869ece2c58c752418d93082dbe450c863db6ba78142f887a7a`.
+
+## Failure-atomic replacement matrix (2026-09-24)
+
+The disposable raw-I/O probe now selects regular-file replacement as well as
+move. It creates `C:/Probe/ReplaceIo.HC` with exact `OLD` bytes, arms injection
+only after fixture publication, and replaces it with exact `NEW` bytes through
+the normal task-owned `FileWrite` path. Fresh images interrupt all four sector
+writes and three flushes spanning allocation, data, publication, old-extent
+reclamation and their durability boundaries.
+
+All seven recovery boots pass. Write failures 1–3 and flush failure 1 retain
+`OLD`; write failure 4 and flush failures 2–3 retain `NEW`. The independent host
+walk requires one live fixture, exact three-byte content, a valid tree, no stale
+move intent and allocation bits matching every reachable extent. This closes
+the raw replacement interruption item for the project-workflow persistence
+slice; broader document-format coverage remains open.
+
+## Original-to-native DolDoc compatibility fixture (2026-09-24)
+
+The real original x86-64 `DocSave` now emits `OriginalCompat.DD` during the i386
+cross-build. The 48-byte document contains ordinary text, a canonical sprite
+reference and the original 16-byte `CDocBin` header plus a five-byte payload.
+The build packages those exported bytes unchanged at
+`C:/Probe/OriginalCompat.DD`. A focused 8 MiB QEMU/486 boot opens it through the
+native `DocRead`, serializes it through native `DocSave`, and verifies the text,
+record boundary and binary payload. The eight-command `document-compatibility`
+group passes with exact VGA output and 46.181-second startup.
+
+This establishes original-to-native cross-reading through both real
+implementations. The reverse test copies the normal disk, creates and writes
+`BinaryRecord.DD` through native i386, extracts the exact 37 bytes through an
+independent RedSea walk, and boots original x86-64 TempleOS with that artifact.
+Original `DocRead` validates the sprite entry and binary ownership, and original
+`DocSave` reproduces all bytes exactly. The fixture SHA-256 is
+`73d58bdbb0bf929d9db33d5cfec27a614aaea98b176baed4637ab3c1e58c046d`.
+This closes bidirectional cross-reading for the implemented structured/binary
+subset; unsupported general DolDoc commands remain outside that bounded claim.
+
+The complete promotion passes both self-rebuild generations, diagnostic and
+normal boots, all module rejection gates, 404 native commands, 467 submitted
+lines, the logical move rollback probe, 13 move interruptions and seven
+replacement interruptions. Normal startup took 46.080 seconds and
+long-document input latency was 0.375 seconds. The resident kernel is unchanged
+at 422008 bytes with SHA-256
+`af6354255464d55c1528f93eb3f98950a25ff1c13d2a9048b316579a774f42d2`;
+the replacement-enabled normal disk SHA-256 is
+`de4058dcd386334bb25c716f00c0383a57983117047effdbe6cd964e2d06cf2e`.
+
+## Nested RedSea directory growth and complete compatibility promotion (2026-09-24)
+
+Adding the original document fixture filled `C:/Probe` through its last available
+directory slot. The first raw move-interruption reboot exposed that creation had
+overwritten the required zero-name terminator, so mount correctly rejected the
+tree. `I386RedSeaCreate` now grows a root or nested directory before consuming
+that slot. Nested growth allocates and flushes a one-sector-larger copy, relinks
+the parent entry, updates direct child `..` records, and then releases the old
+extent.
+
+The independent move matrix passes all seven write and six flush interruptions
+after this change. Each recovered image contains 15 directories, 716 files and
+13,173 reachable sectors, with exactly one complete move fixture and an exact
+allocation bitmap. Both original x86-64 rebuild generations also pass.
+
+The complete promotion now includes bidirectional document compatibility and
+passes diagnostic and normal boots, every module/source rejection gate, 412
+native commands, 475 submitted lines, the logical rollback probe, all 13 move
+interruptions and all seven replacement interruptions. Normal startup took
+46.081 seconds; long-document input-to-VGA latency was 0.256 seconds. The native
+compatibility boot took 45.878 seconds and original `DocRead`/`DocSave` reproduced
+its 37-byte file exactly. The resident kernel remains 422008 bytes with SHA-256
+`af6354255464d55c1528f93eb3f98950a25ff1c13d2a9048b316579a774f42d2`;
+the normal disk SHA-256 is
+`ed963c91329f7650830593d399f4ce2dffeaa565dcdc58265f1fa9be8be91005`.
+
+## Read-only native help browser (2026-09-24)
+
+The packaged RedSea image now includes all original files under `Doc`. Console
+runtime ABI 27 publishes `Help(name)`, defaulting to
+`C:/Doc/HelpIndex.DD`. The viewer reads the original file through the task-owned
+file service, projects common `TX`, `TR`, `LK` and `MA` display labels while
+discarding layout-only commands and binary trailers, and never writes the source.
+Page Up/Page Down and the arrow keys move by VGA page, Home returns to the first
+page, and Escape restores the same HolyC prompt.
+
+The focused 8 MiB QEMU/486 check opens the original
+`CompilerOverview.DD`, verifies its title and six displayed link labels against
+exact VGA pixels, and exits successfully in 46.380 seconds. A task-heap recovery
+assertion covers the source buffer, projected text and viewer lifetime. This is a
+read-only text projection; help-index symbol navigation, colors, tree widgets and
+original `DocRecalc` layout remain open.
+
+The complete promotion after adding the packaged help tree and ConsoleRuntime 27
+passes both rebuild generations, diagnostic and normal boots, every module/source
+rejection gate, 414 native commands, 477 submitted lines, all 13 move and seven
+replacement interruption cases, and bidirectional document compatibility. Normal
+startup took 46.279 seconds and long-document input-to-VGA latency was 0.198
+seconds. The resident kernel is 422008 bytes with SHA-256
+`87d703a00b7b15159757c2989d79ab99049e89292e4df63ce866f2c2c7eb279c`;
+the normal disk SHA-256 is
+`854f05b969d12650c830f6024e4cfbe9bcde726302ead35f7cd4ea4bf6627844`.
+
+## Native help file-link navigation (2026-09-24)
+
+The read-only viewer now retains up to 128 direct file-link spans and their
+normalized `C:/` targets while projecting an original DolDoc. Left/Right selects
+visible links with an exact VGA highlight, Enter follows original `FI:`, `FF:`
+and `FL:` targets, and Escape returns from the nested viewer to the same selected
+parent link. Link tables live on the task heap, which keeps nested navigation off
+the exception stack and makes their ownership visible to the allocator.
+
+The focused 8 MiB QEMU/486 acceptance selects `::/Doc/Asm.DD` in the original
+`CompilerOverview.DD`, checks its highlight, opens the original assembler help,
+checks the complete first-page VGA projection, returns to the selected compiler
+index link, and exits with an exact zero heap delta. It passed with 46.481-second
+startup. `HI:` category links and file anchors still need native resolvers.
+
+## Native man-page link resolution (2026-09-24)
+
+The help projection now resolves `MN:name` against the running task's retained
+`HTG_SRC_SYM` table. A published symbol with a source link becomes selectable;
+its original `FL:` metadata is normalized to the packaged `C:/` source path and
+opened through the same nested viewer. Symbols absent from the native environment
+or lacking source metadata remain plain labels rather than misleading links.
+
+The focused 8 MiB QEMU/486 acceptance opens the original command-line overview,
+selects its `Dir` man-page link after the preceding HolyC file link, verifies the
+exact highlight, resolves it to `C:/Kernel/I386/PublicFiles.HH`, enters the source
+viewer, returns to the selected overview link and exits with exact heap recovery.
+Together with the direct-file case, the help group now passes six native commands
+with exact VGA checkpoints and 46.430-second startup. Source line/anchor
+positioning remains open.
+
+## Native help-index category resolution (2026-09-24)
+
+`HI:index` links now scan the running task's chained hash tables for a public,
+non-private `HTT_HELP_FILE` whose semicolon-delimited help index contains the
+exact requested category component. The viewer follows the registered path
+through the same task-owned file service and nested return path used for file and
+man-page links. This keeps category navigation synchronized with successfully
+published native compiler metadata and excludes rolled-back or private entries.
+
+The focused 8 MiB QEMU/486 acceptance opens the original `DolDoc.DD`, selects
+`HI:Data Types/Circular Queue`, verifies its exact VGA highlight, resolves the
+category to the public queue help registration at `C:/Doc/Que.DD.Z`, enters and
+returns, then exits with an exact zero heap delta. The complete focused help group
+passes seven native commands with exact VGA checkpoints and 46.532-second startup.
+Generated category listings remained open at this slice; a later slice below
+adds them after file search and anchor positioning.
+
+## Native help source-line positioning (2026-09-24)
+
+The link projection now preserves the one-based line suffix from `FL:` targets.
+The nested viewer maps that source line into its read-only projection and uses the
+resulting byte offset as the first page. This also applies to `MN:` navigation,
+because published symbols resolve to their retained `FL:` source link before the
+file is opened. Home still provides an explicit route to the top of the file.
+
+The focused 8 MiB QEMU/486 acceptance follows `MN:Dir` from the original
+command-line overview and verifies that the nested VGA page starts with line 4 of
+`PublicFiles.HH`, the actual `Dir` declaration, followed by the remaining public
+file interface. It returns to the highlighted parent link and completes the full
+seven-command help group with exact heap recovery and 46.330-second startup.
+The later slices below add text-search and DolDoc-anchor positioning.
+
+## Native help text-search positioning (2026-09-24)
+
+`FF:file,needle[:occurrence]` links now preserve an unescaped search string and
+optional positive occurrence number. After projecting the target without
+rewriting it, the nested viewer finds that occurrence and begins at the containing
+text line; if it is absent, the normal file/line start remains the fallback.
+
+A packaged two-document probe contains a repeated `Needle heading`. The focused
+8 MiB QEMU/486 acceptance highlights its `FF:` link, requests occurrence two,
+verifies that the nested page begins with the second heading followed by `Second
+body`, returns to the same selected link, and exits with exact heap recovery. The
+eight-command help group passes all exact VGA checkpoints with 46.482-second
+startup. Generated category listings remain open.
+
+## Native help anchor positioning (2026-09-24)
+
+`FA:file,anchor` links now retain the anchor name. During read-only projection,
+the viewer recognizes an original `AN` command whose `A=` attribute matches that
+name and records the current visible-text offset without emitting the hidden
+command. The nested page begins at that offset and falls back to the normal file
+start if no anchor matches.
+
+A packaged probe places `Wanted` on an invisible anchor between two text sections.
+The focused 8 MiB QEMU/486 acceptance selects the `FA:` link, verifies that the
+nested VGA page begins with `Wanted heading` and `Anchor body`, returns to the
+highlighted parent and exits with exact heap recovery. The complete focused help
+group passes nine native commands with exact VGA checkpoints and 46.178-second
+startup. Generated `HI:` category listings and full DolDoc layout remain open.
+
+## Native generated help-index listings (2026-09-24)
+
+`HI:index` now opens a live category page instead of selecting the first matching
+registration. The page scans every chained task hash table, includes each public,
+non-private help file and source-linked symbol whose semicolon-delimited index has
+the exact category, and exposes their file or source targets as normal selectable
+links. Empty categories show an explicit message. Nested Escape restores the
+selected category entry and then the selected link in the original parent document.
+
+The focused 8 MiB QEMU/486 acceptance follows `Data Types/Circular Queue` from
+the original `DolDoc.DD`, checks the queue help file plus eight indexed native
+symbols and the exact first-link highlight, opens `C:/Doc/Que.DD.Z`, and returns
+through both viewer levels with an exact zero heap delta. The full nine-command
+help group passes every VGA checkpoint with 46.380-second startup. Full original
+DolDoc layout remains open.
+
+## Editor compiler-diagnostic navigation (2026-09-24)
+
+The native compiler console now records the source filename and `last_line_num`
+for the first error. Using the token line matters when lexical lookahead has
+already advanced the file cursor to the following line. After an F5 failure,
+Escape compares that source with the active document and positions its canonical
+cursor at the first editable byte of the reported line. Diagnostics in included
+files do not move the current document.
+
+The three-boot writable acceptance starts at line 3 of a document containing a
+missing expression on line 2. It verifies the visible diagnostic, returns to an
+exact VGA frame with the cursor before line 2, repairs the line through hardware
+Delete/text events, and reruns the document to display `1`, `42` and `3`. All
+107 create/edit/save commands, 56 reopen commands and 15 revised-boot commands
+pass on QEMU/486 with 8 MiB. Startup measured 46.431, 46.481 and 46.584 seconds;
+the independent RedSea audit found 18 directories, 833 files, 14005 uniquely
+owned sectors and an exact reachable-allocation bitmap. The source image stayed
+unchanged; the writable candidate SHA-256 is
+`57a114b338ebaf4e826eaa78c4ca5d50ce74371561a493905b1e37ab97e51f75`.
+
+## In-editor help workflow (2026-09-24)
+
+Native `DocEd` now follows the original unmodified F1 action by opening the
+packaged `C:/Doc/HelpIndex.DD` in the read-only help viewer. Shift-F1 opens
+`AboutTempleOS.DD`. Leaving either view with Escape redraws the active editor
+without serializing or replacing its canonical document, so unsaved text and
+cursor state remain intact.
+
+The three-boot writable acceptance edits `NativeEdit.DD`, opens help before its
+first save, observes a new viewer lifetime, exits and requires the exact prior
+editor pixels before continuing. All 107 create/edit/save commands, 56 reopen
+commands and 15 revised-boot commands pass on QEMU/486 with 8 MiB. Startup was
+46.431, 46.280 and 46.381 seconds, and interrupt-to-recovery VGA latency was
+0.273 seconds. The independent filesystem audit reports 18 directories, 833
+files, 14008 uniquely owned sectors and a matching bitmap. The source image was
+unchanged; the writable candidate SHA-256 is
+`6d8dd9c83f5740858501e8dbb186138a36404630d84a6d4c6a08b7c8a352d866`.
+
+## In-editor project browser (2026-09-24)
+
+Native `DocEd` now binds F4 to the file picker rooted at the active document's
+parent directory. The picker retains its existing directory traversal, nested
+editing, create, rename and confirmed-delete behavior. Escape returns through
+the picker stack and redraws the original canonical document, preserving its
+cursor and unsaved state. This provides a direct project-navigation action while
+the original F4 filename-insertion popup remains open.
+
+The focused 8 MiB QEMU/486 `file-navigation` suite opens
+`C:/Browse/Main.HC`, presses F4, verifies the exact `C:/Browse` picker and its
+three entries, exits and checks the exact restored editor pixels. All 36 native
+commands pass, including the surrounding directory/file lifecycle and
+cross-directory regular-file move cases, with 46.376-second startup and exact
+VGA checkpoints. The tested disk SHA-256 is
+`70ac4ba764a32d3409ad6f4cf6676c3140a5511b08021b85f22c391ef4294dc2`.
+
+## Native editor find and repeat (2026-09-24)
+
+Native `DocEd` now opens a bounded search prompt with Ctrl-F. F3 repeats forward
+and Shift-F3 repeats backward, with a single wrap in either direction. Ordinary
+typing at the document sentinel can produce adjacent `DOCT_TEXT` records, so the
+implementation creates a temporary logical projection of text, newline and tab
+records together with an exact entry/column map. A hit moves the canonical cursor
+without rewriting, merging or serializing document records.
+
+The focused 8 MiB QEMU/486 `document-editing` group types `one two one`, checks
+the prompt and query pixels, wraps from the ending cursor to the first `one`,
+moves to the second with F3 and returns with Shift-F3. All 137 native commands
+pass with exact VGA checkpoints; an absent second query also preserves the first
+cursor and renders `Not found`. Projection allocations now unwind inside the
+search helper, releasing partial buffers and the document lock without ending
+the editor. Startup measured 46.530 seconds. The tested disk
+SHA-256 is
+`ebc1613814577833c633472da67b7d2952eacc6ce420181d4f5f6aa2f2880d3b`.
+
+## Native editor go-to-line (2026-09-24)
+
+Native `DocEd` now implements the original Ctrl-G navigation action with a
+bounded numeric VGA prompt. A positive one-based line walks canonical text and
+newline entries and places the cursor at its first editable byte. An absent line
+does not move the cursor and reports `Line not found` in the editor heading.
+
+The focused 8 MiB QEMU/486 `document-editing` group types three lines, opens the
+prompt, selects line 2 from a line-3 cursor, checks the exact cursor pixels, then
+rejects line 9 with the same cursor. All 140 native commands pass with exact VGA
+checkpoints and 46.682-second startup. The tested disk SHA-256 is
+`6eabd7f616a1722b047e27372a2e86882112627cb4bcfb9d338c3f2894125094`.
+
+## Explicit CPU profile and no-FPU smoke test (2026-09-24)
+
+The native keyboard/VGA runner now accepts `--cpu`, passes that model directly
+to QEMU and records the same value in every result shape. Its default remains
+`486`, preserving existing callers. This prevents a run using a stricter CPU
+configuration from being mislabeled as the former hard-coded profile.
+
+The normal image passed the focused keyboard group on QEMU `486,-fpu` with
+8 MiB: startup took 46.481 seconds, all VGA pixels matched, and the tested disk
+SHA-256 was
+`6eabd7f616a1722b047e27372a2e86882112627cb4bcfb9d338c3f2894125094`.
+The installed QEMU exposes no 386 CPU model, so this is useful no-coprocessor
+evidence but not 386 execution evidence. M7 now assigns the true 386SX/DX run to
+a 386-capable emulator and retains QEMU/486 as the development profile.
+
+## Native editor single replacement (2026-09-24)
+
+The Ctrl-F editor prompt now accepts Tab after a nonempty search term to enter a
+bounded replacement field. Enter locates the next match with the existing
+cross-record search map, deletes the matched logical bytes and inserts the
+replacement through shared canonical `DocPutKey` operations. An empty
+replacement therefore performs deletion without a separate document model.
+
+The focused `document-editing` group enters `one two one`, exercises find and
+forward/reverse repeat, checks the missing-result state, then enters `one`, Tab,
+and `ONE`. Exact VGA checkpoints cover both prompt fields and the resulting
+`one two ONE` document with its cursor after the replacement. All 140 native
+commands pass on the normal QEMU/486 8 MiB image; startup took 46.481 seconds.
+The tested disk SHA-256 is
+`8ed8fe4b55e19c27c01b7876f417123351b7b7863973511d235d5e53bc9919d0`.
+Both original x64 rebuild generations and the native cross-build pass. Full
+original replace-all, replace/skip choices, options and selection semantics
+remain open.
+
+## Native editor bounded undo (2026-09-24)
+
+Native `DocEd` now captures a complete canonical snapshot before ordinary text,
+newline, tab, backspace, Delete, style and replacement mutations. It publishes
+the new snapshot only after serialization succeeds, preserving the previous
+undo point if allocation fails. Alt-Backspace restores the snapshot through the
+structured loader, including cursor and embedded-record state, consumes it and
+keeps the editor active. Editor exit and exception cleanup release the snapshot.
+
+The exact VGA acceptance replaces the second `one` with `ONE`, sends a real
+Alt-Backspace hardware chord and requires `one two one` with the cursor restored
+to the original match. The complete focused `document-editing` group passes all
+140 native commands on QEMU/486 with 8 MiB; startup took 46.581 seconds. Both
+x64 rebuild generations and the native cross-build pass. The tested disk
+SHA-256 is
+`bd6730b783ac1f0eef0638902ad608a64bf3f71fa9e3a8c55e26cbeed4a496c1`.
+At that point, original multi-level/coalesced undo and full selection-aware editing remained open.
+
+## Canonical horizontal editor selection (2026-09-24)
+
+The shared ordinary-text editor core now accepts Shift-Left and Shift-Right.
+It splits text records at exact cursor boundaries only after both the new entry
+and copied suffix exist, marks traversed records with the original `DOCET_SEL`
+bit, and retains non-text record boundaries. Plain navigation clears selection;
+typing, Backspace and Delete remove the selected records before continuing at
+their canonical insertion point. The native renderer inverts selected records.
+
+The hardware/VGA acceptance types `abc`, returns Home, selects `ab` with two
+real Shift-Right chords, requires exact inverted-cell colors and a cursor before
+`c`, then types `X` and requires `X` followed by that cursor and `c`. The focused
+`document-editing` group passes 143 native commands with exact VGA pixels on
+QEMU/486 at 8 MiB; startup took 46.633 seconds. Both x64 rebuild generations
+and the native cross-build pass. The tested disk SHA-256 is
+`6646913178451dee1ab16b445bd6cbc39dfc522e5a541fbc9fd516eb914ff436`.
+At that point, reversible vertical and shifted page selection remained open.
+
+## Multiline editor selection (2026-09-24)
+
+The shared editor core now extends selection with Shift-Up and Shift-Down. It
+normalizes the old cursor to an exact canonical boundary, performs the existing
+column-preserving line move, splits the destination record when necessary and
+marks every record between the two boundaries, including newlines. Existing
+typing, deletion and clipboard operations then consume the selected multiline
+range.
+
+The hardware/VGA acceptance types three two-character lines, sends Shift-Up from
+the end of line three, and requires the cursor after line two with the newline
+and complete third line selected. Typing `X` replaces that range to produce
+two lines ending in `bbX`. The focused `document-editing` group passes 152
+native commands with exact VGA pixels on QEMU/486 at 8 MiB; startup took 46.684
+seconds. Both x64 rebuild generations and the native cross-build pass. The
+tested disk SHA-256 is
+`ea9947b0a8faaea3bdd6250f37dd80e47a1868d36094bea14ac7c62cc42f9195`.
+Reversible vertical/page contraction remains open.
+
+## Viewport-sized editor selection (2026-09-24)
+
+Shift-Page-Up and Shift-Page-Down now call the same canonical multiline selection
+operation with the editor's existing 55-line page distance. The move preserves
+the visual column, splits both range boundaries when needed and marks all
+intervening text and newline records for replacement or clipboard use.
+
+The exact VGA acceptance enters three two-character lines and invokes
+Shift-Page-Up from line three column 2. It requires the cursor at line one column
+2 and selects both following newline/line spans, then types `P` to produce
+`aaP`. The focused `document-editing` group passes 155 native commands on
+QEMU/486 with 8 MiB; startup took 46.780 seconds. Both x64 rebuild generations
+and the native cross-build pass. The tested disk SHA-256 is
+`b19deaf13a20842e0327f46165fb4d38b1b83bacf765a9285ec5be0a7db2d28f`.
+Reversible vertical/page contraction and original undo coalescing remain open.
+
+## Bounded multi-level editor undo (2026-09-24)
+
+Native `DocEd` now retains sixteen complete pre-mutation canonical snapshots.
+Each successful serialization appends atomically; once full, a new snapshot
+releases the oldest and shifts the bounded history. Alt-Backspace restores and
+consumes the newest snapshot only after the structured loader succeeds. Normal
+editor exit and exception cleanup release every retained body.
+
+The hardware/VGA acceptance types `a`, `b`, and `c` as separate mutations, then
+sends Alt-Backspace three times and requires exact `ab`, `a`, and empty document
+frames with their serialized cursors. The focused `document-editing` group
+passes 158 native commands with exact VGA pixels on QEMU/486 at 8 MiB; startup
+took 46.684 seconds. Both x64 rebuild generations and the native cross-build
+pass. The tested disk SHA-256 is
+`6f5044a1333e6084c7cb4c29c3b793b0587c2d07f0d42722c1abcf7ef0395d4e`.
+Original time-based undo coalescing remains open.
+
+## Reversible multiline and page selection (2026-09-24)
+
+The shared multiline selection operation now toggles every canonical record in
+the traversed range. Shift-Up followed by Shift-Down, or Shift-Page-Up followed
+by Shift-Page-Down, therefore restores the unselected document and its original
+cursor; moving back again re-extends the identical range. This matches the
+already reversible horizontal selection model.
+
+Exact VGA checkpoints now cover select, contract and re-extend for both a
+one-line move and the 55-line page action before typing over each selection. The
+focused `document-editing` group passes 158 native commands on QEMU/486 with
+8 MiB; startup took 46.731 seconds. Both x64 rebuild generations and the native
+cross-build pass. The tested disk SHA-256 is
+`6b94a64b06ed82c43fd172f8112084963d77c31b89ad423c182127d44879231a`.
+Original time-based undo coalescing remains open.
+
+## Document-boundary selection (2026-09-24)
+
+The shared editor core now implements the original Ctrl-Shift-Up and
+Ctrl-Shift-Down document-boundary chords. It splits a partial text record at the
+cursor when necessary, marks every canonical record to the start or end, and
+places the cursor at that boundary. Existing clipboard and selected-span
+replacement then operate on the complete range.
+
+The hardware/VGA acceptance types `xyz`, sends Ctrl-Shift-Up, and requires the
+cursor at the start plus all three inverted characters. It cuts the full
+document to an empty editor and pastes it back with the cursor at the end. Exact
+VGA pixels pass for every state. The focused `document-editing` group passes
+149 native commands on QEMU/486 with 8 MiB; startup took 46.780 seconds. Both
+x64 rebuild generations and the native cross-build pass. The tested disk
+SHA-256 is
+`10cab821dc2761a4b6a55d428d092d31abeb09468da349af4b233f968f622480`.
+At that point, vertical line-wise selection remained open.
+
+## Native canonical clipboard (2026-09-24)
+
+Native `DocEd` now binds the original Ctrl-C, Ctrl-X and Ctrl-V actions to the
+canonical selection records. Copy builds a complete replacement document before
+discarding the prior retained clipboard and then clears source selection. Cut
+copies before deleting the selected records. Paste splits an editable text record
+at the cursor when necessary and inserts copied records before the surviving
+canonical insertion point. Cut and paste take the same bounded undo snapshot as
+other mutations.
+
+The hardware/VGA acceptance selects `ab` in `abc`, copies it, pastes at the end
+to form `abcab`, selects and cuts the first `ab`, then pastes it back before `c`.
+Every intermediate cursor and exact VGA frame is asserted using real Ctrl key
+chords. The focused `document-editing` group passes 146 native commands on
+QEMU/486 with 8 MiB; startup took 46.532 seconds. Both x64 rebuild generations
+and the native cross-build pass. The tested disk SHA-256 is
+`8ce63e6fde6f8516d3f77c696ac446e19ca3500825f6d38f76d3a47a5719c052`.
+At that point, vertical/document-wide selection and multi-level undo remained open.
+
+## Reversible horizontal selection (2026-09-24)
+
+Shift-Left and Shift-Right now toggle the canonical character they traverse.
+Moving into unselected text extends the selection; reversing over a selected
+character contracts it while retaining the exact split-record boundary and
+cursor position.
+
+The hardware acceptance selects `ab` in `abc`, reverses once to leave only `a`
+selected with the cursor between `a` and `b`, re-extends across `b`, and then
+types over the restored two-character selection. Exact VGA cells check both
+selection colors and both cursor positions. The focused `document-editing`
+group passes 146 native commands on QEMU/486 at 8 MiB; startup took 46.533
+seconds. Both x64 rebuild generations and the native cross-build pass. The
+tested disk SHA-256 is
+`ba036af81f352a7ec068f2c84aaa0e8ffd311e1267eaaa79c13b7efe96d50ba5`.
+At that point, vertical/document-wide selection remained open.
+
+## Time-coalesced native editor undo (2026-09-24)
+
+Native `DocEd` now groups a continuous run of insertion, Backspace or Delete
+keystrokes into one pre-mutation canonical snapshot. A one-second pause, a
+change of edit operation, cursor movement or command action closes the group;
+the existing failure-atomic sixteen-level snapshot stack remains the storage
+boundary.
+
+The hardware-keyboard/VGA acceptance types `abc` and restores the empty
+document with one Alt-Backspace. It then types `a`, waits past the coalescing
+window, types `b`, and requires two separate undo states before returning to
+empty. The focused `document-editing` group passes all 158 native commands and
+exact VGA checkpoints on QEMU `486,-fpu` with 8 MiB; startup took 46.629
+seconds. Both x64 rebuild generations and the native cross-build pass. The
+tested disk SHA-256 is
+`f024dc3eb3c7764a69efd4d3ad50b2b729b108d754f27716b9fd6fccc7085032`.
+
+## Original F4 path insertion (2026-09-24)
+
+Native `DocEd` now implements the original F4 action over the existing VGA file
+picker. Enter on a file returns its absolute path and inserts it at the canonical
+cursor; Shift-F4 returns a selected directory path. The entire path uses one
+undo snapshot, Escape cancels without mutation, and public `EdDir` retains its
+existing browse/edit/create/rename/delete behavior through the same picker core.
+
+The focused hardware test selects `C:/Browse/Other.HC`, checks the exact inserted
+text and cursor, undoes it, then selects `C:/Browse/Code` with Shift-F4 and
+checks and undoes that insertion. The surrounding file-navigation workflow also
+passes. All 36 native commands and exact VGA checkpoints pass on QEMU
+`486,-fpu` with 8 MiB; startup took 46.681 seconds. Both x64 rebuild generations
+and the native i386 cross-build pass. The tested disk SHA-256 is
+`111e8a72e9e87b619dc211052a8e8eb1ef1513a34d1e1e1d59548261e99a5e1d`.
+
+## Failure-atomic canonical paste (2026-09-24)
+
+Native clipboard paste no longer publishes copied records one at a time. It
+serializes the retained clipboard, loads the complete canonical record graph
+into a temporary document, and completes any required cursor-boundary split.
+Only then does it splice the staged entries and renumbered binary records into
+the destination, with no allocation or other recoverable failure point left.
+
+The retained allocation gate discovers the complete paste allocation count and
+injects `OutMem` at every step. Each case requires byte-identical target
+serialization and exact task-heap recovery. The ordinary hardware copy, cut and
+paste sequence continues to pass exact VGA checks. The focused
+`document-editing` group passes all 158 native commands on QEMU `486,-fpu` with
+8 MiB; startup took 46.729 seconds. Both x64 rebuild generations and the native
+i386 cross-build pass. The tested disk SHA-256 is
+`82955fcbb28d0ad43b6fb542cdc94bbb5a4e6144aa5522528cb9eec253c42581`.
+
+## Native PC-speaker service (2026-09-24)
+
+The normal i386 HolyC scope now exports the original `Snd(I8 ona=0)` primitive
+and `SndRst`. Nonzero Ona values program PIT channel 2 from the twelve-tone
+TempleOS scale (`60` is 440 Hz), then enable the PC-speaker data and gate bits
+at port `0x61`; zero disables both bits. The short critical section restores the
+caller's interrupt-enable state, and the implementation has no FPU dependency.
+
+The focused normal-boot hardware check calls `Snd(60)`, immediately latches PIT
+channel 2 and verifies the divisor range, speaker gate and interrupt state. It
+then checks both direct stop and `SndRst`. All three commands pass on QEMU
+`486,-fpu` with 8 MiB; startup took 47.134 seconds. Both x64 rebuild generations
+and the native i386 cross-build pass. The tested disk SHA-256 is
+`09ddf4bf98a49ce067baca74c6335481992862e22126ccb233688621c7012dcf`.
+This proves emulated PIT/speaker programming; audible output and timer coexistence
+on a named physical PC remain open promotion evidence.
+
+## Native PS/2 mouse input (2026-09-24)
+
+Normal boot now enables the 8042 auxiliary port, configures its interrupt bit,
+starts a standard PS/2 mouse and unmasks IRQ12 together with the PIC cascade.
+The IRQ path distinguishes auxiliary status from keyboard traffic, resynchronizes
+on the packet header, rejects overflow/error bytes and decodes signed relative
+motion into coordinates clamped to the 640×480 VGA surface. It retains the low
+three button bits, packet count and dropped-byte count.
+
+ConsoleRuntime ABI 28 carries the installed state into the normal console and
+exports `MouseGet(&x,&y,&buttons,&packets)` to HolyC. QEMU hardware injection
+verifies the initial center, relative X/Y movement and left-button down/up.
+Mouse setup is optional: if auxiliary initialization fails, normal boot continues
+with IRQ12 masked and `MouseGet` reports unavailable, preserving the keyboard-only
+baseline required by older machines.
+
+The combined keyboard, mouse and speaker run passes all seven submitted commands
+and exact VGA checks on QEMU `486,-fpu` with 8 MiB; startup took 47.885 seconds.
+Both x64 rebuild generations and the native i386 cross-build pass. The tested
+disk SHA-256 is
+`2b66e3e8629baafc7893e2d323fce09ded71e85b43dcaf7c8f09e62e77735dc5`.
+VGA cursor composition, window-manager routing, wheel negotiation, serial
+mouse support and physical-machine evidence remain open.
+
+## Native mouse-to-editor routing (2026-09-24)
+
+`DocEd` now polls the installed PS/2 packet sequence alongside nonblocking
+keyboard input and handles a left-button transition as an insertion-point move.
+Its hit test walks the canonical `CDoc` entries with the renderer's text, tab,
+newline, word-wrap, cursor-cell and viewport rules, clears an existing selection,
+and redraws the ordinary block caret at the selected canonical position. The
+mapping therefore works after vertical or horizontal editor panning without a
+separate flattened document copy.
+
+The QMP interaction harness now has reusable relative-pointer and button actions.
+The `mouse` group clicks between characters, checks the exact VGA caret, types at
+that position and verifies the serialized cursor and neighboring bytes. A second
+60-line document starts with lines 4–59 visible, clicks line 4 through that
+scrolled viewport, observes the viewport return to lines 0–55 and verifies the
+cursor marker at byte 12. The resulting 14-command group passes on QEMU
+`486,-fpu` with 8 MiB; startup took 47.836 seconds and every VGA checkpoint
+matched. The tested disk SHA-256 is
+`7ccc2da15705db8adf3ae07b75b862b598de32a1fe3ebde0c1f1efbe03fd7deb`.
+The combined `mouse` plus `document-editing` regression passes 172 native
+commands against the same image, including all existing keyboard editing,
+selection, clipboard, search, undo, style and persistence checks.
+
+This establishes editor click routing, not a globally composited pointer.
+Global pointer display, drag selection, window/control dispatch, wheel negotiation,
+serial-mouse support and physical-machine evidence remain open.
+
+## Native editor mouse pointer (2026-09-24)
+
+`DocEd` now displays a compact 8×10 XOR arrow after the first mouse packet. The
+overlay is applied only while uploading VGA rows and is immediately removed from
+the retained planar surface, so text rendering, canonical documents and composed
+sprite frames remain cursor-free. Movement restores the old ten scanlines from
+the current clean backing surface and uploads the new ten-line overlay; it does
+not rebuild the full 640×480 graphics frame for each PS/2 packet. Editor exit
+clears pointer state before restoring the HolyC console.
+
+The QEMU oracle independently constructs the pointer mask over the expected VGA
+palette. It checks motion before a click, the pointer over the clicked caret and
+edited text, and a later move to a scrolled document whose exact frame would
+detect stale pixels at the former location. The 14-command `mouse` group passes
+on QEMU `486,-fpu` with 8 MiB, with 47.885-second startup and disk SHA-256
+`bd757ba39252d3a27f037b67208f3c0ccd2aac05bae10043285e16a555444f0f`.
+The combined `mouse` and `document-editing` run passes 172 native commands and
+all exact VGA checkpoints against the same image, proving pointer visibility is
+reset across keyboard-only editor sessions.
+
+Pointer display is currently scoped to `DocEd`. Global console/help/file-picker
+composition, window/control dispatch, wheel negotiation and
+physical-machine evidence remain open.
+
+## Native editor drag selection (2026-09-24)
+
+Holding the left mouse button in `DocEd` now records a stable logical anchor and
+extends selection as PS/2 movement packets arrive. Visible endpoints are mapped
+through the same viewport hit test as clicks. The selection core resolves the
+high endpoint first, splits text records at both canonical offsets, marks the
+intervening entries with `DOCET_SEL`, and leaves the caret at the moving endpoint.
+This produces the same retained selection records used by keyboard extension,
+clipboard commands, deletion and typed replacement. Reverse dragging keeps the
+caret before the selected range as expected.
+
+QEMU tests drag forward over `bc` and backward over `cde`, check exact inverted
+VGA cells under the XOR pointer, release the button, replace each selection with
+`X`, and verify the resulting text and cursor marker in serialized documents.
+The expanded 22-command `mouse` group passes on QEMU `486,-fpu` with 8 MiB;
+startup took 47.938 seconds and the tested disk SHA-256 is
+`c612471d13947d244068f781461373b548bb94f9963df670442345f926d19725`.
+The combined `mouse` and `document-editing` regression passes 180 native
+commands and every exact VGA checkpoint against the same image.
+
+Automatic viewport scrolling during a drag, global pointer/event dispatch,
+wheel negotiation and physical-machine evidence remain open.
+
+## Native file-picker mouse routing (2026-09-24)
+
+The native file picker now polls the shared PS/2 sequence in its nonblocking
+keyboard loop and composites the same transient XOR pointer over its clean text
+planes. A left-button transition maps VGA rows 4–59 through the current picker
+scroll offset and updates the existing selected index. Keyboard navigation and
+Enter continue through the same selection and open paths. Nested `Ed` sessions
+temporarily own and clear their editor overlay; returning restores picker pointer
+ownership before redrawing the selected row.
+
+The QEMU mouse acceptance creates two RedSea files, clicks `Two.HC`, checks the
+exact selected picker frame and pointer, opens the file through public `EdDir`,
+verifies its canonical contents in `DocEd`, returns to the still-selected picker,
+and exits normally. The expanded 27-command `mouse` group passes on QEMU
+`486,-fpu` with 8 MiB. The combined `mouse` and `file-navigation` run passes 63
+native commands and every exact VGA checkpoint, including the existing
+keyboard-only picker sessions; startup took 48.036 seconds and the disk SHA-256
+is `1449f8850e9aa126907a48b25f382a266d9a039e9b12454cd0fd1df4d5395429`.
+
+Mouse-driven picker dialogs and operations, console pointer composition, wheel
+negotiation and physical-machine evidence remain open.
+
+## Native help-viewer mouse routing (2026-09-24)
+
+The native help viewer now polls the shared PS/2 packet sequence and composites
+the same transient XOR pointer used by the editor and file picker. Its hit test
+projects plain text with the viewer's newline, carriage-return, tab and wrapping
+rules, maps the clicked VGA cell back to a source offset, and selects the link
+whose visible range contains that offset. Enter continues through the existing
+link-opening path. A nested help document temporarily owns the overlay; returning
+restores the parent pointer and selected link.
+
+The QEMU mouse test clicks `::/Doc/Asm.DD` in the packaged compiler overview,
+checks the exact selected cells and pointer, opens the assembler document, then
+returns to the same selected parent frame with the pointer restored. The focused
+28-command `mouse` group passes on QEMU `486,-fpu` with 8 MiB; startup took
+47.986 seconds and every VGA checkpoint matched. The tested disk SHA-256 is
+`a818307ae661b1bf6a9bb1082d006912553623d754817accbbf4a2873c28124a`.
+The combined `mouse` and keyboard-driven `help` regression passes 37 native
+commands and all exact VGA checkpoints against the same image, with 47.936-second
+startup. This checks that a later keyboard-only help session starts without a
+stale mouse overlay.
+
+The picker and help viewer now recognize a second press on the same selected item
+within 500 ms and send it through the same activation path as Enter. This opens
+files or directories and follows help links without creating a parallel mouse-only
+action path.
+
+The focused `mouse` group passes 28 native commands, and the combined mouse,
+file-navigation and help regression passes 73 commands on QEMU `486,-fpu` with
+8 MiB. Startup took 47.883 seconds, every exact VGA checkpoint matched, and the
+tested disk SHA-256 is
+`23ec15f93be5e9cd8efda42413be43ff3d8eae3b225bd0a348d8998aa0d3bde6`.
+
+Mouse-driven picker operations, wheel negotiation and physical-machine evidence
+remain open.
+
+## Native HolyC-console mouse pointer (2026-09-24)
+
+The normal HolyC shell now polls keyboard and PS/2 input cooperatively instead of
+sleeping inside a keyboard-only read. The first mouse packet composites the same
+transient XOR arrow over the clean console planes, and later movement restores
+the old scanlines before displaying the new position. A keyboard event restores
+the clean pointer rows before changing or presenting text; subsequent mouse
+activity makes the pointer visible again. Entering an editor, picker or help
+viewer therefore hands the physical frame to that surface without retaining
+pointer pixels in console history.
+
+The QEMU mouse group now waits for the console to consume injected relative
+movement and compares the complete 640x480 prompt frame, including the pointer,
+before typing the next command. The focused 28-command group passes on QEMU
+`486,-fpu` with 8 MiB; startup took 48.035 seconds, every exact VGA checkpoint
+matched, and the tested disk SHA-256 is
+`eeaf055cf935c20fec4c49d2b5abe8f426f100283c0d2e83dbc16e715fbc77b8`.
+The combined keyboard, mouse, file-navigation and help regression also passes
+73 native commands against the same image with 47.987-second startup. Its normal
+prompt checkpoints contain no stale pointer after typing, while nested editor,
+picker and help frames retain their own pointer ownership.
+
+## Native editor drag autoscroll (2026-09-24)
+
+While a left-button selection drag is active, additional PS/2 packets at the
+clamped bottom screen edge now project one row beyond the current viewport.
+Horizontal offsets are implemented but lack dedicated acceptance coverage; the
+top-edge branch is currently rejected by the hit test and remains unfinished. The existing canonical hit test chooses that logical endpoint,
+the selection core updates the same `DOCET_SEL` records used by keyboard and
+clipboard actions, and the cursor-following renderer advances the viewport.
+Repeated relative motion therefore continues scrolling even while the visible
+mouse coordinate remains clamped at the VGA boundary.
+
+The QEMU acceptance starts from a 60-line canonical document, anchors at its
+beginning, drags to y=479 and then injects another downward relative packet. It
+checks that the viewport advances twice, compares all selected text cells and
+the edge pointer in the exact 640x480 frame, and verifies the serialized cursor
+between line 57 and its newline. The expanded focused `mouse` group passes 31
+native commands on QEMU `486,-fpu` with 8 MiB; startup took 48.430 seconds and
+the tested disk SHA-256 is
+`3d4ec2c78bb98427bb293e7544e8943cb3190efe551561b88e1ef92f29357cac`.
+The combined `mouse` and `document-editing` regression passes 189 native
+commands and every exact VGA checkpoint against the same image, with
+48.437-second startup.

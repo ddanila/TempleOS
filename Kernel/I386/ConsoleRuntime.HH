@@ -3,8 +3,9 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
+#include "/Kernel/I386/Mouse.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_CONSOLE_VERSION 24
+#define I386_CONSOLE_VERSION 28
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;
@@ -13,6 +14,8 @@ class CI386ConsoleConfig {
   CHashClass **types;
   CI386KeyboardReader *reader;
   CI386KbcInput *input;
+  CI386MouseState *mouse;
+  I64 *jiffies;
   U32 pit_divisor;
 };
 class CI386ConsoleServices {

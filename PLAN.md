@@ -14,6 +14,13 @@ and broad modern-device support are deferred.
 
 Implementation is underway; see [port progress](docs/port-progress.md) for current
 evidence and limitations. The full 32-bit OS is not yet implemented.
+The next big goal is a [standalone native HolyC development
+environment](#next-big-goal-standalone-native-holyc-development-environment).
+The TDD-driven DolDoc session is its first user-facing workstream. The
+ordinary-text editing/persistence prototype and its first rendered structured
+records, foreground/background color, timed blinking, inversion and underline,
+are available;
+the original editor workflow remains open.
 Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
 two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
 checks 725 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
@@ -150,6 +157,31 @@ signatures and export names, with signed I64 bit addressing and audited locked
 branches. Their shared original-x64/native corpus covers 168 vectors; this closes
 the bit-assignment prerequisite for DocLock, while public Yield and pending-break
 semantics remain required. See [bit assignment](docs/i386-bit-assignment.md).
+
+The compatibility gate now runs both real implementations in both directions.
+A 48-byte structured document produced by original x86-64 `DocSave` is packaged
+unchanged into the native RedSea image and reproduced byte-for-byte by native
+`DocRead`/`DocSave`. Native i386 also persists a 37-byte structured/binary
+document to RedSea; an independent host walk transfers those exact bytes into an
+original-system ISO, where original `DocRead` validates the live records and
+original `DocSave` reproduces the file byte-for-byte. This closes the bounded
+structured subset's bidirectional cross-reading gate; general DolDoc command
+coverage remains part of the complete editor milestone.
+
+The native disk now ships the original `Doc` tree and publishes a read-only
+`Help(name)` viewer. It projects common DolDoc titles, links and menu labels to
+VGA text, supports Page Up/Page Down, arrow paging and Home, and returns to the
+same HolyC prompt without rewriting the source document. Left/Right selection
+and Enter now follow direct `FI:`, `FF:` and `FL:` file links, with nested Escape
+returning to the parent document and exact task-heap recovery. `MN:` links for
+published native symbols resolve through their retained source metadata and open
+the packaged source. `HI:` category links resolve through public retained
+`#help_file` metadata and open a generated listing of matching packaged
+documents and public source-linked symbols. Full DolDoc layout remains part of
+the editor integration milestone.
+`FL:` links, including those reached through `MN:`, begin at their recorded
+one-based source line; `FF:` links begin at the requested text occurrence; and
+`FA:` links map an invisible DolDoc anchor to its visible projection offset.
 Native public task links now track attached live tasks, including blocked workers,
 and detach before reaping. Native dispatch follows public list order, skipping
 blocked, suspended and awaiting-message tasks. If none is eligible, it idles for
@@ -1652,7 +1684,10 @@ reuse, cross-sector append and remount/readback tests. Regular-file deletion now
 flushes tombstones before bitmap release, with empty-file, reclamation and reuse
 tests. Replacement now writes and flushes new storage and publishes the updated entry
 before freeing old storage, with growth/empty/no-space preservation tests.
-Public CDrv/CFile integration, decompression and directory growth remain pending.
+Root and nested RedSea directories now relocate into a larger contiguous extent
+before creation consumes their final zero terminator; parent entries and child
+`..` records are relinked. Public CDrv/CFile integration, decompression and
+crash-atomic directory relocation remain pending.
 See `docs/i386-redsea.md`. A disk-to-module bridge now reads uncompressed RedSea
 modules into temporary heap storage, validates/loads them and releases the file
 buffer before execution. Native tests cover mutable 64-bit data, buffer-lifetime
@@ -1949,7 +1984,7 @@ Repository sources are authoritative for the existing implementation:
 
 ## Focused TDD infrastructure
 
-The console harness now exposes eleven selectable groups through `--group`;
+The console harness now exposes twenty selectable groups through `--group`;
 omitting it retains the complete console suite. See
 [the test workflow](docs/i386-test-workflow.md) for commands and scope. A separate
 mutation runner requires a clean windows baseline and injects two representative
@@ -1968,6 +2003,505 @@ boots the normal 8 MiB image again, and reopens the document in `DocEd` from the
 same RedSea image. This establishes an ordinary-text editing/persistence
 prototype; the medium goal requiring the original editor and edit/execute/reopen
 remains open.
-Full document layout, the remaining original `DocPutKey` commands and editor
+The second slice now also has original/shared navigation oracles and native
+prompt assertions for all four arrows, Home, End, Delete and Tab. The writable
+acceptance sends those keys through QEMU, saves the tab-bearing document, and
+verifies cursor and bytes for tabbed and multiline documents after reboot.
+Deterministic native allocation injection now covers all three `DocNew`
+allocations, both stages of first-character creation, replacement text, newline
+creation and serialization. Each failure releases the document lock, restores
+heap use and permits a later edit/save. `DocRead` also reclaims its partial
+document and owned disk buffer after an injected load failure, then successfully
+reopens the same file. Full document layout and the remaining original `DocPutKey` commands and editor
 callbacks, executable documents, embedded records, mouse input, and execution
 after reopen remain later M5 work.
+
+## Next big goal: standalone native HolyC development environment
+
+**Goal:** Turn the normal 8 MiB i386 image into a coherent offline programming
+system: boot it on the 386+/VGA contract, browse and edit real DolDoc/HolyC files,
+compile and run them through the resident native toolchain, diagnose and recover
+from mistakes, save the work, and resume it after reboot without a host-side
+compiler or test harness. This is the next major integration milestone toward
+M7. It is complete only when the original public services and editor/compiler
+paths support the workflow; prototype adapters remain acceptable while they
+drive tests, but do not close the goal.
+
+Deliver it through four test-driven workstreams:
+
+1. **Daily edit/run loop.** Complete the original DocEd/ExeDoc action path,
+   layout, scrolling, help and file navigation. A user can create a multiline
+   program, press F5 to save and execute it, correct diagnostics, interrupt it,
+   and continue editing the same document.
+   A first public `Dir(path)` workflow now enumerates RedSea directories through
+   the current task's drive and path context, marks subdirectories, accepts
+   absolute and relative paths, and reports missing paths. `EdDir(path)` now adds
+   a keyboard-driven VGA picker: Enter descends into directories or opens a file
+   through `Ed`, Backspace returns to the parent, and `N` creates a named file
+   through the same editor and refreshes the listing after save. Delete now asks
+   for `Y/N`, removes regular files through public `FileDel`, refreshes the
+   listing. Empty directories use the same explicit confirmation and nonempty
+   directories are protected. `R` now renames a file or directory
+   within its parent, rejects collisions and preserves every data extent and
+   directory parent link. Public `FileMove` now moves a regular file between
+   directories on one volume with exact-byte and three-boot integrity coverage.
+   Cross-parent directory moves, wildcard filtering, sorting options and full
+   original DolDoc help layout remain open.
+2. **Durable projects.** Make replacement writes failure-aware; support relative
+   paths and nested directories; preserve DolDoc records across native and x64
+   readers; and prove repeated save/reboot/reopen/execute cycles without directory
+   damage or lost editable state.
+3. **Native programming services.** Close the public memory, task, file, compiler,
+   exception and debugging contracts reached by representative programs. Cover
+   I64, software F64, retained definitions, multiple cooperative tasks and
+   allocation/error recovery through user-visible workflows.
+4. **Integrated workstation acceptance.** Add embedded graphics, mouse and
+   PC-speaker use; measure peak memory, retained growth and input/interrupt
+   latency under editing, compilation and disk activity. Pass a normal manual
+   QEMU session at 8 MiB plus strict 386/no-387 checks. Native self-rebuild at
+   16 MiB remains the following major goal and M7 gate.
+   The normal HolyC scope now exports `Snd` and `SndRst`. `Snd` maps the
+   original Ona note scale to PIT channel 2, gates the PC speaker through port
+   `0x61` and preserves interrupt state. QEMU/486-no-FPU checks latch the 440 Hz
+   divisor and verify on/off/reset gate transitions. Audible validation and
+   speaker coexistence on named physical hardware remain promotion evidence.
+   The boot kernel now enables the auxiliary 8042 port and IRQ12, decodes
+   standard three-byte PS/2 packets and exposes bounded VGA coordinates, three
+   buttons and a packet counter through `MouseGet` in normal HolyC. QEMU hardware
+   injection verifies relative motion and left-button transitions while the
+   combined keyboard/mouse/speaker group proves shared PIC/8042/PIT operation.
+   Auxiliary setup is optional: failure retains normal keyboard-only boot with
+   IRQ12 masked and an unavailable `MouseGet` result.
+   `DocEd` now consumes left-button transitions and maps VGA cells back to
+   canonical insertion points using the same tabs, newlines, wrapping and
+   horizontal/vertical viewport projection as rendering. Exact VGA and saved-byte
+   checks cover insertion on a clicked line and a click through a vertically
+   scrolled viewport. `DocEd` also composites a visible XOR arrow directly during
+   VGA upload while retaining clean text/graphics backing planes; movement restores
+   only the old and new cursor rows. The file picker now uses the same overlay;
+   clicking a visible row selects it, and the existing Enter path opens the
+   selected file. The help viewer now composites the same pointer, maps clicks
+   through its visible text projection, selects a link, opens it through the
+   existing Enter path, and restores pointer ownership on nested return. Pointer
+   composition in the console, broader
+   window-manager routing, wheel negotiation and the planned serial-mouse profile
+   remain open. Holding the left button now extends a canonical selection in
+   either direction; the editor splits text at both endpoints and reuses the same
+   selected entries as keyboard selection, clipboard operations and replacement.
+
+Each workstream starts with an outcome-level failing test. Use original x64
+behavior where it is the semantic oracle, exact file bytes for persistent
+formats, and real QEMU keyboard/VGA observations for the integrated experience.
+The goal closes with one documented manual session and an automated writable-disk
+scenario covering the whole daily loop; isolated component checks alone do not
+satisfy it.
+
+The end-to-end acceptance story is deliberately user-sized: boot a clean normal
+image, use the mouse and keyboard to browse the packaged help and source tree,
+create a project directory and a multiline HolyC/DolDoc program, compile and run
+it, inspect a source-linked error, repair it, interrupt a runaway version, add a
+small graphic and sound, save, reboot, reopen and run the same project again.
+The session must finish with the editor and compiler still usable and with no
+unbounded task-heap growth or RedSea damage.
+
+Build toward that story in these medium-sized increments, each leaving the normal
+image useful on its own:
+
+1. Finish pointer ownership and activation across help, file dialogs, the console
+   and the editor. File-picker items and help links now share a 500 ms
+   double-click/open path with keyboard Enter. The idle HolyC console now displays
+   the same transient pointer and hides it on keyboard input. Editor dragging at
+   the bottom screen edge now advances the viewport and canonical selection.
+   Upward edge scrolling needs correction, horizontal edge behavior needs dedicated
+   validation, and stationary-hold scrolling and keyboard-only fallback acceptance
+   remain. Keep wheel and serial-mouse support optional
+   until the core workflow is stable.
+2. Replace the remaining reduced editor actions with the original DocEd/ExeDoc
+   paths needed by create, open, edit, diagnose, save and execute. Expand DolDoc
+   layout only as the acceptance project reaches records that the current
+   projection cannot preserve or operate.
+3. Join compiler diagnostics, source links, breaks and allocation failures into
+   the editor loop. Every failure case must return to an editable document and
+   preserve successful prior definitions and exact saved bytes.
+4. Run the workflow on a writable disk over several boots, then add concurrent
+   task, graphics, speaker and disk activity while measuring input latency, peak
+   memory and post-session heap use on the 8 MiB no-FPU profile.
+5. Audit all executed code for the 386 instruction contract and repeat the final
+   workflow in a true 386-capable emulator and on the named physical VGA machine.
+   Record hardware-specific gaps before beginning the following self-hosting goal.
+
+## Following big goal: M7 self-hosting 32-bit TempleOS workstation
+
+**Goal:** Starting from a normal bootable disk on the 32-bit 386+/VGA target,
+use TempleOS itself to browse, edit, compile, link and rebuild the complete
+native system without an x86-64 host compiler or test harness. Install that
+build onto a fresh RedSea disk, boot it, and repeat the rebuild from the system
+it produced. Preserve the defining model: HolyC as the system language, DolDoc
+as the development interface, one privileged address space, cooperative tasks,
+direct hardware access, RedSea storage, interactive compilation, graphics,
+sound, help and source-linked diagnostics.
+
+The standalone-development goal above is the entry gate. M7 then requires:
+
+1. **Complete native source build.** All sources needed by the i386 kernel,
+   compiler and runtime compile inside the installed OS. The build consumes
+   only files and tools on the guest disk, reports source-linked failures, can
+   be interrupted, and leaves the running development session usable.
+2. **Bootable native installation.** The native build can format or initialize
+   a fresh RedSea target, publish the rebuilt system failure-atomically, and
+   produce an independently bootable disk. An interrupted installation leaves
+   either the prior bootable system or a recoverable target.
+3. **Two-generation self-hosting.** A host-built Generation 0 produces native
+   Generation 1; Generation 1 boots and produces Generation 2. Generation 2
+   has equivalent public behavior and persistent formats, and can rebuild the
+   same source tree again without retained host-built compiler state.
+4. **PC-class acceptance.** Automated promotion covers a true 386SX/DX model in
+   a selected 386-capable emulator, QEMU 486, and a later 32-bit CPU profile,
+   all without an FPU dependency. QEMU itself is not 386 evidence because its
+   current minimum x86 CPU model is 486. The complete build runs
+   in 16 MiB; 8 MiB is a follow-on memory target. At least one physical 386+
+   VGA machine passes boot, editing, compilation, storage, graphics, speaker
+   and native-build smoke tests.
+5. **Release evidence.** Compiler semantics, allocation ownership, task and
+   exception recovery, persistent compatibility and installation interruption
+   are automated. A documented manual session creates and fixes a program,
+   follows help and diagnostics, runs and interrupts it, reboots, rebuilds the
+   OS, installs the result and boots the rebuilt disk.
+
+M7 closes only with the second native generation booted and verified. A
+cross-compiled image, a native rebuild that cannot install itself, or component
+tests without the complete disk-to-disk workflow do not satisfy it.
+
+### Next major TDD milestone: original-source project workflow
+
+**Goal:** Starting from a normal 8 MiB boot, complete a small HolyC project using
+the OS itself: browse to a nested project, create and rename source files, edit a
+multiline executable DolDoc through the original editor path, follow help and
+compiler diagnostics, run and interrupt the program, save it with failure-atomic
+replacement, delete an obsolete regular file with confirmation, reboot the same
+disk, and resume the project with its source, document records and output intact.
+No step may require a host compiler, injected command, diagnostic boot or host-side
+filesystem repair.
+
+Develop this as one vertical acceptance with smaller red/green contracts:
+
+1. **Project mutations — regular-file lifecycle complete.** File and directory rename,
+   collision and missing-path behavior, directory protection on delete,
+   transactional picker refresh and exact allocation-bitmap ownership after
+   create/rename/delete cycles now pass, including safe removal of empty directories
+   and rejection of nonempty ones. Cross-directory regular-file moves now pass
+   exact-byte, rejection and three-boot filesystem-integrity coverage.
+   Deterministic move-transaction injection now stops before source reading,
+   before destination creation, after destination publication and before source
+   deletion; every stage preserves the source, removes the destination and passes
+   a clean reboot plus exact bitmap audit. Raw sector-write/flush injection now
+   covers all seven writes and six flushes in a journaled cross-directory move.
+   A persistent header intent lets mount recovery roll back a duplicate
+   destination while the source remains, or accept the destination once the
+   source tombstone is durable. Mount-time reconstruction repairs allocation
+   bits from the reachable tree; every case retains exactly one complete file
+   and an exact bitmap. Cross-parent directory moves remain.
+2. **Original editor path.** Drive the original `DocEd`/`DocRecalc` action and
+   handler dependencies from real keyboard events. Compare text, cursor,
+   scrolling, embedded-record placement and saved bytes with original x86-64
+   behavior. Replace prototype expectations only after the equivalent original
+   path is green.
+3. **In-place development recovery.** From that editor, compile and run I64 and
+   software-F64 code, retain a definition, navigate a source-linked diagnostic,
+   correct it, catch a runtime exception and interrupt a loop. Prove the document,
+   prior definitions, locks and task heap remain usable after every recovery.
+4. **Atomic persistence and compatibility.** Inject failures before allocation,
+   data flush, directory publication and old-extent reclamation. After every
+   failure, reboot and require either the old or complete new file, a mountable
+   tree and a bitmap matching reachable extents. Cross-read representative
+   ordinary and embedded-record documents with the original x86-64 target.
+   Raw replacement injection now covers all four writes and three flushes: every
+   recovery retains exact `OLD` or `NEW` bytes, clears transaction state and
+   matches the reachable allocation bitmap. Original/native cross-reading
+   remains open.
+5. **Promotion.** Repeat the complete workflow after reboot, run twenty bounded
+   edit/run/error/save cycles, and record live/peak memory, input and interrupt
+   latency. Finish with a documented manual QEMU session on the normal image,
+   strict 386/no-387 instruction checks and the complete build/rebuild gates.
+
+Use the focused group for the current failing contract during development. A
+matching image hash qualifies a prior exhaustive interactive result for the same
+artifact; the release promotion still rebuilds, boots, audits the writable disk
+and runs the full suite once. This keeps TDD feedback bounded while preserving
+the complete integration evidence.
+
+### First workstream: TDD-driven native DolDoc development session
+
+**Goal:** On the normal 8 MiB native image, use the original DolDoc editor to
+create and edit a multiline HolyC program, execute it, recover from a syntax
+error and an interrupted program, save it to RedSea, reboot the same disk,
+reopen it and execute it again. Preserve canonical documents, shared ring-0
+execution, task ownership, and the original file format. This completes the
+editing-session medium goal in [the dependency analysis](docs/i386-doldoc-integration.md)
+and advances M4/M5; it does not complete all of M5, self-hosting or physical-PC
+acceptance. Status: **in progress; multiline editing, navigation, executable
+documents, replacement persistence, relative/deep project paths, timed blink
+rendering, file-level `Ed` save/cancel, direct Ctrl-S save and allocation integrity pass, while original-editor integration,
+full DolDoc compatibility and failure durability remain open**.
+
+### Readiness and test boundaries
+
+We have enough infrastructure to start TDD now: focused native console groups,
+original-x64 comparisons, QEMU keyboard/VGA checks, writable-copy two-boot
+acceptance, mutation verdict checks, and full rebuild/boot regressions. These
+provide different evidence. Existing window mutations demonstrate that those
+assertions detect two faults; they do not establish editor coverage. The current
+native persistence test covers five root-directory plain-text files. The shared
+loader round-trip corpus runs under original x64, not the native console.
+
+Add missing tests with each implementation slice. Use three complementary
+oracles: original x64 behavior for document semantics, explicit expected text and
+file bytes for stable format contracts, and hardware-input/VGA checks for the
+integrated native user experience. Shared code agreeing with itself is
+insufficient. Keep assertions on outcomes and ownership, not incidental native
+addresses, allocation order or the prototype's extra cursor cell.
+
+### Ordered implementation slices
+
+1. **Establish the next failing contract — complete for the prototype.** Extend the session acceptance with
+   Enter/newline, cursor movement across lines, an insertion and a backspace
+   joining lines. Capture expected text, cursor position and serialization from
+   the original editor; add native assertions for the same sequence. Preserve
+   the current passing single-line acceptance separately. The new test must
+   fail at the missing multiline behavior on the current image, after successful
+   boot and editor entry. A boot failure or timeout is not the intended red result.
+   The original/shared oracle first failed at post-join insertion, then passed
+   after newline insertion and newline deletion were added. A 13-command native
+   focused run and a two-boot hardware-keyboard/VGA acceptance now pass the same
+   sequence. This closes the first test slice only; it does not substitute the
+   prototype for the original editor work in slices 2–4.
+
+2. **Integrate original editing and document lifetime — in progress.** Connect the required
+   original `DocNew`, `DocPutKey` and entry/navigation dependencies rather than
+   extending the small native editor into a permanent replacement. Add newline,
+   tab, arrows, Home/End, Delete and Backspace vectors, including empty documents
+   and line boundaries. Compare contents, cursor and serialization on both
+   targets. Exercise repeated create/reset/delete and allocation failures;
+   document queues, task heaps and locks must remain valid after failure.
+   Home, Right, Delete, Tab and End pass an eight-point original/shared oracle.
+   Up/Down now pass a separate eight-point preserved-column oracle, including
+   short lines and top/bottom limits. Eight more cases cover an empty document,
+   an empty middle line, structural cursor serialization, `DOCF_NO_CURSOR`, and
+   insertion there. Five further cases cover removing that insertion, Delete and
+   Backspace line joins, and no-op behavior at the document limits.
+   Native focused assertions and a real QEMU keyboard/VGA save/reboot/reopen
+   session cover the same behavior. Tab restoration is included in the six-point
+   original-save/shared-load round trip. Twelve deterministic allocation and
+   recovery outcomes now cover construction, entry creation, text replacement,
+   newline insertion, serialization, load cleanup, lock release, heap balance
+   and subsequent successful editing and reopening. Failure-atomic persistent
+   file replacement and
+   replacement by the complete original
+   `DocPutKey` dependency path remain open, so this slice is not complete.
+
+3. **Integrate original layout and editor input.** Bring up the required
+   `DocRecalc`, `DocEd` and `MakeDoc` handler dependencies over the retained VGA
+   and task services. Test wrapping, scrolling beyond the viewport, cursor
+   placement and return to the existing prompt using real keyboard events.
+   Verify put/display/border document pointers, input handlers and locks are
+   restored on normal exit and exception. Add one bounded embedded-graphics
+   fixture and callback/handler case. Replace prototype-only rendering
+   expectations with the original document semantics as this slice lands.
+   The retained renderer now has a bounded 56-row body viewport. A 65-line
+   hardware/VGA case proves that the heading stays fixed and Up moves the
+   viewport with the canonical cursor. A separate 100-column case proves
+   cursor-following horizontal panning from End to Home when word wrap is off.
+   Page Up and Page Down now move 55 logical lines through the 56-row body; an
+   exact 65-line hardware/VGA case proves line 63 to 08 and back to 63.
+   Original Ctrl-Up/Ctrl-Down document-boundary bindings now move to the cursor
+   before line 00 and after line 64 in the same exact-frame sequence.
+   A real Ctrl-Alt-C while the native editor is waiting now propagates through
+   its exception boundary after restoring the task's put/display documents and
+   console surface. The hardware test also proves the document lock and pending
+   break are clear and the compiler remains usable. Original `DocRecalc`,
+   border/input-handler integration and the rest of the
+   original editor restoration contract keep this slice open.
+   The first bounded embedded-graphics increment is also present: after an
+   exact RedSea save/reopen, the native editor interprets original color,
+   point, line and filled-rectangle sprite records and composes them over its
+   text on the VGA framebuffer. The dedicated `document-sprites` QEMU group
+   checks exact pixels independently of the larger editor suite. Full `Sprite3`,
+   original `DocRecalc` placement and malformed-record coverage remain open.
+   F1 now opens the packaged Help Index through the native viewer, while
+   Shift-F1 opens About TempleOS. A hardware acceptance opens help from an
+   unsaved document and requires Escape to restore its exact text, cursor and
+   editor frame before the session continues.
+   F4 now opens the native file picker at the active document's parent path and
+   inserts the selected absolute filename through canonical editor input.
+   Shift-F4 selects and inserts a directory name. Each complete path is one
+   undo point; Escape cancels without changing the document. Standalone `EdDir`
+   retains directory traversal, file editing and project mutation behavior.
+   Ctrl-F now captures a bounded search string, F3 repeats forward and Shift-F3
+   repeats backward with wrapping. Search projects adjacent canonical text,
+   newline and tab records into a temporary logical stream and maps a match back
+   to its exact entry and column. Exact VGA tests cover the prompt, first match,
+   next match, reverse repeat and visible `Not found` state. Temporary projection
+   allocations unwind locally and preserve the document lock on failure.
+   Tab from the Ctrl-F search field now accepts replacement text and replaces
+   the next match through canonical `DocPutKey` deletion/insertion. Exact VGA
+   checks cover both prompt fields and the resulting document. Replace-all,
+   confirmation/skip choices, options and selection-scoped semantics remain open.
+   Alt-Backspace now walks a sixteen-level stack of pre-mutation canonical snapshots for
+   ordinary typing, deletion, style changes and replacement. The snapshot is
+   published only after complete serialization, includes the cursor and embedded
+   records. A seventeenth edit evicts the oldest complete snapshot; editor exit
+   releases the entire stack. Continuous insertion, Backspace and Delete runs
+   now coalesce for one second; operation changes, cursor movement and command
+   actions close the run. Exact VGA coverage proves that a typed word undoes as
+   one operation while timed-apart edits retain distinct document/cursor states.
+   Shift-Left and Shift-Right now split
+   canonical text records at exact character boundaries, mark the traversed
+   records with the original selection bit, render them inverted and let typing,
+   Backspace or Delete replace the selected span. Exact VGA coverage selects two
+   characters and types over them. Ctrl-C, Ctrl-X and Ctrl-V now copy, cut and
+   paste selected canonical records through a retained native clipboard; a new
+   complete copy replaces the prior clipboard, cut/paste participate in undo,
+   and exact VGA checks cover the full sequence. Paste now serializes and loads
+   the complete clipboard into a staging document, completes any cursor split,
+   then publishes entries and binaries without another failure point. The
+   allocation gate fails every discovered step and requires identical target
+   bytes and heap ownership. Reversing Shift-Left or
+   Shift-Right toggles the traversed canonical character back out of the
+   selection, with exact selection-color/cursor coverage. Vertical/document-wide
+   selection. Ctrl-Shift-Up and Ctrl-Shift-Down now select canonical records
+   from an exact cursor boundary to the document start or end, enabling
+   whole-file cut/copy/paste with exact VGA coverage. Shift-Up and Shift-Down
+   now select multiline canonical ranges between equal visual columns, including
+   newline records; typing over the range has exact VGA coverage. Shift-Page-Up
+   and Shift-Page-Down use the same canonical range operation across the 55-line
+   viewport while preserving the visual column. Reversing either vertical/page
+   movement toggles the same canonical range out of the selection, with exact
+   VGA cursor and selection-state coverage.
+   Ctrl-G now captures a bounded positive line number and positions the
+   canonical cursor at that line's first editable byte. An out-of-range request
+   preserves the prior cursor and renders `Line not found`; exact VGA tests cover
+   the prompt, successful move and rejection.
+
+4. **Execute and recover within the document workflow.** Add an acceptance that
+   types a small multiline program through the editor, invokes the original
+   execution path, and checks visible output and a retained definition. Include
+   I64 and software-F64 results. Then introduce and correct a syntax error,
+   exercise a caught runtime exception, and interrupt a nonterminating program
+   through keyboard input. The document, prior definitions and subsequent
+   execution must survive. Calling the compiler directly from the harness is
+   component coverage, not completion of this user-visible gate.
+   Retained `DocExe` now converts a locked canonical document to cursor-free
+   source and feeds the live console compiler. A focused check executes a
+   multiline program, observes `42` and reuses its retained definition. The
+   writable acceptance uses F5 to save and execute that program, reboots the same
+   disk and executes it again. This save-before-execute order matches the original
+   F5 command and is proved without a harness-side `DocWrite`. Native `DocEd` now
+   binds F5 to a result view: hardware-keyboard
+   acceptance reports and corrects a syntax error, survives a thrown runtime
+   exception, and interrupts a marked infinite loop with Ctrl+Alt+C before
+   returning to the same document. Native diagnostics retain the current token's
+   source line; after Escape, an error in the edited file places the cursor at
+   the first byte of that line. A multiline hardware test navigates from line 3
+   to the error on line 2, corrects it and reruns all three expressions. A
+   separate F5 document produces the expected
+   software-F64 `3.75` result. The source snapshot releases `DocLock` before
+   execution so breaks are deliverable. The original `ExeDoc`/editor action
+   remains open.
+
+5. **Persist the complete session and verify compatibility.** Extend the writable
+   two-boot acceptance to save the edited program, replace it with changed
+   contents, reboot, reopen and execute the saved revision. Assert text/cursor
+   state, embedded-record contents and output; check directory/allocation
+   integrity and include a nested-directory file. Cross-read original-x64 and
+   native saved fixtures, preserving the fixed-width binary-record span. Add a
+   controlled failed-write case: report failure, retain the editable document,
+   release file ownership, and verify the filesystem's documented failure
+   behavior. Do not infer crash-safe saving from successful writes.
+   The acceptance is now a three-boot scenario: it creates and executes `42`,
+   reopens and changes the program to `48` with hardware keys, saves through F5,
+   then reboots and executes the persisted revision as `48`. Exact source/cursor
+   and VGA checks pass. F5 on a missing-parent path now visibly reports `Save
+   failed`, executes the in-memory source, and returns to the intact editable
+   document. Public `DirMk` now creates `C:/Project`, and F5 saves and executes
+   `C:/Project/Sub/Main.HC` before a later boot reopens and executes it again.
+   The same session saves `Project/Sub/Relative.HC` through relative-path
+   resolution, reboots, reopens it by the same spelling and executes `64` again.
+   An independent disk walk verifies directory parents, nonoverlapping reachable
+   extents, exact project bytes and a bitmap matching all reachable allocations.
+   Embedded records, original/native cross-reading and injected I/O failure
+   remain open; a missing parent proves application recovery but does not
+   establish crash-safe replacement.
+   Ctrl-S now provides the original save-without-execution path with a visible
+   success/failure result. Hardware-keyboard checks reopen the resulting exact
+   bytes and verify that failed saves preserve the editable in-memory document.
+   A retained file-level `Ed(path)` workflow now loads or creates a document,
+   saves on Escape and discards the session on Shift-Escape. Its create/save and
+   cancel behavior pass hardware-keyboard checks and a three-boot disk audit.
+   The native reader/writer now preserves the original 16-byte `CDocBin` trailer
+   and a bounded canonical `$SP,"tag",BI=n$` reference. Exact in-memory and
+   RedSea save/reopen tests verify renumbering, entry-to-payload linkage, flags,
+   sizes, arbitrary bytes, truncated-input rejection and all four allocation
+   failure points. General embedded commands, original/native cross-reading and
+   injected disk-write failure remain open.
+
+6. **Close resource, regression and manual acceptance.** At 8 MiB, run at least
+   20 edit/execute/error/save/reopen cycles after warm-up. Account for intentional
+   persistent definitions and caches separately; temporary document, compiler,
+   file and exception state must return to a bounded baseline without per-cycle
+   growth. Record usable RAM, resident/peak allocations, bootstrap headroom,
+   normal boot time, key-to-visible-update latency and interruption latency.
+   Include a small program and a document longer than one screen. Keep the normal
+   boot check's existing 60-second development deadline; establish and record
+   latency budgets from the first original-editor measurements before closing
+   this slice. Finish with full regression and a documented manual QEMU run.
+   A guest-side acceptance now completes one warm-up plus 20 create, edit,
+   save, reopen, execute, runtime-exception and cleanup cycles. Every measured
+   cycle returns the shared task heap, exposed through both the data and code
+   handles, to its exact warmed baseline, and retained execution state advances
+   exactly once per cycle. MemoryRuntime ABI 10 measures allocations at their
+   source: the warmed baseline is 1,352,216 live bytes, the live peak is
+   1,355,832 bytes and reserved capacity peaks at 1,356,800 bytes. The focused
+   `document-resources` QEMU/VGA group and native self-rebuild gate pass.
+   The focused long-document Up-key-to-exact-VGA measurement is 0.204 seconds
+   and interrupt-to-recovered-VGA measures 0.217 seconds; both pass a one-second
+   development budget. The complete writable three-boot gate records a
+   conservative accumulated interrupt value of 0.275 seconds and passes. A
+   repeatable long-document human checklist is documented; an observed manual
+   run remains open. The
+   complete gate also passes with the pre-instrumentation resource case in the
+   accumulated interactive session: 357 native commands, 420 submitted lines,
+   44.407-second normal startup and 159.598-second diagnostic startup.
+
+### TDD execution and completion rules
+
+- For each slice, add a focused assertion, observe the intended failure, implement
+  the smallest coherent original-code integration, then refactor with the tests
+  green. Retain the previous passing session throughout. Missing compiler/runtime
+  dependencies become bounded prerequisites with their own failing tests; do not
+  stub away original semantics to pass the outer scenario.
+- Use the existing `documents`, `text`, `windows`, `graphics`, `sound`, `compiler` and
+  `breaks` groups as appropriate. Add focused cases or groups where needed.
+  Rebuild the image after OS changes; tests against an older image are not
+  evidence for the current source. Commands are in [the test workflow](docs/i386-test-workflow.md).
+- Before closing the goal, add representative editor and persistence mutations,
+  such as dropping a newline edit and reporting save success without writing.
+  Require the corresponding content or post-reboot assertion to detect each
+  fault after a clean baseline. Crashes, timeouts and unrelated failures remain
+  inconclusive. Keep injections in disposable guest state or copied test disks.
+- At each completed slice, run the affected focused checks and full
+  `tools/build-i386-kernel.py --test`; run `tools/test-rebuild.py` first when
+  Kernel/Compiler sources change. Run the expanded two-boot acceptance for
+  changes affecting the session. Record source/image hashes, tested profile,
+  actual checks, logs and screenshots with each milestone result.
+- Close this goal only when the original editor path and the complete
+  edit/execute/recover/save/reboot/reopen/re-execute acceptance pass together,
+  resource measurements and budgets are recorded, and the workflow is usable
+  manually without startup diagnostics or host assistance. Keep all six slices
+  open until their evidence exists; the current prototype does not close them.
+
+The development gate remains QEMU/486 with VGA and 8 MiB. Continue instruction
+audits and strict 386/no-387 checks as relevant code changes land; track unavailable
+hardware evidence explicitly. QEMU success cannot close 386SX/DX or physical-PC
+acceptance. Full help layout, mouse/window-manager integration, physical speaker
+evidence, broader DolDoc features and native rebuilds retain their existing
+M5–M7 gates.

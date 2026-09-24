@@ -175,7 +175,9 @@ bounded input queue and wakes the reader without switching inside the interrupt.
 A dedicated heap-owned task blocks in `I386KeyboardRead`, decodes key-down events,
 and owns the console buffer and VGA presentation. Queue discontinuity resets the
 partial line and decoder rather than submitting ambiguous input. The auxiliary
-port remains disabled by the current keyboard setup; mouse support is pending.
+port is now enabled after keyboard setup. IRQ12 feeds a bounded standard
+three-byte PS/2 decoder, and normal HolyC can snapshot coordinates and buttons
+through `MouseGet`; window-manager/editor cursor routing remains pending.
 
 `Text.HH/HC` provides an allocation-free 80×60 renderer over the existing four
 planar buffers. It uses the original `Kernel/FontStd.HC` bytes, supports all 256

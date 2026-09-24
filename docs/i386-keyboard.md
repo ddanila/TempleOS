@@ -201,7 +201,9 @@ translated scan-set-1 stream expected by the packet decoder.
 Failure can leave controller and keyboard configuration partially changed;
 there is no rollback of device state. Keep IRQs masked and recover under exclusive
 ownership before consuming input. These functions do not route concurrent key or
-mouse traffic, probe every historical controller variant, or perform keyboard BAT.
+every historical controller variant or perform keyboard BAT. The normal kernel
+now routes auxiliary bytes to the standard three-byte PS/2 mouse decoder on
+IRQ12; wheel negotiation and non-PS/2 profiles remain separate work.
 They are not runtime LED/typematic transaction management.
 
 The native input fixture checks invalid budgets/attempt counts, successful setup,

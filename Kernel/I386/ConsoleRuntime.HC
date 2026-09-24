@@ -32,13 +32,28 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 U8 *console_planes;
 extern U0 ConsolePresent();
+extern Bool DocExe(CDoc *doc,I64 flags=0);
+public Bool MouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0)
+{
+  CI386MouseState *mouse;
+  U32 flags;
+  if(!x || !y || !console_config || !(mouse=console_config->mouse) ||
+      !mouse->installed) return FALSE;
+  flags=I386IrqSave; *x=mouse->x; *y=mouse->y;
+  if(buttons) *buttons=mouse->buttons;
+  if(packets) *packets=mouse->packets;
+  I386IrqRestore(flags); return TRUE;
+}
+I64 console_diagnostic_line;
+U8 console_diagnostic_filename[256];
 #include "/Kernel/I386/DocumentRuntime.HC"
+#include "/Kernel/I386/SoundRuntime.HC"
 #include "/Kernel/I386/TextBase.HC"
 #include "/Kernel/I386/Window.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[97];
+CI386KernelSymbol console_doc_exports[111];
 U32 console_version=I386_CONSOLE_VERSION;
 extern Bool NativeGraphicsStart();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
@@ -253,7 +268,35 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[95].val=(&DocRead+0)(U64);
   console_doc_exports[96].str="_DOC_ED";
   console_doc_exports[96].val=(&DocEd+0)(U64);
-  for(i=0;i<97;i++) {
+  console_doc_exports[97].str="_DOC_ALLOCATION_CHECK";
+  console_doc_exports[97].val=(&DocAllocationCheck+0)(U64);
+  console_doc_exports[98].str="_DOC_EXE";
+  console_doc_exports[98].val=(&DocExe+0)(U64);
+  console_doc_exports[99].str="_DIR_MK";
+  console_doc_exports[99].val=(&DirMk+0)(U64);
+  console_doc_exports[100].str="_ED";
+  console_doc_exports[100].val=(&Ed+0)(U64);
+  console_doc_exports[101].str="_DIR";
+  console_doc_exports[101].val=(&Dir+0)(U64);
+  console_doc_exports[102].str="_ED_DIR";
+  console_doc_exports[102].val=(&EdDir+0)(U64);
+  console_doc_exports[103].str="_FILE_DEL";
+  console_doc_exports[103].val=(&FileDel+0)(U64);
+  console_doc_exports[104].str="_FILE_RENAME";
+  console_doc_exports[104].val=(&FileRename+0)(U64);
+  console_doc_exports[105].str="_DIR_DEL";
+  console_doc_exports[105].val=(&DirDel+0)(U64);
+  console_doc_exports[106].str="_FILE_MOVE";
+  console_doc_exports[106].val=(&FileMove+0)(U64);
+  console_doc_exports[107].str="_HELP";
+  console_doc_exports[107].val=(&Help+0)(U64);
+  console_doc_exports[108].str="_SND";
+  console_doc_exports[108].val=(&Snd+0)(U64);
+  console_doc_exports[109].str="_SND_RST";
+  console_doc_exports[109].val=(&SndRst+0)(U64);
+  console_doc_exports[110].str="_MOUSE_GET";
+  console_doc_exports[110].val=(&MouseGet+0)(U64);
+  for(i=0;i<111;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78) console_doc_exports[i].kind=3;
@@ -307,7 +350,10 @@ U0 ConsoleKeys(I64 unused)
 {//Single console/input owner. Each complete line is a recoverable compiler input.
   CI386KeyEvent event;
   U8 line[256];
-  I64 length=0,decoded,ch,spaces,header_used;
+  I64 length=0,decoded,ch,spaces,header_used,
+      mouse_x=0,mouse_y=0,mouse_buttons=0,mouse_packets=0,
+      next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets;
+  Bool mouse_visible=FALSE;
   CI386Task *task=I386TaskSelf;
   CI386TaskSymbols *scope=task->symbol_state;
   //Fresh scheduler entries have IF clear. Devices and task services are ready;
@@ -325,8 +371,13 @@ U0 ConsoleKeys(I64 unused)
   else KernelLog("STARTUP source error\n");
   I386TextWrite(&console_text,"> "); ConsolePresent;
   KernelLog("DONE native kernel startup\n");
+  MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   while(1) {
-    decoded=I386KeyboardRead(console_config->reader,&event,TRUE);
+    decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+    if(decoded && mouse_visible) {
+      NativeMousePlaneHide(console_planes,mouse_x,mouse_y);
+      mouse_visible=FALSE;
+    }
     if(decoded<0) {
       length=0;
       I386TextWrite(&console_text,"\nInput reset\n> ");
@@ -354,6 +405,18 @@ U0 ConsoleKeys(I64 unused)
       }
       ConsolePresent;
     }
+    if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+        next_mouse_packets!=mouse_packets) {
+      if(mouse_visible)
+        NativeMousePlaneMove(console_planes,mouse_x,mouse_y,next_mouse_x,next_mouse_y);
+      else {
+        NativeDocMouseShow(console_planes,next_mouse_x,next_mouse_y);
+        mouse_visible=TRUE; KernelLog("CONSOLE mouse pointer\n");
+      }
+      mouse_x=next_mouse_x; mouse_y=next_mouse_y;
+      mouse_buttons=next_mouse_buttons; mouse_packets=next_mouse_packets;
+    }
+    if(!decoded) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
   }
 }
 

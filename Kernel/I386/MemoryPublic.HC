@@ -1,4 +1,38 @@
 #include "/Kernel/I386/MemoryPublic.HH"
+CTask *memory_measure_task;
+I64 memory_measure_base,memory_measure_peak,memory_measure_reserved_peak;
+
+U0 MemoryMeasureUpdate(CHeapCtrl *hc)
+{
+  if(memory_measure_task && hc==memory_measure_task->data_heap) {
+    if(hc->used_u8s>memory_measure_peak) memory_measure_peak=hc->used_u8s;
+    if(hc->alloced_u8s>memory_measure_reserved_peak)
+      memory_measure_reserved_peak=hc->alloced_u8s;
+  }
+}
+
+Bool MemoryMeasureStart(CTask *task=0)
+{
+  U32 flags=I386IrqSave;
+  if(!task) task=I386TaskSelf;
+  if(memory_measure_task || !task || task->task_signature!=TASK_SIGNATURE_VAL ||
+      !task->data_heap) { I386IrqRestore(flags); return FALSE; }
+  memory_measure_task=task;
+  memory_measure_base=memory_measure_peak=task->data_heap->used_u8s;
+  memory_measure_reserved_peak=task->data_heap->alloced_u8s;
+  I386IrqRestore(flags); return TRUE;
+}
+
+Bool MemoryMeasureStop(I64 *base,I64 *peak,I64 *reserved_peak)
+{
+  U32 flags=I386IrqSave;
+  if(!memory_measure_task || !base || !peak || !reserved_peak) {
+    I386IrqRestore(flags); return FALSE;
+  }
+  *base=memory_measure_base; *peak=memory_measure_peak;
+  *reserved_peak=memory_measure_reserved_peak; memory_measure_task=0;
+  I386IrqRestore(flags); return TRUE;
+}
 //Readable live objects are required, as for the original ring-0 allocation API.
 //The bootstrap allocator has different headers and cannot service these calls.
 U8 *MemoryBase(U8 *ptr)
@@ -30,6 +64,7 @@ U8 *MemoryAlloc(I64 size,CTask *selector=0)
     KernelLog("BAD MALLOC HEAP\n"); KernelStop;
   }
   ptr=I386MemAlloc(hc,size);
+  if(ptr) MemoryMeasureUpdate(hc);
   I386IrqRestore(flags);
   if(!ptr) throw('OutMem',TRUE);
   return ptr;

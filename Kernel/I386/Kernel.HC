@@ -20,6 +20,7 @@
 #include "/Kernel/I386/ConsoleRuntime.HH"
 #include "/Kernel/I386/KeyboardSetup.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
+#include "/Kernel/I386/Mouse.HH"
 #include "/Kernel/I386/Kbc.HH"
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/HashTable.HH"
@@ -48,8 +49,13 @@ CI386ConsoleConfig kernel_console_config;
 U8 *kernel_console_image;
 //Build tooling enables this data flag only in the diagnostic disk copy.
 U32 kernel_diagnostics=0;
+//Build tooling enables this only on a disposable writable probe image.
+U32 kernel_file_mutation_probe=0;
+//High byte selects RedSea task operation; low byte selects its failing call.
+U32 kernel_file_io_probe=0;
 Bool kernel_display_ready,kernel_probe_ready;
 CI386KbcInput kernel_input;
+CI386MouseState kernel_mouse;
 CI386KeyboardReader kernel_reader;
 U8 kernel_gdt[40],kernel_idt[2048];
 
@@ -61,8 +67,8 @@ CHashClass *kernel_scalars[6];
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
 CCntsGlbls cnts;
-CI386KernelSymbol kernel_exports[55];
-U8 kernel_export_kinds[55]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1};
+CI386KernelSymbol kernel_exports[57];
+U8 kernel_export_kinds[57]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
 CI386MemoryServices kernel_memory;
@@ -100,7 +106,7 @@ extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_compiler_bindings[23]={3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41};
 U8 kernel_probe_bindings[24]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27};
-U8 kernel_files_bindings[26]={10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54};
+U8 kernel_files_bindings[29]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56};
 U8 kernel_memory_bindings[14]={10,11,12,20,13,14,0,18,19,16,42,40,41,8};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
@@ -109,6 +115,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   CI386MemRange reserved,arena;
   CI386InterruptServices services;
   I64 pulse_used;
+  Bool mouse_ready;
   KernelLog("START native kernel\n");
   reserved.base=0x88000; reserved.size=32768;
   if(!I386BootArena(info,&reserved,1,&arena) || !(info->flags&2) ||
@@ -138,9 +145,22 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelStartup;
   if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
   KernelLog("STORAGE TASK BOUND\n");
+  if(kernel_file_io_probe) {
+    if(kernel_file_io_probe==1) KernelLog("DONE file io recovery\n");
+    else {
+      if(!kernel_files.move_io_probe(kernel_file_io_probe>>8,kernel_file_io_probe&255)) KernelStop;
+      KernelLog("FILE IO PROBE "); KernelHex(kernel_file_io_probe); KernelLog("\n");
+      KernelLog("DONE file io probe\n");
+    }
+    asm { CLI }
+    while(1) { asm { HLT } }
+  }
   if(!I386KeyboardSetup) KernelStop;
+  mouse_ready=I386MouseSetup(&kernel_mouse);
+  if(mouse_ready) KernelLog("MOUSE PS2\n");
+  else { I386KbcWrite(TRUE,0xA7); KernelLog("MOUSE absent\n"); }
   KernelLog(kernel_ready_message);
-  I386PicMask(0xFFFC);
+  if(mouse_ready) I386PicMask(0xEFF8); else I386PicMask(0xFFFC);
   if(kernel_diagnostics) {
     kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,16384,&KernelPulse,0,
       0x18,0x20,524288);
@@ -191,8 +211,9 @@ U0 KernelIrq(CI386IrqFrame *frame)
   if(frame->irq==0) {
     if(!I386TimerStep(&kernel_timer) || !I386SleepTick(&kernel_sleep)) KernelStop;
   }
-  if(frame->irq==1 && I386KbcRead(&data,&status)) {
-    if(!kernel_console.key_irq(data,status)) I386KbcInputPut(&kernel_input,data,status);
+  if((frame->irq==1 || frame->irq==12) && I386KbcRead(&data,&status)) {
+    if(status&0x20) I386MouseFeed(&kernel_mouse,data,status);
+    else if(!kernel_console.key_irq(data,status)) I386KbcInputPut(&kernel_input,data,status);
   }
   I386PicEoi(frame->irq);
 }
@@ -216,6 +237,10 @@ U0 KernelPulse(I64 unused)
   for(pulses=0;pulses<2;pulses++) {
     if(!I386SleepTicks(&kernel_sleep,25)) KernelStop;
     KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
+  }
+  if(kernel_file_mutation_probe) {
+    if(!kernel_files.move_probe()) KernelStop;
+    KernelLog("FILE MOVE PROBE 0000000000000004\n");
   }
   kernel_memory.probe(1);
   KernelCompilerProbe(1);
@@ -253,6 +278,7 @@ U0 KernelDisplay()
 #include "/Kernel/I386/KbcQueue.HC"
 #include "/Kernel/I386/KbcInput.HC"
 #include "/Kernel/I386/KeyboardSetup.HC"
+#include "/Kernel/I386/Mouse.HC"
 #include "/Kernel/I386/Hash.HC"
 #include "/Kernel/I386/HashTableCore.HC"
 #include "/Kernel/HashValue.HC"
@@ -269,10 +295,16 @@ U0 KernelDisplay()
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
+  U8 *bitmap;
+  I64 bitmap_bytes;
   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
       !I386AtaIdentify(&kernel_disk,0,0) ||
       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
+  bitmap_bytes=(kernel_volume.first-kernel_volume.start-1)*512;
+  bitmap=I386HeapAlloc(&kernel_heap,bitmap_bytes,TRUE);
+  if(!bitmap || !I386RedSeaRepairBitmap(&kernel_volume,bitmap,bitmap_bytes) ||
+      !I386HeapFree(&kernel_heap,bitmap) || !I386RedSeaMoveRecover(&kernel_volume)) KernelStop;
   KernelLog("REDSEA "); KernelHex(kernel_volume.start); KernelLog(" ");
   KernelHex(kernel_volume.sectors); KernelLog("\n");
 }
@@ -281,6 +313,8 @@ U0 KernelStorage(CI386BootInfo *info)
 #include "/Kernel/I386/RedSea.HC"
 #include "/Kernel/I386/FileRead.HC"
 #include "/Kernel/I386/RedSeaAlloc.HC"
+#include "/Kernel/I386/RedSeaRepair.HC"
+#include "/Kernel/I386/RedSeaMoveIntent.HC"
 #include "/Kernel/I386/RedSeaWrite.HC"
 
 U8 *KernelModuleLoad(U8 *path,CI386ModuleBinding *bindings,I64 count)
@@ -326,7 +360,7 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i,used;
-  U8 *addresses[55],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0";
+  U8 *addresses[57],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0I386RedSeaMoveIntentSet\0I386RedSeaMoveIntentClear\0";
   CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
@@ -389,7 +423,8 @@ U0 KernelSymbols()
   addresses[47]=&I386RedSeaSectorRead; addresses[48]=&I386RedSeaSectorWrite;
   addresses[49]=&I386RedSeaFlush; addresses[50]=&I386RedSeaAlloc; addresses[51]=&I386RedSeaFree;
   addresses[52]=&I386RedSeaWrite; addresses[53]=&I386RedSeaDirectory; addresses[54]=&I386RedSeaPutWord;
-  for(i=0;i<55;i++) {
+  addresses[55]=&I386RedSeaMoveIntentSet; addresses[56]=&I386RedSeaMoveIntentClear;
+  for(i=0;i<57;i++) {
     kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
     kernel_exports[i].val=(addresses[i]+0)(U64); kernel_exports[i].type=HTT_EXPORT_SYS_SYM;
     HashAdd(&kernel_exports[i],kernel_symbols);
@@ -410,9 +445,9 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity)
 {
   I64 i;
-  if(!bindings || !indices || count!=capacity || count<1 || count>55) KernelStop;
+  if(!bindings || !indices || count!=capacity || count<1 || count>57) KernelStop;
   for(i=0;i<count;i++) {
-    if(indices[i]>=55) KernelStop;
+    if(indices[i]>=57) KernelStop;
     KernelBinding(&bindings[i],kernel_exports[indices[i]].str);
   }
 }
@@ -483,11 +518,11 @@ U0 KernelCompilerProbe(I64 phase)
 
 U0 KernelFileLoad()
 {
-  CI386ModuleBinding bindings[26];
+  CI386ModuleBinding bindings[29];
   if(kernel_file_image || kernel_files.version) KernelStop;
-  KernelBindings(bindings,kernel_files_bindings,26,sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_files_bindings,29,sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
-    bindings,26,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+    bindings,29,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
@@ -587,7 +622,8 @@ U0 KernelConsoleLoad()
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
-  kernel_console_config.input=&kernel_input;
+  kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
+  kernel_console_config.mouse=&kernel_mouse;
   kernel_console_config.pit_divisor=kernel_timer.divisor;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }

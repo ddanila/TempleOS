@@ -16,6 +16,8 @@ public _extern _MEMCPY U8 *MemCpy(U8 *dst,U8 *src,I64 cnt);
 public _extern _MEMSET U8 *MemSet(U8 *dst,I64 val,I64 cnt);
 public _extern _MALLOC_IDENT U8 *MAllocIdent(U8 *src,CTask *mem_task=0);
 public _extern _STR_NEW U8 *StrNew(U8 *src,CTask *mem_task=0);
+public _extern _MEM_MEASURE_START Bool MemMeasureStart(CTask *task=0);
+public _extern _MEM_MEASURE_STOP Bool MemMeasureStop(I64 *base,I64 *peak,I64 *reserved_peak);
 #help_index "Char/Operations"
 public _extern _STRCPY U0 StrCpy(U8 *dst,U8 *src);
 #endif

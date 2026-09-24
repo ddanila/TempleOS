@@ -3,7 +3,7 @@
 class CI386Text
 {
   U8 *planes,*font;
-  U32 column,row,foreground,background;
+  U32 column,row,foreground,background,underline;
   U32 dirty_first,dirty_last; //Text rows, exclusive end; empty is 60,0.
 };
 public extern Bool I386TextInit(CI386Text *text,U8 *planes,U8 *font,

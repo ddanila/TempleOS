@@ -13,7 +13,7 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
   I64 (*entry)();
-  for(kind=0;kind<34;kind++) {
+  for(kind=0;kind<35;kind++) {
     source="I64i Main(){I64i i,sum=0;for(i=0;i<7;i++)sum+=i;return sum*2;}"; expected=42;
     switch(kind) {
       case 1: source="I64i Main(){I64i n=5,r=1;while(n)r*=n--;do{r++;}while(r<123);return r;}"; expected=123; break;
@@ -42,6 +42,7 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 31: source="extern I64i Later(I64i n);I64i Main(){return Later(42);}Unknown bad;"; break;
       case 32: source="extern I64i Later(I64i n);I64i Main(){return Later(40);}I64i Later(I64i n){I64i a[1+1];a[0]=n;a[1]=2;return a[0]+a[1];}"; break;
       case 33: source="extern I64i Later(I64i n);I64i Main(){return Later(42);}I64i Later(F64 n){return 42;}"; break;
+      case 34: source="class N{N *next,*last;U8 type;I64i value;};I64i Main(){N root,a,b,c,d,*p,*next;I64i total=0;root.next=&a;a.next=&b;b.next=&c;c.next=&d;d.next=&root;a.type=15;b.type=0;c.type=15;d.type=0;b.value=3;d.value=6;p=root.next;while(p!=&root){next=p->next;if(p->type==0)total+=p->value;else if(p->type==15)total+=5;p=next;}return total;}"; expected=19; break;
       case 14: source="I64i Main(){I64i n=5;static I64i x=n;return x;}"; break;
       case 15: source="I64i Inc(I64i x){return x+1;}I64i Main(){I64i (*f)(I64i x);f=&Inc;return f(41);}"; break;
       case 16: source="I64i Count(...){return argc;}I64i Main(){return Count(1,2,3);}"; expected=3; break;

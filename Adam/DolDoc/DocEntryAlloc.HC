@@ -23,13 +23,16 @@ CDocEntry *DocEntryNewBase(CDoc *doc,I64 type,I64 de_flags=0,
 CDocEntry *DocEntryNewTag(CDoc *doc,CDocEntry *doc_ce,U8 *tag)
 {
   I64 l=StrLen(tag);
-  CDocEntry *res=DocEntryNewBase(doc,doc_ce->type,doc_ce->de_flags,
+  CDocEntry *res=NULL;
+  try {
+    res=DocEntryNewBase(doc,doc_ce->type,doc_ce->de_flags,
 	doc_ce->x,doc_ce->y,doc_ce->page_line_num);
-  res->de_flags=doc_ce->de_flags; //Override
-  res->max_col=l;
-  res->tag=MAlloc(l+1,doc->mem_task);
-  MemCpy(res->tag,tag,l+1);
-  MemCpy(&res->settings,&doc_ce->settings,sizeof(CDocSettings));
+    res->de_flags=doc_ce->de_flags; //Override
+    res->max_col=l;
+    res->tag=MAlloc(l+1,doc->mem_task);
+    MemCpy(res->tag,tag,l+1);
+    MemCpy(&res->settings,&doc_ce->settings,sizeof(CDocSettings));
+  } catch { Free(res); }
   return res;
 }
 
@@ -95,4 +98,3 @@ public CDocEntry *DocEntryCopy(CDoc *doc,CDocEntry *doc_e)
     doc_ne->data=MAllocIdent(doc_e->data,task);
   return doc_ne;
 }
-

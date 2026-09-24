@@ -86,8 +86,10 @@ raw regular file with a caller-supplied timestamp, rejecting duplicate names,
 invalid names/ranges and read-only directories. It returns 1 on success, 0 for
 an existing name or insufficient data/directory space, and -1 for invalid input
 or I/O failure. A deleted directory slot is reused before appending at the logical
-end. The existing directory must have space; it is not grown by this operation.
-Empty files use block zero and consume no data extent.
+end. When only the final zero terminator remains, root and nested directories are
+relocated into a one-sector-larger contiguous extent. Nested growth updates the
+parent entry and each direct child directory's `..` record before releasing the
+old extent. Empty files use block zero and consume no data extent.
 
 Creation writes the reserved extent and flushes before publishing its 64-byte
 entry. When appending, it preserves a zero-name terminator in the following slot;
@@ -95,7 +97,7 @@ if that slot lies in the next sector, it writes/flushes the terminator before
 publishing the entry. The entry is then written and flushed. A data or publication
 I/O failure invalidates the mounted view and can leave an orphan allocation or
 an uncertain entry; callers must inspect/recover rather than blindly retry.
-There is no rollback, overwrite/replace, directory growth or crash-recovery journal.
+There is no rollback or crash-recovery journal for directory relocation.
 Only raw data bytes are written; tail padding is preserved and compression is not
 performed. Caller buffers remain unchanged.
 
@@ -159,7 +161,16 @@ fragmentation, mixed-range/double-free rejection, full exhaustion and reclamatio
 Root/bitmap reservations and unused tail bits remain intact. A forged device bound
 forces a real bitmap read error and checks view invalidation. The host requires
 complete image equality after all successful allocations are released. Partial
-bitmap-write and power-loss failures are not yet fault-injected.
+The writable-image failure matrix now interrupts each of the seven sector writes
+and six flushes used by the journaled cross-directory move fixture. A recovery boot walks
+the reachable namespace before publishing the volume, rejects malformed,
+cyclic, overlapping or size-inconsistent trees, reconstructs the allocation
+bitmap, writes only differing bitmap sectors and flushes the repair. Every
+boundary retains exactly one complete file and an exact reachable-extent bitmap.
+The volume header holds a checksummed, single-operation move intent. Recovery
+rolls back a published destination while the source remains and accepts the
+destination after the source tombstone becomes durable. Physical power-loss
+durability is still outside the QEMU evidence.
 
 `python3 tools/test-i386.py --redsea-create` verifies a new 700-byte file, HolyC
 source and an empty file, deleted-slot reuse, cross-sector append/terminators,
@@ -183,8 +194,12 @@ to empty and saves HolyC source again. It checks retained name/attributes, updat
 sources. A separate full volume verifies no-space preservation of the old file.
 The host compares the entire image and checks QEMU's new-data/publication/old-free
 write-and-flush sequence. Creation is also rerun after sharing the format writer.
-Interrupted replacement is not yet fault-injected.
+Writable-image replacement testing now interrupts all four writes and three
+flushes in a copy-on-write replacement. Failures before publication recover the
+exact old bytes; publication and reclamation failures recover the exact new
+bytes. Every reboot has one live file, zero move-intent bytes and a bitmap
+matching reachable extents.
 
-Directory growth, legacy cache policy, cache and task locking,
+Crash-atomic directory growth, legacy cache policy, cache and task locking,
 decompression, public file APIs, complete image consistency checks and
 physical 386/IDE validation remain pending.

@@ -52,7 +52,8 @@ class PersistenceVerdictTests(unittest.TestCase):
             def boot(*args, **kwargs):
                 if change_source: disk.write_bytes(b'changed')
                 return {'result':'pass'}
-            with patch.dict(module['main'].__globals__, INPUT=boot), \
+            with patch.dict(module['main'].__globals__, INPUT=boot,
+                            verify_redsea_project=Mock(return_value={'result':'mocked'})), \
                  patch('sys.argv',['test',str(disk),'--out',str(root/'out')]), \
                  contextlib.redirect_stdout(io.StringIO()):
                 code=module['main']()

@@ -20,23 +20,28 @@ def run(*args):
     subprocess.run(args, cwd=ROOT, check=True)
 
 
-def diagnostic_disk(disk, exports):
-    """Copy the normal disk and enable its validated, exported boot data flag."""
+def kernel_flag_disk_offset(exports, symbol):
+    """Locate one zeroed exported U32 data flag in the flat kernel image."""
     module=(exports/'Kernel.t32m').read_bytes()
     size,count,records=struct.unpack_from('<III',module,16)
     flags=[]
     data=[]
     for index in range(count):
         kind,offset,name,length=struct.unpack_from('<4I',module,records+16*index)
-        if kind==3 and module[name:name+length]==b'kernel_diagnostics': flags.append(offset)
+        if kind==3 and module[name:name+length]==symbol.encode(): flags.append(offset)
         if kind==4: data.append((offset,name))
     if len(flags)!=1 or not any(a<=flags[0] and flags[0]+4<=a+n for a,n in data):
-        raise ValueError('Missing or non-data diagnostic boot flag')
+        raise ValueError(f'Missing or non-data kernel flag: {symbol}')
     offset=flags[0]
     if offset>size-4 or struct.unpack_from('<I',module,32+offset)[0]:
-        raise ValueError('Diagnostics must be disabled in the built kernel')
+        raise ValueError(f'Kernel flag must build disabled: {symbol}')
     #512-byte BIOS boot sector, 4096-byte stage, 8-byte flat-image trampoline.
-    disk_offset=512+4096+8+offset
+    return 512+4096+8+offset
+
+
+def diagnostic_disk(disk, exports):
+    """Copy the normal disk and enable its validated, exported boot data flag."""
+    disk_offset=kernel_flag_disk_offset(exports,'kernel_diagnostics')
     original=disk.read_bytes()
     if struct.unpack_from('<I',original,disk_offset)[0]:
         raise ValueError('Normal disk already enables diagnostics')
@@ -47,6 +52,18 @@ def diagnostic_disk(disk, exports):
     path=disk.with_name('kernel-diagnostics.img'); path.write_bytes(changed)
     return path,dict(path=str(path.relative_to(ROOT)),flag_disk_offset=disk_offset,
                      disk_sha256=hashlib.sha256(changed).hexdigest())
+
+
+def mutation_probe_disk(disk, exports):
+    """Create a disposable disk with diagnostics and file mutation probes enabled."""
+    offsets=[kernel_flag_disk_offset(exports,name) for name in
+             ('kernel_diagnostics','kernel_file_mutation_probe')]
+    original=disk.read_bytes(); changed=bytearray(original)
+    if len(set(offsets))!=2 or any(struct.unpack_from('<I',changed,offset)[0] for offset in offsets):
+        raise ValueError('Invalid file mutation probe flags')
+    for offset in offsets: struct.pack_into('<I',changed,offset,1)
+    path=disk.with_name('kernel-file-mutation.img'); path.write_bytes(changed)
+    return path,offsets,hashlib.sha256(changed).hexdigest()
 
 
 def verify_startup_rejection(disk, volume, out):
@@ -176,7 +193,7 @@ def console_runtime_layout(module):
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
                  'DocDictionaryNew', 'DocDictionaryDel', 'DocGlobalsInit', 'ConsoleDocumentStart',
-                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc', 'NativeGraphicsStart', 'NativeGraphicsPresent', 'TextBorder', 'TextRect', 'WinScrollNull', 'WinScrollRestore', 'WinDerivedValsUpdate', 'TaskValidate', 'TaskDerivedValsUpdate', 'WinHorz', 'WinVert', 'CtrlFindUnique', 'CtrlsUpdate', 'CtrlInside', 'WinZBufUpdate', 'WinInside', 'DocNew', 'DocRst', 'DocDel', 'DocSize', 'DocPutKey', 'DocSave', 'DocWrite', 'DocRead', 'DocEd'):
+                 'TextChar', 'TextLenStr', 'TextLenAttrStr', 'TextLenAttr', 'NativeTextBasePresent', 'NativeTextBaseRestore', 'LstSub', 'LstMatch', 'Define', 'DefineSub', 'DefineCnt', 'DefineMatch', 'YearStartDate', 'Struct2Date', 'DayOfWeek', 'Date2Struct', 'FirstDayOfMon', 'LastDayOfMon', 'FirstDayOfYear', 'LastDayOfYear', 'Bcd2Bin', 'Mat4x4MulXYZ', 'DCTransform', 'Mat4x4IdentEqu', 'Mat4x4IdentNew', 'Mat4x4NormSqr65536', 'DCMat4x4Set', 'DCLighting', 'DCFill', 'DCClear', 'DCRst', 'DCExtentsInit', 'DCAlias', 'DCNew', 'DCDel', 'DCSize', 'DCDepthBufRst', 'DCDepthBufAlloc', 'NativeGraphicsStart', 'NativeGraphicsPresent', 'TextBorder', 'TextRect', 'WinScrollNull', 'WinScrollRestore', 'WinDerivedValsUpdate', 'TaskValidate', 'TaskDerivedValsUpdate', 'WinHorz', 'WinVert', 'CtrlFindUnique', 'CtrlsUpdate', 'CtrlInside', 'WinZBufUpdate', 'WinInside', 'DocNew', 'DocRst', 'DocDel', 'DocSize', 'DocPutKey', 'DocSave', 'DocWrite', 'DocRead', 'DocEd', 'DocAllocationCheck', 'DocExe', 'Help'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing retained document service {name}')
     for name in ('gr', 'gr_palette_std', 'text'):
@@ -191,7 +208,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 24:
+    if struct.unpack_from('<I', module, version_offset)[0] != 28:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -232,7 +249,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 9:
+    if struct.unpack_from('<I', module, version_offset)[0] != 10:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -277,19 +294,27 @@ def file_runtime_layout(module):
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
-            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord'}:
+            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileWrite', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 24:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 32:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
         include_offset=8+exports['I386LexTaskFileInclude'][1], read_offset=8+exports['I386TaskFileRead'][1],
-        write_offset=8+exports['I386TaskFileWrite'][1], bind_offset=8+exports['I386FileRuntimeBind'][1],
+        write_offset=8+exports['I386TaskFileWrite'][1], dir_mk_offset=8+exports['I386TaskDirMk'][1],
+        dir_list_offset=8+exports['I386TaskDirList'][1],
+        delete_offset=8+exports['I386TaskFileDelete'][1],
+        rename_offset=8+exports['I386TaskFileRename'][1],
+        dir_delete_offset=8+exports['I386TaskDirDelete'][1],
+        move_offset=8+exports['I386TaskFileMove'][1],
+        move_probe_offset=8+exports['I386TaskFileMoveProbe'][1],
+        move_io_probe_offset=8+exports['I386TaskFileMoveIoProbe'][1],
+        bind_offset=8+exports['I386FileRuntimeBind'][1],
         init_offset=8+exports['I386TaskFilesInit'][1], compiler_init_offset=8+exports['I386FileRuntimeCompiler'][1],
         control_new_offset=8+exports['I386FileRuntimeControl'][1], name_abs_offset=8+exports['I386TaskFileNameAbs'][1],
         import_offset=imports['I386RedSeaReadAll'])
@@ -564,7 +589,7 @@ def package_volume(disk, exports):
     cursor=first
     image=bytearray(disk.read_bytes())
     tree={}
-    for directory in ('Kernel','Compiler','Adam/DolDoc','Adam/Gr','Adam/Ctrls'):
+    for directory in ('Kernel','Compiler','Adam/DolDoc','Adam/Gr','Adam/Ctrls','Doc'):
         for path in sorted((ROOT/directory).rglob('*')):
             if path.is_file() and path.suffix.upper() in ('.HC','.HH','.DD','.PRJ'):
                 node=tree
@@ -575,8 +600,20 @@ def package_volume(disk, exports):
     inner = (ROOT/'tools/guest/i386-kernel/IncludeInner.HC').read_bytes()
     if len(packed)<17 or struct.unpack_from('<qqB', packed) != (len(packed), len(inner), 2):
         raise ValueError('Invalid original-compressor include fixture')
+    original_doc = (exports/'OriginalCompat.DD').read_bytes()
+    original_doc_hash = 0
+    for byte in original_doc:
+        original_doc_hash = (original_doc_hash*257+byte)&0xFFFFFFFF
+    if len(original_doc)!=48 or original_doc_hash!=0x4ABAF862:
+        raise ValueError('Invalid original DolDoc compatibility fixture')
     tree['Probe'] = {'Outer.HC': (ROOT/'tools/guest/i386-kernel/IncludeOuter.HC').read_bytes(),
-                     'Inner.HC.Z': packed, 'Bad.HC.Z': struct.pack('<qqB', 18, 1, 2), 'Bad.HC': b'99\n'}
+                     'Inner.HC.Z': packed, 'Bad.HC.Z': struct.pack('<qqB', 18, 1, 2),
+                     'Bad.HC': b'99\n',
+                     'HelpSearch.DD': b'$LK,"Find section",A="FF:C:/Probe/HelpSearchTarget.DD,Needle heading:2"$\n',
+                     'HelpSearchTarget.DD': b'Prelude\nNeedle heading\nFirst body\nNeedle heading\nSecond body\n',
+                     'HelpAnchor.DD': b'$LK,"Anchor section",A="FA:C:/Probe/HelpAnchorTarget.DD,Wanted"$\n',
+                     'HelpAnchorTarget.DD': b'Top\nBefore\n$AN,"",A="Wanted"$Wanted heading\nAnchor body\n',
+                     'OriginalCompat.DD': original_doc}
     tree['Modules']={'I386':{f'{name}.t32m':(exports/f'{name}.t32m').read_bytes() for name in DISK_MODULES}}
     files={}
     def entry(name,attr,block,size):
@@ -684,6 +721,174 @@ def verify_volume(disk, volume):
     return len(found)
 
 
+def verify_mutated_volume(disk):
+    """Audit a writable RedSea image, including live extents behind tombstones."""
+    image=disk.read_bytes(); start=2048
+    volume_start,sectors,root,bitmap_blocks,version=struct.unpack_from('<5q',image,start*512+8)
+    end=start+sectors; first=start+bitmap_blocks+1
+    if (volume_start,sectors,version)!=(start,32768-2048,1) or not first<=root<end:
+        raise ValueError('Invalid mutation-probe RedSea header')
+    owned=set(); directories=0; files=0; visiting=set()
+    def claim(block,size):
+        count=(size+511)//512
+        if size<=0 or block<first or block+count>end: raise ValueError('Invalid mutation-probe extent')
+        for sector in range(block,block+count):
+            if sector in owned: raise ValueError('Overlapping mutation-probe extents')
+            owned.add(sector)
+    def record(offset):
+        attr,raw,block,size,date=struct.unpack_from('<H38sqqQ',image,offset)
+        return attr,raw.split(b'\0',1)[0].decode('ascii'),block,size,date
+    def directory(block,parent):
+        nonlocal directories,files
+        if block in visiting: raise ValueError('Cyclic mutation-probe tree')
+        visiting.add(block)
+        attr,name,self_block,size,date=record(block*512)
+        if (attr,name,self_block,date)!=(0x810,'.',block,0) or size<512 or size%512:
+            raise ValueError('Invalid mutation-probe directory')
+        if record(block*512+64)!=(0x810,'..',parent,0,0):
+            raise ValueError('Invalid mutation-probe parent')
+        claim(block,size); directories+=1; terminated=False
+        for offset in range(128,size,64):
+            attr,name,child,length,date=record(block*512+offset)
+            if not name: terminated=True; break
+            if attr&0x100: continue
+            if date or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
+            if attr==0x810: directory(child,block)
+            elif attr==0x800:
+                if length: claim(child,length)
+                elif child: raise ValueError('Empty mutation-probe file owns blocks')
+                files+=1
+            else: raise ValueError('Invalid mutation-probe attributes')
+        if not terminated: raise ValueError('Missing mutation-probe terminator')
+        visiting.remove(block)
+    directory(root,root)
+    bitmap=image[(start+1)*512:first*512]
+    for index in range(len(bitmap)*8):
+        block=first-1+index; expected=block<first or block>=end or block in owned
+        if bool(bitmap[index//8]&(1<<(index&7)))!=expected:
+            raise ValueError('Mutation-probe bitmap disagrees with reachable extents')
+    return {'directories':directories,'files':files,'owned_sectors':len(owned),
+            'bitmap':'matches reachable extents'}
+
+
+def mutated_file_contents(disk, wanted):
+    """Read selected live regular files through an independent RedSea walk."""
+    image=disk.read_bytes(); start=2048
+    volume_start,sectors,root,bitmap_blocks,version=struct.unpack_from('<5q',image,start*512+8)
+    if (volume_start,sectors,version)!=(start,32768-2048,1):
+        raise ValueError('Invalid raw-failure RedSea header')
+    found={}; visiting=set()
+    def record(offset):
+        attr,raw,block,size,date=struct.unpack_from('<H38sqqQ',image,offset)
+        return attr,raw.split(b'\0',1)[0].decode('ascii'),block,size,date
+    def directory(block,path):
+        if block in visiting: raise ValueError('Cyclic raw-failure tree')
+        visiting.add(block); attr,name,self_block,size,date=record(block*512)
+        if (attr,name,self_block,date)!=(0x810,'.',block,0) or size<512 or size%512:
+            raise ValueError('Invalid raw-failure directory')
+        for offset in range(block*512+128,block*512+size,64):
+            attr,name,child,length,date=record(offset)
+            if not name: break
+            if attr&0x100: continue
+            child_path=path+'/'+name
+            if attr==0x810: directory(child,child_path)
+            elif attr==0x800 and child_path in wanted:
+                found[child_path]=image[child*512:child*512+length] if length else b''
+        visiting.remove(block)
+    directory(root,'')
+    return found
+
+
+def verify_file_io_failure_matrix(disk, exports, out):
+    """Interrupt each move write/flush, reboot-repair, then audit exact files."""
+    flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
+    original=disk.read_bytes(); cases=[]
+    source='/Probe/MoveIoSource.HC'; destination='/Modules/MoveIoDestination.HC'
+    for operation,limit in ((2,7),(3,6)):
+        for fail_after in range(1,limit+1):
+            work=out/f'file-io-failure-{operation}-{fail_after}'
+            work.mkdir(parents=True,exist_ok=True)
+            candidate=work/'kernel.img'; changed=bytearray(original)
+            struct.pack_into('<I',changed,flag,(operation<<8)|fail_after)
+            candidate.write_bytes(changed)
+            inject=work/'inject'; inject.mkdir(exist_ok=True)
+            with (inject/'runner.log').open('w') as log:
+                subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
+                    '--i386-disk','--out',str(inject),'--timeout','180'],cwd=ROOT,
+                    stdout=log,stderr=log,check=True)
+            marker=f'FILE IO PROBE {((operation<<8)|fail_after):016X}\n'
+            if (inject/'debug.log').read_text().count(marker)!=1:
+                raise ValueError('Raw file I/O failure probe did not complete')
+            changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,1)
+            candidate.write_bytes(changed)
+            recover=work/'recover'; recover.mkdir(exist_ok=True)
+            with (recover/'runner.log').open('w') as log:
+                subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
+                    '--i386-disk','--out',str(recover),'--timeout','180'],cwd=ROOT,
+                    stdout=log,stderr=log,check=True)
+            if (recover/'debug.log').read_text().count('DONE file io recovery\n')!=1:
+                raise ValueError('Raw file I/O recovery boot did not complete')
+            changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,0)
+            candidate.write_bytes(changed)
+            header=candidate.read_bytes()[2048*512:(2048+1)*512]
+            if any(header[48:192]):
+                raise ValueError('Raw file I/O recovery left a stale move intent')
+            audit=verify_mutated_volume(candidate)
+            files=mutated_file_contents(candidate,{source,destination})
+            if len(files)!=1 or any(content!=b'IO' for content in files.values()):
+                raise ValueError('Raw file I/O recovery did not retain exactly one complete file')
+            cases.append({'operation':'write' if operation==2 else 'flush',
+                          'fail_after':fail_after,
+                          'outcome':'both' if len(files)==2 else
+                              ('source' if source in files else 'destination'),
+                          'filesystem_integrity':audit})
+    return {'cases':cases,'writes':7,'flushes':6,'result':'pass'}
+
+
+def verify_file_replace_failure_matrix(disk, exports, out):
+    """Interrupt replacement writes/flushes and require complete old or new bytes."""
+    flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
+    original=disk.read_bytes(); cases=[]; path='/Probe/ReplaceIo.HC'
+    for operation,limit in ((4,4),(5,3)):
+        for fail_after in range(1,limit+1):
+            work=out/f'file-replace-failure-{operation}-{fail_after}'
+            work.mkdir(parents=True,exist_ok=True)
+            candidate=work/'kernel.img'; changed=bytearray(original)
+            struct.pack_into('<I',changed,flag,(operation<<8)|fail_after)
+            candidate.write_bytes(changed)
+            inject=work/'inject'; inject.mkdir(exist_ok=True)
+            with (inject/'runner.log').open('w') as log:
+                subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
+                    '--i386-disk','--out',str(inject),'--timeout','180'],cwd=ROOT,
+                    stdout=log,stderr=log,check=True)
+            marker=f'FILE IO PROBE {((operation<<8)|fail_after):016X}\n'
+            if (inject/'debug.log').read_text().count(marker)!=1:
+                raise ValueError('Raw file replacement failure probe did not complete')
+            changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,1)
+            candidate.write_bytes(changed)
+            recover=work/'recover'; recover.mkdir(exist_ok=True)
+            with (recover/'runner.log').open('w') as log:
+                subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
+                    '--i386-disk','--out',str(recover),'--timeout','180'],cwd=ROOT,
+                    stdout=log,stderr=log,check=True)
+            if (recover/'debug.log').read_text().count('DONE file io recovery\n')!=1:
+                raise ValueError('Raw file replacement recovery boot did not complete')
+            changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,0)
+            candidate.write_bytes(changed)
+            header=candidate.read_bytes()[2048*512:(2048+1)*512]
+            if any(header[48:192]):
+                raise ValueError('Raw file replacement left a move intent')
+            audit=verify_mutated_volume(candidate)
+            files=mutated_file_contents(candidate,{path})
+            if set(files)!={path} or files[path] not in (b'OLD',b'NEW'):
+                raise ValueError('Raw file replacement retained incomplete bytes')
+            cases.append({'operation':'write' if operation==4 else 'flush',
+                          'fail_after':fail_after,
+                          'outcome':'old' if files[path]==b'OLD' else 'new',
+                          'filesystem_integrity':audit})
+    return {'cases':cases,'writes':4,'flushes':3,'result':'pass'}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify startup, keyboard and VGA')
@@ -717,8 +922,8 @@ def main():
         'tools/i386-kernel-stage.asm','-o',str(disk))
     if disk.stat().st_size!=512+4096+len(image) or disk.read_bytes()[512+4096:]!=image:
         raise ValueError('Kernel stage and flat-image load address disagree')
-    if disk.stat().st_size>(768+1)*512:
-        raise ValueError('Kernel stage exceeds its reserved 384 KiB load area')
+    if disk.stat().st_size>(848+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 424 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
     volume=package_volume(disk,exports)
     volume['verified_files']=verify_volume(disk,volume)
@@ -731,7 +936,7 @@ def main():
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
                 'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
-                'tools/i386-kernel-input.py','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
+                'tools/i386-kernel-input.py','tools/test-i386-doc-compat.py','tests/guest/i386-doc-compat/Once.HC','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                 'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
@@ -841,8 +1046,8 @@ def main():
                     (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=13: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=21: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
@@ -853,8 +1058,18 @@ def main():
                 file_name_abs!=file_address+files_layout['name_abs_offset'] or
                 file_control_new!=file_address+files_layout['control_new_offset'] or
                 file_cancel_wait!=file_address+files_layout['cancel_wait_offset'] or
-                file_write!=file_address+files_layout['write_offset']):
+                file_write!=file_address+files_layout['write_offset'] or
+                file_dir_mk!=file_address+files_layout['dir_mk_offset'] or
+                file_dir_list!=file_address+files_layout['dir_list_offset'] or
+                file_delete!=file_address+files_layout['delete_offset'] or
+                file_rename!=file_address+files_layout['rename_offset'] or
+                file_dir_delete!=file_address+files_layout['dir_delete_offset'] or
+                file_move!=file_address+files_layout['move_offset'] or
+                file_move_probe!=file_address+files_layout['move_probe_offset'] or
+                file_move_io_probe!=file_address+files_layout['move_io_probe_offset']):
             raise ValueError('File-runtime placement or service mismatch')
+        if 'FILE MOVE PROBE ' in log:
+            raise ValueError('Writable file mutation probe ran during read-only diagnostics')
         if [int(line.split()[-1],16) for line in log.splitlines() if line.startswith('FILE CANCEL WAIT ')] != [0,1]:
             raise ValueError('File wait-cancellation service probe failed')
         disk_includes = [line.split() for line in log.splitlines() if line.startswith('DISK INCLUDE ')]
@@ -868,8 +1083,9 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=24, image_address=file_address, image_bytes=file_size,
-            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait,
+        result['file_runtime'] = dict(version=32, image_address=file_address, image_bytes=file_size,
+            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe,
+            move_failure_stages=4,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
             disk_include_lines=[68,136], enabled_if_preserved=True, lifetime='kernel lifetime')
@@ -983,7 +1199,7 @@ def main():
         if resident_cases != [(phase, case) for phase in (0,1) for case in range(7)]:
             raise ValueError('Native resident declaration binding/publication failed')
         statement_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('STATEMENT CASE ')]
-        if statement_cases != [(phase, case) for phase in (0,1) for case in range(34)]:
+        if statement_cases != [(phase, case) for phase in (0,1) for case in range(35)]:
             raise ValueError('Native statement/function compilation or recovery failed')
         command_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('COMMAND CASE ')]
         if command_cases != [(phase, case) for phase in (0,1) for case in range(16)]:
@@ -1032,12 +1248,24 @@ def main():
         if keyboard['document_basic_edit_cases']!=5 or 'PASS original/shared basic editing\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/shared/native basic document editing failed')
         result['document_basic_edit']={'cases':5,'original_x64':'pass','shared_core':'pass','native_retained_binding':'pass'}
+        if keyboard['document_basic_multiline_cases']!=7 or 'PASS original/shared multiline editing\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/shared/native multiline document editing failed')
+        result['document_basic_multiline']={'cases':7,'original_x64':'pass','shared_core':'pass','native_retained_binding':'pass'}
+        if keyboard['document_basic_navigation_cases']!=8 or 'PASS original/shared document navigation\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/shared/native document navigation failed')
+        result['document_basic_navigation']={'cases':8,'original_x64':'pass','shared_core':'pass','native_retained_binding':'pass'}
+        if keyboard['document_basic_vertical_cases']!=8 or 'PASS original/shared document vertical\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/shared/native vertical document navigation failed')
+        result['document_basic_vertical']={'cases':8,'original_x64':'pass','shared_core':'pass','native_retained_binding':'pass'}
+        if keyboard['document_basic_boundary_cases']!=13 or 'PASS original/shared document boundaries\n' not in (exports/'debug.log').read_text():
+            raise ValueError('Original/shared/native document boundaries failed')
+        result['document_basic_boundaries']={'cases':13,'original_x64':'pass','shared_core':'pass','native_retained_binding':'pass'}
         if keyboard['document_basic_save_cases']!=5 or 'PASS original/shared basic save\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/shared/native basic document serialization failed')
         result['document_basic_save']={'cases':5,'original_x64':'pass','shared_core':'pass','native_retained_binding':'pass'}
         if 'PASS shared document round trip\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original-x64/shared-loader document round trip failed')
-        result['document_basic_roundtrip']={'cases':5,'original_x64_save_shared_load':'pass','native_persistence':'separate test-i386-doldoc-session.py acceptance'}
+        result['document_basic_roundtrip']={'cases':6,'original_x64_save_shared_load':'pass','native_persistence':'separate test-i386-doldoc-session.py acceptance'}
         if 'PASS original document defaults\n' not in (exports/'debug.log').read_text():
             raise ValueError('Fixed document defaults differ from original parser')
         result['document_defaults']={'original_parser_comparison':'pass'}
@@ -1147,7 +1375,7 @@ def main():
             raise ValueError('Public define list ownership failed')
         result['public_define_lists']={'phases':[0,1],'cases_per_phase':6,'original_x64':'pass'}
         result['public_hash_tables']={'phases':[0,1],'cases_per_phase':10,'allocation_failure_cleanup':'pass'}
-        result['memory_runtime']=dict(version=9,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=10,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)
@@ -1160,7 +1388,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=24,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=28,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
@@ -1184,6 +1412,33 @@ def main():
                              'startup_rejected':rejected,
                              'keyboard':keyboard,
                              'source_bytes':len(source),'source_fnv32':checksum,'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
+        mutation_disk,mutation_flags,mutation_source_hash=mutation_probe_disk(normal_disk,exports)
+        mutation_out=out/'file-mutation-probe'; mutation_out.mkdir(parents=True,exist_ok=True)
+        run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk','--out',str(mutation_out),'--timeout','1200')
+        mutation_log=(mutation_out/'debug.log').read_text()
+        if mutation_log.count('FILE MOVE PROBE 0000000000000004\n')!=1:
+            raise ValueError('Writable file move failure-stage probe did not complete')
+        mutation_bytes=bytearray(mutation_disk.read_bytes())
+        for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
+        mutation_disk.write_bytes(mutation_bytes)
+        mutation_audit=verify_mutated_volume(mutation_disk)
+        mutation_clean_hash=hashlib.sha256(mutation_bytes).hexdigest()
+        mutation_reboot=console['run_input'](mutation_disk,out/'file-mutation-reboot',snapshot=False,
+            startup_check={'status':'ok','answers':[],'commands':[
+                ('Dir("C:/MoveProbeA");',['-1']),('Dir("C:/MoveProbeB");',['-1']),
+                ('!DocRead("C:/MoveProbeA/Source.HC")&&!DocRead("C:/MoveProbeB/Destination.HC");',['1'])]})
+        if hashlib.sha256(mutation_disk.read_bytes()).hexdigest()!=mutation_clean_hash:
+            raise ValueError('Read-only reboot changed the mutation-probe disk')
+        if verify_mutated_volume(mutation_disk)!=mutation_audit:
+            raise ValueError('Mutation-probe filesystem changed after reboot')
+        result['file_move_failure_probe']={'stages':4,'source_sha256':mutation_source_hash,
+            'post_probe_sha256':mutation_clean_hash,'reboot':mutation_reboot,
+            'filesystem_integrity':mutation_audit,'result':'pass'}
+        result['file_io_failure_matrix']=verify_file_io_failure_matrix(normal_disk,exports,out)
+        result['file_replace_failure_matrix']=verify_file_replace_failure_matrix(normal_disk,exports,out)
+        run(sys.executable,'tools/test-i386-doc-compat.py')
+        result['document_cross_compatibility']=json.loads(
+            (ROOT/'build/i386-doc-compat/result.json').read_text())
     if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256'] or \
             hashlib.sha256(diagnostic_image.read_bytes()).hexdigest()!=diagnostics['disk_sha256']:
         raise ValueError('Boot images changed during verification')
