@@ -118,10 +118,13 @@ files nor stored images and disappear when QEMU exits. The mutation report also
 checks the original disk hash after testing. Do not use this harness to establish
 persistence across reboot; that requires a separate writable-disk test.
 
-`test-i386-doldoc-session.py` is that separate writable-disk test. It copies the
-built image, creates a canonical document, enters `DocEd`, and sends QEMU keyboard
-events for typing, Enter, Backspace, all four arrows, Home/End, Delete and Tab. It checks VGA text/cursor pixels,
-returns to HolyC with Escape, and writes to RedSea. A second boot verifies the
+`test-i386-doldoc-session.py` is that separate writable-disk test. It defaults
+to QEMU `486,-fpu` for all three boots and accepts `--cpu` to override the
+profile. It copies the built image, creates a canonical document, enters
+`DocEd`, and sends QEMU keyboard events for typing, Enter, Backspace, all four
+arrows, Home/End, Delete and Tab. It checks VGA text/cursor pixels,
+opens packaged help with F1, returns to the same editor frame, executes the
+program with F5, and writes to RedSea. A second boot verifies the
 reopened editor and serialized bytes, changes the saved HolyC program with real
 keys, and uses F5 to replace it. A third boot verifies the revised source and
 executes its new result. It fails if the

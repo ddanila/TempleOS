@@ -2067,7 +2067,10 @@ Deliver it through four test-driven workstreams:
 2. **Durable projects.** Make replacement writes failure-aware; support relative
    paths and nested directories; preserve DolDoc records across native and x64
    readers; and prove repeated save/reboot/reopen/execute cycles without directory
-   damage or lost editable state.
+   damage or lost editable state. The writable three-boot project test now uses
+   QEMU `486,-fpu`: F1 returns from packaged help to the same editor, F5 executes
+   and saves the program, two later boots reopen and revise it, and an independent
+   RedSea extent/bitmap audit verifies the persisted tree.
 3. **Native programming services.** Close the public memory, task, file, compiler,
    exception and debugging contracts reached by representative programs. Cover
    I64, software F64, retained definitions, multiple cooperative tasks and

@@ -3,7 +3,7 @@
 The full objective and acceptance gates remain in `PLAN.md`. The standalone
 32-bit TempleOS environment is not yet implemented.
 
-## Progress checkpoint (2026-09-24)
+## Progress checkpoint (2026-09-25)
 
 This checkpoint collects the work since `c7af3bd`: expanded canonical document
 editing, structured/binary DolDoc persistence and cross-reading, save failure
@@ -25,6 +25,10 @@ Current-source validation is recorded in the local build artifacts:
 - `build/i386-mouse-held-combined/result.json`: 204 native commands,
   mouse plus document editing, exact VGA frames, QEMU `486,-fpu`, 8 MiB,
   48.132-second startup; release stops the held-edge repeat.
+- `build/i386-doldoc-session-no-fpu-help/result.json`: writable three-boot
+  project acceptance, 107/56/15 guest commands on QEMU `486,-fpu`, 8 MiB;
+  F1 help return, F5 execution, revision across reboots, and independent
+  RedSea extent/bitmap integrity all pass.
 
 The current disk SHA-256 is
 `18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`.
@@ -8451,3 +8455,19 @@ on QEMU `486,-fpu` with 8 MiB and exact VGA checks; startup took 48.178
 seconds. The combined mouse and document-editing regression passes 204 native
 commands on the same image with 48.132-second startup. The tested disk
 SHA-256 is `18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`.
+
+## No-FPU writable project and help return (2026-09-25)
+
+The existing three-boot project acceptance previously used QEMU's default
+`486` CPU profile. It now defaults to `486,-fpu` on every boot, with an explicit
+`--cpu` override. During the first boot, the saved HolyC program opens packaged
+help with F1; Escape must restore its exact editor frame before F5 saves and
+executes it. The subsequent boots reopen, revise and re-execute the saved
+program. The current run passes 107, 56 and 15 guest commands respectively at
+8 MiB. Its independent host audit finds 18 reachable directories, 838 files
+and 14,371 owned sectors, with the RedSea bitmap matching reachable extents;
+the source image remains unchanged. The source disk SHA-256 is
+`18962f93d172b9c34ef2d291272c4aed8786698e9a22ff58e20e5e60ad05c648`.
+This proves the tested project workflow across three boots, while the broader
+graphics/sound concurrency, resource limits and native self-hosted rebuilds
+remain open.

@@ -110,6 +110,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doldoc-session')
+    parser.add_argument('--cpu',default='486,-fpu',help='QEMU CPU profile for all three boots')
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
     candidate=args.out/'session.img'
@@ -471,7 +472,19 @@ def main():
               'initial_rows':['TempleOS i386','DolDoc editor','C:/NativeProgram.HC','',
                               'I64 PersistentDocAnswer()','{return 6*7;}',
                               'PersistentDocAnswer;'+bytes([0xDB]).decode('cp437')],
-              'events':[{'key':'f5'},
+              'events':[{'mark_log':'HELP VIEW begin\n'},
+                        {'key':'f1'},
+                        {'wait_log_after':'HELP VIEW begin\n'},
+                        {'mark_log':'HELP VIEW end\n'},
+                        {'key':'esc'},
+                        {'wait_log_after':'HELP VIEW end\n'},
+                        {'expect_rows':['TempleOS i386','DolDoc editor',
+                                        'C:/NativeProgram.HC','',
+                                        'I64 PersistentDocAnswer()',
+                                        '{return 6*7;}',
+                                        'PersistentDocAnswer;'+bytes([0xDB]).decode('cp437')],
+                         'label':'help-return'},
+                        {'key':'f5'},
                         {'expect_rows':['TempleOS i386','Document execution',
                                         'C:/NativeProgram.HC','','42','',
                                         'Press Esc to return to editor'],
@@ -485,7 +498,7 @@ def main():
           ],
           'command_timeout':60,
         }
-        result['create_edit_save']=INPUT(candidate,args.out/'create-edit-save',startup_check=create,snapshot=False)
+        result['create_edit_save']=INPUT(candidate,args.out/'create-edit-save',startup_check=create,snapshot=False,cpu=args.cpu)
         reopen={
           'status':'ok','answers':[],
           'commands':[
@@ -650,7 +663,7 @@ def main():
           ],
           'command_timeout':60,
         }
-        result['reopen_after_boot']=INPUT(candidate,args.out/'reopen',startup_check=reopen,snapshot=False)
+        result['reopen_after_boot']=INPUT(candidate,args.out/'reopen',startup_check=reopen,snapshot=False,cpu=args.cpu)
         revised={
           'status':'ok','answers':[],
           'commands':[
@@ -712,7 +725,7 @@ def main():
           ],
           'command_timeout':60,
         }
-        result['revised_after_second_boot']=INPUT(candidate,args.out/'revised',startup_check=revised,snapshot=False)
+        result['revised_after_second_boot']=INPUT(candidate,args.out/'revised',startup_check=revised,snapshot=False,cpu=args.cpu)
         result['filesystem_integrity']=verify_redsea_project(candidate)
         result['result']='pass'
     except Exception as exc:
