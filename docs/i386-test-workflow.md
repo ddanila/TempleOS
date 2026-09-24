@@ -38,7 +38,9 @@ old cursor pixels behind. Forward and reverse drag cases verify selected-entry
 attributes, moving-endpoint caret placement, typed replacement and exact saved
 cursor bytes. A long-document case holds the pointer at the clamped bottom edge,
 sends another downward packet, and checks a second viewport advance, the exact
-selected VGA cells and the canonical endpoint bytes.
+selected VGA cells and the canonical endpoint bytes. It then drags back to the
+first text row and into the fixed header, checking two upward advances, the
+selected VGA frame and the canonical bytes at the start of the document.
 The group also creates a two-file RedSea directory, selects the second row with
 the mouse, opens it by double-click through public `EdDir`, verifies the selected file in
 `DocEd`, and checks pointer restoration when returning to the picker. It then

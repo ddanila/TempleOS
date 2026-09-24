@@ -1681,7 +1681,8 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
       goto_line,undo_count=0,undo_index,undo_group_kind=0,undo_group_jiffy=0,
       undo_kind,mouse_x,mouse_y,mouse_buttons=0,mouse_packets=0,
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets,
-      mouse_anchor=0,mouse_endpoint,mouse_scroll_rows,mouse_scroll_columns;
+      mouse_anchor=0,mouse_endpoint,mouse_scroll_rows,mouse_scroll_columns,
+      mouse_hit_y;
   Bool done=FALSE,changed,redraw,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
   I64 save_status=0;
   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL || flags) return FALSE;
@@ -1830,13 +1831,15 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
           KernelLog("DOC EDIT mouse cursor\n");
         } else if(next_mouse_buttons&1 && mouse_buttons&1 && mouse_dragging) {
           mouse_scroll_rows=0; mouse_scroll_columns=0;
-          if(next_mouse_y==0) mouse_scroll_rows=-1;
+          if(next_mouse_y<=32) mouse_scroll_rows=-1;
           else if(next_mouse_y==479) mouse_scroll_rows=1;
           if(next_mouse_x==0) mouse_scroll_columns=-1;
           else if(next_mouse_x==639) mouse_scroll_columns=1;
+          mouse_hit_y=next_mouse_y;
+          if(mouse_hit_y<32) mouse_hit_y=32;
           if((next_mouse_x!=mouse_x || next_mouse_y!=mouse_y ||
               mouse_scroll_rows || mouse_scroll_columns) &&
-              NativeDocEditMouseCursor(doc,next_mouse_x,next_mouse_y,
+              NativeDocEditMouseCursor(doc,next_mouse_x,mouse_hit_y,
                 mouse_scroll_rows,mouse_scroll_columns)) {
           mouse_endpoint=NativeDocCursorOffset(doc);
           NativeDocMouseSelect(doc,mouse_anchor,mouse_endpoint);

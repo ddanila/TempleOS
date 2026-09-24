@@ -2128,10 +2128,10 @@ image useful on its own:
    and the editor. File-picker items and help links now share a 500 ms
    double-click/open path with keyboard Enter. The idle HolyC console now displays
    the same transient pointer and hides it on keyboard input. Editor dragging at
-   the bottom screen edge now advances the viewport and canonical selection.
-   Upward edge scrolling needs correction, horizontal edge behavior needs dedicated
-   validation, and stationary-hold scrolling and keyboard-only fallback acceptance
-   remain. Keep wheel and serial-mouse support optional
+   the bottom screen edge now advances the viewport and canonical selection;
+   dragging into the fixed header advances it toward earlier rows. Horizontal edge
+   behavior needs dedicated validation. Stationary-hold scrolling and
+   keyboard-only fallback acceptance remain. Keep wheel and serial-mouse support optional
    until the core workflow is stable.
 2. Replace the remaining reduced editor actions with the original DocEd/ExeDoc
    paths needed by create, open, edit, diagnose, save and execute. Expand DolDoc

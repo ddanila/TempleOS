@@ -1171,6 +1171,39 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
               'final_pointer':[120,479]})
             submit('I64 MouseScrollAutoCheck(){Free(mouse_scroll_saved);mouse_scroll_saved=DocSave(mouse_scroll,&mouse_size);return mouse_size==180&&mouse_scroll_saved[173]==5&&mouse_scroll_saved[174]==10&&mouse_scroll_saved[175]==53&&mouse_scroll_saved[176]==56;}', [], 'doc-mouse-autoscroll-canonical-definition')
             submit('MouseScrollAutoCheck;', ['1'], 'doc-mouse-autoscroll-canonical-check')
+            mouse_scroll_auto_up=['TempleOS i386','DolDoc editor','C:/MouseScroll.HC','']+[
+                (mouse_block+'00') if index==0 else f'{index:02d}'
+                for index in range(56)]
+            mouse_scroll_up_colors={(row,column):15 for row in range(4,60)
+                                    for column in range(2)}
+            mouse_scroll_up_backgrounds={(row,column):0 for row in range(4,60)
+                                         for column in range(2)}
+            mouse_scroll_up_colors[4,2]=15
+            mouse_scroll_up_backgrounds[4,2]=0
+            submit('DocEd(mouse_scroll);', ['1'], 'doc-mouse-autoscroll-up-editor',interaction={
+              'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
+              'initial_rows':mouse_scroll_auto,
+              'initial_colors':mouse_scroll_auto_colors,
+              'initial_backgrounds':mouse_scroll_auto_backgrounds,
+              'events':[{'mouse_to':[4,476]},
+                        {'mark_log':'DOC EDIT mouse cursor\n'},
+                        {'mouse_button':'left','down':True},
+                        {'wait_log_after':'DOC EDIT mouse cursor\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_to':[4,32]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mark_log':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_rel':[0,-8]},
+                        {'wait_log_after':'DOC EDIT mouse autoscroll\n'},
+                        {'mouse_button':'left','down':False},
+                        {'mouse_rel':[0,8]},
+                        {'mouse_to':[120,32]}],
+              'final_rows':mouse_scroll_auto_up,
+              'final_colors':mouse_scroll_up_colors,
+              'final_backgrounds':mouse_scroll_up_backgrounds,
+              'final_pointer':[120,32]})
+            submit('I64 MouseScrollUpCheck(){Free(mouse_scroll_saved);mouse_scroll_saved=DocSave(mouse_scroll,&mouse_size);return mouse_size==179&&mouse_scroll_saved[0]==48&&mouse_scroll_saved[1]==48&&mouse_scroll_saved[2]==10;}', [], 'doc-mouse-autoscroll-up-canonical-definition')
+            submit('MouseScrollUpCheck;', ['1'], 'doc-mouse-autoscroll-up-canonical-check')
             submit('Free(mouse_scroll_saved);DocDel(mouse_scroll);', [], 'doc-mouse-scroll-delete')
             submit('CDoc *mouse_drag=DocNew("C:/MouseDrag.HC",Fs);U8 *mouse_drag_source="abcdef";for(mouse_at=0;mouse_drag_source[mouse_at];mouse_at++)DocPutKey(mouse_drag,mouse_drag_source[mouse_at]);', ['0'], 'doc-mouse-drag-new')
             mouse_drag_initial=['TempleOS i386','DolDoc editor','C:/MouseDrag.HC','',
