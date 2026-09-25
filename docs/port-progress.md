@@ -8570,3 +8570,20 @@ generation and a bootable native installation remain M7 work.
 --test` gate pass. The latter records `native_module_disk: pass` in
 `build/i386-kernel/result.json`, including both QEMU/486 writable boots, the
 normal 8 MiB session, and the filesystem failure/recovery matrix.
+
+## Native call relocation capture (2026-09-25)
+
+The native frontend now retains named `CALL rel32` sites with each compiled
+function until its compilation control releases the code. A compiler service
+reports their offsets and names. The guest packages its own compiled recursive
+`DurableFact` function as a T32M export plus relocation, loads it at a new
+address, and executes `DurableFact(5)` for 120 in both diagnostic phases.
+This moves native output beyond a fixed-address function. Packaging complete
+source units still requires multi-function layout, data and external binding
+records, and the disk-to-disk native build path.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The QEMU/486 manifest records the 324-byte guest-built
+relocatable module, its 256-byte loaded image, execution in both diagnostic
+phases, the normal 8 MiB session, two-boot RedSea persistence and filesystem
+failure recovery.

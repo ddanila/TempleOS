@@ -8,6 +8,13 @@ extern U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *
 extern Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols);
 //Inspect a generated function while its private compilation control is live.
 extern Bool I386FrontendCodeSpan(CPrsSymbolServices *symbols,U8 *address,I64 *bytes,I64 **data_start);
+class CI386FrontendRelocView {
+  I64 offset;
+  U8 *name;
+};
+//Borrowed names remain valid while the function and its compilation control live.
+extern I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
+  CI386FrontendRelocView *views,I64 capacity);
 extern CPrsSymbolServices *I386FrontendServices(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes);
 extern Bool I386ScalarTypesCheck(CHashClass **roots,Bool record);
 extern Bool I386LoadScalarTypes(CI386Heap *heap,CHashClass **types,

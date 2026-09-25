@@ -8,11 +8,18 @@ extern U0 I386ExecutionBreakPoll();
 #include "/Compiler/PrsBinary.HC"
 #include "/Compiler/LexBackup.HC"
 #include "/Compiler/I386/LexState.HC"
+extern class CI386FrontendReloc;
 class CI386FrontendCode {
   CI386FrontendCode *next;
+  CI386FrontendReloc *relocs;
   U8 *code;
   I64 bytes,data_start,raw_type,prior_misc;
   CHashClass *value_class;
+};
+class CI386FrontendReloc {
+  CI386FrontendReloc *next;
+  I64 offset;
+  U8 name[1];
 };
 class CI386FrontendFixup {
   CI386FrontendFixup *next;
@@ -108,6 +115,7 @@ U0 I386FrontendFree(U8 *context,U8 *allocation)
 {
   CI386Frontend *state=context;
   CI386FrontendCode **link=&state->codes,*record;
+  CI386FrontendReloc *reloc,*next_reloc;
   CI386FrontendFixup **pending=&state->fixups,*fixup;
   while(fixup=*pending) {
     if(fixup->code==allocation) {
@@ -118,6 +126,10 @@ U0 I386FrontendFree(U8 *context,U8 *allocation)
   while(record=*link) {
     if(record->code==allocation) {
       *link=record->next;
+      for(reloc=record->relocs;reloc;reloc=next_reloc) {
+        next_reloc=reloc->next;
+        if(!I386ParserFree(state->heap,state->cc,reloc)) I386FrontendUnavailable(state);
+      }
       if(!I386ParserFree(state->heap,state->cc,record)) I386FrontendUnavailable(state);
       break;
     }
@@ -329,14 +341,27 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
   }
   if(stack) I386FrontendUnavailable(state);
 }
-U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,U8 *code,I64 bytes)
+U0 I386FrontendRelocAdd(CI386Frontend *state,CI386FrontendCode *output,
+  I64 offset,U8 *name)
+{
+  CI386FrontendReloc *reloc;
+  I64 i,length=StrLen(name);
+  if(length<1 || length>255 || offset<1 || offset>output->bytes-4 ||
+      output->code[offset-1]!=0xE8) I386FrontendUnavailable(state);
+  reloc=I386FrontendAlloc(state,sizeof(CI386FrontendReloc)+length,TRUE,FALSE);
+  reloc->offset=offset;
+  for(i=0;i<=length;i++) reloc->name[i]=name[i];
+  reloc->next=output->relocs; output->relocs=reloc;
+}
+U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386FrontendCode *output)
 {
   CAOTImportExport *record,*next;
   CI386FrontendCall *call,*next_call;
   CI386FrontendFixup *fixup;
   CMemberLst *member;
   U8 *target;
-  I64 i,j,offset;
+  I64 i,j,offset,bytes=output->bytes;
+  U8 *code=output->code;
   bound->release_owner.heap=state->heap; bound->release_owner.backend.cc=state->cc;
   for(i=0;i<10;i++) {
     record=bound->functions[i].ie_lst; bound->functions[i].ie_lst=0;
@@ -345,6 +370,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,U8 *code,I64 
       if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4) {
         I386FrontendUnavailable(state);
       }
+      I386FrontendRelocAdd(state,output,offset,bound->functions[i].str);
       (code+offset)(U32 *)[0]=(bound->addresses[i]+0)(U64)-(code+offset+4)(U64);
       I386NativeBackendFree(&bound->release_owner,record);
       record=next;
@@ -358,6 +384,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,U8 *code,I64 
     while(record) {
       next=record->next; offset=record->rip;
       if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4) I386FrontendUnavailable(state);
+      I386FrontendRelocAdd(state,output,offset,call->original->str);
       if(call->unresolved) {
         if(call->fun.arg_cnt<0 || call->fun.arg_cnt>4095) I386FrontendUnavailable(state);
         fixup=I386FrontendAlloc(state,sizeof(CI386FrontendFixup)+call->fun.arg_cnt*sizeof(CHashClass *),TRUE,FALSE);
@@ -416,7 +443,7 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
     if(metadata->rip<result->data_start) result->data_start=metadata->rip;
   }
   for(i=0;i<out->count;i++) result->code[i]=out->data[i];
-  I386FrontendLink(state,bound,result->code,result->bytes);
+  I386FrontendLink(state,bound,result);
   result->next=state->codes; state->codes=result;
   if(!I386OutDel(state->heap,cc,out) || !I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
   cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;

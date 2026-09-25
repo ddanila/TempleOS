@@ -12,6 +12,33 @@ Bool I386FrontendCodeSpan(CPrsSymbolServices *symbols,U8 *address,I64 *bytes,I64
     }
   return FALSE;
 }
+I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
+  CI386FrontendRelocView *views,I64 capacity)
+{
+  CI386Frontend *frontend;
+  CI386FrontendCode *code;
+  CI386FrontendReloc *reloc;
+  I64 count=0;
+  if(!symbols || !address || capacity<0 || !(frontend=symbols->context) ||
+      symbols!=&frontend->symbols) return -1;
+  for(code=frontend->codes;code;code=code->next)
+    if(code->code==address) {
+      for(reloc=code->relocs;reloc;reloc=reloc->next) count++;
+      if(!views) {
+        if(capacity) return -1;
+        return count;
+      }
+      if(capacity<count) return -1;
+      count=0;
+      for(reloc=code->relocs;reloc;reloc=reloc->next) {
+        views[count].offset=reloc->offset;
+        views[count].name=reloc->name;
+        count++;
+      }
+      return count;
+    }
+  return -1;
+}
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
 {
   if(!allocation) { transfer->ok=FALSE; return; }

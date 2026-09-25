@@ -117,6 +117,45 @@ U0 ProbeProgramModule(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE MODULE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(module_bytes);
   KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+U0 ProbeProgramRelocation(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,CHashTable *table)
+{
+  CHashFun *function=ProbeSymbolFind(0,"DurableFact",table,HTT_FUN);
+  CI386FrontendRelocView reloc[2];
+  CI386ModuleRecord records[2];
+  U8 *code=0,*module=0,*image=0,*modules[1];
+  I64 sizes[1],code_bytes,*data_start,module_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  I64 (*entry)(I64 n);
+  if(!function || !function->exe_addr ||
+      !probe->compiler->code_span(symbols,function->exe_addr,&code_bytes,&data_start) ||
+      code_bytes<1 || code_bytes>4096 || *data_start!=code_bytes ||
+      probe->compiler->code_relocs(symbols,function->exe_addr,0,0)!=1 ||
+      probe->compiler->code_relocs(symbols,function->exe_addr,reloc,2)!=1 ||
+      StrCmp(reloc[0].name,"DurableFact") || reloc[0].offset<1 ||
+      reloc[0].offset>code_bytes-4 || function->exe_addr[reloc[0].offset-1]!=0xE8) KernelStop;
+  code=I386HeapAlloc(heap,code_bytes);
+  if(!code) KernelStop;
+  for(i=0;i<code_bytes;i++) code[i]=function->exe_addr[i];
+  (code+reloc[0].offset)(U32 *)[0]=0;
+  records[0].kind=I386_MODULE_EXPORT; records[0].offset=0;
+  records[0].name_offset=0; records[0].name_length=11;
+  records[1].kind=I386_MODULE_REL32; records[1].offset=reloc[0].offset;
+  records[1].name_offset=0; records[1].name_length=11;
+  module_bytes=probe->compiler->module_pack(0,0,code,code_bytes,records,2,"DurableFact",12);
+  if(module_bytes<1 || !(module=I386HeapAlloc(heap,module_bytes)) ||
+      probe->compiler->module_pack(module,module_bytes,code,code_bytes,records,2,
+        "DurableFact",12)!=module_bytes || !I386ModuleValid(module,module_bytes)) KernelStop;
+  modules[0]=module; sizes[0]=module_bytes;
+  image_bytes=I386LoadBoundInto(modules,sizes,1,0,0,"DurableFact",0,0);
+  image=I386HeapAlloc(heap,image_bytes);
+  if(!image || I386LoadBoundInto(modules,sizes,1,image,image_bytes,"DurableFact",0,0)!=image_bytes) KernelStop;
+  entry=image;
+  if((*entry)(5)!=120 || !I386HeapFree(heap,image) || !I386HeapFree(heap,module) ||
+      !I386HeapFree(heap,code) || heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE RELOC "); KernelHex(probe->phase); KernelLog(" "); KernelHex(module_bytes);
+  KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -210,6 +249,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     }
     if(kind==10) {
       ProbeProgramModule(probe,heap,symbols,source_table);
+      ProbeProgramRelocation(probe,heap,symbols,source_table);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);

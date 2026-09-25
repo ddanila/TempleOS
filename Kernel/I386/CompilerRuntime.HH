@@ -19,7 +19,7 @@
 #include "/Compiler/I386/CommandInput.HH"
 #include "/Kernel/I386/Module.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_COMPILER_SERVICES_VERSION 51
+#define I386_COMPILER_SERVICES_VERSION 52
 //Versioned caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
@@ -84,5 +84,7 @@ class CI386CompilerServices {
   Bool (*code_span)(CPrsSymbolServices *symbols,U8 *address,I64 *bytes,I64 **data_start);
   I64 (*module_pack)(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
     CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
+  I64 (*code_relocs)(CPrsSymbolServices *symbols,U8 *address,
+    CI386FrontendRelocView *views,I64 capacity);
 };
 #endif
