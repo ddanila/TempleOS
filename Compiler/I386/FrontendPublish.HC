@@ -60,12 +60,14 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
     for(j=0;j<i;j++) if(!StrCmp(fun->str,functions[j]->str)) return 0;
     code=frontend->codes;
     while(code && code->code!=fun->exe_addr) code=code->next;
-    if(!code || code->bytes<1 || code->data_start!=code->bytes ||
+    if(!code || code->bytes<1 || code->data_start<1 ||
+        code->data_start>code->bytes ||
         code->bytes>0xFFFFFFF0-payload) return 0;
     payload=(payload+7)&~7;
     if(code->bytes>0xFFFFFFF0-payload) return 0;
     payload+=code->bytes;
     record_count++; string_bytes+=length+1;
+    if(code->data_start<code->bytes) record_count++;
     for(reloc=code->relocs;reloc;reloc=reloc->next) {
       length=StrLen(reloc->name);
       if(length<1 || length>255 || reloc->offset<1 ||
@@ -105,6 +107,12 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
       for(k=0;k<=length;k++) strings[string_bytes+k]=reloc->name[k];
       string_bytes+=length+1;
       (body+record->offset)(U32 *)[0]=0;
+    }
+    if(code->data_start<code->bytes) {
+      record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
+      record->offset=base+code->data_start;
+      record->name_offset=code->bytes-code->data_start;
+      record->name_length=0;
     }
   }
   if(index!=record_count || string_bytes!=total-strings_offset) return 0;

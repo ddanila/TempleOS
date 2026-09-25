@@ -158,9 +158,10 @@ U0 ProbeProgramRelocation(CI386CompilerProbe *probe,CI386Heap *heap,
 }
 I64 ProbeProgramMultiRun(CI386Heap *heap,U8 *module,I64 module_bytes)
 {
-  U8 *image;
-  I64 image_bytes;
+  U8 *image,*literal;
+  I64 image_bytes,text_bytes;
   I64 (*entry)();
+  U8 *(*text_entry)();
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableRoot",0,0);
   if(image_bytes<1 || !(image=I386HeapAlloc(heap,image_bytes))) KernelStop;
@@ -168,23 +169,34 @@ I64 ProbeProgramMultiRun(CI386Heap *heap,U8 *module,I64 module_bytes)
       "DurableRoot",0,0)!=image_bytes) KernelStop;
   entry=image;
   if((*entry)()!=42 || !I386HeapFree(heap,image)) KernelStop;
+  text_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableText",0,0);
+  if(text_bytes!=image_bytes || !(image=I386HeapAlloc(heap,text_bytes)) ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,text_bytes,
+        "DurableText",0,0)!=text_bytes) KernelStop;
+  text_entry=image; literal=(*text_entry)();
+  if((literal+0)(U64)<(image+0)(U64) ||
+      (literal+0)(U64)>(image+image_bytes-6)(U64) ||
+      StrCmp(literal,"hello") || !I386HeapFree(heap,image)) KernelStop;
   return image_bytes;
 }
 U0 ProbeProgramMulti(CI386CompilerProbe *probe,CI386Heap *heap,
   CPrsSymbolServices *symbols,CHashTable *table)
 {
-  CHashFun *functions[2];
+  CHashFun *functions[3];
   U8 *module,*disk_module=0;
-  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 module_bytes,disk_bytes,image_bytes,text_bytes,*data_start,i;
   I64 used=heap->used,allocations=heap->allocations;
   functions[0]=ProbeSymbolFind(0,"DurableLeaf",table,HTT_FUN);
   functions[1]=ProbeSymbolFind(0,"DurableRoot",table,HTT_FUN);
-  if(!functions[0] || !functions[1] ||
-      !(module_bytes=probe->compiler->program_pack(symbols,functions,2,0,0)) ||
+  functions[2]=ProbeSymbolFind(0,"DurableText",table,HTT_FUN);
+  if(!functions[0] || !functions[1] || !functions[2] ||
+      !probe->compiler->code_span(symbols,functions[2]->exe_addr,&text_bytes,&data_start) ||
+      *data_start<1 || *data_start>=text_bytes ||
+      !(module_bytes=probe->compiler->program_pack(symbols,functions,3,0,0)) ||
       !(module=I386HeapAlloc(heap,module_bytes))) KernelStop;
   module[0]=0xA5;
-  if(probe->compiler->program_pack(symbols,functions,2,module,module_bytes-1) ||
-      module[0]!=0xA5 || probe->compiler->program_pack(symbols,functions,2,module,
+  if(probe->compiler->program_pack(symbols,functions,3,module,module_bytes-1) ||
+      module[0]!=0xA5 || probe->compiler->program_pack(symbols,functions,3,module,
         module_bytes)!=module_bytes) KernelStop;
   image_bytes=ProbeProgramMultiRun(heap,module,module_bytes);
   if(probe->persist_modules) {

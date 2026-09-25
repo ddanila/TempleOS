@@ -859,6 +859,36 @@ def mutated_file_contents(disk, wanted):
     return found
 
 
+def verify_native_literal_module(disk):
+    """Independently inspect the guest-built module persisted in RedSea."""
+    path='/Probe/DurablePair.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M':
+        raise ValueError('Missing guest-built multi-function module')
+    total,code_size,count,records_offset,strings_offset=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not code_size or code_size&7 or
+            records_offset!=32+code_size or strings_offset!=records_offset+16*count or
+            strings_offset>total):
+        raise ValueError('Invalid persisted native module layout')
+    rows=[struct.unpack_from('<4I',module,records_offset+16*i) for i in range(count)]
+    exports=[module[name:name+length].decode('ascii') for kind,offset,name,length in rows
+             if kind==1]
+    ranges=[(offset,length) for kind,offset,length,name_length in rows
+            if kind==4 and name_length==0]
+    calls=[(offset,module[name:name+length]) for kind,offset,name,length in rows
+           if kind==2]
+    literal=module.find(b'hello\0',32,32+code_size)-32
+    if (exports!=['DurableLeaf','DurableRoot','DurableText'] or
+            ranges!=[(literal,6)] or literal<0 or
+            len(calls)!=1 or calls[0][1]!=b'DurableLeaf' or
+            calls[0][0]<1 or calls[0][0]>code_size-4 or
+            module[32+calls[0][0]-1]!=0xE8 or
+            module[32+calls[0][0]:32+calls[0][0]+4]!=b'\0'*4):
+        raise ValueError('Guest module lost its call or literal data record')
+    return {'sha256':hashlib.sha256(module).hexdigest(),'exports':exports,
+            'data_range':{'offset':literal,'bytes':6},'call':'DurableRoot -> DurableLeaf'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1532,6 +1562,7 @@ def main():
         result['native_multi_disk']={'path':'C:/Probe/DurablePair.t32m',
                                      'fresh_boot':'write, read, execute',
                                      'second_boot':'read, execute, replace, read, execute',
+                                     'module':verify_native_literal_module(mutation_disk),
                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)

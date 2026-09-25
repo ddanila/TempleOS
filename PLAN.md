@@ -2186,8 +2186,9 @@ The standalone-development goal above is the entry gate. M7 then requires:
    native frontend now retains named call relocation sites long enough to
    package a recursive compiled function as T32M. A native compiler service
    now packs multiple live functions with internal named calls, and a writable
-   QEMU image persists that module across boots. Next carry this path through
-   static data, external bindings and complete source units.
+   QEMU image persists that module across boots. The same packer emits T32M
+   data ranges for function literal pools. Next carry this path through global
+   and static variables, external bindings and complete source units.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

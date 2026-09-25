@@ -8605,3 +8605,21 @@ Full source-unit compilation and native installation remain M7 gates.
 multi-function module, its 104-byte loaded image, both diagnostic phases,
 the two-boot RedSea round trip, the normal 8 MiB session, and the filesystem
 failure/recovery matrix.
+
+## Native function literal pools in T32M (2026-09-25)
+
+The native multi-function packer now emits `DATA_RANGE` records for the
+literal pool at the end of each compiled function. The QEMU probe includes
+`DurableText` alongside `DurableLeaf` and `DurableRoot`, loads the guest-built
+module, and checks that `DurableText()` returns `"hello"` from within the
+new loaded image. The same module is saved, reopened and executed from RedSea
+on the writable boot and on the following reboot. Global and static variable
+storage and address relocations remain separate M7 work.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The guest-built module is 312 bytes and its loaded image is
+160 bytes. An independent host walk of the writable RedSea disk confirms three
+exports, the `DurableRoot` to `DurableLeaf` call relocation, and a six-byte
+data range covering `"hello"`. The new retained disk assertion passes against
+that QEMU artifact; the normal 8 MiB session and filesystem recovery matrix
+also pass.
