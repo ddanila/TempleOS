@@ -363,6 +363,65 @@ U0 ProbeProgramAddress(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE ADDRESS "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramDataRun(CI386Heap *heap,U8 *module,I64 module_bytes,U8 *data)
+{
+  CI386ModuleBinding binding;
+  U8 *image;
+  I64 image_bytes;
+  I64 (*entry)(I64 value);
+  binding.name="DurableData";
+  binding.kind=I386_MODULE_DATA_EXPORT;
+  binding.address=(data+0)(U64);
+  if(!I386ModuleValid(module,module_bytes) ||
+      I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableLater",0,0)) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableLater",&binding,1);
+  if(image_bytes<1 || !(image=I386HeapAlloc(heap,image_bytes)) ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "DurableLater",&binding,1)!=image_bytes) KernelStop;
+  entry=image;
+  if(*data(I64 *)!=20 || (*entry)(22)!=42) KernelStop;
+  *data(I64 *)=21;
+  if((*entry)(22)!=43) KernelStop;
+  *data(I64 *)=20;
+  if(!I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramData(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,CHashTable *table)
+{
+  CHashFun *function[1];
+  CHashGlblVar *global;
+  U8 *module,*disk_module;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  function[0]=ProbeSymbolFind(0,"DurableLater",table,HTT_FUN);
+  global=ProbeSymbolFind(0,"DurableData",table,HTT_GLBL_VAR);
+  if(!function[0] || !global || !global->data_addr ||
+      !(module_bytes=probe->compiler->program_pack(symbols,function,1,0,0)) ||
+      !(module=I386HeapAlloc(heap,module_bytes)) ||
+      probe->compiler->program_pack(symbols,function,1,module,module_bytes)!=module_bytes)
+    KernelStop;
+  image_bytes=ProbeProgramDataRun(heap,module,module_bytes,global->data_addr);
+  if(probe->persist_modules) {
+    disk_module=probe->files->read(heap,"C:/Probe/DurableDataRead.t32m",&disk_bytes,0,0);
+    if(disk_module) {
+      if(ProbeProgramDataRun(heap,disk_module,disk_bytes,global->data_addr)!=image_bytes ||
+          !I386HeapFree(heap,disk_module)) KernelStop;
+      KernelLog("NATIVE DATA BOUND EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/DurableDataRead.t32m",module,module_bytes,0)) KernelStop;
+    disk_module=probe->files->read(heap,"C:/Probe/DurableDataRead.t32m",&disk_bytes,0,0);
+    if(!disk_module || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk_module[i]!=module[i]) KernelStop;
+    if(ProbeProgramDataRun(heap,disk_module,disk_bytes,global->data_addr)!=image_bytes ||
+        !I386HeapFree(heap,disk_module)) KernelStop;
+    KernelLog("NATIVE DATA BOUND DISK\n");
+  }
+  if(!I386HeapFree(heap,module) || heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE DATA BOUND "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbeProgramMulti(CI386CompilerProbe *probe,CI386Heap *heap,
   CPrsSymbolServices *symbols,CHashTable *table)
 {
@@ -505,6 +564,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       ProbeProgramBound(probe,heap,symbols,source_table);
       ProbeProgramSplit(probe,heap,symbols,source_table);
       ProbeProgramAddress(probe,heap,symbols,source_table);
+      ProbeProgramData(probe,heap,symbols,source_table);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);

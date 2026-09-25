@@ -884,7 +884,9 @@ pu_export_sys_sym:
 	      cc->abs_cnts.externs++;
 	      PrsEmit(services,cc,IC_IMM_I64,&tmpg->data_addr,tmpc);
 	      PrsEmit(services,cc,IC_DEREF,0,tmpc);
-	    } else
+	    } else if(services->retain_data_addresses && !(tmpg->flags&GVF_ALIAS))
+	      PrsEmit(services,cc,IC_ADDR_IMPORT,tmpg,tmpc);
+	    else
 	      PrsEmit(services,cc,IC_IMM_I64,tmpg->data_addr,tmpc);
 	  }
 	  (*services->lex)(services->context,cc);

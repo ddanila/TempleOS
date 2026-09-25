@@ -952,6 +952,29 @@ def verify_native_address_module(disk):
             'export':'DurableAddress','address_target':'DurableLeaf'}
 
 
+def verify_native_data_bound_module(disk):
+    """Audit a guest-built function's named global-data address record."""
+    path='/Probe/DurableDataRead.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M':
+        raise ValueError('Missing guest-built data-bound module')
+    total,code_size,count,records_offset,strings_offset=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not code_size or code_size&7 or count!=2 or
+            records_offset!=32+code_size or strings_offset!=records_offset+32 or
+            strings_offset>total):
+        raise ValueError('Invalid guest-built data-bound module layout')
+    export,address=[struct.unpack_from('<4I',module,records_offset+16*i) for i in range(2)]
+    if (export[0]!=1 or export[1]!=0 or
+            module[export[2]:export[2]+export[3]]!=b'DurableLater' or
+            address[0]!=5 or address[1]<1 or address[1]>code_size-4 or
+            module[address[2]:address[2]+address[3]]!=b'DurableData' or
+            module[32+address[1]-1]!=0x05 or
+            module[32+address[1]:32+address[1]+4]!=b'\0'*4):
+        raise ValueError('Guest-built global-data address record is missing')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'export':'DurableLater','data_binding':'DurableData'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1428,6 +1451,17 @@ def main():
                                            'module_bytes':native_address[0][1],
                                            'loaded_bytes':native_address[0][2],
                                            'result':'cross-module function address relocated and called'}
+        native_data_bound = [tuple(int(value,16) for value in line.split()[3:])
+                             for line in log.splitlines()
+                             if re.match(r'^NATIVE DATA BOUND [0-9A-F]{16} ',line)]
+        if len(native_data_bound)!=2 or [entry[0] for entry in native_data_bound]!=[0,1] or \
+                native_data_bound[0][1:]!=native_data_bound[1][1:] or \
+                native_data_bound[0][1]<80 or native_data_bound[0][2]<40:
+            raise ValueError('Guest-built global-data relocation did not execute')
+        result['native_data_binding']={'phases':[0,1],
+                                       'module_bytes':native_data_bound[0][1],
+                                       'loaded_bytes':native_data_bound[0][2],
+                                       'result':'bound global read before and after mutation'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1649,6 +1683,8 @@ def main():
             raise ValueError('Fresh split-module disk round trip failed')
         if mutation_log.count('NATIVE ADDRESS DISK\n')!=1 or 'NATIVE ADDRESS EXISTING\n' in mutation_log:
             raise ValueError('Fresh function-address module disk round trip failed')
+        if mutation_log.count('NATIVE DATA BOUND DISK\n')!=1 or 'NATIVE DATA BOUND EXISTING\n' in mutation_log:
+            raise ValueError('Fresh global-data bound module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1668,6 +1704,9 @@ def main():
         if module_reboot_log.count('NATIVE ADDRESS EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE ADDRESS DISK\n')!=1:
             raise ValueError('Function-address module did not link from the previous boot')
+        if module_reboot_log.count('NATIVE DATA BOUND EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE DATA BOUND DISK\n')!=1:
+            raise ValueError('Global-data bound module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1694,6 +1733,11 @@ def main():
                                        'second_boot':'read, relocate, call, replace',
                                        'module':verify_native_address_module(mutation_disk),
                                        'result':'pass'}
+        result['native_data_bound_disk']={'path':'C:/Probe/DurableDataRead.t32m',
+                                          'fresh_boot':'write, read, bind, mutate, execute',
+                                          'second_boot':'read, bind, mutate, execute, replace',
+                                          'module':verify_native_data_bound_module(mutation_disk),
+                                          'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

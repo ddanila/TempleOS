@@ -8681,3 +8681,24 @@ session, two writable boots, filesystem recovery, and document compatibility
 pass. The host RedSea audit confirms one `DurableAddress` export and one
 zero-placeholder `ADDRESS` record targeting `DurableLeaf`. After removing
 temporary trace output, a fresh rebuild and diagnostic QEMU boot passed again.
+
+## Native global-data address binding (2026-09-25)
+
+Native JIT parsing now retains named address sites for allocated global
+variables as well as functions. The frontend patches each live JIT site for
+immediate execution and serializes it as a T32M `ADDRESS` record for load-time
+binding. Deliberate zero-address aliases keep their previous immediate
+behavior. A guest-built `DurableLater` module carries a named reference to
+`DurableData`; the loader rejects it without a binding, then binds it to the
+resident global and observes 42 and 43 as that global changes from 20 to 21.
+The probe restores the value, writes the module to RedSea, and repeats the
+load and mutation check on a writable reboot. A host audit checks the saved
+module's `DurableData` address record. Packaging global and static storage
+itself inside guest-built modules remains an M7 task.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The module is 193 bytes and its loaded image is 112 bytes.
+Both diagnostic phases, the normal 8 MiB session, two writable boots,
+filesystem recovery, and document compatibility pass. The retained host
+RedSea audit confirms the `DurableLater` export and zero-placeholder
+`DurableData` address record.

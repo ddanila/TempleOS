@@ -2193,9 +2193,10 @@ The standalone-development goal above is the entry gate. M7 then requires:
    call target as a second T32M and links both files without a resident
    binding. The native frontend now retains named function-address relocations,
    so a guest-built module can return a pointer to a function in the second
-   module after loading at a new address. Next carry this path through global
-   and static variables, complete source units, and a stable system binding
-   table for native builds.
+   module after loading at a new address. It also retains named global-data
+   address sites for load-time binding to resident storage. Next package
+   global and static storage inside guest-built modules, then carry this path
+   through complete source units and a stable system binding table.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

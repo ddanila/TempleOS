@@ -25,7 +25,7 @@ class CI386FrontendReloc {
 class CI386FrontendAddress {
   CI386FrontendAddress *next;
   CHashFun fun;
-  CHashFun *original;
+  CHashSrcSym *original;
   U8 *target;
 };
 class CI386FrontendFixup {
@@ -334,6 +334,8 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
 {
   CIntermediateCode *node;
   CHashFun *fun;
+  CHashGlblVar *global;
+  CHashSrcSym *symbol;
   CI386FrontendCall *call,*stack=0;
   CI386FrontendAddress *address;
   U8 *destination,*source;
@@ -364,15 +366,26 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
       node->ic_data=&stack->fun;
       stack=stack->stack;
     } else if(node->ic_code==IC_ABS_ADDR || node->ic_code==IC_ADDR_IMPORT) {
-      if(node->ic_code==IC_ABS_ADDR) fun=I386FrontendFunctionAt(state,node->ic_data);
-      else fun=node->ic_data;
-      if(!fun || !fun->exe_addr || !(fun->type&HTT_FUN)) I386FrontendUnavailable(state);
+      if(node->ic_code==IC_ABS_ADDR) symbol=I386FrontendFunctionAt(state,node->ic_data);
+      else symbol=node->ic_data;
+      if(!symbol || !symbol->str) I386FrontendUnavailable(state);
       address=I386FrontendAlloc(state,sizeof(CI386FrontendAddress),TRUE,FALSE);
-      destination=&address->fun; source=fun;
-      for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
+      if(symbol->type&HTT_FUN) {
+        fun=symbol;
+        if(!fun->exe_addr) I386FrontendUnavailable(state);
+        destination=&address->fun; source=fun;
+        for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
+        address->target=fun->exe_addr;
+      } else if(symbol->type&HTT_GLBL_VAR) {
+        global=symbol;
+        if(!global->data_addr || global->flags&GVF_EXTERN) I386FrontendUnavailable(state);
+        address->fun.type=HTT_FUN;
+        address->fun.str=global->str;
+        address->target=global->data_addr;
+      } else I386FrontendUnavailable(state);
       address->fun.type|=HTF_IMPORT;
       address->fun.ie_lst=0; address->fun.ext_lst=0;
-      address->original=fun; address->target=fun->exe_addr;
+      address->original=symbol;
       address->next=bound->address_refs; bound->address_refs=address;
       node->ic_code=IC_ADDR_IMPORT; node->ic_data=&address->fun;
     } else if(node->ic_code==IC_HEAP_GLBL)
@@ -754,6 +767,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   e->string=&I386FrontendString; e->hash_add=&I386FrontendHashAdd; e->hash_after=&I386FrontendHashAfter;
   e->class_view=&I386FrontendClassView;
   e->retain_function_addresses=TRUE;
+  e->retain_data_addresses=TRUE;
   e->type=&I386FrontendType; e->expression=&I386FrontendExpression;
   t=&state->types; t->context=state; t->types=types; t->lex=&I386FrontendLex; t->report=&I386FrontendReport;
   t->snapshot_push=&I386FrontendSnapshot; t->snapshot_drop=&I386FrontendDrop;

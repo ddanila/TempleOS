@@ -31,6 +31,8 @@ class CPrsExpressionServices {
   Bool (*expression)(U8 *context,CCmpCtrl *cc,I64 *precedence,Bool end_exp,CPrsStk *stack);
   //Native JITs retain named function-address sites for later module packaging.
   Bool retain_function_addresses;
+  //Retain named global-address sites instead of embedding live allocation addresses.
+  Bool retain_data_addresses;
 };
 extern CIntermediateCode *PrsAddOpCore(CPrsExpressionServices *services,CCmpCtrl *cc,I64 stk_op,CHashClass *tmpc);
 extern U0 PrsExpression2Core(CPrsExpressionServices *services,CCmpCtrl *cc,I64 *_max_prec,CPrsStk *ps);
