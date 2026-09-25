@@ -8623,3 +8623,20 @@ exports, the `DurableRoot` to `DurableLeaf` call relocation, and a six-byte
 data range covering `"hello"`. The new retained disk assertion passes against
 that QEMU artifact; the normal 8 MiB session and filesystem recovery matrix
 also pass.
+
+## Native load-time function binding (2026-09-25)
+
+The guest compiler now packages `DurableRoot` alone as a T32M whose named
+`DurableLeaf` call remains unresolved on disk. The loader rejects that module
+without a binding, then binds the call to the currently resident `DurableLeaf`
+function and executes the loaded `DurableRoot` for 42. The probe writes the
+module to RedSea, reopens and binds it, and repeats that operation after a
+second writable boot. A host-side RedSea audit checks that the saved module
+contains one export and one zero-placeholder named call to `DurableLeaf`.
+
+This establishes external function binding for guest-built modules; it does
+not yet provide a stable system binding table or a complete source-unit build.
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The module is 144 bytes and its bound image is 64 bytes;
+both diagnostic phases, the normal 8 MiB session, the two writable boots,
+filesystem recovery, and document compatibility pass.

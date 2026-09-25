@@ -889,6 +889,29 @@ def verify_native_literal_module(disk):
             'data_range':{'offset':literal,'bytes':6},'call':'DurableRoot -> DurableLeaf'}
 
 
+def verify_native_bound_module(disk):
+    """Check that the guest saved an unresolved named call for load-time binding."""
+    path='/Probe/DurableBound.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M':
+        raise ValueError('Missing guest-built externally bound module')
+    total,code_size,count,records_offset,strings_offset=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not code_size or code_size&7 or count!=2 or
+            records_offset!=32+code_size or strings_offset!=records_offset+16*count or
+            strings_offset>total):
+        raise ValueError('Invalid externally bound module layout')
+    export,call=[struct.unpack_from('<4I',module,records_offset+16*i) for i in range(2)]
+    if (export[0]!=1 or export[1]!=0 or
+            module[export[2]:export[2]+export[3]]!=b'DurableRoot' or
+            call[0]!=2 or call[1]<1 or call[1]>code_size-4 or
+            module[call[2]:call[2]+call[3]]!=b'DurableLeaf' or
+            module[32+call[1]-1]!=0xE8 or
+            module[32+call[1]:32+call[1]+4]!=b'\0'*4):
+        raise ValueError('Externally bound module lost its named call')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'export':'DurableRoot','external_call':'DurableLeaf'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1329,7 +1352,18 @@ def main():
         result['native_multi_function']={'phases':[0,1],
                                           'module_bytes':native_multi[0][1],
                                           'loaded_bytes':native_multi[0][2],
-                                          'result':'two guest-compiled functions linked and executed'}
+                                          'result':'three guest-compiled functions linked and executed'}
+        native_bound = [tuple(int(value,16) for value in line.split()[2:])
+                        for line in log.splitlines()
+                        if re.match(r'^NATIVE BOUND [0-9A-F]{16} ',line)]
+        if len(native_bound)!=2 or [entry[0] for entry in native_bound]!=[0,1] or \
+                native_bound[0][1:]!=native_bound[1][1:] or \
+                native_bound[0][1]<80 or native_bound[0][2]<32:
+            raise ValueError('Guest-built externally bound module did not execute')
+        result['native_external_binding']={'phases':[0,1],
+                                           'module_bytes':native_bound[0][1],
+                                           'loaded_bytes':native_bound[0][2],
+                                           'result':'unresolved call rejected, bound call executed'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1545,6 +1579,8 @@ def main():
             raise ValueError('Fresh native module disk round trip failed')
         if mutation_log.count('NATIVE MULTI DISK\n')!=1 or 'NATIVE MULTI EXISTING\n' in mutation_log:
             raise ValueError('Fresh multi-function module disk round trip failed')
+        if mutation_log.count('NATIVE BOUND DISK\n')!=1 or 'NATIVE BOUND EXISTING\n' in mutation_log:
+            raise ValueError('Fresh externally bound module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1555,6 +1591,9 @@ def main():
         if module_reboot_log.count('NATIVE MULTI EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE MULTI DISK\n')!=1:
             raise ValueError('Multi-function module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE BOUND EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE BOUND DISK\n')!=1:
+            raise ValueError('Externally bound module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1563,6 +1602,11 @@ def main():
                                      'fresh_boot':'write, read, execute',
                                      'second_boot':'read, execute, replace, read, execute',
                                      'module':verify_native_literal_module(mutation_disk),
+                                     'result':'pass'}
+        result['native_bound_disk']={'path':'C:/Probe/DurableBound.t32m',
+                                     'fresh_boot':'write, read, bind, execute',
+                                     'second_boot':'read, bind, execute, replace',
+                                     'module':verify_native_bound_module(mutation_disk),
                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
