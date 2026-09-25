@@ -2176,7 +2176,10 @@ The standalone-development goal above is the entry gate. M7 then requires:
 1. **Complete native source build.** All sources needed by the i386 kernel,
    compiler and runtime compile inside the installed OS. The build consumes
    only files and tools on the guest disk, reports source-linked failures, can
-   be interrupted, and leaves the running development session usable.
+   be interrupted, and leaves the running development session usable. Build on
+   the shared T32M serializer now exercised by both bootstrap and guest code:
+   teach the native frontend to emit complete relocatable modules, then compile
+   the delivered source tree on the guest before claiming this gate.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

@@ -40,9 +40,11 @@ extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I6
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 extern U0 ICInfoInit();
 extern U0 I386ExecutionBreakPoll();
+extern I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
+  CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
-#assert sizeof(CI386CompilerServices)==208
+#assert sizeof(CI386CompilerServices)==212
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -85,9 +87,12 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->break_poll=&I386ExecutionBreakPoll;
   services->math_bind=&I386MathBind;
   services->code_span=&I386FrontendCodeSpan;
+  services->module_pack=&I386ModulePackRaw;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
+#include "/Kernel/I386/ModuleCheck.HC"
+#include "/Kernel/I386/ModulePackCore.HC"
 #include "/Kernel/I386/SoftF64.HC"
 #include "/Kernel/I386/FloatMath.HC"
 #include "/Kernel/I386/MathPublic.HC"

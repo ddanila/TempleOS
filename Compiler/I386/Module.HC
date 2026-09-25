@@ -2,6 +2,7 @@
 #include "/Kernel/I386/Module.HH"
 
 #include "/Kernel/I386/ModuleLoad.HC"
+#include "/Kernel/I386/ModulePackCore.HC"
 
 U0 I386AOTDel(CAOT *aot)
 {
@@ -71,7 +72,7 @@ public U8 *CmpI386Module(U8 *source,I64 *size,I64 *error_cnt=NULL)
         else r->kind=I386_MODULE_EXPORT;
       } else if (ie->type==IET_I386_REL32_ADDR) r->kind=I386_MODULE_ADDRESS;
       else r->kind=I386_MODULE_REL32;
-      r->name_offset=pos; r->name_length=StrLen(ie->str);
+      r->name_offset=pos-h->strings_offset; r->name_length=StrLen(ie->str);
       MemCpy(data+pos,ie->str,r->name_length+1); pos+=r->name_length+1;
 record_done:
     }
@@ -80,7 +81,8 @@ record_done:
       r->name_offset=(data+32+r->offset)(U32 *)[0];
       (data+32+r->offset)(U32 *)[0]=0;
     }
-    if (!I386ModuleValid(data,total)) throw('Compiler');
+    if (I386ModulePackRaw(data,total,aot->buf,aot->aot_U8s,
+        data+h->records_offset,count,data+h->strings_offset,strings)!=total) throw('Compiler');
     *size=total;
   } catch {
     Free(data); data=NULL;

@@ -53,6 +53,42 @@ U0 ProbeProgramJitSpan(CI386CompilerProbe *probe,CPrsSymbolServices *symbols,
   for(i=0;i<bytes;i++) { KernelLog(" "); KernelHex(function->exe_addr[i]); }
   KernelLog("\n");
 }
+U0 ProbeProgramModule(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,CHashTable *table)
+{
+  CHashFun *function=ProbeSymbolFind(0,"DurableConst",table,HTT_FUN);
+  CI386ModuleRecord record;
+  U8 *module=0,*image=0;
+  I64 code_bytes,*data_start,module_bytes,image_bytes,used=heap->used,allocations=heap->allocations;
+  I64 (*entry)();
+  if(!function || !function->exe_addr ||
+      !probe->compiler->code_span(symbols,function->exe_addr,&code_bytes,&data_start) ||
+      code_bytes<1 || *data_start!=code_bytes) KernelStop;
+  record.kind=I386_MODULE_EXPORT; record.offset=0; record.name_offset=0; record.name_length=12;
+  record.name_offset=13;
+  if(probe->compiler->module_pack(0,0,function->exe_addr,code_bytes,
+      &record,1,"DurableConst",13)) KernelStop;
+  record.name_offset=0;
+  module_bytes=probe->compiler->module_pack(0,0,function->exe_addr,code_bytes,
+    &record,1,"DurableConst",13);
+  if(module_bytes<1) KernelStop;
+  module=I386HeapAlloc(heap,module_bytes);
+  if(!module) KernelStop;
+  module[0]=0xA5;
+  if(probe->compiler->module_pack(module,module_bytes-1,function->exe_addr,code_bytes,
+      &record,1,"DurableConst",13) || module[0]!=0xA5) KernelStop;
+  if(!module || probe->compiler->module_pack(module,module_bytes,function->exe_addr,code_bytes,
+      &record,1,"DurableConst",13)!=module_bytes || !I386ModuleValid(module,module_bytes)) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableConst",0,0);
+  if(image_bytes<1) KernelStop;
+  image=I386HeapAlloc(heap,image_bytes);
+  if(!image || I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,"DurableConst",0,0)!=image_bytes) KernelStop;
+  entry=image;
+  if((*entry)()!=42 || !I386HeapFree(heap,image) || !I386HeapFree(heap,module) ||
+      heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE MODULE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(module_bytes);
+  KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -85,6 +121,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       "U8i *DurableLiteral=0;DurableLiteral=(\"hello\");"
       "U8i *DurableInit=\"abc\";"
       "I64i DurableString(){static U8i *p=\"def\";return ++p[0];}"
+      "I64i DurableConst(){return 42;}"
       "U8i DurableZero;";
     if(kind==7) source="extern I64i Future();I64i Caller(){return Future();}";
     cc=probe->files->control_new(source,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/Program.HC");
@@ -144,6 +181,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       case 13: *generated_split=generated_bytes+1; break;
     }
     if(kind==10) {
+      ProbeProgramModule(probe,heap,symbols,source_table);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);

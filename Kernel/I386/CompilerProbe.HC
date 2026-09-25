@@ -10,6 +10,7 @@
 #include "/Kernel/I386/Hash.HH"
 #include "/Kernel/I386/String.HH"
 #include "/Kernel/I386/ExceptRuntime.HH"
+#include "/Kernel/I386/ModuleLoad.HC"
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);

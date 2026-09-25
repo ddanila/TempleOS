@@ -8536,3 +8536,22 @@ payload length and missing capture metadata. The 8 MiB normal QEMU boot also
 passes all 137 compiler-group commands with matching VGA pixels. This is direct
 evidence for the sampled live JIT paths, not a claim
 that every possible generated function has been audited.
+
+## Shared native T32M serialization (2026-09-25)
+
+An allocation-free T32M serializer now accepts emitted code, relocation/export
+records and a string table, and validates the finished module with the shared
+loader contract. Both the x86-64 bootstrap writer and the retained i386
+compiler runtime use this serializer. In two QEMU diagnostic phases the native
+compiler packages a guest-compiled constant function into a 101-byte module,
+loads its 48-byte executable image, executes it for value 42 and reclaims the
+temporary allocations. The probe also rejects an out-of-range name offset and
+a short output buffer without touching its sentinel byte. This establishes
+guest-side module creation and loading; full native AOT relocation generation,
+disk installation and two-generation self-hosting remain open.
+
+The x86-64 two-generation rebuild and full `python3 tools/build-i386-kernel.py
+--test` gate pass on this change, including 495 native commands and exact VGA
+checks in the normal 8 MiB QEMU boot, file-failure recovery and original
+document cross-compatibility. `build/i386-kernel/result.json` records the two
+native module phases and all twelve live-JIT captures.
