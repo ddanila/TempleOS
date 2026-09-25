@@ -3,7 +3,7 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 //Boot diagnostics also borrow the mounted volume and resident source helpers.
-#define I386_COMPILER_PROBE_VERSION 15
+#define I386_COMPILER_PROBE_VERSION 16
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;
@@ -23,5 +23,7 @@ class CI386CompilerProbe {
   //Available after console loading, in the worker diagnostic phase only.
   Bool (*cancel_input)(CI386Task *task);
   Bool (*cancel_wait)(CI386Task *task);
+  //Writable diagnostic image only; ordinary diagnostic boots leave their disk untouched.
+  Bool persist_modules;
 };
 #endif

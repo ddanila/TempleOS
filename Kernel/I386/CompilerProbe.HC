@@ -69,7 +69,7 @@ extern U0 ProbeOptimize(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *oute
 extern U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 extern U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer);
 U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
-#assert sizeof(CI386CompilerProbe)==76
+#assert sizeof(CI386CompilerProbe)==80
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
 {
   if(!probe || bytes!=sizeof(CI386CompilerProbe) || probe->bytes!=bytes ||

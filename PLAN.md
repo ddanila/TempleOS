@@ -2180,6 +2180,9 @@ The standalone-development goal above is the entry gate. M7 then requires:
    the shared T32M serializer now exercised by both bootstrap and guest code:
    teach the native frontend to emit complete relocatable modules, then compile
    the delivered source tree on the guest before claiming this gate.
+   The first durable step writes a guest-serialized T32M to RedSea, reopens and
+   executes it, then repeats the load on a second writable QEMU boot. Extend
+   this path to complete source-built modules and installation artifacts.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

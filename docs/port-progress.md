@@ -8555,3 +8555,18 @@ The x86-64 two-generation rebuild and full `python3 tools/build-i386-kernel.py
 checks in the normal 8 MiB QEMU boot, file-failure recovery and original
 document cross-compatibility. `build/i386-kernel/result.json` records the two
 native module phases and all twelve live-JIT captures.
+
+## Native module RedSea round trip (2026-09-25)
+
+The writable diagnostic image now uses the guest compiler's T32M serializer to
+save `C:/Probe/DurableConst.t32m`, read the exact bytes back, load and execute
+the module, and reclaim its temporary allocations. The test boots that same
+image again and requires the pre-existing module to load and return 42 before
+replacing it. The ordinary diagnostic image remains read-only. This establishes
+disk persistence for a native-generated module, while complete relocatable AOT
+generation and a bootable native installation remain M7 work.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The latter records `native_module_disk: pass` in
+`build/i386-kernel/result.json`, including both QEMU/486 writable boots, the
+normal 8 MiB session, and the filesystem failure/recovery matrix.

@@ -401,7 +401,7 @@ def compiler_probe_layout(module):
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 15:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 16:
         raise ValueError('Unexpected compiler-probe version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
@@ -1489,6 +1489,19 @@ def main():
         mutation_log=(mutation_out/'debug.log').read_text()
         if mutation_log.count('FILE MOVE PROBE 0000000000000004\n')!=1:
             raise ValueError('Writable file move failure-stage probe did not complete')
+        if mutation_log.count('NATIVE MODULE DISK\n')!=1 or 'NATIVE MODULE EXISTING\n' in mutation_log:
+            raise ValueError('Fresh native module disk round trip failed')
+        module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
+        run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
+            '--out',str(module_reboot_out),'--timeout','1200')
+        module_reboot_log=(module_reboot_out/'debug.log').read_text()
+        if module_reboot_log.count('NATIVE MODULE EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE MODULE DISK\n')!=1:
+            raise ValueError('Native module did not load and execute from the previous boot')
+        result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
+                                      'fresh_boot':'write, read, execute',
+                                      'second_boot':'read, execute, replace, read, execute',
+                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

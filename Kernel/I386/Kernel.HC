@@ -499,6 +499,7 @@ U0 KernelCompilerProbe(I64 phase)
   probe.volume=&kernel_volume; probe.source_read=&I386RedSeaFileRead;
   probe.source_pop=&I386LexFilePop; probe.cancel_input=kernel_console.cancel_read;
   probe.cancel_wait=kernel_console.cancel_wait;
+  probe.persist_modules=phase && kernel_file_mutation_probe;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     KernelModuleRelease(&kernel_probe_image,used-kernel_probe_span,allocations-1);

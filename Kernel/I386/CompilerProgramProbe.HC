@@ -58,8 +58,9 @@ U0 ProbeProgramModule(CI386CompilerProbe *probe,CI386Heap *heap,
 {
   CHashFun *function=ProbeSymbolFind(0,"DurableConst",table,HTT_FUN);
   CI386ModuleRecord record;
-  U8 *module=0,*image=0;
-  I64 code_bytes,*data_start,module_bytes,image_bytes,used=heap->used,allocations=heap->allocations;
+  U8 *module=0,*image=0,*disk_module=0;
+  I64 code_bytes,*data_start,module_bytes,image_bytes,disk_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
   I64 (*entry)();
   if(!function || !function->exe_addr ||
       !probe->compiler->code_span(symbols,function->exe_addr,&code_bytes,&data_start) ||
@@ -79,6 +80,33 @@ U0 ProbeProgramModule(CI386CompilerProbe *probe,CI386Heap *heap,
       &record,1,"DurableConst",13) || module[0]!=0xA5) KernelStop;
   if(!module || probe->compiler->module_pack(module,module_bytes,function->exe_addr,code_bytes,
       &record,1,"DurableConst",13)!=module_bytes || !I386ModuleValid(module,module_bytes)) KernelStop;
+  if(probe->persist_modules) {
+    //The second writable boot must execute the bytes left by the first one.
+    disk_module=probe->files->read(heap,"C:/Probe/DurableConst.t32m",&disk_bytes,0,0);
+    if(disk_module) {
+      if(disk_bytes!=module_bytes || !I386ModuleValid(disk_module,disk_bytes)) KernelStop;
+      image_bytes=I386LoadBoundInto(&disk_module,&disk_bytes,1,0,0,"DurableConst",0,0);
+      image=I386HeapAlloc(heap,image_bytes);
+      if(!image || I386LoadBoundInto(&disk_module,&disk_bytes,1,image,image_bytes,
+          "DurableConst",0,0)!=image_bytes) KernelStop;
+      entry=image;
+      if((*entry)()!=42 || !I386HeapFree(heap,image) || !I386HeapFree(heap,disk_module)) KernelStop;
+      image=0; disk_module=0;
+      KernelLog("NATIVE MODULE EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/DurableConst.t32m",module,module_bytes,0)) KernelStop;
+    disk_module=probe->files->read(heap,"C:/Probe/DurableConst.t32m",&disk_bytes,0,0);
+    if(!disk_module || disk_bytes!=module_bytes || !I386ModuleValid(disk_module,disk_bytes)) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk_module[i]!=module[i]) KernelStop;
+    image_bytes=I386LoadBoundInto(&disk_module,&disk_bytes,1,0,0,"DurableConst",0,0);
+    image=I386HeapAlloc(heap,image_bytes);
+    if(!image || I386LoadBoundInto(&disk_module,&disk_bytes,1,image,image_bytes,
+        "DurableConst",0,0)!=image_bytes) KernelStop;
+    entry=image;
+    if((*entry)()!=42 || !I386HeapFree(heap,image) || !I386HeapFree(heap,disk_module)) KernelStop;
+    image=0; disk_module=0;
+    KernelLog("NATIVE MODULE DISK\n");
+  }
   image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableConst",0,0);
   if(image_bytes<1) KernelStop;
   image=I386HeapAlloc(heap,image_bytes);
