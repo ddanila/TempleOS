@@ -8702,3 +8702,25 @@ Both diagnostic phases, the normal 8 MiB session, two writable boots,
 filesystem recovery, and document compatibility pass. The retained host
 RedSea audit confirms the `DurableLater` export and zero-placeholder
 `DurableData` address record.
+
+## Guest-built module owns a scalar global (2026-09-25)
+
+Compiler services version 54 adds `program_pack_data`, which serializes
+selected 64-bit scalar globals with functions into one T32M. It emits a data
+range and named `DATA_EXPORT` for each selected global, alongside the
+function's named `ADDRESS` relocation. The QEMU probe packages `DurableLater`
+and `DurableData` together, loads without a resident binding, checks the
+initial value 20, changes the loaded copy to 21, and sees the function result
+change from 42 to 43. It saves and reloads the module from RedSea on two
+writable boots. A host audit checks the saved function export, data range,
+data export, address record and initial bytes. Static variables, aggregates,
+and pointer initializers still need native packaging.
+
+Validation: `tools/test-rebuild.py` passes. Both phases of the native QEMU
+diagnostic boot pass with a 245-byte module and 120-byte loaded image. A
+separate writable QEMU boot writes, reads, and executes the module; a second
+boot reads and executes that existing file before replacing it. The host
+RedSea audit confirms all four module records and the initial scalar value.
+The full `build-i386-kernel.py --test` promotion run reached the normal
+workstation session, where the 60-second startup deadline expired during
+source startup under a heavily loaded host. The full gate remains pending.

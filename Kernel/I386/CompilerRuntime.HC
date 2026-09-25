@@ -90,6 +90,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->module_pack=&I386ModulePackRaw;
   services->code_relocs=&I386FrontendCodeRelocs;
   services->program_pack=&I386FrontendModulePack;
+  services->program_pack_data=&I386FrontendModulePackData;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

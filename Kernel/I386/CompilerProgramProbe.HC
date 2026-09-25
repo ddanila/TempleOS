@@ -422,6 +422,74 @@ U0 ProbeProgramData(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE DATA BOUND "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramDataOwnedRun(CI386Heap *heap,U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *records,*record;
+  U8 *image,*data;
+  I64 image_bytes,data_offset=-1,i;
+  I64 (*entry)(I64 value);
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  records=module+header->records_offset;
+  for(i=0;i<header->record_count;i++) {
+    record=records+i;
+    if(record->kind==I386_MODULE_DATA_EXPORT &&
+        !StrCmp(module+record->name_offset,"DurableData")) {
+      if(data_offset>=0) KernelStop;
+      data_offset=record->offset;
+    }
+  }
+  if(data_offset<0) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurableLater",0,0);
+  if(image_bytes<1 || !(image=I386HeapAlloc(heap,image_bytes)) ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "DurableLater",0,0)!=image_bytes) KernelStop;
+  data=image+8+data_offset;
+  entry=image;
+  if(*data(I64 *)!=20 || (*entry)(22)!=42) KernelStop;
+  *data(I64 *)=21;
+  if((*entry)(22)!=43 || !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramDataOwned(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,CHashTable *table)
+{
+  CHashFun *function[1];
+  CHashGlblVar *globals[1];
+  U8 *module,*disk_module;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  function[0]=ProbeSymbolFind(0,"DurableLater",table,HTT_FUN);
+  globals[0]=ProbeSymbolFind(0,"DurableData",table,HTT_GLBL_VAR);
+  if(!function[0] || !globals[0] ||
+      !(module_bytes=probe->compiler->program_pack_data(symbols,function,1,globals,1,0,0)) ||
+      !(module=I386HeapAlloc(heap,module_bytes))) KernelStop;
+  module[0]=0xA5;
+  if(probe->compiler->program_pack_data(symbols,function,1,globals,1,module,module_bytes-1) ||
+      module[0]!=0xA5 ||
+      probe->compiler->program_pack_data(symbols,function,1,globals,1,module,
+        module_bytes)!=module_bytes) KernelStop;
+  image_bytes=ProbeProgramDataOwnedRun(heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk_module=probe->files->read(heap,"C:/Probe/DurableOwned.t32m",&disk_bytes,0,0);
+    if(disk_module) {
+      if(ProbeProgramDataOwnedRun(heap,disk_module,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk_module)) KernelStop;
+      KernelLog("NATIVE DATA OWNED EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/DurableOwned.t32m",module,module_bytes,0)) KernelStop;
+    disk_module=probe->files->read(heap,"C:/Probe/DurableOwned.t32m",&disk_bytes,0,0);
+    if(!disk_module || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk_module[i]!=module[i]) KernelStop;
+    if(ProbeProgramDataOwnedRun(heap,disk_module,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk_module)) KernelStop;
+    KernelLog("NATIVE DATA OWNED DISK\n");
+  }
+  if(!I386HeapFree(heap,module) || heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE DATA OWNED "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbeProgramMulti(CI386CompilerProbe *probe,CI386Heap *heap,
   CPrsSymbolServices *symbols,CHashTable *table)
 {
@@ -565,6 +633,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       ProbeProgramSplit(probe,heap,symbols,source_table);
       ProbeProgramAddress(probe,heap,symbols,source_table);
       ProbeProgramData(probe,heap,symbols,source_table);
+      ProbeProgramDataOwned(probe,heap,symbols,source_table);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);

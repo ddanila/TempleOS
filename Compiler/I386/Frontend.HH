@@ -20,6 +20,9 @@ extern I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
 //and their literal pools as one relocatable T32M. NULL output queries size.
 extern I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
   I64 count,U8 *output,I64 capacity);
+//Add selected scalar globals as named mutable data exports in the same image.
+extern I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
+  I64 count,CHashGlblVar **globals,I64 global_count,U8 *output,I64 capacity);
 extern CPrsSymbolServices *I386FrontendServices(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes);
 extern Bool I386ScalarTypesCheck(CHashClass **roots,Bool record);
 extern Bool I386LoadScalarTypes(CI386Heap *heap,CHashClass **types,

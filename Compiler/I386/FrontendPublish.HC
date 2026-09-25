@@ -42,19 +42,21 @@ I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
     }
   return -1;
 }
-I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
-  I64 count,U8 *output,I64 capacity)
+I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
+  I64 count,CHashGlblVar **globals,I64 global_count,U8 *output,I64 capacity)
 {
   CI386Frontend *frontend;
   CI386FrontendCode *code;
   CI386FrontendReloc *reloc;
   CI386ModuleRecord *records,*record;
   CHashFun *fun;
+  CHashGlblVar *global;
   U8 *strings,*body;
   I64 i,j,k,base,payload=0,record_count=0,string_bytes=0;
   I64 records_offset,strings_offset,total,pos=0,index=0,length;
   if(!symbols || !(frontend=symbols->context) || symbols!=&frontend->symbols ||
-      !functions || count<1 || count>8192 || capacity<0) return 0;
+      !functions || count<1 || count>8192 || global_count<0 || global_count>8192 ||
+      (global_count && !globals) || capacity<0) return 0;
   for(i=0;i<count;i++) {
     fun=functions[i];
     if(!fun || !fun->str || !fun->exe_addr || !(fun->type&HTT_FUN)) return 0;
@@ -82,6 +84,23 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
       record_count++; string_bytes+=length+1;
     }
     if(record_count>0x0FFFFFFF) return 0;
+  }
+  for(i=0;i<global_count;i++) {
+    global=globals[i];
+    if(!global || !global->str || !(global->type&HTT_GLBL_VAR) ||
+        global->flags&(GVF_ALIAS|GVF_EXTERN|GVF_IMPORT) ||
+        !global->data_addr || global->size!=8 ||
+        I386HeapSize(frontend->heap,global->data_addr)<8 ||
+        !global->var_class || global->var_class->ptr_stars_cnt ||
+        (global->var_class->raw_type!=RT_I64 &&
+         global->var_class->raw_type!=RT_U64)) return 0;
+    length=StrLen(global->str);
+    if(length<1 || length>255 || string_bytes>0xFFFFFFFF-length-1) return 0;
+    for(j=0;j<count;j++) if(!StrCmp(global->str,functions[j]->str)) return 0;
+    for(j=0;j<i;j++) if(!StrCmp(global->str,globals[j]->str)) return 0;
+    payload=(payload+7)&~7;
+    if(payload>0xFFFFFFF0-8 || record_count>0x0FFFFFFF-2) return 0;
+    payload+=8; record_count+=2; string_bytes+=length+1;
   }
   payload=(payload+7)&~7;
   if(record_count>(0xFFFFFFFF-32-payload)/16) return 0;
@@ -121,9 +140,25 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
       record->name_length=0;
     }
   }
+  for(i=0;i<global_count;i++) {
+    global=globals[i]; base=(pos+7)&~7; pos=base+8;
+    for(k=0;k<8;k++) body[base+k]=global->data_addr[k];
+    record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
+    record->offset=base; record->name_offset=8; record->name_length=0;
+    record=records+index++; record->kind=I386_MODULE_DATA_EXPORT;
+    record->offset=base; record->name_offset=string_bytes;
+    length=StrLen(global->str); record->name_length=length;
+    for(k=0;k<=length;k++) strings[string_bytes+k]=global->str[k];
+    string_bytes+=length+1;
+  }
   if(index!=record_count || string_bytes!=total-strings_offset) return 0;
   return I386ModulePackRaw(output,total,body,payload,records,record_count,
     strings,string_bytes);
+}
+I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
+  I64 count,U8 *output,I64 capacity)
+{
+  return I386FrontendModulePackData(symbols,functions,count,0,0,output,capacity);
 }
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
 {

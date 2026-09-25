@@ -2194,9 +2194,12 @@ The standalone-development goal above is the entry gate. M7 then requires:
    binding. The native frontend now retains named function-address relocations,
    so a guest-built module can return a pointer to a function in the second
    module after loading at a new address. It also retains named global-data
-   address sites for load-time binding to resident storage. Next package
-   global and static storage inside guest-built modules, then carry this path
-   through complete source units and a stable system binding table.
+   address sites for load-time binding to resident storage. The native packer
+   now places selected 64-bit scalar globals in the same module as their
+   referring functions, with named data exports and mutable loaded storage.
+   Next extend this to static and aggregate data with pointer fixups, then
+   carry the path through complete source units and a stable system binding
+   table.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
