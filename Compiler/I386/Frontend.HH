@@ -12,11 +12,12 @@ class CI386FrontendRelocView {
   I64 offset;
   U8 *name;
 };
-//Borrowed names remain valid while the function and its compilation control live.
+//Inspect named call relocations. Borrowed names remain valid while the
+//function and its compilation control live.
 extern I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
   CI386FrontendRelocView *views,I64 capacity);
-//Package selected live HolyC functions and their literal pools as one
-//relocatable T32M. NULL output queries size.
+//Package selected live HolyC functions, named calls and function addresses,
+//and their literal pools as one relocatable T32M. NULL output queries size.
 extern I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
   I64 count,U8 *output,I64 capacity);
 extern CPrsSymbolServices *I386FrontendServices(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes);

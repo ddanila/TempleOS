@@ -8657,3 +8657,27 @@ compilation and globals remain M7 work.
 combined loaded image is 104 bytes. Both diagnostic phases, the normal 8 MiB
 session, the two writable boots, filesystem recovery, and document
 compatibility pass. The host RedSea audit confirms the saved leaf export.
+
+## Native function-address relocation (2026-09-25)
+
+The shared expression parser now lets the native JIT retain a named
+`&function` node while it parses in non-AOT mode. The frontend records the
+generated `ADD imm32` address site as a T32M `ADDRESS` relocation, patches the
+live JIT copy for immediate use, and zeros the serialized placeholder for
+load-time resolution. Host expression parsing keeps its previous behavior.
+
+The QEMU probe compiles `DurableAddress()` to return `&DurableLeaf`, packages
+the two functions as separate guest-built modules, and loads them together.
+It verifies that the returned pointer names the leaf entry in the newly loaded
+image and that calling through it returns 41. The address module is saved to
+RedSea and checked again after a writable reboot; the host audit inspects its
+named address record. Data-address relocations, global/static storage, and
+complete source units remain M7 work.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The address module is 147 bytes; linking it with the leaf
+module produces a 104-byte image. Both diagnostic phases, the normal 8 MiB
+session, two writable boots, filesystem recovery, and document compatibility
+pass. The host RedSea audit confirms one `DurableAddress` export and one
+zero-placeholder `ADDRESS` record targeting `DurableLeaf`. After removing
+temporary trace output, a fresh rebuild and diagnostic QEMU boot passed again.

@@ -2191,8 +2191,11 @@ The standalone-development goal above is the entry gate. M7 then requires:
    its unresolved named call, binds it to a resident function at load time,
    and survives the two-boot RedSea round trip. The guest also packages the
    call target as a second T32M and links both files without a resident
-   binding. Next carry this path through global and static variables, complete
-   source units, and a stable system binding table for native builds.
+   binding. The native frontend now retains named function-address relocations,
+   so a guest-built module can return a pointer to a function in the second
+   module after loading at a new address. Next carry this path through global
+   and static variables, complete source units, and a stable system binding
+   table for native builds.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

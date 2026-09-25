@@ -29,6 +29,8 @@ class CPrsExpressionServices {
   //Optional private type view; NULL preserves the supplied descriptor.
   CHashClass *(*class_view)(U8 *context,CHashClass *type);
   Bool (*expression)(U8 *context,CCmpCtrl *cc,I64 *precedence,Bool end_exp,CPrsStk *stack);
+  //Native JITs retain named function-address sites for later module packaging.
+  Bool retain_function_addresses;
 };
 extern CIntermediateCode *PrsAddOpCore(CPrsExpressionServices *services,CCmpCtrl *cc,I64 stk_op,CHashClass *tmpc);
 extern U0 PrsExpression2Core(CPrsExpressionServices *services,CCmpCtrl *cc,I64 *_max_prec,CPrsStk *ps);

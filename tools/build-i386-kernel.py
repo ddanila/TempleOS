@@ -929,6 +929,29 @@ def verify_native_leaf_module(disk):
     return {'sha256':hashlib.sha256(module).hexdigest(),'export':'DurableLeaf'}
 
 
+def verify_native_address_module(disk):
+    """Audit the guest's named relative function-address relocation."""
+    path='/Probe/DurableAddress.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M':
+        raise ValueError('Missing guest-built address module')
+    total,code_size,count,records_offset,strings_offset=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not code_size or code_size&7 or count!=2 or
+            records_offset!=32+code_size or strings_offset!=records_offset+32 or
+            strings_offset>total):
+        raise ValueError('Invalid guest-built address module layout')
+    export,address=[struct.unpack_from('<4I',module,records_offset+16*i) for i in range(2)]
+    if (export[0]!=1 or export[1]!=0 or
+            module[export[2]:export[2]+export[3]]!=b'DurableAddress' or
+            address[0]!=5 or address[1]<1 or address[1]>code_size-4 or
+            module[address[2]:address[2]+address[3]]!=b'DurableLeaf' or
+            module[32+address[1]-1]!=0x05 or
+            module[32+address[1]:32+address[1]+4]!=b'\0'*4):
+        raise ValueError('Guest-built address module lost its relocation')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'export':'DurableAddress','address_target':'DurableLeaf'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1394,6 +1417,17 @@ def main():
                                      'leaf_module_bytes':native_split[0][2],
                                      'loaded_bytes':native_split[0][3],
                                      'result':'two guest-built modules linked and executed'}
+        native_address = [tuple(int(value,16) for value in line.split()[2:])
+                          for line in log.splitlines()
+                          if re.match(r'^NATIVE ADDRESS [0-9A-F]{16} ',line)]
+        if len(native_address)!=2 or [entry[0] for entry in native_address]!=[0,1] or \
+                native_address[0][1:]!=native_address[1][1:] or \
+                native_address[0][1]<80 or native_address[0][2]<80:
+            raise ValueError('Guest-built address relocation did not link and execute')
+        result['native_function_address']={'phases':[0,1],
+                                           'module_bytes':native_address[0][1],
+                                           'loaded_bytes':native_address[0][2],
+                                           'result':'cross-module function address relocated and called'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1613,6 +1647,8 @@ def main():
             raise ValueError('Fresh externally bound module disk round trip failed')
         if mutation_log.count('NATIVE SPLIT DISK\n')!=1 or 'NATIVE SPLIT EXISTING\n' in mutation_log:
             raise ValueError('Fresh split-module disk round trip failed')
+        if mutation_log.count('NATIVE ADDRESS DISK\n')!=1 or 'NATIVE ADDRESS EXISTING\n' in mutation_log:
+            raise ValueError('Fresh function-address module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1629,6 +1665,9 @@ def main():
         if module_reboot_log.count('NATIVE SPLIT EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE SPLIT DISK\n')!=1:
             raise ValueError('Split modules did not link from the previous boot')
+        if module_reboot_log.count('NATIVE ADDRESS EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE ADDRESS DISK\n')!=1:
+            raise ValueError('Function-address module did not link from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1649,6 +1688,12 @@ def main():
                                      'second_boot':'read, cross-link, execute, replace',
                                      'dependency':verify_native_leaf_module(mutation_disk),
                                      'result':'pass'}
+        result['native_address_disk']={'paths':['C:/Probe/DurableAddress.t32m',
+                                                'C:/Probe/DurableLeaf.t32m'],
+                                       'fresh_boot':'write, read, relocate, call',
+                                       'second_boot':'read, relocate, call, replace',
+                                       'module':verify_native_address_module(mutation_disk),
+                                       'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

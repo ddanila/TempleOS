@@ -42,6 +42,7 @@ U0 PrsHostServices(CPrsExpressionServices *services)
   services->duplicate=&PrsHostDuplicate; services->string=&PrsHostString;
   services->hash_add=&PrsHostHashAdd; services->hash_after=&PrsHostHashAfter;
   services->class_view=0;
+  services->retain_function_addresses=FALSE;
   services->type=&PrsHostType; services->expression=&PrsHostExpression;
 }
 

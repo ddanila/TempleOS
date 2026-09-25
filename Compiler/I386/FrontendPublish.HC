@@ -23,7 +23,8 @@ I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
       symbols!=&frontend->symbols) return -1;
   for(code=frontend->codes;code;code=code->next)
     if(code->code==address) {
-      for(reloc=code->relocs;reloc;reloc=reloc->next) count++;
+      for(reloc=code->relocs;reloc;reloc=reloc->next)
+        if(reloc->kind==I386_MODULE_REL32) count++;
       if(!views) {
         if(capacity) return -1;
         return count;
@@ -31,9 +32,11 @@ I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
       if(capacity<count) return -1;
       count=0;
       for(reloc=code->relocs;reloc;reloc=reloc->next) {
-        views[count].offset=reloc->offset;
-        views[count].name=reloc->name;
-        count++;
+        if(reloc->kind==I386_MODULE_REL32) {
+          views[count].offset=reloc->offset;
+          views[count].name=reloc->name;
+          count++;
+        }
       }
       return count;
     }
@@ -71,7 +74,10 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
     for(reloc=code->relocs;reloc;reloc=reloc->next) {
       length=StrLen(reloc->name);
       if(length<1 || length>255 || reloc->offset<1 ||
-          reloc->offset>code->bytes-4 || code->code[reloc->offset-1]!=0xE8 ||
+          reloc->offset>code->bytes-4 ||
+          (reloc->kind!=I386_MODULE_REL32 && reloc->kind!=I386_MODULE_ADDRESS) ||
+          (reloc->kind==I386_MODULE_REL32 && code->code[reloc->offset-1]!=0xE8) ||
+          (reloc->kind==I386_MODULE_ADDRESS && code->code[reloc->offset-1]!=0x05) ||
           string_bytes>0xFFFFFFFF-length-1) return 0;
       record_count++; string_bytes+=length+1;
     }
@@ -101,7 +107,7 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
     for(k=0;k<=length;k++) strings[string_bytes+k]=fun->str[k];
     string_bytes+=length+1;
     for(reloc=code->relocs;reloc;reloc=reloc->next) {
-      record=records+index++; record->kind=I386_MODULE_REL32;
+      record=records+index++; record->kind=reloc->kind;
       record->offset=base+reloc->offset; record->name_offset=string_bytes;
       length=StrLen(reloc->name); record->name_length=length;
       for(k=0;k<=length;k++) strings[string_bytes+k]=reloc->name[k];

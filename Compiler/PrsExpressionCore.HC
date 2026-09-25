@@ -621,9 +621,13 @@ I64 PrsUnaryTermCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *ps,C
 		    else (*services->report)(services->context,cc,0,"Can't take addr of extern fun");
 		  } else {
 		    cc->abs_cnts.externs++;
-		    PrsEmit(services,cc,IC_IMM_I64,
+		    if(services->retain_function_addresses)
+		      PrsEmit(services,cc,IC_ADDR_IMPORT,tmpf,services->types[RT_PTR]);
+		    else {
+		      PrsEmit(services,cc,IC_IMM_I64,
 			&tmpf->exe_addr,services->types[RT_PTR]);
-		    PrsEmit(services,cc,IC_DEREF,0,services->types[RT_PTR]);
+		      PrsEmit(services,cc,IC_DEREF,0,services->types[RT_PTR]);
+		    }
 		  }
 		} else {
 		  if (cc->flags&CCF_AOT_COMPILE) {
@@ -631,7 +635,9 @@ I64 PrsUnaryTermCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *ps,C
 			  tmpf->exe_addr,services->types[RT_PTR]);
 		    if (cc->flags&CCF_ASM_EXPRESSIONS)
 		      cc->abs_cnts.abs_addres++;
-		  } else
+		  } else if(services->retain_function_addresses)
+		    PrsEmit(services,cc,IC_ADDR_IMPORT,tmpf,services->types[RT_PTR]);
+		  else
 		    PrsEmit(services,cc,IC_IMM_I64,
 			  tmpf->exe_addr,services->types[RT_PTR]);
 		}

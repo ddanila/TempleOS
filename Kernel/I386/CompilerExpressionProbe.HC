@@ -58,6 +58,7 @@ U0 ProbeExpressionSetup(CProbeExpression *state,CI386CompilerProbe *probe,CI386H
   services->context=state; services->types=probe->internal_types; services->binary_ops=binary_ops;
   services->lex=&ProbeExpressionLex; services->report=&ProbeExpressionReport; services->add=&ProbeExpressionAdd;
   services->class_view=0;
+  services->retain_function_addresses=FALSE;
   services->expression=&ProbeExpressionNested;
   services->retire=&ProbeExpressionUnexpected; services->misc=&ProbeExpressionUnexpected;
   services->init=&ProbeExpressionUnexpected; services->push=&ProbeExpressionUnexpected;

@@ -9,6 +9,7 @@ extern U0 I386ExecutionBreakPoll();
 #include "/Compiler/LexBackup.HC"
 #include "/Compiler/I386/LexState.HC"
 extern class CI386FrontendReloc;
+extern class CI386FrontendAddress;
 class CI386FrontendCode {
   CI386FrontendCode *next;
   CI386FrontendReloc *relocs;
@@ -18,8 +19,14 @@ class CI386FrontendCode {
 };
 class CI386FrontendReloc {
   CI386FrontendReloc *next;
-  I64 offset;
+  I64 offset,kind;
   U8 name[1];
+};
+class CI386FrontendAddress {
+  CI386FrontendAddress *next;
+  CHashFun fun;
+  CHashFun *original;
+  U8 *target;
 };
 class CI386FrontendFixup {
   CI386FrontendFixup *next;
@@ -72,6 +79,7 @@ class CI386FrontendCall {
 };
 class CI386FrontendBound {
   CI386FrontendCall *calls;
+  CI386FrontendAddress *address_refs;
   CHashFun fun;
   CAOT aot;
   CAOTCtrl aotc;
@@ -304,11 +312,30 @@ U0 I386FrontendHelpers(CI386FrontendBound *bound,CHashClass **types)
     HashAdd(fun,&bound->helpers);
   }
 }
+CHashFun *I386FrontendFunctionAt(CI386Frontend *state,U8 *address)
+{
+  CHashTable *table;
+  CHash *entry;
+  CHashFun *found=0,*fun;
+  I64 i;
+  for(table=state->table;table;table=table->next)
+    for(i=0;i<=table->mask;i++)
+      for(entry=table->body[i];entry;entry=entry->next)
+        if(entry->type&HTT_FUN) {
+          fun=entry;
+          if(fun->exe_addr==address) {
+            if(found && found!=fun) I386FrontendUnavailable(state);
+            found=fun;
+          }
+        }
+  return found;
+}
 U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc)
 {
   CIntermediateCode *node;
   CHashFun *fun;
   CI386FrontendCall *call,*stack=0;
+  CI386FrontendAddress *address;
   U8 *destination,*source;
   I64 i;
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
@@ -336,20 +363,35 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
       if(!stack) I386FrontendUnavailable(state);
       node->ic_data=&stack->fun;
       stack=stack->stack;
-    } else if(node->ic_code==IC_ADDR_IMPORT || node->ic_code==IC_HEAP_GLBL || node->ic_code==IC_ABS_ADDR)
+    } else if(node->ic_code==IC_ABS_ADDR || node->ic_code==IC_ADDR_IMPORT) {
+      if(node->ic_code==IC_ABS_ADDR) fun=I386FrontendFunctionAt(state,node->ic_data);
+      else fun=node->ic_data;
+      if(!fun || !fun->exe_addr || !(fun->type&HTT_FUN)) I386FrontendUnavailable(state);
+      address=I386FrontendAlloc(state,sizeof(CI386FrontendAddress),TRUE,FALSE);
+      destination=&address->fun; source=fun;
+      for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
+      address->fun.type|=HTF_IMPORT;
+      address->fun.ie_lst=0; address->fun.ext_lst=0;
+      address->original=fun; address->target=fun->exe_addr;
+      address->next=bound->address_refs; bound->address_refs=address;
+      node->ic_code=IC_ADDR_IMPORT; node->ic_data=&address->fun;
+    } else if(node->ic_code==IC_HEAP_GLBL)
       I386FrontendUnavailable(state);
   }
   if(stack) I386FrontendUnavailable(state);
 }
 U0 I386FrontendRelocAdd(CI386Frontend *state,CI386FrontendCode *output,
-  I64 offset,U8 *name)
+  I64 offset,I64 kind,U8 *name)
 {
   CI386FrontendReloc *reloc;
   I64 i,length=StrLen(name);
   if(length<1 || length>255 || offset<1 || offset>output->bytes-4 ||
-      output->code[offset-1]!=0xE8) I386FrontendUnavailable(state);
+      (kind!=I386_MODULE_REL32 && kind!=I386_MODULE_ADDRESS) ||
+      (kind==I386_MODULE_REL32 && output->code[offset-1]!=0xE8) ||
+      (kind==I386_MODULE_ADDRESS && output->code[offset-1]!=0x05))
+    I386FrontendUnavailable(state);
   reloc=I386FrontendAlloc(state,sizeof(CI386FrontendReloc)+length,TRUE,FALSE);
-  reloc->offset=offset;
+  reloc->offset=offset; reloc->kind=kind;
   for(i=0;i<=length;i++) reloc->name[i]=name[i];
   reloc->next=output->relocs; output->relocs=reloc;
 }
@@ -357,6 +399,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
 {
   CAOTImportExport *record,*next;
   CI386FrontendCall *call,*next_call;
+  CI386FrontendAddress *address,*next_address;
   CI386FrontendFixup *fixup;
   CMemberLst *member;
   U8 *target;
@@ -370,7 +413,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
       if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4) {
         I386FrontendUnavailable(state);
       }
-      I386FrontendRelocAdd(state,output,offset,bound->functions[i].str);
+      I386FrontendRelocAdd(state,output,offset,I386_MODULE_REL32,bound->functions[i].str);
       (code+offset)(U32 *)[0]=(bound->addresses[i]+0)(U64)-(code+offset+4)(U64);
       I386NativeBackendFree(&bound->release_owner,record);
       record=next;
@@ -384,7 +427,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
     while(record) {
       next=record->next; offset=record->rip;
       if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4) I386FrontendUnavailable(state);
-      I386FrontendRelocAdd(state,output,offset,call->original->str);
+      I386FrontendRelocAdd(state,output,offset,I386_MODULE_REL32,call->original->str);
       if(call->unresolved) {
         if(call->fun.arg_cnt<0 || call->fun.arg_cnt>4095) I386FrontendUnavailable(state);
         fixup=I386FrontendAlloc(state,sizeof(CI386FrontendFixup)+call->fun.arg_cnt*sizeof(CHashClass *),TRUE,FALSE);
@@ -403,6 +446,21 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
       I386NativeBackendFree(&bound->release_owner,record); record=next;
     }
     I386FrontendFree(state,call); call=next_call;
+  }
+  address=bound->address_refs; bound->address_refs=0;
+  while(address) {
+    next_address=address->next; target=address->target;
+    if(address->original==state->cc->htc.fun) target=code;
+    record=address->fun.ie_lst;
+    while(record) {
+      next=record->next; offset=record->rip;
+      if(record->type!=IET_I386_REL32_ADDR || offset<1 || offset>bytes-4)
+        I386FrontendUnavailable(state);
+      I386FrontendRelocAdd(state,output,offset,I386_MODULE_ADDRESS,address->original->str);
+      (code+offset)(U32 *)[0]=(target+0)(U64)-(code+offset+4)(U64);
+      I386NativeBackendFree(&bound->release_owner,record); record=next;
+    }
+    I386FrontendFree(state,address); address=next_address;
   }
   record=bound->aot.next_ie; bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
   while(record!=&bound->aot.next_ie) {
@@ -695,6 +753,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   e->optimize=&I386FrontendOptimize; e->allocate=&I386FrontendAlloc; e->duplicate=&I386FrontendDuplicate;
   e->string=&I386FrontendString; e->hash_add=&I386FrontendHashAdd; e->hash_after=&I386FrontendHashAfter;
   e->class_view=&I386FrontendClassView;
+  e->retain_function_addresses=TRUE;
   e->type=&I386FrontendType; e->expression=&I386FrontendExpression;
   t=&state->types; t->context=state; t->types=types; t->lex=&I386FrontendLex; t->report=&I386FrontendReport;
   t->snapshot_push=&I386FrontendSnapshot; t->snapshot_drop=&I386FrontendDrop;
