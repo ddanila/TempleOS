@@ -8587,3 +8587,21 @@ records, and the disk-to-disk native build path.
 relocatable module, its 256-byte loaded image, execution in both diagnostic
 phases, the normal 8 MiB session, two-boot RedSea persistence and filesystem
 failure recovery.
+
+## Guest-built multi-function module (2026-09-25)
+
+The native frontend now exposes a module packer for selected live HolyC
+functions. It lays out function bodies, emits named exports and call
+relocations, then uses the shared T32M serializer. The guest compiles
+`DurableLeaf` and `DurableRoot`, packages them into one module, loads it at a
+new address and executes the cross-function call for 42. The writable QEMU
+diagnostic disk saves this module to RedSea, reopens it and executes it; a
+second boot must execute the existing file before replacing it. Functions
+with embedded data are rejected until native data records are implemented.
+Full source-unit compilation and native installation remain M7 gates.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The QEMU/486 result manifest records a 212-byte native
+multi-function module, its 104-byte loaded image, both diagnostic phases,
+the two-boot RedSea round trip, the normal 8 MiB session, and the filesystem
+failure/recovery matrix.

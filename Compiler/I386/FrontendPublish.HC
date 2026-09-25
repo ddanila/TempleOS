@@ -39,6 +39,78 @@ I64 I386FrontendCodeRelocs(CPrsSymbolServices *symbols,U8 *address,
     }
   return -1;
 }
+I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
+  I64 count,U8 *output,I64 capacity)
+{
+  CI386Frontend *frontend;
+  CI386FrontendCode *code;
+  CI386FrontendReloc *reloc;
+  CI386ModuleRecord *records,*record;
+  CHashFun *fun;
+  U8 *strings,*body;
+  I64 i,j,k,base,payload=0,record_count=0,string_bytes=0;
+  I64 records_offset,strings_offset,total,pos=0,index=0,length;
+  if(!symbols || !(frontend=symbols->context) || symbols!=&frontend->symbols ||
+      !functions || count<1 || count>8192 || capacity<0) return 0;
+  for(i=0;i<count;i++) {
+    fun=functions[i];
+    if(!fun || !fun->str || !fun->exe_addr || !(fun->type&HTT_FUN)) return 0;
+    length=StrLen(fun->str);
+    if(length<1 || length>255 || string_bytes>0xFFFFFFFF-length-1) return 0;
+    for(j=0;j<i;j++) if(!StrCmp(fun->str,functions[j]->str)) return 0;
+    code=frontend->codes;
+    while(code && code->code!=fun->exe_addr) code=code->next;
+    if(!code || code->bytes<1 || code->data_start!=code->bytes ||
+        code->bytes>0xFFFFFFF0-payload) return 0;
+    payload=(payload+7)&~7;
+    if(code->bytes>0xFFFFFFF0-payload) return 0;
+    payload+=code->bytes;
+    record_count++; string_bytes+=length+1;
+    for(reloc=code->relocs;reloc;reloc=reloc->next) {
+      length=StrLen(reloc->name);
+      if(length<1 || length>255 || reloc->offset<1 ||
+          reloc->offset>code->bytes-4 || code->code[reloc->offset-1]!=0xE8 ||
+          string_bytes>0xFFFFFFFF-length-1) return 0;
+      record_count++; string_bytes+=length+1;
+    }
+    if(record_count>0x0FFFFFFF) return 0;
+  }
+  payload=(payload+7)&~7;
+  if(record_count>(0xFFFFFFFF-32-payload)/16) return 0;
+  records_offset=32+payload;
+  strings_offset=records_offset+record_count*16;
+  if(string_bytes>0xFFFFFFFF-strings_offset) return 0;
+  total=strings_offset+string_bytes;
+  if(!output) {
+    if(capacity) return 0;
+    return total;
+  }
+  if(capacity<total) return 0;
+  body=output+32; records=output+records_offset; strings=output+strings_offset;
+  for(i=0;i<payload;i++) body[i]=0;
+  string_bytes=0;
+  for(i=0;i<count;i++) {
+    fun=functions[i]; code=frontend->codes;
+    while(code && code->code!=fun->exe_addr) code=code->next;
+    base=(pos+7)&~7; pos=base+code->bytes;
+    for(k=0;k<code->bytes;k++) body[base+k]=code->code[k];
+    record=records+index++; record->kind=I386_MODULE_EXPORT; record->offset=base;
+    record->name_offset=string_bytes; length=StrLen(fun->str); record->name_length=length;
+    for(k=0;k<=length;k++) strings[string_bytes+k]=fun->str[k];
+    string_bytes+=length+1;
+    for(reloc=code->relocs;reloc;reloc=reloc->next) {
+      record=records+index++; record->kind=I386_MODULE_REL32;
+      record->offset=base+reloc->offset; record->name_offset=string_bytes;
+      length=StrLen(reloc->name); record->name_length=length;
+      for(k=0;k<=length;k++) strings[string_bytes+k]=reloc->name[k];
+      string_bytes+=length+1;
+      (body+record->offset)(U32 *)[0]=0;
+    }
+  }
+  if(index!=record_count || string_bytes!=total-strings_offset) return 0;
+  return I386ModulePackRaw(output,total,body,payload,records,record_count,
+    strings,string_bytes);
+}
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
 {
   if(!allocation) { transfer->ok=FALSE; return; }
