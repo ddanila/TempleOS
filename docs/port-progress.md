@@ -8724,3 +8724,16 @@ RedSea audit confirms all four module records and the initial scalar value.
 The full `build-i386-kernel.py --test` promotion run reached the normal
 workstation session, where the 60-second startup deadline expired during
 source startup under a heavily loaded host. The full gate remains pending.
+
+Checkpoint `4a861e3` is committed and pushed. A subsequent focused retry with
+`python3 tools/i386-kernel-input.py build/i386-kernel/kernel.img --out
+build/i386-kernel/owned-data-normal-retry --group compiler` also expired at
+the unchanged 60-second startup deadline, before any compiler-group commands
+ran. Its log ends after `STARTUP source begin` and `COMPILER BREAK ready`.
+Host CPU load was high during both attempts, but its causal role is unproven;
+rerun on an idle host and investigate startup if the timeout persists before
+claiming full promotion. The successful writable-boot evidence is in
+`build/i386-kernel/owned-data-writable` and
+`build/i386-kernel/owned-data-reboot`; both reached normal startup completion.
+The saved module's SHA-256 is
+`cb439e19622a3264c40455b46204b9e34e37d3793a3600aecc302dd1d756170c`.
