@@ -233,6 +233,68 @@ U0 ProbeProgramBound(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE BOUND "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramSplitRun(CI386Heap *heap,U8 *root,I64 root_bytes,U8 *leaf,I64 leaf_bytes)
+{
+  U8 *modules[2],*image;
+  I64 sizes[2],image_bytes;
+  I64 (*entry)();
+  modules[0]=root; modules[1]=leaf;
+  sizes[0]=root_bytes; sizes[1]=leaf_bytes;
+  if(!I386ModuleValid(root,root_bytes) || !I386ModuleValid(leaf,leaf_bytes)) KernelStop;
+  image_bytes=I386LoadBoundInto(modules,sizes,2,0,0,"DurableRoot",0,0);
+  if(image_bytes<1 || !(image=I386HeapAlloc(heap,image_bytes)) ||
+      I386LoadBoundInto(modules,sizes,2,image,image_bytes,"DurableRoot",0,0)!=image_bytes)
+    KernelStop;
+  entry=image;
+  if((*entry)()!=42 || !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramSplit(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,CHashTable *table)
+{
+  CHashFun *function[1];
+  U8 *root,*leaf,*disk_root,*disk_leaf;
+  I64 root_bytes,leaf_bytes,disk_root_bytes,disk_leaf_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  function[0]=ProbeSymbolFind(0,"DurableRoot",table,HTT_FUN);
+  if(!function[0] ||
+      !(root_bytes=probe->compiler->program_pack(symbols,function,1,0,0)) ||
+      !(root=I386HeapAlloc(heap,root_bytes)) ||
+      probe->compiler->program_pack(symbols,function,1,root,root_bytes)!=root_bytes)
+    KernelStop;
+  function[0]=ProbeSymbolFind(0,"DurableLeaf",table,HTT_FUN);
+  if(!function[0] ||
+      !(leaf_bytes=probe->compiler->program_pack(symbols,function,1,0,0)) ||
+      !(leaf=I386HeapAlloc(heap,leaf_bytes)) ||
+      probe->compiler->program_pack(symbols,function,1,leaf,leaf_bytes)!=leaf_bytes)
+    KernelStop;
+  image_bytes=ProbeProgramSplitRun(heap,root,root_bytes,leaf,leaf_bytes);
+  if(probe->persist_modules) {
+    disk_leaf=probe->files->read(heap,"C:/Probe/DurableLeaf.t32m",&disk_leaf_bytes,0,0);
+    if(disk_leaf) {
+      disk_root=probe->files->read(heap,"C:/Probe/DurableBound.t32m",&disk_root_bytes,0,0);
+      if(!disk_root || ProbeProgramSplitRun(heap,disk_root,disk_root_bytes,
+          disk_leaf,disk_leaf_bytes)!=image_bytes || !I386HeapFree(heap,disk_root) ||
+          !I386HeapFree(heap,disk_leaf)) KernelStop;
+      KernelLog("NATIVE SPLIT EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/DurableLeaf.t32m",leaf,leaf_bytes,0)) KernelStop;
+    disk_root=probe->files->read(heap,"C:/Probe/DurableBound.t32m",&disk_root_bytes,0,0);
+    disk_leaf=probe->files->read(heap,"C:/Probe/DurableLeaf.t32m",&disk_leaf_bytes,0,0);
+    if(!disk_root || !disk_leaf || disk_root_bytes!=root_bytes ||
+        disk_leaf_bytes!=leaf_bytes) KernelStop;
+    for(i=0;i<root_bytes;i++) if(disk_root[i]!=root[i]) KernelStop;
+    for(i=0;i<leaf_bytes;i++) if(disk_leaf[i]!=leaf[i]) KernelStop;
+    if(ProbeProgramSplitRun(heap,disk_root,disk_root_bytes,disk_leaf,disk_leaf_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk_root) || !I386HeapFree(heap,disk_leaf)) KernelStop;
+    KernelLog("NATIVE SPLIT DISK\n");
+  }
+  if(!I386HeapFree(heap,root) || !I386HeapFree(heap,leaf) || heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE SPLIT "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(root_bytes); KernelLog(" "); KernelHex(leaf_bytes);
+  KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbeProgramMulti(CI386CompilerProbe *probe,CI386Heap *heap,
   CPrsSymbolServices *symbols,CHashTable *table)
 {
@@ -372,6 +434,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       ProbeProgramRelocation(probe,heap,symbols,source_table);
       ProbeProgramMulti(probe,heap,symbols,source_table);
       ProbeProgramBound(probe,heap,symbols,source_table);
+      ProbeProgramSplit(probe,heap,symbols,source_table);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);

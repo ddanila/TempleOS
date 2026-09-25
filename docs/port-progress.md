@@ -8640,3 +8640,20 @@ not yet provide a stable system binding table or a complete source-unit build.
 --test` gate pass. The module is 144 bytes and its bound image is 64 bytes;
 both diagnostic phases, the normal 8 MiB session, the two writable boots,
 filesystem recovery, and document compatibility pass.
+
+## Native two-file T32M link (2026-09-25)
+
+The native compiler now packages `DurableRoot` and `DurableLeaf` into separate
+T32M files. The guest loader resolves the root's named call from the leaf
+module, loads both into one image, and executes the root for 42 without a
+resident binding. The probe writes the leaf file alongside the earlier root
+file, reopens both and links them again, then repeats that operation after a
+writable reboot. The retained host audit checks the leaf file's sole export.
+This is a cross-module link from guest-built artifacts; full source-unit
+compilation and globals remain M7 work.
+
+`python3 tools/test-rebuild.py` and the full `python3 tools/build-i386-kernel.py
+--test` gate pass. The root and leaf modules are 144 and 100 bytes, and the
+combined loaded image is 104 bytes. Both diagnostic phases, the normal 8 MiB
+session, the two writable boots, filesystem recovery, and document
+compatibility pass. The host RedSea audit confirms the saved leaf export.

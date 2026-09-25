@@ -2189,9 +2189,10 @@ The standalone-development goal above is the entry gate. M7 then requires:
    QEMU image persists that module across boots. The same packer emits T32M
    data ranges for function literal pools. A one-function module now retains
    its unresolved named call, binds it to a resident function at load time,
-   and survives the two-boot RedSea round trip. Next carry this path through
-   global and static variables, complete source units, and a stable system
-   binding table for native builds.
+   and survives the two-boot RedSea round trip. The guest also packages the
+   call target as a second T32M and links both files without a resident
+   binding. Next carry this path through global and static variables, complete
+   source units, and a stable system binding table for native builds.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
