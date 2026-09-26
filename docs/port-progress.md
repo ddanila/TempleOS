@@ -8763,4 +8763,25 @@ recovery and document compatibility passed. The host RedSea audit confirms
 the 16 initialized bytes, data range/export, named address records and SHA-256
 `27dd6d800cedcf77d3d7d16babc62f98d74daae76348e2411ad161771d96316e`.
 Array sizing is handled by the packer but has no dedicated disk probe yet.
-Static member storage and pointer initializer fixups remain open.
+Static member storage and pointer initializer fixups to external targets remain open.
+
+## Guest-built module relocates initialized data pointers (2026-09-26)
+
+The module packer now finds pointer fields from the native type layout and
+records non-null initialized pointers that target selected module data. The
+shared T32M serializer writes a version 3 stored-pointer record and zeros its
+slot; the loader restores a pointer to the relocated data. The guest probe
+packages `DurableByteRead`, `DurableBytes[4]="abc"`, and
+`DurableBytesPtr=DurableBytes` in one 309-byte module. It loads the module
+without resident bindings, checks that the pointer targets the loaded array,
+changes the loaded `b` to `Z`, and observes the function result change from
+98 to 90. The probe also confirms that packaging the pointer without its
+target array is rejected. `python3 tools/test-rebuild.py` and the full
+`python3 tools/build-i386-kernel.py --test` gate pass: both diagnostic phases,
+the normal 8 MiB boot (48.00 seconds), all 558 workstation input lines, two
+writable module boots, file recovery and document compatibility. The host
+RedSea audit confirms the version 3 pointer record, its target, the zeroed
+pointer slot, initial array bytes and SHA-256
+`ba49dd76740f1c94014d5ca7b18a2b6e6234cb6a4a55ba25b207573c2f431a4f`.
+Pointers to data outside the selected module are rejected until named pointer
+imports have a module contract.

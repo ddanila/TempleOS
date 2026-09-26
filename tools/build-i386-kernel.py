@@ -1036,6 +1036,41 @@ def verify_native_aggregate_module(disk):
             'initial_values':[20,22],'data_bytes':16,'data_offset':ranges[0][1]}
 
 
+def verify_native_pointer_module(disk):
+    """Audit a guest-built stored pointer into another exported data range."""
+    path='/Probe/DurablePointer.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=3:
+        raise ValueError('Missing guest-built stored-pointer module')
+    total,code_size,count,records_offset,strings_offset=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not code_size or code_size&7 or count!=7 or
+            records_offset!=32+code_size or strings_offset!=records_offset+16*count or
+            strings_offset>total):
+        raise ValueError('Invalid guest-built stored-pointer module layout')
+    rows=[struct.unpack_from('<4I',module,records_offset+16*i) for i in range(count)]
+    named=lambda kind:[r for r in rows if r[0]==kind]
+    name=lambda r:module[r[2]:r[2]+r[3]]
+    exports=named(1); addresses=named(5); ranges=named(4); data_exports=named(3)
+    pointers=named(6)
+    if (len(exports)!=1 or name(exports[0])!=b'DurableByteRead' or
+            len(addresses)!=1 or name(addresses[0])!=b'DurableBytesPtr' or
+            module[32+addresses[0][1]-1]!=5 or
+            len(ranges)!=2 or len(data_exports)!=2 or len(pointers)!=1 or
+            {name(r) for r in data_exports}!={b'DurableBytes',b'DurableBytesPtr'}):
+        raise ValueError('Guest-built stored-pointer records differ')
+    offsets={name(r):r[1] for r in data_exports}
+    byte_offset=offsets[b'DurableBytes']; pointer_offset=offsets[b'DurableBytesPtr']
+    if (pointers[0]!=(6,pointer_offset,byte_offset,0) or
+            sorted((r[1],r[2]) for r in ranges)!=sorted(((byte_offset,4),(pointer_offset,4))) or
+            module[32+byte_offset:32+byte_offset+4]!=b'abc\0' or
+            module[32+pointer_offset:32+pointer_offset+4]!=b'\0'*4):
+        raise ValueError('Stored-pointer target or initial data differ')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'function':'DurableByteRead','data':'DurableBytes',
+            'pointer':'DurableBytesPtr','initial_bytes':'abc\\0'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1545,6 +1580,17 @@ def main():
                                     'module_bytes':native_aggregate[0][1],
                                     'loaded_bytes':native_aggregate[0][2],
                                     'result':'function and initialized class loaded together'}
+        native_pointer = [tuple(int(value,16) for value in line.split()[2:])
+                          for line in log.splitlines()
+                          if re.match(r'^NATIVE POINTER [0-9A-F]{16} ',line)]
+        if len(native_pointer)!=2 or [entry[0] for entry in native_pointer]!=[0,1] or \
+                native_pointer[0][1:]!=native_pointer[1][1:] or \
+                native_pointer[0][1]<128 or native_pointer[0][2]<48:
+            raise ValueError('Guest-built module did not relocate stored pointer')
+        result['native_pointer']={'phases':[0,1],
+                                  'module_bytes':native_pointer[0][1],
+                                  'loaded_bytes':native_pointer[0][2],
+                                  'result':'function and linked initialized pointer loaded together'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1772,6 +1818,8 @@ def main():
             raise ValueError('Fresh owned-global module disk round trip failed')
         if mutation_log.count('NATIVE AGGREGATE DISK\n')!=1 or 'NATIVE AGGREGATE EXISTING\n' in mutation_log:
             raise ValueError('Fresh aggregate module disk round trip failed')
+        if mutation_log.count('NATIVE POINTER DISK\n')!=1 or 'NATIVE POINTER EXISTING\n' in mutation_log:
+            raise ValueError('Fresh stored-pointer module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1800,6 +1848,9 @@ def main():
         if module_reboot_log.count('NATIVE AGGREGATE EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE AGGREGATE DISK\n')!=1:
             raise ValueError('Aggregate module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE POINTER EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE POINTER DISK\n')!=1:
+            raise ValueError('Stored-pointer module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1841,6 +1892,11 @@ def main():
                                          'second_boot':'read, load, mutate, execute, replace',
                                          'module':verify_native_aggregate_module(mutation_disk),
                                          'result':'pass'}
+        result['native_pointer_disk']={'path':'C:/Probe/DurablePointer.t32m',
+                                       'fresh_boot':'write, read, load, mutate, execute',
+                                       'second_boot':'read, load, mutate, execute, replace',
+                                       'module':verify_native_pointer_module(mutation_disk),
+                                       'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)
