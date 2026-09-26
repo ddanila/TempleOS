@@ -30,6 +30,39 @@ public Bool I386HeapInit(CI386Heap *hc,U8 *base,I64 size)
   return TRUE;
 }
 
+//The guest source compiler uses the portable validator until it can rebuild
+//the 386 assembly block. The boot kernel retains the faster original path.
+#ifdef I386_HEAP_SOURCE_BUILD
+public Bool I386HeapValid(CI386Heap *hc)
+{//Check the whole physical block chain before trusting metadata for mutation.
+  //Each span is bounded by the remaining arena before advancing the cursor.
+  //Thus the accumulated used bytes and block count cannot overflow U32.
+  CI386HeapBlock *block;
+  U8 *cursor;
+  U32 remaining,span,used=0,count=0;
+  Bool last_free=FALSE;
+  if (!hc || hc->signature!=I386_HEAP_MAGIC ||
+      !I386HeapRegionValid(hc,hc->base,hc->size) ||
+      hc->peak>hc->size || hc->used>hc->peak) return FALSE;
+  cursor=hc->base; remaining=hc->size;
+  while(remaining) {
+    if(remaining<24) return FALSE;
+    block=cursor; span=block->span;
+    if(span<24 || span&7 || span>remaining || block->reserved) return FALSE;
+    if(block->tag==I386_HEAP_FREE) {
+      if(last_free || block->requested) return FALSE;
+      last_free=TRUE;
+    } else if(block->tag==I386_HEAP_USED) {
+      if(block->requested>span-16) return FALSE;
+      used+=span; count++;
+      last_free=FALSE;
+    } else return FALSE;
+    cursor+=span; remaining-=span;
+  }
+  return used==hc->used && count==hc->allocations;
+}
+
+#else
 public Bool I386HeapValid(CI386Heap *hc)
 {//Check the whole physical block chain before trusting metadata for mutation.
   //This hot loop uses bounded U32 arithmetic: each span is checked against the
@@ -90,6 +123,7 @@ public Bool I386HeapValid(CI386Heap *hc)
   return valid;
 }
 
+#endif
 public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Try-allocation: NULL on invalid size, corruption or exhaustion; no OutMem wrapper yet.
   CI386HeapBlock *block,*rest;

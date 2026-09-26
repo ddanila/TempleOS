@@ -1489,6 +1489,131 @@ U0 ProbeProgramNativeLoader(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   KernelLog("NATIVE LOADER "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramNativeAllocRun(CI386CompilerProbe *probe,CI386Heap *heap,
+  U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record,*fixture_record;
+  CI386Heap *owned_heap;
+  CI386HeapBlock *first;
+  U8 *image,*arena,*fixture,*owned_fixture,*loaded;
+  U8 code[6];
+  I64 image_bytes,fixture_bytes,i;
+  I64 init_offset=-1,valid_offset=-1,alloc_offset=-1,free_offset=-1,load_offset=-1;
+  Bool (*guest_init)(CI386Heap *heap,U8 *base,I64 size);
+  Bool (*guest_valid)(CI386Heap *heap);
+  U8 *(*guest_alloc)(CI386Heap *heap,I64 size,Bool zero);
+  Bool (*guest_free)(CI386Heap *heap,U8 *ptr);
+  U8 *(*guest_load)(CI386Heap *heap,U8 **modules,I64 *sizes,I64 count,
+    U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
+  I64 (*answer)();
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  record=module+header->records_offset;
+  for(i=0;i<header->record_count;i++,record++) if(record->kind==I386_MODULE_EXPORT) {
+    if(!StrCmp(module+record->name_offset,"I386HeapInit")) init_offset=record->offset;
+    else if(!StrCmp(module+record->name_offset,"I386HeapValid")) valid_offset=record->offset;
+    else if(!StrCmp(module+record->name_offset,"I386HeapAlloc")) alloc_offset=record->offset;
+    else if(!StrCmp(module+record->name_offset,"I386HeapFree")) free_offset=record->offset;
+    else if(!StrCmp(module+record->name_offset,"I386LoadBoundAlloc")) load_offset=record->offset;
+  }
+  if(init_offset<0 || valid_offset<0 || alloc_offset<0 || free_offset<0 ||
+      load_offset<0) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"I386LoadBoundAlloc",0,0);
+  image=I386HeapAlloc(heap,image_bytes);
+  owned_heap=I386HeapAlloc(heap,sizeof(CI386Heap),TRUE);
+  arena=I386HeapAlloc(heap,4096,TRUE);
+  fixture_record=I386HeapAlloc(heap,sizeof(CI386ModuleRecord),TRUE);
+  if(image_bytes<1 || !image || !owned_heap || !arena || !fixture_record ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "I386LoadBoundAlloc",0,0)!=image_bytes) KernelStop;
+  guest_init=image+8+init_offset;
+  guest_valid=image+8+valid_offset;
+  guest_alloc=image+8+alloc_offset;
+  guest_free=image+8+free_offset;
+  guest_load=image+8+load_offset;
+  if(!(*guest_init)(owned_heap,arena,4096) || !(*guest_valid)(owned_heap)) KernelStop;
+  first=arena;
+  first->reserved=1;
+  if((*guest_valid)(owned_heap) || I386HeapValid(owned_heap)) KernelStop;
+  first->reserved=0;
+  if(!(*guest_valid)(owned_heap) || !I386HeapValid(owned_heap)) KernelStop;
+  fixture_record->kind=I386_MODULE_EXPORT;
+  fixture_record->name_length=4;
+  code[0]=0xB8; code[1]=42; code[2]=0; code[3]=0; code[4]=0; code[5]=0xC3;
+  fixture_bytes=probe->compiler->module_pack(0,0,code,6,fixture_record,1,"Test",5);
+  fixture=I386HeapAlloc(heap,fixture_bytes);
+  if(fixture_bytes!=61 || !fixture ||
+      probe->compiler->module_pack(fixture,fixture_bytes,code,6,
+        fixture_record,1,"Test",5)!=fixture_bytes) KernelStop;
+  owned_fixture=(*guest_alloc)(owned_heap,fixture_bytes,FALSE);
+  if(!owned_fixture) KernelStop;
+  for(i=0;i<fixture_bytes;i++) owned_fixture[i]=fixture[i];
+  loaded=(*guest_load)(owned_heap,&owned_fixture,&fixture_bytes,1,"Test",0,0);
+  if(!loaded || (*guest_valid)(owned_heap)==FALSE ||
+      owned_heap->allocations!=2 || I386HeapSize(owned_heap,loaded)!=16) KernelStop;
+  answer=loaded;
+  if((*answer)()!=42) KernelStop;
+  owned_fixture[0]=0;
+  if((*guest_load)(owned_heap,&owned_fixture,&fixture_bytes,1,"Test",0,0) ||
+      owned_heap->allocations!=2 || !(*guest_valid)(owned_heap)) KernelStop;
+  if(!(*guest_free)(owned_heap,loaded) || !(*guest_free)(owned_heap,owned_fixture) ||
+      !(*guest_valid)(owned_heap) || owned_heap->used || owned_heap->allocations) KernelStop;
+  if(!I386HeapFree(heap,fixture) || !I386HeapFree(heap,fixture_record) ||
+      !I386HeapFree(heap,arena) || !I386HeapFree(heap,owned_heap) ||
+      !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramNativeAlloc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#define I386_HEAP_SOURCE_BUILD 1\n#include \"/Kernel/I386/ModuleAlloc.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeAlloc.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramNativeAllocRun(probe,heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/NativeAlloc.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramNativeAllocRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE ALLOC EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/NativeAlloc.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/NativeAlloc.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramNativeAllocRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE ALLOC DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE ALLOC "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1687,4 +1812,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramNativePacker(probe,heap,outer);
   ProbeProgramNativeBundle(probe,heap,outer);
   ProbeProgramNativeLoader(probe,heap,outer);
+  ProbeProgramNativeAlloc(probe,heap,outer);
 }

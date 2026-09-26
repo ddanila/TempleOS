@@ -9095,3 +9095,27 @@ audit pass. The full `--test` promotion has not been rerun for this revision;
 the focused diagnostic and two writable boots cover the new loader path.
 Native compilation, installation and boot of the full compiler/kernel tree
 remain open.
+
+## Guest-built heap and module allocator (2026-09-26)
+
+The guest now compiles `/Kernel/I386/ModuleAlloc.HC` and its included original
+heap, validator and loader sources into one T32M. The heap source provides an
+equivalent HolyC validation loop under `I386_HEAP_SOURCE_BUILD`, while the
+current boot kernel retains its faster 386 assembly loop. An attempted switch
+of the boot kernel to the HolyC loop made QEMU diagnostics substantially slower,
+so the native-built kernel's eventual memory-service performance remains open.
+
+The guest-built allocator initializes a private 4 KiB heap, detects corrupt
+heap metadata like the resident validator, allocates a test module and its
+loaded image, executes a function returning 42, rejects a malformed module
+without adding an allocation, and frees both allocations. Both diagnostic
+phases pass on the 8 MiB QEMU profile. The 59,791-byte saved module has sixteen
+owned function exports and 28 internal calls, with no resident imports. Its
+SHA-256 is
+`95b2d787a1a97182151c44bda262bfa64ea9e7ef4c4826b399ad49798956849c`.
+The first writable boot saved and reloaded it. The second loaded the previous
+copy, repeated the checks, replaced it and completed normal startup. The
+x86-64 two-generation rebuild, i386 cross-build and 386
+instruction boot audit pass. The full `--test` promotion has not been rerun
+for this revision. The complete source-built compiler/kernel, installation and
+self-hosting remain open.

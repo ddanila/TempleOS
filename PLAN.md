@@ -2247,7 +2247,14 @@ The standalone-development goal above is the entry gate. M7 then requires:
    and its included validator: eight owned functions and 18 internal calls
    survive two writable boots. Its source-built loader produces the same image
    as the resident loader for a simple module, executes that image, and rejects
-   malformed input without writing the destination. Next expose the rest of
+   malformed input without writing the destination. The guest now compiles
+   `/Kernel/I386/ModuleAlloc.HC` through the original heap and loader sources:
+   sixteen owned functions and 28 internal calls build into one T32M. A private
+   source-build definition selects a HolyC heap validator; the boot kernel
+   retains its faster 386 assembly validator. The guest-built allocator owns a
+   private heap, loads and executes a module, rejects malformed heap/module
+   input, and frees its allocations. The HolyC validator's performance in a
+   fully native-built kernel remains to be measured. Next expose the rest of
    the compiler/kernel dependency graph
    through validated resident exports, provide the full kernel prelude, and
    compile that graph. Broader
