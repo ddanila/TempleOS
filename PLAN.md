@@ -2313,7 +2313,8 @@ The standalone-development goal above is the entry gate. M7 then requires:
    host-built Generation 0 disk alone. Publishing rebuilt kernel/compiler
    artifacts remain open. A normal guest boot now copies all 826 packaged
    source/module files to their real paths through the mounted task file API;
-   independent host checks verify every file hash and the target bitmap. The
+   independent host checks verify every file hash and the target bitmap after
+   both an initial copy and an existing-tree retry. The
    clone transport has two injected interruption/retry cases;
    actual power-loss and rebuilt-artifact recovery remain open.
 3. **Two-generation self-hosting.** A host-built Generation 0 produces native

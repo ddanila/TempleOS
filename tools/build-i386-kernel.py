@@ -1619,18 +1619,30 @@ def verify_native_tree_copy(disk, exports, out, console, volume):
     if candidate.read_bytes()!=source or (work/'debug.log').read_text().count(
             'TARGET VOLUME D BOUND\n')!=1:
         raise ValueError('Tree copy changed source disk or missed D: mount')
-    wanted=set(volume['files'])
-    found=mutated_file_contents(target,wanted)
-    if len(found)!=count:
-        raise ValueError('Installed tree omitted source or module files')
-    for path,expected in volume['files'].items():
-        data=found[path]
-        if len(data)!=expected['size'] or hashlib.sha256(data).hexdigest()!=expected['sha256']:
-            raise ValueError(f'Installed tree differs at {path}')
-    integrity=verify_mutated_volume(target)
-    if integrity['files']!=count+1:
-        raise ValueError('Installed tree has unexpected file count')
-    return {'console':report,'files_copied':count,'target_sha256':hashlib.sha256(
+    def audit_target():
+        wanted=set(volume['files'])
+        found=mutated_file_contents(target,wanted)
+        if len(found)!=count:
+            raise ValueError('Installed tree omitted source or module files')
+        for path,expected in volume['files'].items():
+            data=found[path]
+            if len(data)!=expected['size'] or hashlib.sha256(data).hexdigest()!=expected['sha256']:
+                raise ValueError(f'Installed tree differs at {path}')
+        integrity=verify_mutated_volume(target)
+        if integrity['files']!=count+1:
+            raise ValueError('Installed tree has unexpected file count')
+        return integrity
+    first_integrity=audit_target()
+    retry=work/'retry'; retry.mkdir(exist_ok=True)
+    retry_report=console['run_input'](candidate,retry,target_disk=target,snapshot=False,ram_mib=16,
+        startup_check={'status':'ok','answers':[],'command_timeout':1200,'commands':[
+            ('I386InstallTree("C:/","D:/");',[str(count)])]})
+    if candidate.read_bytes()!=source or (retry/'debug.log').read_text().count(
+            'TARGET VOLUME D BOUND\n')!=1:
+        raise ValueError('Tree-copy retry changed source disk or missed D: mount')
+    integrity=audit_target()
+    return {'console':report,'retry_console':retry_report,'files_copied':count,
+            'first_filesystem_integrity':first_integrity,'target_sha256':hashlib.sha256(
         target.read_bytes()).hexdigest(),'filesystem_integrity':integrity,'result':'pass'}
 
 

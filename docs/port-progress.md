@@ -9379,3 +9379,14 @@ These are still host-built Generation 0 source and module bytes. The target's
 boot area remains blank, and native compiler/kernel construction, boot-artifact
 publication and interruption recovery for this file-level install path remain
 open.
+
+## Existing-tree installer retry (2026-09-27)
+
+The full-tree QEMU test now boots a second time with the already populated
+target and reruns `I386InstallTree`. Both runs report 826 copied files. After
+each run, an independent host walk checks every packaged file's size and hash,
+all directory links and RedSea allocation ownership. The second audit again
+found 827 files in 16 directories and 15,842 owned sectors, with the bitmap
+matching reachable extents; the source disk remained unchanged. This proves
+that a complete file-level pass can be repeated on an existing target. It does
+not yet simulate a stop partway through a pass or establish crash recovery.
