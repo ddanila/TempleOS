@@ -402,6 +402,7 @@ def compiler_probe_layout(module):
     expected = {'KernelLog', 'KernelHex', 'KernelStop', 'I386HeapSize', 'I386HeapAlloc', 'I386HeapFree',
                 'I386HeapValid', 'I386IrqSave', 'I386IrqRestore', 'I386LexRawChar',
                 'I386LexIncludeTake', 'I386LexFilePush', 'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric', 'SysTry', 'SysUntry', 'throw', 'I386TaskSpawn', 'I386TaskDestroy', 'I386SchedYield', 'I386RedSeaBegin', 'I386RedSeaEnd'}
+    expected.add('I386RedSeaResolve')
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
     for name in ('Main', 'ProbeStorage', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend'):
@@ -1372,6 +1373,42 @@ def verify_native_alloc_module(disk):
             'internal_calls':28}
 
 
+def verify_native_file_module(disk):
+    """Audit the guest-built RedSea module loader and its three kernel imports."""
+    path='/Probe/NativeFile.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built original RedSea module loader')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=55 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid original RedSea module loader layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+    expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
+        'I386FindSymbol','I386HeapAlloc','I386HeapFree','I386HeapInit',
+        'I386HeapRegionValid','I386HeapSize','I386HeapValid','I386LoadAlloc',
+        'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
+        'I386LoadInto','I386ModuleValid','I386NameEqual',
+        'I386RedSeaLoad','I386RedSeaLoadBound'))
+    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+    imports=sorted(name for name in calls if name not in exported)
+    if exported!=expected or len(calls)!=37 or \
+            imports!=[b'I386RedSeaExtent',b'I386RedSeaRead',b'I386RedSeaValid'] or \
+            any(kind not in (1,2) or offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Original RedSea loader records differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':{
+                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                for name in ('Kernel/I386/ModuleFileSingle.HC','Kernel/I386/ModuleAlloc.HC',
+                             'Kernel/I386/ModuleLoad.HC','Kernel/I386/ModuleCheck.HC',
+                             'Kernel/I386/Heap.HC')},
+            'functions':[name.decode() for name in expected],
+            'resident_imports':[name.decode() for name in imports]}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -2004,6 +2041,17 @@ def main():
                                 'module_bytes':native_alloc[0][1],
                                 'loaded_bytes':native_alloc[0][2],
                                 'source':'/Kernel/I386/ModuleAlloc.HC'}
+        native_file = [tuple(int(value,16) for value in line.split()[2:])
+                       for line in log.splitlines()
+                       if re.match(r'^NATIVE FILE [0-9A-F]{16} ',line)]
+        if len(native_file)!=2 or [entry[0] for entry in native_file]!=[0,1] or \
+                native_file[0][1:]!=native_file[1][1:] or \
+                native_file[0][1]<256 or native_file[0][2]<128:
+            raise ValueError('Guest-built original RedSea module loader did not execute')
+        result['native_file']={'phases':[0,1],
+                               'module_bytes':native_file[0][1],
+                               'loaded_bytes':native_file[0][2],
+                               'source':'/Kernel/I386/ModuleFileSingle.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2254,6 +2302,8 @@ def main():
             raise ValueError('Fresh guest-built original module loader disk round trip failed')
         if mutation_log.count('NATIVE ALLOC DISK\n')!=1 or 'NATIVE ALLOC EXISTING\n' in mutation_log:
             raise ValueError('Fresh guest-built original module allocator disk round trip failed')
+        if mutation_log.count('NATIVE FILE DISK\n')!=1 or 'NATIVE FILE EXISTING\n' in mutation_log:
+            raise ValueError('Fresh guest-built RedSea module loader disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -2315,6 +2365,9 @@ def main():
         if module_reboot_log.count('NATIVE ALLOC EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE ALLOC DISK\n')!=1:
             raise ValueError('Guest-built module allocator did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE FILE EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE FILE DISK\n')!=1:
+            raise ValueError('Guest-built RedSea module loader did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2412,6 +2465,11 @@ def main():
                                      'second_boot':'read, load, execute, replace',
                                      'module':verify_native_alloc_module(mutation_disk),
                                      'result':'pass'}
+        result['native_file_disk']={'path':'C:/Probe/NativeFile.t32m',
+                                    'fresh_boot':'write, bind, load, compare',
+                                    'second_boot':'read, bind, load, compare, replace',
+                                    'module':verify_native_file_module(mutation_disk),
+                                    'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

@@ -2254,7 +2254,13 @@ The standalone-development goal above is the entry gate. M7 then requires:
    retains its faster 386 assembly validator. The guest-built allocator owns a
    private heap, loads and executes a module, rejects malformed heap/module
    input, and frees its allocations. The HolyC validator's performance in a
-   fully native-built kernel remains to be measured. Next expose the rest of
+   fully native-built kernel remains to be measured. The guest now also compiles
+   `/Kernel/I386/ModuleFileSingle.HC` through that heap/loader source graph.
+   Three validated kernel RedSea exports satisfy its disk dependencies, and
+   the guest-built loader reads the original Startup T32M inside an explicit
+   RedSea I/O session, matching the resident loader's image across two writable
+   boots. Next build the multi-file source loader and native installation path,
+   then expose the rest of
    the compiler/kernel dependency graph
    through validated resident exports, provide the full kernel prelude, and
    compile that graph. Broader

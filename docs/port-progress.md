@@ -5778,7 +5778,6 @@ QEMU/486 boot at 8 MiB measured 14.200 seconds and diagnostics
 386 compatibility, full DolDoc, public interruption handling and native
 self-hosting remain open.
 
-
 ## Pending message-read cancellation
 
 The native message queue now supports cancellation of its pending blocking read.
@@ -9118,4 +9117,29 @@ copy, repeated the checks, replaced it and completed normal startup. The
 x86-64 two-generation rebuild, i386 cross-build and 386
 instruction boot audit pass. The full `--test` promotion has not been rerun
 for this revision. The complete source-built compiler/kernel, installation and
+self-hosting remain open.
+
+## Guest-built RedSea module file loader (2026-09-26)
+
+The kernel root symbol table now publishes `I386RedSeaExtent` and
+`I386RedSeaRead` alongside its existing `I386RedSeaValid` export. The guest
+compiles `/Kernel/I386/ModuleFileSingle.HC` with the original heap, validator,
+module loader and allocation sources. The resulting T32M owns eighteen
+functions and binds only those three RedSea calls to the resident kernel.
+
+The source-built loader resolves `/Modules/I386/Startup.t32m` and reads it in
+an explicit RedSea I/O session. Its loaded image matches the resident loader's
+bytes, including relocations at the same load address. It rejects an invalid
+file entry without adding an allocation, then frees the image and returns its
+private heap to baseline. The native source reader needed a larger bounded
+top-level command allowance for this source graph. Both QEMU diagnostic phases
+pass on the 8 MiB profile. The first writable boot saved and reloaded the
+63,255-byte guest-built file loader; the second loaded the previous copy,
+repeated the comparison, replaced the file and completed normal startup.
+The disk audit finds eighteen function exports, 37 call relocations, and exactly
+three resident imports. Its SHA-256 is
+`5ddc39bb21f249da1353180bcd21f9104472c5fe60d703275274a9773399f4f7`.
+The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
+audit pass. The full `--test` promotion has not been rerun for this revision.
+The multi-file loader, native compiler/kernel build, installation and
 self-hosting remain open.

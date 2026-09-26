@@ -18,6 +18,7 @@ import CI386OwnedTask *I386TaskSpawn(CI386Scheduler *scheduler,CI386Heap *heap,
   I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20,I64 private_size=0);
 import Bool I386RedSeaBegin(CI386RedSea *volume);
 import Bool I386RedSeaEnd(CI386RedSea *volume);
+import I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386RedSeaEntry *entry);
 import Bool I386TaskDestroy(CI386OwnedTask *owned);
 import Bool I386SchedYield(CI386Scheduler *scheduler);
 import U0 KernelLog(U8 *text);
