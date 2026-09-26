@@ -8927,3 +8927,28 @@ The x86-64 two-generation rebuild and native cross-build pass. The full
 and two writable boots cover the new source-file path. This is one production
 file, not a compiler/kernel rebuild. Header-rich files, resident bindings,
 installation and two self-hosted generations remain open.
+
+## Guest packages delivered Arc source through nested headers (2026-09-26)
+
+The native compiler now reads `/Kernel/ArcSeed.HC` and its nested headers from
+RedSea, packages the original `ArcCtrlSeed` function, and loads and executes it
+for both 7-bit and 8-bit compression modes. Unlike the earlier integer-math
+source, these headers define macros. The direct source-unit path originally
+left 24 allocations (1,120 heap bytes) in the global define table. Compiler
+services version 56 now lets direct users install the same private define table
+used by ordinary transactional input. Control unwind reclaims the macros; the
+QEMU probe checks that heap use and allocation count return to baseline.
+
+The x86-64 two-generation rebuild, native cross-build and 386 boot audit pass.
+Both QEMU diagnostic phases execute the guest-built 1,116-byte module, loading
+1,064 image bytes. A first writable boot saved, reloaded and executed it from
+RedSea. The second writable boot loaded and executed the existing module
+before replacing it; both boots completed normal startup. The independent
+disk audit found exactly one `ArcCtrlSeed` export and
+SHA-256 `f24533ab0c49541e4115da4847a49700e7c8f120a060259d3dd68a0bf708e0ed`.
+The source SHA-256 is
+`01c83057f7f28f40a9116a10962bcb6bc0231c7ac5ab75052e47266274703721`.
+The full `--test` promotion has not been rerun for this revision; the focused
+diagnostic and two writable boots cover the new source-file path.
+This is a production source file with nested headers, not a complete
+compiler/kernel build or a native installation.

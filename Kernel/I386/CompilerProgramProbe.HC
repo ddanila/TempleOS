@@ -1,4 +1,5 @@
 //Definitions must survive control destruction and later failed input.
+#include "/Kernel/Arc.HH"
 U8 *ProbeProgramRead(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *cc,
   CPrsSymbolServices *symbols,Bool execute=TRUE)
 {
@@ -921,6 +922,90 @@ U0 ProbeProgramKMath(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("NATIVE KMATH "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramArcRun(CI386Heap *heap,U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record;
+  CArcCtrl *control;
+  U8 *image;
+  I64 image_bytes;
+  U0 (*seed)(CArcCtrl *control,I64 compression_type);
+  if(!I386ModuleValid(module,module_bytes) ||
+      header->version!=I386_MODULE_VERSION || header->record_count!=1) KernelStop;
+  record=module+header->records_offset;
+  if(record->kind!=I386_MODULE_EXPORT ||
+      StrCmp(module+record->name_offset,"ArcCtrlSeed")) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"ArcCtrlSeed",0,0);
+  image=I386HeapAlloc(heap,image_bytes);
+  control=I386HeapAlloc(heap,sizeof(CArcCtrl),TRUE);
+  if(!image || !control ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "ArcCtrlSeed",0,0)!=image_bytes) KernelStop;
+  seed=image+8+record->offset;
+  (*seed)(control,CT_7_BIT);
+  if(control->min_bits!=7 || control->min_table_entry!=128 ||
+      control->free_idx!=128 || control->next_bits_in_use!=8 ||
+      control->free_limit!=256 || control->saved_basecode!=0xFFFFFFFF ||
+      control->entry_used!=1) KernelStop;
+  (*seed)(control,CT_8_BIT);
+  if(control->min_bits!=8 || control->min_table_entry!=256 ||
+      control->free_idx!=256 || control->next_bits_in_use!=9 ||
+      control->free_limit!=512 || control->saved_basecode!=0xFFFFFFFF ||
+      control->entry_used!=1) KernelStop;
+  if(!I386HeapFree(heap,control) || !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramArc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#include \"/Kernel/ArcSeed.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/ArcSeed.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramArcRun(heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/ArcSeed.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramArcRun(heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE ARC EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/ArcSeed.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/ArcSeed.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramArcRun(heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE ARC DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE ARC "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1113,4 +1198,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   }
   ProbeProgramUnit(probe,heap,outer);
   ProbeProgramKMath(probe,heap,outer);
+  ProbeProgramArc(probe,heap,outer);
 }

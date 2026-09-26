@@ -105,6 +105,26 @@ class CI386FrontendBound {
 };
 extern I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword);
 extern U0 I386FrontendStatementsInit(CI386Frontend *state);
+//Keep source-unit macros private until publication or control teardown.
+Bool I386FrontendPrivateDefines(CPrsSymbolServices *symbols)
+{
+  CI386Frontend *state;
+  CI386CmpCtrl *owned;
+  CHashTable *table;
+  if(!symbols || !(state=symbols->context) || !state->cc || !state->heap ||
+      !state->table || state->defines || state->table->next!=state->parent)
+    return FALSE;
+  owned=state->cc;
+  if(owned->private_defines) return FALSE;
+  table=I386HashTableNew(state->heap,32);
+  if(!table) return FALSE;
+  owned->private_defines=table;
+  state->defines=table;
+  table->next=state->parent;
+  state->table->next=table;
+  state->cc->htc.define_hash_table=table;
+  return TRUE;
+}
 U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {

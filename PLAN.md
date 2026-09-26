@@ -2202,7 +2202,7 @@ The standalone-development goal above is the entry gate. M7 then requires:
    range in the module. Version-4 named stored-pointer records now allow an
    exact exported symbol in a second module to be resolved at load time; the
    native probe packages and persists a pointer-bearing consumer and its data
-   provider separately. Compiler services version 55 now collects and packages
+   provider separately. Compiler services version 56 now collects and packages
    every owned function and global definition from a private source unit; a
    guest-built unit with three functions, one global and scalar function-local
    static storage survives two writable boots. Local static code references
@@ -2215,6 +2215,11 @@ The standalone-development goal above is the entry gate. M7 then requires:
    original functions as one relocatable module, and executes signed and
    unsigned I64 cases after loading it. This is the first production source
    file on the guest-built module path, not a complete source-tree rebuild.
+   The guest also compiles `/Kernel/ArcSeed.HC` through its nested headers,
+   packages `ArcCtrlSeed`, and checks both compression modes after loading.
+   Direct source-unit compilation now owns preprocessor definitions in a
+   private table, so header macros are released when the compilation control
+   unwinds; the two-phase QEMU probe checks the heap returns to baseline.
    Next extend that path to files with shared headers and resident imports,
    define a stable system binding table, then package the compiler and kernel
    dependency graph. Broader pointer-target identity and full source-tree

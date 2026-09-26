@@ -92,6 +92,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->program_pack=&I386FrontendModulePack;
   services->program_pack_data=&I386FrontendModulePackData;
   services->program_pack_unit=&I386FrontendModulePackUnit;
+  services->frontend_private_defines=&I386FrontendPrivateDefines;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

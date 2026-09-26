@@ -35,7 +35,6 @@ Bool I386CommandInput(CI386CommandInput *input)
   CI386Frontend *state;
   CPrsSymbolServices *symbols;
   CI386FrontendCode *output;
-  CI386CmpCtrl *owned;
   U8 *code;
   I64 raw_type,value;
   Bool accepted=FALSE,raised=FALSE,interrupted=FALSE,unwound;
@@ -61,14 +60,8 @@ Bool I386CommandInput(CI386CommandInput *input)
         symbols=I386FrontendServices(heap,cc,input->types,input->includes);
         if(!symbols) throw('OutMem',TRUE);
         state=symbols->context; state->files=input->files;
-        if(input->flags&I386_INPUT_ATOMIC_DEFINES) {
-          owned=cc;
-          owned->private_defines=I386HashTableNew(heap,32);
-          if(!owned->private_defines) throw('OutMem',TRUE);
-          state->defines=owned->private_defines;
-          state->defines->next=state->parent; state->table->next=state->defines;
-          cc->htc.define_hash_table=state->defines;
-        }
+        if(input->flags&I386_INPUT_ATOMIC_DEFINES &&
+            !I386FrontendPrivateDefines(symbols)) throw('OutMem',TRUE);
         state->diagnostic_context=input->context; state->diagnostic=input->diagnostic;
         I386CommandInputCheckpoint(task,&interrupted);
         I386FrontendLex(state,cc);
