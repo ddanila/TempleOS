@@ -1071,6 +1071,54 @@ def verify_native_pointer_module(disk):
             'pointer':'DurableBytesPtr','initial_bytes':'abc\\0'}
 
 
+def verify_native_named_pointer_modules(disk):
+    """Audit persisted cross-module pointer records without executing the guest."""
+    paths={'consumer':'/Probe/DurableNamedConsumer.t32m',
+           'provider':'/Probe/DurableNamedProvider.t32m'}
+    contents=mutated_file_contents(disk,set(paths.values()))
+    layouts={}
+    for role,path in paths.items():
+        module=contents.get(path)
+        if not module or len(module)<32 or module[:4]!=b'T32M' or \
+                struct.unpack_from('<H',module,4)[0]!=(4 if role=='consumer' else 2):
+            raise ValueError(f'Missing or wrong-version named-pointer {role} module')
+        total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+        if (total!=len(module) or not size or size&7 or
+                records!=32+size or strings!=records+16*count or strings>total):
+            raise ValueError(f'Invalid named-pointer {role} layout')
+        rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+        named=lambda kind:[row for row in rows if row[0]==kind]
+        def name(row,module=module,strings=strings,total=total):
+            offset,length=row[2:4]
+            if not length or length>255 or offset<strings or \
+                    offset+length>=total or module[offset+length] or \
+                    b'\0' in module[offset:offset+length]:
+                raise ValueError(f'Invalid named-pointer {role} name')
+            return module[offset:offset+length]
+        exports=named(1); data_exports=named(3); ranges=named(4)
+        if (len(exports)!=1 or len(data_exports)!=1 or len(ranges)!=1 or
+                ranges[0][3] or data_exports[0][1]!=ranges[0][1] or
+                ranges[0][1]+ranges[0][2]>size):
+            raise ValueError(f'Invalid named-pointer {role} records')
+        layouts[role]=(module,size,rows,named,name,exports[0],data_exports[0],ranges[0])
+    consumer,size,rows,named,name,export,data_export,data_range=layouts['consumer']
+    pointers=named(7); addresses=named(5)
+    if (name(export)!=b'DurableByteRead' or name(data_export)!=b'DurableBytesPtr' or
+            data_range[2]!=4 or len(pointers)!=1 or
+            pointers[0][1]!=data_export[1] or name(pointers[0])!=b'DurableBytes' or
+            len(addresses)!=1 or name(addresses[0])!=b'DurableBytesPtr' or
+            consumer[32+pointers[0][1]:36+pointers[0][1]]!=b'\0'*4):
+        raise ValueError('Named-pointer consumer records differ')
+    provider,size,rows,named,name,export,data_export,data_range=layouts['provider']
+    if (name(export)!=b'DurableConst' or name(data_export)!=b'DurableBytes' or
+            data_range[2]!=4 or named(7) or named(6) or
+            provider[32+data_export[1]:36+data_export[1]]!=b'abc\0'):
+        raise ValueError('Named-pointer provider records differ')
+    return {'consumer_sha256':hashlib.sha256(consumer).hexdigest(),
+            'provider_sha256':hashlib.sha256(provider).hexdigest(),
+            'target':'DurableBytes','pointer':'DurableBytesPtr'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1200,8 +1248,8 @@ def main():
     run(sys.executable,'tools/audit-i386-boot.py',str(disk),str(stage_listing),
         '--out',str(boot_audit_path))
     boot_audit=json.loads(boot_audit_path.read_text())
-    if disk.stat().st_size>(848+1)*512:
-        raise ValueError('Kernel stage exceeds its reserved 424 KiB load area')
+    if disk.stat().st_size>(880+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 440 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
     volume=package_volume(disk,exports)
     volume['verified_files']=verify_volume(disk,volume)
@@ -1591,6 +1639,18 @@ def main():
                                   'module_bytes':native_pointer[0][1],
                                   'loaded_bytes':native_pointer[0][2],
                                   'result':'function and linked initialized pointer loaded together'}
+        named_pointer = [tuple(int(value,16) for value in line.split()[3:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE NAMED POINTER [0-9A-F]{16} ',line)]
+        if len(named_pointer)!=2 or [entry[0] for entry in named_pointer]!=[0,1] or \
+                named_pointer[0][1:]!=named_pointer[1][1:] or \
+                min(named_pointer[0][1:])<48:
+            raise ValueError('Guest-built modules did not relocate named stored pointer')
+        result['native_named_pointer']={'phases':[0,1],
+                                        'consumer_bytes':named_pointer[0][1],
+                                        'provider_bytes':named_pointer[0][2],
+                                        'loaded_bytes':named_pointer[0][3],
+                                        'result':'cross-module initialized pointer loaded and mutated'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1820,6 +1880,9 @@ def main():
             raise ValueError('Fresh aggregate module disk round trip failed')
         if mutation_log.count('NATIVE POINTER DISK\n')!=1 or 'NATIVE POINTER EXISTING\n' in mutation_log:
             raise ValueError('Fresh stored-pointer module disk round trip failed')
+        if mutation_log.count('NATIVE NAMED POINTER DISK\n')!=1 or \
+                'NATIVE NAMED POINTER EXISTING\n' in mutation_log:
+            raise ValueError('Fresh named-pointer modules disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1851,6 +1914,9 @@ def main():
         if module_reboot_log.count('NATIVE POINTER EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE POINTER DISK\n')!=1:
             raise ValueError('Stored-pointer module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE NAMED POINTER EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE NAMED POINTER DISK\n')!=1:
+            raise ValueError('Named-pointer modules did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1897,6 +1963,12 @@ def main():
                                        'second_boot':'read, load, mutate, execute, replace',
                                        'module':verify_native_pointer_module(mutation_disk),
                                        'result':'pass'}
+        result['native_named_pointer_disk']={'paths':['C:/Probe/DurableNamedConsumer.t32m',
+                                                     'C:/Probe/DurableNamedProvider.t32m'],
+                                             'fresh_boot':'write, read, load, mutate, execute',
+                                             'second_boot':'read, load, mutate, execute, replace',
+                                             'modules':verify_native_named_pointer_modules(mutation_disk),
+                                             'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

@@ -6,7 +6,7 @@ public I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleHeader *header;
   CI386ModuleRecord *record,*packed;
   I64 payload,total,records_offset,strings_offset,i;
-  Bool pointers=FALSE;
+  Bool pointers=FALSE,named_pointers=FALSE;
   if(!code || code_bytes<1 || code_bytes>0xFFFFFFF0 || record_count<1 ||
       record_count>0x0FFFFFFF || !records || string_bytes<1 ||
       string_bytes>0xFFFFFFFF || !strings) return 0;
@@ -19,6 +19,7 @@ public I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
     record=records+i;
     if(record->kind==I386_MODULE_POINTER) pointers=TRUE;
     else if(record->kind!=I386_MODULE_DATA_RANGE) {
+      if(record->kind==I386_MODULE_NAMED_POINTER) named_pointers=TRUE;
       if(record->name_length<1 || record->name_length>255 ||
           record->name_length>=string_bytes ||
           record->name_offset>string_bytes-record->name_length-1 ||
@@ -31,6 +32,7 @@ public I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   header->magic=I386_MODULE_MAGIC;
   header->version=I386_MODULE_VERSION;
   if(pointers) header->version=I386_MODULE_POINTER_VERSION;
+  if(named_pointers) header->version=I386_MODULE_NAMED_POINTER_VERSION;
   header->cpu=3; header->pointer_size=4; header->abi=I386_MODULE_ABI;
   header->total_size=total; header->code_size=payload;
   header->record_count=record_count; header->records_offset=records_offset;
@@ -46,7 +48,8 @@ public I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
     packed[i].name_length=record->name_length;
     if(record->kind!=I386_MODULE_POINTER && record->kind!=I386_MODULE_DATA_RANGE)
       packed[i].name_offset+=strings_offset;
-    if(record->kind==I386_MODULE_POINTER && record->offset<=payload-4)
+    if((record->kind==I386_MODULE_POINTER ||
+        record->kind==I386_MODULE_NAMED_POINTER) && record->offset<=payload-4)
       (output+32+record->offset)(U32 *)[0]=0;
   }
   for(i=0;i<string_bytes;i++) output[strings_offset+i]=strings[i];

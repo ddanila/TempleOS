@@ -1,7 +1,7 @@
 # i386 bootstrap modules
 
-`CmpI386Module` compiles HolyC with the i386 backend and writes a `T32M` module: version 2 for position-independent payloads and version 3
-when stored local data pointers require relocation. `I386ModuleValid` checks its structure and architecture/ABI fields.
+`CmpI386Module` compiles HolyC with the i386 backend and writes a `T32M` module: version 2 for position-independent payloads, version 3
+when stored local data pointers require relocation, and version 4 when a stored pointer names a symbol outside its module. `I386ModuleValid` checks its structure and architecture/ABI fields.
 `I386LoadInto` validates and loads a set of modules into caller-owned memory on
 both the x86-64 host and the native i386 target. `I386Link` provides the host
 allocation wrapper. The module format is distinct from the existing x86-64 BIN
@@ -17,7 +17,7 @@ The structures are defined in `Kernel/I386/Module.HH` with size assertions.
 | Offset | Field | Width | Required value or meaning |
 | --- | --- | --- | --- |
 | 0 | magic | 4 | `T32M` (`0x4D323354`) |
-| 4 | version | 2 | 2, or 3 with at least one stored-pointer record; other versions are rejected |
+| 4 | version | 2 | 2; 3 with at least one local stored-pointer record; or 4 with at least one named stored-pointer record |
 | 6 | cpu | 1 | 3, the i386 instruction baseline |
 | 7 | pointer_size | 1 | 4 |
 | 8 | abi | 4 | 1, the contract in `i386-abi.md` |
@@ -37,10 +37,10 @@ the executable-range audit in the backend tests.
 
 | Offset | Field | Meaning |
 | --- | --- | --- |
-| 0 | kind | 1: function export; 2: call import; 3: data export; 4: data range; 5: address import; 6: stored local data pointer (v3) |
+| 0 | kind | 1: function export; 2: call import; 3: data export; 4: data range; 5: address import; 6: stored local data pointer (v3/v4); 7: named stored pointer (v4) |
 | 4 | offset | Offset within the payload, excluding the module header |
-| 8 | name_offset | Named record: file offset into strings; data range: byte length; stored pointer: target payload offset |
-| 12 | name_length | Named record: 1–255 nonzero bytes plus NUL; data range/stored pointer: zero |
+| 8 | name_offset | Named record: file offset into strings; data range: byte length; local stored pointer: target payload offset |
+| 12 | name_length | Named record: 1–255 nonzero bytes plus NUL; data range/local stored pointer: zero |
 
 A function export points outside all data ranges; a data export points inside a
 range. Ranges must be nonempty, contained in the payload, and mutually disjoint.
@@ -55,9 +55,10 @@ Global and static storage occupies bytes in the payload, including zero-initiali
 storage. Fixed-width scalar, array, packed-record, and character-array initializers
 are supported. Pointer storage uses four bytes; numeric/null pointer initializers
 and pointers assigned by running code work. String-pointer initializers such as
-`U8 *p="text"` now produce version-3 records, including globals, statics, aggregate
-members and pointer arrays. General executable initializers, symbolic stored
-function/import pointers and heap records remain unsupported.
+`U8 *p="text"` produce version-3 records, including globals, statics, aggregate
+members and pointer arrays. The guest packer can also name exact external
+function or global addresses in version-4 records. General executable initializers,
+interior pointers to external data, and heap records remain unsupported.
 There is no separate on-disk BSS representation yet.
 
 ## Stored local data pointers
@@ -67,13 +68,29 @@ Kind 6 identifies a four-byte slot wholly contained in one data range. Its
 is zero. The serialized slot must contain zero. Slots cannot overlap one another,
 straddle a range boundary or touch code. Targets outside classified data are
 rejected. Multiple slots may refer to the same target. Version 2 rejects these
-records; version 3 requires at least one, so older readers reject the extension.
+records; version 3 requires at least one. Version 4 may contain local records
+alongside at least one named record.
 
 The compiler emits four-byte AOT absolute records and separate literal data ranges,
 then serializes the module-local target into kind 6 and zeroes the slot. Loading
 writes `load_address + module_offset_in_image + target_offset`. No host allocation
 address enters the module. The source file remains unchanged, and loaded literal
 storage belongs to the loaded image, independently of the serialized source.
+
+## Named stored pointers
+
+Kind 7 identifies a zeroed four-byte data slot and a unique named function or
+data export in another selected module or an explicit binding. Its name uses the
+ordinary string table. The loader validates every name before writing the image,
+then writes the absolute loaded address of that export or binding into the slot.
+The slot must fit wholly inside a data range and cannot overlap another stored
+pointer. An unresolved or duplicate name rejects the whole load. Version 4
+requires at least one kind-7 record; versions 2 and 3 reject it.
+
+The native packer chooses a local kind-6 record for selected data and a kind-7
+record only for an exact, unambiguous external symbol address. This supports
+persisting the pointer-bearing consumer and its provider as separate modules.
+The caller must retain both loaded modules for as long as that pointer is used.
 
 ## Linking
 

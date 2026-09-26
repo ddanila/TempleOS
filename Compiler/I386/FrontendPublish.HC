@@ -80,31 +80,71 @@ I64 I386FrontendPointerTarget(I64 value,CHashGlblVar **globals,I64 count,
   }
   return -1;
 }
+U8 *I386FrontendPointerName(CI386Frontend *frontend,I64 value)
+{//An external stored pointer needs one unambiguous native symbol name.
+  CHashTable *table=frontend->table;
+  CHash *entry;
+  CHashFun *fun;
+  CHashGlblVar *global;
+  U8 *name=0;
+  I64 i,hits=0;
+  while(table) {
+    for(i=0;i<=table->mask;i++)
+      for(entry=table->body[i];entry;entry=entry->next) {
+        if(entry->type&HTT_FUN) {
+          fun=entry;
+          if((fun->exe_addr+0)(U64)==value) { name=entry->str; hits++; }
+        } else if(entry->type&HTT_GLBL_VAR) {
+          global=entry;
+          if(!(global->flags&(GVF_ALIAS|GVF_EXTERN|GVF_IMPORT)) &&
+              (global->data_addr+0)(U64)==value) { name=entry->str; hits++; }
+        }
+      }
+    if(table==frontend->table) table=frontend->parent;
+    else table=0;
+  }
+  if(hits!=1 || !name) return 0;
+  return name;
+}
 I64 I386FrontendPointerSites(CHashClass *type,U8 *data,I64 data_bytes,I64 offset,
   I64 depth,CHashGlblVar **globals,I64 global_count,I64 function_payload,
-  I64 body_base,CI386ModuleRecord *records)
+  I64 body_base,CI386ModuleRecord *records,CI386Frontend *frontend,
+  I64 *string_bytes,U8 *strings)
 {
   CMemberLst *member;
   CI386ModuleRecord *next_records;
-  I64 i,count=0,sites,value,target;
+  U8 *name;
+  I64 i,k,count=0,sites,value,target,length;
   if(!type || depth>32 || offset<0 || type->size>data_bytes-offset) return -1;
   if(type->ptr_stars_cnt) {
     if(type->size!=4) return -1;
     value=(data+offset)(U32 *)[0];
     if(!value) return 0;
     target=I386FrontendPointerTarget(value,globals,global_count,function_payload);
-    if(target<0) return -1;
-    if(records) {
-      records[0].kind=I386_MODULE_POINTER;
-      records[0].offset=body_base+offset;
-      records[0].name_offset=target;
-      records[0].name_length=0;
+    if(target<0) {
+      name=I386FrontendPointerName(frontend,value);
+      if(!name) return -1;
+      length=StrLen(name);
+      if(length<1 || length>255 || *string_bytes>0xFFFFFFFF-length-1) return -1;
     }
+    if(records) {
+      if(target>=0) records[0].kind=I386_MODULE_POINTER;
+      else records[0].kind=I386_MODULE_NAMED_POINTER;
+      records[0].offset=body_base+offset;
+      if(target>=0) {
+        records[0].name_offset=target; records[0].name_length=0;
+      } else {
+        records[0].name_offset=*string_bytes; records[0].name_length=length;
+        for(k=0;k<=length;k++) strings[*string_bytes+k]=name[k];
+      }
+    }
+    if(target<0) *string_bytes+=length+1;
     return 1;
   }
   if(type->base_class) {
     sites=I386FrontendPointerSites(type->base_class,data,data_bytes,offset,
-      depth+1,globals,global_count,function_payload,body_base,records);
+      depth+1,globals,global_count,function_payload,body_base,records,
+      frontend,string_bytes,strings);
     if(sites<0) return -1;
     count+=sites;
   }
@@ -114,14 +154,16 @@ I64 I386FrontendPointerSites(CHashClass *type,U8 *data,I64 data_bytes,I64 offset
         next_records=0; if(records) next_records=records+count;
         sites=I386FrontendPointerSites(member->member_class,data,data_bytes,
           offset+member->offset+i*member->member_class->size,depth+1,
-          globals,global_count,function_payload,body_base,next_records);
+          globals,global_count,function_payload,body_base,next_records,
+          frontend,string_bytes,strings);
         if(sites<0 || count>0x0FFFFFFF-sites) return -1;
         count+=sites;
       }
   return count;
 }
 I64 I386FrontendGlobalPointers(CHashGlblVar *global,CHashGlblVar **globals,
-  I64 global_count,I64 function_payload,I64 body_base,CI386ModuleRecord *records)
+  I64 global_count,I64 function_payload,I64 body_base,CI386ModuleRecord *records,
+  CI386Frontend *frontend,I64 *string_bytes,U8 *strings)
 {
   CI386ModuleRecord *next_records;
   I64 i,count=0,sites;
@@ -129,7 +171,7 @@ I64 I386FrontendGlobalPointers(CHashGlblVar *global,CHashGlblVar **globals,
     next_records=0; if(records) next_records=records+count;
     sites=I386FrontendPointerSites(global->var_class,global->data_addr,
       global->size,i*global->var_class->size,0,globals,global_count,
-      function_payload,body_base,next_records);
+      function_payload,body_base,next_records,frontend,string_bytes,strings);
     if(sites<0 || count>0x0FFFFFFF-sites) return -1;
     count+=sites;
   }
@@ -196,7 +238,7 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
     payload=(payload+7)&~7;
     if(global->size>0xFFFFFFF0-payload || record_count>0x0FFFFFFF-2) return 0;
     pointers=I386FrontendGlobalPointers(global,globals,global_count,
-      function_payload,payload,0);
+      function_payload,payload,0,frontend,&string_bytes,0);
     if(pointers<0 || record_count>0x0FFFFFFF-pointers-2) return 0;
     payload+=global->size; record_count+=pointers+2; string_bytes+=length+1;
   }
@@ -249,7 +291,7 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
     for(k=0;k<=length;k++) strings[string_bytes+k]=global->str[k];
     string_bytes+=length+1;
     pointers=I386FrontendGlobalPointers(global,globals,global_count,
-      function_payload,base,records+index);
+      function_payload,base,records+index,frontend,&string_bytes,strings);
     if(pointers<0) return 0;
     index+=pointers;
   }

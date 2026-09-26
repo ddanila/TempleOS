@@ -60,6 +60,23 @@ def main():
         changed=bytearray(pointer_module); struct.pack_into('<I',changed,position,value)
         pointer_bad.append((label,[bytes(changed)],0,1))
     cases+=pointer_bad
+    named_pointer=bytearray(pointer_module)
+    for pos in range(roff,soff,16):
+        kind,record_offset,name,length=struct.unpack_from('<4I',named_pointer,pos)
+        if kind==3 and named_pointer[name:name+length]==b'text':
+            struct.pack_into('<I',named_pointer,pos+4,4)
+        if kind==6:
+            struct.pack_into('<4I',named_pointer,pos,7,record_offset,len(named_pointer),4)
+    named_pointer+=b'text\0'
+    struct.pack_into('<H',named_pointer,4,4)
+    struct.pack_into('<I',named_pointer,12,len(named_pointer))
+    cases.append(('named-stored-pointer',[bytes(named_pointer)],cases[19][2],0))
+    missing_name=bytearray(named_pointer)
+    missing_name[-5:]=b'lost\0'
+    cases.append(('unresolved-named-pointer',[bytes(missing_name)],0,1))
+    wrong_version=bytearray(named_pointer)
+    struct.pack_into('<H',wrong_version,4,3)
+    cases.append(('named-pointer-wrong-version',[bytes(wrong_version)],0,1))
     consumer, provider = cases[10][1]
     bad = bytearray(consumer)
     bad[0] ^= 1

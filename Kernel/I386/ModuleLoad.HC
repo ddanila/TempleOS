@@ -79,8 +79,13 @@ public I64 I386LoadBoundAt(U8 **modules,I64 *sizes,I64 count,U8 *image,
     for (j=0;j<h->record_count;j++,r++) {
       if (r->kind==I386_MODULE_DATA_RANGE) goto validate_next;
       if (r->kind==I386_MODULE_POINTER) { pointers=TRUE; goto validate_next; }
-      I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,bindings,binding_count,address);
+      target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,
+        bindings,binding_count,address);
       if (matches!=1) return 0;
+      if (r->kind==I386_MODULE_NAMED_POINTER) {
+        pointers=TRUE;
+        if (address+target<1 || address+target>U32_MAX) return 0;
+      }
       if (r->kind==I386_MODULE_REL32) {
         I386BoundSymbol(modules,count,modules[i]+r->name_offset,I386_MODULE_EXPORT,&matches,bindings,binding_count,address);
         if (matches!=1) return 0;
@@ -121,6 +126,11 @@ validate_next:
     for (j=0;j<h->record_count;j++,r++) {
       if (r->kind==I386_MODULE_POINTER)
         (image+base+r->offset)(U32 *)[0]=address+base+r->name_offset;
+      else if (r->kind==I386_MODULE_NAMED_POINTER) {
+        target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,
+          &matches,bindings,binding_count,address);
+        (image+base+r->offset)(U32 *)[0]=address+target;
+      }
       else if (r->kind==I386_MODULE_REL32 || r->kind==I386_MODULE_ADDRESS) {
         target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,bindings,binding_count,address);
         patch=base+r->offset;

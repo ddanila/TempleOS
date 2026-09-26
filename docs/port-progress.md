@@ -8785,3 +8785,43 @@ pointer slot, initial array bytes and SHA-256
 `ba49dd76740f1c94014d5ca7b18a2b6e6234cb6a4a55ba25b207573c2f431a4f`.
 Pointers to data outside the selected module are rejected until named pointer
 imports have a module contract.
+
+## Guest-built modules link an initialized pointer across files (2026-09-26)
+
+T32M version 4 adds a named stored-pointer record for an initialized data slot.
+The shared validator requires a zero slot wholly inside a data range, a valid
+name and no overlap with another pointer record. The loader resolves that name
+uniquely against the selected modules or explicit bindings before writing the
+image, then stores the absolute loaded address. Versions 2 and 3 retain their
+existing meanings. The native packer emits version 4 when an initialized
+pointer exactly matches a function or global symbol outside its selected
+module; a selected local data target still uses version 3.
+
+The QEMU probe builds a consumer containing `DurableByteRead` and
+`DurableBytesPtr`, and a separate provider containing `DurableBytes[4]="abc"`.
+It loads the pair, checks pointer identity and the byte value, changes the
+loaded `b` to `Z`, and checks the read again. Both diagnostic phases pass with
+269-byte consumer and 154-byte provider modules and a 152-byte loaded image.
+Focused native loader tests cover execution, unresolved-name rejection and
+wrong-version rejection. Both writable boots pass: the first writes, reads and
+executes the pair; the second reads the existing files, executes them, then
+replaces and executes them again. The independent host audit confirms the
+version-4 consumer's named zero-slot record and the version-2 provider's
+initial `abc` bytes. Their SHA-256 hashes are
+`97e5e162223740df6561cd7cb05a7c1806c9c8a4e36d6db02394d647a34e796e`
+and `f8ca89713d829fd20c1e6183843e18ece6c0ea52fc8c7854fe0921c311d289d7`.
+
+The additional resident validator and loader code exceeded the former
+848-sector BIOS load reservation by 4184 bytes. The reservation is now 880
+sectors, ending at `0x7E000`, 40 KiB below the task-stack reservation at
+`0x88000`. The 434264-byte kernel plus 4096-byte early stage leaves 12200
+bytes in the new load area. The 386 boot instruction audit and both x86-64
+self-rebuild generations pass. The full promotion invocation completed both
+diagnostic phases, all 558 normal-workstation input lines, the startup rejection
+checks and both writable boots. It then stopped at a Python closure mistake in
+the new host audit; that audit was corrected and passed directly on the saved
+disk. The remaining mutation reboot, all 13 move and seven replacement
+interruption/recovery cases, and original/native document compatibility passed
+in a resumed run. One uninterrupted `--test` invocation after the audit fix
+has not been repeated. This is still an incremental native module contract,
+not complete source-unit packaging or self-hosting.

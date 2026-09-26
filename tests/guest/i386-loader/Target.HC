@@ -24,6 +24,12 @@ Bool LoaderImagesSame(U8 *left,U8 *right,I64 bytes,U8 **modules,I64 count)
               (right+i)(U32 *)[0]!=(right+0)(U64)+base+record->name_offset) return FALSE;
           i+=3; goto compared;
         }
+        else if(record->kind==I386_MODULE_NAMED_POINTER && base+record->offset==i) {
+          if((left+i)(U32 *)[0]-(left+0)(U64)!=
+              (right+i)(U32 *)[0]-(right+0)(U64) ||
+              (left+i)(U32 *)[0]-(left+0)(U64)>=bytes) return FALSE;
+          i+=3; goto compared;
+        }
       base+=h->code_size;
     }
     if(left[i]!=right[i]) return FALSE;

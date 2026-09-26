@@ -136,7 +136,8 @@ flat kernel against module records. The kernel's ready-message pointer exercises
 this path; the retained console's title pointer exercises relocation into a
 runtime-allocated image. Both use version-3 module records while existing
 position-independent modules remain version 2. The overall boot reservation
-remains 393216 bytes.
+is now 450560 bytes (880 sectors), ending at `0x7E000`, 40 KiB below the
+fixed task-stack reservation at `0x88000`.
 
 ## Disk-loaded startup and resident bindings
 

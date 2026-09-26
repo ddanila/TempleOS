@@ -108,7 +108,8 @@ public U8 *I386Link(U8 **modules,I64 *sizes,I64 count,I64 *size,U8 *entry_name="
     for(i=0;i<count;i++) {
       h=modules[i]; record=modules[i]+h->records_offset;
       for(j=0;j<h->record_count;j++,record++)
-        if(record->kind==I386_MODULE_POINTER) return NULL;
+        if(record->kind==I386_MODULE_POINTER ||
+            record->kind==I386_MODULE_NAMED_POINTER) return NULL;
     }
   try {
     image=CAlloc(required);
