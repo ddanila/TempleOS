@@ -8878,6 +8878,29 @@ interactive phases, then was stopped in favor of these two focused writable
 boots; a complete uninterrupted promotion run for this revision remains open.
 This closes the
 basic scalar-local-static packaging gap, but complete source-tree packaging and
-native self-hosting remain open. Static data containing pointers to separately
-allocated literals still needs a representation that owns or relocates those
-targets.
+native self-hosting remain open. At that checkpoint, static data containing
+pointers to separately allocated literals still needed an owned representation.
+
+## Guest-built units own retained string literals (2026-09-26)
+
+The source-unit packer now scans initialized global and function-local static
+storage by type for pointers into retained compiler literal pools. It includes
+only referenced pools as private data ranges and emits local stored-pointer
+relocations. The pool remains anonymous in the T32M export table, so separate
+modules can each contain literals without sharing a generated export name.
+The compiler allocation tracker verifies the pool's lifetime and size; a
+regular data-heap size check cannot validate code allocations.
+
+The guest fixture adds `UnitLetter`, whose `static U8i *p="AZ"` increments the
+loaded literal through that pointer twice. Both QEMU diagnostic phases and the
+first writable boot execute it successfully. The 819-byte version-3 module
+loads as a 384-byte image; the independent saved-file audit checks its four
+function exports, three data exports, anonymous three-byte literal range,
+stored-pointer target, initial bytes, and SHA-256
+`bfa4f710c6cd3a295f1af31efa036e1a3bdd68ee4d85b67984387b58e57d62a5`.
+The second writable boot loaded and executed the existing module, replaced it,
+and passed the same byte audit. The x86-64 two-generation rebuild and native
+cross-build pass. The complete `--test` promotion sequence has not been rerun
+for this revision; the two focused writable boots and saved-file audit cover
+the changed path. Source-tree
+packaging, multi-module system bindings, and native self-hosting remain open.

@@ -1125,37 +1125,51 @@ def verify_native_unit_module(disk):
     path='/Probe/DurableUnit.t32m'
     module=mutated_file_contents(disk,{path}).get(path)
     if not module or len(module)<32 or module[:4]!=b'T32M' or \
-            struct.unpack_from('<H',module,4)[0]!=2:
+            struct.unpack_from('<H',module,4)[0]!=3:
         raise ValueError('Missing guest-built source-unit module')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or not size or size&7 or count!=10 or
+    if (total!=len(module) or not size or size&7 or count!=16 or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid source-unit module layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     named=lambda kind:[row for row in rows if row[0]==kind]
     name=lambda row:module[row[2]:row[2]+row[3]]
     exports=named(1); calls=named(2); data_exports=named(3)
-    ranges=named(4); addresses=named(5)
+    ranges=named(4); addresses=named(5); pointers=named(6)
     data_by_name={name(row):row for row in data_exports}
-    if ({name(row) for row in exports}!={b'UnitAdd',b'UnitMain',b'UnitNext'} or
-            len(exports)!=3 or len(calls)!=1 or name(calls[0])!=b'UnitAdd' or
-            set(data_by_name)!={b'UnitBase',b'@static/UnitNext/0000'} or
-            len(data_exports)!=2 or len(ranges)!=2 or
-            {row[1] for row in ranges}!={row[1] for row in data_exports} or
-            any(row[2]!=8 or row[3] for row in ranges) or
-            {name(row) for row in addresses}!={b'UnitBase',b'@static/UnitNext/0000'} or
-            len(addresses)!=2 or
+    if (len(pointers)!=1 or
+            {name(row) for row in exports}!={b'UnitAdd',b'UnitMain',b'UnitNext',b'UnitLetter'} or
+            len(exports)!=4 or len(calls)!=1 or name(calls[0])!=b'UnitAdd' or
+            set(data_by_name)!={b'UnitBase',b'@static/UnitNext/0000',
+                                b'@static/UnitLetter/0000'} or
+            len(data_exports)!=3 or len(ranges)!=4 or
+            {row[1] for row in ranges}!=
+                {row[1] for row in data_exports}|{pointers[0][2]} or
+            {row[1]:row[2] for row in ranges}!=
+                {data_by_name[b'UnitBase'][1]:8,
+                 data_by_name[b'@static/UnitNext/0000'][1]:8,
+                 data_by_name[b'@static/UnitLetter/0000'][1]:4,
+                 pointers[0][2]:3} or
+            any(row[3] for row in ranges) or
+            {name(row) for row in addresses}!=
+                {b'UnitBase',b'@static/UnitNext/0000',b'@static/UnitLetter/0000'} or
+            len(addresses)!=3 or
+            pointers[0][1]!=data_by_name[b'@static/UnitLetter/0000'][1] or
+            pointers[0][3] or
             module[32+calls[0][1]-1]!=0xE8 or
             any(module[32+row[1]-1]!=0x05 for row in addresses) or
             module[32+calls[0][1]:36+calls[0][1]]!=b'\0'*4 or
             any(module[32+row[1]:36+row[1]]!=b'\0'*4 for row in addresses) or
+            module[32+pointers[0][1]:36+pointers[0][1]]!=b'\0'*4 or
             module[32+data_by_name[b'UnitBase'][1]:40+data_by_name[b'UnitBase'][1]]!=struct.pack('<q',20) or
-            module[32+data_by_name[b'@static/UnitNext/0000'][1]:40+data_by_name[b'@static/UnitNext/0000'][1]]!=struct.pack('<q',40)):
+            module[32+data_by_name[b'@static/UnitNext/0000'][1]:40+data_by_name[b'@static/UnitNext/0000'][1]]!=struct.pack('<q',40) or
+            module[32+pointers[0][2]:35+pointers[0][2]]!=b'AZ\0'):
         raise ValueError('Guest-built source-unit definitions or initial data differ')
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'functions':['UnitAdd','UnitMain','UnitNext'],
-            'globals':['UnitBase','@static/UnitNext/0000'],
-            'initial_values':[20,40]}
+            'functions':['UnitAdd','UnitLetter','UnitMain','UnitNext'],
+            'globals':['UnitBase','@static/UnitNext/0000',
+                       '@static/UnitLetter/0000'],
+            'private_literal_ranges':1,'initial_values':[20,40,'AZ']}
 
 
 def verify_file_io_failure_matrix(disk, exports, out):

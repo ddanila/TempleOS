@@ -754,10 +754,12 @@ I64 ProbeProgramUnitRun(CI386Heap *heap,U8 *module,I64 module_bytes)
   CI386ModuleHeader *header=module;
   CI386ModuleRecord *record;
   U8 *image;
-  I64 i,base_offset=-1,static_offset=-1,next_offset=-1,image_bytes;
+  I64 i,base_offset=-1,static_offset=-1,next_offset=-1,letter_offset=-1,image_bytes;
   I64 (*entry)();
   I64 (*next)();
-  if(!I386ModuleValid(module,module_bytes) || header->version!=I386_MODULE_VERSION)
+  I64 (*letter)();
+  if(!I386ModuleValid(module,module_bytes) ||
+      header->version!=I386_MODULE_POINTER_VERSION)
     KernelStop;
   record=module+header->records_offset;
   for(i=0;i<header->record_count;i++,record++)
@@ -768,16 +770,20 @@ I64 ProbeProgramUnitRun(CI386Heap *heap,U8 *module,I64 module_bytes)
       static_offset=record->offset;
     else if(record->kind==I386_MODULE_EXPORT &&
         !StrCmp(module+record->name_offset,"UnitNext")) next_offset=record->offset;
-  if(base_offset<0 || static_offset<0 || next_offset<0) KernelStop;
+    else if(record->kind==I386_MODULE_EXPORT &&
+        !StrCmp(module+record->name_offset,"UnitLetter")) letter_offset=record->offset;
+  if(base_offset<0 || static_offset<0 || next_offset<0 || letter_offset<0) KernelStop;
   image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"UnitMain",0,0);
   image=I386HeapAlloc(heap,image_bytes);
   if(!image || I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
       "UnitMain",0,0)!=image_bytes) KernelStop;
   entry=image;
   next=image+8+next_offset;
+  letter=image+8+letter_offset;
   if((*entry)()!=42 || (image+8+base_offset)(I64 *)[0]!=20 ||
       (image+8+static_offset)(I64 *)[0]!=40 || (*next)()!=41 ||
-      (*next)()!=42 || (image+8+static_offset)(I64 *)[0]!=42) KernelStop;
+      (*next)()!=42 || (image+8+static_offset)(I64 *)[0]!=42 ||
+      (*letter)()!=66 || (*letter)()!=67) KernelStop;
   (image+8+base_offset)(I64 *)[0]=21;
   if((*entry)()!=43 || !I386HeapFree(heap,image)) KernelStop;
   return image_bytes;
@@ -794,7 +800,8 @@ U0 ProbeProgramUnit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     "I64i UnitBase=20;"
     "I64i UnitAdd(I64i x){return UnitBase+x;}"
     "I64i UnitMain(){return UnitAdd(22);}"
-    "I64i UnitNext(){static I64i n=40;return ++n;}",
+    "I64i UnitNext(){static I64i n=40;return ++n;}"
+    "I64i UnitLetter(){static U8i *p=\"AZ\";return ++p[0];}",
     CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/Unit.HC");
   if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
       !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,

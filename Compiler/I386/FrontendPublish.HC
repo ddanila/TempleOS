@@ -1,4 +1,5 @@
 //Publish complete private definitions and executable/static storage atomically.
+#define I386_GVF_MODULE_PRIVATE 0x100000000
 Bool I386FrontendCodeSpan(CPrsSymbolServices *symbols,U8 *address,I64 *bytes,I64 **data_start)
 {
   CI386Frontend *frontend;
@@ -64,6 +65,51 @@ Bool I386FrontendModuleType(CHashClass *type,I64 depth)
           !I386FrontendModuleType(member->member_class,depth+1)) return FALSE;
   }
   return count==type->member_cnt;
+}
+Bool I386FrontendPointerInSpan(CHashClass *type,U8 *data,I64 data_bytes,
+  I64 offset,I64 depth,I64 start,I64 end)
+{//Inspect typed initialized storage before retaining a literal pool.
+  CMemberLst *member;
+  I64 i,value;
+  if(!type || depth>32 || offset<0 || type->size<1 ||
+      offset>data_bytes-type->size) return FALSE;
+  if(type->ptr_stars_cnt) {
+    if(type->size!=4) return FALSE;
+    value=(data+offset)(U32 *)[0];
+    return value>=start && value<end;
+  }
+  if(type->base_class && I386FrontendPointerInSpan(type->base_class,data,
+      data_bytes,offset,depth+1,start,end)) return TRUE;
+  for(member=type->member_lst_and_root;member;member=member->next)
+    if(!(member->flags&(MLF_STATIC|MLF_FUN)) && member->member_class &&
+        member->offset>=0 && member->dim.total_cnt>0 &&
+        member->dim.total_cnt<=8192 && member->member_class->size>0)
+      for(i=0;i<member->dim.total_cnt;i++)
+        if(I386FrontendPointerInSpan(member->member_class,data,data_bytes,
+            offset+member->offset+i*member->member_class->size,
+            depth+1,start,end)) return TRUE;
+  return FALSE;
+}
+Bool I386FrontendGlobalUsesSpan(CHashGlblVar *global,I64 start,I64 end)
+{
+  I64 i;
+  if(!global || !global->data_addr || !global->var_class ||
+      global->dim.total_cnt<1 || global->dim.total_cnt>8192 ||
+      global->var_class->size<1) return FALSE;
+  for(i=0;i<global->dim.total_cnt;i++)
+    if(I386FrontendPointerInSpan(global->var_class,global->data_addr,
+        global->size,i*global->var_class->size,0,start,end)) return TRUE;
+  return FALSE;
+}
+Bool I386FrontendGlobalDataOwned(CI386Frontend *frontend,CHashGlblVar *global)
+{//A referenced literal begins inside a retained expression's code allocation.
+  CI386FrontendCode *code;
+  for(code=frontend->codes;code;code=code->next)
+    if(code->data_start<code->bytes &&
+        global->data_addr==code->code+code->data_start &&
+        global->size==code->bytes-code->data_start)
+      return I386ParserSize(frontend->heap,frontend->cc,code->code)>=code->bytes;
+  return I386HeapSize(frontend->heap,global->data_addr)>=global->size;
 }
 I64 I386FrontendPointerTarget(I64 value,CHashGlblVar **globals,I64 count,
   I64 function_payload)
@@ -236,21 +282,25 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
     if(!global || !global->str || !(global->type&HTT_GLBL_VAR) ||
         global->flags&(GVF_ALIAS|GVF_EXTERN|GVF_IMPORT) ||
         !global->data_addr || global->size<1 ||
-        I386HeapSize(frontend->heap,global->data_addr)<global->size ||
+        !I386FrontendGlobalDataOwned(frontend,global) ||
         !I386FrontendModuleType(global->var_class,0) ||
         global->dim.total_cnt<1 ||
         global->var_class->size>0xFFFFFFF0/global->dim.total_cnt ||
         global->size!=global->var_class->size*global->dim.total_cnt) return 0;
     length=StrLen(global->str);
-    if(length<1 || length>255 || string_bytes>0xFFFFFFFF-length-1) return 0;
+    if(length<1 || length>255 ||
+        !(global->flags&I386_GVF_MODULE_PRIVATE) &&
+        string_bytes>0xFFFFFFFF-length-1) return 0;
     for(j=0;j<count;j++) if(!StrCmp(global->str,functions[j]->str)) return 0;
     for(j=0;j<i;j++) if(!StrCmp(global->str,globals[j]->str)) return 0;
     payload=(payload+7)&~7;
-    if(global->size>0xFFFFFFF0-payload || record_count>0x0FFFFFFF-2) return 0;
+    m=2; if(global->flags&I386_GVF_MODULE_PRIVATE) m=1;
+    if(global->size>0xFFFFFFF0-payload || record_count>0x0FFFFFFF-m) return 0;
     pointers=I386FrontendGlobalPointers(global,globals,global_count,
       function_payload,payload,0,frontend,&string_bytes,0);
-    if(pointers<0 || record_count>0x0FFFFFFF-pointers-2) return 0;
-    payload+=global->size; record_count+=pointers+2; string_bytes+=length+1;
+    if(pointers<0 || record_count>0x0FFFFFFF-pointers-m) return 0;
+    payload+=global->size; record_count+=pointers+m;
+    if(m==2) string_bytes+=length+1;
   }
   payload=(payload+7)&~7;
   if(record_count>(0xFFFFFFFF-32-payload)/16) return 0;
@@ -295,11 +345,13 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
     for(k=0;k<global->size;k++) body[base+k]=global->data_addr[k];
     record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
     record->offset=base; record->name_offset=global->size; record->name_length=0;
-    record=records+index++; record->kind=I386_MODULE_DATA_EXPORT;
-    record->offset=base; record->name_offset=string_bytes;
-    length=StrLen(global->str); record->name_length=length;
-    for(k=0;k<=length;k++) strings[string_bytes+k]=global->str[k];
-    string_bytes+=length+1;
+    if(!(global->flags&I386_GVF_MODULE_PRIVATE)) {
+      record=records+index++; record->kind=I386_MODULE_DATA_EXPORT;
+      record->offset=base; record->name_offset=string_bytes;
+      length=StrLen(global->str); record->name_length=length;
+      for(k=0;k<=length;k++) strings[string_bytes+k]=global->str[k];
+      string_bytes+=length+1;
+    }
     pointers=I386FrontendGlobalPointers(global,globals,global_count,
       function_payload,base,records+index,frontend,&string_bytes,strings);
     if(pointers<0) return 0;
@@ -314,15 +366,25 @@ I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
 {
   return I386FrontendModulePackData(symbols,functions,count,0,0,output,capacity);
 }
+extern class CI386FrontendLiteral;
+class CI386FrontendLiteral {
+  CI386FrontendLiteral *next;
+  CHashGlblVar symbol;
+  U8 name[16];
+};
 I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capacity)
 {//Package every owned function/global definition in this private source unit.
   CI386Frontend *frontend;
   CHashTable *table;
   CHash *entry;
+  CI386FrontendCode *code;
   CI386FrontendStatic *static_ref;
+  CI386FrontendLiteral *literal=0,*literals=0,*next_literal;
   CHashFun **functions=0,*fun,*swap_fun;
   CHashGlblVar **globals=0,*global,*swap_global;
-  I64 i,j,functions_count=0,globals_count=0,fi=0,gi=0,result=0;
+  U8 *hex="0123456789ABCDEF",*prefix="@literal/";
+  I64 i,j,k,functions_count=0,globals_count=0,literal_slots=0;
+  I64 fi=0,gi=0,original_globals,ordinal=0,bytes,start,result=0;
   if(!symbols || !(frontend=symbols->context) ||
       symbols!=&frontend->symbols || !(table=frontend->table) || capacity<0) return 0;
   for(i=0;i<=table->mask;i++)
@@ -338,10 +400,14 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
     }
   for(static_ref=frontend->saved_vars;static_ref;static_ref=static_ref->next)
     globals_count++;
-  if(functions_count<1 || functions_count>8192 || globals_count>8192) return 0;
+  for(code=frontend->codes;code;code=code->next)
+    if(code->data_start<code->bytes) literal_slots++;
+  if(functions_count<1 || functions_count>8192 || globals_count>8192 ||
+      literal_slots>8192-globals_count) return 0;
   functions=I386HeapAlloc(frontend->heap,functions_count*sizeof(CHashFun *));
-  if(globals_count) globals=I386HeapAlloc(frontend->heap,globals_count*sizeof(CHashGlblVar *));
-  if(!functions || globals_count && !globals) goto done;
+  if(globals_count+literal_slots)
+    globals=I386HeapAlloc(frontend->heap,(globals_count+literal_slots)*sizeof(CHashGlblVar *));
+  if(!functions || globals_count+literal_slots && !globals) goto done;
   for(i=0;i<=table->mask;i++)
     for(entry=table->body[i];entry;entry=entry->next) {
       if(entry->type&HTT_FUN) {
@@ -356,6 +422,33 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
   for(static_ref=frontend->saved_vars;static_ref;static_ref=static_ref->next)
     globals[gi++]=&static_ref->symbol;
   if(fi!=functions_count || gi!=globals_count) goto done;
+  original_globals=gi;
+  for(code=frontend->codes;code;code=code->next)
+    if(code->data_start<code->bytes) {
+      bytes=code->bytes-code->data_start;
+      start=(code->code+code->data_start+0)(U64);
+      for(j=0;j<original_globals;j++)
+        if(I386FrontendGlobalUsesSpan(globals[j],start,start+bytes)) break;
+      if(j<original_globals) {
+        if(ordinal>8191) goto done;
+        literal=I386HeapAlloc(frontend->heap,sizeof(CI386FrontendLiteral),TRUE);
+        if(!literal) goto done;
+        literal->next=literals; literals=literal;
+        for(k=0;k<9;k++) literal->name[k]=prefix[k];
+        for(k=0;k<4;k++) literal->name[9+k]=hex[(ordinal>>(12-4*k))&15];
+        literal->name[13]=0; ordinal++;
+        literal->symbol.type=HTT_GLBL_VAR;
+        literal->symbol.flags=I386_GVF_MODULE_PRIVATE;
+        literal->symbol.str=literal->name;
+        literal->symbol.size=bytes;
+        literal->symbol.var_class=frontend->expression.types[RT_U8];
+        literal->symbol.dim.cnt=bytes;
+        literal->symbol.dim.total_cnt=bytes;
+        literal->symbol.data_addr=code->code+code->data_start;
+        globals[gi++]=&literal->symbol;
+      }
+    }
+  globals_count=gi;
   for(i=1;i<functions_count;i++) {
     swap_fun=functions[i]; j=i;
     while(j && StrCmp(functions[j-1]->str,swap_fun->str)>0) {
@@ -375,6 +468,10 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
 done:
   if(globals && !I386HeapFree(frontend->heap,globals)) return 0;
   if(functions && !I386HeapFree(frontend->heap,functions)) return 0;
+  for(literal=literals;literal;literal=next_literal) {
+    next_literal=literal->next;
+    if(!I386HeapFree(frontend->heap,literal)) return 0;
+  }
   return result;
 }
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)

@@ -2207,9 +2207,13 @@ The standalone-development goal above is the entry gate. M7 then requires:
    guest-built unit with three functions, one global and scalar function-local
    static storage survives two writable boots. Local static code references
    now relocate to owned data in the module; packing the function without its
-   static data is rejected. Pointer-bearing statics with separately allocated
-   literal targets still need ownership or relocation. Next package the
-   delivered system source units and define a stable system binding table.
+   static data is rejected. The source-unit packer now retains separately
+   allocated literal pools referenced by initialized global or static pointers
+   as private data ranges, with local pointer relocation. A guest-built unit
+   exercises mutation through such a pointer across writable boots. Next
+   package the delivered system source units and define a stable system binding
+   table; broader pointer-target identity and full source-tree coverage remain
+   open.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
