@@ -1885,6 +1885,124 @@ U0 ProbeProgramNativeCreate(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   KernelLog("NATIVE CREATE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramNativeFormatRun(CI386CompilerProbe *probe,CI386Heap *heap,
+  U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record;
+  CI386ModuleBinding imports[2];
+  CHashExport *resident;
+  CHashTable *table;
+  CI386Ata target;
+  U8 *image,sector[512];
+  I64 image_bytes,i,offset=-1,used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  Bool blank;
+  Bool (*guest_format)(CI386Ata *disk,I64 start,I64 sectors);
+  Bool (*identify)(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll);
+  Bool (*transfer)(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool write,CI386AtaPoll *poll);
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  imports[0].name="I386AtaTransfer";
+  imports[1].name="I386AtaFlushPolled";
+  for(i=0;i<2;i++) {
+    resident=0;
+    for(table=I386TaskSelf->hash_table;table && !resident;table=table->next)
+      resident=ProbeSymbolFind(0,imports[i].name,table,HTT_EXPORT_SYS_SYM);
+    if(!resident) KernelStop;
+    imports[i].kind=I386_MODULE_EXPORT; imports[i].address=resident->val;
+  }
+  resident=0;
+  for(table=I386TaskSelf->hash_table;table && !resident;table=table->next)
+    resident=ProbeSymbolFind(0,"I386AtaIdentifyPolled",table,HTT_EXPORT_SYS_SYM);
+  if(!resident) KernelStop;
+  identify=resident->val;
+  transfer=imports[0].address;
+  record=module+header->records_offset;
+  for(i=0;i<header->record_count;i++,record++)
+    if(record->kind==I386_MODULE_EXPORT &&
+        !StrCmp(module+record->name_offset,"I386RedSeaFormat")) offset=record->offset;
+  if(offset<0 || I386LoadBoundInto(&module,&module_bytes,1,0,0,
+      "I386RedSeaFormat",imports,1)) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
+    "I386RedSeaFormat",imports,2);
+  image=I386HeapAlloc(heap,image_bytes);
+  if(image_bytes<1 || !image || I386LoadBoundInto(&module,&module_bytes,1,
+      image,image_bytes,"I386RedSeaFormat",imports,2)!=image_bytes) KernelStop;
+  guest_format=image+8+offset;
+  if((*guest_format)(0,2048,30720) ||
+      (*guest_format)(probe->volume->disk,0,30720)) KernelStop;
+  if(probe->format_target) {
+    irq=I386IrqSave;
+    if(!(*identify)(&target,1,0,100000,0) || target.sectors!=32768 ||
+        !(*transfer)(&target,2048,sector,100000,FALSE,0)) KernelStop;
+    blank=TRUE;
+    for(i=0;i<512;i++) if(sector[i]) blank=FALSE;
+    if(blank) {
+      if(!(*guest_format)(&target,2048,target.sectors-2048)) KernelStop;
+      KernelLog("NATIVE FORMAT FRESH\n");
+    } else {
+      if((*guest_format)(&target,2048,target.sectors-2048)) KernelStop;
+      KernelLog("NATIVE FORMAT EXISTING\n");
+    }
+    if(!(*transfer)(&target,2048,sector,100000,FALSE,0) ||
+        sector[3]!=0x88 || sector[510]!=0x55 || sector[511]!=0xAA) KernelStop;
+    I386IrqRestore(irq);
+  }
+  if(!I386HeapFree(heap,image) || heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramNativeFormat(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/RedSeaFormat.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeFormat.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramNativeFormatRun(probe,heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/NativeFormat.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramNativeFormatRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE FORMAT MODULE EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/NativeFormat.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/NativeFormat.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramNativeFormatRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE FORMAT MODULE DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE FORMAT "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -2086,4 +2204,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramNativeAlloc(probe,heap,outer);
   ProbeProgramNativeFile(probe,heap,outer);
   ProbeProgramNativeCreate(probe,heap,outer);
+  ProbeProgramNativeFormat(probe,heap,outer);
 }

@@ -1446,6 +1446,96 @@ def verify_native_create_module(disk):
             'resident_imports':sorted(name.decode() for name in imports)}
 
 
+def verify_native_format_module(disk):
+    """Audit the guest-built RedSea formatter and its ATA-only imports."""
+    module=mutated_file_contents(disk,{'/Probe/NativeFormat.t32m'}).get('/Probe/NativeFormat.t32m')
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built RedSea formatter')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=17 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid guest-built RedSea formatter layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+    if exported!=[b'I386RedSeaFormat',b'I386RedSeaFormatWord'] or len(calls)!=15 or \
+            sorted(name for name in calls if name not in exported)!= \
+            sorted(5*[b'I386AtaTransfer']+2*[b'I386AtaFlushPolled']) or \
+            any(kind not in (1,2) or offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Guest-built RedSea formatter records differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/RedSeaFormat.HC').read_bytes()).hexdigest(),
+            'functions':[name.decode() for name in exported],
+            'resident_imports':['I386AtaFlushPolled','I386AtaTransfer']}
+
+
+def verify_formatted_target(disk):
+    """Independently audit an empty 16 MiB RedSea target and untouched boot area."""
+    image=disk.read_bytes()
+    start,sectors=2048,32768-2048
+    bitmap=(sectors+4095)//4096
+    root=start+bitmap+1
+    if len(image)!=16*1024*1024 or any(image[:start*512]) or \
+            any(image[(root+1)*512:]):
+        raise ValueError('Formatter touched the boot reservation or unused target sectors')
+    header=image[start*512:(start+1)*512]
+    if any(header[:3]) or any(header[4:8]) or any(header[48:510]) or \
+            header[3]!=0x88 or header[510:]!=b'\x55\xaa':
+        raise ValueError('Invalid formatted target header bytes')
+    volume={'start':start,'sectors':sectors,'root':root,
+            'bitmap_sectors':bitmap,'files':{}}
+    if verify_volume(disk,volume)!=0:
+        raise ValueError('Formatted target is not an empty RedSea volume')
+    return {'sha256':hashlib.sha256(image).hexdigest(),
+            'start':start,'sectors':sectors,'root':root,
+            'bitmap_sectors':bitmap,'files':0,'result':'pass'}
+
+
+def verify_native_target_format(disk, exports, out):
+    """Format a separate blank QEMU IDE disk from guest-built HolyC, then reboot."""
+    offsets=[kernel_flag_disk_offset(exports,name) for name in
+             ('kernel_diagnostics','kernel_file_mutation_probe','kernel_target_format_probe')]
+    source=disk.read_bytes()
+    changed=bytearray(source)
+    if len(set(offsets))!=3 or any(struct.unpack_from('<I',changed,offset)[0] for offset in offsets):
+        raise ValueError('Invalid target formatter boot flags')
+    for offset in offsets: struct.pack_into('<I',changed,offset,1)
+    boot=out/'kernel-target-format.img'; boot.write_bytes(changed)
+    target=out/'native-format-target.img'; target.write_bytes(bytes(16*1024*1024))
+    original_hash=hashlib.sha256(source).hexdigest()
+    target_audit=None
+    for name in ('fresh','reboot'):
+        work=out/f'target-format-{name}'
+        work.mkdir(parents=True,exist_ok=True)
+        with (work/'runner.log').open('w') as log:
+            subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(boot),
+                '--i386-disk','--target-disk',str(target),'--out',str(work),
+                '--timeout','1200'],cwd=ROOT,stdout=log,stderr=log,check=True)
+        text=(work/'debug.log').read_text()
+        phases=[int(line.split()[2],16) for line in text.splitlines()
+                if re.match(r'^NATIVE FORMAT [0-9A-F]{16} ',line)]
+        fresh=text.count('NATIVE FORMAT FRESH\n')
+        existing=text.count('NATIVE FORMAT EXISTING\n')
+        previous=text.count('NATIVE FORMAT MODULE EXISTING\n')
+        if phases!=[0,1] or fresh!=(name=='fresh') or \
+                existing!=(1 if name=='fresh' else 3) or \
+                previous!=(name=='reboot') or \
+                text.count('NATIVE FORMAT MODULE DISK\n')!=1 or \
+                text.count('DONE native kernel startup\n')!=1:
+            raise ValueError(f'Guest-built target formatter did not pass {name} boot')
+        audit=verify_formatted_target(target)
+        if target_audit and audit!=target_audit:
+            raise ValueError('Existing target changed during formatter reboot')
+        target_audit=audit
+    if hashlib.sha256(disk.read_bytes()).hexdigest()!=original_hash:
+        raise ValueError('Target format probe changed the normal boot disk')
+    return {'boots':['fresh','reboot'],'module':verify_native_format_module(boot),
+            'target':target_audit,'boot_volume':verify_mutated_volume(boot),
+            'result':'pass'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -2100,6 +2190,17 @@ def main():
                                  'module_bytes':native_create[0][1],
                                  'loaded_bytes':native_create[0][2],
                                  'source':'/Kernel/I386/RedSeaCreate.HC'}
+        native_format = [tuple(int(value,16) for value in line.split()[2:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE FORMAT [0-9A-F]{16} ',line)]
+        if len(native_format)!=2 or [entry[0] for entry in native_format]!=[0,1] or \
+                native_format[0][1:]!=native_format[1][1:] or \
+                native_format[0][1]<256 or native_format[0][2]<128:
+            raise ValueError('Guest-built RedSea formatter did not execute')
+        result['native_format']={'phases':[0,1],
+                                 'module_bytes':native_format[0][1],
+                                 'loaded_bytes':native_format[0][2],
+                                 'source':'/Kernel/I386/RedSeaFormat.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2523,6 +2624,9 @@ def main():
                                       'second_boot':'reload, create, read, delete, replace',
                                       'module':verify_native_create_module(mutation_disk),
                                       'result':'pass'}
+        result['native_format_disk']={'path':'C:/Probe/NativeFormat.t32m',
+                                      'module':verify_native_format_module(mutation_disk),
+                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)
@@ -2541,6 +2645,7 @@ def main():
             'filesystem_integrity':mutation_audit,'result':'pass'}
         result['file_io_failure_matrix']=verify_file_io_failure_matrix(normal_disk,exports,out)
         result['file_replace_failure_matrix']=verify_file_replace_failure_matrix(normal_disk,exports,out)
+        result['native_target_format']=verify_native_target_format(normal_disk,exports,out)
         run(sys.executable,'tools/test-i386-doc-compat.py')
         result['document_cross_compatibility']=json.loads(
             (ROOT/'build/i386-doc-compat/result.json').read_text())

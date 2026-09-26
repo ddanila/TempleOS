@@ -14,7 +14,10 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--timeout', type=float, default=180)
     parser.add_argument('--i386-disk', action='store_true', help='Run a protected-mode test disk with VGA and 8 MiB RAM')
+    parser.add_argument('--target-disk', type=Path, help='Attach a separate secondary IDE target to an i386 disk run')
     args = parser.parse_args()
+    if args.target_disk and (not args.i386_disk or args.target_disk.resolve()==args.iso.resolve()):
+        parser.error('--target-disk requires --i386-disk and a distinct disk image')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     log = out / 'debug.log'
@@ -33,6 +36,8 @@ def main():
                '-drive', f'file={args.iso.resolve()},format=raw,if=ide',
                '-display', 'none', '-no-reboot', '-debugcon', f'file:{log}',
                '-qmp', f'unix:{qmp_path},server=on,wait=off']
+        if args.target_disk:
+            cmd += ['-drive',f'file={args.target_disk.resolve()},format=raw,if=ide,index=2']
     (out / 'command.json').write_text(json.dumps(cmd, indent=2)+'\n')
     sock = socket.socket(socket.AF_UNIX)
     with (out / 'qemu.log').open('w') as stderr:

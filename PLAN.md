@@ -2270,15 +2270,21 @@ The standalone-development goal above is the entry gate. M7 then requires:
    through ten validated resident disk services. Its saved module creates,
    rereads, and deletes a file on a writable QEMU disk across two boots;
    the duplicate-name and invalid-name paths are checked. Next build the
-   native installation path from this creation primitive: format or prepare a
-   fresh target, publish boot artifacts failure-atomically, and boot it. The
-   remaining compiler/kernel dependency graph still needs validated resident
+   native installation path from this creation primitive. A guest-built
+   `/Kernel/I386/RedSeaFormat.HC` now initializes a separate blank 16 MiB
+   secondary IDE target under QEMU. The host audits its empty RedSea root,
+   bitmap and reserved boot area; a second boot reloads the saved formatter
+   and verifies that the existing volume is not changed. Next mount that
+   target in the guest, publish boot artifacts failure-atomically, and boot it.
+   The remaining compiler/kernel dependency graph still needs validated resident
    exports, the full kernel prelude, and complete in-guest compilation.
    Broader pointer-target identity and full source-tree coverage remain open.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
-   either the prior bootable system or a recoverable target.
+   either the prior bootable system or a recoverable target. The blank-target
+   RedSea formatter passes a two-boot QEMU test; boot-sector/kernel publication,
+   source/module copy, and independent target boot remain open.
 3. **Two-generation self-hosting.** A host-built Generation 0 produces native
    Generation 1; Generation 1 boots and produces Generation 2. Generation 2
    has equivalent public behavior and persistent formats, and can rebuild the

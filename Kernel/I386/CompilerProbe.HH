@@ -25,5 +25,7 @@ class CI386CompilerProbe {
   Bool (*cancel_wait)(CI386Task *task);
   //Writable diagnostic image only; ordinary diagnostic boots leave their disk untouched.
   Bool persist_modules;
+  //Disposable QEMU secondary IDE master, never the running C: volume.
+  Bool format_target;
 };
 #endif

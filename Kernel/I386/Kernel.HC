@@ -51,6 +51,8 @@ U8 *kernel_console_image;
 U32 kernel_diagnostics=0;
 //Build tooling enables this only on a disposable writable probe image.
 U32 kernel_file_mutation_probe=0;
+//Build tooling enables this only with a separate blank QEMU target disk.
+U32 kernel_target_format_probe=0;
 //High byte selects RedSea task operation; low byte selects its failing call.
 U32 kernel_file_io_probe=0;
 Bool kernel_display_ready,kernel_probe_ready;
@@ -511,6 +513,7 @@ U0 KernelCompilerProbe(I64 phase)
   probe.source_pop=&I386LexFilePop; probe.cancel_input=kernel_console.cancel_read;
   probe.cancel_wait=kernel_console.cancel_wait;
   probe.persist_modules=phase && kernel_file_mutation_probe;
+  probe.format_target=phase && kernel_target_format_probe;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     KernelModuleRelease(&kernel_probe_image,used-kernel_probe_span,allocations-1);

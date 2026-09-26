@@ -9204,3 +9204,30 @@ two-generation rebuild, i386 cross-build, and 386 boot instruction audit
 pass. The full `--test` promotion has not been rerun for this new revision.
 A fresh-target formatter, boot-artifact publisher, complete native source
 build, and two-generation self-hosting remain open.
+
+## Guest-built empty RedSea target (2026-09-26)
+
+`/Kernel/I386/RedSeaFormat.HC` now supplies a native HolyC formatter for a
+separate ATA target. It requires a flush-capable drive, a 2,048-sector boot
+reservation, supported volume geometry, and blank boot/volume-header sectors.
+It writes the allocation bitmap and empty root first, flushes them, then
+publishes and flushes the RedSea volume header. It leaves the reserved boot
+area untouched. The guest packages this source into a 9,708-byte T32M with
+two owned functions and only `I386AtaTransfer` and `I386AtaFlushPolled` as
+resident imports. Its SHA-256 is
+`fd91a201b816a8b3a194a8b3a692133f31d8324dbd2ff214b1ae066b47f9c7a5`.
+
+A target-only diagnostic flag and `tools/guest-run.py --target-disk` attach a
+blank 16 MiB secondary IDE disk under QEMU. The first boot formats it; an
+independent host audit validates the exact empty root and bitmap, checks the
+reserved boot area and unused sectors, and accepts the volume through the
+RedSea directory/extent verifier. The second boot loads the saved formatter,
+rejects formatting the existing target three times, and leaves its SHA-256
+unchanged at
+`ef85760d2f558b5a9067508711d57e2ec8bd87baa1810215e7da0e80ecc014f7`.
+Both boots complete normal startup. The two-disk promotion helper was run
+independently and passed; the x86-64 two-generation rebuild, i386 cross-build,
+and 386 boot instruction audit also pass. The full `--test` suite has not been
+rerun for this revision. Guest mounting of the target, boot-sector and kernel
+publication, source/module copy, independent target boot, and self-hosting
+remain open.
