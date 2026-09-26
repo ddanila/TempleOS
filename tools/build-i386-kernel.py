@@ -308,12 +308,12 @@ def file_runtime_layout(module):
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 34:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 35:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -1684,6 +1684,44 @@ def verify_native_tree_copy(disk, exports, out, console, volume):
         target.read_bytes()).hexdigest(),'filesystem_integrity':integrity,'result':'pass'}
 
 
+def verify_native_boot_area(disk, exports, out, console):
+    """Publish only boot sectors onto a file-installed target and boot it alone."""
+    offset=kernel_flag_disk_offset(exports,'kernel_install_boot_probe')
+    source=bytearray(disk.read_bytes())
+    if struct.unpack_from('<I',source,offset)[0]:
+        raise ValueError('Boot-area source already requests publication')
+    struct.pack_into('<I',source,offset,1)
+    work=out/'target-tree-boot'; work.mkdir(parents=True,exist_ok=True)
+    candidate=work/'source.img'; candidate.write_bytes(source)
+    target=work/'target.img'
+    initial=(out/'target-tree-copy/target.img').read_bytes()
+    if any(initial[:2048*512]):
+        raise ValueError('File-installed target boot area is not blank')
+    target.write_bytes(initial)
+    install=work/'publication'; install.mkdir(exist_ok=True)
+    with (install/'runner.log').open('w') as log:
+        subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(candidate),
+            '--i386-disk','--target-disk',str(target),'--out',str(install),
+            '--timeout','1200'],cwd=ROOT,stdout=log,stderr=log,check=True)
+    evidence=(install/'debug.log').read_text()
+    if evidence.count('INSTALL BOOT READY\n')!=1 or candidate.read_bytes()!=source:
+        raise ValueError('Guest did not publish boot area or changed source')
+    installed=target.read_bytes()
+    if installed[:2048*512]!=source[:2048*512] or installed[2048*512:]!=initial[2048*512:]:
+        raise ValueError('Boot publication changed source or filesystem sectors')
+    integrity=verify_mutated_volume(target)
+    boot=work/'independent'
+    report=console['run_input'](target,boot,snapshot=False,startup_check={
+        'status':'ok','answers':[],'commands':[
+            ('DocRead("C:/Kernel/I386/InstallTree.HC")!=0;',['1'])]})
+    if (boot/'debug.log').read_text().count('INSTALL BOOT NO TARGET\n')!=1 or \
+            target.read_bytes()!=installed:
+        raise ValueError('File-installed target did not boot independently')
+    return {'publication':'pass','independent_boot':report,
+            'target_sha256':hashlib.sha256(installed).hexdigest(),
+            'filesystem_integrity':integrity,'result':'pass'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1977,7 +2015,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=34, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=35, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             move_failure_stages=4,
             task_volume_bound=True, task_context_inherited=True,
@@ -2796,6 +2834,7 @@ def main():
         result['native_target_format']=verify_native_target_format(normal_disk,exports,out)
         result['native_target_mount']=verify_native_target_mount(normal_disk,exports,out,console)
         result['native_tree_copy']=verify_native_tree_copy(normal_disk,exports,out,console,volume)
+        result['native_boot_area']=verify_native_boot_area(normal_disk,exports,out,console)
         run(sys.executable,'tools/test-i386-install-copy.py')
         result['native_install_copy']=json.loads(
             (out/'install-copy/result.json').read_text())

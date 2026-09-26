@@ -2289,7 +2289,7 @@ The standalone-development goal above is the entry gate. M7 then requires:
    the saved bytes and bitmap. This gives the future installer a standard
    guest file-service path to both volumes.
    The BIOS load reservation is now 896 sectors, ending at `0x80000`, with
-   32 KiB before the task-stack reservation; the current image has 1,880
+   32 KiB before the task-stack reservation; the current image has 1,016
    bytes of load-area headroom. More native code belongs in retained modules
    or must be paired with a revised boot/memory layout.
    A normal guest boot can now copy its complete host-built Generation 0 disk
@@ -2311,13 +2311,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    RedSea formatter, guest target mount and source-built seed-file creation pass
    a two-boot QEMU test. A separate exact-image-copy test boots the copied
    host-built Generation 0 disk alone. Publishing rebuilt kernel/compiler
-   artifacts remain open. A normal guest boot now copies all 826 packaged
+   artifacts remain open. A normal guest boot now copies all 827 packaged
    source/module files to their real paths through the mounted task file API;
    independent host checks verify every file hash and the target bitmap after
    both an initial copy and an existing-tree retry. A bounded 200-file pass
    also leaves a valid partial RedSea tree that a second boot completes and
-   independently audits. The
-   clone transport has two injected interruption/retry cases;
+   independently audits. A separate boot-area-only publication leaves RedSea
+   sectors unchanged and boots the file-installed disk independently in QEMU.
+   This still publishes host-built Generation 0 boot bytes. The clone transport
+   has two injected interruption/retry cases;
    actual power-loss and rebuilt-artifact recovery remain open.
 3. **Two-generation self-hosting.** A host-built Generation 0 produces native
    Generation 1; Generation 1 boots and produces Generation 2. Generation 2

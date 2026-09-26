@@ -9409,3 +9409,27 @@ The public-header help view passed after splitting the longer declaration over
 two source lines. The complete `--test` promotion was not rerun. This is an
 orderly bounded pass, not a simulated power cut during metadata publication;
 crash recovery remains open.
+
+## Boot publication onto the file-installed target (2026-09-27)
+
+The retained file module now has a boot-area publisher for an already populated
+RedSea target. It copies only sectors 1–2047 from the source, flushes them,
+publishes LBA 0 last and flushes again. The kernel's opt-in probe invokes it
+after mounting the target, keeping the sector-copy code out of the nearly full
+BIOS-loaded kernel.
+
+The focused QEMU sequence first copied and audited all 827 packaged files into
+the target RedSea tree, including a bounded 200-file pass and resume. A later
+guest boot published the boot area. The host compared the resulting disk byte
+for byte: sectors 0–2047 match the source, and every RedSea sector remains as
+it was after file installation. The target then booted alone at 8 MiB and read
+`C:/Kernel/I386/InstallTree.HC` through the normal file service. Its filesystem
+audit found 828 files in 16 directories, 15,857 owned sectors and a matching
+bitmap. The installed disk SHA-256 was
+`77868c6dc7963c62192fcecefa43e9d62ca018c1a9e7f0ca69bc3f0d6267a3c2`.
+
+The x86-64 rebuild, i386 cross-build and 386 instruction audit passed; the
+flat kernel is 453,640 bytes with 1,016 bytes of load-area headroom. The full
+`--test` promotion was not rerun. This boot image still contains host-built
+Generation 0 kernel bytes. Native production of boot artifacts and recovery
+from a failed boot-area publication remain open.
