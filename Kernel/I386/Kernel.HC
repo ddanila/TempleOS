@@ -96,6 +96,8 @@ extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
 extern U0 KernelCompilerLoad();
+extern I64 KernelResidentPublish(U8 *image,I64 size,
+  Bool (*export_at)(I64 index,CI386ModuleBinding *binding));
 extern U0 KernelFileLoad();
 extern U0 KernelMemoryLoad();
 extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64 count,
@@ -457,6 +459,7 @@ U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacit
 U0 KernelCompilerLoad()
 {//Boot owns ATA/heap with IF clear. Publish only a validated, retained interface.
   CI386ModuleBinding bindings[sizeof(kernel_compiler_bindings)];
+  CI386KernelSymbol *packer;
   I64 used=kernel_heap.used;
   if(kernel_compiler_image || kernel_compiler.version) KernelStop;
   KernelBindings(bindings,kernel_compiler_bindings,sizeof(kernel_compiler_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
@@ -465,6 +468,9 @@ U0 KernelCompilerLoad()
   kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
   kernel_compiler_span=kernel_heap.used-used;
   if(!kernel_compiler.symbols_init(&kernel_root,&kernel_heap,kernel_symbols,1024)) KernelStop;
+  if(KernelResidentPublish(kernel_compiler_image,kernel_compiler_size,kernel_compiler.export_at)!=1) KernelStop;
+  packer=HashFind("I386ModulePackRaw",kernel_symbols,HTT_EXPORT_SYS_SYM);
+  if(!packer || HashVal(packer)!=(kernel_compiler.module_pack+0)(U64)) KernelStop;
   if(!kernel_compiler.math_bind(kernel_symbols)) KernelStop;
   KernelLog("PUBLIC MATH BOUND\n");
   if(kernel_diagnostics) {

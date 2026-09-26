@@ -1108,16 +1108,26 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CI386ModuleHeader *header=module;
   CI386ModuleRecord *record;
   CI386ModuleBinding binding;
-  CHashExport *resident;
+  CI386ModuleBinding compiler_binding;
+  CHashExport *resident,*compiler_resident;
   CHashTable *table;
   CArcCtrl *control;
   U8 *image,*stack,*source,*destination;
   I64 image_bytes,i,offset=-1;
   Bool (*expand)(CArcCtrl *control);
   resident=0;
+  compiler_resident=0;
   for(table=I386TaskSelf->hash_table;table && !resident;table=table->next)
     resident=ProbeSymbolFind(0,"I386ArcEntryGet",table,HTT_EXPORT_SYS_SYM);
-  if(!I386ModuleValid(module,module_bytes) || !resident ||
+  for(table=I386TaskSelf->hash_table;table && !compiler_resident;table=table->next)
+    compiler_resident=ProbeSymbolFind(0,"I386ModulePackRaw",table,HTT_EXPORT_SYS_SYM);
+  if(!compiler_resident || !probe->compiler->export_at(0,&compiler_binding) ||
+      compiler_binding.kind!=I386_MODULE_EXPORT ||
+      StrCmp(compiler_binding.name,"I386ModulePackRaw") ||
+      compiler_binding.address!=compiler_resident->val ||
+      compiler_binding.address!=(probe->compiler->module_pack+0)(U64) ||
+      probe->compiler->export_at(1,&compiler_binding) ||
+      !I386ModuleValid(module,module_bytes) || !resident ||
       !probe->files->export_at(0,&binding) ||
       binding.kind!=I386_MODULE_EXPORT || StrCmp(binding.name,"I386ArcEntryGet") ||
       binding.address!=resident->val) KernelStop;

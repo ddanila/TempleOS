@@ -2229,9 +2229,13 @@ The standalone-development goal above is the entry gate. M7 then requires:
    symbols; the guest compiles `/Kernel/I386/ArcExpand.HC` against its retained
    `I386ArcEntryGet` dependency, packages only functions generated in that
    source unit, and binds the import when loading the module. This establishes
-   one real cross-module source-build path. Next generalize the export registry
-   across retained modules, provide the full kernel prelude, and compile the
-   compiler/kernel dependency graph. Broader pointer-target identity and
+   one real cross-module source-build path. The same resident-export contract
+   now covers `CompilerRuntime`: the kernel publishes its `I386ModulePackRaw`
+   entry, and the two-phase guest probe verifies that the root symbol and
+   compiler service point to the same retained code. Next expose the actual
+   compiler/kernel dependency graph through validated resident exports,
+   provide the full kernel prelude, and compile that graph. Broader
+   pointer-target identity and
    full source-tree coverage remain open.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and

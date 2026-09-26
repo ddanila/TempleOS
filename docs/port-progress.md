@@ -9010,3 +9010,17 @@ replaced it and completed normal startup. The full `--test` promotion has not
 been rerun for this revision; the focused diagnostic and two writable boots
 cover the changed binding path. Export coverage across other retained modules,
 the full kernel prelude and native compiler/kernel rebuild remain open.
+
+## Compiler runtime participates in resident source linking (2026-09-26)
+
+The retained compiler service now uses version 57 and enumerates
+`I386ModulePackRaw` as a named code export. Boot validates and publishes that
+export through the same bounded resident registry used by the file runtime.
+The two-phase guest diagnostic confirms that the root symbol, enumeration and
+service callback all address the same retained function, and that enumeration
+ends after the single advertised export. The host audit checks the exported
+function's position inside the compiler module and the callback's position in
+the service table. The x86-64 two-generation rebuild and i386 cross-build with
+the 386 QEMU boot audit pass. This extends the linking mechanism to a second
+retained module; guest compilation of the compiler/kernel source graph and a
+native rebuild remain open.

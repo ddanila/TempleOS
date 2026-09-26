@@ -44,7 +44,15 @@ extern I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
-#assert sizeof(CI386CompilerServices)==220
+Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
+{
+  if(index || !binding) return FALSE;
+  binding->name="I386ModulePackRaw";
+  binding->kind=I386_MODULE_EXPORT;
+  binding->address=(&I386ModulePackRaw+0)(U64);
+  return TRUE;
+}
+#assert sizeof(CI386CompilerServices)==224
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -93,6 +101,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->program_pack_data=&I386FrontendModulePackData;
   services->program_pack_unit=&I386FrontendModulePackUnit;
   services->frontend_private_defines=&I386FrontendPrivateDefines;
+  services->export_at=&I386CompilerRuntimeExportAt;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
