@@ -1709,6 +1709,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                              'public _extern _I386_INSTALL_TREE I64 I386InstallTree(',
                              '  U8 *source,U8 *target,I64 limit=0);',
                              'public _extern _I386_INSTALL_BOOT Bool I386InstallBoot(U8 *source,U8 *target);',
+                             'public _extern _I386_BUILD_MODULE I64 I386BuildModule(U8 *source,U8 *target);',
                              '#endif','']
             submit('CHashSrcSym *help_mn_symbol=HashFind("Dir",Fs->hash_table,HTG_SRC_SYM);', [], 'help-man-page-symbol')
             submit('help_mn_symbol!=0;', ['1'], 'help-man-page-symbol-present')

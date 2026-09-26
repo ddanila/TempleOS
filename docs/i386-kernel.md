@@ -33,10 +33,13 @@ it as `D:`. From the HolyC prompt, the current file-level installation path is:
 
 ```c
 I386InstallTree("C:/","D:/");
+I386BuildModule("D:/Kernel/I386/RedSeaCreate.HC",
+  "D:/Modules/I386/GuestCreate.t32m");
 I386InstallBoot("C:/","D:/");
 ```
 
-The first call copies the packaged source and modules; the second publishes
+The first call copies the packaged source and modules. The optional middle
+call builds one native module from the installed source; the last publishes
 the reserved boot area after the tree is complete. Both drives must be
 mounted, and the target's boot sector must be blank. The installed target
 can then boot as the only disk. This currently transfers host-built boot

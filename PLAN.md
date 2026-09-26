@@ -2281,8 +2281,14 @@ The standalone-development goal above is the entry gate. M7 then requires:
    The same guest-built creator now lays out `/Kernel/I386` on the target and
    copies the actual `RedSeaCreate.HC` source file from the boot volume. The
    host verifies the exact source bytes, directory links and bitmap; a second
-   boot finds the existing tree without changing the target. Generalize this
-   path to the complete source and module set before treating it as an installer.
+   boot finds the existing tree without changing the target. The file-level
+   tree copy now covers the complete source and module set. From an ordinary
+   HolyC console,
+   `I386BuildModule` compiles the delivered `RedSeaCreate.HC` into a T32M on
+   the mounted installation disk. Two writable boots produce identical module
+   hashes; after the target boots alone at 8 MiB, its installed compiler
+   builds the same source again. This is one real native source module, not a
+   native rebuild of the compiler or boot kernel.
    A normal boot now detects and mounts a formatted secondary volume as `D:` through the retained
    task file service. The interactive HolyC console reads the copied source,
    creates a directory and writes a document on `D:` at 8 MiB; the host audits
@@ -2311,7 +2317,7 @@ The standalone-development goal above is the entry gate. M7 then requires:
    RedSea formatter, guest target mount and source-built seed-file creation pass
    a two-boot QEMU test. A separate exact-image-copy test boots the copied
    host-built Generation 0 disk alone. Publishing rebuilt kernel/compiler
-   artifacts remain open. A normal guest boot now copies all 827 packaged
+   artifacts remain open. A normal guest boot now copies all 828 packaged
    source/module files to their real paths through the mounted task file API;
    independent host checks verify every file hash and the target bitmap after
    both an initial copy and an existing-tree retry. A bounded 200-file pass
@@ -2319,6 +2325,7 @@ The standalone-development goal above is the entry gate. M7 then requires:
    independently audits. A normal HolyC command, `I386InstallBoot`, publishes
    only the reserved boot sectors after file installation; it leaves RedSea
    sectors unchanged and boots the file-installed disk independently in QEMU.
+   A guest-built `RedSeaCreate.t32m` also persists on that installed disk.
    This still publishes host-built Generation 0 boot bytes. The clone transport
    has two injected interruption/retry cases;
    actual power-loss and rebuilt-artifact recovery remain open.

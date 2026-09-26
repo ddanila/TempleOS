@@ -9462,3 +9462,30 @@ not rerun.
 This is still transport for host-built Generation 0 boot bytes. Guest-built
 kernel/compiler artifact production, validation before publication and
 power-cut recovery remain open.
+
+## Source-built module from the normal HolyC console (2026-09-27)
+
+`I386BuildModule(source,target)` now reads a HolyC source file through the
+mounted task file service, compiles it as a private source unit, packs its
+owned definitions as T32M and writes the result to RedSea after unwinding the
+compilation control. A missing source returns `-1` without publishing an
+artifact; successful calls return the module byte count.
+
+In QEMU, normal 16 MiB HolyC sessions built the delivered
+`D:/Kernel/I386/RedSeaCreate.HC` into
+`D:/Modules/I386/GuestCreate.t32m` on the installation target. Two writable
+boots produced the same 35,329-byte T32M (SHA-256
+`48fa19384c4800982d0188d524375f3dd72a10ff450d54c537ebf876dd415419`).
+An independent host parser verified six expected exports, 59 named call
+records, ten resident imports and the source hash; the RedSea bitmap matched
+reachable extents. The target held 830 files in 16 directories after this
+build. It then received the host-built boot area, booted alone at 8 MiB and
+compiled the same source again using its installed native compiler. Its disk
+SHA-256 after boot publication was
+`8bc356f217ffd9230313c9e05dd2c0089ee711de39dc9cbce09f6bfd58aa2fe2`.
+
+The x86-64 two-generation rebuild, i386 cross-build and 386 instruction audit
+passed. The focused public-header help check passed. The complete `--test`
+promotion was not rerun. The compiler runtime and boot kernel are still
+host-built Generation 0; this proves a source-built component artifact, not a
+native compiler/kernel rebuild or Generation 1 boot.

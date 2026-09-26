@@ -220,7 +220,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 30:
+    if struct.unpack_from('<I', module, version_offset)[0] != 31:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -1410,10 +1410,9 @@ def verify_native_file_module(disk):
             'resident_imports':[name.decode() for name in imports]}
 
 
-def verify_native_create_module(disk):
+def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
+                                payload='/Probe/NativeCreate.bin'):
     """Audit the guest-built original RedSea creation source and its disk imports."""
-    path='/Probe/NativeCreate.t32m'
-    payload='/Probe/NativeCreate.bin'
     files=mutated_file_contents(disk,{path,payload})
     module=files.get(path)
     if payload in files:
@@ -1684,6 +1683,39 @@ def verify_native_tree_copy(disk, exports, out, console, volume):
         target.read_bytes()).hexdigest(),'filesystem_integrity':integrity,'result':'pass'}
 
 
+def verify_interactive_native_module(disk,out,console,volume):
+    """Build a real native source module on the mounted install disk twice."""
+    work=out/'interactive-native-module'; work.mkdir(parents=True,exist_ok=True)
+    source=disk.read_bytes()
+    candidate=work/'source.img'; candidate.write_bytes(source)
+    target=out/'target-tree-copy/target.img'
+    path='/Modules/I386/GuestCreate.t32m'
+    command='I386BuildModule("D:/Kernel/I386/RedSeaCreate.HC","D:/Modules/I386/GuestCreate.t32m")>0;'
+    first=console['run_input'](candidate,work/'first',target_disk=target,snapshot=False,
+        ram_mib=16,startup_check={'status':'ok','answers':[],
+            'command_timeout':120,'commands':[
+                ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
+                (command,['1'])]})
+    if candidate.read_bytes()!=source or \
+            '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
+                {'/Modules/I386/Missing.t32m'}):
+        raise ValueError('Native module build changed source or published missing input')
+    first_module=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
+    integrity=verify_mutated_volume(target)
+    if integrity['files']!=len(volume['files'])+2:
+        raise ValueError('Native module build changed unexpected target file count')
+    second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
+        ram_mib=16,startup_check={'status':'ok','answers':[],
+            'command_timeout':120,'commands':[(command,['1'])]})
+    rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
+    second_integrity=verify_mutated_volume(target)
+    if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
+            second_integrity['files']!=integrity['files']):
+        raise ValueError('Native module rebuild changed bytes or file count')
+    return {'first_boot':first,'second_boot':second,'module':rebuilt,
+            'filesystem_integrity':second_integrity,'result':'pass'}
+
+
 def verify_native_boot_area(disk, exports, out, console):
     """Publish boot sectors from normal HolyC onto a file-installed target."""
     source=disk.read_bytes()
@@ -1708,9 +1740,9 @@ def verify_native_boot_area(disk, exports, out, console):
         raise ValueError('Boot publication changed source or filesystem sectors')
     integrity=verify_mutated_volume(target)
     boot=work/'independent'
-    report=console['run_input'](target,boot,snapshot=False,startup_check={
-        'status':'ok','answers':[],'commands':[
-            ('DocRead("C:/Kernel/I386/InstallTree.HC")!=0;',['1'])]})
+    report=console['run_input'](target,boot,snapshot=True,startup_check={
+        'status':'ok','answers':[],'command_timeout':120,'commands':[
+            ('I386BuildModule("C:/Kernel/I386/RedSeaCreate.HC","C:/Probe/InstalledCreate.t32m")>0;',['1'])]})
     if target.read_bytes()!=installed or 'TARGET VOLUME D BOUND\n' in (boot/'debug.log').read_text():
         raise ValueError('File-installed target did not boot independently')
     return {'publication':publication,'independent_boot':report,
@@ -2564,7 +2596,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=30,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=31,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
@@ -2830,6 +2862,7 @@ def main():
         result['native_target_format']=verify_native_target_format(normal_disk,exports,out)
         result['native_target_mount']=verify_native_target_mount(normal_disk,exports,out,console)
         result['native_tree_copy']=verify_native_tree_copy(normal_disk,exports,out,console,volume)
+        result['interactive_native_module']=verify_interactive_native_module(normal_disk,out,console,volume)
         result['native_boot_area']=verify_native_boot_area(normal_disk,exports,out,console)
         run(sys.executable,'tools/test-i386-install-copy.py')
         result['native_install_copy']=json.loads(
