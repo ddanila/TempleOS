@@ -57,18 +57,19 @@ I64 I386RedSeaFileLocate(CI386RedSea *volume,CI386Heap *heap,I64 directory,
   return result;
 }
 U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
-  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE)
+  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE)
 {
   CI386RedSeaEntry entry;
   I64 found,bytes=0,attributes;
   U8 *raw,*result=0;
   if(GetRFlags&0x200 || !heap || !path || !I386RedSeaBegin(volume)) return 0;
-  found=I386RedSeaFileLocate(volume,heap,directory,path,&entry,scan_parents);
+  if(raw_bytes) found=I386RedSeaResolve(volume,directory,path,&entry);
+  else found=I386RedSeaFileLocate(volume,heap,directory,path,&entry,scan_parents);
   if(found!=1) goto file_load_done;
   raw=I386RedSeaReadAll(volume,heap,&entry,&bytes);
   if(!raw) goto file_load_done;
   attributes=FileAttr(entry.name,entry.attr);
-  if(attributes&RS_ATTR_COMPRESSED) {
+  if((attributes&RS_ATTR_COMPRESSED) && !raw_bytes) {
     result=I386ExpandBuf(heap,raw,bytes,&bytes);
     I386HeapFree(heap,raw);
   } else result=raw;

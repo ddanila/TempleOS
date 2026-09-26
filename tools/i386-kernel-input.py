@@ -74,12 +74,13 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
     if startup_check is not None and (groups is not None or mutation is not None):
         raise ValueError('Startup checks cannot be combined with groups or mutations')
+    if ram_mib not in (8,16): raise ValueError('Unsupported i386 RAM profile')
     active_group=None
     submitted=0
     interaction_latencies={}
@@ -89,7 +90,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     (out/'result.json').unlink(missing_ok=True)
     log=out/'debug.log'; log.write_text('')
     qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
-    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu',cpu,'-m','8','-nic','none',
+    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu',cpu,'-m',str(ram_mib),'-nic','none',
          '-drive',f'file={disk.resolve()},format=raw,if=ide']
     if target_disk is not None:
         if target_disk.resolve()==disk.resolve(): raise ValueError('Target must be a separate disk')
@@ -321,7 +322,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     interaction=command_spec[2] if len(command_spec)>2 else None
                     submit(source,answers,f'startup-command-{index:02}',
                            timeout=startup_check.get('command_timeout',30),interaction=interaction)
-                result={'result':'pass','cpu':cpu,'ram_mib':8,'startup_status':status,
+                result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,'startup_status':status,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
                         'vga':'all pixels matched at each checkpoint',
@@ -1703,6 +1704,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                              'public _extern _FILE_RENAME Bool FileRename(U8 *old_filename,U8 *new_filename);',
                              'public _extern _DIR_DEL Bool DirDel(U8 *filename);',
                              'public _extern _FILE_MOVE Bool FileMove(U8 *old_filename,U8 *new_filename);',
+                             '//Exact source/module-tree transport between mounted drives; -1 on failure.',
+                             'public _extern _I386_INSTALL_TREE I64 I386InstallTree(U8 *source,U8 *target);',
                              '#endif','']
             submit('CHashSrcSym *help_mn_symbol=HashFind("Dir",Fs->hash_table,HTG_SRC_SYM);', [], 'help-man-page-symbol')
             submit('help_mn_symbol!=0;', ['1'], 'help-man-page-symbol-present')
@@ -1825,14 +1828,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             if groups is not None:
                 result={'result':'pass','groups':list(groups),'native_commands':submitted,
-                        'cpu':cpu,'ram_mib':8,'startup_seconds':startup_seconds,
+                        'cpu':cpu,'ram_mib':ram_mib,'startup_seconds':startup_seconds,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
                         'vga':'all pixels matched at each checkpoint',
                         'interaction_latencies_seconds':interaction_latencies}
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
                 return result
-            result={'result':'pass','cpu':cpu,'ram_mib':8,
+            result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,
                     'vga_uploads':len(uploads()), 'vga_text_rows':sum(uploads()),

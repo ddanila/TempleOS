@@ -87,12 +87,13 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   binding->address=(&I386ArcEntryGet+0)(U64);
   return TRUE;
 }
-#assert sizeof(CI386FileServices)==80
+#assert sizeof(CI386FileServices)==84
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
+  services->read_raw=&I386TaskFileReadRaw;
   services->name_abs=&I386TaskFileNameAbs;
   services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;

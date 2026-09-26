@@ -1,6 +1,6 @@
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
-U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0)
+U8 *I386TaskFileReadMode(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name,Bool raw)
 {
   U32 flags=I386IrqSave;
   CI386Task *task=I386TaskSelf;
@@ -12,7 +12,7 @@ U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **n
   state=I386TaskFilesBorrow(task,&paths,&volumes);
   if(state) {
     if(task->owner) result=I386FileReadAt(heap,&paths,volumes,filename,&bytes,&attributes,&absolute,
-      task!=task->owner->root);
+      task!=task->owner->root,raw);
     if(!I386TaskFilesRelease(state)) {
       if(result) I386HeapFree(heap,result);
       if(absolute) I386HeapFree(heap,absolute);
@@ -25,6 +25,14 @@ U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **n
     }
   }
   I386IrqRestore(flags); return result;
+}
+U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0)
+{
+  return I386TaskFileReadMode(heap,filename,size,attr,name,FALSE);
+}
+U8 *I386TaskFileReadRaw(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0)
+{
+  return I386TaskFileReadMode(heap,filename,size,attr,name,TRUE);
 }
 Bool I386LexTaskFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filename)
 {

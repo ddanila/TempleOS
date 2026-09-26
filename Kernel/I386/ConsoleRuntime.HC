@@ -47,13 +47,14 @@ public Bool MouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0)
 I64 console_diagnostic_line;
 U8 console_diagnostic_filename[256];
 #include "/Kernel/I386/DocumentRuntime.HC"
+#include "/Kernel/I386/InstallTree.HC"
 #include "/Kernel/I386/SoundRuntime.HC"
 #include "/Kernel/I386/TextBase.HC"
 #include "/Kernel/I386/Window.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[111];
+CI386KernelSymbol console_doc_exports[112];
 U32 console_version=I386_CONSOLE_VERSION;
 extern Bool NativeGraphicsStart();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
@@ -296,7 +297,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[109].val=(&SndRst+0)(U64);
   console_doc_exports[110].str="_MOUSE_GET";
   console_doc_exports[110].val=(&MouseGet+0)(U64);
-  for(i=0;i<111;i++) {
+  console_doc_exports[111].str="_I386_INSTALL_TREE";
+  console_doc_exports[111].val=(&I386InstallTree+0)(U64);
+  for(i=0;i<112;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78) console_doc_exports[i].kind=3;

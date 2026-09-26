@@ -9354,3 +9354,28 @@ Both source and target are now accessible to normal HolyC file operations, but
 the target mount is still opt-in and full-tree copy plus native artifact
 construction remain open. The next installer should use the task file API and
 move substantial logic out of the nearly full BIOS-loaded kernel.
+
+## Full source/module tree copied through guest file services (2026-09-27)
+
+A normal QEMU `486` boot at 16 MiB mounted the formatted secondary RedSea disk
+as `D:` and ran `I386InstallTree("C:/", "D:/")`. The guest created the source
+directory structure and copied all 826 packaged files through the task file
+API. The installer uses a raw-byte read callback for this transfer so that
+compressed `.Z` files retain their on-disk bytes; ordinary file reads still
+expand them. Copying a volume onto itself is rejected.
+
+The focused VGA-checked run passed. An independent host walk compared every
+target file's size and SHA-256 against the source manifest, verified the
+allocation bitmap and RedSea extents, and found the source disk unchanged.
+The target also retains the earlier `InstallSeed.HC`, for 827 files total in
+16 directories; its final disk SHA-256 is
+`5e97168752f071615ba4b32ce91129572fd11547ac6ac7e96b9562bc6125ecab`.
+The x86-64 two-generation rebuild, i386 cross-build and 386 boot audit passed;
+the flat kernel is 452,776 bytes with 1,880 bytes of BIOS load-area headroom.
+The focused public-header help test also passed. The complete `--test`
+promotion was not rerun.
+
+These are still host-built Generation 0 source and module bytes. The target's
+boot area remains blank, and native compiler/kernel construction, boot-artifact
+publication and interruption recovery for this file-level install path remain
+open.
