@@ -2658,6 +2658,9 @@ def main():
         result['file_io_failure_matrix']=verify_file_io_failure_matrix(normal_disk,exports,out)
         result['file_replace_failure_matrix']=verify_file_replace_failure_matrix(normal_disk,exports,out)
         result['native_target_format']=verify_native_target_format(normal_disk,exports,out)
+        run(sys.executable,'tools/test-i386-install-copy.py')
+        result['native_install_copy']=json.loads(
+            (out/'install-copy/result.json').read_text())
         run(sys.executable,'tools/test-i386-doc-compat.py')
         result['document_cross_compatibility']=json.loads(
             (ROOT/'build/i386-doc-compat/result.json').read_text())

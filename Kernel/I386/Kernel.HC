@@ -53,6 +53,8 @@ U32 kernel_diagnostics=0;
 U32 kernel_file_mutation_probe=0;
 //Build tooling enables this only with a separate blank QEMU target disk.
 U32 kernel_target_format_probe=0;
+//Build tooling enables this only with a disposable secondary IDE disk.
+U32 kernel_install_copy_probe=0;
 //High byte selects RedSea task operation; low byte selects its failing call.
 U32 kernel_file_io_probe=0;
 Bool kernel_display_ready,kernel_probe_ready;
@@ -94,6 +96,7 @@ extern U0 KernelFault(CI386ExceptionFrame *frame);
 extern U0 KernelReport(CI386Task *task,I64 ch);
 extern U0 KernelFatal(CI386Task *task,I64 status,I64 ch);
 extern U0 KernelPulse(I64 unused);
+extern Bool I386InstallCopy(CI386Ata *source,CI386Ata *target);
 extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
@@ -184,6 +187,15 @@ I64 Main(CI386BootInfo *info,I64 unused)
         pulse_used-kernel_heap.used<1048576+16384) KernelStop;
     kernel_pulse=0;
     KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
+  }
+  if(kernel_install_copy_probe) {
+    CI386Ata target;
+    U32 flags=I386IrqSave;
+    if(I386AtaIdentifyPolled(&target,1,0,100000,0)) {
+      if(!I386InstallCopy(&kernel_disk,&target)) KernelStop;
+      KernelLog("INSTALL COPY READY\n");
+    } else KernelLog("INSTALL COPY NO TARGET\n");
+    I386IrqRestore(flags);
   }
   kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,65536,kernel_console.keys,0,
     0x18,0x20,0);
@@ -316,6 +328,7 @@ U0 KernelStorage(CI386BootInfo *info)
 }
 
 #include "/Kernel/I386/Ata.HC"
+#include "/Kernel/I386/InstallCopy.HC"
 #include "/Kernel/I386/RedSea.HC"
 #include "/Kernel/I386/FileRead.HC"
 #include "/Kernel/I386/RedSeaAlloc.HC"

@@ -2279,10 +2279,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    `InstallSeed.HC`; the host checks its bytes, directory entry and bitmap,
    while a second boot confirms the file and target image remain unchanged.
    The BIOS load reservation is now 896 sectors, ending at `0x80000`, with
-   32 KiB before the task-stack reservation; the current image has 8,272
+   32 KiB before the task-stack reservation; the current image has 3,912
    bytes of load-area headroom. More native code belongs in retained modules
    or must be paired with a revised boot/memory layout.
-   Next publish boot artifacts failure-atomically and boot the target.
+   A normal guest boot can now copy its complete host-built Generation 0 disk
+   to a blank second IDE disk, flush all nonboot sectors, publish LBA 0 last,
+   and boot the exact copied image independently. This validates boot-media
+   transport, including source and module bytes, but does not build those bytes
+   on the target or prove interruption recovery. Next replace the image clone
+   with publication of guest-built artifacts and an interruption matrix.
    The remaining compiler/kernel dependency graph still needs validated resident
    exports, the full kernel prelude, and complete in-guest compilation.
    Broader pointer-target identity and full source-tree coverage remain open.
@@ -2291,8 +2296,10 @@ The standalone-development goal above is the entry gate. M7 then requires:
    produce an independently bootable disk. An interrupted installation leaves
    either the prior bootable system or a recoverable target. The blank-target
    RedSea formatter, guest target mount and source-built seed-file creation pass
-   a two-boot QEMU test. Boot-sector/kernel publication, complete source/module
-   copy, and independent target boot remain open.
+   a two-boot QEMU test. A separate exact-image-copy test boots the copied
+   host-built Generation 0 disk alone. Publishing rebuilt kernel/compiler
+   artifacts, copying the full source/module tree through the guest file API,
+   and interrupted-installation recovery remain open.
 3. **Two-generation self-hosting.** A host-built Generation 0 produces native
    Generation 1; Generation 1 boots and produces Generation 2. Generation 2
    has equivalent public behavior and persistent formats, and can rebuild the

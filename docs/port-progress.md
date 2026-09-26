@@ -9262,3 +9262,29 @@ at `0x80000`; the task-stack reservation starts at `0x88000`. The current
 instruction audit and both two-disk QEMU boots passed again with this layout.
 Future growth should use retained modules or a deliberate boot/memory-layout
 revision rather than silently consuming the remaining gap.
+
+## Independent boot from a guest-copied disk (2026-09-26)
+
+The normal-startup installation probe can now copy its complete 16 MiB boot
+disk to a blank secondary IDE target using native polled ATA. It requires equal
+disk geometry and a flush-capable target, copies sectors 1 through 32767,
+flushes them, then writes and flushes boot sector 0. A failed transfer before
+that final write leaves the target without a boot sector. This is a transport
+step for installation, not a native compiler or kernel rebuild.
+
+`python3 tools/test-i386-install-copy.py` passed: the first QEMU boot copied
+the complete disk, an independent byte comparison found identical source and
+target SHA-256 values
+`2e1197ea87e29b20094f3586bea2b06f6b5e5037ba2e8edb4ef0e542dce37e9b`,
+and a second QEMU boot from the target alone completed normal startup. The
+copy probe detects the absent second drive on that boot. The x86-64
+two-generation rebuild, native cross-build, and 386 early-boot instruction
+audit passed. The flat kernel is 450,744 bytes, leaving 3,912 bytes in the
+BIOS load reservation. The full `--test` promotion was not rerun for this
+revision.
+
+The copied disk still contains host-built Generation 0 artifacts. Native
+construction of compiler and kernel outputs, file-level source/module transfer,
+and interrupted-installation recovery remain open. The current copy holds
+interrupts disabled for the entire disk operation, so it is a disposable
+installation probe rather than the final interactive installer.
