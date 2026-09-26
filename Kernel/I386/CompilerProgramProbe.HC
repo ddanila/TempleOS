@@ -837,6 +837,90 @@ U0 ProbeProgramUnit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("NATIVE UNIT "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramKMathRun(CI386Heap *heap,U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record;
+  I64 floor_u=-1,ceil_u=-1,round_i=-1,floor_i=-1,ceil_i=-1;
+  I64 i,image_bytes;
+  U8 *image;
+  I64 (*entry)(I64 n,I64 to);
+  if(!I386ModuleValid(module,module_bytes) ||
+      header->version!=I386_MODULE_VERSION || header->record_count!=5) KernelStop;
+  record=module+header->records_offset;
+  for(i=0;i<header->record_count;i++,record++) {
+    if(record->kind!=I386_MODULE_EXPORT) KernelStop;
+    if(!StrCmp(module+record->name_offset,"FloorU64")) floor_u=record->offset;
+    else if(!StrCmp(module+record->name_offset,"CeilU64")) ceil_u=record->offset;
+    else if(!StrCmp(module+record->name_offset,"RoundI64")) round_i=record->offset;
+    else if(!StrCmp(module+record->name_offset,"FloorI64")) floor_i=record->offset;
+    else if(!StrCmp(module+record->name_offset,"CeilI64")) ceil_i=record->offset;
+    else KernelStop;
+  }
+  if(floor_u<0 || ceil_u<0 || round_i<0 || floor_i<0 || ceil_i<0) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"FloorU64",0,0);
+  image=I386HeapAlloc(heap,image_bytes);
+  if(!image || I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+      "FloorU64",0,0)!=image_bytes) KernelStop;
+  entry=image+8+floor_u; if((*entry)(29,8)!=24) KernelStop;
+  entry=image+8+ceil_u; if((*entry)(29,8)!=32) KernelStop;
+  entry=image+8+round_i; if((*entry)(-5,4)!=-4) KernelStop;
+  entry=image+8+floor_i; if((*entry)(-5,4)!=-8) KernelStop;
+  entry=image+8+ceil_i; if((*entry)(-5,4)!=-4) KernelStop;
+  if(!I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramKMath(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#include \"/Kernel/KMathInt.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/KMathInt.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include))) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramKMathRun(heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/KMathInt.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramKMathRun(heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE KMATH EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/KMathInt.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/KMathInt.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramKMathRun(heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE KMATH DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE KMATH "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1028,4 +1112,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     KernelLog("PROGRAM CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
   }
   ProbeProgramUnit(probe,heap,outer);
+  ProbeProgramKMath(probe,heap,outer);
 }

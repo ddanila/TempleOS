@@ -8904,3 +8904,26 @@ cross-build pass. The complete `--test` promotion sequence has not been rerun
 for this revision; the two focused writable boots and saved-file audit cover
 the changed path. Source-tree
 packaging, multi-module system bindings, and native self-hosting remain open.
+
+## Guest packages a delivered production source file (2026-09-26)
+
+The native compiler now reads `/Kernel/KMathInt.HC` from RedSea through its
+ordinary include service, compiles all five original integer-multiple
+functions, packages them as one T32M, releases the compiler control, then
+loads and calls the relocated code. The diagnostic checks signed negative
+rounding and unsigned cases. It temporarily loads the public scalar classes
+from `/Kernel/Types.HH`, matching production boot order, and removes them after
+the isolated probe. Both diagnostic phases and two writable QEMU boots pass;
+the second boot loads the previously saved module before replacing it.
+
+The guest-built version-2 file is 3,123 bytes and loads as a 2,976-byte image.
+The independent disk audit finds exactly the five function exports, with no
+extra imports or data records, and SHA-256
+`d9e8428dfaff85686e00a9de8efc97234dfcbd3c7c26a18a1be7364624ce8e6f`.
+The delivered source SHA-256 is
+`2bfea2345cd06ca8beccfd8f717f3b62c75303cc29ef4fc51755184754eb00cf`.
+The x86-64 two-generation rebuild and native cross-build pass. The full
+`--test` sequence has not been rerun for this revision; the focused diagnostic
+and two writable boots cover the new source-file path. This is one production
+file, not a compiler/kernel rebuild. Header-rich files, resident bindings,
+installation and two self-hosted generations remain open.

@@ -2210,10 +2210,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    static data is rejected. The source-unit packer now retains separately
    allocated literal pools referenced by initialized global or static pointers
    as private data ranges, with local pointer relocation. A guest-built unit
-   exercises mutation through such a pointer across writable boots. Next
-   package the delivered system source units and define a stable system binding
-   table; broader pointer-target identity and full source-tree coverage remain
-   open.
+   exercises mutation through such a pointer across writable boots. The guest
+   now reads the delivered `/Kernel/KMathInt.HC` from RedSea, packages its five
+   original functions as one relocatable module, and executes signed and
+   unsigned I64 cases after loading it. This is the first production source
+   file on the guest-built module path, not a complete source-tree rebuild.
+   Next extend that path to files with shared headers and resident imports,
+   define a stable system binding table, then package the compiler and kernel
+   dependency graph. Broader pointer-target identity and full source-tree
+   coverage remain open.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

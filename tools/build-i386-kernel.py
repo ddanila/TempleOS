@@ -1172,6 +1172,28 @@ def verify_native_unit_module(disk):
             'private_literal_ranges':1,'initial_values':[20,40,'AZ']}
 
 
+def verify_native_kmath_module(disk):
+    """Audit the guest-built module from the delivered KMathInt.HC file."""
+    path='/Probe/KMathInt.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built production math module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<256 or size&7 or count!=5 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid production math module layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    names={module[row[2]:row[2]+row[3]] for row in rows}
+    if (any(row[0]!=1 or row[1]>=size or row[3]<1 for row in rows) or
+            names!={b'FloorU64',b'CeilU64',b'RoundI64',b'FloorI64',b'CeilI64'} or
+            len(names)!=5):
+        raise ValueError('Production math module exports differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/KMathInt.HC').read_bytes()).hexdigest(),
+            'functions':sorted(name.decode() for name in names)}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1714,6 +1736,17 @@ def main():
         result['native_unit']={'phases':[0,1],'module_bytes':native_unit[0][1],
                                'loaded_bytes':native_unit[0][2],
                                'result':'all source-unit definitions packaged together'}
+        native_kmath = [tuple(int(value,16) for value in line.split()[2:])
+                        for line in log.splitlines()
+                        if re.match(r'^NATIVE KMATH [0-9A-F]{16} ',line)]
+        if len(native_kmath)!=2 or [entry[0] for entry in native_kmath]!=[0,1] or \
+                native_kmath[0][1:]!=native_kmath[1][1:] or \
+                native_kmath[0][1]<256 or native_kmath[0][2]<128:
+            raise ValueError('Delivered KMathInt.HC did not compile and execute')
+        result['native_kmath']={'phases':[0,1],
+                                'module_bytes':native_kmath[0][1],
+                                'loaded_bytes':native_kmath[0][2],
+                                'source':'/Kernel/KMathInt.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1948,6 +1981,8 @@ def main():
             raise ValueError('Fresh named-pointer modules disk round trip failed')
         if mutation_log.count('NATIVE UNIT DISK\n')!=1 or 'NATIVE UNIT EXISTING\n' in mutation_log:
             raise ValueError('Fresh source-unit module disk round trip failed')
+        if mutation_log.count('NATIVE KMATH DISK\n')!=1 or 'NATIVE KMATH EXISTING\n' in mutation_log:
+            raise ValueError('Fresh production math module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1985,6 +2020,9 @@ def main():
         if module_reboot_log.count('NATIVE UNIT EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE UNIT DISK\n')!=1:
             raise ValueError('Source-unit module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE KMATH EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE KMATH DISK\n')!=1:
+            raise ValueError('Production math module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2042,6 +2080,11 @@ def main():
                                     'second_boot':'read, load, mutate, execute, replace',
                                     'module':verify_native_unit_module(mutation_disk),
                                     'result':'pass'}
+        result['native_kmath_disk']={'path':'C:/Probe/KMathInt.t32m',
+                                     'fresh_boot':'write, read, load, execute',
+                                     'second_boot':'read, load, execute, replace',
+                                     'module':verify_native_kmath_module(mutation_disk),
+                                     'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)
