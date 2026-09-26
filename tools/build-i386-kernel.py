@@ -1128,7 +1128,7 @@ def verify_native_unit_module(disk):
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built source-unit module')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or not size or size&7 or count!=6 or
+    if (total!=len(module) or not size or size&7 or count!=10 or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid source-unit module layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
@@ -1136,20 +1136,26 @@ def verify_native_unit_module(disk):
     name=lambda row:module[row[2]:row[2]+row[3]]
     exports=named(1); calls=named(2); data_exports=named(3)
     ranges=named(4); addresses=named(5)
-    if ({name(row) for row in exports}!={b'UnitAdd',b'UnitMain'} or
-            len(exports)!=2 or len(calls)!=1 or name(calls[0])!=b'UnitAdd' or
-            len(data_exports)!=1 or name(data_exports[0])!=b'UnitBase' or
-            len(ranges)!=1 or
-            ranges[0][1]!=data_exports[0][1] or ranges[0][2]!=8 or ranges[0][3] or
-            len(addresses)!=1 or name(addresses[0])!=b'UnitBase' or
+    data_by_name={name(row):row for row in data_exports}
+    if ({name(row) for row in exports}!={b'UnitAdd',b'UnitMain',b'UnitNext'} or
+            len(exports)!=3 or len(calls)!=1 or name(calls[0])!=b'UnitAdd' or
+            set(data_by_name)!={b'UnitBase',b'@static/UnitNext/0000'} or
+            len(data_exports)!=2 or len(ranges)!=2 or
+            {row[1] for row in ranges}!={row[1] for row in data_exports} or
+            any(row[2]!=8 or row[3] for row in ranges) or
+            {name(row) for row in addresses}!={b'UnitBase',b'@static/UnitNext/0000'} or
+            len(addresses)!=2 or
             module[32+calls[0][1]-1]!=0xE8 or
-            module[32+addresses[0][1]-1]!=0x05 or
+            any(module[32+row[1]-1]!=0x05 for row in addresses) or
             module[32+calls[0][1]:36+calls[0][1]]!=b'\0'*4 or
-            module[32+addresses[0][1]:36+addresses[0][1]]!=b'\0'*4 or
-            module[32+data_exports[0][1]:40+data_exports[0][1]]!=struct.pack('<q',20)):
+            any(module[32+row[1]:36+row[1]]!=b'\0'*4 for row in addresses) or
+            module[32+data_by_name[b'UnitBase'][1]:40+data_by_name[b'UnitBase'][1]]!=struct.pack('<q',20) or
+            module[32+data_by_name[b'@static/UnitNext/0000'][1]:40+data_by_name[b'@static/UnitNext/0000'][1]]!=struct.pack('<q',40)):
         raise ValueError('Guest-built source-unit definitions or initial data differ')
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'functions':['UnitAdd','UnitMain'],'global':'UnitBase','initial_value':20}
+            'functions':['UnitAdd','UnitMain','UnitNext'],
+            'globals':['UnitBase','@static/UnitNext/0000'],
+            'initial_values':[20,40]}
 
 
 def verify_file_io_failure_matrix(disk, exports, out):

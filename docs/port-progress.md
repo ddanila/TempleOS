@@ -8854,3 +8854,30 @@ The normal 8 MiB startup took 48.35 seconds and the workstation submitted all
 all 13 move and seven replacement interruption/recovery cases, and
 original/native document compatibility passed. The builder manifest is
 `build/i386-kernel/result.json`.
+
+## Guest-built source units retain local static data (2026-09-26)
+
+The native expression parser now preserves addresses of function-local `static`
+storage for module relocation while leaving the original x86-64 compiler's JIT
+path unchanged. Before JIT code is emitted, the i386 frontend gives each local
+static a stable private name derived from its function and member ordinal. The
+source-unit packer includes that initialized storage as owned data and records
+the code-to-data address relocation. Packing a function without its static data
+still fails, rather than writing a live heap address into a module.
+
+The guest source-unit probe adds `UnitNext`, whose `static I64i n=40` advances to
+41 and 42 after the module is loaded. The 536-byte guest-built module contains
+three functions, the existing global, the local static data export, and both
+address relocations; its loaded image is 256 bytes. A writable QEMU boot saved
+and executed it, and the independent host audit checked all records and initial
+values (SHA-256 `a819af3b9fab1955bf9d65afba88409f2416314bab5333140b5008c41454d0f1`).
+The second writable boot loaded the existing module, executed it, replaced it,
+and completed startup. The x86-64 two-generation rebuild and native cross-build
+pass. The full `--test` invocation reached the native diagnostic and normal
+interactive phases, then was stopped in favor of these two focused writable
+boots; a complete uninterrupted promotion run for this revision remains open.
+This closes the
+basic scalar-local-static packaging gap, but complete source-tree packaging and
+native self-hosting remain open. Static data containing pointers to separately
+allocated literals still needs a representation that owns or relocates those
+targets.

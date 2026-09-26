@@ -771,7 +771,9 @@ I64 PrsUnaryTermCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *ps,C
 	    //	  PrsEmit(services,cc,IC_HEAP_GLBL,tmpm->static_data,tmpc);
 	    //	else
 	    PrsEmit(services,cc,IC_ABS_ADDR,tmpm->static_data_rip,tmpc);
-	  } else
+	  } else if(services->retain_static_addresses)
+	    PrsEmit(services,cc,IC_ABS_ADDR,tmpm->static_data,tmpc);
+	  else
 	    PrsEmit(services,cc,IC_IMM_I64,tmpm->static_data,tmpc);
 	} else {
 	  if (cc->flags&CCF_ASM_EXPRESSIONS) {

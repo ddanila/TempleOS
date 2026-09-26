@@ -10,6 +10,7 @@ extern U0 I386ExecutionBreakPoll();
 #include "/Compiler/I386/LexState.HC"
 extern class CI386FrontendReloc;
 extern class CI386FrontendAddress;
+extern class CI386FrontendStatic;
 class CI386FrontendCode {
   CI386FrontendCode *next;
   CI386FrontendReloc *relocs;
@@ -46,6 +47,14 @@ class CI386FrontendCompletion {
   CI386FrontendCompletion *next;
   CHashClass *published,*staged;
 };
+class CI386FrontendStatic {
+  CI386FrontendStatic *next;
+  CHashFun *owner;
+  CMemberLst *member;
+  CHashGlblVar symbol;
+  U8 name[1];
+};
+#assert sizeof(CI386FrontendStatic)>0
 class CI386Frontend {
   CI386Heap *heap;
   CCmpCtrl *cc;
@@ -67,9 +76,11 @@ class CI386Frontend {
   CI386FrontendFixup *fixups;
   CI386FrontendResident *residents;
   CI386FrontendCompletion *completions;
+  CI386FrontendStatic *saved_vars;
   U8 *diagnostic_context;
   U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
 };
+#assert offset(CI386Frontend.saved_vars)>0
 class CI386FrontendCall {
   CI386FrontendCall *next,*stack;
   CHashFun fun;
@@ -330,16 +341,59 @@ CHashFun *I386FrontendFunctionAt(CI386Frontend *state,U8 *address)
         }
   return found;
 }
+U0 I386FrontendStaticsPrepare(CI386Frontend *state,CHashFun *owner)
+{
+  CI386FrontendStatic *saved_static;
+  CMemberLst *member;
+  U8 *hex="0123456789ABCDEF",*prefix="@static/";
+  I64 ordinal=0,length,i,size;
+  if(!owner || !owner->str) return;
+  length=StrLen(owner->str);
+  if(length<1 || length>240) I386FrontendUnavailable(state);
+  for(member=owner->member_lst_and_root;member;member=member->next,ordinal++) {
+    if(ordinal>8191) I386FrontendUnavailable(state);
+    if(member->flags&MLF_STATIC) {
+      saved_static=state->saved_vars;
+      while(saved_static && !(saved_static->owner==owner && saved_static->member==member))
+        saved_static=saved_static->next;
+      if(!saved_static) {
+        if(!member->member_class || member->dim.total_cnt<1 ||
+            member->member_class->size<1 ||
+            member->member_class->size>0xFFFFFFF0/member->dim.total_cnt ||
+            !member->static_data) I386FrontendUnavailable(state);
+        size=member->member_class->size*member->dim.total_cnt;
+        saved_static=I386FrontendAlloc(state,sizeof(CI386FrontendStatic)+length+16,TRUE,FALSE);
+        saved_static->owner=owner; saved_static->member=member;
+        for(i=0;i<8;i++) saved_static->name[i]=prefix[i];
+        for(i=0;i<length;i++) saved_static->name[8+i]=owner->str[i];
+        saved_static->name[8+length]='/';
+        for(i=0;i<4;i++) saved_static->name[9+length+i]=hex[(ordinal>>(12-4*i))&15];
+        saved_static->name[13+length]=0;
+        saved_static->symbol.type=HTT_GLBL_VAR;
+        saved_static->symbol.str=saved_static->name;
+        saved_static->symbol.size=size;
+        saved_static->symbol.var_class=member->member_class;
+        saved_static->symbol.dim.next=member->dim.next;
+        saved_static->symbol.dim.cnt=member->dim.cnt;
+        saved_static->symbol.dim.total_cnt=member->dim.total_cnt;
+        saved_static->symbol.data_addr=member->static_data;
+        saved_static->next=state->saved_vars; state->saved_vars=saved_static;
+      }
+    }
+  }
+}
 U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc)
 {
   CIntermediateCode *node;
   CHashFun *fun;
   CHashGlblVar *global;
   CHashSrcSym *symbol;
+  CI386FrontendStatic *static_ref;
   CI386FrontendCall *call,*stack=0;
   CI386FrontendAddress *address;
   U8 *destination,*source;
   I64 i;
+  I386FrontendStaticsPrepare(state,cc->htc.fun);
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
     if(node->ic_code==IC_CALL_START) {
       fun=node->ic_data;
@@ -366,7 +420,16 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
       node->ic_data=&stack->fun;
       stack=stack->stack;
     } else if(node->ic_code==IC_ABS_ADDR || node->ic_code==IC_ADDR_IMPORT) {
-      if(node->ic_code==IC_ABS_ADDR) symbol=I386FrontendFunctionAt(state,node->ic_data);
+      if(node->ic_code==IC_ABS_ADDR) {
+        symbol=0;
+        for(static_ref=state->saved_vars;static_ref;static_ref=static_ref->next)
+          if(static_ref->owner==cc->htc.fun &&
+              static_ref->symbol.data_addr==(node->ic_data)(U8 *)) {
+            symbol=&static_ref->symbol;
+            break;
+          }
+        if(!symbol) symbol=I386FrontendFunctionAt(state,node->ic_data);
+      }
       else symbol=node->ic_data;
       if(!symbol || !symbol->str) I386FrontendUnavailable(state);
       address=I386FrontendAlloc(state,sizeof(CI386FrontendAddress),TRUE,FALSE);
@@ -768,6 +831,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   e->class_view=&I386FrontendClassView;
   e->retain_function_addresses=TRUE;
   e->retain_data_addresses=TRUE;
+  e->retain_static_addresses=TRUE;
   e->type=&I386FrontendType; e->expression=&I386FrontendExpression;
   t=&state->types; t->context=state; t->types=types; t->lex=&I386FrontendLex; t->report=&I386FrontendReport;
   t->snapshot_push=&I386FrontendSnapshot; t->snapshot_drop=&I386FrontendDrop;

@@ -187,8 +187,9 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
   CHashFun *fun;
   CHashGlblVar *global;
   CMemberLst *member;
+  CI386FrontendStatic *static_ref;
   U8 *strings,*body;
-  I64 i,j,k,base,payload=0,record_count=0,string_bytes=0,function_payload,pointers;
+  I64 i,j,k,m,base,payload=0,record_count=0,string_bytes=0,function_payload,pointers;
   I64 records_offset,strings_offset,total,pos=0,index=0,length;
   if(!symbols || !(frontend=symbols->context) || symbols!=&frontend->symbols ||
       !functions || count<1 || count>8192 || global_count<0 || global_count>8192 ||
@@ -196,10 +197,14 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
   for(i=0;i<count;i++) {
     fun=functions[i];
     if(!fun || !fun->str || !fun->exe_addr || !(fun->type&HTT_FUN)) return 0;
-    //The JIT keeps function-local statics in separate live allocations.
-    //Their code addresses need a module relocation contract before packaging.
     for(member=fun->member_lst_and_root;member;member=member->next)
-      if(member->flags&MLF_STATIC) return 0;
+      if(member->flags&MLF_STATIC) {
+        for(static_ref=frontend->saved_vars;static_ref;static_ref=static_ref->next)
+          if(static_ref->owner==fun && static_ref->member==member) break;
+        if(!static_ref) return 0;
+        for(m=0;m<global_count;m++) if(globals[m]==&static_ref->symbol) break;
+        if(m==global_count) return 0;
+      }
     length=StrLen(fun->str);
     if(length<1 || length>255 || string_bytes>0xFFFFFFFF-length-1) return 0;
     for(j=0;j<i;j++) if(!StrCmp(fun->str,functions[j]->str)) return 0;
@@ -314,6 +319,7 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
   CI386Frontend *frontend;
   CHashTable *table;
   CHash *entry;
+  CI386FrontendStatic *static_ref;
   CHashFun **functions=0,*fun,*swap_fun;
   CHashGlblVar **globals=0,*global,*swap_global;
   I64 i,j,functions_count=0,globals_count=0,fi=0,gi=0,result=0;
@@ -330,6 +336,8 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
           globals_count++;
       }
     }
+  for(static_ref=frontend->saved_vars;static_ref;static_ref=static_ref->next)
+    globals_count++;
   if(functions_count<1 || functions_count>8192 || globals_count>8192) return 0;
   functions=I386HeapAlloc(frontend->heap,functions_count*sizeof(CHashFun *));
   if(globals_count) globals=I386HeapAlloc(frontend->heap,globals_count*sizeof(CHashGlblVar *));
@@ -345,6 +353,8 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
           globals[gi++]=global;
       }
     }
+  for(static_ref=frontend->saved_vars;static_ref;static_ref=static_ref->next)
+    globals[gi++]=&static_ref->symbol;
   if(fi!=functions_count || gi!=globals_count) goto done;
   for(i=1;i<functions_count;i++) {
     swap_fun=functions[i]; j=i;

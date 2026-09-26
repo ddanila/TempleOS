@@ -2204,10 +2204,12 @@ The standalone-development goal above is the entry gate. M7 then requires:
    native probe packages and persists a pointer-bearing consumer and its data
    provider separately. Compiler services version 55 now collects and packages
    every owned function and global definition from a private source unit; a
-   guest-built unit with two functions and one global survives two writable
-   boots. Function-local static storage is rejected until its live address
-   references can be relocated. Next support that static storage, package the
-   delivered system source units, and define a stable system binding table.
+   guest-built unit with three functions, one global and scalar function-local
+   static storage survives two writable boots. Local static code references
+   now relocate to owned data in the module; packing the function without its
+   static data is rejected. Pointer-bearing statics with separately allocated
+   literal targets still need ownership or relocation. Next package the
+   delivered system source units and define a stable system binding table.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

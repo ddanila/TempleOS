@@ -33,6 +33,8 @@ class CPrsExpressionServices {
   Bool retain_function_addresses;
   //Retain named global-address sites instead of embedding live allocation addresses.
   Bool retain_data_addresses;
+  //Native module frontends retain function-local static address sites.
+  Bool retain_static_addresses;
 };
 extern CIntermediateCode *PrsAddOpCore(CPrsExpressionServices *services,CCmpCtrl *cc,I64 stk_op,CHashClass *tmpc);
 extern U0 PrsExpression2Core(CPrsExpressionServices *services,CCmpCtrl *cc,I64 *_max_prec,CPrsStk *ps);
