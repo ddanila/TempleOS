@@ -8,5 +8,7 @@ public _extern _FILE_RENAME Bool FileRename(U8 *old_filename,U8 *new_filename);
 public _extern _DIR_DEL Bool DirDel(U8 *filename);
 public _extern _FILE_MOVE Bool FileMove(U8 *old_filename,U8 *new_filename);
 //Exact source/module-tree transport between mounted drives; -1 on failure.
-public _extern _I386_INSTALL_TREE I64 I386InstallTree(U8 *source,U8 *target);
+//A positive limit stops after that many files for a resumable bounded pass.
+public _extern _I386_INSTALL_TREE I64 I386InstallTree(
+  U8 *source,U8 *target,I64 limit=0);
 #endif

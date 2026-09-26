@@ -1,16 +1,16 @@
 //Installer transport over normal task file services. Source and target must be
 //different absolute drives. Return the number of copied files or -1 on error.
-public I64 I386InstallTreeNode(U8 *source,U8 *target,I64 depth)
+Bool I386InstallTreeNode(U8 *source,U8 *target,I64 depth,I64 *copied,I64 limit)
 {
   U8 *listing=0,*data=0,*at,*start,source_path[256],target_path[256];
-  I64 needed,count=0,child,size,attr,length,i,j;
+  I64 needed,size,attr,length,i,j;
   Bool directory,ok=TRUE;
-  if(depth>16 || !console_config || !console_config->files) return -1;
+  if(depth>16 || !console_config || !console_config->files) return FALSE;
   needed=(*console_config->files->dir_list)(source,NULL,0,NULL);
-  if(needed<1 || !(listing=I386HeapAlloc(console_config->heap,needed))) return -1;
+  if(needed<1 || !(listing=I386HeapAlloc(console_config->heap,needed))) return FALSE;
   if((*console_config->files->dir_list)(source,listing,needed,NULL)!=needed) ok=FALSE;
   at=listing;
-  while(ok && *at) {
+  while(ok && *at && (!limit || *copied<limit)) {
     start=at;
     while(*at && *at!='\n') at++;
     if(*at!='\n') { ok=FALSE; break; }
@@ -37,9 +37,9 @@ public I64 I386InstallTreeNode(U8 *source,U8 *target,I64 depth)
           !(*console_config->files->dir_list)(target_path,NULL,0,NULL)) {
         ok=FALSE; break;
       }
-      child=I386InstallTreeNode(source_path,target_path,depth+1);
-      if(child<0) { ok=FALSE; break; }
-      count+=child;
+      if(!I386InstallTreeNode(source_path,target_path,depth+1,copied,limit)) {
+        ok=FALSE; break;
+      }
     } else {
       data=(*console_config->files->read_raw)(console_config->heap,source_path,&size,&attr,NULL);
       if(!data) { ok=FALSE; break; }
@@ -47,18 +47,20 @@ public I64 I386InstallTreeNode(U8 *source,U8 *target,I64 depth)
       if(!I386HeapFree(console_config->heap,data)) ok=FALSE;
       data=0;
       if(!ok) break;
-      count++;
+      (*copied)++;
     }
     }
   }
   if(data && !I386HeapFree(console_config->heap,data)) ok=FALSE;
   if(!I386HeapFree(console_config->heap,listing)) ok=FALSE;
-  if(ok) return count;
-  return -1;
+  return ok;
 }
-public I64 I386InstallTree(U8 *source,U8 *target)
+//A positive limit permits a bounded pass that a later call can resume.
+public I64 I386InstallTree(U8 *source,U8 *target,I64 limit=0)
 {
+  I64 copied=0;
   if(!source || !target || source[1]!=':' || target[1]!=':' ||
-      source[2]!='/' || target[2]!='/' || source[0]==target[0]) return -1;
-  return I386InstallTreeNode(source,target,0);
+      source[2]!='/' || target[2]!='/' || source[0]==target[0] || limit<0) return -1;
+  if(!I386InstallTreeNode(source,target,0,&copied,limit)) return -1;
+  return copied;
 }

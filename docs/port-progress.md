@@ -9390,3 +9390,22 @@ found 827 files in 16 directories and 15,842 owned sectors, with the bitmap
 matching reachable extents; the source disk remained unchanged. This proves
 that a complete file-level pass can be repeated on an existing target. It does
 not yet simulate a stop partway through a pass or establish crash recovery.
+
+## Bounded partial tree and resume (2026-09-27)
+
+`I386InstallTree` now accepts an optional positive file limit. A bounded pass
+returns after that many source files, leaving a valid partial RedSea tree; a
+later unrestricted pass walks the source again and fills or replaces the target
+files. The focused four-boot QEMU `486` test exercised full copy, existing-tree
+retry, a fresh 200-file bounded pass, and resume from that partial target.
+The partial target contained 202 files (200 visited by the pass, plus the
+preexisting source file and seed), in nine directories, with all reachable
+extents reflected in the bitmap. After resume, the host independently verified
+all 826 packaged file sizes and hashes and found 827 files in 16 directories
+with a matching bitmap. The source disk stayed unchanged.
+
+The x86-64 two-generation rebuild, i386 cross-build and 386 boot audit passed.
+The public-header help view passed after splitting the longer declaration over
+two source lines. The complete `--test` promotion was not rerun. This is an
+orderly bounded pass, not a simulated power cut during metadata publication;
+crash recovery remains open.

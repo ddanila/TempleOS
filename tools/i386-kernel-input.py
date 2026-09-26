@@ -1705,7 +1705,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                              'public _extern _DIR_DEL Bool DirDel(U8 *filename);',
                              'public _extern _FILE_MOVE Bool FileMove(U8 *old_filename,U8 *new_filename);',
                              '//Exact source/module-tree transport between mounted drives; -1 on failure.',
-                             'public _extern _I386_INSTALL_TREE I64 I386InstallTree(U8 *source,U8 *target);',
+                             '//A positive limit stops after that many files for a resumable bounded pass.',
+                             'public _extern _I386_INSTALL_TREE I64 I386InstallTree(',
+                             '  U8 *source,U8 *target,I64 limit=0);',
                              '#endif','']
             submit('CHashSrcSym *help_mn_symbol=HashFind("Dir",Fs->hash_table,HTG_SRC_SYM);', [], 'help-man-page-symbol')
             submit('help_mn_symbol!=0;', ['1'], 'help-man-page-symbol-present')

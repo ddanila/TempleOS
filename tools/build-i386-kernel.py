@@ -1641,7 +1641,45 @@ def verify_native_tree_copy(disk, exports, out, console, volume):
             'TARGET VOLUME D BOUND\n')!=1:
         raise ValueError('Tree-copy retry changed source disk or missed D: mount')
     integrity=audit_target()
+    partial=work/'partial'; partial.mkdir(exist_ok=True)
+    partial_target=partial/'target.img'
+    partial_target.write_bytes((out/'native-format-target.img').read_bytes())
+    limit=min(200,count-1)
+    partial_report=console['run_input'](candidate,partial,target_disk=partial_target,
+        snapshot=False,ram_mib=16,startup_check={
+            'status':'ok','answers':[],'command_timeout':1200,'commands':[
+                (f'I386InstallTree("C:/","D:/",{limit});',[str(limit)])]})
+    partial_integrity=verify_mutated_volume(partial_target)
+    present=mutated_file_contents(partial_target,set(volume['files']))
+    #The formatted target already contains InstallSeed.HC and RedSeaCreate.HC.
+    if (candidate.read_bytes()!=source or len(present)!=limit+1 or
+            partial_integrity['files']!=limit+2):
+        raise ValueError('Bounded tree copy did not leave the expected partial target')
+    for path,data in present.items():
+        expected=volume['files'][path]
+        if len(data)!=expected['size'] or hashlib.sha256(data).hexdigest()!=expected['sha256']:
+            raise ValueError(f'Partial tree copy differs at {path}')
+    resume=partial/'resume'; resume.mkdir(exist_ok=True)
+    resume_report=console['run_input'](candidate,resume,target_disk=partial_target,
+        snapshot=False,ram_mib=16,startup_check={
+            'status':'ok','answers':[],'command_timeout':1200,'commands':[
+                ('I386InstallTree("C:/","D:/");',[str(count)])]})
+    if candidate.read_bytes()!=source:
+        raise ValueError('Partial tree copy resume changed source disk')
+    resumed=mutated_file_contents(partial_target,set(volume['files']))
+    if len(resumed)!=count:
+        raise ValueError('Partial tree copy resume omitted files')
+    for path,expected in volume['files'].items():
+        data=resumed[path]
+        if len(data)!=expected['size'] or hashlib.sha256(data).hexdigest()!=expected['sha256']:
+            raise ValueError(f'Partial tree copy resume differs at {path}')
+    resumed_integrity=verify_mutated_volume(partial_target)
+    if resumed_integrity['files']!=count+1:
+        raise ValueError('Partial tree copy resume has unexpected file count')
     return {'console':report,'retry_console':retry_report,'files_copied':count,
+            'partial_console':partial_report,'resume_console':resume_report,
+            'partial_files':limit,'partial_filesystem_integrity':partial_integrity,
+            'resumed_filesystem_integrity':resumed_integrity,
             'first_filesystem_integrity':first_integrity,'target_sha256':hashlib.sha256(
         target.read_bytes()).hexdigest(),'filesystem_integrity':integrity,'result':'pass'}
 
