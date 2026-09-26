@@ -9329,3 +9329,28 @@ This is one real source file and its directory path, not the full source/module
 tree or guest-built compiler/kernel output. Directory publication follows the
 current task-file creation pattern; a crash between creating a directory entry
 and writing its `.`/`..` sector still needs recovery design before final install.
+
+## Interactive secondary RedSea volume (2026-09-26)
+
+The normal i386 startup can now mount an already formatted secondary IDE
+RedSea volume and bind it as `D:` through the retained task file runtime.
+The opt-in target-mount flag keeps this probe out of ordinary single-disk
+boots. This is the standard HolyC task file-service path, shared with `C:`,
+rather than a diagnostic-only raw sector interface.
+
+A focused QEMU `486` boot at 8 MiB completed normal startup in 48.42 seconds.
+Five VGA-checked HolyC commands listed `D:/Kernel/I386`, opened its copied
+`RedSeaCreate.HC`, created `D:/InstallCheck`, wrote `Proof.HC` through
+`DocNew`/`DocWrite`, and read it back. The host found the exact `42` document
+bytes with the expected trailing control byte (SHA-256
+`c1d220747dd7c89dd74a10db16dbe42cfa21b74306700d71e342c4887d2888e5`).
+The independent RedSea walk found four directories, three files, 23 owned
+sectors and a matching bitmap; the boot disk stayed unchanged. The x86-64
+two-generation rebuild, native cross-build and 386 boot audit passed. The flat
+kernel is 452,768 bytes, leaving 1,888 bytes in the BIOS load reservation.
+The full `--test` suite was not rerun.
+
+Both source and target are now accessible to normal HolyC file operations, but
+the target mount is still opt-in and full-tree copy plus native artifact
+construction remain open. The next installer should use the task file API and
+move substantial logic out of the nearly full BIOS-loaded kernel.

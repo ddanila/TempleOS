@@ -2283,8 +2283,13 @@ The standalone-development goal above is the entry gate. M7 then requires:
    host verifies the exact source bytes, directory links and bitmap; a second
    boot finds the existing tree without changing the target. Generalize this
    path to the complete source and module set before treating it as an installer.
+   A normal boot can now mount that secondary volume as `D:` through the retained
+   task file service. The interactive HolyC console reads the copied source,
+   creates a directory and writes a document on `D:` at 8 MiB; the host audits
+   the saved bytes and bitmap. This gives the future installer a standard
+   guest file-service path to both volumes.
    The BIOS load reservation is now 896 sectors, ending at `0x80000`, with
-   32 KiB before the task-stack reservation; the current image has 2,800
+   32 KiB before the task-stack reservation; the current image has 1,888
    bytes of load-area headroom. More native code belongs in retained modules
    or must be paired with a revised boot/memory layout.
    A normal guest boot can now copy its complete host-built Generation 0 disk

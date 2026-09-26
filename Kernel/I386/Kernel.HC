@@ -42,6 +42,8 @@ CI386Cpu kernel_cpu;
 CI386Heap kernel_heap;
 CI386Ata kernel_disk;
 CI386RedSea kernel_volume;
+CI386Ata kernel_target_disk;
+CI386RedSea kernel_target_volume;
 CI386Timer kernel_timer;
 CI386SleepQueue kernel_sleep;
 CI386ConsoleServices kernel_console;
@@ -53,6 +55,8 @@ U32 kernel_diagnostics=0;
 U32 kernel_file_mutation_probe=0;
 //Build tooling enables this only with a separate blank QEMU target disk.
 U32 kernel_target_format_probe=0;
+//Build tooling enables this with an already formatted secondary IDE volume.
+U32 kernel_target_mount_probe=0;
 //Build tooling enables this only with a disposable secondary IDE disk.
 U32 kernel_install_copy_probe=0;
 //High byte selects RedSea task operation; low byte selects its failing call.
@@ -187,6 +191,15 @@ I64 Main(CI386BootInfo *info,I64 unused)
         pulse_used-kernel_heap.used<1048576+16384) KernelStop;
     kernel_pulse=0;
     KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
+  }
+  if(kernel_target_mount_probe) {
+    U32 target_flags=I386IrqSave;
+    if(!I386AtaIdentifyPolled(&kernel_target_disk,1,0,100000,0) ||
+        !I386RedSeaMount(&kernel_target_volume,&kernel_target_disk,2048) ||
+        !kernel_files.bind(&kernel_scheduler,&kernel_target_volume)) KernelStop;
+    kernel_volumes.letter['D'-'A']=&kernel_target_volume;
+    I386IrqRestore(target_flags);
+    KernelLog("TARGET VOLUME D BOUND\n");
   }
   if(kernel_install_copy_probe) {
     CI386Ata target;

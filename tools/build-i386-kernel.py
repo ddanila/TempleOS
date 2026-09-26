@@ -1570,6 +1570,37 @@ def verify_native_target_format(disk, exports, out):
             'result':'pass'}
 
 
+def verify_native_target_mount(disk, exports, out, console):
+    """Use the existing target through normal HolyC D: file services."""
+    offset=kernel_flag_disk_offset(exports,'kernel_target_mount_probe')
+    original=bytearray(disk.read_bytes())
+    if struct.unpack_from('<I',original,offset)[0]:
+        raise ValueError('Target-mount flag enabled in normal image')
+    struct.pack_into('<I',original,offset,1)
+    work=out/'target-mount'; work.mkdir(parents=True,exist_ok=True)
+    candidate=work/'source.img'; candidate.write_bytes(original)
+    target=work/'target.img'
+    target.write_bytes((out/'native-format-target.img').read_bytes())
+    report=console['run_input'](candidate,work,target_disk=target,snapshot=False,
+        startup_check={'status':'ok','answers':[],'commands':[
+            ('Dir("D:/Kernel/I386");',['./','../','RedSeaCreate.HC','3']),
+            ('DocRead("D:/Kernel/I386/RedSeaCreate.HC")!=0;',['1']),
+            ('DirMk("D:/InstallCheck");',['1']),
+            ('CDoc *d_proof=DocNew("D:/InstallCheck/Proof.HC",Fs);DocPutKey(d_proof,\'4\');DocPutKey(d_proof,\'2\');DocWrite(d_proof);',['1']),
+            ('DocRead("D:/InstallCheck/Proof.HC")!=0;',['1'])]})
+    if (work/'debug.log').read_text().count('TARGET VOLUME D BOUND\n')!=1 or \
+            candidate.read_bytes()!=original:
+        raise ValueError('Target mount did not bind D: or changed the boot disk')
+    proof=mutated_file_contents(target,{'/InstallCheck/Proof.HC'}).get('/InstallCheck/Proof.HC')
+    if proof!=b'42\x05':
+        raise ValueError('Normal HolyC D: write did not persist exact document bytes')
+    integrity=verify_mutated_volume(target)
+    if integrity['files']!=3:
+        raise ValueError('Target mount wrote unexpected files')
+    return {'console':report,'proof_sha256':hashlib.sha256(proof).hexdigest(),
+            'filesystem_integrity':integrity,'result':'pass'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -2680,6 +2711,7 @@ def main():
         result['file_io_failure_matrix']=verify_file_io_failure_matrix(normal_disk,exports,out)
         result['file_replace_failure_matrix']=verify_file_replace_failure_matrix(normal_disk,exports,out)
         result['native_target_format']=verify_native_target_format(normal_disk,exports,out)
+        result['native_target_mount']=verify_native_target_mount(normal_disk,exports,out,console)
         run(sys.executable,'tools/test-i386-install-copy.py')
         result['native_install_copy']=json.loads(
             (out/'install-copy/result.json').read_text())

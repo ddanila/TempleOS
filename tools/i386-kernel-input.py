@@ -74,7 +74,7 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486'):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -91,6 +91,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
     cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu',cpu,'-m','8','-nic','none',
          '-drive',f'file={disk.resolve()},format=raw,if=ide']
+    if target_disk is not None:
+        if target_disk.resolve()==disk.resolve(): raise ValueError('Target must be a separate disk')
+        cmd+=['-drive',f'file={target_disk.resolve()},format=raw,if=ide,index=2']
     if snapshot: cmd+=['-snapshot']
     cmd += ['-display','none','-no-reboot',
          '-debugcon',f'file:{log}','-qmp',f'unix:{qmp},server=on,wait=off']
