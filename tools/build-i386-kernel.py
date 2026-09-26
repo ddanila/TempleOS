@@ -1006,6 +1006,36 @@ def verify_native_owned_data_module(disk):
             'initial_value':20,'data_offset':data_range[1]}
 
 
+def verify_native_aggregate_module(disk):
+    """Audit initialized class storage and its code references on RedSea."""
+    module=mutated_file_contents(disk,{'/Probe/DurableAggregate.t32m'}).get('/Probe/DurableAggregate.t32m')
+    if not module or len(module)<32 or module[:4]!=b'T32M':
+        raise ValueError('Missing guest-built aggregate module')
+    total,code_size,count,records_offset,strings_offset=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not code_size or code_size&7 or count<4 or
+            records_offset!=32+code_size or strings_offset!=records_offset+16*count or
+            strings_offset>total):
+        raise ValueError('Invalid guest-built aggregate module layout')
+    rows=[struct.unpack_from('<4I',module,records_offset+16*i) for i in range(count)]
+    exports=[r for r in rows if r[0]==1]
+    addresses=[r for r in rows if r[0]==5]
+    ranges=[r for r in rows if r[0]==4]
+    data_exports=[r for r in rows if r[0]==3]
+    name=lambda r:module[r[2]:r[2]+r[3]]
+    if (len(exports)!=1 or name(exports[0])!=b'DurablePairSum' or
+            not addresses or any(name(r)!=b'DurablePairData' or
+                r[1]<1 or r[1]>code_size-4 or module[32+r[1]-1]!=5 or
+                module[32+r[1]:32+r[1]+4]!=b'\0'*4 for r in addresses) or
+            len(ranges)!=1 or ranges[0][2]!=16 or ranges[0][3]!=0 or
+            len(data_exports)!=1 or name(data_exports[0])!=b'DurablePairData' or
+            data_exports[0][1]!=ranges[0][1] or ranges[0][1]>code_size-16 or
+            module[32+ranges[0][1]:32+ranges[0][1]+16]!=struct.pack('<qq',20,22)):
+        raise ValueError('Guest-built aggregate records or initial bytes differ')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'function':'DurablePairSum','global':'DurablePairData',
+            'initial_values':[20,22],'data_bytes':16,'data_offset':ranges[0][1]}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1504,6 +1534,17 @@ def main():
                                        'module_bytes':native_data_owned[0][1],
                                        'loaded_bytes':native_data_owned[0][2],
                                        'result':'function and mutable global loaded together'}
+        native_aggregate = [tuple(int(value,16) for value in line.split()[2:])
+                            for line in log.splitlines()
+                            if re.match(r'^NATIVE AGGREGATE [0-9A-F]{16} ',line)]
+        if len(native_aggregate)!=2 or [entry[0] for entry in native_aggregate]!=[0,1] or \
+                native_aggregate[0][1:]!=native_aggregate[1][1:] or \
+                native_aggregate[0][1]<128 or native_aggregate[0][2]<48:
+            raise ValueError('Guest-built module did not own mutable aggregate data')
+        result['native_aggregate']={'phases':[0,1],
+                                    'module_bytes':native_aggregate[0][1],
+                                    'loaded_bytes':native_aggregate[0][2],
+                                    'result':'function and initialized class loaded together'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1729,6 +1770,8 @@ def main():
             raise ValueError('Fresh global-data bound module disk round trip failed')
         if mutation_log.count('NATIVE DATA OWNED DISK\n')!=1 or 'NATIVE DATA OWNED EXISTING\n' in mutation_log:
             raise ValueError('Fresh owned-global module disk round trip failed')
+        if mutation_log.count('NATIVE AGGREGATE DISK\n')!=1 or 'NATIVE AGGREGATE EXISTING\n' in mutation_log:
+            raise ValueError('Fresh aggregate module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1754,6 +1797,9 @@ def main():
         if module_reboot_log.count('NATIVE DATA OWNED EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE DATA OWNED DISK\n')!=1:
             raise ValueError('Owned-global module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE AGGREGATE EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE AGGREGATE DISK\n')!=1:
+            raise ValueError('Aggregate module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1790,6 +1836,11 @@ def main():
                                             'second_boot':'read, load, mutate, execute, replace',
                                             'module':verify_native_owned_data_module(mutation_disk),
                                             'result':'pass'}
+        result['native_aggregate_disk']={'path':'C:/Probe/DurableAggregate.t32m',
+                                         'fresh_boot':'write, read, load, mutate, execute',
+                                         'second_boot':'read, load, mutate, execute, replace',
+                                         'module':verify_native_aggregate_module(mutation_disk),
+                                         'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

@@ -8746,3 +8746,21 @@ module boots, file interruption/recovery, and original/native document
 compatibility passed. The manifest records compiler services version 54 and
 the owned-global disk audit above. This closes the promotion gap recorded in
 the preceding paragraph; the earlier timeout occurred under heavy host load.
+
+## Guest-built module carries initialized class storage (2026-09-26)
+
+The native module packer now copies a selected global's full initialized byte
+range and checks its class members recursively for pointer fields. This admits
+pointer-free aggregates and arrays while keeping live guest pointers out of
+serialized data. The QEMU probe packages `DurablePairSum` with the initialized
+16-byte `DurablePairData` class, loads the module without resident bindings,
+checks 20+22=42, mutates the loaded second member to 23, and observes 43.
+Both diagnostic phases pass with a 335-byte module and 168-byte loaded image.
+`python3 tools/test-rebuild.py` and the full
+`python3 tools/build-i386-kernel.py --test` gate pass. The normal 8 MiB boot took
+48.49 seconds; the 558-line workstation session, two writable boots, file
+recovery and document compatibility passed. The host RedSea audit confirms
+the 16 initialized bytes, data range/export, named address records and SHA-256
+`27dd6d800cedcf77d3d7d16babc62f98d74daae76348e2411ad161771d96316e`.
+Array sizing is handled by the packer but has no dedicated disk probe yet.
+Static member storage and pointer initializer fixups remain open.

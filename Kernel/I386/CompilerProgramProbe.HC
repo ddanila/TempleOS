@@ -490,6 +490,73 @@ U0 ProbeProgramDataOwned(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE DATA OWNED "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramAggregateRun(CI386Heap *heap,U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *records,*record;
+  U8 *image;
+  I64 image_bytes,data_offset=-1,i,*pair;
+  I64 (*entry)();
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  records=module+header->records_offset;
+  for(i=0;i<header->record_count;i++) {
+    record=records+i;
+    if(record->kind==I386_MODULE_DATA_EXPORT &&
+        !StrCmp(module+record->name_offset,"DurablePairData")) {
+      if(data_offset>=0) KernelStop;
+      data_offset=record->offset;
+    }
+  }
+  if(data_offset<0) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"DurablePairSum",0,0);
+  if(image_bytes<1 || !(image=I386HeapAlloc(heap,image_bytes)) ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "DurablePairSum",0,0)!=image_bytes) KernelStop;
+  pair=image+8+data_offset; entry=image;
+  if(pair[0]!=20 || pair[1]!=22 || (*entry)()!=42) KernelStop;
+  pair[1]=23;
+  if((*entry)()!=43 || !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramAggregate(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,CHashTable *table)
+{
+  CHashFun *function[1];
+  CHashGlblVar *globals[1];
+  U8 *module,*disk_module;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  function[0]=ProbeSymbolFind(0,"DurablePairSum",table,HTT_FUN);
+  globals[0]=ProbeSymbolFind(0,"DurablePairData",table,HTT_GLBL_VAR);
+  if(!function[0] || !globals[0] || globals[0]->size!=16 ||
+      !(module_bytes=probe->compiler->program_pack_data(symbols,function,1,globals,1,0,0)) ||
+      !(module=I386HeapAlloc(heap,module_bytes))) KernelStop;
+  module[0]=0xA5;
+  if(probe->compiler->program_pack_data(symbols,function,1,globals,1,module,module_bytes-1) ||
+      module[0]!=0xA5 ||
+      probe->compiler->program_pack_data(symbols,function,1,globals,1,module,
+        module_bytes)!=module_bytes) KernelStop;
+  image_bytes=ProbeProgramAggregateRun(heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk_module=probe->files->read(heap,"C:/Probe/DurableAggregate.t32m",&disk_bytes,0,0);
+    if(disk_module) {
+      if(ProbeProgramAggregateRun(heap,disk_module,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk_module)) KernelStop;
+      KernelLog("NATIVE AGGREGATE EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/DurableAggregate.t32m",module,module_bytes,0)) KernelStop;
+    disk_module=probe->files->read(heap,"C:/Probe/DurableAggregate.t32m",&disk_bytes,0,0);
+    if(!disk_module || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk_module[i]!=module[i]) KernelStop;
+    if(ProbeProgramAggregateRun(heap,disk_module,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk_module)) KernelStop;
+    KernelLog("NATIVE AGGREGATE DISK\n");
+  }
+  if(!I386HeapFree(heap,module) || heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE AGGREGATE "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbeProgramMulti(CI386CompilerProbe *probe,CI386Heap *heap,
   CPrsSymbolServices *symbols,CHashTable *table)
 {
@@ -553,6 +620,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   for(kind=0;kind<14;kind++) {
     source="I64i DurableData=20;"
       "class DurablePair{I64i a,b;};DurablePair DurablePairData={20,22};"
+      "I64i DurablePairSum(){return DurablePairData.a+DurablePairData.b;}"
       "extern I64i DurableLater(I64i x);"
       "I64i DurableAdd(I64i x=22){return DurableLater(x);}"
       "I64i DurableLater(I64i x){return DurableData+x;}"
@@ -634,6 +702,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       ProbeProgramAddress(probe,heap,symbols,source_table);
       ProbeProgramData(probe,heap,symbols,source_table);
       ProbeProgramDataOwned(probe,heap,symbols,source_table);
+      ProbeProgramAggregate(probe,heap,symbols,source_table);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableAdd",probe->phase,0);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableFact",probe->phase,1);
       ProbeProgramJitSpan(probe,symbols,source_table,"DurableDefault",probe->phase,2);
