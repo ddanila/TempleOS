@@ -1,5 +1,6 @@
 //Allocation-free T32M serializer shared by native and host compilers.
 //Named record offsets refer to the supplied string table until serialized.
+#include "/Kernel/I386/ModuleCheck.HH"
 public I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes)
 {

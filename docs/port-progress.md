@@ -9017,10 +9017,34 @@ The retained compiler service now uses version 57 and enumerates
 `I386ModulePackRaw` as a named code export. Boot validates and publishes that
 export through the same bounded resident registry used by the file runtime.
 The two-phase guest diagnostic confirms that the root symbol, enumeration and
-service callback all address the same retained function, and that enumeration
-ends after the single advertised export. The host audit checks the exported
+service callback all address the same retained function. The host audit checks the exported
 function's position inside the compiler module and the callback's position in
 the service table. The x86-64 two-generation rebuild and i386 cross-build with
 the 386 QEMU boot audit pass. This extends the linking mechanism to a second
 retained module; guest compilation of the compiler/kernel source graph and a
 native rebuild remain open.
+
+## Original module serializer compiles and runs on the guest (2026-09-26)
+
+`ModulePackCore.HC` now includes the shared declaration of its external
+`I386ModuleValid` dependency. The retained compiler runtime publishes that
+validator alongside `I386ModulePackRaw`. With the same scalar bootstrap used
+for other original files, the guest compiler reads and packages the delivered
+serializer source. Its T32M has one owned function export and one external
+relative call to the retained validator. Loading the new function under the
+same name as the resident implementation works in the private source context.
+
+The guest calls the source-built serializer on a one-function T32M fixture and
+compares all 61 output bytes with the resident serializer. It also checks that
+an invalid record is rejected. Both diagnostic phases pass and return their
+heap allocations to baseline. A first writable QEMU boot saved and reloaded
+the 9,226-byte module; a second boot loaded the previous copy, repeated the
+comparison, replaced it and completed normal startup. The independent disk
+audit confirms exactly those two records and SHA-256
+`6bdc593351d7558e7ced9c2ed6a870ce42274bd097a965693649f5efe0fa2a45`.
+The delivered source SHA-256 is
+`2032af5d5bdcaf9f236e49529a7c25d633a2d5ab691f356d94bd4268c5af8272`.
+The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
+audit pass. The full `--test` promotion has not been rerun for this revision;
+the focused diagnostic and writable boots cover this source-build path. The
+complete compiler/kernel build, installation and self-hosting remain open.

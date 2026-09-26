@@ -3,6 +3,7 @@
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/CompilerRuntime.HH"
+#include "/Kernel/I386/ModuleCheck.HH"
 #include "/Compiler/I386/LexString.HH"
 #include "/Compiler/I386/LexNumber.HH"
 #include "/Compiler/I386/LexChar.HH"
@@ -46,10 +47,15 @@ U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
 Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(index || !binding) return FALSE;
-  binding->name="I386ModulePackRaw";
+  if(index<0 || index>1 || !binding) return FALSE;
+  if(index) {
+    binding->name="I386ModuleValid";
+    binding->address=(&I386ModuleValid+0)(U64);
+  } else {
+    binding->name="I386ModulePackRaw";
+    binding->address=(&I386ModulePackRaw+0)(U64);
+  }
   binding->kind=I386_MODULE_EXPORT;
-  binding->address=(&I386ModulePackRaw+0)(U64);
   return TRUE;
 }
 #assert sizeof(CI386CompilerServices)==224

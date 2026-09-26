@@ -165,7 +165,7 @@ def compiler_runtime_layout(module):
                 imports.append((symbol, name))
     if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space', 'I386LexFilePush', 'LexFileReleaseTop', 'I386HashTableNew', 'I386HashTableValid', 'I386HashTableDelete', 'throw', 'SysTry', 'SysUntry'}:
         raise ValueError('Unexpected compiler-runtime import contract')
-    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel', 'I386BackendCompile', 'I386ParseExpression', 'I386ParseType', 'I386ParserAlloc', 'I386ParserFree', 'I386ParserToken', 'I386ParseDeclarations', 'I386COCInit', 'I386ParseClass', 'I386ParseFunJoin', 'I386PublishClasses', 'I386BootstrapScalars', 'I386LoadScalarTypes', 'I386ScalarTypesCheck', 'I386FrontendServices', 'I386FrontendStatement', 'I386FrontendCommand', 'I386FrontendPublish', 'I386FrontendCodeSpan', 'I386FrontendCodeRelocs', 'I386FrontendModulePack', 'I386FrontendModulePackData', 'I386FrontendModulePackUnit', 'I386FrontendPrivateDefines', 'I386CompilerRuntimeExportAt', 'I386ModulePackRaw', 'I386CommandInput', 'I386ExecutionBreakPoll', 'I386MathBind', 'Round', 'Trunc', 'Floor', 'Ceil', 'Pow10I64', 'Ln', 'Log10', 'Log2', 'FloorU64', 'CeilU64', 'RoundI64', 'FloorI64', 'CeilI64'):
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel', 'I386BackendCompile', 'I386ParseExpression', 'I386ParseType', 'I386ParserAlloc', 'I386ParserFree', 'I386ParserToken', 'I386ParseDeclarations', 'I386COCInit', 'I386ParseClass', 'I386ParseFunJoin', 'I386PublishClasses', 'I386BootstrapScalars', 'I386LoadScalarTypes', 'I386ScalarTypesCheck', 'I386FrontendServices', 'I386FrontendStatement', 'I386FrontendCommand', 'I386FrontendPublish', 'I386FrontendCodeSpan', 'I386FrontendCodeRelocs', 'I386FrontendModulePack', 'I386FrontendModulePackData', 'I386FrontendModulePackUnit', 'I386FrontendPrivateDefines', 'I386CompilerRuntimeExportAt', 'I386ModuleValid', 'I386ModulePackRaw', 'I386CommandInput', 'I386ExecutionBreakPoll', 'I386MathBind', 'Round', 'Trunc', 'Floor', 'Ceil', 'Pow10I64', 'Ln', 'Log10', 'Log2', 'FloorU64', 'CeilU64', 'RoundI64', 'FloorI64', 'CeilI64'):
         if name not in exports or exports[name][0] != 1:
             raise ValueError(f'Missing compiler-runtime function {name}')
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
@@ -179,6 +179,7 @@ def compiler_runtime_layout(module):
                 ident_token_offset=8+exports['I386LexIdentToken'][1], string_token_offset=8+exports['I386LexStringToken'][1],
                 next_offset=8+exports['I386RuntimeLexNext'][1], include_offset=8+exports['I386RuntimeLexIncludes'][1], control_new_offset=8+exports['I386CmpCtrlNew'][1], control_del_offset=8+exports['I386CmpCtrlDel'][1], symbols_init_offset=8+exports['I386TaskSymbolsInit'][1], control_enter_offset=8+exports['I386CmpCtrlEnter'][1], control_leave_offset=8+exports['I386CmpCtrlLeave'][1], control_drain_offset=8+exports['I386CmpCtrlDrain'][1], control_unwind_offset=8+exports['I386CmpCtrlUnwind'][1], code_add_offset=8+exports['I386ICAdd'][1], code_misc_offset=8+exports['I386COCMiscNew'][1], code_discard_offset=8+exports['I386COCDiscard'][1], code_save_offset=8+exports['I386COCSave'][1], code_push_offset=8+exports['I386COCPush'][1], code_pop_offset=8+exports['I386COCPopNoFree'][1], code_free_offset=8+exports['I386COCHeaderFree'][1], code_append_offset=8+exports['I386COCAppend'][1], code_retire_offset=8+exports['I386ICRetire'][1], code_branch_offset=8+exports['I386OptBranch'][1], code_optimize_offset=8+exports['I386OptPass012'][1], out_new_offset=8+exports['I386OutNew'][1], out_del_offset=8+exports['I386OutDel'][1], backend_offset=8+exports['I386BackendCompile'][1], expression_offset=8+exports['I386ParseExpression'][1], type_offset=8+exports['I386ParseType'][1], parser_alloc_offset=8+exports['I386ParserAlloc'][1], parser_free_offset=8+exports['I386ParserFree'][1], parser_token_offset=8+exports['I386ParserToken'][1], declarations_offset=8+exports['I386ParseDeclarations'][1], code_init_offset=8+exports['I386COCInit'][1], class_offset=8+exports['I386ParseClass'][1], fun_join_offset=8+exports['I386ParseFunJoin'][1], publish_classes_offset=8+exports['I386PublishClasses'][1], bootstrap_scalars_offset=8+exports['I386BootstrapScalars'][1], load_scalars_offset=8+exports['I386LoadScalarTypes'][1], scalar_check_offset=8+exports['I386ScalarTypesCheck'][1], frontend_offset=8+exports['I386FrontendServices'][1], statement_offset=8+exports['I386FrontendStatement'][1], command_offset=8+exports['I386FrontendCommand'][1], publish_offset=8+exports['I386FrontendPublish'][1], input_offset=8+exports['I386CommandInput'][1], break_poll_offset=8+exports['I386ExecutionBreakPoll'][1], math_bind_offset=8+exports['I386MathBind'][1], version_offset=version_offset,
                 code_span_offset=8+exports['I386FrontendCodeSpan'][1], module_pack_offset=8+exports['I386ModulePackRaw'][1],
+                validator_offset=8+exports['I386ModuleValid'][1],
                 code_reloc_offset=8+exports['I386FrontendCodeRelocs'][1],
                 program_pack_offset=8+exports['I386FrontendModulePack'][1],
                 program_pack_data_offset=8+exports['I386FrontendModulePackData'][1],
@@ -1264,6 +1265,28 @@ def verify_native_resident_module(disk):
             'resident_import':'I386ArcEntryGet'}
 
 
+def verify_native_packer_module(disk):
+    """Audit the guest-built original serializer and its retained validator call."""
+    path='/Probe/NativePacker.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built original module packer')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=2 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid original module packer layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    names=sorted((kind,module[name:name+length]) for kind,offset,name,length in rows)
+    if names!=[(1,b'I386ModulePackRaw'),(2,b'I386ModuleValid')] or \
+            any(offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Original packer exports/imports differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/ModulePackCore.HC').read_bytes()).hexdigest(),
+            'validator':'I386ModuleValid'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1851,6 +1874,17 @@ def main():
                                    'module_bytes':native_resident[0][1],
                                    'loaded_bytes':native_resident[0][2],
                                    'source':'/Kernel/I386/ArcExpand.HC'}
+        native_packer = [tuple(int(value,16) for value in line.split()[2:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE PACKER [0-9A-F]{16} ',line)]
+        if len(native_packer)!=2 or [entry[0] for entry in native_packer]!=[0,1] or \
+                native_packer[0][1:]!=native_packer[1][1:] or \
+                native_packer[0][1]<256 or native_packer[0][2]<128:
+            raise ValueError('Guest-built original module packer did not execute')
+        result['native_packer']={'phases':[0,1],
+                                 'module_bytes':native_packer[0][1],
+                                 'loaded_bytes':native_packer[0][2],
+                                 'source':'/Kernel/I386/ModulePackCore.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1871,7 +1905,7 @@ def main():
             raise ValueError('Missing queued-file compiler break cleanup')
         result['file_break_cleanup']={'cases':2,'result':'pass'}
         result['input_break_cleanup']={'phases':[0,1],'cases_per_phase':3,'result':'pass'}
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=57, export_at_address=compiler_export_at_address, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=57, export_at_address=compiler_export_at_address, validator_address=address+runtime_layout['validator_offset'], image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, backend_address=backend_address, expression_address=expression_address, type_address=type_address, parser_alloc_address=parser_alloc_address, parser_free_address=parser_free_address, parser_token_address=parser_token_address, declarations_address=declarations_address, native_declaration_phases=[0,1], code_init_address=code_init_address, class_address=class_address, fun_join_address=fun_join_address, publish_classes_address=publish_classes_address, bootstrap_scalars_address=bootstrap_scalars_address, load_scalars_address=load_scalars_address, scalar_check_address=scalar_check_address, frontend_address=frontend_address, statement_address=statement_address, command_address=command_address, publish_address=publish_address, input_address=input_address, break_poll_address=break_poll_address, math_bind_address=math_bind_address, native_input_phases=[0,1], native_program_phases=[0,1], native_command_phases=[0,1], native_statement_phases=[0,1], native_frontend_phases=[0,1], native_publication_phases=[0,1], native_symbol_phases=[0,1], parser_token_phases=[0,1], parser_memory_phases=[0,1], native_expression_phases=[0,1], native_backend_phases=[0,1], native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
@@ -2093,6 +2127,8 @@ def main():
             raise ValueError('Fresh production Arc expansion module disk round trip failed')
         if mutation_log.count('NATIVE RESIDENT DISK\n')!=1 or 'NATIVE RESIDENT EXISTING\n' in mutation_log:
             raise ValueError('Fresh resident-bound native Arc module disk round trip failed')
+        if mutation_log.count('NATIVE PACKER DISK\n')!=1 or 'NATIVE PACKER EXISTING\n' in mutation_log:
+            raise ValueError('Fresh guest-built original module packer disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -2142,6 +2178,9 @@ def main():
         if module_reboot_log.count('NATIVE RESIDENT EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE RESIDENT DISK\n')!=1:
             raise ValueError('Resident-bound native Arc module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE PACKER EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE PACKER DISK\n')!=1:
+            raise ValueError('Guest-built native module packer did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2219,6 +2258,11 @@ def main():
                                         'second_boot':'read, bind, load, execute, replace',
                                         'module':verify_native_resident_module(mutation_disk),
                                         'result':'pass'}
+        result['native_packer_disk']={'path':'C:/Probe/NativePacker.t32m',
+                                      'fresh_boot':'write, bind, load, compare',
+                                      'second_boot':'read, bind, load, compare, replace',
+                                      'module':verify_native_packer_module(mutation_disk),
+                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

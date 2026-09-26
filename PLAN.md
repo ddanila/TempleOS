@@ -2232,9 +2232,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    one real cross-module source-build path. The same resident-export contract
    now covers `CompilerRuntime`: the kernel publishes its `I386ModulePackRaw`
    entry, and the two-phase guest probe verifies that the root symbol and
-   compiler service point to the same retained code. Next expose the actual
-   compiler/kernel dependency graph through validated resident exports,
-   provide the full kernel prelude, and compile that graph. Broader
+   compiler service point to the same retained code. The compiler runtime
+   also exports `I386ModuleValid`. Using an explicit validator declaration,
+   the guest now compiles `/Kernel/I386/ModulePackCore.HC`, links its validator
+   call to the retained compiler module, and compares its serialized T32M
+   byte-for-byte with the resident serializer across two writable boots.
+   This exercises rebuilding a function whose name already exists in the
+   root scope. Next expose the rest of the compiler/kernel dependency graph
+   through validated resident exports, provide the full kernel prelude, and
+   compile that graph. Broader
    pointer-target identity and
    full source-tree coverage remain open.
 2. **Bootable native installation.** The native build can format or initialize
