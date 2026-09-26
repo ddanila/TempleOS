@@ -2278,6 +2278,11 @@ The standalone-development goal above is the entry gate. M7 then requires:
    that target and uses its source-built RedSea creator to publish
    `InstallSeed.HC`; the host checks its bytes, directory entry and bitmap,
    while a second boot confirms the file and target image remain unchanged.
+   The same guest-built creator now lays out `/Kernel/I386` on the target and
+   copies the actual `RedSeaCreate.HC` source file from the boot volume. The
+   host verifies the exact source bytes, directory links and bitmap; a second
+   boot finds the existing tree without changing the target. Generalize this
+   path to the complete source and module set before treating it as an installer.
    The BIOS load reservation is now 896 sectors, ending at `0x80000`, with
    32 KiB before the task-stack reservation; the current image has 2,800
    bytes of load-area headroom. More native code belongs in retained modules
@@ -2302,7 +2307,8 @@ The standalone-development goal above is the entry gate. M7 then requires:
    a two-boot QEMU test. A separate exact-image-copy test boots the copied
    host-built Generation 0 disk alone. Publishing rebuilt kernel/compiler
    artifacts and copying the full source/module tree through the guest file API
-   remain open. The clone transport has two injected interruption/retry cases;
+   remain open. One source file now crosses that boundary in its real directory
+   path. The clone transport has two injected interruption/retry cases;
    actual power-loss and rebuilt-artifact recovery remain open.
 3. **Two-generation self-hosting.** A host-built Generation 0 produces native
    Generation 1; Generation 1 boots and produces Generation 2. Generation 2

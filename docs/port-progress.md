@@ -9307,3 +9307,25 @@ the flat kernel is 451,856 bytes, leaving 2,800 bytes in the BIOS load
 reservation. The full `--test` suite was not rerun. These are deliberately
 injected stops after successful flushes, not QEMU power cuts or evidence of
 guest-built compiler/kernel installation. Those gates remain open.
+
+## Guest-created source tree on the installation target (2026-09-26)
+
+The target-format diagnostic now uses the guest-built `I386RedSeaCreate` module
+to create `/Kernel` and `/Kernel/I386` on the secondary disk and copy the real
+`C:/Kernel/I386/RedSeaCreate.HC` source into its matching path. It initializes
+each directory's `.` and `..` entries and reads back the file through the
+mounted target volume. The earlier `InstallSeed.HC` remains in the root.
+
+The focused two-boot QEMU helper passed. Its independent host walk checked
+both directory links, the exact source bytes (SHA-256
+`de4b71927fd69e1a42bf7a9eabeb8146ef41f8974028de83990cde063a496441`),
+the allocation bitmap, and the blank reserved boot area. On reboot, all three
+guest calls found the existing file, and the target SHA-256 remained
+`8201fafc3c4186251fc8ff4718ae03abb8ededb01ce3ec269082bc3107ecd93b`.
+The x86-64 two-generation rebuild, i386 cross-build and 386 boot audit passed.
+The full `--test` suite was not rerun.
+
+This is one real source file and its directory path, not the full source/module
+tree or guest-built compiler/kernel output. Directory publication follows the
+current task-file creation pattern; a crash between creating a directory entry
+and writing its `.`/`..` sector still needs recovery design before final install.

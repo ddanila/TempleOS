@@ -1780,8 +1780,10 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CI386RedSeaEntry directory,target_entry;
   CI386RedSea target_volume;
   CI386Ata target;
-  U8 *image,*read,*payload="Created by guest",target_data[16];
-  I64 image_bytes,read_bytes,i,j,status,offset=-1,used=heap->used,allocations=heap->allocations;
+  U8 *image,*read,*source=0,*copied=0,*payload="Created by guest",target_data[16];
+  U8 dir_sector[512],*dir_name;
+  I64 image_bytes,read_bytes,source_bytes,i,j,k,parent,status,offset=-1;
+  I64 used=heap->used,allocations=heap->allocations;
   U32 irq;
   I64 (*guest_create)(CI386RedSea *volume,I64 directory,U8 *name,
     U8 *buffer,I64 size,I64 datetime,I64 attr);
@@ -1789,6 +1791,9 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
   Bool (*mount)(CI386RedSea *volume,CI386Ata *disk,I64 start);
   I64 (*find)(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSeaEntry *entry);
   I64 (*read_file)(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
+  Bool (*sector_write)(CI386RedSea *volume,I64 block,U8 *buffer);
+  Bool (*flush)(CI386RedSea *volume);
+  U0 (*put_word)(U8 *buffer,U64 value);
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   imports[0].name="I386RedSeaValid";
   imports[1].name="I386RedSeaDirectory";
@@ -1838,6 +1843,10 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
     if(read) KernelStop;
   }
   if(probe->format_target) {
+    source=probe->files->read(heap,"C:/Kernel/I386/RedSeaCreate.HC",&source_bytes,0,0);
+    if(!source || source_bytes<1) KernelStop;
+    copied=I386HeapAlloc(heap,source_bytes);
+    if(!copied) KernelStop;
     identify_symbol=0; mount_symbol=0; find_symbol=0; read_symbol=0;
     for(table=I386TaskSelf->hash_table;table;table=table->next) {
       if(!identify_symbol) identify_symbol=ProbeSymbolFind(0,"I386AtaIdentifyPolled",table,HTT_EXPORT_SYS_SYM);
@@ -1848,6 +1857,9 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
     if(!identify_symbol || !mount_symbol || !find_symbol || !read_symbol) KernelStop;
     identify=identify_symbol->val; mount=mount_symbol->val;
     find=find_symbol->val; read_file=read_symbol->val;
+    put_word=imports[2].address;
+    sector_write=imports[4].address;
+    flush=imports[5].address;
     irq=I386IrqSave;
     if(!(*identify)(&target,1,0,100000,0) || target.sectors!=32768 ||
         !(*mount)(&target_volume,&target,2048)) KernelStop;
@@ -1860,7 +1872,39 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
         target_entry.size!=16 ||
         (*read_file)(&target_volume,&target_entry,0,target_data,16)!=16) KernelStop;
     for(j=0;j<16;j++) if(target_data[j]!=payload[j]) KernelStop;
+    parent=target_volume.root;
+    for(k=0;k<2;k++) {
+      if(k) dir_name="I386"; else dir_name="Kernel";
+      status=(*find)(&target_volume,parent,dir_name,&target_entry);
+      if(status<0) KernelStop;
+      if(!status) {
+        for(j=0;j<512;j++) dir_sector[j]=0;
+        if((*guest_create)(&target_volume,parent,dir_name,dir_sector,512,0,0x810)!=1 ||
+            (*find)(&target_volume,parent,dir_name,&target_entry)!=1) KernelStop;
+        dir_sector[0]=0x10; dir_sector[1]=0x08; dir_sector[2]='.';
+        (*put_word)(dir_sector+40,target_entry.block);
+        (*put_word)(dir_sector+48,512);
+        dir_sector[64]=0x10; dir_sector[65]=0x08;
+        dir_sector[66]='.'; dir_sector[67]='.';
+        (*put_word)(dir_sector+64+40,parent);
+        if(!(*sector_write)(&target_volume,target_entry.block,dir_sector) ||
+            !(*flush)(&target_volume)) KernelStop;
+      }
+      if(target_entry.attr!=0x810 || target_entry.size!=512) KernelStop;
+      parent=target_entry.block;
+    }
+    status=(*guest_create)(&target_volume,parent,"RedSeaCreate.HC",
+      source,source_bytes,0,0x800);
+    if(status==1) KernelLog("NATIVE TARGET SOURCE FRESH\n");
+    else if(status==0) KernelLog("NATIVE TARGET SOURCE EXISTING\n");
+    else KernelStop;
+    if((*find)(&target_volume,parent,"RedSeaCreate.HC",&target_entry)!=1 ||
+        target_entry.attr!=0x800 || target_entry.size!=source_bytes ||
+        (*read_file)(&target_volume,&target_entry,0,copied,source_bytes)!=source_bytes)
+      KernelStop;
+    for(j=0;j<source_bytes;j++) if(copied[j]!=source[j]) KernelStop;
     I386IrqRestore(irq);
+    if(!I386HeapFree(heap,copied) || !I386HeapFree(heap,source)) KernelStop;
   }
   if(!I386HeapFree(heap,image) || heap->used!=used ||
       heap->allocations!=allocations) KernelStop;

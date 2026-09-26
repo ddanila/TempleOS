@@ -1472,16 +1472,16 @@ def verify_native_format_module(disk):
 
 
 def verify_formatted_target(disk):
-    """Audit the guest-mounted target and its source-built installation seed."""
+    """Audit the guest-created target tree and exact copied HolyC source."""
     image=disk.read_bytes()
     start,sectors=2048,32768-2048
     bitmap=(sectors+4095)//4096
     root=start+bitmap+1
     payload=b'Created by guest'
+    source=(ROOT/'Kernel/I386/RedSeaCreate.HC').read_bytes()
     if len(image)!=16*1024*1024 or any(image[:start*512]) or \
-            image[(root+1)*512:(root+1)*512+len(payload)]!=payload or \
-            any(image[(root+1)*512+len(payload):]):
-        raise ValueError('Formatter touched the boot reservation or unused target sectors')
+            image[(root+1)*512:(root+1)*512+len(payload)]!=payload:
+        raise ValueError('Formatter touched the boot reservation or installation seed')
     header=image[start*512:(start+1)*512]
     if any(header[:3]) or any(header[4:8]) or any(header[48:510]) or \
             header[3]!=0x88 or header[510:]!=b'\x55\xaa':
@@ -1490,15 +1490,33 @@ def verify_formatted_target(disk):
     if (attr,name.split(b'\0',1)[0],block,size,date)!= \
             (0x800,b'InstallSeed.HC',root+1,len(payload),0):
         raise ValueError('Guest-built creator did not publish the installation seed')
+    def child(directory,name):
+        for offset in range(128,512,64):
+            row=struct.unpack_from('<H38sqqQ',image,directory*512+offset)
+            if row[1].split(b'\0',1)[0]==name:
+                return row
+        raise ValueError(f'Missing guest-created target entry {name!r}')
+    kernel=child(root,b'Kernel')
+    i386=child(kernel[2],b'I386')
+    copied=child(i386[2],b'RedSeaCreate.HC')
+    if kernel[:1]!=(0x810,) or i386[:1]!=(0x810,) or \
+            kernel[3]!=512 or i386[3]!=512 or \
+            copied[0]!=0x800 or copied[3]!=len(source) or \
+            image[copied[2]*512:copied[2]*512+len(source)]!=source:
+        raise ValueError('Guest-created target source differs from boot source')
     volume={'start':start,'sectors':sectors,'root':root,'bitmap_sectors':bitmap,
             'files':{'/InstallSeed.HC':{'block':root+1,'size':len(payload),
-                                     'sha256':hashlib.sha256(payload).hexdigest()}}}
-    if verify_volume(disk,volume)!=1:
-        raise ValueError('Formatted target does not contain exactly the installation seed')
+                                     'sha256':hashlib.sha256(payload).hexdigest()},
+                     '/Kernel/I386/RedSeaCreate.HC':{
+                         'block':copied[2],'size':len(source),
+                         'sha256':hashlib.sha256(source).hexdigest()}}}
+    if verify_volume(disk,volume)!=2:
+        raise ValueError('Formatted target does not contain exactly the install files')
     return {'sha256':hashlib.sha256(image).hexdigest(),
             'start':start,'sectors':sectors,'root':root,
-            'bitmap_sectors':bitmap,'files':1,
-            'seed_sha256':hashlib.sha256(payload).hexdigest(),'result':'pass'}
+            'bitmap_sectors':bitmap,'files':2,
+            'seed_sha256':hashlib.sha256(payload).hexdigest(),
+            'source_sha256':hashlib.sha256(source).hexdigest(),'result':'pass'}
 
 
 def verify_native_target_format(disk, exports, out):
@@ -1529,11 +1547,15 @@ def verify_native_target_format(disk, exports, out):
         previous=text.count('NATIVE FORMAT MODULE EXISTING\n')
         seed_new=text.count('NATIVE TARGET CREATE FRESH\n')
         seed_existing=text.count('NATIVE TARGET CREATE EXISTING\n')
+        source_new=text.count('NATIVE TARGET SOURCE FRESH\n')
+        source_existing=text.count('NATIVE TARGET SOURCE EXISTING\n')
         if phases!=[0,1] or fresh!=(name=='fresh') or \
                 existing!=(1 if name=='fresh' else 3) or \
                 previous!=(name=='reboot') or \
                 seed_new!=(1 if name=='fresh' else 0) or \
                 seed_existing!=(1 if name=='fresh' else 3) or \
+                source_new!=(1 if name=='fresh' else 0) or \
+                source_existing!=(1 if name=='fresh' else 3) or \
                 text.count('NATIVE FORMAT MODULE DISK\n')!=1 or \
                 text.count('DONE native kernel startup\n')!=1:
             raise ValueError(f'Guest-built target formatter did not pass {name} boot')
