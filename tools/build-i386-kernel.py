@@ -1313,6 +1313,34 @@ def verify_native_bundle_module(disk):
             'internal_call':'I386ModuleValid'}
 
 
+def verify_native_loader_module(disk):
+    """Audit the guest-built original loader and its internal call graph."""
+    path='/Probe/NativeLoader.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built original module loader')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=26 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid original module loader layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+    expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
+        'I386FindSymbol','I386LoadBoundAt','I386LoadBoundInto','I386LoadInto',
+        'I386ModuleValid','I386NameEqual'))
+    if exported!=expected or sum(kind==2 for kind,*_ in rows)!=18 or \
+            any(kind not in (1,2) or offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Original module loader records differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':{
+                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                for name in ('Kernel/I386/ModuleLoad.HC','Kernel/I386/ModuleCheck.HC')},
+            'functions':[name.decode() for name in expected],
+            'internal_calls':18}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1923,6 +1951,17 @@ def main():
                                  'loaded_bytes':native_bundle[0][2],
                                  'sources':['/Kernel/I386/ModuleCheck.HC',
                                             '/Kernel/I386/ModulePackCore.HC']}
+        native_loader = [tuple(int(value,16) for value in line.split()[2:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE LOADER [0-9A-F]{16} ',line)]
+        if len(native_loader)!=2 or [entry[0] for entry in native_loader]!=[0,1] or \
+                native_loader[0][1:]!=native_loader[1][1:] or \
+                native_loader[0][1]<256 or native_loader[0][2]<128:
+            raise ValueError('Guest-built original module loader did not execute')
+        result['native_loader']={'phases':[0,1],
+                                 'module_bytes':native_loader[0][1],
+                                 'loaded_bytes':native_loader[0][2],
+                                 'source':'/Kernel/I386/ModuleLoad.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2169,6 +2208,8 @@ def main():
             raise ValueError('Fresh guest-built original module packer disk round trip failed')
         if mutation_log.count('NATIVE BUNDLE DISK\n')!=1 or 'NATIVE BUNDLE EXISTING\n' in mutation_log:
             raise ValueError('Fresh guest-built original validator/packer disk round trip failed')
+        if mutation_log.count('NATIVE LOADER DISK\n')!=1 or 'NATIVE LOADER EXISTING\n' in mutation_log:
+            raise ValueError('Fresh guest-built original module loader disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -2224,6 +2265,9 @@ def main():
         if module_reboot_log.count('NATIVE BUNDLE EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE BUNDLE DISK\n')!=1:
             raise ValueError('Guest-built validator/packer unit did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE LOADER EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE LOADER DISK\n')!=1:
+            raise ValueError('Guest-built module loader did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2310,6 +2354,11 @@ def main():
                                       'fresh_boot':'write, load, compare',
                                       'second_boot':'read, load, compare, replace',
                                       'module':verify_native_bundle_module(mutation_disk),
+                                      'result':'pass'}
+        result['native_loader_disk']={'path':'C:/Probe/NativeLoader.t32m',
+                                      'fresh_boot':'write, load, execute',
+                                      'second_boot':'read, load, execute, replace',
+                                      'module':verify_native_loader_module(mutation_disk),
                                       'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)

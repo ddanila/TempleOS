@@ -2243,7 +2243,12 @@ The standalone-development goal above is the entry gate. M7 then requires:
    load without resident bindings, and the saved module survives two writable
    boots. This larger unit exposed the diagnostic worker's 512 KiB private-heap
    limit; the worker now gets 1 MiB and returns it at exit on the 8 MiB QEMU
-   profile. Next expose the rest of the compiler/kernel dependency graph
+   profile. The guest now also compiles the original `/Kernel/I386/ModuleLoad.HC`
+   and its included validator: eight owned functions and 18 internal calls
+   survive two writable boots. Its source-built loader produces the same image
+   as the resident loader for a simple module, executes that image, and rejects
+   malformed input without writing the destination. Next expose the rest of
+   the compiler/kernel dependency graph
    through validated resident exports, provide the full kernel prelude, and
    compile that graph. Broader
    pointer-target identity and

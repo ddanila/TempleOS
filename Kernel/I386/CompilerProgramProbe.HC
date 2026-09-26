@@ -1383,6 +1383,112 @@ U0 ProbeProgramNativeBundle(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   KernelLog("NATIVE BUNDLE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramNativeLoaderRun(CI386CompilerProbe *probe,CI386Heap *heap,
+  U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record,*fixture_record;
+  U8 *image,*fixture,*native_image,*resident_image;
+  U8 code[6];
+  I64 image_bytes,fixture_bytes,loaded_bytes,i,offset=-1;
+  I64 (*loader)(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,
+    U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
+  I64 (*answer)();
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  record=module+header->records_offset;
+  for(i=0;i<header->record_count;i++,record++)
+    if(record->kind==I386_MODULE_EXPORT &&
+        !StrCmp(module+record->name_offset,"I386LoadBoundInto")) offset=record->offset;
+  if(offset<0 || I386LoadBoundInto(&module,&module_bytes,1,0,0,
+      "I386LoadBoundInto",0,0)<1) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
+    "I386LoadBoundInto",0,0);
+  image=I386HeapAlloc(heap,image_bytes);
+  if(!image || I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+      "I386LoadBoundInto",0,0)!=image_bytes) KernelStop;
+  loader=image+8+offset;
+  fixture_record=I386HeapAlloc(heap,sizeof(CI386ModuleRecord),TRUE);
+  if(!fixture_record) KernelStop;
+  fixture_record->kind=I386_MODULE_EXPORT;
+  fixture_record->name_length=4;
+  code[0]=0xB8; code[1]=42; code[2]=0; code[3]=0; code[4]=0; code[5]=0xC3;
+  fixture_bytes=probe->compiler->module_pack(0,0,code,6,fixture_record,1,"Test",5);
+  fixture=I386HeapAlloc(heap,fixture_bytes);
+  if(fixture_bytes!=61 || !fixture ||
+      probe->compiler->module_pack(fixture,fixture_bytes,code,6,
+        fixture_record,1,"Test",5)!=fixture_bytes ||
+      !I386ModuleValid(fixture,fixture_bytes)) KernelStop;
+  loaded_bytes=I386LoadBoundInto(&fixture,&fixture_bytes,1,0,0,"Test",0,0);
+  if(loaded_bytes!=16 || (*loader)(&fixture,&fixture_bytes,1,0,0,"Test",0,0)!=loaded_bytes) KernelStop;
+  native_image=I386HeapAlloc(heap,loaded_bytes);
+  resident_image=I386HeapAlloc(heap,loaded_bytes);
+  if(!native_image || !resident_image ||
+      (*loader)(&fixture,&fixture_bytes,1,native_image,loaded_bytes,"Test",0,0)!=loaded_bytes ||
+      I386LoadBoundInto(&fixture,&fixture_bytes,1,resident_image,loaded_bytes,
+        "Test",0,0)!=loaded_bytes) KernelStop;
+  for(i=0;i<loaded_bytes;i++) if(native_image[i]!=resident_image[i]) KernelStop;
+  answer=native_image+8;
+  if((*answer)()!=42) KernelStop;
+  fixture[0]=0;
+  for(i=0;i<loaded_bytes;i++) native_image[i]=0xA5;
+  if((*loader)(&fixture,&fixture_bytes,1,native_image,loaded_bytes,"Test",0,0)) KernelStop;
+  for(i=0;i<loaded_bytes;i++) if(native_image[i]!=0xA5) KernelStop;
+  if(!I386HeapFree(heap,resident_image) || !I386HeapFree(heap,native_image) ||
+      !I386HeapFree(heap,fixture) || !I386HeapFree(heap,fixture_record) ||
+      !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramNativeLoader(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ModuleLoad.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeLoader.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramNativeLoaderRun(probe,heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/NativeLoader.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramNativeLoaderRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE LOADER EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/NativeLoader.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/NativeLoader.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramNativeLoaderRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE LOADER DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE LOADER "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1580,4 +1686,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramNativeExpand(probe,heap,outer);
   ProbeProgramNativePacker(probe,heap,outer);
   ProbeProgramNativeBundle(probe,heap,outer);
+  ProbeProgramNativeLoader(probe,heap,outer);
 }

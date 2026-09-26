@@ -9073,3 +9073,25 @@ audit pass. The full `--test` promotion has not been rerun for this revision;
 the focused diagnostic and two writable boots cover this source-build path.
 Complete native compiler/kernel build, installation and self-hosting remain
 open.
+
+## Original native module loader compiles and runs on the guest (2026-09-26)
+
+The guest now compiles `/Kernel/I386/ModuleLoad.HC`, which includes the original
+module validator, and packages its eight owned functions as one T32M. The
+source-built `I386LoadBoundInto` loads a one-function fixture, produces the
+same 16-byte image as the retained loader, and executes the loaded function to
+return 42. A malformed module returns failure without writing the destination.
+Both diagnostic phases pass on the 8 MiB QEMU profile with the private compile
+arena returned to baseline.
+
+The first writable boot saved and reloaded the 43,979-byte module. The second
+loaded the previous copy, repeated the checks, replaced it and completed
+normal startup. An independent disk audit finds eight function exports and
+18 internal relative calls, with no external imports. The saved module's
+SHA-256 is
+`7bae6d1b9f8a79c34bd09c31076b38fb7693544658148eb9f5390b49081bd8e9`.
+The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
+audit pass. The full `--test` promotion has not been rerun for this revision;
+the focused diagnostic and two writable boots cover the new loader path.
+Native compilation, installation and boot of the full compiler/kernel tree
+remain open.
