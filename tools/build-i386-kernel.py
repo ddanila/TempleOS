@@ -1410,6 +1410,42 @@ def verify_native_file_module(disk):
             'resident_imports':[name.decode() for name in imports]}
 
 
+def verify_native_create_module(disk):
+    """Audit the guest-built original RedSea creation source and its disk imports."""
+    path='/Probe/NativeCreate.t32m'
+    payload='/Probe/NativeCreate.bin'
+    files=mutated_file_contents(disk,{path,payload})
+    module=files.get(path)
+    if payload in files:
+        raise ValueError('Guest-created transient file was not removed')
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built original RedSea creator')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=65 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid original RedSea creator layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+    expected=sorted(x.encode() for x in ('I386RedSeaCreate','I386RedSeaCreateGetWord',
+        'I386RedSeaGrowDirectory','I386RedSeaGrowRoot','I386RedSeaNewName',
+        'I386RedSeaReparentRootChildren'))
+    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+    imports={name for name in calls if name not in exported}
+    expected_imports={x.encode() for x in ('I386RedSeaValid','I386RedSeaDirectory',
+        'I386RedSeaPutWord','I386RedSeaSectorRead','I386RedSeaSectorWrite',
+        'I386RedSeaFlush','I386RedSeaAlloc','I386RedSeaFree',
+        'I386RedSeaFind','I386RedSeaWrite')}
+    if exported!=expected or len(calls)!=59 or imports!=expected_imports or \
+            any(kind not in (1,2) or offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Original RedSea creator records differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/RedSeaCreate.HC').read_bytes()).hexdigest(),
+            'functions':[name.decode() for name in expected],
+            'resident_imports':sorted(name.decode() for name in imports)}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -2053,6 +2089,17 @@ def main():
                                'module_bytes':native_file[0][1],
                                'loaded_bytes':native_file[0][2],
                                'source':'/Kernel/I386/ModuleFile.HC'}
+        native_create = [tuple(int(value,16) for value in line.split()[2:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE CREATE [0-9A-F]{16} ',line)]
+        if len(native_create)!=2 or [entry[0] for entry in native_create]!=[0,1] or \
+                native_create[0][1:]!=native_create[1][1:] or \
+                native_create[0][1]<256 or native_create[0][2]<128:
+            raise ValueError('Guest-built original RedSea creator did not execute')
+        result['native_create']={'phases':[0,1],
+                                 'module_bytes':native_create[0][1],
+                                 'loaded_bytes':native_create[0][2],
+                                 'source':'/Kernel/I386/RedSeaCreate.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2471,6 +2518,11 @@ def main():
                                     'second_boot':'read, bind, load, compare, replace',
                                     'module':verify_native_file_module(mutation_disk),
                                     'result':'pass'}
+        result['native_create_disk']={'path':'C:/Probe/NativeCreate.t32m',
+                                      'fresh_boot':'create, read, delete, save, reload',
+                                      'second_boot':'reload, create, read, delete, replace',
+                                      'module':verify_native_create_module(mutation_disk),
+                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

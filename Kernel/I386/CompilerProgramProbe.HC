@@ -1769,6 +1769,122 @@ U0 ProbeProgramNativeFile(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
   KernelLog("NATIVE FILE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
+  U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record;
+  CI386ModuleBinding imports[10];
+  CHashExport *resident;
+  CHashTable *table;
+  CI386RedSeaEntry directory;
+  U8 *image,*read,*payload="Created by guest";
+  I64 image_bytes,read_bytes,i,j,offset=-1,used=heap->used,allocations=heap->allocations;
+  I64 (*guest_create)(CI386RedSea *volume,I64 directory,U8 *name,
+    U8 *buffer,I64 size,I64 datetime,I64 attr);
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  imports[0].name="I386RedSeaValid";
+  imports[1].name="I386RedSeaDirectory";
+  imports[2].name="I386RedSeaPutWord";
+  imports[3].name="I386RedSeaSectorRead";
+  imports[4].name="I386RedSeaSectorWrite";
+  imports[5].name="I386RedSeaFlush";
+  imports[6].name="I386RedSeaAlloc";
+  imports[7].name="I386RedSeaFree";
+  imports[8].name="I386RedSeaFind";
+  imports[9].name="I386RedSeaWrite";
+  for(i=0;i<10;i++) {
+    resident=0;
+    for(table=I386TaskSelf->hash_table;table && !resident;table=table->next)
+      resident=ProbeSymbolFind(0,imports[i].name,table,HTT_EXPORT_SYS_SYM);
+    if(!resident) KernelStop;
+    imports[i].kind=I386_MODULE_EXPORT; imports[i].address=resident->val;
+  }
+  record=module+header->records_offset;
+  for(i=0;i<header->record_count;i++,record++)
+    if(record->kind==I386_MODULE_EXPORT &&
+        !StrCmp(module+record->name_offset,"I386RedSeaCreate")) offset=record->offset;
+  if(offset<0 || I386LoadBoundInto(&module,&module_bytes,1,0,0,
+      "I386RedSeaCreate",imports,9)) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
+    "I386RedSeaCreate",imports,10);
+  image=I386HeapAlloc(heap,image_bytes);
+  if(image_bytes<1 || !image || I386LoadBoundInto(&module,&module_bytes,1,
+      image,image_bytes,"I386RedSeaCreate",imports,10)!=image_bytes) KernelStop;
+  guest_create=image+8+offset;
+  if((*guest_create)(probe->volume,probe->volume->root,"..",payload,16,0,0x800)!=-1)
+    KernelStop;
+  if(probe->persist_modules) {
+    if(!I386RedSeaBegin(probe->volume) ||
+        I386RedSeaResolve(probe->volume,probe->volume->root,"/Probe",&directory)!=1 ||
+        (*guest_create)(probe->volume,directory.block,"NativeCreate.bin",
+          payload,16,0,0x800)!=1 ||
+        (*guest_create)(probe->volume,directory.block,"NativeCreate.bin",
+          payload,16,0,0x800)!=0 ||
+        !I386RedSeaEnd(probe->volume)) KernelStop;
+    read=probe->files->read(heap,"C:/Probe/NativeCreate.bin",&read_bytes,0,0);
+    if(!read || read_bytes!=16) KernelStop;
+    for(j=0;j<16;j++) if(read[j]!=payload[j]) KernelStop;
+    if(!I386HeapFree(heap,read) ||
+        !probe->files->del("C:/Probe/NativeCreate.bin")) KernelStop;
+    read=probe->files->read(heap,"C:/Probe/NativeCreate.bin",&read_bytes,0,0);
+    if(read) KernelStop;
+  }
+  if(!I386HeapFree(heap,image) || heap->used!=used ||
+      heap->allocations!=allocations) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramNativeCreate(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/RedSeaCreate.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeCreate.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramNativeCreateRun(probe,heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/NativeCreate.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramNativeCreateRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE CREATE EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/NativeCreate.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/NativeCreate.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramNativeCreateRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE CREATE DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE CREATE "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1969,4 +2085,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramNativeLoader(probe,heap,outer);
   ProbeProgramNativeAlloc(probe,heap,outer);
   ProbeProgramNativeFile(probe,heap,outer);
+  ProbeProgramNativeCreate(probe,heap,outer);
 }

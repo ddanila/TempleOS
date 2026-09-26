@@ -9183,3 +9183,24 @@ accepted the 386-targeted early executable ranges (96 real-mode and 33
 protected-mode instructions). This evidence covers the existing component and
 interactive paths; it does not close native installation, a complete in-guest
 kernel/compiler build, or two-generation self-hosting.
+
+## Guest-built RedSea file creation (2026-09-26)
+
+The guest now compiles the original `/Kernel/I386/RedSeaCreate.HC` into a
+relocatable T32M and binds its ten disk dependencies to validated resident
+kernel exports. The 35,329-byte module contains six owned functions and 59
+call relocations. Its SHA-256 is
+`48fa19384c4800982d0188d524375f3dd72a10ff450d54c537ebf876dd415419`.
+
+The source-built `I386RedSeaCreate` rejects an invalid `..` name without I/O.
+On a disposable writable QEMU disk it creates `C:/Probe/NativeCreate.bin`
+inside a RedSea I/O session, reports an existing name on a second create,
+and returns. The normal task file service reads the exact 16-byte payload and
+deletes the file; the host disk audit confirms the transient name is absent.
+Both diagnostic phases and normal startup pass on two consecutive writable
+boots. The second boot loads the previous guest-built creator from RedSea,
+repeats the creation check, and replaces its saved module. The x86-64
+two-generation rebuild, i386 cross-build, and 386 boot instruction audit
+pass. The full `--test` promotion has not been rerun for this new revision.
+A fresh-target formatter, boot-artifact publisher, complete native source
+build, and two-generation self-hosting remain open.

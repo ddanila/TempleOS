@@ -2266,13 +2266,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    promotion also passes for this file-set milestone: interactive console and
    document checks, persisted-module reboot, 13 move-I/O interruption cases,
    seven replacement-I/O interruption cases, and the original DolDoc reader.
-   Next implement the native installation path,
-   then expose the rest of
-   the compiler/kernel dependency graph
-   through validated resident exports, provide the full kernel prelude, and
-   compile that graph. Broader
-   pointer-target identity and
-   full source-tree coverage remain open.
+   The guest now also compiles the original `/Kernel/I386/RedSeaCreate.HC`
+   through ten validated resident disk services. Its saved module creates,
+   rereads, and deletes a file on a writable QEMU disk across two boots;
+   the duplicate-name and invalid-name paths are checked. Next build the
+   native installation path from this creation primitive: format or prepare a
+   fresh target, publish boot artifacts failure-atomically, and boot it. The
+   remaining compiler/kernel dependency graph still needs validated resident
+   exports, the full kernel prelude, and complete in-guest compilation.
+   Broader pointer-target identity and full source-tree coverage remain open.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
