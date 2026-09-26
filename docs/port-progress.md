@@ -9163,5 +9163,23 @@ Both writable QEMU boots passed both diagnostic phases and reached normal
 startup. The second boot loaded the previous guest-built file-set module,
 repeated the checks, and replaced the disk copy.
 The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
-audit pass. The full `--test` promotion has not been rerun. Native installation,
-the complete source-built compiler/kernel, and self-hosting remain open.
+audit pass. Native installation, the complete source-built compiler/kernel, and
+self-hosting remain open; full-suite promotion is recorded below.
+
+## Full QEMU promotion for the file-set milestone (2026-09-26)
+
+`python3 tools/build-i386-kernel.py --test` passed on clean commit
+`f8f2164678d45d2439983e53c27cfda132ee8cc8`. The result artifact is
+`build/i386-kernel/result.json`; it records a clean source tree, the 8 MiB
+486 diagnostic boot, interactive VGA/keyboard/console checks, and the guest-built
+`/Kernel/I386/ModuleFile.HC` module in both phases. The writable disk audit
+validated its 70,639-byte T32M, twenty owned functions, 49 call relocations,
+three resident RedSea dependency names, and reload from a second boot.
+
+The suite also passed 13 interrupted move-I/O cases and seven interrupted
+replacement-I/O cases with rebooted filesystem audits, plus a separate
+original-TempleOS read of the native i386 DolDoc document. Its boot audit
+accepted the 386-targeted early executable ranges (96 real-mode and 33
+protected-mode instructions). This evidence covers the existing component and
+interactive paths; it does not close native installation, a complete in-guest
+kernel/compiler build, or two-generation self-hosting.

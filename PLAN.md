@@ -2262,7 +2262,11 @@ The standalone-development goal above is the entry gate. M7 then requires:
    boots. The guest now compiles `/Kernel/I386/ModuleFile.HC` as well: its
    original file-set loader reads two linked modules from RedSea, resolves a
    cross-file data pointer, executes the result, and reclaims its heap image
-   across two writable boots. Next implement the native installation path,
+   across two writable boots. The full `tools/build-i386-kernel.py --test`
+   promotion also passes for this file-set milestone: interactive console and
+   document checks, persisted-module reboot, 13 move-I/O interruption cases,
+   seven replacement-I/O interruption cases, and the original DolDoc reader.
+   Next implement the native installation path,
    then expose the rest of
    the compiler/kernel dependency graph
    through validated resident exports, provide the full kernel prelude, and
