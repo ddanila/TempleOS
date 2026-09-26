@@ -59,8 +59,6 @@ U32 kernel_target_format_probe=0;
 U32 kernel_target_mount_probe=0;
 //Build tooling enables this only with a disposable secondary IDE disk.
 U32 kernel_install_copy_probe=0;
-//Publish only the reserved boot area after a file-level target installation.
-U32 kernel_install_boot_probe=0;
 //High byte selects RedSea task operation; low byte selects its failing call.
 U32 kernel_file_io_probe=0;
 Bool kernel_display_ready,kernel_probe_ready;
@@ -194,14 +192,16 @@ I64 Main(CI386BootInfo *info,I64 unused)
     kernel_pulse=0;
     KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
   }
-  if(kernel_target_mount_probe) {
+  if(kernel_target_mount_probe ||
+      (!kernel_diagnostics && !kernel_install_copy_probe && !kernel_target_format_probe)) {
     U32 target_flags=I386IrqSave;
-    if(!I386AtaIdentifyPolled(&kernel_target_disk,1,0,100000,0) ||
-        !I386RedSeaMount(&kernel_target_volume,&kernel_target_disk,2048) ||
-        !kernel_files.bind(&kernel_scheduler,&kernel_target_volume)) KernelStop;
-    kernel_volumes.letter['D'-'A']=&kernel_target_volume;
+    if(I386AtaIdentifyPolled(&kernel_target_disk,1,0,100000,0)) {
+      if(!I386RedSeaMount(&kernel_target_volume,&kernel_target_disk,2048) ||
+          !kernel_files.bind(&kernel_scheduler,&kernel_target_volume)) KernelStop;
+      kernel_volumes.letter['D'-'A']=&kernel_target_volume;
+      KernelLog("TARGET VOLUME D BOUND\n");
+    } else if(kernel_target_mount_probe) KernelStop;
     I386IrqRestore(target_flags);
-    KernelLog("TARGET VOLUME D BOUND\n");
   }
   if(kernel_install_copy_probe) {
     CI386Ata target;
@@ -216,17 +216,6 @@ I64 Main(CI386BootInfo *info,I64 unused)
       else KernelLog("INSTALL COPY INTERRUPTED\n");
     } else KernelLog("INSTALL COPY NO TARGET\n");
     I386IrqRestore(flags);
-  }
-  if(kernel_install_boot_probe) {
-    CI386Ata boot_target;
-    CI386RedSea boot_volume;
-    U32 boot_flags=I386IrqSave;
-    if(I386AtaIdentifyPolled(&boot_target,1,0,100000,0)) {
-      if(!I386RedSeaMount(&boot_volume,&boot_target,2048) ||
-          !kernel_files.install_boot(&kernel_disk,&boot_target)) KernelStop;
-      KernelLog("INSTALL BOOT READY\n");
-    } else KernelLog("INSTALL BOOT NO TARGET\n");
-    I386IrqRestore(boot_flags);
   }
   kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,65536,kernel_console.keys,0,
     0x18,0x20,0);

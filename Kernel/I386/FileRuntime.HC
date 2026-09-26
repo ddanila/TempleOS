@@ -34,6 +34,7 @@ extern Bool I386TaskFileMove(U8 *old_filename,U8 *new_filename);
 extern Bool I386TaskFileMoveProbe();
 extern Bool I386TaskFileMoveIoProbe(I64 operation,I64 fail_after);
 extern Bool I386InstallBootArea(CI386Ata *source,CI386Ata *target);
+extern Bool I386TaskInstallBoot(U8 *source,U8 *target);
 import Bool I386RedSeaSectorRead(CI386RedSea *volume,I64 block,U8 *buffer);
 import Bool I386RedSeaSectorWrite(CI386RedSea *volume,I64 block,U8 *buffer);
 import Bool I386RedSeaFlush(CI386RedSea *volume);
@@ -95,7 +96,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
   services->read_raw=&I386TaskFileReadRaw;
-  services->install_boot=&I386InstallBootArea;
+  services->install_boot=&I386TaskInstallBoot;
   services->name_abs=&I386TaskFileNameAbs;
   services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;

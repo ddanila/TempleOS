@@ -28,6 +28,19 @@ to describe such a build.
 retained services and public headers, executes startup source, and opens the
 HolyC console. It does not load `CompilerProbe`, execute memory/source self-checks,
 or create the temporary diagnostic worker and its private compiler arena.
+When a formatted secondary IDE RedSea disk is attached, normal startup mounts
+it as `D:`. From the HolyC prompt, the current file-level installation path is:
+
+```c
+I386InstallTree("C:/","D:/");
+I386InstallBoot("C:/","D:/");
+```
+
+The first call copies the packaged source and modules; the second publishes
+the reserved boot area after the tree is complete. Both drives must be
+mounted, and the target's boot sector must be blank. The installed target
+can then boot as the only disk. This currently transfers host-built boot
+artifacts; it does not yet rebuild the compiler or kernel in the guest.
 
 The build also writes `kernel-diagnostics.img`. It differs from the normal disk
 in one byte of the exported `kernel_diagnostics` data word in the flat boot

@@ -9433,3 +9433,32 @@ flat kernel is 453,640 bytes with 1,016 bytes of load-area headroom. The full
 `--test` promotion was not rerun. This boot image still contains host-built
 Generation 0 kernel bytes. Native production of boot artifacts and recovery
 from a failed boot-area publication remain open.
+
+## Boot publication from normal HolyC (2026-09-27)
+
+The boot-area publisher is now a mounted-drive file service exposed to the
+interactive console as `I386InstallBoot("C:/","D:/")`. It borrows the caller's
+volume table and locks both IDE channels during publication. Normal startup
+detects a formatted secondary disk and mounts it as `D:`; the installed disk
+therefore receives the ordinary boot bytes without an installer probe flag.
+The kernel-only publication probe has been removed.
+
+The focused QEMU `486` sequence again installed and verified all 827 packaged
+files, including partial-pass resume. At 8 MiB, a normal HolyC session rejected
+same-drive publication, successfully published the reserved boot area to
+`D:`, and rejected a second publication onto the now bootable target. The host
+found the source disk unchanged, target sectors 0–2047 equal to
+the source, and all RedSea sectors byte-identical to the file-installed target.
+The target booted alone at 8 MiB and read its installed source through normal
+file services. The target SHA-256 was
+`ef151c9b67219ef5a7e937cb92d6397f2a893fa0bd0a8d1a85735a4f5562e2f2`;
+its 828 files in 16 directories occupied 15,871 sectors with a matching bitmap.
+The focused public-header help test passed. The x86-64 rebuild, i386 cross-build
+and 386 boot audit passed; the flat kernel is 453,008 bytes with 1,648 bytes of
+load-area headroom. The older whole-disk install-copy regression also passed,
+including both interruption/retry cases. The complete `--test` promotion was
+not rerun.
+
+This is still transport for host-built Generation 0 boot bytes. Guest-built
+kernel/compiler artifact production, validation before publication and
+power-cut recovery remain open.

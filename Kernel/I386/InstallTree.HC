@@ -64,3 +64,9 @@ public I64 I386InstallTree(U8 *source,U8 *target,I64 limit=0)
   if(!I386InstallTreeNode(source,target,0,&copied,limit)) return -1;
   return copied;
 }
+public Bool I386InstallBoot(U8 *source,U8 *target)
+{
+  if(!console_config || !console_config->files ||
+      !console_config->files->install_boot) return FALSE;
+  return (*console_config->files->install_boot)(source,target);
+}
