@@ -1622,14 +1622,17 @@ I64 ProbeProgramNativeFileRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CI386ModuleBinding imports[3],startup[3];
   CHashExport *resident;
   CHashTable *table;
-  CI386RedSeaEntry entry;
+  CI386RedSeaEntry entry,paired[2];
   CI386Heap *owned_heap;
   U8 *image,*arena,*loaded,*raw,*expected;
-  I64 image_bytes,loaded_bytes,raw_bytes,i,offset=-1,init_offset=-1,free_offset=-1;
+  I64 image_bytes,loaded_bytes,raw_bytes,i,offset=-1,set_offset=-1,init_offset=-1,free_offset=-1;
   Bool (*guest_init)(CI386Heap *heap,U8 *base,I64 size);
   Bool (*guest_free)(CI386Heap *heap,U8 *ptr);
   U8 *(*guest_load)(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,
     U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
+  U8 *(*guest_set)(CI386RedSea *volume,CI386RedSeaEntry *entries,I64 count,
+    CI386Heap *heap,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
+  I64 (*answer)();
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   imports[0].name="I386RedSeaValid"; imports[1].name="I386RedSeaExtent";
   imports[2].name="I386RedSeaRead";
@@ -1653,6 +1656,8 @@ I64 ProbeProgramNativeFileRun(CI386CompilerProbe *probe,CI386Heap *heap,
   for(i=0;i<header->record_count;i++,record++)
     if(record->kind==I386_MODULE_EXPORT &&
         !StrCmp(module+record->name_offset,"I386RedSeaLoadBound")) offset=record->offset;
+    else if(record->kind==I386_MODULE_EXPORT &&
+        !StrCmp(module+record->name_offset,"I386RedSeaLoadSetBound")) set_offset=record->offset;
   if(offset<0 || I386LoadBoundInto(&module,&module_bytes,1,0,0,
       "I386RedSeaLoadBound",imports,2)) KernelStop;
   image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
@@ -1672,6 +1677,8 @@ I64 ProbeProgramNativeFileRun(CI386CompilerProbe *probe,CI386Heap *heap,
   guest_init=image+8+init_offset;
   guest_free=image+8+free_offset;
   guest_load=image+8+offset;
+  if(set_offset<0) KernelStop;
+  guest_set=image+8+set_offset;
   if(!(*guest_init)(owned_heap,arena,16384) || !I386RedSeaBegin(probe->volume) ||
       I386RedSeaResolve(probe->volume,probe->volume->root,
         "/Modules/I386/Startup.t32m",&entry)!=1) KernelStop;
@@ -1690,6 +1697,22 @@ I64 ProbeProgramNativeFileRun(CI386CompilerProbe *probe,CI386Heap *heap,
       owned_heap->allocations!=1 || !I386HeapValid(owned_heap)) KernelStop;
   if(!(*guest_free)(owned_heap,loaded) || owned_heap->used || owned_heap->allocations ||
       !I386HeapValid(owned_heap)) KernelStop;
+  if(probe->persist_modules) {
+    if(!I386RedSeaBegin(probe->volume) ||
+        I386RedSeaResolve(probe->volume,probe->volume->root,
+          "/Probe/DurableNamedConsumer.t32m",paired)!=1 ||
+        I386RedSeaResolve(probe->volume,probe->volume->root,
+          "/Probe/DurableNamedProvider.t32m",paired+1)!=1) KernelStop;
+    if((*guest_set)(probe->volume,paired,0,owned_heap,"DurableByteRead",0,0) ||
+        (*guest_set)(probe->volume,paired,2,owned_heap,"Missing",0,0) ||
+        owned_heap->allocations) KernelStop;
+    loaded=(*guest_set)(probe->volume,paired,2,owned_heap,"DurableByteRead",0,0);
+    if(!I386RedSeaEnd(probe->volume) || !loaded ||
+        I386HeapSize(owned_heap,loaded)<16 || owned_heap->allocations!=1) KernelStop;
+    answer=loaded;
+    if((*answer)()!=98 || !(*guest_free)(owned_heap,loaded) ||
+        owned_heap->used || owned_heap->allocations || !I386HeapValid(owned_heap)) KernelStop;
+  }
   if(!I386HeapFree(heap,expected) || !I386HeapFree(heap,raw) ||
       !I386HeapFree(heap,arena) || !I386HeapFree(heap,owned_heap) ||
       !I386HeapFree(heap,image)) KernelStop;
@@ -1707,7 +1730,7 @@ U0 ProbeProgramNativeFile(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
   U32 irq;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
-  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#define I386_HEAP_SOURCE_BUILD 1\n#include \"/Kernel/I386/ModuleFileSingle.HC\";",
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#define I386_HEAP_SOURCE_BUILD 1\n#include \"/Kernel/I386/ModuleFile.HC\";",
     CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeFile.HC");
   if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
       !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,

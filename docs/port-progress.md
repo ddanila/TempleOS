@@ -9143,3 +9143,25 @@ The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
 audit pass. The full `--test` promotion has not been rerun for this revision.
 The multi-file loader, native compiler/kernel build, installation and
 self-hosting remain open.
+
+## Guest-built RedSea file-set loader (2026-09-26)
+
+The guest now compiles the full original `/Kernel/I386/ModuleFile.HC`
+source graph into a single T32M. Its twenty owned functions include both
+single-file and file-set entry points. Only the three resident RedSea
+functions are imported. The 70,639-byte module has 49 call relocations;
+its SHA-256 is
+`cad6d8b9c7487b7e8d1f699dd132f7e11f57c9288bfd74a5fc57e72d8f2e2bc5`.
+
+During a writable diagnostic boot, the guest-built file-set loader reads the
+two previously persisted DurableNamed modules directly from RedSea, links
+their cross-file data pointer, and executes `DurableByteRead` with the expected
+result 98. It rejects an empty set and a missing entry symbol without leaving
+heap allocations, then frees the valid image and returns its private heap to
+baseline. The single-file Startup image comparison remains in the same probe.
+Both writable QEMU boots passed both diagnostic phases and reached normal
+startup. The second boot loaded the previous guest-built file-set module,
+repeated the checks, and replaced the disk copy.
+The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
+audit pass. The full `--test` promotion has not been rerun. Native installation,
+the complete source-built compiler/kernel, and self-hosting remain open.

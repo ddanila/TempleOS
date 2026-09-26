@@ -2259,7 +2259,10 @@ The standalone-development goal above is the entry gate. M7 then requires:
    Three validated kernel RedSea exports satisfy its disk dependencies, and
    the guest-built loader reads the original Startup T32M inside an explicit
    RedSea I/O session, matching the resident loader's image across two writable
-   boots. Next build the multi-file source loader and native installation path,
+   boots. The guest now compiles `/Kernel/I386/ModuleFile.HC` as well: its
+   original file-set loader reads two linked modules from RedSea, resolves a
+   cross-file data pointer, executes the result, and reclaims its heap image
+   across two writable boots. Next implement the native installation path,
    then expose the rest of
    the compiler/kernel dependency graph
    through validated resident exports, provide the full kernel prelude, and

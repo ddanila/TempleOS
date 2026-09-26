@@ -1374,14 +1374,14 @@ def verify_native_alloc_module(disk):
 
 
 def verify_native_file_module(disk):
-    """Audit the guest-built RedSea module loader and its three kernel imports."""
+    """Audit the guest-built RedSea file-set loader and its kernel imports."""
     path='/Probe/NativeFile.t32m'
     module=mutated_file_contents(disk,{path}).get(path)
     if not module or len(module)<32 or module[:4]!=b'T32M' or \
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built original RedSea module loader')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=55 or
+    if (total!=len(module) or size<1024 or size&7 or count!=69 or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid original RedSea module loader layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
@@ -1391,18 +1391,19 @@ def verify_native_file_module(disk):
         'I386HeapRegionValid','I386HeapSize','I386HeapValid','I386LoadAlloc',
         'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
         'I386LoadInto','I386ModuleValid','I386NameEqual',
-        'I386RedSeaLoad','I386RedSeaLoadBound'))
+        'I386RedSeaLoad','I386RedSeaLoadBound',
+        'I386RedSeaLoadSet','I386RedSeaLoadSetBound'))
     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
     imports=sorted(name for name in calls if name not in exported)
-    if exported!=expected or len(calls)!=37 or \
-            imports!=[b'I386RedSeaExtent',b'I386RedSeaRead',b'I386RedSeaValid'] or \
+    if exported!=expected or len(calls)!=49 or \
+            imports!=sorted(2*[b'I386RedSeaExtent',b'I386RedSeaRead',b'I386RedSeaValid']) or \
             any(kind not in (1,2) or offset>=size or not length or name<strings or
                 name+length>=total for kind,offset,name,length in rows):
         raise ValueError('Original RedSea loader records differ from source')
     return {'sha256':hashlib.sha256(module).hexdigest(),
             'source_sha256':{
                 name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
-                for name in ('Kernel/I386/ModuleFileSingle.HC','Kernel/I386/ModuleAlloc.HC',
+                for name in ('Kernel/I386/ModuleFile.HC','Kernel/I386/ModuleFileSingle.HC','Kernel/I386/ModuleAlloc.HC',
                              'Kernel/I386/ModuleLoad.HC','Kernel/I386/ModuleCheck.HC',
                              'Kernel/I386/Heap.HC')},
             'functions':[name.decode() for name in expected],
@@ -2051,7 +2052,7 @@ def main():
         result['native_file']={'phases':[0,1],
                                'module_bytes':native_file[0][1],
                                'loaded_bytes':native_file[0][2],
-                               'source':'/Kernel/I386/ModuleFileSingle.HC'}
+                               'source':'/Kernel/I386/ModuleFile.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
