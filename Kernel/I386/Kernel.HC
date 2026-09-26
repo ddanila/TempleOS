@@ -96,7 +96,7 @@ extern U0 KernelFault(CI386ExceptionFrame *frame);
 extern U0 KernelReport(CI386Task *task,I64 ch);
 extern U0 KernelFatal(CI386Task *task,I64 status,I64 ch);
 extern U0 KernelPulse(I64 unused);
-extern Bool I386InstallCopy(CI386Ata *source,CI386Ata *target);
+extern I64 I386InstallCopy(CI386Ata *source,CI386Ata *target,I64 stop_after);
 extern U0 KernelDisplay();
 extern U0 KernelStorage(CI386BootInfo *info);
 extern U0 KernelStartup();
@@ -190,10 +190,15 @@ I64 Main(CI386BootInfo *info,I64 unused)
   }
   if(kernel_install_copy_probe) {
     CI386Ata target;
+    I64 copied;
     U32 flags=I386IrqSave;
     if(I386AtaIdentifyPolled(&target,1,0,100000,0)) {
-      if(!I386InstallCopy(&kernel_disk,&target)) KernelStop;
-      KernelLog("INSTALL COPY READY\n");
+      copied=kernel_install_copy_probe;
+      if(copied==1) copied=0;
+      copied=I386InstallCopy(&kernel_disk,&target,copied);
+      if(copied<0) KernelStop;
+      if(copied) KernelLog("INSTALL COPY READY\n");
+      else KernelLog("INSTALL COPY INTERRUPTED\n");
     } else KernelLog("INSTALL COPY NO TARGET\n");
     I386IrqRestore(flags);
   }

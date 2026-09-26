@@ -57,9 +57,38 @@ def main():
         raise ValueError('Installed disk did not boot independently')
     if target.read_bytes() != installed:
         raise ValueError('Independent boot changed the installed disk')
+    interrupted = []
+    for stop_after in (8192, 32768):
+        case = out / f'interrupt-{stop_after}'
+        case.mkdir(exist_ok=True)
+        interrupted_source = bytearray(source)
+        struct.pack_into('<I', interrupted_source, offsets[0], stop_after)
+        candidate = case / 'source.img'
+        target = case / 'target.img'
+        candidate.write_bytes(interrupted_source)
+        target.write_bytes(bytes(len(source)))
+        report = boot(candidate, case / 'interrupt-boot', target)
+        if report.count('INSTALL COPY INTERRUPTED\n') != 1 or \
+                report.count('DONE native kernel startup\n') != 1:
+            raise ValueError(f'Guest did not interrupt after sector {stop_after}')
+        partial = target.read_bytes()
+        expected = bytearray(len(source))
+        expected[512:min(stop_after + 1, 32768) * 512] = \
+            interrupted_source[512:min(stop_after + 1, 32768) * 512]
+        if partial != expected or candidate.read_bytes() != interrupted_source:
+            raise ValueError(f'Interrupted copy changed unexpected sectors at {stop_after}')
+        struct.pack_into('<I', interrupted_source, offsets[0], 1)
+        candidate.write_bytes(interrupted_source)
+        retry = boot(candidate, case / 'retry-boot', target)
+        if retry.count('INSTALL COPY READY\n') != 1 or \
+                retry.count('DONE native kernel startup\n') != 1 or \
+                target.read_bytes() != interrupted_source:
+            raise ValueError(f'Interrupted copy did not recover at {stop_after}')
+        interrupted.append({'stop_after_sector': stop_after, 'recovered': True})
     result = {'result': 'pass', 'source_sha256': hashlib.sha256(current).hexdigest(),
               'target_sha256': hashlib.sha256(installed).hexdigest(),
-              'boots': ['guest-copy', 'independent-target']}
+              'boots': ['guest-copy', 'independent-target'],
+              'interrupted_cases': interrupted}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2))
 

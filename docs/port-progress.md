@@ -9288,3 +9288,22 @@ construction of compiler and kernel outputs, file-level source/module transfer,
 and interrupted-installation recovery remain open. The current copy holds
 interrupts disabled for the entire disk operation, so it is a disposable
 installation probe rather than the final interactive installer.
+
+## Retryable interrupted image copy (2026-09-26)
+
+The installation-copy probe can now stop after a selected nonboot sector or
+after flushing all nonboot sectors, before publishing LBA 0. Two QEMU cases
+stopped after sector 8192 and at the prepublication flush boundary. The host
+verified the exact copied sector range, zeroes elsewhere including boot sector
+0, and an unchanged source disk. A second normal guest boot then retried on
+each partial target and produced a complete byte-identical image. The existing
+independent target boot passed again. The focused six-boot helper records both
+recovered cases in `build/i386-kernel/install-copy/result.json`; normal source
+and installed disk SHA-256 was
+`fa777977cdb04d45da3aca0b35637222ff7b8081a9998e7739a979f9574ea841`.
+
+The x86-64 two-generation rebuild, native cross-build and 386 boot audit pass;
+the flat kernel is 451,856 bytes, leaving 2,800 bytes in the BIOS load
+reservation. The full `--test` suite was not rerun. These are deliberately
+injected stops after successful flushes, not QEMU power cuts or evidence of
+guest-built compiler/kernel installation. Those gates remain open.
