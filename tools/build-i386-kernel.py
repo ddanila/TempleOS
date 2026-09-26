@@ -1287,6 +1287,32 @@ def verify_native_packer_module(disk):
             'validator':'I386ModuleValid'}
 
 
+def verify_native_bundle_module(disk):
+    """Audit the original validator and serializer packed as one guest unit."""
+    path='/Probe/NativeBundle.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built original validator/packer unit')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=3 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid original validator/packer unit layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    names=sorted((kind,module[name:name+length]) for kind,offset,name,length in rows)
+    if names!=[(1,b'I386ModulePackRaw'),(1,b'I386ModuleValid'),
+               (2,b'I386ModuleValid')] or \
+            any(offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Original validator/packer internal linkage differs from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':{
+                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                for name in ('Kernel/I386/ModuleCheck.HC','Kernel/I386/ModulePackCore.HC')},
+            'functions':['I386ModulePackRaw','I386ModuleValid'],
+            'internal_call':'I386ModuleValid'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1885,6 +1911,18 @@ def main():
                                  'module_bytes':native_packer[0][1],
                                  'loaded_bytes':native_packer[0][2],
                                  'source':'/Kernel/I386/ModulePackCore.HC'}
+        native_bundle = [tuple(int(value,16) for value in line.split()[2:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE BUNDLE [0-9A-F]{16} ',line)]
+        if len(native_bundle)!=2 or [entry[0] for entry in native_bundle]!=[0,1] or \
+                native_bundle[0][1:]!=native_bundle[1][1:] or \
+                native_bundle[0][1]<256 or native_bundle[0][2]<128:
+            raise ValueError('Guest-built original validator/packer unit did not execute')
+        result['native_bundle']={'phases':[0,1],
+                                 'module_bytes':native_bundle[0][1],
+                                 'loaded_bytes':native_bundle[0][2],
+                                 'sources':['/Kernel/I386/ModuleCheck.HC',
+                                            '/Kernel/I386/ModulePackCore.HC']}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2078,7 +2116,7 @@ def main():
         if len(memory)!=1 or memory[0]<=0: raise ValueError('Missing public-header memory accounting')
         lifetimes=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('CODE HEAP LIFETIME ')]
         released=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('PROBE TASK RELEASE ')]
-        if lifetimes!=[0,1] or len(released)!=1 or released[0]<524288+16384 or not (
+        if lifetimes!=[0,1] or len(released)!=1 or released[0]<1048576+16384 or not (
                 log.index('PROBE RELEASE ') < log.index('PROBE TASK RELEASE ') < log.index('CONSOLE TASK SPAWNED')):
             raise ValueError('Missing public code-heap/task reclamation evidence')
         result['code_heap']={'task_phases':lifetimes,'probe_task_reclaimed_bytes':released[0],
@@ -2129,6 +2167,8 @@ def main():
             raise ValueError('Fresh resident-bound native Arc module disk round trip failed')
         if mutation_log.count('NATIVE PACKER DISK\n')!=1 or 'NATIVE PACKER EXISTING\n' in mutation_log:
             raise ValueError('Fresh guest-built original module packer disk round trip failed')
+        if mutation_log.count('NATIVE BUNDLE DISK\n')!=1 or 'NATIVE BUNDLE EXISTING\n' in mutation_log:
+            raise ValueError('Fresh guest-built original validator/packer disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -2181,6 +2221,9 @@ def main():
         if module_reboot_log.count('NATIVE PACKER EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE PACKER DISK\n')!=1:
             raise ValueError('Guest-built native module packer did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE BUNDLE EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE BUNDLE DISK\n')!=1:
+            raise ValueError('Guest-built validator/packer unit did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2262,6 +2305,11 @@ def main():
                                       'fresh_boot':'write, bind, load, compare',
                                       'second_boot':'read, bind, load, compare, replace',
                                       'module':verify_native_packer_module(mutation_disk),
+                                      'result':'pass'}
+        result['native_bundle_disk']={'path':'C:/Probe/NativeBundle.t32m',
+                                      'fresh_boot':'write, load, compare',
+                                      'second_boot':'read, load, compare, replace',
+                                      'module':verify_native_bundle_module(mutation_disk),
                                       'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)

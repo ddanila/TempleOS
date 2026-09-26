@@ -2238,7 +2238,12 @@ The standalone-development goal above is the entry gate. M7 then requires:
    call to the retained compiler module, and compares its serialized T32M
    byte-for-byte with the resident serializer across two writable boots.
    This exercises rebuilding a function whose name already exists in the
-   root scope. Next expose the rest of the compiler/kernel dependency graph
+   root scope. The guest also compiles the original validator and serializer
+   together as one source unit: the call resolves internally, both functions
+   load without resident bindings, and the saved module survives two writable
+   boots. This larger unit exposed the diagnostic worker's 512 KiB private-heap
+   limit; the worker now gets 1 MiB and returns it at exit on the 8 MiB QEMU
+   profile. Next expose the rest of the compiler/kernel dependency graph
    through validated resident exports, provide the full kernel prelude, and
    compile that graph. Broader
    pointer-target identity and

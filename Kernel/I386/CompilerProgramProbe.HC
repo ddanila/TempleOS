@@ -1223,33 +1223,40 @@ U0 ProbeProgramNativeExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
 I64 ProbeProgramNativePackerRun(CI386CompilerProbe *probe,CI386Heap *heap,
-  U8 *module,I64 module_bytes)
+  U8 *module,I64 module_bytes,Bool combined=FALSE)
 {
   CI386ModuleHeader *header=module;
   CI386ModuleRecord *record,*export_record;
   CI386ModuleBinding binding;
   U8 *image,*native_output,*resident_output;
   U8 code[1];
-  I64 image_bytes,expected,i,offset=-1;
+  I64 image_bytes,expected,i,offset=-1,validator_offset=-1,binding_count=1;
+  Bool (*validator)(U8 *data,I64 size);
   I64 (*packer)(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
     CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
-  if(!I386ModuleValid(module,module_bytes) ||
-      !probe->compiler->export_at(1,&binding) ||
-      binding.kind!=I386_MODULE_EXPORT ||
-      StrCmp(binding.name,"I386ModuleValid")) KernelStop;
+  if(!I386ModuleValid(module,module_bytes)) KernelStop;
+  if(combined) binding_count=0;
+  else if(!probe->compiler->export_at(1,&binding) ||
+          binding.kind!=I386_MODULE_EXPORT ||
+          StrCmp(binding.name,"I386ModuleValid")) KernelStop;
   code[0]=0xC3;
   record=module+header->records_offset;
   for(i=0;i<header->record_count;i++,record++)
-    if(record->kind==I386_MODULE_EXPORT &&
-        !StrCmp(module+record->name_offset,"I386ModulePackRaw")) offset=record->offset;
-  if(offset<0 || I386LoadBoundInto(&module,&module_bytes,1,0,0,
-      "I386ModulePackRaw",0,0)) KernelStop;
+    if(record->kind==I386_MODULE_EXPORT) {
+      if(!StrCmp(module+record->name_offset,"I386ModulePackRaw")) offset=record->offset;
+      else if(!StrCmp(module+record->name_offset,"I386ModuleValid"))
+        validator_offset=record->offset;
+    }
+  if(offset<0 || combined && validator_offset<0 ||
+      !combined && I386LoadBoundInto(&module,&module_bytes,1,0,0,
+        "I386ModulePackRaw",0,0)) KernelStop;
   image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
-    "I386ModulePackRaw",&binding,1);
+    "I386ModulePackRaw",&binding,binding_count);
   image=I386HeapAlloc(heap,image_bytes);
   if(image_bytes<1 || !image || I386LoadBoundInto(&module,&module_bytes,1,
-      image,image_bytes,"I386ModulePackRaw",&binding,1)!=image_bytes) KernelStop;
+      image,image_bytes,"I386ModulePackRaw",&binding,binding_count)!=image_bytes) KernelStop;
   packer=image+8+offset;
+  if(combined) validator=image+8+validator_offset;
   export_record=I386HeapAlloc(heap,sizeof(CI386ModuleRecord),TRUE);
   if(!export_record) KernelStop;
   export_record->kind=I386_MODULE_EXPORT;
@@ -1265,6 +1272,8 @@ I64 ProbeProgramNativePackerRun(CI386CompilerProbe *probe,CI386Heap *heap,
       probe->compiler->module_pack(resident_output,expected,code,1,
         export_record,1,"Test",5)!=expected ||
       !I386ModuleValid(native_output,expected)) KernelStop;
+  if(combined && (!(*validator)(native_output,expected) ||
+      (*validator)(native_output,expected-1))) KernelStop;
   for(i=0;i<expected;i++) if(native_output[i]!=resident_output[i]) KernelStop;
   export_record->name_length=5;
   if((*packer)(0,0,code,1,export_record,1,"Test",5)) KernelStop;
@@ -1321,6 +1330,57 @@ U0 ProbeProgramNativePacker(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   I386IrqRestore(irq);
   if(heap->used!=used || heap->allocations!=allocations) KernelStop;
   KernelLog("NATIVE PACKER "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
+U0 ProbeProgramNativeBundle(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ModuleCheck.HC\";\n#include \"/Kernel/I386/ModulePackCore.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeBundle.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramNativePackerRun(probe,heap,module,module_bytes,TRUE);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/NativeBundle.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramNativePackerRun(probe,heap,disk,disk_bytes,TRUE)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE BUNDLE EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/NativeBundle.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/NativeBundle.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramNativePackerRun(probe,heap,disk,disk_bytes,TRUE)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE BUNDLE DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE BUNDLE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
@@ -1519,4 +1579,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramExpand(probe,heap,outer);
   ProbeProgramNativeExpand(probe,heap,outer);
   ProbeProgramNativePacker(probe,heap,outer);
+  ProbeProgramNativeBundle(probe,heap,outer);
 }

@@ -9048,3 +9048,28 @@ The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
 audit pass. The full `--test` promotion has not been rerun for this revision;
 the focused diagnostic and writable boots cover this source-build path. The
 complete compiler/kernel build, installation and self-hosting remain open.
+
+## Guest-built validator and serializer link within one source unit (2026-09-26)
+
+The guest now reads the delivered `/Kernel/I386/ModuleCheck.HC` and
+`/Kernel/I386/ModulePackCore.HC` together. The validator source explicitly
+includes the original numeric-limit definitions. The resulting T32M exports
+`I386ModuleValid` and `I386ModulePackRaw` and has one internal relative call
+from the serializer to its own validator, with no resident binding. The guest
+loads both functions, verifies the new validator accepts a valid module and
+rejects a truncated one, and compares the serializer's 61-byte fixture output
+with the retained implementation.
+
+The combined source unit exceeded the diagnostic task's former 512 KiB private
+heap even though its allocations returned to baseline. The task now receives
+1 MiB and releases it at exit; both diagnostic phases and normal startup pass
+on the 8 MiB QEMU profile. The first writable boot saved and reloaded the
+28,050-byte module. The second loaded that saved copy, repeated the comparison,
+replaced the file and completed normal startup. The independent disk audit
+finds two function exports and one internal call record. Its SHA-256 is
+`d0476cd0d976e1e6fdb69adf695b4eb8091020b89612b7359e0c9612dc0205ae`.
+The x86-64 two-generation rebuild, i386 cross-build and 386 instruction boot
+audit pass. The full `--test` promotion has not been rerun for this revision;
+the focused diagnostic and two writable boots cover this source-build path.
+Complete native compiler/kernel build, installation and self-hosting remain
+open.

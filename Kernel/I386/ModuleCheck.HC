@@ -1,5 +1,6 @@
 //Shared module validation: compile unchanged for the host or i386 target.
 #include "/Kernel/I386/ModuleCheck.HH"
+#include "/Kernel/NumericLimits.HH"
 
 public Bool I386ModuleValid(U8 *data,I64 size)
 {
