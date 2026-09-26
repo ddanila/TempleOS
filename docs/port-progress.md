@@ -8737,3 +8737,12 @@ claiming full promotion. The successful writable-boot evidence is in
 `build/i386-kernel/owned-data-reboot`; both reached normal startup completion.
 The saved module's SHA-256 is
 `cb439e19622a3264c40455b46204b9e34e37d3793a3600aecc302dd1d756170c`.
+
+On 2026-09-26, `python3 tools/build-i386-kernel.py --test` passed from clean
+revision `7590ffd` on an idle host. Its manifest is
+`build/i386-kernel/result.json`: both diagnostic phases, the normal 8 MiB
+workstation session (48.57-second startup and 558 input lines), two writable
+module boots, file interruption/recovery, and original/native document
+compatibility passed. The manifest records compiler services version 54 and
+the owned-global disk audit above. This closes the promotion gap recorded in
+the preceding paragraph; the earlier timeout occurred under heavy host load.
