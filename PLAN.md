@@ -2287,8 +2287,11 @@ The standalone-development goal above is the entry gate. M7 then requires:
    `I386BuildModule` compiles the delivered `RedSeaCreate.HC` into a T32M on
    the mounted installation disk. Two writable boots produce identical module
    hashes; after the target boots alone at 8 MiB, its installed compiler
-   builds the same source again. This is one real native source module, not a
-   native rebuild of the compiler or boot kernel.
+   builds the same source again. It also packages the original
+   `Compiler/I386/LexNumber.HC` and its included lexer body into a second,
+   byte-stable T32M across boots and rebuilds both components at 8 MiB.
+   These are real native source modules, not a native rebuild of the complete
+   compiler or boot kernel.
    A normal boot now detects and mounts a formatted secondary volume as `D:` through the retained
    task file service. The interactive HolyC console reads the copied source,
    creates a directory and writes a document on `D:` at 8 MiB; the host audits
@@ -2325,7 +2328,8 @@ The standalone-development goal above is the entry gate. M7 then requires:
    independently audits. A normal HolyC command, `I386InstallBoot`, publishes
    only the reserved boot sectors after file installation; it leaves RedSea
    sectors unchanged and boots the file-installed disk independently in QEMU.
-   A guest-built `RedSeaCreate.t32m` also persists on that installed disk.
+   Guest-built RedSea creator and compiler-lexer T32Ms also persist on that
+   installed disk.
    This still publishes host-built Generation 0 boot bytes. The clone transport
    has two injected interruption/retry cases;
    actual power-loss and rebuilt-artifact recovery remain open.

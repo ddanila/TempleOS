@@ -9489,3 +9489,23 @@ passed. The focused public-header help check passed. The complete `--test`
 promotion was not rerun. The compiler runtime and boot kernel are still
 host-built Generation 0; this proves a source-built component artifact, not a
 native compiler/kernel rebuild or Generation 1 boot.
+
+## Original compiler lexer packaged on the installed disk (2026-09-27)
+
+The normal-console module build now also covers
+`Compiler/I386/LexNumber.HC`, which includes the original shared number lexer.
+On the mounted installation disk, two writable QEMU `486` boots produced an
+identical 13,716-byte `GuestLexNumber.t32m` (SHA-256
+`c6c4218693892ccd7234bda6cfc604ec77782d39f5f858084d8fe9c17c2eeaa4`).
+The independent host audit found the two expected function exports, eleven
+named call records and one named address import. Both guest-built modules
+remained on the target: 831 files in 16 directories, with 15,994 owned sectors
+and a matching bitmap. After boot-area publication, the target booted alone
+at 8 MiB and compiled both the RedSea creator and lexer sources in its normal
+HolyC session. Its published disk SHA-256 was
+`9764b28f9ccf66b1b697461b9b2a7935f8ce7d8cf0f6a7a09d468dd44c7e9b70`.
+
+This demonstrates source-to-module construction for a component of the native
+compiler, not execution of that newly built component as the running compiler.
+Replacing the retained Generation 0 compiler with a guest-built one and then
+rebuilding the boot kernel remain open.

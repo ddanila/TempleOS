@@ -1445,6 +1445,33 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
             'resident_imports':sorted(name.decode() for name in imports)}
 
 
+def verify_native_lex_number_module(disk,path):
+    """Audit a guest-built original compiler lexer component."""
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built compiler lexer module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if total!=len(module) or size<1024 or size&7 or count!=14 or \
+            records!=32+size or strings!=records+16*count or strings>total:
+        raise ValueError('Invalid compiler lexer module layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    names={kind:[module[name:name+length] for k,offset,name,length in rows if k==kind]
+           for kind in (1,2,5)}
+    if (sorted(names[1])!=[b'I386LexNumber',b'LexNumberBody'] or
+            len(names[2])!=11 or set(names[2])!={b'I386F64FromI64',b'I386F64Mul',
+                b'I386LexRawChar',b'LexNumberBody',b'Pow10I64'} or
+            names[5]!=[b'I386LexSourceRead'] or
+            any(kind not in (1,2,5) or offset>=size or not length or name<strings or
+                name+length>=total for kind,offset,name,length in rows)):
+        raise ValueError('Compiler lexer module records differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Compiler/I386/LexNumber.HC').read_bytes()).hexdigest(),
+            'bytes':len(module),'functions':[name.decode() for name in names[1]],
+            'resident_imports':sorted({name.decode() for name in names[2] if name not in names[1]}),
+            'named_address_imports':[name.decode() for name in names[5]]}
+
+
 def verify_native_format_module(disk):
     """Audit the guest-built RedSea formatter and its ATA-only imports."""
     module=mutated_file_contents(disk,{'/Probe/NativeFormat.t32m'}).get('/Probe/NativeFormat.t32m')
@@ -1691,28 +1718,34 @@ def verify_interactive_native_module(disk,out,console,volume):
     target=out/'target-tree-copy/target.img'
     path='/Modules/I386/GuestCreate.t32m'
     command='I386BuildModule("D:/Kernel/I386/RedSeaCreate.HC","D:/Modules/I386/GuestCreate.t32m")>0;'
+    lexer_path='/Modules/I386/GuestLexNumber.t32m'
+    lexer_command='I386BuildModule("D:/Compiler/I386/LexNumber.HC","D:/Modules/I386/GuestLexNumber.t32m")>0;'
     first=console['run_input'](candidate,work/'first',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[
                 ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
-                (command,['1'])]})
+                (command,['1']),(lexer_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
                 {'/Modules/I386/Missing.t32m'}):
         raise ValueError('Native module build changed source or published missing input')
     first_module=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
+    first_lexer=verify_native_lex_number_module(target,lexer_path)
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=len(volume['files'])+2:
+    if integrity['files']!=len(volume['files'])+3:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
-            'command_timeout':120,'commands':[(command,['1'])]})
+            'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
+    rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
+            rebuilt_lexer['sha256']!=first_lexer['sha256'] or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
     return {'first_boot':first,'second_boot':second,'module':rebuilt,
+            'compiler_component':rebuilt_lexer,
             'filesystem_integrity':second_integrity,'result':'pass'}
 
 
@@ -1742,7 +1775,8 @@ def verify_native_boot_area(disk, exports, out, console):
     boot=work/'independent'
     report=console['run_input'](target,boot,snapshot=True,startup_check={
         'status':'ok','answers':[],'command_timeout':120,'commands':[
-            ('I386BuildModule("C:/Kernel/I386/RedSeaCreate.HC","C:/Probe/InstalledCreate.t32m")>0;',['1'])]})
+            ('I386BuildModule("C:/Kernel/I386/RedSeaCreate.HC","C:/Probe/InstalledCreate.t32m")>0;',['1']),
+            ('I386BuildModule("C:/Compiler/I386/LexNumber.HC","C:/Probe/InstalledLexNumber.t32m")>0;',['1'])]})
     if target.read_bytes()!=installed or 'TARGET VOLUME D BOUND\n' in (boot/'debug.log').read_text():
         raise ValueError('File-installed target did not boot independently')
     return {'publication':publication,'independent_boot':report,
