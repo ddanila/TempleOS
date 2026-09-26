@@ -8948,8 +8948,10 @@ disk audit found exactly one `ArcCtrlSeed` export and
 SHA-256 `f24533ab0c49541e4115da4847a49700e7c8f120a060259d3dd68a0bf708e0ed`.
 The source SHA-256 is
 `01c83057f7f28f40a9116a10962bcb6bc0231c7ac5ab75052e47266274703721`.
-The full `--test` promotion has not been rerun for this revision; the focused
-diagnostic and two writable boots cover the new source-file path.
+The full `python3 tools/build-i386-kernel.py --test` promotion subsequently
+passed on commit `713dd07`, including the normal 8 MiB interactive QEMU
+session, two writable boots, file-failure recovery and original document
+compatibility. `build/i386-kernel/result.json` records that run.
 This is a production source file with nested headers, not a complete
 compiler/kernel build or a native installation.
 
