@@ -8952,3 +8952,29 @@ The full `--test` promotion has not been rerun for this revision; the focused
 diagnostic and two writable boots cover the new source-file path.
 This is a production source file with nested headers, not a complete
 compiler/kernel build or a native installation.
+
+## Guest packages original Arc expansion source (2026-09-26)
+
+The native compiler now reads `/Kernel/ArcExpand.HC` through its shared Arc
+header, packages the original `ArcExpandStep`, and loads and executes it with
+borrowed callbacks. The probe checks a one-byte decode and a negative reader
+result, then requires the heap to return to baseline. The source normally
+inherits `TRUE` and `FALSE` from `KernelA.HH`; the isolated compilation unit
+defines those two standard prelude macros in its private, unwind-owned table.
+The delivered Arc source itself is unchanged. This exposes a requirement for
+the eventual complete native build: reproduce the kernel prelude before
+compiling its dependent files, rather than relying on ambient host state.
+
+Both QEMU diagnostic phases and normal startup pass. The guest-built version-2
+module is 6,398 bytes and loads as a 6,344-byte image. The first writable boot
+saved, reopened and executed the module. The independent disk audit finds
+exactly one `ArcExpandStep` export and SHA-256
+`f4b4d7aa8c23b76fbc93d9ce5020d1f28f96d477798a28467aaf2f5b22c71e22`.
+The delivered source SHA-256 is
+`e38458ee926e203cd2e5e3d754249ecd3f96fab0b89ecac99f834c1d9527acdc`.
+The second writable boot loaded and executed the previously saved module,
+replaced it and completed normal startup. The x86-64 two-generation rebuild,
+i386 cross-build, and 386 boot audit pass. The full `--test` promotion has not
+been rerun for this revision; the focused diagnostic and two writable boots
+cover the changed source-file path. This is another production source file,
+not a native compiler/kernel rebuild.

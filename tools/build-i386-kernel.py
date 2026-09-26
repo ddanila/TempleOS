@@ -1215,6 +1215,26 @@ def verify_native_arc_module(disk):
             'functions':['ArcCtrlSeed']}
 
 
+def verify_native_expand_module(disk):
+    """Audit the guest-built module from the delivered ArcExpand.HC file."""
+    path='/Probe/ArcExpand.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built Arc expansion module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<128 or size&7 or count!=1 or
+            records!=32+size or strings!=records+16 or strings>total):
+        raise ValueError('Invalid guest-built Arc expansion module layout')
+    kind,offset,name,length=struct.unpack_from('<4I',module,records)
+    if (kind!=1 or offset>=size or length!=len(b'ArcExpandStep') or
+            module[name:name+length]!=b'ArcExpandStep'):
+        raise ValueError('Arc expansion module export differs from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/ArcExpand.HC').read_bytes()).hexdigest(),
+            'functions':['ArcExpandStep']}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1779,6 +1799,17 @@ def main():
                               'module_bytes':native_arc[0][1],
                               'loaded_bytes':native_arc[0][2],
                               'source':'/Kernel/ArcSeed.HC'}
+        native_expand = [tuple(int(value,16) for value in line.split()[2:])
+                         for line in log.splitlines()
+                         if re.match(r'^NATIVE EXPAND [0-9A-F]{16} ',line)]
+        if len(native_expand)!=2 or [entry[0] for entry in native_expand]!=[0,1] or \
+                native_expand[0][1:]!=native_expand[1][1:] or \
+                native_expand[0][1]<256 or native_expand[0][2]<128:
+            raise ValueError('Delivered ArcExpand.HC did not compile and execute')
+        result['native_expand']={'phases':[0,1],
+                                 'module_bytes':native_expand[0][1],
+                                 'loaded_bytes':native_expand[0][2],
+                                 'source':'/Kernel/ArcExpand.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2017,6 +2048,8 @@ def main():
             raise ValueError('Fresh production math module disk round trip failed')
         if mutation_log.count('NATIVE ARC DISK\n')!=1 or 'NATIVE ARC EXISTING\n' in mutation_log:
             raise ValueError('Fresh production Arc seed module disk round trip failed')
+        if mutation_log.count('NATIVE EXPAND DISK\n')!=1 or 'NATIVE EXPAND EXISTING\n' in mutation_log:
+            raise ValueError('Fresh production Arc expansion module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -2060,6 +2093,9 @@ def main():
         if module_reboot_log.count('NATIVE ARC EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE ARC DISK\n')!=1:
             raise ValueError('Production Arc seed module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE EXPAND EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE EXPAND DISK\n')!=1:
+            raise ValueError('Production Arc expansion module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2127,6 +2163,11 @@ def main():
                                    'second_boot':'read, load, execute, replace',
                                    'module':verify_native_arc_module(mutation_disk),
                                    'result':'pass'}
+        result['native_expand_disk']={'path':'C:/Probe/ArcExpand.t32m',
+                                      'fresh_boot':'write, read, load, execute',
+                                      'second_boot':'read, load, execute, replace',
+                                      'module':verify_native_expand_module(mutation_disk),
+                                      'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

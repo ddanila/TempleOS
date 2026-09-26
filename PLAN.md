@@ -2220,6 +2220,12 @@ The standalone-development goal above is the entry gate. M7 then requires:
    Direct source-unit compilation now owns preprocessor definitions in a
    private table, so header macros are released when the compilation control
    unwinds; the two-phase QEMU probe checks the heap returns to baseline.
+   The guest now also packages the delivered `/Kernel/ArcExpand.HC` through
+   its shared Arc header and runs its callback success and reader-error paths.
+   This file needs the normal kernel prelude's `TRUE` and `FALSE` definitions;
+   the isolated source unit supplies those definitions transactionally. The
+   complete native build still needs an explicit prelude and resident-binding
+   contract for the broader source dependency graph.
    Next extend that path to files with shared headers and resident imports,
    define a stable system binding table, then package the compiler and kernel
    dependency graph. Broader pointer-target identity and full source-tree

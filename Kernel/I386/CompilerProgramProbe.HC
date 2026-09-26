@@ -1006,6 +1006,102 @@ U0 ProbeProgramArc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("NATIVE ARC "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramExpandRead(U8 *context,CArcCtrl *control)
+{
+  I64 *value=context;
+  return *value;
+}
+U0 ProbeProgramExpandEntry(CArcCtrl *control) {}
+I64 ProbeProgramExpandRun(CI386Heap *heap,U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record;
+  CArcCtrl *control;
+  U8 *image,*stack,*destination;
+  I64 image_bytes,value;
+  Bool (*expand)(CArcCtrl *control,I64 (*read)(U8 *context,CArcCtrl *control),
+    U0 (*entry)(CArcCtrl *control),U8 *context);
+  if(!I386ModuleValid(module,module_bytes) ||
+      header->version!=I386_MODULE_VERSION || header->record_count!=1) KernelStop;
+  record=module+header->records_offset;
+  if(record->kind!=I386_MODULE_EXPORT ||
+      StrCmp(module+record->name_offset,"ArcExpandStep")) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,"ArcExpandStep",0,0);
+  image=I386HeapAlloc(heap,image_bytes);
+  control=I386HeapAlloc(heap,sizeof(CArcCtrl),TRUE);
+  stack=I386HeapAlloc(heap,16,TRUE);
+  destination=I386HeapAlloc(heap,2,TRUE);
+  if(!image || !control || !stack || !destination ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "ArcExpandStep",0,0)!=image_bytes) KernelStop;
+  expand=image+8+record->offset;
+  control->stk_base=control->stk_ptr=stack;
+  control->dst_buf=destination; control->dst_size=1;
+  control->src_size=8; control->next_bits_in_use=8;
+  control->saved_basecode=0xFFFFFFFF;
+  value='Q';
+  if(!(*expand)(control,&ProbeProgramExpandRead,&ProbeProgramExpandEntry,&value) ||
+      control->dst_pos!=1 || destination[0]!='Q' || control->src_pos!=8)
+    KernelStop;
+  control->dst_pos=0; control->src_pos=0; destination[0]=0;
+  control->saved_basecode=0xFFFFFFFF; value=-1;
+  if((*expand)(control,&ProbeProgramExpandRead,&ProbeProgramExpandEntry,&value) ||
+      control->dst_pos || destination[0] || control->src_pos) KernelStop;
+  if(!I386HeapFree(heap,destination) || !I386HeapFree(heap,stack) ||
+      !I386HeapFree(heap,control) || !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/ArcExpand.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/ArcExpand.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramExpandRun(heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/ArcExpand.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramExpandRun(heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE EXPAND EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/ArcExpand.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/ArcExpand.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramExpandRun(heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE EXPAND DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE EXPAND "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1199,4 +1295,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramUnit(probe,heap,outer);
   ProbeProgramKMath(probe,heap,outer);
   ProbeProgramArc(probe,heap,outer);
+  ProbeProgramExpand(probe,heap,outer);
 }
