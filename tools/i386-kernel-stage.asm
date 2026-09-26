@@ -1,5 +1,5 @@
-%define BOOT_SECTORS 880
-%define BOOT_SECTORS_LIMIT 880
+%define BOOT_SECTORS 896
+%define BOOT_SECTORS_LIMIT 896
 %define BOOT_VOLUME_SECTOR 2048
 %include "tools/i386-bios.inc"
 section stage vstart=0x10000 align=1

@@ -2274,8 +2274,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    `/Kernel/I386/RedSeaFormat.HC` now initializes a separate blank 16 MiB
    secondary IDE target under QEMU. The host audits its empty RedSea root,
    bitmap and reserved boot area; a second boot reloads the saved formatter
-   and verifies that the existing volume is not changed. Next mount that
-   target in the guest, publish boot artifacts failure-atomically, and boot it.
+   and verifies that the existing volume is not changed. The guest now mounts
+   that target and uses its source-built RedSea creator to publish
+   `InstallSeed.HC`; the host checks its bytes, directory entry and bitmap,
+   while a second boot confirms the file and target image remain unchanged.
+   The BIOS load reservation is now 896 sectors, ending at `0x80000`, with
+   32 KiB before the task-stack reservation; the current image has 8,272
+   bytes of load-area headroom. More native code belongs in retained modules
+   or must be paired with a revised boot/memory layout.
+   Next publish boot artifacts failure-atomically and boot the target.
    The remaining compiler/kernel dependency graph still needs validated resident
    exports, the full kernel prelude, and complete in-guest compilation.
    Broader pointer-target identity and full source-tree coverage remain open.
@@ -2283,8 +2290,9 @@ The standalone-development goal above is the entry gate. M7 then requires:
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
    either the prior bootable system or a recoverable target. The blank-target
-   RedSea formatter passes a two-boot QEMU test; boot-sector/kernel publication,
-   source/module copy, and independent target boot remain open.
+   RedSea formatter, guest target mount and source-built seed-file creation pass
+   a two-boot QEMU test. Boot-sector/kernel publication, complete source/module
+   copy, and independent target boot remain open.
 3. **Two-generation self-hosting.** A host-built Generation 0 produces native
    Generation 1; Generation 1 boots and produces Generation 2. Generation 2
    has equivalent public behavior and persistent formats, and can rebuild the

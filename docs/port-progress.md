@@ -9231,3 +9231,34 @@ and 386 boot instruction audit also pass. The full `--test` suite has not been
 rerun for this revision. Guest mounting of the target, boot-sector and kernel
 publication, source/module copy, independent target boot, and self-hosting
 remain open.
+
+## Guest-mounted installation target and persistent file (2026-09-26)
+
+The root kernel now publishes its original `I386RedSeaMount` function to the
+native source environment. On the disposable two-disk QEMU profile, the guest
+formats the blank secondary IDE target, mounts it, and invokes the guest-built
+`/Kernel/I386/RedSeaCreate.HC` module to create `InstallSeed.HC` in the target
+root. It reads the exact 16-byte payload back through mounted RedSea services.
+The formatter and creator modules remain owned by the boot disk, while the
+seed file is on the separate target.
+
+An independent host audit verifies the target's reserved boot area, volume
+header, root entry, file extent, data bytes and allocation bitmap. The first
+boot creates the file once; later calls report that it already exists. On the
+second boot the guest reloads both saved source-built modules, mounts the
+existing target, finds the seed on all three calls, and leaves the target image
+byte for byte unchanged. The target SHA-256 is
+`17125918f1b221802e33d9b6477159e8c2388ea8aa2af257dd888ef0c988f7e1`.
+The target-only two-boot promotion helper, x86-64 two-generation rebuild, i386
+cross-build and 386 boot instruction audit pass. The full `--test` suite has
+not been rerun for this revision. Boot-sector/kernel publication, a complete
+source and module copy, independent target boot, and self-hosting remain open.
+
+The new kernel export brought the flat BIOS-loaded image within 80 bytes of
+its former 880-sector reservation. The stage now reserves 896 sectors, ending
+at `0x80000`; the task-stack reservation starts at `0x88000`. The current
+446,384-byte kernel plus its boot sector and 4 KiB protected-mode stage uses
+450,992 of the 459,264 reserved bytes, leaving 8,272 bytes. The 386
+instruction audit and both two-disk QEMU boots passed again with this layout.
+Future growth should use retained modules or a deliberate boot/memory-layout
+revision rather than silently consuming the remaining gap.

@@ -1775,13 +1775,20 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CI386ModuleHeader *header=module;
   CI386ModuleRecord *record;
   CI386ModuleBinding imports[10];
-  CHashExport *resident;
+  CHashExport *resident,*identify_symbol,*mount_symbol,*find_symbol,*read_symbol;
   CHashTable *table;
-  CI386RedSeaEntry directory;
-  U8 *image,*read,*payload="Created by guest";
-  I64 image_bytes,read_bytes,i,j,offset=-1,used=heap->used,allocations=heap->allocations;
+  CI386RedSeaEntry directory,target_entry;
+  CI386RedSea target_volume;
+  CI386Ata target;
+  U8 *image,*read,*payload="Created by guest",target_data[16];
+  I64 image_bytes,read_bytes,i,j,status,offset=-1,used=heap->used,allocations=heap->allocations;
+  U32 irq;
   I64 (*guest_create)(CI386RedSea *volume,I64 directory,U8 *name,
     U8 *buffer,I64 size,I64 datetime,I64 attr);
+  Bool (*identify)(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll);
+  Bool (*mount)(CI386RedSea *volume,CI386Ata *disk,I64 start);
+  I64 (*find)(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSeaEntry *entry);
+  I64 (*read_file)(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   imports[0].name="I386RedSeaValid";
   imports[1].name="I386RedSeaDirectory";
@@ -1829,6 +1836,31 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
         !probe->files->del("C:/Probe/NativeCreate.bin")) KernelStop;
     read=probe->files->read(heap,"C:/Probe/NativeCreate.bin",&read_bytes,0,0);
     if(read) KernelStop;
+  }
+  if(probe->format_target) {
+    identify_symbol=0; mount_symbol=0; find_symbol=0; read_symbol=0;
+    for(table=I386TaskSelf->hash_table;table;table=table->next) {
+      if(!identify_symbol) identify_symbol=ProbeSymbolFind(0,"I386AtaIdentifyPolled",table,HTT_EXPORT_SYS_SYM);
+      if(!mount_symbol) mount_symbol=ProbeSymbolFind(0,"I386RedSeaMount",table,HTT_EXPORT_SYS_SYM);
+      if(!find_symbol) find_symbol=ProbeSymbolFind(0,"I386RedSeaFind",table,HTT_EXPORT_SYS_SYM);
+      if(!read_symbol) read_symbol=ProbeSymbolFind(0,"I386RedSeaRead",table,HTT_EXPORT_SYS_SYM);
+    }
+    if(!identify_symbol || !mount_symbol || !find_symbol || !read_symbol) KernelStop;
+    identify=identify_symbol->val; mount=mount_symbol->val;
+    find=find_symbol->val; read_file=read_symbol->val;
+    irq=I386IrqSave;
+    if(!(*identify)(&target,1,0,100000,0) || target.sectors!=32768 ||
+        !(*mount)(&target_volume,&target,2048)) KernelStop;
+    status=(*guest_create)(&target_volume,target_volume.root,"InstallSeed.HC",
+      payload,16,0,0x800);
+    if(status==1) KernelLog("NATIVE TARGET CREATE FRESH\n");
+    else if(status==0) KernelLog("NATIVE TARGET CREATE EXISTING\n");
+    else KernelStop;
+    if((*find)(&target_volume,target_volume.root,"InstallSeed.HC",&target_entry)!=1 ||
+        target_entry.size!=16 ||
+        (*read_file)(&target_volume,&target_entry,0,target_data,16)!=16) KernelStop;
+    for(j=0;j<16;j++) if(target_data[j]!=payload[j]) KernelStop;
+    I386IrqRestore(irq);
   }
   if(!I386HeapFree(heap,image) || heap->used!=used ||
       heap->allocations!=allocations) KernelStop;
@@ -2203,6 +2235,6 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramNativeLoader(probe,heap,outer);
   ProbeProgramNativeAlloc(probe,heap,outer);
   ProbeProgramNativeFile(probe,heap,outer);
-  ProbeProgramNativeCreate(probe,heap,outer);
   ProbeProgramNativeFormat(probe,heap,outer);
+  ProbeProgramNativeCreate(probe,heap,outer);
 }

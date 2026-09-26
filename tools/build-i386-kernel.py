@@ -1472,25 +1472,33 @@ def verify_native_format_module(disk):
 
 
 def verify_formatted_target(disk):
-    """Independently audit an empty 16 MiB RedSea target and untouched boot area."""
+    """Audit the guest-mounted target and its source-built installation seed."""
     image=disk.read_bytes()
     start,sectors=2048,32768-2048
     bitmap=(sectors+4095)//4096
     root=start+bitmap+1
+    payload=b'Created by guest'
     if len(image)!=16*1024*1024 or any(image[:start*512]) or \
-            any(image[(root+1)*512:]):
+            image[(root+1)*512:(root+1)*512+len(payload)]!=payload or \
+            any(image[(root+1)*512+len(payload):]):
         raise ValueError('Formatter touched the boot reservation or unused target sectors')
     header=image[start*512:(start+1)*512]
     if any(header[:3]) or any(header[4:8]) or any(header[48:510]) or \
             header[3]!=0x88 or header[510:]!=b'\x55\xaa':
         raise ValueError('Invalid formatted target header bytes')
-    volume={'start':start,'sectors':sectors,'root':root,
-            'bitmap_sectors':bitmap,'files':{}}
-    if verify_volume(disk,volume)!=0:
-        raise ValueError('Formatted target is not an empty RedSea volume')
+    attr,name,block,size,date=struct.unpack_from('<H38sqqQ',image,root*512+128)
+    if (attr,name.split(b'\0',1)[0],block,size,date)!= \
+            (0x800,b'InstallSeed.HC',root+1,len(payload),0):
+        raise ValueError('Guest-built creator did not publish the installation seed')
+    volume={'start':start,'sectors':sectors,'root':root,'bitmap_sectors':bitmap,
+            'files':{'/InstallSeed.HC':{'block':root+1,'size':len(payload),
+                                     'sha256':hashlib.sha256(payload).hexdigest()}}}
+    if verify_volume(disk,volume)!=1:
+        raise ValueError('Formatted target does not contain exactly the installation seed')
     return {'sha256':hashlib.sha256(image).hexdigest(),
             'start':start,'sectors':sectors,'root':root,
-            'bitmap_sectors':bitmap,'files':0,'result':'pass'}
+            'bitmap_sectors':bitmap,'files':1,
+            'seed_sha256':hashlib.sha256(payload).hexdigest(),'result':'pass'}
 
 
 def verify_native_target_format(disk, exports, out):
@@ -1519,9 +1527,13 @@ def verify_native_target_format(disk, exports, out):
         fresh=text.count('NATIVE FORMAT FRESH\n')
         existing=text.count('NATIVE FORMAT EXISTING\n')
         previous=text.count('NATIVE FORMAT MODULE EXISTING\n')
+        seed_new=text.count('NATIVE TARGET CREATE FRESH\n')
+        seed_existing=text.count('NATIVE TARGET CREATE EXISTING\n')
         if phases!=[0,1] or fresh!=(name=='fresh') or \
                 existing!=(1 if name=='fresh' else 3) or \
                 previous!=(name=='reboot') or \
+                seed_new!=(1 if name=='fresh' else 0) or \
+                seed_existing!=(1 if name=='fresh' else 3) or \
                 text.count('NATIVE FORMAT MODULE DISK\n')!=1 or \
                 text.count('DONE native kernel startup\n')!=1:
             raise ValueError(f'Guest-built target formatter did not pass {name} boot')
@@ -1665,8 +1677,8 @@ def main():
     run(sys.executable,'tools/audit-i386-boot.py',str(disk),str(stage_listing),
         '--out',str(boot_audit_path))
     boot_audit=json.loads(boot_audit_path.read_text())
-    if disk.stat().st_size>(880+1)*512:
-        raise ValueError('Kernel stage exceeds its reserved 440 KiB load area')
+    if disk.stat().st_size>(896+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 448 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
     volume=package_volume(disk,exports)
     volume['verified_files']=verify_volume(disk,volume)
