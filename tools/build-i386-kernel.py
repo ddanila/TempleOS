@@ -165,13 +165,13 @@ def compiler_runtime_layout(module):
                 imports.append((symbol, name))
     if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space', 'I386LexFilePush', 'LexFileReleaseTop', 'I386HashTableNew', 'I386HashTableValid', 'I386HashTableDelete', 'throw', 'SysTry', 'SysUntry'}:
         raise ValueError('Unexpected compiler-runtime import contract')
-    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel', 'I386BackendCompile', 'I386ParseExpression', 'I386ParseType', 'I386ParserAlloc', 'I386ParserFree', 'I386ParserToken', 'I386ParseDeclarations', 'I386COCInit', 'I386ParseClass', 'I386ParseFunJoin', 'I386PublishClasses', 'I386BootstrapScalars', 'I386LoadScalarTypes', 'I386ScalarTypesCheck', 'I386FrontendServices', 'I386FrontendStatement', 'I386FrontendCommand', 'I386FrontendPublish', 'I386FrontendCodeSpan', 'I386FrontendCodeRelocs', 'I386FrontendModulePack', 'I386FrontendModulePackData', 'I386ModulePackRaw', 'I386CommandInput', 'I386ExecutionBreakPoll', 'I386MathBind', 'Round', 'Trunc', 'Floor', 'Ceil', 'Pow10I64', 'Ln', 'Log10', 'Log2', 'FloorU64', 'CeilU64', 'RoundI64', 'FloorI64', 'CeilI64'):
+    for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel', 'I386BackendCompile', 'I386ParseExpression', 'I386ParseType', 'I386ParserAlloc', 'I386ParserFree', 'I386ParserToken', 'I386ParseDeclarations', 'I386COCInit', 'I386ParseClass', 'I386ParseFunJoin', 'I386PublishClasses', 'I386BootstrapScalars', 'I386LoadScalarTypes', 'I386ScalarTypesCheck', 'I386FrontendServices', 'I386FrontendStatement', 'I386FrontendCommand', 'I386FrontendPublish', 'I386FrontendCodeSpan', 'I386FrontendCodeRelocs', 'I386FrontendModulePack', 'I386FrontendModulePackData', 'I386FrontendModulePackUnit', 'I386ModulePackRaw', 'I386CommandInput', 'I386ExecutionBreakPoll', 'I386MathBind', 'Round', 'Trunc', 'Floor', 'Ceil', 'Pow10I64', 'Ln', 'Log10', 'Log2', 'FloorU64', 'CeilU64', 'RoundI64', 'FloorI64', 'CeilI64'):
         if name not in exports or exports[name][0] != 1:
             raise ValueError(f'Missing compiler-runtime function {name}')
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 54:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 55:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
@@ -182,6 +182,7 @@ def compiler_runtime_layout(module):
                 code_reloc_offset=8+exports['I386FrontendCodeRelocs'][1],
                 program_pack_offset=8+exports['I386FrontendModulePack'][1],
                 program_pack_data_offset=8+exports['I386FrontendModulePackData'][1],
+                program_pack_unit_offset=8+exports['I386FrontendModulePackUnit'][1],
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
@@ -1119,6 +1120,38 @@ def verify_native_named_pointer_modules(disk):
             'target':'DurableBytes','pointer':'DurableBytesPtr'}
 
 
+def verify_native_unit_module(disk):
+    """Audit every definition and relocation in the guest-built source unit."""
+    path='/Probe/DurableUnit.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built source-unit module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or not size or size&7 or count!=6 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid source-unit module layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    named=lambda kind:[row for row in rows if row[0]==kind]
+    name=lambda row:module[row[2]:row[2]+row[3]]
+    exports=named(1); calls=named(2); data_exports=named(3)
+    ranges=named(4); addresses=named(5)
+    if ({name(row) for row in exports}!={b'UnitAdd',b'UnitMain'} or
+            len(exports)!=2 or len(calls)!=1 or name(calls[0])!=b'UnitAdd' or
+            len(data_exports)!=1 or name(data_exports[0])!=b'UnitBase' or
+            len(ranges)!=1 or
+            ranges[0][1]!=data_exports[0][1] or ranges[0][2]!=8 or ranges[0][3] or
+            len(addresses)!=1 or name(addresses[0])!=b'UnitBase' or
+            module[32+calls[0][1]-1]!=0xE8 or
+            module[32+addresses[0][1]-1]!=0x05 or
+            module[32+calls[0][1]:36+calls[0][1]]!=b'\0'*4 or
+            module[32+addresses[0][1]:36+addresses[0][1]]!=b'\0'*4 or
+            module[32+data_exports[0][1]:40+data_exports[0][1]]!=struct.pack('<q',20)):
+        raise ValueError('Guest-built source-unit definitions or initial data differ')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'functions':['UnitAdd','UnitMain'],'global':'UnitBase','initial_value':20}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1344,9 +1377,9 @@ def main():
             raise ValueError('Unexpected 8 MiB memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
-        if len(runtime) != 1 or len(runtime[0]) != 59:
+        if len(runtime) != 1 or len(runtime[0]) != 60:
             raise ValueError('Missing retained compiler-runtime image')
-        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address, symbols_init_address, control_enter_address, control_leave_address, control_drain_address, control_unwind_address, code_add_address, code_misc_address, code_discard_address, code_save_address, code_push_address, code_pop_address, code_free_address, code_append_address, code_retire_address, code_branch_address, code_optimize_address, out_new_address, out_del_address, backend_address, expression_address, type_address, parser_alloc_address, parser_free_address, parser_token_address, declarations_address, code_init_address, class_address, fun_join_address, publish_classes_address, bootstrap_scalars_address, load_scalars_address, scalar_check_address, frontend_address, statement_address, command_address, publish_address, input_address, break_poll_address, math_bind_address, code_span_address, module_pack_address, code_reloc_address, program_pack_address, program_pack_data_address = (int(x, 16) for x in runtime[0][1:])
+        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address, symbols_init_address, control_enter_address, control_leave_address, control_drain_address, control_unwind_address, code_add_address, code_misc_address, code_discard_address, code_save_address, code_push_address, code_pop_address, code_free_address, code_append_address, code_retire_address, code_branch_address, code_optimize_address, out_new_address, out_del_address, backend_address, expression_address, type_address, parser_alloc_address, parser_free_address, parser_token_address, declarations_address, code_init_address, class_address, fun_join_address, publish_classes_address, bootstrap_scalars_address, load_scalars_address, scalar_check_address, frontend_address, statement_address, command_address, publish_address, input_address, break_poll_address, math_bind_address, code_span_address, module_pack_address, code_reloc_address, program_pack_address, program_pack_data_address, program_pack_unit_address = (int(x, 16) for x in runtime[0][1:])
         if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
                 address < begin or address+size > begin+length or
                 string_address != address+runtime_layout['string_offset'] or
@@ -1371,7 +1404,7 @@ def main():
                 any(value != address+runtime_layout[key] for value,key in (
                     (code_save_address,'code_save_offset'), (code_push_address,'code_push_offset'),
                     (code_pop_address,'code_pop_offset'), (code_free_address,'code_free_offset'),
-                    (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset')))):
+                    (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
         if len(file_rows)!=1 or len(file_rows[0])!=21: raise ValueError('Missing file-runtime ownership evidence')
@@ -1651,6 +1684,16 @@ def main():
                                         'provider_bytes':named_pointer[0][2],
                                         'loaded_bytes':named_pointer[0][3],
                                         'result':'cross-module initialized pointer loaded and mutated'}
+        native_unit = [tuple(int(value,16) for value in line.split()[2:])
+                       for line in log.splitlines()
+                       if re.match(r'^NATIVE UNIT [0-9A-F]{16} ',line)]
+        if len(native_unit)!=2 or [entry[0] for entry in native_unit]!=[0,1] or \
+                native_unit[0][1:]!=native_unit[1][1:] or \
+                native_unit[0][1]<128 or native_unit[0][2]<48:
+            raise ValueError('Guest-built source unit did not load and execute')
+        result['native_unit']={'phases':[0,1],'module_bytes':native_unit[0][1],
+                               'loaded_bytes':native_unit[0][2],
+                               'result':'all source-unit definitions packaged together'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -1671,7 +1714,7 @@ def main():
             raise ValueError('Missing queued-file compiler break cleanup')
         result['file_break_cleanup']={'cases':2,'result':'pass'}
         result['input_break_cleanup']={'phases':[0,1],'cases_per_phase':3,'result':'pass'}
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=54, image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=55, image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, backend_address=backend_address, expression_address=expression_address, type_address=type_address, parser_alloc_address=parser_alloc_address, parser_free_address=parser_free_address, parser_token_address=parser_token_address, declarations_address=declarations_address, native_declaration_phases=[0,1], code_init_address=code_init_address, class_address=class_address, fun_join_address=fun_join_address, publish_classes_address=publish_classes_address, bootstrap_scalars_address=bootstrap_scalars_address, load_scalars_address=load_scalars_address, scalar_check_address=scalar_check_address, frontend_address=frontend_address, statement_address=statement_address, command_address=command_address, publish_address=publish_address, input_address=input_address, break_poll_address=break_poll_address, math_bind_address=math_bind_address, native_input_phases=[0,1], native_program_phases=[0,1], native_command_phases=[0,1], native_statement_phases=[0,1], native_frontend_phases=[0,1], native_publication_phases=[0,1], native_symbol_phases=[0,1], parser_token_phases=[0,1], parser_memory_phases=[0,1], native_expression_phases=[0,1], native_backend_phases=[0,1], native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
@@ -1883,6 +1926,8 @@ def main():
         if mutation_log.count('NATIVE NAMED POINTER DISK\n')!=1 or \
                 'NATIVE NAMED POINTER EXISTING\n' in mutation_log:
             raise ValueError('Fresh named-pointer modules disk round trip failed')
+        if mutation_log.count('NATIVE UNIT DISK\n')!=1 or 'NATIVE UNIT EXISTING\n' in mutation_log:
+            raise ValueError('Fresh source-unit module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -1917,6 +1962,9 @@ def main():
         if module_reboot_log.count('NATIVE NAMED POINTER EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE NAMED POINTER DISK\n')!=1:
             raise ValueError('Named-pointer modules did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE UNIT EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE UNIT DISK\n')!=1:
+            raise ValueError('Source-unit module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -1969,6 +2017,11 @@ def main():
                                              'second_boot':'read, load, mutate, execute, replace',
                                              'modules':verify_native_named_pointer_modules(mutation_disk),
                                              'result':'pass'}
+        result['native_unit_disk']={'path':'C:/Probe/DurableUnit.t32m',
+                                    'fresh_boot':'write, read, load, mutate, execute',
+                                    'second_boot':'read, load, mutate, execute, replace',
+                                    'module':verify_native_unit_module(mutation_disk),
+                                    'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

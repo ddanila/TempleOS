@@ -8823,5 +8823,34 @@ the new host audit; that audit was corrected and passed directly on the saved
 disk. The remaining mutation reboot, all 13 move and seven replacement
 interruption/recovery cases, and original/native document compatibility passed
 in a resumed run. One uninterrupted `--test` invocation after the audit fix
-has not been repeated. This is still an incremental native module contract,
-not complete source-unit packaging or self-hosting.
+had not been repeated at that checkpoint. The later version-55 full gate below
+closes that verification gap. This is still an incremental native module
+contract, not complete source-unit packaging or self-hosting.
+
+## Guest compiles and persists a complete small source unit (2026-09-26)
+
+Compiler services version 55 adds `program_pack_unit`. It walks one private
+source symbol table, selects all owned function and global definitions, sorts
+them by name and serializes them through the shared T32M packer. The native
+probe compiles `UnitBase=20`, `UnitAdd(x)` and `UnitMain()` as one source unit.
+It releases the compiler control, loads the resulting version-2 module, sees
+42, changes the loaded global to 21 and sees 43. The 331-byte module loads as
+a 168-byte image. A writable QEMU boot saves and executes it from RedSea; the
+next boot loads the existing file, executes it, replaces it and executes again.
+The independent disk audit confirms both function exports, the global's data
+range/export, call and address relocations, initial value 20, and SHA-256
+`fda02988470fc9022196f760bb976bb54a38dbc5beb1996531d05f4c0b049d84`.
+
+The packer now rejects functions with local `static` members. Their JIT
+storage lies outside the function's code/data image, so serializing those
+functions today would retain invalid live addresses. Static relocation,
+complete delivered source-tree packaging, system bindings, installation and
+self-hosted rebuilding remain open. Both x86-64 self-rebuild generations, the
+native cross-build and 386 boot instruction audit, two diagnostic phases and
+both writable module boots pass.
+The uninterrupted `python3 tools/build-i386-kernel.py --test` gate now passes.
+The normal 8 MiB startup took 48.35 seconds and the workstation submitted all
+558 input lines. Both writable module boots, the independent saved-file audit,
+all 13 move and seven replacement interruption/recovery cases, and
+original/native document compatibility passed. The builder manifest is
+`build/i386-kernel/result.json`.

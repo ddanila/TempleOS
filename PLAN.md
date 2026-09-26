@@ -2202,8 +2202,12 @@ The standalone-development goal above is the entry gate. M7 then requires:
    range in the module. Version-4 named stored-pointer records now allow an
    exact exported symbol in a second module to be resolved at load time; the
    native probe packages and persists a pointer-bearing consumer and its data
-   provider separately. Next support static storage, package complete source
-   units, and define a stable system binding table.
+   provider separately. Compiler services version 55 now collects and packages
+   every owned function and global definition from a private source unit; a
+   guest-built unit with two functions and one global survives two writable
+   boots. Function-local static storage is rejected until its live address
+   references can be relocated. Next support that static storage, package the
+   delivered system source units, and define a stable system binding table.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves

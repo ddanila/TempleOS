@@ -92,6 +92,23 @@ record only for an exact, unambiguous external symbol address. This supports
 persisting the pointer-bearing consumer and its provider as separate modules.
 The caller must retain both loaded modules for as long as that pointer is used.
 
+## Native source-unit packaging
+
+Compiler services version 55 exposes `program_pack_unit` for a private compiled
+source unit. It collects every owned function and global definition from the
+unit's symbol table, orders each set by name, and passes them to the same T32M
+packer used for explicitly selected definitions. Extern/import declarations,
+aliases and type declarations are not module definitions. A source unit with no
+compiled function is rejected. The service can query the required size before
+writing into caller-owned memory; the resulting module owns its code and data
+after the compiler control is released.
+
+Function-local `static` storage still lives in a separate JIT allocation.
+Packaging such a function is rejected until code references to that allocation
+have a relocation record. Complete system-source packaging remains open: the
+guest service can package a supported unit but does not yet compile and install
+the delivered kernel/compiler tree as a new system.
+
 ## Linking
 
 Compile callers with `import` declarations and providers with matching function
