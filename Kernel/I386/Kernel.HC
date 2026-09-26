@@ -68,6 +68,8 @@ CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
 CCntsGlbls cnts;
 CI386KernelSymbol kernel_exports[57];
+CI386KernelSymbol kernel_resident_exports[64];
+I64 kernel_resident_export_count;
 U8 kernel_export_kinds[57]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
@@ -517,6 +519,47 @@ U0 KernelCompilerProbe(I64 phase)
   }
 }
 
+I64 KernelResidentPublish(U8 *image,I64 size,
+  Bool (*export_at)(I64 index,CI386ModuleBinding *binding))
+{//Stage a retained module's named exports before adding any to the root scope.
+  CI386ModuleBinding staged[64],candidate;
+  CHashTable *table;
+  CHash *entry;
+  U64 base=(image+0)(U64),name_address;
+  I64 i,j,k,count=0,length,room=64-kernel_resident_export_count;
+  if(!image || size<8 || !export_at || !kernel_symbols || room<1) KernelStop;
+  for(i=0;i<room;i++) {
+    candidate.name=0; candidate.kind=0; candidate.address=0;
+    if(!(*export_at)(i,&candidate)) break;
+    name_address=(candidate.name+0)(U64);
+    if(name_address<base+8 || name_address>=base+size ||
+        candidate.address<base+8 || candidate.address>=base+size ||
+        candidate.kind!=I386_MODULE_EXPORT && candidate.kind!=I386_MODULE_DATA_EXPORT) KernelStop;
+    for(length=0;length<=255 && name_address+length<base+size;length++)
+      if(!candidate.name[length]) break;
+    if(!length || length>255 || name_address+length>=base+size) KernelStop;
+    for(j=0;j<count;j++) if(!StrCmp(staged[j].name,candidate.name)) KernelStop;
+    for(table=kernel_symbols;table;table=table->next)
+      for(j=0;j<=table->mask;j++)
+        for(entry=table->body[j];entry;entry=entry->next)
+          if(!StrCmp(entry->str,candidate.name)) KernelStop;
+    staged[count].name=candidate.name;
+    staged[count].kind=candidate.kind;
+    staged[count].address=candidate.address;
+    count++;
+  }
+  if(i==room) {
+    candidate.name=0; candidate.kind=0; candidate.address=0;
+    if((*export_at)(i,&candidate)) KernelStop;
+  }
+  for(k=0;k<count;k++) {
+    CI386KernelSymbol *symbol=&kernel_resident_exports[kernel_resident_export_count++];
+    symbol->str=staged[k].name; symbol->kind=staged[k].kind;
+    symbol->val=staged[k].address; symbol->type=HTT_EXPORT_SYS_SYM;
+    HashAdd(symbol,kernel_symbols);
+  }
+  return count;
+}
 U0 KernelFileLoad()
 {
   CI386ModuleBinding bindings[29];
@@ -525,6 +568,8 @@ U0 KernelFileLoad()
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
     bindings,29,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
+  if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=1 ||
+      !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
   kernel_volumes.letter['C'-'A']=&kernel_volume;

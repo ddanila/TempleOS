@@ -372,6 +372,14 @@ class CI386FrontendLiteral {
   CHashGlblVar symbol;
   U8 name[16];
 };
+Bool I386FrontendOwnsFunction(CI386Frontend *frontend,CHashFun *fun)
+{
+  CI386FrontendCode *code;
+  if(!fun || !fun->exe_addr || fun->type&HTF_IMPORT) return FALSE;
+  for(code=frontend->codes;code;code=code->next)
+    if(code->code==fun->exe_addr) return TRUE;
+  return FALSE;
+}
 I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capacity)
 {//Package every owned function/global definition in this private source unit.
   CI386Frontend *frontend;
@@ -391,7 +399,7 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
     for(entry=table->body[i];entry;entry=entry->next) {
       if(entry->type&HTT_FUN) {
         fun=entry;
-        if(fun->exe_addr && !(fun->type&HTF_IMPORT)) functions_count++;
+        if(I386FrontendOwnsFunction(frontend,fun)) functions_count++;
       } else if(entry->type&HTT_GLBL_VAR) {
         global=entry;
         if(global->data_addr && !(global->flags&(GVF_ALIAS|GVF_EXTERN|GVF_IMPORT)))
@@ -412,7 +420,7 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
     for(entry=table->body[i];entry;entry=entry->next) {
       if(entry->type&HTT_FUN) {
         fun=entry;
-        if(fun->exe_addr && !(fun->type&HTF_IMPORT)) functions[fi++]=fun;
+        if(I386FrontendOwnsFunction(frontend,fun)) functions[fi++]=fun;
       } else if(entry->type&HTT_GLBL_VAR) {
         global=entry;
         if(global->data_addr && !(global->flags&(GVF_ALIAS|GVF_EXTERN|GVF_IMPORT)))

@@ -5,6 +5,7 @@
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/RedSeaTask.HH"
+#include "/Kernel/I386/Arc.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
@@ -78,7 +79,15 @@ CCmpCtrl *I386FileRuntimeControl(U8 *buffer,I64 flags,U8 *filename)
   return I386TaskCmpCtrlNew(&file_compiler,buffer,flags,filename);
 }
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
-#assert sizeof(CI386FileServices)==76
+Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
+{
+  if(index || !binding) return FALSE;
+  binding->name="I386ArcEntryGet";
+  binding->kind=I386_MODULE_EXPORT;
+  binding->address=(&I386ArcEntryGet+0)(U64);
+  return TRUE;
+}
+#assert sizeof(CI386FileServices)==80
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
@@ -97,6 +106,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->move=&I386TaskFileMove;
   services->move_probe=&I386TaskFileMoveProbe;
   services->move_io_probe=&I386TaskFileMoveIoProbe;
+  services->export_at=&I386FileRuntimeExportAt;
   return 1;
 }
 #include "/Kernel/I386/FileNames.HC"

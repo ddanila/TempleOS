@@ -8980,3 +8980,33 @@ i386 cross-build, and 386 boot audit pass. The full `--test` promotion has not
 been rerun for this revision; the focused diagnostic and two writable boots
 cover the changed source-file path. This is another production source file,
 not a native compiler/kernel rebuild.
+
+## Guest-built Arc wrapper binds a retained system export (2026-09-26)
+
+The retained `FileRuntime` service now enumerates selected named code exports
+through a version-33 interface. During boot, the kernel checks each borrowed
+name and address against the retained module image, rejects collisions, and
+publishes the validated records in the root symbol table. The first export is
+`I386ArcEntryGet`. Its code and name retain the file module's kernel lifetime.
+
+The native compiler reads the delivered `/Kernel/I386/ArcExpand.HC` and its
+included original `ArcExpand.HC`, binds the `I386ArcEntryGet` declaration to
+that resident export, and packages four functions produced by the source unit.
+Source-unit collection now selects functions by code ownership; a resident
+`extern` with a valid executable address is excluded from the module's owned
+exports. The guest loads the module with the retained binding and checks a
+bounded one-byte decode and short-input rejection. The diagnostic checks both
+phases and returns the heap to baseline; x86-64 two-generation rebuild,
+native cross-build and 386 boot audit pass.
+
+The first writable QEMU boot saved, reloaded and executed the 12,117-byte
+version-2 T32M. The 11,848-byte image contains four function exports and one
+external address reference to `I386ArcEntryGet`; its SHA-256 is
+`e3858f678d497f39bb2b5216277aa4703ce38d94c8d223aa554cf7e379314a82`.
+The source SHA-256 is
+`8268357a991c98f783005711167d8cd58f69c379241d94da02bef66aefaf299c`.
+The second writable boot loaded and executed the previously saved module,
+replaced it and completed normal startup. The full `--test` promotion has not
+been rerun for this revision; the focused diagnostic and two writable boots
+cover the changed binding path. Export coverage across other retained modules,
+the full kernel prelude and native compiler/kernel rebuild remain open.

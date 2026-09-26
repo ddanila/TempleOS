@@ -306,12 +306,12 @@ def file_runtime_layout(module):
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 32:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 33:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -324,6 +324,8 @@ def file_runtime_layout(module):
         move_offset=8+exports['I386TaskFileMove'][1],
         move_probe_offset=8+exports['I386TaskFileMoveProbe'][1],
         move_io_probe_offset=8+exports['I386TaskFileMoveIoProbe'][1],
+        export_at_offset=8+exports['I386FileRuntimeExportAt'][1],
+        arc_entry_offset=8+exports['I386ArcEntryGet'][1],
         bind_offset=8+exports['I386FileRuntimeBind'][1],
         init_offset=8+exports['I386TaskFilesInit'][1], compiler_init_offset=8+exports['I386FileRuntimeCompiler'][1],
         control_new_offset=8+exports['I386FileRuntimeControl'][1], name_abs_offset=8+exports['I386TaskFileNameAbs'][1],
@@ -1235,6 +1237,32 @@ def verify_native_expand_module(disk):
             'functions':['ArcExpandStep']}
 
 
+def verify_native_resident_module(disk):
+    """Audit the guest-built native Arc module and its retained import."""
+    path='/Probe/NativeExpand.t32m'
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built resident-bound Arc module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size<1024 or size&7 or count!=8 or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid resident-bound Arc module layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    names=sorted((kind,module[name:name+length]) for kind,offset,name,length in rows)
+    expected=sorted([(1,b'ArcExpandStep'),(1,b'I386ArcExpandBuf'),
+                     (1,b'I386ArcRead'),(1,b'I386ArcReadCode'),
+                     (5,b'I386ArcEntryGet'),(5,b'I386ArcRead'),
+                     (2,b'ArcExpandStep'),(2,b'I386ArcReadCode')])
+    if names!=expected or any(offset>=size or not length or
+            name<strings or name+length>=total for kind,offset,name,length in rows):
+        raise ValueError('Resident-bound Arc exports/imports differ from source')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/ArcExpand.HC').read_bytes()).hexdigest(),
+            'functions':['ArcExpandStep','I386ArcExpandBuf','I386ArcRead','I386ArcReadCode'],
+            'resident_import':'I386ArcEntryGet'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -1490,8 +1518,8 @@ def main():
                     (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset'), (private_defines_address,'private_defines_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=21: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=22: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
@@ -1510,7 +1538,8 @@ def main():
                 file_dir_delete!=file_address+files_layout['dir_delete_offset'] or
                 file_move!=file_address+files_layout['move_offset'] or
                 file_move_probe!=file_address+files_layout['move_probe_offset'] or
-                file_move_io_probe!=file_address+files_layout['move_io_probe_offset']):
+                file_move_io_probe!=file_address+files_layout['move_io_probe_offset'] or
+                file_export_at!=file_address+files_layout['export_at_offset']):
             raise ValueError('File-runtime placement or service mismatch')
         if 'FILE MOVE PROBE ' in log:
             raise ValueError('Writable file mutation probe ran during read-only diagnostics')
@@ -1527,8 +1556,8 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=32, image_address=file_address, image_bytes=file_size,
-            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe,
+        result['file_runtime'] = dict(version=33, image_address=file_address, image_bytes=file_size,
+            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             move_failure_stages=4,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
@@ -1810,6 +1839,17 @@ def main():
                                  'module_bytes':native_expand[0][1],
                                  'loaded_bytes':native_expand[0][2],
                                  'source':'/Kernel/ArcExpand.HC'}
+        native_resident = [tuple(int(value,16) for value in line.split()[2:])
+                           for line in log.splitlines()
+                           if re.match(r'^NATIVE RESIDENT [0-9A-F]{16} ',line)]
+        if len(native_resident)!=2 or [entry[0] for entry in native_resident]!=[0,1] or \
+                native_resident[0][1:]!=native_resident[1][1:] or \
+                native_resident[0][1]<256 or native_resident[0][2]<128:
+            raise ValueError('Guest-built native Arc wrapper did not bind the retained function')
+        result['native_resident']={'phases':[0,1],
+                                   'module_bytes':native_resident[0][1],
+                                   'loaded_bytes':native_resident[0][2],
+                                   'source':'/Kernel/I386/ArcExpand.HC'}
         bootstrap_sources = [line.split()[2:] for line in log.splitlines() if line.startswith('BOOTSTRAP SOURCE ')]
         source_lines = [i for i, line in enumerate((ROOT/'Kernel/Types.HH').read_text().splitlines(), 1) if re.match(r'^[IU](16|32|64)i union [IU](16|32|64)$', line.strip())]
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
@@ -2050,6 +2090,8 @@ def main():
             raise ValueError('Fresh production Arc seed module disk round trip failed')
         if mutation_log.count('NATIVE EXPAND DISK\n')!=1 or 'NATIVE EXPAND EXISTING\n' in mutation_log:
             raise ValueError('Fresh production Arc expansion module disk round trip failed')
+        if mutation_log.count('NATIVE RESIDENT DISK\n')!=1 or 'NATIVE RESIDENT EXISTING\n' in mutation_log:
+            raise ValueError('Fresh resident-bound native Arc module disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
         run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
             '--out',str(module_reboot_out),'--timeout','1200')
@@ -2096,6 +2138,9 @@ def main():
         if module_reboot_log.count('NATIVE EXPAND EXISTING\n')!=1 or \
                 module_reboot_log.count('NATIVE EXPAND DISK\n')!=1:
             raise ValueError('Production Arc expansion module did not execute from the previous boot')
+        if module_reboot_log.count('NATIVE RESIDENT EXISTING\n')!=1 or \
+                module_reboot_log.count('NATIVE RESIDENT DISK\n')!=1:
+            raise ValueError('Resident-bound native Arc module did not execute from the previous boot')
         result['native_module_disk']={'path':'C:/Probe/DurableConst.t32m',
                                       'fresh_boot':'write, read, execute',
                                       'second_boot':'read, execute, replace, read, execute',
@@ -2168,6 +2213,11 @@ def main():
                                       'second_boot':'read, load, execute, replace',
                                       'module':verify_native_expand_module(mutation_disk),
                                       'result':'pass'}
+        result['native_resident_disk']={'path':'C:/Probe/NativeExpand.t32m',
+                                        'fresh_boot':'write, bind, load, execute',
+                                        'second_boot':'read, bind, load, execute, replace',
+                                        'module':verify_native_resident_module(mutation_disk),
+                                        'result':'pass'}
         mutation_bytes=bytearray(mutation_disk.read_bytes())
         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
         mutation_disk.write_bytes(mutation_bytes)

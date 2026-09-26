@@ -1102,6 +1102,109 @@ U0 ProbeProgramExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("NATIVE EXPAND "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
+  U8 *module,I64 module_bytes)
+{
+  CI386ModuleHeader *header=module;
+  CI386ModuleRecord *record;
+  CI386ModuleBinding binding;
+  CHashExport *resident;
+  CHashTable *table;
+  CArcCtrl *control;
+  U8 *image,*stack,*source,*destination;
+  I64 image_bytes,i,offset=-1;
+  Bool (*expand)(CArcCtrl *control);
+  resident=0;
+  for(table=I386TaskSelf->hash_table;table && !resident;table=table->next)
+    resident=ProbeSymbolFind(0,"I386ArcEntryGet",table,HTT_EXPORT_SYS_SYM);
+  if(!I386ModuleValid(module,module_bytes) || !resident ||
+      !probe->files->export_at(0,&binding) ||
+      binding.kind!=I386_MODULE_EXPORT || StrCmp(binding.name,"I386ArcEntryGet") ||
+      binding.address!=resident->val) KernelStop;
+  record=module+header->records_offset;
+  for(i=0;i<header->record_count;i++,record++)
+    if(record->kind==I386_MODULE_EXPORT &&
+        !StrCmp(module+record->name_offset,"I386ArcExpandBuf")) offset=record->offset;
+  if(offset<0 || I386LoadBoundInto(&module,&module_bytes,1,0,0,
+      "I386ArcExpandBuf",0,0)) KernelStop;
+  image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
+    "I386ArcExpandBuf",&binding,1);
+  image=I386HeapAlloc(heap,image_bytes);
+  control=I386HeapAlloc(heap,sizeof(CArcCtrl),TRUE);
+  stack=I386HeapAlloc(heap,4096,TRUE);
+  source=I386HeapAlloc(heap,1,TRUE);
+  destination=I386HeapAlloc(heap,2,TRUE);
+  if(image_bytes<1 || !image || !control || !stack || !source || !destination ||
+      I386LoadBoundInto(&module,&module_bytes,1,image,image_bytes,
+        "I386ArcExpandBuf",&binding,1)!=image_bytes) KernelStop;
+  source[0]='Q'; control->src_buf=source; control->src_size=8;
+  control->dst_buf=destination; control->dst_size=1;
+  control->stk_base=control->stk_ptr=stack;
+  control->min_bits=7; control->min_table_entry=128;
+  control->next_bits_in_use=8; control->free_idx=128; control->free_limit=256;
+  control->saved_basecode=0xFFFFFFFF; control->entry_used=1;
+  expand=image+8+offset;
+  if(!(*expand)(control) || control->dst_pos!=1 || destination[0]!='Q' ||
+      control->src_pos!=8 || !control->next_entry) KernelStop;
+  control->src_pos=0; control->src_size=7; control->dst_pos=0;
+  control->saved_basecode=0xFFFFFFFF; destination[0]=0;
+  if((*expand)(control) || control->src_pos || control->dst_pos || destination[0]) KernelStop;
+  if(!I386HeapFree(heap,destination) || !I386HeapFree(heap,source) ||
+      !I386HeapFree(heap,stack) || !I386HeapFree(heap,control) ||
+      !I386HeapFree(heap,image)) KernelStop;
+  return image_bytes;
+}
+U0 ProbeProgramNativeExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{
+  CI386Task *task=I386TaskSelf;
+  CHashClass *roots[6];
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  U8 *module=0,*disk=0;
+  I64 module_bytes,disk_bytes,image_bytes,i;
+  I64 used=heap->used,allocations=heap->allocations;
+  U32 irq;
+  if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
+      probe->files,probe->disk_include,roots)) KernelStop;
+  cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ArcExpand.HC\";",
+    CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/NativeExpand.HC");
+  if(!cc || !probe->compiler->control_enter(heap,cc,0,0) ||
+      !(symbols=probe->compiler->frontend(heap,cc,probe->internal_types,
+        probe->disk_include)) ||
+      !probe->compiler->frontend_private_defines(symbols)) KernelStop;
+  ProbeProgramRead(probe,heap,cc,symbols);
+  module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  module=I386HeapAlloc(heap,module_bytes);
+  if(module_bytes<1 || !module ||
+      probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
+      !I386ModuleValid(module,module_bytes) ||
+      !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  image_bytes=ProbeProgramNativeExpandRun(probe,heap,module,module_bytes);
+  if(probe->persist_modules) {
+    disk=probe->files->read(heap,"C:/Probe/NativeExpand.t32m",&disk_bytes,0,0);
+    if(disk) {
+      if(ProbeProgramNativeExpandRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+          !I386HeapFree(heap,disk)) KernelStop;
+      KernelLog("NATIVE RESIDENT EXISTING\n");
+    }
+    if(!probe->files->write("C:/Probe/NativeExpand.t32m",module,module_bytes,0)) KernelStop;
+    disk=probe->files->read(heap,"C:/Probe/NativeExpand.t32m",&disk_bytes,0,0);
+    if(!disk || disk_bytes!=module_bytes) KernelStop;
+    for(i=0;i<module_bytes;i++) if(disk[i]!=module[i]) KernelStop;
+    if(ProbeProgramNativeExpandRun(probe,heap,disk,disk_bytes)!=image_bytes ||
+        !I386HeapFree(heap,disk)) KernelStop;
+    KernelLog("NATIVE RESIDENT DISK\n");
+  }
+  if(!I386HeapFree(heap,module)) KernelStop;
+  irq=I386IrqSave;
+  for(i=0;i<6;i++)
+    if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
+        !I386HashDel(heap,roots[i])) KernelStop;
+  I386IrqRestore(irq);
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE RESIDENT "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
+}
 U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -1296,4 +1399,5 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   ProbeProgramKMath(probe,heap,outer);
   ProbeProgramArc(probe,heap,outer);
   ProbeProgramExpand(probe,heap,outer);
+  ProbeProgramNativeExpand(probe,heap,outer);
 }

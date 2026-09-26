@@ -2224,12 +2224,15 @@ The standalone-development goal above is the entry gate. M7 then requires:
    its shared Arc header and runs its callback success and reader-error paths.
    This file needs the normal kernel prelude's `TRUE` and `FALSE` definitions;
    the isolated source unit supplies those definitions transactionally. The
-   complete native build still needs an explicit prelude and resident-binding
-   contract for the broader source dependency graph.
-   Next extend that path to files with shared headers and resident imports,
-   define a stable system binding table, then package the compiler and kernel
-   dependency graph. Broader pointer-target identity and full source-tree
-   coverage remain open.
+   retained file module now enumerates selected named exports through a
+   versioned service. The kernel validates and publishes these as resident
+   symbols; the guest compiles `/Kernel/I386/ArcExpand.HC` against its retained
+   `I386ArcEntryGet` dependency, packages only functions generated in that
+   source unit, and binds the import when loading the module. This establishes
+   one real cross-module source-build path. Next generalize the export registry
+   across retained modules, provide the full kernel prelude, and compile the
+   compiler/kernel dependency graph. Broader pointer-target identity and
+   full source-tree coverage remain open.
 2. **Bootable native installation.** The native build can format or initialize
    a fresh RedSea target, publish the rebuilt system failure-atomically, and
    produce an independently bootable disk. An interrupted installation leaves
