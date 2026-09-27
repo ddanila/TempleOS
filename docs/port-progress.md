@@ -9509,3 +9509,20 @@ This demonstrates source-to-module construction for a component of the native
 compiler, not execution of that newly built component as the running compiler.
 Replacing the retained Generation 0 compiler with a guest-built one and then
 rebuilding the boot kernel remain open.
+
+## Full compiler-runtime source probe (2026-09-27)
+
+The normal-console source builder now accepts T32M output up to 4 MiB; the
+host-built `CompilerRuntime.t32m` is 1,497,630 bytes and exceeded its former
+1 MiB bound. Failure logging records the build stage and, when parsing throws,
+the active source path, line and compiler error count. The x86-64 two-generation
+rebuild and i386 cross-build/386 audit pass with this change.
+
+In a 16 MiB QEMU `486` session, compiling
+`C:/Kernel/I386/CompilerRuntime.HC` still returns failure. The log identifies
+stage 3 (source command parsing), `Compiler` exception, one error and line 14:
+the first `import U8 *I386HeapAlloc(...)` declaration. No output artifact was
+published; the source disk remained valid. This isolates the next native
+compiler boundary to resident-name/import handling rather than the output
+size. A successful full-runtime build, two-generation self-hosting and M7 remain
+open. The full `--test` promotion was not rerun for this diagnostic change.

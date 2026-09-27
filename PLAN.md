@@ -2686,3 +2686,16 @@ QEMU success is sufficient for current milestones once their complete functional
 and resource gates pass. Full help layout, mouse/window-manager integration,
 emulated speaker behavior, broader DolDoc features and native rebuilds retain
 their M5–M7 gates.
+
+For the next M7 self-hosting slice, compile the full
+`Kernel/I386/CompilerRuntime.HC` source from a normal 16 MiB QEMU HolyC session.
+Its existing host-built T32M is about 1.5 MiB, so the source builder permits a
+4 MiB output. The first current failure occurs during parsing at source line 14,
+the `I386HeapAlloc` import declaration, before module packing. Add a focused
+resident-import compilation check, make private AOT declarations retain named
+imports without changing resident symbols, then rebuild the full runtime and
+verify its exports and relocations independently. Require two byte-identical
+guest builds before replacing the retained Generation 0 compiler; run the
+existing smaller RedSea and lexer builds as regressions. A guest-built compiler
+artifact alone does not close M7: execution, second-generation rebuild and boot
+verification still follow.

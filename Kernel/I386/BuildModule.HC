@@ -11,7 +11,7 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
   CPrsExpressionServices *expression;
   CCmpCtrl *boundary,*cc=0;
   U8 *source=0,*module=0,*code;
-  I64 source_bytes,module_bytes=0,raw_type,commands=0,exception=0;
+  I64 source_bytes,module_bytes=0,raw_type,commands=0,exception=0,stage=0;
   Bool entered=FALSE,compiled=FALSE,clean=TRUE;
   if(!console_config || !task || !source_path || !target_path ||
       !(scope=task->symbol_state) || scope->task!=task ||
@@ -19,6 +19,7 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
   compiler=console_config->compiler; boundary=task->last_cc;
   source=(*console_config->files->read)(heap,source_path,&source_bytes,0,0);
   if(!source || source_bytes<1 || source_bytes>1048576) goto build_module_done;
+  stage=1;
   try {
     cc=(*console_config->files->control_new)(source,
       CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,source_path);
@@ -28,10 +29,12 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
       throw('OutMem',TRUE);
     }
     entered=TRUE;
+    stage=2;
     symbols=(*compiler->frontend)(heap,cc,console_config->types,
       console_config->includes);
     if(!symbols || !(*compiler->frontend_private_defines)(symbols))
       throw('OutMem',TRUE);
+    stage=3;
     declarations=symbols->declarations; expression=declarations->expression;
     (*expression->lex)(expression->context,cc);
     while(cc->token!=TK_EOF) {
@@ -41,23 +44,40 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
         (*declarations->release)(declarations->context,code);
     }
     if(cc->error_cnt) throw('Compiler',TRUE);
+    stage=4;
     module_bytes=(*compiler->program_pack_unit)(symbols,0,0);
-    if(module_bytes<32 || module_bytes>1048576 ||
-        !(module=I386HeapAlloc(heap,module_bytes)) ||
-        (*compiler->program_pack_unit)(symbols,module,module_bytes)!=module_bytes)
+    stage=5;
+    if(module_bytes<32 || module_bytes>4194304 ||
+        !(module=I386HeapAlloc(heap,module_bytes))) throw('Compiler',TRUE);
+    stage=6;
+    if((*compiler->program_pack_unit)(symbols,module,module_bytes)!=module_bytes)
       throw('Compiler',TRUE);
+    stage=7;
     compiled=TRUE;
   } catch {
     exception=task->except_ch;
     task->catch_except=TRUE;
+    if(cc && cc->lex_include_stk) {
+      KernelLog("BUILD MODULE SOURCE ");
+      if(cc->lex_include_stk->full_name)
+        KernelLog(cc->lex_include_stk->full_name);
+      KernelLog(" "); KernelHex(cc->last_line_num);
+      KernelLog(" "); KernelHex(cc->error_cnt); KernelLog("\n");
+    }
   }
   if(entered && !(*compiler->control_unwind)(task,boundary)) clean=FALSE;
+  if(compiled && clean) stage=8;
   if(compiled && clean &&
       !(*console_config->files->write)(target_path,module,module_bytes,0))
     compiled=FALSE;
+  if(compiled) stage=9;
 build_module_done:
   if(module && !I386HeapFree(heap,module)) clean=FALSE;
   if(source && !I386HeapFree(heap,source)) clean=FALSE;
+  if(!compiled || !clean) {
+    KernelLog("BUILD MODULE REJECT "); KernelHex(stage); KernelLog(" ");
+    KernelHex(module_bytes); KernelLog(" "); KernelHex(exception); KernelLog("\n");
+  }
   if(exception && exception!='Compiler' && exception!='OutMem') throw(exception,TRUE);
   if(compiled && clean) return module_bytes;
   return -1;
