@@ -129,6 +129,7 @@ U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
   CI386Frontend *state=context;
+  if(!kind) { KernelLog("FRONTEND ERROR "); KernelLog(message); KernelLog("\n"); }
   if(kind==2) {
     if(!(cc->opts&1<<OPTf_WARN_PAREN) || cc->lex_include_stk->flags&LFSF_DEFINE) return;
     message="Unnecessary parenthesis ";
@@ -424,13 +425,14 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
       call->fun.ie_lst=0; call->fun.ext_lst=0;
       call->target=fun->exe_addr; call->recursive=fun==cc->htc.fun;
       call->original=fun;
-      call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN);
+      call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT);
       call->next=bound->calls; bound->calls=call;
       call->stack=stack; stack=call;
       node->ic_data=&call->fun;
     } else if(node->ic_code==IC_CALL || node->ic_code==IC_CALL_EXTERN ||
         node->ic_code==IC_CALL_IMPORT || node->ic_code==IC_CALL_INDIRECT2) {
-      if(!stack || !stack->recursive && (!stack->target || stack->fun.type&HTF_IMPORT))
+      if(!stack || !stack->recursive && (!stack->target ||
+          stack->fun.type&HTF_IMPORT && !(cc->flags&CCF_MODULE_SOURCE)))
         I386FrontendUnavailable(state);
       if(stack->unresolved && !I386ParserRecord(state->cc,stack->original))
         I386FrontendUnavailable(state);
@@ -461,10 +463,13 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
         address->target=fun->exe_addr;
       } else if(symbol->type&HTT_GLBL_VAR) {
         global=symbol;
-        if(!global->data_addr || global->flags&GVF_EXTERN) I386FrontendUnavailable(state);
+        if(global->flags&GVF_EXTERN || !global->data_addr &&
+            !(cc->flags&CCF_MODULE_SOURCE && global->flags&GVF_IMPORT))
+          I386FrontendUnavailable(state);
         address->fun.type=HTT_FUN;
         address->fun.str=global->str;
         address->target=global->data_addr;
+        if(!address->target) address->target=&I386FrontendUndefined;
       } else I386FrontendUnavailable(state);
       address->fun.type|=HTF_IMPORT;
       address->fun.ie_lst=0; address->fun.ext_lst=0;

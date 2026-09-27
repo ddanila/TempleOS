@@ -2690,12 +2690,22 @@ their M5–M7 gates.
 For the next M7 self-hosting slice, compile the full
 `Kernel/I386/CompilerRuntime.HC` source from a normal 16 MiB QEMU HolyC session.
 Its existing host-built T32M is about 1.5 MiB, so the source builder permits a
-4 MiB output. The first current failure occurs during parsing at source line 14,
-the `I386HeapAlloc` import declaration, before module packing. Add a focused
-resident-import compilation check, make private AOT declarations retain named
-imports without changing resident symbols, then rebuild the full runtime and
+4 MiB output. Parsing originally stopped at the line-14 `I386HeapAlloc` import;
+the focused resident-import check and private module-source declaration path now
+cover that boundary. Rebuild the full runtime and
 verify its exports and relocations independently. Require two byte-identical
 guest builds before replacing the retained Generation 0 compiler; run the
 existing smaller RedSea and lexer builds as regressions. A guest-built compiler
 artifact alone does not close M7: execution, second-generation rebuild and boot
 verification still follow.
+
+The resident-import prerequisite now has a two-boot regression: a guest-built
+fixture must export two functions and retain one named `I386HeapAlloc` call and
+one named `char_bmp_hex_numeric` address reference. Both module imports work in
+the focused QEMU run. The full compiler runtime now passes its original first
+import and first lexer-function boundary, but its 16 MiB compile exceeded a
+900-second command deadline while QEMU remained CPU-bound. The builder logs a
+source location and live heap use every sixteen top-level commands. Use that
+evidence in the next bounded full-runtime run to distinguish slow parsing or
+code generation from an allocation limit. A packaged T32M and independent
+export/relocation audit remain the immediate acceptance target.

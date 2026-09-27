@@ -12,6 +12,7 @@
 #include "/Compiler/I386/Lex.HH"
 #include "/Kernel/I386/Cpu.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import U0 KernelLog(U8 *text);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);

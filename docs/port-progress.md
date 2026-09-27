@@ -9526,3 +9526,31 @@ published; the source disk remained valid. This isolates the next native
 compiler boundary to resident-name/import handling rather than the output
 size. A successful full-runtime build, two-generation self-hosting and M7 remain
 open. The full `--test` promotion was not rerun for this diagnostic change.
+
+## Guest-built resident function and data imports (2026-09-27)
+
+The native command parser clears its AOT flag while compiling interactive
+statements. A dedicated module-source flag now permits original `import`
+declarations in private source builds without changing interactive declarations.
+Module compilation accepts unresolved resident function calls as named call
+relocations and imported global references as named address relocations. The
+ordinary interactive path still rejects calls or data references that cannot
+execute immediately.
+
+A focused 16 MiB QEMU `486` run built `ImportModuleFixture.HC` from the mounted
+disk. The independently parsed 419-byte T32M (SHA-256
+`ae3c8950a0f584e978999f26ed8476b6da353d7403ca88d05b49bd6895f4cdb1`)
+exports both fixture functions and contains exactly one `I386HeapAlloc` call
+record and one `char_bmp_hex_numeric` address record. The two-boot target-disk
+module regression now checks the same artifact and its byte identity alongside
+the existing RedSea creator and lexer builds.
+
+The full `CompilerRuntime.HC` source advanced beyond its former first import
+and first lexer function failure. A subsequent 16 MiB QEMU build stayed
+CPU-bound and did not finish within its 900-second console command limit; it
+published no compiler artifact. The builder now emits a source location and
+heap-use checkpoint every sixteen top-level commands to locate the slow phase
+in the next bounded run. The x86-64 two-generation rebuild and i386 cross-build
+with 386 audit pass. The complete `--test` promotion is running; its first
+attempt exposed and prompted repair of a stale file-service placement check
+for `read_raw` and `install_boot`.

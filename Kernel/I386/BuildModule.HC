@@ -22,7 +22,7 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
   stage=1;
   try {
     cc=(*console_config->files->control_new)(source,
-      CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,source_path);
+      CCF_DONT_FREE_BUF|CCF_AOT_COMPILE|CCF_MODULE_SOURCE,source_path);
     if(!cc) throw('OutMem',TRUE);
     if(!(*compiler->control_enter)(heap,cc,0,0)) {
       (*compiler->control_del)(heap,cc,0,0); cc=0;
@@ -39,6 +39,13 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
     (*expression->lex)(expression->context,cc);
     while(cc->token!=TK_EOF) {
       if(++commands>4096) throw('Compiler',TRUE);
+      if(!(commands&15)) {
+        KernelLog("BUILD MODULE PROGRESS "); KernelHex(commands); KernelLog(" ");
+        if(cc->lex_include_stk && cc->lex_include_stk->full_name)
+          KernelLog(cc->lex_include_stk->full_name);
+        KernelLog(" "); KernelHex(cc->last_line_num);
+        KernelLog(" "); KernelHex(heap->used); KernelLog("\n");
+      }
       code=(*compiler->command)(heap,cc,symbols,&raw_type);
       if(code && !(cc->flags&CCF_HAS_MISC_DATA))
         (*declarations->release)(declarations->context,code);
@@ -62,7 +69,7 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
       if(cc->lex_include_stk->full_name)
         KernelLog(cc->lex_include_stk->full_name);
       KernelLog(" "); KernelHex(cc->last_line_num);
-      KernelLog(" "); KernelHex(cc->error_cnt); KernelLog("\n");
+      KernelLog(" "); KernelHex(cc->error_cnt); KernelLog(" "); KernelHex(cc->flags); KernelLog("\n");
     }
   }
   if(entered && !(*compiler->control_unwind)(task,boundary)) clean=FALSE;

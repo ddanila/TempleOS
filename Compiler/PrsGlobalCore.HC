@@ -65,7 +65,7 @@ U0 PrsGlblVarLstCore(CPrsGlobalServices *services,CCmpCtrl *cc,I64 saved_mode,CH
 	  if (!(fsp_flags&FSF__))
 	    (*expression->report)(expression->context,cc,0,"Expecting label with underscore at ");
 	case PRS0_IMPORT:
-	  if (!(cc->flags&CCF_AOT_COMPILE))
+	  if (!(cc->flags&(CCF_AOT_COMPILE|CCF_MODULE_SOURCE)))
 	    (*expression->report)(expression->context,cc,0,"import not needed at ");
 	  else {
 	    tmpf=PrsFunJoinCore(symbols,cc,tmpc,st,fsp_flags);
@@ -107,7 +107,7 @@ U0 PrsGlblVarLstCore(CPrsGlobalServices *services,CCmpCtrl *cc,I64 saved_mode,CH
 	  break;
 	case PRS0__IMPORT:
 	case PRS0_IMPORT:
-	  if (!(cc->flags&CCF_AOT_COMPILE))
+	  if (!(cc->flags&(CCF_AOT_COMPILE|CCF_MODULE_SOURCE)))
 	    (*expression->report)(expression->context,cc,0,"import not needed at ");
 	  else {
 	    tmpg=(*expression->allocate)(expression->context,sizeof(CHashGlblVar),TRUE,FALSE);

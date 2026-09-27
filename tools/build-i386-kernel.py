@@ -163,7 +163,7 @@ def compiler_runtime_layout(module):
                 exports[symbol] = (kind, offset)
             else:
                 imports.append((symbol, name))
-    if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space', 'I386LexFilePush', 'LexFileReleaseTop', 'I386HashTableNew', 'I386HashTableValid', 'I386HashTableDelete', 'throw', 'SysTry', 'SysUntry'}:
+    if {name for name, _ in imports} != {'I386LexRawChar', 'I386LexSourceRead', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_non_eol', 'HashFind', 'StrCmp', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave', 'I386IrqRestore', 'I386LexIncludeCopy', 'HashAdd', 'char_bmp_non_eol_white_space', 'I386LexFilePush', 'LexFileReleaseTop', 'I386HashTableNew', 'I386HashTableValid', 'I386HashTableDelete', 'throw', 'SysTry', 'SysUntry', 'KernelLog'}:
         raise ValueError('Unexpected compiler-runtime import contract')
     for name in ('Main', 'I386LexStringChunk', 'I386LexNumber', 'I386LexChar', 'I386RuntimePunct', 'I386LexIdentScan', 'I386LexIdentToken', 'I386LexStringToken', 'I386RuntimeLexNext', 'I386RuntimeLexIncludes', 'I386CmpCtrlNew', 'I386CmpCtrlDel', 'I386TaskSymbolsInit', 'I386CmpCtrlEnter', 'I386CmpCtrlLeave', 'I386CmpCtrlDrain', 'I386CmpCtrlUnwind', 'I386ICAdd', 'I386COCMiscNew', 'I386COCDiscard', 'I386COCSave', 'I386COCPush', 'I386COCPopNoFree', 'I386COCHeaderFree', 'I386COCAppend', 'I386ICRetire', 'I386OptBranch', 'I386OptPass012', 'I386OutNew', 'I386OutDel', 'I386BackendCompile', 'I386ParseExpression', 'I386ParseType', 'I386ParserAlloc', 'I386ParserFree', 'I386ParserToken', 'I386ParseDeclarations', 'I386COCInit', 'I386ParseClass', 'I386ParseFunJoin', 'I386PublishClasses', 'I386BootstrapScalars', 'I386LoadScalarTypes', 'I386ScalarTypesCheck', 'I386FrontendServices', 'I386FrontendStatement', 'I386FrontendCommand', 'I386FrontendPublish', 'I386FrontendCodeSpan', 'I386FrontendCodeRelocs', 'I386FrontendModulePack', 'I386FrontendModulePackData', 'I386FrontendModulePackUnit', 'I386FrontendPrivateDefines', 'I386CompilerRuntimeExportAt', 'I386ModuleValid', 'I386ModulePackRaw', 'I386CommandInput', 'I386ExecutionBreakPoll', 'I386MathBind', 'Round', 'Trunc', 'Floor', 'Ceil', 'Pow10I64', 'Ln', 'Log10', 'Log2', 'FloorU64', 'CeilU64', 'RoundI64', 'FloorI64', 'CeilI64'):
         if name not in exports or exports[name][0] != 1:
@@ -326,6 +326,8 @@ def file_runtime_layout(module):
         move_offset=8+exports['I386TaskFileMove'][1],
         move_probe_offset=8+exports['I386TaskFileMoveProbe'][1],
         move_io_probe_offset=8+exports['I386TaskFileMoveIoProbe'][1],
+        read_raw_offset=8+exports['I386TaskFileReadRaw'][1],
+        install_boot_offset=8+exports['I386TaskInstallBoot'][1],
         export_at_offset=8+exports['I386FileRuntimeExportAt'][1],
         arc_entry_offset=8+exports['I386ArcEntryGet'][1],
         bind_offset=8+exports['I386FileRuntimeBind'][1],
@@ -1472,6 +1474,27 @@ def verify_native_lex_number_module(disk,path):
             'named_address_imports':[name.decode() for name in names[5]]}
 
 
+def verify_native_import_module(disk,path):
+    """A source build must keep resident calls and data references relocatable."""
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built import fixture')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if total!=len(module) or size<32 or size&7 or count!=4 or \
+            records!=32+size or strings!=records+16*count or strings>total:
+        raise ValueError('Invalid guest-built import fixture layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    names=sorted((kind,module[name:name+length]) for kind,offset,name,length in rows)
+    if names!=[(1,b'I386ImportGlobalFixture'),(1,b'I386ImportModuleFixture'),
+               (2,b'I386HeapAlloc'),(5,b'char_bmp_hex_numeric')] or \
+            any(offset>=size or not length or name<strings or name+length>=total
+                for kind,offset,name,length in rows):
+        raise ValueError('Guest-built import fixture lost a named relocation')
+    return {'sha256':hashlib.sha256(module).hexdigest(),'bytes':len(module),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/ImportModuleFixture.HC').read_bytes()).hexdigest()}
+
+
 def verify_native_format_module(disk):
     """Audit the guest-built RedSea formatter and its ATA-only imports."""
     module=mutated_file_contents(disk,{'/Probe/NativeFormat.t32m'}).get('/Probe/NativeFormat.t32m')
@@ -1720,32 +1743,37 @@ def verify_interactive_native_module(disk,out,console,volume):
     command='I386BuildModule("D:/Kernel/I386/RedSeaCreate.HC","D:/Modules/I386/GuestCreate.t32m")>0;'
     lexer_path='/Modules/I386/GuestLexNumber.t32m'
     lexer_command='I386BuildModule("D:/Compiler/I386/LexNumber.HC","D:/Modules/I386/GuestLexNumber.t32m")>0;'
+    import_path='/Modules/I386/GuestImports.t32m'
+    import_command='I386BuildModule("D:/Kernel/I386/ImportModuleFixture.HC","D:/Modules/I386/GuestImports.t32m")>0;'
     first=console['run_input'](candidate,work/'first',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[
                 ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
-                (command,['1']),(lexer_command,['1'])]})
+                (command,['1']),(lexer_command,['1']),(import_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
                 {'/Modules/I386/Missing.t32m'}):
         raise ValueError('Native module build changed source or published missing input')
     first_module=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     first_lexer=verify_native_lex_number_module(target,lexer_path)
+    first_imports=verify_native_import_module(target,import_path)
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=len(volume['files'])+3:
+    if integrity['files']!=len(volume['files'])+4:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
-            'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1'])]})
+            'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1']),(import_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
+    rebuilt_imports=verify_native_import_module(target,import_path)
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
             rebuilt_lexer['sha256']!=first_lexer['sha256'] or
+            rebuilt_imports['sha256']!=first_imports['sha256'] or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
     return {'first_boot':first,'second_boot':second,'module':rebuilt,
-            'compiler_component':rebuilt_lexer,
+            'compiler_component':rebuilt_lexer,'resident_imports':rebuilt_imports,
             'filesystem_integrity':second_integrity,'result':'pass'}
 
 
@@ -2039,8 +2067,8 @@ def main():
                     (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset'), (private_defines_address,'private_defines_offset'), (compiler_export_at_address,'export_at_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=22: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=24: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
@@ -2060,7 +2088,9 @@ def main():
                 file_move!=file_address+files_layout['move_offset'] or
                 file_move_probe!=file_address+files_layout['move_probe_offset'] or
                 file_move_io_probe!=file_address+files_layout['move_io_probe_offset'] or
-                file_export_at!=file_address+files_layout['export_at_offset']):
+                file_export_at!=file_address+files_layout['export_at_offset'] or
+                file_read_raw!=file_address+files_layout['read_raw_offset'] or
+                file_install_boot!=file_address+files_layout['install_boot_offset']):
             raise ValueError('File-runtime placement or service mismatch')
         if 'FILE MOVE PROBE ' in log:
             raise ValueError('Writable file mutation probe ran during read-only diagnostics')
@@ -2078,7 +2108,7 @@ def main():
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
         result['file_runtime'] = dict(version=36, image_address=file_address, image_bytes=file_size,
-            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, arc_entry_address=file_address+files_layout['arc_entry_offset'],
+            retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             move_failure_stages=4,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
