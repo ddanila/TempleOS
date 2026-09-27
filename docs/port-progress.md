@@ -9551,6 +9551,13 @@ CPU-bound and did not finish within its 900-second console command limit; it
 published no compiler artifact. The builder now emits a source location and
 heap-use checkpoint every sixteen top-level commands to locate the slow phase
 in the next bounded run. The x86-64 two-generation rebuild and i386 cross-build
-with 386 audit pass. The complete `--test` promotion is running; its first
-attempt exposed and prompted repair of a stale file-service placement check
-for `read_raw` and `install_boot`.
+with 386 audit pass. The complete `tools/build-i386-kernel.py --test` gate now
+passes. Its first attempt exposed a stale file-service placement check for
+`read_raw` and `install_boot`; the corrected checker verifies both live
+addresses. The two writable target boots produced byte-identical 419-byte
+import fixtures, with all four expected T32M records, and retained the RedSea
+and lexer module regressions. The installed target has 833 files in 16
+directories and a bitmap matching 16,009 owned sectors. It booted independently
+at 8 MiB and rebuilt the existing RedSea and lexer modules; install-copy
+interruption/retry and original document compatibility also passed. The full
+runtime source build and second-generation boot remain open.
