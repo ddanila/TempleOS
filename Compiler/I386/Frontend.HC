@@ -403,6 +403,26 @@ U0 I386FrontendStaticsPrepare(CI386Frontend *state,CHashFun *owner)
     }
   }
 }
+U0 I386FrontendCallsReject(CI386Frontend *state,I64 reason,CIntermediateCode *node)
+{
+  U8 *name="<none>";
+  if(state->cc->htc.fun) name=state->cc->htc.fun->str;
+  KernelLog("MODULE CALLS REJECT ");
+  switch(reason) {
+    case 1: KernelLog("internal "); break;
+    case 2: KernelLog("target "); break;
+    case 3: KernelLog("record "); break;
+    case 4: KernelLog("end "); break;
+    case 5: KernelLog("symbol "); break;
+    case 6: KernelLog("fun-address "); break;
+    case 7: KernelLog("global-address "); break;
+    case 8: KernelLog("symbol-type "); break;
+    case 9: KernelLog("heap-global "); break;
+    case 10: KernelLog("stack "); break;
+  }
+  KernelLog(name); KernelLog("\n");
+  I386FrontendUnavailable(state);
+}
 U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc)
 {
   CIntermediateCode *node;
@@ -418,7 +438,7 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
     if(node->ic_code==IC_CALL_START) {
       fun=node->ic_data;
-      if(fun && Bt(&fun->flags,Ff_INTERNAL) && !I386IntrinsicValid(fun)) I386FrontendUnavailable(state);
+      if(fun && Bt(&fun->flags,Ff_INTERNAL) && !I386IntrinsicValid(fun)) I386FrontendCallsReject(state,1,node);
       call=I386FrontendAlloc(state,sizeof(CI386FrontendCall),TRUE,FALSE);
       destination=&call->fun; source=fun;
       for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
@@ -433,12 +453,12 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
         node->ic_code==IC_CALL_IMPORT || node->ic_code==IC_CALL_INDIRECT2) {
       if(!stack || !stack->recursive && (!stack->target ||
           stack->fun.type&HTF_IMPORT && !(cc->flags&CCF_MODULE_SOURCE)))
-        I386FrontendUnavailable(state);
+        I386FrontendCallsReject(state,2,node);
       if(stack->unresolved && !I386ParserRecord(state->cc,stack->original))
-        I386FrontendUnavailable(state);
+        I386FrontendCallsReject(state,3,node);
       node->ic_code=IC_CALL_IMPORT;
     } else if(node->ic_code==IC_CALL_END) {
-      if(!stack) I386FrontendUnavailable(state);
+      if(!stack) I386FrontendCallsReject(state,4,node);
       node->ic_data=&stack->fun;
       stack=stack->stack;
     } else if(node->ic_code==IC_ABS_ADDR || node->ic_code==IC_ADDR_IMPORT) {
@@ -453,11 +473,11 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
         if(!symbol) symbol=I386FrontendFunctionAt(state,node->ic_data);
       }
       else symbol=node->ic_data;
-      if(!symbol || !symbol->str) I386FrontendUnavailable(state);
+      if(!symbol || !symbol->str) I386FrontendCallsReject(state,5,node);
       address=I386FrontendAlloc(state,sizeof(CI386FrontendAddress),TRUE,FALSE);
       if(symbol->type&HTT_FUN) {
         fun=symbol;
-        if(!fun->exe_addr) I386FrontendUnavailable(state);
+        if(!fun->exe_addr) I386FrontendCallsReject(state,6,node);
         destination=&address->fun; source=fun;
         for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
         address->target=fun->exe_addr;
@@ -465,21 +485,21 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
         global=symbol;
         if(global->flags&GVF_EXTERN || !global->data_addr &&
             !(cc->flags&CCF_MODULE_SOURCE && global->flags&GVF_IMPORT))
-          I386FrontendUnavailable(state);
+          I386FrontendCallsReject(state,7,node);
         address->fun.type=HTT_FUN;
         address->fun.str=global->str;
         address->target=global->data_addr;
         if(!address->target) address->target=&I386FrontendUndefined;
-      } else I386FrontendUnavailable(state);
+      } else I386FrontendCallsReject(state,8,node);
       address->fun.type|=HTF_IMPORT;
       address->fun.ie_lst=0; address->fun.ext_lst=0;
       address->original=symbol;
       address->next=bound->address_refs; bound->address_refs=address;
       node->ic_code=IC_ADDR_IMPORT; node->ic_data=&address->fun;
     } else if(node->ic_code==IC_HEAP_GLBL)
-      I386FrontendUnavailable(state);
+      I386FrontendCallsReject(state,9,node);
   }
-  if(stack) I386FrontendUnavailable(state);
+  if(stack) I386FrontendCallsReject(state,10,0);
 }
 U0 I386FrontendRelocAdd(CI386Frontend *state,CI386FrontendCode *output,
   I64 offset,I64 kind,U8 *name)
@@ -584,11 +604,15 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
   cc->aot=&bound->aot; cc->aotc=&bound->aotc;
   cc->flags=cc->flags&~mask|CCF_AOT_COMPILE; cc->pass=0;
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS START\n");
   I386FrontendCalls(state,bound,cc);
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS DONE\n");
   out=I386OutNew(state->heap,cc);
   if(!out) throw('OutMem',TRUE);
   I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND START\n");
   if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll)) I386FrontendUnavailable(state);
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
     if(metadata->type!=IET_I386_DATA) I386FrontendUnavailable(state);
   result=I386FrontendAlloc(state,sizeof(CI386FrontendCode),TRUE,FALSE);
@@ -602,7 +626,9 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
     if(metadata->rip<result->data_start) result->data_start=metadata->rip;
   }
   for(i=0;i<out->count;i++) result->code[i]=out->data[i];
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK START\n");
   I386FrontendLink(state,bound,result);
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK DONE\n");
   result->next=state->codes; state->codes=result;
   if(!I386OutDel(state->heap,cc,out) || !I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
   cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;

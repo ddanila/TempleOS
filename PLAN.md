@@ -2713,3 +2713,23 @@ The first instrumented 16 MiB run reached command 336 at
 `CompilerRuntime.HC` line 34 in 360 seconds, with about 5.7 MiB live heap and
 no reported compiler error. Continue with a longer bounded run using these
 checkpoints; avoid treating the prior timeout as a parser rejection.
+
+A 16 MiB QEMU/KVM development run now reaches the optimizer source. Its first
+rejection was an internal `Bsf`/`Bsr` call in `OptPass012Core`: the 32-bit
+backend already emits these operations, but the intrinsic signature validator
+omitted them. The validator now accepts their original declarations, and
+focused intrinsic probes cover high 64-bit positions and zero input. The next
+run compiled `OptPass012Core` and advanced to the top-level `asm` block in
+`Compiler/I386/Divide.HC`, where the native source frontend rejects the unit.
+The next prerequisite is a relocatable representation of this division
+template that the guest can build while preserving its i386 instruction
+semantics and the host/guest byte contract. QEMU/KVM is only a development
+accelerator for this long source build; TCG remains the promotion profile.
+
+The native two-generation rebuild and cross-build/386 audit pass. Both TCG
+intrinsic-probe phases publish all 37 declarations and return the expected
+bit-scan results. The current complete `--test` attempt is incomplete: it
+reached install-tree interruption/resume verification, then exceeded the normal
+60-second boot limit in `target-tree-copy/partial/resume` before submitting the
+resume command. Revalidate that boot boundary and finish the remaining gates;
+do not treat this checkpoint as a complete promotion or a guest-built compiler.

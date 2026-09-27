@@ -32,11 +32,13 @@ U8 *I386FrontendFunctionCode(U8 *context,CCmpCtrl *cc,I64 *bytes,CDbgInfo **debu
   CI386FrontendCode *result;
   CHashClass *type;
   CCodeMisc *label;
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE FUNCTION BODY DONE\n");
   I386FrontendStack(state,cc);
   if(!cc->htc.fun || !(type=OptClassFwd(cc->htc.fun->return_class))) I386FrontendUnavailable(state);
   for(label=cc->coc.coc_next_misc;label!=&cc->coc.coc_next_misc;label=label->next)
     if(label->type==CMT_GOTO_LABEL && !(label->flags&CMF_DEFINED)) I386FrontendUnavailable(state);
   result=I386FrontendOutput(state,cc,type,cc->flags&CCF_HAS_MISC_DATA);
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE FUNCTION OUTPUT DONE\n");
   if(bytes) *bytes=result->bytes;
   if(debug) *debug=0;
   if(raw_type) *raw_type=result->raw_type;
@@ -45,9 +47,13 @@ U8 *I386FrontendFunctionCode(U8 *context,CCmpCtrl *cc,I64 *bytes,CDbgInfo **debu
 U0 I386FrontendFunction(U8 *context,CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags)
 {
   CI386Frontend *state=context;
+  if(cc->flags&CCF_MODULE_SOURCE) {
+    KernelLog("MODULE FUNCTION START "); if(name) KernelLog(name); KernelLog("\n");
+  }
   I386FrontendStack(state,cc);
   if(cc->flags&CCF_AOT_COMPILE || cc->htc.fun) I386FrontendUnavailable(state);
   PrsFunCore(&state->functions,cc,type,name,flags);
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE FUNCTION DONE\n");
 }
 U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
 {

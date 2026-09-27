@@ -61,6 +61,7 @@ Bool I386IntrinsicValid(CHashFun *fun)
     case IC_BT: case IC_BTS: case IC_BTR: case IC_BTC:
     case IC_LBTS: case IC_LBTR: case IC_LBTC:
       count=2; result=RT_I8; first=RT_U8; first_pointers=1; break;
+    case IC_BSF: case IC_BSR: break;
     case IC_TOUPPER: first=RT_U8; break;
     case IC_STRLEN: first=RT_U8; first_pointers=1; break;
     case IC_QUE_INIT: case IC_QUE_REM: result=RT_U0; queue=TRUE; break;

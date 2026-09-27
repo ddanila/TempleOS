@@ -74,13 +74,14 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg'):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
     if startup_check is not None and (groups is not None or mutation is not None):
         raise ValueError('Startup checks cannot be combined with groups or mutations')
     if ram_mib not in (8,16): raise ValueError('Unsupported i386 RAM profile')
+    if accel not in ('tcg','kvm'): raise ValueError('Unsupported QEMU accelerator')
     active_group=None
     submitted=0
     interaction_latencies={}
@@ -90,7 +91,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     (out/'result.json').unlink(missing_ok=True)
     log=out/'debug.log'; log.write_text('')
     qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
-    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu',cpu,'-m',str(ram_mib),'-nic','none',
+    cmd=['qemu-system-i386','-machine','pc','-accel',accel,'-cpu',cpu,'-m',str(ram_mib),'-nic','none',
          '-drive',f'file={disk.resolve()},format=raw,if=ide']
     if target_disk is not None:
         if target_disk.resolve()==disk.resolve(): raise ValueError('Target must be a separate disk')

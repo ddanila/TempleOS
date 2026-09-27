@@ -366,3 +366,14 @@ then succeeds and cleans up. The host clears the flags, independently audits all
 reachable RedSea extents and bitmap bits, and performs a normal read-only reboot
 that proves both probe directories and files are absent. The ordinary diagnostic
 image remains read-only and must contain no mutation-probe marker.
+
+For long compiler-source investigations, the Python `run_input` helper accepts
+`accel='kvm'` when the host provides accessible `/dev/kvm`. Its default remains
+`accel='tcg'`; this option is currently a Python API argument, not a CLI flag.
+The exact QEMU invocation, including accelerator, is saved in `command.json`.
+Use copied disks for writable probes. KVM runs provide development feedback;
+TCG remains the required promotion profile and 386 instruction audits still
+apply. A console expression such as `I386BuildModule(...)||1` only checks that
+the console recovers: it masks the builder's failure return. Inspect build
+rejection logs and independently audit the resulting artifact before claiming
+a successful source build.

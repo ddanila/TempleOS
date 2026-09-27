@@ -46,7 +46,16 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
         KernelLog(" "); KernelHex(cc->last_line_num);
         KernelLog(" "); KernelHex(heap->used); KernelLog("\n");
       }
+      if(336<=commands<400) {
+        KernelLog("BUILD MODULE COMMAND START "); KernelHex(commands); KernelLog(" ");
+        if(cc->lex_include_stk && cc->lex_include_stk->full_name)
+          KernelLog(cc->lex_include_stk->full_name);
+        KernelLog(" "); KernelHex(cc->last_line_num); KernelLog("\n");
+      }
       code=(*compiler->command)(heap,cc,symbols,&raw_type);
+      if(336<=commands<400) {
+        KernelLog("BUILD MODULE COMMAND DONE "); KernelHex(commands); KernelLog("\n");
+      }
       if(code && !(cc->flags&CCF_HAS_MISC_DATA))
         (*declarations->release)(declarations->context,code);
     }

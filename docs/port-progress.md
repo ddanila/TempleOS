@@ -9569,3 +9569,59 @@ parser error, rejection log or output artifact. The compiler advanced steadily
 through the included headers. A longer bounded run is needed to locate the
 first genuinely slow source command and decide whether to optimize compilation
 or raise the build profile's RAM budget.
+
+## Compiler bit-scan validation and assembly boundary (2026-09-27)
+
+The full compiler-runtime source build now passes `OptPass012Core`. A 16 MiB
+QEMU `486` development run with KVM localized the earlier rejection to the
+frontend's internal-function validation. The backend already supports `Bsf`
+and `Bsr`, but their signatures were missing from the validator. Both are now
+accepted, and the native intrinsic probe publishes 37 declarations and checks
+high 64-bit positions (combined result 95) and zero inputs (combined result -2).
+Both TCG probe phases passed, including their cleanup checks.
+
+Module-source diagnostics now identify function entry, body completion, call
+binding, backend emission and linking. Detailed top-level command checkpoints
+currently cover commands 336 through 399. Rejection labels distinguish internal
+intrinsics, call targets and address references. These development diagnostics
+remain in this checkpoint to support the next full-source build.
+
+With the validator fix, the KVM run completed the optimizer and output-buffer
+functions, then rejected the top-level assembly block in
+`Compiler/I386/Divide.HC` (reported source line 4). No full compiler artifact was
+produced. The run's console wrapper used `I386BuildModule(...)||1`, so its VGA
+report only proves the command returned to the console; the debug log is the
+authoritative failed-build result. The next prerequisite is guest compilation
+of the division template while preserving its relocation and instruction
+semantics. General HolyC assembly support and the full self-hosting gates remain
+open.
+
+Validation for this checkpoint:
+
+- `python3 tools/test-rebuild.py` passed the original x64 two-generation rebuild.
+- The i386 cross-build and 386 boot audit passed.
+- `python3 tools/build-i386-kernel.py --test` passed the expanded intrinsic
+  checks and progressed to install-tree interruption/resume verification, but
+  exited on a 60-second normal-boot timeout in
+  `build/i386-kernel/target-tree-copy/partial/resume`. Its log reached
+  `GRAPHICS BUFFERS` without `DONE native kernel startup`; the resume command
+  was never submitted. The cause has not been established. The complete gate
+  and its later module/boot-area checks are therefore not certified by this run.
+- The first regression attempt also caught the host's stale expected intrinsic
+  count of 35; it now expects 37, matching the expanded guest probe.
+
+Local evidence is in `build/i386-kernel/boot/debug.log`,
+`build/i386-kernel/full-test-bitscan.log`, and
+`build/i386-kernel/full-runtime-kvm-bitscan/location/debug.log`. The full-test
+log SHA-256 is
+`497f63ed08650c3ff8e3953a3a4e04493e34a12be5797636661c50776cce8cb0`;
+the KVM source-build log SHA-256 is
+`2f15e3f47dfe4ae6908f74d9f66a214559ad3931aff7535d75dc28bbd3aee3db`.
+The final normal image SHA-256 is
+`5fcbaa007d2cbd568c35b310226192aecf7edbbcf4074bfc6af4ab3936b7769e`;
+the diagnostic image SHA-256 is
+`e8e55bd76d52d832fd79109e14783db0dec8f1089246f2eaea7609472fe437cf`.
+The retained host-built `CompilerRuntime.t32m` SHA-256 is
+`dddaa5c73da2559a5a92f8bd48d64051b850c2d22715d2c8b4d45976b1dbff9b`.
+These are intermediate results; the full guest-built compiler, its execution,
+two identical builds and the second-generation boot remain required for M7.
