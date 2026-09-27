@@ -9561,3 +9561,11 @@ directories and a bitmap matching 16,009 owned sectors. It booted independently
 at 8 MiB and rebuilt the existing RedSea and lexer modules; install-copy
 interruption/retry and original document compatibility also passed. The full
 runtime source build and second-generation boot remain open.
+
+An instrumented 16 MiB follow-up reached command 336 at
+`Kernel/I386/CompilerRuntime.HC` line 34 after a 360-second console deadline.
+The last checkpoint reported 5,687,712 live heap bytes (`0x56C9A0`), with no
+parser error, rejection log or output artifact. The compiler advanced steadily
+through the included headers. A longer bounded run is needed to locate the
+first genuinely slow source command and decide whether to optimize compilation
+or raise the build profile's RAM budget.

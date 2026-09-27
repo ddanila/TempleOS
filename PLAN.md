@@ -2709,3 +2709,7 @@ source location and live heap use every sixteen top-level commands. Use that
 evidence in the next bounded full-runtime run to distinguish slow parsing or
 code generation from an allocation limit. A packaged T32M and independent
 export/relocation audit remain the immediate acceptance target.
+The first instrumented 16 MiB run reached command 336 at
+`CompilerRuntime.HC` line 34 in 360 seconds, with about 5.7 MiB live heap and
+no reported compiler error. Continue with a longer bounded run using these
+checkpoints; avoid treating the prior timeout as a parser rejection.
