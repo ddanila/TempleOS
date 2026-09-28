@@ -2733,3 +2733,26 @@ reached install-tree interruption/resume verification, then exceeded the normal
 60-second boot limit in `target-tree-copy/partial/resume` before submitting the
 resume command. Revalidate that boot boundary and finish the remaining gates;
 do not treat this checkpoint as a complete promotion or a guest-built compiler.
+
+The division prerequisite is now met for module-source builds. The original
+`Divide.HC` assembly still produces the host compiler's template; a private
+module-source define selects a 185-byte data copy for the guest frontend. The
+cross-build compares every byte of that copy with the host-assembled template.
+Two independent 16 MiB QEMU/KVM source builds produced the same 1,596,488-byte
+`CompilerRuntime.t32m` (SHA-256
+`eaf79254f6d1a78644303e7c436766e3e7dd7e46fdadf497a3fba437b6aa7df9`).
+The standalone auditor checks all records, the public export set, resident
+imports, zeroed relocation slots, data ranges and division bytes. The second
+artifact replaced the host-built compiler on a writable disk. Its next boot
+executed HolyC and built the original `LexNumber.HC` under both KVM and TCG;
+the two lexer artifacts were byte-identical. The complete current-source
+`tools/build-i386-kernel.py --test` gate also passes, including the previously
+timed-out install-tree resume. These results establish a working Generation 1
+compiler. They do not yet prove a Generation 2 compiler or native kernel
+rebuild. Next, rebuild the full compiler from a Generation 1 session, audit
+byte identity and boot/use the result, then close the remaining M7 kernel,
+workstation and resource gates. The Generation 1 TCG boot took 72.917 seconds
+at 16 MiB, above the 60-second normal-boot development budget; improve and
+remeasure it before claiming that latency gate. General source assembly
+support remains a later language-completeness task; keep the template parity
+check until the native assembler can build this block directly.

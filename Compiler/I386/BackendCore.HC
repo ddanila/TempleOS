@@ -517,7 +517,11 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Bytes(out,"\x58\x5A\x59\x5B\x50",5);
             I386Load(out,backend->types[RT_U64]);
             I386Byte(out,0xBE); I386Dword(out,4);
+#ifdef I386_DIV_SOURCE_BUILD
+            I386Bytes(out,I386DivTemplate,185);
+#else
             I386Bytes(out,&I386DivBegin,(&I386DivEnd)(U8 *)-(&I386DivBegin)(U8 *));
+#endif
             I386Byte(out,0x59);
             I386Store(out,backend->types[RT_U64]);
             I386Bytes(out,"\x89\xF0\x89\xFA",4);
@@ -992,7 +996,11 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Byte(out,0xBE);
             I386Dword(out,!ToBool((c->raw_type|ic->t.arg2_class->raw_type)&RTF_UNSIGNED) |
               2*ToBool(ic->ic_code==IC_MOD || ic->ic_code==IC_MOD_EQU));
+#ifdef I386_DIV_SOURCE_BUILD
+            I386Bytes(out,I386DivTemplate,185);
+#else
             I386Bytes(out,&I386DivBegin,(&I386DivEnd)(U8 *)-(&I386DivBegin)(U8 *));
+#endif
             if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
               I386Byte(out,0x59);
               I386Store(out,c);

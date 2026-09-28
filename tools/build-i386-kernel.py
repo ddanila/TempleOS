@@ -544,6 +544,13 @@ def audit(exports, out):
                 template = (template_markers['_I386_DIV_BEGIN'], template_markers['_I386_DIV_END'])
                 if template[1]-template[0] != 185:
                     raise ValueError('Unexpected native division template size')
+                source=(ROOT/'Compiler/I386/DivideTemplate.HC').read_text()
+                values=re.search(r'U8 I386DivTemplate\[185\]=\{([^}]*)\};',source,re.S)
+                if not values:
+                    raise ValueError('Missing native-source division template')
+                expected=bytes(int(value,16) for value in re.findall(r'0x[0-9A-Fa-f]{2}',values.group(1)))
+                if expected!=code[template[0]:template[1]]:
+                    raise ValueError('Native-source division bytes differ from host assembly')
             starts.sort()
             if not starts or starts[-1]>=size or len(set(starts))!=len(starts):
                 raise ValueError('Invalid kernel function boundaries')

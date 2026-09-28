@@ -377,3 +377,17 @@ apply. A console expression such as `I386BuildModule(...)||1` only checks that
 the console recovers: it masks the builder's failure return. Inspect build
 rejection logs and independently audit the resulting artifact before claiming
 a successful source build.
+
+To audit two full guest-built compiler artifacts against the host assembly:
+
+```sh
+python3 tools/audit-i386-compiler-runtime.py \
+  build/i386-kernel/exports/CompilerRuntime.t32m \
+  build/i386-kernel/full-runtime-kvm-division/GuestCompilerRuntime.t32m \
+  build/i386-kernel/full-runtime-kvm-generation1/CompilerRuntime.t32m
+```
+
+The Python QEMU helper also accepts `startup_timeout=<seconds>` for an
+explicitly measured exploratory boot; the normal default is 60 seconds. The
+Generation 1 compiler disk needed 72.917 seconds at 16 MiB on TCG. Passing
+with a larger limit does not satisfy the normal startup budget.

@@ -1,7 +1,11 @@
 //Included after native control, optimizer and output-buffer implementations.
 #include "/Compiler/I386/NativeBackend.HH"
+#ifdef I386_DIV_SOURCE_BUILD
+#include "/Compiler/I386/DivideTemplate.HC"
+#else
 #define I386_DIV_KEEP32 1
 #include "/Compiler/I386/Divide.HC"
+#endif
 #include "/Compiler/CodeLabel.HC"
 #include "/Compiler/I386/BackendCore.HC"
 #include "/Compiler/I386/AsmCore.HC"

@@ -9625,3 +9625,48 @@ The retained host-built `CompilerRuntime.t32m` SHA-256 is
 `dddaa5c73da2559a5a92f8bd48d64051b850c2d22715d2c8b4d45976b1dbff9b`.
 These are intermediate results; the full guest-built compiler, its execution,
 two identical builds and the second-generation boot remain required for M7.
+
+## Guest-built full compiler runtime, Generation 1 (2026-09-28)
+
+The native source compiler now builds the full `CompilerRuntime.HC` module. A
+private module-source define selects `DivideTemplate.HC` while compiling the
+i386 backend; the host keeps assembling the original `Divide.HC`. The
+cross-build rejects any byte difference between the two 185-byte templates.
+This preserves the exact division instructions while native top-level assembly
+parsing remains open.
+
+Two independent 16 MiB QEMU/KVM builds produced byte-identical 1,596,488-byte
+T32M files, SHA-256
+`eaf79254f6d1a78644303e7c436766e3e7dd7e46fdadf497a3fba437b6aa7df9`.
+The second build overwrote `C:/Modules/I386/CompilerRuntime.t32m` on a copied
+writable disk. `tools/audit-i386-compiler-runtime.py` validated 396 function
+exports, ten data exports, 2,436 call relocations, 254 address relocations,
+zeroed patch slots, the exact resident import sets, nonoverlapping data ranges,
+and byte identity of the division template and both guest builds. A deliberate
+one-byte template mutation was rejected by the audit.
+
+That disk booted with the guest-built compiler on QEMU/KVM in 22.229 seconds.
+It evaluated HolyC and built `LexNumber.HC`; the independent lexer audit found
+the expected two exports and named imports. The same disk booted under
+QEMU/TCG `486`, 16 MiB and built a byte-identical lexer module (13,716 bytes,
+SHA-256 `ce7a3f750cbb84865b79a76092afab764300bc64f2739b43decd06da08fc74f7`).
+The TCG boot took 72.917 seconds. An explicit 180-second exploratory startup
+limit was used for that Generation 1 run; the runner's default normal-boot
+limit remains 60 seconds. Startup performance therefore remains open.
+
+The x64 two-generation rebuild, i386 cross-build and 386 instruction audit
+passed. The complete `python3 tools/build-i386-kernel.py --test` gate passed on
+the current source, including the install-tree partial-copy resume that timed
+out in the preceding attempt. The normal image SHA-256 is
+`946295e7853ce9185696636f1da42c911b082e0f54f18f634f49dee43e49d9bd`;
+the full test log SHA-256 is
+`cb6fd758738402954e452449706039ac574ce6f08c6f415195a02e6bde910261`.
+The host-built compiler artifact SHA-256 is
+`74d53042805a615c525b2c9b86fe0f56260295b65a501528079a8d74fb1f5e54`.
+The evidence lives under `build/i386-kernel/full-runtime-kvm-division/`,
+`full-runtime-kvm-generation1/`, and `full-runtime-tcg-generation1/`.
+
+This is a working guest-built Generation 1 compiler. A full Generation 2
+compiler built by Generation 1, its boot and use, and the native kernel rebuild
+remain open. The 60-second TCG startup budget and native assembly source
+support also remain open.

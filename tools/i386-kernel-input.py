@@ -74,7 +74,7 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg'):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=60):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -82,6 +82,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
         raise ValueError('Startup checks cannot be combined with groups or mutations')
     if ram_mib not in (8,16): raise ValueError('Unsupported i386 RAM profile')
     if accel not in ('tcg','kvm'): raise ValueError('Unsupported QEMU accelerator')
+    if startup_timeout<1 or startup_timeout>1200: raise ValueError('Unsupported startup timeout')
     active_group=None
     submitted=0
     interaction_latencies={}
@@ -151,7 +152,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             command('qmp_capabilities')
             startup_started=time.monotonic()
             #Normal interactive boot must not pay for the diagnostic probe suite.
-            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else 60)
+            wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else startup_timeout)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
             status='ok' if startup_check is None else startup_check['status']

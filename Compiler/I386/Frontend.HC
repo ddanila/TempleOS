@@ -111,6 +111,9 @@ Bool I386FrontendPrivateDefines(CPrsSymbolServices *symbols)
   CI386Frontend *state;
   CI386CmpCtrl *owned;
   CHashTable *table;
+  CHashDefineStr *define;
+  U8 *name="I386_DIV_SOURCE_BUILD";
+  I64 i;
   if(!symbols || !(state=symbols->context) || !state->cc || !state->heap ||
       !state->table || state->defines || state->table->next!=state->parent)
     return FALSE;
@@ -123,6 +126,22 @@ Bool I386FrontendPrivateDefines(CPrsSymbolServices *symbols)
   table->next=state->parent;
   state->table->next=table;
   state->cc->htc.define_hash_table=table;
+  if(state->cc->flags&CCF_MODULE_SOURCE) {
+    define=I386HeapAlloc(state->heap,sizeof(CHashDefineStr),TRUE);
+    if(!define) return FALSE;
+    define->str=I386HeapAlloc(state->heap,22,FALSE);
+    define->data=I386HeapAlloc(state->heap,2,FALSE);
+    if(!define->str || !define->data) {
+      if(define->str) I386HeapFree(state->heap,define->str);
+      if(define->data) I386HeapFree(state->heap,define->data);
+      I386HeapFree(state->heap,define);
+      return FALSE;
+    }
+    for(i=0;i<22;i++) define->str[i]=name[i];
+    define->data[0]='1'; define->data[1]=0;
+    define->type=HTT_DEFINE_STR|HTF_PRIVATE; define->cnt=-1;
+    HashAdd(define,table);
+  }
   return TRUE;
 }
 U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
