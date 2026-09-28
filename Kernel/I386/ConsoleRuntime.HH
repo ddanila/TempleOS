@@ -5,7 +5,7 @@
 #include "/Kernel/I386/KeyboardRead.HH"
 #include "/Kernel/I386/Mouse.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_CONSOLE_VERSION 31
+#define I386_CONSOLE_VERSION 32
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;

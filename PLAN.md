@@ -2990,3 +2990,18 @@ The full 8 MiB `486,-fpu` TCG workstation suite also passes on Generation 2:
 495 native commands, 558 submitted lines, exact VGA checks and 20 bounded
 document-development cycles with heap recovery. The manual observation and
 broader original DolDoc/editor behavior remain open.
+
+The native console now publishes the original `ExeDoc(CDoc *,I64)` entry and
+returns the last executed expression value. The existing `DocExe` Boolean
+entry and F5 editor workflow retain their behavior, and nested compiler input
+restores the outer break target. This is a compatible public execution adapter;
+the original document-attached compiler control and complete `DocEd` action
+path remain open. The six retained runtime/compiler T32Ms are still packaged
+by the cross-build, so M7's full native-source gate is not closed by the two
+guest-built boot generations. A 16 MiB guest probe compiled 151 functions of
+`ConsoleRuntime.HC` before rejecting `MemSetU32` while parsing the shared
+graphics unit; an isolated `GraphicsContext.HC` build reproduces the rejection.
+The complete 8 MiB QEMU/KVM workstation suite passes with the new `ExeDoc`
+case: 499 native commands, 562 submitted lines and exact VGA checkpoints.
+Resolve that parser/source-unit boundary, then guest-build and load all six
+retained modules before claiming the complete self-hosted system.

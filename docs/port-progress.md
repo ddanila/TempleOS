@@ -10153,3 +10153,30 @@ submitted lines, exact VGA checks and 20 document development cycles with
 exact warmed heap recovery. Startup took 49.2 seconds; the measured
 long-document key-to-VGA update took 0.202 seconds. The full result is in
 `build/i386-kernel/gen2-instruction-audit/full-486-nofpu.log`.
+
+## Original ExeDoc entry and retained-runtime source probe (2026-09-28)
+
+The i386 console now publishes `ExeDoc(CDoc *,I64)` with the original return
+shape. It serializes the canonical document without the cursor, executes it
+through the live HolyC compiler and returns the last expression value, or zero
+on failure. `DocExe` keeps its Boolean result for the existing F5 editor
+workflow. Nested compiler input now restores the outer task's break target on
+success and exception. A focused QEMU check first failed with an undefined
+`ExeDoc`, then passed with a document evaluating `6*7` and continued console
+compilation. The console service version is 32. The complete 8 MiB QEMU/KVM
+workstation suite passes with 499 native commands, 562 submitted lines, exact
+VGA checkpoint matches, and 20 bounded document-development cycles with heap
+recovery. The result is in `build/exedoc-full.log`; the x64 rebuild and i386
+cross-build also pass.
+
+The wider self-hosting audit found that the six retained runtime/compiler
+T32Ms in the installed image are still cross-built. A 16 MiB QEMU/KVM attempt
+to compile current `ConsoleRuntime.HC` in the guest completed 151 functions,
+then reported a frontend-service rejection at `MemSetU32` in the graphics
+source. Compiling `GraphicsContext.HC` alone reproduces that point. Temporary
+tracing established that the private function and its source metadata were
+created before the rejection; the parser cause remains unresolved. The trace
+edits were removed. Logs are under `build/i386-kernel/exedoc-guest-console/`
+and `build/i386-kernel/exedoc-graphics-probe/`. Full self-hosting still requires
+guest building and loading the retained modules, as well as broader original
+DolDoc/editor behavior.

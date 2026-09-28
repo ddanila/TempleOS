@@ -43,5 +43,6 @@ public _extern _DOC_ED Bool DocEd(CDoc *doc,I64 flags=0);
 public _extern _ED Bool Ed(U8 *filename,I64 flags=0);
 public _extern _DOC_ALLOCATION_CHECK I64 DocAllocationCheck();
 public _extern _DOC_EXE Bool DocExe(CDoc *doc,I64 flags=0);
+public _extern _EXE_DOC I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
 public _extern _HELP Bool Help(U8 *name=0);
 #endif

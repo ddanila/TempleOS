@@ -1,5 +1,10 @@
+class CConsoleExecutionResult {
+  I64 diagnostics,last_value;
+};
 U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 {
+  CConsoleExecutionResult *result=context;
+  result->last_value=value;
   if(type->ptr_stars_cnt) {
     I386TextWrite(&console_text,"0x"); ConsoleUnsigned(value(U32),16);
   } else if(type->raw_type==RT_F64) ConsoleFloat(value);
@@ -10,8 +15,9 @@ U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 }
 U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
-  I64 *count=context,index;
-  (*count)++;
+  CConsoleExecutionResult *result=context;
+  I64 index;
+  result->diagnostics++;
   if(!kind && !console_diagnostic_line && cc && cc->lex_include_stk) {
     console_diagnostic_line=cc->last_line_num;
     if(console_diagnostic_line<1)
@@ -29,13 +35,15 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   if(message) I386TextWrite(&console_text,message);
   I386TextPut(&console_text,10);
 }
-Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
+Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value)
 {
   CI386CommandInput input;
   CI386Task *task=I386TaskSelf;
+  CI386Task *previous_break;
   CI386TaskSymbols *scope=task->symbol_state;
   U8 *bytes=&input;
-  I64 i,diagnostics=0;
+  I64 i;
+  CConsoleExecutionResult execution;
   Bool accepted=FALSE;
   U32 irq;
   console_diagnostic_line=0; console_diagnostic_filename[0]=0;
@@ -43,35 +51,41 @@ Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
   if(!scope || scope->task!=task) KernelStop;
   input.heap=scope->heap; input.types=console_config->types;
   input.files=console_config->files; input.includes=console_config->includes;
-  input.flags=flags; input.source=source; input.filename=filename; input.context=&diagnostics;
+  execution.diagnostics=0; execution.last_value=0;
+  input.flags=flags; input.source=source; input.filename=filename; input.context=&execution;
   input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
   //Required public-header publication must finish before an interactive target exists.
   irq=I386IrqSave;
+  previous_break=console_break_task;
   if(!(flags&CCF_JUST_LOAD)) console_break_task=task;
   I386IrqRestore(irq);
   if(!(flags&CCF_JUST_LOAD)) KernelLog("COMPILER BREAK ready\n");
   try {
     accepted=console_config->compiler->input(&input);
-    irq=I386IrqSave; console_break_task=0; I386IrqRestore(irq);
+    irq=I386IrqSave; console_break_task=previous_break; I386IrqRestore(irq);
     //A request arriving after the compiler's last checkpoint belongs here.
     I386TaskBreakPoll;
   } catch {
-    irq=I386IrqSave; console_break_task=0; I386IrqRestore(irq);
+    irq=I386IrqSave; console_break_task=previous_break; I386IrqRestore(irq);
     task->catch_except=TRUE; accepted=FALSE;
-    I386TextWrite(&console_text,"Exception\n"); diagnostics++;
+    I386TextWrite(&console_text,"Exception\n"); execution.diagnostics++;
   }
-  if(!accepted && !diagnostics) {
+  if(!accepted && !execution.diagnostics) {
     if(input.exception=='OutMem') I386TextWrite(&console_text,"Out of memory\n");
     else I386TextWrite(&console_text,"Compilation failed\n");
   }
+  if(last_value) *last_value=execution.last_value;
   return accepted;
 }
-public Bool DocExe(CDoc *doc,I64 flags=0)
+Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
+{ return ConsoleSourceResult(source,filename,flags,0); }
+I64 NativeExeDoc(CDoc *doc,I64 flags,Bool *accepted)
 {//Execute canonical document source in the live console compiler environment.
   U8 *source=NULL,filename[256];
-  I64 old_flags;
-  Bool unlock,release,accepted=FALSE;
-  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return FALSE;
+  I64 old_flags,value=0;
+  Bool unlock,release,okay=FALSE;
+  if(accepted) *accepted=FALSE;
+  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return 0;
   unlock=DocLock(doc); old_flags=doc->flags;
   try {
     doc->flags|=DOCF_NO_CURSOR;
@@ -80,7 +94,7 @@ public Bool DocExe(CDoc *doc,I64 flags=0)
     StrCpy(filename,doc->filename.name);
     release=unlock; unlock=FALSE;
     if(release) DocUnlock(doc);
-    if(source) accepted=ConsoleSource(source,filename,flags);
+    if(source) okay=ConsoleSourceResult(source,filename,flags,&value);
     Free(source); source=NULL;
     if(unlock) DocUnlock(doc);
   } catch {
@@ -88,8 +102,18 @@ public Bool DocExe(CDoc *doc,I64 flags=0)
     Free(source);
     if(unlock) DocUnlock(doc);
   }
+  if(accepted) *accepted=okay;
+  if(okay) return value;
+  return 0;
+}
+public Bool DocExe(CDoc *doc,I64 flags=0)
+{
+  Bool accepted;
+  NativeExeDoc(doc,flags,&accepted);
   return accepted;
 }
+public I64 ExeDoc(CDoc *doc,I64 ccf_flags=0)
+{ return NativeExeDoc(doc,ccf_flags,0); }
 U0 ConsoleSubmit(U8 *line)
 {
   if(ConsoleSource(line,"Console.HC")) KernelLog("COMMAND OK\n");
