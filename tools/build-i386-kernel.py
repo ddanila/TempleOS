@@ -1792,12 +1792,15 @@ def verify_native_tree_copy(disk, exports, out, console, volume):
         target.read_bytes()).hexdigest(),'filesystem_integrity':integrity,'result':'pass'}
 
 
-def verify_interactive_native_module(disk,out,console,volume):
+def verify_interactive_native_module(disk,out,console,volume,exports):
     """Build a real native source module on the mounted install disk twice."""
     work=out/'interactive-native-module'; work.mkdir(parents=True,exist_ok=True)
     source=disk.read_bytes()
     candidate=work/'source.img'; candidate.write_bytes(source)
     target=out/'target-tree-copy/target.img'
+    initial_target_files=verify_mutated_volume(target)['files']
+    if initial_target_files not in (len(volume['files']),len(volume['files'])+1):
+        raise ValueError('Unexpected installed target source file count')
     path='/Modules/I386/GuestCreate.t32m'
     command='I386BuildModule("D:/Kernel/I386/RedSeaCreate.HC","D:/Modules/I386/GuestCreate.t32m")>0;'
     lexer_path='/Modules/I386/GuestLexNumber.t32m'
@@ -1810,12 +1813,16 @@ def verify_interactive_native_module(disk,out,console,volume):
     operand_command='I386BuildModule("D:/Kernel/I386/AsmOperandFixture.HC","D:/Modules/I386/GuestAsmOperand.t32m")>0;'
     branch_path='/Modules/I386/GuestAsmBranch.t32m'
     branch_command='I386BuildModule("D:/Kernel/I386/AsmBranchFixture.HC","D:/Modules/I386/GuestAsmBranch.t32m")>0;'
+    boot_path='/Modules/I386/GuestBoot.bin'
+    boot_command='I386BuildBootImage("D:/Modules/I386/Kernel.t32m","D:/Modules/I386/","D:/Modules/I386/GuestBoot.bin")>0;'
+    expected_boot=(exports/'Kernel32.BIN').read_bytes()
     first=console['run_input'](candidate,work/'first',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[
                 ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
                 (command,['1']),(lexer_command,['1']),(import_command,['1']),
-                (asm_command,['1']),(operand_command,['1']),(branch_command,['1'])]})
+                (asm_command,['1']),(operand_command,['1']),(branch_command,['1']),
+                (boot_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
                 {'/Modules/I386/Missing.t32m'}):
@@ -1826,20 +1833,25 @@ def verify_interactive_native_module(disk,out,console,volume):
     first_asm=verify_native_zero_asm_module(target,asm_path)
     first_operand=verify_native_operand_asm_module(target,operand_path)
     first_branch=verify_native_branch_asm_module(target,branch_path)
+    first_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
+    if first_boot_image!=expected_boot:
+        raise ValueError('Native boot link differs from cross-linked image')
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=len(volume['files'])+7:
+    if integrity['files']!=initial_target_files+7:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1']),
                 (import_command,['1']),(asm_command,['1']),
-                (operand_command,['1']),(branch_command,['1'])]})
+                (operand_command,['1']),(branch_command,['1']),
+                (boot_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
     rebuilt_imports=verify_native_import_module(target,import_path)
     rebuilt_asm=verify_native_zero_asm_module(target,asm_path)
     rebuilt_operand=verify_native_operand_asm_module(target,operand_path)
     rebuilt_branch=verify_native_branch_asm_module(target,branch_path)
+    rebuilt_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
             rebuilt_lexer['sha256']!=first_lexer['sha256'] or
@@ -1847,12 +1859,15 @@ def verify_interactive_native_module(disk,out,console,volume):
             rebuilt_asm['sha256']!=first_asm['sha256'] or
             rebuilt_operand['sha256']!=first_operand['sha256'] or
             rebuilt_branch['sha256']!=first_branch['sha256'] or
+            rebuilt_boot_image!=expected_boot or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
     return {'first_boot':first,'second_boot':second,'module':rebuilt,
             'compiler_component':rebuilt_lexer,'resident_imports':rebuilt_imports,
             'inline_asm':rebuilt_asm,'operand_asm':rebuilt_operand,
             'branch_asm':rebuilt_branch,
+            'boot_image':{'bytes':len(rebuilt_boot_image),
+                          'sha256':hashlib.sha256(rebuilt_boot_image).hexdigest()},
             'filesystem_integrity':second_integrity,'result':'pass'}
 
 
@@ -3005,7 +3020,7 @@ def main():
         result['native_target_format']=verify_native_target_format(normal_disk,exports,out)
         result['native_target_mount']=verify_native_target_mount(normal_disk,exports,out,console)
         result['native_tree_copy']=verify_native_tree_copy(normal_disk,exports,out,console,volume)
-        result['interactive_native_module']=verify_interactive_native_module(normal_disk,out,console,volume)
+        result['interactive_native_module']=verify_interactive_native_module(normal_disk,out,console,volume,exports)
         result['native_boot_area']=verify_native_boot_area(normal_disk,exports,out,console)
         run(sys.executable,'tools/test-i386-install-copy.py')
         result['native_install_copy']=json.loads(

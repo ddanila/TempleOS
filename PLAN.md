@@ -2851,3 +2851,16 @@ the link step and five helper modules were still host supplied. Next build
 those helper modules in the guest and provide an on-machine linker plus safe
 boot-area publication to an installed target; repeat the boot from wholly
 guest-built outputs before claiming native kernel self-hosting.
+
+The OS can now perform the six-module flat link itself. `I386BuildBootImage`
+reads a selected kernel T32M and the five helper modules from mounted RedSea
+drives, validates/resolves them with the native module loader at `0x11000`,
+and writes a bounded flat-image file. Linking the guest-built kernel from a
+second drive produced the same 456,872 bytes as the diagnostic host linker;
+a missing helper set published no file. The installed-volume regression also
+linked the six packaged modules twice across reboot, matching host
+`Kernel32.BIN` byte for byte both times. This closes native file-level image
+linking. Next publish that file into the reserved boot area with the boot
+sector written last, then independently boot the installed target. The helper
+assembly sources still need native compilation before the entire boot image
+can count as guest-built.

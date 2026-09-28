@@ -9852,3 +9852,29 @@ cross-build. A wholly on-machine image link, safe boot publication, helper
 module rebuild, independent installed-disk boot and the complete M7 workflow
 remain open. Artifacts and QEMU logs are under
 `build/i386-kernel/bootstrap-kernel-module/`.
+
+## Native flat-image linker (2026-09-28)
+
+The native console now exposes `I386BuildBootImage(kernel_module,
+helper_directory,target_file)`. It reads the six T32Ms through task file
+services, validates their references through the native `I386LoadBoundAt`
+loader, links at the BIOS load address `0x11000`, rejects images beyond the
+944-sector payload reservation and publishes the result as a RedSea file.
+It leaves boot-sector publication as a separate operation.
+
+In a 16 MiB QEMU/KVM normal boot, the guest read the previously guest-built
+bootstrap kernel module on `D:` and the five packaged helper modules on `C:`.
+It wrote a 456,872-byte flat file byte-identical to the diagnostic host link.
+A missing helper directory returned failure and published no file. The focused
+installed-volume regression then linked the six packaged modules twice across
+two boots, producing the exact 453,008-byte host `Kernel32.BIN` on each boot;
+the file survived reboot and the target volume had its expected 841 files.
+The x64 two-generation rebuild, i386 cross-build and 386 boot audit pass.
+QEMU logs and files are under `build/i386-kernel/native-boot-link/` and
+`build/i386-kernel/nbl/`.
+
+The native linker writes a regular file; it does not yet install that file
+into the target's reserved boot sectors. The five top-level assembly helper
+sources are also still host-built. Next add safe target boot-area publication,
+then native assembly-source builds for those helpers and an independent boot
+of the wholly guest-built image.

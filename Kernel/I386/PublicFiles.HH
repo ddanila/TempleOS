@@ -15,4 +15,7 @@ public _extern _I386_INSTALL_BOOT Bool I386InstallBoot(U8 *source,U8 *target);
 //Bootstrap modules execute before the interactive break service is loaded.
 public _extern _I386_BUILD_MODULE I64 I386BuildModule(
   U8 *source,U8 *target,Bool boot_module=FALSE);
+//Link six boot modules to a flat file at 0x11000; publication is separate.
+public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(
+  U8 *kernel_module,U8 *helper_directory,U8 *target);
 #endif
