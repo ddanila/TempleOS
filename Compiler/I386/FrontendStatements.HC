@@ -113,8 +113,7 @@ CCodeCtrl *I386FrontendPopSaved(U8 *context,CCmpCtrl *cc)
   if(!saved) I386FrontendUnavailable(state);
   return saved;
 }
-U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
-{ I386FrontendUnavailable(context); }
+extern U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags);
 class CI386AsmOperand {
   I64 kind,size,register_code,base,disp,value;
 };
@@ -176,6 +175,15 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
   else I386FrontendUnavailable(state);
   I386FrontendLex(state,cc);
   if(cc->token=='[') offset=0;
+  else if(cc->token==TK_I64 || cc->token=='+' || cc->token=='-') {
+    register_code=1;
+    if(cc->token=='-' || cc->token=='+') {
+      if(cc->token=='-') register_code=-1;
+      if(I386FrontendLex(state,cc)!=TK_I64) I386FrontendUnavailable(state);
+    }
+    offset=register_code*cc->cur_i64;
+    I386FrontendLex(state,cc);
+  }
   else if(cc->token=='&') {
     if(I386FrontendLex(state,cc)!=TK_IDENT || !cc->cur_str)
       I386FrontendUnavailable(state);
@@ -221,6 +229,7 @@ U0 I386FrontendAsmModRM(CI386Frontend *state,U8 *bytes,I64 *count,
     if(mode==2) for(i=0;i<4;i++) I386FrontendAsmByte(state,bytes,count,disp>>(i*8));
   } else I386FrontendUnavailable(state);
 }
+#include "/Compiler/I386/TopAssembly.HC"
 CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
 {//Native 386 inline assembly; only recognized encodings are published.
   CI386Frontend *state=context;
@@ -435,7 +444,8 @@ U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols
   old_flags=cc->flags; old_pass=cc->pass;
   I386FrontendPush(state,cc); I386FrontendInit(state,cc);
   cc->flags&=~(CCF_AOT_COMPILE|CCF_HAS_MISC_DATA|(1<<CCf_PASS_TRACE_PRESENT));
-  if(PrsStmtCore(&state->statements,cc,0,0,CMPF_PRS_SEMICOLON)) I386FrontendUnavailable(state);
+  if(PrsStmtCore(&state->statements,cc,0,0,CMPF_PRS_SEMICOLON) &&
+      !(cc->flags&CCF_MODULE_SOURCE)) I386FrontendUnavailable(state);
   if(cc->coc.coc_head.next!=&cc->coc.coc_head) {
     cc->coc.coc_head.last->ic_flags&=~ICF_RES_NOT_USED;
     bound=I386FrontendAlloc(state,sizeof(CI386FrontendBound),TRUE,FALSE);

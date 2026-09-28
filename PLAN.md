@@ -2888,3 +2888,15 @@ on the machine, install to a separate target, and cold-boot two successive
 generations under QEMU. A first `SysTry.HC` assembler prototype passed the
 x64 and i386 host builds but failed the actual QEMU source-module build; it
 was removed. The next test must identify the exact frontend rejection.
+
+That rejection was a dispatch error: the native command parser cleared AOT
+mode before parsing, so module-level `asm` reached the inline join service.
+Module sources now route it to a bounded top-level assembler. The original
+`SysTry.HC` builds in the guest as a 220-byte T32M with one export and two
+named calls. An instruction audit matches the host module's code, allowing
+the guest's near branches in place of equivalent short branches. A guest
+linked and installed mixed-source image using this `SysTry` cold-booted in
+16 MiB QEMU/KVM and 486 TCG and evaluated `6*7`. This closes the first of
+five helper source-build gates. Extend the assembler for the remaining four
+helpers, then rebuild the current kernel and prove the wholly guest-built
+two-generation boot and workstation gates.

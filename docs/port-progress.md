@@ -9936,3 +9936,30 @@ then verifies the resulting `SysTry.t32m` exports, call relocations and 386
 instructions against the host module. Repeat this for `TaskContext.HC`,
 `ExceptContext.HC`, `IrqEntry.HC` and `ExceptionEntry.HC` before linking a
 wholly guest-built image and booting two generations.
+
+## First guest-built boot helper (2026-09-28)
+
+The `SysTry.HC` failure was caused by module command dispatch, before
+instruction parsing: `I386FrontendCommand` clears `CCF_AOT_COMPILE`, and the
+shared statement parser consequently sent top-level `asm` to the inline
+join service. Module-source assembly now reaches the top-level service and
+its command return is accepted. The first bounded assembler slice recognizes
+the original `SysTry.HC` forms: `USE32`, imports, one export, local labels,
+32-bit stack operands, register moves, calls, relative branches and `RET1`.
+
+In 16 MiB QEMU/KVM the guest produced a 220-byte `SysTry` T32M; rebuilding
+it after reboot produced the same SHA-256
+`309618b97ba70d1d91dc4692c90930ff48510e4204c96791fb82658b11402bb1`.
+Its one export and two named call relocations match the host module. The
+instruction bytes match through `TEST EAX,EAX`; the guest emits equivalent
+near `JNZ`/`JMP` branches where the host uses short branches, and the final
+`LEA ESP`/`RET1 16` tail matches. The persistent installed-volume regression
+now rebuilds and audits this real source twice.
+
+The guest replaced the packaged `SysTry.t32m`, linked a 453,024-byte
+mixed-source flat image, and installed it onto a separate blank-boot target.
+The target's filesystem sectors were unchanged. An independent 16 MiB
+QEMU/KVM cold boot and 486 TCG cold boot both executed `6*7`; TCG startup
+took 58.193 seconds. The kernel and four other boot helpers in that image
+were still host-built. Artifacts and logs are under
+`build/i386-kernel/top-systry-module/` and `top-systry-boot/`.

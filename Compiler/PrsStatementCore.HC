@@ -567,10 +567,11 @@ Bool PrsStmtCore(CPrsStatementServices *services,CCmpCtrl *cc,I64 try_cnt=0,
 			PrsEmit(expression,cc,IC_ASM,tmpaot,0);
 		      (*expression->lex)(expression->context,cc); //Skip '}' of asm{}
 		    } else {
-		      if (cc->flags&CCF_AOT_COMPILE || cc->aot_depth) {
+		      if (cc->flags&(CCF_AOT_COMPILE|CCF_MODULE_SOURCE) || cc->aot_depth) {
 			(*expression->lex)(expression->context,cc);
 			(*services->assembly)(services->context,cc,0);
-			if (cc->flags&CCF_AOT_COMPILE && cc->aot_depth==1)
+			if (cc->flags&CCF_MODULE_SOURCE ||
+			    cc->flags&CCF_AOT_COMPILE && cc->aot_depth==1)
 			  (*expression->lex)(expression->context,cc); //Skip '}' of asm{}
 		      } else {
 			if (tmpaot=(*services->join)(services->context,cc,CMPF_ASM_BLK))
