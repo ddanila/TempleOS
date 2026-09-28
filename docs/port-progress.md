@@ -10101,5 +10101,19 @@ bitmap matching every reachable extent. The original second-generation disk
 remained unchanged; the writable test copy is at
 `build/i386-kernel/gen2-project-session/session.img`, with its result in
 `build/i386-kernel/gen2-project-session/result.json`. The observed interrupt
-to recovered VGA in the first boot was 0.335 seconds. Rebuilt-image
-installation interruption and recovery remain open.
+to recovered VGA in the first boot was 0.335 seconds.
+
+## Guest-built image installation recovery (2026-09-28)
+
+`tools/test-i386-guest-install-recovery.py` tests real QEMU process termination
+during publication of the guest-built second-generation image. In separate
+16 MiB KVM runs, it killed QEMU when target LBA 128 and LBA 850 became
+nonzero. The partial targets contained 125 and 848 nonzero reserved sectors.
+In both cases LBA 0 was still blank and the RedSea filesystem sectors and
+allocation bitmap were intact. Retrying `I386InstallBootImage` on each same
+target produced a byte-for-byte copy of the clean Generation 2 installation;
+each target then cold-booted independently and evaluated `6*7`. The test also
+checks that the source disk is unchanged. Results and disks are under
+`build/i386-kernel/gen2-install-recovery/`. These QEMU cuts verify retry
+before LBA-0 publication; they do not model a physical cache-loss event after
+the final boot-sector write.
