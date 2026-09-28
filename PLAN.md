@@ -2912,3 +2912,16 @@ cold-booted independently under 16 MiB QEMU/KVM and 486 TCG. Three helper
 sources remain: `ExceptContext.HC`, `IrqEntry.HC` and `ExceptionEntry.HC`.
 After those, rebuild the kernel against the current ABI and close the fully
 guest-built two-generation and workstation gates.
+
+`ExceptContext.HC` is the third guest-built boot helper. The assembler now
+encodes the source's memory push, indirect memory call, register jump and XOR
+forms. The guest emits four exports whose function bodies match the host
+module byte for byte; the module is 380 rather than 364 bytes because the
+native packer reorders and aligns the bodies. The installed-volume regression
+rebuilt all three guest helpers twice with identical outputs. A guest-linked,
+guest-installed mixed image containing them cold-booted independently in
+16 MiB QEMU/KVM and 486 TCG and evaluated `6*7`. `IrqEntry.HC` and
+`ExceptionEntry.HC` remain. Their exported stubs branch to shared assembly
+code, so the next assembler step must preserve cross-export labels/branches
+and publish correct entry offsets, before rebuilding the current kernel and
+attempting a wholly guest-built boot image.

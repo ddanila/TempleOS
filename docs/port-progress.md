@@ -9987,3 +9987,26 @@ an independent 16 MiB QEMU/KVM boot and 486 TCG boot both evaluated `6*7`.
 TCG startup took 57.793 seconds. The kernel and remaining three helpers were
 still host-built. Artifacts and logs are under
 `build/i386-kernel/top-task-context/`, `top-two-helpers-boot/` and `build/ttc/`.
+
+## Third guest-built boot helper (2026-09-28)
+
+The top-level assembler now handles `PUSH U32 [base+offset]`, indirect
+`CALL U32 [base+offset]`, `JMP reg32`, and register XOR. These are the remaining
+forms in the original `ExceptContext.HC`. In 16 MiB QEMU/KVM, the guest built
+a 380-byte module exporting `i386_except_save`, `i386_except_invoke`,
+`i386_except_resume`, and `i386_except_register`. Each named function body
+matches the host module byte for byte. The host's contiguous assembly block
+is 364 bytes as a module; the guest module is larger because its packer
+reorders and aligns the four function bodies. The guest module SHA-256 is
+`a8dc974092f42fd7acbbca6f3fe7bf73f96497842507b48a3ddd8a7f544779ac`.
+
+The persistent installed-volume regression builds all three guest assembly
+helpers on two QEMU/KVM boots and verifies identical modules, expected
+exports, instructions, relocations and file counts. The guest also linked
+and installed a 453,040-byte mixed-source image containing those three
+helpers. The target's filesystem sectors were unchanged. Independent
+16 MiB QEMU/KVM and 486 TCG boots both evaluated `6*7`; TCG startup took
+58.394 seconds. The kernel, `IrqEntry` and `ExceptionEntry` in that image
+were still host-built. Artifacts and logs are under
+`build/i386-kernel/top-except-context/`, `top-three-helpers-boot/` and
+`build/tec/`.

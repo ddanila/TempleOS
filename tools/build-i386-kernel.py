@@ -1589,6 +1589,37 @@ def verify_native_top_task_context_module(disk,path,host):
             'exports':3}
 
 
+def verify_native_top_except_context_module(disk,path,host):
+    """Audit all four exception context entries despite function reordering."""
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or module[:12]!=host[:12]:
+        raise ValueError('Missing guest-built ExceptContext module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size!=208 or count!=4 or
+            records!=32+size or strings!=records+16*count or
+            struct.unpack_from('<I',host,16)[0]!=192):
+        raise ValueError('Invalid guest-built ExceptContext module layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    named={module[name:name+length]:offset for kind,offset,name,length in rows if kind==1}
+    expected={b'i386_except_invoke':(0,44,79),
+              b'i386_except_register':(40,108,190),
+              b'i386_except_resume':(128,79,108),
+              b'i386_except_save':(160,0,44)}
+    if len(named)!=4 or named!={name:parts[0] for name,parts in expected.items()}:
+        raise ValueError('Guest-built ExceptContext exports differ')
+    code=module[32:32+size];original=host[32:32+192]
+    for name,(offset,start,end) in expected.items():
+        if code[offset:offset+end-start]!=original[start:end]:
+            raise ValueError('Guest-built ExceptContext instructions differ: '+name.decode())
+    if (code[35:40]!=b'\0'*5 or code[122:128]!=b'\0'*6 or
+            code[157:160]!=b'\0'*3 or code[204:208]!=b'\0'*4 or
+            original[190:192]!=b'\0'*2):
+        raise ValueError('Guest-built ExceptContext padding differs')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/ExceptContext.HC').read_bytes()).hexdigest(),
+            'exports':4}
+
+
 def verify_native_import_module(disk,path):
     """A source build must keep resident calls and data references relocatable."""
     module=mutated_file_contents(disk,{path}).get(path)
@@ -1873,6 +1904,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
     systry_command='I386BuildModule("D:/Kernel/I386/SysTry.HC","D:/Modules/I386/GuestSysTry.t32m",TRUE)>0;'
     task_context_path='/Modules/I386/GuestTaskContext.t32m'
     task_context_command='I386BuildModule("D:/Kernel/I386/TaskContext.HC","D:/Modules/I386/GuestTaskContext.t32m",TRUE)>0;'
+    except_context_path='/Modules/I386/GuestExceptContext.t32m'
+    except_context_command='I386BuildModule("D:/Kernel/I386/ExceptContext.HC","D:/Modules/I386/GuestExceptContext.t32m",TRUE)>0;'
     boot_path='/Modules/I386/GuestBoot.bin'
     boot_command='I386BuildBootImage("D:/Modules/I386/Kernel.t32m","D:/Modules/I386/","D:/Modules/I386/GuestBoot.bin")>0;'
     expected_boot=(exports/'Kernel32.BIN').read_bytes()
@@ -1883,6 +1916,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
                 (command,['1']),(lexer_command,['1']),(import_command,['1']),
                 (asm_command,['1']),(operand_command,['1']),(branch_command,['1']),
                 (systry_command,['1']),(task_context_command,['1']),
+                (except_context_command,['1']),
                 (boot_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
@@ -1898,11 +1932,13 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
         (exports/'SysTry.t32m').read_bytes())
     first_task_context=verify_native_top_task_context_module(target,task_context_path,
         (exports/'TaskContext.t32m').read_bytes())
+    first_except_context=verify_native_top_except_context_module(target,except_context_path,
+        (exports/'ExceptContext.t32m').read_bytes())
     first_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     if first_boot_image!=expected_boot:
         raise ValueError('Native boot link differs from cross-linked image')
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=initial_target_files+9:
+    if integrity['files']!=initial_target_files+10:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
@@ -1910,6 +1946,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
                 (import_command,['1']),(asm_command,['1']),
                 (operand_command,['1']),(branch_command,['1']),
                 (systry_command,['1']),(task_context_command,['1']),
+                (except_context_command,['1']),
                 (boot_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
@@ -1921,6 +1958,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
         (exports/'SysTry.t32m').read_bytes())
     rebuilt_task_context=verify_native_top_task_context_module(target,task_context_path,
         (exports/'TaskContext.t32m').read_bytes())
+    rebuilt_except_context=verify_native_top_except_context_module(target,except_context_path,
+        (exports/'ExceptContext.t32m').read_bytes())
     rebuilt_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
@@ -1931,6 +1970,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
             rebuilt_branch['sha256']!=first_branch['sha256'] or
             rebuilt_systry['sha256']!=first_systry['sha256'] or
             rebuilt_task_context['sha256']!=first_task_context['sha256'] or
+            rebuilt_except_context['sha256']!=first_except_context['sha256'] or
             rebuilt_boot_image!=expected_boot or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
@@ -1939,6 +1979,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
             'inline_asm':rebuilt_asm,'operand_asm':rebuilt_operand,
             'branch_asm':rebuilt_branch,'top_asm_systry':rebuilt_systry,
             'top_asm_task_context':rebuilt_task_context,
+            'top_asm_except_context':rebuilt_except_context,
             'boot_image':{'bytes':len(rebuilt_boot_image),
                           'sha256':hashlib.sha256(rebuilt_boot_image).hexdigest()},
             'filesystem_integrity':second_integrity,'result':'pass'}
