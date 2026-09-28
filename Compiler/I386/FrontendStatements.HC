@@ -116,7 +116,42 @@ CCodeCtrl *I386FrontendPopSaved(U8 *context,CCmpCtrl *cc)
 U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
 { I386FrontendUnavailable(context); }
 CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
-{ I386FrontendUnavailable(context); return 0; }
+{//Start native inline assembly with 386 zero-operand instructions.
+  CI386Frontend *state=context;
+  CAOT *aot;
+  U8 bytes[64],opcode;
+  I64 count=0;
+  if(flags!=CMPF_ASM_BLK || !cc->htc.fun || cc->token!=TK_IDENT ||
+      !cc->hash_entry || !(cc->hash_entry->type&HTT_KEYWORD) ||
+      cc->hash_entry(CHashGeneric *)->user_data0!=KW_ASM) I386FrontendUnavailable(state);
+  if(I386FrontendLex(state,cc)!='{') I386FrontendUnavailable(state);
+  I386FrontendLex(state,cc);
+  while(cc->token!='}') {
+    if(cc->token==';') I386FrontendLex(state,cc);
+    else {
+      if(cc->token!=TK_IDENT || !cc->cur_str || count>=sizeof(bytes))
+        I386FrontendUnavailable(state);
+      if(!StrCmp(cc->cur_str,"CLI")) opcode=0xFA;
+      else if(!StrCmp(cc->cur_str,"STI")) opcode=0xFB;
+      else if(!StrCmp(cc->cur_str,"HLT")) opcode=0xF4;
+      else if(!StrCmp(cc->cur_str,"CLD")) opcode=0xFC;
+      else if(!StrCmp(cc->cur_str,"STD")) opcode=0xFD;
+      else if(!StrCmp(cc->cur_str,"NOP")) opcode=0x90;
+      else if(!StrCmp(cc->cur_str,"CLC")) opcode=0xF8;
+      else if(!StrCmp(cc->cur_str,"STC")) opcode=0xF9;
+      else I386FrontendUnavailable(state);
+      bytes[count++]=opcode;
+      I386FrontendLex(state,cc);
+    }
+  }
+  if(!count) I386FrontendUnavailable(state);
+  aot=I386FrontendAlloc(state,sizeof(CAOT),TRUE,FALSE);
+  aot->buf=I386FrontendAlloc(state,count,FALSE,FALSE);
+  for(opcode=0;opcode<count;opcode++) aot->buf[opcode]=bytes[opcode];
+  aot->aot_U8s=count;
+  aot->next_ie=aot->last_ie=&aot->next_ie;
+  return aot;
+}
 U0 I386FrontendFixAssembly(U8 *context,CCmpCtrl *cc,CAOT *aot)
 { I386FrontendUnavailable(context); }
 CHashTable *I386FrontendTaskSymbols(U8 *context)

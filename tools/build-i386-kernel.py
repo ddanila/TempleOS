@@ -1481,6 +1481,28 @@ def verify_native_lex_number_module(disk,path):
             'named_address_imports':[name.decode() for name in names[5]]}
 
 
+def verify_native_zero_asm_module(disk,path):
+    """Check guest compilation of privileged 386 inline bytes without executing them."""
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or len(module)<32 or module[:4]!=b'T32M' or \
+            struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built native assembly fixture')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    if total!=len(module) or size<8 or size&7 or count!=1 or \
+            records!=32+size or strings!=records+16*count or strings>total:
+        raise ValueError('Invalid native assembly fixture layout')
+    kind,offset,name,length=struct.unpack_from('<4I',module,records)
+    expected=b'I386AsmZeroFixture'
+    opcodes=bytes.fromhex('fa fb f4 fc fd 90 f8 f9')
+    if kind!=1 or offset!=0 or name<strings or name+length>=total or \
+            module[name:name+length]!=expected or module[name+length] or \
+            module[32:32+size].count(opcodes)!=1:
+        raise ValueError('Native assembly fixture lost its 386 instruction bytes')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/AsmZeroFixture.HC').read_bytes()).hexdigest(),
+            'opcodes':opcodes.hex()}
+
+
 def verify_native_import_module(disk,path):
     """A source build must keep resident calls and data references relocatable."""
     module=mutated_file_contents(disk,{path}).get(path)
@@ -1752,11 +1774,14 @@ def verify_interactive_native_module(disk,out,console,volume):
     lexer_command='I386BuildModule("D:/Compiler/I386/LexNumber.HC","D:/Modules/I386/GuestLexNumber.t32m")>0;'
     import_path='/Modules/I386/GuestImports.t32m'
     import_command='I386BuildModule("D:/Kernel/I386/ImportModuleFixture.HC","D:/Modules/I386/GuestImports.t32m")>0;'
+    asm_path='/Modules/I386/GuestAsmZero.t32m'
+    asm_command='I386BuildModule("D:/Kernel/I386/AsmZeroFixture.HC","D:/Modules/I386/GuestAsmZero.t32m")>0;'
     first=console['run_input'](candidate,work/'first',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[
                 ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
-                (command,['1']),(lexer_command,['1']),(import_command,['1'])]})
+                (command,['1']),(lexer_command,['1']),(import_command,['1']),
+                (asm_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
                 {'/Modules/I386/Missing.t32m'}):
@@ -1764,23 +1789,28 @@ def verify_interactive_native_module(disk,out,console,volume):
     first_module=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     first_lexer=verify_native_lex_number_module(target,lexer_path)
     first_imports=verify_native_import_module(target,import_path)
+    first_asm=verify_native_zero_asm_module(target,asm_path)
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=len(volume['files'])+4:
+    if integrity['files']!=len(volume['files'])+5:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
-            'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1']),(import_command,['1'])]})
+            'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1']),
+                (import_command,['1']),(asm_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
     rebuilt_imports=verify_native_import_module(target,import_path)
+    rebuilt_asm=verify_native_zero_asm_module(target,asm_path)
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
             rebuilt_lexer['sha256']!=first_lexer['sha256'] or
             rebuilt_imports['sha256']!=first_imports['sha256'] or
+            rebuilt_asm['sha256']!=first_asm['sha256'] or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
     return {'first_boot':first,'second_boot':second,'module':rebuilt,
             'compiler_component':rebuilt_lexer,'resident_imports':rebuilt_imports,
+            'inline_asm':rebuilt_asm,
             'filesystem_integrity':second_integrity,'result':'pass'}
 
 

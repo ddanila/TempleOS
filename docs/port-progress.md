@@ -9737,3 +9737,23 @@ service stubs in `FrontendStatements.HC`. The log is under
 `build/i386-kernel/generation-repeat/kernel-source-probe/`. Native i386
 assembly support, then kernel image publication and boot verification, are
 the next self-hosting steps.
+
+## Native inline assembly first slice (2026-09-28)
+
+The guest frontend now joins 386 zero-operand inline assembly into an AOT
+fragment and passes it through the existing `IC_ASM` backend. It accepts
+`CLI`, `STI`, `HLT`, `CLD`, `STD`, `NOP`, `CLC`, and `STC`; other forms still
+reject explicitly. A compile-only HolyC fixture built under QEMU/KVM and
+486 TCG produced byte-identical 107-byte T32Ms (SHA-256
+`78e338cd92433887dd1126fd739b32c259766b09a7bf2ccd7107035aa427b7f3`).
+Independent artifact checks found the exact `FA FB F4 FC FD 90 F8 F9`
+instruction sequence. The installed-disk module test now builds that fixture
+twice and checks its bytes and persistence; that full integration gate has
+not yet been rerun with this addition.
+
+The x64 two-generation rebuild, i386 cross-build and 386 instruction audit
+passed. The next QEMU/KVM kernel-source probe passed the previous `asm { CLI }`
+failure at `Kernel.HC` line 168 and reached `Heap.HC` line 77, where a
+`MOV` uses a local variable address and `EBP` addressing. That file also uses
+structure offsets and local branches. This is the next native-assembler
+boundary; a guest-built kernel module and bootable rebuilt disk remain open.

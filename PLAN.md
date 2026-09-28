@@ -2793,3 +2793,14 @@ exercise the actual kernel assembly sites, then build a native kernel module.
 After that, close the distinct image/link/boot-sector publication and
 installed-disk boot gates. A successful T32M compile by itself does not prove
 a rebuilt bootable OS.
+
+The first native inline-assembly slice is implemented through the shared
+`IC_ASM`/AOT backend path for 386 zero-operand instructions (`CLI`, `STI`,
+`HLT`, `CLD`, `STD`, `NOP`, `CLC`, `STC`). A compile-only fixture verifies their
+exact bytes on both KVM and 486 TCG; the installed-disk module test also
+rebuilds and audits it twice. A new Generation 2 kernel-source probe passed
+the former `Kernel.HC` line-168 boundary and reached `Heap.HC` line 77,
+`MOV EBX,U32 &hc[EBP]`. Continue the same assembler path with register and
+memory operands, typed structure offsets, local labels and 386 relative
+branches; keep rejecting forms whose encoding or relocation is not yet
+defined. Then rerun the kernel source build to expose the following boundary.
