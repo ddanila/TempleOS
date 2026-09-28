@@ -1563,6 +1563,32 @@ def verify_native_top_systry_module(disk,path,host):
             'export':'SysTry','named_calls':2}
 
 
+def verify_native_top_task_context_module(disk,path,host):
+    """Compare the three guest-assembled task entries with the host encodings."""
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or module[:12]!=host[:12]:
+        raise ValueError('Missing guest-built TaskContext module')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    host_size=struct.unpack_from('<I',host,16)[0]
+    if (total!=len(module) or size!=56 or host_size!=56 or count!=3 or
+            records!=32+size or strings!=records+16*count):
+        raise ValueError('Invalid guest-built TaskContext module layout')
+    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+    named=sorted((kind,offset,module[name:name+length]) for kind,offset,name,length in rows)
+    if named!=[(1,0,b'i386_context_switch'),(1,32,b'i386_idle'),
+               (1,40,b'i386_segments_reload')]:
+        raise ValueError('Guest-built TaskContext exports differ')
+    code=module[32:32+size];original=host[32:32+host_size]
+    if (code[:31]!=original[:31] or code[31:32]!=b'\0' or
+            code[32:36]!=original[31:35] or code[36:40]!=b'\0'*4 or
+            code[40:54]!=original[35:49] or code[54:56]!=b'\0'*2 or
+            original[49:56]!=b'\0'*7):
+        raise ValueError('Guest-built TaskContext instructions differ')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/TaskContext.HC').read_bytes()).hexdigest(),
+            'exports':3}
+
+
 def verify_native_import_module(disk,path):
     """A source build must keep resident calls and data references relocatable."""
     module=mutated_file_contents(disk,{path}).get(path)
@@ -1845,6 +1871,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
     branch_command='I386BuildModule("D:/Kernel/I386/AsmBranchFixture.HC","D:/Modules/I386/GuestAsmBranch.t32m")>0;'
     systry_path='/Modules/I386/GuestSysTry.t32m'
     systry_command='I386BuildModule("D:/Kernel/I386/SysTry.HC","D:/Modules/I386/GuestSysTry.t32m",TRUE)>0;'
+    task_context_path='/Modules/I386/GuestTaskContext.t32m'
+    task_context_command='I386BuildModule("D:/Kernel/I386/TaskContext.HC","D:/Modules/I386/GuestTaskContext.t32m",TRUE)>0;'
     boot_path='/Modules/I386/GuestBoot.bin'
     boot_command='I386BuildBootImage("D:/Modules/I386/Kernel.t32m","D:/Modules/I386/","D:/Modules/I386/GuestBoot.bin")>0;'
     expected_boot=(exports/'Kernel32.BIN').read_bytes()
@@ -1854,7 +1882,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
                 ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
                 (command,['1']),(lexer_command,['1']),(import_command,['1']),
                 (asm_command,['1']),(operand_command,['1']),(branch_command,['1']),
-                (systry_command,['1']),
+                (systry_command,['1']),(task_context_command,['1']),
                 (boot_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
@@ -1868,18 +1896,20 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
     first_branch=verify_native_branch_asm_module(target,branch_path)
     first_systry=verify_native_top_systry_module(target,systry_path,
         (exports/'SysTry.t32m').read_bytes())
+    first_task_context=verify_native_top_task_context_module(target,task_context_path,
+        (exports/'TaskContext.t32m').read_bytes())
     first_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     if first_boot_image!=expected_boot:
         raise ValueError('Native boot link differs from cross-linked image')
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=initial_target_files+8:
+    if integrity['files']!=initial_target_files+9:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1']),
                 (import_command,['1']),(asm_command,['1']),
                 (operand_command,['1']),(branch_command,['1']),
-                (systry_command,['1']),
+                (systry_command,['1']),(task_context_command,['1']),
                 (boot_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
@@ -1889,6 +1919,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
     rebuilt_branch=verify_native_branch_asm_module(target,branch_path)
     rebuilt_systry=verify_native_top_systry_module(target,systry_path,
         (exports/'SysTry.t32m').read_bytes())
+    rebuilt_task_context=verify_native_top_task_context_module(target,task_context_path,
+        (exports/'TaskContext.t32m').read_bytes())
     rebuilt_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
@@ -1898,6 +1930,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
             rebuilt_operand['sha256']!=first_operand['sha256'] or
             rebuilt_branch['sha256']!=first_branch['sha256'] or
             rebuilt_systry['sha256']!=first_systry['sha256'] or
+            rebuilt_task_context['sha256']!=first_task_context['sha256'] or
             rebuilt_boot_image!=expected_boot or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
@@ -1905,6 +1938,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
             'compiler_component':rebuilt_lexer,'resident_imports':rebuilt_imports,
             'inline_asm':rebuilt_asm,'operand_asm':rebuilt_operand,
             'branch_asm':rebuilt_branch,'top_asm_systry':rebuilt_systry,
+            'top_asm_task_context':rebuilt_task_context,
             'boot_image':{'bytes':len(rebuilt_boot_image),
                           'sha256':hashlib.sha256(rebuilt_boot_image).hexdigest()},
             'filesystem_integrity':second_integrity,'result':'pass'}

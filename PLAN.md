@@ -2900,3 +2900,15 @@ linked and installed mixed-source image using this `SysTry` cold-booted in
 five helper source-build gates. Extend the assembler for the remaining four
 helpers, then rebuild the current kernel and prove the wholly guest-built
 two-generation boot and workstation gates.
+
+`TaskContext.HC` now builds in the guest too. The top-level assembler publishes
+its three exports as separate aligned function bodies and supports the
+observed task, idle and segment-reload encodings. Its 187-byte guest T32M
+matches every host instruction per function; export offsets differ only for
+the module packer's alignment. The installed-volume regression rebuilt both
+guest assembly helpers twice with identical bytes. A mixed image containing
+guest-built `SysTry` and `TaskContext` linked and installed in the guest, then
+cold-booted independently under 16 MiB QEMU/KVM and 486 TCG. Three helper
+sources remain: `ExceptContext.HC`, `IrqEntry.HC` and `ExceptionEntry.HC`.
+After those, rebuild the kernel against the current ABI and close the fully
+guest-built two-generation and workstation gates.

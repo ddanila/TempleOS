@@ -9963,3 +9963,27 @@ QEMU/KVM cold boot and 486 TCG cold boot both executed `6*7`; TCG startup
 took 58.193 seconds. The kernel and four other boot helpers in that image
 were still host-built. Artifacts and logs are under
 `build/i386-kernel/top-systry-module/` and `top-systry-boot/`.
+
+## Second guest-built boot helper (2026-09-28)
+
+The top-level assembler now publishes multiple exports from one assembly
+block as separate aligned code records. It also handles the segment stack
+operations, `PUSHAD`/`POPAD`, `POPFD`, `STI`/`HLT`/`CLI`, plain `RET`, and
+`MOV FS/GS,AX` used by the original `TaskContext.HC`.
+
+A 16 MiB QEMU/KVM guest built a 187-byte `TaskContext.t32m` containing
+`i386_context_switch`, `i386_idle`, and `i386_segments_reload`. Every
+instruction in each export matches the host module byte for byte. The guest
+packer aligns the three function bodies at offsets 0, 32 and 40; the host
+assembly block places them contiguously at 0, 31 and 35. The guest module's
+SHA-256 is `a37d325ce43769e4a8966117bbedc9f4f38774d485bb9dc747fcfbefd642ce53`.
+The persistent installed-volume regression builds and audits this module and
+`SysTry` on two QEMU/KVM boots, producing identical bytes on the second boot
+while its existing file and module checks remain green.
+
+The guest linked and installed a 453,024-byte mixed-source image with both
+guest-built helpers. The target's filesystem sectors remained unchanged, and
+an independent 16 MiB QEMU/KVM boot and 486 TCG boot both evaluated `6*7`.
+TCG startup took 57.793 seconds. The kernel and remaining three helpers were
+still host-built. Artifacts and logs are under
+`build/i386-kernel/top-task-context/`, `top-two-helpers-boot/` and `build/ttc/`.
