@@ -2952,3 +2952,16 @@ fully guest-built installed generation. The same target also booted and ran
 HolyC under 16 MiB 486 TCG and 8 MiB QEMU/KVM. Next, boot that generation to rebuild
 and install a second generation, then complete the integrated M7 workstation
 and resource acceptance.
+
+That second generation now exists: the first wholly guest-built disk rebuilt
+the kernel and five boot helpers, linked and installed a new image on a blank
+target, and the target independently booted under 16 MiB QEMU/KVM. Its kernel
+module and boot image are byte-identical to Generation 1; the booted system
+evaluated `6*7` and rebuilt `LexNumber.HC`. The same boot and compiler check
+also passed under 16 MiB 486 TCG; the focused 8 MiB help/text VGA checks pass.
+The complete 8 MiB QEMU/KVM workstation suite also passes on Generation 2:
+495 native commands and 558 submitted lines exercise compiler recovery,
+graphics/input, DolDoc editing, RedSea navigation and source-linked help with
+exact VGA checks. Persistent source/project workflow and remaining
+installation/recovery acceptance still need explicit verification before M7
+closes.

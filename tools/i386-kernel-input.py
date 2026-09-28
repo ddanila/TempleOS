@@ -1711,7 +1711,15 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                              'public _extern _I386_INSTALL_TREE I64 I386InstallTree(',
                              '  U8 *source,U8 *target,I64 limit=0);',
                              'public _extern _I386_INSTALL_BOOT Bool I386InstallBoot(U8 *source,U8 *target);',
-                             'public _extern _I386_BUILD_MODULE I64 I386BuildModule(U8 *source,U8 *target);',
+                             '//Install a linked flat-image file with LBA 0 written last on a blank target.',
+                             'public _extern _I386_INSTALL_BOOT_IMAGE Bool I386InstallBootImage(',
+                             '  U8 *source,U8 *target,U8 *image_file);',
+                             '//Bootstrap modules execute before the interactive break service is loaded.',
+                             'public _extern _I386_BUILD_MODULE I64 I386BuildModule(',
+                             '  U8 *source,U8 *target,Bool boot_module=FALSE);',
+                             '//Link six boot modules to a flat file at 0x11000; publication is separate.',
+                             'public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(',
+                             '  U8 *kernel_module,U8 *helper_directory,U8 *target);',
                              '#endif','']
             submit('CHashSrcSym *help_mn_symbol=HashFind("Dir",Fs->hash_table,HTG_SRC_SYM);', [], 'help-man-page-symbol')
             submit('help_mn_symbol!=0;', ['1'], 'help-man-page-symbol-present')
@@ -1729,8 +1737,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         {'expect_rows':cmd_rows,'colors':cmd_selected_colors,
                          'backgrounds':cmd_selected_backgrounds,'label':'mn-returned'},
                         {'key':'esc'}],
-              'final_rows':cmd_rows,'final_colors':cmd_selected_colors,
-              'final_backgrounds':cmd_selected_backgrounds})
+              'final_rows':['TempleOS i386','HolyC console','','0','> ']})
             doldoc_rows=['TempleOS i386','Help: C:/Doc/DolDoc.DD','',
                          'A DolDoc in memory is a Circular Queue of cmds and graphics.  See CDocEntry for ',
                          'the entry structure.  See TipOfDay() for a nice example.','',

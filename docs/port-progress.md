@@ -10059,3 +10059,33 @@ and disk artifacts are under `build/i386-kernel/current-guest-kernel/` and
 
 The same installed target also passed an independent 8 MiB QEMU/KVM boot and
 evaluated `6*7` (21.2-second startup).
+
+## Second wholly guest-built installed generation (2026-09-28)
+
+Starting from the first wholly guest-built disk, the guest rebuilt the current
+kernel source and all five boot helpers, linked a new flat image, and installed
+it on a separate blank target. The second kernel T32M was byte-identical to
+the first (506,917 bytes; SHA-256
+`5fba7df8bd15352ee5e24ff6c61dc9fdf43cbb42bc86e3953134aca5017272b4`).
+The second flat image was also byte-identical (456,992 bytes; SHA-256
+`02593b818584ef7bbbd4cfb77aebd6208328f6a6cdad08fbaa6a6e591dcb4131`).
+The installation preserved all target filesystem sectors. An independent
+16 MiB QEMU/KVM cold boot evaluated `6*7` and rebuilt `LexNumber.HC` from
+source. Artifacts and console logs are under `build/i386-kernel/gen2-guest-boot/`.
+
+The same second-generation image independently booted under 16 MiB 486 TCG,
+evaluated `6*7`, and rebuilt `LexNumber.HC` (49.3-second startup). A focused
+8 MiB workstation run passed all help and text checkpoints. During a broader
+workstation run, the harness's help-source view still expected an older
+`PublicFiles.HH` declaration list and an obsolete post-help screen; its VGA
+expectations now match the delivered source and observed console behavior.
+
+With those expectations corrected, the complete 8 MiB QEMU/KVM workstation
+suite passed on the second-generation disk: 495 native commands, 558 submitted
+lines and exact VGA pixels at every checkpoint. It covered graphics and mouse
+input, compiler error and break recovery, DolDoc creation/editing/save,
+RedSea file navigation, source-linked help, and text rendering. Startup took
+21.2 seconds; the measured long-document update reached VGA in 0.671 seconds.
+The run is recorded in `build/i386-kernel/gen2-guest-boot/workstation-final/`.
+Persistent manual project workflow and rebuilt-artifact installation recovery
+remain to be verified before M7 closes.
