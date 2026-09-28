@@ -2,7 +2,7 @@
 #include "/Compiler/LexIdent.HC"
 I64 I386LexIdentScan(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *buf,I64 capacity,CHash **entry,I64 *compiled_lines)
 {
-  CLexCharSource source; CI386LexCharSource native; I64 length;
+  CLexCharSource source; CI386LexCharSource native; CHash *define; I64 length;
   if(!entry) return -1;
   *entry=0;
   if(!cc || !compiled_lines || !buf || capacity<2 || !cc->char_bmp_alpha_numeric) return -1;
@@ -19,6 +19,11 @@ I64 I386LexIdentScan(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *buf,I64 capacity,CH
   length=LexIdentRead(cc,ch,buf,capacity,&source);
   if(length<0) return length;
   *entry=LexIdentFind(cc,buf);
+  //A source define must win over an imported function with the same name.
+  //The private define table follows the module symbol table in the chain.
+  if(!(cc->flags&CCF_NO_DEFINES) && cc->htc.define_hash_table &&
+      (define=HashFind(buf,cc->htc.define_hash_table,HTT_DEFINE_STR)))
+    *entry=define;
   return length;
 }
 

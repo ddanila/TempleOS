@@ -74,7 +74,7 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=60):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')

@@ -10250,3 +10250,36 @@ in that sequential probe. The four guest-built modules are evidence for source
 compilation, not installed boot artifacts: the active image still boots its
 six host-built retained modules. Replacing all six and independently booting
 the resulting installed image remains the M7 self-hosting gate.
+
+## All retained modules and define precedence (2026-09-29)
+
+The `CompilerTaskLayoutProbe.HC` assertion table now terminates each directive
+with a semicolon. This prevents recursive directive lookahead from exhausting
+the guest compiler task stack. `CompilerProbe.HC` then built in the 16 MiB
+guest, followed by `CompilerRuntime.HC`. The retained-build harness audits
+all six persisted T32Ms against their cross-built export sets. Installation
+of all six guest-built copies cold-boots under 8 MiB QEMU/KVM and 8 MiB
+`486` TCG. Building the current flat kernel and five boot helpers from that
+same guest-built retained set also installs and independently boots. A second
+retained build produced byte-identical modules. These results used the first
+guest-built console and establish the boot/install path, but its full
+workstation suite uncovered the regression below.
+
+In that run, `DocAllocationCheck` returned -9: the guest-built document loader
+had called imported `CAlloc`/`MAlloc` directly, despite active source defines
+redirecting those names to fault-injection wrappers. Native identifier lookup
+searched the module symbol table before the private define table. It now
+checks the active define table before retaining an imported function match.
+The retained-build audit requires four `NativeDocCAlloc` calls and one
+`NativeDocMAlloc` call in `NativeDocRecordLoadCore`. The corrected console
+passes that audit (896,448 bytes, 2,677 records, 287 exports); after replacing
+the old guest-built console, a fresh 8 MiB QEMU/KVM boot returns 12 from
+`DocAllocationCheck`. The x64 rebuild and i386 cross-build pass. The QEMU
+startup timeout defaults to 180 seconds so the six guest-built modules can
+also start under TCG.
+
+Next rebuild the full six-module retained set with the corrected compiler,
+install it alongside a guest-built flat kernel, run the complete 8 MiB
+workstation and resource suite, and verify a second generation. The focused
+console result is not yet evidence that the corrected all-module system passes
+those gates.

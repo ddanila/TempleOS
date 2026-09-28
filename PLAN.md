@@ -3042,3 +3042,25 @@ the compiler probe failure, build the remaining modules, install all six
 guest-built copies, and repeat the independent Generation 2 boot and suite.
 The full 8 MiB QEMU/KVM workstation run passes with this source: 506 native
 commands and 569 submitted lines.
+
+All six retained runtime/compiler modules now build and persist in a 16 MiB
+QEMU/KVM guest. The compiler-probe task-layout assertions need semicolon
+terminators: without them, directive lookahead nests through the table and
+exhausts the compiler task stack. An independent RedSea audit checks module
+records and exports. Replacing all six packaged modules with these guest-built
+copies boots at 8 MiB; the same retained set also builds and installs the
+current flat kernel and five boot helpers in the guest, then cold-boots from
+the resulting disk. The retained build is repeatable byte for byte. These
+boot and reproducibility results precede the latest compiler fix below.
+
+The first full workstation run on that all-guest-built retained set caught a
+regression: private source `#define` aliases lost to identically named
+imported functions. The guest-built document loader called raw `CAlloc` and
+`MAlloc`, bypassing its allocation-failure wrappers, so
+`DocAllocationCheck` returned -9. Native identifier lookup now gives the
+active source define precedence. A focused T32M audit checks the five wrapper
+calls, and a freshly guest-built console returns 12 from
+`DocAllocationCheck` on an independent 8 MiB QEMU boot. The cross-build and
+x64 rebuild pass with this fix. Rebuild and install all six retained modules
+from the corrected source, rerun the full workstation/resource suite, then
+rebuild a second fully guest-built generation before closing M7.
