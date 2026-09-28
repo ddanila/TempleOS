@@ -3015,3 +3015,16 @@ The full 8 MiB QEMU/KVM workstation suite passes with 504 native commands and
 exact VGA checkpoints after this change.
 Diagnose the packer rejection, then guest-build and load the retained modules;
 source compilation alone is not the M7 self-hosting gate.
+
+The packer rejection was a real duplicate export: a bare forward declaration
+of `NativeDocClipPasteAtomicCheck` emitted a second function in the native AOT
+path. Moving `DocAllocationCheck` after the real clip-check body removes the
+forward declaration and leaves one export. Running the actual clip-check then
+exposed an unhandled injected `OutMem`; the clipboard paste catch now consumes
+that expected failure, and the 8 MiB `DocAllocationCheck` returns 12. A 16 MiB
+QEMU/KVM guest builds and persists the full `ConsoleRuntime.HC` T32M; an
+independent RedSea walk verifies unique exports and required console/editor
+APIs. The full 8 MiB QEMU/KVM workstation suite passes with the real
+`DocAllocationCheck` and 504 native commands. The retained image still boots
+the host-built runtime. Next, guest-build the other retained T32Ms, replace
+the packaged copies, and boot/test two wholly guest-built generations.

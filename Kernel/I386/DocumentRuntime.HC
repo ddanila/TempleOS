@@ -763,43 +763,6 @@ public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
   }
   return doc;
 }
-I64 NativeDocClipPasteAtomicCheck();
-public I64 DocAllocationCheck()
-{
-  CDoc *doc,*read_doc=NULL;
-  U8 *saved;
-  I64 before,caught=0,result=NativeDocRecordSaveCheck,size;
-  if(result!=4) return result;
-  result=NativeDocBinarySaveCheck;
-  if(result!=5) return result;
-  result=NativeDocAllocationCoreCheck;
-  if(result!=8) return result;
-  result=NativeDocClipPasteAtomicCheck;
-  if(result<=0) return result;
-  doc=DocNew("C:/AllocRead.DD",Fs);
-  DocPutKey(doc,'r',0); DocPutKey(doc,'e',0); DocPutKey(doc,'a',0); DocPutKey(doc,'d',0);
-  if(!DocWrite(doc)) { DocDel(doc); return -11; }
-  DocDel(doc); before=Fs->data_heap->used_u8s;
-  NativeDocAllocArm(4);
-  try { read_doc=DocRead("C:/AllocRead.DD"); }
-  catch {
-    if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
-  }
-  NativeDocAllocArm(0);
-  if(read_doc) { DocDel(read_doc); read_doc=NULL; }
-  if(!caught || Fs->data_heap->used_u8s!=before) return -12;
-  read_doc=DocRead("C:/AllocRead.DD");
-  if(read_doc) saved=DocSave(read_doc,&size); else saved=NULL;
-  if(!saved || size!=5 || saved[0]!='r' || saved[1]!='e' ||
-      saved[2]!='a' || saved[3]!='d' || saved[4]!=CH_CURSOR) {
-    Free(saved);
-    DocDel(read_doc); return -13;
-  }
-  Free(saved);
-  DocDel(read_doc);
-  if(Fs->data_heap->used_u8s!=before) return -14;
-  return 12;
-}
 U0 NativeDocEditTextAttr(CI386Text *text,I64 foreground,I64 background,
   Bool inverted,Bool blinking,Bool blink_phase)
 {
@@ -1514,7 +1477,9 @@ Bool NativeDocClipPaste(CDoc *doc)
     }
     doc->cur_entry=at; doc->cur_col=at->min_col; result=TRUE;
 paste_done:
-  } catch { result=FALSE; }
+  } catch {
+    if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; result=FALSE; }
+  }
   Free(body); DocDel(staged);
   return result;
 }
@@ -1561,6 +1526,42 @@ paste_check_done:
   NativeDocAllocArm(0); Free(after); Free(before); DocDel(target); DocDel(source);
   DocDel(native_clip_doc); native_clip_doc=old_clip;
   return result;
+}
+public I64 DocAllocationCheck()
+{
+  CDoc *doc,*read_doc=NULL;
+  U8 *saved;
+  I64 before,caught=0,result=NativeDocRecordSaveCheck,size;
+  if(result!=4) return result;
+  result=NativeDocBinarySaveCheck;
+  if(result!=5) return result;
+  result=NativeDocAllocationCoreCheck;
+  if(result!=8) return result;
+  result=NativeDocClipPasteAtomicCheck;
+  if(result<=0) return result;
+  doc=DocNew("C:/AllocRead.DD",Fs);
+  DocPutKey(doc,'r',0); DocPutKey(doc,'e',0); DocPutKey(doc,'a',0); DocPutKey(doc,'d',0);
+  if(!DocWrite(doc)) { DocDel(doc); return -11; }
+  DocDel(doc); before=Fs->data_heap->used_u8s;
+  NativeDocAllocArm(4);
+  try { read_doc=DocRead("C:/AllocRead.DD"); }
+  catch {
+    if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
+  }
+  NativeDocAllocArm(0);
+  if(read_doc) { DocDel(read_doc); read_doc=NULL; }
+  if(!caught || Fs->data_heap->used_u8s!=before) return -12;
+  read_doc=DocRead("C:/AllocRead.DD");
+  if(read_doc) saved=DocSave(read_doc,&size); else saved=NULL;
+  if(!saved || size!=5 || saved[0]!='r' || saved[1]!='e' ||
+      saved[2]!='a' || saved[3]!='d' || saved[4]!=CH_CURSOR) {
+    Free(saved);
+    DocDel(read_doc); return -13;
+  }
+  Free(saved);
+  DocDel(read_doc);
+  if(Fs->data_heap->used_u8s!=before) return -14;
+  return 12;
 }
 U0 NativeDocGotoDraw(CDoc *doc,U8 *digits)
 {

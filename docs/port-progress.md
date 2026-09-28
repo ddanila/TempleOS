@@ -10203,3 +10203,29 @@ the unit at package stage 5 because `program_pack_unit` returned zero; no
 frontend diagnostic appeared. The next self-hosting task is to identify which
 packer precondition rejects this larger unit. The full retained runtime set
 still has to be built, loaded and verified from guest-produced modules.
+
+## Guest-built retained console module (2026-09-28)
+
+The package-stage zero was a duplicate function export. A bare forward
+declaration of `NativeDocClipPasteAtomicCheck` in `DocumentRuntime.HC` caused
+the native AOT parser to emit one function before the actual body, then the
+packer correctly rejected two exports with the same name. Moving
+`DocAllocationCheck` below the clip-check body removes the forward declaration
+and emits one export. The first attempt to use `extern` built the module but
+failed `DocAllocationCheck`: it made the actual clip-check run, exposing a
+clipboard paste `catch` that did not mark an injected `OutMem` handled. That
+catch now consumes `OutMem` and allows other exceptions to propagate. A fresh
+8 MiB QEMU boot returns the expected `12` from the real allocation check.
+
+`tools/test-i386-retained-console-build.py` copies the installed image, boots
+it in 16 MiB QEMU/KVM, builds `ConsoleRuntime.HC` as a boot module, and reads
+the resulting T32M independently from RedSea. The final-source run passes with
+895,998 bytes, 2,677 records and 287 unique function exports. The audit
+checks `Main`, `ConsoleInit`, `DocExe`, `ExeDoc`, `DocEd`, `I386BuildModule` and
+the single clip-check definition. The x64 rebuild and i386 cross-build pass.
+The full 8 MiB QEMU/KVM workstation suite also passes on this final source:
+504 native commands, 567 submitted lines, exact VGA checkpoint matches, the
+real `DocAllocationCheck` returning 12, and 20 bounded document-development
+cycles with heap recovery. The result is in `build/console-clip-full-final.log`.
+The module has not yet replaced the host-built runtime in a booted image;
+the other five retained modules and two-generation boot verification remain.
