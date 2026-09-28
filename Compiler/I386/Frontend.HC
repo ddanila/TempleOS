@@ -605,6 +605,12 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
   record=bound->aot.next_ie; bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
   while(record!=&bound->aot.next_ie) {
     next=record->next;
+    if(record->type==IET_I386_BREAK_POLL) {
+      offset=record->rip;
+      if(offset<1 || offset>bytes-4) I386FrontendUnavailable(state);
+      I386FrontendRelocAdd(state,output,offset,I386_MODULE_REL32,"I386ExecutionBreakPoll");
+      (code+offset)(U32 *)[0]=(I386ExecutionBreakPoll+0)(U64)-(code+offset+4)(U64);
+    }
     I386NativeBackendFree(&bound->release_owner,record);
     record=next;
   }
@@ -633,16 +639,19 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll)) I386FrontendUnavailable(state);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
-    if(metadata->type!=IET_I386_DATA) I386FrontendUnavailable(state);
+    if(metadata->type!=IET_I386_DATA && metadata->type!=IET_I386_BREAK_POLL)
+      I386FrontendUnavailable(state);
   result=I386FrontendAlloc(state,sizeof(CI386FrontendCode),TRUE,FALSE);
   result->code=I386ParserCodeAlloc(state->heap,cc,out->count); result->bytes=out->count;
   if(!result->code) I386FrontendUnavailable(state);
   result->value_class=type; result->raw_type=type->raw_type; result->prior_misc=prior_misc;
   result->data_start=out->count;
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next) {
-    if(metadata->rip<0 || metadata->rip>out->count || metadata->flags<0 || metadata->flags>out->count-metadata->rip)
-      I386FrontendUnavailable(state);
-    if(metadata->rip<result->data_start) result->data_start=metadata->rip;
+    if(metadata->type==IET_I386_DATA) {
+      if(metadata->rip<0 || metadata->rip>out->count || metadata->flags<0 || metadata->flags>out->count-metadata->rip)
+        I386FrontendUnavailable(state);
+      if(metadata->rip<result->data_start) result->data_start=metadata->rip;
+    }
   }
   for(i=0;i<out->count;i++) result->code[i]=out->data[i];
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK START\n");

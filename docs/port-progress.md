@@ -9670,3 +9670,31 @@ This is a working guest-built Generation 1 compiler. A full Generation 2
 compiler built by Generation 1, its boot and use, and the native kernel rebuild
 remain open. The 60-second TCG startup budget and native assembly source
 support also remain open.
+
+## Generation 2 relocation finding (2026-09-28)
+
+Generation 1 completed a full Generation 2 compiler source build on a 16 MiB
+QEMU/KVM writable disk. The artifact was 1,596,488 bytes, SHA-256
+`b9a14c0ac5c8e154e87835b070c72a8f48e319370048ebeb005c7039ec898d2b`.
+Its export, import, division-template, data-range, and zeroed-relocation audit
+passed, but it was not byte-identical to the Generation 1 artifact. The record
+and string sections matched; 3,273 code bytes differed. They include the
+absolute address embedded at loop backedge break checkpoints: Generation 1
+compiled calls to its own `I386ExecutionBreakPoll` address, while Generation 2
+compiled calls to a different load address. On a later boot this can leave a
+checkpoint pointing into the prior compiler's location.
+
+The backend now emits a named relative-call relocation for break checkpoints
+when compiling module source, preserving the direct call for interactive code.
+The full-runtime auditor requires that the guest module contain these named
+relocations. Rebuild both generations from this source, require byte identity,
+and boot/use Generation 2 before promoting this finding to a self-hosting
+result. The pre-fix Generation 2 artifact is diagnostic evidence only.
+
+Verification of the relocation change so far: the x64 two-generation rebuild,
+the i386 cross-build, and the full 486 TCG console-input suite passed. The
+16 MiB QEMU/KVM guest built the original `LexNumber.HC` into a 14,347-byte
+T32M; the independent record parser found 17 named
+`I386ExecutionBreakPoll` call relocations with zeroed patch slots. The
+complete `tools/build-i386-kernel.py --test` run continued into rejection and
+filesystem cases at this checkpoint; its final result is not yet counted.

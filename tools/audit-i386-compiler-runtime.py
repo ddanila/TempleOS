@@ -58,6 +58,9 @@ def audit(host_path,guest_path,second_path=None):
         raise ValueError('Guest resident call imports differ from host compiler runtime')
     if set(g[5])-set(g[1])-set(g[3])!=set(h[5]):
         raise ValueError('Guest resident address imports differ from host compiler runtime')
+    polls=g[2].get('I386ExecutionBreakPoll',[])
+    if not polls or any(guest['code'][offset-1]!=0xE8 for offset in polls):
+        raise ValueError('Guest break checkpoints lack named call relocations')
     begin=h[1]['_I386_DIV_BEGIN'][0]; end=h[1]['_I386_DIV_END'][0]
     target=g[3]['I386DivTemplate'][0]
     if end-begin!=185 or guest['code'][target:target+185]!=host['code'][begin:end] or not any(
@@ -68,6 +71,7 @@ def audit(host_path,guest_path,second_path=None):
     return {'result':'pass','guest_bytes':len(guest['blob']),'guest_sha256':guest['sha256'],
             'function_exports':len(g[1]),'data_exports':len(g[3]),
             'call_relocations':sum(map(len,g[2].values())),
+            'break_poll_relocations':len(polls),
             'address_relocations':sum(map(len,g[5].values())),
             'resident_calls':sorted(set(g[2])-set(g[1])),
             'resident_addresses':sorted(set(g[5])-set(g[1])-set(g[3])),

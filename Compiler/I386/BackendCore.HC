@@ -233,9 +233,10 @@ U0 I386Bool(CI386Out *out)
 }
 
 U0 I386BackendBreakPoll(CI386Backend *backend,CI386Out *out)
-{//JIT-only checkpoint. Preserve expression registers and conditional flags.
+{//Preserve expression registers and conditional flags at loop backedges.
   CIntermediateCode *node;
   CCodeMisc *target;
+  CAOTImportExport *record;
   if(!backend->break_poll) return;
   //Use IR order, not addresses left over from the sizing pass. Only backedges
   //need a checkpoint; forward branches cannot sustain a non-returning loop.
@@ -246,9 +247,23 @@ U0 I386BackendBreakPoll(CI386Backend *backend,CI386Out *out)
   I386Bytes(out,"\x9C\x64\xF7\x05",4); //PUSHFD; TEST dword FS:[flags],pending
   I386Dword(out,backend->break_flags_offset);
   I386Dword(out,1<<11); //TASKf_PENDING_BREAK, checked by the native adapter.
-  I386Bytes(out,"\x74\x09\x60\xB8",4); //JZ restore; PUSHAD; MOV EAX,poll
-  I386Dword(out,(backend->break_poll+0)(U64));
-  I386Bytes(out,"\xFF\xD0\x61\x9D",4); //CALL EAX; POPAD; POPFD
+  if(backend->cc->flags&CCF_MODULE_SOURCE) {
+    I386Bytes(out,"\x74\x07\x60\xE8",4); //JZ restore; PUSHAD; CALL rel32
+    if(backend->pass) {
+      record=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
+      record->type=IET_I386_BREAK_POLL;
+      record->rip=backend->cc->aotc->rip+out->count;
+      record->next=&backend->cc->aot->next_ie;
+      record->last=backend->cc->aot->last_ie;
+      record->last->next=record; backend->cc->aot->last_ie=record;
+    }
+    I386Dword(out,0);
+    I386Bytes(out,"\x61\x9D",2); //POPAD; POPFD
+  } else {
+    I386Bytes(out,"\x74\x09\x60\xB8",4); //JZ restore; PUSHAD; MOV EAX,poll
+    I386Dword(out,(backend->break_poll+0)(U64));
+    I386Bytes(out,"\xFF\xD0\x61\x9D",4); //CALL EAX; POPAD; POPFD
+  }
 }
 U0 I386BackendCore(CI386Backend *backend)
 {

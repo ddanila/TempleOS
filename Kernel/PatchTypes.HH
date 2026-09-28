@@ -28,5 +28,6 @@
 //Private metadata for the i386 bootstrap writer; never legacy BIN records.
 #define IET_I386_DATA		26
 #define IET_I386_REL32_ADDR	27
+#define IET_I386_BREAK_POLL	28
 
 #endif

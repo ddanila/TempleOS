@@ -2756,3 +2756,15 @@ at 16 MiB, above the 60-second normal-boot development budget; improve and
 remeasure it before claiming that latency gate. General source assembly
 support remains a later language-completeness task; keep the template parity
 check until the native assembler can build this block directly.
+
+The first Generation 2 source build completed, but its T32M differed from
+Generation 1 at 3,273 code bytes while its record and string sections matched.
+The differing sites were loop break checkpoints containing the current
+compiler's absolute `I386ExecutionBreakPoll` address. That address changes
+when the next compiler loads and can become stale after reboot. The module
+source backend now emits a named relative-call relocation for each checkpoint;
+ordinary interactive code retains its direct runtime call. Before accepting
+Generation 2, rebuild both generations with this change, require byte-identical
+T32Ms, verify the break-poll relocation count and zeroed patch slots, then
+boot and use Generation 2 in QEMU. A pre-fix Generation 2 artifact must not
+be treated as self-hosting evidence.
