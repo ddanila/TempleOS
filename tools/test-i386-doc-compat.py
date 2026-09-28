@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Prove that original TempleOS reads a document serialized by native i386."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -18,12 +19,15 @@ def run(*args):
 
 
 def main():
-    out=ROOT/'build/i386-doc-compat'
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('source',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
+    parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doc-compat')
+    args=parser.parse_args()
+    out=args.out
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
-    source=ROOT/'build/i386-kernel/kernel.img'
     disk=out/'native.img'
-    shutil.copyfile(source,disk)
+    shutil.copyfile(args.source,disk)
     native_run=INPUT(disk,out/'native',startup_check={
         'status':'ok','answers':[],
         'commands':[

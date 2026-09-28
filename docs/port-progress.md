@@ -10117,3 +10117,14 @@ checks that the source disk is unchanged. Results and disks are under
 `build/i386-kernel/gen2-install-recovery/`. These QEMU cuts verify retry
 before LBA-0 publication; they do not model a physical cache-loss event after
 the final boot-sector write.
+
+The installed Generation 2 disk also passed both directions of the existing
+DolDoc compatibility checks. Its native reader loaded the original x86-64
+48-byte structured/binary fixture through eight console commands with exact
+VGA output. In the reverse test, Generation 2 wrote `BinaryRecord.DD`; original
+x86-64 TempleOS read it and saved the same 37 bytes with SHA-256
+`73d58bdbb0bf929d9db33d5cfec27a614aaea98b176baed4637ab3c1e58c046d`.
+The compatibility helper now accepts a source disk argument, so this test can
+target the installed guest-built system. Results are under
+`build/i386-kernel/gen2-original-doc/` and
+`build/i386-kernel/gen2-native-doc-compat/`.

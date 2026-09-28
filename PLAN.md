@@ -2971,5 +2971,9 @@ after LBA 128 and LBA 850 have been written, LBA 0 remains blank, the RedSea
 bitmap remains exact, a retry reproduces the clean Generation 2 disk byte for
 byte and that disk independently boots. This covers a recoverable unbootable
 target before the final LBA-0 publication, not physical power-loss durability
-after LBA 0. Remaining manual workflow, original/native cross-reading and
-release evidence still need explicit verification before M7 closes.
+after LBA 0. Bidirectional original/native cross-reading for the implemented
+structured/binary DolDoc subset also passes on the installed Generation 2 disk:
+native reads the original 48-byte fixture, and original x86-64 TempleOS saves
+the native 37-byte binary fixture byte for byte. Broader DolDoc commands,
+remaining manual workflow and release evidence still need explicit
+verification before M7 closes.
