@@ -2879,3 +2879,12 @@ compile the five top-level assembly helpers, rebuild the kernel against this
 latest file-service ABI, install a wholly guest-built image and repeat it for
 a second generation. The broader M7 workstation/resource acceptance remains
 open.
+
+Build the five boot helper sources in source order, starting with
+`SysTry.HC`. For each, require a guest-built T32M with the expected exports,
+named relocations and independently audited 386 instructions. Rebuild the
+kernel against the current file-service ABI, link all six guest-built modules
+on the machine, install to a separate target, and cold-boot two successive
+generations under QEMU. A first `SysTry.HC` assembler prototype passed the
+x64 and i386 host builds but failed the actual QEMU source-module build; it
+was removed. The next test must identify the exact frontend rejection.

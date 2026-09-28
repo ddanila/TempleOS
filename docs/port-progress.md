@@ -9917,3 +9917,22 @@ work is to rebuild it in the current guest, compile the five top-level
 assembly helper sources, then natively link and install the wholly guest-built
 set and verify two generations. The complete workstation/resource gates stay
 open.
+
+## M7 status and next source-build gate (2026-09-28)
+
+The last committed native installer result remains the current execution
+milestone: an image linked and published by the guest from packaged modules
+cold-boots under KVM and 486 TCG. This does not yet constitute a wholly
+guest-built kernel image. The five top-level assembly helpers still come from
+the host cross-build, and the previously guest-built kernel module predates
+the current file-service ABI.
+
+An exploratory top-level assembler for `SysTry.HC` passed the x64 two-generation
+rebuild and i386 cross-build, but the guest's real `I386BuildModule` command
+rejected that source in QEMU with `Native frontend service unavailable`. The
+prototype was removed; no unverified assembler was promoted. The next slice
+is a focused source-module test that identifies the rejected token or operand,
+then verifies the resulting `SysTry.t32m` exports, call relocations and 386
+instructions against the host module. Repeat this for `TaskContext.HC`,
+`ExceptContext.HC`, `IrqEntry.HC` and `ExceptionEntry.HC` before linking a
+wholly guest-built image and booting two generations.
