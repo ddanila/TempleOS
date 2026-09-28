@@ -2804,3 +2804,19 @@ the former `Kernel.HC` line-168 boundary and reached `Heap.HC` line 77,
 memory operands, typed structure offsets, local labels and 386 relative
 branches; keep rejecting forms whose encoding or relocation is not yet
 defined. Then rerun the kernel source build to expose the following boundary.
+
+That heap assembler slice is now implemented and measured. The guest accepts
+the register, typed stack/structure memory, local-label and 386 relative
+branch forms used by the original `I386HeapValid`, while rejecting unknown
+forms. Compile-only operand and branch fixtures have identical KVM/486 TCG
+bytes. The guest also built the original `Heap.HC` as a byte-identical T32M
+under both accelerators; an independent instruction audit matched all 41
+heap-assembly instructions and 14 branch targets against the host build.
+The current Generation 2 kernel-source probe passes `Heap.HC` and stops at
+`Gdt.HC` line 27 on `LEA EAX,U32 &descriptor[EBP]`. Extend the same assembler
+for `LEA`, descriptor-table instructions and the remaining actual kernel
+assembly sites, then require a complete guest-built kernel module. Keep image
+linking/publication and boot of an installed disk as distinct M7 gates. The
+full promotion suite has not been rerun for this slice; the focused installed
+tree module regression passes with all three assembly fixtures rebuilt twice
+and 840 expected target files verified.

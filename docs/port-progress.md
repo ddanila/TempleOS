@@ -9757,3 +9757,35 @@ failure at `Kernel.HC` line 168 and reached `Heap.HC` line 77, where a
 `MOV` uses a local variable address and `EBP` addressing. That file also uses
 structure offsets and local branches. This is the next native-assembler
 boundary; a guest-built kernel module and bootable rebuilt disk remain open.
+
+## Native heap assembly and next kernel boundary (2026-09-28)
+
+The guest `asm {}` frontend now encodes the 386 register and typed memory
+operands used by `I386HeapValid`, including stack argument/local offsets and
+structure fields. It emits fixed-width relative jumps with forward/backward
+`@@` label fixups and rejects unresolved or duplicate labels. The supported
+forms include `MOV`, `XOR`, `CMP`, `TEST`, `ADD`, `SUB` and the needed branches;
+this is a bounded kernel-source subset, not general HolyC assembly support.
+The same `IC_ASM`/AOT backend path remains in use.
+
+Operand and branch compile-only fixtures built under QEMU/KVM and 486 TCG
+matched byte for byte: respectively 110 bytes (SHA-256
+`fbec8c0e493b673ca39a4aa4c9e796e674feeb22b664ac66daf087441e7ca818`)
+and 109 bytes (SHA-256
+`edb8bd22f4b1953c546f67ed08debcc7f4f8f35aa2f8ab758c985dde9f958867`).
+The original `Kernel/I386/Heap.HC` also built as a guest module on both
+accelerators, with identical 11,947-byte artifacts (SHA-256
+`beedae034c5a9b78fd21b0bf057a1c4b81e63a9d2eb4e39770befd6d1d2954c4`).
+`tools/audit-i386-inline-asm.py` compared its disassembled `I386HeapValid`
+against the host-built kernel, matching all 41 instructions and 14 branch
+targets; a one-byte branch-target mutation was rejected.
+
+The next full `Kernel.HC` source probe passed the complete heap block and
+stopped at `Kernel/I386/Gdt.HC` line 27, `LEA EAX,U32 &descriptor[EBP]`, before
+publishing a kernel module. The x64 two-generation rebuild and i386 cross-build
+and instruction audit pass. The focused QEMU/KVM installed-tree regression
+passes: all three assembly fixtures rebuilt twice and survived reboot, and
+the target filesystem had the expected 840 files. The full promotion suite
+has not been rerun. Native `LEA`, descriptor
+instructions, subsequent assembly sites, kernel image publication and the
+guest-built disk boot remain open M7 work.

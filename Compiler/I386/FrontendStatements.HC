@@ -115,15 +115,125 @@ CCodeCtrl *I386FrontendPopSaved(U8 *context,CCmpCtrl *cc)
 }
 U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
 { I386FrontendUnavailable(context); }
+class CI386AsmOperand {
+  I64 kind,size,register_code,base,disp,value;
+};
+class CI386AsmLabel {
+  I64 offset;
+  U8 name[32];
+};
+class CI386AsmFix {
+  I64 offset;
+  U8 name[32];
+};
+U0 I386FrontendAsmName(CI386Frontend *state,U8 *dst,U8 *src)
+{
+  I64 i,length;
+  if(!src || src[0]!='@' || src[1]!='@' ||
+      (length=StrLen(src))<3 || length>=32) I386FrontendUnavailable(state);
+  for(i=0;i<=length;i++) dst[i]=src[i];
+}
+I64 I386FrontendAsmReg(U8 *name)
+{
+  if(!StrCmp(name,"EAX")) return 0;
+  if(!StrCmp(name,"ECX")) return 1;
+  if(!StrCmp(name,"EDX")) return 2;
+  if(!StrCmp(name,"EBX")) return 3;
+  if(!StrCmp(name,"ESP")) return 4;
+  if(!StrCmp(name,"EBP")) return 5;
+  if(!StrCmp(name,"ESI")) return 6;
+  if(!StrCmp(name,"EDI")) return 7;
+  return -1;
+}
+U0 I386FrontendAsmByte(CI386Frontend *state,U8 *bytes,I64 *count,I64 value)
+{
+  if(*count>=256) I386FrontendUnavailable(state);
+  bytes[*count]=value; (*count)++;
+}
+U0 I386FrontendAsmDword(CI386Frontend *state,U8 *bytes,I64 *count,I64 value)
+{
+  I64 i;
+  for(i=0;i<4;i++) I386FrontendAsmByte(state,bytes,count,value>>(i*8));
+}
+U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg)
+{//Keep register, immediate and EBP/class-member addressing explicit.
+  CMemberLst *member;
+  CHashClass *cls;
+  I64 register_code,offset;
+  U8 *name;
+  arg->kind=arg->size=arg->register_code=arg->base=arg->disp=arg->value=0;
+  if(cc->token==TK_I64) {
+    arg->kind=3; arg->value=cc->cur_i64; I386FrontendLex(state,cc); return;
+  }
+  if(cc->token!=TK_IDENT || !cc->cur_str) I386FrontendUnavailable(state);
+  register_code=I386FrontendAsmReg(cc->cur_str);
+  if(register_code>=0) {
+    arg->kind=1; arg->size=4; arg->register_code=register_code;
+    I386FrontendLex(state,cc); return;
+  }
+  if(!StrCmp(cc->cur_str,"U32")) arg->size=4;
+  else if(!StrCmp(cc->cur_str,"U8")) arg->size=1;
+  else I386FrontendUnavailable(state);
+  I386FrontendLex(state,cc);
+  if(cc->token=='&') {
+    if(I386FrontendLex(state,cc)!=TK_IDENT || !cc->cur_str)
+      I386FrontendUnavailable(state);
+    name=cc->cur_str; member=cc->htc.fun->member_lst_and_root;
+    while(member && StrCmp(member->str,name)) member=member->next;
+    if(!member) I386FrontendUnavailable(state);
+    offset=member->offset;
+    I386FrontendLex(state,cc);
+  } else {
+    if(cc->token!=TK_IDENT || !cc->cur_str) I386FrontendUnavailable(state);
+    cls=HashFind(cc->cur_str,cc->htc.hash_table_lst,HTT_CLASS);
+    if(!cls) I386FrontendUnavailable(state);
+    cls=OptClassFwd(cls);
+    if(I386FrontendLex(state,cc)!='.' ||
+        I386FrontendLex(state,cc)!=TK_IDENT || !cc->cur_str)
+      I386FrontendUnavailable(state);
+    member=cls->member_lst_and_root;
+    while(member && StrCmp(member->str,cc->cur_str)) member=member->next;
+    if(!member) I386FrontendUnavailable(state);
+    offset=member->offset;
+    I386FrontendLex(state,cc);
+  }
+  if(cc->token!='[' || I386FrontendLex(state,cc)!=TK_IDENT ||
+      !cc->cur_str || (register_code=I386FrontendAsmReg(cc->cur_str))<0 ||
+      I386FrontendLex(state,cc)!=']') I386FrontendUnavailable(state);
+  I386FrontendLex(state,cc);
+  arg->kind=2; arg->base=register_code; arg->disp=offset;
+}
+U0 I386FrontendAsmModRM(CI386Frontend *state,U8 *bytes,I64 *count,
+  I64 register_code,CI386AsmOperand *arg)
+{
+  I64 mode,disp=arg->disp,i;
+  if(register_code<0 || register_code>7) I386FrontendUnavailable(state);
+  if(arg->kind==1) {
+    I386FrontendAsmByte(state,bytes,count,0xC0|register_code<<3|arg->register_code);
+  } else if(arg->kind==2) {
+    if(!disp && arg->base!=5) mode=0;
+    else if(disp>=-128 && disp<=127) mode=1;
+    else mode=2;
+    I386FrontendAsmByte(state,bytes,count,mode<<6|register_code<<3|arg->base);
+    if(arg->base==4) I386FrontendAsmByte(state,bytes,count,0x24);
+    if(mode==1) I386FrontendAsmByte(state,bytes,count,disp);
+    if(mode==2) for(i=0;i<4;i++) I386FrontendAsmByte(state,bytes,count,disp>>(i*8));
+  } else I386FrontendUnavailable(state);
+}
 CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
-{//Start native inline assembly with 386 zero-operand instructions.
+{//Native 386 inline assembly; only recognized encodings are published.
   CI386Frontend *state=context;
   CAOT *aot;
-  U8 bytes[64],opcode;
-  I64 count=0;
+  CI386AsmOperand dst,src;
+  CI386AsmLabel *labels;
+  CI386AsmFix *fixes;
+  U8 bytes[256],opcode;
+  I64 count=0,op,label_count=0,fix_count=0,i,j,delta;
   if(flags!=CMPF_ASM_BLK || !cc->htc.fun || cc->token!=TK_IDENT ||
       !cc->hash_entry || !(cc->hash_entry->type&HTT_KEYWORD) ||
       cc->hash_entry(CHashGeneric *)->user_data0!=KW_ASM) I386FrontendUnavailable(state);
+  labels=I386FrontendAlloc(state,32*sizeof(CI386AsmLabel),TRUE,FALSE);
+  fixes=I386FrontendAlloc(state,64*sizeof(CI386AsmFix),TRUE,FALSE);
   if(I386FrontendLex(state,cc)!='{') I386FrontendUnavailable(state);
   I386FrontendLex(state,cc);
   while(cc->token!='}') {
@@ -131,7 +241,16 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
     else {
       if(cc->token!=TK_IDENT || !cc->cur_str || count>=sizeof(bytes))
         I386FrontendUnavailable(state);
-      if(!StrCmp(cc->cur_str,"CLI")) opcode=0xFA;
+      if(cc->cur_str[0]=='@' && cc->cur_str[1]=='@') {
+        if(label_count>=32) I386FrontendUnavailable(state);
+        I386FrontendAsmName(state,labels[label_count].name,cc->cur_str);
+        for(i=0;i<label_count;i++)
+          if(!StrCmp(labels[i].name,labels[label_count].name)) I386FrontendUnavailable(state);
+        labels[label_count].offset=count; label_count++;
+        if(I386FrontendLex(state,cc)!=':') I386FrontendUnavailable(state);
+        I386FrontendLex(state,cc);
+        opcode=0xFF;
+      } else if(!StrCmp(cc->cur_str,"CLI")) opcode=0xFA;
       else if(!StrCmp(cc->cur_str,"STI")) opcode=0xFB;
       else if(!StrCmp(cc->cur_str,"HLT")) opcode=0xF4;
       else if(!StrCmp(cc->cur_str,"CLD")) opcode=0xFC;
@@ -139,10 +258,97 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else if(!StrCmp(cc->cur_str,"NOP")) opcode=0x90;
       else if(!StrCmp(cc->cur_str,"CLC")) opcode=0xF8;
       else if(!StrCmp(cc->cur_str,"STC")) opcode=0xF9;
+      else if(!StrCmp(cc->cur_str,"MOV")) opcode=0;
+      else if(!StrCmp(cc->cur_str,"XOR")) opcode=1;
+      else if(!StrCmp(cc->cur_str,"CMP")) opcode=2;
+      else if(!StrCmp(cc->cur_str,"TEST")) opcode=3;
+      else if(!StrCmp(cc->cur_str,"ADD")) opcode=4;
+      else if(!StrCmp(cc->cur_str,"SUB")) opcode=5;
+      else if(!StrCmp(cc->cur_str,"JMP")) opcode=0xE9;
+      else if(!StrCmp(cc->cur_str,"JB")) opcode=0x82;
+      else if(!StrCmp(cc->cur_str,"JNZ") || !StrCmp(cc->cur_str,"JNE")) opcode=0x85;
+      else if(!StrCmp(cc->cur_str,"JE")) opcode=0x84;
+      else if(!StrCmp(cc->cur_str,"JA")) opcode=0x87;
       else I386FrontendUnavailable(state);
-      bytes[count++]=opcode;
-      I386FrontendLex(state,cc);
+      if(opcode==0xFF) { }
+      else if(opcode==0xE9 || opcode==0x82 || opcode==0x85 ||
+          opcode==0x84 || opcode==0x87) {
+        if(I386FrontendLex(state,cc)!=TK_IDENT || fix_count>=64)
+          I386FrontendUnavailable(state);
+        I386FrontendAsmName(state,fixes[fix_count].name,cc->cur_str);
+        I386FrontendLex(state,cc);
+        if(opcode!=0xE9) I386FrontendAsmByte(state,bytes,&count,0x0F);
+        I386FrontendAsmByte(state,bytes,&count,opcode);
+        fixes[fix_count].offset=count; fix_count++;
+        for(i=0;i<4;i++) I386FrontendAsmByte(state,bytes,&count,0);
+      } else if(opcode<=5) {
+        I386FrontendLex(state,cc);
+        op=opcode;
+        I386FrontendAsmOperand(state,cc,&dst);
+        if(cc->token!=',') I386FrontendUnavailable(state);
+        I386FrontendLex(state,cc);
+        I386FrontendAsmOperand(state,cc,&src);
+        if(op==0 && dst.kind==1 && dst.size==4 &&
+            (src.kind==1 || src.kind==2 && src.size==4)) {
+          I386FrontendAsmByte(state,bytes,&count,0x8B);
+          I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+        } else if(op==0 && dst.kind==2 && src.kind==3 &&
+            (dst.size==4 || dst.size==1)) {
+          if(dst.size==4) I386FrontendAsmByte(state,bytes,&count,0xC7);
+          else I386FrontendAsmByte(state,bytes,&count,0xC6);
+          I386FrontendAsmModRM(state,bytes,&count,0,&dst);
+          if(dst.size==4) I386FrontendAsmDword(state,bytes,&count,src.value);
+          else I386FrontendAsmByte(state,bytes,&count,src.value);
+        } else if(op==1 && dst.kind==1 && src.kind==1) {
+          I386FrontendAsmByte(state,bytes,&count,0x33);
+          I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+        } else if(op==2 && src.kind==3 &&
+            (dst.kind==1 && dst.size==4 || dst.kind==2 && dst.size==4)) {
+          if(src.value>=-128 && src.value<=127)
+            I386FrontendAsmByte(state,bytes,&count,0x83);
+          else I386FrontendAsmByte(state,bytes,&count,0x81);
+          I386FrontendAsmModRM(state,bytes,&count,7,&dst);
+          if(src.value>=-128 && src.value<=127)
+            I386FrontendAsmByte(state,bytes,&count,src.value);
+          else I386FrontendAsmDword(state,bytes,&count,src.value);
+        } else if(op==2 && dst.kind==1 && dst.size==4 &&
+            (src.kind==1 || src.kind==2 && src.size==4)) {
+          I386FrontendAsmByte(state,bytes,&count,0x3B);
+          I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+        } else if(op==2 && dst.kind==2 && dst.size==4 &&
+            src.kind==1 && src.size==4) {
+          I386FrontendAsmByte(state,bytes,&count,0x39);
+          I386FrontendAsmModRM(state,bytes,&count,src.register_code,&dst);
+        } else if(op==3 && dst.kind==1 && dst.register_code==0 && src.kind==3) {
+          I386FrontendAsmByte(state,bytes,&count,0xA9);
+          I386FrontendAsmDword(state,bytes,&count,src.value);
+        } else if((op==4 || op==5) && dst.kind==1 && dst.size==4 &&
+            src.kind==3) {
+          if(src.value>=-128 && src.value<=127)
+            I386FrontendAsmByte(state,bytes,&count,0x83);
+          else I386FrontendAsmByte(state,bytes,&count,0x81);
+          if(op==4) I386FrontendAsmModRM(state,bytes,&count,0,&dst);
+          else I386FrontendAsmModRM(state,bytes,&count,5,&dst);
+          if(src.value>=-128 && src.value<=127)
+            I386FrontendAsmByte(state,bytes,&count,src.value);
+          else I386FrontendAsmDword(state,bytes,&count,src.value);
+        } else if((op==4 || op==5) && dst.kind==1 && dst.size==4 &&
+            src.kind==1 && src.size==4) {
+          if(op==4) I386FrontendAsmByte(state,bytes,&count,0x03);
+          else I386FrontendAsmByte(state,bytes,&count,0x2B);
+          I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+        } else I386FrontendUnavailable(state);
+      } else {
+        I386FrontendAsmByte(state,bytes,&count,opcode);
+        I386FrontendLex(state,cc);
+      }
     }
+  }
+  for(i=0;i<fix_count;i++) {
+    for(j=0;j<label_count;j++) if(!StrCmp(fixes[i].name,labels[j].name)) break;
+    if(j==label_count) I386FrontendUnavailable(state);
+    delta=labels[j].offset-fixes[i].offset-4;
+    for(j=0;j<4;j++) bytes[fixes[i].offset+j]=delta>>(j*8);
   }
   if(!count) I386FrontendUnavailable(state);
   aot=I386FrontendAlloc(state,sizeof(CAOT),TRUE,FALSE);
@@ -150,6 +356,7 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
   for(opcode=0;opcode<count;opcode++) aot->buf[opcode]=bytes[opcode];
   aot->aot_U8s=count;
   aot->next_ie=aot->last_ie=&aot->next_ie;
+  I386FrontendFree(state,labels); I386FrontendFree(state,fixes);
   return aot;
 }
 U0 I386FrontendFixAssembly(U8 *context,CCmpCtrl *cc,CAOT *aot)

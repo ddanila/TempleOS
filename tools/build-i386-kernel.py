@@ -1422,6 +1422,7 @@ def verify_native_file_module(disk):
 def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
                                 payload='/Probe/NativeCreate.bin'):
     """Audit the guest-built original RedSea creation source and its disk imports."""
+    source_built=path!='/Probe/NativeCreate.t32m'
     files=mutated_file_contents(disk,{path,payload})
     module=files.get(path)
     if payload in files:
@@ -1430,7 +1431,8 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built original RedSea creator')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=65 or
+    if (total!=len(module) or size<1024 or size&7 or
+            count!=(81 if source_built else 65) or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid original RedSea creator layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
@@ -1439,12 +1441,19 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
         'I386RedSeaGrowDirectory','I386RedSeaGrowRoot','I386RedSeaNewName',
         'I386RedSeaReparentRootChildren'))
     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+    polls=[offset for kind,offset,name,length in rows if kind==2 and
+           module[name:name+length]==b'I386ExecutionBreakPoll']
     imports={name for name in calls if name not in exported}
     expected_imports={x.encode() for x in ('I386RedSeaValid','I386RedSeaDirectory',
         'I386RedSeaPutWord','I386RedSeaSectorRead','I386RedSeaSectorWrite',
         'I386RedSeaFlush','I386RedSeaAlloc','I386RedSeaFree',
         'I386RedSeaFind','I386RedSeaWrite')}
-    if exported!=expected or len(calls)!=59 or imports!=expected_imports or \
+    if source_built: expected_imports.add(b'I386ExecutionBreakPoll')
+    if exported!=expected or len(calls)!=(75 if source_built else 59) or \
+            len(polls)!=(16 if source_built else 0) or \
+            any(offset<1 or offset>size-4 or module[32+offset-1]!=0xE8 or
+                module[32+offset:32+offset+4]!=b'\0'*4 for offset in polls) or \
+            imports!=expected_imports or \
             any(kind not in (1,2) or offset>=size or not length or name<strings or
                 name+length>=total for kind,offset,name,length in rows):
         raise ValueError('Original RedSea creator records differ from source')
@@ -1461,15 +1470,21 @@ def verify_native_lex_number_module(disk,path):
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built compiler lexer module')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if total!=len(module) or size<1024 or size&7 or count!=14 or \
+    if total!=len(module) or size<1024 or size&7 or count!=31 or \
             records!=32+size or strings!=records+16*count or strings>total:
         raise ValueError('Invalid compiler lexer module layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     names={kind:[module[name:name+length] for k,offset,name,length in rows if k==kind]
            for kind in (1,2,5)}
+    polls=[offset for kind,offset,name,length in rows if kind==2 and
+           module[name:name+length]==b'I386ExecutionBreakPoll']
     if (sorted(names[1])!=[b'I386LexNumber',b'LexNumberBody'] or
-            len(names[2])!=11 or set(names[2])!={b'I386F64FromI64',b'I386F64Mul',
-                b'I386LexRawChar',b'LexNumberBody',b'Pow10I64'} or
+            len(names[2])!=28 or len(polls)!=17 or
+            any(offset<1 or offset>size-4 or module[32+offset-1]!=0xE8 or
+                module[32+offset:32+offset+4]!=b'\0'*4 for offset in polls) or
+            set(names[2])!={b'I386F64FromI64',b'I386F64Mul',
+                b'I386LexRawChar',b'LexNumberBody',b'Pow10I64',
+                b'I386ExecutionBreakPoll'} or
             names[5]!=[b'I386LexSourceRead'] or
             any(kind not in (1,2,5) or offset>=size or not length or name<strings or
                 name+length>=total for kind,offset,name,length in rows)):
@@ -1481,8 +1496,8 @@ def verify_native_lex_number_module(disk,path):
             'named_address_imports':[name.decode() for name in names[5]]}
 
 
-def verify_native_zero_asm_module(disk,path):
-    """Check guest compilation of privileged 386 inline bytes without executing them."""
+def verify_native_asm_fixture(disk,path,expected_name,source,opcodes):
+    """Check guest inline assembly bytes without executing privileged code."""
     module=mutated_file_contents(disk,{path}).get(path)
     if not module or len(module)<32 or module[:4]!=b'T32M' or \
             struct.unpack_from('<H',module,4)[0]!=2:
@@ -1491,16 +1506,31 @@ def verify_native_zero_asm_module(disk,path):
     if total!=len(module) or size<8 or size&7 or count!=1 or \
             records!=32+size or strings!=records+16*count or strings>total:
         raise ValueError('Invalid native assembly fixture layout')
-    kind,offset,name,length=struct.unpack_from('<4I',module,records)
-    expected=b'I386AsmZeroFixture'
-    opcodes=bytes.fromhex('fa fb f4 fc fd 90 f8 f9')
-    if kind!=1 or offset!=0 or name<strings or name+length>=total or \
-            module[name:name+length]!=expected or module[name+length] or \
+    kind,offset,name_offset,length=struct.unpack_from('<4I',module,records)
+    if kind!=1 or offset!=0 or name_offset<strings or name_offset+length>=total or \
+            module[name_offset:name_offset+length]!=expected_name or module[name_offset+length] or \
             module[32:32+size].count(opcodes)!=1:
         raise ValueError('Native assembly fixture lost its 386 instruction bytes')
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/AsmZeroFixture.HC').read_bytes()).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/source).read_bytes()).hexdigest(),
             'opcodes':opcodes.hex()}
+
+
+def verify_native_zero_asm_module(disk,path):
+    return verify_native_asm_fixture(disk,path,b'I386AsmZeroFixture',
+        'Kernel/I386/AsmZeroFixture.HC',bytes.fromhex('fa fb f4 fc fd 90 f8 f9'))
+
+
+def verify_native_operand_asm_module(disk,path):
+    return verify_native_asm_fixture(disk,path,b'I386AsmOperandFixture',
+        'Kernel/I386/AsmOperandFixture.HC',
+        bytes.fromhex('8b 5d 08 8b 33 8b 4b 04 33 ff 33 d2'))
+
+
+def verify_native_branch_asm_module(disk,path):
+    return verify_native_asm_fixture(disk,path,b'I386AsmBranchFixture',
+        'Kernel/I386/AsmBranchFixture.HC',
+        bytes.fromhex('e9 01 00 00 00 90 90 0f 82 f8 ff ff ff'))
 
 
 def verify_native_import_module(disk,path):
@@ -1776,12 +1806,16 @@ def verify_interactive_native_module(disk,out,console,volume):
     import_command='I386BuildModule("D:/Kernel/I386/ImportModuleFixture.HC","D:/Modules/I386/GuestImports.t32m")>0;'
     asm_path='/Modules/I386/GuestAsmZero.t32m'
     asm_command='I386BuildModule("D:/Kernel/I386/AsmZeroFixture.HC","D:/Modules/I386/GuestAsmZero.t32m")>0;'
+    operand_path='/Modules/I386/GuestAsmOperand.t32m'
+    operand_command='I386BuildModule("D:/Kernel/I386/AsmOperandFixture.HC","D:/Modules/I386/GuestAsmOperand.t32m")>0;'
+    branch_path='/Modules/I386/GuestAsmBranch.t32m'
+    branch_command='I386BuildModule("D:/Kernel/I386/AsmBranchFixture.HC","D:/Modules/I386/GuestAsmBranch.t32m")>0;'
     first=console['run_input'](candidate,work/'first',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[
                 ('I386BuildModule("D:/Missing.HC","D:/Modules/I386/Missing.t32m");',['-1']),
                 (command,['1']),(lexer_command,['1']),(import_command,['1']),
-                (asm_command,['1'])]})
+                (asm_command,['1']),(operand_command,['1']),(branch_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
                 {'/Modules/I386/Missing.t32m'}):
@@ -1790,27 +1824,35 @@ def verify_interactive_native_module(disk,out,console,volume):
     first_lexer=verify_native_lex_number_module(target,lexer_path)
     first_imports=verify_native_import_module(target,import_path)
     first_asm=verify_native_zero_asm_module(target,asm_path)
+    first_operand=verify_native_operand_asm_module(target,operand_path)
+    first_branch=verify_native_branch_asm_module(target,branch_path)
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=len(volume['files'])+5:
+    if integrity['files']!=len(volume['files'])+7:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
             'command_timeout':120,'commands':[(command,['1']),(lexer_command,['1']),
-                (import_command,['1']),(asm_command,['1'])]})
+                (import_command,['1']),(asm_command,['1']),
+                (operand_command,['1']),(branch_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
     rebuilt_imports=verify_native_import_module(target,import_path)
     rebuilt_asm=verify_native_zero_asm_module(target,asm_path)
+    rebuilt_operand=verify_native_operand_asm_module(target,operand_path)
+    rebuilt_branch=verify_native_branch_asm_module(target,branch_path)
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
             rebuilt_lexer['sha256']!=first_lexer['sha256'] or
             rebuilt_imports['sha256']!=first_imports['sha256'] or
             rebuilt_asm['sha256']!=first_asm['sha256'] or
+            rebuilt_operand['sha256']!=first_operand['sha256'] or
+            rebuilt_branch['sha256']!=first_branch['sha256'] or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
     return {'first_boot':first,'second_boot':second,'module':rebuilt,
             'compiler_component':rebuilt_lexer,'resident_imports':rebuilt_imports,
-            'inline_asm':rebuilt_asm,
+            'inline_asm':rebuilt_asm,'operand_asm':rebuilt_operand,
+            'branch_asm':rebuilt_branch,
             'filesystem_integrity':second_integrity,'result':'pass'}
 
 
