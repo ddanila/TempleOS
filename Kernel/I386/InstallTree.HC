@@ -70,3 +70,19 @@ public Bool I386InstallBoot(U8 *source,U8 *target)
       !console_config->files->install_boot) return FALSE;
   return (*console_config->files->install_boot)(source,target);
 }
+public Bool I386InstallBootImage(U8 *source,U8 *target,U8 *image_path)
+{
+  CI386TaskSymbols *scope;
+  U8 *image;
+  I64 bytes;
+  Bool result;
+  if(!console_config || !console_config->files ||
+      !console_config->files->install_image || !I386TaskSelf ||
+      !(scope=I386TaskSelf->symbol_state) || scope->task!=I386TaskSelf ||
+      !scope->heap || !image_path) return FALSE;
+  image=(*console_config->files->read)(scope->heap,image_path,&bytes,0,0);
+  if(!image) return FALSE;
+  result=(*console_config->files->install_image)(source,target,image,bytes);
+  if(!I386HeapFree(scope->heap,image)) result=FALSE;
+  return result;
+}

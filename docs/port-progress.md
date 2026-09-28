@@ -9878,3 +9878,42 @@ into the target's reserved boot sectors. The five top-level assembly helper
 sources are also still host-built. Next add safe target boot-area publication,
 then native assembly-source builds for those helpers and an independent boot
 of the wholly guest-built image.
+
+## Native linked-image boot publication (2026-09-28)
+
+`I386InstallBootImage("C:/","D:/",image_file)` now reads a linked flat-image
+file through the task file service and publishes it to a separate mounted
+target. The file runtime checks the trampoline and the 944-sector payload
+limit, requires an initially blank target LBA 0, writes the BIOS stage and
+reserved nonboot sectors, substitutes the image and zero-fills its remaining
+load area, flushes, then writes LBA 0 and flushes again. It does not touch
+RedSea sectors starting at LBA 2048. The file-service ABI is now version 37.
+
+In 16 MiB QEMU/KVM, the guest linked the current packaged six modules to a
+453,016-byte flat file (SHA-256
+`1884a65f99e7aa43013170c398ab96c320b3532f780e31c43621dc264c91973b`),
+byte-identical to the host cross-link. Same-drive, missing-file and non-image
+publication requests left the target byte-for-byte unchanged. A valid
+publication succeeded once; retry rejected the nonblank boot sector. The
+entire reserved area matched the independently constructed expected bytes,
+while every filesystem sector remained unchanged and RedSea integrity passed.
+The target then cold-booted without the source drive: 16 MiB KVM startup took
+20.964 seconds, ran `6*7` and rebuilt the original lexer; 486 TCG startup
+took 58.246 seconds and ran `6*7`. An 8 MiB KVM boot ran `6*7` in 20.865
+seconds. The older `I386InstallBoot` copy path still passed its focused
+two-boot regression.
+
+`tools/build-i386-kernel.py` now includes a persistent native link/publication
+and independent-boot check. Its focused KVM run passed with an exact
+453,016-byte image and intact 834-file target filesystem. The x64
+two-generation rebuild, i386 cross-build and 386 stage instruction audit
+pass; the full `--test` gate has not been rerun for this change. Logs and
+images are under `build/i386-kernel/pub/` and `build/i386-kernel/lb/`.
+
+This installed image used the packaged host-built six boot modules. The
+kernel was previously guest-compiled and separately booted with a host link,
+but that guest kernel predates the new file-service ABI. The next self-hosting
+work is to rebuild it in the current guest, compile the five top-level
+assembly helper sources, then natively link and install the wholly guest-built
+set and verify two generations. The complete workstation/resource gates stay
+open.

@@ -12,6 +12,9 @@ public _extern _FILE_MOVE Bool FileMove(U8 *old_filename,U8 *new_filename);
 public _extern _I386_INSTALL_TREE I64 I386InstallTree(
   U8 *source,U8 *target,I64 limit=0);
 public _extern _I386_INSTALL_BOOT Bool I386InstallBoot(U8 *source,U8 *target);
+//Install a linked flat-image file with LBA 0 written last on a blank target.
+public _extern _I386_INSTALL_BOOT_IMAGE Bool I386InstallBootImage(
+  U8 *source,U8 *target,U8 *image_file);
 //Bootstrap modules execute before the interactive break service is loaded.
 public _extern _I386_BUILD_MODULE I64 I386BuildModule(
   U8 *source,U8 *target,Bool boot_module=FALSE);

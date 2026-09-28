@@ -308,12 +308,12 @@ def file_runtime_layout(module):
     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386TaskInstallBoot', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 36:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 37:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -328,6 +328,7 @@ def file_runtime_layout(module):
         move_io_probe_offset=8+exports['I386TaskFileMoveIoProbe'][1],
         read_raw_offset=8+exports['I386TaskFileReadRaw'][1],
         install_boot_offset=8+exports['I386TaskInstallBoot'][1],
+        install_image_offset=8+exports['I386TaskInstallBootImage'][1],
         export_at_offset=8+exports['I386FileRuntimeExportAt'][1],
         arc_entry_offset=8+exports['I386ArcEntryGet'][1],
         bind_offset=8+exports['I386FileRuntimeBind'][1],
@@ -1906,6 +1907,43 @@ def verify_native_boot_area(disk, exports, out, console):
             'filesystem_integrity':integrity,'result':'pass'}
 
 
+def verify_native_linked_boot_area(disk,exports,out,console):
+    """Link in HolyC, publish LBA 0 last, and boot the installed target."""
+    work=out/'linked-boot';work.mkdir(parents=True,exist_ok=True)
+    candidate=work/'source.img';candidate.write_bytes(disk.read_bytes())
+    target=work/'target.img'
+    initial=(out/'target-tree-copy/target.img').read_bytes()
+    if any(initial[:2048*512]):
+        raise ValueError('Linked-boot target is already bootable')
+    target.write_bytes(initial)
+    publication=console['run_input'](candidate,work/'publication',target_disk=target,
+        snapshot=False,ram_mib=16,startup_check={'status':'ok','answers':[],
+            'command_timeout':120,'commands':[
+                ('I386BuildBootImage("C:/Modules/I386/Kernel.t32m","C:/Modules/I386/","C:/Probe/LinkedBoot.bin")>0;',['1']),
+                ('I386InstallBootImage("C:/","C:/","C:/Probe/LinkedBoot.bin");',['0']),
+                ('I386InstallBootImage("C:/","D:/","C:/Probe/LinkedBoot.bin");',['1']),
+                ('I386InstallBootImage("C:/","D:/","C:/Probe/LinkedBoot.bin");',['0'])]})
+    flat=mutated_file_contents(candidate,{'/Probe/LinkedBoot.bin'})['/Probe/LinkedBoot.bin']
+    if flat!=(exports/'Kernel32.BIN').read_bytes():
+        raise ValueError('Guest-linked boot image differs from cross build')
+    source=candidate.read_bytes();installed=target.read_bytes()
+    expected=source[:4608]+flat+bytes(944*512-4096-len(flat))+source[512+944*512:2048*512]
+    if installed[:2048*512]!=expected or installed[2048*512:]!=initial[2048*512:]:
+        raise ValueError('Guest boot publication changed unexpected sectors')
+    integrity=verify_mutated_volume(target)
+    independent=console['run_input'](target,work/'independent',snapshot=True,
+        ram_mib=16,startup_timeout=180,startup_check={'status':'ok','answers':[],
+            'command_timeout':120,'commands':[
+                ('6*7;',['42']),
+                ('I386BuildModule("C:/Compiler/I386/LexNumber.HC","C:/Probe/LinkedLex.t32m")>0;',['1'])]})
+    if target.read_bytes()!=installed:
+        raise ValueError('Independent linked target boot changed installed disk')
+    return {'publication':publication,'independent_boot':independent,
+            'flat_bytes':len(flat),'flat_sha256':hashlib.sha256(flat).hexdigest(),
+            'target_sha256':hashlib.sha256(installed).hexdigest(),
+            'filesystem_integrity':integrity,'result':'pass'}
+
+
 def verify_file_io_failure_matrix(disk, exports, out):
     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
@@ -2161,8 +2199,8 @@ def main():
                     (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset'), (private_defines_address,'private_defines_offset'), (compiler_export_at_address,'export_at_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=24: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=25: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot, file_install_image = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
@@ -2184,7 +2222,8 @@ def main():
                 file_move_io_probe!=file_address+files_layout['move_io_probe_offset'] or
                 file_export_at!=file_address+files_layout['export_at_offset'] or
                 file_read_raw!=file_address+files_layout['read_raw_offset'] or
-                file_install_boot!=file_address+files_layout['install_boot_offset']):
+                file_install_boot!=file_address+files_layout['install_boot_offset'] or
+                file_install_image!=file_address+files_layout['install_image_offset']):
             raise ValueError('File-runtime placement or service mismatch')
         if 'FILE MOVE PROBE ' in log:
             raise ValueError('Writable file mutation probe ran during read-only diagnostics')
@@ -3022,6 +3061,7 @@ def main():
         result['native_tree_copy']=verify_native_tree_copy(normal_disk,exports,out,console,volume)
         result['interactive_native_module']=verify_interactive_native_module(normal_disk,out,console,volume,exports)
         result['native_boot_area']=verify_native_boot_area(normal_disk,exports,out,console)
+        result['native_linked_boot_area']=verify_native_linked_boot_area(normal_disk,exports,out,console)
         run(sys.executable,'tools/test-i386-install-copy.py')
         result['native_install_copy']=json.loads(
             (out/'install-copy/result.json').read_text())

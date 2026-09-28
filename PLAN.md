@@ -2864,3 +2864,18 @@ linking. Next publish that file into the reserved boot area with the boot
 sector written last, then independently boot the installed target. The helper
 assembly sources still need native compilation before the entire boot image
 can count as guest-built.
+
+The native installer now accepts a linked flat-image file. It validates the
+entry trampoline and size, copies the trusted source BIOS/stage and reserved
+sectors to a separate blank-boot target, substitutes the linked image in the
+944-sector load range, flushes, and writes LBA 0 last. The installed target's
+RedSea sectors remain unchanged. A guest-linked 453,016-byte image built from
+the packaged six modules was published this way; its sectors matched the
+expected image exactly, and the target independently booted under 16 MiB
+QEMU/KVM and 486 TCG. HolyC executed `6*7`, and KVM rebuilt the lexer source.
+An 8 MiB KVM boot also passed. This closes native link and boot-area
+publication for the currently packaged boot modules. The guest must still
+compile the five top-level assembly helpers, rebuild the kernel against this
+latest file-service ABI, install a wholly guest-built image and repeat it for
+a second generation. The broader M7 workstation/resource acceptance remains
+open.

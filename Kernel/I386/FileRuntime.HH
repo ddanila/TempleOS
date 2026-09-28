@@ -5,7 +5,7 @@
 #include "/Kernel/I386/TaskCompiler.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_FILE_SERVICES_VERSION 36
+#define I386_FILE_SERVICES_VERSION 37
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 class CI386FileServices {
   U32 version,bytes;
@@ -37,5 +37,6 @@ class CI386FileServices {
   U8 *(*read_raw)(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name);
   //Publish boot sectors between mounted drives after the target tree is installed.
   Bool (*install_boot)(U8 *source,U8 *target);
+  Bool (*install_image)(U8 *source,U8 *target,U8 *image,I64 bytes);
 };
 #endif
