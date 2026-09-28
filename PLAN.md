@@ -2820,3 +2820,17 @@ linking/publication and boot of an installed disk as distinct M7 gates. The
 full promotion suite has not been rerun for this slice; the focused installed
 tree module regression passes with all three assembly fixtures rebuilt twice
 and 840 expected target files verified.
+
+The next native assembly slice now covers `LEA` on typed stack storage and
+`LGDT`/`SGDT`/`LIDT`/`SIDT` on register-indirect descriptor operands. A 16 MiB
+QEMU/KVM guest compiled the complete original `Kernel/I386/Kernel.HC` source
+and published a 520,534-byte `GuestKernel.t32m`. The module parser validates
+225 function and 85 data exports, 1,015 named calls, 454 address relocations,
+106 nonoverlapping data ranges and its local data pointer. The inline-assembly
+auditor matches the host's heap instructions/branches and the exact descriptor
+instruction sequences in all four GDT/IDT functions. This establishes a
+complete guest source-module build, not a bootable rebuilt kernel: next add a
+native image/link and boot-sector publication path from that module, verify
+its imports and entry/data layout against the installed source tree, then
+boot and exercise the resulting disk under QEMU/486 TCG. Repeat kernel-source
+builds and the complete promotion suite remain open.

@@ -9789,3 +9789,30 @@ the target filesystem had the expected 840 files. The full promotion suite
 has not been rerun. Native `LEA`, descriptor
 instructions, subsequent assembly sites, kernel image publication and the
 guest-built disk boot remain open M7 work.
+
+## Complete guest kernel source module (2026-09-28)
+
+The guest inline assembler now emits `LEA` for typed stack operands and the
+four descriptor-table operations `LGDT`, `SGDT`, `LIDT` and `SIDT` for
+register-indirect memory operands. Unknown forms still reject. The x64
+two-generation rebuild and i386 cross-build/boot-instruction audit pass.
+
+A 16 MiB QEMU/KVM normal boot (20.613 seconds) compiled the complete original
+`Kernel/I386/Kernel.HC` source to `/Probe/GuestKernel.t32m`. The 520,534-byte
+artifact has SHA-256
+`f00b65f6a008ecbfe1fc6e17c8b206f777de38c43c0b7062b2d1d50dd0b26286`.
+The independent T32M parser accepted its 225 function exports, 85 data
+exports, 1,015 named calls, 454 address relocations, 106 data ranges and one
+local data pointer. Host and guest export-name sets match. The inline-assembly
+auditor matched all 41 `I386HeapValid` instructions and 14 branches and the
+exact instruction sequences in `I386GdtLoad`, `I386GdtRead`, `I386IdtLoad`
+and `I386IdtRead`. The QEMU run and extracted module are under
+`build/i386-kernel/asm-gdt-kernel-probe-long/`.
+
+The guest module is relocatable source output, not a bootable kernel image.
+Its extra named internal relocations reflect the module format rather than
+the host-linked `Kernel.t32m`. The next M7 task is a guest-accessible image
+link/publication step that resolves those imports and publishes the bootable
+disk, followed by an independent QEMU/486 TCG boot and workstation checks.
+The full promotion suite and a second kernel-source build have not yet been
+run for this checkpoint.

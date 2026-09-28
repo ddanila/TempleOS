@@ -10,6 +10,40 @@ import tempfile
 START=bytes.fromhex('8b 5d 08 8b 33 8b 4b 04 33 ff 33 d2')
 END=bytes.fromhex('c6 45 ff 01')
 BRANCHES={'jb','ja','je','jne','jmp'}
+DESCRIPTORS={
+    'I386GdtLoad':bytes.fromhex('8d45f80f0110'),
+    'I386GdtRead':bytes.fromhex('8b45080f0100'),
+    'I386IdtLoad':bytes.fromhex('8d45f80f0118'),
+    'I386IdtRead':bytes.fromhex('8b45080f0108'),
+}
+
+
+def descriptor_assembly(path):
+    blob=path.read_bytes()
+    magic,version,cpu,pointer,abi,total,size,count,records,strings=struct.unpack_from('<IHBB6I',blob)
+    if (magic!=0x4D323354 or version not in (2,3) or cpu!=3 or pointer!=4 or
+            abi!=1 or total!=len(blob) or records!=32+size or
+            strings!=records+16*count or strings>len(blob)):
+        raise ValueError(f'{path}: invalid module')
+    exports={}
+    for i in range(count):
+        kind,offset,name,length=struct.unpack_from('<4I',blob,records+16*i)
+        if kind==1:
+            if offset>=size or not length or name<strings or name+length>=len(blob):
+                raise ValueError(f'{path}: invalid export')
+            symbol=blob[name:name+length].decode('ascii')
+            if symbol in exports:
+                raise ValueError(f'{path}: duplicate export {symbol}')
+            exports[symbol]=offset
+    code=blob[32:32+size]
+    for symbol,sequence in DESCRIPTORS.items():
+        if symbol not in exports:
+            raise ValueError(f'{path}: missing {symbol}')
+        begin=exports[symbol]
+        end=min((offset for offset in exports.values() if offset>begin),default=size)
+        if code[begin:end].count(sequence)!=1:
+            raise ValueError(f'{path}: missing unique {symbol} assembly')
+    return True
 
 
 def heap_assembly(path):
@@ -69,7 +103,7 @@ def instructions(code):
     return normalized
 
 
-def audit(host,guest):
+def audit(host,guest,descriptors=False):
     original=instructions(heap_assembly(host))
     rebuilt=instructions(heap_assembly(guest))
     if original!=rebuilt:
@@ -77,13 +111,19 @@ def audit(host,guest):
             if left!=right:
                 raise ValueError(f'Heap assembly differs at instruction {index}: {left} != {right}')
         raise ValueError(f'Heap assembly length differs: {len(original)} != {len(rebuilt)}')
-    return {'result':'pass','instructions':len(original),
+    result={'result':'pass','instructions':len(original),
             'branches':sum(mnemonic in BRANCHES for mnemonic,_ in original)}
+    if descriptors:
+        descriptor_assembly(host)
+        descriptor_assembly(guest)
+        result['descriptor_functions']=len(DESCRIPTORS)
+    return result
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('host',type=Path)
     parser.add_argument('guest',type=Path)
+    parser.add_argument('--descriptors',action='store_true')
     args=parser.parse_args()
-    print(audit(args.host,args.guest))
+    print(audit(args.host,args.guest,args.descriptors))

@@ -12,17 +12,24 @@ def parse(path):
     if len(blob)<32:
         raise ValueError(f'{path}: truncated module')
     magic,version,cpu,pointer,abi,total,size,count,records,strings=struct.unpack_from('<IHBB6I',blob)
-    if (magic,version,cpu,pointer,abi,total,records,strings)!=(
-            0x4D323354,2,3,4,1,len(blob),32+size,32+size+16*count) or strings>len(blob):
+    if (magic,cpu,pointer,abi,total,records,strings)!=(
+            0x4D323354,3,4,1,len(blob),32+size,32+size+16*count) or \
+            version not in (2,3) or strings>len(blob):
         raise ValueError(f'{path}: invalid T32M header')
     names={kind:{} for kind in (1,2,3,5)}
     ranges=[]
+    pointers=[]
     for i in range(count):
         kind,offset,name,length=struct.unpack_from('<4I',blob,records+16*i)
         if kind==4:
             if not name or offset>size-name or length:
                 raise ValueError(f'{path}: invalid data range {i}')
             ranges.append((offset,offset+name))
+            continue
+        if kind==6:
+            if version<3 or length or offset>size-4 or name>=size or struct.unpack_from('<I',blob,32+offset)[0]:
+                raise ValueError(f'{path}: invalid local pointer {i}')
+            pointers.append((offset,name))
             continue
         if (kind not in names or offset>=size or not length or
                 name<strings or name+length>=len(blob) or blob[name+length] or
@@ -38,12 +45,17 @@ def parse(path):
     ranges.sort()
     if any(left[1]>right[0] for left,right in zip(ranges,ranges[1:])):
         raise ValueError(f'{path}: overlapping data ranges')
+    for offset,target in pointers:
+        if not any(begin<=offset and offset+4<=end for begin,end in ranges) or not any(
+                begin<=target<end for begin,end in ranges):
+            raise ValueError(f'{path}: local pointer outside data')
     for kind in (1,3):
         for symbol,offsets in names[kind].items():
             inside=any(begin<=offsets[0]<end for begin,end in ranges)
             if inside!=(kind==3):
                 raise ValueError(f'{path}: misplaced export {symbol}')
     return {'blob':blob,'code':blob[32:32+size],'names':names,'ranges':ranges,
+            'pointers':pointers,
             'sha256':hashlib.sha256(blob).hexdigest()}
 
 
