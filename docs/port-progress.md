@@ -9816,3 +9816,39 @@ link/publication step that resolves those imports and publishes the bootable
 disk, followed by an independent QEMU/486 TCG boot and workstation checks.
 The full promotion suite and a second kernel-source build have not yet been
 run for this checkpoint.
+
+## First boot of guest-compiled kernel code (2026-09-28)
+
+The first guest-built `Kernel.HC` module could not be linked as early boot
+code: 223 loop-backedge calls imported `I386ExecutionBreakPoll`, a service
+loaded with the compiler runtime only after kernel startup. The source builder
+now accepts `I386BuildModule(source,target,TRUE)` for bootstrap modules. It
+compiles the same source with no interactive break checkpoint; the ordinary
+two-argument form still emits break-poll relocations for interactive code.
+The guest rebuilt `Kernel.HC` in that mode and published a 506,909-byte T32M
+(SHA-256
+`2366c41f057c207e1d37adb1703997991a9fef1567dc60d36de1aaa6f142806a`)
+with 456,304 code bytes and zero break-poll imports. The previous ordinary
+module still fails to link with exactly the missing break-poll symbol.
+
+The projected flat image also exceeded the former 896-sector BIOS reservation.
+The stage now reads 944 sectors, ending at `0x86000`; the existing 32 KiB task
+stack starts at `0x88000`, leaving an 8 KiB gap. The native cross-build and
+386 stage audit pass, and the new host-built disk booted under QEMU/KVM.
+`tools/link-i386-guest-kernel-probe.py` is a diagnostic linker: before using a
+guest module, it must reproduce the host `Kernel32.BIN` byte for byte from
+the six host modules. With the guest kernel and five existing helper modules
+it emitted a 456,872-byte flat image, leaving 22,360 bytes in the BIOS-loaded
+payload reservation. It changed only the reserved boot area of a copied disk.
+
+That mixed-source disk cold-booted under QEMU/KVM and 486 TCG. KVM startup
+took 20.667 seconds, executed `6*7` and rebuilt the original lexer source;
+TCG startup took 48.560 seconds and executed `6*7`. The inline-assembly
+auditor matched the heap block and four descriptor functions against the host
+module; the 386 BIOS/stage instruction audit also passed. This is execution
+evidence for guest-compiled kernel code, but the flat link was performed by
+the host diagnostic tool and the five boot helper modules came from the host
+cross-build. A wholly on-machine image link, safe boot publication, helper
+module rebuild, independent installed-disk boot and the complete M7 workflow
+remain open. Artifacts and QEMU logs are under
+`build/i386-kernel/bootstrap-kernel-module/`.

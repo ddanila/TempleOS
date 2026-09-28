@@ -2834,3 +2834,20 @@ native image/link and boot-sector publication path from that module, verify
 its imports and entry/data layout against the installed source tree, then
 boot and exercise the resulting disk under QEMU/486 TCG. Repeat kernel-source
 builds and the complete promotion suite remain open.
+
+The bootstrap-kernel source path now has an explicit `I386BuildModule` mode
+that omits interactive loop-break checkpoints from early boot code. An ordinary
+module retains them; the previous guest kernel had 223 unresolved calls to
+`I386ExecutionBreakPoll`, which is only loaded later. With this mode, the
+guest built a 506,909-byte kernel T32M with zero such imports. The six-module
+flat image using that kernel and the five current boot helpers is 456,872
+bytes. The BIOS load reservation is now 944 sectors, ending at `0x86000` and
+leaving 8 KiB before the task stack at `0x88000`. A diagnostic host linker
+first reproduced the existing host image byte for byte, then linked the guest
+kernel into a disk without changing RedSea sectors. That disk booted under
+QEMU/KVM and 486 TCG; HolyC evaluated `6*7`, and KVM rebuilt the lexer source.
+The 386 boot audit passed. This proves the guest-compiled kernel can run, but
+the link step and five helper modules were still host supplied. Next build
+those helper modules in the guest and provide an on-machine linker plus safe
+boot-area publication to an installed target; repeat the boot from wholly
+guest-built outputs before claiming native kernel self-hosting.

@@ -1,6 +1,6 @@
 //Compile one on-disk HolyC source unit to a relocatable T32M on a mounted drive.
 //The private compilation control is unwound before publishing the file.
-public I64 I386BuildModule(U8 *source_path,U8 *target_path)
+public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALSE)
 {
   CI386Task *task=I386TaskSelf;
   CI386TaskSymbols *scope;
@@ -22,7 +22,8 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path)
   stage=1;
   try {
     cc=(*console_config->files->control_new)(source,
-      CCF_DONT_FREE_BUF|CCF_AOT_COMPILE|CCF_MODULE_SOURCE,source_path);
+      CCF_DONT_FREE_BUF|CCF_AOT_COMPILE|CCF_MODULE_SOURCE|
+      (boot_module*CCF_BOOT_MODULE),source_path);
     if(!cc) throw('OutMem',TRUE);
     if(!(*compiler->control_enter)(heap,cc,0,0)) {
       (*compiler->control_del)(heap,cc,0,0); cc=0;

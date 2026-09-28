@@ -636,7 +636,10 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   if(!out) throw('OutMem',TRUE);
   I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND START\n");
-  if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll)) I386FrontendUnavailable(state);
+  if(cc->flags&CCF_BOOT_MODULE) {
+    if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0)) I386FrontendUnavailable(state);
+  } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll))
+    I386FrontendUnavailable(state);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
     if(metadata->type!=IET_I386_DATA && metadata->type!=IET_I386_BREAK_POLL)

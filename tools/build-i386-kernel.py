@@ -2020,8 +2020,8 @@ def main():
     run(sys.executable,'tools/audit-i386-boot.py',str(disk),str(stage_listing),
         '--out',str(boot_audit_path))
     boot_audit=json.loads(boot_audit_path.read_text())
-    if disk.stat().st_size>(896+1)*512:
-        raise ValueError('Kernel stage exceeds its reserved 448 KiB load area')
+    if disk.stat().st_size>(944+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 472 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
     volume=package_volume(disk,exports)
     volume['verified_files']=verify_volume(disk,volume)
