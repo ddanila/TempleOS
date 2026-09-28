@@ -2962,6 +2962,9 @@ also passed under 16 MiB 486 TCG; the focused 8 MiB help/text VGA checks pass.
 The complete 8 MiB QEMU/KVM workstation suite also passes on Generation 2:
 495 native commands and 558 submitted lines exercise compiler recovery,
 graphics/input, DolDoc editing, RedSea navigation and source-linked help with
-exact VGA checks. Persistent source/project workflow and remaining
-installation/recovery acceptance still need explicit verification before M7
-closes.
+exact VGA checks. The writable three-boot DolDoc project acceptance also
+passes on the installed Generation 2 disk under 8 MiB `486,-fpu`: it edits,
+executes, saves, reopens and revises source across boots, then independently
+audits file bytes, directory ownership and the RedSea bitmap. Rebuilt-artifact
+installation interruption/recovery, remaining manual workflow, and release
+evidence still need explicit verification before M7 closes.

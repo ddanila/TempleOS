@@ -10089,3 +10089,17 @@ RedSea file navigation, source-linked help, and text rendering. Startup took
 The run is recorded in `build/i386-kernel/gen2-guest-boot/workstation-final/`.
 Persistent manual project workflow and rebuilt-artifact installation recovery
 remain to be verified before M7 closes.
+
+The existing three-boot DolDoc project acceptance was then run against the
+installed Generation 2 disk under 8 MiB QEMU TCG with `486,-fpu`. All three
+boots passed. The first boot performed 107 keyboard-driven commands, including
+editing and executing source; the second performed 56 commands, reopened the
+saved program and revised its answer from 42 to 48. The third reopened that
+revision. An independent RedSea walk verified exact nested-project and styled
+document bytes, directory structure, nonoverlapping extents and an allocation
+bitmap matching every reachable extent. The original second-generation disk
+remained unchanged; the writable test copy is at
+`build/i386-kernel/gen2-project-session/session.img`, with its result in
+`build/i386-kernel/gen2-project-session/result.json`. The observed interrupt
+to recovered VGA in the first boot was 0.335 seconds. Rebuilt-image
+installation interruption and recovery remain open.
