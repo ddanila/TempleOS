@@ -395,6 +395,10 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
   I64 fi=0,gi=0,original_globals,ordinal=0,bytes,start,result=0;
   if(!symbols || !(frontend=symbols->context) ||
       symbols!=&frontend->symbols || !(table=frontend->table) || capacity<0) return 0;
+  if(frontend->top_bundle) {
+    if(frontend->codes || frontend->saved_vars) return 0;
+    return I386FrontendTopPack(frontend,output,capacity);
+  }
   for(i=0;i<=table->mask;i++)
     for(entry=table->body[i];entry;entry=entry->next) {
       if(entry->type&HTT_FUN) {

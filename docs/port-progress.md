@@ -10010,3 +10010,52 @@ helpers. The target's filesystem sectors were unchanged. Independent
 were still host-built. Artifacts and logs are under
 `build/i386-kernel/top-except-context/`, `top-three-helpers-boot/` and
 `build/tec/`.
+
+## All five boot helpers built by the guest (2026-09-28)
+
+The IRQ and exception sources expose many vector entries that jump into a
+single shared handler. To preserve those labels and branches, the guest
+top-level assembler now keeps each `asm` block contiguous and publishes a
+T32M with export records at the actual entry offsets. This replaces the
+per-function alignment used in the earlier TaskContext and ExceptContext
+probes. Their current guest modules have 187 and 364 bytes respectively;
+their full code payloads now match the host modules byte for byte.
+
+The guest compiled `IrqEntry.HC` to a 654-byte T32M with 16 exports and one
+named `I386IrqDispatch` call. It compiled `ExceptionEntry.HC` to an 822-byte
+T32M with 17 exports and one named `I386ExceptionDispatch` call. Independent
+audits checked every vector's pushed values, the near jump target shared by
+its stubs, the complete handler bytes, and the relocation slot. The guest
+uses 386 near branches where the host uses short branches. The installed-
+volume regression now rebuilds and audits all five original helper sources
+on two QEMU/KVM boots, with identical outputs and intact file counts.
+
+The guest replaced all five packaged helper modules, linked a 453,128-byte
+flat image with the packaged kernel, and installed it to a separate
+blank-boot target without changing filesystem sectors. The target
+independently cold-booted under 16 MiB QEMU/KVM and 486 TCG. HolyC ran
+`6*7`; KVM also rebuilt the lexer source. TCG startup took 58.044 seconds.
+The remaining boot-generation boundary is the current kernel source module:
+the previously guest-built kernel predates the current file-service ABI.
+Artifacts and logs are under `build/i386-kernel/shared-asm-probe/`,
+`top-all-helpers-boot/` and `build/av/`.
+
+## First fully guest-built installed image (2026-09-28)
+
+The live guest compiled the current `Kernel/I386/Kernel.HC` source to a
+506,917-byte T32M. Its record audit found 225 function exports, 85 data
+exports, 792 named calls, 454 address relocations, 106 data ranges, and one
+pointer record. The guest then rebuilt all five boot helpers, linked them
+with that kernel module, and installed the resulting 456,992-byte flat image
+to a separate blank target. The flat image SHA-256 is
+`02593b818584ef7bbbd4cfb77aebd6208328f6a6cdad08fbaa6a6e591dcb4131`.
+The target's filesystem sectors remained unchanged. An independent 16 MiB
+QEMU/KVM cold boot evaluated `6*7` and rebuilt the lexer. An independent
+16 MiB 486 TCG boot also evaluated `6*7` (49.0-second startup). This is the first
+installed generation made wholly from guest-built modules. The second native
+generation and integrated M7 workstation/resource gates remain open. Logs
+and disk artifacts are under `build/i386-kernel/current-guest-kernel/` and
+`build/i386-kernel/fully-guest-boot/`.
+
+The same installed target also passed an independent 8 MiB QEMU/KVM boot and
+evaluated `6*7` (21.2-second startup).

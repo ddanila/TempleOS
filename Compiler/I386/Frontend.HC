@@ -11,6 +11,7 @@ extern U0 I386ExecutionBreakPoll();
 extern class CI386FrontendReloc;
 extern class CI386FrontendAddress;
 extern class CI386FrontendStatic;
+extern class CI386FrontendTopBundle;
 class CI386FrontendCode {
   CI386FrontendCode *next;
   CI386FrontendReloc *relocs;
@@ -73,6 +74,7 @@ class CI386Frontend {
   U32 binary_ops[TK_TKS_NUM];
   I64 lines;
   CI386FrontendCode *codes;
+  CI386FrontendTopBundle *top_bundle;
   CI386FrontendFixup *fixups;
   CI386FrontendResident *residents;
   CI386FrontendCompletion *completions;

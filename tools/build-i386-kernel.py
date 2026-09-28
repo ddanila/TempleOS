@@ -1575,14 +1575,11 @@ def verify_native_top_task_context_module(disk,path,host):
         raise ValueError('Invalid guest-built TaskContext module layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     named=sorted((kind,offset,module[name:name+length]) for kind,offset,name,length in rows)
-    if named!=[(1,0,b'i386_context_switch'),(1,32,b'i386_idle'),
-               (1,40,b'i386_segments_reload')]:
+    if named!=[(1,0,b'i386_context_switch'),(1,31,b'i386_idle'),
+               (1,35,b'i386_segments_reload')]:
         raise ValueError('Guest-built TaskContext exports differ')
     code=module[32:32+size];original=host[32:32+host_size]
-    if (code[:31]!=original[:31] or code[31:32]!=b'\0' or
-            code[32:36]!=original[31:35] or code[36:40]!=b'\0'*4 or
-            code[40:54]!=original[35:49] or code[54:56]!=b'\0'*2 or
-            original[49:56]!=b'\0'*7):
+    if code!=original:
         raise ValueError('Guest-built TaskContext instructions differ')
     return {'sha256':hashlib.sha256(module).hexdigest(),
             'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/TaskContext.HC').read_bytes()).hexdigest(),
@@ -1590,34 +1587,78 @@ def verify_native_top_task_context_module(disk,path,host):
 
 
 def verify_native_top_except_context_module(disk,path,host):
-    """Audit all four exception context entries despite function reordering."""
+    """Audit the contiguous four-entry exception context assembly block."""
     module=mutated_file_contents(disk,{path}).get(path)
     if not module or module[:12]!=host[:12]:
         raise ValueError('Missing guest-built ExceptContext module')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size!=208 or count!=4 or
+    if (total!=len(module) or size!=192 or count!=4 or
             records!=32+size or strings!=records+16*count or
             struct.unpack_from('<I',host,16)[0]!=192):
         raise ValueError('Invalid guest-built ExceptContext module layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     named={module[name:name+length]:offset for kind,offset,name,length in rows if kind==1}
-    expected={b'i386_except_invoke':(0,44,79),
-              b'i386_except_register':(40,108,190),
-              b'i386_except_resume':(128,79,108),
-              b'i386_except_save':(160,0,44)}
-    if len(named)!=4 or named!={name:parts[0] for name,parts in expected.items()}:
+    expected={b'i386_except_save':0,b'i386_except_invoke':44,
+              b'i386_except_resume':79,b'i386_except_register':108}
+    if len(named)!=4 or named!=expected:
         raise ValueError('Guest-built ExceptContext exports differ')
     code=module[32:32+size];original=host[32:32+192]
-    for name,(offset,start,end) in expected.items():
-        if code[offset:offset+end-start]!=original[start:end]:
-            raise ValueError('Guest-built ExceptContext instructions differ: '+name.decode())
-    if (code[35:40]!=b'\0'*5 or code[122:128]!=b'\0'*6 or
-            code[157:160]!=b'\0'*3 or code[204:208]!=b'\0'*4 or
-            original[190:192]!=b'\0'*2):
-        raise ValueError('Guest-built ExceptContext padding differs')
+    if code!=original:
+        raise ValueError('Guest-built ExceptContext instructions differ')
     return {'sha256':hashlib.sha256(module).hexdigest(),
             'source_sha256':hashlib.sha256((ROOT/'Kernel/I386/ExceptContext.HC').read_bytes()).hexdigest(),
             'exports':4}
+
+
+def verify_native_top_vector_module(disk,path,host,kind):
+    """Check every vector stub reaches the shared 386 handler."""
+    if kind=='irq':
+        count,guest_size,host_size,guest_common,host_common,common_end=16,152,104,112,64,101
+        guest_call,host_call,dispatcher=134,86,b'I386IrqDispatch'
+    elif kind=='exception':
+        count,guest_size,host_size,guest_common,host_common,common_end=17,184,128,141,90,127
+        guest_call,host_call,dispatcher=163,112,b'I386ExceptionDispatch'
+    else:
+        raise ValueError('Unknown top-level vector module')
+    module=mutated_file_contents(disk,{path}).get(path)
+    if not module or module[:12]!=host[:12]:
+        raise ValueError('Missing guest-built '+kind+' module')
+    total,size,records_count,records,strings=struct.unpack_from('<5I',module,12)
+    if (total!=len(module) or size!=guest_size or records_count!=count+1 or
+            records!=32+size or strings!=records+16*records_count or
+            struct.unpack_from('<I',host,16)[0]!=host_size):
+        raise ValueError('Invalid guest-built '+kind+' module layout')
+    code=module[32:32+size];original=host[32:32+host_size]
+    guest_offset=host_offset=0
+    for vector in range(count):
+        row=struct.unpack_from('<4I',module,records+16*vector)
+        name=f'i386_{kind}_{vector}'.encode()
+        if (row[0]!=1 or row[1]!=guest_offset or
+                module[row[2]:row[2]+row[3]]!=name):
+            raise ValueError('Guest-built '+kind+' export differs')
+        pushes=1 if kind=='irq' or vector in (8,10,11,12,13,14) else 2
+        prefix=2*pushes
+        if code[guest_offset:guest_offset+prefix]!=original[host_offset:host_offset+prefix]:
+            raise ValueError('Guest-built '+kind+' vector push differs')
+        guest_jump=guest_offset+prefix;host_jump=host_offset+prefix
+        if (code[guest_jump]!=0xE9 or original[host_jump]!=0xEB or
+                guest_jump+5+struct.unpack_from('<i',code,guest_jump+1)[0]!=guest_common or
+                host_jump+2+struct.unpack_from('<b',original,host_jump+1)[0]!=host_common):
+            raise ValueError('Guest-built '+kind+' vector branch differs')
+        guest_offset=guest_jump+5;host_offset=host_jump+2
+    if (guest_offset!=guest_common or host_offset!=host_common or
+            code[guest_common:guest_common+common_end-host_common]!=original[host_common:common_end] or
+            any(code[guest_common+common_end-host_common:]) or any(original[common_end:])):
+        raise ValueError('Guest-built '+kind+' shared handler differs')
+    row=struct.unpack_from('<4I',module,records+16*count)
+    if (row[0]!=2 or row[1]!=guest_call or
+            module[row[2]:row[2]+row[3]]!=dispatcher or
+            code[guest_call:guest_call+4]!=b'\0'*4 or
+            original[host_call:host_call+4]!=b'\0'*4):
+        raise ValueError('Guest-built '+kind+' dispatcher relocation differs')
+    return {'sha256':hashlib.sha256(module).hexdigest(),
+            'source_sha256':hashlib.sha256((ROOT/f'Kernel/I386/{"IrqEntry" if kind=="irq" else "ExceptionEntry"}.HC').read_bytes()).hexdigest(),
+            'exports':count,'dispatcher':dispatcher.decode()}
 
 
 def verify_native_import_module(disk,path):
@@ -1906,6 +1947,10 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
     task_context_command='I386BuildModule("D:/Kernel/I386/TaskContext.HC","D:/Modules/I386/GuestTaskContext.t32m",TRUE)>0;'
     except_context_path='/Modules/I386/GuestExceptContext.t32m'
     except_context_command='I386BuildModule("D:/Kernel/I386/ExceptContext.HC","D:/Modules/I386/GuestExceptContext.t32m",TRUE)>0;'
+    irq_path='/Modules/I386/GuestIrqEntry.t32m'
+    irq_command='I386BuildModule("D:/Kernel/I386/IrqEntry.HC","D:/Modules/I386/GuestIrqEntry.t32m",TRUE)>0;'
+    exception_path='/Modules/I386/GuestExceptionEntry.t32m'
+    exception_command='I386BuildModule("D:/Kernel/I386/ExceptionEntry.HC","D:/Modules/I386/GuestExceptionEntry.t32m",TRUE)>0;'
     boot_path='/Modules/I386/GuestBoot.bin'
     boot_command='I386BuildBootImage("D:/Modules/I386/Kernel.t32m","D:/Modules/I386/","D:/Modules/I386/GuestBoot.bin")>0;'
     expected_boot=(exports/'Kernel32.BIN').read_bytes()
@@ -1916,7 +1961,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
                 (command,['1']),(lexer_command,['1']),(import_command,['1']),
                 (asm_command,['1']),(operand_command,['1']),(branch_command,['1']),
                 (systry_command,['1']),(task_context_command,['1']),
-                (except_context_command,['1']),
+                (except_context_command,['1']),(irq_command,['1']),
+                (exception_command,['1']),
                 (boot_command,['1'])]})
     if candidate.read_bytes()!=source or \
             '/Modules/I386/Missing.t32m' in mutated_file_contents(target,
@@ -1934,11 +1980,15 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
         (exports/'TaskContext.t32m').read_bytes())
     first_except_context=verify_native_top_except_context_module(target,except_context_path,
         (exports/'ExceptContext.t32m').read_bytes())
+    first_irq=verify_native_top_vector_module(target,irq_path,
+        (exports/'IrqEntry.t32m').read_bytes(),'irq')
+    first_exception=verify_native_top_vector_module(target,exception_path,
+        (exports/'ExceptionEntry.t32m').read_bytes(),'exception')
     first_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     if first_boot_image!=expected_boot:
         raise ValueError('Native boot link differs from cross-linked image')
     integrity=verify_mutated_volume(target)
-    if integrity['files']!=initial_target_files+10:
+    if integrity['files']!=initial_target_files+12:
         raise ValueError('Native module build changed unexpected target file count')
     second=console['run_input'](candidate,work/'second',target_disk=target,snapshot=False,
         ram_mib=16,startup_check={'status':'ok','answers':[],
@@ -1946,7 +1996,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
                 (import_command,['1']),(asm_command,['1']),
                 (operand_command,['1']),(branch_command,['1']),
                 (systry_command,['1']),(task_context_command,['1']),
-                (except_context_command,['1']),
+                (except_context_command,['1']),(irq_command,['1']),
+                (exception_command,['1']),
                 (boot_command,['1'])]})
     rebuilt=verify_native_create_module(target,path,'/Modules/I386/GuestCreate.bin')
     rebuilt_lexer=verify_native_lex_number_module(target,lexer_path)
@@ -1960,6 +2011,10 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
         (exports/'TaskContext.t32m').read_bytes())
     rebuilt_except_context=verify_native_top_except_context_module(target,except_context_path,
         (exports/'ExceptContext.t32m').read_bytes())
+    rebuilt_irq=verify_native_top_vector_module(target,irq_path,
+        (exports/'IrqEntry.t32m').read_bytes(),'irq')
+    rebuilt_exception=verify_native_top_vector_module(target,exception_path,
+        (exports/'ExceptionEntry.t32m').read_bytes(),'exception')
     rebuilt_boot_image=mutated_file_contents(target,{boot_path})[boot_path]
     second_integrity=verify_mutated_volume(target)
     if (candidate.read_bytes()!=source or rebuilt['sha256']!=first_module['sha256'] or
@@ -1971,6 +2026,8 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
             rebuilt_systry['sha256']!=first_systry['sha256'] or
             rebuilt_task_context['sha256']!=first_task_context['sha256'] or
             rebuilt_except_context['sha256']!=first_except_context['sha256'] or
+            rebuilt_irq['sha256']!=first_irq['sha256'] or
+            rebuilt_exception['sha256']!=first_exception['sha256'] or
             rebuilt_boot_image!=expected_boot or
             second_integrity['files']!=integrity['files']):
         raise ValueError('Native module rebuild changed bytes or file count')
@@ -1980,6 +2037,7 @@ def verify_interactive_native_module(disk,out,console,volume,exports):
             'branch_asm':rebuilt_branch,'top_asm_systry':rebuilt_systry,
             'top_asm_task_context':rebuilt_task_context,
             'top_asm_except_context':rebuilt_except_context,
+            'top_asm_irq':rebuilt_irq,'top_asm_exception':rebuilt_exception,
             'boot_image':{'bytes':len(rebuilt_boot_image),
                           'sha256':hashlib.sha256(rebuilt_boot_image).hexdigest()},
             'filesystem_integrity':second_integrity,'result':'pass'}

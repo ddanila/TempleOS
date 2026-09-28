@@ -6,45 +6,53 @@ U0 I386FrontendTopName(CI386Frontend *state,U8 *dst,U8 *src)
     I386FrontendUnavailable(state);
   for(i=0;i<=length;i++) dst[i]=src[i];
 }
-U0 I386FrontendTopPublish(CI386Frontend *state,CCmpCtrl *cc,U8 *name,
-  U8 *bytes,I64 count,CI386AsmLabel *labels,I64 label_count,
-  CI386AsmFix *branches,I64 branch_count,CI386AsmFix *calls,I64 call_count)
+class CI386FrontendTopBundle {
+  I64 bytes,export_count,call_count;
+  U8 code[256];
+  CI386AsmLabel exports[32];
+  CI386AsmFix calls[16];
+};
+I64 I386FrontendTopPack(CI386Frontend *state,U8 *output,I64 capacity)
 {
-  CI386FrontendCode *output;
-  CHashFun *fun;
-  I64 i,j,k,delta;
-  if(!count) I386FrontendUnavailable(state);
-  for(i=0;i<branch_count;i++) {
-    for(j=0;j<label_count;j++)
-      if(!StrCmp(branches[i].name,labels[j].name)) break;
-    if(j==label_count) I386FrontendUnavailable(state);
-    delta=labels[j].offset-branches[i].offset-4;
-    for(k=0;k<4;k++) bytes[branches[i].offset+k]=delta>>(k*8);
+  CI386FrontendTopBundle *bundle=state->top_bundle;
+  CI386ModuleRecord records[48];
+  U8 strings[2048],*name;
+  I64 i,j,length,string_bytes=0,record_count;
+  if(!bundle || bundle->bytes<1 || bundle->bytes>256 ||
+      bundle->export_count<1 || bundle->export_count>32 ||
+      bundle->call_count<0 || bundle->call_count>16) return 0;
+  record_count=bundle->export_count+bundle->call_count;
+  for(i=0;i<record_count;i++) {
+    if(i<bundle->export_count) {
+      name=bundle->exports[i].name;
+      records[i].kind=I386_MODULE_EXPORT;
+      records[i].offset=bundle->exports[i].offset;
+    } else {
+      name=bundle->calls[i-bundle->export_count].name;
+      records[i].kind=I386_MODULE_REL32;
+      records[i].offset=bundle->calls[i-bundle->export_count].offset;
+    }
+    length=StrLen(name);
+    if(length<1 || length>31 || string_bytes>2048-length-1) return 0;
+    records[i].name_offset=string_bytes; records[i].name_length=length;
+    for(j=0;j<=length;j++) strings[string_bytes+j]=name[j];
+    string_bytes+=length+1;
   }
-  output=I386FrontendAlloc(state,sizeof(CI386FrontendCode),TRUE,FALSE);
-  output->code=I386ParserCodeAlloc(state->heap,cc,count);
-  if(!output->code) I386FrontendUnavailable(state);
-  output->bytes=output->data_start=count;
-  for(i=0;i<count;i++) output->code[i]=bytes[i];
-  for(i=0;i<call_count;i++) I386FrontendRelocAdd(state,output,calls[i].offset,
-    I386_MODULE_REL32,calls[i].name);
-  output->next=state->codes; state->codes=output;
-  fun=I386FrontendAlloc(state,sizeof(CHashFun),TRUE,FALSE);
-  fun->str=I386FrontendDuplicate(state,name);
-  fun->type=HTT_FUN; fun->exe_addr=output->code;
-  fun->return_class=state->expression.types[RT_U0];
-  HashAdd(fun,state->table);
+  return I386ModulePackRaw(output,capacity,bundle->code,bundle->bytes,
+    records,record_count,strings,string_bytes);
 }
 U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
 {
   CI386Frontend *state=context;
   CI386AsmOperand dst,src;
-  CI386AsmLabel labels[16],imports[8];
-  CI386AsmFix branches[32],calls[16];
-  U8 bytes[256],name[32],export_name[32];
+  CI386AsmLabel labels[32],imports[8],exports[32];
+  CI386AsmFix branches[64],calls[16];
+  CI386FrontendTopBundle *bundle;
+  U8 bytes[256],name[32];
   I64 count=0,label_count=0,import_count=0,branch_count=0,call_count=0;
-  I64 i,opcode,export_count=0;
-  if(flags || !(cc->flags&CCF_MODULE_SOURCE) || cc->htc.fun || cc->token!='{')
+  I64 i,j,k,delta,opcode,export_count=0;
+  if(flags || !(cc->flags&CCF_MODULE_SOURCE) || cc->htc.fun ||
+      cc->token!='{' || state->top_bundle)
     I386FrontendReport(state,cc,0,"Invalid top-level assembly entry");
   I386FrontendLex(state,cc);
   while(cc->token!='}') {
@@ -55,20 +63,20 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
       I386FrontendTopName(state,name,cc->cur_str);
       I386FrontendLex(state,cc);
       if(cc->token==TK_DBL_COLON) {
-        if(export_count>=16 || !export_count && count) I386FrontendUnavailable(state);
-        if(export_count) {
-          I386FrontendTopPublish(state,cc,export_name,bytes,count,labels,label_count,
-            branches,branch_count,calls,call_count);
-          count=label_count=branch_count=call_count=0;
-        }
-        I386FrontendTopName(state,export_name,name); export_count++;
+        if(export_count>=32 || !export_count && count) I386FrontendUnavailable(state);
+        for(i=0;i<export_count;i++)
+          if(!StrCmp(exports[i].name,name)) I386FrontendUnavailable(state);
+        I386FrontendTopName(state,exports[export_count].name,name);
+        exports[export_count].offset=count; export_count++;
         I386FrontendLex(state,cc);
-      } else if(cc->token==':' && name[0]=='@' && name[1]=='@') {
-        if(label_count>=16) I386FrontendUnavailable(state);
-        I386FrontendAsmName(state,labels[label_count].name,name);
+      } else if(cc->token==':') {
+        if(!export_count || label_count>=32) I386FrontendUnavailable(state);
+        I386FrontendTopName(state,labels[label_count].name,name);
         for(i=0;i<label_count;i++)
           if(!StrCmp(labels[i].name,labels[label_count].name))
             I386FrontendUnavailable(state);
+        for(i=0;i<export_count;i++)
+          if(!StrCmp(exports[i].name,name)) I386FrontendUnavailable(state);
         labels[label_count].offset=count; label_count++;
         I386FrontendLex(state,cc);
       } else if(!StrCmp(name,"USE32")) {
@@ -92,7 +100,9 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
         else if(!StrCmp(name,"POPAD")) I386FrontendAsmByte(state,bytes,&count,0x61);
         else if(!StrCmp(name,"STI")) I386FrontendAsmByte(state,bytes,&count,0xFB);
         else if(!StrCmp(name,"CLI")) I386FrontendAsmByte(state,bytes,&count,0xFA);
+        else if(!StrCmp(name,"CLD")) I386FrontendAsmByte(state,bytes,&count,0xFC);
         else if(!StrCmp(name,"HLT")) I386FrontendAsmByte(state,bytes,&count,0xF4);
+        else if(!StrCmp(name,"IRET")) I386FrontendAsmByte(state,bytes,&count,0xCF);
         else if(!StrCmp(name,"RET")) I386FrontendAsmByte(state,bytes,&count,0xC3);
         else if(!StrCmp(name,"POP")) {
           if(cc->token==TK_IDENT && cc->cur_str && !StrCmp(cc->cur_str,"DS")) {
@@ -140,14 +150,18 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
             } else I386FrontendUnavailable(state);
           }
         } else if(!StrCmp(name,"MOV") || !StrCmp(name,"LEA") ||
-            !StrCmp(name,"TEST") || !StrCmp(name,"XOR")) {
+            !StrCmp(name,"TEST") || !StrCmp(name,"XOR") || !StrCmp(name,"ADD")) {
           opcode=0;
           if(!StrCmp(name,"LEA")) opcode=1;
           if(!StrCmp(name,"TEST")) opcode=2;
           if(!StrCmp(name,"XOR")) opcode=3;
+          if(!StrCmp(name,"ADD")) opcode=4;
           if(opcode==0 && cc->token==TK_IDENT && cc->cur_str &&
-              (!StrCmp(cc->cur_str,"FS") || !StrCmp(cc->cur_str,"GS"))) {
-            if(!StrCmp(cc->cur_str,"FS")) i=0xE0;
+              (!StrCmp(cc->cur_str,"DS") || !StrCmp(cc->cur_str,"ES") ||
+               !StrCmp(cc->cur_str,"FS") || !StrCmp(cc->cur_str,"GS"))) {
+            if(!StrCmp(cc->cur_str,"DS")) i=0xD8;
+            else if(!StrCmp(cc->cur_str,"ES")) i=0xC0;
+            else if(!StrCmp(cc->cur_str,"FS")) i=0xE0;
             else i=0xE8;
             if(I386FrontendLex(state,cc)!=',' ||
                 I386FrontendLex(state,cc)!=TK_IDENT ||
@@ -156,6 +170,16 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
             I386FrontendLex(state,cc);
             I386FrontendAsmByte(state,bytes,&count,0x8E);
             I386FrontendAsmByte(state,bytes,&count,i);
+          } else if(opcode==0 && cc->token==TK_IDENT && cc->cur_str &&
+              !StrCmp(cc->cur_str,"AX")) {
+            if(I386FrontendLex(state,cc)!=',' ||
+                I386FrontendLex(state,cc)!=TK_I64 || cc->cur_i64<0 ||
+                cc->cur_i64>65535) I386FrontendUnavailable(state);
+            i=cc->cur_i64; I386FrontendLex(state,cc);
+            I386FrontendAsmByte(state,bytes,&count,0x66);
+            I386FrontendAsmByte(state,bytes,&count,0xB8);
+            I386FrontendAsmByte(state,bytes,&count,i);
+            I386FrontendAsmByte(state,bytes,&count,i>>8);
           } else {
             I386FrontendAsmOperand(state,cc,&dst);
             if(cc->token!=',') I386FrontendUnavailable(state);
@@ -181,6 +205,11 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
                 (src.kind==1 || src.kind==2 && src.size==4)) {
               I386FrontendAsmByte(state,bytes,&count,0x33);
               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+            } else if(opcode==4 && dst.kind==1 && dst.size==4 &&
+                src.kind==3 && src.value>=-128 && src.value<=127) {
+              I386FrontendAsmByte(state,bytes,&count,0x83);
+              I386FrontendAsmModRM(state,bytes,&count,0,&dst);
+              I386FrontendAsmByte(state,bytes,&count,src.value);
             } else I386FrontendUnavailable(state);
           }
         } else if(!StrCmp(name,"CALL")) {
@@ -208,8 +237,8 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
             I386FrontendAsmByte(state,bytes,&count,0xFF);
             I386FrontendAsmModRM(state,bytes,&count,4,&dst);
           } else {
-            if(cc->token!=TK_IDENT || branch_count>=32) I386FrontendUnavailable(state);
-            I386FrontendAsmName(state,branches[branch_count].name,cc->cur_str);
+            if(cc->token!=TK_IDENT || branch_count>=64) I386FrontendUnavailable(state);
+            I386FrontendTopName(state,branches[branch_count].name,cc->cur_str);
             I386FrontendLex(state,cc);
             if(!StrCmp(name,"JNZ")) {
               I386FrontendAsmByte(state,bytes,&count,0x0F);
@@ -229,7 +258,30 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
       }
     }
   }
-  if(!export_count) I386FrontendUnavailable(state);
-  I386FrontendTopPublish(state,cc,export_name,bytes,count,labels,label_count,
-    branches,branch_count,calls,call_count);
+  if(!export_count || !count) I386FrontendUnavailable(state);
+  for(i=0;i<branch_count;i++) {
+    for(j=0;j<label_count;j++)
+      if(!StrCmp(branches[i].name,labels[j].name)) break;
+    if(j<label_count) delta=labels[j].offset-branches[i].offset-4;
+    else {
+      for(j=0;j<export_count;j++)
+        if(!StrCmp(branches[i].name,exports[j].name)) break;
+      if(j==export_count) I386FrontendUnavailable(state);
+      delta=exports[j].offset-branches[i].offset-4;
+    }
+    for(k=0;k<4;k++) bytes[branches[i].offset+k]=delta>>(k*8);
+  }
+  bundle=I386FrontendAlloc(state,sizeof(CI386FrontendTopBundle),TRUE,FALSE);
+  bundle->bytes=count; bundle->export_count=export_count;
+  bundle->call_count=call_count;
+  for(i=0;i<count;i++) bundle->code[i]=bytes[i];
+  for(i=0;i<export_count;i++) {
+    bundle->exports[i].offset=exports[i].offset;
+    for(j=0;j<32;j++) bundle->exports[i].name[j]=exports[i].name[j];
+  }
+  for(i=0;i<call_count;i++) {
+    bundle->calls[i].offset=calls[i].offset;
+    for(j=0;j<32;j++) bundle->calls[i].name[j]=calls[i].name[j];
+  }
+  state->top_bundle=bundle;
 }

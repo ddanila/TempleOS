@@ -2925,3 +2925,30 @@ guest-installed mixed image containing them cold-booted independently in
 code, so the next assembler step must preserve cross-export labels/branches
 and publish correct entry offsets, before rebuilding the current kernel and
 attempting a wholly guest-built boot image.
+
+All five boot helper sources now compile in the guest. The top-level assembler
+keeps an assembly block contiguous and records exports at their original
+offsets, so IRQ and exception vector stubs can branch to one shared handler.
+Its direct T32M publication preserves named dispatcher calls. Audits verify
+all 16 IRQ and 17 exception entry exports, every vector push and branch
+target, both shared handler bodies, and the named relocations. The earlier
+TaskContext and ExceptContext modules now use the same contiguous layout;
+their code matches the host assembly block exactly. A guest-linked image
+with all five guest-built helpers and the currently packaged kernel was
+installed to a separate target and cold-booted under 16 MiB QEMU/KVM and
+486 TCG; HolyC evaluated `6*7`, and KVM rebuilt the lexer source. The
+installed-volume regression rebuilt all five helpers twice with identical
+bytes. Rebuild the current kernel source in the guest, then link/install a
+wholly guest-built image, repeat for a second generation and close the M7
+workstation/resource gates.
+
+The current kernel source now builds in the guest against the live file-service
+ABI. Its 506,917-byte T32M has 225 function exports and 792 named calls.
+Together with all five guest-built boot helpers, it linked and installed a
+456,992-byte flat image to a separate blank target. That target independently
+cold-booted in 16 MiB QEMU/KVM, evaluated `6*7`, and rebuilt the lexer;
+installation preserved its filesystem sectors. This establishes the first
+fully guest-built installed generation. The same target also booted and ran
+HolyC under 16 MiB 486 TCG and 8 MiB QEMU/KVM. Next, boot that generation to rebuild
+and install a second generation, then complete the integrated M7 workstation
+and resource acceptance.
