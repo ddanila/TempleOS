@@ -10180,3 +10180,26 @@ edits were removed. Logs are under `build/i386-kernel/exedoc-guest-console/`
 and `build/i386-kernel/exedoc-graphics-probe/`. Full self-hosting still requires
 guest building and loading the retained modules, as well as broader original
 DolDoc/editor behavior.
+
+## Native source directives in module builds (2026-09-28)
+
+The previous `GraphicsContext.HC` rejection was a missing service binding,
+not a graphics expression failure. `GrDCCore.HC` contains `#help_file`; the
+native frontend requires a file-name service for that directive. Interactive
+input bound it, while `I386BuildModule` did not. The compiler interface now
+exposes a validated, borrowed file-service binding and module builds call it
+before lexing. The interface version is 58. A new compiler-suite case builds
+a guest-created `#help_file` module at 8 MiB. A 16 MiB QEMU/KVM guest also
+builds the complete `GraphicsContext.HC` source successfully.
+The x64 rebuild, i386 cross-build, focused 142-command compiler group and full
+8 MiB QEMU/KVM workstation suite pass. The full suite ran 504 native commands
+and 567 submitted lines with exact VGA checkpoint matches and 20 bounded
+document-development cycles with heap recovery. Its result is in
+`build/frontend-files-full.log`.
+
+The same 16 MiB guest compiled all of current `ConsoleRuntime.HC`, including
+the graphics code and final `NativeGraphicsPresent` function. It then rejected
+the unit at package stage 5 because `program_pack_unit` returned zero; no
+frontend diagnostic appeared. The next self-hosting task is to identify which
+packer precondition rejects this larger unit. The full retained runtime set
+still has to be built, loaded and verified from guest-produced modules.

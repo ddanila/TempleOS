@@ -33,7 +33,8 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
     stage=2;
     symbols=(*compiler->frontend)(heap,cc,console_config->types,
       console_config->includes);
-    if(!symbols || !(*compiler->frontend_private_defines)(symbols))
+    if(!symbols || !(*compiler->frontend_private_defines)(symbols) ||
+        !(*compiler->frontend_bind_files)(symbols,console_config->files))
       throw('OutMem',TRUE);
     stage=3;
     declarations=symbols->declarations; expression=declarations->expression;

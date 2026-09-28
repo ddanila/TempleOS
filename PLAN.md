@@ -3005,3 +3005,13 @@ The complete 8 MiB QEMU/KVM workstation suite passes with the new `ExeDoc`
 case: 499 native commands, 562 submitted lines and exact VGA checkpoints.
 Resolve that parser/source-unit boundary, then guest-build and load all six
 retained modules before claiming the complete self-hosted system.
+
+The `#help_file` source-unit boundary is now fixed: native module builds borrow
+the same file-name service as interactive compilation. An 8 MiB QEMU/KVM guest
+builds a module containing `#help_file`, and a 16 MiB guest builds the complete
+`GraphicsContext.HC` source. `ConsoleRuntime.HC` now compiles through its final
+function, but `program_pack_unit` returns zero when packaging that larger unit.
+The full 8 MiB QEMU/KVM workstation suite passes with 504 native commands and
+exact VGA checkpoints after this change.
+Diagnose the packer rejection, then guest-build and load the retained modules;
+source compilation alone is not the M7 self-hosting gate.

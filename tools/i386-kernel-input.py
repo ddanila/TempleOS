@@ -567,6 +567,11 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             active_group='compiler'
             for index,(source,answers) in enumerate(commands):
                 submit(source,answers,f'command-{index:02}')
+            submit('CDoc *help_module=DocNew("C:/Probe/HelpModule.HC",Fs);U8 *help_source="#help_file \\"::/Doc/Transform\\"\\nI64 HelpModule(){return 42;}";', [], 'module-help-file-new')
+            submit('while(*help_source)DocPutKey(help_module,*help_source++);', [], 'module-help-file-text')
+            submit('DocWrite(help_module);', ['1'], 'module-help-file-write')
+            submit('DocDel(help_module);', [], 'module-help-file-delete')
+            submit('I386BuildModule("C:/Probe/HelpModule.HC","C:/Probe/HelpModule.t32m",TRUE)>0;', ['1'], 'module-help-file-build')
             active_group='breaks'
             submit("U0 HotkeyWait(I64 locked){if(locked) Fs->task_flags|=1<<TASKf_BREAK_LOCKED;OutU8(0xE9,64);while(!Bt(&Fs->task_flags,TASKf_PENDING_BREAK)){}}", [], 'hotkey-definition')
             submit('HotkeyWait(0);', ['Exception'], 'hotkey-break', hotkey=True)

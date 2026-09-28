@@ -42,6 +42,7 @@ extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I6
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 extern U0 ICInfoInit();
 extern U0 I386ExecutionBreakPoll();
+extern Bool I386FrontendBindFiles(CPrsSymbolServices *symbols,CI386FileServices *files);
 extern I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
@@ -59,7 +60,7 @@ Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   binding->kind=I386_MODULE_EXPORT;
   return TRUE;
 }
-#assert sizeof(CI386CompilerServices)==224
+#assert sizeof(CI386CompilerServices)==228
 I64 Main(CI386CompilerServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386CompilerServices)) return 0;
@@ -109,6 +110,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->program_pack_unit=&I386FrontendModulePackUnit;
   services->frontend_private_defines=&I386FrontendPrivateDefines;
   services->export_at=&I386CompilerRuntimeExportAt;
+  services->frontend_bind_files=&I386FrontendBindFiles;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

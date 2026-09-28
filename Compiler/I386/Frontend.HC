@@ -146,6 +146,16 @@ Bool I386FrontendPrivateDefines(CPrsSymbolServices *symbols)
   }
   return TRUE;
 }
+Bool I386FrontendBindFiles(CPrsSymbolServices *symbols,CI386FileServices *files)
+{
+  CI386Frontend *state;
+  if(!symbols || !(state=symbols->context) || !state->cc || !state->heap ||
+      !files || files->version!=I386_FILE_SERVICES_VERSION ||
+      files->bytes!=sizeof(CI386FileServices) || !files->name_abs)
+    return FALSE;
+  state->files=files;
+  return TRUE;
+}
 U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
