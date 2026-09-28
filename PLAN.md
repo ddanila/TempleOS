@@ -2768,3 +2768,17 @@ Generation 2, rebuild both generations with this change, require byte-identical
 T32Ms, verify the break-poll relocation count and zeroed patch slots, then
 boot and use Generation 2 in QEMU. A pre-fix Generation 2 artifact must not
 be treated as self-hosting evidence.
+
+The repaired two-generation compiler gate now passes. A 16 MiB QEMU/KVM
+Generation 0 boot built Generation 1; a fresh boot from that compiler built
+Generation 2. Both T32Ms are byte-identical (1,640,255 bytes, SHA-256
+`2ec70524f3a103bbbf51de170111c4318b2d670c5e06d185d85490450aaceb89`).
+The independent audit found 396 function exports, ten data exports, 1,092
+named break-poll calls, and valid zeroed relocation slots. Generation 2 then
+booted and built the original lexer source under both KVM and 486 TCG; those
+lexer T32Ms also matched byte for byte. This closes the compiler-generation
+subgate, not M7. Next, require Generation 2 to rebuild the native kernel and
+publish a bootable disk from the installed source tree, then boot and verify
+that disk under TCG. Complete the workstation/manual workflow and resource
+gates as specified above. The Generation 2 TCG boot took 84.778 seconds at
+16 MiB, so the 60-second normal-boot development budget remains open.

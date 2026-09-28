@@ -9698,3 +9698,33 @@ T32M; the independent record parser found 17 named
 `I386ExecutionBreakPoll` call relocations with zeroed patch slots. The
 complete `tools/build-i386-kernel.py --test` run continued into rejection and
 filesystem cases at this checkpoint; its final result is not yet counted.
+
+## Byte-identical full compiler generations (2026-09-28)
+
+The current source completed the two-generation compiler experiment. From a
+fresh 16 MiB QEMU/KVM Generation 0 disk, the guest built and installed a
+1,640,255-byte Generation 1 `CompilerRuntime.t32m`. Its next boot used that
+compiler to build and install Generation 2. The two artifacts were byte-identical,
+SHA-256 `2ec70524f3a103bbbf51de170111c4318b2d670c5e06d185d85490450aaceb89`.
+Generation 0 and Generation 1 boots took 20.264 and 23.623 seconds under KVM.
+`tools/audit-i386-compiler-runtime.py` accepted both artifacts and their byte
+identity: 396 function exports, ten data exports, 3,533 named call relocations
+including 1,092 `I386ExecutionBreakPoll` sites, 254 address relocations,
+zeroed patch slots, valid resident imports, nonoverlapping data ranges, and
+exact division-template bytes.
+
+The resulting Generation 2 disk booted separately under QEMU/KVM and 486 TCG,
+evaluated `2+3`, and built the original `LexNumber.HC`. Both lexer modules
+were byte-identical (14,347 bytes, SHA-256
+`bd7161e56d28f928a8b5ff51839a4c3143532853a97697776f4275bd470ca8be`).
+KVM and TCG boots took 23.724 and 84.778 seconds respectively. The TCG run
+used an explicit 180-second exploratory startup limit; the 60-second normal
+boot budget remains unmet. Build artifacts and QEMU logs are under
+`build/i386-kernel/generation-repeat/`; the audit accepts both full modules.
+
+The compiler-generation gate is now proven, but M7 is not complete. The
+guest-built compiler still needs to rebuild the native kernel, publish and
+boot an installed disk, and pass the complete workstation/resource acceptance
+workflow. The full `tools/build-i386-kernel.py --test` run started from this
+source and passed cross-build and the full TCG console suite, but was stopped
+during later filesystem regression checks; it is not recorded as a pass.
