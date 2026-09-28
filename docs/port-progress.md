@@ -9728,3 +9728,12 @@ boot an installed disk, and pass the complete workstation/resource acceptance
 workflow. The full `tools/build-i386-kernel.py --test` run started from this
 source and passed cross-build and the full TCG console suite, but was stopped
 during later filesystem regression checks; it is not recorded as a pass.
+
+The first next-step kernel probe ran from the Generation 2 disk under QEMU/KVM.
+`I386BuildModule("C:/Kernel/I386/Kernel.HC",...)` reached the source's line 168,
+`asm { CLI }`, and returned `Native frontend service unavailable`; the guest
+published no output T32M. This is expected from the current assembly/join
+service stubs in `FrontendStatements.HC`. The log is under
+`build/i386-kernel/generation-repeat/kernel-source-probe/`. Native i386
+assembly support, then kernel image publication and boot verification, are
+the next self-hosting steps.

@@ -2782,3 +2782,14 @@ publish a bootable disk from the installed source tree, then boot and verify
 that disk under TCG. Complete the workstation/manual workflow and resource
 gates as specified above. The Generation 2 TCG boot took 84.778 seconds at
 16 MiB, so the 60-second normal-boot development budget remains open.
+
+The first Generation 2 attempt to compile `Kernel/I386/Kernel.HC` reached
+line 168, `asm { CLI }`, then returned a native-frontend-unavailable error.
+No target module was published. This confirms the next kernel-build boundary
+is the guest frontend's assembly service (currently rejecting assembly and
+join requests), rather than compiler-generation drift. Implement its i386
+assembly path with instruction, local-label, symbol and relocation handling;
+exercise the actual kernel assembly sites, then build a native kernel module.
+After that, close the distinct image/link/boot-sector publication and
+installed-disk boot gates. A successful T32M compile by itself does not prove
+a rebuilt bootable OS.
