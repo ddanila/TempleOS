@@ -3028,3 +3028,17 @@ APIs. The full 8 MiB QEMU/KVM workstation suite passes with the real
 `DocAllocationCheck` and 504 native commands. The retained image still boots
 the host-built runtime. Next, guest-build the other retained T32Ms, replace
 the packaged copies, and boot/test two wholly guest-built generations.
+
+A 16 MiB QEMU/KVM guest now also builds `Startup.HC`, `MemoryRuntime.HC`,
+and `FileRuntime.HC` as retained T32Ms. `MemoryRuntime.HC` needed its
+`MemoryStrCopy` inline assembly expressed as a HolyC byte loop; the original
+`StrCopyCheck` corpus passes in the guest, including null pointers, overlap,
+long copies, and direction-flag behavior. That corpus is now in the regular
+workstation input suite. `CompilerProbe.HC` reaches its included task-layout
+assertions but rejects during source compilation; `CompilerRuntime.HC` has not
+yet been attempted in this sequence. Four of six retained modules can now be
+guest-built, but none has replaced the packaged host-built boot copy. Resolve
+the compiler probe failure, build the remaining modules, install all six
+guest-built copies, and repeat the independent Generation 2 boot and suite.
+The full 8 MiB QEMU/KVM workstation run passes with this source: 506 native
+commands and 569 submitted lines.

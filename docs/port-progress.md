@@ -10229,3 +10229,24 @@ real `DocAllocationCheck` returning 12, and 20 bounded document-development
 cycles with heap recovery. The result is in `build/console-clip-full-final.log`.
 The module has not yet replaced the host-built runtime in a booted image;
 the other five retained modules and two-generation boot verification remain.
+
+## Guest-built startup, memory, and file modules (2026-09-28)
+
+The 16 MiB QEMU/KVM source-build probe now succeeds for `Startup.HC`,
+`MemoryRuntime.HC`, and `FileRuntime.HC`, in addition to the already audited
+`ConsoleRuntime.HC`. The memory build initially stopped at inline assembly in
+`Kernel/I386/StrCopy.HC`; its HolyC implementation now copies bytewise with
+the active direction flag and preserves null-source/destination behavior.
+Inside the guest, the original `StrCopyCheck(&StrCpy)` corpus returns 1 and
+`I386BuildModule` completes `MemoryRuntime.HC`. The string-copy corpus is also
+part of the regular workstation QEMU input suite.
+The full 8 MiB QEMU/KVM suite passes with 506 native commands, 569 submitted
+lines, and exact VGA checkpoints (`build/i386-kernel/strcopy-full/result.json`).
+
+The next retained source, `CompilerProbe.HC`, compiles through its completion
+probes and rejects at the included `CompilerTaskLayoutProbe.HC` assertions in
+module stage 3. This remains to diagnose; `CompilerRuntime.HC` was not reached
+in that sequential probe. The four guest-built modules are evidence for source
+compilation, not installed boot artifacts: the active image still boots its
+six host-built retained modules. Replacing all six and independently booting
+the resulting installed image remains the M7 self-hosting gate.

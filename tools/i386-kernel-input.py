@@ -386,6 +386,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 ('StrLen("VGA")+StrLen("adapter"+2);', ['8']),
                 ('U8 *copy_buf=CAlloc(8);StrCpy(copy_buf+1,"VGA");StrLen(copy_buf+1)==3&&copy_buf[0]==0&&copy_buf[5]==0;', ['1']),
                 ('StrCpy(0,1);StrCpy(copy_buf+1,0);copy_buf[1]==0&&copy_buf[2]==71;', ['1']),
+                ('#include "/Kernel/I386/StrCopyCheck.HC"', []),
+                ('StrCopyCheck(&StrCpy);', ['1']),
                 ('Free(copy_buf);', []),
                 ('U8 *dup=StrNew(0);dup[0]==0&&MHeapCtrl(dup)==Fs->data_heap;', ['1']),
                 ('Free(dup);U8 *dup_text=StrNew("VGA",Fs->code_heap);dup_text[0]==86&&dup_text[1]==71&&dup_text[2]==65&&dup_text[3]==0;', ['1']),
