@@ -3061,6 +3061,9 @@ imported functions. The guest-built document loader called raw `CAlloc` and
 active source define precedence. A focused T32M audit checks the five wrapper
 calls, and a freshly guest-built console returns 12 from
 `DocAllocationCheck` on an independent 8 MiB QEMU boot. The cross-build and
-x64 rebuild pass with this fix. Rebuild and install all six retained modules
+x64 rebuild pass with this fix. The full 8 MiB QEMU/KVM workstation suite
+also passes on the six-module disk after replacing its console with the
+corrected guest-built copy: 506 commands, 569 submitted lines, and exact VGA
+checkpoints. Rebuild and install all six retained modules
 from the corrected source, rerun the full workstation/resource suite, then
 rebuild a second fully guest-built generation before closing M7.

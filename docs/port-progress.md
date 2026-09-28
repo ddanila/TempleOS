@@ -10276,7 +10276,11 @@ passes that audit (896,448 bytes, 2,677 records, 287 exports); after replacing
 the old guest-built console, a fresh 8 MiB QEMU/KVM boot returns 12 from
 `DocAllocationCheck`. The x64 rebuild and i386 cross-build pass. The QEMU
 startup timeout defaults to 180 seconds so the six guest-built modules can
-also start under TCG.
+also start under TCG. The full 8 MiB QEMU/KVM workstation suite passes on
+that disk with the corrected console: 506 native commands, 569 submitted
+lines, exact VGA checkpoints, the 12-case allocation check, and 20 bounded
+document-development cycles with exact heap recovery
+(`build/i386-kernel/define-shadow-merge-full/result.json`).
 
 Next rebuild the full six-module retained set with the corrected compiler,
 install it alongside a guest-built flat kernel, run the complete 8 MiB
