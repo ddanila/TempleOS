@@ -96,6 +96,65 @@ present. Record QEMU version, host, observed boot time, and any display/input
 differences. This is the human usability check; the `document-latency` and
 writable-session tests provide repeatable hardware-input and exact-pixel gates.
 
+## Manual self-hosted workstation session
+
+Use the independently installed Generation 2 disk. Keep a writable copy so the
+automated reference remains unchanged:
+
+```sh
+cp build/i386-kernel/gen2-guest-boot/target.img build/i386-manual-source.img
+qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 8 -nic none \
+  -drive file=build/i386-manual-source.img,format=raw,if=ide
+```
+
+At the HolyC prompt, open `Help("C:/Doc/CmdLineOverview.DD");`, follow its
+directory link with Enter or the mouse, then return. Create `C:/Project` and
+`C:/Project/Sub` with `DirMk`, browse them with `EdDir`, and open
+`Ed("C:/Project/Sub/Main.HC");`. Type a multiline program defining
+`I64 ManualAnswer(){return 6*7;}` and calling `ManualAnswer;`. Press F5 and
+observe `42`. Introduce a syntax error, press F5, follow the source-linked
+diagnostic, repair the line, and run it again. In a separate file, run a loop
+and interrupt it with Ctrl+Alt+C; confirm the editor and console remain usable.
+Save with Ctrl-S, close QEMU, boot the same writable copy again, reopen the
+project and run it. Try `Snd(60);` followed by `Snd;` for the PC speaker, and
+repeat the long-document screen/scroll check above. Record observed boot,
+editing and interruption latency, plus any input or display discrepancy.
+
+For the full native rebuild, close QEMU and make a blank-boot target from that
+same source disk so the project files are present on both volumes:
+
+```sh
+python3 - <<'PY'
+from pathlib import Path
+source=Path('build/i386-manual-source.img').read_bytes()
+Path('build/i386-manual-target.img').write_bytes(bytes(2048*512)+source[2048*512:])
+PY
+qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 16 -nic none \
+  -drive file=build/i386-manual-source.img,format=raw,if=ide \
+  -drive file=build/i386-manual-target.img,format=raw,if=ide,index=2
+```
+
+Run these HolyC commands. The kernel build may take several minutes under TCG;
+each module command should return `1`:
+
+```c
+I386BuildModule("C:/Kernel/I386/Kernel.HC","C:/Probe/ManualKernel.t32m",TRUE)>0;
+I386BuildModule("C:/Kernel/I386/SysTry.HC","C:/Modules/I386/SysTry.t32m",TRUE)>0;
+I386BuildModule("C:/Kernel/I386/TaskContext.HC","C:/Modules/I386/TaskContext.t32m",TRUE)>0;
+I386BuildModule("C:/Kernel/I386/ExceptContext.HC","C:/Modules/I386/ExceptContext.t32m",TRUE)>0;
+I386BuildModule("C:/Kernel/I386/IrqEntry.HC","C:/Modules/I386/IrqEntry.t32m",TRUE)>0;
+I386BuildModule("C:/Kernel/I386/ExceptionEntry.HC","C:/Modules/I386/ExceptionEntry.t32m",TRUE)>0;
+I386BuildBootImage("C:/Probe/ManualKernel.t32m","C:/Modules/I386/","C:/Probe/Manual.bin")>0;
+I386InstallBootImage("C:/","D:/","C:/Probe/Manual.bin");
+```
+
+The final command should return `1`. Close QEMU, boot
+`build/i386-manual-target.img` alone with the same 16 MiB profile, reopen the
+project, run it, and compile `C:/Compiler/I386/LexNumber.HC` to a new T32M.
+Keep the source and target images and a short observation log. Automated
+Generation 2 rebuild, project, compatibility and interruption checks cover the
+byte-level and recovery contracts; this session checks the human workflow.
+
 The default disk is `build/i386-kernel/kernel.img`. An optional positional disk
 path overrides it. Groups run in suite order, sharing one normal boot; omitted
 groups do not run their setup commands. Available groups are keyboard, mouse, windows,

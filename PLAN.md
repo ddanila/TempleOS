@@ -2977,3 +2977,16 @@ native reads the original 48-byte fixture, and original x86-64 TempleOS saves
 the native 37-byte binary fixture byte for byte. Broader DolDoc commands,
 remaining manual workflow and release evidence still need explicit
 verification before M7 closes.
+
+The installed Generation 2 artifact now has a repeatable executable-region
+audit: `tools/audit-i386-guest-image.py` extracts its guest-built T32Ms from
+the source disk, verifies the installed flat payload, audits all linked and
+retained module code against the 386 instruction allowlist, and audits the
+BIOS/protected-mode stage ranges. It passes on the 456,992-byte Generation 2
+image. Independent 16 MiB TCG boots pass on both `486` and `pentium`, each
+evaluating HolyC and rebuilding the lexer. A manual source/edit/rebuild/install
+session is specified in `docs/i386-test-workflow.md` for human observation.
+The full 8 MiB `486,-fpu` TCG workstation suite also passes on Generation 2:
+495 native commands, 558 submitted lines, exact VGA checks and 20 bounded
+document-development cycles with heap recovery. The manual observation and
+broader original DolDoc/editor behavior remain open.

@@ -10128,3 +10128,28 @@ The compatibility helper now accepts a source disk argument, so this test can
 target the installed guest-built system. Results are under
 `build/i386-kernel/gen2-original-doc/` and
 `build/i386-kernel/gen2-native-doc-compat/`.
+
+## Installed Generation 2 instruction and CPU audit (2026-09-28)
+
+`tools/audit-i386-guest-image.py` extracts the kernel, five boot helpers and
+six retained T32Ms from the guest source disk. It checks that the installed
+payload is the 456,992-byte guest-linked image, audits every classified
+executable module span with the repository's 386 instruction allowlist, and
+audits the installed BIOS and protected-mode stage using the NASM listing.
+The result passes, with 96 BIOS and 33 protected-mode stage instructions in
+their exact executable ranges. The installed disk cold-booted independently
+under 16 MiB QEMU TCG on both `486` and `pentium`; each boot evaluated `6*7`
+and rebuilt `LexNumber.HC`. The Pentium startup took 48.8 seconds. Audit
+artifacts are under `build/i386-kernel/gen2-instruction-audit/`.
+
+`docs/i386-test-workflow.md` now gives a writable-copy manual session for the
+installed image, including help, editing, diagnostics, interruption, reboot,
+native rebuild, separate-disk installation and independent boot. The steps
+are prepared for human observation; they are not recorded as a manual pass.
+
+The complete 8 MiB workstation suite subsequently passed under QEMU TCG
+`486,-fpu` on the installed Generation 2 disk: 495 native commands, 558
+submitted lines, exact VGA checks and 20 document development cycles with
+exact warmed heap recovery. Startup took 49.2 seconds; the measured
+long-document key-to-VGA update took 0.202 seconds. The full result is in
+`build/i386-kernel/gen2-instruction-audit/full-486-nofpu.log`.
