@@ -3366,3 +3366,12 @@ document generation's no-FPU guest rebuild of ConsoleRuntime and
 CompilerRuntime has independently passed byte identity to its installed
 modules. M7 human QEMU observation remains deferred by request; other
 quoted document record semantics still need original-behavior fixtures.
+The next original-behavior fixture covered quoted shifted-X/Y records.
+Original x64 `ExeDoc` produces `A$SX,12$$SY,-34$B` (length 17); the old
+i386 image returned a three-character result. The i386 direct-document
+lexer now emits both records with signed decimal attributes and the
+original two-dollar escape count. The nine-command native probe passes
+under 8 MiB KVM and `486,-fpu` TCG. The 33-command documents group passes
+both profiles, and foreground/style quotations retain their focused
+passes. Full workstation regressions and an exact-source guest rebuild
+are running. Human observation remains deferred.

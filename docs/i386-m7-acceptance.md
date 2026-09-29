@@ -200,3 +200,10 @@ ConsoleRuntime and CompilerRuntime now matches its installed modules byte
 for byte (`retained-build-direct-doc-breakfix-tcg-nofpu/result.json`),
 separate from the newer generation. M7 human observation remains deferred;
 further quoted-record semantics still need original-behavior fixtures.
+An original x64 fixture now establishes quoted shifted-X/Y behavior:
+`A$SX,12$$SY,-34$B`, length 17. The old i386 image fails the matching
+native probe; the updated cross-built image passes nine commands with exact
+VGA under both KVM and `486,-fpu` TCG. The 33-command documents group and
+foreground/style quotation regressions pass both profiles. Full workstation
+and exact-source guest-built installation checks for this newest lexer are
+still active. Manual observation remains deferred by request.

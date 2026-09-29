@@ -8,8 +8,9 @@ I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
   CDocEntry *entry;
   CDocBin *bin;
   U8 *binary,*format;
-  I64 i;
+  I64 i,j,n,last,digit;
   U8 *end;
+  U8 swap;
   if(!cc || !compiled_lines || !cc->lex_include_stk || cc->flags&CCF_PMT || cc->opts&OPTF_ECHO) return -1;
   if(Btr(&cc->flags,CCf_USE_LAST_U16)) {
     return cc->last_U16;
@@ -34,17 +35,21 @@ lex_step:
         if(cc->flags&CCF_IN_QUOTES &&
             (entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
              entry->type_u8==DOCT_BLINK || entry->type_u8==DOCT_INVERT ||
-             entry->type_u8==DOCT_UNDERLINE)) {
+             entry->type_u8==DOCT_UNDERLINE || entry->type_u8==DOCT_SHIFTED_X ||
+             entry->type_u8==DOCT_SHIFTED_Y)) {
           if(cc->dollar_buf && !I386HeapFree(heap,cc->dollar_buf)) return -1;
           cc->dollar_buf=0;
           if(entry->attr!=DOC_DFT) {
-            if(entry->attr<0) return -1;
             if(entry->type_u8==DOCT_FOREGROUND ||
                 entry->type_u8==DOCT_BACKGROUND) {
-              if(entry->attr>15) return -1;
-            } else if(entry->attr>1) return -1;
+              if(entry->attr<0 || entry->attr>15) return -1;
+            } else if(entry->type_u8==DOCT_BLINK ||
+                entry->type_u8==DOCT_INVERT ||
+                entry->type_u8==DOCT_UNDERLINE) {
+              if(entry->attr<0 || entry->attr>1) return -1;
+            }
           }
-          format=I386HeapAlloc(heap,8,FALSE);
+          format=I386HeapAlloc(heap,32,FALSE);
           if(!format) return -1;
           i=0; format[i++]='$$';
           if(entry->type_u8==DOCT_FOREGROUND) {
@@ -55,13 +60,29 @@ lex_step:
             format[i++]='B'; format[i++]='K';
           } else if(entry->type_u8==DOCT_INVERT) {
             format[i++]='I'; format[i++]='V';
-          } else {
+          } else if(entry->type_u8==DOCT_UNDERLINE) {
             format[i++]='U'; format[i++]='L';
+          } else if(entry->type_u8==DOCT_SHIFTED_X) {
+            format[i++]='S'; format[i++]='X';
+          } else {
+            format[i++]='S'; format[i++]='Y';
           }
           if(entry->attr!=DOC_DFT) {
             format[i++]=',';
-            if(entry->attr>=10) format[i++]='1';
-            format[i++]='0'+entry->attr%10;
+            n=entry->attr;
+            if(n<0) format[i++]='-';
+            j=i;
+            do {
+              digit=n%10;
+              if(digit<0) digit=-digit;
+              format[i++]='0'+digit;
+              n/=10;
+            } while(n);
+            last=i-1;
+            while(j<last) {
+              swap=format[j]; format[j]=format[last]; format[last]=swap;
+              j++; last--;
+            }
           }
           format[i++]='$$'; format[i]=0;
           cc->dollar_buf=format;

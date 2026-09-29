@@ -10817,3 +10817,22 @@ quoted-format generation. The latter already has two KVM guest-built
 generations, no-FPU workstation and writable-session results. Human manual
 observation remains deferred, and original-behavior fixtures for further
 quoted document record types remain open.
+
+## Quoted shifted X/Y records (2026-09-29)
+
+Original x64 TempleOS turns canonical `DOCT_SHIFTED_X` and `DOCT_SHIFTED_Y`
+entries inside a quoted document string into `A$SX,12$$SY,-34$B` (length
+17), as captured by `tests/guest/i386-exedoc-shifted/Once.HC`. The previous
+i386 image produced a three-character result at `ExeDoc`, so the new native
+probe had a real red state. The i386 direct-document lexer now preserves
+both records, renders signed decimal attributes and applies the original
+two-dollar escape count. The nine-command native probe passes with exact
+VGA under both 8 MiB KVM and `486,-fpu` TCG
+(`build/i386-kernel/exedoc-shifted-multidigit-kvm/result.json`,
+`build/i386-kernel/exedoc-shifted-multidigit-tcg-nofpu/result.json`). The
+original x64 three-generation rebuild and the refreshed 386 cross-build
+audit pass. The 33-command documents group passes both CPU profiles; the
+foreground repeat and style probes also pass on both, and the background
+probe passes under KVM. Full workstation suites and an exact-source
+six-module guest rebuild are running. Human manual observation remains
+deferred by request.
