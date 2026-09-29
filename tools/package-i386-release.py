@@ -133,32 +133,40 @@ def main():
     if any(session.get(phase, {}).get('result') != 'pass' for phase in
            ('create_edit_save', 'reopen_after_boot', 'revised_after_second_boot')):
         raise ValueError('writable session did not pass all three boots')
-    recovery_path = gen2 / 'install-recovery-committed/result.json'
-    recovery = read_pass(recovery_path)
-    if not recovery.get('source_unchanged') or [case.get('cut_lba') for case in
-            recovery.get('cases', [])] != [128, 850]:
-        raise ValueError('final-image installation recovery is incomplete')
-    for case in recovery['cases']:
-        if (case.get('result') != 'pass' or case.get('lba_zero') != 'blank' or
-                case.get('filesystem', {}).get('bitmap') != 'matches reachable extents' or
-                case.get('retry', {}).get('result') != 'pass' or
-                case.get('independent_boot', {}).get('result') != 'pass'):
-            raise ValueError(f"installation recovery failed at LBA {case.get('cut_lba')}")
-    committed = recovery.get('committed_case', {})
-    if (committed.get('result') != 'pass' or committed.get('cut_lba') != 0 or
-            committed.get('disk') != 'matches complete reference' or
-            committed.get('filesystem', {}).get('bitmap') != 'matches reachable extents' or
-            committed.get('independent_boot', {}).get('result') != 'pass'):
-        raise ValueError('post-LBA-0 installation hard-stop is incomplete')
-    recovery_artifacts = {
-        'source': gen2 / 'install-recovery-committed/source.img',
-        'retry_after_lba_128': gen2 / 'install-recovery-committed/cut-lba-128/target.img',
-        'retry_after_lba_850': gen2 / 'install-recovery-committed/cut-lba-850/target.img',
-        'committed_after_lba_zero': gen2 / 'install-recovery-committed/cut-after-lba-zero/target.img',
+    recovery_paths = {
+        'kvm': gen2 / 'install-recovery-committed',
+        'tcg-no-fpu': gen2 / 'install-recovery-tcg-nofpu',
     }
-    for name, path in recovery_artifacts.items():
-        if sha256(path) != image_hash:
-            raise ValueError(f'{name} differs from the release image')
+    recovery_artifact_hashes = {}
+    for profile, recovery_dir in recovery_paths.items():
+        recovery = read_pass(recovery_dir / 'result.json')
+        cpu = '486,-fpu' if profile == 'tcg-no-fpu' else '486'
+        if not recovery.get('source_unchanged') or [case.get('cut_lba') for case in
+                recovery.get('cases', [])] != [128, 850]:
+            raise ValueError(f'{profile} final-image installation recovery is incomplete')
+        for case in recovery['cases']:
+            if (case.get('result') != 'pass' or case.get('lba_zero') != 'blank' or
+                    case.get('filesystem', {}).get('bitmap') != 'matches reachable extents' or
+                    any(case.get(phase, {}).get('result') != 'pass' or
+                        case[phase].get('cpu') != cpu for phase in ('retry', 'independent_boot'))):
+                raise ValueError(f"{profile} installation recovery failed at LBA {case.get('cut_lba')}")
+        committed = recovery.get('committed_case', {})
+        if (committed.get('result') != 'pass' or committed.get('cut_lba') != 0 or
+                committed.get('disk') != 'matches complete reference' or
+                committed.get('filesystem', {}).get('bitmap') != 'matches reachable extents' or
+                committed.get('independent_boot', {}).get('result') != 'pass' or
+                committed['independent_boot'].get('cpu') != cpu):
+            raise ValueError(f'{profile} post-LBA-0 installation hard-stop is incomplete')
+        recovery_artifacts = {
+            'source': recovery_dir / 'source.img',
+            'retry_after_lba_128': recovery_dir / 'cut-lba-128/target.img',
+            'retry_after_lba_850': recovery_dir / 'cut-lba-850/target.img',
+            'committed_after_lba_zero': recovery_dir / 'cut-after-lba-zero/target.img',
+        }
+        for name, path in recovery_artifacts.items():
+            if sha256(path) != image_hash:
+                raise ValueError(f'{profile} {name} differs from the release image')
+            recovery_artifact_hashes[f'{profile}_{name}'] = image_hash
 
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='i386-release-', dir=out.parent) as tmp:
@@ -187,7 +195,8 @@ def main():
             'generation-2-pentium3-no-fpu-workstation.json': gen2 / 'full-pentium3-nofpu/result.json',
             'generation-2-pentium3-no-fpu-command.json': gen2 / 'full-pentium3-nofpu/command.json',
             'generation-2-tcg-no-fpu-doldoc.json': session_path,
-            'generation-2-install-recovery.json': recovery_path,
+            'generation-2-install-recovery.json': recovery_paths['kvm'] / 'result.json',
+            'generation-2-tcg-no-fpu-install-recovery.json': recovery_paths['tcg-no-fpu'] / 'result.json',
             'resource-profile.json': resource_path,
             'resource-profile-command.json': gen2 / 'resource-profile/command.json',
             'support-matrix.md': ROOT / 'docs/i386-support-matrix.md',
@@ -238,7 +247,7 @@ def main():
             'guest_built_modules': 12,
             'flat_image_sha256': generation['flat_sha256'],
             'boot_area_sha256': generation['boot_area_sha256'],
-            'recovery_artifact_sha256': {name: image_hash for name in recovery_artifacts},
+            'recovery_artifact_sha256': recovery_artifact_hashes,
             'files_sha256': {
                 str(path.relative_to(package)): sha256(path)
                 for path in sorted(package.rglob('*')) if path.is_file()

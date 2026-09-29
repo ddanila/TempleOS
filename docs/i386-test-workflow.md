@@ -126,6 +126,10 @@ python3 tools/test-i386-guest-install-recovery.py \
   --out build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-committed
 ```
 
+Repeat the same three cuts under no-FPU TCG with `--accel tcg --cpu 486,-fpu`
+and a separate output directory, for example
+`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu`.
+
 ```sh
 python3 tools/i386-kernel-input.py --list-groups
 python3 tools/i386-kernel-input.py --group windows

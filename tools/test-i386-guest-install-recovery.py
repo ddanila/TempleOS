@@ -45,7 +45,7 @@ def cut_after_sector(target,log,lba,timeout):
     return None
 
 
-def run_case(input_tool,build_tool,source,reference,out,lba,boot_file):
+def run_case(input_tool,build_tool,source,reference,out,lba,boot_file,accel,cpu):
     work=out/f'cut-lba-{lba}';work.mkdir(parents=True,exist_ok=True)
     target=work/'target.img'
     target.write_bytes(bytes(2048*512)+reference[2048*512:])
@@ -59,7 +59,7 @@ def run_case(input_tool,build_tool,source,reference,out,lba,boot_file):
     interrupted_error=None
     try:
         input_tool.run_input(source,work/'interrupted',target_disk=target,snapshot=False,
-            ram_mib=16,accel='kvm',startup_timeout=180,startup_check={
+            ram_mib=16,accel=accel,cpu=cpu,startup_timeout=180,startup_check={
                 'status':'ok','answers':[],'command_timeout':120,'commands':[(command,['1'])]})
     except Exception as error:
         interrupted_error=repr(error)
@@ -74,12 +74,12 @@ def run_case(input_tool,build_tool,source,reference,out,lba,boot_file):
     integrity=build_tool.verify_mutated_volume(target)
     sectors=sum(any(partial[i*512:(i+1)*512]) for i in range(1,2048))
     retry=input_tool.run_input(source,work/'retry',target_disk=target,snapshot=False,
-        ram_mib=16,accel='kvm',startup_timeout=180,startup_check={
+        ram_mib=16,accel=accel,cpu=cpu,startup_timeout=180,startup_check={
             'status':'ok','answers':[],'command_timeout':120,'commands':[(command,['1'])]})
     if target.read_bytes()!=reference:
         raise ValueError('Retried installation differs from the clean reference disk')
     independent=input_tool.run_input(target,work/'independent',snapshot=True,
-        ram_mib=16,accel='kvm',startup_timeout=180,startup_check={
+        ram_mib=16,accel=accel,cpu=cpu,startup_timeout=180,startup_check={
             'status':'ok','answers':[],'command_timeout':120,'commands':[('6*7;',['42'])]})
     return {'cut_lba':lba,'interrupted_process':state['pid'],
             'interrupted_error':interrupted_error,'partial_nonzero_boot_sectors':sectors,
@@ -87,7 +87,7 @@ def run_case(input_tool,build_tool,source,reference,out,lba,boot_file):
             'result':'pass'}
 
 
-def run_committed_case(input_tool,build_tool,source,reference,out,boot_file):
+def run_committed_case(input_tool,build_tool,source,reference,out,boot_file,accel,cpu):
     work=out/'cut-after-lba-zero';work.mkdir(parents=True,exist_ok=True)
     target=work/'target.img'
     target.write_bytes(bytes(2048*512)+reference[2048*512:])
@@ -99,7 +99,7 @@ def run_committed_case(input_tool,build_tool,source,reference,out,boot_file):
     interrupted_error=None
     try:
         input_tool.run_input(source,work/'interrupted',target_disk=target,snapshot=False,
-            ram_mib=16,accel='kvm',startup_timeout=180,startup_check={
+            ram_mib=16,accel=accel,cpu=cpu,startup_timeout=180,startup_check={
                 'status':'ok','answers':[],'command_timeout':120,'commands':[(command,['1'])]})
     except Exception as error:
         interrupted_error=repr(error)
@@ -110,7 +110,7 @@ def run_committed_case(input_tool,build_tool,source,reference,out,boot_file):
         raise ValueError('Post-LBA-0 hard stop did not leave the complete reference disk')
     integrity=build_tool.verify_mutated_volume(target)
     independent=input_tool.run_input(target,work/'independent',snapshot=True,
-        ram_mib=8,accel='kvm',startup_timeout=180,startup_check={
+        ram_mib=8,accel=accel,cpu=cpu,startup_timeout=180,startup_check={
             'status':'ok','answers':[],'command_timeout':120,
             'commands':[('6*7;',['42']),('DocAllocationCheck;',['12'])]})
     return {'cut_lba':0,'interrupted_process':state['pid'],
@@ -125,6 +125,8 @@ def main():
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel/gen2-install-recovery')
     parser.add_argument('--boot-file',default='/Probe/Gen2.bin',
                         help='Absolute RedSea path to guest-built boot image on source disk')
+    parser.add_argument('--accel',choices=('kvm','tcg'),default='kvm')
+    parser.add_argument('--cpu',default='486')
     parser.add_argument('--include-committed-cut',action='store_true',
                         help='Also stop QEMU just after LBA 0 is published')
     args=parser.parse_args()
@@ -142,12 +144,14 @@ def main():
     result={'result':'incomplete','cases':[]}
     (args.out/'result.json').unlink(missing_ok=True)
     for lba in (128,850):
-        case=run_case(input_tool,build_tool,source,reference,args.out,lba,args.boot_file)
+        case=run_case(input_tool,build_tool,source,reference,args.out,lba,
+                      args.boot_file,args.accel,args.cpu)
         result['cases'].append(case)
         print(f'LBA {lba}: pass, {case["partial_nonzero_boot_sectors"]} boot sectors written',flush=True)
     if args.include_committed_cut:
         result['committed_case']=run_committed_case(
-            input_tool,build_tool,source,reference,args.out,args.boot_file)
+            input_tool,build_tool,source,reference,args.out,args.boot_file,
+            args.accel,args.cpu)
         print('LBA 0: complete disk booted after hard stop',flush=True)
     if source.read_bytes()!=original: raise ValueError('Installation changed source disk')
     result['source_unchanged']=True

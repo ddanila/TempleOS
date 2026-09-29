@@ -3150,3 +3150,10 @@ function outputs before the host harness's 2,400-second command timeout; no
 guest build error appeared. An independent run with a 7,200-second limit is
 continuing, alongside the retained-module no-FPU rebuild. Neither is yet a
 promotion pass.
+The exact Generation 2 disk has now also passed all three installation
+hard-stop cases under `486,-fpu` TCG. Stops during boot-sector writes at LBA
+128 and 850 left LBA 0 blank and the RedSea bitmap exact; retries reproduced
+the reference disk byte for byte and independently booted. A stop just after
+LBA 0 publication left a complete byte-identical disk that independently
+booted at 8 MiB. The source disk remained unchanged
+(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu/result.json`).

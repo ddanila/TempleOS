@@ -10407,3 +10407,10 @@ The first complete 16 MiB `486,-fpu` TCG flat-kernel rebuild used the
 check timed out before the module returned. A separate build with a 7,200-
 second limit was already running and remains the acceptance attempt. The
 retained-module no-FPU build also remains live; neither checkpoint is a pass.
+The final-image installation hard-stop/retry suite also passes under
+`486,-fpu` TCG at LBA 128, LBA 850 and just after LBA 0 publication. The
+pre-commit cuts leave LBA 0 blank and a valid RedSea bitmap; retry produces
+the reference bytes and boots independently. The post-commit disk boots at
+8 MiB; the source remains unchanged. All source and target disk hashes equal
+the release image
+(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu/result.json`).
