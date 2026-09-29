@@ -3180,13 +3180,21 @@ The complete Generation 3 `486,-fpu` TCG workstation suite now passes on that
 exact disk: 506 native commands, 569 submitted lines, exact VGA checkpoints
 and 20 document-development cycles with exact task heap recovery
 (`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu/result.json`).
-The writable three-boot session is still being retried. Its first attempt
-passed the 107-command creation boot, then timed out in the 56-command reopen
-boot because 23 timed left-arrow events placed the editor caret in the wrong
-line. The saved program file confirms the wrong insertion point. The harness
-now uses four navigation keys and checks the exact caret frame before editing;
-the retry starts from an unchanged Generation 3 image. Do not count the
-writable gate until all three boots and RedSea audit pass.
+The exact Generation 3 disk also passes a three-boot writable DolDoc project
+session under 8 MiB `486,-fpu` TCG: 107 commands to create/edit/save, 56 to
+reopen and revise, and 15 after the next cold boot. The independent RedSea
+walk confirms project bytes, rename/delete cycles, extent ownership and bitmap;
+the source image hash is unchanged
+(`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/doldoc-tcg-nofpu-final/result.json`).
+Earlier attempts exposed test-navigation assumptions, not a guest rejection:
+timed left-arrow events moved the caret to the wrong line, and End moves to
+the end of the document rather than the current line. The runner now saves a
+hash-checked post-creation disk snapshot, reuses it only after an exact source
+and CPU check, and verifies each caret frame while moving from Go to line 2
+to the digit being revised. The final release packager requires the three
+boots, their QEMU commands and the snapshot hash alongside the Generation 3
+build, workstation and ISA evidence. The all-six no-FPU retained rebuild and
+human manual observation remain open M7 gates.
 The exact Generation 2 disk has now also passed all three installation
 hard-stop cases under `486,-fpu` TCG. Stops during boot-sector writes at LBA
 128 and 850 left LBA 0 blank and the RedSea bitmap exact; retries reproduced

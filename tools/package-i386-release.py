@@ -81,6 +81,7 @@ def main():
 
     base = ROOT / 'build/i386-kernel'
     gen2 = base / 'selfhost-install-gen2-fixed'
+    gen3 = base / 'selfhost-install-gen3-tcg-nofpu-long'
     build_manifest_path = base / 'result.json'
     build_manifest = json.loads(build_manifest_path.read_text())
     source_paths = list(build_manifest['source_sha256'])
@@ -112,6 +113,52 @@ def main():
     if len({install.get('flat_sha256'), instruction.get('flat_sha256'),
             generation.get('flat_sha256')}) != 1:
         raise ValueError('guest-built flat image hashes disagree')
+    gen3_install = read_pass(gen3 / 'result.json')
+    gen3_instruction = read_pass(gen3 / 'instruction-audit/result.json')
+    gen3_identity = read_pass(base / 'generation-identity-gen2-gen3-tcg-nofpu/result.json')
+    gen3_image = gen3 / 'target.img'
+    gen3_hash = sha256(gen3_image)
+    if (gen3_identity.get('first_disk_sha256') != image_hash or
+            gen3_identity.get('second_disk_sha256') != gen3_hash or
+            gen3_identity.get('module_count') != 12 or
+            gen3_identity.get('flat_sha256') != generation.get('flat_sha256') or
+            gen3_identity.get('boot_area_sha256') != generation.get('boot_area_sha256') or
+            gen3_install.get('flat_sha256') != generation.get('flat_sha256') or
+            gen3_instruction.get('flat_sha256') != generation.get('flat_sha256')):
+        raise ValueError('no-FPU guest-built Generation 3 differs from Generation 2')
+    gen3_boot = read_pass(gen3 / 'boot/result.json')
+    if (gen3_boot.get('cpu'), gen3_boot.get('ram_mib'), gen3_boot.get('commands')) != (
+            '486,-fpu', 8, 2):
+        raise ValueError('no-FPU Generation 3 independent boot is incomplete')
+    require_qemu_command(gen3 / 'build/command.json', '486,-fpu', 'tcg',
+                         gen3 / 'source.img', 16, gen3_image)
+    require_qemu_command(gen3 / 'boot/command.json', '486,-fpu', 'tcg', gen3_image)
+    require_workstation(gen3 / 'full-tcg-nofpu/result.json', '486,-fpu')
+    require_qemu_command(gen3 / 'full-tcg-nofpu/command.json',
+                         '486,-fpu', 'tcg', gen3_image)
+    gen3_session_dir = gen3 / 'doldoc-tcg-nofpu-final'
+    gen3_session_path = gen3_session_dir / 'result.json'
+    gen3_session = read_pass(gen3_session_path)
+    if (gen3_session.get('source_disk_sha256') != gen3_hash or
+            not gen3_session.get('source_disk_unchanged') or
+            gen3_session.get('after_create_sha256') !=
+            sha256(gen3_session_dir / 'after-create.img') or
+            gen3_session.get('filesystem_integrity', {}).get('bitmap') !=
+            'matches reachable extents'):
+        raise ValueError('no-FPU Generation 3 writable session is incomplete')
+    for phase, folder, commands in (
+            ('create_edit_save', 'create-edit-save', 107),
+            ('reopen_after_boot', 'reopen', 56),
+            ('revised_after_second_boot', 'revised', 15)):
+        phase_result = gen3_session.get(phase, {})
+        if (phase_result.get('result'), phase_result.get('cpu'),
+                phase_result.get('ram_mib'), phase_result.get('commands'),
+                phase_result.get('vga')) != (
+                'pass', '486,-fpu', 8, commands,
+                'all pixels matched at each checkpoint'):
+            raise ValueError(f'no-FPU Generation 3 writable {phase} did not pass')
+        require_qemu_command(gen3_session_dir / folder / 'command.json',
+                             '486,-fpu', 'tcg', gen3_session_dir / 'session.img')
     require_workstation(gen2 / 'full/result.json', '486')
     require_workstation(gen2 / 'full-tcg-nofpu/result.json', '486,-fpu')
     require_workstation(gen2 / 'full-pentium3-nofpu/result.json', 'pentium3,-fpu')
@@ -239,7 +286,16 @@ def main():
         sources = {
             'build-inputs.json': build_manifest_path,
             'generation-identity.json': base / 'generation-identity-fixed/result.json',
+            'generation-2-to-3-no-fpu-identity.json': base / 'generation-identity-gen2-gen3-tcg-nofpu/result.json',
             'generation-2-install.json': gen2 / 'result.json',
+            'generation-3-no-fpu-install.json': gen3 / 'result.json',
+            'generation-3-no-fpu-build-command.json': gen3 / 'build/command.json',
+            'generation-3-no-fpu-boot.json': gen3 / 'boot/result.json',
+            'generation-3-no-fpu-boot-command.json': gen3 / 'boot/command.json',
+            'generation-3-no-fpu-instruction-audit.json': gen3 / 'instruction-audit/result.json',
+            'generation-3-no-fpu-workstation.json': gen3 / 'full-tcg-nofpu/result.json',
+            'generation-3-no-fpu-workstation-command.json': gen3 / 'full-tcg-nofpu/command.json',
+            'generation-3-no-fpu-doldoc.json': gen3_session_path,
             'generation-2-instruction-audit.json': gen2 / 'instruction-audit/result.json',
             'generation-2-kvm-workstation.json': gen2 / 'full/result.json',
             'generation-2-kvm-command.json': gen2 / 'full/command.json',
@@ -266,6 +322,9 @@ def main():
             copy_evidence(source, package / 'evidence' / name)
         for name, source in recovery_command_paths.items():
             copy_evidence(source, package / 'evidence' / f'install-recovery-{name}-command.json')
+        for phase in ('create-edit-save', 'reopen', 'revised'):
+            copy_evidence(gen3_session_dir / phase / 'command.json', package / 'evidence' /
+                          f'generation-3-no-fpu-doldoc-{phase}-command.json')
         for command in sorted(session_path.parent.glob('*/command.json')):
             copy_evidence(command, package / 'evidence' /
                           f'doldoc-{command.parent.name}-command.json')
@@ -278,6 +337,9 @@ def main():
             'kernel and the boot area byte for byte. Evidence and exact QEMU '
             'commands are under `evidence/`. Verify the package first with '
             '`python3 verify.py`.\n\n'
+            'A no-FPU TCG guest also built and installed a third generation '
+            'with identical modules and boot bytes; its independent boot, '
+            'full workstation suite and three writable DolDoc boots pass.\n\n'
             'Unpack with `gzip -dk TempleOS-i386-gen2.img.gz`, then verify the '
             'raw image against `manifest.json`. Boot a writable copy with:\n\n'
             '```sh\nqemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu '

@@ -39,6 +39,10 @@ The no-FPU-built Generation 3 disk also passes the complete 8 MiB
 `486,-fpu` TCG workstation suite: 506 commands, 569 input lines, exact VGA
 and 20 document-development cycles with exact task heap recovery
 (`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu/result.json`).
+The same Generation 3 image passes a writable three-boot DolDoc project under
+`486,-fpu` TCG: 107/56/15 commands, exact VGA and independent RedSea audit,
+with the source disk unchanged
+(`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/doldoc-tcg-nofpu-final/result.json`).
 The host has SeaBIOS `bios-256k.bin` at SHA-256
 `e26615f9ad430328f49ca105e570b2dc4490a08a34ea73d27cae8b809a30ee06`
 and `vgabios-stdvga.bin` at SHA-256

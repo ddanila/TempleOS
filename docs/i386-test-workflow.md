@@ -104,6 +104,11 @@ release image, and checks all 16 recovery QEMU command records for the CPU,
 accelerator, RAM size and disk paths. It
 also verifies and includes the original-reader document round trip, both QEMU
 command records and the identical native/original document bytes. It
+requires the no-FPU-built Generation 3 disk to pass its independent 8 MiB
+boot, Generation 2 byte-identity comparison, 386 executable audit, complete
+workstation suite and three-boot writable DolDoc session. The latter records
+a hash-checked post-creation snapshot so the reopen phase can be retried from
+the exact persistent state with `--resume-reopen`. It
 requires the focused 8 MiB
 resource profile from that exact disk. The bundle includes `verify.py`; running
 `python3 verify.py` inside it checks every bundled file and the decompressed
@@ -135,6 +140,46 @@ resume or audit a disk while another QEMU process is writing it.
 seconds for the long 16 MiB TCG kernel build; its default remains 2,400
 seconds. Set a measured longer limit when the guest is still emitting
 functions near that boundary. A timeout is not a guest build failure.
+
+To reproduce the no-FPU Generation 3 gates on the exact Generation 2 disk:
+
+```sh
+python3 tools/test-i386-selfhost-install.py \
+  --disk build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --accel tcg --cpu 486,-fpu --command-timeout 7200 \
+  --out build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long
+python3 tools/audit-i386-generations.py \
+  --first build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --second build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/target.img \
+  --out build/i386-kernel/generation-identity-gen2-gen3-tcg-nofpu
+python3 tools/audit-i386-guest-image.py \
+  --source build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/source.img \
+  --installed build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/target.img \
+  --kernel-module-path /Modules/I386/Kernel.t32m \
+  --flat-path /Probe/GuestBoot.bin --guest-compiler-template \
+  --out build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/instruction-audit
+python3 tools/test-i386-doldoc-session.py \
+  build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/target.img \
+  --cpu 486,-fpu \
+  --out build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/doldoc-tcg-nofpu-final
+```
+
+If only the reopen or revised phase fails, add `--resume-reopen` to the last
+command. The runner verifies the first-boot result, CPU, source disk and saved
+snapshot hash, then restores that snapshot before retrying the reopen boot.
+
+Run the complete workstation suite on that target with:
+
+```sh
+python3 - <<'PY'
+import runpy
+from pathlib import Path
+runpy.run_path('tools/i386-kernel-input.py')['run_input'](
+    Path('build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/target.img'),
+    Path('build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu'),
+    accel='tcg', cpu='486,-fpu', ram_mib=8, startup_timeout=180)
+PY
+```
 
 The final installed image also supplies the guest-built boot file needed to
 repeat the installation interruption/retry gate on that exact disk:

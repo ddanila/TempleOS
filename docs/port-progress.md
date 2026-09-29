@@ -10451,9 +10451,14 @@ That complete suite now passes on the exact Generation 3 disk under 8 MiB
 document-development cycles with exact task heap recovery. Startup took 84.04
 seconds and long-document key-to-VGA update took 0.462 seconds
 (`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu/result.json`).
-The separate writable three-boot session passed its first 107-command boot,
-then timed out during a re-edit after 23 timed left-arrow events positioned
-the caret on the wrong line. The persisted source confirms the wrong insertion.
-The test now uses four navigation keys and an exact caret checkpoint before
-replacing the digit, and a fresh retry is live; no writable-session pass is
-claimed yet.
+The separate writable Generation 3 session now passes three cold boots under
+8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA, saved program revision,
+and an independent RedSea audit of project files, extents and bitmap. The
+Generation 3 source image remains unchanged
+(`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/doldoc-tcg-nofpu-final/result.json`).
+Earlier retries exposed two harness assumptions: timed left-arrow events were
+not an acknowledged cursor move, and End means document end. The runner now
+checks every right-arrow caret frame after Go to line 2, and a hash-checked
+post-creation disk snapshot makes a reopen retry start at the same persistent
+state. The release packager validates this session and the Generation 3 build,
+boot, identity, ISA and full workstation results.

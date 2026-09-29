@@ -10,6 +10,7 @@ import struct
 
 ROOT=Path(__file__).resolve().parents[1]
 INPUT=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
+FILES=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
 
 
 def verify_redsea_project(disk):
@@ -111,12 +112,34 @@ def main():
     parser.add_argument('disk',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doldoc-session')
     parser.add_argument('--cpu',default='486,-fpu',help='QEMU CPU profile for all three boots')
+    parser.add_argument('--resume-reopen',action='store_true',
+                        help='Keep a passed first-boot disk and rerun reopen/revised boots')
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
     candidate=args.out/'session.img'
-    shutil.copyfile(args.disk,candidate)
+    after_create=args.out/'after-create.img'
     source_hash=hashlib.sha256(args.disk.read_bytes()).hexdigest()
     result={'result':'incomplete','source_disk_sha256':source_hash,'candidate':str(candidate)}
+    if args.resume_reopen:
+        previous=json.loads((args.out/'result.json').read_text())
+        expected_program=(b'I64 PersistentDocAnswer()\n{return 6*7;}\n'
+                          b'PersistentDocAnswer;\x05')
+        if not after_create.is_file():
+            parser.error('Cannot resume without the after-create disk snapshot')
+        after_create_hash=hashlib.sha256(after_create.read_bytes()).hexdigest()
+        program=FILES(after_create,{'/NativeProgram.HC'}).get('/NativeProgram.HC')
+        if (previous.get('source_disk_sha256')!=source_hash or
+                previous.get('create_edit_save',{}).get('result')!='pass' or
+                previous['create_edit_save'].get('cpu')!=args.cpu or
+                not previous.get('source_disk_unchanged') or
+                previous.get('after_create_sha256')!=after_create_hash or
+                program!=expected_program):
+            parser.error('Cannot resume: first boot or persisted program differs')
+        shutil.copyfile(after_create,candidate)
+        result['create_edit_save']=previous['create_edit_save']
+        result['after_create_sha256']=after_create_hash
+    else:
+        shutil.copyfile(args.disk,candidate)
     (args.out/'result.json').unlink(missing_ok=True)
     try:
         create={
@@ -498,7 +521,10 @@ def main():
           ],
           'command_timeout':60,
         }
-        result['create_edit_save']=INPUT(candidate,args.out/'create-edit-save',startup_check=create,snapshot=False,cpu=args.cpu)
+        if not args.resume_reopen:
+            result['create_edit_save']=INPUT(candidate,args.out/'create-edit-save',startup_check=create,snapshot=False,cpu=args.cpu)
+            shutil.copyfile(candidate,after_create)
+            result['after_create_sha256']=hashlib.sha256(after_create.read_bytes()).hexdigest()
         reopen={
           'status':'ok','answers':[],
           'commands':[
@@ -646,8 +672,39 @@ def main():
               'initial_rows':['TempleOS i386','DolDoc editor','C:/NativeProgram.HC','',
                               'I64 PersistentDocAnswer()','{return 6*7;}',
                               'PersistentDocAnswer;'+bytes([0xDB]).decode('cp437')],
-              'events':([{'key':'left'},{'delay':0.1}]*23)+
-                       [{'key':'backspace'},{'text':'8'},{'key':'f5'},
+              'events':[{'mark_log':'DOC GOTO begin\n'},{'ctrl_key':'g'},
+                        {'wait_log_after':'DOC GOTO begin\n'},
+                        {'expect_rows':['TempleOS i386','Go to line',
+                                        'C:/NativeProgram.HC','',
+                                        'Line: '+bytes([0xDB]).decode('cp437')],
+                         'label':'revised-goto-prompt'},
+                        {'text':'2'},
+                        {'expect_rows':['TempleOS i386','Go to line',
+                                        'C:/NativeProgram.HC','',
+                                        'Line: 2'+bytes([0xDB]).decode('cp437')],
+                         'label':'revised-goto-query'},
+                        {'mark_log':'DOC GOTO end\n'},{'key':'ret'},
+                        {'wait_log_after':'DOC GOTO end\n'},
+                        {'expect_rows':['TempleOS i386','DolDoc editor',
+                                        'C:/NativeProgram.HC','',
+                                        'I64 PersistentDocAnswer()',
+                                        bytes([0xDB]).decode('cp437')+'{return 6*7;}',
+                                        'PersistentDocAnswer;'],
+                         'label':'revised-goto-line'},
+                       ]+[
+                        action for column in range(1,12)
+                        for action in (
+                          {'key':'right'},
+                          {'expect_rows':['TempleOS i386','DolDoc editor',
+                                          'C:/NativeProgram.HC','',
+                                          'I64 PersistentDocAnswer()',
+                                          '{return 6*7;}'[:column]+
+                                          bytes([0xDB]).decode('cp437')+
+                                          '{return 6*7;}'[column:],
+                                          'PersistentDocAnswer;'],
+                           'label':f'revised-right-{column:02}'})
+                       ]+[
+                        {'key':'backspace'},{'text':'8'},{'key':'f5'},
                         {'expect_rows':['TempleOS i386','Document execution',
                                         'C:/NativeProgram.HC','','48','',
                                         'Press Esc to return to editor'],
