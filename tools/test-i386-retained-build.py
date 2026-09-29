@@ -60,6 +60,8 @@ def main():
     parser.add_argument('--command-timeout', type=int, default=3600)
     parser.add_argument('--audit-only', action='store_true',
                         help='Audit the source.img produced by an earlier build')
+    parser.add_argument('--compare-installed', type=Path,
+                        help='Require guest output to match installed T32Ms on this disk')
     args = parser.parse_args()
     selected = tuple(args.modules or MODULES)
     if len(selected) != len(set(selected)):
@@ -80,6 +82,10 @@ def main():
     files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']
     wanted = {f'/Probe/Retained{name}.t32m' for name in selected}
     actual = files(source, wanted)
+    comparison = None
+    if args.compare_installed:
+        installed_paths = {f'/Modules/I386/{name}.t32m' for name in selected}
+        comparison = files(args.compare_installed, installed_paths)
     result = {'result': 'pass', 'modules': {}}
     for name in selected:
         path = f'/Probe/Retained{name}.t32m'
@@ -95,8 +101,13 @@ def main():
             raise ValueError(f'{name} export set differs from cross-built module')
         if name == 'ConsoleRuntime':
             check_console_alloc_wrappers(module)
+        if comparison is not None and module != comparison.get(
+                f'/Modules/I386/{name}.t32m'):
+            raise ValueError(f'{name} differs from installed comparison module')
         result['modules'][name] = {'bytes': len(module), 'records': count,
                                    'exports': len(exports)}
+    if comparison is not None:
+        result['byte_identical_to_installed'] = str(args.compare_installed)
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)
 
