@@ -10477,3 +10477,18 @@ local release packager now requires this result, the exact no-FPU QEMU command
 and disk-level module identity, and bundles the two records. Its independent
 `verify.py` passes with 60 files. The integrated six-module resume and the
 focused compiler rebuilds are still running; the all-six retained gate is open.
+
+## Formatted document execution probe (2026-09-29)
+
+The existing i386 `ExeDoc` API now has a regression case that builds a
+canonical document with a foreground entry before `6*7;`, checks that
+`DocSave` emits a DolDoc record, and executes the document. A focused 8 MiB
+QEMU/486 KVM run passed seven commands with exact VGA output and result 42
+(`build/i386-kernel/exedoc-format-record-kvm-asserted/result.json`). The
+document-editing group also runs this case. The test proves this formatting
+case, while the original document-attached compiler control remains to be
+implemented. Manual QEMU observation is deferred by the user; automated
+acceptance continues.
+The expanded `document-editing` group also passes all 169 native commands
+on the exact Generation 2 disk at 8 MiB under QEMU/486 KVM, with exact VGA
+checks (`build/i386-kernel/document-editing-formatted-exedoc-kvm/result.json`).

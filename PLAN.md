@@ -3218,3 +3218,14 @@ RedSea read found its bytes identical to the installed Generation 2 module
 local packager checks that disk-level identity and bundles the result and QEMU
 command. This proves one retained module under no-FPU TCG; the resumed
 integrated six-module build and its post-exit audit are still required.
+The public `ExeDoc` compatibility probe now builds a HolyC document through
+canonical `CDocEntry` and `DocPutKey` calls, verifies that `DocSave` begins with
+a DolDoc foreground record, then executes its `6*7;` source and returns 42
+with exact QEMU VGA output. This case is part of the document-editing test
+group. It tests one formatted document; native `LexAttachDoc`-style compiler
+control and the full original editor action path remain open. Human manual
+QEMU observation is deferred at the user's request while automated work
+continues.
+The expanded 169-command `document-editing` group passes on the exact
+Generation 2 disk under 8 MiB QEMU/486 KVM with exact VGA checkpoints
+(`build/i386-kernel/document-editing-formatted-exedoc-kvm/result.json`).
