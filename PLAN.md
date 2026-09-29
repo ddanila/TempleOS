@@ -3343,3 +3343,11 @@ flat-kernel and boot-helper construction, installation and independent
 image passes the 386 executable-region, guest compiler template, boot-area
 and filesystem audit. A second guest-built generation and complete no-FPU
 workstation run are active; human observation remains deferred.
+The second fully guest-built generation now passes from the first installed
+target. All twelve guest-built modules, the 471,992-byte linked image and
+installed boot area are byte-identical across generations; both RedSea
+volumes pass exact ownership/bitmap audit. Both installed images pass the
+386 executable and guest compiler-template audit. Quoted background and
+style probes pass on the first fully guest-built target under `486,-fpu`
+TCG. Complete no-FPU workstation and three-boot writable-session runs on
+that target remain active; human manual observation remains deferred.

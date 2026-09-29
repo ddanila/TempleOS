@@ -10775,3 +10775,17 @@ compiler templates, along with boot payload and RedSea ownership checks
 isolated build directory). A second native generation is running from this
 target, as is the full no-FPU workstation suite on the preceding retained-
 module installation. Human observation remains deferred.
+
+The second fully guest-built generation now passes from the first installed
+target (`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-gen2-kvm/result.json`).
+An independent identity audit finds all twelve guest-built T32Ms, the
+471,992-byte linked image and installed boot area byte-identical; both
+RedSea volumes have exact bitmap ownership
+(`../TempleOS-quote-next/build/i386-kernel/generation-identity-style-kvm/result.json`).
+Both installed images pass the 386 executable-region audit with guest
+compiler templates (`selfhost-install-style-kvm/instruction-audit/result.json`
+and `selfhost-install-style-gen2-kvm/instruction-audit/result.json` in the
+isolated build directory). The first fully guest-built target also passes
+quoted background and style probes under 8 MiB `486,-fpu` TCG with exact
+VGA. The complete no-FPU workstation and writable three-boot sessions on
+that target are still active; human observation stays deferred.

@@ -172,3 +172,12 @@ image is 471,992 bytes
 `selfhost-install-style-kvm/instruction-audit/result.json`). Second-generation
 identity, the full installed-disk no-FPU run, and human observation remain
 open; manual observation is deferred by request.
+The second fully guest-built expanded-source generation now passes from the
+first installed target. All twelve guest-built modules, the 471,992-byte
+linked image, and the installed boot area are byte-identical; both RedSea
+volumes pass extent/bitmap audit
+(`../TempleOS-quote-next/build/i386-kernel/generation-identity-style-kvm/result.json`).
+Both installed generations pass the 386 executable and guest compiler-template
+audit. Quoted background/style probes pass on the first fully guest-built
+target under no-FPU TCG. Its complete no-FPU workstation and three-boot
+writable session remain active; human observation is deferred.
