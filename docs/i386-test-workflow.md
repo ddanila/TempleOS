@@ -6,6 +6,33 @@ The input harness tests the supplied image; it does not rebuild it. Keep the
 source checkout and image together, especially the font and frame expectations.
 Do not replace the image during a run.
 
+To produce the fully guest-built installed image used by the M7 checks, start
+from the current cross-built bootstrap disk and run the native build and
+installation stages. The retained build runs in a 16 MiB QEMU/KVM guest; the
+installation tests cold-boot their results at 8 MiB:
+
+```sh
+python3 tools/test-rebuild.py
+python3 tools/build-i386-kernel.py
+python3 tools/test-i386-retained-build.py --out build/i386-kernel/retained-build-fixed
+python3 tools/test-i386-retained-install.py \
+  --source build/i386-kernel/retained-build-fixed/source.img \
+  --out build/i386-kernel/retained-install-fixed
+python3 tools/test-i386-selfhost-install.py \
+  --disk build/i386-kernel/retained-install-fixed/candidate.img \
+  --out build/i386-kernel/selfhost-install-fixed
+python3 tools/audit-i386-guest-image.py \
+  --source build/i386-kernel/selfhost-install-fixed/target.img \
+  --installed build/i386-kernel/selfhost-install-fixed/target.img \
+  --kernel-module-path /Modules/I386/Kernel.t32m \
+  --flat-path /Probe/GuestBoot.bin --guest-compiler-template \
+  --out build/i386-kernel/selfhost-install-fixed/instruction-audit
+```
+
+`build/i386-kernel/selfhost-install-fixed/target.img` is the independently
+booted, fully guest-built image. The QEMU work here is substantial; preserve
+each stage's `result.json` and use a fresh output directory for a new run.
+
 ```sh
 python3 tools/i386-kernel-input.py --list-groups
 python3 tools/i386-kernel-input.py --group windows
@@ -69,10 +96,10 @@ entry linkage.
 
 ## Manual long-document acceptance
 
-Build the normal image, copy it, and boot the copy without `-snapshot`:
+Copy the fully guest-built installed image and boot the copy without `-snapshot`:
 
 ```sh
-cp build/i386-kernel/kernel.img build/i386-manual.img
+cp build/i386-kernel/selfhost-install-fixed/target.img build/i386-manual.img
 qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none \
   -drive file=build/i386-manual.img,format=raw,if=ide
 ```
@@ -98,11 +125,11 @@ writable-session tests provide repeatable hardware-input and exact-pixel gates.
 
 ## Manual self-hosted workstation session
 
-Use the independently installed Generation 2 disk. Keep a writable copy so the
+Use the independently installed fully guest-built disk. Keep a writable copy so the
 automated reference remains unchanged:
 
 ```sh
-cp build/i386-kernel/gen2-guest-boot/target.img build/i386-manual-source.img
+cp build/i386-kernel/selfhost-install-fixed/target.img build/i386-manual-source.img
 qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 8 -nic none \
   -drive file=build/i386-manual-source.img,format=raw,if=ide
 ```
@@ -152,7 +179,7 @@ The final command should return `1`. Close QEMU, boot
 `build/i386-manual-target.img` alone with the same 16 MiB profile, reopen the
 project, run it, and compile `C:/Compiler/I386/LexNumber.HC` to a new T32M.
 Keep the source and target images and a short observation log. Automated
-Generation 2 rebuild, project, compatibility and interruption checks cover the
+rebuild, project, compatibility and interruption checks cover the
 byte-level and recovery contracts; this session checks the human workflow.
 
 The default disk is `build/i386-kernel/kernel.img`. An optional positional disk
