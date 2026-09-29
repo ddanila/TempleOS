@@ -3405,3 +3405,13 @@ with exact VGA and 20 document cycles with exact heap recovery. The full
 KVM latency checkpoint passes at 0.39 seconds without competing QEMU
 builds. Exact-source guest-built installation remains; manual observation
 is deferred.
+The shifted-record source has now passed a second fully guest-built
+generation from its first installed target. All twelve guest modules, the
+475,216-byte linked image and installed boot area are byte-identical across
+generations; both RedSea volumes pass extent/bitmap ownership audit
+(`build/i386-kernel/generation-identity-shifted-kvm/result.json`). The second
+installed image independently passes the 386 executable, guest compiler
+template, boot payload and filesystem audit
+(`build/i386-kernel/selfhost-install-shifted-gen2-kvm/instruction-audit/result.json`).
+The newer default-color source is undergoing its exact-source guest rebuild.
+The manual QEMU usability session remains deferred by request.

@@ -239,3 +239,12 @@ on an isolated byte-identical build; each full suite checks 513 commands,
 576 lines, exact VGA and 20 document cycles with exact heap recovery.
 Exact-source guest-built installation and repeated-generation identity
 remain open; human observation is deferred by request.
+The preceding shifted-record source now passes two fully guest-built
+generations with byte-identical twelve modules, linked image and boot area;
+both installed RedSea volumes pass extent/bitmap audit
+(`build/i386-kernel/generation-identity-shifted-kvm/result.json`). The second
+installed image passes the 386 executable/guest compiler-template and
+boot/filesystem audit
+(`build/i386-kernel/selfhost-install-shifted-gen2-kvm/instruction-audit/result.json`).
+The newer default-color source's guest rebuild is running. The human M7
+usability gate remains deferred by request.

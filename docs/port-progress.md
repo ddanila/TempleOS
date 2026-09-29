@@ -10896,3 +10896,14 @@ at 0.39 seconds. The original x64 rebuild and isolated 386 cross-build
 audit pass. Exact-source guest-built installation and repeated-generation
 identity for this latest source remain open. Human manual observation is
 deferred.
+
+The preceding shifted-record source now has two fully guest-built
+generations: all twelve guest modules, the 475,216-byte linked image and
+installed boot area match byte for byte. Both RedSea volumes pass the
+extent/bitmap ownership check
+(`build/i386-kernel/generation-identity-shifted-kvm/result.json`). The second
+installed image also passes the 386 executable, guest compiler-template,
+boot-payload and filesystem audit
+(`build/i386-kernel/selfhost-install-shifted-gen2-kvm/instruction-audit/result.json`).
+The newer default-color source is still in its exact-source guest rebuild;
+the manual QEMU observation remains deferred.
