@@ -33,7 +33,8 @@ lex_step:
           break;
         }
         if(cc->flags&CCF_IN_QUOTES &&
-            (entry->type_u8==DOCT_PAGE_LEN || entry->type_u8==DOCT_LEFT_MARGIN ||
+            (entry->type_u8==DOCT_PAGE_BREAK || entry->type_u8==DOCT_CLEAR ||
+             entry->type_u8==DOCT_PAGE_LEN || entry->type_u8==DOCT_LEFT_MARGIN ||
              entry->type_u8==DOCT_RIGHT_MARGIN || entry->type_u8==DOCT_HEADER ||
              entry->type_u8==DOCT_FOOTER || entry->type_u8==DOCT_INDENT ||
              entry->type_u8==DOCT_WORD_WRAP || entry->type_u8==DOCT_HIGHLIGHT ||
@@ -58,7 +59,11 @@ lex_step:
           format=I386HeapAlloc(heap,32,FALSE);
           if(!format) return -1;
           i=0; format[i++]='$$';
-          if(entry->type_u8==DOCT_PAGE_LEN) {
+          if(entry->type_u8==DOCT_PAGE_BREAK) {
+            format[i++]='P'; format[i++]='B';
+          } else if(entry->type_u8==DOCT_CLEAR) {
+            format[i++]='C'; format[i++]='L';
+          } else if(entry->type_u8==DOCT_PAGE_LEN) {
             format[i++]='P'; format[i++]='L';
           } else if(entry->type_u8==DOCT_LEFT_MARGIN) {
             format[i++]='L'; format[i++]='M';
@@ -93,7 +98,8 @@ lex_step:
           } else {
             format[i++]='S'; format[i++]='Y';
           }
-          if(entry->attr!=DOC_DFT) {
+          if(entry->attr!=DOC_DFT && entry->type_u8!=DOCT_PAGE_BREAK &&
+              entry->type_u8!=DOCT_CLEAR) {
             format[i++]=',';
             n=entry->attr;
             if(n<0) format[i++]='-';

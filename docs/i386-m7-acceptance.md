@@ -298,12 +298,22 @@ The first fully guest-built default-color target itself passes the
 nine-command quoted default-color probe under 8 MiB `486,-fpu` TCG with
 exact VGA
 (`build/i386-kernel/selfhost-install-default-colors-kvm/default-colors-tcg-nofpu/result.json`).
-Its complete no-FPU workstation suite and second guest-built generation
-are running. The latest eight-layout-record source has started its
+Its complete no-FPU workstation suite is running. The latest
+eight-layout-record source has started its
 six-module guest rebuild. Human manual observation remains deferred.
 The next original-behavior fixture establishes quoted page-break and clear
-records: x64 `ExeDoc` yields `A$PB$$CL$B` (length 10), while the current
+records: x64 `ExeDoc` yields `A$PB$$CL$B` (length 10), while the preceding
 i386 image reaches `ExeDoc` but fails the matching nine-command probe
 (`tests/guest/i386-exedoc-controls/Once.HC`,
-`build/i386-kernel/exedoc-controls-red-kvm/`). This remains a red TDD case;
+`build/i386-kernel/exedoc-controls-red-kvm/`). The isolated byte-identical
+new source passes the nine-command control probe, 14-command numeric layout
+regression and 33-command documents group on KVM and `486,-fpu` TCG with
+exact VGA; its x64 rebuild and 386 cross-build/audit pass. Complete
+workstation and guest-built installed-generation checks remain open.
+The preceding default-color source passes two fully guest-built generations
+with all twelve modules, linked image and boot area byte-identical; both
+RedSea volumes pass extent/bitmap audit
+(`build/i386-kernel/generation-identity-default-colors-kvm/result.json`).
+The second installed image passes the 386 executable/guest compiler-template
+and boot/filesystem audit. Its complete no-FPU workstation suite is running;
 human manual observation stays deferred.

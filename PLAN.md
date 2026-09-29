@@ -3477,14 +3477,27 @@ The first fully guest-built default-color target itself passes the
 nine-command quoted default-color probe under 8 MiB `486,-fpu` TCG with
 exact VGA
 (`build/i386-kernel/selfhost-install-default-colors-kvm/default-colors-tcg-nofpu/result.json`).
-Its complete no-FPU workstation suite and second guest-built generation
-are running. The latest eight-layout-record source has started its
+Its complete no-FPU workstation suite is running. The latest
+eight-layout-record source has started its
 exact-source six-module KVM guest rebuild. Human manual observation remains
 deferred.
 The next original-behavior fixture covers quoted page-break and clear
 records. Original x64 `ExeDoc` yields `A$PB$$CL$B` (length 10)
-(`tests/guest/i386-exedoc-controls/Once.HC`). The current i386 image
+(`tests/guest/i386-exedoc-controls/Once.HC`). The preceding i386 image
 reaches `ExeDoc` but times out on the matching nine-command native probe
-(`build/i386-kernel/exedoc-controls-red-kvm/`). This is a red TDD case;
-control-record serialization and its installed-generation checks remain
-open. The manual QEMU session stays deferred.
+(`build/i386-kernel/exedoc-controls-red-kvm/`). The lexer now serializes
+both records in quotes without an attribute field. The isolated,
+byte-identical source passes the nine-command native probe and 33-command
+documents group under 8 MiB KVM and `486,-fpu` TCG with exact VGA;
+the 14-command numeric layout regression passes both profiles. Original
+x64 rebuild and 386 cross-build/audit pass. Its complete workstation and
+guest-built installed-generation checks remain open.
+The preceding default-color source now has two fully guest-built generations.
+All twelve modules, the 476,360-byte linked image and installed boot area
+are byte-identical; both RedSea volumes pass exact extent/bitmap ownership
+audit (`build/i386-kernel/generation-identity-default-colors-kvm/result.json`).
+The second installed image independently passes the 386 executable, guest
+compiler-template, boot payload and filesystem audit
+(`build/i386-kernel/selfhost-install-default-colors-gen2-kvm/instruction-audit/result.json`).
+Its full no-FPU workstation suite remains active. The manual QEMU session
+stays deferred.

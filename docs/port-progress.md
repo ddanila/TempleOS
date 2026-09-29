@@ -10992,8 +10992,8 @@ The first fully guest-built default-color target itself passes the
 nine-command quoted default-color probe under 8 MiB `486,-fpu` TCG with
 exact VGA
 (`build/i386-kernel/selfhost-install-default-colors-kvm/default-colors-tcg-nofpu/result.json`).
-Its complete no-FPU workstation suite and second guest-built generation
-are running. The latest eight-layout-record source has started an
+Its complete no-FPU workstation suite is running. The latest
+eight-layout-record source has started an
 exact-source six-module KVM guest rebuild. Human observation remains
 deferred.
 
@@ -11002,7 +11002,23 @@ deferred.
 Original x64 `ExeDoc` serializes canonical page-break and clear entries
 inside a quoted string as `A$PB$$CL$B` (length 10)
 (`tests/guest/i386-exedoc-controls/Once.HC`,
-`build/i386-kernel/exedoc-controls-x64/debug.log`). The current i386 image
+`build/i386-kernel/exedoc-controls-x64/debug.log`). The preceding i386 image
 reaches `ExeDoc` but times out on the matching nine-command probe
-(`build/i386-kernel/exedoc-controls-red-kvm/`). This is a red behavior test;
-no i386 pass is claimed. Manual observation remains deferred.
+(`build/i386-kernel/exedoc-controls-red-kvm/`). The lexer now emits both
+records inside quotes without an attribute field. An isolated byte-identical
+source in `../TempleOS-controls` passes the nine-command native probe and
+33-command documents group under 8 MiB KVM and `486,-fpu` TCG with exact
+VGA; the 14-command numeric layout regression also passes both profiles.
+Its original x64 rebuild and 386 cross-build/instruction audit pass.
+Complete workstation and guest-built installed-generation checks remain
+open for this latest source.
+
+The preceding default-color source has two fully guest-built generations.
+All twelve modules, the 476,360-byte linked image and installed boot area
+match byte for byte, and both RedSea volumes pass exact extent/bitmap
+ownership audit (`build/i386-kernel/generation-identity-default-colors-kvm/result.json`).
+The second installed image independently passes the 386 executable,
+guest compiler-template, boot-payload and filesystem audit
+(`build/i386-kernel/selfhost-install-default-colors-gen2-kvm/instruction-audit/result.json`).
+Its full no-FPU workstation suite is still running; human manual
+observation remains deferred.
