@@ -10371,7 +10371,11 @@ Generation 2 disk via `--boot-file /Probe/GuestBoot.bin`. At LBA 128 and LBA
 850, forced QEMU termination leaves LBA 0 blank and the RedSea bitmap exact;
 retry reproduces the final reference disk byte for byte and the retried disk
 boots independently. The source disk remains unchanged
-(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery/result.json`).
+(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-committed/result.json`).
+An added QEMU hard stop after LBA 0 publication leaves the complete reference
+disk byte-identical and independently bootable. The package verifier checks
+the source and all three resulting target disk hashes against the release
+image. Physical power-loss durability remains outside this QEMU evidence.
 
 The later 32-bit QEMU CPU promotion profile also passes on the final
 Generation 2 disk. The full 8 MiB `pentium3,-fpu` TCG run executes 506 native

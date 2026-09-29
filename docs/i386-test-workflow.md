@@ -86,9 +86,10 @@ The packager verifies the recorded 1,233 source-file hashes, the installed
 Generation 2 disk and flat-image hashes, the executable-region audit, three
 complete workstation verdicts (`486` KVM, `486,-fpu` TCG and `pentium3,-fpu`
 TCG), the three writable boot verdicts and two final-image installation
-recovery cases. It produces a compressed raw IDE disk, manifest, command
-records and acceptance evidence. It hashes both retried targets and the
-recovery source against the release image and requires the focused 8 MiB
+recovery cases plus a post-LBA-0 hard stop. It produces a compressed raw IDE
+disk, manifest, command records and acceptance evidence. It hashes the source,
+both retried targets and the post-LBA-0 target against the release image and
+requires the focused 8 MiB
 resource profile from that exact disk. The bundle includes `verify.py`; running
 `python3 verify.py` inside it checks every bundled file and the decompressed
 disk. A README mutation must fail verification. Human manual observation is a
@@ -115,7 +116,8 @@ python3 tools/test-i386-guest-install-recovery.py \
   --source build/i386-kernel/selfhost-install-gen2-fixed/target.img \
   --reference build/i386-kernel/selfhost-install-gen2-fixed/target.img \
   --boot-file /Probe/GuestBoot.bin \
-  --out build/i386-kernel/selfhost-install-gen2-fixed/install-recovery
+  --include-committed-cut \
+  --out build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-committed
 ```
 
 ```sh

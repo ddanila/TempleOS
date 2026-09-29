@@ -3124,7 +3124,11 @@ The final Generation 2 disk also passes the rebuilt-artifact installation
 hard-stop/retry gate at LBA 128 and LBA 850: LBA 0 stays blank, the RedSea
 bitmap matches reachable extents, retry reproduces the reference disk byte for
 byte, and the retried disk boots independently
-(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery/result.json`).
+(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-committed/result.json`).
+A third hard stop immediately after LBA 0 publication leaves the complete
+reference disk byte-identical and independently bootable; all four source and
+recovered target disk hashes match the release image. This is a QEMU process
+hard-stop test, not physical power-loss durability.
 The later 32-bit CPU profile now passes the complete 8 MiB workstation suite
 on that same image: `pentium3,-fpu` TCG executes 506 native commands and 569
 submitted lines with exact VGA checks and 20 document-development cycles

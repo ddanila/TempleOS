@@ -115,7 +115,7 @@ def main():
     if any(session.get(phase, {}).get('result') != 'pass' for phase in
            ('create_edit_save', 'reopen_after_boot', 'revised_after_second_boot')):
         raise ValueError('writable session did not pass all three boots')
-    recovery_path = gen2 / 'install-recovery/result.json'
+    recovery_path = gen2 / 'install-recovery-committed/result.json'
     recovery = read_pass(recovery_path)
     if not recovery.get('source_unchanged') or [case.get('cut_lba') for case in
             recovery.get('cases', [])] != [128, 850]:
@@ -126,10 +126,17 @@ def main():
                 case.get('retry', {}).get('result') != 'pass' or
                 case.get('independent_boot', {}).get('result') != 'pass'):
             raise ValueError(f"installation recovery failed at LBA {case.get('cut_lba')}")
+    committed = recovery.get('committed_case', {})
+    if (committed.get('result') != 'pass' or committed.get('cut_lba') != 0 or
+            committed.get('disk') != 'matches complete reference' or
+            committed.get('filesystem', {}).get('bitmap') != 'matches reachable extents' or
+            committed.get('independent_boot', {}).get('result') != 'pass'):
+        raise ValueError('post-LBA-0 installation hard-stop is incomplete')
     recovery_artifacts = {
-        'source': gen2 / 'install-recovery/source.img',
-        'retry_after_lba_128': gen2 / 'install-recovery/cut-lba-128/target.img',
-        'retry_after_lba_850': gen2 / 'install-recovery/cut-lba-850/target.img',
+        'source': gen2 / 'install-recovery-committed/source.img',
+        'retry_after_lba_128': gen2 / 'install-recovery-committed/cut-lba-128/target.img',
+        'retry_after_lba_850': gen2 / 'install-recovery-committed/cut-lba-850/target.img',
+        'committed_after_lba_zero': gen2 / 'install-recovery-committed/cut-after-lba-zero/target.img',
     }
     for name, path in recovery_artifacts.items():
         if sha256(path) != image_hash:

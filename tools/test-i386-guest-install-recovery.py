@@ -87,6 +87,37 @@ def run_case(input_tool,build_tool,source,reference,out,lba,boot_file):
             'result':'pass'}
 
 
+def run_committed_case(input_tool,build_tool,source,reference,out,boot_file):
+    work=out/'cut-after-lba-zero';work.mkdir(parents=True,exist_ok=True)
+    target=work/'target.img'
+    target.write_bytes(bytes(2048*512)+reference[2048*512:])
+    log=(work/'interrupted'/'debug.log').resolve()
+    state={}
+    watcher=threading.Thread(target=lambda:state.update(pid=cut_after_sector(target,log,0,180)),daemon=True)
+    watcher.start()
+    command=f'I386InstallBootImage("C:/","D:/","C:{boot_file}");'
+    interrupted_error=None
+    try:
+        input_tool.run_input(source,work/'interrupted',target_disk=target,snapshot=False,
+            ram_mib=16,accel='kvm',startup_timeout=180,startup_check={
+                'status':'ok','answers':[],'command_timeout':120,'commands':[(command,['1'])]})
+    except Exception as error:
+        interrupted_error=repr(error)
+    watcher.join(timeout=1)
+    if not state.get('pid') or interrupted_error is None:
+        raise ValueError(f'QEMU was not cut after LBA 0 publication: {state}')
+    if target.read_bytes()!=reference:
+        raise ValueError('Post-LBA-0 hard stop did not leave the complete reference disk')
+    integrity=build_tool.verify_mutated_volume(target)
+    independent=input_tool.run_input(target,work/'independent',snapshot=True,
+        ram_mib=8,accel='kvm',startup_timeout=180,startup_check={
+            'status':'ok','answers':[],'command_timeout':120,
+            'commands':[('6*7;',['42']),('DocAllocationCheck;',['12'])]})
+    return {'cut_lba':0,'interrupted_process':state['pid'],
+            'interrupted_error':interrupted_error,'disk':'matches complete reference',
+            'filesystem':integrity,'independent_boot':independent,'result':'pass'}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source',type=Path,default=ROOT/'build/i386-kernel/gen2-guest-boot/source.img')
@@ -94,6 +125,8 @@ def main():
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel/gen2-install-recovery')
     parser.add_argument('--boot-file',default='/Probe/Gen2.bin',
                         help='Absolute RedSea path to guest-built boot image on source disk')
+    parser.add_argument('--include-committed-cut',action='store_true',
+                        help='Also stop QEMU just after LBA 0 is published')
     args=parser.parse_args()
     if not args.boot_file.startswith('/') or '"' in args.boot_file:
         parser.error('--boot-file must be an absolute RedSea path without quotes')
@@ -112,6 +145,10 @@ def main():
         case=run_case(input_tool,build_tool,source,reference,args.out,lba,args.boot_file)
         result['cases'].append(case)
         print(f'LBA {lba}: pass, {case["partial_nonzero_boot_sectors"]} boot sectors written',flush=True)
+    if args.include_committed_cut:
+        result['committed_case']=run_committed_case(
+            input_tool,build_tool,source,reference,args.out,args.boot_file)
+        print('LBA 0: complete disk booted after hard stop',flush=True)
     if source.read_bytes()!=original: raise ValueError('Installation changed source disk')
     result['source_unchanged']=True
     result['result']='pass'
