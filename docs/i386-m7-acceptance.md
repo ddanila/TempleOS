@@ -82,6 +82,8 @@ passes with exact VGA under 8 MiB QEMU/486 KVM
 passes 513 commands, 576 submitted lines, exact VGA and 20 document cycles
 (`direct-doc-full-kvm/result.json`); the full no-FPU suite is running. This
 source change is not yet installed in the release candidate.
-Document includes, binary insertion, quoted formatting, source diagnostics,
+Focused include/resume and embedded-binary insertion tests pass under KVM and
+`486,-fpu` TCG (`exedoc-include-direct-*/result.json` and
+`exedoc-binary-direct-*/result.json`). Quoted formatting, source diagnostics
 and unwind behavior still need focused verification. Human manual observation
 remains deferred by the user.

@@ -3254,7 +3254,8 @@ entry. A direct, borrowed document source in the i386 compiler and lexer now
 passes the standalone native test on a fresh cross-built image under both
 8 MiB QEMU/486 KVM and `486,-fpu` TCG. The complete KVM workstation suite
 passes 513 commands and exact VGA; the no-FPU suite is running. Next verify
-document includes, binary insertion, quoted formatting,
-source positions and unwind behavior; repeat the complete no-FPU workstation
+quoted formatting, source positions and unwind behavior; repeat the complete no-FPU workstation
 and writable-project gates, then rebuild/install a self-hosted generation from
-the updated sources. Human manual QEMU observation remains deferred by request.
+the updated sources. Focused direct-document include/resume and binary
+insertion tests already pass under KVM and `486,-fpu` TCG. Human manual QEMU
+observation remains deferred by request.
