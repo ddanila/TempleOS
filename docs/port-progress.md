@@ -10596,3 +10596,11 @@ cycles, extent ownership and bitmap; the source image is unchanged
 (`build/i386-kernel/direct-doc-breakfix-doldoc-tcg-nofpu/result.json`). The
 full workstation suite and guest rebuild from this exact source are still
 running. Human manual observation remains deferred.
+The first complete KVM regression reached the help-index interaction before
+its final-frame assertion failed. The captured frame and log showed normal
+return to the HolyC console: the runner had sent a third Esc from the top-
+level help view, then incorrectly expected that view to remain visible. The
+runner now leaves the final Esc to its normal exit step. A focused nine-
+command KVM help group passes with exact VGA on the same image
+(`build/i386-kernel/direct-doc-breakfix-help-kvm-fixed/result.json`); the
+complete KVM regression has restarted with this corrected navigation.

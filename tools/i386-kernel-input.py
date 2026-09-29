@@ -1789,8 +1789,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                          'backgrounds':category_selected_backgrounds,'label':'hi-category-returned'},
                         {'key':'esc'},
                         {'expect_rows':doldoc_rows,'colors':index_selected_colors,
-                         'backgrounds':index_selected_backgrounds,'label':'hi-returned'},
-                        {'key':'esc'}],
+                         'backgrounds':index_selected_backgrounds,'label':'hi-returned'}],
               'final_rows':doldoc_rows,'final_colors':index_selected_colors,
               'final_backgrounds':index_selected_backgrounds})
             search_rows=['TempleOS i386','Help: C:/Probe/HelpSearch.DD','',
