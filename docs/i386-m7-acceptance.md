@@ -224,3 +224,10 @@ post-exit export/structure audit, replacement installation and independent
 `build/i386-kernel/retained-install-shifted-kvm/result.json`). Native
 flat-kernel installation and second-generation identity are still active;
 manual observation remains deferred.
+The first fully guest-built shifted-record generation now passes native
+flat-kernel and boot-helper construction, independent 8 MiB KVM cold boot,
+and the 386 executable/boot/filesystem audit. The linked image is 475,216
+bytes (`build/i386-kernel/selfhost-install-shifted-kvm/result.json`,
+`build/i386-kernel/selfhost-install-shifted-kvm/instruction-audit/result.json`).
+Second-generation identity and no-FPU workstation/persistence checks on this
+installed image remain open; manual observation is deferred.

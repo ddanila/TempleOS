@@ -10860,3 +10860,17 @@ six retained modules on a separate disk passed independent 8 MiB KVM cold
 boot (`build/i386-kernel/retained-install-shifted-kvm/result.json`). Native
 flat-kernel build/install from this disk is active. The manual QEMU session
 remains deferred by request.
+
+The first fully guest-built shifted-record generation now passes native
+flat-kernel and boot-helper construction, installation and independent
+8 MiB KVM cold boot (`build/i386-kernel/selfhost-install-shifted-kvm/result.json`).
+Its linked image is 475,216 bytes, SHA-256
+`8adf3d9f5438a4baeae28e5d93287f73ae320f6658c1a3ac14a994249ec5628a`.
+The installed image passes the 386 executable-region and guest compiler-
+template audit, boot payload match and RedSea ownership check
+(`build/i386-kernel/selfhost-install-shifted-kvm/instruction-audit/result.json`).
+The guest-installed retained disk also passes the nine-command quoted
+shifted-record probe under 8 MiB `486,-fpu` TCG with exact VGA
+(`build/i386-kernel/retained-install-shifted-kvm/shifted-tcg-nofpu/result.json`).
+Second-generation identity and the complete no-FPU workflow on the new
+installed image remain open. Human observation remains deferred.

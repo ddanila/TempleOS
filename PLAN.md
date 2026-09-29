@@ -3389,3 +3389,9 @@ The shifted-record source has now passed a complete six-module guest rebuild,
 post-exit export/structure audit, replacement installation and independent
 8 MiB KVM cold boot. Native flat-kernel build/install from that guest-built
 disk is running. The manual QEMU usability session remains deferred.
+The first fully guest-built shifted-record generation now passes native
+flat-kernel and boot-helper construction, installation, independent 8 MiB
+KVM cold boot, and the 386 executable/guest compiler-template audit. Its
+linked image is 475,216 bytes. A second-generation identity check and
+no-FPU workflow on this installed target remain; manual observation is
+still deferred.
