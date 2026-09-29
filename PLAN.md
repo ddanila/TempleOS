@@ -3513,3 +3513,11 @@ unchanged source disk and verified RedSea extent/bitmap ownership after
 create, reopen and revision
 (`build/i386-kernel/selfhost-install-default-colors-kvm/doldoc-tcg-nofpu/result.json`).
 The manual QEMU session remains deferred.
+The installed default-color disk embeds `/Compiler/I386/LexInput.HC`
+byte-identical to commit `18463db3` (SHA-256
+`31170d5c3194de658bf1f340df2d6dde86032d8c3947d5d6ce44d0ad363f0aef`).
+The separate cross-built disk feeding the in-flight layout guest rebuild
+embeds the same path byte-identical to commit `36da99b0` (SHA-256
+`bb27038d48169a9a9e477f7d35afce47a98645e338474b190cccf8bb62646e4b`).
+These checks bind the older generation evidence to its source snapshots;
+the newer control-record source has not yet completed guest installation.

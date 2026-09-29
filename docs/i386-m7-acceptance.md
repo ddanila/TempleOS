@@ -327,3 +327,8 @@ exact VGA, 0.346-second break recovery, unchanged source disk and RedSea
 extent/bitmap ownership audit
 (`build/i386-kernel/selfhost-install-default-colors-kvm/doldoc-tcg-nofpu/result.json`).
 Human observation stays deferred.
+The installed default-color disk embeds compiler lexer source byte-identical
+to commit `18463db3`, while the cross-built input disk for the active
+layout guest rebuild embeds that path byte-identical to `36da99b0`.
+The newer control-record source has not yet completed guest installation;
+human observation remains deferred.

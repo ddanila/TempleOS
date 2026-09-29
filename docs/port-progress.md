@@ -11034,3 +11034,10 @@ independently verified RedSea extent/bitmap ownership after create,
 reopen and revision
 (`build/i386-kernel/selfhost-install-default-colors-kvm/doldoc-tcg-nofpu/result.json`).
 Human observation remains deferred.
+The installed default-color disk's `/Compiler/I386/LexInput.HC` bytes match
+commit `18463db3` (SHA-256
+`31170d5c3194de658bf1f340df2d6dde86032d8c3947d5d6ce44d0ad363f0aef`).
+The cross-built input disk for the active layout guest rebuild matches
+commit `36da99b0` at the same path (SHA-256
+`bb27038d48169a9a9e477f7d35afce47a98645e338474b190cccf8bb62646e4b`).
+This identifies the source revisions behind those generation results.
