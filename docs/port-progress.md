@@ -10922,7 +10922,14 @@ The original x64 fixture `tests/guest/i386-exedoc-layout/Once.HC` produces
 `A$PL,80$$LM,-2$B` (length 16) from canonical page-length and left-margin
 entries inside a quoted document string
 (`build/i386-kernel/exedoc-layout-x64/debug.log`). The nine-command native
-probe reaches `ExeDoc` on the current i386 image but times out waiting for
-length 16 (`build/i386-kernel/exedoc-layout-red-kvm/`). This is a failing
-behavior test for the next lexer change; no i386 pass is claimed. The
-manual QEMU session remains deferred.
+probe reaches `ExeDoc` on the preceding i386 image but times out waiting for
+length 16 (`build/i386-kernel/exedoc-layout-red-kvm/`). The lexer now emits
+both records with signed decimal attributes and the original two-dollar
+escape count. The isolated byte-identical source in `../TempleOS-layout`
+passes the nine-command probe under 8 MiB KVM and `486,-fpu` TCG with
+exact VGA (`build/i386-kernel/exedoc-layout-kvm/result.json` and
+`exedoc-layout-tcg-nofpu/result.json` in that worktree). Its default-color
+and shifted-record regressions pass under KVM, as do the original x64
+two-generation rebuild and 386 cross-build/instruction audit. Complete
+workstation and guest-built installed-generation checks remain open for
+this source; the manual QEMU session remains deferred.

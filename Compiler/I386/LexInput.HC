@@ -33,7 +33,8 @@ lex_step:
           break;
         }
         if(cc->flags&CCF_IN_QUOTES &&
-            (entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
+            (entry->type_u8==DOCT_PAGE_LEN || entry->type_u8==DOCT_LEFT_MARGIN ||
+             entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
              entry->type_u8==DOCT_DFT_FOREGROUND ||
              entry->type_u8==DOCT_DFT_BACKGROUND ||
              entry->type_u8==DOCT_BLINK || entry->type_u8==DOCT_INVERT ||
@@ -54,7 +55,11 @@ lex_step:
           format=I386HeapAlloc(heap,32,FALSE);
           if(!format) return -1;
           i=0; format[i++]='$$';
-          if(entry->type_u8==DOCT_FOREGROUND) {
+          if(entry->type_u8==DOCT_PAGE_LEN) {
+            format[i++]='P'; format[i++]='L';
+          } else if(entry->type_u8==DOCT_LEFT_MARGIN) {
+            format[i++]='L'; format[i++]='M';
+          } else if(entry->type_u8==DOCT_FOREGROUND) {
             format[i++]='F'; format[i++]='G';
           } else if(entry->type_u8==DOCT_BACKGROUND) {
             format[i++]='B'; format[i++]='G';

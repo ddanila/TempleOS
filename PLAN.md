@@ -3427,6 +3427,11 @@ The next quoted-record TDD case is page layout. The original x64 fixture
 `tests/guest/i386-exedoc-layout/Once.HC` yields
 `A$PL,80$$LM,-2$B` (length 16) for page length and left margin entries.
 The new native probe `tools/test-i386-exedoc-layout.py` reaches `ExeDoc`
-on the current i386 image but times out expecting that length, establishing
-a red state. Quoted layout serialization and its full installed-generation
-verification remain to be implemented. Manual observation stays deferred.
+on the preceding i386 image but times out expecting that length, establishing
+a red state. The lexer now serializes both records inside quotes with signed
+decimal attributes and the original two-dollar escape count. An isolated
+byte-identical source passes the native nine-command probe under 8 MiB KVM
+and `486,-fpu` TCG with exact VGA, plus default-color and shifted-record
+regressions under KVM. Its original x64 rebuild and 386 cross-build/audit
+pass. Full workstation and guest-built installed-generation checks for this
+new source remain open. Manual observation stays deferred.
