@@ -44,6 +44,7 @@ QEMU loaded.
 | `486`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`: Generation 2 full 506-command workstation suite, exact VGA and 20 document resource cycles | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-fixed/full-tcg-nofpu/result.json`: same complete 506-command workstation suite, exact VGA and heap recovery | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-gen2-fixed/full-tcg-nofpu/result.json`: Generation 2 complete 506-command suite, exact VGA and heap recovery; 73.68 s startup, 0.265 s long-document key-to-VGA update | Pass at 8 MiB |
+| `pentium3,-fpu`, TCG | `build/i386-kernel/selfhost-install-gen2-fixed/full-pentium3-nofpu/result.json`: Generation 2 complete 506-command suite, exact VGA and heap recovery; 73.38 s startup, 0.382 s long-document key-to-VGA update | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/sf-doldoc/result.json`: three writable boots on the fully guest-built image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-gen2-fixed/doldoc-tcg-nofpu/result.json`: three writable boots on the Generation 2 image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, KVM | `build/i386-kernel/resource-profile-third/resource-result.json`: 7,143,424-byte heap arena and 20 document cycles with exact live-heap recovery | Pass at 8 MiB |

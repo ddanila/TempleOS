@@ -10372,3 +10372,10 @@ Generation 2 disk via `--boot-file /Probe/GuestBoot.bin`. At LBA 128 and LBA
 retry reproduces the final reference disk byte for byte and the retried disk
 boots independently. The source disk remains unchanged
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery/result.json`).
+
+The later 32-bit QEMU CPU promotion profile also passes on the final
+Generation 2 disk. The full 8 MiB `pentium3,-fpu` TCG run executes 506 native
+commands and 569 submitted lines with exact VGA checkpoints and 20 document
+cycles with heap recovery. Startup measured 73.38 seconds and the
+long-document key-to-VGA update 0.382 seconds
+(`build/i386-kernel/selfhost-install-gen2-fixed/full-pentium3-nofpu/result.json`).

@@ -83,12 +83,13 @@ python3 tools/package-i386-release.py --out build/i386-release-candidate
 ```
 
 The packager verifies the recorded 1,233 source-file hashes, the installed
-Generation 2 disk and flat-image hashes, the executable-region audit, both
-complete workstation verdicts, the three writable boot verdicts and the two
-final-image installation recovery cases. It
-produces a compressed raw IDE disk, manifest, command records and acceptance
-evidence. Human manual observation is a separate M7 gate; this command does
-not publish a release.
+Generation 2 disk and flat-image hashes, the executable-region audit, three
+complete workstation verdicts (`486` KVM, `486,-fpu` TCG and `pentium3,-fpu`
+TCG), the three writable boot verdicts and two final-image installation
+recovery cases. It produces a compressed raw IDE disk, manifest, command
+records and acceptance evidence. It hashes both retried targets and the
+recovery source against the release image. Human manual observation is a
+separate M7 gate; this command does not publish a release.
 
 The native build/install harnesses accept `--cpu` as well as `--accel`, so the
 complete guest build can be exercised without an FPU. For example, to rebuild

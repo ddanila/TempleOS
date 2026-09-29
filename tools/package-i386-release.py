@@ -92,8 +92,11 @@ def main():
         raise ValueError('guest-built flat image hashes disagree')
     require_workstation(gen2 / 'full/result.json', '486')
     require_workstation(gen2 / 'full-tcg-nofpu/result.json', '486,-fpu')
+    require_workstation(gen2 / 'full-pentium3-nofpu/result.json', 'pentium3,-fpu')
     require_qemu_command(gen2 / 'full/command.json', '486', 'kvm', image)
     require_qemu_command(gen2 / 'full-tcg-nofpu/command.json', '486,-fpu', 'tcg', image)
+    require_qemu_command(gen2 / 'full-pentium3-nofpu/command.json',
+                         'pentium3,-fpu', 'tcg', image)
     session_path = gen2 / 'doldoc-tcg-nofpu/result.json'
     session = read_pass(session_path)
     if session.get('source_disk_sha256') != image_hash or not session.get('source_disk_unchanged'):
@@ -114,6 +117,14 @@ def main():
                 case.get('retry', {}).get('result') != 'pass' or
                 case.get('independent_boot', {}).get('result') != 'pass'):
             raise ValueError(f"installation recovery failed at LBA {case.get('cut_lba')}")
+    recovery_artifacts = {
+        'source': gen2 / 'install-recovery/source.img',
+        'retry_after_lba_128': gen2 / 'install-recovery/cut-lba-128/target.img',
+        'retry_after_lba_850': gen2 / 'install-recovery/cut-lba-850/target.img',
+    }
+    for name, path in recovery_artifacts.items():
+        if sha256(path) != image_hash:
+            raise ValueError(f'{name} differs from the release image')
 
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='i386-release-', dir=out.parent) as tmp:
@@ -138,6 +149,8 @@ def main():
             'generation-2-kvm-command.json': gen2 / 'full/command.json',
             'generation-2-tcg-no-fpu-workstation.json': gen2 / 'full-tcg-nofpu/result.json',
             'generation-2-tcg-no-fpu-command.json': gen2 / 'full-tcg-nofpu/command.json',
+            'generation-2-pentium3-no-fpu-workstation.json': gen2 / 'full-pentium3-nofpu/result.json',
+            'generation-2-pentium3-no-fpu-command.json': gen2 / 'full-pentium3-nofpu/command.json',
             'generation-2-tcg-no-fpu-doldoc.json': session_path,
             'generation-2-install-recovery.json': recovery_path,
             'resource-profile.json': base / 'resource-profile-third/resource-result.json',
@@ -175,6 +188,7 @@ def main():
             'guest_built_modules': 12,
             'flat_image_sha256': generation['flat_sha256'],
             'boot_area_sha256': generation['boot_area_sha256'],
+            'recovery_artifact_sha256': {name: image_hash for name in recovery_artifacts},
             'files_sha256': {
                 str(path.relative_to(package)): sha256(path)
                 for path in sorted(package.rglob('*')) if path.is_file()

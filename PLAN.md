@@ -3125,4 +3125,8 @@ hard-stop/retry gate at LBA 128 and LBA 850: LBA 0 stays blank, the RedSea
 bitmap matches reachable extents, retry reproduces the reference disk byte for
 byte, and the retried disk boots independently
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery/result.json`).
+The later 32-bit CPU profile now passes the complete 8 MiB workstation suite
+on that same image: `pentium3,-fpu` TCG executes 506 native commands and 569
+submitted lines with exact VGA checks and 20 document-development cycles
+(`build/i386-kernel/selfhost-install-gen2-fixed/full-pentium3-nofpu/result.json`).
 Publication and human manual observation remain open M7 gates.
