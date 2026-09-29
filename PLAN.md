@@ -3290,9 +3290,10 @@ target. An independent audit finds all twelve guest-built T32Ms, the
 465,952-byte linked image and installed boot area byte-identical across both
 generations; both RedSea volumes have exact bitmap ownership. Both installed
 images pass the 386 executable-region audit, including guest compiler
-templates. The first target's complete `486,-fpu` workstation and writable
-three-boot sessions are running; quoted formatting and human observation
-remain open.
+templates. The first target's `486,-fpu` writable session now passes three
+boots (107/56/15 commands), exact VGA, 0.29-second break recovery and
+independent RedSea audit. Its complete no-FPU workstation suite is still
+running; quoted formatting and human observation remain open.
 The next original-programming-model red test is quoted DolDoc formatting.
 Original x64 `ExeDoc` turns a foreground entry between `A` and `B` inside a
 quoted string into `A$FG,4$B` (length 8); the current i386 lexer skips the

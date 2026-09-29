@@ -10659,4 +10659,11 @@ template data
 (`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/instruction-audit/result.json`,
 `build/i386-kernel/selfhost-install-direct-doc-breakfix-gen2-kvm/instruction-audit/result.json`).
 The first installed target's full no-FPU workstation and three-boot writable
-sessions remain in progress; quoted formatting remains an open semantic gap.
+sessions then ran. Its writable session now passes 107 create/edit/save
+commands, 56 reopen/revise commands and 15 next-boot commands under 8 MiB
+`486,-fpu` TCG, with exact VGA and 0.291-second break recovery. An independent
+RedSea walk verifies project bytes, rename/delete and move cycles, extents
+and bitmap; the source disk remains unchanged
+(`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/doldoc-tcg-nofpu/result.json`).
+The complete no-FPU workstation suite is still running, and quoted
+formatting remains an open semantic gap.

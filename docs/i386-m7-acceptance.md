@@ -120,5 +120,9 @@ guest-built T32Ms, linked image and boot area match byte for byte, and both
 RedSea volumes pass ownership/bitmap audits
 (`generation-identity-direct-doc-breakfix-kvm/result.json`). Both installed
 generations pass the 386 executable audit with guest compiler templates. The
-first installed target's no-FPU workstation and writable three-boot runs are
-in progress; quoted `ExeDoc` formatting remains a known gap.
+first installed target's no-FPU workstation and writable three-boot runs
+followed. Its writable three-boot run now passes 107/56/15
+commands, exact VGA and independent RedSea audit on the exact guest-built
+target (`selfhost-install-direct-doc-breakfix-kvm/doldoc-tcg-nofpu/result.json`).
+The full no-FPU workstation suite remains active; quoted `ExeDoc` formatting
+remains a known gap.
