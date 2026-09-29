@@ -173,6 +173,7 @@ def main():
             'resource-profile.json': resource_path,
             'resource-profile-command.json': gen2 / 'resource-profile/command.json',
             'support-matrix.md': ROOT / 'docs/i386-support-matrix.md',
+            'i386-m7-acceptance.md': ROOT / 'docs/i386-m7-acceptance.md',
             'i386-test-workflow.md': ROOT / 'docs/i386-test-workflow.md',
             'i386-manual-observation-template.md': ROOT / 'docs/i386-manual-observation-template.md',
         }
@@ -195,8 +196,9 @@ def main():
             '```sh\nqemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu '
             '-m 8 -nic none -drive file=TempleOS-i386-gen2.img,format=raw,if=ide\n```\n\n'
             'The complete source and reproduction procedure are in the repository '
-            'at the manifest revisions. See `evidence/support-matrix.md` for '
-            'verified profiles and limits. Use '
+            'at the manifest revisions. See `evidence/i386-m7-acceptance.md` '
+            'for the gate status and `evidence/support-matrix.md` for verified '
+            'profiles and limits. Use '
             '`evidence/i386-manual-observation-template.md` to record the human '
             'workstation session. Human manual acceptance is still open; '
             'this directory is a release candidate, not a published release.\n')

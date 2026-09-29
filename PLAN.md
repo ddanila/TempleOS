@@ -3138,3 +3138,5 @@ the 7,143,424-byte heap arena and 20 document-development cycles with 3,616
 bytes of temporary live growth and exact return to the 1,352,224-byte live
 baseline (`build/i386-kernel/selfhost-install-gen2-fixed/resource-profile/resource-result.json`).
 Publication and human manual observation remain open M7 gates.
+The current requirement-by-requirement evidence map is
+[docs/i386-m7-acceptance.md](docs/i386-m7-acceptance.md).
