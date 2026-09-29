@@ -31,13 +31,33 @@ lex_step:
           file->buf_ptr=cc->cur_buf_ptr=entry->tag;
           break;
         }
-        if(entry->type_u8==DOCT_FOREGROUND && cc->flags&CCF_IN_QUOTES) {
+        if(cc->flags&CCF_IN_QUOTES &&
+            (entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
+             entry->type_u8==DOCT_BLINK || entry->type_u8==DOCT_INVERT ||
+             entry->type_u8==DOCT_UNDERLINE)) {
           if(cc->dollar_buf && !I386HeapFree(heap,cc->dollar_buf)) return -1;
           cc->dollar_buf=0;
-          if(entry->attr!=DOC_DFT && (entry->attr<0 || entry->attr>15)) return -1;
+          if(entry->attr!=DOC_DFT) {
+            if(entry->attr<0) return -1;
+            if(entry->type_u8==DOCT_FOREGROUND ||
+                entry->type_u8==DOCT_BACKGROUND) {
+              if(entry->attr>15) return -1;
+            } else if(entry->attr>1) return -1;
+          }
           format=I386HeapAlloc(heap,8,FALSE);
           if(!format) return -1;
-          i=0; format[i++]='$$'; format[i++]='F'; format[i++]='G';
+          i=0; format[i++]='$$';
+          if(entry->type_u8==DOCT_FOREGROUND) {
+            format[i++]='F'; format[i++]='G';
+          } else if(entry->type_u8==DOCT_BACKGROUND) {
+            format[i++]='B'; format[i++]='G';
+          } else if(entry->type_u8==DOCT_BLINK) {
+            format[i++]='B'; format[i++]='K';
+          } else if(entry->type_u8==DOCT_INVERT) {
+            format[i++]='I'; format[i++]='V';
+          } else {
+            format[i++]='U'; format[i++]='L';
+          }
           if(entry->attr!=DOC_DFT) {
             format[i++]=',';
             if(entry->attr>=10) format[i++]='1';

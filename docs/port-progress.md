@@ -10696,5 +10696,27 @@ rebuild has now exited and passed post-exit audit. All six guest-built T32Ms
 are byte-identical to the installed modules
 (`build/i386-kernel/retained-build-gen3-tcg-nofpu/result.json`). The newer
 direct-document source's no-FPU retained rebuild remains active separately.
-Formatting record types other than foreground remain to be matched against
-the original quoted-document behavior.
+At this checkpoint, formatting record types other than foreground still
+needed original-behavior fixtures.
+
+## Quoted background/style records and help interaction (2026-09-29)
+
+Original x64 fixtures establish that a quoted `DOCT_BACKGROUND` record with
+attribute 1 produces `A$BG,1$B` and length 8, while consecutive `DOCT_BLINK`,
+`DOCT_INVERT` and `DOCT_UNDERLINE` entries produce
+`A$BK,1$$IV,1$$UL,1$B` and length 20. Canonical full-sized entries are
+allocated from the document task heap. The old i386 image fails both new
+native probes at `ExeDoc`, giving the tests a real red state. The updated
+direct-document lexer emits the matching quoted record text and two-dollar
+escape count. Focused KVM and `486,-fpu` TCG runs on an isolated, identical
+source build pass with exact VGA, as does the 33-command documents group on
+both profiles (`../TempleOS-quote-next/build/i386-kernel/exedoc-background-*`,
+`exedoc-style-*`, and `style-documents-*/result.json`).
+
+The first full foreground-only workstation rerun reached the help group and
+exposed an extra Escape event in the QEMU interaction script: the view had
+already closed before its final-screen assertion. Removing that duplicate
+event makes the nine-command help group pass with exact VGA on KVM
+(`build/i386-kernel/help-escape-fixed-kvm/result.json`). The full suite on
+the extended formatting source and the exact-source guest rebuild are still
+running. The human manual session remains deferred.

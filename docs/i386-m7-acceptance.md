@@ -133,3 +133,9 @@ cycles with exact task-heap recovery under 8 MiB `486,-fpu` TCG. A newer
 cross-built source passes quoted foreground records, including two-digit and
 default colors, on KVM and no-FPU TCG. The rest of quoted record semantics
 and the human observation remain open; the manual session is deferred.
+Original x64 background and style fixtures now specify `$BG,1$`, `$BK,1$`,
+`$IV,1$` and `$UL,1$` inside quoted document strings. New native probes first
+failed on the old image and now pass on an isolated cross-built source under
+both KVM and `486,-fpu` TCG, with exact VGA; the documents group passes both
+profiles. The full workstation and guest-built installation checks on this
+source remain pending. Human observation stays deferred by request.

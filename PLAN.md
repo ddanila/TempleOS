@@ -3307,3 +3307,11 @@ record types, run the full workstation suite on this exact source, then
 guest-build, install and repeat the generation and no-FPU gates. The older
 Gen2 source's complete six-module no-FPU retained rebuild now passes a
 post-exit byte-identity audit. Human QEMU observation remains deferred.
+Original x64 fixtures also establish quoted background and style records:
+`A$BG,1$B` has length 8, and `A$BK,1$$IV,1$$UL,1$B` has length 20.
+The i386 lexer now preserves those records alongside foreground entries;
+focused cross-built 8 MiB KVM and `486,-fpu` TCG probes, plus the 33-command
+documents group, pass with exact VGA. A full workstation regression and an
+exact-source guest-built installed generation are the next integration gates.
+Quoted record types beyond these five still need original-behavior fixtures.
+The manual QEMU session remains deferred by request.

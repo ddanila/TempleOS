@@ -1653,8 +1653,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         {'key':'ret'},{'expect_rows':asm_rows,'label':'link-opened'},
                         {'key':'esc'},
                         {'expect_rows':help_rows,'colors':help_selected_colors,
-                         'backgrounds':help_selected_backgrounds,'label':'link-returned'},
-                        {'key':'esc'}],
+                         'backgrounds':help_selected_backgrounds,'label':'link-returned'}],
               'final_rows':help_rows,'final_colors':help_selected_colors,
               'final_backgrounds':help_selected_backgrounds})
             active_group='mouse'
