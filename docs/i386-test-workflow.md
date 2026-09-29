@@ -75,6 +75,20 @@ runpy.run_path('tools/i386-kernel-input.py')['run_input'](
 PY
 ```
 
+After the corresponding `486,-fpu` TCG full suite and three-boot writable
+DolDoc run pass on that same disk, prepare a local release candidate with:
+
+```sh
+python3 tools/package-i386-release.py --out build/i386-release-candidate
+```
+
+The packager verifies the recorded 1,233 source-file hashes, the installed
+Generation 2 disk and flat-image hashes, the executable-region audit, both
+complete workstation verdicts and the three writable boot verdicts. It
+produces a compressed raw IDE disk, manifest, command records and acceptance
+evidence. Human manual observation is a separate M7 gate; this command does
+not publish a release.
+
 ```sh
 python3 tools/i386-kernel-input.py --list-groups
 python3 tools/i386-kernel-input.py --group windows

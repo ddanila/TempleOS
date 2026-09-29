@@ -10345,5 +10345,22 @@ extent ownership and allocation bitmaps
 image also passes the 386 executable audit. Its full 8 MiB QEMU/KVM
 workstation suite passes with 506 native commands, 569 submitted lines, exact
 VGA checkpoints and 20 document-development cycles with exact heap recovery
-(`build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`). Manual
-usability and release packaging remain open.
+(`build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`). The exact
+Generation 2 source disk also passes a three-boot writable `486,-fpu` TCG
+DolDoc project run: 107/56/15 commands, saved revision, independent RedSea
+extent and bitmap checks, and an unchanged source-image hash
+(`build/i386-kernel/selfhost-install-gen2-fixed/doldoc-tcg-nofpu/result.json`).
+The exact Generation 2 disk also passes the complete 8 MiB `486,-fpu` TCG
+workstation suite: 506 native commands, 569 submitted lines, exact VGA
+checkpoints and 20 document-development cycles with exact heap recovery.
+Startup measured 73.68 seconds and long-document key-to-VGA update 0.265
+seconds (`build/i386-kernel/selfhost-install-gen2-fixed/full-tcg-nofpu/result.json`).
+A local release candidate now exists at `build/i386-release-candidate/`:
+the 16 MiB Generation 2 raw disk compresses to 1,805,767 bytes and its
+manifest names the original image SHA-256
+`c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8`.
+`tools/package-i386-release.py` checks the 1,233 source-input hashes, the
+Generation 2 identity and executable audit, the two full workstation results,
+and the three writable boots before bundling evidence. An independent
+manifest walk and decompression hash check pass. Manual usability and release
+publication remain open.

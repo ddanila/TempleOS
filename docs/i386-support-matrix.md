@@ -20,6 +20,9 @@ in `PLAN.md` remain open.
 | Generation 2 image SHA-256 | `c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8` (`build/i386-kernel/selfhost-install-gen2-fixed/target.img`) |
 
 The command manifests in each result directory contain the exact QEMU argv.
+The locally prepared candidate in `build/i386-release-candidate/` bundles the
+compressed Generation 2 disk, source-input hashes, command records and these
+acceptance results; `tools/package-i386-release.py` verifies their linkage.
 The host has SeaBIOS `bios-256k.bin` at SHA-256
 `e26615f9ad430328f49ca105e570b2dc4490a08a34ea73d27cae8b809a30ee06`
 and `vgabios-stdvga.bin` at SHA-256
@@ -36,7 +39,9 @@ QEMU loaded.
 | `486`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/result.json`: independent Generation 2 boot, `6*7` = 42, `DocAllocationCheck` = 12 | Pass at 8 MiB |
 | `486`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`: Generation 2 full 506-command workstation suite, exact VGA and 20 document resource cycles | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-fixed/full-tcg-nofpu/result.json`: same complete 506-command workstation suite, exact VGA and heap recovery | Pass at 8 MiB |
+| `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-gen2-fixed/full-tcg-nofpu/result.json`: Generation 2 complete 506-command suite, exact VGA and heap recovery; 73.68 s startup, 0.265 s long-document key-to-VGA update | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/sf-doldoc/result.json`: three writable boots on the fully guest-built image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
+| `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-gen2-fixed/doldoc-tcg-nofpu/result.json`: three writable boots on the Generation 2 image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, KVM | `build/i386-kernel/resource-profile-third/resource-result.json`: 7,143,424-byte heap arena and 20 document cycles with exact live-heap recovery | Pass at 8 MiB |
 | `486,-fpu` | `build/i386-doldoc-session-no-fpu-help/result.json`: three writable boots, 107/56/15 guest commands; F1 help return, F5 execution, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `pentium3,-fpu` | `build/i386-doldoc-session-pentium3-no-fpu/result.json`: the same three-boot workflow and persisted-format audit | Pass at 8 MiB |

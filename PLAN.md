@@ -3104,5 +3104,19 @@ volumes pass independent ownership/bitmap audits. The Generation 2 executable
 image passes the 386 instruction audit. Its full 8 MiB QEMU/KVM workstation
 suite also passes: 506 native commands, 569 submitted lines, exact VGA
 checkpoints and 20 document-development cycles with exact heap recovery
-(`build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`). The
-release package and human manual observation remain open M7 gates.
+(`build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`). The same
+Generation 2 disk passes the three-boot writable DolDoc project check at 8 MiB
+under `486,-fpu` TCG: 107/56/15 commands, saved revision, and an independent
+RedSea extent/bitmap audit
+(`build/i386-kernel/selfhost-install-gen2-fixed/doldoc-tcg-nofpu/result.json`).
+The complete 8 MiB `486,-fpu` TCG workstation suite also passes on the
+Generation 2 disk: 506 native commands, 569 submitted lines, exact VGA
+checkpoints and 20 document-development cycles with exact heap recovery.
+Startup measured 73.68 seconds and long-document key-to-VGA update 0.265
+seconds (`build/i386-kernel/selfhost-install-gen2-fixed/full-tcg-nofpu/result.json`).
+A local 2.1 MiB release candidate under `build/i386-release-candidate/` now
+contains the compressed Generation 2 disk, source-input hash manifest, QEMU
+command records, acceptance results, support matrix and reproduction steps.
+The packager verifies all 1,233 recorded source files, the disk hash, both
+full-suite verdicts and the three-boot writable verdict before producing it.
+Publication and human manual observation remain open M7 gates.
