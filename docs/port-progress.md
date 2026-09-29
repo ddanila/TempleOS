@@ -10762,3 +10762,16 @@ quoted-style probes pass under 8 MiB `486,-fpu` TCG with exact VGA
 isolated build directory). A complete no-FPU workstation run on this disk
 and native flat-kernel guest build/install are active. A fully guest-built
 second generation and the human observation remain open.
+
+The first fully guest-built generation from the expanded quoted-format source
+now passes native flat-kernel and six boot-helper construction, installation
+and independent 8 MiB KVM cold boot
+(`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/result.json`).
+Its linked image is 471,992 bytes, SHA-256
+`abbf135ec52638d586ced2e074b987e51415a9f1edf749117e91ef8033866504`.
+The installed disk passes the 386 executable-region audit, including guest
+compiler templates, along with boot payload and RedSea ownership checks
+(`selfhost-install-style-kvm/instruction-audit/result.json` under the same
+isolated build directory). A second native generation is running from this
+target, as is the full no-FPU workstation suite on the preceding retained-
+module installation. Human observation remains deferred.

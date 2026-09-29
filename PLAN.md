@@ -3337,3 +3337,9 @@ guest-installed disk, quoted background and style probes pass under
 `486,-fpu` TCG with exact VGA. A full installed-disk no-FPU workstation
 run and native flat-kernel build/install are active; second-generation
 identity and human observation remain open.
+The first fully guest-built expanded-source generation now passes native
+flat-kernel and boot-helper construction, installation and independent
+8 MiB KVM cold boot. Its linked image is 471,992 bytes. The installed
+image passes the 386 executable-region, guest compiler template, boot-area
+and filesystem audit. A second guest-built generation and complete no-FPU
+workstation run are active; human observation remains deferred.

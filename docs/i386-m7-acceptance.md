@@ -164,3 +164,11 @@ probes also pass with exact VGA on this guest-installed disk under 8 MiB
 `486,-fpu` TCG. The complete installed-disk no-FPU workstation and native
 flat-kernel installation are active; second-generation identity and manual
 observation remain open.
+The first fully guest-built expanded-source generation now passes native
+flat-kernel and boot-helper construction, installation, independent 8 MiB KVM
+cold boot, and the guest 386 executable/boot/filesystem audit. The linked
+image is 471,992 bytes
+(`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/result.json`,
+`selfhost-install-style-kvm/instruction-audit/result.json`). Second-generation
+identity, the full installed-disk no-FPU run, and human observation remain
+open; manual observation is deferred by request.
