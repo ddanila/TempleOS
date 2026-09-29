@@ -11028,3 +11028,9 @@ every checkpoint, a 0.268-second long-document visible-update latency and
 Focused default-color and shifted-record probes also pass under no-FPU TCG
 on this installed image. Its three-boot writable session is running; human
 manual observation remains deferred.
+That session now passes under 8 MiB `486,-fpu` TCG: 107/56/15 commands,
+exact VGA, 0.346-second break recovery, unchanged source disk and
+independently verified RedSea extent/bitmap ownership after create,
+reopen and revision
+(`build/i386-kernel/selfhost-install-default-colors-kvm/doldoc-tcg-nofpu/result.json`).
+Human observation remains deferred.

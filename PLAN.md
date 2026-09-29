@@ -3507,3 +3507,9 @@ every checkpoint, 0.268-second long-document visible-update latency and
 The focused default-color and shifted-record probes also pass under no-FPU
 TCG on that target. A three-boot writable session is running; the manual
 QEMU session stays deferred.
+That three-boot writable DolDoc session now passes under 8 MiB `486,-fpu`
+TCG: 107/56/15 commands, exact VGA, 0.346-second break recovery, an
+unchanged source disk and verified RedSea extent/bitmap ownership after
+create, reopen and revision
+(`build/i386-kernel/selfhost-install-default-colors-kvm/doldoc-tcg-nofpu/result.json`).
+The manual QEMU session remains deferred.

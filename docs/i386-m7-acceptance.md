@@ -322,3 +322,8 @@ document cycles with exact task-heap recovery
 (`build/i386-kernel/selfhost-install-default-colors-kvm/full-tcg-nofpu/result.json`).
 Focused default-color and shifted-record no-FPU probes pass on that target.
 The three-boot writable session is running; human observation stays deferred.
+That session now passes under 8 MiB `486,-fpu` TCG: 107/56/15 commands,
+exact VGA, 0.346-second break recovery, unchanged source disk and RedSea
+extent/bitmap ownership audit
+(`build/i386-kernel/selfhost-install-default-colors-kvm/doldoc-tcg-nofpu/result.json`).
+Human observation stays deferred.
