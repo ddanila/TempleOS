@@ -10615,3 +10615,17 @@ The corrected nine-command help group separately passes on both profiles.
 The exact-source six-module guest rebuild is in its final module; installed
 and repeated guest-built generations are still required. Human manual
 observation remains deferred.
+
+## Quoted document formatting red test (2026-09-29)
+
+Original x64 TempleOS executed an in-memory document whose quoted string
+contains a canonical foreground entry and produced `A$FG,4$B`, length 8
+(`tests/guest/i386-exedoc-quote/Once.HC`). The matching i386 `ExeDoc`
+document currently produces `AB`, length 2, and the standalone native test
+fails at its expected result check
+(`tools/test-i386-exedoc-quote.py`,
+`build/i386-kernel/exedoc-quote-native-red-kvm/`). The i386 document lexer
+skips formatting entries instead of invoking the original quoted `LexDollar`
+path. This is an open programming-model gap, separate from the passing
+binary-size, include and binary-insertion probes. The test is not part of the
+passing release suite yet.

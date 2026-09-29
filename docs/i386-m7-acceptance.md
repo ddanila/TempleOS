@@ -101,3 +101,7 @@ workstation regressions now pass on both KVM and `486,-fpu` TCG: 513 commands,
 (`direct-doc-breakfix-full-kvm-fixed-help/result.json` and
 `direct-doc-breakfix-full-tcg-nofpu/result.json`). The exact-source
 six-module guest rebuild and installation remain pending.
+An original x64 fixture now identifies another open programming-model case:
+quoted foreground formatting yields `A$FG,4$B` (length 8), while the current
+i386 `ExeDoc` yields `AB` (length 2). The standalone red test is
+`tools/test-i386-exedoc-quote.py`; it is not a passing release gate.

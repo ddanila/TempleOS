@@ -3274,3 +3274,10 @@ exact VGA and 20 document cycles with exact heap recovery. The exact-source
 six-module retained rebuild has reached its final module; native installation
 and repeat-generation evidence still need to follow. Human observation stays
 deferred.
+The next original-programming-model red test is quoted DolDoc formatting.
+Original x64 `ExeDoc` turns a foreground entry between `A` and `B` inside a
+quoted string into `A$FG,4$B` (length 8); the current i386 lexer skips the
+entry and returns length 2. The standalone native test is intentionally red,
+outside the passing release suite. After the current guest-built image is
+installed and audited, teach document lexing to preserve this quoted token
+behavior, then rerun the focused test and workstation gates.
