@@ -66,7 +66,8 @@ def main():
     run_input(target, out / 'boot', snapshot=True, ram_mib=8,
               accel=args.accel, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
-                             'commands': [('6*7;', ['42'])]})
+                             'commands': [('6*7;', ['42']),
+                                          ('DocAllocationCheck;', ['12'])]})
     result = {'result': 'pass', 'flat_bytes': len(flat),
               'flat_sha256': hashlib.sha256(flat).hexdigest(),
               'guest_built_flat_modules': list(FLAT),

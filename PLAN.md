@@ -3067,3 +3067,14 @@ corrected guest-built copy: 506 commands, 569 submitted lines, and exact VGA
 checkpoints. Rebuild and install all six retained modules
 from the corrected source, rerun the full workstation/resource suite, then
 rebuild a second fully guest-built generation before closing M7.
+
+The corrected six-module retained build now passes its independent T32M and
+export audit. All six copies were installed into a candidate disk and cold-booted
+under 8 MiB QEMU/KVM; `6*7` returns 42 and `DocAllocationCheck` returns 12.
+The same candidate guest-built and installed the current flat kernel and five
+boot helpers onto a target disk. That target independently cold-booted at 8 MiB,
+returned 42 from `6*7` and 12 from `DocAllocationCheck`, and retained all six
+guest-built runtime/compiler modules unchanged. The full workstation suite on
+the corrected retained candidate and a second-generation rebuild from the
+fully guest-built target are running. Their results and the remaining M7
+publication/resource gates are still required.

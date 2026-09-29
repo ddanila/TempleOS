@@ -10287,3 +10287,18 @@ install it alongside a guest-built flat kernel, run the complete 8 MiB
 workstation and resource suite, and verify a second generation. The focused
 console result is not yet evidence that the corrected all-module system passes
 those gates.
+
+The corrected 16 MiB guest build has now completed all six retained T32Ms.
+The persisted-module audit passes for 407-byte `Startup`, 178,962-byte
+`MemoryRuntime`, 301,724-byte `FileRuntime`, 896,448-byte `ConsoleRuntime`,
+1,209,705-byte `CompilerProbe` and 1,698,986-byte `CompilerRuntime`.
+After installing those exact copies, an independent 8 MiB QEMU/KVM boot
+returns 42 from `6*7` and 12 from `DocAllocationCheck`
+(`build/i386-kernel/retained-install-fixed/result.json`). That candidate then
+guest-built the flat kernel and five boot helpers, linked a 457,000-byte boot
+image and installed it to a separate target disk. The target independently
+booted at 8 MiB and returned 42 from `6*7` and 12 from
+`DocAllocationCheck`; all six retained T32Ms matched their guest-built source
+bytes (`build/i386-kernel/selfhost-install-fixed/result.json`). The full
+workstation suite and second-generation rebuild are running; their results
+are not yet counted as passed.

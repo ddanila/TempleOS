@@ -49,7 +49,8 @@ def main():
     run_input(candidate, out / 'boot', snapshot=True, ram_mib=8,
               accel=args.accel, startup_timeout=180, startup_check={
                   'status': 'ok', 'answers': [],
-                  'commands': [('6*7;', ['42'])]})
+                  'commands': [('6*7;', ['42']),
+                               ('DocAllocationCheck;', ['12'])]})
     result = {'result': 'pass', 'installed': list(MODULES),
               'module_bytes': {name: len(built[f'/Probe/Retained{name}.t32m'])
                                for name in MODULES}}
