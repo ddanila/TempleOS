@@ -48,6 +48,7 @@ QEMU loaded.
 | `486,-fpu`, TCG | `build/sf-doldoc/result.json`: three writable boots on the fully guest-built image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-gen2-fixed/doldoc-tcg-nofpu/result.json`: three writable boots on the Generation 2 image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, KVM | `build/i386-kernel/resource-profile-third/resource-result.json`: 7,143,424-byte heap arena and 20 document cycles with exact live-heap recovery | Pass at 8 MiB |
+| `486,-fpu`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/resource-profile/resource-result.json`: final-image 7,143,424-byte heap arena and 20 document cycles with 3,616-byte peak live growth and exact recovery | Pass at 8 MiB |
 | `486,-fpu` | `build/i386-doldoc-session-no-fpu-help/result.json`: three writable boots, 107/56/15 guest commands; F1 help return, F5 execution, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `pentium3,-fpu` | `build/i386-doldoc-session-pentium3-no-fpu/result.json`: the same three-boot workflow and persisted-format audit | Pass at 8 MiB |
 | `486,-fpu` | `build/i386-mouse-held-combined/result.json`: 204 mouse and document-editing commands with exact VGA checkpoints | Pass at 8 MiB |

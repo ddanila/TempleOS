@@ -3129,4 +3129,8 @@ The later 32-bit CPU profile now passes the complete 8 MiB workstation suite
 on that same image: `pentium3,-fpu` TCG executes 506 native commands and 569
 submitted lines with exact VGA checks and 20 document-development cycles
 (`build/i386-kernel/selfhost-install-gen2-fixed/full-pentium3-nofpu/result.json`).
+An 8 MiB `486,-fpu` focused profile on the exact Generation 2 disk confirms
+the 7,143,424-byte heap arena and 20 document-development cycles with 3,616
+bytes of temporary live growth and exact return to the 1,352,224-byte live
+baseline (`build/i386-kernel/selfhost-install-gen2-fixed/resource-profile/resource-result.json`).
 Publication and human manual observation remain open M7 gates.

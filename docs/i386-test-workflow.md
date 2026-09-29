@@ -88,7 +88,8 @@ complete workstation verdicts (`486` KVM, `486,-fpu` TCG and `pentium3,-fpu`
 TCG), the three writable boot verdicts and two final-image installation
 recovery cases. It produces a compressed raw IDE disk, manifest, command
 records and acceptance evidence. It hashes both retried targets and the
-recovery source against the release image. Human manual observation is a
+recovery source against the release image and requires the focused 8 MiB
+resource profile from that exact disk. Human manual observation is a
 separate M7 gate; this command does not publish a release.
 
 The native build/install harnesses accept `--cpu` as well as `--accel`, so the

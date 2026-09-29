@@ -97,6 +97,15 @@ def main():
     require_qemu_command(gen2 / 'full-tcg-nofpu/command.json', '486,-fpu', 'tcg', image)
     require_qemu_command(gen2 / 'full-pentium3-nofpu/command.json',
                          'pentium3,-fpu', 'tcg', image)
+    resource_path = gen2 / 'resource-profile/resource-result.json'
+    resource = read_pass(resource_path)
+    if (resource.get('cpu'), resource.get('ram_mib'),
+            resource.get('document_development_cycles'),
+            resource.get('arena_bytes'), resource.get('temporary_live_growth')) != (
+            '486,-fpu', 8, 20, 7143424, 3616):
+        raise ValueError('final-image 8 MiB resource profile is incomplete')
+    require_qemu_command(gen2 / 'resource-profile/command.json',
+                         '486,-fpu', 'kvm', image)
     session_path = gen2 / 'doldoc-tcg-nofpu/result.json'
     session = read_pass(session_path)
     if session.get('source_disk_sha256') != image_hash or not session.get('source_disk_unchanged'):
@@ -153,7 +162,8 @@ def main():
             'generation-2-pentium3-no-fpu-command.json': gen2 / 'full-pentium3-nofpu/command.json',
             'generation-2-tcg-no-fpu-doldoc.json': session_path,
             'generation-2-install-recovery.json': recovery_path,
-            'resource-profile.json': base / 'resource-profile-third/resource-result.json',
+            'resource-profile.json': resource_path,
+            'resource-profile-command.json': gen2 / 'resource-profile/command.json',
             'support-matrix.md': ROOT / 'docs/i386-support-matrix.md',
             'test-workflow.md': ROOT / 'docs/i386-test-workflow.md',
         }

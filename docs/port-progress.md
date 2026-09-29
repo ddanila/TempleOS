@@ -10379,3 +10379,10 @@ commands and 569 submitted lines with exact VGA checkpoints and 20 document
 cycles with heap recovery. Startup measured 73.38 seconds and the
 long-document key-to-VGA update 0.382 seconds
 (`build/i386-kernel/selfhost-install-gen2-fixed/full-pentium3-nofpu/result.json`).
+
+The exact Generation 2 image also passes a focused 8 MiB `486,-fpu` resource
+profile. The native heap arena is 7,143,424 bytes from physical 1,114,112;
+20 document-development cycles begin at 1,352,224 live bytes, peak at
+1,355,840 live bytes and 1,356,800 reserved bytes, then recover the exact
+baseline. Temporary live growth is 3,616 bytes
+(`build/i386-kernel/selfhost-install-gen2-fixed/resource-profile/resource-result.json`).
