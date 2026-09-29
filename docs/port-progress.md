@@ -10400,3 +10400,10 @@ build-input hashes in the checkout and independently reads the Generation 2
 RedSea volume: all 814 delivered source files match the same hashes. The
 cross-build manifest's older revision was recorded from a dirty worktree, so
 the package reports it separately.
+
+The first complete 16 MiB `486,-fpu` TCG flat-kernel rebuild used the
+2,400-second default per-command harness limit. Its guest log reached 191 of
+225 kernel function outputs with no guest build error, but the host console
+check timed out before the module returned. A separate build with a 7,200-
+second limit was already running and remains the acceptance attempt. The
+retained-module no-FPU build also remains live; neither checkpoint is a pass.

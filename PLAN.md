@@ -3145,3 +3145,8 @@ revision `78f66cfc`: all 1,233 recorded build-input hashes match the checkout,
 and all 814 source files delivered on the Generation 2 RedSea volume match
 those same hashes byte for byte. The earlier cross-build manifest revision
 recorded a dirty worktree and is not used alone as the source identifier.
+The initial 16 MiB `486,-fpu` TCG flat-kernel rebuild reached 191 of 225
+function outputs before the host harness's 2,400-second command timeout; no
+guest build error appeared. An independent run with a 7,200-second limit is
+continuing, alongside the retained-module no-FPU rebuild. Neither is yet a
+promotion pass.

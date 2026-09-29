@@ -27,6 +27,9 @@ evidence rather than repository contents.
 
 The 16 MiB `486,-fpu` TCG retained rebuild and flat-kernel installation are
 running in `build/i386-kernel/retained-build-gen3-tcg-nofpu/` and
-`build/i386-kernel/selfhost-install-gen3-tcg-nofpu/`. A command checkpoint is
-progress information, not a passing verdict. Record their final result and
-compare their artifacts before promoting this row.
+`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/`. An earlier kernel
+attempt with the default 2,400-second per-command limit reached 191 of 225
+function outputs, then the host screen check timed out without a guest build
+error. The separate 7,200-second run preserves the full no-FPU build gate.
+A command checkpoint is progress information, not a passing verdict. Record
+the final result and compare its artifacts before promoting this row.
