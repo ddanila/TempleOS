@@ -211,7 +211,8 @@ writable-session tests provide repeatable hardware-input and exact-pixel gates.
 ## Manual self-hosted workstation session
 
 Use the independently installed fully guest-built disk. Keep a writable copy so the
-automated reference remains unchanged:
+automated reference remains unchanged. Record observations in the
+[manual observation template](i386-manual-observation-template.md):
 
 ```sh
 cp build/i386-kernel/selfhost-install-gen2-fixed/target.img build/i386-manual-source.img
