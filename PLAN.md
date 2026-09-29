@@ -3150,6 +3150,12 @@ function outputs before the host harness's 2,400-second command timeout; no
 guest build error appeared. An independent run with a 7,200-second limit is
 continuing, alongside the retained-module no-FPU rebuild. Neither is yet a
 promotion pass.
+The retained-build harness now has an explicit resume mode for a timed-out
+multi-module TCG build. It preserves the already written `source.img`, rebuilds
+only named unfinished modules after QEMU exits, then uses `--audit-only` across
+all six modules to verify final persisted bytes against the installed image.
+The running first attempt is still subject to its original per-command limit;
+this recovery path does not count as a pass until the final audit succeeds.
 The exact Generation 2 disk has now also passed all three installation
 hard-stop cases under `486,-fpu` TCG. Stops during boot-sector writes at LBA
 128 and 850 left LBA 0 blank and the RedSea bitmap exact; retries reproduced

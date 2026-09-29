@@ -112,6 +112,14 @@ python3 tools/test-i386-retained-build.py \
   --out build/i386-kernel/retained-build-gen3-tcg-nofpu
 ```
 
+If a long run reaches the host command timeout after earlier modules have
+already been written to `source.img`, wait for its QEMU process to exit. Then
+use `--resume` with `--module NAME` for the unfinished modules and a measured
+`--command-timeout`; this reuses the persisted disk instead of copying the
+original input again. Once all six are present, run `--audit-only` on the same
+output directory with `--compare-installed` to require byte identity. Never
+resume or audit a disk while another QEMU process is writing it.
+
 `tools/test-i386-selfhost-install.py` also accepts `--command-timeout` in
 seconds for the long 16 MiB TCG kernel build; its default remains 2,400
 seconds. Set a measured longer limit when the guest is still emitting

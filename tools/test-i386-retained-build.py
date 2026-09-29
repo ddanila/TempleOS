@@ -59,11 +59,15 @@ def main():
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for the build boot')
     parser.add_argument('--module', choices=MODULES, action='append', dest='modules')
     parser.add_argument('--command-timeout', type=int, default=3600)
+    parser.add_argument('--resume', action='store_true',
+                        help='Build selected modules on an existing output source.img')
     parser.add_argument('--audit-only', action='store_true',
                         help='Audit the source.img produced by an earlier build')
     parser.add_argument('--compare-installed', type=Path,
                         help='Require guest output to match installed T32Ms on this disk')
     args = parser.parse_args()
+    if args.resume and args.audit_only:
+        parser.error('--resume and --audit-only cannot be combined')
     selected = tuple(args.modules or MODULES)
     if len(selected) != len(set(selected)):
         parser.error('Each module may be selected only once')
@@ -71,7 +75,11 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     source = out / 'source.img'
     if not args.audit_only:
-        shutil.copyfile(args.disk, source)
+        if args.resume:
+            if not source.is_file():
+                parser.error(f'cannot resume without {source}')
+        else:
+            shutil.copyfile(args.disk, source)
         commands = [(f'I386BuildModule("C:/Kernel/I386/{name}.HC",'
                      f'"C:/Probe/Retained{name}.t32m",TRUE)>0;', ['1'])
                     for name in selected]

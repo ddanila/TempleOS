@@ -10417,3 +10417,10 @@ the release image
 The release candidate now includes all 16 KVM and no-FPU TCG recovery QEMU
 command records. Its packager checks their CPU, accelerator, RAM and disk paths
 before accepting the results.
+The retained-module harness now supports `--resume`: after a timed-out QEMU
+process exits, it can preserve its existing `source.img` and rebuild only named
+unfinished modules before an all-module `--audit-only` byte comparison. A KVM
+smoke run resumed a copied Generation 2 disk, rebuilt `Startup` and matched its
+407-byte installed module exactly
+(`build/i386-kernel/retained-resume-smoke/result.json`). The long no-FPU TCG
+rebuilds remain live; this smoke run is not their final verdict.
