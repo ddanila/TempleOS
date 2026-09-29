@@ -3156,6 +3156,14 @@ only named unfinished modules after QEMU exits, then uses `--audit-only` across
 all six modules to verify final persisted bytes against the installed image.
 The running first attempt is still subject to its original per-command limit;
 this recovery path does not count as a pass until the final audit succeeds.
+The first integrated `486,-fpu` TCG retained build then reached its 3,600-
+second host limit during `ConsoleRuntime`. A post-exit RedSea read found the
+already persisted `Startup` (407 bytes), `MemoryRuntime` (178,962 bytes) and
+`FileRuntime` (301,724 bytes), each byte-identical to the Generation 2 installed
+module. `ConsoleRuntime`, `CompilerProbe` and `CompilerRuntime` were absent,
+so this is a partial result. The explicit `--resume` run for those three is
+now active with a 14,400-second per-command limit. An all-six `--audit-only`
+check remains required before the no-FPU retained-build gate passes.
 The exact Generation 2 disk has now also passed all three installation
 hard-stop cases under `486,-fpu` TCG. Stops during boot-sector writes at LBA
 128 and 850 left LBA 0 blank and the RedSea bitmap exact; retries reproduced

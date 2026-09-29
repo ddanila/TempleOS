@@ -33,3 +33,8 @@ function outputs, then the host screen check timed out without a guest build
 error. The separate 7,200-second run preserves the full no-FPU build gate.
 A command checkpoint is progress information, not a passing verdict. Record
 the final result and compare its artifacts before promoting this row.
+The initial retained build reached its host command timeout during
+`ConsoleRuntime`; after QEMU exited, the first three persisted T32Ms matched
+their installed Generation 2 copies byte for byte. A `--resume` run is active
+for the remaining three. The complete retained-build row still requires an
+all-six disk audit.

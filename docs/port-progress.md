@@ -10424,3 +10424,10 @@ smoke run resumed a copied Generation 2 disk, rebuilt `Startup` and matched its
 407-byte installed module exactly
 (`build/i386-kernel/retained-resume-smoke/result.json`). The long no-FPU TCG
 rebuilds remain live; this smoke run is not their final verdict.
+The first integrated `486,-fpu` TCG retained rebuild timed out in its fourth
+command while compiling `ConsoleRuntime`. After QEMU exited, an independent
+RedSea read found the persisted `Startup` (407 bytes), `MemoryRuntime` (178,962
+bytes) and `FileRuntime` (301,724 bytes) modules byte-identical to the installed
+Generation 2 copies. The other three modules were absent. A live resume run is
+compiling those three on the same disk with a 14,400-second per-command limit;
+the six-module audit remains pending.
