@@ -3211,3 +3211,10 @@ release packager verifies and bundles both command records and documents
 The local release packager also validates and bundles all 16 KVM/TCG recovery
 QEMU command records, so the CPU, accelerator, RAM size and source/target disk
 paths are independently reviewable alongside the verdicts.
+The focused 16 MiB `486,-fpu` TCG `ConsoleRuntime` source rebuild now passes:
+the guest produced an 896,448-byte module with 287 exports, and an independent
+RedSea read found its bytes identical to the installed Generation 2 module
+(`build/i386-kernel/retained-console-gen3-tcg-nofpu-long/result.json`). The
+local packager checks that disk-level identity and bundles the result and QEMU
+command. This proves one retained module under no-FPU TCG; the resumed
+integrated six-module build and its post-exit audit are still required.

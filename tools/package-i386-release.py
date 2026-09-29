@@ -159,6 +159,26 @@ def main():
             raise ValueError(f'no-FPU Generation 3 writable {phase} did not pass')
         require_qemu_command(gen3_session_dir / folder / 'command.json',
                              '486,-fpu', 'tcg', gen3_session_dir / 'session.img')
+    console_retained_dir = base / 'retained-console-gen3-tcg-nofpu-long'
+    console_retained_path = console_retained_dir / 'result.json'
+    console_retained = read_pass(console_retained_path)
+    console_module = console_retained.get('modules', {}).get('ConsoleRuntime', {})
+    if (set(console_retained.get('modules', {})) != {'ConsoleRuntime'} or
+            console_module.get('bytes') != 896448 or
+            console_module.get('exports') != 287):
+        raise ValueError('no-FPU retained console rebuild is incomplete')
+    require_qemu_command(console_retained_dir / 'qemu/command.json',
+                         '486,-fpu', 'tcg', console_retained_dir / 'source.img', 16)
+    read_redsea_files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']
+    console_copy = read_redsea_files(
+        console_retained_dir / 'source.img', {'/Probe/RetainedConsoleRuntime.t32m'})
+    installed_console = read_redsea_files(
+        image, {'/Modules/I386/ConsoleRuntime.t32m'})
+    if (set(console_copy) != {'/Probe/RetainedConsoleRuntime.t32m'} or
+            set(installed_console) != {'/Modules/I386/ConsoleRuntime.t32m'} or
+            console_copy['/Probe/RetainedConsoleRuntime.t32m'] !=
+            installed_console['/Modules/I386/ConsoleRuntime.t32m']):
+        raise ValueError('no-FPU retained console differs from installed module')
     require_workstation(gen2 / 'full/result.json', '486')
     require_workstation(gen2 / 'full-tcg-nofpu/result.json', '486,-fpu')
     require_workstation(gen2 / 'full-pentium3-nofpu/result.json', 'pentium3,-fpu')
@@ -296,6 +316,8 @@ def main():
             'generation-3-no-fpu-workstation.json': gen3 / 'full-tcg-nofpu/result.json',
             'generation-3-no-fpu-workstation-command.json': gen3 / 'full-tcg-nofpu/command.json',
             'generation-3-no-fpu-doldoc.json': gen3_session_path,
+            'generation-3-no-fpu-retained-console.json': console_retained_path,
+            'generation-3-no-fpu-retained-console-command.json': console_retained_dir / 'qemu/command.json',
             'generation-2-instruction-audit.json': gen2 / 'instruction-audit/result.json',
             'generation-2-kvm-workstation.json': gen2 / 'full/result.json',
             'generation-2-kvm-command.json': gen2 / 'full/command.json',

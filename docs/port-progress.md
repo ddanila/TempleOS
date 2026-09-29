@@ -10462,3 +10462,18 @@ checks every right-arrow caret frame after Go to line 2, and a hash-checked
 post-creation disk snapshot makes a reopen retry start at the same persistent
 state. The release packager validates this session and the Generation 3 build,
 boot, identity, ISA and full workstation results.
+
+## Focused no-FPU retained console rebuild (2026-09-29)
+
+The 16 MiB `486,-fpu` TCG guest compiled `ConsoleRuntime` from the retained
+source to an 896,448-byte T32M with 287 exports. After QEMU exited, an
+independent RedSea read found `/Probe/RetainedConsoleRuntime.t32m` in the
+guest-written disk byte-identical to `/Modules/I386/ConsoleRuntime.t32m` in
+the installed Generation 2 image (SHA-256
+`f303b1bb9053d8f0a7a64f98bd0d72978389ebe5bc8c70be0482dcde408a0c4b`).
+The result is in
+`build/i386-kernel/retained-console-gen3-tcg-nofpu-long/result.json`. The
+local release packager now requires this result, the exact no-FPU QEMU command
+and disk-level module identity, and bundles the two records. Its independent
+`verify.py` passes with 60 files. The integrated six-module resume and the
+focused compiler rebuilds are still running; the all-six retained gate is open.

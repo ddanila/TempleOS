@@ -15,7 +15,7 @@ evidence rather than repository contents.
 
 | M7 requirement | Current evidence | Status |
 | --- | --- | --- |
-| All kernel, compiler and retained runtime sources build in the guest | Six retained T32Ms in `retained-build-fixed/result.json`; six flat kernel/boot T32Ms and an independently booted installed disk in `selfhost-install-fixed/result.json`. The second generation repeats the build. `selfhost-install-gen3-tcg-nofpu-long/result.json` now passes the flat kernel and five boot helpers under `486,-fpu` TCG, and the installed disk cold-boots at 8 MiB. | Pass in 16 MiB QEMU/KVM; no-FPU flat-kernel build/install passes, while the complete no-FPU retained rebuild is still running. |
+| All kernel, compiler and retained runtime sources build in the guest | Six retained T32Ms in `retained-build-fixed/result.json`; six flat kernel/boot T32Ms and an independently booted installed disk in `selfhost-install-fixed/result.json`. The second generation repeats the build. `selfhost-install-gen3-tcg-nofpu-long/result.json` passes the flat kernel and five boot helpers under `486,-fpu` TCG, and the installed disk cold-boots at 8 MiB. A focused no-FPU `ConsoleRuntime` rebuild also matches the installed 896,448-byte module exactly. | Pass in 16 MiB QEMU/KVM; no-FPU flat-kernel build/install and focused console rebuild pass, while the complete no-FPU retained rebuild is still running. |
 | Development session survives source errors and interruption | The complete workstation suite exercises source-linked error recovery and keyboard break handling; the [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) includes an interrupted loop and subsequent compilation. | Automated cases pass; human source-edit/rebuild observation open. |
 | Native installation and interrupted-install recovery | `selfhost-install-gen2-fixed/result.json` cold-boots the installed image. Both `install-recovery-committed/result.json` (KVM) and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0; each source and all three resulting disks match the release image after recovery or publication. | Pass for tested QEMU hard stops on KVM and `486,-fpu` TCG. Physical power-loss durability is deferred. |
 | Two independent guest-built generations | `generation-identity-fixed/result.json` verifies Generations 1 and 2. `generation-identity-gen2-gen3-tcg-nofpu/result.json` verifies Generation 3 built under no-FPU TCG: all twelve T32Ms, the 457,000-byte linked image and boot area are byte-identical to Generation 2; both RedSea volumes pass ownership/bitmap audits. | Pass through Generation 3 for audited artifacts; its full workstation suite also passes. |
@@ -46,3 +46,8 @@ with exact heap recovery. The three-boot writable Generation 3 session also
 passes 107/56/15 commands and an independent RedSea audit. Its runner now
 saves a verified post-creation snapshot for reopen retries and checks each
 caret movement before revising the program; the source image stays unchanged.
+The separate 16 MiB no-FPU TCG console build now passes and matches the
+installed module byte for byte after an independent RedSea read
+(`retained-console-gen3-tcg-nofpu-long/result.json`). The package requires and
+bundles this focused evidence. It does not close the all-six retained source
+build gate; the integrated resume still needs its final audit.
