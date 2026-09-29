@@ -282,3 +282,15 @@ this latest source. The preceding default-color source passes its
 six-module guest rebuild and post-exit audit
 (`build/i386-kernel/retained-build-default-colors-kvm/result.json`).
 Human manual observation stays deferred.
+The preceding default-color source now passes replacement installation of
+all six guest-built retained modules, independent 8 MiB KVM cold boot, a
+first fully guest-built flat-kernel installation and independent cold boot.
+The 476,360-byte installed image passes the 386 executable, guest compiler-
+template, boot-payload and filesystem audit
+(`build/i386-kernel/selfhost-install-default-colors-kvm/result.json`,
+`build/i386-kernel/selfhost-install-default-colors-kvm/instruction-audit/result.json`).
+A second guest-built generation is running. The latest eight-layout-record
+source passes main cross-build, the 14-command focused probe and 33-command
+documents group on KVM and `486,-fpu` TCG with exact VGA. Its complete
+workstation and installed-generation gates remain open; human observation
+stays deferred.

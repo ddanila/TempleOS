@@ -10964,3 +10964,27 @@ KVM guest rebuild and post-exit module audit
 (`build/i386-kernel/retained-build-default-colors-kvm/result.json`). Its
 replacement installation and independent cold boot are running. Human
 manual observation remains deferred.
+
+The default-color source's six guest-built retained modules passed
+replacement installation and independent 8 MiB KVM cold boot
+(`build/i386-kernel/retained-install-default-colors-kvm/result.json`). Its
+first fully guest-built flat kernel and boot helper also installed and cold
+booted independently: 476,360 linked bytes, SHA-256
+`7cb3e5e02c680842f153d841c21a8f521565635ee08f482138277671c3ea470e`
+(`build/i386-kernel/selfhost-install-default-colors-kvm/result.json`). The
+installed image passes the 386 executable, guest compiler-template,
+boot-payload and RedSea filesystem ownership audit
+(`build/i386-kernel/selfhost-install-default-colors-kvm/instruction-audit/result.json`).
+A second guest-built generation is active. Human manual observation remains
+deferred.
+
+The latest eight-layout-record source now passes the original x64 rebuild,
+main 386 cross-build/audit and 14-command quoted-layout probe under both
+8 MiB KVM and `486,-fpu` TCG with exact VGA
+(`build/i386-kernel/exedoc-layout-all-main-kvm/result.json`,
+`build/i386-kernel/exedoc-layout-all-main-tcg-nofpu/result.json`). The
+33-command documents group also passes under both profiles with exact VGA
+(`build/i386-kernel/layout-all-documents-kvm/result.json`,
+`build/i386-kernel/layout-all-documents-tcg-nofpu/result.json`). Full
+workstation and guest-built installed-generation gates remain open for this
+source.
