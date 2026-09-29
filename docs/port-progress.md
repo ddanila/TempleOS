@@ -10304,5 +10304,9 @@ installed image passes the 386 executable audit for the linked flat image,
 retained modules and boot stages. The audit now checks the guest compiler's
 division template in its data range and still accepts the earlier host
 assembly marker form (`build/i386-kernel/selfhost-install-fixed/instruction-audit/result.json`).
-The full workstation suite and second-generation rebuild are running; their
-results are not yet counted as passed.
+The full 8 MiB QEMU/KVM workstation suite passes on the corrected retained
+candidate: 506 native commands, 569 submitted lines, exact VGA checkpoints,
+the real 12-case allocation check and 20 bounded document-development cycles
+with exact task heap recovery (`build/i386-kernel/retained-install-fixed/full/result.json`).
+The suite on the fully guest-built flat image and the second-generation
+rebuild are running; their results are not yet counted as passed.

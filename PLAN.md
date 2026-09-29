@@ -3074,9 +3074,11 @@ under 8 MiB QEMU/KVM; `6*7` returns 42 and `DocAllocationCheck` returns 12.
 The same candidate guest-built and installed the current flat kernel and five
 boot helpers onto a target disk. That target independently cold-booted at 8 MiB,
 returned 42 from `6*7` and 12 from `DocAllocationCheck`, and retained all six
-guest-built runtime/compiler modules unchanged. The full workstation suite on
-the corrected retained candidate and a second-generation rebuild from the
-fully guest-built target are running. The installed target also passes the
+guest-built runtime/compiler modules unchanged. The full 8 MiB QEMU/KVM
+workstation suite passes on the corrected six-module retained candidate:
+506 native commands, 569 submitted lines and exact VGA checkpoints. A second-
+generation rebuild from the fully guest-built target is running. The installed target also passes the
 linked-module, retained-module and boot-stage 386 instruction audit, including
-the guest compiler's division-template data. Their results and the remaining M7
-publication/resource gates are still required.
+the guest compiler's division-template data. The full suite on that installed
+target, the second-generation result, and the remaining M7 publication/resource
+gates are still required.
