@@ -10308,5 +10308,9 @@ The full 8 MiB QEMU/KVM workstation suite passes on the corrected retained
 candidate: 506 native commands, 569 submitted lines, exact VGA checkpoints,
 the real 12-case allocation check and 20 bounded document-development cycles
 with exact task heap recovery (`build/i386-kernel/retained-install-fixed/full/result.json`).
-The suite on the fully guest-built flat image and the second-generation
-rebuild are running; their results are not yet counted as passed.
+The same full 8 MiB QEMU/KVM suite passes on the fully guest-built flat and
+retained installed image (`build/i386-kernel/selfhost-install-fixed/full/result.json`):
+506 native commands, 569 submitted lines, exact VGA checkpoints and 20
+bounded document-development cycles with exact task heap recovery. The
+second-generation rebuild and three-boot no-FPU DolDoc persistence run are
+still in progress.

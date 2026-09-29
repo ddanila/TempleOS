@@ -3079,6 +3079,8 @@ workstation suite passes on the corrected six-module retained candidate:
 506 native commands, 569 submitted lines and exact VGA checkpoints. A second-
 generation rebuild from the fully guest-built target is running. The installed target also passes the
 linked-module, retained-module and boot-stage 386 instruction audit, including
-the guest compiler's division-template data. The full suite on that installed
-target, the second-generation result, and the remaining M7 publication/resource
-gates are still required.
+the guest compiler's division-template data. The fully guest-built installed
+target also passes the full 8 MiB QEMU/KVM workstation suite: 506 native
+commands, 569 submitted lines, exact VGA checkpoints and 20 bounded document
+development cycles with exact heap recovery. The second-generation result
+and remaining M7 publication/resource gates are still required.
