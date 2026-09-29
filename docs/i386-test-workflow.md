@@ -82,6 +82,15 @@ DolDoc run pass on that same disk, prepare a local release candidate with:
 python3 tools/package-i386-release.py --out build/i386-release-candidate
 ```
 
+The package also requires an original-TempleOS DolDoc reader check on the exact
+Generation 2 image. Reproduce it with:
+
+```sh
+python3 tools/test-i386-doc-compat.py \
+  build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --out build/i386-kernel/selfhost-install-gen2-fixed/doc-compat-provenance-retry
+```
+
 The packager verifies the recorded 1,233 source-file hashes in the committed
 checkout and all 814 delivered source files on the RedSea disk, the installed
 Generation 2 disk and flat-image hashes, the executable-region audit, three
@@ -93,6 +102,8 @@ disk, manifest, command records and acceptance evidence. It hashes the source,
 both retried targets and the post-LBA-0 target for each profile against the
 release image, and checks all 16 recovery QEMU command records for the CPU,
 accelerator, RAM size and disk paths. It
+also verifies and includes the original-reader document round trip, both QEMU
+command records and the identical native/original document bytes. It
 requires the focused 8 MiB
 resource profile from that exact disk. The bundle includes `verify.py`; running
 `python3 verify.py` inside it checks every bundled file and the decompressed

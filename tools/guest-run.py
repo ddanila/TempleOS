@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import socket
 import subprocess
+import tempfile
 import time
 
 
@@ -21,8 +22,8 @@ def main():
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     log = out / 'debug.log'
-    qmp_path = out / 'qmp.sock'
-    qmp_path.unlink(missing_ok=True)
+    qmp_dir = Path(tempfile.mkdtemp(prefix='templeos-qmp-'))
+    qmp_path = qmp_dir / 'qmp.sock'
     log.write_text('')
     cmd = ['qemu-system-x86_64', '-machine', 'pc', '-accel', 'tcg',
            '-cpu', 'max', '-m', '2048', '-smp', '2', '-nic', 'none',
@@ -95,6 +96,7 @@ def main():
                 proc.wait()
             sock.close()
             qmp_path.unlink(missing_ok=True)
+            qmp_dir.rmdir()
 
 
 if __name__ == '__main__':

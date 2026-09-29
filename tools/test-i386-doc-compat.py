@@ -18,16 +18,22 @@ def run(*args):
     subprocess.run(args,cwd=ROOT,check=True)
 
 
+def sha256(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doc-compat')
     args=parser.parse_args()
+    source=args.source.resolve()
+    source_hash=sha256(source)
     out=args.out
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
     disk=out/'native.img'
-    shutil.copyfile(args.source,disk)
+    shutil.copyfile(source,disk)
     native_run=INPUT(disk,out/'native',startup_check={
         'status':'ok','answers':[],
         'commands':[
@@ -49,9 +55,12 @@ def main():
     round_trip=(exports/'NativeRoundTrip.DD').read_bytes()
     if round_trip!=native:
         raise ValueError('Original DocRead/DocSave changed the native document bytes')
+    if sha256(source)!=source_hash:
+        raise ValueError('Compatibility test changed the source image')
     result={'result':'pass','native_run':native_run,'bytes':len(native),
             'sha256':hashlib.sha256(native).hexdigest(),
-            'original_round_trip':'byte exact'}
+            'original_round_trip':'byte exact',
+            'source_disk_sha256':source_hash,'source_unchanged':True}
     (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
     print('PASS: original TempleOS read and reproduced the native i386 document')
 

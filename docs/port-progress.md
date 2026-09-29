@@ -10431,3 +10431,9 @@ bytes) and `FileRuntime` (301,724 bytes) modules byte-identical to the installed
 Generation 2 copies. The other three modules were absent. A live resume run is
 compiling those three on the same disk with a 14,400-second per-command limit;
 the six-module audit remains pending.
+The exact Generation 2 image now passes the original-TempleOS document reader
+check: an 8 MiB i386 TCG guest wrote a 37-byte DolDoc file, and original
+TempleOS under x64 TCG read and saved it byte for byte. The source disk hash
+is unchanged. The release packager checks this result, both QEMU commands and
+both document files
+(`build/i386-kernel/selfhost-install-gen2-fixed/doc-compat-provenance-retry/result.json`).

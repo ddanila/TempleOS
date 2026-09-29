@@ -137,6 +137,34 @@ def main():
     if any(session.get(phase, {}).get('result') != 'pass' for phase in
            ('create_edit_save', 'reopen_after_boot', 'revised_after_second_boot')):
         raise ValueError('writable session did not pass all three boots')
+    doc_compat_dir = gen2 / 'doc-compat-provenance-retry'
+    doc_compat_path = doc_compat_dir / 'result.json'
+    doc_compat = read_pass(doc_compat_path)
+    native_doc = doc_compat_dir / 'overlay/NativeCompat.DD'
+    original_doc = doc_compat_dir / 'original/NativeRoundTrip.DD'
+    if (doc_compat.get('source_disk_sha256') != image_hash or
+            not doc_compat.get('source_unchanged') or
+            doc_compat.get('original_round_trip') != 'byte exact' or
+            doc_compat.get('bytes') != 37 or
+            doc_compat.get('sha256') != sha256(native_doc) or
+            native_doc.read_bytes() != original_doc.read_bytes()):
+        raise ValueError('original TempleOS did not reproduce the release image document')
+    native_run = doc_compat.get('native_run', {})
+    if (native_run.get('result'), native_run.get('cpu'), native_run.get('ram_mib'),
+            native_run.get('commands'), native_run.get('vga')) != (
+            'pass', '486', 8, 2, 'all pixels matched at each checkpoint'):
+        raise ValueError('native document compatibility run is incomplete')
+    require_qemu_command(doc_compat_dir / 'native/command.json',
+                         '486', 'tcg', doc_compat_dir / 'native.img')
+    original_command = json.loads((doc_compat_dir / 'original/command.json').read_text())
+    if (not original_command or original_command[0] != 'qemu-system-x86_64' or
+            '-accel' not in original_command or
+            original_command[original_command.index('-accel') + 1] != 'tcg' or
+            '-boot' not in original_command or
+            original_command[original_command.index('-boot') + 1] != 'd' or
+            f'file={doc_compat_dir / "original-reader.iso"},format=raw,media=cdrom,if=ide,index=2'
+            not in original_command):
+        raise ValueError('original TempleOS document reader command is incomplete')
     recovery_paths = {
         'kvm': gen2 / 'install-recovery-committed',
         'tcg-no-fpu': gen2 / 'install-recovery-tcg-nofpu',
@@ -220,6 +248,11 @@ def main():
             'generation-2-pentium3-no-fpu-workstation.json': gen2 / 'full-pentium3-nofpu/result.json',
             'generation-2-pentium3-no-fpu-command.json': gen2 / 'full-pentium3-nofpu/command.json',
             'generation-2-tcg-no-fpu-doldoc.json': session_path,
+            'generation-2-document-compatibility.json': doc_compat_path,
+            'generation-2-document-native-command.json': doc_compat_dir / 'native/command.json',
+            'generation-2-document-original-command.json': doc_compat_dir / 'original/command.json',
+            'generation-2-document-native.DD': native_doc,
+            'generation-2-document-original.DD': original_doc,
             'generation-2-install-recovery.json': recovery_paths['kvm'] / 'result.json',
             'generation-2-tcg-no-fpu-install-recovery.json': recovery_paths['tcg-no-fpu'] / 'result.json',
             'resource-profile.json': resource_path,
@@ -254,6 +287,8 @@ def main():
             'all build-input hashes; all 814 source files delivered on the disk '
             'also match those hashes. `build_input_revision` is the earlier '
             'cross-build manifest revision, which recorded a dirty worktree. '
+            'The bundled document compatibility evidence records original '
+            'TempleOS reading and saving a native i386 document byte for byte. '
             'See `evidence/i386-m7-acceptance.md` '
             'for the gate status and `evidence/support-matrix.md` for verified '
             'profiles and limits. Use '

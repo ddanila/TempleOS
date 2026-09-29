@@ -31,6 +31,10 @@ the complete reference disk byte-identical and bootable
 The same three cuts also pass under 16 MiB `486,-fpu` TCG for installation
 and retry; the final published disk independently boots at 8 MiB
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu/result.json`).
+The exact Generation 2 image also writes a 37-byte DolDoc compatibility file
+under 8 MiB 486 TCG. Original TempleOS under x64 TCG reads and saves it
+byte-identically; the source image remains unchanged
+(`build/i386-kernel/selfhost-install-gen2-fixed/doc-compat-provenance-retry/result.json`).
 The host has SeaBIOS `bios-256k.bin` at SHA-256
 `e26615f9ad430328f49ca105e570b2dc4490a08a34ea73d27cae8b809a30ee06`
 and `vgabios-stdvga.bin` at SHA-256
