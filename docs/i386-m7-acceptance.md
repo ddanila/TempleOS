@@ -251,3 +251,7 @@ usability gate remains deferred by request.
 The first fully guest-built shifted-record target also passes the
 nine-command quoted shifted-X/Y probe under 8 MiB `486,-fpu` TCG with exact
 VGA (`build/i386-kernel/selfhost-install-shifted-kvm/shifted-tcg-nofpu/result.json`).
+The same target passes the three-boot writable DolDoc session at 8 MiB
+`486,-fpu`: 107/56/15 commands, exact VGA, 0.285-second break recovery,
+unchanged source disk and RedSea extent/bitmap ownership audit
+(`build/i386-kernel/selfhost-install-shifted-kvm/doldoc-tcg-nofpu/result.json`).

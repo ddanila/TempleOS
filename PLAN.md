@@ -3418,3 +3418,8 @@ The manual QEMU usability session remains deferred by request.
 The first fully guest-built shifted-record target also passes the native
 nine-command quoted shifted-X/Y probe under 8 MiB `486,-fpu` TCG with exact
 VGA (`build/i386-kernel/selfhost-install-shifted-kvm/shifted-tcg-nofpu/result.json`).
+That same fully guest-built target passes the three-boot writable DolDoc
+session under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA,
+0.285-second break recovery, an unchanged source disk and verified RedSea
+extent/bitmap ownership after create, reopen and revision
+(`build/i386-kernel/selfhost-install-shifted-kvm/doldoc-tcg-nofpu/result.json`).
