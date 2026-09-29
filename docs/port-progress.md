@@ -10560,3 +10560,21 @@ exact VGA under KVM and `486,-fpu` TCG
 Quoted formatting, source positions and unwinding remain unverified, and the
 guest-built release disk has not yet been updated. The human manual QEMU
 session remains deferred by user request.
+
+## Document diagnostic line correction (2026-09-29)
+
+The first three-boot writable session on the direct-document cross-build
+reached its multiline syntax-error case and found a real regression: after a
+newline, the lexer reset the source line to the following text entry's stale
+`y` value, so `DocEd` logged diagnostic line 1 and selected the first line
+instead of line 2. The fixture stopped at `startup-command-32`
+(`build/i386-kernel/direct-doc-doldoc-tcg-nofpu/result.json`).
+The document lexer now advances `line_start` and `line_num` at the newline,
+matching the original lexer rule, and preserves that line through ordinary
+text entries. The three-generation original rebuild and cross-build pass;
+the 386 boot audit passes on the new image. A fresh `486,-fpu` writable
+session has passed the formerly failing case and logged `DOC EXEC diagnostic
+line 0000000000000002`, then continued through later commands
+(`build/i386-kernel/direct-doc-linefix-doldoc-tcg-nofpu/create-edit-save/`).
+The full three-boot verdict and guest rebuild from this exact fixed source
+remain in progress.

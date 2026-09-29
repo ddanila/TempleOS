@@ -88,3 +88,8 @@ Focused include/resume and embedded-binary insertion tests pass under KVM and
 `exedoc-binary-direct-*/result.json`). Quoted formatting, source diagnostics
 and unwind behavior still need focused verification. Human manual observation
 remains deferred by the user.
+The first direct-document writable-session run found the document lexer
+resetting a multiline error's line number to 1. After correcting newline
+tracking, the new `486,-fpu` run passed the previously failing editor check
+and logged diagnostic line 2. Its complete three-boot verdict and an exact-
+source guest rebuild are still pending.

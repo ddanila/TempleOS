@@ -3260,3 +3260,8 @@ self-hosted generation from
 the updated sources. Focused direct-document include/resume and binary
 insertion tests already pass under KVM and `486,-fpu` TCG. Human manual QEMU
 observation remains deferred by request.
+The first writable-session attempt exposed a diagnostic line regression:
+ordinary text after a newline reset the compiler line to 1. A source fix
+now reaches the formerly failing editor case and logs line 2 under
+`486,-fpu` TCG; the complete three-boot run and guest rebuild from that fixed
+source are in progress.
