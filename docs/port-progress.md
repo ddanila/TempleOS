@@ -10797,3 +10797,23 @@ audit. The original source disk is unchanged
 (`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/doldoc-tcg-nofpu/result.json`).
 The complete no-FPU workstation runs on the retained-module installation and
 the fully guest-built target are still active. Human observation is deferred.
+
+Both full workstation suites subsequently passed on the first fully guest-
+built expanded-source target: 513 native commands and 576 submitted lines
+each under 8 MiB KVM/486 and `486,-fpu` TCG, with exact VGA at every
+checkpoint and 20 bounded document-development cycles with exact task heap
+recovery (`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/full-kvm/result.json`
+and `selfhost-install-style-kvm/full-tcg-nofpu/result.json` in the same
+isolated build directory). The preceding retained-module installation also
+passes the complete `486,-fpu` TCG suite with those same command, VGA and
+heap-recovery gates
+(`../TempleOS-quote-next/build/i386-kernel/retained-install-style-kvm/full-tcg-nofpu/result.json`).
+The long no-FPU guest rebuild on the earlier direct-document installed
+generation has also finished: guest-built `ConsoleRuntime` and
+`CompilerRuntime` are byte-identical to that generation's installed modules
+(`build/i386-kernel/retained-build-direct-doc-breakfix-tcg-nofpu/result.json`).
+This result is baseline evidence, not a no-FPU guest rebuild of the newer
+quoted-format generation. The latter already has two KVM guest-built
+generations, no-FPU workstation and writable-session results. Human manual
+observation remains deferred, and original-behavior fixtures for further
+quoted document record types remain open.

@@ -3356,3 +3356,13 @@ session under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA,
 0.224-second break recovery, unchanged source disk and independently
 verified RedSea extent/bitmap ownership. The complete no-FPU workstation
 run on the target is still active. Human observation remains deferred.
+The complete 8 MiB workstation suite now passes on the first fully guest-
+built expanded-source target under both KVM/486 and TCG/`486,-fpu`: each
+profile runs 513 native commands, 576 submitted lines, exact VGA at every
+checkpoint and 20 bounded document cycles with exact heap recovery. The
+same image passes the three-boot writable session, both quoted-format
+probes, 386 audit, and two-generation byte identity. The earlier direct-
+document generation's no-FPU guest rebuild of ConsoleRuntime and
+CompilerRuntime has independently passed byte identity to its installed
+modules. M7 human QEMU observation remains deferred by request; other
+quoted document record semantics still need original-behavior fixtures.

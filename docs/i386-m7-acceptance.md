@@ -187,3 +187,16 @@ break recovery and independent RedSea extent/bitmap ownership
 (`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/doldoc-tcg-nofpu/result.json`).
 The complete no-FPU workstation suites are still active; human observation
 remains deferred by request.
+The first fully guest-built expanded-source target now passes the complete
+8 MiB workstation suite under both KVM/486 and `486,-fpu` TCG: 513 native
+commands, 576 lines, exact VGA and 20 bounded document cycles with exact
+heap recovery on each profile
+(`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/full-kvm/result.json`,
+`selfhost-install-style-kvm/full-tcg-nofpu/result.json`). Its three-boot
+writable session, two-generation byte identity and 386 audits also pass.
+The preceding retained-module installation's full no-FPU suite passes as
+well. The earlier direct-document source's no-FPU retained rebuild of
+ConsoleRuntime and CompilerRuntime now matches its installed modules byte
+for byte (`retained-build-direct-doc-breakfix-tcg-nofpu/result.json`),
+separate from the newer generation. M7 human observation remains deferred;
+further quoted-record semantics still need original-behavior fixtures.
