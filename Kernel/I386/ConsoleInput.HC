@@ -35,7 +35,8 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   if(message) I386TextWrite(&console_text,message);
   I386TextPut(&console_text,10);
 }
-Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value)
+Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
+  CDoc *document=NULL)
 {
   CI386CommandInput input;
   CI386Task *task=I386TaskSelf;
@@ -53,6 +54,7 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value)
   input.files=console_config->files; input.includes=console_config->includes;
   execution.diagnostics=0; execution.last_value=0;
   input.flags=flags; input.source=source; input.filename=filename; input.context=&execution;
+  input.document=document;
   input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
   //Required public-header publication must finish before an interactive target exists.
   irq=I386IrqSave;
@@ -80,28 +82,18 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value)
 Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
 { return ConsoleSourceResult(source,filename,flags,0); }
 I64 NativeExeDoc(CDoc *doc,I64 flags,Bool *accepted)
-{//Execute canonical document source in the live console compiler environment.
-  U8 *source=NULL,filename[256];
-  I64 old_flags,value=0;
-  Bool unlock,release,okay=FALSE;
+{//Compile directly from the locked canonical document in the live task.
+  I64 value=0;
+  Bool unlock,okay=FALSE;
   if(accepted) *accepted=FALSE;
   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return 0;
-  unlock=DocLock(doc); old_flags=doc->flags;
+  unlock=DocLock(doc);
   try {
-    doc->flags|=DOCF_NO_CURSOR;
-    source=DocSave(doc);
-    doc->flags=old_flags;
-    StrCpy(filename,doc->filename.name);
-    release=unlock; unlock=FALSE;
-    if(release) DocUnlock(doc);
-    if(source) okay=ConsoleSourceResult(source,filename,flags,&value);
-    Free(source); source=NULL;
-    if(unlock) DocUnlock(doc);
+    okay=ConsoleSourceResult("",doc->filename.name,flags,&value,doc);
   } catch {
-    doc->flags=old_flags;
-    Free(source);
-    if(unlock) DocUnlock(doc);
+    okay=FALSE;
   }
+  if(unlock) DocUnlock(doc);
   if(accepted) *accepted=okay;
   if(okay) return value;
   return 0;

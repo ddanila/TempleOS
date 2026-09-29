@@ -31,6 +31,7 @@ import U32 char_bmp_dec_numeric[16];
 import U32 char_bmp_non_eol[16];
 import U32 char_bmp_non_eol_white_space[16];
 import CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
+import Bool I386LexAttachDocRoot(CI386Heap *heap,CCmpCtrl *cc,CDoc *doc);
 import CLexFile *LexFileReleaseTop(CCmpCtrl *cc,CLexFileRelease *owner);
 import CHashTable *I386HashTableNew(CI386Heap *heap,I64 buckets);
 import Bool I386HashTableValid(CI386Heap *heap,CHashTable *table);

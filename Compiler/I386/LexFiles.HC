@@ -1,8 +1,10 @@
 #include "/Compiler/I386/LexFiles.HH"
 #include "/Compiler/I386/LexState.HH"
+#include "/Kernel/DocTypes.HH"
 #include "/Compiler/LexFiles.HC"
 #include "/Kernel/I386/Cpu.HH"
 #define I386_LEX_FILE_MAGIC 0x4C464931
+U8 i386_doc_zero=0;
 class CI386LexFile
 {
   CLexFile file;
@@ -33,6 +35,28 @@ CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc)
   if(!file) return 0;
   file->heap=heap; file->control=cc; file->signature=I386_LEX_FILE_MAGIC;
   return LexFileAttach(cc,&file->file);
+}
+Bool I386LexAttachDocRoot(CI386Heap *heap,CCmpCtrl *cc,CDoc *doc)
+{
+  CI386LexFile *owned;
+  CLexFile *file;
+  U32 flags=I386IrqSave;
+  Bool okay=FALSE;
+  if(!cc || !doc || doc->doc_signature!=DOC_SIGNATURE_VAL ||
+      !(cc->flags&CCF_DONT_FREE_BUF) || !(file=cc->lex_include_stk) ||
+      file->next || file->flags || file->doc ||
+      I386HeapSize(heap,file)!=sizeof(CI386LexFile)) goto done;
+  owned=file;
+  if(owned->signature!=I386_LEX_FILE_MAGIC || owned->heap!=heap ||
+      owned->control!=cc) goto done;
+  file->doc=doc; file->flags=LFSF_DOC;
+  file->cur_entry=doc;
+  file->line_start=doc->head.next;
+  file->line_num=1;
+  file->buf_ptr=cc->cur_buf_ptr=&i386_doc_zero;
+  okay=TRUE;
+done:
+  I386IrqRestore(flags); return okay;
 }
 //Keep the caller's document context distinct from the allocator context.
 class CI386LexFileDispatch
@@ -104,7 +128,7 @@ Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is
   I64 name_size=1,source_size,i;
   U32 flags;
   if(!cc || !cc->lex_include_stk || !name || !source || cc->flags&CCF_PMT ||
-      cc->opts&OPTF_ECHO || cc->lex_include_stk->flags&LFSF_DOC) return FALSE;
+      cc->opts&OPTF_ECHO) return FALSE;
   flags=I386IrqSave;
   source_size=I386HeapSize(heap,source);
   I386IrqRestore(flags);
@@ -134,7 +158,7 @@ Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is
   I64 name_size=1,source_size=1,i;
   U32 flags;
   if(!cc || !cc->lex_include_stk || !name || !source || cc->flags&CCF_PMT ||
-      cc->opts&OPTF_ECHO || cc->lex_include_stk->flags&LFSF_DOC) return FALSE;
+      cc->opts&OPTF_ECHO) return FALSE;
   while(name[name_size-1]) name_size++;
   while(source[source_size-1]) source_size++;
   flags=I386IrqSave;

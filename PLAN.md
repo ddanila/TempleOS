@@ -3246,14 +3246,15 @@ byte-identical to the installed Generation 2 module (SHA-256
 The packager checks the guest-written and installed bytes and bundles the
 result and exact QEMU command; its 66-file candidate verifies. The focused
 `CompilerRuntime` and integrated six-module no-FPU runs remain live.
-The next original-programming-model red test now has a reference verdict:
+The next original-programming-model test has a reference verdict:
 original x64 TempleOS executes a canonical `DOCT_INS_BIN_SIZE` entry attached
-to a three-byte `CDocBin` and returns 3. The same in-memory document on i386
-currently returns 0 because `NativeExeDoc` serializes through `DocSave`, whose
-current record subset rejects `DOCT_INS_BIN_SIZE`. The standalone native
-test in `tools/test-i386-exedoc-bin-size.py` intentionally fails at its final
-VGA result check; it is not a release gate yet. Implement a borrowed document
-source in the i386 compiler control and lexer, with original token behavior,
-lock/unwind safety and source positions. Then extend canonical save/load for
-the embedded binary records, run the red test green on both KVM and no-FPU
-TCG, and repeat the workstation and writable-project gates.
+to a three-byte `CDocBin` and returns 3. The old i386 path returned 0 because
+`NativeExeDoc` serialized through `DocSave`, whose record subset rejects that
+entry. A direct, borrowed document source in the i386 compiler and lexer now
+passes the standalone native test on a fresh cross-built image under both
+8 MiB QEMU/486 KVM and `486,-fpu` TCG. The complete KVM workstation suite
+passes 513 commands and exact VGA; the no-FPU suite is running. Next verify
+document includes, binary insertion, quoted formatting,
+source positions and unwind behavior; repeat the complete no-FPU workstation
+and writable-project gates, then rebuild/install a self-hosted generation from
+the updated sources. Human manual QEMU observation remains deferred by request.

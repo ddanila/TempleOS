@@ -14,6 +14,8 @@ class CI386CommandInput {
   U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
   I64 flags;
   I64 commands,answers,errors,warnings,exception;
+  //Borrowed for this synchronous input. The caller keeps it locked and live.
+  CDoc *document;
 };
 extern Bool I386CommandInput(CI386CommandInput *input);
 #endif

@@ -47,14 +47,16 @@ Bool I386CommandInput(CI386CommandInput *input)
       !input->filename || !input->types || !input->files ||
       input->files->version!=I386_FILE_SERVICES_VERSION ||
       input->files->bytes!=sizeof(CI386FileServices) || !input->files->control_new ||
-      input->flags&~(CCF_JUST_LOAD|I386_INPUT_ATOMIC_DEFINES)) return FALSE;
+      input->flags&~(CCF_JUST_LOAD|I386_INPUT_ATOMIC_DEFINES) ||
+      input->document && *input->source) return FALSE;
   boundary=task->last_cc;
   try {
     I386CommandInputCheckpoint(task,&interrupted);
     cc=input->files->control_new(input->source,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,input->filename);
     if(!cc) I386CommandInputCheckpoint(task,&interrupted);
     if(cc) {
-      if(!I386CmpCtrlEnter(heap,cc)) {
+      if(input->document && !I386LexAttachDocRoot(heap,cc,input->document) ||
+          !I386CmpCtrlEnter(heap,cc)) {
         I386CmpCtrlDel(heap,cc); cc=0;
       } else {
         symbols=I386FrontendServices(heap,cc,input->types,input->includes);

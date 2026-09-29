@@ -10532,3 +10532,23 @@ The release packager checks the guest-written module, installed module and
 QEMU command, and its standalone 66-file candidate verifies. The focused
 `CompilerRuntime` build and integrated six-module resume are still running;
 this is a partial retained-source pass.
+
+## Direct document compiler input (2026-09-29)
+
+The red `DOCT_INS_BIN_SIZE` test exposed an `ExeDoc` semantic gap: the i386
+implementation passed its document through `DocSave`, which does not serialize
+that in-memory entry. The compiler now accepts a borrowed, locked `CDoc` as
+its root input and reads text, newlines, tabs and embedded binary tokens
+directly from canonical entries. The original x64 fixture returns 3. On a
+fresh cross-built i386 kernel image, the formerly red native test now passes
+all 14 commands with exact VGA under 8 MiB QEMU/486 KVM
+(`build/i386-kernel/exedoc-bin-size-direct-kvm-root/result.json`) and
+`486,-fpu` TCG
+(`build/i386-kernel/exedoc-bin-size-direct-tcg-nofpu/result.json`). The
+complete KVM workstation regression now passes 513 native commands, 576
+submitted lines, exact VGA checks and 20 bounded document-development cycles
+with exact heap recovery (`build/i386-kernel/direct-doc-full-kvm/result.json`).
+The complete no-FPU TCG run is in progress. These results do not
+yet establish include behavior, binary insertion, quoted formatting, source
+positions or unwinding, nor do they update the guest-built release disk. The
+human manual QEMU session remains deferred by user request.

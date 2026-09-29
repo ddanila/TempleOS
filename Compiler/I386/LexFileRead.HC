@@ -6,7 +6,7 @@ Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
   U8 *extension,*name=0,*source;
   Bool attached;
   if(GetRFlags&0x200 || !heap || !cc || !cc->lex_include_stk || !paths || !volumes ||
-      !filename || cc->flags&CCF_PMT || cc->opts&OPTF_ECHO || cc->lex_include_stk->flags&LFSF_DOC) return FALSE;
+      !filename || cc->flags&CCF_PMT || cc->opts&OPTF_ECHO) return FALSE;
   extension=I386ExtDft(heap,filename,"HC.Z");
   if(!extension) return FALSE;
   //The compiler stores its first absolute name; FileRead normalizes it again.

@@ -67,9 +67,21 @@ Original x64 TempleOS executes a `DOCT_INS_BIN_SIZE` document record and
 returns 3 (`tests/guest/i386-exedoc-bin-size/Once.HC`). The corresponding
 i386 standalone test currently fails because `ExeDoc` returns 0 after its
 serializer rejects that record (`tools/test-i386-exedoc-bin-size.py`). This
-is a concrete open programming-model gate, outside the passing release suite.
+was a concrete open programming-model gate outside the passing release suite.
 The focused `CompilerProbe` source rebuild also passes under 16 MiB
 `486,-fpu` TCG and matches the installed 1,209,705-byte module exactly
 (`retained-compiler-probe-gen3-tcg-nofpu-long/result.json`). The package
 requires and bundles that focused result; the six-module no-FPU audit remains
 open.
+
+A fresh cross-built kernel now compiles directly from the locked `CDoc`,
+without serializing the document first. The same embedded-binary-size test
+passes with exact VGA under 8 MiB QEMU/486 KVM
+(`exedoc-bin-size-direct-kvm-root/result.json`) and `486,-fpu` TCG
+(`exedoc-bin-size-direct-tcg-nofpu/result.json`). The complete KVM suite
+passes 513 commands, 576 submitted lines, exact VGA and 20 document cycles
+(`direct-doc-full-kvm/result.json`); the full no-FPU suite is running. This
+source change is not yet installed in the release candidate.
+Document includes, binary insertion, quoted formatting, source diagnostics,
+and unwind behavior still need focused verification. Human manual observation
+remains deferred by the user.
