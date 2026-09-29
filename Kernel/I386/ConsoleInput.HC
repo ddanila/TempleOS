@@ -84,14 +84,32 @@ Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0)
 I64 NativeExeDoc(CDoc *doc,I64 flags,Bool *accepted)
 {//Compile directly from the locked canonical document in the live task.
   I64 value=0;
-  Bool unlock,okay=FALSE;
+  Bool unlock,break_suspended=FALSE,okay=FALSE;
+  U32 irq;
   if(accepted) *accepted=FALSE;
   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return 0;
   unlock=DocLock(doc);
+  //The compiler must see a pending keyboard break while this document stays
+  //locked. Restore the lock's break state before DocUnlock releases it.
+  if(unlock && Bt(&doc->flags,DOCf_BREAK_UNLOCKED)) {
+    irq=I386IrqSave;
+    if(doc->owning_task==I386TaskSelf &&
+        doc->locked_flags&(1<<DOClf_LOCKED) &&
+        I386TaskSelf->task_flags&(1<<TASKf_BREAK_LOCKED)) {
+      I386TaskSelf->task_flags&=~(1<<TASKf_BREAK_LOCKED);
+      break_suspended=TRUE;
+    }
+    I386IrqRestore(irq);
+  }
   try {
     okay=ConsoleSourceResult("",doc->filename.name,flags,&value,doc);
   } catch {
     okay=FALSE;
+  }
+  if(break_suspended) {
+    irq=I386IrqSave;
+    I386TaskSelf->task_flags|=1<<TASKf_BREAK_LOCKED;
+    I386IrqRestore(irq);
   }
   if(unlock) DocUnlock(doc);
   if(accepted) *accepted=okay;

@@ -91,5 +91,9 @@ remains deferred by the user.
 The first direct-document writable-session run found the document lexer
 resetting a multiline error's line number to 1. After correcting newline
 tracking, the new `486,-fpu` run passed the previously failing editor check
-and logged diagnostic line 2. Its complete three-boot verdict and an exact-
-source guest rebuild are still pending.
+and logged diagnostic line 2. That run then found a document lock suppressing
+keyboard breaks during `ExeDoc`; break delivery is now permitted while the
+document remains locked. The fresh three-boot `486,-fpu` session passes
+107/56/15 commands, exact VGA and an independent RedSea audit
+(`direct-doc-breakfix-doldoc-tcg-nofpu/result.json`). The latest full
+workstation regression and exact-source guest rebuild remain pending.

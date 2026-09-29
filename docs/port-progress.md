@@ -10576,5 +10576,23 @@ the 386 boot audit passes on the new image. A fresh `486,-fpu` writable
 session has passed the formerly failing case and logged `DOC EXEC diagnostic
 line 0000000000000002`, then continued through later commands
 (`build/i386-kernel/direct-doc-linefix-doldoc-tcg-nofpu/create-edit-save/`).
-The full three-boot verdict and guest rebuild from this exact fixed source
-remain in progress.
+That intermediate run later exposed the break-lock regression described
+below; it was not a complete three-boot pass.
+
+## Direct-document break recovery and writable session (2026-09-29)
+
+After the line correction, the writable session reached the keyboard break
+case and exposed a second gap. `NativeExeDoc` kept the document lock during
+execution, as original `ExeDoc` does, but that lock also set the task's break
+lock; the interrupted loop never reached an eligible compiler checkpoint.
+The console now temporarily permits break delivery while it owns the document
+lock, then restores the break-lock state before `DocUnlock`. The three-
+generation rebuild, cross-build and 386 instruction audit pass. On the fresh
+image, the 8 MiB `486,-fpu` TCG writable session now passes all three boots:
+107 create/edit/save commands, 56 reopen/revise commands and 15 next-boot
+commands, with exact VGA. Keyboard interruption recovered in 0.349 seconds.
+An independent RedSea walk confirms project bytes, rename/delete and move
+cycles, extent ownership and bitmap; the source image is unchanged
+(`build/i386-kernel/direct-doc-breakfix-doldoc-tcg-nofpu/result.json`). The
+full workstation suite and guest rebuild from this exact source are still
+running. Human manual observation remains deferred.

@@ -3263,5 +3263,8 @@ observation remains deferred by request.
 The first writable-session attempt exposed a diagnostic line regression:
 ordinary text after a newline reset the compiler line to 1. A source fix
 now reaches the formerly failing editor case and logs line 2 under
-`486,-fpu` TCG; the complete three-boot run and guest rebuild from that fixed
-source are in progress.
+`486,-fpu` TCG. The next run exposed a document-lock break suppression;
+`ExeDoc` now permits break delivery while preserving the document lock and
+restores the break state before unlock. The fresh three-boot writable session
+passes 107/56/15 commands under `486,-fpu` TCG with exact VGA and RedSea
+audit. Full workstation regression and exact-source guest rebuild remain.
