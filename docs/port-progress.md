@@ -10330,3 +10330,17 @@ guest-built installed image (`build/i386-kernel/selfhost-install-fixed/full-tcg-
 506 native commands, 569 submitted lines, exact VGA checkpoints and 20
 document-development cycles with exact task heap recovery. Startup took
 74.42 seconds; the measured long-document key-to-VGA update took 0.379 seconds.
+
+The fully guest-built Generation 1 disk now also rebuilt all six retained
+modules inside a 16 MiB guest. Their persisted T32Ms passed the export and
+wrapper audit and matched the installed Generation 1 bytes exactly. After
+installing those copies, an independent 8 MiB boot returned 42 from `6*7` and
+12 from `DocAllocationCheck`. The same guest rebuilt the flat kernel and five
+boot helpers and installed a separate Generation 2 disk; it cold-booted at
+8 MiB with the same checks. `tools/audit-i386-generations.py` verifies that
+all twelve installed modules, the 457,000-byte linked image and the boot area
+are byte-identical across generations, while both RedSea volumes have exact
+extent ownership and allocation bitmaps
+(`build/i386-kernel/generation-identity-fixed/result.json`). The Generation 2
+image also passes the 386 executable audit. Its full workstation suite is
+running; manual usability and release packaging remain open.

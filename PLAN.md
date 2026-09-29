@@ -3076,15 +3076,13 @@ boot helpers onto a target disk. That target independently cold-booted at 8 MiB,
 returned 42 from `6*7` and 12 from `DocAllocationCheck`, and retained all six
 guest-built runtime/compiler modules unchanged. The full 8 MiB QEMU/KVM
 workstation suite passes on the corrected six-module retained candidate:
-506 native commands, 569 submitted lines and exact VGA checkpoints. A second
-generation rebuild from the fully guest-built target is running. The installed
-target also passes the
-linked-module, retained-module and boot-stage 386 instruction audit, including
+506 native commands, 569 submitted lines and exact VGA checkpoints. The
+installed target also passes the linked-module, retained-module and boot-stage
+386 instruction audit, including
 the guest compiler's division-template data. The fully guest-built installed
 target also passes the full 8 MiB QEMU/KVM workstation suite: 506 native
 commands, 569 submitted lines, exact VGA checkpoints and 20 bounded document
-development cycles with exact heap recovery. The second-generation result
-and remaining M7 publication/resource gates are still required. The same
+development cycles with exact heap recovery. The same
 installed image also passes the three-boot writable DolDoc project check under
 8 MiB `486,-fpu`: create/edit/execute/save, reboot/reopen, revise/reboot,
 and an independent RedSea directory, file-byte and bitmap audit.
@@ -3095,5 +3093,13 @@ document-development cycles start from 1,352,224 live bytes, reach a
 1,355,840-byte live peak and a 1,356,800-byte reserved peak, then return to
 the exact live baseline after each cycle. The full 8 MiB `486,-fpu` TCG
 workstation suite also passes on the fully guest-built installed image:
-506 native commands, 569 submitted lines and exact VGA checkpoints. The
-second-generation rebuild remains under verification.
+506 native commands, 569 submitted lines and exact VGA checkpoints.
+
+Generation 2 now independently guest-builds all six retained modules and the
+flat kernel/boot helpers from the fully guest-built Generation 1 disk. It
+installs and cold-boots at 8 MiB, evaluates `6*7` and passes
+`DocAllocationCheck`. All twelve T32Ms, the 457,000-byte linked flat image and
+the installed boot area are byte-identical across generations; both RedSea
+volumes pass independent ownership/bitmap audits. The Generation 2 executable
+image passes the 386 instruction audit. Its full workstation suite is running.
+The release package and human manual observation remain open M7 gates.
