@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--out', type=Path,
                         default=ROOT / 'build/i386-kernel/selfhost-install')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
+    parser.add_argument('--cpu', default='486', help='QEMU CPU model for build and boot')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -44,7 +45,7 @@ def main():
         ('I386InstallBootImage("C:/","D:/","D:/Probe/GuestBoot.bin");', ['1'])]
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     run_input(source, out / 'build', target_disk=target, snapshot=False,
-              ram_mib=16, accel=args.accel, startup_timeout=180,
+              ram_mib=16, accel=args.accel, cpu=args.cpu, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': 2400, 'commands': commands})
     if source.read_bytes() != original:
@@ -64,7 +65,7 @@ def main():
     if target.read_bytes()[:BOOT_AREA] != expected:
         raise ValueError('Installed boot area differs from guest-linked image')
     run_input(target, out / 'boot', snapshot=True, ram_mib=8,
-              accel=args.accel, startup_timeout=180,
+              accel=args.accel, cpu=args.cpu, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'commands': [('6*7;', ['42']),
                                           ('DocAllocationCheck;', ['12'])]})

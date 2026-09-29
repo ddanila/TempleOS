@@ -89,6 +89,19 @@ produces a compressed raw IDE disk, manifest, command records and acceptance
 evidence. Human manual observation is a separate M7 gate; this command does
 not publish a release.
 
+The native build/install harnesses accept `--cpu` as well as `--accel`, so the
+complete guest build can be exercised without an FPU. For example, to rebuild
+all retained modules from the installed Generation 2 disk under 16 MiB TCG and
+require each output to match its installed copy:
+
+```sh
+python3 tools/test-i386-retained-build.py \
+  --disk build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --compare-installed build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --accel tcg --cpu 486,-fpu \
+  --out build/i386-kernel/retained-build-gen3-tcg-nofpu
+```
+
 ```sh
 python3 tools/i386-kernel-input.py --list-groups
 python3 tools/i386-kernel-input.py --group windows

@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--out', type=Path,
                         default=ROOT / 'build/i386-kernel/retained-install')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
+    parser.add_argument('--cpu', default='486', help='QEMU CPU model for install and boot')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -35,7 +36,7 @@ def main():
                  f'"C:/Modules/I386/{name}.t32m");', ['1'])
                 for name in MODULES]
     run_input(candidate, out / 'replace', snapshot=False, ram_mib=16,
-              accel=args.accel, startup_timeout=180, startup_check={
+              accel=args.accel, cpu=args.cpu, startup_timeout=180, startup_check={
                   'status': 'ok', 'answers': [], 'command_timeout': 240,
                   'commands': commands})
     installed_paths = {f'/Modules/I386/{name}.t32m' for name in MODULES}
@@ -47,7 +48,7 @@ def main():
                 built[f'/Probe/Retained{name}.t32m']):
             raise ValueError(f'{name} changed while installing')
     run_input(candidate, out / 'boot', snapshot=True, ram_mib=8,
-              accel=args.accel, startup_timeout=180, startup_check={
+              accel=args.accel, cpu=args.cpu, startup_timeout=180, startup_check={
                   'status': 'ok', 'answers': [],
                   'commands': [('6*7;', ['42']),
                                ('DocAllocationCheck;', ['12'])]})

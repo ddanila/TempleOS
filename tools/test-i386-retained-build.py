@@ -56,6 +56,7 @@ def main():
     parser.add_argument('--disk', type=Path, default=ROOT / 'build/i386-kernel/kernel.img')
     parser.add_argument('--out', type=Path, default=ROOT / 'build/i386-kernel/retained-build')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
+    parser.add_argument('--cpu', default='486', help='QEMU CPU model for the build boot')
     parser.add_argument('--module', choices=MODULES, action='append', dest='modules')
     parser.add_argument('--command-timeout', type=int, default=3600)
     parser.add_argument('--audit-only', action='store_true',
@@ -76,6 +77,7 @@ def main():
                     for name in selected]
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         run_input(source, out / 'qemu', snapshot=False, ram_mib=16, accel=args.accel,
+                  cpu=args.cpu,
                   startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [],
                       'command_timeout': args.command_timeout, 'commands': commands})
