@@ -231,3 +231,11 @@ bytes (`build/i386-kernel/selfhost-install-shifted-kvm/result.json`,
 `build/i386-kernel/selfhost-install-shifted-kvm/instruction-audit/result.json`).
 Second-generation identity and no-FPU workstation/persistence checks on this
 installed image remain open; manual observation is deferred.
+An original x64 fixture establishes quoted default color records:
+`A$FD,7$$BD,2$B`, length 14. The preceding i386 image fails the matching
+native probe. The updated source passes the nine-command probe, documents
+group and complete workstation suite under 8 MiB KVM and `486,-fpu` TCG
+on an isolated byte-identical build; each full suite checks 513 commands,
+576 lines, exact VGA and 20 document cycles with exact heap recovery.
+Exact-source guest-built installation and repeated-generation identity
+remain open; human observation is deferred by request.

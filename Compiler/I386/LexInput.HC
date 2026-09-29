@@ -34,6 +34,8 @@ lex_step:
         }
         if(cc->flags&CCF_IN_QUOTES &&
             (entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
+             entry->type_u8==DOCT_DFT_FOREGROUND ||
+             entry->type_u8==DOCT_DFT_BACKGROUND ||
              entry->type_u8==DOCT_BLINK || entry->type_u8==DOCT_INVERT ||
              entry->type_u8==DOCT_UNDERLINE || entry->type_u8==DOCT_SHIFTED_X ||
              entry->type_u8==DOCT_SHIFTED_Y)) {
@@ -56,6 +58,10 @@ lex_step:
             format[i++]='F'; format[i++]='G';
           } else if(entry->type_u8==DOCT_BACKGROUND) {
             format[i++]='B'; format[i++]='G';
+          } else if(entry->type_u8==DOCT_DFT_FOREGROUND) {
+            format[i++]='F'; format[i++]='D';
+          } else if(entry->type_u8==DOCT_DFT_BACKGROUND) {
+            format[i++]='B'; format[i++]='D';
           } else if(entry->type_u8==DOCT_BLINK) {
             format[i++]='B'; format[i++]='K';
           } else if(entry->type_u8==DOCT_INVERT) {

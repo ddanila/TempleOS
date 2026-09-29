@@ -3395,3 +3395,13 @@ KVM cold boot, and the 386 executable/guest compiler-template audit. Its
 linked image is 475,216 bytes. A second-generation identity check and
 no-FPU workflow on this installed target remain; manual observation is
 still deferred.
+The next original-behavior fixture establishes quoted default foreground
+and background records: x64 `ExeDoc` produces `A$FD,7$$BD,2$B` (length 14),
+while the preceding i386 image fails that native probe. The i386 lexer now
+emits both records. An isolated, byte-identical source build passes the
+nine-command probe and 33-command documents group on KVM and `486,-fpu`
+TCG, plus the complete 513-command workstation suite on both profiles
+with exact VGA and 20 document cycles with exact heap recovery. The full
+KVM latency checkpoint passes at 0.39 seconds without competing QEMU
+builds. Exact-source guest-built installation remains; manual observation
+is deferred.

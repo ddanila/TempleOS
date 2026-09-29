@@ -10874,3 +10874,25 @@ shifted-record probe under 8 MiB `486,-fpu` TCG with exact VGA
 (`build/i386-kernel/retained-install-shifted-kvm/shifted-tcg-nofpu/result.json`).
 Second-generation identity and the complete no-FPU workflow on the new
 installed image remain open. Human observation remains deferred.
+
+## Quoted default color records (2026-09-29)
+
+Original x64 TempleOS serializes canonical `DOCT_DFT_FOREGROUND` and
+`DOCT_DFT_BACKGROUND` entries inside a quoted document string as
+`A$FD,7$$BD,2$B` (length 14). The preceding i386 image fails the matching
+native `ExeDoc` probe. The direct-document lexer now emits both records;
+the source in the isolated `../TempleOS-default-colors` worktree has the
+same `Compiler/I386/LexInput.HC` bytes as main. Its nine-command native
+probe and 33-command documents group pass under 8 MiB KVM and `486,-fpu`
+TCG with exact VGA. Complete workstation suites pass on both profiles:
+513 native commands, 576 submitted lines, exact VGA at every checkpoint
+and 20 bounded document cycles with exact task heap recovery
+(`../TempleOS-default-colors/build/i386-kernel/default-colors-full-kvm-uncontended/result.json`,
+`../TempleOS-default-colors/build/i386-kernel/default-colors-full-tcg-nofpu/result.json`).
+An initial KVM full-suite attempt exceeded the one-second long-document
+visible-update budget under concurrent QEMU compiler load; the unchanged
+latency group passed at 0.63 seconds and the uncontended full suite passed
+at 0.39 seconds. The original x64 rebuild and isolated 386 cross-build
+audit pass. Exact-source guest-built installation and repeated-generation
+identity for this latest source remain open. Human manual observation is
+deferred.
