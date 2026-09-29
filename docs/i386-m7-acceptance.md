@@ -255,3 +255,10 @@ The same target passes the three-boot writable DolDoc session at 8 MiB
 `486,-fpu`: 107/56/15 commands, exact VGA, 0.285-second break recovery,
 unchanged source disk and RedSea extent/bitmap ownership audit
 (`build/i386-kernel/selfhost-install-shifted-kvm/doldoc-tcg-nofpu/result.json`).
+The next quoted page-layout fixture is red on i386: original x64 `ExeDoc`
+produces `A$PL,80$$LM,-2$B` (length 16), while the current i386 image
+times out at the matching `ExeDoc` check
+(`tests/guest/i386-exedoc-layout/Once.HC`,
+`build/i386-kernel/exedoc-layout-x64/debug.log`,
+`build/i386-kernel/exedoc-layout-red-kvm/`). Lexer implementation and
+installed-generation verification remain open; human observation is deferred.

@@ -3423,3 +3423,10 @@ session under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA,
 0.285-second break recovery, an unchanged source disk and verified RedSea
 extent/bitmap ownership after create, reopen and revision
 (`build/i386-kernel/selfhost-install-shifted-kvm/doldoc-tcg-nofpu/result.json`).
+The next quoted-record TDD case is page layout. The original x64 fixture
+`tests/guest/i386-exedoc-layout/Once.HC` yields
+`A$PL,80$$LM,-2$B` (length 16) for page length and left margin entries.
+The new native probe `tools/test-i386-exedoc-layout.py` reaches `ExeDoc`
+on the current i386 image but times out expecting that length, establishing
+a red state. Quoted layout serialization and its full installed-generation
+verification remain to be implemented. Manual observation stays deferred.

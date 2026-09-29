@@ -10915,3 +10915,14 @@ session at 8 MiB `486,-fpu`: 107/56/15 commands, exact VGA, 0.285-second
 break recovery, unchanged source disk and independently verified RedSea
 extent/bitmap ownership after create, reopen and revision
 (`build/i386-kernel/selfhost-install-shifted-kvm/doldoc-tcg-nofpu/result.json`).
+
+## Quoted page-layout records (TDD baseline, 2026-09-29)
+
+The original x64 fixture `tests/guest/i386-exedoc-layout/Once.HC` produces
+`A$PL,80$$LM,-2$B` (length 16) from canonical page-length and left-margin
+entries inside a quoted document string
+(`build/i386-kernel/exedoc-layout-x64/debug.log`). The nine-command native
+probe reaches `ExeDoc` on the current i386 image but times out waiting for
+length 16 (`build/i386-kernel/exedoc-layout-red-kvm/`). This is a failing
+behavior test for the next lexer change; no i386 pass is claimed. The
+manual QEMU session remains deferred.
