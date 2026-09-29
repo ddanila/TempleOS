@@ -10789,3 +10789,11 @@ isolated build directory). The first fully guest-built target also passes
 quoted background and style probes under 8 MiB `486,-fpu` TCG with exact
 VGA. The complete no-FPU workstation and writable three-boot sessions on
 that target are still active; human observation stays deferred.
+
+The first fully guest-built target's three-boot writable DolDoc session now
+passes under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA at every
+checkpoint, 0.224-second break recovery and an independent RedSea ownership
+audit. The original source disk is unchanged
+(`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/doldoc-tcg-nofpu/result.json`).
+The complete no-FPU workstation runs on the retained-module installation and
+the fully guest-built target are still active. Human observation is deferred.

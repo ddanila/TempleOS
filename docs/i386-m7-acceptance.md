@@ -181,3 +181,9 @@ Both installed generations pass the 386 executable and guest compiler-template
 audit. Quoted background/style probes pass on the first fully guest-built
 target under no-FPU TCG. Its complete no-FPU workstation and three-boot
 writable session remain active; human observation is deferred.
+The first fully guest-built target's three-boot writable session now passes
+under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA, 0.224-second
+break recovery and independent RedSea extent/bitmap ownership
+(`../TempleOS-quote-next/build/i386-kernel/selfhost-install-style-kvm/doldoc-tcg-nofpu/result.json`).
+The complete no-FPU workstation suites are still active; human observation
+remains deferred by request.

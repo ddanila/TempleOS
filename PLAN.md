@@ -3351,3 +3351,8 @@ volumes pass exact ownership/bitmap audit. Both installed images pass the
 style probes pass on the first fully guest-built target under `486,-fpu`
 TCG. Complete no-FPU workstation and three-boot writable-session runs on
 that target remain active; human manual observation remains deferred.
+The fully guest-built target now also passes the three-boot writable DolDoc
+session under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA,
+0.224-second break recovery, unchanged source disk and independently
+verified RedSea extent/bitmap ownership. The complete no-FPU workstation
+run on the target is still active. Human observation remains deferred.
