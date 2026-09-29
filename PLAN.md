@@ -3443,3 +3443,17 @@ exact task-heap recovery
 (`build/i386-kernel/selfhost-install-shifted-kvm/full-tcg-nofpu/result.json`).
 This result belongs to the shifted-record generation; the newer layout
 source still needs full installed-generation verification.
+The original x64 fixture for all eight simple numeric layout directives
+now yields `A$PL,80$$LM,-2$$RM,3$$HD,4$$FO,5$$ID,6$$WW,1$$HL,1$B`
+(length 52). The prior page-length/left-margin i386 image fails the matching
+14-command native probe at `ExeDoc`. The lexer now serializes right margin,
+header, footer, indent, word wrap and highlight as well. An isolated
+byte-identical source passes that probe under 8 MiB KVM and `486,-fpu` TCG
+with exact VGA, the original x64 rebuild and 386 cross-build/audit; quoted
+default-color and shifted-record regressions pass under KVM. The main-source
+full workstation and guest-built generation gates remain open.
+The preceding default-color source has completed its exact-source six-module
+KVM guest rebuild and post-exit module audit
+(`build/i386-kernel/retained-build-default-colors-kvm/result.json`).
+Replacement installation and cold boot are in progress. Manual observation
+stays deferred.

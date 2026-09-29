@@ -10942,3 +10942,25 @@ cycles with exact task-heap recovery
 Its focused no-FPU shifted probe, three-boot writable session, 386 audit
 and two-generation byte identity also pass. The newer page-layout source
 still needs full workstation and installed-generation gates.
+
+The complete simple numeric page-layout family now has an original x64
+oracle: `A$PL,80$$LM,-2$$RM,3$$HD,4$$FO,5$$ID,6$$WW,1$$HL,1$B`, length
+52 (`tests/guest/i386-exedoc-layout-all/Once.HC`,
+`build/i386-kernel/exedoc-layout-all-x64-fixed/debug.log`). The preceding
+two-layout-record i386 image reaches `ExeDoc` but fails the 14-command
+matching probe (`build/i386-kernel/exedoc-layout-all-red-kvm/`). The lexer
+now serializes right margin, header, footer, indent, word wrap and
+highlight inside quotes. The isolated byte-identical source in
+`../TempleOS-layout` passes the 14-command probe under 8 MiB KVM and
+`486,-fpu` TCG with exact VGA
+(`build/i386-kernel/exedoc-layout-all-kvm/result.json`,
+`build/i386-kernel/exedoc-layout-all-tcg-nofpu/result.json`).
+The original x64 rebuild, 386 cross-build/audit and quoted default-color
+and shifted-record KVM regressions pass. Full workstation and guest-built
+installed-generation checks remain open for this latest source.
+
+The preceding default-color source completed an exact-source six-module
+KVM guest rebuild and post-exit module audit
+(`build/i386-kernel/retained-build-default-colors-kvm/result.json`). Its
+replacement installation and independent cold boot are running. Human
+manual observation remains deferred.

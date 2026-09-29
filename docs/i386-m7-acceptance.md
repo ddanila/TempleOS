@@ -272,3 +272,13 @@ complete 8 MiB `486,-fpu` TCG workstation suite: 513 native commands,
 latency and 20 bounded document cycles with exact task-heap recovery
 (`build/i386-kernel/selfhost-install-shifted-kvm/full-tcg-nofpu/result.json`).
 The newer page-layout source's installed-generation gates remain open.
+Original x64 now establishes the whole simple numeric layout quotation:
+`A$PL,80$$LM,-2$$RM,3$$HD,4$$FO,5$$ID,6$$WW,1$$HL,1$B` (length 52).
+The earlier two-record i386 image fails at the matching `ExeDoc` check;
+the new byte-identical isolated-source build passes all 14 commands under
+8 MiB KVM and `486,-fpu` TCG with exact VGA, along with x64 rebuild and
+386 cross-build/audit. Full installed-generation checks remain open for
+this latest source. The preceding default-color source passes its
+six-module guest rebuild and post-exit audit
+(`build/i386-kernel/retained-build-default-colors-kvm/result.json`).
+Human manual observation stays deferred.

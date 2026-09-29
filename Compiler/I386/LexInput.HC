@@ -34,6 +34,9 @@ lex_step:
         }
         if(cc->flags&CCF_IN_QUOTES &&
             (entry->type_u8==DOCT_PAGE_LEN || entry->type_u8==DOCT_LEFT_MARGIN ||
+             entry->type_u8==DOCT_RIGHT_MARGIN || entry->type_u8==DOCT_HEADER ||
+             entry->type_u8==DOCT_FOOTER || entry->type_u8==DOCT_INDENT ||
+             entry->type_u8==DOCT_WORD_WRAP || entry->type_u8==DOCT_HIGHLIGHT ||
              entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
              entry->type_u8==DOCT_DFT_FOREGROUND ||
              entry->type_u8==DOCT_DFT_BACKGROUND ||
@@ -59,6 +62,18 @@ lex_step:
             format[i++]='P'; format[i++]='L';
           } else if(entry->type_u8==DOCT_LEFT_MARGIN) {
             format[i++]='L'; format[i++]='M';
+          } else if(entry->type_u8==DOCT_RIGHT_MARGIN) {
+            format[i++]='R'; format[i++]='M';
+          } else if(entry->type_u8==DOCT_HEADER) {
+            format[i++]='H'; format[i++]='D';
+          } else if(entry->type_u8==DOCT_FOOTER) {
+            format[i++]='F'; format[i++]='O';
+          } else if(entry->type_u8==DOCT_INDENT) {
+            format[i++]='I'; format[i++]='D';
+          } else if(entry->type_u8==DOCT_WORD_WRAP) {
+            format[i++]='W'; format[i++]='W';
+          } else if(entry->type_u8==DOCT_HIGHLIGHT) {
+            format[i++]='H'; format[i++]='L';
           } else if(entry->type_u8==DOCT_FOREGROUND) {
             format[i++]='F'; format[i++]='G';
           } else if(entry->type_u8==DOCT_BACKGROUND) {
