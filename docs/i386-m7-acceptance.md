@@ -96,4 +96,8 @@ keyboard breaks during `ExeDoc`; break delivery is now permitted while the
 document remains locked. The fresh three-boot `486,-fpu` session passes
 107/56/15 commands, exact VGA and an independent RedSea audit
 (`direct-doc-breakfix-doldoc-tcg-nofpu/result.json`). The latest full
-workstation regression and exact-source guest rebuild remain pending.
+workstation regressions now pass on both KVM and `486,-fpu` TCG: 513 commands,
+576 lines, exact VGA and 20 document cycles with exact heap recovery
+(`direct-doc-breakfix-full-kvm-fixed-help/result.json` and
+`direct-doc-breakfix-full-tcg-nofpu/result.json`). The exact-source
+six-module guest rebuild and installation remain pending.

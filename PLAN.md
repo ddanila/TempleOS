@@ -3267,4 +3267,10 @@ now reaches the formerly failing editor case and logs line 2 under
 `ExeDoc` now permits break delivery while preserving the document lock and
 restores the break state before unlock. The fresh three-boot writable session
 passes 107/56/15 commands under `486,-fpu` TCG with exact VGA and RedSea
-audit. Full workstation regression and exact-source guest rebuild remain.
+audit. Exact-source guest rebuild and installation remain.
+The complete workstation suite now passes on the break-fixed cross-built
+image under both KVM and `486,-fpu` TCG: 513 commands, 576 submitted lines,
+exact VGA and 20 document cycles with exact heap recovery. The exact-source
+six-module retained rebuild has reached its final module; native installation
+and repeat-generation evidence still need to follow. Human observation stays
+deferred.

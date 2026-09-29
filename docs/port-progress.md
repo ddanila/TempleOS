@@ -10604,3 +10604,14 @@ runner now leaves the final Esc to its normal exit step. A focused nine-
 command KVM help group passes with exact VGA on the same image
 (`build/i386-kernel/direct-doc-breakfix-help-kvm-fixed/result.json`); the
 complete KVM regression has restarted with this corrected navigation.
+The rerun now passes the complete 8 MiB KVM workstation suite on the same
+break-fixed image: 513 native commands, 576 submitted lines, exact VGA and
+20 bounded document-development cycles with exact heap recovery
+(`build/i386-kernel/direct-doc-breakfix-full-kvm-fixed-help/result.json`).
+The complete `486,-fpu` TCG suite also passes the same counts and checks on
+the exact image
+(`build/i386-kernel/direct-doc-breakfix-full-tcg-nofpu/result.json`).
+The corrected nine-command help group separately passes on both profiles.
+The exact-source six-module guest rebuild is in its final module; installed
+and repeated guest-built generations are still required. Human manual
+observation remains deferred.
