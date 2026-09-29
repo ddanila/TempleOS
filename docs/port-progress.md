@@ -10720,3 +10720,11 @@ event makes the nine-command help group pass with exact VGA on KVM
 (`build/i386-kernel/help-escape-fixed-kvm/result.json`). The full suite on
 the extended formatting source and the exact-source guest rebuild are still
 running. The human manual session remains deferred.
+
+The extended lexer subsequently passed the complete 8 MiB KVM workstation
+suite (`../TempleOS-quote-next/build/i386-kernel/style-full-fixed-kvm/result.json`):
+513 native commands, 576 submitted lines, exact VGA at every checkpoint and
+20 bounded document-development cycles with exact task heap recovery. The
+foreground repeat test also passes 21 commands with exact VGA on both KVM
+and `486,-fpu` TCG. The complete no-FPU workstation run and exact-source
+guest-built installation are still pending.

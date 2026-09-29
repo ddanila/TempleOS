@@ -139,3 +139,8 @@ failed on the old image and now pass on an isolated cross-built source under
 both KVM and `486,-fpu` TCG, with exact VGA; the documents group passes both
 profiles. The full workstation and guest-built installation checks on this
 source remain pending. Human observation stays deferred by request.
+The complete 8 MiB KVM workstation suite now passes on the expanded quoted-
+format source: 513 commands, 576 lines, exact VGA and 20 bounded document
+cycles with exact heap recovery
+(`../TempleOS-quote-next/build/i386-kernel/style-full-fixed-kvm/result.json`).
+The full no-FPU suite and guest-built installation are still pending.

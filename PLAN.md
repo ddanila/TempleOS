@@ -3315,3 +3315,8 @@ documents group, pass with exact VGA. A full workstation regression and an
 exact-source guest-built installed generation are the next integration gates.
 Quoted record types beyond these five still need original-behavior fixtures.
 The manual QEMU session remains deferred by request.
+The expanded quoted-format source has now passed the complete 8 MiB KVM
+workstation suite: 513 native commands, 576 submitted lines, exact VGA at
+every checkpoint, and 20 bounded document cycles with exact heap recovery.
+The corresponding `486,-fpu` full suite and exact-source guest build remain
+running; neither is counted as passed yet.
