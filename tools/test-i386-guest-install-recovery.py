@@ -45,7 +45,7 @@ def cut_after_sector(target,log,lba,timeout):
     return None
 
 
-def run_case(input_tool,build_tool,source,reference,out,lba):
+def run_case(input_tool,build_tool,source,reference,out,lba,boot_file):
     work=out/f'cut-lba-{lba}';work.mkdir(parents=True,exist_ok=True)
     target=work/'target.img'
     target.write_bytes(bytes(2048*512)+reference[2048*512:])
@@ -55,7 +55,7 @@ def run_case(input_tool,build_tool,source,reference,out,lba):
     state={}
     watcher=threading.Thread(target=lambda:state.update(pid=cut_after_sector(target,log,lba,180)),daemon=True)
     watcher.start()
-    command='I386InstallBootImage("C:/","D:/","C:/Probe/Gen2.bin");'
+    command=f'I386InstallBootImage("C:/","D:/","C:{boot_file}");'
     interrupted_error=None
     try:
         input_tool.run_input(source,work/'interrupted',target_disk=target,snapshot=False,
@@ -92,7 +92,11 @@ def main():
     parser.add_argument('--source',type=Path,default=ROOT/'build/i386-kernel/gen2-guest-boot/source.img')
     parser.add_argument('--reference',type=Path,default=ROOT/'build/i386-kernel/gen2-guest-boot/target.img')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel/gen2-install-recovery')
+    parser.add_argument('--boot-file',default='/Probe/Gen2.bin',
+                        help='Absolute RedSea path to guest-built boot image on source disk')
     args=parser.parse_args()
+    if not args.boot_file.startswith('/') or '"' in args.boot_file:
+        parser.error('--boot-file must be an absolute RedSea path without quotes')
     args.out.mkdir(parents=True,exist_ok=True)
     input_tool=load_tool('i386_input',Path('tools/i386-kernel-input.py'))
     build_tool=load_tool('i386_build',Path('tools/build-i386-kernel.py'))
@@ -100,12 +104,12 @@ def main():
     original=source.read_bytes();reference=args.reference.read_bytes()
     if len(original)!=32768*512 or len(reference)!=len(original):
         raise ValueError('Expected two 16 MiB RedSea disks')
-    if '/Probe/Gen2.bin' not in build_tool.mutated_file_contents(source,{'/Probe/Gen2.bin'}):
-        raise ValueError('Source disk has no guest-built Gen2.bin')
+    if args.boot_file not in build_tool.mutated_file_contents(source,{args.boot_file}):
+        raise ValueError(f'Source disk has no guest-built {args.boot_file}')
     result={'result':'incomplete','cases':[]}
     (args.out/'result.json').unlink(missing_ok=True)
     for lba in (128,850):
-        case=run_case(input_tool,build_tool,source,reference,args.out,lba)
+        case=run_case(input_tool,build_tool,source,reference,args.out,lba,args.boot_file)
         result['cases'].append(case)
         print(f'LBA {lba}: pass, {case["partial_nonzero_boot_sectors"]} boot sectors written',flush=True)
     if source.read_bytes()!=original: raise ValueError('Installation changed source disk')

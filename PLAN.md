@@ -3118,5 +3118,11 @@ A local 2.1 MiB release candidate under `build/i386-release-candidate/` now
 contains the compressed Generation 2 disk, source-input hash manifest, QEMU
 command records, acceptance results, support matrix and reproduction steps.
 The packager verifies all 1,233 recorded source files, the disk hash, both
-full-suite verdicts and the three-boot writable verdict before producing it.
+full-suite verdicts, the three-boot writable verdict and the final-image
+installation recovery verdict before producing it.
+The final Generation 2 disk also passes the rebuilt-artifact installation
+hard-stop/retry gate at LBA 128 and LBA 850: LBA 0 stays blank, the RedSea
+bitmap matches reachable extents, retry reproduces the reference disk byte for
+byte, and the retried disk boots independently
+(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery/result.json`).
 Publication and human manual observation remain open M7 gates.

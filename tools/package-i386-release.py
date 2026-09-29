@@ -103,6 +103,17 @@ def main():
     if any(session.get(phase, {}).get('result') != 'pass' for phase in
            ('create_edit_save', 'reopen_after_boot', 'revised_after_second_boot')):
         raise ValueError('writable session did not pass all three boots')
+    recovery_path = gen2 / 'install-recovery/result.json'
+    recovery = read_pass(recovery_path)
+    if not recovery.get('source_unchanged') or [case.get('cut_lba') for case in
+            recovery.get('cases', [])] != [128, 850]:
+        raise ValueError('final-image installation recovery is incomplete')
+    for case in recovery['cases']:
+        if (case.get('result') != 'pass' or case.get('lba_zero') != 'blank' or
+                case.get('filesystem', {}).get('bitmap') != 'matches reachable extents' or
+                case.get('retry', {}).get('result') != 'pass' or
+                case.get('independent_boot', {}).get('result') != 'pass'):
+            raise ValueError(f"installation recovery failed at LBA {case.get('cut_lba')}")
 
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='i386-release-', dir=out.parent) as tmp:
@@ -128,6 +139,7 @@ def main():
             'generation-2-tcg-no-fpu-workstation.json': gen2 / 'full-tcg-nofpu/result.json',
             'generation-2-tcg-no-fpu-command.json': gen2 / 'full-tcg-nofpu/command.json',
             'generation-2-tcg-no-fpu-doldoc.json': session_path,
+            'generation-2-install-recovery.json': recovery_path,
             'resource-profile.json': base / 'resource-profile-third/resource-result.json',
             'support-matrix.md': ROOT / 'docs/i386-support-matrix.md',
             'test-workflow.md': ROOT / 'docs/i386-test-workflow.md',

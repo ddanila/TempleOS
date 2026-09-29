@@ -10361,6 +10361,14 @@ manifest names the original image SHA-256
 `c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8`.
 `tools/package-i386-release.py` checks the 1,233 source-input hashes, the
 Generation 2 identity and executable audit, the two full workstation results,
-and the three writable boots before bundling evidence. An independent
+the three writable boots and final-image installation recovery before bundling
+evidence. An independent
 manifest walk and decompression hash check pass. Manual usability and release
 publication remain open.
+
+The rebuilt-artifact installation hard-stop test now also runs on the exact
+Generation 2 disk via `--boot-file /Probe/GuestBoot.bin`. At LBA 128 and LBA
+850, forced QEMU termination leaves LBA 0 blank and the RedSea bitmap exact;
+retry reproduces the final reference disk byte for byte and the retried disk
+boots independently. The source disk remains unchanged
+(`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery/result.json`).

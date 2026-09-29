@@ -84,7 +84,8 @@ python3 tools/package-i386-release.py --out build/i386-release-candidate
 
 The packager verifies the recorded 1,233 source-file hashes, the installed
 Generation 2 disk and flat-image hashes, the executable-region audit, both
-complete workstation verdicts and the three writable boot verdicts. It
+complete workstation verdicts, the three writable boot verdicts and the two
+final-image installation recovery cases. It
 produces a compressed raw IDE disk, manifest, command records and acceptance
 evidence. Human manual observation is a separate M7 gate; this command does
 not publish a release.
@@ -100,6 +101,17 @@ python3 tools/test-i386-retained-build.py \
   --compare-installed build/i386-kernel/selfhost-install-gen2-fixed/target.img \
   --accel tcg --cpu 486,-fpu \
   --out build/i386-kernel/retained-build-gen3-tcg-nofpu
+```
+
+The final installed image also supplies the guest-built boot file needed to
+repeat the installation interruption/retry gate on that exact disk:
+
+```sh
+python3 tools/test-i386-guest-install-recovery.py \
+  --source build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --reference build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --boot-file /Probe/GuestBoot.bin \
+  --out build/i386-kernel/selfhost-install-gen2-fixed/install-recovery
 ```
 
 ```sh
