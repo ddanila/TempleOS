@@ -80,7 +80,8 @@ passes with exact VGA under 8 MiB QEMU/486 KVM
 (`exedoc-bin-size-direct-kvm-root/result.json`) and `486,-fpu` TCG
 (`exedoc-bin-size-direct-tcg-nofpu/result.json`). The complete KVM suite
 passes 513 commands, 576 submitted lines, exact VGA and 20 document cycles
-(`direct-doc-full-kvm/result.json`); the full no-FPU suite is running. This
+under both KVM (`direct-doc-full-kvm/result.json`) and `486,-fpu` TCG
+(`direct-doc-full-tcg-nofpu/result.json`). This
 source change is not yet installed in the release candidate.
 Focused include/resume and embedded-binary insertion tests pass under KVM and
 `486,-fpu` TCG (`exedoc-include-direct-*/result.json` and

@@ -10548,7 +10548,10 @@ all 14 commands with exact VGA under 8 MiB QEMU/486 KVM
 complete KVM workstation regression now passes 513 native commands, 576
 submitted lines, exact VGA checks and 20 bounded document-development cycles
 with exact heap recovery (`build/i386-kernel/direct-doc-full-kvm/result.json`).
-The complete no-FPU TCG run is in progress. Additional focused tests verify
+The complete no-FPU TCG run also passes 513 native commands, 576 submitted
+lines, exact VGA and 20 bounded document-development cycles with exact heap
+recovery (`build/i386-kernel/direct-doc-full-tcg-nofpu/result.json`).
+Additional focused tests verify
 that compilation returns from an included source file to the document and
 that a three-byte embedded binary compiles as an expression. Both pass with
 exact VGA under KVM and `486,-fpu` TCG

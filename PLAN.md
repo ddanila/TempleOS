@@ -3252,10 +3252,11 @@ to a three-byte `CDocBin` and returns 3. The old i386 path returned 0 because
 `NativeExeDoc` serialized through `DocSave`, whose record subset rejects that
 entry. A direct, borrowed document source in the i386 compiler and lexer now
 passes the standalone native test on a fresh cross-built image under both
-8 MiB QEMU/486 KVM and `486,-fpu` TCG. The complete KVM workstation suite
-passes 513 commands and exact VGA; the no-FPU suite is running. Next verify
-quoted formatting, source positions and unwind behavior; repeat the complete no-FPU workstation
-and writable-project gates, then rebuild/install a self-hosted generation from
+8 MiB QEMU/486 KVM and `486,-fpu` TCG. The complete workstation suite passes
+513 commands, exact VGA and 20 bounded document cycles on both KVM and
+`486,-fpu` TCG. Next verify quoted formatting, source positions and unwind
+behavior; repeat the writable-project gates, then rebuild/install a
+self-hosted generation from
 the updated sources. Focused direct-document include/resume and binary
 insertion tests already pass under KVM and `486,-fpu` TCG. Human manual QEMU
 observation remains deferred by request.
