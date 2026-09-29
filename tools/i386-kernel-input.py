@@ -8,6 +8,7 @@ import re
 import socket
 import struct
 import subprocess
+import tempfile
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -91,7 +92,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
     log=out/'debug.log'; log.write_text('')
-    qmp=out/'qmp.sock'; qmp.unlink(missing_ok=True)
+    qmp_dir=tempfile.TemporaryDirectory(prefix='i386-qmp-')
+    qmp=Path(qmp_dir.name)/'qmp.sock'
     cmd=['qemu-system-i386','-machine','pc','-accel',accel,'-cpu',cpu,'-m',str(ram_mib),'-nic','none',
          '-drive',f'file={disk.resolve()},format=raw,if=ide']
     if target_disk is not None:
@@ -1876,7 +1878,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             if proc.poll() is None: proc.terminate()
             try: proc.wait(timeout=5)
             except subprocess.TimeoutExpired: proc.kill(); proc.wait()
-            sock.close(); qmp.unlink(missing_ok=True)
+            sock.close(); qmp_dir.cleanup()
 
 
 def main():
