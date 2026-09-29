@@ -10845,3 +10845,11 @@ exact task-heap recovery
 `486,-fpu` TCG workstation run and exact-source six-module guest rebuild
 are still active. The focused quoted background probe also passes under
 `486,-fpu` TCG on this source.
+
+The complete 8 MiB `486,-fpu` TCG workstation suite subsequently passed on
+the same shifted-record source: 513 commands, 576 submitted lines, exact
+VGA at every checkpoint and 20 bounded document cycles with exact task-heap
+recovery (`build/i386-kernel/shifted-full-tcg-nofpu/result.json`). Both
+full CPU profiles are now green on the cross-built image. The exact-source
+guest rebuild and installed-generation checks remain open; human manual
+observation remains deferred.

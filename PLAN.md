@@ -3380,3 +3380,8 @@ suite: 513 native commands, 576 submitted lines, exact VGA at every
 checkpoint and 20 bounded document cycles with exact heap recovery.
 The complete `486,-fpu` TCG suite and exact-source six-module guest
 rebuild remain active; neither is counted as passed yet.
+The complete `486,-fpu` TCG workstation suite has now also passed on the
+shifted-record source: 513 commands, 576 submitted lines, exact VGA and
+20 bounded document cycles with exact heap recovery. Both full profiles
+are green on the cross-built image; the exact-source guest rebuild and
+installed-generation gates remain open. Human observation stays deferred.

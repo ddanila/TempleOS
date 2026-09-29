@@ -212,3 +212,9 @@ suite: 513 commands, 576 lines, exact VGA and 20 bounded document cycles
 with exact heap recovery (`build/i386-kernel/shifted-full-kvm/result.json`).
 The full no-FPU suite and exact-source guest-built generation are still
 running; manual observation remains deferred.
+The complete 8 MiB `486,-fpu` TCG workstation suite also passes on this
+shifted-record cross-built source: 513 commands, 576 lines, exact VGA and
+20 bounded document cycles with exact heap recovery
+(`build/i386-kernel/shifted-full-tcg-nofpu/result.json`). The exact-source
+guest-built installed-generation gates remain open; manual observation is
+deferred by request.
