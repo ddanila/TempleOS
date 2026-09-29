@@ -3473,3 +3473,11 @@ main 386 cross-build/audit, the 14-command quoted-layout probe, and the
 33-command documents group under both 8 MiB KVM and `486,-fpu` TCG with
 exact VGA. Its complete workstation and guest-built installed-generation
 checks remain open.
+The first fully guest-built default-color target itself passes the
+nine-command quoted default-color probe under 8 MiB `486,-fpu` TCG with
+exact VGA
+(`build/i386-kernel/selfhost-install-default-colors-kvm/default-colors-tcg-nofpu/result.json`).
+Its complete no-FPU workstation suite and second guest-built generation
+are running. The latest eight-layout-record source has started its
+exact-source six-module KVM guest rebuild. Human manual observation remains
+deferred.

@@ -294,3 +294,10 @@ source passes main cross-build, the 14-command focused probe and 33-command
 documents group on KVM and `486,-fpu` TCG with exact VGA. Its complete
 workstation and installed-generation gates remain open; human observation
 stays deferred.
+The first fully guest-built default-color target itself passes the
+nine-command quoted default-color probe under 8 MiB `486,-fpu` TCG with
+exact VGA
+(`build/i386-kernel/selfhost-install-default-colors-kvm/default-colors-tcg-nofpu/result.json`).
+Its complete no-FPU workstation suite and second guest-built generation
+are running. The latest eight-layout-record source has started its
+six-module guest rebuild. Human manual observation remains deferred.
