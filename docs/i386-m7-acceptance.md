@@ -248,3 +248,6 @@ boot/filesystem audit
 (`build/i386-kernel/selfhost-install-shifted-gen2-kvm/instruction-audit/result.json`).
 The newer default-color source's guest rebuild is running. The human M7
 usability gate remains deferred by request.
+The first fully guest-built shifted-record target also passes the
+nine-command quoted shifted-X/Y probe under 8 MiB `486,-fpu` TCG with exact
+VGA (`build/i386-kernel/selfhost-install-shifted-kvm/shifted-tcg-nofpu/result.json`).
