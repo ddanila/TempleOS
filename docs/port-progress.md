@@ -10444,5 +10444,16 @@ The Generation 2-to-3 audit finds all twelve modules, flat image and boot area
 byte-identical; both RedSea volumes have exact bitmap/extent ownership. The
 Generation 3 386 executable audit passes. Its whole-disk hash is
 `dac4e8d7c23ea1c715c2e0d198cc5ccfaf41b446024dc33943ba76d8d5612d7f`.
-The full Generation 3 workstation suite is live, so this is not yet a complete
-no-FPU workstation promotion; retained-module TCG rebuilds are also running.
+The full Generation 3 workstation suite was still running at that checkpoint;
+retained-module TCG rebuilds remain open.
+That complete suite now passes on the exact Generation 3 disk under 8 MiB
+`486,-fpu` TCG: 506 native commands, 569 input lines, exact VGA and 20
+document-development cycles with exact task heap recovery. Startup took 84.04
+seconds and long-document key-to-VGA update took 0.462 seconds
+(`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu/result.json`).
+The separate writable three-boot session passed its first 107-command boot,
+then timed out during a re-edit after 23 timed left-arrow events positioned
+the caret on the wrong line. The persisted source confirms the wrong insertion.
+The test now uses four navigation keys and an exact caret checkpoint before
+replacing the digit, and a fresh retry is live; no writable-session pass is
+claimed yet.

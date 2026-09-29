@@ -3174,8 +3174,19 @@ regions also pass the 386 instruction audit, including guest compiler template
 data. The Generation 3 whole-disk SHA-256 is
 `dac4e8d7c23ea1c715c2e0d198cc5ccfaf41b446024dc33943ba76d8d5612d7f`;
 filesystem metadata explains the expected difference from Generation 2. Its
-complete 8 MiB no-FPU workstation suite is running, and the resumed retained
+complete 8 MiB no-FPU workstation suite was then started, and the resumed retained
 build still needs its all-six audit before closing the native-source gate.
+The complete Generation 3 `486,-fpu` TCG workstation suite now passes on that
+exact disk: 506 native commands, 569 submitted lines, exact VGA checkpoints
+and 20 document-development cycles with exact task heap recovery
+(`build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu/result.json`).
+The writable three-boot session is still being retried. Its first attempt
+passed the 107-command creation boot, then timed out in the 56-command reopen
+boot because 23 timed left-arrow events placed the editor caret in the wrong
+line. The saved program file confirms the wrong insertion point. The harness
+now uses four navigation keys and checks the exact caret frame before editing;
+the retry starts from an unchanged Generation 3 image. Do not count the
+writable gate until all three boots and RedSea audit pass.
 The exact Generation 2 disk has now also passed all three installation
 hard-stop cases under `486,-fpu` TCG. Stops during boot-sector writes at LBA
 128 and 850 left LBA 0 blank and the RedSea bitmap exact; retries reproduced
