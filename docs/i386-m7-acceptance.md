@@ -109,4 +109,9 @@ The direct-document source now passes a KVM guest rebuild and installed-disk
 cold boot for all six retained modules
 (`retained-build-direct-doc-breakfix-kvm/result.json`,
 `retained-install-direct-doc-breakfix-kvm/result.json`). Its flat-kernel
-guest build/install is running; the new release image is not yet accepted.
+guest build/install followed; the new release image is not yet accepted.
+The first full guest-built generation now passes native flat-kernel and boot-
+helper construction, installation and independent 8 MiB KVM cold boot
+(`selfhost-install-direct-doc-breakfix-kvm/result.json`). The second
+generation is running from that installed disk; byte identity and no-FPU
+workstation checks on the new target remain open.

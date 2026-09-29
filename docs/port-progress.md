@@ -10638,7 +10638,13 @@ pass (`build/i386-kernel/retained-build-direct-doc-breakfix-kvm/result.json`).
 The guest then replaced all six installed T32Ms with those built bytes;
 independent 8 MiB KVM cold boot passed `6*7` and `DocAllocationCheck`
 (`build/i386-kernel/retained-install-direct-doc-breakfix-kvm/result.json`).
-The flat-kernel and boot-helper guest build/install from this exact candidate
-is running. These local artifacts are not yet a new release candidate; the
-installed flat-kernel boot, repeat generation, no-FPU image checks and quoted
-format semantics remain open.
+The flat-kernel and boot-helper guest build/install followed from this exact
+candidate. These local artifacts are not yet a new release candidate; repeat
+generation, no-FPU image checks and quoted format semantics remain open.
+The first complete guest-built generation has now passed: six flat-kernel and
+boot-helper T32Ms were built in the guest, the 465,952-byte linked image was
+installed onto a distinct target disk, and that target cold-booted at 8 MiB
+under KVM (`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/result.json`).
+The source disk remained byte-identical. A second build from this installed
+target is running; generation identity and the new target's no-FPU workflow
+are not yet verified.

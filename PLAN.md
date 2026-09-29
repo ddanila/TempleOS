@@ -3277,8 +3277,13 @@ deferred.
 The exact direct-document source has now passed a 16 MiB KVM guest rebuild of
 all six retained modules. Their replacement disk independently cold-boots at
 8 MiB, and the native guest build/install of the flat kernel and boot helpers
-is running from that disk. This is a new generation after the quoted-format
+followed from that disk. This is a new generation after the quoted-format
 red test; the quoted gap remains open for subsequent compiler work.
+The first complete guest-built direct-document generation now passes its
+flat-kernel and six boot-helper build, native installation and independent
+8 MiB KVM cold boot. Its flat image is 465,952 bytes. A second independent
+guest-built generation is running from that installed target; generation
+identity, target-image no-FPU workflow and quoted formatting remain open.
 The next original-programming-model red test is quoted DolDoc formatting.
 Original x64 `ExeDoc` turns a foreground entry between `A` and `B` inside a
 quoted string into `A$FG,4$B` (length 8); the current i386 lexer skips the
