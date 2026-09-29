@@ -21,7 +21,7 @@ def main():
     commands = [
         ('CDoc *quote_doc=DocNew("C:/Probe/QuotedFormat.HC",Fs);', []),
         ('U8 *quote_prefix="U8 *s=\\"A";while(*quote_prefix)DocPutKey(quote_doc,*quote_prefix++);', []),
-        ('CDocEntry *quote_color=DocEntryNewBase(quote_doc,DOCT_FOREGROUND);', []),
+        ('CDocEntry *quote_color=CAlloc(sizeof(CDocEntry),quote_doc->mem_task);quote_color->type=DOCT_FOREGROUND;quote_color->de_flags=doldoc.dft_de_flags[DOCT_FOREGROUND];', ['15', '0']),
         ('quote_color->attr=4;DocInsEntry(quote_doc,quote_color);', ['4']),
         ('U8 *quote_suffix="B\\";StrLen(s);";while(*quote_suffix)DocPutKey(quote_doc,*quote_suffix++);', []),
         ('ExeDoc(quote_doc);', ['8', '8']),

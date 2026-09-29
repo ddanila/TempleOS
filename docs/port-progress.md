@@ -10621,7 +10621,7 @@ observation remains deferred.
 Original x64 TempleOS executed an in-memory document whose quoted string
 contains a canonical foreground entry and produced `A$FG,4$B`, length 8
 (`tests/guest/i386-exedoc-quote/Once.HC`). The matching i386 `ExeDoc`
-document currently produces `AB`, length 2, and the standalone native test
+document at that point produced `AB`, length 2, and the standalone native test
 fails at its expected result check
 (`tools/test-i386-exedoc-quote.py`,
 `build/i386-kernel/exedoc-quote-native-red-kvm/`). The i386 document lexer
@@ -10670,7 +10670,31 @@ target under 8 MiB `486,-fpu` TCG: 513 native commands, 576 submitted lines,
 exact VGA at every checkpoint and 20 bounded document-development cycles
 with exact task-heap recovery
 (`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/full-tcg-nofpu/result.json`).
-Quoted formatting remains an open semantic gap. A first foreground-entry
-lexer experiment still returned length 2 in the focused test, so it was
-removed without changing the installed image. Human observation remains
-deferred at the user's request.
+Quoted formatting was an open semantic gap on this installed image. Human
+observation remains deferred at the user's request.
+
+## Quoted foreground entries and no-FPU retained audit (2026-09-29)
+
+The i386 document lexer now emits the original `$FG,n$` text and two-dollar
+escape count for a foreground record encountered inside a quoted string.
+The original x64 fixture, rebuilt with a full-sized canonical `CDocEntry`,
+produces `A$FG,4$B` and length 8. A fresh cross-built i386 disk passes the
+same single-document test and a 21-command sequence that creates, executes
+and deletes separate color-4, color-15 and default-color documents. KVM and
+8 MiB `486,-fpu` TCG match exact VGA at every checkpoint
+(`build/i386-kernel/exedoc-quote-default-owned-kvm/`,
+`build/i386-kernel/exedoc-quote-default-owned-tcg-nofpu/`). The 33-command
+document group also passes on both profiles
+(`build/i386-kernel/quote-fg-documents-kvm/result.json`,
+`build/i386-kernel/quote-fg-documents-tcg-nofpu/result.json`). The full
+workstation suite passed the first foreground implementation before the
+final escape-count and canonical-fixture corrections; the exact final
+source still needs its full suite and guest-built generation.
+
+The older Generation 2 image's complete six-module `486,-fpu` retained
+rebuild has now exited and passed post-exit audit. All six guest-built T32Ms
+are byte-identical to the installed modules
+(`build/i386-kernel/retained-build-gen3-tcg-nofpu/result.json`). The newer
+direct-document source's no-FPU retained rebuild remains active separately.
+Formatting record types other than foreground remain to be matched against
+the original quoted-document behavior.

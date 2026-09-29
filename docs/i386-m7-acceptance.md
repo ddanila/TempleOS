@@ -15,7 +15,7 @@ evidence rather than repository contents.
 
 | M7 requirement | Current evidence | Status |
 | --- | --- | --- |
-| All kernel, compiler and retained runtime sources build in the guest | Six retained T32Ms in `retained-build-fixed/result.json`; six flat kernel/boot T32Ms and an independently booted installed disk in `selfhost-install-fixed/result.json`. The second generation repeats the build. `selfhost-install-gen3-tcg-nofpu-long/result.json` passes the flat kernel and five boot helpers under `486,-fpu` TCG, and the installed disk cold-boots at 8 MiB. Focused no-FPU `ConsoleRuntime` and `CompilerProbe` rebuilds match their installed modules byte for byte. | Pass in 16 MiB QEMU/KVM; no-FPU flat-kernel build/install and two focused retained rebuilds pass, while the complete no-FPU retained rebuild is still running. |
+| All kernel, compiler and retained runtime sources build in the guest | Six retained T32Ms in `retained-build-fixed/result.json`; six flat kernel/boot T32Ms and an independently booted installed disk in `selfhost-install-fixed/result.json`. The second generation repeats the build. `selfhost-install-gen3-tcg-nofpu-long/result.json` passes the flat kernel and five boot helpers under `486,-fpu` TCG, and the installed disk cold-boots at 8 MiB. `retained-build-gen3-tcg-nofpu/result.json` verifies all six no-FPU retained rebuilds byte-identical to installed Generation 2 modules. | Pass for older audited Gen2/Gen3 sources. The newer direct-document source's no-FPU retained rebuild is still running; quoted-foreground source still needs a guest build. |
 | Development session survives source errors and interruption | The complete workstation suite exercises source-linked error recovery and keyboard break handling; the [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) includes an interrupted loop and subsequent compilation. | Automated cases pass; human source-edit/rebuild observation open. |
 | Native installation and interrupted-install recovery | `selfhost-install-gen2-fixed/result.json` cold-boots the installed image. Both `install-recovery-committed/result.json` (KVM) and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0; each source and all three resulting disks match the release image after recovery or publication. | Pass for tested QEMU hard stops on KVM and `486,-fpu` TCG. Physical power-loss durability is deferred. |
 | Two independent guest-built generations | `generation-identity-fixed/result.json` verifies Generations 1 and 2. `generation-identity-gen2-gen3-tcg-nofpu/result.json` verifies Generation 3 built under no-FPU TCG: all twelve T32Ms, the 457,000-byte linked image and boot area are byte-identical to Generation 2; both RedSea volumes pass ownership/bitmap audits. | Pass through Generation 3 for audited artifacts; its full workstation suite also passes. |
@@ -71,8 +71,9 @@ was a concrete open programming-model gate outside the passing release suite.
 The focused `CompilerProbe` source rebuild also passes under 16 MiB
 `486,-fpu` TCG and matches the installed 1,209,705-byte module exactly
 (`retained-compiler-probe-gen3-tcg-nofpu-long/result.json`). The package
-requires and bundles that focused result; the six-module no-FPU audit remains
-open.
+requires and bundles that focused result. The six-module no-FPU audit has now
+passed for the older Generation 2 image
+(`retained-build-gen3-tcg-nofpu/result.json`).
 
 A fresh cross-built kernel now compiles directly from the locked `CDoc`,
 without serializing the document first. The same embedded-binary-size test
@@ -101,10 +102,11 @@ workstation regressions now pass on both KVM and `486,-fpu` TCG: 513 commands,
 (`direct-doc-breakfix-full-kvm-fixed-help/result.json` and
 `direct-doc-breakfix-full-tcg-nofpu/result.json`). The exact-source
 six-module guest rebuild and installation remain pending.
-An original x64 fixture now identifies another open programming-model case:
-quoted foreground formatting yields `A$FG,4$B` (length 8), while the current
-i386 `ExeDoc` yields `AB` (length 2). The standalone red test is
-`tools/test-i386-exedoc-quote.py`; it is not a passing release gate.
+An original x64 fixture identified quoted foreground formatting as another
+programming-model case: `A$FG,4$B` has length 8. The i386 lexer now passes
+the canonical single-document test and a repeated color-4/15/default test
+under KVM and `486,-fpu` TCG on a cross-built image. Other quoted formatting
+records and a guest-built image with this source still need verification.
 The direct-document source now passes a KVM guest rebuild and installed-disk
 cold boot for all six retained modules
 (`retained-build-direct-doc-breakfix-kvm/result.json`,
@@ -127,5 +129,7 @@ target (`selfhost-install-direct-doc-breakfix-kvm/doldoc-tcg-nofpu/result.json`)
 The full no-FPU workstation suite now passes on this same guest-built target
 (`selfhost-install-direct-doc-breakfix-kvm/full-tcg-nofpu/result.json`):
 513 native commands, 576 submitted lines, exact VGA and 20 bounded document
-cycles with exact task-heap recovery under 8 MiB `486,-fpu` TCG. Quoted
-`ExeDoc` formatting remains a known gap. Human observation remains deferred.
+cycles with exact task-heap recovery under 8 MiB `486,-fpu` TCG. A newer
+cross-built source passes quoted foreground records, including two-digit and
+default colors, on KVM and no-FPU TCG. The rest of quoted record semantics
+and the human observation remain open; the manual session is deferred.

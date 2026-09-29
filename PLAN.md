@@ -3296,10 +3296,14 @@ independent RedSea audit. Its complete no-FPU workstation suite also passes
 513 commands, 576 submitted lines, exact VGA and 20 document cycles with
 exact task-heap recovery on the guest-built image. Quoted formatting and
 human observation remain open; the manual session is deferred by request.
-The next original-programming-model red test is quoted DolDoc formatting.
-Original x64 `ExeDoc` turns a foreground entry between `A` and `B` inside a
-quoted string into `A$FG,4$B` (length 8); the current i386 lexer skips the
-entry and returns length 2. The standalone native test is intentionally red,
-outside the passing release suite. After the current guest-built image is
-installed and audited, teach document lexing to preserve this quoted token
-behavior, then rerun the focused test and workstation gates.
+The next original-programming-model test covered quoted DolDoc foreground
+formatting. Original x64 `ExeDoc` turns a foreground entry between `A` and
+`B` inside a quoted string into `A$FG,4$B` (length 8). The i386 lexer now
+emits that record with the original two-dollar escape behavior. Canonical
+foreground entries with color 4, color 15 and default color pass in separate
+documents on the fresh cross-built image under both 8 MiB KVM and `486,-fpu`
+TCG. The document group passes both profiles. Next complete the other quoted
+record types, run the full workstation suite on this exact source, then
+guest-build, install and repeat the generation and no-FPU gates. The older
+Gen2 source's complete six-module no-FPU retained rebuild now passes a
+post-exit byte-identity audit. Human QEMU observation remains deferred.

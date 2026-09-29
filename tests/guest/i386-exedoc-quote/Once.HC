@@ -10,7 +10,9 @@ U0 CheckQuotedDocumentFormat()
   U8 *source="U8 *s=\"A",*tail="B\";Report(s);StrLen(s);",*line;
   I64 answer;
   while(*source) DocPutKey(doc,*source++);
-  entry=DocEntryNewBase(doc,DOCT_FOREGROUND);
+  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
+  entry->type=DOCT_FOREGROUND;
+  entry->de_flags=doldoc.dft_de_flags[DOCT_FOREGROUND];
   entry->attr=4;
   DocInsEntry(doc,entry);
   while(*tail) DocPutKey(doc,*tail++);

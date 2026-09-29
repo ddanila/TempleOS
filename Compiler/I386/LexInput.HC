@@ -7,7 +7,7 @@ I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
   CDoc *doc;
   CDocEntry *entry;
   CDocBin *bin;
-  U8 *binary;
+  U8 *binary,*format;
   I64 i;
   U8 *end;
   if(!cc || !compiled_lines || !cc->lex_include_stk || cc->flags&CCF_PMT || cc->opts&OPTF_ECHO) return -1;
@@ -30,6 +30,24 @@ lex_step:
         if(entry->type_u8==DOCT_TEXT && entry->tag && *entry->tag) {
           file->buf_ptr=cc->cur_buf_ptr=entry->tag;
           break;
+        }
+        if(entry->type_u8==DOCT_FOREGROUND && cc->flags&CCF_IN_QUOTES) {
+          if(cc->dollar_buf && !I386HeapFree(heap,cc->dollar_buf)) return -1;
+          cc->dollar_buf=0;
+          if(entry->attr!=DOC_DFT && (entry->attr<0 || entry->attr>15)) return -1;
+          format=I386HeapAlloc(heap,8,FALSE);
+          if(!format) return -1;
+          i=0; format[i++]='$$'; format[i++]='F'; format[i++]='G';
+          if(entry->attr!=DOC_DFT) {
+            format[i++]=',';
+            if(entry->attr>=10) format[i++]='1';
+            format[i++]='0'+entry->attr%10;
+          }
+          format[i++]='$$'; format[i]=0;
+          cc->dollar_buf=format;
+          cc->dollar_cnt=2;
+          file->buf_ptr=cc->cur_buf_ptr=format;
+          goto lex_step;
         }
         if(entry->type_u8==DOCT_NEW_LINE) {
           file->line_start=entry->next;

@@ -638,7 +638,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('ExeDoc(original_exe);', ['42','42'], 'original-exedoc-result')
             submit('DocDel(original_exe);', [], 'original-exedoc-delete')
             submit('CDoc *fmt_exe=DocNew("C:/Probe/FormattedExe.HC",Fs);', [], 'formatted-exedoc-new')
-            submit('CDocEntry *fmt_color=DocEntryNewBase(fmt_exe,DOCT_FOREGROUND);', [], 'formatted-exedoc-color')
+            submit('CDocEntry *fmt_color=CAlloc(sizeof(CDocEntry),fmt_exe->mem_task);fmt_color->type=DOCT_FOREGROUND;fmt_color->de_flags=doldoc.dft_de_flags[DOCT_FOREGROUND];', ['15','0'], 'formatted-exedoc-color')
             submit('fmt_color->attr=4;DocInsEntry(fmt_exe,fmt_color);', ['4'], 'formatted-exedoc-insert')
             submit('U8 *fmt_src="6*7;";while(*fmt_src)DocPutKey(fmt_exe,*fmt_src++);', [], 'formatted-exedoc-source')
             submit('U8 *fmt_saved=DocSave(fmt_exe);fmt_saved[0]==36;', ['1'], 'formatted-exedoc-record')
