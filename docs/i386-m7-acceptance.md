@@ -113,5 +113,12 @@ guest build/install followed; the new release image is not yet accepted.
 The first full guest-built generation now passes native flat-kernel and boot-
 helper construction, installation and independent 8 MiB KVM cold boot
 (`selfhost-install-direct-doc-breakfix-kvm/result.json`). The second
-generation is running from that installed disk; byte identity and no-FPU
-workstation checks on the new target remain open.
+generation then ran from that installed disk; no-FPU workstation checks on
+the new target remained open at that point.
+The second generation now passes from the first installed disk. All twelve
+guest-built T32Ms, linked image and boot area match byte for byte, and both
+RedSea volumes pass ownership/bitmap audits
+(`generation-identity-direct-doc-breakfix-kvm/result.json`). Both installed
+generations pass the 386 executable audit with guest compiler templates. The
+first installed target's no-FPU workstation and writable three-boot runs are
+in progress; quoted `ExeDoc` formatting remains a known gap.

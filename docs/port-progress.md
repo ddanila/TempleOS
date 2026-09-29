@@ -10646,5 +10646,17 @@ boot-helper T32Ms were built in the guest, the 465,952-byte linked image was
 installed onto a distinct target disk, and that target cold-booted at 8 MiB
 under KVM (`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/result.json`).
 The source disk remained byte-identical. A second build from this installed
-target is running; generation identity and the new target's no-FPU workflow
-are not yet verified.
+target then ran to completion; the new target's no-FPU workflow still needed
+verification at that point.
+The second complete guest-built generation now passes from that installed
+target (`build/i386-kernel/selfhost-install-direct-doc-breakfix-gen2-kvm/result.json`).
+The independent generation audit verifies all twelve T32Ms, the 465,952-byte
+flat image and installed boot area byte-identical; both RedSea volumes pass
+ownership and bitmap walks
+(`build/i386-kernel/generation-identity-direct-doc-breakfix-kvm/result.json`).
+Both target disks pass the 386 executable-region audit with guest compiler
+template data
+(`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/instruction-audit/result.json`,
+`build/i386-kernel/selfhost-install-direct-doc-breakfix-gen2-kvm/instruction-audit/result.json`).
+The first installed target's full no-FPU workstation and three-boot writable
+sessions remain in progress; quoted formatting remains an open semantic gap.
