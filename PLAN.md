@@ -3157,3 +3157,6 @@ the reference disk byte for byte and independently booted. A stop just after
 LBA 0 publication left a complete byte-identical disk that independently
 booted at 8 MiB. The source disk remained unchanged
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu/result.json`).
+The local release packager also validates and bundles all 16 KVM/TCG recovery
+QEMU command records, so the CPU, accelerator, RAM size and source/target disk
+paths are independently reviewable alongside the verdicts.

@@ -42,15 +42,19 @@ def require_workstation(path, cpu):
     return data
 
 
-def require_qemu_command(path, cpu, accel, image):
+def require_qemu_command(path, cpu, accel, image, ram_mib=8, target=None):
     argv = json.loads(path.read_text())
     def value(flag):
         return argv[argv.index(flag) + 1]
     try:
-        if (value('-cpu'), value('-accel'), value('-m')) != (cpu, accel, '8'):
+        if (value('-cpu'), value('-accel'), value('-m')) != (cpu, accel, str(ram_mib)):
             raise ValueError('wrong CPU, accelerator or memory size')
-        if f'file={image},format=raw,if=ide' not in value('-drive'):
+        drives = [argv[index + 1] for index, arg in enumerate(argv[:-1])
+                  if arg == '-drive']
+        if f'file={image},format=raw,if=ide' not in drives:
             raise ValueError('QEMU command uses a different disk')
+        if target is not None and f'file={target},format=raw,if=ide,index=2' not in drives:
+            raise ValueError('QEMU command uses a different installation target')
     except (ValueError, IndexError) as exc:
         raise ValueError(f'{path}: invalid QEMU command: {exc}') from exc
 
@@ -138,9 +142,12 @@ def main():
         'tcg-no-fpu': gen2 / 'install-recovery-tcg-nofpu',
     }
     recovery_artifact_hashes = {}
+    recovery_command_paths = {}
     for profile, recovery_dir in recovery_paths.items():
         recovery = read_pass(recovery_dir / 'result.json')
         cpu = '486,-fpu' if profile == 'tcg-no-fpu' else '486'
+        accel = 'tcg' if profile == 'tcg-no-fpu' else 'kvm'
+        recovery_source = recovery_dir / 'source.img'
         if not recovery.get('source_unchanged') or [case.get('cut_lba') for case in
                 recovery.get('cases', [])] != [128, 850]:
             raise ValueError(f'{profile} final-image installation recovery is incomplete')
@@ -167,6 +174,24 @@ def main():
             if sha256(path) != image_hash:
                 raise ValueError(f'{profile} {name} differs from the release image')
             recovery_artifact_hashes[f'{profile}_{name}'] = image_hash
+        for lba in (128, 850):
+            target = recovery_dir / f'cut-lba-{lba}/target.img'
+            for phase in ('interrupted', 'retry'):
+                key = f'{profile}-lba-{lba}-{phase}'
+                command = recovery_dir / f'cut-lba-{lba}/{phase}/command.json'
+                require_qemu_command(command, cpu, accel, recovery_source, 16, target)
+                recovery_command_paths[key] = command
+            key = f'{profile}-lba-{lba}-independent'
+            command = recovery_dir / f'cut-lba-{lba}/independent/command.json'
+            require_qemu_command(command, cpu, accel, target, 16)
+            recovery_command_paths[key] = command
+        committed_target = recovery_dir / 'cut-after-lba-zero/target.img'
+        command = recovery_dir / 'cut-after-lba-zero/interrupted/command.json'
+        require_qemu_command(command, cpu, accel, recovery_source, 16, committed_target)
+        recovery_command_paths[f'{profile}-lba-0-interrupted'] = command
+        command = recovery_dir / 'cut-after-lba-zero/independent/command.json'
+        require_qemu_command(command, cpu, accel, committed_target, 8)
+        recovery_command_paths[f'{profile}-lba-0-independent'] = command
 
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='i386-release-', dir=out.parent) as tmp:
@@ -206,6 +231,8 @@ def main():
         }
         for name, source in sources.items():
             copy_evidence(source, package / 'evidence' / name)
+        for name, source in recovery_command_paths.items():
+            copy_evidence(source, package / 'evidence' / f'install-recovery-{name}-command.json')
         for command in sorted(session_path.parent.glob('*/command.json')):
             copy_evidence(command, package / 'evidence' /
                           f'doldoc-{command.parent.name}-command.json')

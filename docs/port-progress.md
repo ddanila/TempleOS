@@ -10414,3 +10414,6 @@ the reference bytes and boots independently. The post-commit disk boots at
 8 MiB; the source remains unchanged. All source and target disk hashes equal
 the release image
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu/result.json`).
+The release candidate now includes all 16 KVM and no-FPU TCG recovery QEMU
+command records. Its packager checks their CPU, accelerator, RAM and disk paths
+before accepting the results.

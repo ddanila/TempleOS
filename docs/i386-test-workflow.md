@@ -86,10 +86,13 @@ The packager verifies the recorded 1,233 source-file hashes in the committed
 checkout and all 814 delivered source files on the RedSea disk, the installed
 Generation 2 disk and flat-image hashes, the executable-region audit, three
 complete workstation verdicts (`486` KVM, `486,-fpu` TCG and `pentium3,-fpu`
-TCG), the three writable boot verdicts and two final-image installation
-recovery cases plus a post-LBA-0 hard stop. It produces a compressed raw IDE
+TCG), the three writable boot verdicts and both KVM and no-FPU TCG final-image
+installation recovery suites, each with two pre-commit cuts and a post-LBA-0
+hard stop. It produces a compressed raw IDE
 disk, manifest, command records and acceptance evidence. It hashes the source,
-both retried targets and the post-LBA-0 target against the release image and
+both retried targets and the post-LBA-0 target for each profile against the
+release image, and checks all 16 recovery QEMU command records for the CPU,
+accelerator, RAM size and disk paths. It
 requires the focused 8 MiB
 resource profile from that exact disk. The bundle includes `verify.py`; running
 `python3 verify.py` inside it checks every bundled file and the decompressed
