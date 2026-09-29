@@ -33,6 +33,33 @@ python3 tools/audit-i386-guest-image.py \
 booted, fully guest-built image. The QEMU work here is substantial; preserve
 each stage's `result.json` and use a fresh output directory for a new run.
 
+Rebuild from that installed image to make Generation 2, then compare both
+installed generations. The retained build also requires each new T32M to match
+the copy installed on the Generation 1 disk:
+
+```sh
+python3 tools/test-i386-retained-build.py \
+  --disk build/i386-kernel/selfhost-install-fixed/target.img \
+  --compare-installed build/i386-kernel/selfhost-install-fixed/target.img \
+  --out build/i386-kernel/retained-build-gen2-fixed
+python3 tools/test-i386-retained-install.py \
+  --source build/i386-kernel/retained-build-gen2-fixed/source.img \
+  --out build/i386-kernel/retained-install-gen2-fixed
+python3 tools/test-i386-selfhost-install.py \
+  --disk build/i386-kernel/retained-install-gen2-fixed/candidate.img \
+  --out build/i386-kernel/selfhost-install-gen2-fixed
+python3 tools/audit-i386-generations.py \
+  --first build/i386-kernel/selfhost-install-fixed/target.img \
+  --second build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --out build/i386-kernel/generation-identity-fixed
+python3 tools/audit-i386-guest-image.py \
+  --source build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --installed build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --kernel-module-path /Modules/I386/Kernel.t32m \
+  --flat-path /Probe/GuestBoot.bin --guest-compiler-template \
+  --out build/i386-kernel/selfhost-install-gen2-fixed/instruction-audit
+```
+
 ```sh
 python3 tools/i386-kernel-input.py --list-groups
 python3 tools/i386-kernel-input.py --group windows
@@ -99,7 +126,7 @@ entry linkage.
 Copy the fully guest-built installed image and boot the copy without `-snapshot`:
 
 ```sh
-cp build/i386-kernel/selfhost-install-fixed/target.img build/i386-manual.img
+cp build/i386-kernel/selfhost-install-gen2-fixed/target.img build/i386-manual.img
 qemu-system-i386 -machine pc -accel tcg -cpu 486 -m 8 -nic none \
   -drive file=build/i386-manual.img,format=raw,if=ide
 ```
@@ -129,7 +156,7 @@ Use the independently installed fully guest-built disk. Keep a writable copy so 
 automated reference remains unchanged:
 
 ```sh
-cp build/i386-kernel/selfhost-install-fixed/target.img build/i386-manual-source.img
+cp build/i386-kernel/selfhost-install-gen2-fixed/target.img build/i386-manual-source.img
 qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 8 -nic none \
   -drive file=build/i386-manual-source.img,format=raw,if=ide
 ```

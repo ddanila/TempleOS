@@ -2,8 +2,9 @@
 
 This matrix records observed behavior for the fully guest-built i386 disk
 image. It is QEMU verification, not certification of physical 386 hardware.
-The second-generation rebuild and final M7 publication/resource gates in
-`PLAN.md` remain open.
+The second-generation rebuild is byte-identical in its installed boot code
+and twelve guest-built modules. Final M7 publication and human observation
+in `PLAN.md` remain open.
 
 ## Tested emulator
 
@@ -16,6 +17,7 @@ The second-generation rebuild and final M7 publication/resource gates in
 | Display and input | Standard QEMU VGA, AT keyboard and PS/2 mouse |
 | Network | Disabled with `-nic none` |
 | Fully guest-built image SHA-256 | `593e914a4769a53bd987fa5a3978e0e14018bbf4b2825820d37a1d4f958bc023` (`build/i386-kernel/selfhost-install-fixed/target.img`) |
+| Generation 2 image SHA-256 | `c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8` (`build/i386-kernel/selfhost-install-gen2-fixed/target.img`) |
 
 The command manifests in each result directory contain the exact QEMU argv.
 The host has SeaBIOS `bios-256k.bin` at SHA-256
@@ -31,6 +33,7 @@ QEMU loaded.
 | CPU | Evidence | Result |
 | --- | --- | --- |
 | `486`, KVM | `build/i386-kernel/selfhost-install-fixed/full/result.json`: 506 native commands, 569 input lines, exact VGA, document resource cycles | Pass at 8 MiB |
+| `486`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/result.json`: independent Generation 2 boot, `6*7` = 42, `DocAllocationCheck` = 12 | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-fixed/full-tcg-nofpu/result.json`: same complete 506-command workstation suite, exact VGA and heap recovery | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/sf-doldoc/result.json`: three writable boots on the fully guest-built image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, KVM | `build/i386-kernel/resource-profile-third/resource-result.json`: 7,143,424-byte heap arena and 20 document cycles with exact live-heap recovery | Pass at 8 MiB |
@@ -62,12 +65,16 @@ needed before claiming the 80386 instruction baseline. A diagnostic QEMU boot
 now exports and audits twelve sampled native JIT functions across two compiler
 probe phases (1,238 executable bytes and 622 instructions); the exact captures
 are recorded in `build/i386-jit-live-boot/live-jit-audit.json`.
-The fully guest-built installed image passes the executable-region audit in
-`build/i386-kernel/selfhost-install-fixed/instruction-audit/result.json`,
-including the guest compiler's division-template data. QEMU on this host does
-not offer a 386 CPU model; neither a no-FPU 486 run nor the static allowlist
-proves strict physical 386 compatibility. The 16 MiB native compiler/kernel
-build and installation now pass for one complete generation. The second
-generation, final resource/reporting package and remaining integrated M7
-acceptance remain open. Physical hardware and dedicated SX/DX certification
+The installed images pass the executable-region audits in
+`build/i386-kernel/selfhost-install-fixed/instruction-audit/result.json` and
+`build/i386-kernel/selfhost-install-gen2-fixed/instruction-audit/result.json`,
+including the guest compiler's division-template data. The two-generation
+audit in `build/i386-kernel/generation-identity-fixed/result.json` finds all
+twelve T32Ms, the 457,000-byte flat image and the installed boot area
+byte-identical; the whole disk hashes differ because the native builds leave
+different files on RedSea. QEMU on this host does not offer a 386 CPU model;
+neither a no-FPU 486 run nor the static allowlist proves strict physical 386
+compatibility. The 16 MiB native compiler/kernel build and installation now
+pass for two complete generations. Final release packaging and human
+observation remain open. Physical hardware and dedicated SX/DX certification
 are deferred under the current plan.
