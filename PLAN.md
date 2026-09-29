@@ -3083,4 +3083,7 @@ the guest compiler's division-template data. The fully guest-built installed
 target also passes the full 8 MiB QEMU/KVM workstation suite: 506 native
 commands, 569 submitted lines, exact VGA checkpoints and 20 bounded document
 development cycles with exact heap recovery. The second-generation result
-and remaining M7 publication/resource gates are still required.
+and remaining M7 publication/resource gates are still required. The same
+installed image also passes the three-boot writable DolDoc project check under
+8 MiB `486,-fpu`: create/edit/execute/save, reboot/reopen, revise/reboot,
+and an independent RedSea directory, file-byte and bitmap audit.

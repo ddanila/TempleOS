@@ -10312,5 +10312,8 @@ The same full 8 MiB QEMU/KVM suite passes on the fully guest-built flat and
 retained installed image (`build/i386-kernel/selfhost-install-fixed/full/result.json`):
 506 native commands, 569 submitted lines, exact VGA checkpoints and 20
 bounded document-development cycles with exact task heap recovery. The
-second-generation rebuild and three-boot no-FPU DolDoc persistence run are
-still in progress.
+second-generation rebuild is still in progress. The three-boot no-FPU DolDoc
+run passes on this image (`build/sf-doldoc/result.json`): 107 commands create,
+edit, execute and save the project; 56 commands reopen and revise it after a
+boot; 15 commands verify it after a second boot. The host-side RedSea walk
+confirms saved file bytes, directory ownership and the allocation bitmap.
