@@ -3326,3 +3326,7 @@ heap recovery. An earlier foreground-only source has passed a six-module
 guest rebuild, export/structure audit, replacement installation and
 independent 8 MiB KVM cold boot. The expanded-source guest rebuild and full
 installed-generation gates remain open. Manual observation stays deferred.
+The foreground-only guest-installed disk also passes the 21-command quoted
+foreground repeat test under 8 MiB `486,-fpu` TCG with exact VGA. The
+expanded-source guest rebuild is still compiling its retained compiler
+modules; its installation and generation identity are not yet accepted.

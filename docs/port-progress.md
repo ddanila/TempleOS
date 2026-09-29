@@ -10743,3 +10743,7 @@ six retained modules on a separate disk then passed independent 8 MiB KVM
 cold boot (`build/i386-kernel/retained-install-quote-fg-kvm/result.json`).
 The expanded-source guest rebuild and fully guest-built installed generation
 remain open. Human manual observation stays deferred.
+The foreground-only guest-installed disk additionally passes all 21 quoted
+foreground repeat commands under 8 MiB `486,-fpu` TCG with exact VGA
+(`build/i386-kernel/retained-install-quote-fg-kvm/quote-repeat-tcg-nofpu/result.json`).
+The expanded-source guest rebuild remains active separately.

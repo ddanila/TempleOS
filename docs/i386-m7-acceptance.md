@@ -152,3 +152,7 @@ The preceding foreground-only source passed six-module guest rebuild and
 replacement installation with independent KVM cold boot. The expanded-source
 guest-built image and second-generation identity are still open; manual
 observation remains deferred.
+The foreground-only guest-installed image passes the 21-command quoted
+foreground repeat test under 8 MiB `486,-fpu` TCG with exact VGA
+(`retained-install-quote-fg-kvm/quote-repeat-tcg-nofpu/result.json`). The
+expanded-source guest rebuild and installed-generation checks remain open.
