@@ -3435,3 +3435,11 @@ and `486,-fpu` TCG with exact VGA, plus default-color and shifted-record
 regressions under KVM. Its original x64 rebuild and 386 cross-build/audit
 pass. Full workstation and guest-built installed-generation checks for this
 new source remain open. Manual observation stays deferred.
+The preceding fully guest-built shifted-record target now also passes the
+complete 8 MiB `486,-fpu` TCG workstation suite: 513 native commands, 576
+submitted lines, exact VGA at every checkpoint, a 0.209-second long-document
+visible-update latency and 20 bounded document-development cycles with
+exact task-heap recovery
+(`build/i386-kernel/selfhost-install-shifted-kvm/full-tcg-nofpu/result.json`).
+This result belongs to the shifted-record generation; the newer layout
+source still needs full installed-generation verification.

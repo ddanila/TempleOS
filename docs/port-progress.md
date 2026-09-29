@@ -10933,3 +10933,12 @@ and shifted-record regressions pass under KVM, as do the original x64
 two-generation rebuild and 386 cross-build/instruction audit. Complete
 workstation and guest-built installed-generation checks remain open for
 this source; the manual QEMU session remains deferred.
+The preceding fully guest-built shifted-record target has now passed the
+complete 8 MiB `486,-fpu` TCG workstation suite: 513 native commands,
+576 submitted lines, exact VGA at each checkpoint, a 0.209-second
+long-document visible-update latency and 20 bounded document-development
+cycles with exact task-heap recovery
+(`build/i386-kernel/selfhost-install-shifted-kvm/full-tcg-nofpu/result.json`).
+Its focused no-FPU shifted probe, three-boot writable session, 386 audit
+and two-generation byte identity also pass. The newer page-layout source
+still needs full workstation and installed-generation gates.
