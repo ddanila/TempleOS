@@ -10317,3 +10317,10 @@ run passes on this image (`build/sf-doldoc/result.json`): 107 commands create,
 edit, execute and save the project; 56 commands reopen and revise it after a
 boot; 15 commands verify it after a second boot. The host-side RedSea walk
 confirms saved file bytes, directory ownership and the allocation bitmap.
+
+The focused 8 MiB `486,-fpu` resource profile on the fully guest-built image
+measures a 7,143,424-byte heap arena from physical 1,114,112. After warm-up,
+20 document-development cycles begin at 1,352,224 live bytes, peak at
+1,355,840 live bytes (3,616 bytes temporary growth) and 1,356,800 reserved
+bytes, then recover the exact live baseline on every cycle
+(`build/i386-kernel/resource-profile-third/resource-result.json`).

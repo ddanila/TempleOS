@@ -3076,8 +3076,9 @@ boot helpers onto a target disk. That target independently cold-booted at 8 MiB,
 returned 42 from `6*7` and 12 from `DocAllocationCheck`, and retained all six
 guest-built runtime/compiler modules unchanged. The full 8 MiB QEMU/KVM
 workstation suite passes on the corrected six-module retained candidate:
-506 native commands, 569 submitted lines and exact VGA checkpoints. A second-
-generation rebuild from the fully guest-built target is running. The installed target also passes the
+506 native commands, 569 submitted lines and exact VGA checkpoints. A second
+generation rebuild from the fully guest-built target is running. The installed
+target also passes the
 linked-module, retained-module and boot-stage 386 instruction audit, including
 the guest compiler's division-template data. The fully guest-built installed
 target also passes the full 8 MiB QEMU/KVM workstation suite: 506 native
@@ -3087,3 +3088,10 @@ and remaining M7 publication/resource gates are still required. The same
 installed image also passes the three-boot writable DolDoc project check under
 8 MiB `486,-fpu`: create/edit/execute/save, reboot/reopen, revise/reboot,
 and an independent RedSea directory, file-byte and bitmap audit.
+
+The current 8 MiB no-FPU resource profile reports a 7,143,424-byte native
+heap arena starting at physical 1,114,112. After warm-up, 20 complete
+document-development cycles start from 1,352,224 live bytes, reach a
+1,355,840-byte live peak and a 1,356,800-byte reserved peak, then return to
+the exact live baseline after each cycle. The full no-FPU workstation suite
+and second-generation rebuild remain under verification.
