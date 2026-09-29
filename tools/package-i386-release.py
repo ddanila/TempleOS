@@ -139,6 +139,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='i386-release-', dir=out.parent) as tmp:
         package = Path(tmp) / out.name
         package.mkdir()
+        shutil.copyfile(ROOT / 'tools/verify-i386-release.py', package / 'verify.py')
         disk_gz = package / 'TempleOS-i386-gen2.img.gz'
         with image.open('rb') as src, disk_gz.open('wb') as raw:
             with gzip.GzipFile(filename='', mode='wb', fileobj=raw, mtime=0, compresslevel=9) as zipped:
@@ -179,7 +180,8 @@ def main():
             'This 16 MiB raw IDE image was built and installed inside the i386 guest. '
             'The second guest generation reproduces all twelve modules, the flat '
             'kernel and the boot area byte for byte. Evidence and exact QEMU '
-            'commands are under `evidence/`.\n\n'
+            'commands are under `evidence/`. Verify the package first with '
+            '`python3 verify.py`.\n\n'
             'Unpack with `gzip -dk TempleOS-i386-gen2.img.gz`, then verify the '
             'raw image against `manifest.json`. Boot a writable copy with:\n\n'
             '```sh\nqemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu '

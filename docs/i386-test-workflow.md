@@ -89,7 +89,9 @@ TCG), the three writable boot verdicts and two final-image installation
 recovery cases. It produces a compressed raw IDE disk, manifest, command
 records and acceptance evidence. It hashes both retried targets and the
 recovery source against the release image and requires the focused 8 MiB
-resource profile from that exact disk. Human manual observation is a
+resource profile from that exact disk. The bundle includes `verify.py`; running
+`python3 verify.py` inside it checks every bundled file and the decompressed
+disk. A README mutation must fail verification. Human manual observation is a
 separate M7 gate; this command does not publish a release.
 
 The native build/install harnesses accept `--cpu` as well as `--accel`, so the

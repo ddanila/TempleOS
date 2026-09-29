@@ -10386,3 +10386,7 @@ profile. The native heap arena is 7,143,424 bytes from physical 1,114,112;
 1,355,840 live bytes and 1,356,800 reserved bytes, then recover the exact
 baseline. Temporary live growth is 3,616 bytes
 (`build/i386-kernel/selfhost-install-gen2-fixed/resource-profile/resource-result.json`).
+
+The local candidate now carries a standalone `verify.py`: it checks every
+bundled file against the manifest and hashes the decompressed 16 MiB image.
+The clean candidate passes; altering its README makes the verifier reject it.
