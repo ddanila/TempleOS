@@ -10996,3 +10996,13 @@ Its complete no-FPU workstation suite and second guest-built generation
 are running. The latest eight-layout-record source has started an
 exact-source six-module KVM guest rebuild. Human observation remains
 deferred.
+
+## Quoted page-break and clear records (TDD baseline, 2026-09-29)
+
+Original x64 `ExeDoc` serializes canonical page-break and clear entries
+inside a quoted string as `A$PB$$CL$B` (length 10)
+(`tests/guest/i386-exedoc-controls/Once.HC`,
+`build/i386-kernel/exedoc-controls-x64/debug.log`). The current i386 image
+reaches `ExeDoc` but times out on the matching nine-command probe
+(`build/i386-kernel/exedoc-controls-red-kvm/`). This is a red behavior test;
+no i386 pass is claimed. Manual observation remains deferred.

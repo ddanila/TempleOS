@@ -3481,3 +3481,10 @@ Its complete no-FPU workstation suite and second guest-built generation
 are running. The latest eight-layout-record source has started its
 exact-source six-module KVM guest rebuild. Human manual observation remains
 deferred.
+The next original-behavior fixture covers quoted page-break and clear
+records. Original x64 `ExeDoc` yields `A$PB$$CL$B` (length 10)
+(`tests/guest/i386-exedoc-controls/Once.HC`). The current i386 image
+reaches `ExeDoc` but times out on the matching nine-command native probe
+(`build/i386-kernel/exedoc-controls-red-kvm/`). This is a red TDD case;
+control-record serialization and its installed-generation checks remain
+open. The manual QEMU session stays deferred.

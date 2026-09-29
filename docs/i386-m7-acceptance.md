@@ -301,3 +301,9 @@ exact VGA
 Its complete no-FPU workstation suite and second guest-built generation
 are running. The latest eight-layout-record source has started its
 six-module guest rebuild. Human manual observation remains deferred.
+The next original-behavior fixture establishes quoted page-break and clear
+records: x64 `ExeDoc` yields `A$PB$$CL$B` (length 10), while the current
+i386 image reaches `ExeDoc` but fails the matching nine-command probe
+(`tests/guest/i386-exedoc-controls/Once.HC`,
+`build/i386-kernel/exedoc-controls-red-kvm/`). This remains a red TDD case;
+human manual observation stays deferred.
