@@ -109,6 +109,11 @@ python3 tools/test-i386-retained-build.py \
   --out build/i386-kernel/retained-build-gen3-tcg-nofpu
 ```
 
+`tools/test-i386-selfhost-install.py` also accepts `--command-timeout` in
+seconds for the long 16 MiB TCG kernel build; its default remains 2,400
+seconds. Set a measured longer limit when the guest is still emitting
+functions near that boundary. A timeout is not a guest build failure.
+
 The final installed image also supplies the guest-built boot file needed to
 repeat the installation interruption/retry gate on that exact disk:
 

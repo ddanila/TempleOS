@@ -23,7 +23,11 @@ def main():
                         default=ROOT / 'build/i386-kernel/selfhost-install')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for build and boot')
+    parser.add_argument('--command-timeout', type=int, default=2400,
+                        help='Seconds allowed for each guest build/install command')
     args = parser.parse_args()
+    if args.command_timeout <= 0:
+        parser.error('--command-timeout must be positive')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     source = out / 'source.img'
@@ -47,7 +51,8 @@ def main():
     run_input(source, out / 'build', target_disk=target, snapshot=False,
               ram_mib=16, accel=args.accel, cpu=args.cpu, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
-                             'command_timeout': 2400, 'commands': commands})
+                             'command_timeout': args.command_timeout,
+                             'commands': commands})
     if source.read_bytes() != original:
         raise ValueError('Self-hosting source disk changed')
     installed = files(target, retained_paths)
