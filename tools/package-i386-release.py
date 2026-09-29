@@ -179,6 +179,25 @@ def main():
             console_copy['/Probe/RetainedConsoleRuntime.t32m'] !=
             installed_console['/Modules/I386/ConsoleRuntime.t32m']):
         raise ValueError('no-FPU retained console differs from installed module')
+    compiler_probe_dir = base / 'retained-compiler-probe-gen3-tcg-nofpu-long'
+    compiler_probe_path = compiler_probe_dir / 'result.json'
+    compiler_probe = read_pass(compiler_probe_path)
+    probe_module = compiler_probe.get('modules', {}).get('CompilerProbe', {})
+    if (set(compiler_probe.get('modules', {})) != {'CompilerProbe'} or
+            probe_module.get('bytes') != 1209705 or
+            probe_module.get('exports') != 182):
+        raise ValueError('no-FPU retained compiler probe rebuild is incomplete')
+    require_qemu_command(compiler_probe_dir / 'qemu/command.json',
+                         '486,-fpu', 'tcg', compiler_probe_dir / 'source.img', 16)
+    probe_copy = read_redsea_files(
+        compiler_probe_dir / 'source.img', {'/Probe/RetainedCompilerProbe.t32m'})
+    installed_probe = read_redsea_files(
+        image, {'/Modules/I386/CompilerProbe.t32m'})
+    if (set(probe_copy) != {'/Probe/RetainedCompilerProbe.t32m'} or
+            set(installed_probe) != {'/Modules/I386/CompilerProbe.t32m'} or
+            probe_copy['/Probe/RetainedCompilerProbe.t32m'] !=
+            installed_probe['/Modules/I386/CompilerProbe.t32m']):
+        raise ValueError('no-FPU retained compiler probe differs from installed module')
     require_workstation(gen2 / 'full/result.json', '486')
     require_workstation(gen2 / 'full-tcg-nofpu/result.json', '486,-fpu')
     require_workstation(gen2 / 'full-pentium3-nofpu/result.json', 'pentium3,-fpu')
@@ -338,6 +357,8 @@ def main():
             'generation-3-no-fpu-doldoc.json': gen3_session_path,
             'generation-3-no-fpu-retained-console.json': console_retained_path,
             'generation-3-no-fpu-retained-console-command.json': console_retained_dir / 'qemu/command.json',
+            'generation-3-no-fpu-retained-compiler-probe.json': compiler_probe_path,
+            'generation-3-no-fpu-retained-compiler-probe-command.json': compiler_probe_dir / 'qemu/command.json',
             'generation-2-instruction-audit.json': gen2 / 'instruction-audit/result.json',
             'generation-2-kvm-workstation.json': gen2 / 'full/result.json',
             'generation-2-kvm-command.json': gen2 / 'full/command.json',

@@ -10500,4 +10500,35 @@ under 8 MiB `486,-fpu` TCG: canonical formatting record present, `ExeDoc`
 returns 42, and every VGA checkpoint matches
 (`build/i386-kernel/exedoc-format-record-gen3-tcg-nofpu/result.json`).
 The packager requires and bundles this result and its no-FPU QEMU command;
-the resulting 64-file candidate passes the standalone verifier.
+the resulting local candidate passes the standalone verifier.
+
+## Document-attached compiler red test (2026-09-29)
+
+An original x64 TempleOS QEMU fixture builds a canonical `CDoc` with a
+three-byte `CDocBin` and a `DOCT_INS_BIN_SIZE` entry; `ExeDoc` returns 3 and
+the guest runner exits on its `DONE` marker
+(`tests/guest/i386-exedoc-bin-size/Once.HC`). The matching i386 public-API
+probe reaches `ExeDoc` but returns 0, so its expected VGA check for 3 fails
+at `startup-command-12`
+(`build/i386-kernel/exedoc-bin-size-native-red/`). The first prototype used
+`DocEntryNewBase` and was invalid because that function allocates only a
+base entry; the checked probe uses a full `CDocEntry` and the same bin flags
+as the passing binary-persistence test. The failure is consistent with the
+current `NativeExeDoc` path: it calls `DocSave`, whose record serializer
+returns null for `DOCT_INS_BIN_SIZE`. The standalone red test is
+`tools/test-i386-exedoc-bin-size.py`; it is not part of the passing release
+suite. The port needs direct document-source lexing and full embedded-record
+save/load before claiming the original `ExeDoc` programming model.
+
+## Focused no-FPU retained compiler probe (2026-09-29)
+
+The 16 MiB `486,-fpu` TCG guest rebuilt `CompilerProbe` from source. Its
+1,209,705-byte module has 182 exports and exactly matches the installed
+Generation 2 module after an independent post-exit RedSea read (SHA-256
+`835b584c91b156417cfbec66c32f7dde272c28be34df49d23aeb8a10bdff5c91`).
+The result is in
+`build/i386-kernel/retained-compiler-probe-gen3-tcg-nofpu-long/result.json`.
+The release packager checks the guest-written module, installed module and
+QEMU command, and its standalone 66-file candidate verifies. The focused
+`CompilerRuntime` build and integrated six-module resume are still running;
+this is a partial retained-source pass.

@@ -3238,4 +3238,22 @@ DolDoc-record byte check, result 42 and exact VGA
 extends this specific programming-model check to the target CPU profile;
 document-attached compiler control remains open.
 The packager also requires this Generation 3 no-FPU verdict and QEMU command;
-the resulting 64-file candidate passes its standalone verifier.
+the resulting local candidate passes its standalone verifier.
+The focused 16 MiB `486,-fpu` TCG `CompilerProbe` source rebuild now also
+passes. A post-exit RedSea read found its 1,209,705-byte, 182-export T32M
+byte-identical to the installed Generation 2 module (SHA-256
+`835b584c91b156417cfbec66c32f7dde272c28be34df49d23aeb8a10bdff5c91`).
+The packager checks the guest-written and installed bytes and bundles the
+result and exact QEMU command; its 66-file candidate verifies. The focused
+`CompilerRuntime` and integrated six-module no-FPU runs remain live.
+The next original-programming-model red test now has a reference verdict:
+original x64 TempleOS executes a canonical `DOCT_INS_BIN_SIZE` entry attached
+to a three-byte `CDocBin` and returns 3. The same in-memory document on i386
+currently returns 0 because `NativeExeDoc` serializes through `DocSave`, whose
+current record subset rejects `DOCT_INS_BIN_SIZE`. The standalone native
+test in `tools/test-i386-exedoc-bin-size.py` intentionally fails at its final
+VGA result check; it is not a release gate yet. Implement a borrowed document
+source in the i386 compiler control and lexer, with original token behavior,
+lock/unwind safety and source positions. Then extend canonical save/load for
+the embedded binary records, run the red test green on both KVM and no-FPU
+TCG, and repeat the workstation and writable-project gates.
