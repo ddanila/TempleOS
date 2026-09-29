@@ -10300,5 +10300,9 @@ image and installed it to a separate target disk. The target independently
 booted at 8 MiB and returned 42 from `6*7` and 12 from
 `DocAllocationCheck`; all six retained T32Ms matched their guest-built source
 bytes (`build/i386-kernel/selfhost-install-fixed/result.json`). The full
-workstation suite and second-generation rebuild are running; their results
-are not yet counted as passed.
+installed image passes the 386 executable audit for the linked flat image,
+retained modules and boot stages. The audit now checks the guest compiler's
+division template in its data range and still accepts the earlier host
+assembly marker form (`build/i386-kernel/selfhost-install-fixed/instruction-audit/result.json`).
+The full workstation suite and second-generation rebuild are running; their
+results are not yet counted as passed.

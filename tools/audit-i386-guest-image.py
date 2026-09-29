@@ -22,18 +22,21 @@ def main():
     parser.add_argument('--installed',type=Path,default=ROOT/'build/i386-kernel/gen2-guest-boot/target.img')
     parser.add_argument('--stage-listing',type=Path,default=ROOT/'build/i386-kernel/kernel-stage.lst')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel/gen2-instruction-audit')
+    parser.add_argument('--kernel-module-path',default='/Probe/Gen2Kernel.t32m')
+    parser.add_argument('--flat-path',default='/Probe/Gen2.bin')
+    parser.add_argument('--guest-compiler-template',action='store_true')
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
     build=load('i386_build',Path('tools/build-i386-kernel.py'))
     boot=load('i386_boot_audit',Path('tools/audit-i386-boot.py'))
     names=build.DISK_MODULES
-    wanted={'/Probe/Gen2Kernel.t32m','/Probe/Gen2.bin'}|{
+    wanted={args.kernel_module_path,args.flat_path}|{
         f'/Modules/I386/{name}.t32m' for name in names[1:]}
     files=build.mutated_file_contents(args.source,wanted)
     if set(files)!=wanted: raise ValueError(f'Missing installed source modules: {wanted-set(files)}')
     exports=args.out/'exports';exports.mkdir(exist_ok=True)
-    (exports/'Kernel.t32m').write_bytes(files['/Probe/Gen2Kernel.t32m'])
-    flat=files['/Probe/Gen2.bin']
+    (exports/'Kernel.t32m').write_bytes(files[args.kernel_module_path])
+    flat=files[args.flat_path]
     (exports/'Kernel32.BIN').write_bytes(flat)
     for name in names[1:]:
         (exports/f'{name}.t32m').write_bytes(files[f'/Modules/I386/{name}.t32m'])
@@ -41,7 +44,7 @@ def main():
     if len(installed)!=32768*512 or installed[512+4096:512+4096+len(flat)]!=flat:
         raise ValueError('Installed boot payload differs from the guest-built flat image')
     filesystem=build.verify_mutated_volume(args.installed)
-    build.audit(exports,args.out)
+    build.audit(exports,args.out,guest_compiler_template=args.guest_compiler_template)
     boot_result=boot.audit(installed,args.stage_listing.read_text())
     result={'result':'pass','flat_bytes':len(flat),
             'flat_sha256':hashlib.sha256(flat).hexdigest(),

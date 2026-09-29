@@ -502,7 +502,7 @@ def division_template_lines(code, disassemble):
     return lines
 
 
-def audit(exports, out):
+def audit(exports, out, guest_compiler_template=False):
     disassemble = runpy.run_path(str(ROOT/'tools/test-i386.py'))['disassemble_i386']
     allowed = I386_ALLOWED
     image = (exports/'Kernel32.BIN').read_bytes()
@@ -523,6 +523,7 @@ def audit(exports, out):
         if index==0 or not resident:
             starts, data = [], []
             template_markers = {}
+            template_data = []
             for i in range(count):
                 kind, offset, name_offset, length = struct.unpack_from('<4I',module,records+16*i)
                 if kind==1:
@@ -533,6 +534,9 @@ def audit(exports, out):
                         starts.append(offset)
                 elif kind==4:
                     data.append((offset,name_offset))
+                elif kind==3 and name == 'CompilerRuntime':
+                    symbol = module[name_offset:name_offset+length].decode('ascii')
+                    if symbol == 'I386DivTemplate': template_data.append(offset)
                 elif kind==6:
                     if version!=3 or length or offset>size-4 or name_offset>=size or struct.unpack_from('<I',module,32+offset)[0]:
                         raise ValueError(f'Invalid {name} stored pointer')
@@ -540,17 +544,25 @@ def audit(exports, out):
                         raise ValueError('Flat kernel pointer uses the wrong load address')
             template = None
             if name == 'CompilerRuntime':
-                if set(template_markers) != {'_I386_DIV_BEGIN', '_I386_DIV_END'}:
-                    raise ValueError('Missing native backend division template markers')
-                template = (template_markers['_I386_DIV_BEGIN'], template_markers['_I386_DIV_END'])
-                if template[1]-template[0] != 185:
-                    raise ValueError('Unexpected native division template size')
+                if guest_compiler_template:
+                    if template_markers or len(template_data)!=1 or not any(
+                            begin<=template_data[0] and template_data[0]+185<=begin+length
+                            for begin,length in data):
+                        raise ValueError('Missing guest division template data range')
+                    template_location = template_data[0]
+                else:
+                    if set(template_markers) != {'_I386_DIV_BEGIN', '_I386_DIV_END'}:
+                        raise ValueError('Missing native backend division template markers')
+                    template = (template_markers['_I386_DIV_BEGIN'], template_markers['_I386_DIV_END'])
+                    if template[1]-template[0] != 185:
+                        raise ValueError('Unexpected native division template size')
+                    template_location = template[0]
                 source=(ROOT/'Compiler/I386/DivideTemplate.HC').read_text()
                 values=re.search(r'U8 I386DivTemplate\[185\]=\{([^}]*)\};',source,re.S)
                 if not values:
                     raise ValueError('Missing native-source division template')
                 expected=bytes(int(value,16) for value in re.findall(r'0x[0-9A-Fa-f]{2}',values.group(1)))
-                if expected!=code[template[0]:template[1]]:
+                if expected!=code[template_location:template_location+185]:
                     raise ValueError('Native-source division bytes differ from host assembly')
             starts.sort()
             if not starts or starts[-1]>=size or len(set(starts))!=len(starts):

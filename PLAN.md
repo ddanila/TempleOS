@@ -3076,5 +3076,7 @@ boot helpers onto a target disk. That target independently cold-booted at 8 MiB,
 returned 42 from `6*7` and 12 from `DocAllocationCheck`, and retained all six
 guest-built runtime/compiler modules unchanged. The full workstation suite on
 the corrected retained candidate and a second-generation rebuild from the
-fully guest-built target are running. Their results and the remaining M7
+fully guest-built target are running. The installed target also passes the
+linked-module, retained-module and boot-stage 386 instruction audit, including
+the guest compiler's division-template data. Their results and the remaining M7
 publication/resource gates are still required.
