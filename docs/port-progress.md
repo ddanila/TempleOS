@@ -10492,3 +10492,6 @@ acceptance continues.
 The expanded `document-editing` group also passes all 169 native commands
 on the exact Generation 2 disk at 8 MiB under QEMU/486 KVM, with exact VGA
 checks (`build/i386-kernel/document-editing-formatted-exedoc-kvm/result.json`).
+The local release packager now checks the exact source image hash, 169-command
+verdict, CPU/RAM/VGA fields and QEMU command, then bundles both records; its
+62-file candidate passes the standalone verifier.

@@ -3229,3 +3229,5 @@ continues.
 The expanded 169-command `document-editing` group passes on the exact
 Generation 2 disk under 8 MiB QEMU/486 KVM with exact VGA checkpoints
 (`build/i386-kernel/document-editing-formatted-exedoc-kvm/result.json`).
+The release packager now requires that exact-disk verdict and QEMU command
+and bundles both in its independently verified 62-file local candidate.

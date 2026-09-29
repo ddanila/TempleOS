@@ -56,3 +56,5 @@ QEMU gates continue.
 The expanded 169-command document-editing group, including the formatted
 `ExeDoc` case, passes under 8 MiB QEMU/486 KVM with exact VGA checkpoints
 (`document-editing-formatted-exedoc-kvm/result.json`).
+The local release package requires and includes that exact-image result and
+its QEMU command.
