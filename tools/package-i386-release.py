@@ -5,6 +5,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import runpy
 import shutil
 import subprocess
 import tempfile
@@ -78,10 +79,27 @@ def main():
     gen2 = base / 'selfhost-install-gen2-fixed'
     build_manifest_path = base / 'result.json'
     build_manifest = json.loads(build_manifest_path.read_text())
+    source_paths = list(build_manifest['source_sha256'])
     for name, expected in build_manifest['source_sha256'].items():
         path = ROOT / name
         if not path.is_file() or sha256(path) != expected:
             raise ValueError(f'build source differs from recorded input: {name}')
+    source_revision = subprocess.check_output(
+        ['git', 'log', '-1', '--format=%H', '--', *source_paths],
+        cwd=ROOT, text=True).strip()
+    if not source_revision or subprocess.run(
+            ['git', 'diff', '--quiet', 'HEAD', '--', *source_paths],
+            cwd=ROOT, check=False).returncode or subprocess.run(
+            ['git', 'diff', '--quiet', f'{source_revision}..HEAD', '--', *source_paths],
+            cwd=ROOT, check=False).returncode:
+        raise ValueError('Recorded build sources are not a clean committed source tree')
+    disk_files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents'](
+        image, {'/' + name for name in source_paths})
+    if len(disk_files) != 814:
+        raise ValueError(f'Expected 814 delivered source files, found {len(disk_files)}')
+    for path, contents in disk_files.items():
+        if hashlib.sha256(contents).hexdigest() != build_manifest['source_sha256'][path[1:]]:
+            raise ValueError(f'Delivered source differs from committed source: {path}')
     generation = read_pass(base / 'generation-identity-fixed/result.json')
     if generation.get('second_disk_sha256') != image_hash or generation.get('module_count') != 12:
         raise ValueError('image differs from audited Generation 2 disk')
@@ -195,8 +213,12 @@ def main():
             'raw image against `manifest.json`. Boot a writable copy with:\n\n'
             '```sh\nqemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu '
             '-m 8 -nic none -drive file=TempleOS-i386-gen2.img,format=raw,if=ide\n```\n\n'
-            'The complete source and reproduction procedure are in the repository '
-            'at the manifest revisions. See `evidence/i386-m7-acceptance.md` '
+            'The complete source and reproduction procedure are in the repository. '
+            '`source_revision` identifies the committed source whose files match '
+            'all build-input hashes; all 814 source files delivered on the disk '
+            'also match those hashes. `build_input_revision` is the earlier '
+            'cross-build manifest revision, which recorded a dirty worktree. '
+            'See `evidence/i386-m7-acceptance.md` '
             'for the gate status and `evidence/support-matrix.md` for verified '
             'profiles and limits. Use '
             '`evidence/i386-manual-observation-template.md` to record the human '
@@ -208,6 +230,10 @@ def main():
             'image_bytes': image.stat().st_size,
             'image_sha256': image_hash,
             'build_input_revision': build_manifest['revision'],
+            'build_input_worktree_dirty': build_manifest['worktree_dirty'],
+            'source_revision': source_revision,
+            'source_file_count': len(source_paths),
+            'disk_source_file_count': len(disk_files),
             'packaging_revision': revision,
             'guest_built_modules': 12,
             'flat_image_sha256': generation['flat_sha256'],

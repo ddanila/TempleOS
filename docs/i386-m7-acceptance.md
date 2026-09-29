@@ -3,6 +3,12 @@
 This is the current evidence map for [M7 in PLAN.md](../PLAN.md#following-big-goal-m7-self-hosting-32-bit-templeos-workstation).
 The candidate disk is `build/i386-kernel/selfhost-install-gen2-fixed/target.img`
 (SHA-256 `c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8`).
+The package checks all 1,233 build-input file hashes against the checkout and
+records committed source revision `78f66cfc72370cf7d508196950521bf8535b1f2e`.
+It also reads all 814 delivered source files from the Generation 2 RedSea
+image and checks each byte hash against that manifest.
+The older cross-build manifest revision reflects a dirty worktree at build
+time, so its revision alone is not the source identifier.
 The local bundle is `build/i386-release-candidate/`; run its `verify.py` before
 using it. `build/` is ignored by Git, so the linked result files are local
 evidence rather than repository contents.

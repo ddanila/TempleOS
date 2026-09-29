@@ -10394,3 +10394,9 @@ baseline. Temporary live growth is 3,616 bytes
 The local candidate now carries a standalone `verify.py`: it checks every
 bundled file against the manifest and hashes the decompressed 16 MiB image.
 The clean candidate passes; altering its README makes the verifier reject it.
+For source provenance, the packager resolves committed source revision
+`78f66cfc72370cf7d508196950521bf8535b1f2e`, verifies all 1,233 recorded
+build-input hashes in the checkout and independently reads the Generation 2
+RedSea volume: all 814 delivered source files match the same hashes. The
+cross-build manifest's older revision was recorded from a dirty worktree, so
+the package reports it separately.

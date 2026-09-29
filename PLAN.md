@@ -3140,3 +3140,8 @@ baseline (`build/i386-kernel/selfhost-install-gen2-fixed/resource-profile/resour
 Publication and human manual observation remain open M7 gates.
 The current requirement-by-requirement evidence map is
 [docs/i386-m7-acceptance.md](docs/i386-m7-acceptance.md).
+The local release packager now also binds the image to committed source
+revision `78f66cfc`: all 1,233 recorded build-input hashes match the checkout,
+and all 814 source files delivered on the Generation 2 RedSea volume match
+those same hashes byte for byte. The earlier cross-build manifest revision
+recorded a dirty worktree and is not used alone as the source identifier.
