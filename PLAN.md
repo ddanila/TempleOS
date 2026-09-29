@@ -3375,3 +3375,8 @@ under 8 MiB KVM and `486,-fpu` TCG. The 33-command documents group passes
 both profiles, and foreground/style quotations retain their focused
 passes. Full workstation regressions and an exact-source guest rebuild
 are running. Human observation remains deferred.
+The shifted-record source now passes the complete 8 MiB KVM workstation
+suite: 513 native commands, 576 submitted lines, exact VGA at every
+checkpoint and 20 bounded document cycles with exact heap recovery.
+The complete `486,-fpu` TCG suite and exact-source six-module guest
+rebuild remain active; neither is counted as passed yet.

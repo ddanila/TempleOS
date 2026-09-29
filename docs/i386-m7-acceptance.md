@@ -207,3 +207,8 @@ VGA under both KVM and `486,-fpu` TCG. The 33-command documents group and
 foreground/style quotation regressions pass both profiles. Full workstation
 and exact-source guest-built installation checks for this newest lexer are
 still active. Manual observation remains deferred by request.
+The shifted-record source now also passes the complete 8 MiB KVM workstation
+suite: 513 commands, 576 lines, exact VGA and 20 bounded document cycles
+with exact heap recovery (`build/i386-kernel/shifted-full-kvm/result.json`).
+The full no-FPU suite and exact-source guest-built generation are still
+running; manual observation remains deferred.

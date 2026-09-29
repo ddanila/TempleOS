@@ -10836,3 +10836,12 @@ foreground repeat and style probes also pass on both, and the background
 probe passes under KVM. Full workstation suites and an exact-source
 six-module guest rebuild are running. Human manual observation remains
 deferred by request.
+
+The shifted-record source subsequently passed the complete 8 MiB KVM
+workstation suite: 513 native commands, 576 submitted lines, exact VGA
+at every checkpoint and 20 bounded document-development cycles with
+exact task-heap recovery
+(`build/i386-kernel/shifted-full-kvm/result.json`). The complete
+`486,-fpu` TCG workstation run and exact-source six-module guest rebuild
+are still active. The focused quoted background probe also passes under
+`486,-fpu` TCG on this source.
