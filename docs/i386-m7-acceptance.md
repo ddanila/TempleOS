@@ -144,3 +144,11 @@ format source: 513 commands, 576 lines, exact VGA and 20 bounded document
 cycles with exact heap recovery
 (`../TempleOS-quote-next/build/i386-kernel/style-full-fixed-kvm/result.json`).
 The full no-FPU suite and guest-built installation are still pending.
+The same expanded source now also passes the complete 8 MiB `486,-fpu` TCG
+workstation suite: 513 commands, 576 lines, exact VGA and 20 bounded
+document cycles with exact heap recovery
+(`../TempleOS-quote-next/build/i386-kernel/style-full-tcg-nofpu/result.json`).
+The preceding foreground-only source passed six-module guest rebuild and
+replacement installation with independent KVM cold boot. The expanded-source
+guest-built image and second-generation identity are still open; manual
+observation remains deferred.

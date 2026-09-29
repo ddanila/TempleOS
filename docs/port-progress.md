@@ -10728,3 +10728,18 @@ suite (`../TempleOS-quote-next/build/i386-kernel/style-full-fixed-kvm/result.jso
 foreground repeat test also passes 21 commands with exact VGA on both KVM
 and `486,-fpu` TCG. The complete no-FPU workstation run and exact-source
 guest-built installation are still pending.
+
+The complete 8 MiB `486,-fpu` TCG workstation suite subsequently passed on
+the same expanded quoted-format source, also with 513 commands, 576 submitted
+lines, exact VGA at every checkpoint and 20 bounded document cycles with
+exact heap recovery
+(`../TempleOS-quote-next/build/i386-kernel/style-full-tcg-nofpu/result.json`).
+The earlier foreground-only six-module KVM guest rebuild completed. Comparing
+its output to the cross-built installed modules fails byte identity at
+`Startup`, so that is not a valid generation-identity gate; all six guest
+modules passed the post-exit export/structure audit instead
+(`build/i386-kernel/retained-build-quote-fg-kvm/result.json`). Replacing all
+six retained modules on a separate disk then passed independent 8 MiB KVM
+cold boot (`build/i386-kernel/retained-install-quote-fg-kvm/result.json`).
+The expanded-source guest rebuild and fully guest-built installed generation
+remain open. Human manual observation stays deferred.
