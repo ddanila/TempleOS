@@ -10747,3 +10747,18 @@ The foreground-only guest-installed disk additionally passes all 21 quoted
 foreground repeat commands under 8 MiB `486,-fpu` TCG with exact VGA
 (`build/i386-kernel/retained-install-quote-fg-kvm/quote-repeat-tcg-nofpu/result.json`).
 The expanded-source guest rebuild remains active separately.
+
+The expanded quoted-format source subsequently completed all six retained
+guest builds and passed the post-exit export/structure audit
+(`../TempleOS-quote-next/build/i386-kernel/retained-build-style-kvm/result.json`).
+Its guest-built modules were installed on a separate disk, which passed an
+independent 8 MiB KVM cold boot
+(`../TempleOS-quote-next/build/i386-kernel/retained-install-style-kvm/result.json`).
+The disk contains the exact pushed `Compiler/I386/LexInput.HC` bytes. On the
+installed disk, the seven-command quoted-background and fourteen-command
+quoted-style probes pass under 8 MiB `486,-fpu` TCG with exact VGA
+(`retained-install-style-kvm/background-tcg-nofpu/result.json` and
+`retained-install-style-kvm/style-tcg-nofpu/result.json`, under the same
+isolated build directory). A complete no-FPU workstation run on this disk
+and native flat-kernel guest build/install are active. A fully guest-built
+second generation and the human observation remain open.

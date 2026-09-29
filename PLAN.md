@@ -3330,3 +3330,10 @@ The foreground-only guest-installed disk also passes the 21-command quoted
 foreground repeat test under 8 MiB `486,-fpu` TCG with exact VGA. The
 expanded-source guest rebuild is still compiling its retained compiler
 modules; its installation and generation identity are not yet accepted.
+The expanded quoted-format source has now completed a six-module guest
+rebuild, passed export/structure audit, replaced all six retained modules
+on a separate disk and cold-booted independently at 8 MiB KVM. On that
+guest-installed disk, quoted background and style probes pass under
+`486,-fpu` TCG with exact VGA. A full installed-disk no-FPU workstation
+run and native flat-kernel build/install are active; second-generation
+identity and human observation remain open.

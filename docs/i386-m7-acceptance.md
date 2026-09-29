@@ -156,3 +156,11 @@ The foreground-only guest-installed image passes the 21-command quoted
 foreground repeat test under 8 MiB `486,-fpu` TCG with exact VGA
 (`retained-install-quote-fg-kvm/quote-repeat-tcg-nofpu/result.json`). The
 expanded-source guest rebuild and installed-generation checks remain open.
+The expanded-source six-module retained rebuild has since passed export and
+structure audit, replacement installation, and independent 8 MiB KVM cold
+boot (`../TempleOS-quote-next/build/i386-kernel/retained-build-style-kvm/result.json`,
+`retained-install-style-kvm/result.json`). Background and style quotation
+probes also pass with exact VGA on this guest-installed disk under 8 MiB
+`486,-fpu` TCG. The complete installed-disk no-FPU workstation and native
+flat-kernel installation are active; second-generation identity and manual
+observation remain open.
