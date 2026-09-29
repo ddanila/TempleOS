@@ -3499,5 +3499,11 @@ audit (`build/i386-kernel/generation-identity-default-colors-kvm/result.json`).
 The second installed image independently passes the 386 executable, guest
 compiler-template, boot payload and filesystem audit
 (`build/i386-kernel/selfhost-install-default-colors-gen2-kvm/instruction-audit/result.json`).
-Its full no-FPU workstation suite remains active. The manual QEMU session
-stays deferred.
+Its first fully guest-built target passes the complete 8 MiB `486,-fpu`
+TCG workstation suite: 513 commands, 576 submitted lines, exact VGA at
+every checkpoint, 0.268-second long-document visible-update latency and
+20 bounded document-development cycles with exact task-heap recovery
+(`build/i386-kernel/selfhost-install-default-colors-kvm/full-tcg-nofpu/result.json`).
+The focused default-color and shifted-record probes also pass under no-FPU
+TCG on that target. A three-boot writable session is running; the manual
+QEMU session stays deferred.

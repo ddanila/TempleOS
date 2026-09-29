@@ -315,5 +315,10 @@ with all twelve modules, linked image and boot area byte-identical; both
 RedSea volumes pass extent/bitmap audit
 (`build/i386-kernel/generation-identity-default-colors-kvm/result.json`).
 The second installed image passes the 386 executable/guest compiler-template
-and boot/filesystem audit. Its complete no-FPU workstation suite is running;
-human manual observation stays deferred.
+and boot/filesystem audit. The first fully guest-built target passes the
+complete 8 MiB `486,-fpu` TCG workstation suite: 513 commands, 576 lines,
+exact VGA, 0.268-second long-document visible-update latency and 20 bounded
+document cycles with exact task-heap recovery
+(`build/i386-kernel/selfhost-install-default-colors-kvm/full-tcg-nofpu/result.json`).
+Focused default-color and shifted-record no-FPU probes pass on that target.
+The three-boot writable session is running; human observation stays deferred.
