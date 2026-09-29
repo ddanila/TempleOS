@@ -124,5 +124,8 @@ first installed target's no-FPU workstation and writable three-boot runs
 followed. Its writable three-boot run now passes 107/56/15
 commands, exact VGA and independent RedSea audit on the exact guest-built
 target (`selfhost-install-direct-doc-breakfix-kvm/doldoc-tcg-nofpu/result.json`).
-The full no-FPU workstation suite remains active; quoted `ExeDoc` formatting
-remains a known gap.
+The full no-FPU workstation suite now passes on this same guest-built target
+(`selfhost-install-direct-doc-breakfix-kvm/full-tcg-nofpu/result.json`):
+513 native commands, 576 submitted lines, exact VGA and 20 bounded document
+cycles with exact task-heap recovery under 8 MiB `486,-fpu` TCG. Quoted
+`ExeDoc` formatting remains a known gap. Human observation remains deferred.

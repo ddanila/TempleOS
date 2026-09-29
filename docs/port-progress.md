@@ -10665,5 +10665,12 @@ commands, 56 reopen/revise commands and 15 next-boot commands under 8 MiB
 RedSea walk verifies project bytes, rename/delete and move cycles, extents
 and bitmap; the source disk remains unchanged
 (`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/doldoc-tcg-nofpu/result.json`).
-The complete no-FPU workstation suite is still running, and quoted
-formatting remains an open semantic gap.
+The complete no-FPU workstation suite now passes on this same guest-built
+target under 8 MiB `486,-fpu` TCG: 513 native commands, 576 submitted lines,
+exact VGA at every checkpoint and 20 bounded document-development cycles
+with exact task-heap recovery
+(`build/i386-kernel/selfhost-install-direct-doc-breakfix-kvm/full-tcg-nofpu/result.json`).
+Quoted formatting remains an open semantic gap. A first foreground-entry
+lexer experiment still returned length 2 in the focused test, so it was
+removed without changing the installed image. Human observation remains
+deferred at the user's request.

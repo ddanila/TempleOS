@@ -3292,8 +3292,10 @@ generations; both RedSea volumes have exact bitmap ownership. Both installed
 images pass the 386 executable-region audit, including guest compiler
 templates. The first target's `486,-fpu` writable session now passes three
 boots (107/56/15 commands), exact VGA, 0.29-second break recovery and
-independent RedSea audit. Its complete no-FPU workstation suite is still
-running; quoted formatting and human observation remain open.
+independent RedSea audit. Its complete no-FPU workstation suite also passes
+513 commands, 576 submitted lines, exact VGA and 20 document cycles with
+exact task-heap recovery on the guest-built image. Quoted formatting and
+human observation remain open; the manual session is deferred by request.
 The next original-programming-model red test is quoted DolDoc formatting.
 Original x64 `ExeDoc` turns a foreground entry between `A` and `B` inside a
 quoted string into `A$FG,4$B` (length 8); the current i386 lexer skips the
