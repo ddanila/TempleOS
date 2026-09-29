@@ -3230,4 +3230,12 @@ The expanded 169-command `document-editing` group passes on the exact
 Generation 2 disk under 8 MiB QEMU/486 KVM with exact VGA checkpoints
 (`build/i386-kernel/document-editing-formatted-exedoc-kvm/result.json`).
 The release packager now requires that exact-disk verdict and QEMU command
-and bundles both in its independently verified 62-file local candidate.
+and bundles both in its independently verified local candidate.
+The same seven-command formatted `ExeDoc` probe also passes on the
+no-FPU-built Generation 3 disk at 8 MiB under `486,-fpu` TCG, including the
+DolDoc-record byte check, result 42 and exact VGA
+(`build/i386-kernel/exedoc-format-record-gen3-tcg-nofpu/result.json`). This
+extends this specific programming-model check to the target CPU profile;
+document-attached compiler control remains open.
+The packager also requires this Generation 3 no-FPU verdict and QEMU command;
+the resulting 64-file candidate passes its standalone verifier.

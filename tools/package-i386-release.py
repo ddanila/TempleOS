@@ -197,6 +197,15 @@ def main():
             formatted_doc.get('vga') != 'all pixels matched at each checkpoint'):
         raise ValueError('formatted-document editor acceptance is incomplete')
     require_qemu_command(formatted_doc_dir / 'command.json', '486', 'kvm', image)
+    formatted_gen3_dir = base / 'exedoc-format-record-gen3-tcg-nofpu'
+    formatted_gen3_path = formatted_gen3_dir / 'result.json'
+    formatted_gen3 = read_pass(formatted_gen3_path)
+    if (formatted_gen3.get('cpu'), formatted_gen3.get('ram_mib'),
+            formatted_gen3.get('commands'), formatted_gen3.get('vga')) != (
+            '486,-fpu', 8, 7, 'all pixels matched at each checkpoint'):
+        raise ValueError('no-FPU formatted-document execution is incomplete')
+    require_qemu_command(formatted_gen3_dir / 'command.json',
+                         '486,-fpu', 'tcg', gen3_image)
     resource_path = gen2 / 'resource-profile/resource-result.json'
     resource = read_pass(resource_path)
     if (resource.get('cpu'), resource.get('ram_mib'),
@@ -338,6 +347,8 @@ def main():
             'generation-2-pentium3-no-fpu-command.json': gen2 / 'full-pentium3-nofpu/command.json',
             'generation-2-formatted-exedoc-editor.json': formatted_doc_path,
             'generation-2-formatted-exedoc-editor-command.json': formatted_doc_dir / 'command.json',
+            'generation-3-no-fpu-formatted-exedoc.json': formatted_gen3_path,
+            'generation-3-no-fpu-formatted-exedoc-command.json': formatted_gen3_dir / 'command.json',
             'generation-2-tcg-no-fpu-doldoc.json': session_path,
             'generation-2-document-compatibility.json': doc_compat_path,
             'generation-2-document-native-command.json': doc_compat_dir / 'native/command.json',

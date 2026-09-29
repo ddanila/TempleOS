@@ -58,3 +58,8 @@ The expanded 169-command document-editing group, including the formatted
 (`document-editing-formatted-exedoc-kvm/result.json`).
 The local release package requires and includes that exact-image result and
 its QEMU command.
+The focused formatted `ExeDoc` sequence also passes seven commands on the
+no-FPU-built Generation 3 disk under 8 MiB `486,-fpu` TCG with exact VGA
+(`exedoc-format-record-gen3-tcg-nofpu/result.json`).
+The local release package requires and includes this no-FPU result and QEMU
+command as well.
