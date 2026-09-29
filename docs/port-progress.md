@@ -10437,3 +10437,12 @@ TempleOS under x64 TCG read and saved it byte for byte. The source disk hash
 is unchanged. The release packager checks this result, both QEMU commands and
 both document files
 (`build/i386-kernel/selfhost-install-gen2-fixed/doc-compat-provenance-retry/result.json`).
+The long 16 MiB `486,-fpu` TCG flat-kernel build now passes: the guest compiled
+all 225 kernel functions, built the 457,000-byte flat image and five boot
+helpers, installed Generation 3, and cold-booted it under 8 MiB no-FPU TCG.
+The Generation 2-to-3 audit finds all twelve modules, flat image and boot area
+byte-identical; both RedSea volumes have exact bitmap/extent ownership. The
+Generation 3 386 executable audit passes. Its whole-disk hash is
+`dac4e8d7c23ea1c715c2e0d198cc5ccfaf41b446024dc33943ba76d8d5612d7f`.
+The full Generation 3 workstation suite is live, so this is not yet a complete
+no-FPU workstation promotion; retained-module TCG rebuilds are also running.

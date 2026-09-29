@@ -3164,6 +3164,18 @@ module. `ConsoleRuntime`, `CompilerProbe` and `CompilerRuntime` were absent,
 so this is a partial result. The explicit `--resume` run for those three is
 now active with a 14,400-second per-command limit. An all-six `--audit-only`
 check remains required before the no-FPU retained-build gate passes.
+The separate 7,200-second `486,-fpu` TCG flat-kernel acceptance run now
+completed all 225 kernel function outputs, packaged the 457,000-byte linked
+image, built five boot helpers, installed a Generation 3 disk and cold-booted
+that disk at 8 MiB. `audit-i386-generations.py` finds all twelve installed
+modules, linked image and boot area byte-identical to Generation 2, with exact
+RedSea ownership and bitmaps on both volumes. The Generation 3 executable
+regions also pass the 386 instruction audit, including guest compiler template
+data. The Generation 3 whole-disk SHA-256 is
+`dac4e8d7c23ea1c715c2e0d198cc5ccfaf41b446024dc33943ba76d8d5612d7f`;
+filesystem metadata explains the expected difference from Generation 2. Its
+complete 8 MiB no-FPU workstation suite is running, and the resumed retained
+build still needs its all-six audit before closing the native-source gate.
 The exact Generation 2 disk has now also passed all three installation
 hard-stop cases under `486,-fpu` TCG. Stops during boot-sector writes at LBA
 128 and 850 left LBA 0 blank and the RedSea bitmap exact; retries reproduced
