@@ -3101,5 +3101,8 @@ installs and cold-boots at 8 MiB, evaluates `6*7` and passes
 `DocAllocationCheck`. All twelve T32Ms, the 457,000-byte linked flat image and
 the installed boot area are byte-identical across generations; both RedSea
 volumes pass independent ownership/bitmap audits. The Generation 2 executable
-image passes the 386 instruction audit. Its full workstation suite is running.
-The release package and human manual observation remain open M7 gates.
+image passes the 386 instruction audit. Its full 8 MiB QEMU/KVM workstation
+suite also passes: 506 native commands, 569 submitted lines, exact VGA
+checkpoints and 20 document-development cycles with exact heap recovery
+(`build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`). The
+release package and human manual observation remain open M7 gates.

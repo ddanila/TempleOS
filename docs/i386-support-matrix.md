@@ -34,6 +34,7 @@ QEMU loaded.
 | --- | --- | --- |
 | `486`, KVM | `build/i386-kernel/selfhost-install-fixed/full/result.json`: 506 native commands, 569 input lines, exact VGA, document resource cycles | Pass at 8 MiB |
 | `486`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/result.json`: independent Generation 2 boot, `6*7` = 42, `DocAllocationCheck` = 12 | Pass at 8 MiB |
+| `486`, KVM | `build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`: Generation 2 full 506-command workstation suite, exact VGA and 20 document resource cycles | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-fixed/full-tcg-nofpu/result.json`: same complete 506-command workstation suite, exact VGA and heap recovery | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/sf-doldoc/result.json`: three writable boots on the fully guest-built image, 107/56/15 commands, saved revision and independent RedSea audit | Pass at 8 MiB |
 | `486,-fpu`, KVM | `build/i386-kernel/resource-profile-third/resource-result.json`: 7,143,424-byte heap arena and 20 document cycles with exact live-heap recovery | Pass at 8 MiB |

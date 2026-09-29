@@ -10342,5 +10342,8 @@ all twelve installed modules, the 457,000-byte linked image and the boot area
 are byte-identical across generations, while both RedSea volumes have exact
 extent ownership and allocation bitmaps
 (`build/i386-kernel/generation-identity-fixed/result.json`). The Generation 2
-image also passes the 386 executable audit. Its full workstation suite is
-running; manual usability and release packaging remain open.
+image also passes the 386 executable audit. Its full 8 MiB QEMU/KVM
+workstation suite passes with 506 native commands, 569 submitted lines, exact
+VGA checkpoints and 20 document-development cycles with exact heap recovery
+(`build/i386-kernel/selfhost-install-gen2-fixed/full/result.json`). Manual
+usability and release packaging remain open.

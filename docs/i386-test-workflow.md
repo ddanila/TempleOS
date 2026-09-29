@@ -60,6 +60,21 @@ python3 tools/audit-i386-guest-image.py \
   --out build/i386-kernel/selfhost-install-gen2-fixed/instruction-audit
 ```
 
+The complete 8 MiB Generation 2 workstation run uses KVM for development
+feedback and records 506 native commands, 569 submitted lines, exact VGA
+checkpoints and 20 document resource cycles:
+
+```sh
+python3 - <<'PY'
+import runpy
+from pathlib import Path
+runpy.run_path('tools/i386-kernel-input.py')['run_input'](
+    Path('build/i386-kernel/selfhost-install-gen2-fixed/target.img'),
+    Path('build/i386-kernel/selfhost-install-gen2-fixed/full'),
+    accel='kvm', ram_mib=8, startup_timeout=180)
+PY
+```
+
 ```sh
 python3 tools/i386-kernel-input.py --list-groups
 python3 tools/i386-kernel-input.py --group windows
