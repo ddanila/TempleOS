@@ -3093,5 +3093,7 @@ The current 8 MiB no-FPU resource profile reports a 7,143,424-byte native
 heap arena starting at physical 1,114,112. After warm-up, 20 complete
 document-development cycles start from 1,352,224 live bytes, reach a
 1,355,840-byte live peak and a 1,356,800-byte reserved peak, then return to
-the exact live baseline after each cycle. The full no-FPU workstation suite
-and second-generation rebuild remain under verification.
+the exact live baseline after each cycle. The full 8 MiB `486,-fpu` TCG
+workstation suite also passes on the fully guest-built installed image:
+506 native commands, 569 submitted lines and exact VGA checkpoints. The
+second-generation rebuild remains under verification.

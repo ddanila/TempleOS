@@ -10324,3 +10324,9 @@ measures a 7,143,424-byte heap arena from physical 1,114,112. After warm-up,
 1,355,840 live bytes (3,616 bytes temporary growth) and 1,356,800 reserved
 bytes, then recover the exact live baseline on every cycle
 (`build/i386-kernel/resource-profile-third/resource-result.json`).
+
+The complete 8 MiB `486,-fpu` TCG workstation suite passes on the same fully
+guest-built installed image (`build/i386-kernel/selfhost-install-fixed/full-tcg-nofpu/result.json`):
+506 native commands, 569 submitted lines, exact VGA checkpoints and 20
+document-development cycles with exact task heap recovery. Startup took
+74.42 seconds; the measured long-document key-to-VGA update took 0.379 seconds.
