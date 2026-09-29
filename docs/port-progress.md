@@ -10615,7 +10615,6 @@ The corrected nine-command help group separately passes on both profiles.
 The exact-source six-module guest rebuild is in its final module; installed
 and repeated guest-built generations are still required. Human manual
 observation remains deferred.
-
 ## Quoted document formatting red test (2026-09-29)
 
 Original x64 TempleOS executed an in-memory document whose quoted string
@@ -10853,3 +10852,11 @@ recovery (`build/i386-kernel/shifted-full-tcg-nofpu/result.json`). Both
 full CPU profiles are now green on the cross-built image. The exact-source
 guest rebuild and installed-generation checks remain open; human manual
 observation remains deferred.
+
+The shifted-record source then passed a complete six-module KVM guest
+rebuild and post-exit export/structure audit
+(`build/i386-kernel/retained-build-shifted-kvm/result.json`). Replacing all
+six retained modules on a separate disk passed independent 8 MiB KVM cold
+boot (`build/i386-kernel/retained-install-shifted-kvm/result.json`). Native
+flat-kernel build/install from this disk is active. The manual QEMU session
+remains deferred by request.

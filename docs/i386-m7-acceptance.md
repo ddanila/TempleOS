@@ -218,3 +218,9 @@ shifted-record cross-built source: 513 commands, 576 lines, exact VGA and
 (`build/i386-kernel/shifted-full-tcg-nofpu/result.json`). The exact-source
 guest-built installed-generation gates remain open; manual observation is
 deferred by request.
+The shifted-record source now passes a complete six-module guest rebuild,
+post-exit export/structure audit, replacement installation and independent
+8 MiB KVM cold boot (`build/i386-kernel/retained-build-shifted-kvm/result.json`,
+`build/i386-kernel/retained-install-shifted-kvm/result.json`). Native
+flat-kernel installation and second-generation identity are still active;
+manual observation remains deferred.

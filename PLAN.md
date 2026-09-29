@@ -3385,3 +3385,7 @@ shifted-record source: 513 commands, 576 submitted lines, exact VGA and
 20 bounded document cycles with exact heap recovery. Both full profiles
 are green on the cross-built image; the exact-source guest rebuild and
 installed-generation gates remain open. Human observation stays deferred.
+The shifted-record source has now passed a complete six-module guest rebuild,
+post-exit export/structure audit, replacement installation and independent
+8 MiB KVM cold boot. Native flat-kernel build/install from that guest-built
+disk is running. The manual QEMU usability session remains deferred.
