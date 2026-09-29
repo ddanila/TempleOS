@@ -3274,6 +3274,11 @@ exact VGA and 20 document cycles with exact heap recovery. The exact-source
 six-module retained rebuild has reached its final module; native installation
 and repeat-generation evidence still need to follow. Human observation stays
 deferred.
+The exact direct-document source has now passed a 16 MiB KVM guest rebuild of
+all six retained modules. Their replacement disk independently cold-boots at
+8 MiB, and the native guest build/install of the flat kernel and boot helpers
+is running from that disk. This is a new generation after the quoted-format
+red test; the quoted gap remains open for subsequent compiler work.
 The next original-programming-model red test is quoted DolDoc formatting.
 Original x64 `ExeDoc` turns a foreground entry between `A` and `B` inside a
 quoted string into `A$FG,4$B` (length 8); the current i386 lexer skips the

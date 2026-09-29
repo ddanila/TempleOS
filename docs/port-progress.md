@@ -10629,3 +10629,16 @@ skips formatting entries instead of invoking the original quoted `LexDollar`
 path. This is an open programming-model gap, separate from the passing
 binary-size, include and binary-insertion probes. The test is not part of the
 passing release suite yet.
+
+## Direct-document retained self-hosting (2026-09-29)
+
+The updated cross-built disk guest-rebuilt all six retained modules under
+16 MiB QEMU/486 KVM. Post-exit RedSea reads and module record/export audits
+pass (`build/i386-kernel/retained-build-direct-doc-breakfix-kvm/result.json`).
+The guest then replaced all six installed T32Ms with those built bytes;
+independent 8 MiB KVM cold boot passed `6*7` and `DocAllocationCheck`
+(`build/i386-kernel/retained-install-direct-doc-breakfix-kvm/result.json`).
+The flat-kernel and boot-helper guest build/install from this exact candidate
+is running. These local artifacts are not yet a new release candidate; the
+installed flat-kernel boot, repeat generation, no-FPU image checks and quoted
+format semantics remain open.

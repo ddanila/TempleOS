@@ -105,3 +105,8 @@ An original x64 fixture now identifies another open programming-model case:
 quoted foreground formatting yields `A$FG,4$B` (length 8), while the current
 i386 `ExeDoc` yields `AB` (length 2). The standalone red test is
 `tools/test-i386-exedoc-quote.py`; it is not a passing release gate.
+The direct-document source now passes a KVM guest rebuild and installed-disk
+cold boot for all six retained modules
+(`retained-build-direct-doc-breakfix-kvm/result.json`,
+`retained-install-direct-doc-breakfix-kvm/result.json`). Its flat-kernel
+guest build/install is running; the new release image is not yet accepted.
