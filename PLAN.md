@@ -3647,3 +3647,12 @@ install-copy recovery, filesystem mutation checks and original TempleOS
 document cross-compatibility checks also pass. The fully guest-built
 installed target's no-FPU workstation and second-generation identity runs
 continue; manual QEMU observation remains deferred.
+
+The first exact-source guest-built target now passes a three-boot writable
+DolDoc session under 8 MiB `486,-fpu` TCG: 107 commands to create/edit/save,
+56 after reopening, and 15 after revision, all with exact VGA
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`).
+The source disk is unchanged; the final RedSea volume has 18 directories,
+853 files and 17,855 owned sectors, with its bitmap matching reachable
+extents. The complete no-FPU workstation and second-generation guest
+rebuild remain active. The manual QEMU session is still deferred.

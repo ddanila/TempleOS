@@ -11163,3 +11163,12 @@ mutation probes and original TempleOS document cross-compatibility all
 pass. The fully guest-built target's no-FPU workstation and
 second-generation identity runs are still active. Human observation is
 deferred.
+
+The current fully guest-built target passes the three-boot writable
+8 MiB `486,-fpu` TCG DolDoc session: 107/56/15 commands, exact VGA,
+unchanged source disk, create/reopen/revision persistence, and a final
+RedSea audit of 18 directories, 853 files, 17,855 owned sectors and a
+bitmap matching reachable extents
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`).
+The complete no-FPU workstation suite and second-generation rebuild
+remain active. Human manual observation stays deferred.

@@ -417,3 +417,11 @@ interrupted install-copy recovery and original TempleOS document
 cross-compatibility (`build/i386-kernel/result.json`). The installed
 guest-built image's no-FPU workstation and second-generation identity
 checks are still active. Human manual observation remains deferred.
+
+The current fully guest-built target passes its three-boot writable
+8 MiB no-FPU DolDoc session: 107/56/15 native commands, exact VGA,
+unchanged source disk, persistent create/reopen/revision, and verified
+RedSea extent/bitmap ownership
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`).
+Full no-FPU workstation and second-generation identity checks remain
+active. Human manual observation remains deferred.
