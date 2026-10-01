@@ -391,3 +391,11 @@ source-matched KVM guest rebuild is on the sixth retained module; the
 complete 386 `--test` is active in follow-up boot and filesystem probes.
 Exact-source guest installation and human observation remain open. The
 manual QEMU session remains deferred.
+
+All six current-source retained modules pass KVM guest rebuild and audit,
+byte-identical replacement and independent 8 MiB KVM cold boot
+(`build/i386-kernel/retained-build-capacity-lexfix-kvm/result.json`,
+`build/i386-kernel/retained-install-capacity-lexfix-kvm/result.json`). The
+candidate embeds current lexer, boot-image builder and installer source.
+Its guest-built flat-kernel installation and the complete 386 `--test`
+are still running. Manual QEMU observation remains deferred.

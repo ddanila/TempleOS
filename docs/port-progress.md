@@ -11128,3 +11128,14 @@ byte-identical to the current committed tree; it has reached the final
 retained module. The complete 386 `--test` still runs follow-up boot and
 filesystem probes. Exact-source installation and human observation remain
 open, and the manual session is deferred.
+
+The exact current-source six retained modules pass their KVM guest rebuild,
+post-exit export/module audit and byte-identical replacement installation
+(`build/i386-kernel/retained-build-capacity-lexfix-kvm/result.json`,
+`build/i386-kernel/retained-install-capacity-lexfix-kvm/result.json`). The
+resulting disk independently cold-boots under 8 MiB KVM and answers two
+native commands. It embeds current `LexIdent.HC`, `LexInput.HC`,
+`BuildBootImage.HC` and `InstallBootArea.HC` byte-identical to the tree.
+The six flat modules and native boot-image install are now running on a
+copy; the complete 386 `--test` remains active. Human observation is
+deferred.

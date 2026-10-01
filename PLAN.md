@@ -3612,3 +3612,15 @@ byte-identical to the committed tree. The rebuild has reached the sixth
 retained module; the complete 386 `--test` is still running through
 follow-up boot and filesystem checks. Exact-source installation remains
 open, and the manual QEMU session remains deferred.
+
+The current source's six retained modules now complete the KVM guest
+rebuild with post-exit export and module audits
+(`build/i386-kernel/retained-build-capacity-lexfix-kvm/result.json`). Their
+replacement into a disk copy is byte-identical, and that disk passes an
+independent 8 MiB KVM cold boot with native commands
+(`build/i386-kernel/retained-install-capacity-lexfix-kvm/result.json`).
+The candidate retains `Compiler/I386/LexIdent.HC`,
+`Compiler/I386/LexInput.HC`, `Kernel/I386/BuildBootImage.HC` and
+`Kernel/I386/InstallBootArea.HC` byte-identical to the committed source.
+Its six guest-built flat modules and boot-image installation are running;
+the complete 386 `--test` remains active. Manual observation is deferred.
