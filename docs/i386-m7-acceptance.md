@@ -14,10 +14,10 @@ are local evidence rather than repository contents.
 
 | M7 requirement | Current evidence | Status |
 | --- | --- | --- |
-| All kernel, compiler and retained runtime sources build in the guest | `retained-build-capacity-lexfix-kvm/result.json` audits six guest-built retained modules; `selfhost-install-capacity-lexfix-kvm/result.json` audits six guest-built flat modules, installs the 482,384-byte image and cold-boots it. | Pass for the current first guest-built generation; second-generation rebuild active. |
+| All kernel, compiler and retained runtime sources build in the guest | `retained-build-capacity-lexfix-kvm/result.json` and `selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json` audit two guest-built sets of six retained modules; `selfhost-install-capacity-lexfix-kvm/result.json` audits six guest-built flat modules, installs the 482,384-byte image and cold-boots it. | Pass for the current first generation and second-generation retained modules; second-generation flat install active. |
 | Development session survives source errors and interruption | The complete workstation suite exercises source-linked error recovery and keyboard break handling; the [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) includes an interrupted loop and subsequent compilation. | Automated cases pass; human source-edit/rebuild observation open. |
 | Native installation and interrupted-install recovery | The current `selfhost-install-capacity-lexfix-kvm/result.json` cold-boots the guest-built target; `build/i386-kernel/result.json` passes native boot-area publication and interrupted install-copy checks. Earlier `install-recovery-committed/result.json` and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0. | Pass for tested QEMU scenarios; physical power-loss durability is deferred. |
-| Two independent guest-built generations | Earlier `generation-identity-fixed/result.json` and `generation-identity-gen2-gen3-tcg-nofpu/result.json` prove the older source generations. The current candidate's second-generation retained rebuild is active. | Open for the current source. |
+| Two independent guest-built generations | The current `selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json` audits all six rebuilt retained modules byte-identical to installed copies; `selfhost-install-capacity-lexfix-gen2-retained-install-kvm-retry/result.json` passes replacement and cold boot. | Flat-kernel rebuild, boot-area comparison and full twelve-module identity remain open for the current source. |
 | 386-targeted executable regions | `selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json` checks the current linked and retained modules, guest compiler template, and BIOS/protected-mode boot ranges. | Pass for the current candidate's audited regions. |
 | 8 MiB PC workstation on no-FPU and later 32-bit CPUs | `selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json` and `selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json` each pass 513 commands, 576 lines, exact VGA and 20 document cycles on the current installed disk. `build/i386-kernel/result.json` passes the same suite on the current cross-built disk. | Pass under `486,-fpu` TCG and `486` KVM on the current installed disk. |
 | Persistent DolDoc development and memory budget | `selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json` passes 107/56/15 commands over three writable boots with exact VGA, unchanged source disk and RedSea audit. The current installed no-FPU workstation suite passes 20 cycles with exact task-heap recovery. | Pass on the current guest-built target. |
@@ -440,3 +440,13 @@ document cycles with exact task-heap recovery
 The second-generation retained rebuild persisted five byte-identical
 modules before interruption during its last module; that module is being
 resumed. Human manual observation remains deferred.
+
+The resumed final module now completes the all-six second-generation
+retained audit; each module is byte-identical to the first generation
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json`).
+Replacement installation and independent 8 MiB KVM cold boot pass
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-install-kvm-retry/result.json`).
+The current build manifest matches all 1,233 worktree sources and all 814
+delivered source files on the first installed target. The second-generation
+flat build and twelve-module/boot-area identity check remain open. Human
+manual observation remains deferred.

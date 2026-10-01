@@ -3672,3 +3672,12 @@ checkpoint, and 20 document cycles with exact shared task-heap recovery
 (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json`).
 The second-generation guest rebuild remains in progress; manual QEMU
 observation remains deferred.
+
+The current first installed disk has now rebuilt all six retained modules
+as a second guest generation. The persisted modules pass export and
+structure audits and match the installed first-generation modules byte for
+byte (`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json`).
+Their replacement on a disk copy and independent 8 MiB KVM cold boot also
+pass (`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-install-kvm-retry/result.json`).
+The second-generation flat-kernel build and full twelve-module identity
+check remain open; the manual session remains deferred.

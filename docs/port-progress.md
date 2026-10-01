@@ -11189,3 +11189,15 @@ The second-generation retained rebuild was interrupted during its final
 module; its first five persisted modules audit byte-identical to the
 installed copies. The final module is being resumed. Manual observation
 remains deferred.
+
+The resumed CompilerRuntime build finished. All six second-generation
+retained modules now pass export and structure audit and match the installed
+first-generation copies byte for byte
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json`).
+Replacing them on a disk copy and independently cold-booting under 8 MiB
+KVM also passes
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-install-kvm-retry/result.json`).
+The current build manifest matches all 1,233 worktree source files and all
+814 delivered source files on the first installed target. The second-
+generation flat-kernel install and full generation identity are still open;
+manual observation remains deferred.
