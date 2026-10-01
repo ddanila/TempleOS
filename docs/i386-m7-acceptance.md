@@ -7,22 +7,24 @@ The current candidate is
 It contains twelve guest-built modules and a 482,384-byte flat image, and
 its installed executable regions, boot payload and RedSea volume pass audit.
 The installed lexer, boot-image builder and installer source files match
-the committed tree byte for byte. The older local bundle at
-`build/i386-release-candidate/` is tied to an earlier source revision and
-does not package this candidate. `build/` is ignored by Git, so result files
-are local evidence rather than repository contents.
+the committed tree byte for byte. The current local bundle at
+`build/i386-release-current/` packages this candidate and independently
+verifies its compressed image and evidence-file hashes. The older
+`build/i386-release-candidate/` bundle remains tied to an earlier source
+revision. `build/` is ignored by Git, so result files and bundles are local
+evidence rather than repository contents.
 
 | M7 requirement | Current evidence | Status |
 | --- | --- | --- |
-| All kernel, compiler and retained runtime sources build in the guest | `retained-build-capacity-lexfix-kvm/result.json` and `selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json` audit two guest-built sets of six retained modules; `selfhost-install-capacity-lexfix-kvm/result.json` audits six guest-built flat modules, installs the 482,384-byte image and cold-boots it. | Pass for the current first generation and second-generation retained modules; second-generation flat install active. |
+| All kernel, compiler and retained runtime sources build in the guest | `retained-build-capacity-lexfix-kvm/result.json` and `selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json` audit two guest-built sets of six retained modules; both `selfhost-install-capacity-lexfix-kvm/result.json` and `selfhost-install-capacity-lexfix-gen2-kvm/result.json` audit six guest-built flat modules, install the 482,384-byte image and cold-boot it. | Pass for both current guest-built generations. |
 | Development session survives source errors and interruption | The complete workstation suite exercises source-linked error recovery and keyboard break handling; the [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) includes an interrupted loop and subsequent compilation. | Automated cases pass; human source-edit/rebuild observation open. |
 | Native installation and interrupted-install recovery | The current `selfhost-install-capacity-lexfix-kvm/result.json` cold-boots the guest-built target; `build/i386-kernel/result.json` passes native boot-area publication and interrupted install-copy checks. Earlier `install-recovery-committed/result.json` and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0. | Pass for tested QEMU scenarios; physical power-loss durability is deferred. |
-| Two independent guest-built generations | The current `selfhost-install-capacity-lexfix-gen2-retained-build-kvm/result.json` audits all six rebuilt retained modules byte-identical to installed copies; `selfhost-install-capacity-lexfix-gen2-retained-install-kvm-retry/result.json` passes replacement and cold boot. | Flat-kernel rebuild, boot-area comparison and full twelve-module identity remain open for the current source. |
-| 386-targeted executable regions | `selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json` checks the current linked and retained modules, guest compiler template, and BIOS/protected-mode boot ranges. | Pass for the current candidate's audited regions. |
+| Two independent guest-built generations | `generation-identity-capacity-lexfix-kvm/result.json` checks all twelve modules, the flat image and boot area byte for byte; both volumes pass RedSea ownership/bitmap audit. | Pass for the current source under QEMU/486 KVM. |
+| 386-targeted executable regions | Both generations' `instruction-audit/result.json` check linked and retained modules, guest compiler template, and BIOS/protected-mode boot ranges. | Pass for both current guest-built generations' audited regions. |
 | 8 MiB PC workstation on no-FPU and later 32-bit CPUs | `selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json` and `selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json` each pass 513 commands, 576 lines, exact VGA and 20 document cycles on the current installed disk. `build/i386-kernel/result.json` passes the same suite on the current cross-built disk. | Pass under `486,-fpu` TCG and `486` KVM on the current installed disk. |
 | Persistent DolDoc development and memory budget | `selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json` passes 107/56/15 commands over three writable boots with exact VGA, unchanged source disk and RedSea audit. The current installed no-FPU workstation suite passes 20 cycles with exact task-heap recovery. | Pass on the current guest-built target. |
 | TempleOS programming model and public services | The current full suites exercise HolyC compilation, DolDoc, task/break recovery, direct VGA/PS/2/PIT/speaker paths, RedSea, graphics, sound, help and source-linked diagnostics. `build/i386-kernel/result.json` passes original TempleOS document cross-compatibility. The [support matrix](i386-support-matrix.md) defines the tested surface. | Pass for the integrated tested surface; complete original feature parity remains open. |
-| Release artifact and human usability | The older bundle is verified for its pinned source. The [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Current-source package, human observation and publication open; the manual session is deferred by request. |
+| Release artifact and human usability | `build/i386-release-current/` packages the current disk and evidence; its standalone `verify.py` passes. The [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Local current-source package passes; human observation and publication remain open, with the manual session deferred by request. |
 
 The 16 MiB `486,-fpu` TCG retained rebuild is running in
 `build/i386-kernel/retained-build-gen3-tcg-nofpu/`. An earlier kernel
@@ -223,6 +225,7 @@ post-exit export/structure audit, replacement installation and independent
 `build/i386-kernel/retained-install-shifted-kvm/result.json`). Native
 flat-kernel installation and second-generation identity are still active;
 manual observation remains deferred.
+
 The first fully guest-built shifted-record generation now passes native
 flat-kernel and boot-helper construction, independent 8 MiB KVM cold boot,
 and the 386 executable/boot/filesystem audit. The linked image is 475,216
@@ -450,3 +453,14 @@ The current build manifest matches all 1,233 worktree sources and all 814
 delivered source files on the first installed target. The second-generation
 flat build and twelve-module/boot-area identity check remain open. Human
 manual observation remains deferred.
+
+Both current-source guest-built generations now pass native flat-kernel
+installation and independent 8 MiB KVM cold boot. The second target passes
+the 386 executable and guest compiler-template audit. All twelve modules,
+the 482,384-byte flat image and installed boot area match byte for byte;
+both RedSea volumes pass extent/bitmap ownership audit
+(`build/i386-kernel/generation-identity-capacity-lexfix-kvm/result.json`).
+`tools/package-i386-current.py` builds the local current-source bundle,
+and its standalone verifier passes the compressed disk and 31 bundled file
+hashes (`build/i386-release-current/manifest.json`). Human manual QEMU
+observation remains deferred, and this bundle is not published.

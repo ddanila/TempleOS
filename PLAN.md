@@ -3681,3 +3681,14 @@ Their replacement on a disk copy and independent 8 MiB KVM cold boot also
 pass (`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-retained-install-kvm-retry/result.json`).
 The second-generation flat-kernel build and full twelve-module identity
 check remain open; the manual session remains deferred.
+
+The current source now passes two fully guest-built QEMU/486 generations.
+All twelve installed modules, the 482,384-byte flat image and the boot area
+match byte for byte; both RedSea volumes pass ownership/bitmap audit
+(`build/i386-kernel/generation-identity-capacity-lexfix-kvm/result.json`).
+The second target independently cold-boots at 8 MiB and passes the 386
+executable and guest compiler-template audit. A local current-source
+release candidate is produced by `tools/package-i386-current.py`; its
+standalone verifier passes for the compressed disk and 31 bundled files
+(`build/i386-release-current/manifest.json`). Human usability observation
+and publication remain open; the manual session is deferred.

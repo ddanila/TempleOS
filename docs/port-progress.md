@@ -11201,3 +11201,17 @@ The current build manifest matches all 1,233 worktree source files and all
 814 delivered source files on the first installed target. The second-
 generation flat-kernel install and full generation identity are still open;
 manual observation remains deferred.
+
+The second-generation guest flat-kernel build and install now pass with the
+same 482,384-byte image. Its independent 8 MiB KVM cold boot and 386
+executable/guest compiler-template audit pass
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/result.json`,
+`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/instruction-audit/result.json`).
+All twelve modules, flat bytes and boot area match the first installed
+generation byte for byte; both RedSea volumes have 16 directories, 836
+files and 17,834 owned sectors, with matching bitmaps
+(`build/i386-kernel/generation-identity-capacity-lexfix-kvm/result.json`).
+`tools/package-i386-current.py` creates a local current-source bundle
+whose standalone verifier passes its compressed disk and 31 file hashes
+(`build/i386-release-current/manifest.json`). Human manual usability
+observation remains deferred, so publication is still open.
