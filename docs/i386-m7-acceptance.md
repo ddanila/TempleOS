@@ -19,7 +19,7 @@ are local evidence rather than repository contents.
 | Native installation and interrupted-install recovery | The current `selfhost-install-capacity-lexfix-kvm/result.json` cold-boots the guest-built target; `build/i386-kernel/result.json` passes native boot-area publication and interrupted install-copy checks. Earlier `install-recovery-committed/result.json` and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0. | Pass for tested QEMU scenarios; physical power-loss durability is deferred. |
 | Two independent guest-built generations | Earlier `generation-identity-fixed/result.json` and `generation-identity-gen2-gen3-tcg-nofpu/result.json` prove the older source generations. The current candidate's second-generation retained rebuild is active. | Open for the current source. |
 | 386-targeted executable regions | `selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json` checks the current linked and retained modules, guest compiler template, and BIOS/protected-mode boot ranges. | Pass for the current candidate's audited regions. |
-| 8 MiB PC workstation on no-FPU and later 32-bit CPUs | `selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json` passes 513 commands, 576 lines, exact VGA and 20 document cycles on the current installed disk. `build/i386-kernel/result.json` passes the same suite on the current cross-built disk. | Pass under `486,-fpu` TCG on the current installed disk; its full KVM rerun remains open. |
+| 8 MiB PC workstation on no-FPU and later 32-bit CPUs | `selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json` and `selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json` each pass 513 commands, 576 lines, exact VGA and 20 document cycles on the current installed disk. `build/i386-kernel/result.json` passes the same suite on the current cross-built disk. | Pass under `486,-fpu` TCG and `486` KVM on the current installed disk. |
 | Persistent DolDoc development and memory budget | `selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json` passes 107/56/15 commands over three writable boots with exact VGA, unchanged source disk and RedSea audit. The current installed no-FPU workstation suite passes 20 cycles with exact task-heap recovery. | Pass on the current guest-built target. |
 | TempleOS programming model and public services | The current full suites exercise HolyC compilation, DolDoc, task/break recovery, direct VGA/PS/2/PIT/speaker paths, RedSea, graphics, sound, help and source-linked diagnostics. `build/i386-kernel/result.json` passes original TempleOS document cross-compatibility. The [support matrix](i386-support-matrix.md) defines the tested surface. | Pass for the integrated tested surface; complete original feature parity remains open. |
 | Release artifact and human usability | The older bundle is verified for its pinned source. The [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Current-source package, human observation and publication open; the manual session is deferred by request. |
@@ -432,3 +432,11 @@ long-document visible update
 (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`).
 The installed-disk KVM suite and second-generation identity work are
 active. Human manual observation remains deferred.
+
+The current installed image also passes the full 8 MiB `486` KVM
+workstation suite: 513 commands, 576 lines, exact VGA, and 20 bounded
+document cycles with exact task-heap recovery
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json`).
+The second-generation retained rebuild persisted five byte-identical
+modules before interruption during its last module; that module is being
+resumed. Human manual observation remains deferred.

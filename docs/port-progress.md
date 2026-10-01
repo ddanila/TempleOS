@@ -11180,3 +11180,12 @@ task-heap recovery, and a 0.387-second long-document visible update
 (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`).
 The installed-disk KVM suite and second-generation guest rebuild remain
 active; human manual observation stays deferred.
+
+The same installed image now passes the complete 8 MiB `486` KVM
+workstation suite: 513 native commands, 576 submitted lines, exact VGA,
+and 20 document cycles with exact shared task-heap recovery
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json`).
+The second-generation retained rebuild was interrupted during its final
+module; its first five persisted modules audit byte-identical to the
+installed copies. The final module is being resumed. Manual observation
+remains deferred.

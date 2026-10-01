@@ -3665,3 +3665,10 @@ long-document visible update
 (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`).
 Its installed-disk KVM suite and second-generation guest rebuild are
 active. Manual QEMU observation remains deferred.
+
+The current fully guest-built target also passes the complete 8 MiB
+`486` KVM workstation suite: 513 commands, 576 lines, exact VGA at every
+checkpoint, and 20 document cycles with exact shared task-heap recovery
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json`).
+The second-generation guest rebuild remains in progress; manual QEMU
+observation remains deferred.
