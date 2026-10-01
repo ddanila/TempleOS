@@ -399,3 +399,13 @@ byte-identical replacement and independent 8 MiB KVM cold boot
 candidate embeds current lexer, boot-image builder and installer source.
 Its guest-built flat-kernel installation and the complete 386 `--test`
 are still running. Manual QEMU observation remains deferred.
+
+The current-source first fully guest-built image now passes all-twelve
+module installation, 482,384-byte flat linking, exact boot-area check,
+independent 8 MiB KVM cold boot, RedSea ownership audit and 386
+executable/guest compiler-template audit
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/result.json`,
+`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json`).
+The installed target embeds current lexer, boot builder and installer
+source byte-identically. Full no-FPU workstation and second-generation
+identity checks are active. Human manual observation remains deferred.

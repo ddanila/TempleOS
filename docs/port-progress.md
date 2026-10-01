@@ -11139,3 +11139,17 @@ native commands. It embeds current `LexIdent.HC`, `LexInput.HC`,
 The six flat modules and native boot-image install are now running on a
 copy; the complete 386 `--test` remains active. Human observation is
 deferred.
+
+The current-source first fully guest-built target now passes installation:
+all twelve modules were compiled inside QEMU, the flat image is 482,384
+bytes and the installed boot area matches the expected guest-linked bytes
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/result.json`).
+Its independent 8 MiB KVM cold boot and RedSea audit pass. The executable
+386 allowlist and guest compiler-template audit also pass, and the target
+volume has 16 directories, 836 files, 17,834 owned sectors and a bitmap
+matching reachable extents
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json`).
+Current lexer, builder and installer source files match the target volume
+byte for byte. A full 8 MiB no-FPU workstation run on this image and
+second-generation identity rebuild are underway. The long 386 `--test`
+remains active; human manual observation is deferred.

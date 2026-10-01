@@ -3624,3 +3624,16 @@ The candidate retains `Compiler/I386/LexIdent.HC`,
 `Kernel/I386/InstallBootArea.HC` byte-identical to the committed source.
 Its six guest-built flat modules and boot-image installation are running;
 the complete 386 `--test` remains active. Manual observation is deferred.
+
+The current source now passes its first fully guest-built 32-bit
+installation. Six flat modules compiled inside QEMU link to 482,384
+bytes, fit the 487,424-byte payload limit, and are installed beside the
+six guest-built retained modules. The target passes independent 8 MiB KVM
+cold boot, exact boot-area comparison and RedSea extent/bitmap audit
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/result.json`). Its
+386 executable regions and guest compiler template pass instruction audit
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json`).
+The target embeds current lexer, builder and installer sources byte for
+byte. A complete no-FPU workstation run on this installed image and a
+second guest-built generation are active. The long 386 `--test` remains
+active, and manual QEMU observation stays deferred.
