@@ -11092,3 +11092,13 @@ The diagnostic boot fails after `RUNTIME PROBE` even after reverting the
 capacity change to the prior 944-sector source, so its cause is separate
 and remains to be resolved. No guest-built flat image using the new limit
 has been installed yet. Human manual observation remains deferred.
+
+The diagnostic stop was traced to a duplicate source-define lookup in
+`I386LexIdentScan`: the second lookup raised the macro's use count from
+one to two before the compiler probe checked it. Skipping that lookup
+when the normal chain already returned a define lets both diagnostic
+probe phases and native startup complete. The host verifier's runtime
+interface check has been extended to cover the existing
+`frontend_bind_files` service pointer. The full 386 `--test` run is
+still active in its interactive QEMU phase. Guest-built flat installation
+and human observation remain open; the manual session is deferred.

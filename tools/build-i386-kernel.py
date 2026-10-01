@@ -186,6 +186,7 @@ def compiler_runtime_layout(module):
                 program_pack_unit_offset=8+exports['I386FrontendModulePackUnit'][1],
                 private_defines_offset=8+exports['I386FrontendPrivateDefines'][1],
                 export_at_offset=8+exports['I386CompilerRuntimeExportAt'][1],
+                bind_files_offset=8+exports['I386FrontendBindFiles'][1],
                 import_offset=next(offset for name, offset in imports if name == 'I386LexRawChar'))
 
 
@@ -2352,10 +2353,12 @@ def main():
             raise ValueError('Unexpected 8 MiB memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
-        if len(runtime) != 1 or len(runtime[0]) != 62:
+        if len(runtime) != 1 or len(runtime[0]) != 63:
             raise ValueError('Missing retained compiler-runtime image')
-        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address, symbols_init_address, control_enter_address, control_leave_address, control_drain_address, control_unwind_address, code_add_address, code_misc_address, code_discard_address, code_save_address, code_push_address, code_pop_address, code_free_address, code_append_address, code_retire_address, code_branch_address, code_optimize_address, out_new_address, out_del_address, backend_address, expression_address, type_address, parser_alloc_address, parser_free_address, parser_token_address, declarations_address, code_init_address, class_address, fun_join_address, publish_classes_address, bootstrap_scalars_address, load_scalars_address, scalar_check_address, frontend_address, statement_address, command_address, publish_address, input_address, break_poll_address, math_bind_address, code_span_address, module_pack_address, code_reloc_address, program_pack_address, program_pack_data_address, program_pack_unit_address, private_defines_address, compiler_export_at_address = (int(x, 16) for x in runtime[0][1:])
-        if (size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
+        address, size, span, string_address, number_address, char_address, punct_address, ident_address, ident_token_address, string_token_address, next_address, include_address, control_new_address, control_del_address, symbols_init_address, control_enter_address, control_leave_address, control_drain_address, control_unwind_address, code_add_address, code_misc_address, code_discard_address, code_save_address, code_push_address, code_pop_address, code_free_address, code_append_address, code_retire_address, code_branch_address, code_optimize_address, out_new_address, out_del_address, backend_address, expression_address, type_address, parser_alloc_address, parser_free_address, parser_token_address, declarations_address, code_init_address, class_address, fun_join_address, publish_classes_address, bootstrap_scalars_address, load_scalars_address, scalar_check_address, frontend_address, statement_address, command_address, publish_address, input_address, break_poll_address, math_bind_address, code_span_address, module_pack_address, code_reloc_address, program_pack_address, program_pack_data_address, program_pack_unit_address, private_defines_address, compiler_export_at_address = (int(x, 16) for x in runtime[0][1:-1])
+        bind_files_address=int(runtime[0][-1],16)
+        if (bind_files_address != address+runtime_layout['bind_files_offset'] or
+                size != runtime_layout['image_bytes'] or span != ((size+7)&~7)+16 or
                 address < begin or address+size > begin+length or
                 string_address != address+runtime_layout['string_offset'] or
                 number_address != address+runtime_layout['number_offset'] or

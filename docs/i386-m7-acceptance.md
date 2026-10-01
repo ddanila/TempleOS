@@ -364,3 +364,11 @@ cross-build/boot audit and normal 8 MiB QEMU keyboard/VGA boot
 Guest-built flat installation under that limit and the diagnostic boot
 remain open; the latter also fails on the unchanged 944-sector baseline.
 The manual session and observation template remain deferred.
+
+The diagnostic stop after `RUNTIME PROBE` was caused by duplicate
+source-define lookup in the 386 identifier scanner. With that lookup
+removed, the diagnostic guest completes both probe phases and native
+startup. The host verifier now includes the retained compiler runtime's
+existing `frontend_bind_files` service pointer. The complete `--test`
+run is active in its interactive QEMU phase. Guest-built flat install
+and human observation are still open; the manual session is deferred.

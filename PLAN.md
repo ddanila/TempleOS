@@ -3573,3 +3573,14 @@ the new guest-built flat installation remain open. A later architectural
 step must move more code out of the flat boot image or load it above low
 memory, since 6,472 bytes is limited headroom. Human observation in
 `docs/i386-test-workflow.md` remains deferred.
+
+Follow-up diagnostic work found that `I386LexIdentScan` counted a source
+define twice when the normal symbol-chain lookup had already found it.
+That violated the native compiler probe's macro-use invariant. The scanner
+now skips the redundant lookup for an already-found define; the diagnostic
+guest reaches both probe phases and completes native startup. The host
+boot verifier now also checks the existing `frontend_bind_files` service
+pointer in the retained compiler runtime instead of expecting the older
+interface width. The complete `tools/build-i386-kernel.py --test` run is
+in progress. The guest-built flat installation and human QEMU observation
+remain open; the manual session stays deferred.
