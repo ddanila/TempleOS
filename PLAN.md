@@ -3656,3 +3656,12 @@ The source disk is unchanged; the final RedSea volume has 18 directories,
 853 files and 17,855 owned sectors, with its bitmap matching reachable
 extents. The complete no-FPU workstation and second-generation guest
 rebuild remain active. The manual QEMU session is still deferred.
+
+The first exact-source fully guest-built target now passes the complete
+8 MiB `486,-fpu` TCG workstation suite: 513 native commands, 576 submitted
+lines, exact VGA at every checkpoint, 20 bounded document-development
+cycles with exact shared task-heap recovery, and a 0.387-second
+long-document visible update
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`).
+Its installed-disk KVM suite and second-generation guest rebuild are
+active. Manual QEMU observation remains deferred.

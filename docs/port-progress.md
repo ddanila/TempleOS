@@ -11172,3 +11172,11 @@ bitmap matching reachable extents
 (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`).
 The complete no-FPU workstation suite and second-generation rebuild
 remain active. Human manual observation stays deferred.
+
+The exact-source fully guest-built installed image now passes the complete
+8 MiB `486,-fpu` TCG workstation suite: 513 commands, 576 lines, exact
+VGA at every checkpoint, 20 bounded document cycles with exact shared
+task-heap recovery, and a 0.387-second long-document visible update
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`).
+The installed-disk KVM suite and second-generation guest rebuild remain
+active; human manual observation stays deferred.

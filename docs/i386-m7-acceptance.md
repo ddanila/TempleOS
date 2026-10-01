@@ -425,3 +425,11 @@ RedSea extent/bitmap ownership
 (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`).
 Full no-FPU workstation and second-generation identity checks remain
 active. Human manual observation remains deferred.
+
+The first exact-source fully guest-built installed image passes the full
+8 MiB `486,-fpu` workstation suite: 513 commands, 576 lines, exact VGA,
+20 document cycles with exact task-heap recovery and a 0.387-second
+long-document visible update
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`).
+The installed-disk KVM suite and second-generation identity work are
+active. Human manual observation remains deferred.
