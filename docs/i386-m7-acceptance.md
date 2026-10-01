@@ -409,3 +409,11 @@ executable/guest compiler-template audit
 The installed target embeds current lexer, boot builder and installer
 source byte-identically. Full no-FPU workstation and second-generation
 identity checks are active. Human manual observation remains deferred.
+
+The complete current-source `tools/build-i386-kernel.py --test` passes:
+513 workstation commands, 576 lines, exact VGA, 20 document cycles with
+exact task-heap recovery, diagnostic startup, boot-area publication,
+interrupted install-copy recovery and original TempleOS document
+cross-compatibility (`build/i386-kernel/result.json`). The installed
+guest-built image's no-FPU workstation and second-generation identity
+checks are still active. Human manual observation remains deferred.

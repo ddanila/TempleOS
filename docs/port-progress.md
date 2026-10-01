@@ -11153,3 +11153,13 @@ Current lexer, builder and installer source files match the target volume
 byte for byte. A full 8 MiB no-FPU workstation run on this image and
 second-generation identity rebuild are underway. The long 386 `--test`
 remains active; human manual observation is deferred.
+
+The complete current-source `tools/build-i386-kernel.py --test` passes
+(`build/i386-kernel/result.json`). The 8 MiB interactive QEMU phase runs
+513 commands and 576 lines with exact VGA and 20 bounded document cycles
+with exact shared task-heap recovery. The diagnostic startup, native and
+linked boot-area publication, interrupted install-copy recovery, filesystem
+mutation probes and original TempleOS document cross-compatibility all
+pass. The fully guest-built target's no-FPU workstation and
+second-generation identity runs are still active. Human observation is
+deferred.
