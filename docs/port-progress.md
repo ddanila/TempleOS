@@ -11118,3 +11118,13 @@ The target RedSea volume audit reports 16 directories, 836 files,
 the layout generation installed with the current source's boot stage and
 publisher. The latest control-record generation's guest rebuild and
 flat installation remain open. Human manual observation stays deferred.
+
+The current source passes the 8 MiB no-FPU TCG compiler group with 144
+native commands and exact VGA
+(`build/i386-kernel/lexident-compiler-tcg-nofpu/result.json`). The active
+KVM six-module guest rebuild disk contains `Compiler/I386/LexIdent.HC`,
+`Kernel/I386/BuildBootImage.HC` and `Kernel/I386/InstallBootArea.HC`
+byte-identical to the current committed tree; it has reached the final
+retained module. The complete 386 `--test` still runs follow-up boot and
+filesystem probes. Exact-source installation and human observation remain
+open, and the manual session is deferred.

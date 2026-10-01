@@ -383,3 +383,11 @@ and exact VGA (`build/i386-kernel/boot-capacity-layout-link-kvm/result.json`,
 `build/i386-kernel/boot-capacity-layout-cold-boot-tcg-nofpu/result.json`).
 The latest control-record source still needs its own full guest-built
 installation. The manual session remains deferred.
+
+The current source's 8 MiB `486,-fpu` compiler group passes 144 native
+commands and exact VGA
+(`build/i386-kernel/lexident-compiler-tcg-nofpu/result.json`). Its
+source-matched KVM guest rebuild is on the sixth retained module; the
+complete 386 `--test` is active in follow-up boot and filesystem probes.
+Exact-source guest installation and human observation remain open. The
+manual QEMU session remains deferred.

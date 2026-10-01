@@ -3602,3 +3602,13 @@ guest-built modules with the current boot stage and publisher; it does not
 replace the latest control-record source's exact-generation install gate.
 The full current-source `--test` and six-module KVM guest rebuild continue.
 Human manual observation remains deferred.
+
+For the current source, the 8 MiB `486,-fpu` compiler group passes 144
+native commands with exact VGA
+(`build/i386-kernel/lexident-compiler-tcg-nofpu/result.json`). The active
+six-module KVM guest rebuild disk embeds `Compiler/I386/LexIdent.HC`,
+`Kernel/I386/BuildBootImage.HC` and `Kernel/I386/InstallBootArea.HC`
+byte-identical to the committed tree. The rebuild has reached the sixth
+retained module; the complete 386 `--test` is still running through
+follow-up boot and filesystem checks. Exact-source installation remains
+open, and the manual QEMU session remains deferred.
