@@ -3539,3 +3539,14 @@ document-latency group also passes with exact VGA
 (`../TempleOS-controls/build/i386-kernel/controls-functional-kvm/result.json`).
 The complete KVM suite and latest installed-generation gates remain open;
 manual QEMU observation stays deferred.
+The control-record source's main cross-built image passes the standalone
+8 MiB KVM document-latency group under concurrent QEMU load: four native
+commands, exact VGA and a 0.620-second long-document visible update
+(`build/i386-kernel/controls-latency-main-kvm/result.json`). Its isolated
+cross-built disk embeds `/Compiler/I386/LexInput.HC` byte-identical to
+commit `eb3305a4` (SHA-256
+`1788eddbb02fea3250bd2c19072e8ccc0f546d5b2e7eca75f907d97159d745dd`).
+The complete main-image KVM and no-FPU workstation runs and exact-source
+guest rebuild remain active. The eight-layout-record source's first native
+flat-kernel install is still active at guest boot-image linking; no pass is
+claimed for that installation. Manual observation remains deferred.

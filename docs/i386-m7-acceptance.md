@@ -344,3 +344,10 @@ exact VGA, 0.382-second long-document visible-update latency and 20 bounded
 document cycles with exact heap recovery. A 509-command KVM functional run
 excluding the timing-sensitive latency group also passes. Full KVM and
 installed-generation gates remain open; human observation stays deferred.
+The control-record source's main cross-built image passes the standalone
+8 MiB KVM document-latency group: four commands, exact VGA and a
+0.620-second long-document visible update
+(`build/i386-kernel/controls-latency-main-kvm/result.json`). Main-image
+complete workstation runs and guest rebuild are active. The preceding
+layout source's flat-kernel install remains at boot-image linking; no
+installed-image pass is counted. Human observation stays deferred.
