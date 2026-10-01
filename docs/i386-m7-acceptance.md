@@ -1,29 +1,28 @@
 # M7 self-hosting workstation acceptance
 
 This is the current evidence map for [M7 in PLAN.md](../PLAN.md#following-big-goal-m7-self-hosting-32-bit-templeos-workstation).
-The candidate disk is `build/i386-kernel/selfhost-install-gen2-fixed/target.img`
-(SHA-256 `c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8`).
-The package checks all 1,233 build-input file hashes against the checkout and
-records committed source revision `78f66cfc72370cf7d508196950521bf8535b1f2e`.
-It also reads all 814 delivered source files from the Generation 2 RedSea
-image and checks each byte hash against that manifest.
-The older cross-build manifest revision reflects a dirty worktree at build
-time, so its revision alone is not the source identifier.
-The local bundle is `build/i386-release-candidate/`; run its `verify.py` before
-using it. `build/` is ignored by Git, so the linked result files are local
-evidence rather than repository contents.
+The current candidate is
+`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img`
+(SHA-256 `a7c111f8f139f4121283916ff80e1d173069753b173e1bb1e4c90ace191db96c`).
+It contains twelve guest-built modules and a 482,384-byte flat image, and
+its installed executable regions, boot payload and RedSea volume pass audit.
+The installed lexer, boot-image builder and installer source files match
+the committed tree byte for byte. The older local bundle at
+`build/i386-release-candidate/` is tied to an earlier source revision and
+does not package this candidate. `build/` is ignored by Git, so result files
+are local evidence rather than repository contents.
 
 | M7 requirement | Current evidence | Status |
 | --- | --- | --- |
-| All kernel, compiler and retained runtime sources build in the guest | Six retained T32Ms in `retained-build-fixed/result.json`; six flat kernel/boot T32Ms and an independently booted installed disk in `selfhost-install-fixed/result.json`. The second generation repeats the build. `selfhost-install-gen3-tcg-nofpu-long/result.json` passes the flat kernel and five boot helpers under `486,-fpu` TCG, and the installed disk cold-boots at 8 MiB. `retained-build-gen3-tcg-nofpu/result.json` verifies all six no-FPU retained rebuilds byte-identical to installed Generation 2 modules. | Pass for older audited Gen2/Gen3 sources. The newer direct-document source's no-FPU retained rebuild is still running; quoted-foreground source still needs a guest build. |
+| All kernel, compiler and retained runtime sources build in the guest | `retained-build-capacity-lexfix-kvm/result.json` audits six guest-built retained modules; `selfhost-install-capacity-lexfix-kvm/result.json` audits six guest-built flat modules, installs the 482,384-byte image and cold-boots it. | Pass for the current first guest-built generation; second-generation rebuild active. |
 | Development session survives source errors and interruption | The complete workstation suite exercises source-linked error recovery and keyboard break handling; the [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) includes an interrupted loop and subsequent compilation. | Automated cases pass; human source-edit/rebuild observation open. |
-| Native installation and interrupted-install recovery | `selfhost-install-gen2-fixed/result.json` cold-boots the installed image. Both `install-recovery-committed/result.json` (KVM) and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0; each source and all three resulting disks match the release image after recovery or publication. | Pass for tested QEMU hard stops on KVM and `486,-fpu` TCG. Physical power-loss durability is deferred. |
-| Two independent guest-built generations | `generation-identity-fixed/result.json` verifies Generations 1 and 2. `generation-identity-gen2-gen3-tcg-nofpu/result.json` verifies Generation 3 built under no-FPU TCG: all twelve T32Ms, the 457,000-byte linked image and boot area are byte-identical to Generation 2; both RedSea volumes pass ownership/bitmap audits. | Pass through Generation 3 for audited artifacts; its full workstation suite also passes. |
-| 386-targeted executable regions | `selfhost-install-gen2-fixed/instruction-audit/result.json` and `selfhost-install-gen3-tcg-nofpu-long/instruction-audit/result.json` check linked and retained modules plus BIOS/protected-mode boot ranges, including guest compiler template data. | Pass for audited regions on both images. QEMU here has no 386 CPU model; physical 386 certification is deferred. |
-| 8 MiB PC workstation on no-FPU and later 32-bit CPUs | `selfhost-install-gen2-fixed/full-tcg-nofpu/result.json`, `full-pentium3-nofpu/result.json`, and `selfhost-install-gen3-tcg-nofpu-long/full-tcg-nofpu/result.json` each pass 506 native commands, 569 input lines, exact VGA and 20 document cycles. `full/result.json` passes under KVM. | Pass on the exact Generation 2 disk and the no-FPU-built Generation 3 disk. |
-| Persistent DolDoc development and memory budget | `selfhost-install-gen2-fixed/doldoc-tcg-nofpu/result.json` and `selfhost-install-gen3-tcg-nofpu-long/doldoc-tcg-nofpu-final/result.json` each pass three writable boots with independent RedSea audit. `resource-profile/resource-result.json` measures 20 cycles, 3,616-byte temporary live growth and exact recovery in 8 MiB. | Pass on the exact Generation 2 disk and the no-FPU-built Generation 3 disk. |
-| TempleOS programming model and public services | The full suites exercise HolyC compilation, DolDoc, cooperative task/break recovery, direct VGA/PS/2/PIT/speaker paths, RedSea, graphics, sound, help and source-linked diagnostics. `doc-compat-provenance-retry/result.json` records the exact Generation 2 image producing a 37-byte DolDoc file that original TempleOS reads and saves byte for byte. A focused `ExeDoc` probe executes a canonical document containing a foreground record and returns 42. The [support matrix](i386-support-matrix.md) defines the tested surface. | Tested integrated surface, original-reader compatibility and formatted-document execution pass; the original document-attached compiler control and complete `DocEd` action set are not yet established. |
-| Release artifact and human usability | `tools/package-i386-release.py` produces a verified local disk/evidence bundle. [Manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Local package prepared; human observation and publication open. |
+| Native installation and interrupted-install recovery | The current `selfhost-install-capacity-lexfix-kvm/result.json` cold-boots the guest-built target; `build/i386-kernel/result.json` passes native boot-area publication and interrupted install-copy checks. Earlier `install-recovery-committed/result.json` and `install-recovery-tcg-nofpu/result.json` cover hard stops at LBA 128, 850 and after LBA 0. | Pass for tested QEMU scenarios; physical power-loss durability is deferred. |
+| Two independent guest-built generations | Earlier `generation-identity-fixed/result.json` and `generation-identity-gen2-gen3-tcg-nofpu/result.json` prove the older source generations. The current candidate's second-generation retained rebuild is active. | Open for the current source. |
+| 386-targeted executable regions | `selfhost-install-capacity-lexfix-kvm/instruction-audit/result.json` checks the current linked and retained modules, guest compiler template, and BIOS/protected-mode boot ranges. | Pass for the current candidate's audited regions. |
+| 8 MiB PC workstation on no-FPU and later 32-bit CPUs | `selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json` passes 513 commands, 576 lines, exact VGA and 20 document cycles on the current installed disk. `build/i386-kernel/result.json` passes the same suite on the current cross-built disk. | Pass under `486,-fpu` TCG on the current installed disk; its full KVM rerun remains open. |
+| Persistent DolDoc development and memory budget | `selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json` passes 107/56/15 commands over three writable boots with exact VGA, unchanged source disk and RedSea audit. The current installed no-FPU workstation suite passes 20 cycles with exact task-heap recovery. | Pass on the current guest-built target. |
+| TempleOS programming model and public services | The current full suites exercise HolyC compilation, DolDoc, task/break recovery, direct VGA/PS/2/PIT/speaker paths, RedSea, graphics, sound, help and source-linked diagnostics. `build/i386-kernel/result.json` passes original TempleOS document cross-compatibility. The [support matrix](i386-support-matrix.md) defines the tested surface. | Pass for the integrated tested surface; complete original feature parity remains open. |
+| Release artifact and human usability | The older bundle is verified for its pinned source. The [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Current-source package, human observation and publication open; the manual session is deferred by request. |
 
 The 16 MiB `486,-fpu` TCG retained rebuild is running in
 `build/i386-kernel/retained-build-gen3-tcg-nofpu/`. An earlier kernel
