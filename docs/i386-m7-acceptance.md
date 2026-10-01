@@ -372,3 +372,14 @@ startup. The host verifier now includes the retained compiler runtime's
 existing `frontend_bind_files` service pointer. The complete `--test`
 run is active in its interactive QEMU phase. Guest-built flat install
 and human observation are still open; the manual session is deferred.
+
+The enlarged boot area now passes the prior layout generation's
+guest-built flat-image installation: 480,952 linked bytes, exact reserved
+boot-area comparison, RedSea extent/bitmap audit and independent 8 MiB
+KVM `486` and no-FPU TCG `486,-fpu` cold boots with two native commands
+and exact VGA (`build/i386-kernel/boot-capacity-layout-link-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-install-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-cold-boot-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-cold-boot-tcg-nofpu/result.json`).
+The latest control-record source still needs its own full guest-built
+installation. The manual session remains deferred.

@@ -11102,3 +11102,19 @@ interface check has been extended to cover the existing
 `frontend_bind_files` service pointer. The full 386 `--test` run is
 still active in its interactive QEMU phase. Guest-built flat installation
 and human observation remain open; the manual session is deferred.
+
+The expanded 960-sector boot path has now linked and installed the prior
+layout-generation six guest-built flat modules on a writable target copy.
+The guest linker produced 480,952 bytes with exact VGA; the publisher's
+reserved-area output matches the expected stage plus flat image byte for
+byte. An independent 8 MiB KVM `486` boot and an 8 MiB no-FPU TCG
+`486,-fpu` boot each passed two native commands with exact VGA
+(`build/i386-kernel/boot-capacity-layout-link-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-install-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-cold-boot-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-cold-boot-tcg-nofpu/result.json`).
+The target RedSea volume audit reports 16 directories, 836 files,
+17,823 owned sectors and a bitmap matching reachable extents. This is
+the layout generation installed with the current source's boot stage and
+publisher. The latest control-record generation's guest rebuild and
+flat installation remain open. Human manual observation stays deferred.

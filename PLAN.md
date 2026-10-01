@@ -3584,3 +3584,21 @@ pointer in the retained compiler runtime instead of expecting the older
 interface width. The complete `tools/build-i386-kernel.py --test` run is
 in progress. The guest-built flat installation and human QEMU observation
 remain open; the manual session stays deferred.
+
+The measured layout-generation six-module flat image now passes the new
+960-sector installation path on a writable copy of its partial guest-built
+target. The guest linked 480,952 bytes
+(`build/i386-kernel/boot-capacity-layout-link-kvm/result.json`), published
+that image into the reserved boot area with exact byte comparison against
+the expected stage and image
+(`build/i386-kernel/boot-capacity-layout-install-kvm/result.json`), and
+the installed target passed independent 8 MiB cold boots on KVM `486`
+and TCG `486,-fpu` with two native commands and exact VGA
+(`build/i386-kernel/boot-capacity-layout-cold-boot-kvm/result.json`,
+`build/i386-kernel/boot-capacity-layout-cold-boot-tcg-nofpu/result.json`).
+The target volume has 16 directories, 836 files and 17,823 owned sectors;
+its bitmap matches reachable extents. This combines the earlier layout
+guest-built modules with the current boot stage and publisher; it does not
+replace the latest control-record source's exact-generation install gate.
+The full current-source `--test` and six-module KVM guest rebuild continue.
+Human manual observation remains deferred.
