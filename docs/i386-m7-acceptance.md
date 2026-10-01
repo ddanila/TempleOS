@@ -332,3 +332,15 @@ to commit `18463db3`, while the cross-built input disk for the active
 layout guest rebuild embeds that path byte-identical to `36da99b0`.
 The newer control-record source has not yet completed guest installation;
 human observation remains deferred.
+The eight-layout-record source passes a six-module guest rebuild, replacement
+installation and independent 8 MiB KVM cold boot
+(`build/i386-kernel/retained-build-layout-all-kvm/result.json`,
+`build/i386-kernel/retained-install-layout-all-kvm/result.json`). Its native
+flat-kernel installation remains active.
+The newer control-record source passes main cross-build and the focused
+quoted-control probe on KVM and `486,-fpu` TCG. Its isolated byte-identical
+image passes the full no-FPU workstation suite: 513 commands, 576 lines,
+exact VGA, 0.382-second long-document visible-update latency and 20 bounded
+document cycles with exact heap recovery. A 509-command KVM functional run
+excluding the timing-sensitive latency group also passes. Full KVM and
+installed-generation gates remain open; human observation stays deferred.

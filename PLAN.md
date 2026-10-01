@@ -3521,3 +3521,21 @@ embeds the same path byte-identical to commit `36da99b0` (SHA-256
 `bb27038d48169a9a9e477f7d35afce47a98645e338474b190cccf8bb62646e4b`).
 These checks bind the older generation evidence to its source snapshots;
 the newer control-record source has not yet completed guest installation.
+The eight-layout-record source has completed its exact-source six-module
+KVM guest rebuild and post-exit module audit, replacement installation and
+independent 8 MiB KVM cold boot
+(`build/i386-kernel/retained-build-layout-all-kvm/result.json`,
+`build/i386-kernel/retained-install-layout-all-kvm/result.json`). Its native
+flat-kernel build/install is active.
+The newer control-record source passes a fresh main x64 rebuild and 386
+cross-build/audit, and the nine-command control probe on the main image
+under KVM and `486,-fpu` TCG with exact VGA. Its isolated byte-identical
+image passes the full 8 MiB no-FPU workstation suite: 513 commands, 576
+submitted lines, exact VGA, 0.382-second long-document visible-update
+latency and 20 document cycles with exact task-heap recovery
+(`../TempleOS-controls/build/i386-kernel/controls-full-tcg-nofpu/result.json`).
+Its 509-command KVM functional run excluding the timing-sensitive
+document-latency group also passes with exact VGA
+(`../TempleOS-controls/build/i386-kernel/controls-functional-kvm/result.json`).
+The complete KVM suite and latest installed-generation gates remain open;
+manual QEMU observation stays deferred.

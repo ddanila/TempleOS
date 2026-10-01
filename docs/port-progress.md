@@ -11041,3 +11041,24 @@ The cross-built input disk for the active layout guest rebuild matches
 commit `36da99b0` at the same path (SHA-256
 `bb27038d48169a9a9e477f7d35afce47a98645e338474b190cccf8bb62646e4b`).
 This identifies the source revisions behind those generation results.
+
+The eight-layout-record source completed its exact-source six-module KVM
+guest rebuild and post-exit module audit, replacement installation and
+independent 8 MiB KVM cold boot
+(`build/i386-kernel/retained-build-layout-all-kvm/result.json`,
+`build/i386-kernel/retained-install-layout-all-kvm/result.json`). Its native
+flat-kernel build/install is running.
+
+The newer control-record source passes a fresh main x64 rebuild, 386
+cross-build/instruction audit and nine-command quoted control probe on the
+main image under KVM and `486,-fpu` TCG with exact VGA. Its isolated
+byte-identical image passes the complete 8 MiB no-FPU workstation suite:
+513 native commands, 576 submitted lines, exact VGA, a 0.382-second
+long-document visible-update latency and 20 bounded document-development
+cycles with exact task-heap recovery
+(`../TempleOS-controls/build/i386-kernel/controls-full-tcg-nofpu/result.json`).
+The 509-command KVM functional run excluding the timing-sensitive
+document-latency group also passes with exact VGA
+(`../TempleOS-controls/build/i386-kernel/controls-functional-kvm/result.json`).
+The full KVM suite and guest-built installed-generation gates remain open
+for this latest source. Human observation remains deferred.
