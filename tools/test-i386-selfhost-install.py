@@ -63,10 +63,10 @@ def main():
     if set(flat_modules) != flat_paths:
         raise ValueError('A guest-built flat-kernel module is missing')
     flat = files(target, {'/Probe/GuestBoot.bin'}).get('/Probe/GuestBoot.bin')
-    if not flat or len(flat) > 944 * 512 - 4096:
+    if not flat or len(flat) > 960 * 512 - 4096:
         raise ValueError('Guest-linked boot image is missing or oversized')
-    expected = (original[:4608] + flat + bytes(944 * 512 - 4096 - len(flat)) +
-                original[512 + 944 * 512:BOOT_AREA])
+    expected = (original[:4608] + flat + bytes(960 * 512 - 4096 - len(flat)) +
+                original[512 + 960 * 512:BOOT_AREA])
     if target.read_bytes()[:BOOT_AREA] != expected:
         raise ValueError('Installed boot area differs from guest-linked image')
     run_input(target, out / 'boot', snapshot=True, ram_mib=8,

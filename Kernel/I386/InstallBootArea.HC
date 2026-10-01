@@ -27,7 +27,7 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
 {
   U8 sector[512];
   I64 lba,i,offset,entry;
-  if(!source || !target || !image || bytes<8 || bytes>944*512-4096 ||
+  if(!source || !target || !image || bytes<8 || bytes>960*512-4096 ||
       image[0]!=0xE9 || image[5] || image[6] || image[7] ||
       (entry=5+(image+1)(I32 *)[0])<8 || entry>=bytes ||
       source->signature!=0x41543332 || target->signature!=0x41543332 ||
@@ -36,7 +36,7 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
       !I386AtaTransfer(target,0,sector,100000,FALSE,0)) return FALSE;
   for(i=0;i<512;i++) if(sector[i]) return FALSE;
   for(lba=1;lba<2048;lba++) {
-    if(lba>=9 && lba<=944) {
+    if(lba>=9 && lba<=960) {
       offset=(lba-9)*512;
       for(i=0;i<512;i++) {
         if(offset+i<bytes) sector[i]=image[offset+i];

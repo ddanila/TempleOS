@@ -11073,3 +11073,22 @@ Complete main-image KVM and no-FPU suites and exact-source guest rebuild
 are running. The preceding layout source's native flat-kernel installation
 is still active at guest boot-image linking; its installed-image gate is
 not yet accepted. Human manual observation remains deferred.
+
+Both exact-source control-record workstation suites now pass: 513 native
+commands, 576 lines, exact VGA and 20 bounded document cycles on 8 MiB
+KVM `486` and no-FPU TCG `486,-fpu`
+(`build/i386-kernel/controls-full-main-kvm/result.json`,
+`build/i386-kernel/controls-full-main-tcg-nofpu/result.json`). The
+layout-generation self-host install was stopped after guest image linking
+made no progress. Its guest-built six-module flat payload computes to
+480,952 bytes, 1,720 above the former 479,232-byte limit. The load
+reservation has been increased to 960 sectors, ending at the boot stack
+base `0x88000`, for a 487,424-byte payload limit. The guest builder now
+checks module code sizes before expensive resolution. Two original x64
+rebuilds, 386 cross-build/boot instruction audit and normal 8 MiB QEMU
+keyboard/VGA boot pass with this change
+(`build/i386-kernel/boot-capacity-preflight-keyboard/result.json`).
+The diagnostic boot fails after `RUNTIME PROBE` even after reverting the
+capacity change to the prior 944-sector source, so its cause is separate
+and remains to be resolved. No guest-built flat image using the new limit
+has been installed yet. Human manual observation remains deferred.

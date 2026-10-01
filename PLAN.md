@@ -3550,3 +3550,26 @@ The complete main-image KVM and no-FPU workstation runs and exact-source
 guest rebuild remain active. The eight-layout-record source's first native
 flat-kernel install is still active at guest boot-image linking; no pass is
 claimed for that installation. Manual observation remains deferred.
+
+The complete exact-source control-record workstation suite now passes on
+both 8 MiB KVM `486` and no-FPU TCG `486,-fpu`: 513 native commands, 576
+submitted lines, exact VGA checkpoints and 20 bounded document cycles
+(`build/i386-kernel/controls-full-main-kvm/result.json`,
+`build/i386-kernel/controls-full-main-tcg-nofpu/result.json`). The earlier
+layout-generation native flat-kernel install was stopped at guest image
+linking: its six modules require 480,952 bytes, above the old 479,232-byte
+boot payload limit. A 960-sector BIOS reservation now ends at `0x88000`,
+the base of the existing 32 KiB boot stack. It allows 487,424 payload
+bytes, leaving 6,472 bytes for that measured generation, while keeping
+the 576 KiB conventional-memory requirement. Loader, guest builder,
+installer and host verification use the same limit. The guest builder
+rejects an oversized module set before symbol resolution. The final
+source passes two x64 rebuilds, 386 cross-build/instruction audit and
+normal 8 MiB QEMU keyboard/VGA boot
+(`build/i386-kernel/boot-capacity-preflight-keyboard/result.json`).
+The diagnostic startup currently stops after `RUNTIME PROBE` on both the
+unchanged 944-sector baseline and this revision; that diagnostic gate and
+the new guest-built flat installation remain open. A later architectural
+step must move more code out of the flat boot image or load it above low
+memory, since 6,472 bytes is limited headroom. Human observation in
+`docs/i386-test-workflow.md` remains deferred.

@@ -6,7 +6,8 @@ U8 *boot_image_names[5]={"SysTry.t32m","TaskContext.t32m",
 public I64 I386BuildBootImage(U8 *kernel_path,U8 *module_dir,U8 *target_path)
 {
   U8 path[256],*modules[6],*image=0;
-  I64 sizes[6],i,j,prefix,required=0,result=-1;
+  I64 sizes[6],i,j,prefix,required=8,result=-1;
+  CI386ModuleHeader *header;
   CI386Heap *heap;
   CI386TaskSymbols *scope;
   Bool clean=TRUE;
@@ -26,8 +27,15 @@ public I64 I386BuildBootImage(U8 *kernel_path,U8 *module_dir,U8 *target_path)
     modules[i]=(*console_config->files->read)(heap,path,sizes+i,0,0);
     if(!modules[i]) goto boot_image_done;
   }
+  //Reject an oversized image before the expensive symbol-resolution pass.
+  for(i=0;i<6;i++) {
+    if(sizes[i]<32) goto boot_image_done;
+    header=modules[i];
+    if(header->code_size>960*512-4096-required) goto boot_image_done;
+    required+=header->code_size;
+  }
   required=I386LoadBoundAt(modules,sizes,6,0,0,"Main",0,0,0x11000);
-  if(required<8 || required>944*512-4096 ||
+  if(required<8 || required>960*512-4096 ||
       !(image=I386HeapAlloc(heap,required))) goto boot_image_done;
   if(I386LoadBoundAt(modules,sizes,6,image,required,"Main",0,0,0x11000)!=required)
     goto boot_image_done;

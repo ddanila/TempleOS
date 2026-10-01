@@ -10,7 +10,7 @@ from pathlib import Path
 
 MODULES=('Kernel','SysTry','TaskContext','ExceptContext','IrqEntry','ExceptionEntry')
 LOAD_ADDRESS=0x11000
-BOOT_SECTORS=944
+BOOT_SECTORS=960
 STAGE_BYTES=4096
 
 

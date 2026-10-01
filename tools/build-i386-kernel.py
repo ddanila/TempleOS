@@ -2110,7 +2110,7 @@ def verify_native_linked_boot_area(disk,exports,out,console):
     if flat!=(exports/'Kernel32.BIN').read_bytes():
         raise ValueError('Guest-linked boot image differs from cross build')
     source=candidate.read_bytes();installed=target.read_bytes()
-    expected=source[:4608]+flat+bytes(944*512-4096-len(flat))+source[512+944*512:2048*512]
+    expected=source[:4608]+flat+bytes(960*512-4096-len(flat))+source[512+960*512:2048*512]
     if installed[:2048*512]!=expected or installed[2048*512:]!=initial[2048*512:]:
         raise ValueError('Guest boot publication changed unexpected sectors')
     integrity=verify_mutated_volume(target)
@@ -2256,8 +2256,8 @@ def main():
     run(sys.executable,'tools/audit-i386-boot.py',str(disk),str(stage_listing),
         '--out',str(boot_audit_path))
     boot_audit=json.loads(boot_audit_path.read_text())
-    if disk.stat().st_size>(944+1)*512:
-        raise ValueError('Kernel stage exceeds its reserved 472 KiB load area')
+    if disk.stat().st_size>(960+1)*512:
+        raise ValueError('Kernel stage exceeds its reserved 480 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
     volume=package_volume(disk,exports)
     volume['verified_files']=verify_volume(disk,volume)

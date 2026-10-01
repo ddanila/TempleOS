@@ -351,3 +351,16 @@ The control-record source's main cross-built image passes the standalone
 complete workstation runs and guest rebuild are active. The preceding
 layout source's flat-kernel install remains at boot-image linking; no
 installed-image pass is counted. Human observation stays deferred.
+
+The exact-source control-record workstation now passes the full 513-command,
+576-line suite with exact VGA on both 8 MiB KVM `486` and no-FPU TCG
+`486,-fpu` (`build/i386-kernel/controls-full-main-kvm/result.json`,
+`build/i386-kernel/controls-full-main-tcg-nofpu/result.json`). The earlier
+layout flat-kernel install is not accepted: its guest-built payload needs
+480,952 bytes, beyond the previous 479,232-byte limit. The expanded
+960-sector reservation and guest size preflight pass x64 rebuild, 386
+cross-build/boot audit and normal 8 MiB QEMU keyboard/VGA boot
+(`build/i386-kernel/boot-capacity-preflight-keyboard/result.json`).
+Guest-built flat installation under that limit and the diagnostic boot
+remain open; the latter also fails on the unchanged 944-sector baseline.
+The manual session and observation template remain deferred.
