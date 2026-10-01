@@ -1,10 +1,10 @@
 # i386 QEMU support matrix
 
-This matrix records observed behavior for the fully guest-built i386 disk
-image. It is QEMU verification, not certification of physical 386 hardware.
-The second-generation rebuild is byte-identical in its installed boot code
-and twelve guest-built modules. Final M7 publication and human observation
-in `PLAN.md` remain open.
+This matrix records observed behavior for the current fully guest-built i386
+disk image. It is QEMU verification, not certification of physical 386
+hardware. The second-generation rebuild matches all twelve modules, the
+flat image and installed boot area byte for byte. Final M7 publication and
+human observation in `PLAN.md` remain open; the manual session is deferred.
 
 ## Tested emulator
 
@@ -16,11 +16,32 @@ in `PLAN.md` remain open.
 | Disk | Raw IDE hard-disk image, legacy BIOS boot, writable RedSea candidate |
 | Display and input | Standard QEMU VGA, AT keyboard and PS/2 mouse |
 | Network | Disabled with `-nic none` |
-| Fully guest-built image SHA-256 | `593e914a4769a53bd987fa5a3978e0e14018bbf4b2825820d37a1d4f958bc023` (`build/i386-kernel/selfhost-install-fixed/target.img`) |
-| Generation 2 image SHA-256 | `c3a1dae46d76ebb8b2062216cb3724856324a3be14f9104b70fc2a950df795b8` (`build/i386-kernel/selfhost-install-gen2-fixed/target.img`) |
+| Current first-generation image SHA-256 | `a7c111f8f139f4121283916ff80e1d173069753b173e1bb1e4c90ace191db96c` (`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img`) |
+| Current second-generation image SHA-256 | `158a4b809c40d9cff75940c1facf5a53bccf6ef78f9f19a3a585fbd8f150d2c6` (`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img`) |
 
 The command manifests in each result directory contain the exact QEMU argv.
-The locally prepared candidate in `build/i386-release-candidate/` bundles the
+`build/i386-release-current/` contains the first current-source disk and its
+verified QEMU evidence. `tools/package-i386-current.py` checks two-generation
+identity, source hashes, 386 audits and current workstation and writable
+session results before creating that local bundle. Its standalone verifier
+checks the compressed image and 31 bundled files. The current source has not
+yet completed a no-FPU guest rebuild; its installed image does pass the
+complete no-FPU workstation and writable-session suites.
+
+## Current-source profiles
+
+| CPU | Evidence | Result |
+| --- | --- | --- |
+| `486`, KVM | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json`: 513 commands, 576 lines, exact VGA and 20 document cycles with exact task-heap recovery | Pass at 8 MiB |
+| `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`: the same complete workstation suite | Pass at 8 MiB |
+| `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`: 107/56/15 commands over three writable boots, exact VGA, unchanged source disk and RedSea audit | Pass at 8 MiB |
+| `486`, KVM | `build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/boot/result.json`: independently booted second generation and two native commands | Pass at 8 MiB |
+| 386 instruction audit | Both current generations' `instruction-audit/result.json`: linked and retained executable ranges, boot code and guest compiler template | Pass for audited regions |
+| Generation identity | `build/i386-kernel/generation-identity-capacity-lexfix-kvm/result.json`: twelve modules, 482,384-byte flat image and boot area byte-identical; both RedSea bitmaps match reachable extents | Pass |
+
+## Earlier-source evidence
+
+The earlier candidate in `build/i386-release-candidate/` bundles the
 compressed Generation 2 disk, source-input hashes, command records and these
 acceptance results; `tools/package-i386-release.py` verifies their linkage.
 The final Generation 2 disk passes two guest-built boot-image hard-stop/retry
@@ -29,7 +50,7 @@ retry and independent boot. A third hard stop after LBA 0 publication leaves
 the complete reference disk byte-identical and bootable
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-committed/result.json`).
 The same three cuts also pass under 16 MiB `486,-fpu` TCG for installation
-and retry; the final published disk independently boots at 8 MiB
+and retry; the resulting installed disk independently boots at 8 MiB
 (`build/i386-kernel/selfhost-install-gen2-fixed/install-recovery-tcg-nofpu/result.json`).
 The exact Generation 2 image also writes a 37-byte DolDoc compatibility file
 under 8 MiB 486 TCG. Original TempleOS under x64 TCG reads and saves it
@@ -51,7 +72,7 @@ The test command uses QEMU's default firmware selection rather than explicit
 firmware paths, so those installed-file hashes do not prove which ROM bytes
 QEMU loaded.
 
-## Verified profiles
+### Earlier-source profiles
 
 | CPU | Evidence | Result |
 | --- | --- | --- |
@@ -102,7 +123,8 @@ twelve T32Ms, the 457,000-byte flat image and the installed boot area
 byte-identical; the whole disk hashes differ because the native builds leave
 different files on RedSea. QEMU on this host does not offer a 386 CPU model;
 neither a no-FPU 486 run nor the static allowlist proves strict physical 386
-compatibility. The 16 MiB native compiler/kernel build and installation now
-pass for two complete generations. Final release packaging and human
-observation remain open. Physical hardware and dedicated SX/DX certification
-are deferred under the current plan.
+compatibility. The current 16 MiB native compiler/kernel build and
+installation pass for two complete generations, and a local current-source
+package is verified. Human observation and publication remain open.
+Physical hardware and dedicated SX/DX certification are deferred under the
+current plan.
