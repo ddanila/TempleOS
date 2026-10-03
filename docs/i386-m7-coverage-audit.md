@@ -66,3 +66,17 @@ HolyC execution afterward. This establishes those operand forms, not complete
 original assembler coverage. A 1,509-keystroke fixture attempt also timed out
 during document teardown on both images; retain that observation for a focused
 resource/teardown test. The final compiler fixture uses one text entry.
+
+The expression-conditional JIT contract now has an executable baseline:
+`tools/test-i386-native-conditionals.py`, with failure recorded in
+`build/i386-native-conditionals-before-final/result.json`. Source preparation
+passes, and inclusion produces `Compilation failed`; the current lexer rejects
+expression `KW_IF`. The positive and recovery assertions are not yet executed.
+AOT conditions and allocation-failure cleanup require additional evidence.
+
+Public file compatibility also remains incomplete: an attempted public
+`FileWrite` call produces an undefined-identifier error. The working private
+writer and `DocWrite` do not prove the original `FileWrite(filename,buffer,size,
+cdt,attr)` contract. Audit `FileRead` publication and ownership as part of the
+planned public file migration, and add failing signature/behavior tests before
+implementing the missing bindings.

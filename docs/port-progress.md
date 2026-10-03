@@ -11677,3 +11677,31 @@ out during document destruction on both compiler versions. That observation
 needs a separate teardown/resource regression; it is not an assembly failure.
 The focused assembly fixture now constructs a single text entry through the
 existing document lifecycle API and verifies its saved file by compiling it.
+
+## Expression-conditional TDD baseline (2026-10-03)
+
+`tools/test-i386-native-conditionals.py` stages a source file through the
+working DolDoc lifecycle APIs, then asks the native compiler to evaluate true,
+false and nested expression `#if` directives. The source also exercises macro
+arithmetic, `sizeof(U8 *)==4`, floating-point truth, invalid skipped branches,
+and ordinary code following the directives. The intended combined result is
+81. A later invalid condition must report an undefined identifier, preserve
+prior definitions and ordinary execution, and leave no `IfBad` definition.
+
+The current baseline in `build/i386-native-conditionals-before-final/result.json`
+fails at `#include "C:/IfGood.HC"`, after all source-staging checks pass. The
+independent VGA capture shows `Compilation failed`, consistent with the native
+lexer's explicit unsupported `KW_IF` path. The source disk and checker remain
+unchanged. The later behavioral and recovery assertions remain unexecuted;
+this is a failing specification, not completed conditional support. Native
+AOT conditions and allocation-failure/owned-heap cleanup still need separate
+oracles before the complete contract can close.
+
+The previous current-source workstation and retained rebuild jobs remain live.
+OS sources have stayed unchanged while they run, preserving their source
+provenance. The next compiler implementation can proceed after that rebuild
+finishes. Another observed coverage gap is public `FileWrite`: fixture staging
+through that original API produced an undefined-identifier error. The private
+file-service writer and `DocWrite` work; they do not establish publication or
+original-signature behavior for the public file API. Keep that API migration
+visible in the coverage audit.

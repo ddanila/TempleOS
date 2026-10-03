@@ -178,10 +178,16 @@ suite are running, with no final verdict yet.
 
 The native compiler also rejects expression `#if` directives, discovered by
 trying `#if sizeof(U8 *)==4` in kernel source. This is an uncovered HolyC
-feature, not hardware verification. Add a failing native frontend contract for
-true/false/nested expression conditions, target `sizeof`, skipped invalid code,
-lookahead preservation and failed-condition cleanup, then implement it using
-the existing expression services. Do not claim original compiler feature
+feature, not hardware verification. `tools/test-i386-native-conditionals.py`
+now records a failing native JIT fixture for true/false/nested conditions,
+macro arithmetic, target pointer `sizeof`, floating-point truth and skipped
+invalid code. Its positive branch also checks ordinary lookahead and subsequent
+execution; its error branch checks previously published definitions and absent
+failed definitions. The baseline fails at inclusion before those behavior
+assertions can execute. Implement expression evaluation using the existing
+frontend services, preserving conditional lookahead and restoring flags on
+errors. Add native AOT coverage and allocation-failure/owned-heap cleanup
+checks before closing the complete conditional contract. Do not claim original compiler feature
 coverage from the directive-skipping lexer tests alone.
 
 ### Next public task package: ownership through exit

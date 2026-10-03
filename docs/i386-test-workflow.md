@@ -962,3 +962,20 @@ feature parity or full self-hosting qualification. For isolated development
 flat-kernel builds, `test-i386-selfhost-install.py --cross-retained --cross-build
 DIRECTORY` verifies retained inputs against that explicit cross-build manifest.
 These runs remain development evidence even if the native flat kernel boots.
+
+### Native expression conditionals
+
+The expression `#if` frontend contract is currently an expected failing
+specification. Run its native JIT fixture with:
+
+```sh
+python3 tools/test-i386-native-conditionals.py IMAGE --out build/native-conditionals
+```
+
+The test checks macro arithmetic, true/false/nested branches, 32-bit pointer
+`sizeof`, floating-point truth, skipped invalid code and code after directives.
+After a failed condition it requires prior definitions and ordinary execution
+to survive, with no failed definition published. Its report preserves source
+and checker hashes. The current image fails while including the positive
+fixture; later behavior assertions remain unexecuted. Passing this test will
+not establish native AOT behavior or allocation-failure cleanup.
