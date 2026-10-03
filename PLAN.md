@@ -4714,3 +4714,27 @@ popup routing, resource ownership and allocation recovery. Integrate these
 services with Break and Kill, then qualify native builds within the boot budget.
 The original five-case pass is reference evidence only; it does not prove
 native message support or the broader job subsystem.
+
+### Shared public job records
+
+Moved the original job constants and CJob definition verbatim from KernelA.HH
+into Kernel/JobTypes.HH and included it in both original and native public
+headers. The port now has a complete public CJob record instead of only a
+forward declaration. Native compiler layout probes require its 80-byte size
+and all fourteen field offsets. This adds no message service implementation
+and does not change existing CTask or CJobCtrl fields.
+
+A byte-for-byte extraction check passes. Current-source original two-generation
+rebuild passes (build/rebuild-test/result.json), and the original layout
+comparison preserves all 105 task fields (build/task-layout/result.json).
+The first native qualification (build/i386-public-job-records-kernel)
+passes cross-build and 386 boot audit but terminates with FAIL after the bit
+check: its header probe still requires the previous 113 assertions. The fifteen
+new CJob assertions make 128; both the guest assertion count and independent
+host expectation now require 128 in both boot and task phases. The corrected current-source two-generation rebuild passes. Fresh native
+qualification is running in build/i386-public-job-records-kernel-v2; its
+both boot and task phases pass all 128 public layout assertions, including
+the fifteen new CJob checks. Header rollback/retry and task cleanup also pass.
+The broader console/startup and build-suite terminal result remains pending. The native compiler has executed the new layout assertions in both contexts;
+this proves the shared record layout, not public message service behavior. Continue queue initialization and
+retirement work after this shared-record prerequisite is verified.

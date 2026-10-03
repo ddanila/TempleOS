@@ -1,7 +1,7 @@
 # Shared public task and CPU records
 
-`Kernel/KernelA.HH` now includes the original public records from four small
-headers: `WindowScrollTypes.HH`, `JobCtrlTypes.HH`, `TaskTypes.HH` and
+`Kernel/KernelA.HH` now includes the original public records from five small
+headers: `WindowScrollTypes.HH`, `JobTypes.HH`, `JobCtrlTypes.HH`, `TaskTypes.HH` and
 `CpuTypes.HH`. The headers retain all original task and CPU fields, including
 window/document state, task links, exception/answer state, compiler controls,
 callbacks, jobs, saved register values and user data. Callers provide the declared
@@ -98,3 +98,13 @@ the JIT before user startup. Header guards and class definitions publish togethe
 in an opt-in input transaction. Public service integration remains incomplete;
 see [native public headers](i386-public-headers.md) for the ownership contract and
 current scope.
+
+The shared `JobTypes.HH` also retains the original job constants and complete
+`CJob` definition verbatim. Native compilation now sees its fields directly,
+instead of only a forward declaration. Fifteen layout assertions require an
+80-byte native record and offsets for all fourteen fields, including the
+function pointer and 64-bit message arguments. Public-header qualification
+passes 128 layout checks in each boot/worker phase in
+`build/i386-public-job-records-kernel-v2/boot/debug.log`. The broader build
+suite is still running. Public message and job services remain separate implementation
+work.

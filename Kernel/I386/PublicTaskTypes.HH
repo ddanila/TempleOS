@@ -56,6 +56,7 @@ extern class CCmpCtrl;
 #endif
 #include "/Kernel/WindowScrollTypes.HH"
 #include "/Kernel/JobCtrlTypes.HH"
+#include "/Kernel/JobTypes.HH"
 #include "/Kernel/TaskTypes.HH"
 #include "/Kernel/CpuTypes.HH"
 #endif
