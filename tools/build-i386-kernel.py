@@ -236,10 +236,13 @@ def memory_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386HeapValid',
-                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind'}:
+    #Native T32Ms retain relocations to their own exports; these are local
+    #bindings, not additional external kernel services.
+    external_imports = set(imports) - set(exports)
+    if external_imports != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386HeapValid',
+                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts'}:
         raise ValueError('Unexpected memory-runtime import contract')
-    for name in ('Main', 'MemoryBind', 'MemoryProbe'):
+    for name in ('Main', 'MemoryBind', 'MemoryProbe', 'Yield', 'Sleep', 'SleepUntil'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing memory service {name}')
     #A locked assignment must use one locked bit operation on either branch.
@@ -262,7 +265,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 10:
+    if struct.unpack_from('<I', module, version_offset)[0] != 11:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -2221,8 +2224,9 @@ def verify_file_replace_failure_matrix(disk, exports, out):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify startup, keyboard and VGA')
+    parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel',help='Isolated build output directory')
     args=parser.parse_args()
-    out=ROOT/'build/i386-kernel'
+    out=args.out.resolve()
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
     run(sys.executable,'tools/gen-compiler-keywords.py','--check')
@@ -2966,7 +2970,7 @@ def main():
             raise ValueError('Public define list ownership failed')
         result['public_define_lists']={'phases':[0,1],'cases_per_phase':6,'original_x64':'pass'}
         result['public_hash_tables']={'phases':[0,1],'cases_per_phase':10,'allocation_failure_cleanup':'pass'}
-        result['memory_runtime']=dict(version=10,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=11,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)

@@ -11513,3 +11513,58 @@ to finish that build, install verified retained outputs, measure fully
 guest-built startup and repeat the second generation. Missing public task
 services, interactive multi-terminal behavior and runtime inspection remain
 required work before qualification/publication.
+
+## Public cooperative delays: red test to native installed behavior (2026-10-03)
+
+The startup-optimized baseline fails the new public-delay contract because
+`Yield`, `Sleep` and `SleepUntil` are absent, with working `MAlloc`/`Dir`
+controls (`build/i386-public-delay-before/result.json`). The implementation
+extracts the original `Sleep`/`SleepUntil` bodies byte for byte into
+`Kernel/TaskDelayCore.HC`, includes them from both original x64 and the native
+memory provider, and binds public delay exports to the native scheduler and
+persistent clock. Memory service ABI version is now 11. The scheduler retains
+its wake-deadline and interrupt-state rules; no separate application task API
+is introduced.
+
+Verification completed:
+
+- The original x64 compiler and kernel rebuild themselves through two
+  generations after extraction (`build/rebuild-test/result.json`).
+- An isolated cross image builds and passes the boot/executable 386 audits
+  (`build/i386-public-delay-kernel/result.json`). Its flat kernel is 478,832
+  bytes; disk SHA-256 is
+  `ea307fc9bb7cdcb846b843f2b418121f9271f2180f3a233e20ac735fd0bedc24`.
+- On that disk, the public-delay contract passes 2 lookup commands and 11
+  behavior commands under 8 MiB `486,-fpu` TCG, with exact VGA and an unchanged
+  source disk (`build/i386-public-delay-after/result.json`). It covers yielding,
+  zero and negative sleeps, future and past deadlines, task identity,
+  idle-bit restoration and IF preservation including masked-IF callers.
+- The native compiler builds the updated `MemoryRuntime` under 16 MiB
+  `486,-fpu` KVM (`build/i386-public-delay-native-memory/result.json`): 181,036
+  bytes, 546 records, 86 exports; module SHA-256
+  `1b9a337575b2c641daa639c282a33c252bb78a23e4031410321a93c5f9f5153c`.
+- Installing that guest-built module on a copy preserves its bytes and the
+  source disk. The installed image then passes the same 2+11-command
+  8 MiB no-FPU TCG delay contract, exact VGA and source protection
+  (`build/i386-public-delay-native-memory-installed/delay/result.json`).
+  Startup observations are 52.220079 and 50.858636 seconds. Its independent
+  instruction/ABI/filesystem audit passes (`instruction-audit/result.json` in
+  the same directory). The ABI audit separates native self-relocations from
+  actual external imports while retaining the exact external service set,
+  locked-bit checks, version and delay-export requirements.
+- All 14 host test-oracle tests pass. Missing/repeated observations and broken
+  lookup controls cannot masquerade as successful delay publication.
+
+`build-i386-kernel.py --out` and retained-build `--reference-exports` keep
+source epochs and export contracts isolated. Retained builds clear a prior
+verdict before new work and record reference-module hashes. The older six-module
+startup-optimization native build remains live at its final `CompilerRuntime`
+command; no final all-module verdict is claimed. Its default reference exports
+have not been overwritten.
+
+The broader required-service probe now fails specifically for public `Spawn`,
+`Exit` and `Dbg` (`build/i386-required-services-public-delay/result.json`).
+Multiple interactive terminals, useful runtime/source debugging, complete
+current-source two-generation self-hosting/integration, consolidated qualification
+and release publication remain open. The previous 95-file package stays an
+earlier-source candidate; these focused passes do not promote it.

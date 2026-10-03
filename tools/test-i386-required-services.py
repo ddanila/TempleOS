@@ -10,6 +10,14 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = ('Spawn', 'Exit', 'Yield', 'Sleep', 'Dbg')
 CONTROLS = ('MAlloc', 'Dir')
+SERVICE_DEFINITION = ('U0 M7Service(U8 *n){U8 *p=n;Bool v=HashFind(n,Fs->hash_table,HTT_FUN)!=0;'
+                      'p="M7 SERVICE ";while(*p)OutU8(0xE9,*p++);p=n;while(*p)OutU8(0xE9,*p++);'
+                      'OutU8(0xE9,32);OutU8(0xE9,48+v);OutU8(0xE9,10);}')
+
+
+def observation_commands(names=CONTROLS + REQUIRED):
+    return [(SERVICE_DEFINITION, []),
+            (''.join(f'M7Service("{name}");' for name in names), [])]
 
 
 def assess(log):
@@ -37,13 +45,9 @@ def main():
     (out / 'result.json').unlink(missing_ok=True)
     disk_hash = hashlib.sha256(args.disk.read_bytes()).hexdigest()
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-    definition = ('U0 M7Service(U8 *n){U8 *p=n;Bool v=HashFind(n,Fs->hash_table,HTT_FUN)!=0;'
-                  'p="M7 SERVICE ";while(*p)OutU8(0xE9,*p++);p=n;while(*p)OutU8(0xE9,*p++);'
-                  'OutU8(0xE9,32);OutU8(0xE9,48+v);OutU8(0xE9,10);}')
     console = runner(args.disk, out / 'console', cpu='486,-fpu', qmp_stdio=True,
                      startup_check={'status': 'ok', 'answers': [], 'commands':
-                                    [(definition, []),
-                                     (''.join(f'M7Service("{name}");' for name in CONTROLS + REQUIRED), [])]})
+                                    observation_commands()})
     report = assess((out / 'console/debug.log').read_text())
     report.update(disk_sha256=disk_hash, cpu='486,-fpu', ram_mib=8, accel='tcg',
                   console_result=console,

@@ -191,4 +191,21 @@ class RequiredServiceObservationTests(unittest.TestCase):
                 self.assertEqual(self.module['assess'](bad)['result'], 'invalid')
 
 
+class PublicDelayObservationTests(unittest.TestCase):
+    module = runpy.run_path(str(Path(__file__).with_name('test-i386-public-delay.py')))
+
+    def test_missing_delay_is_failure_and_broken_controls_are_inconclusive(self):
+        names = self.module['PUBLIC']['CONTROLS'] + self.module['DELAYS']
+        log = ''.join(f'M7 SERVICE {name} 1\n' for name in names)
+        self.assertEqual(self.module['delay_presence'](log)['result'], 'pass')
+        for name in self.module['DELAYS']:
+            failed = self.module['delay_presence'](log.replace(f'{name} 1', f'{name} 0'))
+            self.assertEqual(failed['result'], 'fail')
+            self.assertEqual(failed['missing'], [name])
+        for bad in ('', log + 'M7 SERVICE Sleep 1\n',
+                    log.replace('MAlloc 1', 'MAlloc 0'), log.replace('Yield 1', 'Yield 2')):
+            with self.subTest(log=bad):
+                self.assertEqual(self.module['delay_presence'](bad)['result'], 'invalid')
+
+
 if __name__=='__main__': unittest.main()

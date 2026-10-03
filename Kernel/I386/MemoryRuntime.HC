@@ -9,6 +9,9 @@
 #include "/Kernel/I386/KernelSymbols.HH"
 #include "/Kernel/I386/MemoryPublic.HH"
 #include "/Kernel/I386/HashPublic.HH"
+#include "/Kernel/TimeTypes.HH"
+import CCntsGlbls cnts;
+import Bool I386SchedYield(CI386Scheduler *s);
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
@@ -26,14 +29,17 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386BackingPool memory_pool;
 CI386Task *memory_root;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[23];
+CI386KernelSymbol memory_exports[26];
 extern U0 MemoryReclaim(CI386PublicPool *pool);
 extern U0 MemoryProbe(I64 phase);
+extern U0 Yield();
+extern U0 Sleep(I64 mS);
+extern U0 SleepUntil(I64 wake_jiffy);
 Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//No arena is reserved until a task actually requests pages.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[23],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0";
+  U8 *addresses[26],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->owner || root->owner->root!=root ||
@@ -54,7 +60,8 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[17]=&MemoryHashDel; addresses[18]=&MemoryHashLstAdd;
   addresses[19]=&MemoryDefineLstLoad; addresses[20]=&MemoryHashDefineLstAdd;
   addresses[21]=&MemoryMeasureStart; addresses[22]=&MemoryMeasureStop;
-  for(i=0;i<23;i++) {
+  addresses[23]=&Yield; addresses[24]=&Sleep; addresses[25]=&SleepUntil;
+  for(i=0;i<26;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1; memory_exports[i].val=(addresses[i]+0)(U64);
     HashAdd(&memory_exports[i],symbols);
@@ -76,6 +83,11 @@ U0 MemoryReclaim(CI386PublicPool *pool)
   if(pool!=&memory_pool || I386MemBackingTrim(&memory_pool)<0) KernelStop;
 }
 #include "/Kernel/I386/Bit.HC"
+U0 Yield()
+{
+  CI386Task *task=I386TaskSelf;
+  if(!task || !task->owner || !I386SchedYield(task->owner)) throw('Task',TRUE);
+}
 #include "/Kernel/I386/StrCopy.HC"
 #include "/Kernel/I386/StrCopyCheck.HC"
 U0 MemoryProbe(I64 phase)
@@ -138,3 +150,8 @@ U0 MemoryProbe(I64 phase)
 
 #include "/Kernel/I386/HashPublic.HC"
 #include "/Kernel/I386/HashPublicProbe.HC"
+
+//Module-local aliases apply only to this final shared include.
+#define Fs I386TaskSelf
+#define LBEqu MemoryLockedBitEqu
+#include "/Kernel/TaskDelayCore.HC"

@@ -50,6 +50,17 @@ All work stays in our fork, `ddanila/TempleOS`, directly on `main`, without
 feature branches or PRs. The former `archive` branch was removed after verifying
 that its history is contained in `main`.
 
+The public-delay slice now passes its focused cross-image no-FPU test:
+`Yield`, `Sleep` and `SleepUntil` reuse the original delay core and preserve
+wake deadlines, task identity, the prior idle bit and caller IF. The native
+compiler also rebuilds the updated memory provider, and its installed output
+passes the same 8 MiB no-FPU delay test and independent code/ABI audit. This is incremental
+required-behavior evidence; public `Spawn`/`Exit`, multiple interactive terminals,
+source-linked debugging, full current-source two-generation qualification and
+publication remain open. See [the M7 coverage audit](docs/i386-m7-coverage-audit.md).
+The still-running startup-optimization retained build predates this delay change;
+keep its source epoch and export references separate.
+
 ## Next goal: an automatically qualified M7 release
 
 Deliver a reproducible, published QEMU workstation release whose required

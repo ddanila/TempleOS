@@ -865,3 +865,37 @@ budgets. Their retained modules are cross-built; repeat the promotion profiles
 after all guest-built retained outputs are installed. A result from an older
 image is not a pass for a changed disk, and an active build checkpoint is not
 a final module audit.
+
+### Public cooperative delays
+
+Run the focused public contract on the actual candidate disk:
+
+```sh
+python3 tools/test-i386-public-delay.py build/i386-public-delay-kernel/kernel.img \
+  --out build/i386-public-delay-after
+```
+
+The test first requires exactly one public lookup observation for each delay
+and working `MAlloc`/`Dir` controls. It then executes `Yield`, zero/negative
+`Sleep`, and future/past `SleepUntil` deadlines, checks task identity, idle-bit
+restoration and IF preservation (including calls with interrupts masked), and
+requires exact VGA output plus a usable prompt afterwards. It uses 8 MiB
+`486,-fpu` TCG and preserves the input image. Missing functions fail; invalid
+lookup controls cannot become a pass. This does not establish multiple terminals
+or public task creation/exit.
+
+Keep a newer image isolated while older-source native builds continue:
+
+```sh
+python3 tools/test-rebuild.py
+python3 tools/build-i386-kernel.py --out build/i386-public-delay-kernel
+python3 tools/test-i386-retained-build.py \
+  --disk build/i386-public-delay-kernel/kernel.img \
+  --out build/i386-public-delay-native-memory \
+  --reference-exports build/i386-public-delay-kernel/exports \
+  --module MemoryRuntime --accel kvm --cpu 486,-fpu --qmp-stdio
+```
+
+The reference directory supplies the matching export contract, not proof of
+byte equality or a complete native installation. A selected module rebuild
+cannot satisfy the all-module/two-generation qualification gate.

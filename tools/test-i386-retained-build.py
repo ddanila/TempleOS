@@ -64,6 +64,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path, default=ROOT / 'build/i386-kernel/kernel.img')
     parser.add_argument('--out', type=Path, default=ROOT / 'build/i386-kernel/retained-build')
+    parser.add_argument('--reference-exports', type=Path, default=ROOT / 'build/i386-kernel/exports',
+                        help='Cross-built export contracts for this source/image')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for the build boot')
     parser.add_argument('--qmp-stdio', action='store_true',
@@ -84,6 +86,7 @@ def main():
         parser.error('Each module may be selected only once')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
+    (out / 'result.json').unlink(missing_ok=True)
     source = out / 'source.img'
     if not args.audit_only:
         if args.resume:
@@ -113,7 +116,7 @@ def main():
         path = f'/Probe/Retained{name}.t32m'
         module = actual.get(path)
         count, exports = exports_of(module)
-        host = (ROOT / f'build/i386-kernel/exports/{name}.t32m').read_bytes()
+        host = (args.reference_exports / f'{name}.t32m').read_bytes()
         _, host_exports = exports_of(host)
         missing = set(host_exports) - set(exports)
         extra = set(exports) - set(host_exports)
@@ -128,7 +131,8 @@ def main():
             raise ValueError(f'{name} differs from installed comparison module')
         result['modules'][name] = {'bytes': len(module), 'records': count,
                                    'exports': len(exports),
-                                   'sha256': hashlib.sha256(module).hexdigest()}
+                                   'sha256': hashlib.sha256(module).hexdigest(),
+                                   'reference_sha256': hashlib.sha256(host).hexdigest()}
     if comparison is not None:
         result['byte_identical_to_installed'] = str(args.compare_installed)
         result['installed_disk_sha256'] = sha256(args.compare_installed)
