@@ -161,7 +161,7 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
   I64 register_code,offset;
   U8 *name;
   arg->kind=arg->size=arg->register_code=arg->base=arg->disp=arg->value=0;
-  if(cc->token==TK_I64) {
+  if(cc->token==TK_I64 || cc->token==TK_CHAR_CONST) {
     arg->kind=3; arg->value=cc->cur_i64; I386FrontendLex(state,cc); return;
   }
   if(cc->token!=TK_IDENT || !cc->cur_str) I386FrontendUnavailable(state);

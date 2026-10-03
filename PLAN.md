@@ -337,11 +337,29 @@ pass (`build/i386-task-compact-rings-bootstrap.log`,
 bytes, 4,368 bytes below the first scheduler-split image, with unchanged boot
 capacity. Its normal 8 MiB no-FPU TCG boot matches every keyboard/VGA checkpoint
 in 49.032234 seconds, passing the 60-second startup budget
-(`build/i386-task-compact-rings-keyboard/result.json`). A fresh six-module guest
-rebuild/install is running in `build/i386-task-compact-rings-native-flat`;
-actual guest-native capacity and installation remain unqualified until its
-results are available. The older creator-pin full integration run is still
-active against its own packaged source epoch; it cannot qualify these changes.
+(`build/i386-task-compact-rings-keyboard/result.json`). Its guest rebuild
+rejected the first kernel module in `I386SchedActivate` at
+`CMP EAX,TASK_SIGNATURE_VAL`: the native assembler accepted integer immediates
+but omitted HolyC character constants. No native size or installation pass
+was produced (`build/i386-task-compact-rings-native-flat/failure-result.json`).
+The native operand parser now accepts `TK_CHAR_CONST` using the same integer
+payload as HolyC expressions. A focused guest-compiler test reproduces the old
+include failure, then passes after the fix: word/byte immediate stores and a
+character-immediate comparison execute correctly, the older 270-NOP/rel32 case
+still returns 41, and ordinary HolyC returns 42. All 20 console commands match
+exact VGA at 8 MiB no-FPU TCG, with the source disk unchanged
+(`build/i386-asm-char-before/result.json`,
+`build/i386-asm-char-after/result.json`). Two bootstrap generations and the
+cross-build audit pass; flat size remains 482,584 bytes. A fresh guest-native
+rebuild/install runs in `build/i386-asm-char-native-flat`; actual native capacity
+and installation still require its result.
+The older creator-pin full integration run is terminal: it completed earlier
+checks but failed while reading the final isolated install-copy result. Its
+child checker used the hard-coded default build directory rather than the
+selected `--out`. This is not a complete integration pass. The driver now
+passes the chosen build directory to install-copy and the selected image and
+output directory to document compatibility; isolated checks are running before
+qualification of that harness correction.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning

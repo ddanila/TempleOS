@@ -21,7 +21,12 @@ def commands():
               'ADD EAX,EDX AND EAX,255 ADD EAX,U32 &value[EBP] '
               'TEST EAX,EAX JZ I32 @@bad CMP EAX,41 JNE I32 @@bad '
               'JMP I32 @@done @@bad: MOV EAX,0 ' + 'NOP ' * 270 +
-              '@@done: MOV U32 &value[EBP],EAX }return value;}')
+              '@@done: MOV U32 &value[EBP],EAX }return value;}'
+              "I64 NativeAsmChars(){U32 value=0;U8 byte=0;asm {"
+              "MOV EAX,0x536B7354 CMP EAX,'TskS' JNE I32 @@charbad "
+              "MOV U32 &value[EBP],'TskS' MOV U8 &byte[EBP],'x' "
+              "JMP I32 @@chardone @@charbad: MOV U32 &value[EBP],0 "
+              "@@chardone: }return value==0x536B7354&&byte==120;}")
     # Stage a source file through bounded console commands; the prompt accepts
     # at most 255 bytes per input line.
     result = [(f'U8 *native_asm_source=CAlloc({len(source)+1});', [])]
@@ -34,7 +39,7 @@ def commands():
         ('DocWrite(native_asm_doc);', ['1']),
         ('DocDel(native_asm_doc);Free(native_asm_source);', []),
         ('#include "C:/NativeAsm.HC"', []),
-        ('NativeAsmIndex;', ['41']), ('6*7;', ['42']),
+        ('NativeAsmIndex;', ['41']), ('NativeAsmChars;', ['1']), ('6*7;', ['42']),
     ])
     assert all(len(command) <= 255 for command, _ in result)
     return result
@@ -52,7 +57,7 @@ def main():
     before = sha(args.disk)
     report = dict(result='fail', disk_sha256=before, cpu='486,-fpu', ram_mib=8,
                   accel='tcg', checker_sha256=sha(Path(__file__)),
-                  scope='Guest-compiled inline assembly; loader-required forms and blocks over 256 bytes')
+                  scope='Guest-compiled inline assembly; loader-required forms, character immediates and blocks over 256 bytes')
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     try:
         report['console'] = runner(args.disk, args.out / 'console', cpu='486,-fpu',
