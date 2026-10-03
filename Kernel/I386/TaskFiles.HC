@@ -49,6 +49,7 @@ Bool I386TaskFilesInit(CI386Task *task,CI386Heap *heap,CFilePathContext *environ
   state=I386TaskFilesNew(task,heap,environment,volumes,environment->cur_dir,environment->cur_drv);
   if(!state) goto files_init_done;
   task->file_state=state; task->file_clone=&I386TaskFilesClone; task->file_destroy=&I386TaskFilesDestroy;
+  task->cur_dir=(state+1)(U8 *);
   result=TRUE;
 files_init_done:
   I386IrqRestore(flags); return result;
@@ -63,6 +64,7 @@ Bool I386TaskFilesClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
   copy=I386TaskFilesNew(target,heap,state->environment,state->volumes,(state+1)(U8 *),state->drive);
   if(!copy) goto files_clone_done;
   target->file_state=copy; target->file_clone=&I386TaskFilesClone; target->file_destroy=&I386TaskFilesDestroy;
+  target->cur_dir=(copy+1)(U8 *);
   result=TRUE;
 files_clone_done:
   I386IrqRestore(flags); return result;
@@ -77,7 +79,7 @@ Bool I386TaskFilesSet(CI386Task *task,U8 *directory,U8 drive)
   copy=I386TaskFilesNew(task,state->heap,state->environment,state->volumes,directory,drive);
   if(!copy) goto files_set_done;
   if(!I386HeapFree(state->heap,state)) { I386HeapFree(copy->heap,copy); goto files_set_done; }
-  task->file_state=copy; result=TRUE;
+  task->file_state=copy; task->cur_dir=(copy+1)(U8 *); result=TRUE;
 files_set_done:
   I386IrqRestore(flags); return result;
 }
@@ -89,7 +91,8 @@ Bool I386TaskFilesDestroy(CI386Task *task)
   state=I386TaskFilesValid(task);
   if(!state || !I386TaskFilesAccess(task) || state->busy) goto files_destroy_done;
   if(!I386HeapFree(state->heap,state)) goto files_destroy_done;
-  task->file_state=0; task->file_clone=0; task->file_destroy=0; result=TRUE;
+  task->file_state=0; task->file_clone=0; task->file_destroy=0;
+  task->cur_dir=0; result=TRUE;
 files_destroy_done:
   I386IrqRestore(flags); return result;
 }

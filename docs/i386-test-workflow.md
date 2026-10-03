@@ -1037,3 +1037,27 @@ of a creator's code while its dormant child exists, and a failed file cleanup
 followed by successful retry without premature creator destruction. It uses a separate image to stay below the existing task fixture
 memory limit. This verifies private retained helpers; public Spawn/Exit/TaskQueIns
 and automatic reaping still require the public task contract tests.
+
+Before changing the public lifecycle contract, check that its definition source
+also compiles in original TempleOS:
+
+```sh
+python3 tools/test-i386-public-task-definitions.py
+```
+
+This oracle compiles the classes and function bodies from the public contract
+and initializes its state pointer to zero. It never runs the workers. The
+separate public lifecycle test still proves runtime behavior and resource
+recovery on the selected i386 disk; a definition-compile pass cannot replace it.
+
+For the public directory view used by Spawn, run:
+
+```sh
+python3 tools/test-i386.py --task-symbols
+```
+
+This checks that `CTask.cur_dir` points to the owned directory, that children
+receive distinct inherited storage, and that directory replacement updates the
+public pointer. It also exercises explicit-parent symbol/file inheritance and
+parent retention through task exit. The public lifecycle gate still needs to
+pass on both the cross-built and installed guest-built runtime.

@@ -255,9 +255,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
             plain={'\\':'backslash','|':'backslash','~':'grave_accent','%':'5','#':'3','$':'4','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
-                   '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
+                   '/':'slash','?':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>#!%$|~:')
+            shifted=set('(){}*+&_"<>#!%$|~:?')
             plain[':']='semicolon'
             def typed_rows(source):
                 text='> '+source

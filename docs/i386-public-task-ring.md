@@ -17,6 +17,16 @@ idles until an IRQ makes a task eligible when all are suspended. See
 [task eligibility](i386-task-eligibility.md). This does not yet implement the
 complete public `Yield` scheduling contract.
 
+The retained memory service now publishes public `Spawn`, `Exit` and
+`TaskQueIns`. It creates dormant owned tasks first, clones the selected parent's
+heap/file/symbol state, then activates tasks requested with `JOBf_ADD_TO_QUE`.
+Public child links follow the original insertion rule; explicit activation of
+a task created without that flag does not add it to the parent's child ring.
+The managed yield path initializes private boot workers' public metadata and
+reclaims finished owned tasks from another live stack. Parent and creator
+references prevent premature reclamation. Descendant termination, public Kill,
+and automatic disposal of never-activated descendants remain open.
+
 Task and compiler cleanup callbacks run while the exiting task is still linked,
 including callbacks that yield. Finish detaches both public links before switching
 away. Reap rejects a task that still has either public link; file, symbol and

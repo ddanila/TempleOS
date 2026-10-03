@@ -71,6 +71,7 @@ I64 ScopeTest()
   HashAdd(&root_symbol,symbols);
   paths.cur_dir="/"; paths.home_dir="C:/"; paths.cur_drv='C'; paths.boot_drv='C'; paths.white_space=white_space;
   if(!I386TaskFilesInit(&root,&heap,&paths,&volumes)) return 3;
+  if(!root.cur_dir || root.cur_dir[0]!='/' || root.cur_dir[1]) return 251;
   i=FactoryRootTest; if(i) return i;
   used=heap.used; allocations=heap.allocations;
   for(i=24;i<=512;i+=8)
@@ -84,6 +85,8 @@ I64 ScopeTest()
     workers[i]=I386TaskSpawn(&scheduler,&heap,4096,&Worker,i,0x18,0x20,8192);
     if(!workers[i] || workers[i]->task.hash_table==symbols ||
         workers[i]->task.hash_table->next!=symbols || workers[i]->task.hash_table->mask!=1023) return 6;
+    if(!workers[i]->task.cur_dir || workers[i]->task.cur_dir==root.cur_dir ||
+        workers[i]->task.cur_dir[0]!='/' || workers[i]->task.cur_dir[1]) return 252;
   }
   I386SchedYield(&scheduler);
   if(!selected_parent_ready || workers[0]->task.finished ||
@@ -154,6 +157,7 @@ U0 Worker(I64 id)
   if(!FactoryWorkerTest(id)) { errors++; return; }
   if(!id) {
     if(!I386TaskFilesSet(I386TaskSelf,"/Selected",'D')) { errors++; return; }
+    if(!I386TaskSelf->cur_dir || StrCmp(I386TaskSelf->cur_dir,"/Selected")) { errors++; return; }
     selected_parent_ready=1;
     I386SchedYield(&scheduler);
   }

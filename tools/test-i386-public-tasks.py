@@ -38,7 +38,7 @@ def behavior_commands():
         ('CTaskLifeProbe *LifeState=CAlloc(sizeof(CTaskLifeProbe));', []),
         ('Bool LifeRecord(){CTask *t=LifeState->child;return t->addr==t&&t->task_signature==TASK_SIGNATURE_VAL&&t->task_num>0&&t->gs==Fs->gs&&t->stk->stk_size==8192&&!StrCmp(t->task_name,"Life")&&!StrCmp(t->task_title,"Life");}', []),
         ('Bool LifeChild(){CTask *t=LifeState->child;return Fs->next_child_task==t&&Fs->last_child_task==t&&t->last_sibling_task->next_sibling_task==t&&t->next_sibling_task->last_sibling_task==t;}', []),
-        ('Bool LifeStart(Bool quit){CTaskLifeProbe *p=LifeState;p->parent=Fs;p->stage=p->errors=0;p->child=Spawn(quit?&LifeExit:&LifeWork,p,"Life",-1,Fs,8192);return p->child&&LifeRecord&&LifeChild;}', []),
+        ('Bool LifeStart(Bool quit){CTaskLifeProbe *p=LifeState;p->parent=Fs;p->stage=p->errors=0;if(quit)p->child=Spawn(&LifeExit,p,"Life",-1,Fs,8192);else p->child=Spawn(&LifeWork,p,"Life",-1,Fs,8192);return p->child&&LifeRecord&&LifeChild;}', []),
         ('Bool LifeFinish(){I64 end=cnts.jiffies+2000;while(!LifeEmpty(Fs)&&cnts.jiffies<end)Yield;return LifeEmpty(Fs)&&LifeState->stage==2&&!LifeState->errors;}', []),
         ('LifeEmpty(Fs);', ['1']),
         ('LifeStart(FALSE);', ['1']),

@@ -29,7 +29,12 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386BackingPool memory_pool;
 CI386Task *memory_root;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[26];
+CI386KernelSymbol memory_exports[30];
+extern U0 MemoryTaskRootInit(CI386Task *root);
+extern Bool MemoryManagedYield(CI386Scheduler *scheduler);
+extern CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,I64 target_cpu=-1,CTask *parent=0,I64 stack_size=0,I64 flags=256);
+extern U0 Exit();
+extern U0 TaskQueIns(CTask *task,CTask *pred=0);
 extern U0 MemoryReclaim(CI386PublicPool *pool);
 extern U0 MemoryProbe(I64 phase);
 extern U0 Yield();
@@ -39,16 +44,17 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//No arena is reserved until a task actually requests pages.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[26],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0";
+  U8 *addresses[30],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
-      !root || !root->owner || root->owner->root!=root ||
+      !root || !root->gs || !root->owner || root->owner->root!=root ||
       root->owner->current!=root || !I386MemBackingInit(&memory_pool,heap)) goto done;
   if(!I386TaskHeapsInit(root,heap,&memory_pool)) {
     if(!I386MemBackingDestroy(&memory_pool)) KernelStop;
     goto done;
   }
   memory_pool.reclaim=&MemoryReclaim; memory_root=root; result=TRUE;
+  MemoryTaskRootInit(root);
   addresses[0]=&MemoryAlloc; addresses[1]=&MemoryFree; addresses[2]=&MemorySize;
   addresses[3]=&MemorySize2; addresses[4]=&MemoryHeap; addresses[5]=&MemoryCAlloc;
   addresses[6]=&MemoryAligned; addresses[7]=&MemoryCAligned;
@@ -61,7 +67,9 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[19]=&MemoryDefineLstLoad; addresses[20]=&MemoryHashDefineLstAdd;
   addresses[21]=&MemoryMeasureStart; addresses[22]=&MemoryMeasureStop;
   addresses[23]=&Yield; addresses[24]=&Sleep; addresses[25]=&SleepUntil;
-  for(i=0;i<26;i++) {
+  addresses[26]=&Spawn; addresses[27]=&Exit; addresses[28]=&TaskQueIns;
+  addresses[29]=&MemoryManagedYield;
+  for(i=0;i<30;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1; memory_exports[i].val=(addresses[i]+0)(U64);
     HashAdd(&memory_exports[i],symbols);
@@ -86,7 +94,7 @@ U0 MemoryReclaim(CI386PublicPool *pool)
 U0 Yield()
 {
   CI386Task *task=I386TaskSelf;
-  if(!task || !task->owner || !I386SchedYield(task->owner)) throw('Task',TRUE);
+  if(!task || !task->owner || !MemoryManagedYield(task->owner)) throw('Task',TRUE);
 }
 #include "/Kernel/I386/StrCopy.HC"
 #include "/Kernel/I386/StrCopyCheck.HC"
@@ -156,4 +164,6 @@ U0 MemoryProbe(I64 phase)
 #define LBEqu MemoryLockedBitEqu
 #include "/Kernel/TaskDelayCore.HC"
 
+Bool MemoryCoreYield(CI386Scheduler *scheduler) { return I386SchedYield(scheduler); }
 #include "/Kernel/I386/TaskRuntimeCore.HC"
+#include "/Kernel/I386/TaskRuntimePublic.HC"

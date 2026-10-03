@@ -58,8 +58,13 @@ The public-delay slice now passes its focused cross-image no-FPU test:
 wake deadlines, task identity, the prior idle bit and caller IF. The native
 compiler also rebuilds the updated memory provider, and its installed output
 passes the same 8 MiB no-FPU delay test and independent code/ABI audit. This is incremental
-required-behavior evidence; public `Spawn`/`Exit`, multiple interactive terminals,
-source-linked debugging, full current-source two-generation qualification and
+required-behavior evidence. The public task package now passes its 43-command
+positive contract on the cross-built image: Spawn/Exit, inherited state, nested
+creators, default task records and dormant activation with exact public-pool
+recovery. The guest-built memory provider installs and passes its executable
+audit and the same 43-command no-FPU public contract. Public cancellation and
+descendant termination, multiple interactive terminals, source-linked debugging,
+full current-source two-generation qualification and
 publication remain open. See [the M7 coverage audit](docs/i386-m7-coverage-audit.md).
 The still-running startup-optimization retained build predates this delay change;
 keep its source epoch and export references separate.
@@ -238,7 +243,7 @@ and full integration qualification remain active for this source.
 
 ### Next public task package: ownership through exit
 
-The next failing contract is `tools/test-i386-public-tasks.py`. On the
+The original failing contract is `tools/test-i386-public-tasks.py`. On the
 public-delay image its lookup controls pass and `Spawn`/`Exit` fail. The
 behavior branch is specified but cannot execute until those services exist;
 its presence-only red result is not evidence of working task lifecycle.
@@ -408,7 +413,7 @@ validated callback interface to the existing create/activate/finish/destroy
 primitives and bootstrap allocator; reject incomplete or mismatched bindings
 before publication. The retained service owns task numbers, public descriptors,
 child links and the managed registry, including tasks created without queue
-insertion. Wire safe root-stack reaping into the existing cooperative execution
+insertion. Wire reaping from another live stack into the cooperative execution
 path and prove never-activated disposal and construction rollback before
 publishing `Spawn`, `Exit` and `TaskQueIns`. If this needs an additional module,
 update the complete module list, installation/provenance checks and both native
@@ -434,7 +439,7 @@ cross-built kernel passes exact VGA in 48.895514 seconds, within the boot budget
    scheduler `current` to impersonate another parent during creation. Pass
    ownership through the private creation helper instead.
 3. **Finish on one stack, reclaim on another.** Explicit `Exit` and entry
-   return retire the task; the root performs managed reaping. Respect active
+   return retire the task; another live task performs managed reaping. Respect active
    compiler controls, pending waits, file/symbol storage and lifetime refs.
    Remove public child links only when destruction is safe. Preserve original
    descendant termination semantics, and ensure a child's completion cannot
@@ -4259,3 +4264,74 @@ and original TempleOS DolDoc round-trip
 predates the owned constructor and retained helper changes; it does not
 qualify them. Complete public policy, managed reaping and child rings remain
 the next work.
+
+Public task runtime development (2026-10-03, positive contract milestone):
+A retained TaskRuntimePublic.HC now implements Spawn, Exit, TaskQueIns and
+owned-record reaping. MemoryServices version 12 publishes the public calls
+and a managed I386SchedYield binding for modules loaded afterward; its own
+core-yield import is captured before publication. The retained import contract
+remains unchanged. Spawn preserves the default parent, stack size, task naming,
+selected-parent heap/file/symbol inheritance and original child-list insertion.
+TaskQueIns activates a dormant context and inserts before the predecessor.
+A record retains the owned allocation until normal return or explicit Exit has
+retired it and its lifetime references permit teardown.
+
+The first cross build and native MemoryRuntime rebuild/install pass
+(build/i386-public-task-runtime-reap-kernel/result.json,
+build/i386-public-task-runtime-native-memory/result.json and
+build/i386-public-task-runtime-native-install/result.json). The flat cross
+kernel remains 483,408 bytes. Public lookup finds all required task services,
+but this is not a behavior pass. Positive testing exposed two previously
+unexecuted checker problems: QMP typing lacked Shift+slash for question marks,
+and the fixture used C's unsupported ternary syntax. Direct if/else worker
+selection now keeps the same normal-return/Exit assertions. The new original
+compiler oracle verifies all 29 contract definitions without executing workers
+(build/i386-public-task-definitions-global/result.json).
+
+The behavior gate then exposed that Fs is the interactive console worker,
+not the background kernel root. Initializing only memory_root leaves that
+worker's public child list uninitialized. The corrected development source
+prepares private workers when they enter the public runtime and permits
+reaping from any other live stack, retaining current-task and creator/parent
+reference guards. Finishing tasks can still yield during cleanup. It also
+rejects insertion before the task itself. This source passes a fresh
+original two-generation bootstrap
+(build/i386-public-task-runtime-live-stack-bootstrap.log), cross build and
+private lifecycle regression. Its native MemoryRuntime also builds successfully
+(build/i386-public-task-runtime-live-stack-native-memory/result.json).
+The public behavior gate then reaches successful Spawn but fails LifeFinish.
+An isolated 8 MiB no-FPU KVM probe establishes that the worker reaches stage 2,
+is reclaimed, and fails only directory inheritance
+(build/i386-public-task-invariants-bits-probe/result.json): the public cur_dir
+field was never linked to the task-owned directory bytes.
+
+A focused task-symbol regression now checks public directory initialization,
+distinct inherited directory storage and replacement after a directory change.
+Before the fix it fails with code 251 (0xFB), the missing root directory field
+(build/i386-task-public-directory-symbols-red.log). TaskFiles now publishes the
+owned directory pointer on init/clone/set and clears it on successful teardown.
+The fresh original two-generation bootstrap, task-symbol regression and cross
+build now pass (build/i386-public-task-directory-bootstrap.log,
+build/i386-task-symbols-test/result.json and
+build/i386-public-task-directory-kernel/result.json). All 43 public lifecycle
+commands pass at 8 MiB under 486,-fpu TCG, with exact VGA and unchanged source
+disk (build/i386-public-task-directory-contract/result.json). This includes
+normal return, explicit Exit, 20 repeated cycles with exact public pool recovery,
+default parent/name/stack, nested creators, dormant tasks and repeated activation.
+The public-directory regression changed from failure 251 to a passing result.
+
+The current MemoryRuntime builds in the guest and installs successfully
+(build/i386-public-task-directory-native-memory/result.json and
+build/i386-public-task-directory-native-install/result.json). The installed
+candidate passes the 386 executable/boot allowlist and filesystem extent audit
+(build/i386-public-task-directory-native-audit/result.json); its flat kernel is
+still cross-built, at 483,408 bytes. The same 43-command public behavior contract
+passes against the installed provider at 8 MiB under 486,-fpu TCG, with exact
+VGA and an unchanged candidate (build/i386-public-task-directory-native-contract/result.json).
+Its behavior boot takes 49.282671 seconds; the cross-image behavior boot takes
+48.985763 seconds. This does not provide the still-missing public
+drive-descriptor service or prove a complete native generation.
+
+Full descendant termination, public cancellation/Kill, automatic disposal of
+never-activated managed descendants, source debugging, multiple terminals,
+complete current-source native generations and release evidence remain open.
