@@ -12026,3 +12026,10 @@ export-kind and offset cases remain rejected
 (`build/i386-conditional-owned-heap-kernel/module-layout-recheck.json`). This
 does not retrospectively claim a complete integration pass. The pressure-fix
 integration runner remains live with its original verifier loaded.
+
+Installed-provider AOT qualification now passes
+(`build/i386-conditional-pressure-fix-native-aot/result.json`): the source returns
+98 in JIT mode and its 813-byte module returns 99 across 41 loader cases. The
+module hash remains `33457f848f31e5b341b66f86ed575e6dd0bb5efeec7eb85dfcef418957e0c755`.
+This closes the focused JIT/AOT regression for the guest-built allocation-error
+compiler provider, not full latest-source native release qualification.
