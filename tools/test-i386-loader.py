@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Execute the shared module loader and its loaded code inside an i386 guest."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -17,6 +18,18 @@ def run(*args):
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--native-module', type=Path,
+                        help='Also load a guest-built module whose Main returns --native-expected')
+    parser.add_argument('--native-expected', type=int)
+    args=parser.parse_args()
+    if (args.native_module is None)!=(args.native_expected is None):
+        parser.error('--native-module and --native-expected must be used together')
+    native_module=None
+    if args.native_module:
+        native_module=args.native_module.read_bytes()
+        if len(native_module)>2020:
+            parser.error('Native module exceeds the existing 2048-byte case packet')
     manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
     for name, digest in manifest['source_sha256'].items():
         if name.startswith(('Compiler/', 'Kernel/')):
@@ -97,6 +110,8 @@ def main():
         raise ValueError('Missing function fixture')
     cases += [('data-entry',[function_to_data(cases[0][1][0],'Main')],0,1),
               ('call-data',[consumer,function_to_data(provider,'Add')],0,1)]
+    if native_module is not None:
+        cases.append(('guest-built-constant-program',[native_module],args.native_expected,0))
     iso = OUT/'loader.iso'
     exports = OUT/'exports'
     run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
@@ -171,6 +186,7 @@ def main():
         raise RuntimeError(f'Native loader failed: {log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'result':'pass','cases':[c[0] for c in cases],
         'cpu':'486,-fpu','ram_mib':8,
+        'native_module':None if native_module is None else {'sha256':hashlib.sha256(native_module).hexdigest(),'expected':args.native_expected},
         'symbol_index':{'export_counts':[1,128,512,513],'differential':'original linear scan','duplicates':'rejected without writes','over_capacity':'original scan fallback'},
         'source_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ('Kernel/I386/ModuleLoad.HC','tests/guest/i386-loader/Target.HC','tests/guest/i386-loader/SymbolIndex.HC','tests/guest/i386-loader/Once.HC')},
         'scope':'native module loading, heap allocation, execution, exhaustion, release and reuse'},indent=2)+'\n')

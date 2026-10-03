@@ -965,8 +965,8 @@ These runs remain development evidence even if the native flat kernel boots.
 
 ### Native expression conditionals
 
-The expression `#if` frontend contract is currently an expected failing
-specification. Run its native JIT fixture with:
+The expression `#if` frontend contract has a recorded failing baseline and
+passes on the updated compiler. Run its native JIT fixture with:
 
 ```sh
 python3 tools/test-i386-native-conditionals.py IMAGE --out build/native-conditionals
@@ -974,8 +974,19 @@ python3 tools/test-i386-native-conditionals.py IMAGE --out build/native-conditio
 
 The test checks macro arithmetic, true/false/nested branches, 32-bit pointer
 `sizeof`, floating-point truth, skipped invalid code and code after directives.
-After a failed condition it requires prior definitions and ordinary execution
+After a failed condition it requires the shared original expression diagnostic
+(`Invalid lval at` for a missing name), prior definitions and ordinary execution
 to survive, with no failed definition published. Its report preserves source
-and checker hashes. The current image fails while including the positive
-fixture; later behavior assertions remain unexecuted. Passing this test will
-not establish native AOT behavior or allocation-failure cleanup.
+and checker hashes. The older image fails while including the positive fixture; the updated
+compiler passes its behavior assertions. For executed JIT/AOT distinction:
+
+```sh
+python3 tools/test-i386-native-conditionals-aot.py IMAGE --out build/native-conditionals-aot
+```
+
+This stages a source file, checks JIT result 98, builds its module in the guest,
+and feeds those exact bytes to the native loader corpus with expected result 99.
+It preserves the source disk and checker hashes, uses a writable working copy,
+and saves the matching module/loader report. The module must fit the corpus's
+existing 2,048-byte packet. These tests do not establish allocation-failure or
+exact conditional-owned heap cleanup.

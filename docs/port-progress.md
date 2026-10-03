@@ -11705,3 +11705,76 @@ through that original API produced an undefined-identifier error. The private
 file-service writer and `DocWrite` work; they do not establish publication or
 original-signature behavior for the public file API. Keep that API migration
 visible in the coverage audit.
+
+## Native expression conditionals and qualification update (2026-10-03)
+
+The loader-index development image completes the full no-FPU workstation
+suite: 513 commands, 576 submitted lines, exact VGA, and 20 cycles with exact
+shared task-heap recovery. Startup is 50.241406 seconds and the visible
+long-document update is 0.261061 seconds. Both existing latency targets pass.
+Evidence: `build/i386-symbol-index-frontend-native-workstation/result.json`,
+its budget verdict and `provenance.json`; the preserved source hash is
+`02e38c51706694bf68fe3777302a7396a0083b469c676fcc2e97fac65614bf4a`.
+This remains the loader-index source epoch with cross-built retained inputs.
+
+All six retained modules from that epoch also finish native rebuilds and
+install byte-for-byte, followed by an independent 8 MiB no-FPU KVM boot with
+`6*7` and the 12 document-allocation checks. The installed retained candidate
+is `2baf3494e8a3c884e15bef404d5d53d503fe02861ed4b13279fca2dc35f09fe8`
+(`build/i386-symbol-index-fully-native-installed/result.json`). A fresh six-module flat rebuild using those native providers also passes
+(`build/i386-symbol-index-fully-native-flat/result.json`), producing an
+independently booted image with all twelve modules guest-built. Its flat size
+is 486,088 bytes, flat hash
+`86b9fe25fb1214b7ec5c000504ca6ec788c80dffe2842cf37ddd6ddc717c965f`,
+and installed disk hash
+`70535124d7edb0d09c44519b1b490a9c92ddda0733379d7d39eaabc369941d90`.
+The executable audit and no-FPU TCG keyboard/workstation runs have started. Installation/boot alone does not close the fully
+guest-built TCG timing gate or two-generation qualification.
+
+The compiler now evaluates expression `#if` through its existing expression
+services. Raw branch skipping remains shared with the original lexer, but its
+lookahead and parser flags are preserved through nested directives and errors.
+The JIT contract passes all 23 commands on 8 MiB `486,-fpu` TCG, including the
+combined result 81, failed-condition recovery, prior definitions and absence of
+`IfBad`: `build/i386-native-conditionals-source-mode-jit/result.json`. Its old
+image baseline fails at inclusion. The diagnostic oracle now matches the
+shared original expression grammar's `Invalid lval at` error for a missing
+expression name; the earlier expectation came from statement diagnostics.
+
+The separate AOT contract first failed because its compiled module selected the
+JIT branch, returning 98 where 99 was required. Its emitted mode function
+returned 17 rather than 18. Parser-backed lookahead now distinguishes
+`#ifjit` from `#ifaot` while preserving the raw lexer's original marker behavior.
+A further failure exposed that statement parsing temporarily clears the backend
+AOT flag. Parser-backed source-mode directives now use explicit module-source
+mode; interactive controls also use AOT backend staging and must remain JIT
+from the source language's perspective. The expected results were not relaxed.
+
+`build/i386-native-conditionals-source-mode-aot/result.json` now passes: the
+source executes as JIT with result 98, compiles natively to an 813-byte module,
+and that module executes with result 99 in the native loader corpus. All 41
+cases pass, including the existing index, relocation, allocation, source-erasure
+and no-write checks. Module hash:
+`33457f848f31e5b341b66f86ed575e6dd0bb5efeec7eb85dfcef418957e0c755`.
+Both focused reports use input disk
+`925354a9f241c6ffe34b4c4afe0e561c09d0b96774ca66f1fe17bb9dcd27c2c8`,
+and source images/checkers remain unchanged.
+
+The x86-64 bootstrap rebuild, raw conditional lexer/include corpus with its
+instruction audit, and 16 host oracle tests pass. The raw conditional fixture
+already starts its first heap at `0x60000`; its loader now uses the corresponding
+640-sector profile after the expanded shared loader exceeded its old 512-sector
+transfer. The OS boot limit remains unchanged.
+
+An intermediate compiler-provider source version rebuilds natively, but it
+lacks the final mode fix. The final provider rebuild is still running and must
+be installed and tested before claiming that scope. Allocation-failure and
+exact conditional-owned heap cleanup also remain open. The complete OS still
+requires public task/terminal/debug/file contracts, current-source full native
+qualification, reproducible pipeline orchestration and release publication.
+
+The rebuild runner reads the sources packaged in its disk image and compares
+against an isolated export directory. Inspection showed that host edits do not
+change those running guest inputs, so implementation continued without
+restarting the older jobs. Their evidence retains its original source epoch;
+it does not qualify the new compiler source.

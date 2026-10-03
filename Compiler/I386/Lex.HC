@@ -129,7 +129,15 @@ I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables
             }
             break;
           case KW_IFAOT: case KW_IFJIT:
-            if(cc->flags&CCF_IN_IF) { ch=TK_IFAOT; goto lex_literal; }
+            if(cc->flags&CCF_IN_IF) {
+              ch=TK_IFAOT;
+              //Raw Lex compatibility keeps the original shared marker. A
+              //parser-backed expression needs the actual directive kind.
+              if(keyword==KW_IFJIT && includes && includes->directive) ch=TK_IFJIT;
+              goto lex_literal;
+            }
+            if(includes && includes->directive)
+              return includes->directive(includes->directive_context,cc,keyword);
             take=(cc->flags&CCF_AOT_COMPILE)!=0; if(keyword==KW_IFJIT) take=!take;
             if(!take) {
               result=I386ConditionalSkip(heap,cc,tables,macro_filename,compiled_lines,TRUE,includes);
@@ -148,6 +156,8 @@ I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables
             break;
           case KW_IF:
             if(cc->flags&CCF_IN_IF) { ch=TK_IF; goto lex_literal; }
+            if(!includes || !includes->directive) return -4;
+            return includes->directive(includes->directive_context,cc,keyword);
           default: return -4;
         }
         break;

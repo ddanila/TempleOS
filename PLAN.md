@@ -31,17 +31,20 @@ architectural target. Cross-platform QEMU launchers remain useful supporting
 work; they are not a substitute for native 386 compatibility. ARM, RISC-V, UEFI,
 and broad modern-device support are deferred.
 
-The last fully guest-built native i386 candidate is self-hosting: two guest-built generations
+A previous fully guest-built native i386 candidate established self-hosting: two guest-built generations
 reproduce all twelve modules, the flat image and boot area byte for byte.
 Both generations pass the 8 MiB no-FPU workstation suites and persistent
 three-boot document workflow. All six retained modules also rebuild under
-16 MiB no-FPU TCG. The local 95-file release bundle verifies, including both generations’ audio output. The authoritative
+16 MiB no-FPU TCG. The local 95-file release bundle for that earlier checkpoint verifies, including both generations’ audio output. The authoritative
 current evidence is [M7 acceptance](docs/i386-m7-acceptance.md); detailed
 chronology is in [port progress](docs/port-progress.md).
 
 M7 remains open. Complete original feature parity is not established, release
-publication is pending, and current no-FPU startup measurements of 73–74 seconds
-exceed the stated 60-second development target. Functional passes and package
+publication is pending, and startup qualification of a fully guest-built image
+with the latest source remains open. The loader-index development image now
+passes the full no-FPU workstation suite with 50.241406-second startup and a
+0.261061-second long-document update; its retained inputs are cross-built. Older
+fully guest-built startup results exceed the 60-second target. Functional passes and package
 hash verification do not by themselves close these gaps. The historical
 “next” sections below record the implementation sequence; the following work
 queue supersedes their stale status and priority statements.
@@ -174,21 +177,27 @@ the 486,088-byte image passes its executable audit and boots in 46.971996 second
 on 8 MiB no-FPU TCG. Retained inputs are still cross-built in that development
 image: require fully guest-built installation and timing before closing the
 self-hosting startup gate. The current retained rebuild and full workstation
-suite are running, with no final verdict yet.
+suite have passed for that loader checkpoint: all twelve modules build natively
+and the installed image boots independently, while the development workstation
+suite passes within its latency targets. No-FPU TCG timing and workstation
+checks on the fully guest-built image have started. That source epoch predates
+the conditional frontend below; it does not qualify the new compiler source.
 
-The native compiler also rejects expression `#if` directives, discovered by
-trying `#if sizeof(U8 *)==4` in kernel source. This is an uncovered HolyC
-feature, not hardware verification. `tools/test-i386-native-conditionals.py`
-now records a failing native JIT fixture for true/false/nested conditions,
-macro arithmetic, target pointer `sizeof`, floating-point truth and skipped
-invalid code. Its positive branch also checks ordinary lookahead and subsequent
-execution; its error branch checks previously published definitions and absent
-failed definitions. The baseline fails at inclusion before those behavior
-assertions can execute. Implement expression evaluation using the existing
-frontend services, preserving conditional lookahead and restoring flags on
-errors. Add native AOT coverage and allocation-failure/owned-heap cleanup
-checks before closing the complete conditional contract. Do not claim original compiler feature
-coverage from the directive-skipping lexer tests alone.
+Expression `#if` now uses the existing native expression evaluator, with the
+shared raw skip grammar, preserved directive lookahead and flag restoration
+on errors. The JIT test has an observed fail-to-pass result across true/false
+and nested conditions, macro arithmetic, pointer `sizeof`, floating-point truth,
+skipped invalid code and post-error definition preservation. The separate
+`tools/test-i386-native-conditionals-aot.py` checks source-mode semantics: the
+same source returns 98 under JIT, then its guest-built AOT module returns 99
+inside the no-FPU loader corpus (41 cases). It caught two real mode/lookahead
+errors before passing. Raw lexer compatibility tests still pass. The frontend
+uses explicit module-source mode because interactive controls also use AOT
+backend staging internally; source-language mode cannot follow that temporary
+backend flag. Allocation-failure and exact owned-heap cleanup still need
+separate oracles before the complete conditional ownership contract closes.
+The final compiler-provider native rebuild is running; do not claim its result
+from earlier versions that lacked the final mode fix.
 
 ### Next public task package: ownership through exit
 

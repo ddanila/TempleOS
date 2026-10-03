@@ -80,3 +80,21 @@ writer and `DocWrite` do not prove the original `FileWrite(filename,buffer,size,
 cdt,attr)` contract. Audit `FileRead` publication and ownership as part of the
 planned public file migration, and add failing signature/behavior tests before
 implementing the missing bindings.
+
+The loader-index development image now passes the full 513-command no-FPU
+workstation suite with 50.241406-second startup, a 0.261061-second long-document
+update and 20 exact shared-heap recovery cycles. Its retained inputs remain
+cross-built. All six retained modules have subsequently rebuilt and installed
+natively, and the flat kernel rebuilt with those providers installs and boots
+independently. All twelve modules are now guest-built at that loader checkpoint;
+its no-FPU TCG timing/workstation qualification has started.
+
+Expression conditionals now pass focused JIT and executed AOT contracts:
+`build/i386-native-conditionals-source-mode-jit/result.json` and
+`build/i386-native-conditionals-source-mode-aot/result.json`. The same source
+returns 98 under JIT and 99 from its loaded guest-built AOT module, with all 41
+loader cases passing. Nested lookahead distinguishes source mode independently
+of temporary backend staging flags. Error recovery preserves prior definitions.
+This does not establish allocation-failure/owned-heap cleanup or final native
+compiler-provider installation; those remain open. The raw lexer and its
+original marker compatibility contract still pass.

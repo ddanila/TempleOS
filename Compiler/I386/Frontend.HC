@@ -759,6 +759,74 @@ I64 I386FrontendEvaluate(U8 *context,CCmpCtrl *cc)
   result=I386FrontendExecute(context,code);
   I386FrontendFree(context,code); return result;
 }
+//Use the shared raw skip grammar and the control-owned token adapter.
+I64 I386FrontendConditionalSkip(CI386Frontend *state,CCmpCtrl *cc,
+  I64 depth,Bool stop_else)
+{
+  CI386LexCharSource native;
+  CLexCharSource characters,tokens;
+  I64 result;
+  native.heap=state->heap; native.compiled_lines=&state->lines;
+  characters.context=&native; characters.read=&I386LexSourceRead;
+  tokens.context=state; tokens.read=&I386FrontendLex;
+  result=LexSkipConditional(cc,&characters,&tokens,depth,stop_else);
+  if(result<0) I386FrontendUnavailable(state);
+  return result;
+}
+I64 I386FrontendConditional(CI386Frontend *state,CCmpCtrl *cc,I64 keyword=KW_IF)
+{//Expression lookahead can already contain the next conditional directive.
+  I64 depth;
+  Bool take;
+  while(TRUE) {
+    if(keyword==KW_IFDEF || keyword==KW_IFNDEF) {
+      cc->flags|=CCF_NO_DEFINES;
+      try { I386FrontendLex(state,cc); }
+      catch { cc->flags&=~CCF_NO_DEFINES; }
+      cc->flags&=~CCF_NO_DEFINES;
+      if(cc->token!=TK_IDENT) return cc->token;
+      take=cc->hash_entry!=0;
+      if(keyword==KW_IFNDEF) take=!take;
+      if(!take && !I386FrontendConditionalSkip(state,cc,1,TRUE)) return TK_EOF;
+      return I386FrontendLex(state,cc);
+    }
+    if(keyword==KW_IFAOT || keyword==KW_IFJIT) {
+      //Interactive controls use AOT backend staging too. Only an explicit
+      //module-source build is an AOT source-language compilation.
+      take=(cc->flags&CCF_MODULE_SOURCE)!=0;
+      if(keyword==KW_IFJIT) take=!take;
+      if(!take && !I386FrontendConditionalSkip(state,cc,1,TRUE)) return TK_EOF;
+      return I386FrontendLex(state,cc);
+    }
+    cc->flags|=CCF_IN_IF;
+    try {
+      if(I386FrontendLex(state,cc)==TK_EOF) {
+        cc->flags&=~CCF_IN_IF; return TK_EOF;
+      }
+      take=I386FrontendEvaluate(state,cc)!=0;
+    } catch { cc->flags&=~CCF_IN_IF; }
+    cc->flags&=~CCF_IN_IF;
+    if(!take) {
+      if(cc->token!=TK_ENDIF && cc->token!=TK_ELSE) {
+        depth=1;
+        if(cc->token==TK_IF || cc->token==TK_IFDEF || cc->token==TK_IFNDEF ||
+            cc->token==TK_IFAOT || cc->token==TK_IFJIT) depth=2;
+        if(!I386FrontendConditionalSkip(state,cc,depth,TRUE)) return TK_EOF;
+      }
+      return I386FrontendLex(state,cc);
+    }
+    switch(cc->token) {
+      case TK_IF: keyword=KW_IF; break;
+      case TK_IFDEF: keyword=KW_IFDEF; break;
+      case TK_IFNDEF: keyword=KW_IFNDEF; break;
+      case TK_IFAOT: keyword=KW_IFAOT; break;
+      case TK_IFJIT: keyword=KW_IFJIT; break;
+      case TK_ELSE:
+        if(!I386FrontendConditionalSkip(state,cc,1,FALSE)) return TK_EOF;
+      case TK_ENDIF: return I386FrontendLex(state,cc);
+      default: return cc->token;
+    }
+  }
+}
 extern U0 I386FrontendSource(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol,I64 adjust);
 I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword)
 {
@@ -766,6 +834,8 @@ I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword)
   CHashSrcSym *symbol;
   U8 *name;
   U32 irq;
+  if(keyword==KW_IF || keyword==KW_IFAOT || keyword==KW_IFJIT)
+    return I386FrontendConditional(state,cc,keyword);
   if(keyword==KW_HELP_FILE) {
     if(I386FrontendLex(context,cc)!=TK_STR) return cc->token;
     if(!state->files || !state->files->name_abs) I386FrontendUnavailable(context);

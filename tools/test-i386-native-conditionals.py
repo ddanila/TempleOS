@@ -73,7 +73,7 @@ def commands():
         ('6*7;', ['42']),
     ]
     result += stage(BAD_SOURCE, 'Bad') + [
-        ('#include "C:/IfBad.HC"', ['Error: Undefined identifier at ']),
+        ('#include "C:/IfBad.HC"', ['Error: Invalid lval at ']),
         ('6*7;', ['42']),
         ('IfTrue+IfTail;', ['27']),
         ('HashFind("IfBad",Fs->hash_table,HTT_FUN)==0;', ['1']),
