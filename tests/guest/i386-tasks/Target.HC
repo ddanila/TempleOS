@@ -1,6 +1,7 @@
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
+#define I386_TASK_NATIVE_BUILD 1
 #include "/Kernel/I386/Context.HH"
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/Cpu.HH"

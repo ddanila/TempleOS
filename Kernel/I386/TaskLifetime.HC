@@ -1,5 +1,8 @@
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/Cpu.HH"
+#ifdef I386_TASK_NATIVE_BUILD
+#assert offset(CI386OwnedTask.task)==0
+#endif
 //Link Context, Scheduler, Heap and Cpu once. Requires working Fs task binding.
 public U0 I386TaskReturn()
 {//Normal entry return retires the current task; another task destroys its stack.
@@ -11,9 +14,11 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
   U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
+  CI386Task *creator[1];
   CI386Heap *file_heap;
   I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total;
-  U32 flags;
+  U32 flags,invalid[1];
+  creator[0]=0;
   if (!s || !s->root || !s->bind || !parent || parent->owner!=s ||
       parent->addr!=parent || parent->finished || parent->finishing ||
       !heap || !entry || stack_size<256 ||
@@ -22,9 +27,45 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
       private_size>0xFFFFFFFF-header-stack_size) return 0;
   total=header+stack_size+private_size;
   flags=I386IrqSave;
-  if(parent!=s->current && (!s->current || s->current->owner!=s ||
-      s->current->finished || s->current->finishing || s->current->lifetime_refs==0xFFFFFFFF)) {
-    I386IrqRestore(flags); return 0;
+  if(parent!=s->current) {
+    creator[0]=s->current;
+#ifdef I386_TASK_NATIVE_BUILD
+    invalid[0]=0;
+    asm {
+      PUSH EAX
+      PUSH ECX
+      PUSH ESI
+      PUSH EDI
+      MOV ESI,U32 &creator[EBP]
+      TEST ESI,ESI
+      JZ I32 @@20
+      LEA EDI,U32 CI386Task.owner[ESI]
+      MOV EAX,U32 [EDI]
+      CMP EAX,U32 &s[EBP]
+      JNZ I32 @@20
+      MOV EAX,U32 CI386Task.finished[ESI]
+      TEST EAX,EAX
+      JNZ I32 @@20
+      MOV EAX,U32 CI386Task.finishing[ESI]
+      TEST EAX,EAX
+      JNZ I32 @@20
+      MOV EAX,U32 CI386Task.lifetime_refs[ESI]
+      CMP EAX,0xFFFFFFFF
+      JNZ I32 @@21
+@@20:
+      MOV EAX,1
+      MOV U32 &invalid[EBP],EAX
+@@21:
+      POP EDI
+      POP ESI
+      POP ECX
+      POP EAX
+    }
+#else
+    invalid[0]=!creator[0] || creator[0]->owner!=s || creator[0]->finished ||
+      creator[0]->finishing || creator[0]->lifetime_refs==0xFFFFFFFF;
+#endif
+    if(invalid[0]) { I386IrqRestore(flags); return 0; }
   }
   owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
@@ -54,9 +95,8 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
         !(*parent->symbol_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
   }
   //Inherited state belongs to the parent; entry code can belong to the creator.
-  if(parent!=s->current) {
-    owned->creator=s->current; owned->creator->lifetime_refs++;
-  }
+  owned->creator=creator[0];
+  if(creator[0]) creator[0]->lifetime_refs++;
   if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
   I386IrqRestore(flags);
   return owned;
@@ -85,23 +125,56 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
 {//Readable live owned record required. Never destroy from its own stack.
   U32 flags=I386IrqSave;
   CI386Heap *heap;
-  CI386Task *creator;
+  CI386Task *creator[1];
+  U32 invalid[1];
   Bool result;
   if (!owned || owned->signature!=0x54323349 || !owned->task.owner ||
       !owned->task.finished || owned->task.owner->current==&owned->task) {
     I386IrqRestore(flags); return FALSE;
   }
   heap=owned->heap;
-  creator=owned->creator;
-  if(creator && (creator->owner!=owned->task.owner || !creator->lifetime_refs)) {
-    I386IrqRestore(flags); return FALSE;
+  creator[0]=owned->creator;
+  if(creator[0]) {
+#ifdef I386_TASK_NATIVE_BUILD
+    invalid[0]=0;
+    asm {
+      PUSH EAX
+      PUSH ECX
+      PUSH EDX
+      PUSH ESI
+      PUSH EDI
+      MOV ESI,U32 &creator[EBP]
+      MOV EDI,U32 &owned[EBP]
+      //Native owner pointers occupy one U32; the next field is finished.
+      LEA ECX,U32 CI386Task.owner[ESI]
+      LEA EDX,U32 CI386Task.owner[EDI]
+      MOV EAX,U32 [ECX]
+      CMP EAX,U32 [EDX]
+      JNZ I32 @@30
+      MOV EAX,U32 CI386Task.lifetime_refs[ESI]
+      TEST EAX,EAX
+      JNZ I32 @@31
+@@30:
+      MOV EAX,1
+      MOV U32 &invalid[EBP],EAX
+@@31:
+      POP EDI
+      POP ESI
+      POP EDX
+      POP ECX
+      POP EAX
+    }
+#else
+    invalid[0]=creator[0]->owner!=owned->task.owner || !creator[0]->lifetime_refs;
+#endif
+    if(invalid[0]) { I386IrqRestore(flags); return FALSE; }
   }
   if (I386HeapSize(heap,owned)!=owned->allocation_size ||
       !I386SchedReap(owned->task.owner,&owned->task)) {
     I386IrqRestore(flags); return FALSE;
   }
   result=I386HeapFree(heap,owned);
-  if(result && creator) creator->lifetime_refs--;
+  if(result && creator[0]) creator[0]->lifetime_refs--;
   I386IrqRestore(flags);
   return result;
 }

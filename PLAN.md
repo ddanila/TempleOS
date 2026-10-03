@@ -270,14 +270,22 @@ descriptor behavior remain open. The updated cross-built flat image is
 488,680 bytes, exceeding the unchanged 487,424-byte boot region by 1,256 bytes.
 The boot-image builder correctly rejected that image; this is not an install
 pass (`build/i386-creator-pin-native-flat/capacity-result.json`).
-A compact native task validation implementation is under test. Its initial
-heap and symbol fixtures failed, so it is not qualified. The heap diagnostic
-isolated failed-construction rollback: the compact implementation released a
-creator reference before acquiring it. Rollback now checks the owned record's
-creator field, which is set only when acquisition occurs; a fresh bootstrap
-and regression run must verify the correction before this implementation is
-promoted. Public task implementation and latest-source native generations
-remain pending.
+Compact native creator validation now passes the heap, symbol and legacy
+task fixtures plus their instruction audits. Two bootstrap generations also
+pass (`build/i386-creator-compact-owner32-bootstrap.log`). The heap diagnostic
+first isolated failed-construction rollback: the compact implementation released
+a creator reference before acquiring it. Rollback checks the owned record's
+creator field, which is set only when acquisition occurs. The next failure
+exposed an eight-byte owner comparison in assembly where native pointers occupy
+four bytes: the extra comparison read the adjacent `finished` field. Correcting
+that comparison restores child destruction, with 14 heap reclamations and exact
+recovery across selected-parent and creator-lifetime cases. Regression logs are
+`build/i386-creator-compact-owner32-task-heaps.log`,
+`build/i386-creator-compact-owner32-task-symbols.log` and
+`build/i386-creator-compact-owner32-tasks.log`. These fixtures use the hosted
+compiler's i386 backend; guest-frontend full-kernel size and execution still
+require separate qualification. Public task implementation and latest-source
+native generations remain pending.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning

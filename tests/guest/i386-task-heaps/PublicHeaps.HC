@@ -204,40 +204,42 @@ Bool SelectedParentTest(CI386Heap *heap)
   U32 flags=GetRFlags;
   invalid.owner=0;
   if(I386TaskSpawnFrom(&scheduler,heap,&invalid,8192,&SelectedParentWorker,0) ||
-      heap->used!=used || heap->allocations!=allocations) return FALSE;
+      heap->used!=used || heap->allocations!=allocations) { OutU8(0xE9,97); OutU8(0xE9,10); return FALSE; }
   parent=I386TaskSpawn(&scheduler,heap,8192,&SelectedParentWorker,0);
-  if(!parent || scheduler.current!=scheduler.root) return FALSE;
+  if(!parent || scheduler.current!=scheduler.root) { OutU8(0xE9,98); OutU8(0xE9,10); return FALSE; }
   parent_state=parent->task.heap_state;
   used=heap->used;
   if(I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0,0x18,0x20,24) ||
       heap->used!=used || parent->task.lifetime_refs || parent_state->children ||
-      scheduler.root->lifetime_refs!=1 || root_state->children!=1) return FALSE;
+      scheduler.root->lifetime_refs!=1 || root_state->children!=1) { OutU8(0xE9,99); OutU8(0xE9,10); return FALSE; }
   scheduler.root->lifetime_refs=0xFFFFFFFF;
   if(I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0) ||
       heap->used!=used || parent->task.lifetime_refs || parent_state->children ||
-      scheduler.root->lifetime_refs!=0xFFFFFFFF) return FALSE;
+      scheduler.root->lifetime_refs!=0xFFFFFFFF) { OutU8(0xE9,100); OutU8(0xE9,10); return FALSE; }
   scheduler.root->lifetime_refs=1;
   child=I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0);
-  if(!child || scheduler.current!=scheduler.root) return FALSE;
+  if(!child || scheduler.current!=scheduler.root) { OutU8(0xE9,101); OutU8(0xE9,10); return FALSE; }
   child_state=child->task.heap_state;
   if(child_state->parent!=parent_state || parent->task.lifetime_refs!=1 ||
       parent_state->children!=1 || scheduler.root->lifetime_refs!=2 ||
       root_state->children!=1 || child->task.data_heap==parent->task.data_heap ||
-      child->task.data_heap->mem_task!=&child->task) return FALSE;
+      child->task.data_heap->mem_task!=&child->task) { OutU8(0xE9,102); OutU8(0xE9,10); return FALSE; }
   if(!I386SchedYield(&scheduler) || !parent->task.finished || !child->task.finished ||
-      I386TaskDestroy(parent)) return FALSE;
+      I386TaskDestroy(parent)) { OutU8(0xE9,103); OutU8(0xE9,10); return FALSE; }
   used=heap->used;
   if(I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0) ||
-      heap->used!=used) return FALSE;
+      heap->used!=used) { OutU8(0xE9,104); OutU8(0xE9,10); return FALSE; }
   heap_creator_root_pins=1; heap_reclaim_target=&child->task;
-  if(!I386TaskDestroy(child) || parent->task.lifetime_refs || parent_state->children) return FALSE;
+  if(!I386TaskDestroy(child)) { OutU8(0xE9,107); OutU8(0xE9,10); return FALSE; }
+  if(parent->task.lifetime_refs) { OutU8(0xE9,108); OutU8(0xE9,10); return FALSE; }
+  if(parent_state->children) { OutU8(0xE9,109); OutU8(0xE9,10); return FALSE; }
   heap_creator_root_pins=0;
   heap_reclaim_target=&parent->task;
   if(!I386TaskDestroy(parent) || scheduler.root->lifetime_refs || root_state->children ||
       heap->used || heap->allocations!=allocations || !I386HeapValid(heap) ||
       task_control_storage.used!=controls || task_control_storage.allocations!=control_allocations ||
       task_pool.used_u8s!=pages || heap_reclaims!=reclaims+2 || errors ||
-      (GetRFlags&0x200)!=(flags&0x200)) return FALSE;
+      (GetRFlags&0x200)!=(flags&0x200)) { OutU8(0xE9,106); OutU8(0xE9,10); return FALSE; }
   return TRUE;
 }
 U0 PublicHeapReclaim(CI386PublicPool *pool)
