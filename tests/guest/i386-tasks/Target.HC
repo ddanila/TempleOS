@@ -207,7 +207,30 @@ I64 SchedulerTest()
       if(I386SchedAdd(&scheduler,&tasks[i]) || tasks[i].owner || tasks[i].next || tasks[i].last ||
           tasks[i].last_task!=&tasks[0] || !PublicRingCheck(i)) return 108;
       tasks[i].last_task=0;
-      if(!I386SchedAdd(&scheduler,&tasks[i]) || I386SchedAdd(&scheduler,&tasks[i]) ||
+      if(i==1) {
+        U32 prepare_flags=GetRFlags;
+        if(!I386SchedPrepare(&scheduler,&tasks[i]) ||
+            I386SchedPrepare(&scheduler,&tasks[i]) || tasks[i].owner!=&scheduler ||
+            tasks[i].addr!=&tasks[i] || tasks[i].task_signature!=TASK_SIGNATURE_VAL ||
+            tasks[i].next_task!=&tasks[i] || tasks[i].last_task!=&tasks[i] ||
+            tasks[i].next || tasks[i].last || !PublicRingCheck(1) ||
+            (GetRFlags&0x200)!=(prepare_flags&0x200)) return 142;
+        for(j=0;j<20;j++) if(!I386SchedYield(&scheduler) || scheduled_progress[i] ||
+            scheduler.current!=scheduler.root || !PublicRingCheck(1)) return 143;
+        tasks[i].finished=1;
+        if(I386SchedActivate(&scheduler,&tasks[i]) || !PublicRingCheck(1)) return 146;
+        tasks[i].finished=0;
+        tasks[i].next_task=scheduler.root;
+        if(I386SchedActivate(&scheduler,&tasks[i]) || !PublicRingCheck(1)) return 147;
+        tasks[i].next_task=&tasks[i];
+        foreign_task.owner=0;
+        if(I386SchedActivate(0,&tasks[i]) || I386SchedActivate(&scheduler,0) ||
+            I386SchedActivate(&scheduler,&foreign_task) ||
+            !I386SchedActivate(&scheduler,&tasks[i]) ||
+            I386SchedActivate(&scheduler,&tasks[i]) ||
+            (GetRFlags&0x200)!=(prepare_flags&0x200)) return 144;
+      } else if(!I386SchedAdd(&scheduler,&tasks[i])) return 145;
+      if(I386SchedAdd(&scheduler,&tasks[i]) ||
           I386SchedReap(&scheduler,&tasks[i])) return 15;
       if(!PublicRingCheck(i+1)) return 102;
     }

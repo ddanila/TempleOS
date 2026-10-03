@@ -35,8 +35,8 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   s->focus=0; s->jiffies=0;
   return TRUE;
 }
-public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
-{//Append a freshly prepared context before root; caller owns its stack lifetime.
+public Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task)
+{//Initialize a fresh context without making it runnable; caller owns its stack.
   U32 flags=I386IrqSave;
   I64 i;
   if (!s || !s->root || !task || task->owner || task->next_task || task->last_task || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
@@ -59,6 +59,19 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   task->messages=0;
   task->except_ch=0; task->catch_except=0; task->except_rbp=0;
   for(i=0;i<I386_EXCEPT_CALLERS;i++) task->except_callers[i]=0;
+  task->next_task=task->last_task=task;
+  I386IrqRestore(flags);
+  return TRUE;
+}
+public Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task)
+{//Attach a prepared dormant task once. Does not switch the current context.
+  U32 flags=I386IrqSave;
+  if(!s || !s->root || !task || task->owner!=s || task->addr!=task ||
+      task->task_signature!=TASK_SIGNATURE_VAL || !task->context.esp ||
+      task->finished || task->finishing || task->blocked || task->next || task->last ||
+      task->next_task!=task || task->last_task!=task) {
+    I386IrqRestore(flags); return FALSE;
+  }
   task->next=s->root; task->last=s->root->last;
   task->last->next=task; s->root->last=task;
   //Public ring contains every attached live task, including blocked workers.
@@ -67,6 +80,14 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
   task->last_task->next_task=task; s->root->last_task=task;
   I386IrqRestore(flags);
   return TRUE;
+}
+public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
+{//Preserve immediate attachment for existing callers, with no scheduling gap.
+  U32 flags=I386IrqSave;
+  Bool result=I386SchedPrepare(s,task);
+  if(result) result=I386SchedActivate(s,task);
+  I386IrqRestore(flags);
+  return result;
 }
 Bool I386SchedReady(CI386Task *task)
 {

@@ -292,6 +292,33 @@ recovery across selected-parent and creator-lifetime cases. Regression logs are
 compiler's i386 backend; guest-frontend full-kernel size and execution still
 require separate qualification. Public task implementation and latest-source
 native generations remain pending.
+The compact-guard guest rebuild completed all six flat modules, totaling
+488,208 bytes. The boot-image builder returned zero: this reduces the prior
+excess by 472 bytes but still exceeds the boot region by 784 bytes
+(`build/i386-creator-compact-owner32-native-flat/capacity-result.json`). This
+snapshot predates the scheduler preparation split below and is not an install
+pass. Boot-region capacity remains a required architectural constraint.
+
+The private scheduler now separates `I386SchedPrepare` from
+`I386SchedActivate`. Preparation sets owner, identity, signature and control
+sentinels but leaves public queue links pointing to the task itself; activation
+attaches once without switching context. Existing `I386SchedAdd` keeps immediate
+attachment under one interrupt-masked operation. The new fixture initially
+failed compilation before these APIs existed; after implementation it passes
+20 dormant yields, invalid/finished/malformed/repeated activation rejection,
+IF preservation and completion/reaping across two reused-record cycles.
+The heap and symbol fixtures also pass, and two bootstrap generations pass
+(`build/i386-deferred-scheduler-bootstrap.log`,
+`build/i386-deferred-scheduler-after.log`,
+`build/i386-deferred-scheduler-task-heaps.log`,
+`build/i386-deferred-scheduler-task-symbols.log`). The cross-built flat kernel
+is 486,952 bytes and passes its boot/instruction audit. Normal 8 MiB no-FPU TCG
+keyboard boot matches every VGA checkpoint in 48.084802 seconds, within the
+60-second budget (`build/i386-deferred-scheduler-keyboard/result.json`).
+Owned-task construction still uses immediate attachment; public deferred
+`Spawn`, queue insertion, child rings, pending disposal and managed reaping
+remain to be wired and qualified. Latest-source guest-built boot capacity
+is not established by the cross-build or private fixture passes.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning

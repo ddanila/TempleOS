@@ -66,6 +66,9 @@ class CI386Cpu:CCPU { CI386Scheduler *scheduler; };
 extern I64 I386TaskHeapHooks(CI386Task *task);
 public extern Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next));
+//Prepared tasks have self-linked public queues and cannot run until activation.
+public extern Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task);
+public extern Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task);
 public extern Bool I386SchedYield(CI386Scheduler *s);
 public extern Bool I386SchedSetClock(CI386Scheduler *s,I64 *jiffies);
