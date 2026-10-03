@@ -19,13 +19,18 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
 {
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
-  I64 i,j,base=8,result=0;
+  U32 j,name_length=0;
+  I64 i,base=8,result=0;
+  //Caller has validated the module records and bounded NUL-terminated names.
+  //A length mismatch cannot match; still scan every export for duplicates.
+  while(name[name_length]) name_length++;
   *matches=0;
   for (i=0;i<count;i++) {
     h=modules[i]; r=modules[i]+h->records_offset;
     for (j=0;j<h->record_count;j++,r++)
       if ((r->kind==I386_MODULE_EXPORT || r->kind==I386_MODULE_DATA_EXPORT) &&
-          (!kind || kind==r->kind) && I386NameEqual(modules[i]+r->name_offset,name)) {
+          (!kind || kind==r->kind) && r->name_length==name_length &&
+          I386NameEqual(modules[i]+r->name_offset,name)) {
         (*matches)++; result=base+r->offset;
       }
     base+=h->code_size;

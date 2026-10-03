@@ -5,8 +5,11 @@ automated QEMU evidence. Historical manual-gate notes below are superseded by
 the 2026-10-03 acceptance revision in PLAN.md.
 
 The next work is the [automated release qualification queue](../PLAN.md#next-goal-an-automatically-qualified-m7-release).
-This table records existing evidence; it does not replace a requirement-to-test
-coverage audit. In particular, current no-FPU boots take 73–74 seconds against
+The [requirement-to-test audit](i386-m7-coverage-audit.md) distinguishes
+existing passes from uncovered outcomes. Public task/terminal work and runtime
+exception inspection remain open; the current-source publication probe fails
+for `Spawn`, `Exit`, `Yield`, `Sleep` and `Dbg`. This table records earlier
+self-hosting evidence and does not qualify the new startup optimization. In particular, current no-FPU boots take 73–74 seconds against
 the plan's 60-second target. The startup-budget checker now reports that failure; startup optimization
 remains open. Both guest-built generations pass an automated 440/880 Hz
 waveform and off/reset emission oracle. Publication follows complete qualification;

@@ -2,6 +2,7 @@
 """Check mutation verdicts and persistence acceptance source-disk protection."""
 import contextlib
 import array
+import hashlib
 import io
 import json
 import math
@@ -129,6 +130,65 @@ class SpeakerWaveformTests(unittest.TestCase):
             with self.subTest(phase=phase, field=field):
                 self.assertEqual(self.waveform([440, 880], changed)['result'], 'fail')
         self.assertEqual(self.waveform([440, 880], {})['result'], 'fail')
+
+
+class DevelopmentBuildProvenanceTests(unittest.TestCase):
+    def test_changed_inputs_reject_before_qemu_and_clear_old_verdict(self):
+        for fault, message in (('disk', 'cross-built disk'),
+                               ('module', 'retained input differs'),
+                               ('source', 'source changed')):
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as tmp:
+                module = runpy.run_path(str(Path(__file__).with_name('test-i386-selfhost-install.py')))
+                root = Path(tmp)
+                disk = root / 'input.img'
+                disk.write_bytes(bytes(2048*512+512))
+                out = root / 'out'
+                out.mkdir()
+                (out / 'result.json').write_text('{"result":"pass"}')
+                build = root / 'build/i386-kernel'
+                (build / 'exports').mkdir(parents=True)
+                retained = {}
+                for name in module['RETAINED']:
+                    retained[f'/Modules/I386/{name}.t32m'] = b'module'
+                    (build / f'exports/{name}.t32m').write_bytes(b'module')
+                source = root / 'Kernel/I386/fixture.HC'
+                source.parent.mkdir(parents=True)
+                source.write_bytes(b'source')
+                digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+                manifest = {'disk_sha256': digest(disk),
+                            'source_sha256': {'Kernel/I386/fixture.HC': digest(source)}}
+                if fault == 'disk': manifest['disk_sha256'] = 'stale'
+                if fault == 'module': (build / 'exports/Startup.t32m').write_bytes(b'changed')
+                if fault == 'source': source.write_bytes(b'changed')
+                (build / 'result.json').write_text(json.dumps(manifest))
+                with patch.dict(module['main'].__globals__, ROOT=root), \
+                     patch('runpy.run_path', return_value={'mutated_file_contents': lambda *args: retained}) as load, \
+                     patch('sys.argv', ['test', '--disk', str(disk), '--out', str(out), '--cross-retained']):
+                    with self.assertRaisesRegex(ValueError, message): module['main']()
+                self.assertEqual(load.call_count, 1, 'QEMU runner must not be loaded')
+                self.assertFalse((out / 'result.json').exists(), 'Old pass must not survive rejection')
+
+
+class RequiredServiceObservationTests(unittest.TestCase):
+    module = runpy.run_path(str(Path(__file__).with_name('test-i386-required-services.py')))
+
+    def test_missing_functions_are_failures_with_working_controls(self):
+        log = ''.join(f'M7 SERVICE {name} 1\n' for name in self.module['CONTROLS'])
+        log += ''.join(f'M7 SERVICE {name} 0\n' for name in self.module['REQUIRED'])
+        result = self.module['assess'](log)
+        self.assertEqual(result['result'], 'fail')
+        self.assertEqual(result['missing'], list(self.module['REQUIRED']))
+
+    def test_all_names_present_only_proves_publication(self):
+        log = ''.join(f'M7 SERVICE {name} 1\n' for name in
+                      self.module['CONTROLS'] + self.module['REQUIRED'])
+        result = self.module['assess'](log)
+        self.assertEqual(result['result'], 'pass')
+        self.assertIn('publication only', result['scope'])
+        for bad in ('', log + 'M7 SERVICE Spawn 1\n',
+                    log.replace('MAlloc 1', 'MAlloc 0'), log.replace('Sleep 1', 'Sleep 2')):
+            with self.subTest(log=bad):
+                self.assertEqual(self.module['assess'](bad)['result'], 'invalid')
 
 
 if __name__=='__main__': unittest.main()

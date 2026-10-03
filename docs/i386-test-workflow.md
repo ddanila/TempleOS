@@ -814,3 +814,35 @@ and test hashes, and reanalyses both recordings. Its standalone verifier
 repeats that analysis using the bundled checker. `python3
 tools/test-i386-test-runner.py` exercises muted/wrong/reversed/stuck tones,
 missing silence, invalid emission observations and source-disk protection.
+
+The public task/debug publication probe is an intentionally open requirement:
+
+```sh
+python3 tools/test-i386-required-services.py build/i386-kernel/kernel.img \
+  --out build/i386-required-services-startup-u32
+```
+
+It boots an unchanged snapshot under 8 MiB `486,-fpu` TCG, verifies known
+public `MAlloc` and `Dir` controls, then checks `Spawn`, `Exit`, `Yield`,
+`Sleep` and `Dbg` in the native public function table. Missing functions
+produce exit 1 and a named failing JSON result; absent/repeated observations
+or failed controls produce an invalid verdict. A publication pass alone
+does not establish task/terminal or debugging behavior.
+
+For a development flat-kernel rebuild on fresh cross-built retained inputs:
+
+```sh
+python3 tools/test-i386-selfhost-install.py \
+  --disk build/i386-kernel/kernel.img \
+  --out build/i386-kernel/selfhost-startup-u32-development \
+  --accel kvm --cpu 486,-fpu --qmp-stdio --cross-retained
+```
+
+`--cross-retained` checks the disk, retained exports and delivered source
+against the cross-build manifest and explicitly reports zero guest-built
+retained modules. This is development feedback and cannot satisfy M7's
+all-module, two-generation gate. Normal runs retain the existing guest-built
+input workflow. Interrupted/rejected runs clear any old final verdict.
+The x64 ISO/rebuild tools use the immutable original snapshot commit instead
+of an `archive` branch; ordinary clones must include that history. An isolated
+ISO can be audited with `python3 tools/verify-iso.py --image <path>`.

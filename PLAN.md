@@ -31,7 +31,7 @@ architectural target. Cross-platform QEMU launchers remain useful supporting
 work; they are not a substitute for native 386 compatibility. ARM, RISC-V, UEFI,
 and broad modern-device support are deferred.
 
-The current native i386 candidate is self-hosting: two guest-built generations
+The last fully guest-built native i386 candidate is self-hosting: two guest-built generations
 reproduce all twelve modules, the flat image and boot area byte for byte.
 Both generations pass the 8 MiB no-FPU workstation suites and persistent
 three-boot document workflow. All six retained modules also rebuild under
@@ -88,12 +88,27 @@ no-FPU result as failing the 60-second target. An installed-image profile uses
 the candidate's own retained modules and preserves the disk; its samples point
 to module validation/symbol resolution during foundation loading and heap
 operations during source compilation. Next, complete the requirement-to-test
-audit and optimize these measured costs without weakening validation. Both guest-built
+audit and optimize these measured costs without weakening validation. Both previous guest-built
 generations now pass the PC-speaker waveform and off/reset emission checks;
 packaging and its standalone verifier independently recheck that evidence.
 After M7 qualification, prioritize
 broader original-source/API compatibility using an explicit inventory and
 original x64 behavioral oracles, rather than adding isolated passing examples.
+
+The [requirement-to-test audit](docs/i386-m7-coverage-audit.md) now names
+concrete remaining behavior gaps. A current-source publication probe fails for
+`Spawn`, `Exit`, `Yield`, `Sleep` and `Dbg`, with working memory/file controls.
+Scheduler/window corpora and generic exception recovery do not establish
+multiple interactive terminals or usable runtime exception inspection. These
+are required implementation work, followed by visible behavioral tests.
+
+Startup optimization now uses validated U32 counters and symbol-name length
+filtering while preserving wide input bounds, duplicate-symbol checks and
+full heap validation. The fresh guest flat-kernel development image boots in
+51.264 seconds under 8 MiB `486,-fpu` TCG and passes the 386/filesystem audit.
+Its retained modules are cross-built, so it is not a replacement for the
+fully guest-built qualification. Current-source retained rebuilding and
+workstation integration are underway.
 
 ## Final goal: a fully working TempleOS on a PC-compatible machine
 

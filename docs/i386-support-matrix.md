@@ -1,7 +1,8 @@
 # i386 QEMU support matrix
 
-This matrix records observed behavior for the current fully guest-built i386
-disk image. It is QEMU verification, not certification of physical 386
+This matrix records observed behavior for the last fully guest-built i386
+disk image. The current U32 startup optimization is a development revision
+and requires new all-module qualification; older image passes do not prove it. It is QEMU verification, not certification of physical 386
 hardware. The second-generation rebuild matches all twelve modules, the
 flat image and installed boot area byte for byte. Final M7 publication remains open. Human observation is optional exploratory
 feedback under the 2026-10-03 acceptance revision in `PLAN.md`.
@@ -35,7 +36,7 @@ retained modules were rebuilt in the guest under 16 MiB `486,-fpu` TCG and
 match the installed second-generation modules byte for byte. The installed
 image also passes the complete no-FPU workstation and writable-session suites.
 
-## Current-source profiles
+## Previously qualified source profiles
 
 | CPU | Evidence | Result |
 | --- | --- | --- |
@@ -69,6 +70,22 @@ QEMU's WAV backend omits inactive-voice intervals, so file emission observations
 provide the silence oracle rather than invented zero-valued PCM. Result paths
 are `build/i386-speaker-output-gen{1,2}-emission/result.json`; the local bundle
 includes the recordings, observations and exact commands.
+
+## Startup optimization development image
+
+The fresh source revision passes 46 validator and 40 loader cases, the heap
+stress/corruption corpus and two x64 bootstrap rebuilds. Six flat modules now
+build inside the guest, install and cold boot at 8 MiB; the retained modules
+for this development image remain cross-built. Its installed 386 and RedSea
+audits pass, and an unprofiled `486,-fpu` TCG keyboard session boots in
+51.264 seconds. This is a development timing pass, not full self-hosting
+qualification. Current-source workstation integration and retained rebuilding
+are running.
+
+A current-source public function probe confirms `MAlloc` and `Dir`, but fails
+for `Spawn`, `Exit`, `Yield`, `Sleep` and `Dbg`. See the
+[coverage audit](i386-m7-coverage-audit.md) for the required task/terminal and
+debugging behavior still to implement and verify.
 
 ## Earlier-source evidence
 

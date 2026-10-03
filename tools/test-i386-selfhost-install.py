@@ -23,6 +23,8 @@ def main():
                         default=ROOT / 'build/i386-kernel/selfhost-install')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for build and boot')
+    parser.add_argument('--cross-retained', action='store_true',
+                        help='Development-only flat build with verified cross-built retained inputs; not full self-hosting evidence')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
     parser.add_argument('--command-timeout', type=int, default=2400,
@@ -32,6 +34,7 @@ def main():
         parser.error('--command-timeout must be positive')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
+    (out / 'result.json').unlink(missing_ok=True)
     source = out / 'source.img'
     target = out / 'target.img'
     shutil.copyfile(args.disk, source)
@@ -42,6 +45,19 @@ def main():
     retained = files(source, retained_paths)
     if set(retained) != retained_paths:
         raise ValueError('Source disk does not contain all guest-built retained modules')
+    cross_manifest_hash = None
+    if args.cross_retained:
+        manifest_path = ROOT / 'build/i386-kernel/result.json'
+        manifest = json.loads(manifest_path.read_text())
+        if hashlib.sha256(original).hexdigest() != manifest.get('disk_sha256'):
+            raise ValueError('Development input differs from the current cross-built disk')
+        for path, module in retained.items():
+            if module != (ROOT / 'build/i386-kernel/exports' / Path(path).name).read_bytes():
+                raise ValueError(f'Cross-built retained input differs: {path}')
+        for name, digest in manifest['source_sha256'].items():
+            if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != digest:
+                raise ValueError(f'Development cross-build source changed: {name}')
+        cross_manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     commands = [(f'I386BuildModule("D:/Kernel/I386/{name}.HC",'
                  f'"D:/Modules/I386/{name}.t32m",TRUE)>0;', ['1'])
                 for name in FLAT]
@@ -88,7 +104,13 @@ def main():
     result = {'result': 'pass', 'flat_bytes': len(flat),
               'flat_sha256': hashlib.sha256(flat).hexdigest(),
               'guest_built_flat_modules': list(FLAT),
-              'guest_built_retained_modules': list(RETAINED)}
+              'guest_built_retained_modules': [] if args.cross_retained else list(RETAINED),
+              'retained_origin': 'cross-built development inputs' if args.cross_retained else 'guest-built supplied inputs',
+              'source_disk_sha256': hashlib.sha256(original).hexdigest(),
+              'target_disk_sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+              'cross_build_manifest_sha256': cross_manifest_hash,
+              'cpu': args.cpu, 'build_ram_mib': 16, 'boot_ram_mib': 8,
+              'scope': 'Development flat-kernel build only; not full M7 self-hosting qualification' if args.cross_retained else 'Guest flat-kernel build with supplied guest-built retained modules'}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)
 

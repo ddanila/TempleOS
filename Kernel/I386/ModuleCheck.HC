@@ -6,7 +6,10 @@ public Bool I386ModuleValid(U8 *data,I64 size)
 {
   CI386ModuleHeader *h=data;
   CI386ModuleRecord *r,*q;
-  I64 i,j,end,lo,hi;
+  //Header validation bounds record counts and name lengths to U32. Keep wide
+  //range calculations below, but avoid software I64 work on every scan step.
+  U32 i,j;
+  I64 end,lo,hi;
   Bool in_data,target_data,pointers=FALSE,named_pointers=FALSE;
   if (!data || size<32 || size>U32_MAX) return FALSE;
   if (h->magic!=I386_MODULE_MAGIC || (h->version!=I386_MODULE_VERSION &&

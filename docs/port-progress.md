@@ -11427,3 +11427,54 @@ Evidence is `build/archive-reference-check.iso` and
 `build/rebuild-test/result.json`. Native OS sources and installed candidate
 images did not change. This repairs build preparation; startup and the broader
 M7 qualification requirements remain open.
+
+## Bounded counter optimization and concrete M7 gaps (2026-10-03)
+
+Module validation now uses U32 record/name loop counters after header bounds
+checks. Symbol lookup filters different-length export names before comparing
+strings and continues scanning every export for duplicates. Heap allocation,
+size and free use U32 traversal offsets after full-chain validation; allocation
+retains the wide input-size rejection, whose bound guarantees that the
+rounded allocation including its header fits U32. Public signatures, corruption checks, coalescing and ownership
+rules remain intact.
+
+The changed source passes two x64 compiler/kernel rebuilds, 46 native module
+validator cases, 40 loader/allocation cases and the native heap corpus,
+including public heap layout and corruption/foreign-pointer/overflow checks.
+The fresh cross image passes exact boot instruction audits. Its complete
+8 MiB no-FPU TCG workstation suite is still running in
+`build/i386-startup-u32-workstation-tcg/`; no final suite pass is claimed.
+
+A focused development guest build produces and installs all six flat modules,
+then cold-boots at 8 MiB and checks arithmetic/document allocation. The new
+flat image is 482,816 bytes. Its installed executable and RedSea audits pass.
+A separate unprofiled 8 MiB `486,-fpu` TCG keyboard session boots in
+51.264420 seconds and passes the 60-second checker. Evidence:
+`build/i386-kernel/selfhost-startup-u32-development/result.json`,
+`instruction-audit/result.json`, `build/i386-startup-u32-guest-kernel-tcg/result.json`
+and `build/i386-startup-u32-guest-kernel-budget.json`.
+
+The development run explicitly uses cross-built retained modules, records zero
+guest-built retained modules and verifies its input against the source-linked
+cross-build manifest. It cannot replace M7's two full guest generations.
+Wrong disks, changed exports and changed source are rejected before QEMU;
+old final verdicts are cleared on rejection. Thirteen host runner/oracle
+tests pass. An all-six current-source retained rebuild is now live under
+16 MiB no-FPU KVM in `build/i386-kernel/retained-startup-u32-kvm/`. Resume
+from the actual process/output, not an inferred pass or an automatic restart.
+
+The new `test-i386-required-services.py` probe reports a genuine open failing
+case on the fresh current-source image: `Spawn`, `Exit`, `Yield`, `Sleep`
+and `Dbg` are absent, while known public `MAlloc` and `Dir` controls pass.
+Its two console commands and exact VGA pass; the capability verdict is
+separately **fail**, preserving the distinction between transport execution
+and required behavior. Result: `build/i386-required-services-startup-u32/result.json`.
+The [M7 coverage audit](i386-m7-coverage-audit.md) now maps each required
+outcome to a test/oracle or concrete open work. Underlying scheduler/window
+tests do not prove multiple interactive terminals, and a generic `Exception`
+message does not prove usable runtime inspection.
+
+The 95-file bundle remains the earlier-source candidate. Do not promote it
+as evidence for these OS changes. Fully guest-built timing, integration,
+public task/terminal and debugging behavior, consolidated qualification and
+publication remain open.

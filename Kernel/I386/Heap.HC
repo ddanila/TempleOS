@@ -128,8 +128,11 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Try-allocation: NULL on invalid size, corruption or exhaustion; no OutMem wrapper yet.
   CI386HeapBlock *block,*rest;
   U8 *result;
-  I64 offset=0,need,i;
+  U32 offset=0,need,i,requested;
   if (size<0 || size>0xFFFFFFFF-23 || !I386HeapValid(hc)) return 0;
+  //The checked size and validated physical chain fit U32. Preserve the wide
+  //API rejection above and full-chain validation before any arena mutation.
+  requested=size;
   need=(size+7)&~7;
   if (!need) need=8;
   need+=16;
@@ -146,7 +149,7 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
       hc->used+=block->span; hc->allocations++;
       if (hc->used>hc->peak) hc->peak=hc->used;
       result=hc->base+offset+16;
-      if (zero) for (i=0;i<size;i++) result[i]=0;
+      if (zero) for (i=0;i<requested;i++) result[i]=0;
       return result;
     }
     offset+=block->span;
@@ -157,7 +160,7 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 public I64 I386HeapSize(CI386Heap *hc,U8 *ptr)
 {//Requested byte count, or -1 for an invalid or freed pointer.
   CI386HeapBlock *block;
-  I64 offset=0;
+  U32 offset=0;
   if (!ptr || !I386HeapValid(hc)) return -1;
   while (offset<hc->size) {
     block=hc->base+offset;
@@ -171,7 +174,7 @@ public I64 I386HeapSize(CI386Heap *hc,U8 *ptr)
 public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
 {//NULL is a no-op. Reject foreign/interior pointers and double frees without writes.
   CI386HeapBlock *block,*previous=0,*next;
-  I64 offset=0;
+  U32 offset=0;
   if (!ptr) return TRUE;
   if (!I386HeapValid(hc)) return FALSE;
   while (offset<hc->size) {
