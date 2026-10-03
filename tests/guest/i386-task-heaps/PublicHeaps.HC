@@ -16,6 +16,8 @@ extern Bool PublicHeapCompilerCleanup(CI386Task *task);
 extern Bool PublicHeapFileDestroy(CI386Task *task);
 extern Bool PublicHeapSymbolDestroy(CI386Task *task);
 extern Bool PublicHeapCloneFailure(CI386Task *source,CI386Task *target,CI386Heap *heap);
+extern Bool SelectedParentTest(CI386Heap *heap);
+extern U0 SelectedParentWorker(I64 unused);
 Bool CodeProviderTest(CI386TaskHeaps *state)
 {
   CHeapCtrl *hc=&state->control;
@@ -76,9 +78,9 @@ I64 PublicTaskHeapTest()
   U8 *root_payload;
   I64 i,j,cycle,before,root_pages,retained,reclaims;
   U32 flags=GetRFlags;
-  if(!I386HeapInit(&heap,0x40000,32768) ||
-      !I386HeapInit(&task_control_storage,0x48000,32768) ||
-      !I386HeapInit(&task_backing_storage,0x50000,0x30000) ||
+  if(!I386HeapInit(&heap,0x48000,32768) ||
+      !I386HeapInit(&task_control_storage,0x50000,32768) ||
+      !I386HeapInit(&task_backing_storage,0x58000,0x30000) ||
       !I386MemBackingInit(&task_pool,&task_backing_storage,8192) ||
       !I386TaskHeapsInit(root,&task_control_storage,&task_pool) ||
       I386TaskHeapsInit(root,&task_control_storage,&task_pool)) return 101;
@@ -145,17 +147,60 @@ I64 PublicTaskHeapTest()
     if(errors || root->lifetime_refs || state->children || heap.used || heap.allocations ||
         !I386HeapValid(&heap) || task_pool.used_u8s!=root_pages) return 117;
   }
+  if(!SelectedParentTest(&heap)) return 122;
   //Root detach is an explicit provider shutdown, not normal task exit.
   heap_reclaim_target=root;
   if(!I386TaskHeapsDestroy(root) || task_pool.used_u8s || task_control_storage.used ||
       task_control_storage.allocations || root->data_heap || root->code_heap || root->heap_state ||
       root->heap_clone || root->heap_destroy || I386TaskHeapsDestroy(root)) return 118;
   if(errors || task_pool.retained || task_pool.owned_count || task_backing_storage.used ||
-      task_backing_storage.allocations || heap_reclaims!=10) return 120;
+      task_backing_storage.allocations || heap_reclaims!=12) return 120;
   task_pool.reclaim=0;
   if(!I386MemBackingDestroy(&task_pool)) return 121;
   SetRFlags(flags);
   return 0;
+}
+U0 SelectedParentWorker(I64 unused) {}
+Bool SelectedParentTest(CI386Heap *heap)
+{
+  CI386OwnedTask *parent,*child;
+  CI386Task invalid;
+  CI386TaskHeaps *parent_state,*child_state,*root_state=scheduler.root->heap_state;
+  I64 used=heap->used,allocations=heap->allocations;
+  I64 controls=task_control_storage.used,control_allocations=task_control_storage.allocations;
+  I64 pages=task_pool.used_u8s,reclaims=heap_reclaims;
+  U32 flags=GetRFlags;
+  invalid.owner=0;
+  if(I386TaskSpawnFrom(&scheduler,heap,&invalid,8192,&SelectedParentWorker,0) ||
+      heap->used!=used || heap->allocations!=allocations) return FALSE;
+  parent=I386TaskSpawn(&scheduler,heap,8192,&SelectedParentWorker,0);
+  if(!parent || scheduler.current!=scheduler.root) return FALSE;
+  parent_state=parent->task.heap_state;
+  used=heap->used;
+  if(I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0,0x18,0x20,24) ||
+      heap->used!=used || parent->task.lifetime_refs || parent_state->children ||
+      scheduler.root->lifetime_refs!=1 || root_state->children!=1) return FALSE;
+  child=I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0);
+  if(!child || scheduler.current!=scheduler.root) return FALSE;
+  child_state=child->task.heap_state;
+  if(child_state->parent!=parent_state || parent->task.lifetime_refs!=1 ||
+      parent_state->children!=1 || scheduler.root->lifetime_refs!=1 ||
+      root_state->children!=1 || child->task.data_heap==parent->task.data_heap ||
+      child->task.data_heap->mem_task!=&child->task) return FALSE;
+  if(!I386SchedYield(&scheduler) || !parent->task.finished || !child->task.finished ||
+      I386TaskDestroy(parent)) return FALSE;
+  used=heap->used;
+  if(I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0) ||
+      heap->used!=used) return FALSE;
+  heap_reclaim_target=&child->task;
+  if(!I386TaskDestroy(child) || parent->task.lifetime_refs || parent_state->children) return FALSE;
+  heap_reclaim_target=&parent->task;
+  if(!I386TaskDestroy(parent) || scheduler.root->lifetime_refs || root_state->children ||
+      heap->used || heap->allocations!=allocations || !I386HeapValid(heap) ||
+      task_control_storage.used!=controls || task_control_storage.allocations!=control_allocations ||
+      task_pool.used_u8s!=pages || heap_reclaims!=reclaims+2 || errors ||
+      (GetRFlags&0x200)!=(flags&0x200)) return FALSE;
+  return TRUE;
 }
 U0 PublicHeapReclaim(CI386PublicPool *pool)
 {

@@ -6,14 +6,17 @@ public U0 I386TaskReturn()
   I386SchedFinish(I386TaskSelf->owner);
   while (1) {}
 }
-public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
-  I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
+public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
+  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
+  U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   CI386Heap *file_heap;
   I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total;
   U32 flags;
-  if (!s || !s->root || !s->bind || !heap || !entry || stack_size<256 ||
+  if (!s || !s->root || !s->bind || !parent || parent->owner!=s ||
+      parent->addr!=parent || parent->finished || parent->finishing ||
+      !heap || !entry || stack_size<256 ||
       stack_size&7 || stack_size>0xFFFFFFFF-header) return 0;
   if (private_size<0 || private_size&7 || (private_size && private_size<24) ||
       private_size>0xFFFFFFFF-header-stack_size) return 0;
@@ -34,17 +37,17 @@ public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
   if (!I386ContextInit(&owned->task.context,&owned->task.stk->stk_base,owned->task.stk->stk_size,
       entry,arg,&I386TaskReturn,fs,gs)) goto spawn_fail;
   file_heap=heap; if(owned->task.memory) file_heap=owned->task.memory;
-  if(s->current && I386TaskHeapHooks(s->current)) {
-    if(I386TaskHeapHooks(s->current)!=31 ||
-        !(*s->current->heap_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
+  if(I386TaskHeapHooks(parent)) {
+    if(I386TaskHeapHooks(parent)!=31 ||
+        !(*parent->heap_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
   }
-  if(s->current && (s->current->file_state || s->current->file_clone || s->current->file_destroy)) {
-    if(!s->current->file_state || !s->current->file_clone || !s->current->file_destroy ||
-        !(*s->current->file_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
+  if(parent->file_state || parent->file_clone || parent->file_destroy) {
+    if(!parent->file_state || !parent->file_clone || !parent->file_destroy ||
+        !(*parent->file_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
   }
-  if(s->current && (s->current->hash_table || s->current->symbol_state || s->current->symbol_clone || s->current->symbol_destroy)) {
-    if(!s->current->hash_table || !s->current->symbol_state || !s->current->symbol_clone || !s->current->symbol_destroy ||
-        !(*s->current->symbol_clone)(s->current,&owned->task,file_heap)) goto spawn_fail;
+  if(parent->hash_table || parent->symbol_state || parent->symbol_clone || parent->symbol_destroy) {
+    if(!parent->hash_table || !parent->symbol_state || !parent->symbol_clone || !parent->symbol_destroy ||
+        !(*parent->symbol_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
   }
   if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
   I386IrqRestore(flags);
@@ -62,6 +65,12 @@ spawn_fail:
   I386HeapFree(heap,owned);
   I386IrqRestore(flags);
   return 0;
+}
+public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
+  I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
+{
+  if(!s) return 0;
+  return I386TaskSpawnFrom(s,heap,s->current,stack_size,entry,arg,fs,gs,private_size);
 }
 public Bool I386TaskDestroy(CI386OwnedTask *owned)
 {//Readable live owned record required. Never destroy from its own stack.

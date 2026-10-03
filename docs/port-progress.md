@@ -11932,3 +11932,31 @@ disk SHA-256 is
 `a09defbbd882ab8acecde7902e33999235c929f40c05d3eeb0bf381058fb6f91`.
 This is the cross-built provider containing the allocation-error fix; the
 guest-built replacement is still compiling.
+
+All four conditional pressure attempts now pass in both diagnostic phases,
+including exact heap recovery after `OutMem` and the successful 64 KiB case.
+The broader integration runner and updated compiler-provider rebuild remain
+active; their final verdicts are still pending.
+
+The private creation helper now supports a selected live parent through
+`I386TaskSpawnFrom`. Heap, file and symbol cloning receive that parent directly,
+without changing scheduler current or Fs. The original `I386TaskSpawn` entry
+keeps its calling convention and delegates with the current task as parent.
+Invalid, finishing and finished parents are rejected before allocation.
+
+`build/i386-task-heaps-test/result.json` passes: its new selected-parent case
+creates a child from root context with a different heap parent, verifies the
+chosen parent's pin, prevents parent destruction until child destruction,
+tests construction rollback and finished-parent rejection, then recovers exact
+private and control-heap counters. All four earlier heap cycles remain, with
+12 reclamations total. The legacy task corpus and 386 instruction audit also
+pass (`build/i386-selected-parent-legacy-tasks.log`). File/symbol inheritance
+through this new selection path still needs behavior coverage.
+
+The expanded heap fixture exceeded its old stage capacity. It now uses a
+bounded 448-sector profile ending at its relocated first heap at `0x48000`;
+control storage starts at `0x50000`, and the unchanged-size backing arena spans
+`0x58000` through `0x88000`, below the boot stack. The OS boot limit is unchanged.
+The bootstrap's two rebuild generations pass. The updated kernel cross-build
+is running in `build/i386-selected-parent-kernel`; this helper does not expose
+public `Spawn` or implement child rings, creator-code retention or root reaping.

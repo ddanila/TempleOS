@@ -232,8 +232,9 @@ the explicit allocation-error test pass. Conditional flag mutations now occur
 inside their registered cleanup handlers. Full pressure qualification is running.
 The fixed boot phase passes all four pressure attempts: 0, 1 KiB and 4 KiB
 throw `OutMem` with cleared conditional flags and exact recovery, while 64 KiB
-succeeds. The task phase remains pending. A new guest compiler-provider rebuild
-and normal-console conditional regression run are active for this source.
+succeeds. All four attempts also pass in the task phase. The normal-console
+regression passes 23 exact-VGA commands; the new guest compiler-provider rebuild
+and full integration qualification remain active for this source.
 
 ### Next public task package: ownership through exit
 
@@ -245,6 +246,13 @@ The contract now also creates a task from inside a child while selecting the
 root as its explicit parent, then requires root-based symbol inheritance and
 child-ring membership. This distinguishes the chosen parent from the creator;
 these behavior checks remain unexecuted while `Spawn` and `Exit` are absent.
+The private `I386TaskSpawnFrom` helper now accepts a selected live parent and
+clones its heap/file/symbol hooks without changing scheduler current. The
+original `I386TaskSpawn` entry keeps its ABI and current-parent behavior.
+Selected-parent heap pinning, failed construction rollback, finished-parent
+rejection, deferred parent destruction and exact private/control-heap recovery
+pass the native heap fixture; the legacy task corpus also passes. This does
+not establish public child rings, creator-code retention or managed reaping.
 
 1. **Create through the original public contract.** Keep `Spawn`'s original
    signature and defaults. Bind the single CPU's `Gs->seth_task` to its root,

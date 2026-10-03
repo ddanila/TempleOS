@@ -13,6 +13,11 @@
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 640
 %error Macro lexer test stage must fit below physical 0x60000
 %endif
+%elifdef TASK_HEAP_TEST
+;Selected-parent task heap fixture starts its first arena at physical 0x48000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 448
+%error Task heap test stage must fit below physical 0x48000
+%endif
 %elifdef LEX_LARGE_TEST
 ;Large fixtures use their first arena at or above 0x50000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 512
