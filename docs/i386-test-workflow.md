@@ -1,5 +1,24 @@
 # Focused tests and mutation checks
 
+Functional acceptance uses automated QEMU tests. The manual workflows below
+are optional exploratory sessions, not required repetitions of passing tests.
+Use them to identify usability problems and convert reproducible failures into
+automated regressions. Host audio playback and subjective comfort may still
+benefit from human feedback without blocking automated functional acceptance.
+
+For typing pasted text into an interactive QEMU guest, launch QEMU with
+`-qmp unix:/tmp/templeos-qmp.sock,server=on,wait=off`, then run:
+
+```sh
+python3 tools/qemu-paste.py --socket /tmp/templeos-qmp.sock
+```
+
+Paste into the helper window with Ctrl+V and click **Type into QEMU**. This
+emulates a US-layout keyboard; it needs no guest clipboard service. Newlines
+press Enter (and execute commands at the console); no final Enter is added.
+ASCII text, tabs and newlines are supported. `--text '6*7;'` or `--file FILE`
+can be used instead of the window. Use the guest's actual QMP socket path.
+
 Build a current image with `python3 tools/build-i386-kernel.py` (run
 `python3 tools/test-rebuild.py` first when Kernel/Compiler sources changed).
 The input harness tests the supplied image; it does not rebuild it. Keep the
@@ -150,8 +169,8 @@ the exact persistent state with `--resume-reopen`. It
 requires the focused 8 MiB
 resource profile from that exact disk. The bundle includes `verify.py`; running
 `python3 verify.py` inside it checks every bundled file and the decompressed
-disk. A README mutation must fail verification. Human manual observation is a
-separate M7 gate; this command does not publish a release.
+disk. A README mutation must fail verification. Human manual observation is optional exploratory feedback; this command does
+not publish a release.
 
 The native build/install harnesses accept `--cpu` as well as `--accel`, so the
 complete guest build can be exercised without an FPU. For example, to rebuild

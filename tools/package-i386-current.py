@@ -585,7 +585,7 @@ def main():
             'Unpack TempleOS-i386-gen2.img.gz and boot a writable copy using:\n\n'
             'qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 8 '
             '-nic none -drive file=TempleOS-i386-gen2.img,format=raw,if=ide\n\n'
-            'Human manual QEMU observation is deferred; this is a local '
+            'Human QEMU observation is optional exploratory feedback; this is a local '
             'candidate, not a published release.\n')
         manifest = {
             'format': 1,

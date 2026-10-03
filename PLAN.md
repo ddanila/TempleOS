@@ -2,6 +2,15 @@
 
 ## Objective and status
 
+**Acceptance revision (2026-10-03):** Repeatable QEMU automation is the
+functional acceptance gate. A person is not required to repeat the automated
+boot, edit/execute/error/interrupt, persistence, rebuild or installation checks.
+Human sessions are optional exploratory feedback on usability and host display,
+input and audio integration. Record discovered failures and turn reproducible
+ones into automated regressions. This supersedes mandatory manual-observation
+gates in the historical progress notes; it does not waive missing automated
+coverage, latency budgets, source provenance or release publication.
+
 **Acceptance revision (2026-09-24):** QEMU/TCG is the required execution
 platform for the current port milestones, including the standalone development
 environment and M7 self-hosting. Physical-PC verification and dedicated 386SX/DX
@@ -2624,7 +2633,7 @@ addresses, allocation order or the prototype's extra cursor cell.
    failure points. General embedded commands, original/native cross-reading and
    injected disk-write failure remain open.
 
-6. **Close resource, regression and manual acceptance.** At 8 MiB, run at least
+6. **Close resource and automated regression acceptance.** At 8 MiB, run at least
    20 edit/execute/error/save/reopen cycles after warm-up. Account for intentional
    persistent definitions and caches separately; temporary document, compiler,
    file and exception state must return to a bounded baseline without per-cycle
@@ -2633,7 +2642,8 @@ addresses, allocation order or the prototype's extra cursor cell.
    Include a small program and a document longer than one screen. Keep the normal
    boot check's existing 60-second development deadline; establish and record
    latency budgets from the first original-editor measurements before closing
-   this slice. Finish with full regression and a documented manual QEMU run.
+   this slice. Finish with full regression and recorded QEMU evidence.
+   A manual QEMU run is optional exploratory feedback, not a completion gate.
    A guest-side acceptance now completes one warm-up plus 20 create, edit,
    save, reopen, execute, runtime-exception and cleanup cycles. Every measured
    cycle returns the shared task heap, exposed through both the data and code

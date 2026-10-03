@@ -11328,3 +11328,17 @@ support QMP stdio and writable copies, preserve logs when an image is locked,
 and terminate the Linux QEMU child if its input runner dies. The human manual
 session remains deferred, and M7 is not marked complete. Work is maintained
 directly on `main` in `ddanila/TempleOS`.
+
+## Automated acceptance and optional exploration (2026-10-03)
+
+The user identified that the manual checklist repeats automated functional
+checks. PLAN.md now makes repeatable QEMU evidence the functional gate; human
+observations are optional usability feedback. This policy change does not
+waive missing automated coverage or publication. The user reported that
+`6*7;` works in the interactive session. No further human results are inferred.
+
+`tools/qemu-paste.py` provides a host paste window and CLI for ASCII keyboard
+injection through QMP, without a guest clipboard service. Printable ASCII,
+tab and newline events were accepted by a disposable QEMU instance; unsupported
+characters are rejected before typing. The current interactive session was
+left untouched and its paste window is ready for the user.

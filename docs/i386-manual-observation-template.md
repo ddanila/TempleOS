@@ -1,7 +1,7 @@
 # i386 QEMU manual observation
 
-When the deferred manual session resumes, use a writable copy of the current
-verified guest-built candidate. Follow the complete
+This is an optional exploratory record, not an M7 completion gate. Use a writable
+copy of the current verified guest-built candidate. Follow the
 commands in [i386-test-workflow.md](i386-test-workflow.md#manual-self-hosted-workstation-session).
 Fill this record with what you actually observed; leave an untried item open.
 
