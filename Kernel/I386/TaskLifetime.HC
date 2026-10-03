@@ -19,12 +19,111 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
   I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total;
   U32 flags,invalid[1];
   creator[0]=0;
+#ifdef I386_TASK_NATIVE_BUILD
+  //Validate native pointer fields directly, retaining the C checks for other targets.
+  invalid[0]=0;
+  asm {
+    PUSH EAX
+    PUSH ESI
+    PUSH EDI
+    MOV ESI,U32 &s[EBP]
+    TEST ESI,ESI
+    JZ I32 @@10
+    MOV EAX,U32 CI386Scheduler.root[ESI]
+    TEST EAX,EAX
+    JZ I32 @@10
+    MOV EAX,U32 CI386Scheduler.bind[ESI]
+    TEST EAX,EAX
+    JZ I32 @@10
+    MOV EDI,U32 &parent[EBP]
+    TEST EDI,EDI
+    JZ I32 @@10
+    CMP ESI,U32 CI386Task.owner[EDI]
+    JNZ I32 @@10
+    CMP EDI,U32 CTask.addr[EDI]
+    JNZ I32 @@10
+    MOV EAX,U32 CI386Task.finished[EDI]
+    TEST EAX,EAX
+    JNZ I32 @@10
+    MOV EAX,U32 CI386Task.finishing[EDI]
+    TEST EAX,EAX
+    JZ I32 @@11
+@@10:
+    MOV EAX,1
+    MOV U32 &invalid[EBP],EAX
+@@11:
+    POP EDI
+    POP ESI
+    POP EAX
+  }
+  if(invalid[0]) return 0;
+#else
   if (!s || !s->root || !s->bind || !parent || parent->owner!=s ||
-      parent->addr!=parent || parent->finished || parent->finishing ||
-      !heap || !entry || stack_size<256 ||
+      parent->addr!=parent || parent->finished || parent->finishing) return 0;
+#endif
+#ifdef I386_TASK_NATIVE_BUILD
+  invalid[0]=0;
+  asm {
+    PUSH EAX
+    PUSH ECX
+    PUSH EDX
+    PUSH EDI
+    MOV EAX,U32 &heap[EBP]
+    TEST EAX,EAX
+    JZ I32 @@60
+    MOV EAX,U32 &entry[EBP]
+    TEST EAX,EAX
+    JZ I32 @@60
+    LEA ECX,U32 &stack_size[EBP]
+    ADD ECX,4
+    MOV ECX,U32 [ECX]
+    TEST ECX,ECX
+    JNZ I32 @@60
+    MOV EAX,U32 &stack_size[EBP]
+    CMP EAX,256
+    JB I32 @@60
+    TEST EAX,7
+    JNZ I32 @@60
+    MOV ECX,U32 &header[EBP]
+    MOV EDX,0xFFFFFFFF
+    SUB EDX,ECX
+    CMP EAX,EDX
+    JA I32 @@60
+    SUB EDX,EAX
+    LEA ECX,U32 &private_size[EBP]
+    ADD ECX,4
+    MOV ECX,U32 [ECX]
+    TEST ECX,ECX
+    JNZ I32 @@60
+    MOV EDI,U32 &private_size[EBP]
+    MOV ECX,EDI
+    AND ECX,7
+    TEST ECX,ECX
+    JNZ I32 @@60
+    TEST EDI,EDI
+    JZ I32 @@61
+    CMP EDI,24
+    JB I32 @@60
+@@61:
+    CMP EDI,EDX
+    JA I32 @@60
+    JMP I32 @@62
+@@60:
+    MOV EAX,1
+    MOV U32 &invalid[EBP],EAX
+@@62:
+    POP EDI
+    POP EDX
+    POP ECX
+    POP EAX
+  }
+  if(invalid[0]) return 0;
+#else
+  if (!heap || !entry || stack_size<256 ||
       stack_size&7 || stack_size>0xFFFFFFFF-header) return 0;
   if (private_size<0 || private_size&7 || (private_size && private_size<24) ||
       private_size>0xFFFFFFFF-header-stack_size) return 0;
+#endif
   total=header+stack_size+private_size;
   flags=I386IrqSave;
   if(parent!=s->current) {
@@ -128,10 +227,40 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
   CI386Task *creator[1];
   U32 invalid[1];
   Bool result;
+#ifdef I386_TASK_NATIVE_BUILD
+  invalid[0]=0;
+  asm {
+    PUSH EAX
+    PUSH ESI
+    MOV ESI,U32 &owned[EBP]
+    TEST ESI,ESI
+    JZ I32 @@40
+    MOV EAX,U32 CI386OwnedTask.signature[ESI]
+    CMP EAX,0x54323349
+    JNZ I32 @@40
+    MOV EAX,U32 CI386Task.owner[ESI]
+    TEST EAX,EAX
+    JZ I32 @@40
+    MOV EAX,U32 CI386Task.finished[ESI]
+    TEST EAX,EAX
+    JZ I32 @@40
+    MOV EAX,U32 CI386Task.owner[ESI]
+    CMP ESI,U32 CI386Scheduler.current[EAX]
+    JNZ I32 @@41
+@@40:
+    MOV EAX,1
+    MOV U32 &invalid[EBP],EAX
+@@41:
+    POP ESI
+    POP EAX
+  }
+  if(invalid[0]) { I386IrqRestore(flags); return FALSE; }
+#else
   if (!owned || owned->signature!=0x54323349 || !owned->task.owner ||
       !owned->task.finished || owned->task.owner->current==&owned->task) {
     I386IrqRestore(flags); return FALSE;
   }
+#endif
   heap=owned->heap;
   creator[0]=owned->creator;
   if(creator[0]) {

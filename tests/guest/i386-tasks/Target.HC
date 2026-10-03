@@ -412,11 +412,22 @@ I64 OwnedTaskTest()
       I386TaskSpawn(&scheduler,&heap,255,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,&heap,257,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,&heap,0x100000000,&OwnedWorker,0) || heap.used) return 40;
+  if(I386TaskSpawnFrom(0,&heap,scheduler.root,8192,&OwnedWorker,0) ||
+      I386TaskSpawnFrom(&scheduler,&heap,0,8192,&OwnedWorker,0)) return 148;
+  scheduler.root->addr=0;
+  if(I386TaskSpawnFrom(&scheduler,&heap,scheduler.root,8192,&OwnedWorker,0) || heap.used) return 149;
+  scheduler.root->addr=scheduler.root;
+  scheduler.root->finishing=1;
+  if(I386TaskSpawnFrom(&scheduler,&heap,scheduler.root,8192,&OwnedWorker,0) || heap.used) return 150;
+  scheduler.root->finishing=0;
   if (I386TaskAlloc(1) || !I386TaskFree(0) ||
       I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,-1) ||
       I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,16) ||
       I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,4097) ||
-      I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,0xFFFFFFFF)) return 57;
+      I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,0xFFFFFFFF) ||
+      I386TaskSpawn(&scheduler,&heap,0xFFFFFFF8,&OwnedWorker,0) ||
+      I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,0xFFFFFFF8) ||
+      I386TaskSpawn(&scheduler,&heap,8192,&OwnedWorker,0,0x18,0x20,0x100000000)) return 57;
   if (I386SchedSetCleanup(0,&OwnedCleanup) ||
       I386SchedSetCleanup(&scheduler,&OwnedCleanup)) return 60;
   for (cycle=0;cycle<2;cycle++) {

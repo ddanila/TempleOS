@@ -319,6 +319,29 @@ Owned-task construction still uses immediate attachment; public deferred
 `Spawn`, queue insertion, child rings, pending disposal and managed reaping
 remain to be wired and qualified. Latest-source guest-built boot capacity
 is not established by the cross-build or private fixture passes.
+Native task guards and activation insertion now use compact assembly with
+matching C implementations retained for other targets. The guards preserve
+parent identity/owner checks, live-state checks, creator overflow handling,
+destruction from another stack and one-time dormant-task activation. Size
+validation rejects nonzero high words, negative and misaligned sizes, minimum
+violations and total-allocation overflow. Both queue insertions remain under
+the original IRQ mask and store task-base pointers, preserving private and
+public ring membership.
+The task fixture adds null-parent/scheduler, broken parent identity, finishing
+parent and aligned/wider-than-32-bit allocation boundaries. Task, heap and
+symbol fixtures pass with instruction audits, and two bootstrap generations
+pass (`build/i386-task-compact-rings-bootstrap.log`,
+`build/i386-task-compact-rings-tasks.log`,
+`build/i386-task-compact-rings-heaps.log`,
+`build/i386-task-compact-rings-symbols.log`). The cross-built image is 482,584
+bytes, 4,368 bytes below the first scheduler-split image, with unchanged boot
+capacity. Its normal 8 MiB no-FPU TCG boot matches every keyboard/VGA checkpoint
+in 49.032234 seconds, passing the 60-second startup budget
+(`build/i386-task-compact-rings-keyboard/result.json`). A fresh six-module guest
+rebuild/install is running in `build/i386-task-compact-rings-native-flat`;
+actual guest-native capacity and installation remain unqualified until its
+results are available. The older creator-pin full integration run is still
+active against its own packaged source epoch; it cannot qualify these changes.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning

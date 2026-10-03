@@ -66,18 +66,100 @@ public Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task)
 public Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task)
 {//Attach a prepared dormant task once. Does not switch the current context.
   U32 flags=I386IrqSave;
+#ifdef I386_TASK_NATIVE_BUILD
+  U32 invalid[1];
+  invalid[0]=0;
+  asm {
+    PUSH EAX
+    PUSH ESI
+    PUSH EDI
+    MOV ESI,U32 &s[EBP]
+    TEST ESI,ESI
+    JZ I32 @@50
+    MOV EAX,U32 CI386Scheduler.root[ESI]
+    TEST EAX,EAX
+    JZ I32 @@50
+    MOV EDI,U32 &task[EBP]
+    TEST EDI,EDI
+    JZ I32 @@50
+    CMP ESI,U32 CI386Task.owner[EDI]
+    JNZ I32 @@50
+    CMP EDI,U32 CTask.addr[EDI]
+    JNZ I32 @@50
+    MOV EAX,U32 CTask.task_signature[EDI]
+    CMP EAX,TASK_SIGNATURE_VAL
+    JNZ I32 @@50
+    LEA ESI,U32 CI386Task.context[EDI]
+    MOV EAX,U32 CI386Context.esp[ESI]
+    TEST EAX,EAX
+    JZ I32 @@50
+    MOV EAX,U32 CI386Task.finished[EDI]
+    TEST EAX,EAX
+    JNZ I32 @@50
+    MOV EAX,U32 CI386Task.finishing[EDI]
+    TEST EAX,EAX
+    JNZ I32 @@50
+    MOV EAX,U32 CI386Task.blocked[EDI]
+    TEST EAX,EAX
+    JNZ I32 @@50
+    MOV EAX,U32 CI386Task.next[EDI]
+    TEST EAX,EAX
+    JNZ I32 @@50
+    MOV EAX,U32 CI386Task.last[EDI]
+    TEST EAX,EAX
+    JNZ I32 @@50
+    CMP EDI,U32 CTask.next_task[EDI]
+    JNZ I32 @@50
+    CMP EDI,U32 CTask.last_task[EDI]
+    JZ I32 @@51
+@@50:
+    MOV EAX,1
+    MOV U32 &invalid[EBP],EAX
+@@51:
+    POP EDI
+    POP ESI
+    POP EAX
+  }
+  if(invalid[0]) { I386IrqRestore(flags); return FALSE; }
+#else
   if(!s || !s->root || !task || task->owner!=s || task->addr!=task ||
       task->task_signature!=TASK_SIGNATURE_VAL || !task->context.esp ||
       task->finished || task->finishing || task->blocked || task->next || task->last ||
       task->next_task!=task || task->last_task!=task) {
     I386IrqRestore(flags); return FALSE;
   }
+#endif
+#ifdef I386_TASK_NATIVE_BUILD
+  //Both rings store task-base pointers. IF remains clear through both insertions.
+  asm {
+    PUSH EAX
+    PUSH ESI
+    PUSH EDI
+    MOV ESI,U32 &s[EBP]
+    MOV ESI,U32 CI386Scheduler.root[ESI]
+    MOV EDI,U32 &task[EBP]
+    MOV EAX,U32 CI386Task.last[ESI]
+    MOV U32 CI386Task.next[EDI],ESI
+    MOV U32 CI386Task.last[EDI],EAX
+    MOV U32 CI386Task.next[EAX],EDI
+    MOV U32 CI386Task.last[ESI],EDI
+    MOV EAX,U32 CTask.last_task[ESI]
+    MOV U32 CTask.next_task[EDI],ESI
+    MOV U32 CTask.last_task[EDI],EAX
+    MOV U32 CTask.next_task[EAX],EDI
+    MOV U32 CTask.last_task[ESI],EDI
+    POP EDI
+    POP ESI
+    POP EAX
+  }
+#else
   task->next=s->root; task->last=s->root->last;
   task->last->next=task; s->root->last=task;
   //Public ring contains every attached live task, including blocked workers.
   //Only the private next/last ring is restricted to runnable tasks.
   task->next_task=s->root; task->last_task=s->root->last_task;
   task->last_task->next_task=task; s->root->last_task=task;
+#endif
   I386IrqRestore(flags);
   return TRUE;
 }
