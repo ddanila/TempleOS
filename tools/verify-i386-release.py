@@ -6,6 +6,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
+import runpy
 
 
 def file_sha256(path):
@@ -43,6 +44,19 @@ def main():
             size += len(chunk)
     if (size, digest.hexdigest()) != (manifest['image_bytes'], manifest['image_sha256']):
         raise ValueError('Decompressed disk differs from manifest')
+    if 'speaker_output_generations' in manifest:
+        if manifest['speaker_output_generations'] != ['first', 'second']:
+            raise ValueError('Expected audio evidence for both generations')
+        assess = runpy.run_path(str(package / 'evidence/speaker-output-checker.py'))['assess_wav']
+        for label, disk_hash in (('first', manifest['image_sha256']),
+                                 ('second', manifest['second_generation_sha256'])):
+            audio = json.loads((package / f'evidence/{label}-speaker-output.json').read_text())
+            wav = package / f'evidence/{label}-speaker.wav'
+            if audio.get('disk_sha256') != disk_hash or audio.get('wav_sha256') != file_sha256(wav):
+                raise ValueError(f'{label}: audio evidence identity differs')
+            measured = assess(wav, audio.get('console_result', {}).get('audio_emission', {}))
+            if measured['result'] != 'pass' or any(audio.get(key) != value for key, value in measured.items()):
+                raise ValueError(f'{label}: speaker output failed independent verification')
     print(json.dumps({'result': 'pass', 'files': len(files),
                       'image_sha256': digest.hexdigest(),
                       'packaging_revision': manifest['packaging_revision']}, indent=2))

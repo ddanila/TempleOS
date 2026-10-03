@@ -11380,3 +11380,32 @@ optimization must preserve malformed-module rejection, duplicate-symbol
 detection and heap corruption invariants. No OS behavior changed in this
 checkpoint; source/API coverage mapping and the remaining release gates
 are still open.
+
+## PC-speaker output qualification (2026-10-03)
+
+Both guest-built generations now pass an independent emitted-audio test on
+8 MiB `486,-fpu` TCG. Their unchanged snapshots execute four sound commands
+with exact VGA, PIT divisor, speaker-enable and IRQ checks. WAV samples
+independently show 440 Hz followed by 880 Hz. After settling, both speaker-off
+and reset produce zero new WAV bytes over 1.5 seconds; each tone produces
+over one second of PCM. Source disk hashes remain unchanged. Evidence:
+`build/i386-speaker-output-gen{1,2}-emission/result.json`, recordings and
+`console/command.json`.
+
+The first live test deliberately retained its failing result in
+`build/i386-speaker-output-gen2/result.json`: it expected zero-valued silence
+samples, but QEMU's WAV backend omits disabled-voice intervals. The final
+oracle checks actual byte emission during explicit off/reset intervals. It
+does not fabricate silence samples or infer silence from PIT status alone.
+
+Ten host runner/oracle tests pass, including muted, wrong-note, reversed,
+stuck-on, missing-reset-silence, invalid-observation and source-disk cases.
+Packaging rejects stale checker hashes, wrong disks, emitted sound during
+off and muted recordings. The standalone bundle verifier also rejects a
+muted recording after its report and manifest hashes are recomputed.
+
+The package now requires both audio results, records the WAVs and commands,
+and bundles its checker for independent verification. The expanded local
+bundle verifies 95 files. OS source and installed images did not change;
+no guest rebuild was needed. Startup optimization, broader required-coverage
+audit, reproducible full qualification and release publication remain open.

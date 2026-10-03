@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Check mutation verdicts and persistence acceptance source-disk protection."""
 import contextlib
+import array
 import io
 import json
+import math
 from pathlib import Path
 import runpy
 import tempfile
 import unittest
+import wave
 from unittest.mock import Mock, patch
 
 MODULE=runpy.run_path(str(Path(__file__).with_name('test-i386-mutations.py')))
@@ -69,6 +72,63 @@ class PersistenceVerdictTests(unittest.TestCase):
         self.assertEqual(code,1)
         self.assertEqual(report['result'],'fail')
         self.assertFalse(report['source_disk_unchanged'])
+
+
+class SpeakerWaveformTests(unittest.TestCase):
+    assess = staticmethod(runpy.run_path(str(Path(__file__).with_name(
+        'test-i386-speaker-output.py')))['assess_wav'])
+
+    def waveform(self, notes, emission=None):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'speaker.wav'
+            samples = array.array('h')
+            for note in notes:
+                samples.extend(0 if note == 0 else
+                               (12000 if math.sin(2*math.pi*note*i/44100) > 0 else -12000)
+                               for i in range(44100*2))
+            import sys
+            if sys.byteorder != 'little': samples.byteswap()
+            with wave.open(str(path), 'wb') as stream:
+                stream.setparams((1, 2, 44100, 0, 'NONE', 'not compressed'))
+                stream.writeframes(samples.tobytes())
+            return self.assess(path, emission)
+
+    def test_tones_and_both_silence_transitions(self):
+        self.assertEqual(self.waveform([0, 440, 0, 880, 0])['result'], 'pass')
+
+    def test_capture_rejects_disk_as_audio_destination(self):
+        runner = runpy.run_path(str(Path(__file__).with_name('i386-kernel-input.py')))['run_input']
+        with tempfile.TemporaryDirectory() as tmp:
+            disk = Path(tmp) / 'source.img'
+            disk.write_bytes(b'preserve this disk')
+            with self.assertRaisesRegex(ValueError, 'overwrite a disk'):
+                runner(disk, Path(tmp)/'out', groups=('sound',), audio_wav=disk)
+            self.assertEqual(disk.read_bytes(), b'preserve this disk')
+
+    def test_faulty_output_is_rejected(self):
+        for notes in ([0, 0, 0, 0, 0], [0, 220, 0, 880, 0],
+                      [0, 440, 440, 880, 880], [0, 880, 0, 440, 0],
+                      [0, 440, 0, 880], [0, 440, 0, 880, 0, 220]):
+            with self.subTest(notes=notes):
+                self.assertEqual(self.waveform(notes)['result'], 'fail')
+
+    def test_backend_silence_requires_independent_emission_observations(self):
+        import copy
+        emission = {
+            'tone_440': {'before_bytes': 44, 'after_bytes': 132344, 'observation_seconds': 1.51},
+            'off': {'before_bytes': 132344, 'after_bytes': 132344, 'observation_seconds': 1.51},
+            'tone_880': {'before_bytes': 132344, 'after_bytes': 264644, 'observation_seconds': 1.51},
+            'reset': {'before_bytes': 264644, 'after_bytes': 264644, 'observation_seconds': 1.51}}
+        self.assertEqual(self.waveform([440, 880], emission)['result'], 'pass')
+        for phase, field, value in (
+                ('off', 'after_bytes', 132346), ('reset', 'after_bytes', 264646),
+                ('tone_440', 'after_bytes', 44), ('tone_880', 'observation_seconds', 0.5),
+                ('off', 'before_bytes', True), ('reset', 'observation_seconds', float('nan'))):
+            changed = copy.deepcopy(emission)
+            changed[phase][field] = value
+            with self.subTest(phase=phase, field=field):
+                self.assertEqual(self.waveform([440, 880], changed)['result'], 'fail')
+        self.assertEqual(self.waveform([440, 880], {})['result'], 'fail')
 
 
 if __name__=='__main__': unittest.main()

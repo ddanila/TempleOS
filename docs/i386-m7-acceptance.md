@@ -7,9 +7,9 @@ the 2026-10-03 acceptance revision in PLAN.md.
 The next work is the [automated release qualification queue](../PLAN.md#next-goal-an-automatically-qualified-m7-release).
 This table records existing evidence; it does not replace a requirement-to-test
 coverage audit. In particular, current no-FPU boots take 73–74 seconds against
-the plan's 60-second target. The next slice must expose that as a failing budget
-check, then profile and improve startup. Speaker-register tests also need an
-automated audio-output oracle. Publication follows complete qualification;
+the plan's 60-second target. The startup-budget checker now reports that failure; startup optimization
+remains open. Both guest-built generations pass an automated 440/880 Hz
+waveform and off/reset emission oracle. Publication follows complete qualification;
 removing the manual gate does not make M7 complete.
 
 This is the current evidence map for [M7 in PLAN.md](../PLAN.md#following-big-goal-m7-self-hosting-32-bit-templeos-workstation).
@@ -37,7 +37,8 @@ evidence rather than repository contents.
 | 8 MiB PC workstation on no-FPU and later 32-bit CPUs | Both installed generations pass 513 commands, 576 lines, exact VGA and 20 document cycles under `486,-fpu` and `pentium3,-fpu` TCG, each with writable-copy provenance. The first also passes under `486` KVM. | Pass on both guest-built generations under no-FPU 486 and later-CPU TCG, and on the first under 486 KVM. |
 | Persistent DolDoc development and memory budget | Both guest-built generations' `doldoc-tcg-nofpu*/result.json` pass 107/56/15 commands over three writable boots with exact VGA, unchanged source disks and RedSea audits. Both complete no-FPU workstation suites pass 20 cycles with exact task-heap recovery. | Pass on both current guest-built generations. |
 | TempleOS programming model and public services | The current full suites exercise HolyC compilation, DolDoc, task/break recovery, direct VGA/PS/2/PIT/speaker paths, RedSea, graphics, sound, help and source-linked diagnostics. Original x64 TempleOS reads and saves both generations' native binary-record and styled DolDoc files byte for byte. Both i386 generations then read and save an original-edited styled document byte for byte. The [support matrix](i386-support-matrix.md) defines the tested surface. | Pass for the integrated tested surface; complete original feature parity remains open. |
-| Release artifact and optional human usability feedback | `build/i386-release-current/` packages the current disk and evidence, including bidirectional original-document compatibility, install recovery and the six-module no-FPU retained rebuild; its standalone `verify.py` passes for 88 files. The [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Local current-source package passes; publication remains open. Human observation is optional and does not block M7. |
+| Emulated PC-speaker output | `build/i386-speaker-output-gen1-emission/result.json` and `build/i386-speaker-output-gen2-emission/result.json`: 440 Hz and 880 Hz PCM waveforms plus zero new WAV bytes during settled 1.5-second off/reset intervals. Source disks unchanged. | Pass for both generations at 8 MiB `486,-fpu` TCG; physical audio remains deferred. |
+| Release artifact and optional human usability feedback | `build/i386-release-current/` packages the current disk and evidence, including bidirectional original-document compatibility, install recovery and the six-module no-FPU retained rebuild; its standalone `verify.py` passes for 95 files and independently rechecks both generations’ audio waveforms and off/reset emission observations. The [manual workflow](i386-test-workflow.md#manual-self-hosted-workstation-session) and [observation form](i386-manual-observation-template.md) are ready. | Local current-source package passes; publication remains open. Human observation is optional and does not block M7. |
 
 The 16 MiB `486,-fpu` TCG retained rebuild in
 `build/i386-kernel/retained-build-gen3-tcg-nofpu/` has since passed its

@@ -70,12 +70,47 @@ def qemu_command(path, cpu, accel, disk, ram=8, target=None):
         raise ValueError(f'{path}: invalid QEMU command: {exc}') from exc
 
 
+def speaker_output(directory, disk):
+    data = passing(directory / 'result.json')
+    console = data.get('console_result', {})
+    if ((data.get('cpu'), data.get('ram_mib'), data.get('accel'),
+         data.get('disk_sha256'), data.get('source_disk_unchanged')) !=
+            ('486,-fpu', 8, 'tcg', sha256(disk), True) or
+            (console.get('result'), console.get('cpu'), console.get('ram_mib'),
+             console.get('disk_sha256'), console.get('boot_mode')) !=
+            ('pass', '486,-fpu', 8, sha256(disk), 'interactive') or console.get('groups') != ['sound'] or
+            console.get('native_commands') != 4):
+        raise ValueError(f'{directory}: incomplete speaker output profile')
+    wav = directory / 'speaker.wav'
+    if data.get('wav_sha256') != sha256(wav):
+        raise ValueError(f'{directory}: speaker waveform differs')
+    for key, name in (('checker_sha256', 'test-i386-speaker-output.py'),
+                      ('input_runner_sha256', 'i386-kernel-input.py')):
+        if data.get(key) != sha256(ROOT / 'tools' / name):
+            raise ValueError(f'{directory}: changed audio test: {name}')
+    assess = runpy.run_path(str(ROOT / 'tools/test-i386-speaker-output.py'))['assess_wav']
+    measured = assess(wav, console.get('audio_emission', {}))
+    if measured['result'] != 'pass' or any(data.get(key) != value for key, value in measured.items()):
+        raise ValueError(f'{directory}: independent audio check failed')
+    command = directory / 'console/command.json'
+    qemu_command(command, '486,-fpu', 'tcg', disk)
+    argv = json.loads(command.read_text())
+    if ('-snapshot' not in argv or argv[argv.index('-machine') + 1] != 'pc,pcspk-audiodev=speaker' or
+            argv[argv.index('-audiodev') + 1] !=
+            f'wav,id=speaker,path={wav},out.frequency=44100,out.channels=1,out.format=s16'):
+        raise ValueError(f'{directory}: invalid speaker capture command')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--first', type=Path, default=FIRST)
     parser.add_argument('--second', type=Path, default=SECOND)
     parser.add_argument('--identity', type=Path, default=IDENTITY)
     parser.add_argument('--out', type=Path, default=OUT)
+    parser.add_argument('--first-audio', type=Path,
+                        default=ROOT / 'build/i386-speaker-output-gen1-emission')
+    parser.add_argument('--second-audio', type=Path,
+                        default=ROOT / 'build/i386-speaker-output-gen2-emission')
     args = parser.parse_args()
     first, second = args.first.resolve(), args.second.resolve()
     out = args.out.resolve()
@@ -210,6 +245,13 @@ def main():
         'manual-observation-template.md':
             ROOT / 'docs/i386-manual-observation-template.md',
     }
+    for label, audio, disk in (('first', args.first_audio.resolve(), first_disk),
+                               ('second', args.second_audio.resolve(), second_disk)):
+        speaker_output(audio, disk)
+        evidence[f'{label}-speaker-output.json'] = audio / 'result.json'
+        evidence[f'{label}-speaker-command.json'] = audio / 'console/command.json'
+        evidence[f'{label}-speaker.wav'] = audio / 'speaker.wav'
+    evidence['speaker-output-checker.py'] = ROOT / 'tools/test-i386-speaker-output.py'
     for generation in (first, second):
         install = passing(generation / 'result.json')
         audit = passing(generation / 'instruction-audit/result.json')
@@ -581,7 +623,9 @@ def main():
             'both generations\' original TempleOS binary-document and '
             'bidirectional styled-document round trips, both generations\' interrupted-install '
             'recovery, a six-module no-FPU guest rebuild and source '
-            'manifest are in evidence/. Verify with python3 verify.py.\n\n'
+            'manifest, and both generations\' PC-speaker waveforms with off/reset '
+            'emission checks '
+            'are in evidence/. Verify with python3 verify.py.\n\n'
             'Unpack TempleOS-i386-gen2.img.gz and boot a writable copy using:\n\n'
             'qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 8 '
             '-nic none -drive file=TempleOS-i386-gen2.img,format=raw,if=ide\n\n'
@@ -600,6 +644,7 @@ def main():
             'packaging_revision': revision,
             'packaging_worktree_dirty': worktree_dirty,
             'guest_built_modules': 12,
+            'speaker_output_generations': ['first', 'second'],
             'flat_image_sha256': identity['flat_sha256'],
             'boot_area_sha256': identity['boot_area_sha256'],
             'files_sha256': {

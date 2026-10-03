@@ -35,7 +35,7 @@ The current native i386 candidate is self-hosting: two guest-built generations
 reproduce all twelve modules, the flat image and boot area byte for byte.
 Both generations pass the 8 MiB no-FPU workstation suites and persistent
 three-boot document workflow. All six retained modules also rebuild under
-16 MiB no-FPU TCG. The local 88-file release bundle verifies. The authoritative
+16 MiB no-FPU TCG. The local 95-file release bundle verifies, including both generations’ audio output. The authoritative
 current evidence is [M7 acceptance](docs/i386-m7-acceptance.md); detailed
 chronology is in [port progress](docs/port-progress.md).
 
@@ -60,7 +60,7 @@ removing redundant manual steps does not establish missing functional coverage.
 | Order | Work | Completion evidence |
 | --- | --- | --- |
 | 1. Audit required coverage | Map each M7 requirement to an executable test and independent oracle on the current image. Check source-linked diagnostics, cooperative work in multiple terminals, public services and the original-document workflow explicitly; distinguish required behavior from broader feature parity. Add focused failing tests for uncovered required behavior and implement the missing behavior. | Every required outcome has a current-source result or a named open failing case; no blanket “complete OS” claim based only on the existing suite count. |
-| 2. Close observable gaps | Profile normal startup and bring the no-FPU reference run within the existing 60-second target. Enforce the existing one-second edit/interrupt budget, 8 MiB interactive and 16 MiB rebuild profiles, and bounded heap use. Capture emulated speaker output to a WAV file and check tone/silence automatically; PIT register checks alone do not prove audio output. | Machine-readable timings and memory bounds fail the gate when exceeded; audio samples show the requested tone and silence. Any proposed budget change requires measured justification and an explicit plan revision, not merely a longer harness timeout. |
+| 2. Close observable gaps | Profile normal startup and bring the no-FPU reference run within the existing 60-second target. Enforce the existing one-second edit/interrupt budget, 8 MiB interactive and 16 MiB rebuild profiles, and bounded heap use. Capture emulated speaker output to a WAV file and check tone/silence automatically; PIT register checks alone do not prove audio output. | Machine-readable timings and memory bounds fail the gate when exceeded; audio waveforms show the requested tones, and settled off/reset intervals produce no new audio samples. Any proposed budget change requires measured justification and an explicit plan revision, not merely a longer harness timeout. |
 | 3. Make qualification reproducible | Provide one entry command that runs or validates the required pipeline for an explicit source revision and candidate, with named stage outputs, safe resume and provenance checks. Separate fresh qualification from verification of cached evidence. Include the matching x86-64 regression and executable-region 386 audit. | A clean output directory produces a complete pass/fail report; stale source hashes, wrong images, missing verdicts, excessive latency and targeted broken behavior are rejected. |
 | 4. Publish the qualified candidate | After the required gates pass, publish a versioned image, matching source reference, hashes, support matrix, known limitations and standalone verifier on our fork. Smoke-boot a downloaded artifact on a writable copy automatically. | The downloaded published artifact verifies and reaches the normal prompt; the report identifies precisely what was tested. No manual approval checkbox is used as evidence of functionality. |
 
@@ -88,7 +88,10 @@ no-FPU result as failing the 60-second target. An installed-image profile uses
 the candidate's own retained modules and preserves the disk; its samples point
 to module validation/symbol resolution during foundation loading and heap
 operations during source compilation. Next, complete the requirement-to-test
-audit and optimize these measured costs without weakening validation. After M7 qualification, prioritize
+audit and optimize these measured costs without weakening validation. Both guest-built
+generations now pass the PC-speaker waveform and off/reset emission checks;
+packaging and its standalone verifier independently recheck that evidence.
+After M7 qualification, prioritize
 broader original-source/API compatibility using an explicit inventory and
 original x64 behavioral oracles, rather than adding isolated passing examples.
 

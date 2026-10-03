@@ -8,8 +8,8 @@ feedback under the 2026-10-03 acceptance revision in `PLAN.md`.
 
 Functional pass entries below do not imply every resource target passes.
 Current first/second-generation no-FPU startup measures 73.868/73.265 seconds,
-exceeding the plan's 60-second target. Automated budget enforcement and audio
-waveform verification are named work in the current release qualification plan.
+exceeding the plan's 60-second target. The startup-budget checker reports that failure. Both generations now pass
+automated audio waveform and off/reset emission checks.
 
 ## Tested emulator
 
@@ -29,7 +29,8 @@ The command manifests in each result directory contain the exact QEMU argv.
 verified QEMU evidence. `tools/package-i386-current.py` checks two-generation
 identity, source hashes, 386 audits and current workstation and writable
 session results before creating that local bundle. Its standalone verifier
-checks the compressed image and 88 bundled files. All six current-source
+checks the compressed image and 95 bundled files and independently rechecks
+both audio waveforms and their off/reset emission observations. All six current-source
 retained modules were rebuilt in the guest under 16 MiB `486,-fpu` TCG and
 match the installed second-generation modules byte for byte. The installed
 image also passes the complete no-FPU workstation and writable-session suites.
@@ -60,6 +61,14 @@ timer interval so a host scheduling pause between programming and one read
 does not masquerade as a guest sound failure; it still checks the 440 Hz
 divisor range, speaker-enable bits and preserved interrupt flag. The revised
 focused sound group passes on both `486,-fpu` and `pentium3,-fpu` TCG.
+
+The focused speaker-output test boots unchanged snapshots of both generations
+under 8 MiB `486,-fpu` TCG. The WAV recordings contain 440 Hz then 880 Hz;
+each settled 1.5-second `Snd`-off and `SndRst` interval emits zero new WAV bytes.
+QEMU's WAV backend omits inactive-voice intervals, so file emission observations
+provide the silence oracle rather than invented zero-valued PCM. Result paths
+are `build/i386-speaker-output-gen{1,2}-emission/result.json`; the local bundle
+includes the recordings, observations and exact commands.
 
 ## Earlier-source evidence
 

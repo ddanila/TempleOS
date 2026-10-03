@@ -107,7 +107,7 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -116,9 +116,15 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     if ram_mib not in (8,16): raise ValueError('Unsupported i386 RAM profile')
     if accel not in ('tcg','kvm'): raise ValueError('Unsupported QEMU accelerator')
     if startup_timeout<1 or startup_timeout>1200: raise ValueError('Unsupported startup timeout')
+    if audio_wav is not None and groups!=('sound',):
+        raise ValueError('Audio capture requires the focused sound group')
+    if audio_wav is not None and audio_wav.resolve() in (
+            disk.resolve(), target_disk.resolve() if target_disk is not None else None):
+        raise ValueError('Audio capture must not overwrite a disk image')
     active_group=None
     submitted=0
     interaction_latencies={}
+    audio_emission={}
     mouse_host_x=320
     mouse_host_y=240
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
@@ -132,6 +138,12 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     qmp=Path(qmp_dir.name)/'qmp.sock' if qmp_dir else None
     cmd=['qemu-system-i386','-machine','pc','-accel',accel,'-cpu',cpu,'-m',str(ram_mib),'-nic','none',
          '-drive',f'file={disk.resolve()},format=raw,if=ide']
+    if audio_wav is not None:
+        audio_wav=audio_wav.resolve()
+        audio_wav.parent.mkdir(parents=True,exist_ok=True)
+        audio_wav.unlink(missing_ok=True)
+        cmd[2]='pc,pcspk-audiodev=speaker'
+        cmd+=['-audiodev',f'wav,id=speaker,path={audio_wav},out.frequency=44100,out.channels=1,out.format=s16']
     if target_disk is not None:
         if target_disk.resolve()==disk.resolve(): raise ValueError('Target must be a separate disk')
         cmd+=['-drive',f'file={target_disk.resolve()},format=raw,if=ide,index=2']
@@ -189,6 +201,17 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
 
             def press(name):
                 key(name,True); key(name,False)
+
+            def capture_audio_phase(name):
+                #The WAV backend stops emitting samples when the voice is disabled.
+                #Allow queued output to drain, then observe independent file growth.
+                time.sleep(.3)
+                before=audio_wav.stat().st_size
+                started=time.monotonic()
+                time.sleep(1.5)
+                audio_emission[name]={'before_bytes':before,
+                                     'after_bytes':audio_wav.stat().st_size,
+                                     'observation_seconds':time.monotonic()-started}
 
             def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None):
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer)
@@ -585,8 +608,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets)&&!(mouse_buttons&1);', ['1'], 'mouse-left-up')
             active_group='sound'
             submit('I64 SndProbe(){I64 f=GetRFlags,l,h,p,m=0,i;Snd(60);for(i=0;i<4096;i++){OutU8(0x43,0x80);l=InU8(0x42);h=InU8(0x42);p=l+(h<<8);if(p>m)m=p;}return m>=2400&&m<=2712&&(InU8(0x61)&3)==3&&(GetRFlags&512)==(f&512);}SndProbe;', ['1'], 'speaker-on')
+            if audio_wav is not None: capture_audio_phase('tone_440')
             submit('I64 SndOffProbe(){I64 flags=GetRFlags;Snd;return (InU8(0x61)&3)==0&&(GetRFlags&512)==(flags&512);}SndOffProbe;', ['1'], 'speaker-off')
+            if audio_wav is not None:
+                capture_audio_phase('off')
+                submit('Snd(72);42;', ['42'], 'speaker-octave')
+                capture_audio_phase('tone_880')
             submit('Snd(72);SndRst;(InU8(0x61)&3)==0;', ['1'], 'speaker-reset')
+            if audio_wav is not None: capture_audio_phase('reset')
             active_group='windows'
             submit('#include "/Kernel/I386/WindowServiceCheck.HC"', [], 'window-service-source')
             submit('WindowServiceCheck;', ['14'], 'window-service-check')
@@ -1918,6 +1947,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
                         'vga':'all pixels matched at each checkpoint',
                         'interaction_latencies_seconds':interaction_latencies}
+                if audio_wav is not None: result['audio_emission']=audio_emission
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
                 return result
             result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,

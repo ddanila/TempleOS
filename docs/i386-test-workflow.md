@@ -783,3 +783,34 @@ The profiler extracts symbols from the disk's retained modules, boots a QEMU
 snapshot, and verifies the original disk hash afterward. It records module
 hashes, sampled instruction addresses and frame chains. Its pauses distort
 elapsed time: use the unprofiled workstation result for the startup gate.
+
+To verify emitted speaker output independently of PIT register checks:
+
+```sh
+python3 tools/test-i386-speaker-output.py \
+  build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --out build/i386-speaker-output-gen2-emission
+```
+
+Repeat with `selfhost-install-capacity-lexfix-kvm/target.img` and output
+`build/i386-speaker-output-gen1-emission` for the first generation. The test
+uses 8 MiB `486,-fpu` TCG, QMP stdio, and an unchanged-source QEMU snapshot.
+It needs no host audio service: the speaker connects directly to the WAV backend.
+Four commands retain the existing PIT/IRQ/VGA assertions while holding 440 Hz
+and 880 Hz tones, speaker-off and reset states. The checker requires at least
+one second of each stable tone and rejects other sustained output.
+
+This QEMU backend omits inactive-voice intervals from its WAV. After a 0.3-second
+drain interval, each 1.5-second off/reset observation must emit zero new file
+bytes; each tone observation must emit at least one second of PCM. The WAV and
+these independent observations together verify tone and silence. The result
+records disk, WAV, checker and runner hashes, raw windows and emission sizes.
+The source disk must remain unchanged. Malformed or incomplete observations
+fail instead of being treated as silence.
+
+`tools/package-i386-current.py` requires both results (override their paths
+with `--first-audio` and `--second-audio`), validates their exact disk/profile
+and test hashes, and reanalyses both recordings. Its standalone verifier
+repeats that analysis using the bundled checker. `python3
+tools/test-i386-test-runner.py` exercises muted/wrong/reversed/stuck tones,
+missing silence, invalid emission observations and source-disk protection.
