@@ -14,8 +14,18 @@ CI386Scheduler scheduler;
 CI386Task root;
 CI386Cpu cpu;
 _intern 0x17 CI386Cpu *Gs();
-U32 stage,errors;
+U32 stage,errors,fail_destroy;
+Bool FileCloneStub(CI386Task *source,CI386Task *target,CI386Heap *heap) { return FALSE; }
+Bool FileDestroyFault(CI386Task *task)
+{
+  if(fail_destroy) { fail_destroy--; return FALSE; }
+  task->file_state=0; task->file_clone=0; task->file_destroy=0;
+  return TRUE;
+}
 extern U0 Worker(I64 arg);
+extern U0 Creator(I64 arg);
+CI386OwnedTask *orphan;
+extern Bool TaskRuntimeTaskDiscard(CI386OwnedTask *owned);
 extern U0 BindTask(CI386Task *task);
 extern I64 RetainedTest(CI386Heap *heap);
 extern I64 InitAndRun();
@@ -82,5 +92,37 @@ I64 RetainedTest(CI386Heap *heap)
         root.next_task!=&root || root.last_task!=&root ||
         root.next!=&root || root.last!=&root || root.lifetime_refs) return 6;
   }
+  if(TaskRuntimeTaskDiscard(0)) return 7;
+  for(cycle=0;cycle<20;cycle++) {
+    stage=0;
+    pending=TaskRuntimeTaskCreateFrom(&scheduler,heap,&root,8192,
+        &Worker,0x123456780000002A,0x18,0x20,4096);
+    if(!pending || !TaskRuntimeTaskDiscard(pending) || stage || errors ||
+        heap->used || heap->allocations || !I386HeapValid(heap) ||
+        root.next_task!=&root || root.last_task!=&root) return 8;
+  }
+  pending=TaskRuntimeTaskCreateFrom(&scheduler,heap,&root,8192,
+      &Creator,(heap+0)(U64),0x18,0x20,0,TRUE);
+  if(!pending || TaskRuntimeTaskDiscard(pending) || !CoreYield ||
+      !pending->task.finished || !orphan || pending->task.lifetime_refs!=1 ||
+      TaskRuntimeTaskDestroy(pending)) return 9;
+  for(j=0;j<20;j++) if(!CoreYield || stage || errors ||
+      pending->task.lifetime_refs!=1) return 10;
+  orphan->task.file_state=&stage;
+  orphan->task.file_clone=&FileCloneStub; orphan->task.file_destroy=&FileDestroyFault;
+  fail_destroy=1;
+  if(TaskRuntimeTaskDiscard(orphan) || !orphan->task.finished ||
+      orphan->task.next_task || orphan->task.last_task ||
+      pending->task.lifetime_refs!=1 || TaskRuntimeTaskDestroy(pending) ||
+      TaskRuntimeSchedActivate(&scheduler,&orphan->task)) return 12;
+  if(!TaskRuntimeTaskDestroy(orphan) || pending->task.lifetime_refs ||
+      !TaskRuntimeTaskDestroy(pending) || heap->used || heap->allocations ||
+      !I386HeapValid(heap) || root.next_task!=&root || root.last_task!=&root ||
+      root.next!=&root || root.last!=&root) return 11;
   return 0;
+}
+U0 Creator(I64 arg)
+{
+  orphan=TaskRuntimeTaskCreateFrom(&scheduler,arg,&root,8192,
+      &Worker,0x123456780000002A,0x18,0x20,4096);
 }

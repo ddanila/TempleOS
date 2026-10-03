@@ -4225,6 +4225,37 @@ also passes (build/i386-tasks-test/result.json). Both retain their existing
 The installed native HolyC compiler rebuilds MemoryRuntime successfully
 (build/i386-retained-task-core-native-memory/result.json); this is module
 build evidence, not an installed guest-built provider or full self-hosting
-gate. The current flat native build/install is still running in
-build/i386-retained-task-core-native-flat. Complete public policy, managed
-reaping, child rings and never-activated disposal remain the next work.
+gate. This foundation's flat native build/install and 386 executable audit now
+pass (build/i386-retained-task-core-native-flat/result.json and its
+instruction-audit/result.json): 487,392 linked bytes, with only 32 boot bytes
+remaining, built with 16 MiB and independently booted with 8 MiB on KVM
+486,-fpu. Its retained inputs are cross-built, so it is development evidence.
+The original public lifecycle checker still correctly fails for missing
+Spawn, Exit and TaskQueIns
+(build/i386-retained-task-core-public-tasks/result.json).
+
+Dormant disposal now has a separate retained helper. It rejects attached,
+current, referenced or otherwise active contexts, then retires a valid dormant
+record before using the same owned-task teardown. A teardown failure leaves
+that record retired for retry rather than runnable or freed. The focused
+fixture first failed with the helper absent
+(build/i386-retained-task-discard-before.log), then passed 20 dormant disposal
+cycles, a creator-code retention case and injected file-cleanup failure/retry,
+in addition to its 20 ordinary lifecycle cycles
+(build/i386-task-runtime-core-test/result.json). Creator destruction remains
+blocked until the dormant child is successfully reclaimed. The current source
+passes another two-generation bootstrap
+(build/i386-retained-task-discard-bootstrap.log) and isolated cross build
+(build/i386-retained-task-discard-kernel/result.json); the flat cross kernel
+remains 483,408 bytes. The installed native HolyC compiler also rebuilds
+MemoryRuntime with the disposal helper successfully
+(build/i386-retained-task-discard-native-memory/result.json). That persisted
+module has not yet replaced the cross-built provider in an installed image.
+
+The older character-immediate source epoch's complete --test integration
+also finished successfully, including keyboard/VGA checks, disk-copy recovery
+and original TempleOS DolDoc round-trip
+(build/i386-asm-char-integration/result.json and child reports). That source
+predates the owned constructor and retained helper changes; it does not
+qualify them. Complete public policy, managed reaping and child rings remain
+the next work.
