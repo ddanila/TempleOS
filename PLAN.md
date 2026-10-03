@@ -253,6 +253,11 @@ Selected-parent heap pinning, failed construction rollback, finished-parent
 rejection, deferred parent destruction and exact private/control-heap recovery
 pass the native heap fixture; the legacy task corpus also passes. This does
 not establish public child rings, creator-code retention or managed reaping.
+The symbol/file fixture now also passes selection from root context of a
+different live parent with its own `Shared` definition and `/Selected` directory
+on drive D. It verifies inherited values, independent file state, parent pinning
+through exit and exact arena recovery. Normal no-FPU boot of the updated
+cross-built kernel passes exact VGA in 48.895514 seconds, within the boot budget.
 
 1. **Create through the original public contract.** Keep `Spawn`'s original
    signature and defaults. Bind the single CPU's `Gs->seth_task` to its root,

@@ -25,7 +25,7 @@ CHashTable *symbols;
 CHashDefineStr root_symbol;
 CFilePathContext paths;
 CI386FileVolumes volumes;
-U32 white_space[8],errors,scope_done,protected_parent;
+U32 white_space[8],errors,scope_done,protected_parent,selected_parent_ready;
 CI386CompilerServices control_services;
 CI386TaskCompilerConfig task_compiler,other_compiler;
 CCmpCtrl *retained_control;
@@ -61,7 +61,7 @@ I64 ScopeTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x74000,65536)) return 1;
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x78000,65536)) return 1;
   OutU8(0x21,255); OutU8(0xA1,255);
   symbols=I386HashTableNew(&heap,8);
   if(!symbols || !I386TaskSymbolsInit(&root,&heap,symbols) ||
@@ -84,6 +84,13 @@ I64 ScopeTest()
     if(!workers[i] || workers[i]->task.hash_table==symbols ||
         workers[i]->task.hash_table->next!=symbols || workers[i]->task.hash_table->mask!=1023) return 6;
   }
+  I386SchedYield(&scheduler);
+  if(!selected_parent_ready || workers[0]->task.finished ||
+      scheduler.current!=&root || I386TaskSelf!=&root) return 250;
+  grand=I386TaskSpawnFrom(&scheduler,&heap,&workers[0]->task,4096,&Grandchild,0);
+  if(!grand || grand->task.hash_table->next!=workers[0]->task.hash_table ||
+      grand->task.file_state==workers[0]->task.file_state ||
+      scheduler.current!=&root || I386TaskSelf!=&root) return 251;
   for(round=0;round<100;round++) {
     I386SchedYield(&scheduler);
     if(grand && workers[0]->task.finished && workers[0]->task.lifetime_refs) {
@@ -145,18 +152,26 @@ U0 Worker(I64 id)
   if(HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR)!=&root_symbol || !Define('A'+id)) { errors++; return; }
   if(!FactoryWorkerTest(id)) { errors++; return; }
   if(!id) {
-    grand=I386TaskSpawn(&scheduler,&heap,4096,&Grandchild,0);
-    if(!grand || grand->task.hash_table->next!=I386TaskSelf->hash_table) { errors++; return; }
+    if(!I386TaskFilesSet(I386TaskSelf,"/Selected",'D')) { errors++; return; }
+    selected_parent_ready=1;
+    I386SchedYield(&scheduler);
   }
   scope_done++;
 }
 U0 Grandchild(I64 unused)
 {
+  CI386TaskFiles *borrow;
+  CFilePathContext snapshot;
+  CI386FileVolumes *selected;
   CHashDefineStr *entry=HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR);
   CI386TaskSymbols *parent=workers[0]->task.symbol_state;
   if(!entry || entry==&root_symbol || entry->data[0]!='A' || !workers[0]->task.finished ||
       !parent->storage || parent->storage->allocations[0].allocation[0]!='A' ||
       parent->storage->allocations[1].allocation[0]!='B' || I386TaskSelf->memory || !Define('G')) { errors++; return; }
+  borrow=I386TaskFilesBorrow(I386TaskSelf,&snapshot,&selected);
+  if(!borrow || snapshot.cur_drv!='D' || snapshot.cur_dir[1]!='S' ||
+      snapshot.cur_dir[8]!='d' || snapshot.cur_dir[9] || selected!=&volumes ||
+      !I386TaskFilesRelease(borrow)) { errors++; return; }
   I386SchedYield(&scheduler);
   entry=HashFind("Shared",I386TaskSelf->hash_table,HTT_DEFINE_STR);
   if(!entry || entry->data[0]!='G' || workers[0]->task.lifetime_refs!=2 ||

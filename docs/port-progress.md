@@ -11965,3 +11965,24 @@ The selected-parent kernel cross-build now passes its executable and boot
 instruction audits: the flat kernel is 482,392 bytes, below the 487,424-byte
 limit (`build/i386-selected-parent-kernel/result.json`). Normal 8 MiB no-FPU
 keyboard/VGA boot is running in `build/i386-selected-parent-keyboard`.
+
+The selected-parent kernel's normal 8 MiB `486,-fpu` TCG keyboard/VGA boot now
+passes with exact pixels in 48.895514 seconds, and the unchanged 60-second
+budget passes. The writable-copy provenance verifies that source disk
+`21185f19334782fe01a412e498fe4fa7cfec8e7e47149b037bc28980c68a8aa7`
+was preserved (`build/i386-selected-parent-keyboard/result.json`).
+
+Selected-parent file/symbol behavior now passes in the native symbol fixture
+(`build/i386-selected-parent-symbol-files-bounded.log`). A worker publishes its
+own `Shared` definition and changes its directory to `/Selected` on drive D,
+then yields. Root creates a child from that worker through `I386TaskSpawnFrom`
+while current/Fs remain root. The child sees the worker's symbol and cloned
+directory state, survives the worker's entry return, and keeps it pinned until
+child destruction. Existing retained-control pinning, storage lifetime and
+exact arena recovery checks remain in the same lifecycle sequence. This
+qualifies private selection, not public child-ring or creator-code ownership.
+
+The expanded symbol fixture exceeded its old transfer capacity. Its bounded
+832-sector profile ends at the relocated first arena at `0x78000`. The arena
+retains its 64 KiB size and ends at `0x88000`, below the boot stack; both stage
+bounds and the 386 instruction audit pass. The OS boot limit remains unchanged.
