@@ -1197,5 +1197,8 @@ python3 tools/test-i386-public-task-queues.py build/i386-kernel/kernel.img --out
 The focused contract checks empty waiting/done circular rings and unlocked
 control flags for the root and ten spawned children. It exercises the same
 public records in original and native guests and does not call the internal
-JobCtrlInit helper. Nonempty queue retirement, messages and allocation recovery
-require separate checks.
+JobCtrlInit helper. The contract also inserts three jobs with auxiliary strings into a child's
+waiting/done rings using caller-owned allocations, then requires exact caller
+heap usage recovery after exit. Both original and native references pass this addition, including a verified
+native red result before the cleanup implementation. Message delivery and general allocation
+recovery require separate checks.

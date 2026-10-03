@@ -4768,3 +4768,34 @@ at 482936 bytes. Native focused queue qualification passes
 (build/i386-public-task-queues-native/result.json): 18 console submissions on
 486,-fpu with 8 MiB, exact VGA at each checkpoint and unchanged input disk. It does not cover queued-job cleanup or
 public message delivery. The previous-source broader suite remains live.
+
+### Task retirement: queued-job ownership
+
+The focused public-task queue contract now has twelve cases, adding retirement
+of three jobs across waiting/done rings with separately allocated auxiliary
+strings. Nodes and strings belong to the caller heap, allowing exact usage
+recovery to be checked independently of Adam's shared system/task allocations.
+The first fixture measured the Adam heap and failed on the original OS; the
+corrected caller-heap fixture passes all twelve cases
+(build/i386-public-task-job-cleanup-original-v2/result.json).
+
+The native baseline observation confirms QueueCleanup=0 against the preceding
+immutable queue-initialization image
+(build/i386-public-task-job-cleanup-native-red/result.json). The contract
+requires 1; all other submitted checks match and the input disk is unchanged.
+This is a verified red contract, not native cleanup support.
+The native implementation now drains both public job rings, freeing auxiliary
+strings and nodes through their owning public heaps at actual Exit, after
+callback recovery opportunities and child retirement. Current-source original
+two-generation rebuild passes. The fresh native build and 386 boot audit pass
+(build/i386-public-job-cleanup-kernel/result.json), retaining the 482936-byte
+flat image. Green cleanup qualification passes
+(build/i386-public-task-job-cleanup-native/result.json): twelve cases across
+24 console submissions at 8 MiB on 486,-fpu, exact VGA and unchanged input
+disk. The checker SHA matches the original and verified-red reference.
+The existing five-case callback-recovery regression also passes
+(build/i386-public-job-cleanup-callbacks/result.json): 28 submissions on the
+same immutable no-FPU image. It checks one-shot return/Exit callbacks,
+exception recovery and descendant cancellation, but does not specifically
+exercise a callback recovering with nonempty job queues. Public message
+posting/scanning and full job-service compatibility remain open. This does not implement public message services.

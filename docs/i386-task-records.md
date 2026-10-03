@@ -115,3 +115,11 @@ waiting/done rings and clear job-control flags. The focused root-and-ten-child
 contract passes on the original OS and on the native 486 guest without an FPU
 at 8 MiB. This proves empty queue initialization, not ownership or cleanup of
 queued jobs.
+
+Actual public task retirement now drains both waiting and completed job rings
+and frees each node's auxiliary string before the node itself. Cleanup occurs
+after callback recovery opportunities and child retirement. The original and
+native twelve-case queue contract verifies three caller-owned jobs with strings
+are reclaimed at child exit; the previous native image gives a verified red
+result. The five existing callback cases also pass on the new image. Public
+message posting and general job execution remain unimplemented.

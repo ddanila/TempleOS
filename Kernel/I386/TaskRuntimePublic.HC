@@ -7,6 +7,17 @@ class CMemoryTaskRecord {
   U0 (*end_callback)();
   Bool child_linked,exiting;
 };
+U0 MemoryJobQueDel(CJob *head)
+{//Task retirement owns both job rings, including cross-task auxiliary storage.
+  CJob *job;
+  while(head->next!=head) {
+    job=head->next;
+    job->last->next=job->next;
+    job->next->last=job->last;
+    MemoryFree(job->aux_str);
+    MemoryFree(job);
+  }
+}
 CMemoryTaskRecord *memory_tasks;
 I64 memory_task_number=1;
 CTask *MemoryChildHead(CTask *task)
@@ -165,6 +176,8 @@ U0 Exit()
     Yield;
     irq=I386IrqSave;
   }
+  MemoryJobQueDel(&task->srv_ctrl.next_waiting);
+  MemoryJobQueDel(&task->srv_ctrl.next_done);
   I386IrqRestore(irq);
   //Exit need not return through the lexical untry epilogues on this stack.
   while(task->except_top) SysUntry;
