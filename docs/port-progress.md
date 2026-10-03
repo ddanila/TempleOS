@@ -12033,3 +12033,23 @@ Installed-provider AOT qualification now passes
 module hash remains `33457f848f31e5b341b66f86ed575e6dd0bb5efeec7eb85dfcef418957e0c755`.
 This closes the focused JIT/AOT regression for the guest-built allocation-error
 compiler provider, not full latest-source native release qualification.
+
+The creator-pinning kernel passes normal 8 MiB `486,-fpu` TCG keyboard/VGA
+boot with exact pixels in 47.996394 seconds. The unchanged 60-second verifier
+passes (`build/i386-creator-pin-keyboard/budget.json`), and writable-copy
+provenance preserves source disk
+`d657cc07b362ca8e541023e7945a4c665dba96e5c59aca6574f74eb1060bd6a3`.
+Guest-built flat qualification is now running in
+`build/i386-creator-pin-native-flat`, using the explicitly verified cross-built
+retained inputs. This is a development flat-image capacity check, not all-twelve
+module self-hosting or release qualification.
+
+The public task contract now requires `TaskQueIns` and has 41 behavior commands
+(maximum 254 bytes). Deferred creation uses the original `flags=0` contract:
+self-linked scheduler pointers, no parent child-ring membership, and no entry
+execution through 20 yields. Explicit public queue insertion then runs it;
+entry return must reclaim its shared pool even without a parent child link.
+The helpers run without publishing new definitions inside the measured pool
+cycle. This pool check does not prove private stack/control allocation recovery
+or disposal of a task that is never activated. The new baseline is running in
+`build/i386-creator-pin-public-tasks`; its behavior branch remains unverified.

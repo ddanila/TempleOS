@@ -9,7 +9,7 @@ import runpy
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = runpy.run_path(str(ROOT / 'tools/test-i386-required-services.py'))
-REQUIRED = ('Spawn', 'Exit', 'Yield', 'Sleep')
+REQUIRED = ('Spawn', 'Exit', 'Yield', 'Sleep', 'TaskQueIns')
 
 
 def assess_presence(log):
@@ -60,6 +60,12 @@ def behavior_commands():
         ('Bool LifeNestedStart(){CTaskLifeProbe *p=LifeState;p->parent=Fs;p->stage=p->errors=0;p->child=0;return Spawn(&LifeNestedCreator,p,"Creator",-1,Fs,8192)!=0;}', []),
         ('LifeNestedStart;', ['1']),
         ('LifeFinish;', ['1']),
+        ('Bool LifePendingStart(){CTaskLifeProbe *p=LifeState;p->parent=Fs;p->stage=p->errors=0;p->child=Spawn(&LifeWork,p,"Pending",-1,Fs,8192,0);return p->child&&p->child->next_task==p->child&&p->child->last_task==p->child&&!LifeHas(Fs,p->child);}', []),
+        ('Bool LifePendingIdle(){I64 i;for(i=0;i<20;i++)Yield;return !LifeState->stage&&!LifeState->errors&&!LifeHas(Fs,LifeState->child);}', []),
+        ('U0 LifePendingActivate(){TaskQueIns(LifeState->child);}', []),
+        ('Bool LifePendingFinish(){I64 i,end=cnts.jiffies+2000;while(LifeState->stage!=2&&cnts.jiffies<end)Yield;for(i=0;i<20;i++)Yield;return LifeState->stage==2&&!LifeState->errors&&LifeEmpty(Fs);}', []),
+        ('Bool LifePendingRun(){I64 n=Fs->data_heap->bp->used_u8s,r=Fs->data_heap->bp->alloced_u8s;if(!LifePendingStart||!LifePendingIdle)return FALSE;LifePendingActivate;return LifePendingFinish&&Fs->data_heap->bp->used_u8s==n&&Fs->data_heap->bp->alloced_u8s==r;}', []),
+        ('LifePendingRun;', ['1']),
         ('Free(LifeState);', []),
         ('6*7;', ['42']),
     ]

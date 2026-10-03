@@ -246,6 +246,13 @@ The contract now also creates a task from inside a child while selecting the
 root as its explicit parent, then requires root-based symbol inheritance and
 child-ring membership. This distinguishes the chosen parent from the creator;
 these behavior checks remain unexecuted while `Spawn` and `Exit` are absent.
+The public contract also requires `TaskQueIns` and specifies deferred creation:
+`Spawn(..., flags=0)` must leave scheduler links pointing to the task itself,
+omit the parent's child ring and remain dormant through 20 yields. Explicit
+`TaskQueIns` then activates it; entry return must reclaim its shared public-pool
+allocations even though it was never inserted into the parent's child ring.
+This is 41 behavior commands, all within the console limit. Private allocation
+recovery and pending-task disposal still require separate oracles.
 The private `I386TaskSpawnFrom` helper now accepts a selected live parent and
 clones its heap/file/symbol hooks without changing scheduler current. The
 original `I386TaskSpawn` entry keeps its ABI and current-parent behavior.
