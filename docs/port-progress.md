@@ -11841,3 +11841,18 @@ this is not current-source full native release qualification.
 The five new private-heap conditional cases have passed in the boot diagnostic
 phase. The task phase and full integration run remain active, so the two-phase
 ownership gate is not yet closed.
+
+The fully guest-built loader checkpoint's workstation suite now passes
+(`build/i386-symbol-index-fully-native-workstation/result.json`): 513 commands,
+576 submitted lines, exact VGA at every checkpoint and 20 document-development
+cycles with exact shared task-heap recovery. Startup is 55.820355 seconds and
+the 60-second timing verifier passes; long-document navigation to VGA takes
+0.378412 seconds, within the one-second target. Its preserved source disk is
+`70535124d7edb0d09c44519b1b490a9c92ddda0733379d7d39eaabc369941d90`.
+This closes that checkpoint's pending workstation run, not the later compiler
+source or full release gate.
+
+The diagnostic log now contains all five conditional cleanup case completions
+in both phases (case indices 22 through 26). Their exact private-heap and control
+checks pass. The broader build/integration runner is still active and has not
+yet written its final result, so its overall pass remains unclaimed.

@@ -181,7 +181,9 @@ suite have passed for that loader checkpoint: all twelve modules build natively
 and the installed image boots independently, while the development workstation
 suite passes within its latency targets. The fully guest-built image passes its 386 executable audit and normal
 8 MiB no-FPU TCG keyboard/VGA boot in 56.381575 seconds, within the 60-second
-budget. Its full workstation run is still active. That source epoch predates
+budget. Its full workstation suite also passes: 513 commands, exact VGA,
+20 document cycles with exact shared-heap recovery, 55.820355-second startup
+and 0.378412-second long-document navigation. That source epoch predates
 the conditional frontend below; it does not qualify the new compiler source.
 
 Expression `#if` now uses the existing native expression evaluator, with the
@@ -210,7 +212,8 @@ Five new diagnostic input cases require exact private-heap recovery after
 nested and floating conditions, JIT mode selection, a failed expression with
 atomic macro rollback, and an answer-callback exception. Both compiler phases
 must also preserve the outer control, sentinel, references and interrupt flag.
-Their diagnostic build is running; allocation exhaustion remains separate.
+All five cases have run successfully in both diagnostic phases; the full
+integration runner remains active. Allocation exhaustion remains separate.
 
 ### Next public task package: ownership through exit
 
