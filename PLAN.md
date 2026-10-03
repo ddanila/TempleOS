@@ -4694,3 +4694,23 @@ just_break compatibility; the private bounded message queue is not sufficient
 proof. Self-directed break and resource-wait cancellation still need dedicated
 contracts. This change adds reference evidence, not native runtime support or
 release qualification.
+
+### Public messages: original behavior reference
+
+Added tools/test-i386-public-messages.py before implementing public message
+services. Five contracts pass on the original x64 OS
+(build/i386-public-messages-original/result.json): a 40-event FIFO, destructive
+mask filtering, negative-code paired down/up events, flush counts with empty
+output clearing, and delivery through PostMsg/GetMsg to a waiting child.
+The queue-depth contract deliberately exceeds the private queue's 16 slots.
+Keeping the original programming model requires public job-backed message
+semantics rather than merely publishing aliases for that private queue.
+
+The native runner is available but was not executed in this source epoch:
+Msg, ScanMsg, GetMsg and PostMsg are not published by the current runtime.
+Next implement the shared CJob records, task queue initialization/retirement
+and public delivery/scan services, with additional contracts for input filtering,
+popup routing, resource ownership and allocation recovery. Integrate these
+services with Break and Kill, then qualify native builds within the boot budget.
+The original five-case pass is reference evidence only; it does not prove
+native message support or the broader job subsystem.

@@ -1170,3 +1170,19 @@ constant expressions, class-member displacement and signed branches. It verifies
 that the prompt remains usable and freezes input-disk/checker/validator hashes.
 Use `--accel tcg` for software emulation. This tests selected assembly/error
 paths; it does not establish all compiler error recovery or public FileWrite.
+
+Public message compatibility has a separate tests-first reference:
+
+```sh
+python3 tools/test-i386-public-messages.py --original --out build/public-messages-original
+python3 tools/test-i386-public-messages.py build/i386-kernel/kernel.img --out build/public-messages-i386
+```
+
+The five checks cover 40 queued messages in FIFO order, destructive mask
+filtering, negative message codes producing down/up events, FlushMsgs counts
+and zeroed outputs on an empty queue, and PostMsg/GetMsg delivery to a child.
+The native runner first checks MAlloc and Msg publication and then requires the
+same console results, preserving the input image and freezing checker hashes.
+These public APIs are not yet published in the port; the native command is a
+future acceptance gate, not a currently passing test. Input filters, popups,
+non-message jobs and allocation recovery are outside this contract.
