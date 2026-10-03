@@ -351,15 +351,28 @@ exact VGA at 8 MiB no-FPU TCG, with the source disk unchanged
 (`build/i386-asm-char-before/result.json`,
 `build/i386-asm-char-after/result.json`). Two bootstrap generations and the
 cross-build audit pass; flat size remains 482,584 bytes. A fresh guest-native
-rebuild/install runs in `build/i386-asm-char-native-flat`; actual native capacity
-and installation still require its result.
+rebuild/install passes in `build/i386-asm-char-native-flat`: all six flat modules
+are guest-built, the 486,568-byte image fits with 856 bytes remaining, and the
+installed image independently cold-boots at 8 MiB no-FPU KVM, returning 42 and
+passing all 12 document-allocation checks. Its executable/boot audit passes
+(`build/i386-asm-char-native-flat/result.json`,
+`build/i386-asm-char-native-flat/instruction-audit/result.json`). Retained modules
+remain cross-built development inputs; this does not qualify a guest-built
+compiler provider, all-module self-hosting or two native generations. It also
+predates the dormant owned-task constructor now under test.
 The older creator-pin full integration run is terminal: it completed earlier
 checks but failed while reading the final isolated install-copy result. Its
 child checker used the hard-coded default build directory rather than the
 selected `--out`. This is not a complete integration pass. The driver now
 passes the chosen build directory to install-copy and the selected image and
-output directory to document compatibility; isolated checks are running before
-qualification of that harness correction.
+output directory to document compatibility. The isolated checks pass on the
+character-immediate-fix image: installation, independent target boot and both
+interrupted-copy/retry boundaries preserve the input image and record its
+exact hash (`build/i386-asm-char-kernel/install-copy/result.json`); original
+TempleOS reproduces the native 37-byte document byte for byte, with an unchanged
+input image (`build/i386-asm-char-kernel/doc-compat/result.json`). The full
+integration run with corrected final-stage paths is active in
+`build/i386-asm-char-integration`; it cannot yet be counted as a full pass.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning

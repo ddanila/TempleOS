@@ -900,6 +900,26 @@ The reference directory supplies the matching export contract, not proof of
 byte equality or a complete native installation. A selected module rebuild
 cannot satisfy the all-module/two-generation qualification gate.
 
+### Isolated full integration outputs
+
+`tools/build-i386-kernel.py --test --out BUILD` passes that exact build directory
+to its final install-copy check and that build's kernel image to document
+compatibility. Their results are written to `BUILD/install-copy/result.json`
+and `BUILD/doc-compat/result.json`.
+
+To repeat those gates independently:
+
+```sh
+python3 tools/test-i386-install-copy.py --build build/i386-asm-char-kernel
+python3 tools/test-i386-doc-compat.py build/i386-asm-char-kernel/kernel.img \
+  --out build/i386-asm-char-kernel/doc-compat --qmp-stdio
+```
+
+Install-copy records the original input image hash and checks that it remains
+unchanged across publication, target boot and interrupted-copy recovery. It
+removes an old result before starting so a failed repeat cannot leave a stale
+pass. Neither isolated gate alone is a full integration pass.
+
 ### Public task lifecycle contract
 
 ```sh

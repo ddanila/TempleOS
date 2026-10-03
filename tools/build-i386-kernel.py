@@ -3269,12 +3269,13 @@ def main():
         result['interactive_native_module']=verify_interactive_native_module(normal_disk,out,console,volume,exports)
         result['native_boot_area']=verify_native_boot_area(normal_disk,exports,out,console)
         result['native_linked_boot_area']=verify_native_linked_boot_area(normal_disk,exports,out,console)
-        run(sys.executable,'tools/test-i386-install-copy.py')
+        run(sys.executable,'tools/test-i386-install-copy.py','--build',str(out))
         result['native_install_copy']=json.loads(
             (out/'install-copy/result.json').read_text())
-        run(sys.executable,'tools/test-i386-doc-compat.py')
+        run(sys.executable,'tools/test-i386-doc-compat.py',str(normal_disk),
+            '--out',str(out/'doc-compat'))
         result['document_cross_compatibility']=json.loads(
-            (ROOT/'build/i386-doc-compat/result.json').read_text())
+            (out/'doc-compat/result.json').read_text())
     if hashlib.sha256(normal_disk.read_bytes()).hexdigest()!=result['disk_sha256'] or \
             hashlib.sha256(diagnostic_image.read_bytes()).hexdigest()!=diagnostics['disk_sha256']:
         raise ValueError('Boot images changed during verification')

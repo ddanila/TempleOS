@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Verify guest disk publication and an independent boot from its target."""
+import argparse
 import hashlib
 import importlib.util
 import json
@@ -27,11 +28,18 @@ def boot(image, output, target=None):
 
 
 def main():
-    disk = BUILD / 'kernel.img'
-    exports = BUILD / 'exports'
-    out = BUILD / 'install-copy'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--build', type=Path, default=BUILD,
+                        help='Matching kernel image and exports directory')
+    args = parser.parse_args()
+    source_build = args.build.resolve()
+    disk = source_build / 'kernel.img'
+    exports = source_build / 'exports'
+    out = source_build / 'install-copy'
     out.mkdir(parents=True, exist_ok=True)
+    (out / 'result.json').unlink(missing_ok=True)
     source = bytearray(disk.read_bytes())
+    input_hash = hashlib.sha256(source).hexdigest()
     flags = ('kernel_install_copy_probe',)
     offsets = [build.kernel_flag_disk_offset(exports, flag) for flag in flags]
     if len(source) != 16 * 1024 * 1024 or len(set(offsets)) != len(offsets) or \
@@ -85,7 +93,11 @@ def main():
                 target.read_bytes() != interrupted_source:
             raise ValueError(f'Interrupted copy did not recover at {stop_after}')
         interrupted.append({'stop_after_sector': stop_after, 'recovered': True})
-    result = {'result': 'pass', 'source_sha256': hashlib.sha256(current).hexdigest(),
+    if hashlib.sha256(disk.read_bytes()).hexdigest() != input_hash:
+        raise ValueError('Install-copy test changed its input kernel image')
+    result = {'result': 'pass', 'source_build_directory': str(source_build),
+              'source_input_sha256': input_hash, 'source_input_unchanged': True,
+              'source_sha256': hashlib.sha256(current).hexdigest(),
               'target_sha256': hashlib.sha256(installed).hexdigest(),
               'boots': ['guest-copy', 'independent-target'],
               'interrupted_cases': interrupted}
