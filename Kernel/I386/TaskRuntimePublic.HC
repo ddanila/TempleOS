@@ -28,6 +28,7 @@ U0 MemoryTaskRootInit(CI386Task *root)
 {
   root->next_child_task=root->last_child_task=MemoryChildHead(root);
   root->next_sibling_task=root->last_sibling_task=root;
+  root->next_input_filter_task=root->last_input_filter_task=root;
   JobCtrlInit(&root->srv_ctrl);
   root->task_num=memory_task_number;
   if(!root->gs->seth_task) root->gs->seth_task=root;
@@ -45,6 +46,9 @@ Bool MemoryTaskEnsure(CI386Task *task)
   if(!task->next_sibling_task && !task->last_sibling_task) {
     task->next_sibling_task=task; task->last_sibling_task=task;
   }
+  if(!task->next_input_filter_task && !task->last_input_filter_task)
+    task->next_input_filter_task=task->last_input_filter_task=task;
+  else if(!task->next_input_filter_task || !task->last_input_filter_task) return FALSE;
   if(!task->srv_ctrl.next_waiting && !task->srv_ctrl.last_waiting)
     JobCtrlInit(&task->srv_ctrl);
   if(!task->task_num) task->task_num=++memory_task_number;
@@ -124,6 +128,7 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   task->next_child_task=task->last_child_task=MemoryChildHead(task);
   task->next_sibling_task=task->last_sibling_task=task;
   JobCtrlInit(&task->srv_ctrl);
+  task->next_input_filter_task=task->last_input_filter_task=task;
   task->rflags=0x202; task->context.esp(U32 *)[12]=0x202;
   task->context.esp(U32 *)[18]=&Exit;
   task->rip=(entry+0)(U64);
@@ -178,6 +183,9 @@ U0 Exit()
   }
   MemoryJobQueDel(&task->srv_ctrl.next_waiting);
   MemoryJobQueDel(&task->srv_ctrl.next_done);
+  task->last_input_filter_task->next_input_filter_task=task->next_input_filter_task;
+  task->next_input_filter_task->last_input_filter_task=task->last_input_filter_task;
+  task->next_input_filter_task=task->last_input_filter_task=task;
   I386IrqRestore(irq);
   //Exit need not return through the lexical untry epilogues on this stack.
   while(task->except_top) SysUntry;

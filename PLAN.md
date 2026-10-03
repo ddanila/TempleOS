@@ -4821,3 +4821,32 @@ routes alongside unbounded FIFO and paired-event behavior; initialize native
 input-filter self-links and maintain their lifetime as part of that package.
 The preceding-source broader native suite is still live and is not a proof of
 these new message contracts.
+
+### Input-filter task links
+
+Added tools/test-i386-public-task-filter-links.py. The original OS passes
+eleven checks (build/i386-public-filter-links-original/result.json): the
+caller starts self-linked, each of ten spawned children starts self-linked,
+and each child temporarily joins the caller's input-filter ring before exit
+restores the caller's self-links. A preceding-image native observation gives
+verified red results, zero where each check requires one
+(build/i386-public-filter-links-native-red/result.json), with unchanged disk
+and frozen checker hash.
+
+Native root binding, public Spawn and first managed yield now initialize
+input-filter self-links; partially initialized private-worker links are
+rejected. Actual public task Exit removes the retiring task from its
+input-filter ring after job cleanup and resets its own links. This preserves
+the original topology/lifetime needed by message routing, without publishing
+message services yet. The current-source two-generation rebuild passes.
+The fresh native build and 386 boot audit pass
+(build/i386-public-filter-links-kernel/result.json), with the flat image still
+482936 bytes. Green runtime qualification passes
+(build/i386-public-filter-links-native/result.json): eleven cases across
+19 console submissions. Queued-job cleanup and callback regressions also pass
+(build/i386-public-filter-links-queues/result.json and
+build/i386-public-filter-links-callbacks/result.json): twelve queue cases
+and five callback cases. All three use the same immutable 486,-fpu image at
+8 MiB, exact VGA checkpoints and unchanged input disk.
+The focused contract checks caller/child link lifetime, not execution of the
+original input-filter job loop or full window-manager behavior.

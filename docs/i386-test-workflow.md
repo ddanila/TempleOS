@@ -1209,3 +1209,17 @@ waiting/done rings using caller-owned allocations, then requires exact caller
 heap usage recovery after exit. Both original and native references pass this addition, including a verified
 native red result before the cleanup implementation. Message delivery and general allocation
 recovery require separate checks.
+
+Check input-filter link lifetime before qualifying message routing:
+
+```sh
+python3 tools/test-i386-public-task-filter-links.py --original --out build/filter-links-original
+python3 tools/test-i386-public-task-filter-links.py build/i386-kernel/kernel.img --out build/filter-links-native
+```
+
+The caller and ten spawned children must begin with input-filter self-links.
+Each child joins the caller's ring and exits; the caller's ring must return to
+self-links. The original reference passes, and the preceding native image has
+a verified red result. The new implementation passes green qualification and the queued-job cleanup
+and callback regressions on the same 8 MiB no-FPU image. This does not run the
+input-filter job loop.

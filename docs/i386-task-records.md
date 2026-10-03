@@ -123,3 +123,12 @@ native twelve-case queue contract verifies three caller-owned jobs with strings
 are reclaimed at child exit; the previous native image gives a verified red
 result. The five existing callback cases also pass on the new image. Public
 message posting and general job execution remain unimplemented.
+
+Public task input-filter links start self-linked at root binding, Spawn, and
+a private worker's first managed yield. A retiring public task removes itself
+from its filter ring after queued-job cleanup. The focused caller/child
+contract verifies ten linked-child retirements restore the caller's self-links,
+with original reference, native red and native green results. Queue cleanup
+and callback regressions also pass on the new 8 MiB no-FPU image. This establishes
+link lifetime; public message delivery and input-filter job execution remain
+open.
