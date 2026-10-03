@@ -11568,3 +11568,58 @@ Multiple interactive terminals, useful runtime/source debugging, complete
 current-source two-generation self-hosting/integration, consolidated qualification
 and release publication remain open. The previous 95-file package stays an
 earlier-source candidate; these focused passes do not promote it.
+
+## Optimized native retained installation and next task contract (2026-10-03)
+
+The six-module native retained build completed successfully after its final
+`CompilerRuntime` command (`build/i386-kernel/retained-startup-u32-kvm/result.json`).
+All six export sets match their isolated startup-optimization source contract.
+The source output disk SHA-256 is
+`a86790cc675e91c12648d390a4fba4477e1bce81198b9829d83dcd05438fb04a`.
+
+The installer now accepts QMP stdio, clears a prior verdict, verifies installed
+module bytes, records source/candidate/module hashes, and uses a separate
+writable copy for independent boot. Output aliases to its source are rejected
+before mutation or QEMU. The optimized six guest-built outputs install and
+boot with arithmetic 42 and `DocAllocationCheck` 12 under 8 MiB no-FPU KVM
+(`build/i386-kernel/retained-startup-u32-installed/result.json`). Candidate SHA-256:
+`382ca7b9da8dd82e61c201bc86ddc17f28cb378de5a25c2efe56a88f535d6cf2`.
+The independent executable/boot/filesystem audit passes, including the
+native compiler division template (`instruction-audit/result.json` in that
+directory); its flat kernel is 482,816 bytes.
+
+Normal 8 MiB `486,-fpu` TCG keyboard boot passes exact VGA but takes
+71.383183 seconds (`build/i386-retained-startup-u32-keyboard-tcg/result.json`).
+The budget checker correctly fails by 11.383183 seconds
+(`build/i386-retained-startup-u32-keyboard-budget.json`). This fully guest-built
+measurement supersedes any assumption that the earlier 50-second cross/development
+observations would establish the native-installed startup budget. The target
+remains 60 seconds.
+
+The installed-image statistical profile succeeds with 727 samples
+(`build/i386-retained-startup-u32-profile/result.json`): foundation has
+160/285 samples in symbol resolution and 86/285 in module validation;
+startup-source has 320/347 samples in bootstrap heap allocate/free/size/validation.
+Its sampled PCs and caller chains are hints, not call counts, and its pauses
+make elapsed time unsuitable for benchmarks. The next optimization package
+is now directed at these paths with the existing fault-rejection invariants.
+A full no-FPU TCG workstation run on a protected writable copy is newly live
+at `build/i386-retained-startup-u32-workstation-tcg`; no final suite result is
+claimed. All of these images use the pre-delay optimized source epoch.
+
+`tools/test-i386-public-tasks.py` records the next red baseline on the newer
+public-delay image: `Spawn` and `Exit` are absent while controls and delays
+are present (`build/i386-public-tasks-before/result.json`). Its behavior branch
+specifies public parent/heap/symbol/directory ownership, task records/child links,
+entry return and explicit exit, defaults, and 20 repeated public-pool recovery
+cycles. That branch is unexecuted until publication exists and does not prove
+bootstrap stack/control reclamation. The plan names the additional bootstrap,
+allocation-failure, nested-parent and unqueued/activation oracles required for
+the complete task contract, followed by multi-terminal integration. Record
+checks occur before yielding, and later commands avoid dereferencing reclaimed
+task pointers. Checker changes during a run reject the final verdict.
+
+All 16 host oracle tests pass, including task-observation rejection and
+installer source-alias/stale-verdict protection. The complete objective remains
+open: public task/terminal/debug behavior, current-source two-generation
+qualification, the native-installed startup budget and release publication.

@@ -61,6 +61,14 @@ publication remain open. See [the M7 coverage audit](docs/i386-m7-coverage-audit
 The still-running startup-optimization retained build predates this delay change;
 keep its source epoch and export references separate.
 
+The optimized fully guest-built image now installs all six native retained
+outputs and passes its independent executable/boot/filesystem audit. Its
+8 MiB `486,-fpu` TCG normal boot takes **71.383183 seconds**, so the startup
+budget still fails. This image uses the pre-delay optimized source epoch;
+it is not qualification for the newer public services. Evidence:
+`build/i386-kernel/retained-startup-u32-installed/result.json` and
+`build/i386-retained-startup-u32-keyboard-budget.json`.
+
 ## Next goal: an automatically qualified M7 release
 
 Deliver a reproducible, published QEMU workstation release whose required
@@ -123,6 +131,70 @@ suite (513 commands, 50.501-second startup and 0.314-second visible update).
 The guest flat-kernel development image also passes the writable three-boot
 document workflow, including 0.271-second interrupt recovery and exact
 filesystem/VGA checks. All-six retained rebuilding remains underway.
+
+### Remaining startup work: measured fully guest-built paths
+
+`build/i386-retained-startup-u32-profile/result.json` samples the installed
+native modules rather than host-built stand-ins. Of 285 foundation samples,
+160 are in `I386FindSymbol` and 86 in `I386ModuleValid`; 320 of 347 startup-source
+samples are in bootstrap heap allocate/free/size/validation. Sampling pauses
+make profile elapsed time unsuitable for budget measurement.
+
+Next optimize these measured paths while retaining malformed-module rejection,
+duplicate/missing binding checks, full heap metadata validation, allocation
+failure rollback and load failure's no-write guarantee. Prefer a per-call
+symbol index or explicit scratch workspace over shared mutable lookup state;
+keep valid large modules supported. For heap costs, investigate whether the
+native assembler can rebuild the existing fast validator instead of the
+portable source-build fallback, and whether repeated full walks can be reduced
+without trusting corrupt metadata. Use the loader/heap mutation corpora and
+native executable audit before timing an installed image. Do not relax the
+60-second budget or use KVM/profile times as the TCG reference verdict.
+
+### Next public task package: ownership through exit
+
+The next failing contract is `tools/test-i386-public-tasks.py`. On the
+public-delay image its lookup controls pass and `Spawn`/`Exit` fail. The
+behavior branch is specified but cannot execute until those services exist;
+its presence-only red result is not evidence of working task lifecycle.
+
+1. **Create through the original public contract.** Keep `Spawn`'s original
+   signature and defaults. Bind the single CPU's `Gs->seth_task` to its root,
+   honor an explicit parent, name/title, requested/default stack, task number,
+   signature and child/sibling links. Clone the selected parent's symbol chain
+   and directory while giving the child its own public heaps. Separate native
+   creation from queue insertion so flags without `JOBf_ADD_TO_QUE` retain
+   their meaning; add the matching public queue/activation path. Reject
+   unavailable CPU destinations explicitly. Failed creation must roll back
+   allocations, references and queues and preserve caller IF.
+2. **Retain every owner until it is safe to release.** Existing heap/symbol
+   clone references protect the selected parent. Also retain the creator's
+   compiled entry code when the selected parent is different. Do not change
+   scheduler `current` to impersonate another parent during creation. Pass
+   ownership through the private creation helper instead.
+3. **Finish on one stack, reclaim on another.** Explicit `Exit` and entry
+   return retire the task; the root performs managed reaping. Respect active
+   compiler controls, pending waits, file/symbol storage and lifetime refs.
+   Remove public child links only when destruction is safe. Preserve original
+   descendant termination semantics, and ensure a child's completion cannot
+   leave its parent or creator permanently unreapable.
+4. **Make the failing behavior branch pass.** The fixture covers explicit
+   parent inheritance, distinct task heaps, copied directory, child-ring
+   membership, task record/defaults, entry return, explicit exit without
+   executing subsequent statements, and 20 repeated cycles with exact public
+   pool recovery. Add independent bootstrap-allocation accounting to prove
+   stack/control/node reclamation too; public pool counters do not cover it.
+   Add creation-failure, nested-parent and unqueued/activation cases before
+   claiming the full public task contract. Require exact VGA, a usable prompt,
+   8 MiB no-FPU TCG and an unchanged input disk, then repeat with guest-built
+   service code and the executable-region audit.
+5. **Integrate multiple interactive terminals.** Once lifecycle works, replace
+   singleton input/document/definition state with task-owned terminal state,
+   route keyboard focus explicitly, and test two live terminals with separate
+   definitions/documents and cooperative work. Window drawing tests alone do
+   not establish this required workflow. Source-linked runtime debugging and
+   full current-source two-generation release qualification remain separate
+   required packages.
 
 ## Final goal: a fully working TempleOS on a PC-compatible machine
 

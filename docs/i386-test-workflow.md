@@ -899,3 +899,46 @@ python3 tools/test-i386-retained-build.py \
 The reference directory supplies the matching export contract, not proof of
 byte equality or a complete native installation. A selected module rebuild
 cannot satisfy the all-module/two-generation qualification gate.
+
+### Public task lifecycle contract
+
+```sh
+python3 tools/test-i386-public-tasks.py build/i386-public-delay-kernel/kernel.img \
+  --out build/i386-public-tasks-before
+```
+
+The current baseline exits 1 for missing public `Spawn` and `Exit`, with working
+`MAlloc`/`Dir` controls. After publication, the behavior branch exercises the
+ordinary public interfaces under 8 MiB `486,-fpu` TCG: parent/heap/symbol/directory
+ownership, child links, task records, explicit exit and ordinary entry return,
+default parent/name/stack, and repeated public-pool reclamation. Checks of a
+new task's record and child links run inside the spawning command before any
+yield; later commands never dereference a possibly reclaimed task. Pool usage
+is measured inside the repeat function so transient command compilation does
+not invalidate the comparison. Bootstrap stack/control reclamation, allocation
+failure, nested-parent teardown and unqueued activation need additional oracles.
+The behavior branch is currently unexecuted; missing service observations are
+not an end-to-end lifecycle pass. Checker hashes are fixed before the run and
+changes during testing reject the verdict.
+
+### Installing the optimized native retained outputs
+
+```sh
+python3 tools/test-i386-retained-install.py \
+  --source build/i386-kernel/retained-startup-u32-kvm/source.img \
+  --out build/i386-kernel/retained-startup-u32-installed \
+  --accel kvm --cpu 486,-fpu --qmp-stdio
+python3 tools/i386-kernel-input.py \
+  build/i386-kernel/retained-startup-u32-installed/candidate.img \
+  --out build/i386-retained-startup-u32-keyboard-tcg \
+  --group keyboard --cpu 486,-fpu --qmp-stdio --writable-copy
+python3 tools/check-i386-startup-budget.py \
+  build/i386-retained-startup-u32-keyboard-tcg/result.json \
+  --out build/i386-retained-startup-u32-keyboard-budget.json
+```
+
+The installer verifies persisted module bytes, uses a separate writable copy
+for independent boot, preserves the source/candidate hashes and rejects output
+paths that would overwrite its source. These outputs predate the public-delay
+change. The installed image's observed 71.383183-second startup fails the
+60-second budget; a component installation pass does not promote it to M7.

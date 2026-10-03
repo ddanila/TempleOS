@@ -208,4 +208,39 @@ class PublicDelayObservationTests(unittest.TestCase):
                 self.assertEqual(self.module['delay_presence'](bad)['result'], 'invalid')
 
 
+class PublicTaskObservationTests(unittest.TestCase):
+    module = runpy.run_path(str(Path(__file__).with_name('test-i386-public-tasks.py')))
+
+    def test_missing_lifecycle_and_unreliable_observations_cannot_pass(self):
+        names = self.module['PUBLIC']['CONTROLS'] + self.module['REQUIRED']
+        log = ''.join(f'M7 SERVICE {name} 1\n' for name in names)
+        self.assertEqual(self.module['assess_presence'](log)['result'], 'pass')
+        missing = log.replace('Spawn 1', 'Spawn 0').replace('Exit 1', 'Exit 0')
+        verdict = self.module['assess_presence'](missing)
+        self.assertEqual(verdict['result'], 'fail')
+        self.assertEqual(verdict['missing'], ['Spawn', 'Exit'])
+        for bad in ('', log + 'M7 SERVICE Spawn 1\n',
+                    log.replace('Dir 1', 'Dir 0'), log.replace('Exit 1', 'Exit 2')):
+            with self.subTest(log=bad):
+                self.assertEqual(self.module['assess_presence'](bad)['result'], 'invalid')
+
+
+class RetainedInstallProtectionTests(unittest.TestCase):
+    def test_output_alias_rejects_before_qemu_and_clears_stale_verdict(self):
+        module = runpy.run_path(str(Path(__file__).with_name('test-i386-retained-install.py')))
+        for name in ('candidate.img', 'boot.img'):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp)
+                source = out / name
+                source.write_bytes(b'preserve native image')
+                (out / 'result.json').write_text('{"result":"pass"}')
+                with patch('sys.argv', ['test', '--source', str(source), '--out', str(out)]), \
+                     patch('runpy.run_path') as load:
+                    with self.assertRaisesRegex(ValueError, 'overwrite the source'):
+                        module['main']()
+                    load.assert_not_called()
+                self.assertEqual(source.read_bytes(), b'preserve native image')
+                self.assertFalse((out / 'result.json').exists())
+
+
 if __name__=='__main__': unittest.main()
