@@ -9,9 +9,9 @@ public U0 I386TaskReturn()
   I386SchedFinish(I386TaskSelf->owner);
   while (1) {}
 }
-public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
+public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
-  U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
+  U16 fs=0x18,U16 gs=0x20,I64 private_size=0,Bool queued=FALSE)
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   CI386Task *creator[1];
@@ -196,7 +196,9 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
   //Inherited state belongs to the parent; entry code can belong to the creator.
   owned->creator=creator[0];
   if(creator[0]) creator[0]->lifetime_refs++;
-  if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
+  if(queued) {
+    if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
+  } else if(!I386SchedPrepare(s,&owned->task)) goto spawn_fail;
   I386IrqRestore(flags);
   return owned;
 spawn_fail:
@@ -213,6 +215,12 @@ spawn_fail:
   I386HeapFree(heap,owned);
   I386IrqRestore(flags);
   return 0;
+}
+public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
+  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
+  U16 fs=0x18,U16 gs=0x20,I64 private_size=0)
+{//Keep the existing immediate-spawn ABI while sharing the owned constructor.
+  return I386TaskCreateFrom(s,heap,parent,stack_size,entry,arg,fs,gs,private_size,TRUE);
 }
 public CI386OwnedTask *I386TaskSpawn(CI386Scheduler *s,CI386Heap *heap,
   I64 stack_size,U0 (*entry)(I64 arg),I64 arg,U16 fs=0x18,U16 gs=0x20,I64 private_size=0)

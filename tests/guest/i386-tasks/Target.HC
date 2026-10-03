@@ -9,6 +9,8 @@
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/Frame.HH"
 #include "/Kernel/I386/Debug.HH"
+extern U0 PendingOwnedWorker(I64 unused);
+U32 pending_owned_stage;
 extern I64 OwnedTaskTest();
 extern I64 JoinTest();
 extern I64 AtaChannelTest();
@@ -467,6 +469,29 @@ I64 OwnedTaskTest()
     if (heap.used || heap.allocations || !I386HeapValid(&heap) ||
         tasks[0].next!=&tasks[0] || tasks[0].last!=&tasks[0] || (GetRFlags&0x200)) return 47;
   }
+  //Own a dormant descriptor/stack/private heap before explicit activation.
+  for(cycle=0;cycle<20;cycle++) {
+    CI386OwnedTask *pending;
+    U32 pending_flags=GetRFlags,pending_expected;
+    SetRFlags((pending_flags&~0x200)|((cycle&1)<<9));
+    pending_expected=GetRFlags;
+    pending_owned_stage=0;
+    pending=I386TaskCreateFrom(&scheduler,&heap,scheduler.root,8192,
+        &PendingOwnedWorker,0,0x18,0x20,4096);
+    if(!pending || pending->task.owner!=&scheduler ||
+        pending->task.next_task!=&pending->task || pending->task.last_task!=&pending->task ||
+        pending->task.next || pending->task.last || heap.allocations!=1 ||
+        I386TaskDestroy(pending)) return 151;
+    for(j=0;j<20;j++) if(!I386SchedYield(&scheduler) || pending_owned_stage ||
+        scheduler.current!=scheduler.root || !PublicRingCheck(1)) return 152;
+    if(!I386SchedActivate(&scheduler,&pending->task) ||
+        !I386SchedYield(&scheduler) || pending_owned_stage!=2 ||
+        !pending->task.finished || pending->local_heap.allocations!=1 ||
+        !I386TaskDestroy(pending)) return 153;
+    if(heap.used || heap.allocations || !I386HeapValid(&heap) || !PublicRingCheck(1) ||
+        (GetRFlags&0x200)!=(pending_expected&0x200)) return 154;
+    SetRFlags(pending_flags);
+  }
   p=I386HeapAlloc(&heap,32752);
   if (!p || !I386HeapFree(&heap,p)) return 48;
   return JoinTest;
@@ -486,6 +511,15 @@ I64 CheckCurrentFrame()
   return 0;
 }
 
+U0 PendingOwnedWorker(I64 unused)
+{
+  U8 *payload;
+  pending_owned_stage=1;
+  payload=I386TaskAlloc(128);
+  if(!payload) { errors++; return; }
+  payload[0]=42;
+  pending_owned_stage=2;
+}
 U0 OwnedWorker(I64 arg)
 {
   I64 id=arg&255,round,j;

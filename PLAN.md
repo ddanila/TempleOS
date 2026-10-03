@@ -373,6 +373,46 @@ TempleOS reproduces the native 37-byte document byte for byte, with an unchanged
 input image (`build/i386-asm-char-kernel/doc-compat/result.json`). The full
 integration run with corrected final-stage paths is active in
 `build/i386-asm-char-integration`; it cannot yet be counted as a full pass.
+
+Dormant owned construction is now available through `I386TaskCreateFrom`.
+Its default leaves the descriptor, stack, private heap and inherited state
+prepared without scheduler insertion. The existing `I386TaskSpawnFrom` and
+`I386TaskSpawn` signatures retain immediate-queue behavior through the shared
+constructor, including rollback and creator retention. The new fixture failed
+compilation before the constructor existed, then passes 20 complete
+create/20-yield-idle/activate/finish/destroy cycles with exact bootstrap-heap
+recovery and alternating caller IF modes. The selected-parent heap fixture now
+also leaves a child dormant while its selected parent returns: parent and
+creator references remain held, parent destruction is deferred, and activation
+followed by teardown recovers the original heaps and public pool.
+The task, heap and symbol suites plus instruction audits pass, as do two
+bootstrap generations (`build/i386-owned-deferred-bootstrap.log`,
+`build/i386-owned-deferred-if-modes.log`,
+`build/i386-owned-deferred-parent-heaps.log`,
+`build/i386-owned-deferred-symbols.log`). The cross-built image is 483,408 bytes;
+normal 8 MiB no-FPU TCG boot matches all keyboard/VGA checkpoints in 49.002025
+seconds, within budget (`build/i386-owned-deferred-keyboard/result.json`).
+All six current flat modules also rebuild in the guest, link, install and
+independently cold-boot at 8 MiB no-FPU KVM. The 487,392-byte guest-built flat
+image passes its 386 executable/boot audit and leaves only 32 bytes in the
+487,424-byte boot region (`build/i386-owned-deferred-native-flat/result.json`,
+`build/i386-owned-deferred-native-flat/instruction-audit/result.json`). Retained
+modules are still cross-built inputs: all-module native rebuilding and two
+current-source generations remain required. Never-activated disposal, public
+metadata/child rings, service publication and managed reaping remain open.
+
+**Placement of the next lifecycle work:** put public task policy in the retained
+service layer, loaded after bootstrap, rather than adding it to the flat kernel.
+Keep the boot-region limit and reserved stack unchanged. Provide a versioned,
+validated callback interface to the existing create/activate/finish/destroy
+primitives and bootstrap allocator; reject incomplete or mismatched bindings
+before publication. The retained service owns task numbers, public descriptors,
+child links and the managed registry, including tasks created without queue
+insertion. Wire safe root-stack reaping into the existing cooperative execution
+path and prove never-activated disposal and construction rollback before
+publishing `Spawn`, `Exit` and `TaskQueIns`. If this needs an additional module,
+update the complete module list, installation/provenance checks and both native
+generation gates together; a selected-module pass must not replace those gates.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning

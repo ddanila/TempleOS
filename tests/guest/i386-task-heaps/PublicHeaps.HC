@@ -217,13 +217,20 @@ Bool SelectedParentTest(CI386Heap *heap)
       heap->used!=used || parent->task.lifetime_refs || parent_state->children ||
       scheduler.root->lifetime_refs!=0xFFFFFFFF) { OutU8(0xE9,100); OutU8(0xE9,10); return FALSE; }
   scheduler.root->lifetime_refs=1;
-  child=I386TaskSpawnFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0);
+  child=I386TaskCreateFrom(&scheduler,heap,&parent->task,8192,&SelectedParentWorker,0);
   if(!child || scheduler.current!=scheduler.root) { OutU8(0xE9,101); OutU8(0xE9,10); return FALSE; }
   child_state=child->task.heap_state;
   if(child_state->parent!=parent_state || parent->task.lifetime_refs!=1 ||
       parent_state->children!=1 || scheduler.root->lifetime_refs!=2 ||
       root_state->children!=1 || child->task.data_heap==parent->task.data_heap ||
       child->task.data_heap->mem_task!=&child->task) { OutU8(0xE9,102); OutU8(0xE9,10); return FALSE; }
+  //The selected parent can return while its dormant child retains both owners.
+  I64 idle;
+  for(idle=0;idle<20;idle++) if(!I386SchedYield(&scheduler) || child->task.finished ||
+      child->task.next_task!=&child->task || child->task.last_task!=&child->task) return FALSE;
+  if(!parent->task.finished || I386TaskDestroy(parent) ||
+      parent->task.lifetime_refs!=1 || scheduler.root->lifetime_refs!=2 ||
+      !I386SchedActivate(&scheduler,&child->task)) return FALSE;
   if(!I386SchedYield(&scheduler) || !parent->task.finished || !child->task.finished ||
       I386TaskDestroy(parent)) { OutU8(0xE9,103); OutU8(0xE9,10); return FALSE; }
   used=heap->used;
