@@ -11856,3 +11856,20 @@ The diagnostic log now contains all five conditional cleanup case completions
 in both phases (case indices 22 through 26). Their exact private-heap and control
 checks pass. The broader build/integration runner is still active and has not
 yet written its final result, so its overall pass remains unclaimed.
+
+The next ownership test is now implemented before changing runtime cleanup:
+`ProbeConditionalOutMem` initializes a frontend, consumes a leading token,
+then exhausts the private arena while releasing a reserved block of 0, 1,024,
+4,096 or 65,536 bytes before entering `#if (6*7)==42`. The zero-space attempt
+must throw `OutMem`, and the largest reserve must succeed. Intermediate budgets
+may either fail cleanly or succeed. Every attempt requires cleared `CCF_IN_IF`,
+preserved outer sentinel/control and lifetime references, restored interrupt
+state, and exact baseline heap usage/allocation counts after unwind. The host
+verifier requires all four attempts in both compiler phases.
+
+The x86-64 bootstrap's two generations pass with these probe sources. The new
+diagnostic run is active in `build/i386-conditional-pressure-kernel`; its verdict
+is pending. The earlier `i386-conditional-owned-heap-kernel` integration run
+uses its already-packaged sources and does not contain the pressure cases.
+This is a conditional lexer/evaluator pressure test, not proof that every
+allocation site has been individually fault-injected.

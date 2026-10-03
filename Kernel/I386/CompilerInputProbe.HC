@@ -20,6 +20,54 @@ U0 ProbeInputDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   if(cc->lex_include_stk) { KernelLog(" "); KernelLog(cc->lex_include_stk->full_name); }
   KernelLog("\n");
 }
+U0 ProbeConditionalOutMem(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+{//Exercise the complete conditional lexer/evaluator under bounded arena pressure.
+  CI386Task *task=I386TaskSelf;
+  CCmpCtrl *cc;
+  CPrsSymbolServices *symbols;
+  CPrsExpressionServices *expression;
+  CIntermediateCode *sentinel=outer->coc.coc_head.next;
+  U8 *fill,*block,*next,*reserve;
+  I64 attempt,size,room,accepted,failures=0;
+  I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
+  U32 flags=GetRFlags;
+  for(attempt=0;attempt<4;attempt++) {
+    cc=probe->files->control_new("0 #if (6*7)==42\n42;\n#else\ninvalid skipped syntax\n#endif\n",
+        CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/ConditionalOutMem.HC");
+    if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
+    symbols=probe->compiler->frontend(heap,cc,probe->internal_types,probe->disk_include);
+    if(!symbols) KernelStop;
+    expression=symbols->declarations->expression;
+    expression->lex(expression->context,cc);
+    fill=0; reserve=0; accepted=0; room=0;
+    if(attempt==1) room=1024;
+    if(attempt==2) room=4096;
+    if(attempt==3) room=65536;
+    try {
+      if(room) { reserve=I386HeapAlloc(heap,room,FALSE); if(!reserve) KernelStop; }
+      for(size=65536;size>=8;size>>=1)
+        while(block=I386HeapAlloc(heap,size,FALSE)) { block(U8 **)[0]=fill; fill=block; }
+      if(reserve) { if(!I386HeapFree(heap,reserve)) KernelStop; reserve=0; }
+      expression->lex(expression->context,cc);
+      if(!attempt || cc->cur_i64!=42 || cc->flags&CCF_IN_IF) KernelStop;
+      accepted=1;
+    } catch {
+      if(attempt==3 || task->except_ch!='OutMem' || cc->flags&CCF_IN_IF ||
+          task->last_cc!=cc || task->active_controls!=2) KernelStop;
+      task->catch_except=TRUE; accepted=1; failures++;
+    }
+    if(reserve && !I386HeapFree(heap,reserve)) KernelStop;
+    while(fill) { next=fill(U8 **)[0]; if(!I386HeapFree(heap,fill)) KernelStop; fill=next; }
+    if(!accepted || !probe->compiler->control_unwind(task,outer) ||
+        task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||
+        task->except_top || outer->coc.coc_head.next!=sentinel ||
+        heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||
+        (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+    KernelLog("CONDITIONAL PRESSURE CASE "); KernelHex(probe->phase); KernelLog(" ");
+    KernelHex(attempt); KernelLog("\n");
+  }
+  if(!failures) KernelStop;
+}
 U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -163,6 +211,7 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
     KernelLog("INPUT RUN CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
   }
+  ProbeConditionalOutMem(probe,heap,outer);
   if(!probe->compiler->code_discard(heap,outer,0,0) || heap->used!=used ||
       heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
 }

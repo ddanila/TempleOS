@@ -214,6 +214,13 @@ atomic macro rollback, and an answer-callback exception. Both compiler phases
 must also preserve the outer control, sentinel, references and interrupt flag.
 All five cases have run successfully in both diagnostic phases; the full
 integration runner remains active. Allocation exhaustion remains separate.
+A new conditional pressure contract now reserves 0, 1,024, 4,096 or 65,536
+payload bytes after frontend initialization, exhausts the remaining private
+arena, and advances into an expression conditional. Zero space must throw
+`OutMem`; the largest reserve must parse successfully. Every attempt must
+restore conditional flags, controls, references, interrupt state and exact heap
+counters. Its diagnostic run is active; this does not cover every individual
+allocation site or close the release gate.
 
 ### Next public task package: ownership through exit
 

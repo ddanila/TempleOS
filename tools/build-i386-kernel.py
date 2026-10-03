@@ -2817,6 +2817,16 @@ def main():
             'exact_heap_recovery': True,
             'scope': 'Nested, float, JIT mode, expression error and callback exception; not allocation exhaustion',
             'result': 'pass'}
+        conditional_pressure = [tuple(int(x,16) for x in line.split()[3:])
+                                for line in log.splitlines()
+                                if line.startswith('CONDITIONAL PRESSURE CASE ')]
+        if conditional_pressure != [(phase,case) for phase in (0,1) for case in range(4)]:
+            raise ValueError('Missing conditional heap-pressure recovery cases')
+        result['conditional_heap_pressure'] = {
+            'phases': [0,1], 'available_payload_bytes': [0,1024,4096,65536],
+            'exact_heap_recovery': True,
+            'scope': 'Conditional lexer/evaluator arena exhaustion and success; not every allocation site',
+            'result': 'pass'}
         break_cases=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines()
                      if line.startswith('INPUT BREAK CLEANUP ')]
         if sorted(break_cases)!=[(phase,case) for phase in (0,1) for case in range(3)]:
