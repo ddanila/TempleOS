@@ -1061,3 +1061,34 @@ receive distinct inherited storage, and that directory replacement updates the
 public pointer. It also exercises explicit-parent symbol/file inheritance and
 parent retention through task exit. The public lifecycle gate still needs to
 pass on both the cross-built and installed guest-built runtime.
+
+The public lifecycle contract also checks six creation rejections, unchanged
+public pool/child state, caller IF and a successful spawn afterward. Run the
+separate descendant oracle to compare parent return/Exit with original TempleOS:
+
+```sh
+python3 tools/test-i386-public-task-descendants.py --original --out build/descendants-original
+python3 tools/test-i386-public-task-descendants.py build/i386-kernel/kernel.img --out build/descendants-i386
+```
+
+It covers a child canceled before entry, a running child, a sleeping child and
+a sleeping grandchild. The original reference executes these cases, rather than
+only compiling their definitions. Each native command checks exact VGA; the
+input disk and checker remain unchanged. This does not establish public Kill,
+I/O cancellation or disposal of never-activated tasks.
+
+The public pool counters do not include raw stack/control/registry allocations.
+Check those separately with the bootstrap accounting gate:
+
+```sh
+python3 tools/test-i386-public-task-accounting.py build/i386-kernel/kernel.img --out build/task-bootstrap-accounting
+```
+
+The checker derives private layout declarations from source headers in the
+tested disk, rather than importing internal implementation headers into the
+app. It binds the installed heap validator and checks both signatures before
+reading counters. It requires exact bootstrap used-byte and allocation-count
+recovery after 20 normal-return/Exit cycles, 20 deferred-activation cycles and
+six creation rejections. Header hashes, disk hash and both checker hashes are
+recorded. Run it again on the installed guest-built provider; public pool
+recovery and bootstrap recovery prove different resource invariants.

@@ -62,8 +62,10 @@ required-behavior evidence. The public task package now passes its 43-command
 positive contract on the cross-built image: Spawn/Exit, inherited state, nested
 creators, default task records and dormant activation with exact public-pool
 recovery. The guest-built memory provider installs and passes its executable
-audit and the same 43-command no-FPU public contract. Public cancellation and
-descendant termination, multiple interactive terminals, source-linked debugging,
+audit and the same 43-command no-FPU public contract. The following descendant
+policy also passes five original-behavior cases and the expanded 55-command
+lifecycle contract on cross-built and guest-built providers. Public cancellation,
+descendant callbacks and dormant disposal, multiple interactive terminals, source-linked debugging,
 full current-source two-generation qualification and
 publication remain open. See [the M7 coverage audit](docs/i386-m7-coverage-audit.md).
 The still-running startup-optimization retained build predates this delay change;
@@ -4335,3 +4337,65 @@ drive-descriptor service or prove a complete native generation.
 Full descendant termination, public cancellation/Kill, automatic disposal of
 never-activated managed descendants, source debugging, multiple terminals,
 complete current-source native generations and release evidence remain open.
+
+Public failure paths and descendant retirement (2026-10-03):
+The public lifecycle contract now contains 55 commands. Six rejection cases
+cover unavailable CPU targets, null entry, undersized/misaligned stack and an
+8 MiB stack allocation that cannot fit the interactive profile. Each requires
+the expected exception, preserved caller IF, unchanged public child membership
+and exact public pool usage/reservation, followed by successful creation and
+completion. All 33 definitions compile with original HolyC, and all 55 commands
+pass on the preceding cross-built and installed guest-built directory milestone
+(build/i386-public-task-failure-definitions/result.json,
+build/i386-public-task-failures-cross/result.json and
+build/i386-public-task-failures-native/result.json). These checks do not measure
+bootstrap stack/control/node allocation rollback independently.
+
+The new tools/test-i386-public-task-descendants.py establishes original queued
+descendant semantics with five executable x64 reference cases: parent return
+before child entry, return with a running child, explicit Exit with a running
+child, return with a sleeping child, and Exit with a sleeping grandchild
+(build/i386-public-task-descendants-full-reference/result.json).
+The first basic case fails on the preceding i386 image: DescDone returns zero
+after its bounded wait, while the returned parent remains linked because its
+child keeps yielding (build/i386-public-task-descendants-red/behavior/debug.log
+and startup-command-09.ppm). A retained reference prevents premature freeing,
+but does not preserve the original requirement to terminate queued descendants.
+
+The development policy now enters public tasks through a retained wrapper.
+Parent Exit marks queued children for termination, clears their public sleep
+and suspension conditions, and yields until they are reclaimed. The wrapper
+prevents a canceled task's first user instruction; checks on both sides of
+managed yield prevent already-running tasks from resuming user code after a
+termination request. Normal entry return follows the same Exit path. An exiting
+record rejects new children, and reference/cleanup guards remain in place.
+The fresh original two-generation bootstrap and cross build pass
+(build/i386-public-task-descendants-bootstrap.log and
+build/i386-public-task-descendants-kernel/result.json). All five descendant cases
+and the 55-command lifecycle regression now pass at 8 MiB under 486,-fpu TCG
+on both the cross-built and installed guest-built provider
+(build/i386-public-task-descendants-cross/result.json,
+build/i386-public-task-descendants-lifecycle/result.json,
+build/i386-public-task-descendants-native/result.json and
+build/i386-public-task-descendants-native-lifecycle/result.json). Native
+MemoryRuntime builds and installs; its 261,991-byte module passes the installed
+386 executable/boot and filesystem audit. The flat kernel remains cross-built
+and 483,408 bytes (build/i386-public-task-descendants-native-memory/result.json,
+build/i386-public-task-descendants-native-install/result.json and
+build/i386-public-task-descendants-native-audit/result.json).
+
+The independent bootstrap accounting checker passes on both candidates
+(build/i386-public-task-bootstrap-accounting-extern-cross/result.json and
+build/i386-public-task-bootstrap-accounting-extern-native/result.json).
+It uses layout declarations extracted from the tested disk's source headers,
+checks the backing and heap signatures, and invokes the installed heap validator.
+It compares bootstrap used bytes and allocation counts after each of 20
+normal-return/Exit cycles, 20 deferred activation cycles, and six creation
+rejections. The initial header-import attempt could not compile as a public app;
+only layout declarations and a plain extern heap-validator binding are used now.
+Both 57-command runs preserve exact VGA and the input/checker hashes under
+8 MiB 486,-fpu TCG. Bootstrap accounting for descendant trees, late clone-hook
+failure and dormant disposal remains separate from these passing cycles.
+Public Kill/break, private I/O-wait cancellation, descendant
+callbacks, dormant disposal, the remaining bootstrap accounting cases and complete
+current-source generation/release qualification still require work.

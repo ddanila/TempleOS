@@ -2,7 +2,8 @@
 class CMemoryTaskRecord {
   CMemoryTaskRecord *next;
   CI386OwnedTask *owned;
-  Bool child_linked;
+  U0 (*entry)(U8 *data);
+  Bool child_linked,exiting;
 };
 CMemoryTaskRecord *memory_tasks;
 I64 memory_task_number=1;
@@ -41,6 +42,13 @@ CMemoryTaskRecord *MemoryTaskFind(CTask *task)
     if(&record->owned->task==task) return record;
   return 0;
 }
+U0 MemoryTaskEntry(U8 *data)
+{//A canceled queued task must not enter user code for the first time.
+  CMemoryTaskRecord *record=MemoryTaskFind(I386TaskSelf);
+  if(!record) KernelStop;
+  if(!(I386TaskSelf->task_flags&(1<<TASKf_KILL_TASK))) (*record->entry)(data);
+  Exit;
+}
 Bool MemoryTaskActivate(CTask *public_task,CTask *pred)
 {
   CMemoryTaskRecord *record=MemoryTaskFind(public_task);
@@ -78,11 +86,15 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
       !MemoryTaskEnsure(parent)) {
     I386IrqRestore(irq); throw('Task',TRUE); return 0;
   }
+  record=MemoryTaskFind(parent);
+  if(record && record->exiting) {
+    I386IrqRestore(irq); throw('Task',TRUE); return 0;
+  }
   if(!stack_size) stack_size=MEM_DFT_STK;
   record=I386HeapAlloc(memory_pool.heap,sizeof(CMemoryTaskRecord),TRUE);
   if(!record) { I386IrqRestore(irq); throw('OutMem',TRUE); return 0; }
   owned=TaskRuntimeTaskCreateFrom(memory_root->owner,memory_pool.heap,parent,
-      stack_size,entry,(data+0)(U64),0x18,0x20);
+      stack_size,&MemoryTaskEntry,(data+0)(U64),0x18,0x20);
   if(!owned) {
     I386HeapFree(memory_pool.heap,record);
     I386IrqRestore(irq); throw('OutMem',TRUE); return 0;
@@ -93,11 +105,13 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   task->next_child_task=task->last_child_task=MemoryChildHead(task);
   task->next_sibling_task=task->last_sibling_task=task;
   task->rflags=0x202; task->context.esp(U32 *)[12]=0x202;
+  task->context.esp(U32 *)[18]=&Exit;
   task->rip=(entry+0)(U64);
   if(!name) name="Unnamed Task";
   for(i=0;i<TASK_NAME_LEN-1 && name[i];i++) task->task_name[i]=name[i];
   task->task_name[i]=0; MemoryStrCopy(task->task_title,task->task_name);
-  record->owned=owned; record->next=memory_tasks; memory_tasks=record;
+  record->owned=owned; record->entry=entry;
+  record->next=memory_tasks; memory_tasks=record;
   if(flags&256) {
     head=parent->last_child_task; last=head->last_sibling_task;
     task->next_sibling_task=head; task->last_sibling_task=last;
@@ -110,8 +124,30 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
 U0 Exit()
 {
   CI386Task *task=I386TaskSelf;
-  if(!task || task==memory_root || !MemoryTaskFind(task) ||
-      !TaskRuntimeSchedFinish(task->owner)) throw('Task',TRUE);
+  CMemoryTaskRecord *record;
+  CTask *head,*child;
+  U32 irq=I386IrqSave;
+  if(!task || task==memory_root || !(record=MemoryTaskFind(task))) {
+    I386IrqRestore(irq); throw('Task',TRUE); return;
+  }
+  record->exiting=TRUE;
+  head=MemoryChildHead(task);
+  for(child=task->next_child_task;child!=head;child=child->next_sibling_task) {
+    child->task_flags|=1<<TASKf_KILL_TASK;
+    child->task_flags&=~(1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG|1<<TASKf_IDLE);
+    child->wake_jiffy=0;
+  }
+  I386IrqRestore(irq);
+  //Their stacks and inherited references are reclaimed before this task retires.
+  while(task->next_child_task!=head) Yield;
+  if(!TaskRuntimeSchedFinish(task->owner)) throw('Task',TRUE);
+}
+U0 MemoryTaskCheckExit()
+{
+  CI386Task *task=I386TaskSelf;
+  CMemoryTaskRecord *record=MemoryTaskFind(task);
+  if(record && !record->exiting && !task->finishing && !task->io_locks &&
+      !task->wait && task->task_flags&(1<<TASKf_KILL_TASK)) Exit;
 }
 U0 MemoryTaskReap()
 {//Release completed owned tasks from another live stack; never the current stack.
@@ -156,8 +192,10 @@ Bool MemoryManagedYield(CI386Scheduler *scheduler)
   if(!memory_root || scheduler!=memory_root->owner ||
       !MemoryTaskEnsure(I386TaskSelf)) { I386IrqRestore(irq); return FALSE; }
   I386IrqRestore(irq);
+  MemoryTaskCheckExit;
   MemoryTaskReap;
   result=MemoryCoreYield(scheduler);
+  MemoryTaskCheckExit;
   MemoryTaskReap;
   return result;
 }

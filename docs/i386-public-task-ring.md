@@ -24,8 +24,13 @@ Public child links follow the original insertion rule; explicit activation of
 a task created without that flag does not add it to the parent's child ring.
 The managed yield path initializes private boot workers' public metadata and
 reclaims finished owned tasks from another live stack. Parent and creator
-references prevent premature reclamation. Descendant termination, public Kill,
-and automatic disposal of never-activated descendants remain open.
+references prevent premature reclamation. Parent return and explicit Exit now
+request termination of queued descendants and wait for their reclamation. An
+entry wrapper prevents first execution after cancellation; checks before and
+after managed yield stop running children. Sleep/suspension flags and wake
+deadlines are cleared so sleeping descendants can finish. Public Kill/break,
+private I/O-wait cancellation, exit callbacks and disposal of never-activated
+descendants remain open.
 
 Task and compiler cleanup callbacks run while the exiting task is still linked,
 including callbacks that yield. Finish detaches both public links before switching
