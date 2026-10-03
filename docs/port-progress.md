@@ -11409,3 +11409,21 @@ and bundles its checker for independent verification. The expanded local
 bundle verifies 95 files. OS source and installed images did not change;
 no guest rebuild was needed. Startup optimization, broader required-coverage
 audit, reproducible full qualification and release publication remain open.
+
+## Branch-independent bootstrap preparation (2026-10-03)
+
+A fresh ISO preparation exposed a reproducibility regression: `build-iso.py`,
+`verify-iso.py` and `test-rebuild.py` still used the deleted `archive` branch
+to identify the original OS tree. ISO creation failed with “Not a valid object
+name archive.” All three now use the immutable original snapshot commit
+`c26482bb6ad3f80106d28504ec5db3c6a360732c`. Current tracked/unignored additions
+under those original OS roots remain included. No branch was recreated.
+
+`verify-iso.py --image` permits an independent audit of an isolated ISO. The
+fresh image passes boot metadata, 62 directories, 1,233 file-byte comparisons
+and embedded DolDoc record lengths. Two x86-64 bootstrap compiler/kernel
+rebuilds also pass, with generation two booting the generated binaries.
+Evidence is `build/archive-reference-check.iso` and
+`build/rebuild-test/result.json`. Native OS sources and installed candidate
+images did not change. This repairs build preparation; startup and the broader
+M7 qualification requirements remain open.

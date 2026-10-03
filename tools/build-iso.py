@@ -14,6 +14,8 @@ OUT = ROOT / 'build'
 SECTOR = 512
 DVD = 2048
 OFFSET = 88  # RedSea starts after descriptors, catalog and loader.
+#Original imported snapshot; no branch or remote ref is needed to build.
+OS_SNAPSHOT = 'c26482bb6ad3f80106d28504ec5db3c6a360732c'
 
 
 def align(n, unit=SECTOR):
@@ -28,9 +30,9 @@ def main():
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     OUT.mkdir(exist_ok=True)
-    # Archive identifies OS roots; include new versioned/unignored OS source too.
+    #The immutable snapshot identifies OS roots; include new OS source too.
     paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only',
-                                     'archive'], cwd=ROOT).decode().splitlines()
+                                     OS_SNAPSHOT], cwd=ROOT).decode().splitlines()
     os_dirs = {name.split("/")[0] for name in paths if "/" in name}
     additions = subprocess.check_output(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard"],

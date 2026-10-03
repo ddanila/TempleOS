@@ -9,6 +9,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT/'build/rebuild-test'
+OS_SNAPSHOT = 'c26482bb6ad3f80106d28504ec5db3c6a360732c'
 
 
 def run(*args):
@@ -24,7 +25,7 @@ def main():
     (OUT/'result.json').unlink(missing_ok=True)
     manifest = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],
                 cwd=ROOT, text=True).strip(), 'source_sha256': {}, 'generations': []}
-    names = subprocess.check_output(['git','ls-tree','-r','--name-only','archive'],
+    names = subprocess.check_output(['git','ls-tree','-r','--name-only',OS_SNAPSHOT],
                                     cwd=ROOT,text=True).splitlines()
     os_dirs = {name.split('/')[0] for name in names if '/' in name}
     current = subprocess.check_output(['git','ls-files','--cached','--others',

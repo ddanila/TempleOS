@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Independently read the built filesystem and compare every archived OS path."""
 import pathlib
+import argparse
 import struct
 import subprocess
 
 root = pathlib.Path(__file__).resolve().parents[1]
-image = (root / 'build/TempleOS.iso').read_bytes()
+OS_SNAPSHOT = 'c26482bb6ad3f80106d28504ec5db3c6a360732c'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--image', type=pathlib.Path, default=root / 'build/TempleOS.iso')
+image = parser.parse_args().image.read_bytes()
 assert len(image) % 2048 == 0
 for sector, kind in ((16, 1), (17, 0), (18, 2), (19, 255)):
     assert image[sector*2048:sector*2048+7] == bytes([kind]) + b'CD001\x01'
@@ -44,7 +48,7 @@ def visit(block):
 
 
 files = visit(root_block)
-paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', 'archive'],
+paths = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', OS_SNAPSHOT],
                                 cwd=root).decode().splitlines()
 os_dirs = {name.split('/')[0] for name in paths if '/' in name}
 current = subprocess.check_output(['git', 'ls-files', '--cached', '--others',
