@@ -651,4 +651,5 @@ U0 OwnedCleanup(CI386Task *task)
 #include "/Kernel/I386/WaitCancel.HC"
 #include "T:/WaitCancel.HC"
 #include "T:/Flags.HC"
+#include "T:/KillEligibility.HC"
 #include "T:/WakeTime.HC"

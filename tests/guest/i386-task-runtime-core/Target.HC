@@ -14,7 +14,8 @@ CI386Scheduler scheduler;
 CI386Task root;
 CI386Cpu cpu;
 _intern 0x17 CI386Cpu *Gs();
-U32 stage,errors,fail_destroy;
+U32 stage,errors,fail_destroy,kill_flags;
+I64 kill_wake;
 Bool FileCloneStub(CI386Task *source,CI386Task *target,CI386Heap *heap) { return FALSE; }
 Bool FileDestroyFault(CI386Task *task)
 {
@@ -62,11 +63,13 @@ U0 Worker(I64 arg)
   U8 *p;
   if(arg!=0x123456780000002A || !task || task==&root ||
       task->owner!=&scheduler || scheduler.current!=task) { errors++; return; }
+  if(kill_flags && (task->task_flags!=kill_flags || task->wake_jiffy!=kill_wake)) errors++;
   p=I386HeapAlloc(task->memory,128,TRUE);
   if(!p) { errors++; return; }
   p[0]=0xA7; stage=1;
   CoreYield;
   if(I386TaskSelf!=task || p[0]!=0xA7) errors++;
+  if(kill_flags && (task->task_flags!=kill_flags || task->wake_jiffy!=kill_wake)) errors++;
   stage=2;
   //Owned teardown must reclaim the deliberately live private allocation.
 }
@@ -92,6 +95,23 @@ I64 RetainedTest(CI386Heap *heap)
         root.next_task!=&root || root.last_task!=&root ||
         root.next!=&root || root.last!=&root || root.lifetime_refs) return 6;
   }
+  //Retained HolyC eligibility must agree with the native boot scheduler.
+  kill_flags=1<<31|1<<TASKf_KILL_TASK|1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG;
+  kill_wake=0x100000001;
+  for(cycle=0;cycle<20;cycle++) {
+    stage=0;
+    pending=TaskRuntimeTaskCreateFrom(&scheduler,heap,&root,8192,
+        &Worker,0x123456780000002A,0x18,0x20,4096);
+    if(!pending) return 12;
+    pending->task.task_flags=kill_flags; pending->task.wake_jiffy=kill_wake;
+    if(!TaskRuntimeSchedActivate(&scheduler,&pending->task) ||
+        !TaskRuntimeSchedYield(&scheduler) || stage!=1 || pending->task.finished ||
+        !TaskRuntimeSchedYield(&scheduler) || stage!=2 || errors ||
+        !pending->task.finished || !TaskRuntimeTaskDestroy(pending)) return 13;
+    if(heap->used || heap->allocations || !I386HeapValid(heap) ||
+        root.next_task!=&root || root.last_task!=&root || root.lifetime_refs) return 14;
+  }
+  kill_flags=0; kill_wake=0;
   if(TaskRuntimeTaskDiscard(0)) return 7;
   for(cycle=0;cycle<20;cycle++) {
     stage=0;

@@ -57,5 +57,5 @@ I64 WakeTimeTest()
   for(i=0;i<8;i++) if(stack[i]!=0xA5 || stack[8200+i]!=0xA5) return 148;
   if(!I386HeapFree(&heap,stack) || heap.used || heap.allocations || !I386HeapValid(&heap)) return 149;
   tasks[0].wake_jiffy=0; tasks[1].wake_jiffy=0; test_jiffies=0;
-  return OwnedTaskTest;
+  return KillEligibilityTest;
 }

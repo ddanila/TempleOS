@@ -184,11 +184,54 @@ public Bool I386SchedAdd(CI386Scheduler *s,CI386Task *task)
 }
 Bool I386SchedReady(CI386Task *task)
 {
+#if I386_TASK_IMPLEMENTATION_ASM
+  //Keep the boot scheduler small; retain the same signed 64-bit deadline rule.
+  U32 ready[1];
+  ready[0]=0;
+  asm {
+    PUSH EAX
+    PUSH ECX
+    PUSH EBX
+    PUSH ESI
+    MOV EAX,U32 &task[EBP]
+    MOV ECX,U32 CI386Task.blocked[EAX]
+    OR ECX,U32 CI386Task.finished[EAX]
+    JNZ I32 @@75
+    TEST U32 CTask.task_flags[EAX],1<<TASKf_KILL_TASK
+    JNZ I32 @@74
+    TEST U32 CTask.task_flags[EAX],1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG
+    JNZ I32 @@75
+    XOR EBX,EBX
+    XOR ESI,ESI
+    MOV ECX,U32 CI386Task.owner[EAX]
+    MOV ECX,U32 CI386Scheduler.jiffies[ECX]
+    TEST ECX,ECX
+    JZ I32 @@73
+    MOV EBX,U32 [ECX]
+    MOV ESI,U32 +4[ECX]
+@@73:
+    CMP U32 CTask.wake_jiffy+4[EAX],ESI
+    JL I32 @@74
+    JG I32 @@75
+    CMP U32 CTask.wake_jiffy[EAX],EBX
+    JA I32 @@75
+@@74:
+    MOV U32 &ready[EBP],1
+@@75:
+    POP ESI
+    POP EBX
+    POP ECX
+    POP EAX
+  }
+  return ready[0]!=0;
+#else
   I64 now=0;
+  if(task->blocked || task->finished) return FALSE;
+  if(task->task_flags & 1<<TASKf_KILL_TASK) return TRUE;
+  if(task->task_flags & (1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG)) return FALSE;
   if(task->owner->jiffies) now=*task->owner->jiffies;
-  return !task->blocked && !task->finished &&
-    !(task->task_flags & (1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG)) &&
-    task->wake_jiffy<=now;
+  return task->wake_jiffy<=now;
+#endif
 }
 #ifndef I386_TASK_RETAINED_BUILD
 public Bool I386SchedSetClock(CI386Scheduler *s,I64 *jiffies)

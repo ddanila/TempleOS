@@ -4579,3 +4579,98 @@ The next cancellation package must:
    exact allocation recovery, including tasks inside active try blocks.
 Public message/break integration and dormant disposal remain separate required
 contracts; passing these eight cases alone does not complete cancellation or M7.
+
+
+Kill scheduling prerequisite and boot budget (2026-10-04):
+The native task corpus adds an executable kill-eligibility test. Workers with
+future deadlines and suspension/message-wait flags must run when KILL is set,
+without changing those public fields. Private blocking must still prevent
+execution. Stack guards, task detachment and exact heap recovery are checked.
+The original implementation fails at status 174 (00:AE)
+(build/i386-kill-eligibility-red.log).
+
+A first HolyC-only change passes the task and exception regressions and builds
+a 483,512-byte cross image, but the guest-built six flat modules total 487,496
+bytes, exceeding the 487,424-byte boot budget by 72 bytes. The boot-image builder
+rejects them. The console wait was stopped after confirming this semantic
+failure, not restarted after an observation timeout
+(build/i386-kill-eligibility-native-flat/budget-failure.json).
+
+The final implementation follows the existing scheduler's native-assembly /
+retained-HolyC split. Both paths prioritize KILL after private-block/finished
+checks and before public suspension/message-wait/deadline eligibility. The
+native path compares signed high and unsigned low words of the full I64
+clock/deadline, preserving wrap-boundary and negative-deadline behavior. No
+wake or flag field is changed by eligibility. ISA audit allowlists now include
+only the added JL/JG signed branches; these are 386 instructions, not a new CPU
+baseline. The original bootstrap, native task corpus, and retained/core
+interop test pass (build/i386-kill-eligibility-asm-bootstrap.log,
+build/i386-kill-eligibility-asm-tasks-audited.log and
+build/i386-kill-eligibility-retained-kill.log). The interop test adds 20 killed
+worker cycles, exercising native and retained eligibility with a deadline
+above 2^32 jiffies and exact field/allocation preservation.
+
+The current audited cross image is 482,936 bytes, 472 bytes smaller than the
+pre-change image (build/i386-kill-eligibility-asm-audited-kernel/result.json).
+The message corpus initially exceeded its 192 KiB loader transfer before
+execution. Its test-only transfer is now 256 KiB and its temporary heap is at
+0x60000, separate from code, segment records and worker stacks. The expanded
+message corpus passes on the final native variant, as does the exception-task
+regression and all five public callback cases under 8 MiB 486,-fpu TCG
+(build/i386-kill-eligibility-asm-messages.log,
+build/i386-kill-eligibility-asm-exceptions.log and
+build/i386-kill-eligibility-callbacks/result.json). The corrected six-module
+guest-flat build stopped at a native frontend rejection of OR register/memory
+in SchedulerCore.HC line 198, before a flat image could be linked
+(build/i386-kill-eligibility-asm-native-flat/frontend-failure.json).
+Keep the first variant and final assembly-source evidence separate. Public Kill/break remains
+unpublished, and full native current-source generation/release qualification
+remains open.
+
+
+Guest assembler closure for kill eligibility (2026-10-04):
+The original compiler accepts the compact scheduler, but the native frontend
+lacked OR register/memory, TEST r/m32 with an immediate, signed JL/JG branches,
+integer expressions in immediates and additive class-member displacements.
+The failed guest build is confirmed by its source-line/status trace; its
+console wait was stopped after compilation rejection. The scheduler source
+is retained rather than replacing these HolyC assembly forms with a workaround.
+
+FrontendStatements.HC now adds those encodings and an integer constant-expression
+reader with unary operators, parentheses, arithmetic, shifts and bitwise
+precedence. Existing accumulator TEST encoding stays unchanged. The operand
+fixture and independent expected opcode bytes cover OR with a memory operand,
+a shifted/combined TEST mask, parenthesized arithmetic/unary precedence,
+member+4 addressing and zero-displacement signed branches. The final original
+bootstrap and fresh cross build pass
+(build/i386-kill-asm-frontend-final-bootstrap.log and
+build/i386-kill-asm-frontend-kernel/result.json). The guest fixture passes the
+exact-byte oracle with an unchanged input image
+(build/i386-kill-asm-frontend-fixture/result.json). Corrected six-module native
+build/install/boot qualification now passes
+(build/i386-kill-asm-frontend-native-flat/result.json). All six flat modules
+are guest-built; all six retained providers remain cross-built development
+inputs. The 486,920-byte flat image leaves 504 bytes in the existing boot region
+and passes the independent 386 instruction/boot/filesystem audit
+(build/i386-kill-asm-frontend-native-flat/instruction-audit/result.json).
+Building uses 16 MiB and the installed image independently boots at 8 MiB
+without an FPU. Public Kill remains unpublished,
+and complete self-hosted release qualification remains open.
+
+
+The reusable tools/test-i386-asm-recovery.py also passes nine console commands
+with exact VGA and an unchanged input disk
+(build/i386-kill-asm-recovery-contract/result.json). DolDoc creates and saves an
+invalid assembly source; division by zero is rejected without publishing its
+output module. A subsequent valid operand fixture matches the exact byte oracle,
+and the prompt still evaluates 6*7. The checker and validator hashes are frozen
+through the run. The first probe attempted the still-unpublished FileWrite API;
+the successful contract uses the existing DocWrite path. This does not establish
+all compiler error paths or full public file-write compatibility.
+
+The kill-scheduling prerequisite is now verified through native and retained
+scheduler tests, message/exception/callback regressions, guest assembly byte and
+error-recovery tests, and a guest-built flat image that fits and boots. Continue
+with the public cancellation package above; its eight-case public Kill checker
+remains deliberately red until the API is implemented. These proofs are not full
+current-source two-generation or release qualification.

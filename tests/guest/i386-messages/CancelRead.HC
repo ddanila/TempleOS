@@ -31,7 +31,7 @@ I64 CancelReadTest()
   U8 *reuse;
   I64 scenario,i;
   U32 saved=GetRFlags;
-  if(!I386HeapInit(&heap,0x40000,8192)) return 60;
+  if(!I386HeapInit(&heap,0x60000,8192)) return 60;
   for(scenario=0;scenario<6;scenario++) {
     read_cancel_done=0; read_next_done=0; read_cancel_if=(scenario&1)*0x200;
     bound=scenario==1 || scenario==3;

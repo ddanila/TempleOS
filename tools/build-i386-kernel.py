@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
 DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime')
 I386_ALLOWED = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
-                    'movsx movzx cdq jmp cmp jz jnz setz setnz setl setnl setg setng setc setnc '
+                    'movsx movzx cdq jmp cmp jz jnz jl jg setz setnz setl setnl setg setng setc setnc '
                     'seta setna test shl shr in out sar shld shrd rcl div call inc dec jns jc jnc ja jna '
                     'cli sti hlt cld lodsb stosb pusha popa iret lgdt sgdt lidt sidt').split())
 
@@ -1543,7 +1543,9 @@ def verify_native_zero_asm_module(disk,path):
 def verify_native_operand_asm_module(disk,path):
     return verify_native_asm_fixture(disk,path,b'I386AsmOperandFixture',
         'Kernel/I386/AsmOperandFixture.HC',
-        bytes.fromhex('8b 5d 08 8b 33 8b 4b 04 33 ff 33 d2'))
+        bytes.fromhex('8b 5d 08 8b 33 8b 4b 04 33 ff 33 d2 '
+                      '0b 4b 04 f7 43 04 04 02 00 00 f7 c1 09 00 00 00 '
+                      '39 73 04 0f 8c 00 00 00 00 0f 8f 00 00 00 00'))
 
 
 def verify_native_branch_asm_module(disk,path):

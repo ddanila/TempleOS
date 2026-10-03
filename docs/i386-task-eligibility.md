@@ -1,10 +1,17 @@
 # Native task-flag eligibility
 
-The native scheduler now skips tasks with either `TASKf_SUSPENDED` or
-`TASKf_AWAITING_MSG` set, as well as privately blocked and finished tasks. The
+The native scheduler skips privately blocked and finished tasks. For other
+tasks, `TASKf_KILL_TASK` takes priority over suspension, awaiting-message state
+and future wake deadlines. Scheduling does not clear these public fields; the
+managed task exit path handles them. Without KILL, either `TASKf_SUSPENDED` or
+`TASKf_AWAITING_MSG` prevents scheduling. The
 original flag definitions are shared through `Kernel/TaskFlags.HH`, included by
 the original KernelA and the shared task records. `CTask.task_flags` remains U32;
-no record layout or module ABI changes are needed.
+no record layout or module ABI changes are needed. The native build uses a
+compact 386 assembly eligibility path with a full signed I64 deadline comparison;
+retained lifecycle helpers keep the equivalent HolyC path. Their interop test
+repeats 20 killed workers with unchanged flags/deadlines and exact allocation
+recovery.
 
 Yield, block and finish all use this eligibility rule while traversing the public
 task list. If no task is eligible, selection executes adjacent STI/HLT/CLI and
@@ -26,7 +33,12 @@ private blocking; it does not clear public suspension or awaiting-message flags.
 
 ## Verification
 
-The task corpus covers both public bits independently, preservation of unrelated
+The kill-eligibility corpus dispatches workers with future deadlines and each
+combination of the public suspension/message-wait bits, verifies unchanged
+flags and deadlines inside the worker, and confirms that private blocking
+still prevents dispatch. It checks stack guards and exact heap recovery.
+
+The task corpus also covers both public bits independently, preservation of unrelated
 bit 31, IRQ-driven root resumption with original IF both clear and set, idle with
 privately runnable but publicly suspended workers, and a worker woken while its
 own block operation is selecting a successor. It also covers all-ineligible yield
@@ -37,9 +49,11 @@ prevent reaping, and resume them one at a time. A second join cycle suspends the
 root: finishing the target must wake and run its joiners, which resume the root.
 This specifically detects selecting a successor before waking joiners.
 
-The expanded task runner needs a 256 KiB transfer ending at 0x50000; its temporary
-heap moves to 0x60000. This changes only the test harness. Production bootstrap
-reservation and the 8 MiB development profile remain unchanged.
+The scheduler/wait runner uses a 320 KiB transfer below its temporary heap at
+0x60000. The message runner now uses a 256 KiB transfer ending at 0x50000, with
+its temporary heap also at 0x60000; its previous 192 KiB limit rejected the
+expanded binary before execution. These are test harness reservations. The
+production bootstrap reservation and 8 MiB development profile stay unchanged.
 
 Run the x64 rebuild, the native tasks, task-heaps, messages, except-tasks,
 task-symbols and ata-tasks suites, then the full native kernel suite, as listed in

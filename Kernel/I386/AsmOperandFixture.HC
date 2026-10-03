@@ -8,5 +8,13 @@ public U0 I386AsmOperandFixture(CI386Heap *hc)
     MOV ECX,U32 CI386Heap.size[EBX]
     XOR EDI,EDI
     XOR EDX,EDX
+    OR ECX,U32 CI386Heap.size[EBX]
+    TEST U32 CI386Heap.size[EBX],1<<2|1<<9
+    TEST ECX,(1+2)*3^~(-1)
+    CMP U32 CI386Heap.base+4[EBX],ESI
+    JL I32 @@50
+@@50:
+    JG I32 @@51
+@@51:
   }
 }

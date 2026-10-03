@@ -1150,3 +1150,19 @@ requires a working MAlloc lookup and public Kill lookup, then the same behavior
 with exact VGA. It is expected to fail until Kill is published. Self-directed
 break, I/O-wait cancellation and full public message/break behavior need separate
 contracts; this test does not qualify those paths.
+
+
+Verify native assembly operand encoding and compiler recovery:
+
+```sh
+python3 tools/test-i386-asm-recovery.py build/i386-kernel/kernel.img --out build/asm-recovery
+```
+
+Use a fresh image containing the current AsmOperandFixture.HC and compiler
+provider. At 16 MiB with no FPU, the test writes an invalid source through
+DolDoc, requires zero-divisor rejection without an output module, then compiles
+a valid fixture and checks exact bytes for OR register/memory, TEST masks and
+constant expressions, class-member displacement and signed branches. It verifies
+that the prompt remains usable and freezes input-disk/checker/validator hashes.
+Use `--accel tcg` for software emulation. This tests selected assembly/error
+paths; it does not establish all compiler error recovery or public FileWrite.

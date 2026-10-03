@@ -112,7 +112,7 @@ I64 InboxTest()
   CI386OwnedInbox *inbox;
   U8 *all;
   I64 i;
-  if (!I386HeapInit(&heap,0x40000,8192)) return 30;
+  if (!I386HeapInit(&heap,0x60000,8192)) return 30;
   for (i=0;i<3;i++) {
     if (!I386ContextInit(&tasks[1].context,0x52000,8192,&EmptyWorker,0,&EndTask) ||
         !I386SchedAdd(&scheduler,&tasks[1])) return 31;
