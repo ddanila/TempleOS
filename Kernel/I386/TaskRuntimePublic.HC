@@ -1,4 +1,5 @@
 //Public single-CPU task policy. Include after the retained lifecycle helpers.
+#include "/Kernel/JobCtrlInit.HC"
 class CMemoryTaskRecord {
   CMemoryTaskRecord *next;
   CI386OwnedTask *owned;
@@ -16,6 +17,7 @@ U0 MemoryTaskRootInit(CI386Task *root)
 {
   root->next_child_task=root->last_child_task=MemoryChildHead(root);
   root->next_sibling_task=root->last_sibling_task=root;
+  JobCtrlInit(&root->srv_ctrl);
   root->task_num=memory_task_number;
   if(!root->gs->seth_task) root->gs->seth_task=root;
 }
@@ -32,6 +34,8 @@ Bool MemoryTaskEnsure(CI386Task *task)
   if(!task->next_sibling_task && !task->last_sibling_task) {
     task->next_sibling_task=task; task->last_sibling_task=task;
   }
+  if(!task->srv_ctrl.next_waiting && !task->srv_ctrl.last_waiting)
+    JobCtrlInit(&task->srv_ctrl);
   if(!task->task_num) task->task_num=++memory_task_number;
   if(task!=memory_root && !task->parent_task) task->parent_task=memory_root;
   return TRUE;
@@ -108,6 +112,7 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   task->task_num=++memory_task_number;
   task->next_child_task=task->last_child_task=MemoryChildHead(task);
   task->next_sibling_task=task->last_sibling_task=task;
+  JobCtrlInit(&task->srv_ctrl);
   task->rflags=0x202; task->context.esp(U32 *)[12]=0x202;
   task->context.esp(U32 *)[18]=&Exit;
   task->rip=(entry+0)(U64);

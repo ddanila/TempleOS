@@ -108,3 +108,10 @@ passes 128 layout checks in each boot/worker phase in
 `build/i386-public-job-records-kernel-v2/boot/debug.log`. The broader build
 suite is still running. Public message and job services remain separate implementation
 work.
+
+Public task queue initialization uses shared `Kernel/JobCtrlInit.HC`. Root
+binding, public Spawn and a private worker's first managed yield create empty
+waiting/done rings and clear job-control flags. The focused root-and-ten-child
+contract passes on the original OS and on the native 486 guest without an FPU
+at 8 MiB. This proves empty queue initialization, not ownership or cleanup of
+queued jobs.

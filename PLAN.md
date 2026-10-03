@@ -4738,3 +4738,33 @@ the fifteen new CJob checks. Header rollback/retry and task cleanup also pass.
 The broader console/startup and build-suite terminal result remains pending. The native compiler has executed the new layout assertions in both contexts;
 this proves the shared record layout, not public message service behavior. Continue queue initialization and
 retirement work after this shared-record prerequisite is verified.
+
+### Public task job-queue initialization (new source epoch)
+
+Added shared JobCtrlInit.HC, used by original Job.HC and the native public
+task runtime. Its pointer assignments reproduce QueInit's empty circular rings
+for both waiting and done queues and clear control flags. Root binding, Spawn
+and first managed yield of private workers now initialize their public queues.
+The public-message reference adds a sixth contract for constructor ring links
+and flags. This is queue initialization only: posting, scanning, job ownership
+and retirement of nonempty queues remain unimplemented.
+
+The new-source two-generation rebuild passes. The earlier shared-record
+build remains live against its captured image in
+build/i386-public-job-records-kernel-v2 and has passed both 128-assertion
+layout phases; its broader suite does not qualify these new lifecycle edits.
+The first two six-case fixtures called JobCtrlInit directly, but this internal
+helper is not declared in the original public API. Both stopped in the compiler
+before the start marker. The initial stack-declaration diagnosis was premature;
+changing the local declaration did not fix the private-API call. The corrected
+fixture checks actual root/child queue links and passes all six original message
+contracts (build/i386-public-messages-init-original-v3/result.json).
+
+A dedicated tools/test-i386-public-task-queues.py passes the original root plus
+ten-child contract (build/i386-public-task-queues-original/result.json).
+The current-source cross-build and 386 boot audit pass
+(build/i386-public-task-queues-kernel/result.json), with the flat image unchanged
+at 482936 bytes. Native focused queue qualification passes
+(build/i386-public-task-queues-native/result.json): 18 console submissions on
+486,-fpu with 8 MiB, exact VGA at each checkpoint and unchanged input disk. It does not cover queued-job cleanup or
+public message delivery. The previous-source broader suite remains live.

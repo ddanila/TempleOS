@@ -1178,7 +1178,7 @@ python3 tools/test-i386-public-messages.py --original --out build/public-message
 python3 tools/test-i386-public-messages.py build/i386-kernel/kernel.img --out build/public-messages-i386
 ```
 
-The five checks cover 40 queued messages in FIFO order, destructive mask
+The six checks cover empty root/child job queues, 40 queued messages in FIFO order, destructive mask
 filtering, negative message codes producing down/up events, FlushMsgs counts
 and zeroed outputs on an empty queue, and PostMsg/GetMsg delivery to a child.
 The native runner first checks MAlloc and Msg publication and then requires the
@@ -1186,3 +1186,16 @@ same console results, preserving the input image and freezing checker hashes.
 These public APIs are not yet published in the port; the native command is a
 future acceptance gate, not a currently passing test. Input filters, popups,
 non-message jobs and allocation recovery are outside this contract.
+
+Check public task job-queue initialization independently of message delivery:
+
+```sh
+python3 tools/test-i386-public-task-queues.py --original --out build/task-queues-original
+python3 tools/test-i386-public-task-queues.py build/i386-kernel/kernel.img --out build/task-queues-native
+```
+
+The focused contract checks empty waiting/done circular rings and unlocked
+control flags for the root and ten spawned children. It exercises the same
+public records in original and native guests and does not call the internal
+JobCtrlInit helper. Nonempty queue retirement, messages and allocation recovery
+require separate checks.

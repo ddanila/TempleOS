@@ -15,12 +15,7 @@ U0 JobQueDel(CJob *head)
   }
 }
 
-U0 JobCtrlInit(CJobCtrl *ctrl)
-{
-  QueInit(&ctrl->next_waiting);
-  QueInit(&ctrl->next_done);
-  ctrl->flags=0;
-}
+#include "/Kernel/JobCtrlInit.HC"
 
 U0 TaskRstAwaitingMsg(CTask *task=NULL)
 {//Pop-ups get parent messages so wake-up our pop-ups if we got a msg.
