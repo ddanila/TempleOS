@@ -107,8 +107,11 @@ filtering while preserving wide input bounds, duplicate-symbol checks and
 full heap validation. The fresh guest flat-kernel development image boots in
 51.264 seconds under 8 MiB `486,-fpu` TCG and passes the 386/filesystem audit.
 Its retained modules are cross-built, so it is not a replacement for the
-fully guest-built qualification. Current-source retained rebuilding and
-workstation integration are underway.
+fully guest-built qualification. The current-source cross image now passes the complete no-FPU workstation
+suite (513 commands, 50.501-second startup and 0.314-second visible update).
+The guest flat-kernel development image also passes the writable three-boot
+document workflow, including 0.271-second interrupt recovery and exact
+filesystem/VGA checks. All-six retained rebuilding remains underway.
 
 ## Final goal: a fully working TempleOS on a PC-compatible machine
 

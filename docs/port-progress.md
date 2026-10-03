@@ -11478,3 +11478,38 @@ The 95-file bundle remains the earlier-source candidate. Do not promote it
 as evidence for these OS changes. Fully guest-built timing, integration,
 public task/terminal and debugging behavior, consolidated qualification and
 publication remain open.
+
+## Completed startup integration runs (2026-10-03)
+
+The previously live cross-image workstation run completed successfully. Under
+8 MiB `486,-fpu` TCG it passes 513 commands, 576 submitted lines, exact VGA
+and 20 bounded resource cycles with exact shared-heap recovery. Startup is
+50.501435 seconds and the visible long-document update is 0.313749 seconds;
+both budgets pass. Evidence:
+`build/i386-startup-u32-workstation-tcg/result.json`, `provenance.json`,
+`command.json`, and `build/i386-startup-u32-workstation-budget.json`.
+The post-run provenance independently matches the unchanged image and all
+1,233 build source inputs against the current tree and verifies module hashes.
+
+A separate preserved pre-change cross image passes the normal keyboard boot
+check at 56.423819 seconds (`build/i386-startup-before-u32-tcg/result.json`).
+Its source manifest differs from the optimized image in exactly `Heap.HC`,
+`ModuleCheck.HC` and `ModuleLoad.HC`. These are individual host/QEMU
+observations, not a controlled timing distribution. Cross-image timings
+are not interchangeable with the earlier fully guest-built 73–74-second runs.
+
+The guest flat-kernel development image now also passes three writable
+DolDoc boots: 107/56/15 commands, exact VGA, binary/style/program saved
+content, rename/move/delete cycles and independently audited directory
+extents/bitmap. Startup measures 50.506228/51.312604/53.144229 seconds and
+interrupt-to-visible-recovery takes 0.271096 seconds. The source disk remains
+unchanged. Evidence: `build/i386-startup-u32-doldoc-tcg/result.json`.
+
+The all-six current-source retained build continues on its original process
+and has advanced to `CompilerProbe` after `Startup`, `MemoryRuntime`,
+`FileRuntime` and `ConsoleRuntime` command execution. No final export/disk
+audit or module pass is inferred from those checkpoints. The next action is
+to finish that build, install verified retained outputs, measure fully
+guest-built startup and repeat the second generation. Missing public task
+services, interactive multi-terminal behavior and runtime inspection remain
+required work before qualification/publication.

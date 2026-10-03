@@ -79,8 +79,12 @@ build inside the guest, install and cold boot at 8 MiB; the retained modules
 for this development image remain cross-built. Its installed 386 and RedSea
 audits pass, and an unprofiled `486,-fpu` TCG keyboard session boots in
 51.264 seconds. This is a development timing pass, not full self-hosting
-qualification. Current-source workstation integration and retained rebuilding
-are running.
+qualification. The fresh cross image passes the full no-FPU workstation suite (513 commands,
+20 exact heap-recovery cycles, 50.501-second startup, 0.314-second visible
+update). The guest flat development image passes three writable boots
+(107/56/15 commands), exact saved bytes and RedSea audit, with 0.271-second
+interrupt recovery. Retained rebuilding continues. These development passes
+do not replace the fully guest-built promotion profiles.
 
 A current-source public function probe confirms `MAlloc` and `Dir`, but fails
 for `Spawn`, `Exit`, `Yield`, `Sleep` and `Dbg`. See the

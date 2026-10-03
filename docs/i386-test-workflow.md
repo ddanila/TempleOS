@@ -846,3 +846,22 @@ input workflow. Interrupted/rejected runs clear any old final verdict.
 The x64 ISO/rebuild tools use the immutable original snapshot commit instead
 of an `archive` branch; ordinary clones must include that history. An isolated
 ISO can be audited with `python3 tools/verify-iso.py --image <path>`.
+
+The optimized-source integration commands are:
+
+```sh
+python3 tools/i386-kernel-input.py build/i386-kernel/kernel.img \
+  --cpu 486,-fpu --qmp-stdio --out build/i386-startup-u32-workstation-tcg
+python3 tools/check-i386-startup-budget.py \
+  build/i386-startup-u32-workstation-tcg/result.json \
+  --out build/i386-startup-u32-workstation-budget.json
+python3 tools/test-i386-doldoc-session.py \
+  build/i386-kernel/selfhost-startup-u32-development/target.img \
+  --cpu 486,-fpu --qmp-stdio --out build/i386-startup-u32-doldoc-tcg
+```
+
+These completed development runs pass their startup and visible-update/interrupt
+budgets. Their retained modules are cross-built; repeat the promotion profiles
+after all guest-built retained outputs are installed. A result from an older
+image is not a pass for a changed disk, and an active build checkpoint is not
+a final module audit.

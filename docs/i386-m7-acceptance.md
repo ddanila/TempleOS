@@ -561,3 +561,24 @@ completed, and a post-write, read-only audit supplied the verdict. The local
 release bundle requires this result and independently compares all six module
 bytes; its standalone verifier passes 76 files. Human manual QEMU observation
 remains deferred, and complete original feature parity remains open.
+
+## Startup optimization integration checkpoint (2026-10-03)
+
+The fresh source-linked cross image passes the entire 8 MiB `486,-fpu` TCG
+workstation suite: 513 commands, 576 lines, exact VGA, 20 cycles with exact
+shared-heap recovery, 50.501435-second startup and 0.313749-second long-document
+visible update. `build/i386-startup-u32-workstation-tcg/provenance.json` binds
+the unchanged disk, source inputs, build manifest, QEMU command and result.
+The startup-budget checker passes for this full-suite measurement.
+
+The guest flat-kernel development image passes the writable three-boot
+DolDoc workflow under the same CPU/RAM profile: 107/56/15 commands, startup
+50.506228/51.312604/53.144229 seconds, 0.271096-second interrupt recovery, exact
+VGA/saved bytes and a persisted RedSea audit. Source disk preservation passes.
+Evidence: `build/i386-startup-u32-doldoc-tcg/result.json`.
+
+Both image types still have cross-built retained modules. They do not establish
+the fully guest-built startup gate or two-generation promotion for the new
+source. All-six retained rebuilding is live under 16 MiB no-FPU KVM and has
+advanced to `CompilerProbe`; its checkpoint alone is not a passing verdict.
+Task/terminal and debugging publication failures remain open.
