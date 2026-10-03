@@ -39,6 +39,9 @@ existing exception handler and resume execution, including creating children.
 Exception records and child cleanup therefore remain untouched until actual
 retirement. The callback pointer is consumed once, matching the original task
 end policy. A callback that returns is followed by Exit again.
+An exiting parent renews its child termination requests after each yield until
+the child ring is empty, so a descendant that recovers from its callback is
+still terminated before the parent retires.
 
 Task and compiler cleanup callbacks run while the exiting task is still linked,
 including callbacks that yield. Finish detaches both public links before switching

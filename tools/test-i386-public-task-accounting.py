@@ -62,7 +62,7 @@ def behavior_commands(disk):
         ('BootTree;', ['1']),
         ('Bool BootTry(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!TryStart(i%4)||!TryDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
         ('BootTry;', ['1']),
-        ('Bool BootEnd(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!EndStart(i%4)||!EndDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('Bool BootEnd(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!EndStart(i%5)||!EndDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
         ('BootEnd;', ['1']),
         ('Bool BootBad(I64 cpu,I64 size,I64 ch,Bool empty=FALSE){CBootHeap *h=BootHeap;I64 u=h->used,n=h->allocations;return LifeRejected(cpu,size,ch,empty)&&BootSame(h,u,n);}', []),
         ("BootBad(1,8192,'Task');", ['1']),
@@ -111,7 +111,7 @@ def main():
               'normal_and_exit_cycles': 20, 'deferred_activation_cycles': 20,
               'descendant_cycles': 20, 'descendant_variants': 5,
               'exception_cycles': 20, 'exception_variants': 4,
-              'end_callback_cycles': 20, 'end_callback_variants': 4,
+              'end_callback_cycles': 20, 'end_callback_variants': 5,
               'creation_rejections': 6,
               'scope': 'Bootstrap recovery through public calls, including queued descendants; not late clone-hook failures or dormant disposal'}
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')

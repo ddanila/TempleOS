@@ -64,7 +64,9 @@ creators, default task records and dormant activation with exact public-pool
 recovery. The guest-built memory provider installs and passes its executable
 audit and the same 43-command no-FPU public contract. The following descendant
 policy also passes five original-behavior cases and the expanded 55-command
-lifecycle contract on cross-built and guest-built providers. Public cancellation,
+lifecycle contract on cross-built and guest-built providers. Five original exit
+callback cases, including descendant recovery during parent termination, now
+pass on both providers, with 107-command bootstrap accounting. Public cancellation,
 dormant disposal, multiple interactive terminals, source-linked debugging,
 full current-source two-generation qualification and
 publication remain open. See [the M7 coverage audit](docs/i386-m7-coverage-audit.md).
@@ -4511,3 +4513,69 @@ canceled descendant; it does not yet prove that combined case. The prepared
 original Kill reference passes six variants and null/protected-root rejection
 (build/i386-task-kill-original-v2/result.json), but its fixture is still a
 build-directory prototype and no public Kill implementation is published.
+
+
+Descendant callback recovery during parent termination (2026-10-04):
+The callback corpus adds a fifth original behavior: the canceled child throws
+from its one-shot callback into an active catch, resumes a yielding loop, and
+is then terminated before its parent retires. Original x64 passes all five
+cases (build/i386-task-end-recovery-original/result.json). The existing i386
+provider passes the first four but fails EndDone after EndStart(4)
+(build/i386-task-end-recovery-red/behavior/debug.log). It requested termination
+only once, so the recovered child could clear KILL indefinitely.
+
+Exit now renews queued-child termination requests after each yield until the
+child ring is empty, matching the original TaskEnd policy. Ring traversal stays
+IRQ-protected; yielding restores the caller's interrupt state. The original
+bootstrap and fresh cross build pass (build/i386-task-end-recovery-bootstrap.log
+and build/i386-task-end-recovery-kernel/result.json). All five cases pass under
+8 MiB 486,-fpu TCG with exact VGA and unchanged source/checker hashes
+(build/i386-task-end-recovery-cross/result.json). The guest compiler rebuilds
+and installs the 263,107-byte memory provider, which independently boots without
+an FPU (build/i386-task-end-recovery-native-memory/result.json and
+build/i386-task-end-recovery-native-install/result.json).
+
+The accounting corpus now repeats each of five callback variants four times.
+Both cross/native accounting runs pass all 107 commands with exact allocation
+recovery after every cycle, including four repetitions of each callback variant
+(build/i386-task-end-recovery-accounting-cross/result.json and
+build/i386-task-end-recovery-accounting-native/result.json). The installed
+guest-built provider passes all five callback cases under 8 MiB 486,-fpu TCG,
+and the independent executable/boot/filesystem audit passes
+(build/i386-task-end-recovery-native/result.json and
+build/i386-task-end-recovery-native-audit/result.json). Source disks and checker
+hashes stay unchanged. This remains selected-provider qualification. Public Kill/break,
+private I/O cancellation, dormant disposal, late clone-hook failure accounting,
+uncaught exception policy and full self-hosted generation/release qualification
+remain open.
+
+
+Public cancellation tests-first contract (2026-10-04):
+tools/test-i386-public-task-kill.py replaces the build-directory prototype.
+Its eight original x64 variants pass: pre-entry, running, sleeping and suspended
+cancellation, callback recovery, caller-side Break, and asynchronous sleeping/
+suspended cancellation. It also rejects null, protected-root and retired task
+pointers (build/i386-public-kill-original-v2/result.json). Async Kill initially
+preserves wake deadlines and all flags except KILL. A waiting Kill may return
+when an exit callback clears KILL and resumes the target; it is not a death wait.
+The native baseline first passes the MAlloc lookup control, then fails the Kill
+lookup before behavior definitions run (build/i386-public-kill-red-v2/behavior/debug.log).
+No public Kill implementation has been published; this checker is deliberately
+red until that work is completed.
+
+The next cancellation package must:
+
+1. Extend scheduler eligibility so KILL can admit sleeping/suspended managed
+   tasks without prematurely changing their public wake/flag state. Verify the
+   private scheduler first and remeasure the native flat image's boot budget.
+2. Connect public Kill to owned-task validation, protected root rejection,
+   asynchronous requests and the original wait-until-KILL-clears rule. Repeat
+   all eight original behaviors on cross-built and installed guest-built providers.
+3. Specify self-directed break and BREAK_TO_SHIFT_ESC message delivery before
+   claiming full just_break behavior. Preserve break-lock/checkpoint semantics;
+   the current caller-side Break case does not qualify the other paths.
+4. Cancel private wait queues without abandoning caller cleanup or releasing
+   task/code ownership early. Prove I/O cancellation, caught break recovery and
+   exact allocation recovery, including tasks inside active try blocks.
+Public message/break integration and dormant disposal remain separate required
+contracts; passing these eight cases alone does not complete cancellation or M7.

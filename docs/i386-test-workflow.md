@@ -1123,10 +1123,30 @@ python3 tools/test-i386-public-task-end-callbacks.py --original --out build/task
 python3 tools/test-i386-public-task-end-callbacks.py build/i386-kernel/kernel.img --out build/task-end-i386
 ```
 
-The four cases cover normal return, explicit Exit, a callback that throws to
+The five cases cover normal return, explicit Exit, a callback that throws to
 an active catch and resumes task execution, and queued descendant cancellation
-inside try. Callbacks must run once with their public pointer cleared and kill,
+inside try, with either callback-driven Exit or recovery. A parent must renew
+termination requests if its child recovers. Callbacks must run once with their public pointer cleared and kill,
 suspension, message-wait and wake state reset. The resumed task must still be
 able to spawn a child. This does not establish public Kill or I/O cancellation.
-The bootstrap accounting gate repeats each variant five times, checks exact
+The bootstrap accounting gate repeats each variant four times, checks exact
 allocation recovery after each cycle, and records the callback checker hash.
+
+
+The public Kill contract is a tests-first prerequisite; the port does not yet
+publish this API:
+
+```sh
+python3 tools/test-i386-public-task-kill.py --original --out build/task-kill-original
+python3 tools/test-i386-public-task-kill.py build/i386-kernel/kernel.img --out build/task-kill-i386
+```
+
+The original reference executes eight variants: cancellation before entry,
+running, sleeping and suspended tasks, callback recovery, caller-side Break,
+and asynchronous cancellation of sleeping/suspended tasks. Async cancellation
+must initially preserve wake deadlines and all flags except KILL. It also
+rejects null, protected-root and retired task pointers. The native check first
+requires a working MAlloc lookup and public Kill lookup, then the same behavior
+with exact VGA. It is expected to fail until Kill is published. Self-directed
+break, I/O-wait cancellation and full public message/break behavior need separate
+contracts; this test does not qualify those paths.

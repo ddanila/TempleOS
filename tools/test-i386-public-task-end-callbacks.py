@@ -23,13 +23,15 @@ def behavior_commands():
         'U0 EndWorker(U8 *data){CEndProbe *p=data;Fs->task_end_cb=&EndExit;p->stage=1;if(p->kind==1)Exit;}',
         "U0 EndResume(U8 *data){CEndProbe *p=data;Fs->task_end_cb=&EndThrow;try{Exit;}catch{if(Fs->except_ch!='Resume')p->errors=2;p->caught++;Fs->catch_except=TRUE;}p->child=Spawn(&EndChild,p,\"Child\",-1,Fs,8192);while(p->stage!=3)Yield;}",
         'U0 EndWait(U8 *data){CEndProbe *p=data;Fs->task_end_cb=&EndExit;try{p->stage=1;while(TRUE)Yield;}catch{p->errors=4;Fs->catch_except=TRUE;}}',
-        'U0 EndParent(U8 *data){CEndProbe *p=data;p->child=Spawn(&EndWait,p,"Child",-1,Fs,8192);while(p->stage!=1)Yield;}',
-        'CTask *EndSpawn(I64 k){if(k==2)return Spawn(&EndResume,EndState,"Resume",-1,Fs,8192);if(k==3)return Spawn(&EndParent,EndState,"Parent",-1,Fs,8192);return Spawn(&EndWorker,EndState,"End",-1,Fs,8192);}',
+        "U0 EndRecoverWait(U8 *data){CEndProbe *p=data;Fs->task_end_cb=&EndThrow;try{p->stage=1;while(TRUE)Yield;}catch{if(Fs->except_ch!='Resume')p->errors=8;p->caught++;Fs->catch_except=TRUE;p->stage=2;while(TRUE)Yield;}}",
+        'U0 EndParent(U8 *data){CEndProbe *p=data;if(p->kind==4)p->child=Spawn(&EndRecoverWait,p,"Child",-1,Fs,8192);else p->child=Spawn(&EndWait,p,"Child",-1,Fs,8192);while(p->stage!=1)Yield;}',
+        'CTask *EndSpawn(I64 k){if(k==2)return Spawn(&EndResume,EndState,"Resume",-1,Fs,8192);if(k>=3)return Spawn(&EndParent,EndState,"Parent",-1,Fs,8192);return Spawn(&EndWorker,EndState,"End",-1,Fs,8192);}',
         'Bool EndStart(I64 k){EndState->kind=k;EndState->stage=EndState->calls=EndState->caught=EndState->errors=0;EndState->task=EndSpawn(k);return EndState->task!=0;}',
-        'Bool EndDone(){I64 end=cnts.jiffies+2000;while(EndHas(Fs,EndState->task)&&cnts.jiffies<end)Yield;return !EndHas(Fs,EndState->task)&&!EndState->errors&&EndState->calls==1&&EndState->caught==(EndState->kind==2)&&EndState->stage==2+(EndState->kind==2);}',
+        'Bool EndResult(){return !EndState->errors&&EndState->calls==1&&EndState->caught==(EndState->kind==2||EndState->kind==4)&&EndState->stage==2+(EndState->kind==2);}',
+        'Bool EndDone(){I64 end=cnts.jiffies+2000;while(EndHas(Fs,EndState->task)&&cnts.jiffies<end)Yield;return !EndHas(Fs,EndState->task)&&EndResult;}',
     ]
     commands = [(source, []) for source in definitions]
-    for kind in range(4):
+    for kind in range(5):
         commands.extend([(f'EndStart({kind});', ['1']), ('EndDone;', ['1'])])
     commands.extend([('Free(EndState);', []), ('6*7;', ['42'])])
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
@@ -54,13 +56,13 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:14]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:16]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
 Report("START original task end callbacks\\n");
 I64 i;Bool ok=TRUE;
-for(i=0;i<4;i++)if(!EndStart(i)||!EndDone) {ok=FALSE;Report("Case failed\\n");break;}
+for(i=0;i<5;i++)if(!EndStart(i)||!EndDone) {ok=FALSE;Report("Case failed\\n");break;}
 if(ok) {Free(EndState);Report("PASS original task end callbacks\\n");}
 else Report("FAIL original task end callbacks\\n");
 Report("DONE original task end callbacks\\n");
@@ -86,8 +88,8 @@ Report("DONE original task end callbacks\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Task end callback checker changed during execution')
-    report.update(checker_sha256=checker, cases=4,
-                  scope='One-shot callbacks on return, explicit Exit, exception recovery and descendant cancellation; not public Kill')
+    report.update(checker_sha256=checker, cases=5,
+                  scope='One-shot callbacks on return, explicit Exit, exception recovery and descendant cancellation with exit or recovery; not public Kill')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

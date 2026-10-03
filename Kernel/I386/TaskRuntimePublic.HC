@@ -148,14 +148,19 @@ U0 Exit()
   }
   record->exiting=TRUE;
   head=MemoryChildHead(task);
-  for(child=task->next_child_task;child!=head;child=child->next_sibling_task) {
-    child->task_flags|=1<<TASKf_KILL_TASK;
-    child->task_flags&=~(1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG|1<<TASKf_IDLE);
-    child->wake_jiffy=0;
+  //A descendant's callback can clear KILL and recover to its active catch.
+  //Like TaskEnd, renew termination requests until all queued children retire.
+  while(task->next_child_task!=head) {
+    for(child=task->next_child_task;child!=head;child=child->next_sibling_task) {
+      child->task_flags|=1<<TASKf_KILL_TASK;
+      child->task_flags&=~(1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG|1<<TASKf_IDLE);
+      child->wake_jiffy=0;
+    }
+    I386IrqRestore(irq);
+    Yield;
+    irq=I386IrqSave;
   }
   I386IrqRestore(irq);
-  //Their stacks and inherited references are reclaimed before this task retires.
-  while(task->next_child_task!=head) Yield;
   //Exit need not return through the lexical untry epilogues on this stack.
   while(task->except_top) SysUntry;
   if(!TaskRuntimeSchedFinish(task->owner)) throw('Task',TRUE);
