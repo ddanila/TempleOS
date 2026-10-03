@@ -779,8 +779,7 @@ I64 I386FrontendConditional(CI386Frontend *state,CCmpCtrl *cc,I64 keyword=KW_IF)
   Bool take;
   while(TRUE) {
     if(keyword==KW_IFDEF || keyword==KW_IFNDEF) {
-      cc->flags|=CCF_NO_DEFINES;
-      try { I386FrontendLex(state,cc); }
+      try { cc->flags|=CCF_NO_DEFINES; I386FrontendLex(state,cc); }
       catch { cc->flags&=~CCF_NO_DEFINES; }
       cc->flags&=~CCF_NO_DEFINES;
       if(cc->token!=TK_IDENT) return cc->token;
@@ -797,8 +796,8 @@ I64 I386FrontendConditional(CI386Frontend *state,CCmpCtrl *cc,I64 keyword=KW_IF)
       if(!take && !I386FrontendConditionalSkip(state,cc,1,TRUE)) return TK_EOF;
       return I386FrontendLex(state,cc);
     }
-    cc->flags|=CCF_IN_IF;
     try {
+      cc->flags|=CCF_IN_IF;
       if(I386FrontendLex(state,cc)==TK_EOF) {
         cc->flags&=~CCF_IN_IF; return TK_EOF;
       }

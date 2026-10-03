@@ -20,6 +20,7 @@ I64 I386ParserToken(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
   }
   I386IrqRestore(irq);
   token=I386RuntimeLexIncludes(heap,cc,macro_filename,compiled_lines,includes);
+  if(token==I386_LEX_OUT_OF_MEMORY) throw('OutMem',TRUE);
   if(token<0) { cc->error_cnt++; throw('Compiler',TRUE); }
   irq=I386IrqSave;
   if(cc->cur_str) {

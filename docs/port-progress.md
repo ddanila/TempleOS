@@ -11890,3 +11890,21 @@ requires root-based symbol inheritance, public heap ownership and root child
 membership before both tasks retire. This catches implementations that always
 clone the current task. The behavior branch remains unexecuted while public
 `Spawn` and `Exit` are missing; host command-shape/presence checks pass.
+
+The pressure diagnostic rerun confirms attempt zero throws `Compiler`
+(`72656C69706D6F43`), with two active controls and `CCF_IN_IF` clear. The raw
+identifier publisher returned generic failure on allocation exhaustion, which
+the parser adapter classified as a compiler error. A new explicit identifier
+error path returns `I386_LEX_OUT_OF_MEMORY`; parser-backed directive lexing uses
+it and the adapter throws `OutMem`. The original raw identifier entry retains
+its signature and return values. Conditional flag mutations also move inside
+their `try` blocks, so failure to register a handler cannot leave a new flag set.
+
+The two-generation x86-64 bootstrap rebuild passes. The raw identifier corpus,
+including unchanged generic-error cases and a new explicit allocation-failure
+case preserving the previous token and heap counters, passes with its 386 audit
+(`build/i386-conditional-pressure-fix-lex-ident-retry.log`). Its 153,742-byte
+runner exceeded the old transfer profile; the test now uses the existing
+320-sector profile and remains below its first heap at `0x40000`. The OS boot
+limit is unchanged. Full pressure diagnostics are running in
+`build/i386-conditional-pressure-fix-kernel`; no pressure pass is claimed yet.

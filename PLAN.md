@@ -224,6 +224,12 @@ allocation site or close the release gate.
 The first pressure run stops during attempt zero before recording a completion.
 Diagnostic checkpoints have been added to distinguish exception registration,
 flag cleanup and unwind failures; the cause remains under investigation.
+The diagnostic rerun identifies an identifier-publication allocation failure
+reported as `Compiler` rather than `OutMem`, with conditional flags clear.
+The parser-backed lexer now preserves that allocation distinction; the original
+raw entry retains its ABI and error values. Raw identifier compatibility and
+the explicit allocation-error test pass. Conditional flag mutations now occur
+inside their registered cleanup handlers. Full pressure qualification is running.
 
 ### Next public task package: ownership through exit
 

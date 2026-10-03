@@ -72,7 +72,8 @@ I64 I386LexNextWithIncludes(CI386Heap *heap,CCmpCtrl *cc,CLexPunctTables *tables
         if(cc->flags&CCF_KEEP_AT_SIGN) goto lex_literal;
       case TK_SUPERSCRIPT: case TK_SUBSCRIPT: case TK_NORMALSCRIPT:
       case 'A'...'Z': case 'a'...'z': case '_': case 128...255:
-        result=I386LexIdentToken(heap,cc,ch,macro_filename,compiled_lines);
+        result=I386LexIdentTokenWithErrors(heap,cc,ch,macro_filename,compiled_lines,
+            includes && includes->directive);
         if(result!=-2) return result;
         break;
       case '0'...'9': case '.': return I386LexNumber(heap,cc,ch,compiled_lines);

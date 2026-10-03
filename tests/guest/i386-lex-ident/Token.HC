@@ -16,6 +16,12 @@ I64 NativeTokenTest()
         cc.token!=77 || cc.hash_entry!=&macro || StrCmp(old,"Old") || cc.lex_include_stk!=&parent ||
         small.allocations!=1 || !I386HeapValid(&small)) return 162+i;
   }
+  IdentSeed(&cc,&parent,input); cc.cur_str=old; cc.cur_str_len=4; cc.token=77;
+  cc.flags|=CCF_NO_DEFINES; cc.htc.hash_table_lst=&table; cc.hash_entry=&macro;
+  ch=I386LexRawChar(&small,&cc,&lines);
+  if(I386LexIdentTokenWithErrors(&small,&cc,ch,"Macro",&lines,TRUE)!=I386_LEX_OUT_OF_MEMORY ||
+      cc.cur_str!=old || cc.token!=77 || cc.hash_entry!=&macro || small.allocations!=1 ||
+      StrCmp(old,"Old") || !I386HeapValid(&small)) return 169;
   if(!I386HeapFree(&small,old) || small.used || small.allocations) return 164;
   //Expansion retains the previous owned token until actual publication succeeds.
   IdentSeed(&cc,&parent,input); cc.htc.hash_table_lst=&table;

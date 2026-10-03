@@ -30,7 +30,7 @@ I64 I386LexIdentScan(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *buf,I64 capacity,CH
 }
 
 #include "/Kernel/I386/Cpu.HH"
-class CI386IdentSink { CI386Heap *heap; U8 *macro_filename; };
+class CI386IdentSink { CI386Heap *heap; U8 *macro_filename; Bool out_of_memory; };
 Bool I386IdentInclude(U8 *context,CCmpCtrl *cc,CHashDefineStr *entry)
 {
   CI386IdentSink *sink=context;
@@ -43,7 +43,7 @@ Bool I386IdentPublish(U8 *context,CCmpCtrl *cc,U8 *name,I64 length,CHash *entry)
   if(cc->cur_str && I386HeapSize(sink->heap,cc->cur_str)<1) { I386IrqRestore(flags); return FALSE; }
   text=I386HeapAlloc(sink->heap,length,FALSE);
   I386IrqRestore(flags);
-  if(!text) return FALSE;
+  if(!text) { sink->out_of_memory=TRUE; return FALSE; }
   for(i=0;i<length;i++) text[i]=name[i];
   flags=I386IrqSave;
   if(cc->cur_str && !I386HeapFree(sink->heap,cc->cur_str)) {
@@ -53,18 +53,23 @@ Bool I386IdentPublish(U8 *context,CCmpCtrl *cc,U8 *name,I64 length,CHash *entry)
   I386IrqRestore(flags);
   return TRUE;
 }
-I64 I386LexIdentToken(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *macro_filename,I64 *compiled_lines)
+I64 I386LexIdentTokenWithErrors(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *macro_filename,I64 *compiled_lines,Bool allocation_errors)
 {
   U8 name[STR_LEN]; CHash *entry; CLexIdentSink sink; CI386IdentSink native;
   I64 length,result;
   length=I386LexIdentScan(heap,cc,ch,name,STR_LEN,&entry,compiled_lines);
   if(length==-2) return -3;
   if(length<0) return -1;
-  native.heap=heap; native.macro_filename=macro_filename;
+  native.heap=heap; native.macro_filename=macro_filename; native.out_of_memory=FALSE;
   sink.context=&native; sink.include=&I386IdentInclude; sink.publish=&I386IdentPublish;
   result=LexIdentFinish(cc,name,length,entry,&sink);
+  if(allocation_errors && native.out_of_memory) return I386_LEX_OUT_OF_MEMORY;
   if(result!=TK_IDENT) return result;
   if(I386LexRawChar(heap,cc,compiled_lines)<0) return -1;
   cc->flags|=CCF_USE_LAST_U16;
   return TK_IDENT;
+}
+I64 I386LexIdentToken(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *macro_filename,I64 *compiled_lines)
+{
+  return I386LexIdentTokenWithErrors(heap,cc,ch,macro_filename,compiled_lines,FALSE);
 }
