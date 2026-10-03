@@ -4799,3 +4799,25 @@ same immutable no-FPU image. It checks one-shot return/Exit callbacks,
 exception recovery and descendant cancellation, but does not specifically
 exercise a callback recovering with nonempty job queues. Public message
 posting/scanning and full job-service compatibility remain open. This does not implement public message services.
+
+### Public messages: filter and popup routing references
+
+The message checker now has thirteen original-OS contracts. All pass
+(build/i386-public-message-popup-original/result.json). The intermediate
+nine-case reference also passes
+(build/i386-public-message-routing-original/result.json). New checks cover
+forward filter routing, explicit DONT_FILTER bypass, backward posting from an
+input-filter task, popup fallback to its parent's queued message, rejection of
+parent posts while a popup exists without FILTER_INPUT, direct popup delivery
+and clearing AWAITING_MSG along the parent/popup chain.
+
+The fixture temporarily constructs a two-task input-filter ring and popup
+relationship through public task fields, then restores links before retirement.
+This verifies message routing, not the original InputFilterTask job-execution
+loop, macro recording or complete window-manager behavior. Public messaging
+remains unpublished in the port, and native acceptance is still pending.
+Implement posting and scanning against shared job records, preserving these
+routes alongside unbounded FIFO and paired-event behavior; initialize native
+input-filter self-links and maintain their lifetime as part of that package.
+The preceding-source broader native suite is still live and is not a proof of
+these new message contracts.

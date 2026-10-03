@@ -1178,14 +1178,21 @@ python3 tools/test-i386-public-messages.py --original --out build/public-message
 python3 tools/test-i386-public-messages.py build/i386-kernel/kernel.img --out build/public-messages-i386
 ```
 
-The six checks cover empty root/child job queues, 40 queued messages in FIFO order, destructive mask
+The thirteen checks cover empty root/child job queues, 40 queued messages in FIFO order, destructive mask
 filtering, negative message codes producing down/up events, FlushMsgs counts
 and zeroed outputs on an empty queue, and PostMsg/GetMsg delivery to a child.
 The native runner first checks MAlloc and Msg publication and then requires the
 same console results, preserving the input image and freezing checker hashes.
+The routing checks temporarily link two live worker tasks: normal posts follow
+the filter chain, DONT_FILTER bypasses it, and a post to an input-filter task
+returns to its preceding task. Popup checks cover parent-queue fallback,
+rejection of a parent post without FILTER_INPUT, direct popup delivery and
+clearing AWAITING_MSG on both parent and popup. Links are restored before
+workers retire. These check routing against public task fields; they do not run
+the original InputFilterTask job loop or establish full window-manager behavior.
 These public APIs are not yet published in the port; the native command is a
-future acceptance gate, not a currently passing test. Input filters, popups,
-non-message jobs and allocation recovery are outside this contract.
+future acceptance gate, not a currently passing test. Non-message jobs, macro
+recording and allocation recovery are outside this contract.
 
 Check public task job-queue initialization independently of message delivery:
 
