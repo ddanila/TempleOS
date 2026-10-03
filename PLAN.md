@@ -266,7 +266,18 @@ until destruction. A returned creator cannot be reaped while its child is
 alive; overflow rejects construction before allocation. Native heap, symbol
 and legacy task fixtures pass with exact recovery. Public reaping and task
 descriptor behavior remain open. The updated cross-built flat image is
-484,704 bytes; guest-built flat capacity still requires qualification.
+484,704 bytes. Rebuilding all six flat modules inside the guest produced
+488,680 bytes, exceeding the unchanged 487,424-byte boot region by 1,256 bytes.
+The boot-image builder correctly rejected that image; this is not an install
+pass (`build/i386-creator-pin-native-flat/capacity-result.json`).
+A compact native task validation implementation is under test. Its initial
+heap and symbol fixtures failed, so it is not qualified. The heap diagnostic
+isolated failed-construction rollback: the compact implementation released a
+creator reference before acquiring it. Rollback now checks the owned record's
+creator field, which is set only when acquisition occurs; a fresh bootstrap
+and regression run must verify the correction before this implementation is
+promoted. Public task implementation and latest-source native generations
+remain pending.
 The symbol/file fixture now also passes selection from root context of a
 different live parent with its own `Shared` definition and `/Selected` directory
 on drive D. It verifies inherited values, independent file state, parent pinning
