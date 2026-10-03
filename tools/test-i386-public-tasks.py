@@ -66,6 +66,8 @@ def behavior_commands():
         ('Bool LifePendingFinish(){I64 i,end=cnts.jiffies+2000;while(LifeState->stage!=2&&cnts.jiffies<end)Yield;for(i=0;i<20;i++)Yield;return LifeState->stage==2&&!LifeState->errors&&LifeEmpty(Fs);}', []),
         ('Bool LifePendingRun(){I64 n=Fs->data_heap->bp->used_u8s,r=Fs->data_heap->bp->alloced_u8s;if(!LifePendingStart||!LifePendingIdle)return FALSE;LifePendingActivate;return LifePendingFinish&&Fs->data_heap->bp->used_u8s==n&&Fs->data_heap->bp->alloced_u8s==r;}', []),
         ('LifePendingRun;', ['1']),
+        ('Bool LifePendingRepeat(){I64 i;for(i=0;i<20;i++)if(!LifePendingRun)return FALSE;return TRUE;}', []),
+        ('LifePendingRepeat;', ['1']),
         ('Free(LifeState);', []),
         ('6*7;', ['42']),
     ]

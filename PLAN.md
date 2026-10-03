@@ -251,8 +251,14 @@ The public contract also requires `TaskQueIns` and specifies deferred creation:
 omit the parent's child ring and remain dormant through 20 yields. Explicit
 `TaskQueIns` then activates it; entry return must reclaim its shared public-pool
 allocations even though it was never inserted into the parent's child ring.
-This is 41 behavior commands, all within the console limit. Private allocation
-recovery and pending-task disposal still require separate oracles.
+Deferred creation/activation also repeats 20 times, with exact public-pool
+usage and reserved-capacity recovery required after each cycle. This is 43
+behavior commands, all within the console limit. Private allocation recovery
+and pending-task disposal still require separate oracles.
+The compact-guard image reproduces the public presence baseline under 8 MiB
+`486,-fpu` TCG: `MAlloc`, `Dir`, `Yield` and `Sleep` are present, while `Spawn`,
+`Exit` and `TaskQueIns` are absent. The source disk is unchanged; none of the
+43 behavior commands executed (`build/i386-creator-compact-owner32-public-tasks/result.json`).
 The private `I386TaskSpawnFrom` helper now accepts a selected live parent and
 clones its heap/file/symbol hooks without changing scheduler current. The
 original `I386TaskSpawn` entry keeps its ABI and current-parent behavior.

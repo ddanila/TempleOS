@@ -907,16 +907,21 @@ python3 tools/test-i386-public-tasks.py build/i386-public-delay-kernel/kernel.im
   --out build/i386-public-tasks-before
 ```
 
-The current baseline exits 1 for missing public `Spawn` and `Exit`, with working
+The current baseline exits 1 for missing public `Spawn`, `Exit` and `TaskQueIns`, with working
 `MAlloc`/`Dir` controls. After publication, the behavior branch exercises the
 ordinary public interfaces under 8 MiB `486,-fpu` TCG: parent/heap/symbol/directory
 ownership, child links, task records, explicit exit and ordinary entry return,
-default parent/name/stack, and repeated public-pool reclamation. Checks of a
+default parent/name/stack, nested selection of a different parent, and repeated
+public-pool reclamation. Deferred creation with `flags=0` must remain dormant
+through 20 yields, then activate through `TaskQueIns` and reclaim its allocations
+without public child-ring insertion. That sequence repeats 20 times, checking
+both pool usage and reserved capacity after each cycle. All 43 commands fit
+the interactive line limit. Checks of a
 new task's record and child links run inside the spawning command before any
 yield; later commands never dereference a possibly reclaimed task. Pool usage
 is measured inside the repeat function so transient command compilation does
 not invalidate the comparison. Bootstrap stack/control reclamation, allocation
-failure, nested-parent teardown and unqueued activation need additional oracles.
+failure and disposal of never-activated tasks need additional oracles.
 The behavior branch is currently unexecuted; missing service observations are
 not an end-to-end lifecycle pass. Checker hashes are fixed before the run and
 changes during testing reject the verdict.
