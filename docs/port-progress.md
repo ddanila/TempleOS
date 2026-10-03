@@ -11960,3 +11960,8 @@ control storage starts at `0x50000`, and the unchanged-size backing arena spans
 The bootstrap's two rebuild generations pass. The updated kernel cross-build
 is running in `build/i386-selected-parent-kernel`; this helper does not expose
 public `Spawn` or implement child rings, creator-code retention or root reaping.
+
+The selected-parent kernel cross-build now passes its executable and boot
+instruction audits: the flat kernel is 482,392 bytes, below the 487,424-byte
+limit (`build/i386-selected-parent-kernel/result.json`). Normal 8 MiB no-FPU
+keyboard/VGA boot is running in `build/i386-selected-parent-keyboard`.
