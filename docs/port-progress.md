@@ -11924,3 +11924,11 @@ The latter reads sources packaged in the new image and compares against its
 isolated cross-build exports; earlier native provider evidence does not cover
 this allocation-error change. The older cleanup-only integration run remains
 active on its original packaged source epoch.
+
+The normal-console regression now passes all 23 commands with exact VGA on
+8 MiB `486,-fpu` TCG (`build/i386-conditional-pressure-fix-jit/result.json`).
+Startup is 52.060161 seconds, and source/checker hashes are preserved. Its input
+disk SHA-256 is
+`a09defbbd882ab8acecde7902e33999235c929f40c05d3eeb0bf381058fb6f91`.
+This is the cross-built provider containing the allocation-error fix; the
+guest-built replacement is still compiling.
