@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import random
 import re
+import runpy
 import socket
 import struct
 import subprocess
@@ -16,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def symbols(module, base):
-    data = module.read_bytes()
+    data = module if isinstance(module, bytes) else module.read_bytes()
     size, count, records = struct.unpack_from('<III', data, 16)
     starts, boundaries = [], {size}
     for index in range(count):
@@ -46,30 +47,44 @@ def main():
     parser.add_argument('--out', type=Path, default=ROOT / 'build/i386-boot-profile')
     parser.add_argument('--interval', type=float, default=.1)
     parser.add_argument('--timeout', type=float, default=180)
+    parser.add_argument('--disk', type=Path,
+                        help='Profile an installed disk using its own retained modules')
+    parser.add_argument('--cpu', default='486,-fpu')
     args = parser.parse_args()
     if args.interval <= 0 or args.timeout <= 0:
         parser.error('interval and timeout must be positive')
     build = ROOT / 'build/i386-kernel'
-    result = json.loads((build / 'result.json').read_text())
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
-    disk = build / 'kernel.img'
-    if sha(disk) != result['disk_sha256']:
-        raise ValueError('Disk differs from build evidence')
-    for name, digest in result['modules'].items():
-        if sha(build / 'exports' / f'{name}.t32m') != digest:
-            raise ValueError(f'Module differs from build evidence: {name}')
+    disk = args.disk.resolve() if args.disk else build / 'kernel.img'
+    disk_hash = sha(disk)
+    if args.disk:
+        names = ('Kernel', 'CompilerRuntime', 'FileRuntime', 'MemoryRuntime', 'ConsoleRuntime')
+        read_files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']
+        paths = {f'/Modules/I386/{name}.t32m' for name in names}
+        stored = read_files(disk, paths)
+        modules = {name: stored[f'/Modules/I386/{name}.t32m'] for name in names}
+    else:
+        result = json.loads((build / 'result.json').read_text())
+        if disk_hash != result['disk_sha256']:
+            raise ValueError('Disk differs from build evidence')
+        modules = {}
+        for name, digest in result['modules'].items():
+            path = build / 'exports' / f'{name}.t32m'
+            if sha(path) != digest:
+                raise ValueError(f'Module differs from build evidence: {name}')
+            modules[name] = path.read_bytes()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     (out / 'result.json').unlink(missing_ok=True)
     log_path, qmp = out / 'debug.log', out / 'qmp.sock'
     qmp.unlink(missing_ok=True)
     log_path.write_text('')
-    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486',
+    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', args.cpu,
            '-m', '8', '-nic', 'none', '-snapshot',
            '-drive', f'file={disk},format=raw,if=ide', '-display', 'none', '-no-reboot',
            '-debugcon', f'file:{log_path}', '-qmp', f'unix:{qmp},server=on,wait=off']
     (out / 'command.json').write_text(json.dumps(cmd, indent=2) + '\n')
-    ranges = {'Kernel': symbols(build / 'exports/Kernel.t32m', 0x11008)}
+    ranges = {'Kernel': symbols(modules['Kernel'], 0x11008)}
     samples = []
     rng = random.Random(386)
     start = time.monotonic()
@@ -113,7 +128,7 @@ def main():
                     if module not in ranges:
                         match = re.search(r'^' + prefix + r' ([0-9A-Fa-f]+) ', log, re.M)
                         if match:
-                            ranges[module] = symbols(build / 'exports' / f'{module}.t32m',
+                            ranges[module] = symbols(modules[module],
                                                      int(match[1], 16) + 8)
                 registers = command('human-monitor-command', **{'command-line': 'info registers'})
                 match = re.search(r'\bEIP=([0-9A-Fa-f]+)', registers)
@@ -167,8 +182,11 @@ def main():
         counts[sample['phase']][sample['symbol']] += 1
         stack = ' <- '.join([sample['symbol']] + [c['symbol'] for c in sample['callers']])
         stacks[sample['phase']][stack] += 1
-    report = dict(scope='Statistical PC samples of normal QEMU/486 boot; not call counts or an elapsed-time benchmark',
-                  disk_sha256=result['disk_sha256'], source_sha256=result['source_sha256'],
+    if sha(disk) != disk_hash:
+        raise ValueError('Profiling changed the source disk')
+    report = dict(scope='Statistical PC samples of normal QEMU boot; not call counts or an elapsed-time benchmark',
+                  disk_sha256=disk_hash, cpu=args.cpu, source_disk_unchanged=True,
+                  module_sha256={name:hashlib.sha256(data).hexdigest() for name,data in modules.items()},
                   profiler_sha256=sha(Path(__file__)), interval_seconds=args.interval,
                   samples=len(samples), phases={name:dict(counter.most_common()) for name,counter in counts.items()},
                   stacks={name:dict(counter.most_common()) for name,counter in stacks.items()})

@@ -83,9 +83,12 @@ removing redundant manual steps does not establish missing functional coverage.
   into automatic tests; do not ask users to retype arithmetic, build commands,
   save/reopen sequences or other deterministic acceptance cases.
 
-The immediate engineering slice is the requirement-to-test audit plus a failing
-startup-budget check: the current 73–74-second no-FPU result must be reported
-as over budget before optimizing startup. After M7 qualification, prioritize
+The startup-budget checker now reports the second-generation 73.265-second
+no-FPU result as failing the 60-second target. An installed-image profile uses
+the candidate's own retained modules and preserves the disk; its samples point
+to module validation/symbol resolution during foundation loading and heap
+operations during source compilation. Next, complete the requirement-to-test
+audit and optimize these measured costs without weakening validation. After M7 qualification, prioritize
 broader original-source/API compatibility using an explicit inventory and
 original x64 behavioral oracles, rather than adding isolated passing examples.
 

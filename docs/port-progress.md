@@ -11354,3 +11354,29 @@ The current no-FPU first/second-generation startup measurements are
 passes do not close that budget. The next implementation slice is the coverage
 audit and a failing startup-budget check, followed by startup optimization.
 No new guest behavior or automated gate is claimed by this documentation change.
+
+## Startup budget and installed-image profile (2026-10-03)
+
+`tools/check-i386-startup-budget.py` now gives an explicit red timing verdict
+for the existing second-generation no-FPU workstation result: 73.264675 seconds
+against the 60-second target, 13.264675 seconds over budget. It rejects wrong
+profiles, unsuccessful runs and absent or invalid measurements. This closes
+the missing timing verdict, not the performance gap or full M7 qualification.
+
+The profiler now accepts installed images and extracts their actual retained
+module symbols instead of assuming cross-built exports. A fresh 8 MiB
+`486,-fpu` TCG snapshot profile completed with 389 samples and confirmed the
+source disk remained unchanged (SHA-256
+`158a4b809c40d9cff75940c1facf5a53bccf6ef78f9f19a3a585fbd8f150d2c6`).
+Foundation loading contributed 71 samples in `I386FindSymbol`, 47 in
+`I386ModuleValid` and 29 in `I386NameEqual`. Header and startup compilation
+samples concentrate in heap allocation, free, size and validation. These
+are statistical observations, not call counts or elapsed-time measurements;
+the previous cross-image profile is not interchangeable with this candidate.
+
+Evidence is in `build/i386-startup-budget-gen2.json` and
+`build/i386-boot-profile-gen2-nofpu/{result,samples,command}.json`. The next
+optimization must preserve malformed-module rejection, duplicate-symbol
+detection and heap corruption invariants. No OS behavior changed in this
+checkpoint; source/API coverage mapping and the remaining release gates
+are still open.

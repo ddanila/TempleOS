@@ -754,3 +754,32 @@ added `!` marker in the parsed document before writing it. The source session
 disk is not changed. Run
 the same command with the first generation's `doldoc-tcg-nofpu/session.img`
 to reproduce both packaged results.
+
+To enforce the normal-boot timing budget against an existing full workstation
+result, run:
+
+```sh
+python3 tools/check-i386-startup-budget.py \
+  build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/full-tcg-nofpu-stdio-cli/result.json \
+  --out build/i386-startup-budget-gen2.json
+```
+
+The checker requires a passing interactive `486,-fpu`, 8 MiB result with a
+finite positive startup measurement. It exits 0 within 60 seconds, 1 over
+budget, or 2 for invalid evidence, and records the input hash. This timing
+check alone does not establish candidate provenance or full qualification.
+The current second-generation result is an expected failure at 73.265 seconds.
+
+To locate costs in that installed candidate without changing it:
+
+```sh
+python3 tools/profile-i386-boot.py \
+  --disk build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --cpu 486,-fpu --out build/i386-boot-profile-gen2-nofpu \
+  --interval 0.2 --timeout 240
+```
+
+The profiler extracts symbols from the disk's retained modules, boots a QEMU
+snapshot, and verifies the original disk hash afterward. It records module
+hashes, sampled instruction addresses and frame chains. Its pauses distort
+elapsed time: use the unprofiled workstation result for the startup gate.
