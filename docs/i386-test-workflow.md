@@ -1092,3 +1092,26 @@ recovery after 20 normal-return/Exit cycles, 20 deferred-activation cycles and
 six creation rejections. Header hashes, disk hash and both checker hashes are
 recorded. Run it again on the installed guest-built provider; public pool
 recovery and bootstrap recovery prove different resource invariants.
+
+The accounting gate also executes 20 descendant-tree cycles, repeating the five
+original cases four times, and hashes the descendant checker it uses. This
+includes destruction of sleeping grandchildren; functional child-list removal
+alone does not establish raw allocation recovery.
+
+Check structured exceptions inside spawned workers independently:
+
+```sh
+python3 tools/test-i386-public-task-exceptions.py --original --out build/task-exceptions-original
+python3 tools/test-i386-public-task-exceptions.py build/i386-kernel/kernel.img --out build/task-exceptions-i386
+```
+
+The original reference executes catches across a yield, nested catches/rethrow,
+Exit inside try, and descendant cancellation with an active exception record.
+The native run requires the same results and exact VGA on an unchanged disk.
+This does not establish uncaught-exception recovery or public Kill/break.
+
+The bootstrap accounting gate repeats all four worker-exception variants five
+times. It checks raw allocation recovery after every worker retires, including
+Exit inside a try block and cancellation with a live exception record. Its
+report includes the exception checker hash and the 20-cycle verdict alongside
+ordinary, deferred and descendant-tree task accounting.

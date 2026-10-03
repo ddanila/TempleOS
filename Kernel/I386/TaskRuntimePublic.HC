@@ -100,6 +100,9 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
     I386IrqRestore(irq); throw('OutMem',TRUE); return 0;
   }
   task=&owned->task;
+  //Exception records use kernel-lifetime scratch storage, owned by this task's
+  //except_top chain. Public code/data allocations still use its cloned heaps.
+  task->memory=memory_pool.heap;
   task->parent_task=parent; task->gs=parent->gs;
   task->task_num=++memory_task_number;
   task->next_child_task=task->last_child_task=MemoryChildHead(task);
@@ -140,6 +143,8 @@ U0 Exit()
   I386IrqRestore(irq);
   //Their stacks and inherited references are reclaimed before this task retires.
   while(task->next_child_task!=head) Yield;
+  //Exit need not return through the lexical untry epilogues on this stack.
+  while(task->except_top) SysUntry;
   if(!TaskRuntimeSchedFinish(task->owner)) throw('Task',TRUE);
 }
 U0 MemoryTaskCheckExit()

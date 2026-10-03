@@ -9,6 +9,8 @@ import runpy
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / 'tools/test-i386-public-tasks.py'
+DESCENDANTS = ROOT / 'tools/test-i386-public-task-descendants.py'
+EXCEPTIONS = ROOT / 'tools/test-i386-public-task-exceptions.py'
 
 
 def behavior_commands(disk):
@@ -36,7 +38,13 @@ def behavior_commands(disk):
     contract = runpy.run_path(str(CONTRACT))['behavior_commands']()
     definitions = [(source, []) for source, _ in contract
                    if source.startswith(('class ', 'I64 ', 'Bool ', 'U0 ', 'CTaskLifeProbe *'))]
-    commands = layout_commands + definitions + [
+    descendants = runpy.run_path(str(DESCENDANTS))['behavior_commands']()
+    descendant_definitions = [(source, []) for source, _ in descendants
+                              if source.startswith(('class ', 'CDescProbe *', 'CTask *', 'Bool ', 'U0 '))]
+    exceptions = runpy.run_path(str(EXCEPTIONS))['behavior_commands']()
+    exception_definitions = [(source, []) for source, _ in exceptions
+                            if source.startswith(('class ', 'CTryProbe *', 'CTask *', 'Bool ', 'U0 '))]
+    commands = layout_commands + definitions + descendant_definitions + exception_definitions + [
         ('CBootHeap *BootHeap(){CBootBacking *p=Fs->data_heap->bp;return p->heap;}', []),
         ("Bool BootHeader(){CBootBacking *p=Fs->data_heap->bp;return p->backing_signature=='B32S'&&p->heap->signature==0x48323349&&I386HeapValid(p->heap);}", []),
         ('BootHeader;', ['1']),
@@ -45,6 +53,11 @@ def behavior_commands(disk):
         ('BootLive;', ['1']),
         ('Bool BootPending(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!LifePendingRun||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
         ('BootPending;', ['1']),
+        ('Bool BootTreeCase(I64 j){return DescStart(j>0,j==2||j==4,j==4,j>=3)&&DescDone&&DescStill;}', []),
+        ('Bool BootTree(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!BootTreeCase(i%5)||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('BootTree;', ['1']),
+        ('Bool BootTry(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!TryStart(i%4)||!TryDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('BootTry;', ['1']),
         ('Bool BootBad(I64 cpu,I64 size,I64 ch,Bool empty=FALSE){CBootHeap *h=BootHeap;I64 u=h->used,n=h->allocations;return LifeRejected(cpu,size,ch,empty)&&BootSame(h,u,n);}', []),
         ("BootBad(1,8192,'Task');", ['1']),
         ("BootBad(-2,8192,'Task');", ['1']),
@@ -53,6 +66,8 @@ def behavior_commands(disk):
         ("BootBad(-1,8193,'OutMem');", ['1']),
         ("BootBad(-1,0x800000,'OutMem');", ['1']),
         ('Free(LifeState);', []),
+        ('Free(DescState);', []),
+        ('Free(TryState);', []),
         ('6*7;', ['42']),
     ]
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
@@ -70,19 +85,25 @@ def main():
     (out / 'result.json').unlink(missing_ok=True)
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     disk_hash, checker_hash, contract_hash = sha(args.disk), sha(Path(__file__)), sha(CONTRACT)
+    descendant_hash = sha(DESCENDANTS)
+    exception_hash = sha(EXCEPTIONS)
     commands, header_hashes = behavior_commands(args.disk)
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
                       startup_check={'status': 'ok', 'answers': [], 'commands': commands})
-    if sha(args.disk) != disk_hash or sha(Path(__file__)) != checker_hash or sha(CONTRACT) != contract_hash:
+    if sha(args.disk) != disk_hash or sha(Path(__file__)) != checker_hash or sha(CONTRACT) != contract_hash or sha(DESCENDANTS) != descendant_hash or sha(EXCEPTIONS) != exception_hash:
         raise ValueError('Accounting disk or checker changed during execution')
     report = {'result': 'pass', 'behavior': behavior,
               'disk_sha256': disk_hash, 'checker_sha256': checker_hash,
               'public_contract_sha256': contract_hash, 'source_disk_unchanged': True,
+              'descendant_checker_sha256': descendant_hash,
+              'exception_checker_sha256': exception_hash,
               'layout_headers_sha256': header_hashes,
               'normal_and_exit_cycles': 20, 'deferred_activation_cycles': 20,
+              'descendant_cycles': 20, 'descendant_variants': 5,
+              'exception_cycles': 20, 'exception_variants': 4,
               'creation_rejections': 6,
-              'scope': 'Bootstrap used bytes, allocation count and heap validity through public calls; not descendant or dormant-disposal accounting'}
+              'scope': 'Bootstrap recovery through public calls, including queued descendants; not late clone-hook failures or dormant disposal'}
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

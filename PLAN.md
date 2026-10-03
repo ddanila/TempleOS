@@ -4399,3 +4399,61 @@ failure and dormant disposal remains separate from these passing cycles.
 Public Kill/break, private I/O-wait cancellation, descendant
 callbacks, dormant disposal, the remaining bootstrap accounting cases and complete
 current-source generation/release qualification still require work.
+
+Task exception prerequisite and current native-flat evidence (2026-10-04):
+The six current flat modules rebuild, link, install and independently boot
+without an FPU, using 16 MiB for building and 8 MiB for operation
+(build/i386-public-task-descendants-native-flat/result.json). The flat image is
+487,392 bytes, leaving 32 bytes in the existing boot region, and passes its
+386 executable/boot/filesystem audit. All six retained modules are cross-built
+development inputs; this is not a fully guest-built generation.
+
+The expanded bootstrap checker now also passes 20 descendant-tree cycles,
+covering all five original-behavior variants four times, on both the cross-built
+and installed guest-built memory provider
+(build/i386-public-task-tree-accounting-cross/result.json and
+build/i386-public-task-tree-accounting-native/result.json). Every cycle restores
+raw used bytes/allocation counts and passes heap validation. The checker binds
+the descendant definition source by hash as well as the public task contract.
+Late clone-hook failure and dormant disposal accounting still remain open.
+
+Before exposing Kill/break, tools/test-i386-public-task-exceptions.py establishes
+four original x64 behaviors: a catch after yielding, nested catches/rethrow,
+Exit from inside try, and queued descendant termination with an active try
+(build/i386-public-task-exceptions-original/result.json). The current i386
+baseline fails on the first worker's SysTry entry with UNHANDLED status 1 and
+FAIL native kernel (build/i386-public-task-exceptions-red/behavior/debug.log).
+The private exception runtime requires task.memory, but public Spawn left it
+unset when constructing without a dedicated private arena.
+
+The development fix binds exception scratch allocation to the service's existing
+bootstrap heap. Records remain owned by each task's except_top chain; public
+code/data allocations retain their separate task heap ownership. Exit drains
+that chain through the existing SysUntry service before retirement, including
+when it bypasses lexical untry epilogues. No boot-kernel code or import contract
+is added. The fresh original bootstrap, private exception-task regression and
+cross build now pass (build/i386-public-task-exceptions-bootstrap.log,
+build/i386-public-task-exceptions-private-regression.log and
+build/i386-public-task-exceptions-kernel/result.json). All four worker cases
+pass at 8 MiB under 486,-fpu TCG on cross-built and installed guest-built
+providers (build/i386-public-task-exceptions-cross/result.json and
+build/i386-public-task-exceptions-native/result.json). The guest-built
+262,244-byte memory module installs and passes the 386 executable/boot and
+filesystem audit (build/i386-public-task-exceptions-native-memory/result.json,
+build/i386-public-task-exceptions-native-install/result.json and
+build/i386-public-task-exceptions-native-audit/result.json). The current cross
+image also passes all 55 public lifecycle commands.
+
+Both providers pass the expanded 88-command bootstrap accounting gate: 20
+ordinary return/Exit, 20 deferred activation, 20 descendant-tree and 20 worker
+exception cycles, plus six creation rejections. Every cycle restores raw used
+bytes/allocation counts and passes heap validation; source disks and checker
+hashes remain unchanged (build/i386-public-task-exception-accounting-cross/result.json
+and build/i386-public-task-exception-accounting-native/result.json). Worker
+exceptions repeat each of the four original variants five times, including
+retirement with live try records. Late clone-hook failure and dormant disposal
+remain separate accounting cases. This is selected-provider qualification,
+not a complete current-source self-hosted generation.
+
+Uncaught exception policy, public Kill/break, exit callbacks,
+I/O cancellation and full native generation/release evidence remain open.
