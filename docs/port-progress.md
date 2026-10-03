@@ -11908,3 +11908,19 @@ runner exceeded the old transfer profile; the test now uses the existing
 320-sector profile and remains below its first heap at `0x40000`. The OS boot
 limit is unchanged. Full pressure diagnostics are running in
 `build/i386-conditional-pressure-fix-kernel`; no pressure pass is claimed yet.
+
+The fixed pressure test now completes all four boot-phase attempts. Budgets of
+0, 1,024 and 4,096 bytes throw `OutMem` (`00006D654D74754F`), leave `CCF_IN_IF`
+clear, preserve the outer control and recover exact private-heap counters.
+The 65,536-byte budget succeeds and recovers the same invariants. This changes
+the observed zero-budget failure to a pass without relaxing its expected
+exception. The task phase and broader integration remain active.
+
+Qualification now also runs a normal-console conditional regression in
+`build/i386-conditional-pressure-fix-jit` and rebuilds the updated compiler
+provider inside the no-FPU guest in
+`build/i386-conditional-pressure-fix-native-compiler`. Both are pending.
+The latter reads sources packaged in the new image and compares against its
+isolated cross-build exports; earlier native provider evidence does not cover
+this allocation-error change. The older cleanup-only integration run remains
+active on its original packaged source epoch.

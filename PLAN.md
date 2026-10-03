@@ -230,6 +230,10 @@ The parser-backed lexer now preserves that allocation distinction; the original
 raw entry retains its ABI and error values. Raw identifier compatibility and
 the explicit allocation-error test pass. Conditional flag mutations now occur
 inside their registered cleanup handlers. Full pressure qualification is running.
+The fixed boot phase passes all four pressure attempts: 0, 1 KiB and 4 KiB
+throw `OutMem` with cleared conditional flags and exact recovery, while 64 KiB
+succeeds. The task phase remains pending. A new guest compiler-provider rebuild
+and normal-console conditional regression run are active for this source.
 
 ### Next public task package: ownership through exit
 
