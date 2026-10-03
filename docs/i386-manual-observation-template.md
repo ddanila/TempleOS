@@ -1,6 +1,7 @@
 # i386 QEMU manual observation
 
-Use a writable copy of the verified Generation 2 image. Follow the complete
+When the deferred manual session resumes, use a writable copy of the current
+verified guest-built candidate. Follow the complete
 commands in [i386-test-workflow.md](i386-test-workflow.md#manual-self-hosted-workstation-session).
 Fill this record with what you actually observed; leave an untried item open.
 

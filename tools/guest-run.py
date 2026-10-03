@@ -16,42 +16,54 @@ def main():
     parser.add_argument('--timeout', type=float, default=180)
     parser.add_argument('--i386-disk', action='store_true', help='Run a protected-mode test disk with VGA and 8 MiB RAM')
     parser.add_argument('--target-disk', type=Path, help='Attach a separate secondary IDE target to an i386 disk run')
+    parser.add_argument('--qmp-stdio', action='store_true',
+                        help='Control QEMU over stdio when Unix sockets are unavailable')
     args = parser.parse_args()
     if args.target_disk and (not args.i386_disk or args.target_disk.resolve()==args.iso.resolve()):
         parser.error('--target-disk requires --i386-disk and a distinct disk image')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     log = out / 'debug.log'
-    qmp_dir = Path(tempfile.mkdtemp(prefix='templeos-qmp-'))
-    qmp_path = qmp_dir / 'qmp.sock'
+    qmp_dir = None if args.qmp_stdio else Path(tempfile.mkdtemp(prefix='templeos-qmp-'))
+    qmp_path = qmp_dir / 'qmp.sock' if qmp_dir else None
+    qmp_arg = 'stdio' if args.qmp_stdio else f'unix:{qmp_path},server=on,wait=off'
     log.write_text('')
     cmd = ['qemu-system-x86_64', '-machine', 'pc', '-accel', 'tcg',
            '-cpu', 'max', '-m', '2048', '-smp', '2', '-nic', 'none',
            '-drive', f'file={args.iso.resolve()},format=raw,media=cdrom,if=ide,index=2',
            '-boot', 'd', '-display', 'none', '-no-reboot',
            '-debugcon', f'file:{log}', '-global', 'isa-debugcon.iobase=0xe9',
-           '-qmp', f'unix:{qmp_path},server=on,wait=off']
+           '-qmp', qmp_arg]
     if args.i386_disk:
         cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg',
                '-cpu', '486', '-m', '8', '-nic', 'none',
                '-drive', f'file={args.iso.resolve()},format=raw,if=ide',
                '-display', 'none', '-no-reboot', '-debugcon', f'file:{log}',
-               '-qmp', f'unix:{qmp_path},server=on,wait=off']
+               '-qmp', qmp_arg]
         if args.target_disk:
             cmd += ['-drive',f'file={args.target_disk.resolve()},format=raw,if=ide,index=2']
     (out / 'command.json').write_text(json.dumps(cmd, indent=2)+'\n')
-    sock = socket.socket(socket.AF_UNIX)
+    sock = None if args.qmp_stdio else socket.socket(socket.AF_UNIX)
     with (out / 'qemu.log').open('w') as stderr:
-        proc = subprocess.Popen(cmd, stderr=stderr)
+        proc = subprocess.Popen(cmd, stderr=stderr,
+                                stdin=subprocess.PIPE if args.qmp_stdio else None,
+                                stdout=subprocess.PIPE if args.qmp_stdio else None,
+                                bufsize=0)
         try:
             deadline = time.monotonic()+args.timeout
-            while not qmp_path.exists():
-                if proc.poll() is not None or time.monotonic()>deadline:
-                    raise RuntimeError('QEMU failed to open QMP')
-                time.sleep(.1)
-            sock.connect(str(qmp_path))
-            sock.settimeout(15)
-            stream = sock.makefile('rwb', buffering=0)
+            if args.qmp_stdio:
+                class QMPStream:
+                    def readline(self): return proc.stdout.readline()
+                    def write(self, data): return proc.stdin.write(data)
+                stream = QMPStream()
+            else:
+                while not qmp_path.exists():
+                    if proc.poll() is not None or time.monotonic()>deadline:
+                        raise RuntimeError('QEMU failed to open QMP')
+                    time.sleep(.1)
+                sock.connect(str(qmp_path))
+                sock.settimeout(15)
+                stream = sock.makefile('rwb', buffering=0)
             json.loads(stream.readline())
 
             def command(name, **arguments):
@@ -94,9 +106,9 @@ def main():
             except subprocess.TimeoutExpired:
                 proc.kill()
                 proc.wait()
-            sock.close()
-            qmp_path.unlink(missing_ok=True)
-            qmp_dir.rmdir()
+            if sock is not None: sock.close()
+            if qmp_path is not None: qmp_path.unlink(missing_ok=True)
+            if qmp_dir is not None: qmp_dir.rmdir()
 
 
 if __name__ == '__main__':

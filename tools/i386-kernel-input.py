@@ -1,17 +1,49 @@
 #!/usr/bin/env python3
 """Check the native keyboard console through emulated hardware and VGA pixels."""
 import argparse
+import ctypes
+import fcntl
 import json
 import hashlib
+import os
 from pathlib import Path
 import re
+import shutil
+import signal
 import socket
 import struct
 import subprocess
+import sys
 import tempfile
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
+
+
+def parent_death_signal():
+    """Stop QEMU if a terminated test runner cannot reach its cleanup block."""
+    if sys.platform != 'linux':
+        return None
+    parent_pid = os.getpid()
+
+    def arm():
+        libc = ctypes.CDLL(None, use_errno=True)
+        if libc.prctl(1, signal.SIGTERM, 0, 0, 0) != 0:
+            raise OSError(ctypes.get_errno(), 'prctl(PR_SET_PDEATHSIG) failed')
+        if os.getppid() != parent_pid:
+            os.kill(os.getpid(), signal.SIGTERM)
+
+    return arm
+
+
+def require_unlocked_image(path):
+    """Refuse a writable QEMU run before replacing evidence from an active one."""
+    with path.open('rb+') as image:
+        try:
+            fcntl.lockf(image, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError(f'{path}: writable image is locked by another process') from exc
+        fcntl.lockf(image, fcntl.LOCK_UN)
 
 
 def console_pixels(rows, foreground_cells=None, background_cells=None, underline_cells=None,
@@ -75,7 +107,7 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -90,10 +122,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     mouse_host_x=320
     mouse_host_y=240
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
+    if not snapshot:
+        require_unlocked_image(disk)
+        if target_disk is not None:
+            require_unlocked_image(target_disk)
     (out/'result.json').unlink(missing_ok=True)
     log=out/'debug.log'; log.write_text('')
-    qmp_dir=tempfile.TemporaryDirectory(prefix='i386-qmp-')
-    qmp=Path(qmp_dir.name)/'qmp.sock'
+    qmp_dir=None if qmp_stdio else tempfile.TemporaryDirectory(prefix='i386-qmp-')
+    qmp=Path(qmp_dir.name)/'qmp.sock' if qmp_dir else None
     cmd=['qemu-system-i386','-machine','pc','-accel',accel,'-cpu',cpu,'-m',str(ram_mib),'-nic','none',
          '-drive',f'file={disk.resolve()},format=raw,if=ide']
     if target_disk is not None:
@@ -101,23 +137,41 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
         cmd+=['-drive',f'file={target_disk.resolve()},format=raw,if=ide,index=2']
     if snapshot: cmd+=['-snapshot']
     cmd += ['-display','none','-no-reboot',
-         '-debugcon',f'file:{log}','-qmp',f'unix:{qmp},server=on,wait=off']
+         '-debugcon',f'file:{log}','-qmp',
+         'stdio' if qmp_stdio else f'unix:{qmp},server=on,wait=off']
     (out/'command.json').write_text(json.dumps(cmd,indent=2)+'\n')
-    sock=socket.socket(socket.AF_UNIX)
+    sock=None if qmp_stdio else socket.socket(socket.AF_UNIX)
     with (out/'qemu.log').open('w') as stderr:
-        proc=subprocess.Popen(cmd,stderr=stderr)
+        proc=subprocess.Popen(cmd,stderr=stderr,
+                              stdin=subprocess.PIPE if qmp_stdio else None,
+                              stdout=subprocess.PIPE if qmp_stdio else None,
+                              preexec_fn=parent_death_signal(),
+                              bufsize=0)
         try:
-            deadline=time.monotonic()+60
-            while not qmp.exists():
-                if proc.poll() is not None or time.monotonic()>deadline: raise RuntimeError('No QMP')
-                time.sleep(.05)
-            sock.connect(str(qmp)); sock.settimeout(5)
-            stream=sock.makefile('rwb',buffering=0); json.loads(stream.readline())
+            if qmp_stdio:
+                class QMPStream:
+                    def readline(self): return proc.stdout.readline()
+                    def write(self, data): return proc.stdin.write(data)
+                stream=QMPStream()
+            else:
+                deadline=time.monotonic()+60
+                while not qmp.exists():
+                    if proc.poll() is not None or time.monotonic()>deadline: raise RuntimeError('No QMP')
+                    time.sleep(.05)
+                sock.connect(str(qmp)); sock.settimeout(5)
+                stream=sock.makefile('rwb',buffering=0)
+            def qmp_reply():
+                line=stream.readline()
+                if not line:
+                    raise RuntimeError(f'QEMU closed QMP; inspect {out / "qemu.log"}')
+                return json.loads(line)
+
+            qmp_reply()
 
             def command(name,**arguments):
                 stream.write((json.dumps({'execute':name,'arguments':arguments})+'\n').encode())
                 while True:
-                    reply=json.loads(stream.readline())
+                    reply=qmp_reply()
                     if 'error' in reply: raise RuntimeError(reply)
                     if 'return' in reply: return reply['return']
 
@@ -177,10 +231,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={'\\':'backslash','|':'backslash','~':'grave_accent','%':'5','#':'3','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={'\\':'backslash','|':'backslash','~':'grave_accent','%':'5','#':'3','$':'4','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>#!%|~:')
+            shifted=set('(){}*+&_"<>#!%$|~:')
             plain[':']='semicolon'
             def typed_rows(source):
                 text='> '+source
@@ -530,7 +584,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 command('input-send-event',events=[{'type':'btn','data':{'down':False,'button':'left'}}])
             submit('MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets)&&!(mouse_buttons&1);', ['1'], 'mouse-left-up')
             active_group='sound'
-            submit('I64 SndProbe(){I64 flags=GetRFlags,lo,hi,period;Snd(60);OutU8(0x43,0x80);lo=InU8(0x42);hi=InU8(0x42);period=lo+(hi<<8);return period>=2400&&period<=2712&&(InU8(0x61)&3)==3&&(GetRFlags&512)==(flags&512);}SndProbe;', ['1'], 'speaker-on')
+            submit('I64 SndProbe(){I64 f=GetRFlags,l,h,p,m=0,i;Snd(60);for(i=0;i<4096;i++){OutU8(0x43,0x80);l=InU8(0x42);h=InU8(0x42);p=l+(h<<8);if(p>m)m=p;}return m>=2400&&m<=2712&&(InU8(0x61)&3)==3&&(GetRFlags&512)==(f&512);}SndProbe;', ['1'], 'speaker-on')
             submit('I64 SndOffProbe(){I64 flags=GetRFlags;Snd;return (InU8(0x61)&3)==0&&(GetRFlags&512)==(flags&512);}SndOffProbe;', ['1'], 'speaker-off')
             submit('Snd(72);SndRst;(InU8(0x61)&3)==0;', ['1'], 'speaker-reset')
             active_group='windows'
@@ -1883,7 +1937,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             if proc.poll() is None: proc.terminate()
             try: proc.wait(timeout=5)
             except subprocess.TimeoutExpired: proc.kill(); proc.wait()
-            sock.close(); qmp_dir.cleanup()
+            if sock is not None: sock.close()
+            if qmp_dir is not None: qmp_dir.cleanup()
 
 
 def main():
@@ -1894,10 +1949,40 @@ def main():
     parser.add_argument('--list-groups',action='store_true')
     parser.add_argument('--diagnostics',action='store_true',help='Expect the diagnostic boot image')
     parser.add_argument('--cpu',default='486',help='QEMU CPU model (default: 486)')
+    parser.add_argument('--qmp-stdio',action='store_true',
+                        help='Control QEMU over stdio when Unix sockets are unavailable')
+    parser.add_argument('--writable-copy',action='store_true',
+                        help='Run on a fresh writable disk copy instead of a QEMU snapshot')
     args=parser.parse_args()
     if args.list_groups:
         print('\n'.join(GROUPS)); return
-    print(run_input(args.disk,args.out,diagnostics=args.diagnostics,groups=args.group,cpu=args.cpu))
+    source=args.disk.resolve()
+    disk=source
+    provenance=None
+    if args.writable_copy:
+        args.out.mkdir(parents=True,exist_ok=True)
+        disk=args.out.resolve()/'writable.img'
+        if disk.exists(): parser.error(f'writable copy already exists: {disk}')
+        source_hash=hashlib.sha256(source.read_bytes()).hexdigest()
+        shutil.copyfile(source,disk)
+        if hashlib.sha256(disk.read_bytes()).hexdigest()!=source_hash:
+            raise ValueError('Writable disk copy differs from source')
+        provenance=args.out/'provenance.json'
+        provenance.write_text(json.dumps({
+            'source_disk_sha256':source_hash,'source_disk_unchanged':True,
+            'working_disk':str(disk)},indent=2)+'\n')
+    try:
+        result=run_input(disk,args.out,diagnostics=args.diagnostics,groups=args.group,
+                         cpu=args.cpu,qmp_stdio=args.qmp_stdio,
+                         snapshot=not args.writable_copy)
+    finally:
+        if provenance is not None:
+            unchanged=hashlib.sha256(source.read_bytes()).hexdigest()==source_hash
+            provenance.write_text(json.dumps({
+                'source_disk_sha256':source_hash,'source_disk_unchanged':unchanged,
+                'working_disk':str(disk)},indent=2)+'\n')
+            if not unchanged: raise ValueError('Writable-copy run changed its source disk')
+    print(result)
 
 
 if __name__=='__main__': main()

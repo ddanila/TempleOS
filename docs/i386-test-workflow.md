@@ -6,6 +6,44 @@ The input harness tests the supplied image; it does not rebuild it. Keep the
 source checkout and image together, especially the font and frame expectations.
 Do not replace the image during a run.
 
+The current fully guest-built candidate is
+`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img`. Its two
+guest-built generations, current-source QEMU profiles and local package are
+tracked in [M7 acceptance](i386-m7-acceptance.md). The `*-fixed` paths in the
+historical reproduction recipe below refer to an earlier source generation.
+To package the current candidate after its required evidence is present, run
+`python3 tools/package-i386-current.py`, then
+`python3 build/i386-release-current/verify.py`. Human manual observation is
+deferred at the user's request.
+
+For an automated persistent-session repeat on the second generation in a
+host that blocks QMP Unix sockets, use:
+
+```sh
+python3 tools/test-i386-doldoc-session.py \
+  build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --cpu 486,-fpu --qmp-stdio \
+  --out build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doldoc-repeat-stdio
+```
+
+This creates its own writable copy and verifies three boots; it does not run
+the deferred human observation session.
+
+To repeat the second-generation interrupted-install cuts under no-FPU TCG
+on a host that blocks QMP Unix sockets and QEMU snapshots, use:
+
+```sh
+python3 tools/test-i386-guest-install-recovery.py \
+  --source build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --reference build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --boot-file /Probe/GuestBoot.bin --accel tcg --cpu 486,-fpu \
+  --qmp-stdio --include-committed-cut \
+  --out build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/install-recovery-tcg-nofpu-stdio-retry
+```
+
+The independent boot uses a writable disk copy so it cannot modify the
+reference target and does not need QEMU's host snapshot directory.
+
 To produce the fully guest-built installed image used by the M7 checks, start
 from the current cross-built bootstrap disk and run the native build and
 installation stages. The retained build runs in a 16 MiB QEMU/KVM guest; the
@@ -128,6 +166,26 @@ python3 tools/test-i386-retained-build.py \
   --out build/i386-kernel/retained-build-gen3-tcg-nofpu
 ```
 
+On a host that blocks QMP Unix sockets, add `--qmp-stdio` to both
+`test-i386-retained-build.py` and `test-i386-selfhost-install.py`. The latter
+boots a separate writable copy for its independent post-install check because
+QEMU snapshot files may also be blocked. A focused current-source smoke check
+for the transport is:
+
+```sh
+python3 tools/test-i386-retained-build.py \
+  --disk build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --compare-installed build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/target.img \
+  --accel tcg --cpu 486,-fpu --qmp-stdio --module Startup \
+  --out build/i386-kernel/retained-startup-capacity-lexfix-gen2-tcg-nofpu-stdio
+```
+
+That focused result matches the installed 407-byte `Startup` module. The
+all-six current-source no-FPU guest rebuild also passes after resumed
+per-module runs. Its post-write audit is at
+`build/i386-kernel/retained-build-capacity-lexfix-gen2-tcg-nofpu-stdio/result.json`;
+all six module hashes match the installed Generation 2 disk.
+
 If a long run reaches the host command timeout after earlier modules have
 already been written to `source.img`, wait for its QEMU process to exit. Then
 use `--resume` with `--module NAME` for the unfinished modules and a measured
@@ -135,6 +193,15 @@ use `--resume` with `--module NAME` for the unfinished modules and a measured
 original input again. Once all six are present, run `--audit-only` on the same
 output directory with `--compare-installed` to require byte identity. Never
 resume or audit a disk while another QEMU process is writing it.
+
+If the runner itself is terminated, first check whether QEMU still holds the
+source image's write lock. A locked image must not be used for a retry, even
+when the runner has exited; its guest may still be compiling. The Linux QEMU
+helper now asks the kernel to terminate QEMU when its runner dies, so future
+interrupted runs release that lock. A prior detached QEMU may still need to
+finish or be stopped before the same image can be reused.
+The writable runner checks the lock before replacing its prior QEMU log or
+result, so a blocked retry preserves the active run's evidence.
 
 `tools/test-i386-selfhost-install.py` also accepts `--command-timeout` in
 seconds for the long 16 MiB TCG kernel build; its default remains 2,400
@@ -294,7 +361,7 @@ automated reference remains unchanged. Record observations in the
 [manual observation template](i386-manual-observation-template.md):
 
 ```sh
-cp build/i386-kernel/selfhost-install-gen2-fixed/target.img build/i386-manual-source.img
+cp build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img build/i386-manual-source.img
 qemu-system-i386 -machine pc -accel tcg -cpu 486,-fpu -m 8 -nic none \
   -drive file=build/i386-manual-source.img,format=raw,if=ide
 ```
@@ -642,3 +709,23 @@ The Python QEMU helper also accepts `startup_timeout=<seconds>` for an
 explicitly measured exploratory boot; the normal default is 60 seconds. The
 Generation 1 compiler disk needed 72.917 seconds at 16 MiB on TCG. Passing
 with a larger limit does not satisfy the normal startup budget.
+
+To repeat the original TempleOS styled-document compatibility check on the
+current second generation, use its completed three-boot session image:
+
+```sh
+python3 tools/test-i386-doc-style-compat.py \
+  build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doldoc-tcg-nofpu-stdio/session.img \
+  --out build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doc-style-compat-stdio \
+  --qmp-stdio
+```
+
+The check extracts the persisted native color/style document, boots original
+x64 TempleOS under QEMU to read and save it, and compares the returned bytes.
+The original guest also edits the document; a copied i386 session disk receives
+those bytes in the existing one-sector file, then boots under `486,-fpu` TCG
+and reads/saves them unchanged. The i386 guest checks the original guest's
+added `!` marker in the parsed document before writing it. The source session
+disk is not changed. Run
+the same command with the first generation's `doldoc-tcg-nofpu/session.img`
+to reproduce both packaged results.

@@ -26,6 +26,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doc-compat')
+    parser.add_argument('--qmp-stdio',action='store_true',
+                        help='Control both QEMU guests over stdio')
     args=parser.parse_args()
     source=args.source.resolve()
     source_hash=sha256(source)
@@ -34,7 +36,7 @@ def main():
     (out/'result.json').unlink(missing_ok=True)
     disk=out/'native.img'
     shutil.copyfile(source,disk)
-    native_run=INPUT(disk,out/'native',startup_check={
+    native_run=INPUT(disk,out/'native',qmp_stdio=args.qmp_stdio,startup_check={
         'status':'ok','answers':[],
         'commands':[
             ('#include "/Kernel/I386/DocBinaryPersistenceCheck.HC"',[]),
@@ -51,7 +53,10 @@ def main():
     run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
         '--overlay','tests/guest/i386-doc-compat','--overlay',str(overlay),
         '--output',str(iso))
-    run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90')
+    guest_command=[sys.executable,'tools/guest-run.py',str(iso),
+                   '--out',str(exports),'--timeout','90']
+    if args.qmp_stdio: guest_command.append('--qmp-stdio')
+    run(*guest_command)
     round_trip=(exports/'NativeRoundTrip.DD').read_bytes()
     if round_trip!=native:
         raise ValueError('Original DocRead/DocSave changed the native document bytes')

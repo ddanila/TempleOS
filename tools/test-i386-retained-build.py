@@ -2,6 +2,7 @@
 """Build selected retained T32Ms in QEMU and audit their persisted disk copies."""
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import runpy
@@ -35,6 +36,14 @@ def exports_of(module):
     return count, exports
 
 
+def sha256(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def check_console_alloc_wrappers(module):
     _, payload, count, records, _ = struct.unpack_from('<5I', module, 12)
     rows = [struct.unpack_from('<4I', module, records + 16 * i) for i in range(count)]
@@ -57,6 +66,8 @@ def main():
     parser.add_argument('--out', type=Path, default=ROOT / 'build/i386-kernel/retained-build')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for the build boot')
+    parser.add_argument('--qmp-stdio', action='store_true',
+                        help='Use QMP stdio where Unix sockets are blocked')
     parser.add_argument('--module', choices=MODULES, action='append', dest='modules')
     parser.add_argument('--command-timeout', type=int, default=3600)
     parser.add_argument('--resume', action='store_true',
@@ -85,7 +96,7 @@ def main():
                     for name in selected]
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         run_input(source, out / 'qemu', snapshot=False, ram_mib=16, accel=args.accel,
-                  cpu=args.cpu,
+                  cpu=args.cpu, qmp_stdio=args.qmp_stdio,
                   startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [],
                       'command_timeout': args.command_timeout, 'commands': commands})
@@ -96,7 +107,8 @@ def main():
     if args.compare_installed:
         installed_paths = {f'/Modules/I386/{name}.t32m' for name in selected}
         comparison = files(args.compare_installed, installed_paths)
-    result = {'result': 'pass', 'modules': {}}
+    result = {'result': 'pass', 'source_disk_sha256': sha256(source),
+              'modules': {}}
     for name in selected:
         path = f'/Probe/Retained{name}.t32m'
         module = actual.get(path)
@@ -115,9 +127,11 @@ def main():
                 f'/Modules/I386/{name}.t32m'):
             raise ValueError(f'{name} differs from installed comparison module')
         result['modules'][name] = {'bytes': len(module), 'records': count,
-                                   'exports': len(exports)}
+                                   'exports': len(exports),
+                                   'sha256': hashlib.sha256(module).hexdigest()}
     if comparison is not None:
         result['byte_identical_to_installed'] = str(args.compare_installed)
+        result['installed_disk_sha256'] = sha256(args.compare_installed)
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)
 

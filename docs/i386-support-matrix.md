@@ -24,9 +24,10 @@ The command manifests in each result directory contain the exact QEMU argv.
 verified QEMU evidence. `tools/package-i386-current.py` checks two-generation
 identity, source hashes, 386 audits and current workstation and writable
 session results before creating that local bundle. Its standalone verifier
-checks the compressed image and 31 bundled files. The current source has not
-yet completed a no-FPU guest rebuild; its installed image does pass the
-complete no-FPU workstation and writable-session suites.
+checks the compressed image and 88 bundled files. All six current-source
+retained modules were rebuilt in the guest under 16 MiB `486,-fpu` TCG and
+match the installed second-generation modules byte for byte. The installed
+image also passes the complete no-FPU workstation and writable-session suites.
 
 ## Current-source profiles
 
@@ -34,10 +35,26 @@ complete no-FPU workstation and writable-session suites.
 | --- | --- | --- |
 | `486`, KVM | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-kvm-retry/result.json`: 513 commands, 576 lines, exact VGA and 20 document cycles with exact task-heap recovery | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-tcg-nofpu/result.json`: the same complete workstation suite | Pass at 8 MiB |
+| `pentium3,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-pentium3-nofpu-stdio-cli-retry/result.json`: 513 commands, 576 lines, exact VGA and 20 document cycles; `provenance.json` binds the writable copy to the unchanged current image | Pass at 8 MiB |
+| `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/full-tcg-nofpu-stdio-cli/result.json`: the complete 513-command workstation suite on the independently rebuilt second-generation disk; provenance binds its writable copy to the unchanged second disk | Pass at 8 MiB |
+| `pentium3,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/full-pentium3-nofpu-stdio-cli/result.json`: the complete 513-command workstation suite on the second-generation disk, with unchanged-source writable-copy provenance | Pass at 8 MiB |
 | `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doldoc-tcg-nofpu/result.json`: 107/56/15 commands over three writable boots, exact VGA, unchanged source disk and RedSea audit | Pass at 8 MiB |
+| `486,-fpu`, TCG | `build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doldoc-tcg-nofpu-stdio/result.json`: the same 107/56/15-command persistent project workflow on the rebuilt second disk, exact VGA and independent RedSea audit | Pass at 8 MiB |
 | `486`, KVM | `build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/boot/result.json`: independently booted second generation and two native commands | Pass at 8 MiB |
 | 386 instruction audit | Both current generations' `instruction-audit/result.json`: linked and retained executable ranges, boot code and guest compiler template | Pass for audited regions |
 | Generation identity | `build/i386-kernel/generation-identity-capacity-lexfix-kvm/result.json`: twelve modules, 482,384-byte flat image and boot area byte-identical; both RedSea bitmaps match reachable extents | Pass |
+| Native/original DolDoc | `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doc-compat-current/result.json` and `build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doc-compat-stdio/result.json`: original x64 TempleOS reads and saves each generation's native 37-byte document byte for byte | Pass for both generations |
+| Native/original styled DolDoc | Both generations' `doc-style-compat-stdio/result.json`: original x64 TempleOS reads and saves each generation's persisted 78-byte color, background, invert and underline document byte for byte, edits it to 79 bytes, and the i386 guest reads and saves those original-authored bytes byte for byte | Pass in both directions for both generations |
+| Interrupted install | First-generation `install-recovery-current-kvm/result.json` and second-generation `install-recovery-tcg-nofpu-stdio-retry/result.json`: cuts at LBAs 128 and 850 recover by retry; a cut after LBA 0 leaves the complete disk bootable | Pass under KVM and `486,-fpu` TCG |
+
+The later-CPU run uses the runner's `--qmp-stdio --writable-copy` options
+because this restricted host cannot bind a QMP Unix socket or create QEMU's
+snapshot file in `/var/tmp`. A focused compiler group and keyboard check pass
+through the same transport. The sound check samples PIT channel 2 across a
+timer interval so a host scheduling pause between programming and one read
+does not masquerade as a guest sound failure; it still checks the 440 Hz
+divisor range, speaker-enable bits and preserved interrupt flag. The revised
+focused sound group passes on both `486,-fpu` and `pentium3,-fpu` TCG.
 
 ## Earlier-source evidence
 
@@ -128,3 +145,9 @@ installation pass for two complete generations, and a local current-source
 package is verified. Human observation and publication remain open.
 Physical hardware and dedicated SX/DX certification are deferred under the
 current plan.
+
+For the current two-generation candidate, all six retained modules also pass
+a separate guest rebuild on the installed Generation 2 disk under 16 MiB
+`486,-fpu` TCG. Each persisted module matches the installed bytes, and the
+current local release bundle verifies 76 files. This extends the no-FPU build
+evidence; human QEMU usability observation remains deferred.

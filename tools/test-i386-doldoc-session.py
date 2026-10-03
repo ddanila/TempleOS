@@ -112,6 +112,8 @@ def main():
     parser.add_argument('disk',type=Path,nargs='?',default=ROOT/'build/i386-kernel/kernel.img')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doldoc-session')
     parser.add_argument('--cpu',default='486,-fpu',help='QEMU CPU profile for all three boots')
+    parser.add_argument('--qmp-stdio',action='store_true',
+                        help='Control QEMU over stdio when Unix sockets are unavailable')
     parser.add_argument('--resume-reopen',action='store_true',
                         help='Keep a passed first-boot disk and rerun reopen/revised boots')
     args=parser.parse_args()
@@ -522,7 +524,7 @@ def main():
           'command_timeout':60,
         }
         if not args.resume_reopen:
-            result['create_edit_save']=INPUT(candidate,args.out/'create-edit-save',startup_check=create,snapshot=False,cpu=args.cpu)
+            result['create_edit_save']=INPUT(candidate,args.out/'create-edit-save',startup_check=create,snapshot=False,cpu=args.cpu,qmp_stdio=args.qmp_stdio)
             shutil.copyfile(candidate,after_create)
             result['after_create_sha256']=hashlib.sha256(after_create.read_bytes()).hexdigest()
         reopen={
@@ -720,7 +722,7 @@ def main():
           ],
           'command_timeout':60,
         }
-        result['reopen_after_boot']=INPUT(candidate,args.out/'reopen',startup_check=reopen,snapshot=False,cpu=args.cpu)
+        result['reopen_after_boot']=INPUT(candidate,args.out/'reopen',startup_check=reopen,snapshot=False,cpu=args.cpu,qmp_stdio=args.qmp_stdio)
         revised={
           'status':'ok','answers':[],
           'commands':[
@@ -782,7 +784,7 @@ def main():
           ],
           'command_timeout':60,
         }
-        result['revised_after_second_boot']=INPUT(candidate,args.out/'revised',startup_check=revised,snapshot=False,cpu=args.cpu)
+        result['revised_after_second_boot']=INPUT(candidate,args.out/'revised',startup_check=revised,snapshot=False,cpu=args.cpu,qmp_stdio=args.qmp_stdio)
         result['filesystem_integrity']=verify_redsea_project(candidate)
         result['result']='pass'
     except Exception as exc:

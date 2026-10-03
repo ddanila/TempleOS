@@ -771,7 +771,7 @@ completion, preserving the destination on failure.
 The new native ATA fixture passes capacity discovery, boot-signature and distinct
 pattern reads, the final sector, repeated reads, argument rejection, guard checks,
 a real out-of-range device error and recovery, plus absent-device probing. The
-instruction audit, both x64 rebuilds and image verification (751 files,
+instruction audit, both x64 rebuilds and image verification (772 files,
 62 directories) pass. CHS-only drives, writes, reset/recovery service, block/filesystem
 integration and physical vintage hardware validation remain pending.
 
@@ -786,7 +786,7 @@ Synthetic records pass geometry/capacity and malformed-response checks. Clearing
 LBA support in the emulated disk profile exercises CHS commands against seeded
 sectors across head/cylinder boundaries and the final CHS sector, with invalid
 geometry/range rejection and unchanged failure outputs. The native ATA suite,
-instruction audit, both x64 rebuilds and image verification (751 files,
+instruction audit, both x64 rebuilds and image verification (772 files,
 62 directories) pass. This is evidence for CHS command
 execution on QEMU, not a physical CHS-only drive. Firmware-dependent parameter
 initialization, writes, recovery and filesystem integration remain pending.
@@ -802,7 +802,7 @@ Native tests pass LBA and forced-CHS writes, overwrite/readback, final-sector
 access, invalid arguments/geometry, guards, and a real out-of-range write error
 followed by successful writes. The host compares the entire 16 MiB image after
 QEMU exits and finds exactly the three intended sector replacements. The ATA
-suite, instruction audit, both x64 rebuilds and image verification (751 files,
+suite, instruction audit, both x64 rebuilds and image verification (772 files,
 62 directories) pass. Cache policy/flush, task
 ownership, block/filesystem integration and physical IDE validation remain.
 
@@ -818,7 +818,7 @@ Synthetic capability records and rejected invalid/unsupported calls pass. Four
 native write/flush/read sequences and a repeated final flush pass; QEMU's command
 trace independently confirms the exact command ordering. The full backing-image
 comparison, ATA instruction audit, both x64 rebuilds and image verification
-(751 files, 62 directories) pass. Legacy cache policy,
+(772 files, 62 directories) pass. Legacy cache policy,
 fault-injected flush recovery, physical durability and filesystem integration
 remain pending.
 
@@ -871,7 +871,7 @@ mixed-range/double-free rejection, full exhaustion and reclamation. It preserves
 reserved and out-of-volume tail bits, and forces a real bitmap-read failure to
 verify invalidation. After release and flush the entire disk image equals its
 starting contents. The instruction audit, both x64 rebuilds and image verification
-(755 files, 62 directories) pass. Directory
+(772 files, 62 directories) pass. Directory
 publication/removal, allocation policy in public file APIs, interrupted-update
 recovery and physical storage validation remain pending.
 
@@ -939,7 +939,7 @@ is overwritten. Repeated load/free resets module data and reclaims the heap.
 Wrong pointer width, truncation, small/compressed files, missing entry symbols,
 both exhaustion stages and a real partial disk read pass rejection/cleanup checks.
 The payload and loader code pass instruction audits; the backing disk remains
-unchanged. Both x64 rebuilds and image verification (760 files, 62 directories)
+unchanged. Both x64 rebuilds and image verification (772 files, 62 directories)
 pass. Multi-file dependencies, resident symbols,
 registry/lifetime policy and production boot/JIT integration remain pending.
 
@@ -956,7 +956,7 @@ exact reclaimed-buffer overwrite and complete heap reclamation. Missing/duplicat
 providers, malformed dependencies, missing entry symbols, all four allocation
 stages and a real second-file read error pass rejection/cleanup checks. The direct
 linked payload and runtime pass instruction audits; the disk remains unchanged.
-The single-file regression, both x64 rebuilds and image verification (760 files,
+The single-file regression, both x64 rebuilds and image verification (772 files,
 62 directories) pass. Automatic dependency search,
 resident kernel symbols, registry/lifetime policy and production boot/JIT remain.
 
@@ -10475,7 +10475,7 @@ The result is in
 `build/i386-kernel/retained-console-gen3-tcg-nofpu-long/result.json`. The
 local release packager now requires this result, the exact no-FPU QEMU command
 and disk-level module identity, and bundles the two records. Its independent
-`verify.py` passes with 60 files. The integrated six-module resume and the
+`verify.py` passes with 72 files. The integrated six-module resume and the
 focused compiler rebuilds are still running; the all-six retained gate is open.
 
 ## Formatted document execution probe (2026-09-29)
@@ -10615,6 +10615,7 @@ The corrected nine-command help group separately passes on both profiles.
 The exact-source six-module guest rebuild is in its final module; installed
 and repeated guest-built generations are still required. Human manual
 observation remains deferred.
+
 ## Quoted document formatting red test (2026-09-29)
 
 Original x64 TempleOS executed an in-memory document whose quoted string
@@ -11212,6 +11213,118 @@ generation byte for byte; both RedSea volumes have 16 directories, 836
 files and 17,834 owned sectors, with matching bitmaps
 (`build/i386-kernel/generation-identity-capacity-lexfix-kvm/result.json`).
 `tools/package-i386-current.py` creates a local current-source bundle
-whose standalone verifier passes its compressed disk and 31 file hashes
+whose standalone verifier passes its compressed disk and 55 file hashes
 (`build/i386-release-current/manifest.json`). Human manual usability
 observation remains deferred, so publication is still open.
+
+The exact current guest-installed image now passes an original TempleOS
+DolDoc round trip: the original x64 reader reproduces its 37-byte document
+byte for byte
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/doc-compat-current/result.json`).
+Current-image install recovery also passes KVM hard stops at LBAs 128 and
+850, exact retry and independent boot, and a hard stop after LBA 0 that
+leaves the complete reference disk bootable
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/install-recovery-current-kvm/result.json`).
+The current local bundle includes these proofs and verifies 72 files.
+Manual human observation remains deferred.
+
+The exact current installed image now passes the complete 8 MiB
+`pentium3,-fpu` TCG workstation suite: 513 commands, 576 lines, exact VGA,
+20 bounded document cycles and exact shared task-heap recovery
+(`build/i386-kernel/selfhost-install-capacity-lexfix-kvm/full-pentium3-nofpu-stdio-cli-retry/result.json`).
+Its `provenance.json` records an unchanged source image and a writable disk
+copy. `tools/i386-kernel-input.py --qmp-stdio --writable-copy` permits this
+QEMU run where Unix sockets and `/var/tmp` snapshots are blocked. A single
+PIT latch had been sensitive to host scheduling; the sound probe now samples
+the expected 440 Hz counter range across an interval and passes focused
+groups on `486,-fpu` and `pentium3,-fpu` TCG as well as the full later-CPU
+suite. The local bundle verifies 72 files; human observation
+remains deferred.
+
+The independently rebuilt second-generation target now passes its own
+complete 8 MiB `486,-fpu` TCG workstation suite: 513 commands, 576 lines,
+exact VGA and 20 bounded document cycles with exact task-heap recovery
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/full-tcg-nofpu-stdio-cli/result.json`).
+Its provenance records the unchanged second-generation source disk. The
+local bundle includes this direct result and verifies 72 files; human
+observation remains deferred.
+
+The second-generation disk now also passes its own three-boot writable
+DolDoc project under 8 MiB `486,-fpu` TCG: 107/56/15 commands, exact VGA,
+persistent create/reopen/revision, unchanged source image, and an independent
+RedSea audit of 18 directories, 853 files, 17,855 owned sectors and a bitmap
+matching reachable extents
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doldoc-tcg-nofpu-stdio/result.json`).
+The local bundle verifies 72 files, including both generations' writable
+sessions. Human manual QEMU observation remains deferred.
+
+The independently guest-built second-generation disk also passes the
+original x64 TempleOS DolDoc read/save round trip: its native 37-byte
+document returns byte for byte, with unchanged source-image provenance
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/doc-compat-stdio/result.json`).
+`tools/test-i386-doc-compat.py --qmp-stdio` runs this through the restricted
+host's QEMU transport. The current bundle includes both generations'
+original-reader results and verifies 72 files. The human manual session
+remains deferred.
+
+The independently guest-built second-generation disk passes all three
+interrupted boot-image install cuts under 16 MiB `486,-fpu` TCG. Cuts after
+LBAs 128 and 850 leave LBA 0 blank, and retry reconstructs the reference
+disk byte for byte before independent boot. A cut after LBA 0 leaves the
+complete disk bootable. The source image stays unchanged; QMP stdio and a
+separate writable independent-boot copy avoid host socket and snapshot
+restrictions
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/install-recovery-tcg-nofpu-stdio-retry/result.json`).
+The local release bundle requires this result and its QEMU command records
+and verifies 72 files. Human manual observation remains deferred.
+
+The independently guest-built second-generation disk now passes the complete
+8 MiB `pentium3,-fpu` TCG workstation suite on a verified writable copy:
+513 commands, 576 lines, exact VGA and 20 document cycles with exact shared
+task-heap recovery
+(`build/i386-kernel/selfhost-install-capacity-lexfix-gen2-kvm/full-pentium3-nofpu-stdio-cli/result.json`).
+Provenance binds the run to the unchanged second disk. Both generations now
+pass the complete no-FPU suites on 486 and later 32-bit CPU profiles. The
+local bundle requires this evidence and verifies 72 files; human manual
+observation remains deferred.
+
+The retained-build and flat self-host-install harnesses now accept
+`--qmp-stdio`; the installer boots a writable copy for its independent
+check when host snapshots are unavailable. A focused current-source
+`Startup` guest rebuild passes under 16 MiB `486,-fpu` TCG and matches the
+installed second-generation module byte for byte
+(`build/i386-kernel/retained-startup-capacity-lexfix-gen2-tcg-nofpu-stdio/result.json`).
+The all-six current-source retained rebuild now passes on the installed
+Generation 2 disk under 16 MiB `486,-fpu` TCG. The post-write audit verifies
+all six exports, structures and exact installed bytes, with disk and module
+hashes (`build/i386-kernel/retained-build-capacity-lexfix-gen2-tcg-nofpu-stdio/result.json`).
+The local package requires and independently checks this evidence; its
+standalone verifier passes 76 files. The manual QEMU session remains deferred.
+
+The two guest-built generations' persisted 78-byte styled DolDoc files now
+pass original x64 TempleOS `DocRead`/`DocSave` round trips byte for byte
+(`doc-style-compat-stdio/result.json` under each installation). The fixture
+contains foreground, background, invert and underline transitions from the
+native three-boot document session. The local release bundle requires both
+results and verifies 84 files. Manual QEMU observation remains deferred.
+
+The original x64 guest edits the styled file to a distinct 79-byte document.
+On each generation's copied session disk, the i386 guest reads and writes
+that original-authored file byte for byte under `486,-fpu` TCG. The package
+requires both reverse-path runs and their QEMU commands and verifies 88 files.
+The manual session remains deferred.
+
+## Progress checkpoint (2026-10-03)
+
+The current candidate has two byte-identical guest-built generations and
+passing no-FPU workstation, persistent document, and interrupted-install
+checks. All six retained modules also rebuild under `486,-fpu` TCG and
+match the installed modules. Original x64 TempleOS and both i386 generations
+exchange styled DolDoc files byte for byte; the reverse check verifies the
+original guest's added marker inside the i386 guest before saving.
+
+The 88-file local release bundle passes its standalone verifier. QEMU tools
+support QMP stdio and writable copies, preserve logs when an image is locked,
+and terminate the Linux QEMU child if its input runner dies. The human manual
+session remains deferred, and M7 is not marked complete. Work is maintained
+directly on `main` in `ddanila/TempleOS`.

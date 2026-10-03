@@ -23,6 +23,8 @@ def main():
                         default=ROOT / 'build/i386-kernel/selfhost-install')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for build and boot')
+    parser.add_argument('--qmp-stdio', action='store_true',
+                        help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
     parser.add_argument('--command-timeout', type=int, default=2400,
                         help='Seconds allowed for each guest build/install command')
     args = parser.parse_args()
@@ -49,7 +51,8 @@ def main():
         ('I386InstallBootImage("C:/","D:/","D:/Probe/GuestBoot.bin");', ['1'])]
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     run_input(source, out / 'build', target_disk=target, snapshot=False,
-              ram_mib=16, accel=args.accel, cpu=args.cpu, startup_timeout=180,
+              ram_mib=16, accel=args.accel, cpu=args.cpu,
+              qmp_stdio=args.qmp_stdio, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': args.command_timeout,
                              'commands': commands})
@@ -69,11 +72,19 @@ def main():
                 original[512 + 960 * 512:BOOT_AREA])
     if target.read_bytes()[:BOOT_AREA] != expected:
         raise ValueError('Installed boot area differs from guest-linked image')
-    run_input(target, out / 'boot', snapshot=True, ram_mib=8,
-              accel=args.accel, cpu=args.cpu, startup_timeout=180,
+    installed_bytes = target.read_bytes()
+    boot_disk = target
+    if args.qmp_stdio:
+        boot_disk = out / 'boot.img'
+        shutil.copyfile(target, boot_disk)
+    run_input(boot_disk, out / 'boot', snapshot=not args.qmp_stdio, ram_mib=8,
+              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio,
+              startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'commands': [('6*7;', ['42']),
                                           ('DocAllocationCheck;', ['12'])]})
+    if args.qmp_stdio and target.read_bytes() != installed_bytes:
+        raise ValueError('Independent boot changed the installed reference disk')
     result = {'result': 'pass', 'flat_bytes': len(flat),
               'flat_sha256': hashlib.sha256(flat).hexdigest(),
               'guest_built_flat_modules': list(FLAT),
