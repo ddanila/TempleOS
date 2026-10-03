@@ -31,30 +31,63 @@ architectural target. Cross-platform QEMU launchers remain useful supporting
 work; they are not a substitute for native 386 compatibility. ARM, RISC-V, UEFI,
 and broad modern-device support are deferred.
 
-Implementation is underway; see [port progress](docs/port-progress.md) for current
-evidence and limitations. The full 32-bit OS is not yet implemented.
-The next big goal is a [standalone native HolyC development
-environment](#next-big-goal-standalone-native-holyc-development-environment).
-The TDD-driven DolDoc session is its first user-facing workstream. The
-ordinary-text editing/persistence prototype and its first rendered structured
-records, foreground/background color, timed blinking, inversion and underline,
-are available;
-the original editor workflow remains open.
-Current evidence covers the x86-64 image on QEMU 10.2.1/TCG: graphical startup,
-two terminals, keyboard input, and HolyC `6*7;` returning `42`. The image verifier
-checks 725 packaged files and embedded DolDoc record lengths. Two native x86-64 rebuild/reboot generations also pass; persistence, audio, and
-multicore behavior still need baseline verification. The native i386 foundation
-now boots a disk image on the 8 MiB QEMU/486 development profile, initializes
-cooperative tasks and timer interrupts, reads its source from RedSea, and loads a
-separate startup module that initializes VGA through resident imports. A retained
-HolyC console now executes disk-backed startup source, compiles keyboard
-submissions, retains definitions, recovers
-from syntax errors and renders integer/pointer/software-F64 answers with the
-original 8×8 font. These results do not establish strict 386 support, the complete
-HolyC/DolDoc environment or native self-hosting. Component evidence and remaining limitations
-are tracked in the progress document.
+The current native i386 candidate is self-hosting: two guest-built generations
+reproduce all twelve modules, the flat image and boot area byte for byte.
+Both generations pass the 8 MiB no-FPU workstation suites and persistent
+three-boot document workflow. All six retained modules also rebuild under
+16 MiB no-FPU TCG. The local 88-file release bundle verifies. The authoritative
+current evidence is [M7 acceptance](docs/i386-m7-acceptance.md); detailed
+chronology is in [port progress](docs/port-progress.md).
 
-All work stays in our fork on `main`. Preserve `archive` at `c26482b`.
+M7 remains open. Complete original feature parity is not established, release
+publication is pending, and current no-FPU startup measurements of 73–74 seconds
+exceed the stated 60-second development target. Functional passes and package
+hash verification do not by themselves close these gaps. The historical
+“next” sections below record the implementation sequence; the following work
+queue supersedes their stale status and priority statements.
+
+All work stays in our fork, `ddanila/TempleOS`, directly on `main`, without
+feature branches or PRs. The former `archive` branch was removed after verifying
+that its history is contained in `main`.
+
+## Next goal: an automatically qualified M7 release
+
+Deliver a reproducible, published QEMU workstation release whose required
+behavior, source provenance and resource budgets are checked automatically.
+A human checklist is not a prerequisite. Preserve the existing M7 requirements;
+removing redundant manual steps does not establish missing functional coverage.
+
+| Order | Work | Completion evidence |
+| --- | --- | --- |
+| 1. Audit required coverage | Map each M7 requirement to an executable test and independent oracle on the current image. Check source-linked diagnostics, cooperative work in multiple terminals, public services and the original-document workflow explicitly; distinguish required behavior from broader feature parity. Add focused failing tests for uncovered required behavior and implement the missing behavior. | Every required outcome has a current-source result or a named open failing case; no blanket “complete OS” claim based only on the existing suite count. |
+| 2. Close observable gaps | Profile normal startup and bring the no-FPU reference run within the existing 60-second target. Enforce the existing one-second edit/interrupt budget, 8 MiB interactive and 16 MiB rebuild profiles, and bounded heap use. Capture emulated speaker output to a WAV file and check tone/silence automatically; PIT register checks alone do not prove audio output. | Machine-readable timings and memory bounds fail the gate when exceeded; audio samples show the requested tone and silence. Any proposed budget change requires measured justification and an explicit plan revision, not merely a longer harness timeout. |
+| 3. Make qualification reproducible | Provide one entry command that runs or validates the required pipeline for an explicit source revision and candidate, with named stage outputs, safe resume and provenance checks. Separate fresh qualification from verification of cached evidence. Include the matching x86-64 regression and executable-region 386 audit. | A clean output directory produces a complete pass/fail report; stale source hashes, wrong images, missing verdicts, excessive latency and targeted broken behavior are rejected. |
+| 4. Publish the qualified candidate | After the required gates pass, publish a versioned image, matching source reference, hashes, support matrix, known limitations and standalone verifier on our fork. Smoke-boot a downloaded artifact on a writable copy automatically. | The downloaded published artifact verifies and reaches the normal prompt; the report identifies precisely what was tested. No manual approval checkbox is used as evidence of functionality. |
+
+### Scalable test policy
+
+- **During implementation:** run the affected focused tests. For a functional
+  change, first observe the intended failing assertion, then implement the fix.
+  Rebuild the image when OS sources change. A passing old image is not evidence
+  for new source.
+- **At integration checkpoints:** run the complete workstation suite and any
+  affected persistent-session, compatibility or recovery tests. Check resource
+  regressions with the same host/QEMU profile and retain the raw measurements.
+- **For release qualification:** run the required two-generation guest builds,
+  CPU/RAM profiles, installation recovery, x86-64 regression, instruction audits
+  and downloaded-artifact smoke test. Resume verified stages after interruption;
+  never accept stale or partial stages. Do not repeat hours of guest builds for
+  documentation-only edits when their source inputs are unchanged.
+- **Human use:** optional exploration for awkward controls, readability and host
+  integration. Record actual observations only. Convert reproducible failures
+  into automatic tests; do not ask users to retype arithmetic, build commands,
+  save/reopen sequences or other deterministic acceptance cases.
+
+The immediate engineering slice is the requirement-to-test audit plus a failing
+startup-budget check: the current 73–74-second no-FPU result must be reported
+as over budget before optimizing startup. After M7 qualification, prioritize
+broader original-source/API compatibility using an explicit inventory and
+original x64 behavioral oracles, rather than adding isolated passing examples.
 
 ## Final goal: a fully working TempleOS on a PC-compatible machine
 

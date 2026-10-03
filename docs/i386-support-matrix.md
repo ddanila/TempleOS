@@ -6,6 +6,11 @@ hardware. The second-generation rebuild matches all twelve modules, the
 flat image and installed boot area byte for byte. Final M7 publication remains open. Human observation is optional exploratory
 feedback under the 2026-10-03 acceptance revision in `PLAN.md`.
 
+Functional pass entries below do not imply every resource target passes.
+Current first/second-generation no-FPU startup measures 73.868/73.265 seconds,
+exceeding the plan's 60-second target. Automated budget enforcement and audio
+waveform verification are named work in the current release qualification plan.
+
 ## Tested emulator
 
 | Item | Recorded value |

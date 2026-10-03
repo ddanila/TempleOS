@@ -11342,3 +11342,15 @@ injection through QMP, without a guest clipboard service. Printable ASCII,
 tab and newline events were accepted by a disposable QEMU instance; unsupported
 characters are rejected before typing. The current interactive session was
 left untouched and its paste window is ready for the user.
+
+## M7 qualification work queue (2026-10-03)
+
+The plan now leads with current self-hosting evidence and an ordered automated
+qualification queue. It replaces the stale prototype status and redundant
+manual gate with coverage mapping, enforced resource budgets, an audio waveform
+oracle, a reproducible qualification entry point and published-artifact testing.
+The current no-FPU first/second-generation startup measurements are
+73.868/73.265 seconds, above the existing 60-second target; the functional suite
+passes do not close that budget. The next implementation slice is the coverage
+audit and a failing startup-budget check, followed by startup optimization.
+No new guest behavior or automated gate is claimed by this documentation change.

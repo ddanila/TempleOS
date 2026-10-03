@@ -6,6 +6,12 @@ Use them to identify usability problems and convert reproducible failures into
 automated regressions. Host audio playback and subjective comfort may still
 benefit from human feedback without blocking automated functional acceptance.
 
+See the [current qualification queue](../PLAN.md#next-goal-an-automatically-qualified-m7-release)
+for required next work and the focused/integration/release test tiers. The
+single-command qualification entry point described there is planned, not yet
+implemented. The current packager validates existing evidence; it does not run
+the entire qualification pipeline or enforce every performance budget.
+
 For typing pasted text into an interactive QEMU guest, launch QEMU with
 `-qmp unix:/tmp/templeos-qmp.sock,server=on,wait=off`, then run:
 

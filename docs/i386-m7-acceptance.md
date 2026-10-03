@@ -4,6 +4,14 @@ Manual observation is optional exploratory feedback; functional acceptance uses
 automated QEMU evidence. Historical manual-gate notes below are superseded by
 the 2026-10-03 acceptance revision in PLAN.md.
 
+The next work is the [automated release qualification queue](../PLAN.md#next-goal-an-automatically-qualified-m7-release).
+This table records existing evidence; it does not replace a requirement-to-test
+coverage audit. In particular, current no-FPU boots take 73–74 seconds against
+the plan's 60-second target. The next slice must expose that as a failing budget
+check, then profile and improve startup. Speaker-register tests also need an
+automated audio-output oracle. Publication follows complete qualification;
+removing the manual gate does not make M7 complete.
+
 This is the current evidence map for [M7 in PLAN.md](../PLAN.md#following-big-goal-m7-self-hosting-32-bit-templeos-workstation).
 The current candidate is
 `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img`
@@ -25,6 +33,7 @@ evidence rather than repository contents.
 | Native installation and interrupted-install recovery | Both guest-built targets cold-boot. The first generation passes hard stops at LBA 128, 850 and after LBA 0 under KVM; `selfhost-install-capacity-lexfix-gen2-kvm/install-recovery-tcg-nofpu-stdio-retry/result.json` passes the same cuts under `486,-fpu` TCG, with byte-identical retry and independent boot. `build/i386-kernel/result.json` also passes native boot-area publication and interrupted install-copy checks. | Pass for both generations in tested QEMU scenarios; physical power-loss durability is deferred. |
 | Two independent guest-built generations | `generation-identity-capacity-lexfix-kvm/result.json` checks all twelve modules, the flat image and boot area byte for byte; both volumes pass RedSea ownership/bitmap audit. | Pass for the current source under QEMU/486 KVM. |
 | 386-targeted executable regions | Both generations' `instruction-audit/result.json` check linked and retained modules, guest compiler template, and BIOS/protected-mode boot ranges. | Pass for both current guest-built generations' audited regions. |
+| Normal startup budget | First-generation `full-tcg-nofpu/result.json` records 73.868 seconds; second-generation `full-tcg-nofpu-stdio-cli/result.json` records 73.265 seconds. The development target in PLAN.md is 60 seconds. | Over target; functional pass does not close this resource gate. Profile and optimize before promotion. |
 | 8 MiB PC workstation on no-FPU and later 32-bit CPUs | Both installed generations pass 513 commands, 576 lines, exact VGA and 20 document cycles under `486,-fpu` and `pentium3,-fpu` TCG, each with writable-copy provenance. The first also passes under `486` KVM. | Pass on both guest-built generations under no-FPU 486 and later-CPU TCG, and on the first under 486 KVM. |
 | Persistent DolDoc development and memory budget | Both guest-built generations' `doldoc-tcg-nofpu*/result.json` pass 107/56/15 commands over three writable boots with exact VGA, unchanged source disks and RedSea audits. Both complete no-FPU workstation suites pass 20 cycles with exact task-heap recovery. | Pass on both current guest-built generations. |
 | TempleOS programming model and public services | The current full suites exercise HolyC compilation, DolDoc, task/break recovery, direct VGA/PS/2/PIT/speaker paths, RedSea, graphics, sound, help and source-linked diagnostics. Original x64 TempleOS reads and saves both generations' native binary-record and styled DolDoc files byte for byte. Both i386 generations then read and save an original-edited styled document byte for byte. The [support matrix](i386-support-matrix.md) defines the tested surface. | Pass for the integrated tested surface; complete original feature parity remains open. |
