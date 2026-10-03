@@ -201,6 +201,12 @@ The final compiler-provider native rebuild passes (1,722,646 bytes, 3,594
 records, 407 exports). Installation verifies its bytes and independently boots
 with 8 MiB and no FPU. Installed-provider JIT/AOT qualification is running;
 installation alone does not establish that language behavior.
+The installed-provider JIT contract now passes all 23 keyboard/VGA commands.
+Five new diagnostic input cases require exact private-heap recovery after
+nested and floating conditions, JIT mode selection, a failed expression with
+atomic macro rollback, and an answer-callback exception. Both compiler phases
+must also preserve the outer control, sentinel, references and interrupt flag.
+Their diagnostic build is running; allocation exhaustion remains separate.
 
 ### Next public task package: ownership through exit
 

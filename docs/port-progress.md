@@ -11801,3 +11801,23 @@ Candidate disk SHA-256:
 `db3dbf16f913eebd2f70a5a419f31ed9539cd17678ad99bea5d0fc1e26d348f9`.
 Installed-provider JIT/AOT tests are running; that behavior is not yet claimed.
 The earlier all-twelve-module workstation run remains live.
+
+The installed final provider now passes the JIT contract:
+`build/i386-native-conditionals-final-native-jit/result.json` records 23
+commands with exact VGA matching on 8 MiB `486,-fpu` TCG, preserved source and
+checker hashes, and startup in 55.823721 seconds. The AOT run passed its 15
+compile commands but its loader subprocess encountered a missing bootstrap
+manifest while the x86-64 rebuild was replacing it; this is a harness sequencing
+failure, not a language pass or a compiler failure. The bootstrap's two rebuild
+generations now pass, and the complete AOT contract is rerunning in
+`build/i386-native-conditionals-final-native-aot-retry`.
+
+Five diagnostic `ProbeInputs` cases have been added before further ownership
+changes. They require exact heap usage/allocation recovery per case for nested
+skip branches, floating truth, JIT source mode, failed-expression atomic macro
+rollback and answer-callback exceptions, together with the existing control,
+sentinel, lifetime-reference and interrupt checks. The host verifier now
+requires all 27 cases in each of the two phases. The full diagnostic build is
+running in `build/i386-conditional-owned-heap-kernel`; no pass is claimed yet.
+These checks use the compiler's own heap and remain outside normal startup.
+Allocation exhaustion is still an open, distinct contract.

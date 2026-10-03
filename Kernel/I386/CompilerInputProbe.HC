@@ -30,7 +30,7 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHash *entry;
   CIntermediateCode *sentinel;
   U8 *bytes,*names[3];
-  I64 kind,i,used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
+  I64 kind,i,case_used,case_allocations,used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
   Bool result,caught;
   bytes=&input; for(i=0;i<sizeof(CI386CommandInput);i++) bytes[i]=0;
@@ -39,11 +39,22 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.context=&answer; input.answer=&ProbeInputAnswer; input.diagnostic=&ProbeInputDiagnostic;
   sentinel=probe->compiler->code_add(heap,outer,IC_IMM_I64,123,probe->i64_type,0);
   if(!sentinel) KernelStop;
-  for(kind=0;kind<22;kind++) {
+  for(kind=0;kind<27;kind++) {
+    case_used=heap->used; case_allocations=heap->allocations;
     KernelLog("INPUT RUN START "); KernelHex(kind); KernelLog("\n");
     bytes=&answer; for(i=0;i<sizeof(CProbeInputAnswer);i++) bytes[i]=0;
     input.flags=0; input.source="6*7;"; caught=FALSE;
     switch(kind) {
+      case 22:
+        input.source="#if 0\ninvalid skipped syntax\n#if 1\ninvalid nested syntax\n#endif\n#else\n#if sizeof(U8 *)==4\n6*7;\n#endif\n#endif\n"; break;
+      case 23: input.flags=I386_INPUT_ATOMIC_DEFINES;
+        input.source="#define InputGuard 1\n#if UnknownConditional\n42;\n#endif\n"; break;
+      case 24: answer.fail=TRUE; answer.exception='InputCb';
+        input.source="#if 1\n42;\n#endif\n"; break;
+      case 25:
+        input.source="#if 0.5\n42;\n#else\ninvalid skipped syntax\n#endif\n"; break;
+      case 26:
+        input.source="#if 1\n#ifjit\n42;\n#else\ninvalid skipped syntax\n#endif\n#endif\n"; break;
       case 18: input.flags=I386_INPUT_ATOMIC_DEFINES; answer.fail=TRUE; answer.exception='InputCb';
         input.source="#define InputGuard 1\n6*7;"; break;
       case 19: input.flags=I386_INPUT_ATOMIC_DEFINES;
@@ -76,10 +87,15 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     }
     result=FALSE;
     try { result=probe->compiler->input(&input); }
-    catch { if((kind==6 || kind==18) && task->except_ch=='InputCb' || kind==10 && !task->except_ch) { task->catch_except=TRUE; caught=TRUE; } }
+    catch { if((kind==6 || kind==18 || kind==24) && task->except_ch=='InputCb' || kind==10 && !task->except_ch) { task->catch_except=TRUE; caught=TRUE; } }
     KernelLog("INPUT RUN RESULT "); KernelHex(result); KernelLog(" \n");
     KernelLog("INPUT RUN COUNTS "); KernelHex(input.commands); KernelLog(" "); KernelHex(input.answers); KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value); KernelLog(" "); KernelHex(answer.raw_type); KernelLog("\n");
-    if(result!=(kind<4 || kind==5 || kind==9 || kind==11 || kind==15 || kind==16 || kind==19 || kind==21) || caught!=(kind==6 || kind==10 || kind==18)) KernelStop;
+    if(result!=(kind<4 || kind==5 || kind==9 || kind==11 || kind==15 || kind==16 || kind==19 || kind==21 || kind==22 || kind==25 || kind==26) || caught!=(kind==6 || kind==10 || kind==18 || kind==24)) KernelStop;
+    if((kind==22 || kind==25 || kind==26) &&
+        (answer.count!=1 || answer.value!=42 || input.answers!=1 || input.commands!=1 || input.exception)) KernelStop;
+    if(kind==23 && (answer.count || !answer.diagnostics || !input.errors ||
+        input.exception!='Compiler' || ProbeSymbolFind(0,"InputGuard",task->hash_table,HTT_DEFINE_STR))) KernelStop;
+    if(kind==24 && input.exception!='InputCb') KernelStop;
     if(kind==0 && (answer.count!=1 || answer.value!=42 || input.answers!=1 || input.commands!=1)) KernelStop;
     if(kind==1 && (answer.value!=0x10000002A || answer.raw_type!=RT_I64)) KernelStop;
     if(kind==2 && (answer.value!=0x400E000000000000 || answer.raw_type!=RT_F64)) KernelStop;
@@ -140,6 +156,8 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       storage=scope->storage; scope->storage=storage->next;
       if(!I386TaskStorageRelease(heap,storage)) KernelStop;
     }
+    if(kind>=22 && (heap->used!=case_used || heap->allocations!=case_allocations ||
+        !I386HeapValid(heap))) KernelStop;
     if(task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||
         task->except_top || outer->coc.coc_head.next!=sentinel || sentinel->ic_data!=123 ||
         (GetRFlags&0x200)!=(flags&0x200)) KernelStop;

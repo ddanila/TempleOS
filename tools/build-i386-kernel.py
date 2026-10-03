@@ -2810,8 +2810,13 @@ def main():
         if scalar_live != [1] or log.index('SCALAR LIVE ') < log.index('PROBE RELEASE '):
             raise ValueError('Permanent scalar bootstrap lifetime evidence missing')
         result['public_scalars'] = dict(source='Kernel/Types.HH', lifetime='root symbol table', validated_phases=scalar_live)
-        if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('INPUT RUN CASE ')]) != [[phase,kind] for phase in range(2) for kind in range(22)]:
+        if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('INPUT RUN CASE ')]) != [[phase,kind] for phase in range(2) for kind in range(27)]:
             raise ValueError('Incomplete native input run checks')
+        result['conditional_input_cleanup'] = {
+            'phases': [0, 1], 'cases_per_phase': 5,
+            'exact_heap_recovery': True,
+            'scope': 'Nested, float, JIT mode, expression error and callback exception; not allocation exhaustion',
+            'result': 'pass'}
         break_cases=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines()
                      if line.startswith('INPUT BREAK CLEANUP ')]
         if sorted(break_cases)!=[(phase,case) for phase in (0,1) for case in range(3)]:
