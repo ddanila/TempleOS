@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / 'tools/test-i386-public-tasks.py'
 DESCENDANTS = ROOT / 'tools/test-i386-public-task-descendants.py'
 EXCEPTIONS = ROOT / 'tools/test-i386-public-task-exceptions.py'
+END_CALLBACKS = ROOT / 'tools/test-i386-public-task-end-callbacks.py'
 
 
 def behavior_commands(disk):
@@ -44,7 +45,10 @@ def behavior_commands(disk):
     exceptions = runpy.run_path(str(EXCEPTIONS))['behavior_commands']()
     exception_definitions = [(source, []) for source, _ in exceptions
                             if source.startswith(('class ', 'CTryProbe *', 'CTask *', 'Bool ', 'U0 '))]
-    commands = layout_commands + definitions + descendant_definitions + exception_definitions + [
+    callbacks = runpy.run_path(str(END_CALLBACKS))['behavior_commands']()
+    callback_definitions = [(source, []) for source, _ in callbacks
+                           if source.startswith(('class ', 'CEndProbe *', 'CTask *', 'Bool ', 'U0 '))]
+    commands = layout_commands + definitions + descendant_definitions + exception_definitions + callback_definitions + [
         ('CBootHeap *BootHeap(){CBootBacking *p=Fs->data_heap->bp;return p->heap;}', []),
         ("Bool BootHeader(){CBootBacking *p=Fs->data_heap->bp;return p->backing_signature=='B32S'&&p->heap->signature==0x48323349&&I386HeapValid(p->heap);}", []),
         ('BootHeader;', ['1']),
@@ -58,6 +62,8 @@ def behavior_commands(disk):
         ('BootTree;', ['1']),
         ('Bool BootTry(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!TryStart(i%4)||!TryDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
         ('BootTry;', ['1']),
+        ('Bool BootEnd(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!EndStart(i%4)||!EndDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('BootEnd;', ['1']),
         ('Bool BootBad(I64 cpu,I64 size,I64 ch,Bool empty=FALSE){CBootHeap *h=BootHeap;I64 u=h->used,n=h->allocations;return LifeRejected(cpu,size,ch,empty)&&BootSame(h,u,n);}', []),
         ("BootBad(1,8192,'Task');", ['1']),
         ("BootBad(-2,8192,'Task');", ['1']),
@@ -68,6 +74,7 @@ def behavior_commands(disk):
         ('Free(LifeState);', []),
         ('Free(DescState);', []),
         ('Free(TryState);', []),
+        ('Free(EndState);', []),
         ('6*7;', ['42']),
     ]
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
@@ -87,21 +94,24 @@ def main():
     disk_hash, checker_hash, contract_hash = sha(args.disk), sha(Path(__file__)), sha(CONTRACT)
     descendant_hash = sha(DESCENDANTS)
     exception_hash = sha(EXCEPTIONS)
+    callback_hash = sha(END_CALLBACKS)
     commands, header_hashes = behavior_commands(args.disk)
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
                       startup_check={'status': 'ok', 'answers': [], 'commands': commands})
-    if sha(args.disk) != disk_hash or sha(Path(__file__)) != checker_hash or sha(CONTRACT) != contract_hash or sha(DESCENDANTS) != descendant_hash or sha(EXCEPTIONS) != exception_hash:
+    if sha(args.disk) != disk_hash or sha(Path(__file__)) != checker_hash or sha(CONTRACT) != contract_hash or sha(DESCENDANTS) != descendant_hash or sha(EXCEPTIONS) != exception_hash or sha(END_CALLBACKS) != callback_hash:
         raise ValueError('Accounting disk or checker changed during execution')
     report = {'result': 'pass', 'behavior': behavior,
               'disk_sha256': disk_hash, 'checker_sha256': checker_hash,
               'public_contract_sha256': contract_hash, 'source_disk_unchanged': True,
               'descendant_checker_sha256': descendant_hash,
               'exception_checker_sha256': exception_hash,
+              'end_callback_checker_sha256': callback_hash,
               'layout_headers_sha256': header_hashes,
               'normal_and_exit_cycles': 20, 'deferred_activation_cycles': 20,
               'descendant_cycles': 20, 'descendant_variants': 5,
               'exception_cycles': 20, 'exception_variants': 4,
+              'end_callback_cycles': 20, 'end_callback_variants': 4,
               'creation_rejections': 6,
               'scope': 'Bootstrap recovery through public calls, including queued descendants; not late clone-hook failures or dormant disposal'}
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')

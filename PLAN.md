@@ -65,7 +65,7 @@ recovery. The guest-built memory provider installs and passes its executable
 audit and the same 43-command no-FPU public contract. The following descendant
 policy also passes five original-behavior cases and the expanded 55-command
 lifecycle contract on cross-built and guest-built providers. Public cancellation,
-descendant callbacks and dormant disposal, multiple interactive terminals, source-linked debugging,
+dormant disposal, multiple interactive terminals, source-linked debugging,
 full current-source two-generation qualification and
 publication remain open. See [the M7 coverage audit](docs/i386-m7-coverage-audit.md).
 The still-running startup-optimization retained build predates this delay change;
@@ -4457,3 +4457,57 @@ not a complete current-source self-hosted generation.
 
 Uncaught exception policy, public Kill/break, exit callbacks,
 I/O cancellation and full native generation/release evidence remain open.
+
+
+Public task-end callback prerequisite (2026-10-04):
+The new tools/test-i386-public-task-end-callbacks.py executes four original
+x64 reference cases: callback on normal return, callback on explicit Exit,
+a callback that throws to an active catch and resumes execution, and callback
+on queued descendant cancellation inside try. The original reference passes
+(build/i386-task-end-callbacks-original-v2/result.json); the pre-change i386
+image fails its first EndDone console verdict
+(build/i386-task-end-callbacks-red/behavior/debug.log).
+
+The retained memory service now consumes task_end_cb before marking the task
+exiting, clears kill/suspension/message-wait/wake state, and invokes the callback
+with the existing exception chain intact. A recovered task can create a child;
+actual retirement still waits for descendants and drains exception records.
+The initial cross-build failure was an undefined NULL constant in this isolated
+provider, corrected to its existing zero-pointer convention. No boot-kernel
+code or import contract is added.
+
+The original two-generation bootstrap and fresh cross build pass
+(build/i386-task-end-callbacks-bootstrap-v4.log and
+build/i386-task-end-callbacks-kernel-v4/result.json). All four callback cases
+pass under 8 MiB 486,-fpu TCG on both the cross-built and installed guest-built
+providers (build/i386-task-end-callbacks-cross/result.json and
+build/i386-task-end-callbacks-native/result.json). The 262,928-byte guest-built
+memory provider installs, independently boots and passes the 386 executable,
+boot-stage and filesystem audit (build/i386-task-end-callbacks-native-memory/result.json,
+build/i386-task-end-callbacks-native-install/result.json and
+build/i386-task-end-callbacks-native-audit/result.json). The current cross image
+also passes the existing 55-command public task lifecycle contract
+(build/i386-task-end-callbacks-lifecycle/result.json).
+
+The bootstrap accounting checker now includes 20 callback cycles, repeating
+each original variant five times and binding the callback source hash. Cross
+and guest-provider accounting runs both pass all 105 commands under 8 MiB
+486,-fpu TCG (build/i386-task-end-callbacks-accounting-cross/result.json and
+build/i386-task-end-callbacks-accounting-native/result.json). Each run covers
+20 ordinary return/Exit, 20 deferred activation, 20 descendant-tree, 20 worker
+exception and 20 callback cycles, plus six creation rejections. Every cycle
+restores raw used bytes/allocation counts and passes heap validation. Exact VGA,
+source-disk and checker hashes remain unchanged. This qualifies the selected
+provider, not a fully guest-built current-source generation. Public Kill/break,
+private I/O cancellation, dormant
+disposal, late clone-hook failure accounting, uncaught exception policy and
+complete current-source self-hosted generation/release qualification remain open.
+
+The next cancellation work must also cover a descendant callback that recovers
+while its parent is trying to terminate: the original TaskEnd repeatedly requests
+child termination until the ring is empty. The current callback corpus proves
+recovery for an independently exiting worker and callback-driven Exit for a
+canceled descendant; it does not yet prove that combined case. The prepared
+original Kill reference passes six variants and null/protected-root rejection
+(build/i386-task-kill-original-v2/result.json), but its fixture is still a
+build-directory prototype and no public Kill implementation is published.

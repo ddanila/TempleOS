@@ -29,8 +29,16 @@ request termination of queued descendants and wait for their reclamation. An
 entry wrapper prevents first execution after cancellation; checks before and
 after managed yield stop running children. Sleep/suspension flags and wake
 deadlines are cleared so sleeping descendants can finish. Public Kill/break,
-private I/O-wait cancellation, exit callbacks and disposal of never-activated
+private I/O-wait cancellation and disposal of never-activated
 descendants remain open.
+
+Public task-end callbacks run before the task enters retirement. Exit clears
+the callback pointer and resets kill, suspension, message-wait and wake state
+before invoking it. A callback may explicitly Exit or throw to the task's
+existing exception handler and resume execution, including creating children.
+Exception records and child cleanup therefore remain untouched until actual
+retirement. The callback pointer is consumed once, matching the original task
+end policy. A callback that returns is followed by Exit again.
 
 Task and compiler cleanup callbacks run while the exiting task is still linked,
 including callbacks that yield. Finish detaches both public links before switching

@@ -1115,3 +1115,18 @@ times. It checks raw allocation recovery after every worker retires, including
 Exit inside a try block and cancellation with a live exception record. Its
 report includes the exception checker hash and the 20-cycle verdict alongside
 ordinary, deferred and descendant-tree task accounting.
+
+Check public task exit callbacks against executable original behavior:
+
+```sh
+python3 tools/test-i386-public-task-end-callbacks.py --original --out build/task-end-original
+python3 tools/test-i386-public-task-end-callbacks.py build/i386-kernel/kernel.img --out build/task-end-i386
+```
+
+The four cases cover normal return, explicit Exit, a callback that throws to
+an active catch and resumes task execution, and queued descendant cancellation
+inside try. Callbacks must run once with their public pointer cleared and kill,
+suspension, message-wait and wake state reset. The resumed task must still be
+able to spawn a child. This does not establish public Kill or I/O cancellation.
+The bootstrap accounting gate repeats each variant five times, checks exact
+allocation recovery after each cycle, and records the callback checker hash.

@@ -3,6 +3,7 @@ class CMemoryTaskRecord {
   CMemoryTaskRecord *next;
   CI386OwnedTask *owned;
   U0 (*entry)(U8 *data);
+  U0 (*end_callback)();
   Bool child_linked,exiting;
 };
 CMemoryTaskRecord *memory_tasks;
@@ -132,6 +133,18 @@ U0 Exit()
   U32 irq=I386IrqSave;
   if(!task || task==memory_root || !(record=MemoryTaskFind(task))) {
     I386IrqRestore(irq); throw('Task',TRUE); return;
+  }
+  //A callback may throw to the task's active try and resume normal execution.
+  //Keep its exception chain and child creation available until it actually exits.
+  if(task->task_end_cb) {
+    record->end_callback=task->task_end_cb;
+    task->task_end_cb=0;
+    task->wake_jiffy=0;
+    task->task_flags&=~(1<<TASKf_KILL_TASK|1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG);
+    I386IrqRestore(irq);
+    (*record->end_callback)();
+    Exit;
+    return;
   }
   record->exiting=TRUE;
   head=MemoryChildHead(task);
