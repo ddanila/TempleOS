@@ -4,6 +4,7 @@
 #include "/Kernel/I386/PublicTaskTypes.HH"
 #include "/Kernel/I386/PublicMemory.HH"
 #include "/Kernel/I386/PublicTask.HH"
+#include "/Kernel/MessageCodes.HH"
 #include "/Kernel/I386/Bit.HH"
 #include "/Kernel/I386/Queue.HH"
 #include "/Kernel/DocTypes.HH"

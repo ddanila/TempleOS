@@ -150,3 +150,14 @@ The public Bit.HH adds BEqu/LBEqu with their original callable export names and
 Bit help metadata. Shared original/native tests cover old-bit returns and wide
 signed offsets in both task phases, followed by full scope reclamation. See
 [bit assignment](i386-bit-assignment.md) for the resident provider and stack evidence.
+
+## Shared message constants
+
+`Kernel/MessageCodes.HH` holds the original thirteen ordinary message codes
+and five negative paired-event aliases, with their original help text.
+Both `KernelA.HH` and native `PublicKernel.HH` include this byte-identical
+extraction. Two original rebuild generations and the native build/386 boot
+audit pass. A focused 8 MiB no-FPU guest check evaluates all eighteen values
+from the loaded native public header with exact VGA and unchanged input disk
+(`build/i386-public-message-codes-native/result.json`). Message service APIs
+remain unpublished; constants alone do not qualify message delivery.

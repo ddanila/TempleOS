@@ -4850,3 +4850,19 @@ and five callback cases. All three use the same immutable 486,-fpu image at
 8 MiB, exact VGA checkpoints and unchanged input disk.
 The focused contract checks caller/child link lifetime, not execution of the
 original input-filter job loop or full window-manager behavior.
+
+### Shared public message codes
+
+Moved the original message code definitions and help text verbatim from
+KernelA.HH into Kernel/MessageCodes.HH. Native PublicKernel.HH now includes
+that same header, providing the original thirteen ordinary message codes
+and five paired-event aliases. Previously the native public header did not
+define these names, independently of its missing message service APIs.
+A byte-for-byte extraction check and both original rebuild generations pass.
+Fresh native build and 386 boot audit pass
+(build/i386-public-message-codes-kernel/result.json), with the flat image
+unchanged at 482936 bytes. Native public-header/code-value qualification
+passes (build/i386-public-message-codes-native/result.json): all eighteen
+values are evaluated from the loaded public header on 486,-fpu at 8 MiB,
+with exact VGA checks and an unchanged input disk. This change
+only supplies the shared constants and does not publish message services.
