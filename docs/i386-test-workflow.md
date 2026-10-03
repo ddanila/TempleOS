@@ -1141,9 +1141,13 @@ python3 tools/test-i386-public-task-kill.py --original --out build/task-kill-ori
 python3 tools/test-i386-public-task-kill.py build/i386-kernel/kernel.img --out build/task-kill-i386
 ```
 
-The original reference executes eight variants: cancellation before entry,
+The original reference executes nine variants: cancellation before entry,
 running, sleeping and suspended tasks, callback recovery, caller-side Break,
-and asynchronous cancellation of sleeping/suspended tasks. Async cancellation
+asynchronous cancellation of sleeping/suspended tasks, and caller-side
+Shift-Esc delivery. The latter sets BREAK_TO_SHIFT_ESC on the caller and checks
+MSG_KEY_DOWN, CH_SHIFT_ESC and scan code 0x20100000201. Original Kill returns
+FALSE on this path despite posting the message; the target stays alive and can
+subsequently be cancelled normally. Async cancellation
 must initially preserve wake deadlines and all flags except KILL. It also
 rejects null, protected-root and retired task pointers. The native check first
 requires a working MAlloc lookup and public Kill lookup, then the same behavior

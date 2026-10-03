@@ -28,6 +28,7 @@ def behavior_commands():
         'Bool KillResume(){return KillHas(Fs,KillState->task)&&KillState->stage==2&&KillState->calls==1&&KillState->caught==1&&!KillState->errors;}',
         'Bool KillStale(){return !Kill(KillState->task,FALSE);}',
         'Bool KillProtected(){return !Kill(NULL)&&!Kill(Gs->seth_task,FALSE);}',
+        'Bool KillShift(){I64 a,b,r;FlushMsgs;LBts(&Fs->task_flags,TASKf_BREAK_TO_SHIFT_ESC);r=Kill(KillState->task,TRUE,TRUE);LBtr(&Fs->task_flags,TASKf_BREAK_TO_SHIFT_ESC);return !r&&ScanMsg(&a,&b)==MSG_KEY_DOWN&&a==CH_SHIFT_ESC&&b==0x20100000201;}',
     ]
     commands = [(source, []) for source in definitions]
     commands.append(('KillProtected;', ['1']))
@@ -39,7 +40,10 @@ def behavior_commands():
         if kind == 4:
             commands.extend([('KillResume;', ['1']), ('KillState->stage=3;', [])])
         commands.extend([('KillDead;', ['1']), ('KillStale;', ['1'])])
-    commands.extend([('Free(KillState);', []), ('6*7;', ['42'])])
+    commands.extend([('KillStart(1);', ['1']), ('KillReady;', ['1']),
+                     ('KillShift;', ['1']), ('KillHas(Fs,KillState->task);', ['1']),
+                     ('Kill(KillState->task);', ['1']), ('KillDead;', ['1']),
+                     ('KillStale;', ['1']), ('Free(KillState);', []), ('6*7;', ['42'])])
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Task cancellation contract exceeds the interactive line limit')
     return commands
@@ -62,7 +66,7 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:15]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:16]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
@@ -75,6 +79,7 @@ for(i=0;i<8&&ok;i++) {
  if(i==4) {if(!KillResume)ok=FALSE;KillState->stage=3;}
  if(!KillDead||!KillStale)ok=FALSE;
 }
+if(ok)ok=KillStart(1)&&KillReady&&KillShift&&KillHas(Fs,KillState->task)&&Kill(KillState->task)&&KillDead&&KillStale;
 if(ok) {Free(KillState);Report("PASS original public task cancellation\\n");}
 else Report("FAIL original public task cancellation\\n");
 Report("DONE original public task cancellation\\n");
@@ -101,8 +106,8 @@ Report("DONE original public task cancellation\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Task cancellation checker changed during execution')
-    report.update(checker_sha256=checker, cases=8,
-                  scope='Public Kill: pre-entry, running, sleeping, suspended, callback recovery, caller Break; null/protected/stale rejection and unchanged async wake/flags; not self-break or I/O cancellation')
+    report.update(checker_sha256=checker, cases=9,
+                  scope='Public Kill: pre-entry, running, sleeping, suspended, callback recovery, caller Break and Shift-Esc message delivery; null/protected/stale rejection and unchanged async wake/flags; not self-break or I/O cancellation')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

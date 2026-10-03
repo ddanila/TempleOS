@@ -4674,3 +4674,23 @@ error-recovery tests, and a guest-built flat image that fits and boots. Continue
 with the public cancellation package above; its eight-case public Kill checker
 remains deliberately red until the API is implemented. These proofs are not full
 current-source two-generation or release qualification.
+
+### Public cancellation: caller Shift-Esc reference contract
+
+The public Kill checker now covers nine variants. A fresh original x64 run
+passes all of them (build/i386-public-kill-shift-reference-v2/result.json).
+The added variant requests just_break on another task while the caller has
+TASKf_BREAK_TO_SHIFT_ESC set. It requires delivery to the caller of MSG_KEY_DOWN
+with CH_SHIFT_ESC and scan code 0x20100000201, and verifies that the target
+remains alive before ordinary cancellation and stale-pointer rejection.
+Original Kill returns FALSE after this successful message delivery: Break
+returns rather than throws, and Kill falls through to its FALSE return.
+The first probe incorrectly expected TRUE and failed; the corrected oracle
+passes. Preserve this observed contract when implementing the port.
+
+Public Kill remains unpublished and the native checker remains deliberately
+red. Implement original public message/job handling before claiming full
+just_break compatibility; the private bounded message queue is not sufficient
+proof. Self-directed break and resource-wait cancellation still need dedicated
+contracts. This change adds reference evidence, not native runtime support or
+release qualification.
