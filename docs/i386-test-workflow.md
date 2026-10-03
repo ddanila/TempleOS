@@ -942,3 +942,23 @@ for independent boot, preserves the source/candidate hashes and rejects output
 paths that would overwrite its source. These outputs predate the public-delay
 change. The installed image's observed 71.383183-second startup fails the
 60-second budget; a component installation pass does not promote it to M7.
+
+### Native inline assembly contract
+
+Cross-compiling a loader fixture does not prove that the guest compiler accepts
+the same assembly. Compile and execute the loader-required operand forms,
+explicit local branches, and a block exceeding 256 bytes through the normal
+guest prompt:
+
+```sh
+python3 tools/test-i386-native-inline-asm.py IMAGE --out build/native-inline-asm
+```
+
+The test stages a bounded source file through DolDoc, checks its saved source,
+then verifies assembly returning 41 and ordinary HolyC returning 42. It uses
+8 MiB `486,-fpu` TCG, compares VGA pixels, and preserves the supplied image via
+a snapshot. Its report covers those assembly forms; it is not full assembler
+feature parity or full self-hosting qualification. For isolated development
+flat-kernel builds, `test-i386-selfhost-install.py --cross-retained --cross-build
+DIRECTORY` verifies retained inputs against that explicit cross-build manifest.
+These runs remain development evidence even if the native flat kernel boots.

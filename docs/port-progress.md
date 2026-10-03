@@ -1,7 +1,9 @@
 # i386 port progress
 
-The full objective and acceptance gates remain in `PLAN.md`. The standalone
-32-bit TempleOS environment is not yet implemented.
+The full objective and acceptance gates remain in `PLAN.md`. A standalone
+32-bit TempleOS environment now boots, edits and executes HolyC, persists DolDoc
+documents, and rebuilds itself. The complete OS and release gates remain open;
+the dated entries below record the scope of each verified checkpoint.
 
 ## Progress checkpoint (2026-09-25)
 
@@ -11623,3 +11625,55 @@ All 16 host oracle tests pass, including task-observation rejection and
 installer source-alias/stale-verdict protection. The complete objective remains
 open: public task/terminal/debug behavior, current-source two-generation
 qualification, the native-installed startup budget and release publication.
+
+## Loader symbol index and native assembly checkpoint (2026-10-03)
+
+Normal startup profiling identified repeated linear export scans in the module
+loader. The loader now creates an invocation-local index with 256 buckets and
+512 slots after validating the input modules. Duplicate names retain their match
+counts; export sets above capacity use the original scan. Validation still
+finishes before writing the output image, and no heap scratch or shared mutable
+lookup state is introduced. The native kernel uses a compact assembly builder;
+host linking keeps the portable C implementation.
+
+The updated loader corpus passes all 40 cases on 8 MiB `486,-fpu` TCG. Its
+additional differential fixture compares against the original scan at 1, 128,
+512 and 513 exports, covers collisions and duplicate modules, and checks that
+ambiguous loads leave the destination unchanged. External resident binding
+also passes both existing cases. The two-generation x86-64 bootstrap rebuild
+and all 16 host runner/oracle tests pass.
+
+The first all-C native builder made the flat image 488,776 bytes, exceeding the
+existing 487,424-byte limit. That rejected image was never promoted. Selecting
+the compact builder exposed unsupported expression `#if` and missing native
+inline-assembly forms. The kernel now selects the builder with supported
+`#ifdef`; expression conditions remain an explicit compiler gap in `PLAN.md`.
+Native inline assembly now supports the required 386 register/immediate moves,
+register stores, byte zero extension, shifts, masking, stack register operations,
+arithmetic operands, `JZ`, and explicit `I32` local branches. Its bounded block
+buffer grows from 256 to 1,024 bytes, and the output copy uses an integer index
+rather than the byte opcode variable.
+
+`build/i386-symbol-index-frontend-native-development/result.json` records all
+six flat modules compiled in the guest, linked, installed, and independently
+booted. The flat image is 486,088 bytes, with 1,336 bytes left within the existing
+limit. The executable audit passes, and the normal keyboard/VGA check on 8 MiB
+no-FPU TCG reaches the prompt in 46.971996 seconds, passing the unchanged
+60-second budget. The installed disk hash is
+`02e38c51706694bf68fe3777302a7396a0083b469c676fcc2e97fac65614bf4a`.
+This development image retains cross-built runtime modules; these results do
+not prove full current-source self-hosting or its installed startup budget.
+
+The focused guest-compiler assembly test has an observed fail-to-pass result:
+`build/i386-native-inline-asm-before-checked/result.json` fails at inclusion with
+`FRONTEND ERROR Native frontend service unavailable`;
+`build/i386-native-inline-asm-after-checked/result.json` passes all 18 commands,
+including assembly returning 41 and the ordinary `6*7` control returning 42.
+Exact VGA checkpoints match and source disks remain unchanged. The complete
+workstation suite and fresh guest rebuild of all six retained modules are still
+running; their results must be checked before claiming those scopes. An earlier test-fixture attempt
+that inserted all 1,509 source characters as individual DolDoc keystrokes timed
+out during document destruction on both compiler versions. That observation
+needs a separate teardown/resource regression; it is not an assembly failure.
+The focused assembly fixture now constructs a single text entry through the
+existing document lifecycle API and verifies its saved file by compiling it.

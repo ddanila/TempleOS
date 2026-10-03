@@ -25,11 +25,16 @@ def main():
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for build and boot')
     parser.add_argument('--cross-retained', action='store_true',
                         help='Development-only flat build with verified cross-built retained inputs; not full self-hosting evidence')
+    parser.add_argument('--cross-build', type=Path,
+                        help='Isolated cross-build directory for --cross-retained provenance')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
     parser.add_argument('--command-timeout', type=int, default=2400,
                         help='Seconds allowed for each guest build/install command')
     args = parser.parse_args()
+    if args.cross_build and not args.cross_retained:
+        parser.error('--cross-build requires --cross-retained')
+    cross_build = args.cross_build.resolve() if args.cross_build else ROOT / 'build/i386-kernel'
     if args.command_timeout <= 0:
         parser.error('--command-timeout must be positive')
     out = args.out.resolve()
@@ -47,12 +52,12 @@ def main():
         raise ValueError('Source disk does not contain all guest-built retained modules')
     cross_manifest_hash = None
     if args.cross_retained:
-        manifest_path = ROOT / 'build/i386-kernel/result.json'
+        manifest_path = cross_build / 'result.json'
         manifest = json.loads(manifest_path.read_text())
         if hashlib.sha256(original).hexdigest() != manifest.get('disk_sha256'):
             raise ValueError('Development input differs from the current cross-built disk')
         for path, module in retained.items():
-            if module != (ROOT / 'build/i386-kernel/exports' / Path(path).name).read_bytes():
+            if module != (cross_build / 'exports' / Path(path).name).read_bytes():
                 raise ValueError(f'Cross-built retained input differs: {path}')
         for name, digest in manifest['source_sha256'].items():
             if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != digest:

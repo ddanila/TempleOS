@@ -144,12 +144,45 @@ Next optimize these measured paths while retaining malformed-module rejection,
 duplicate/missing binding checks, full heap metadata validation, allocation
 failure rollback and load failure's no-write guarantee. Prefer a per-call
 symbol index or explicit scratch workspace over shared mutable lookup state;
-keep valid large modules supported. For heap costs, investigate whether the
-native assembler can rebuild the existing fast validator instead of the
-portable source-build fallback, and whether repeated full walks can be reduced
-without trusting corrupt metadata. Use the loader/heap mutation corpora and
+keep valid large modules supported. Inspection of the installed kernel confirms that it already contains the
+assembly validator; the older portable fallback explanation does not apply
+to this image. For heap costs, investigate whether repeated full walks can
+be reduced without trusting corrupt metadata. Use the loader/heap mutation corpora and
 native executable audit before timing an installed image. Do not relax the
 60-second budget or use KVM/profile times as the TCG reference verdict.
+
+The symbol-loader implementation now builds a bounded, invocation-local export
+index and retains the original scan for export sets larger than 512 entries.
+The i386 kernel explicitly selects the compact native builder; host linking
+keeps the portable builder. The no-FPU loader corpus compares lookup results
+against the original scan and checks collisions, duplicate matches and the
+512/513-entry boundary without changing valid-module acceptance. Native image
+size and installed timing must still pass before this work closes the budget.
+The first portable-builder native image was rejected at 488,776 bytes against
+the existing 487,424-byte load limit; that failed build is not a candidate.
+
+The compact builder exposed another native frontend gap: inline assembly
+lacked register-immediate moves, memory stores from registers, byte zero
+extension, shifts, masking, stack register operations and several arithmetic
+forms. The cross-built loader corpus cannot prove that the guest compiler
+accepts those forms. `tools/test-i386-native-inline-asm.py` compiles and executes
+the required forms at the normal guest prompt, including a block beyond the
+former 256-byte limit and a forward jump across that span. The focused test now fails at native compilation on the old compiler and passes
+on the updated compiler. Class-member LEA addressing avoids unsupported offset
+immediates. All six flat modules compile, link, install and boot in the guest;
+the 486,088-byte image passes its executable audit and boots in 46.971996 seconds
+on 8 MiB no-FPU TCG. Retained inputs are still cross-built in that development
+image: require fully guest-built installation and timing before closing the
+self-hosting startup gate. The current retained rebuild and full workstation
+suite are running, with no final verdict yet.
+
+The native compiler also rejects expression `#if` directives, discovered by
+trying `#if sizeof(U8 *)==4` in kernel source. This is an uncovered HolyC
+feature, not hardware verification. Add a failing native frontend contract for
+true/false/nested expression conditions, target `sizeof`, skipped invalid code,
+lookahead preservation and failed-condition cleanup, then implement it using
+the existing expression services. Do not claim original compiler feature
+coverage from the directive-skipping lexer tests alone.
 
 ### Next public task package: ownership through exit
 

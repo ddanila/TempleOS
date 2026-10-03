@@ -38,10 +38,159 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
   return result;
 }
 
-I64 I386BoundSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches,
-  CI386ModuleBinding *bindings,I64 binding_count,I64 load_address)
+//Scratch belongs to this load invocation, not to shared module/global state.
+//Large export sets fall back to the original scan without changing acceptance.
+class CI386SymbolSlot {
+  U8 *name;
+  U32 target,kind,next;
+};
+class CI386SymbolIndex {
+  U32 heads[256];
+  CI386SymbolSlot slots[512];
+  Bool complete;
+};
+U32 I386SymbolBucket(U8 *name)
 {
-  I64 i,result=I386FindSymbol(modules,count,name,kind,matches);
+  U32 hash=0;
+  while(*name) hash=hash*31+*name++;
+  return hash&255;
+}
+U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+{//Only validated, bounded names and module offsets are read here.
+#ifdef I386_LOADER_NATIVE_BUILD
+  //The validated total image, record counts and target offsets fit U32.
+  //Build without host arithmetic helpers or allocating scratch from the heap.
+  U8 **next=modules;
+  CI386SymbolSlot *slot;
+  U32 left=count,remaining,base=8,used=0;
+  #assert sizeof(CI386SymbolSlot)==16
+  index->complete=FALSE;
+  asm {
+    MOV EBX,U32 &index[EBP]
+    LEA EDI,U32 CI386SymbolIndex.heads[EBX]
+    MOV ECX,256
+    XOR EAX,EAX
+@@01:
+    MOV U32 [EDI],EAX
+    ADD EDI,4
+    SUB ECX,1
+    JNZ I32 @@01
+@@10:
+    MOV EAX,U32 &next[EBP]
+    MOV ESI,U32 [EAX]
+    ADD EAX,4
+    MOV U32 &next[EBP],EAX
+    MOV EAX,U32 CI386ModuleHeader.record_count[ESI]
+    MOV U32 &remaining[EBP],EAX
+    MOV EDI,U32 CI386ModuleHeader.records_offset[ESI]
+    ADD EDI,ESI
+    TEST EAX,EAX
+    JZ I32 @@70
+@@20:
+    MOV ECX,U32 CI386ModuleRecord.kind[EDI]
+    CMP ECX,I386_MODULE_EXPORT
+    JE I32 @@30
+    CMP ECX,I386_MODULE_DATA_EXPORT
+    JNE I32 @@60
+@@30:
+    MOV EAX,U32 &used[EBP]
+    CMP EAX,512
+    JE I32 @@90
+    MOV EDX,EAX
+    SHL EDX,4
+    ADD EDX,EBX
+    LEA EDX,U32 CI386SymbolIndex.slots[EDX]
+    MOV U32 &slot[EBP],EDX
+    MOV U32 CI386SymbolSlot.kind[EDX],ECX
+    MOV EAX,U32 CI386ModuleRecord.offset[EDI]
+    ADD EAX,U32 &base[EBP]
+    MOV U32 CI386SymbolSlot.target[EDX],EAX
+    MOV ECX,U32 CI386ModuleRecord.name_offset[EDI]
+    ADD ECX,ESI
+    MOV U32 CI386SymbolSlot.name[EDX],ECX
+    XOR EAX,EAX
+@@40:
+    MOVZX EDX,U8 [ECX]
+    TEST EDX,EDX
+    JZ I32 @@50
+    PUSH EDX
+    MOV EDX,EAX
+    SHL EAX,5
+    SUB EAX,EDX
+    POP EDX
+    ADD EAX,EDX
+    ADD ECX,1
+    JMP I32 @@40
+@@50:
+    AND EAX,255
+    SHL EAX,2
+    ADD EAX,EBX
+    LEA EAX,U32 CI386SymbolIndex.heads[EAX]
+    MOV ECX,U32 [EAX]
+    MOV EDX,U32 &slot[EBP]
+    MOV U32 CI386SymbolSlot.next[EDX],ECX
+    MOV ECX,U32 &used[EBP]
+    ADD ECX,1
+    MOV U32 &used[EBP],ECX
+    MOV U32 [EAX],ECX
+@@60:
+    ADD EDI,16
+    SUB U32 &remaining[EBP],1
+    JNZ I32 @@20
+@@70:
+    MOV EAX,U32 CI386ModuleHeader.code_size[ESI]
+    ADD U32 &base[EBP],EAX
+    SUB U32 &left[EBP],1
+    JNZ I32 @@10
+    MOV U8 CI386SymbolIndex.complete[EBX],1
+@@90:
+  }
+#else
+  CI386ModuleHeader *h;
+  CI386ModuleRecord *r;
+  CI386SymbolSlot *slot;
+  U32 j,used=0,base=8,bucket;
+  I64 i;
+  index->complete=FALSE;
+  for(j=0;j<256;j++) index->heads[j]=0;
+  for(i=0;i<count;i++) {
+    h=modules[i]; r=modules[i]+h->records_offset;
+    for(j=0;j<h->record_count;j++,r++)
+      if(r->kind==I386_MODULE_EXPORT || r->kind==I386_MODULE_DATA_EXPORT) {
+        if(used==512) return;
+        slot=&index->slots[used]; slot->name=modules[i]+r->name_offset;
+        slot->target=base+r->offset; slot->kind=r->kind;
+        bucket=I386SymbolBucket(slot->name);
+        slot->next=index->heads[bucket]; index->heads[bucket]=++used;
+      }
+    base+=h->code_size;
+  }
+  index->complete=TRUE;
+#endif
+}
+
+I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
+  U8 *name,I64 kind,I64 *matches)
+{
+  CI386SymbolSlot *slot;
+  U32 cursor;
+  I64 result=0;
+  if(!index || !index->complete) return I386FindSymbol(modules,count,name,kind,matches);
+  *matches=0; cursor=index->heads[I386SymbolBucket(name)];
+  while(cursor) {
+    slot=&index->slots[cursor-1];
+    if((!kind || kind==slot->kind) && I386NameEqual(slot->name,name)) {
+      (*matches)++; result=slot->target;
+    }
+    cursor=slot->next;
+  }
+  return result;
+}
+
+I64 I386BoundSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches,
+  CI386ModuleBinding *bindings,I64 binding_count,I64 load_address,CI386SymbolIndex *index=0)
+{
+  I64 i,result=I386IndexedSymbol(index,modules,count,name,kind,matches);
   for (i=0;i<binding_count;i++)
     if ((!kind || bindings[i].kind==kind) && I386NameEqual(bindings[i].name,name)) {
       (*matches)++; result=(bindings[i].address+0)(U64)-load_address;
@@ -56,6 +205,7 @@ public I64 I386LoadBoundAt(U8 **modules,I64 *sizes,I64 count,U8 *image,
   CI386ModuleRecord *r;
   I64 i,j,k,n,total=8,matches,target,entry,base,patch,name_size,address;
   Bool pointers=FALSE;
+  CI386SymbolIndex index;
   if (!modules || !sizes || !entry_name || count<=0 || count>U32_MAX/8 ||
       capacity<0 || capacity>U32_MAX || load_address< -1 || load_address>U32_MAX || binding_count<0 ||
       binding_count>U32_MAX/sizeof(CI386ModuleBinding) || (binding_count && (!bindings || (bindings+0)(U64)>
@@ -77,7 +227,8 @@ public I64 I386LoadBoundAt(U8 **modules,I64 *sizes,I64 count,U8 *image,
   }
   address=load_address; if(address<0) address=(image+0)(U64);
   if(load_address>=0 && address>0x100000000-total) return 0;
-  entry=I386FindSymbol(modules,count,entry_name,I386_MODULE_EXPORT,&matches);
+  I386SymbolIndexBuild(&index,modules,count);
+  entry=I386IndexedSymbol(&index,modules,count,entry_name,I386_MODULE_EXPORT,&matches);
   if (matches!=1) return 0;
   for (i=0;i<count;i++) {
     h=modules[i]; r=modules[i]+h->records_offset;
@@ -85,14 +236,14 @@ public I64 I386LoadBoundAt(U8 **modules,I64 *sizes,I64 count,U8 *image,
       if (r->kind==I386_MODULE_DATA_RANGE) goto validate_next;
       if (r->kind==I386_MODULE_POINTER) { pointers=TRUE; goto validate_next; }
       target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,
-        bindings,binding_count,address);
+        bindings,binding_count,address,&index);
       if (matches!=1) return 0;
       if (r->kind==I386_MODULE_NAMED_POINTER) {
         pointers=TRUE;
         if (address+target<1 || address+target>U32_MAX) return 0;
       }
       if (r->kind==I386_MODULE_REL32) {
-        I386BoundSymbol(modules,count,modules[i]+r->name_offset,I386_MODULE_EXPORT,&matches,bindings,binding_count,address);
+        I386BoundSymbol(modules,count,modules[i]+r->name_offset,I386_MODULE_EXPORT,&matches,bindings,binding_count,address,&index);
         if (matches!=1) return 0;
       }
 validate_next:
@@ -133,11 +284,11 @@ validate_next:
         (image+base+r->offset)(U32 *)[0]=address+base+r->name_offset;
       else if (r->kind==I386_MODULE_NAMED_POINTER) {
         target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,
-          &matches,bindings,binding_count,address);
+          &matches,bindings,binding_count,address,&index);
         (image+base+r->offset)(U32 *)[0]=address+target;
       }
       else if (r->kind==I386_MODULE_REL32 || r->kind==I386_MODULE_ADDRESS) {
-        target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,bindings,binding_count,address);
+        target=I386BoundSymbol(modules,count,modules[i]+r->name_offset,0,&matches,bindings,binding_count,address,&index);
         patch=base+r->offset;
         (image+patch)(U32 *)[0]=target-(patch+4);
       }

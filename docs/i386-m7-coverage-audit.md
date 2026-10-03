@@ -39,3 +39,30 @@ boot and RedSea audits, but its normal no-FPU TCG startup is 71.383183 seconds
 (`build/i386-retained-startup-u32-keyboard-budget.json`: fail). The existing
 60-second target remains in force. This is the pre-delay source epoch; preserve
 that distinction when running further qualification.
+
+The optimized fully guest-built installed image also completes the full
+8 MiB no-FPU workstation suite: 513 commands, 576 lines, exact VGA and 20
+exact shared-heap recovery cycles (`build/i386-retained-startup-u32-workstation-tcg/result.json`).
+Its 70.498169-second startup still fails the unchanged budget; the visible
+long-document update is 0.264459 seconds. This remains the pre-delay source epoch.
+
+Expression `#if` is a newly identified compiler gap. The indexed-loader native
+build rejected `#if sizeof(U8 *)==4` at `ModuleLoad.HC:60`; lexer tests that skip
+conditional blocks do not establish frontend evaluation of these directives.
+The current native-builder selection uses a supported explicit define while
+this required compiler-coverage work stays open.
+
+The invocation-local loader index passes 40 no-FPU loader cases and a differential
+1/128/512/513-export fixture. Its compact builder also compiles with the native
+frontend: six guest-built flat modules install and boot, the 486,088-byte flat
+image passes its 386 executable audit, and normal startup takes 46.971996 seconds
+on 8 MiB no-FPU TCG. See
+`build/i386-symbol-index-frontend-native-development/result.json` and
+`build/i386-symbol-index-frontend-native-keyboard/budget.json`. Retained runtime
+inputs in this image are cross-built; the full guest-built budget remains open.
+The focused native inline-assembly test fails on the old compiler and passes
+on the updated compiler, including a block larger than 256 bytes and ordinary
+HolyC execution afterward. This establishes those operand forms, not complete
+original assembler coverage. A 1,509-keystroke fixture attempt also timed out
+during document teardown on both images; retain that observation for a focused
+resource/teardown test. The final compiler fixture uses one text entry.

@@ -7,7 +7,9 @@ U0 CompileTests()
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
   Report("START native module loader\n");
-  module=CmpI386Module(source,&size,&errors);
+  module=NULL; errors=0;
+  try { module=CmpI386Module(source,&size,&errors); }
+  catch { errors=1; }
   if (!module || errors) {
     source=DocSave(DocPut,&size);
     line=MStrPrint("EXPORT compiler-log.DD %X %X\n",source,size); Report(line);

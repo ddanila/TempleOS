@@ -2,10 +2,13 @@
 #define TRUE 1
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
+#define I386_LOADER_NATIVE_BUILD 1
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/A20.HH"
 #include "/Kernel/I386/ModuleBind.HH"
+extern I64 SymbolIndexStress();
+Bool symbol_index_tested=FALSE;
 extern U8 *I386LoadAlloc(CI386Heap *heap,U8 **modules,I64 *sizes,I64 count,U8 *entry_name);
 extern I64 I386LoadInto(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,U8 *entry_name);
 U8 entry_name[5]="Main",output[2048],other[2048],original[2048];
@@ -46,6 +49,9 @@ I64 Main(I64 a,I64 b)
   U8 *packet=a,*modules[3],*cursor,*first,*second,*again,*reserve,*stored,*heap_modules[3];
   I64 sizes[3],count,mode,expected,required,i,j,result;
   I64 (*entry)(I64 x,I64 y);
+  if(!symbol_index_tested) {
+    i=SymbolIndexStress; if(i) return i; symbol_index_tested=TRUE;
+  }
   if (b<28 || b>2048) return 1;
   mode=packet(U32 *)[0]; count=packet(U32 *)[1]; expected=(packet+8)(I64 *)[0];
   if (count<1 || count>3) return 2;
@@ -147,3 +153,5 @@ I64 Main(I64 a,I64 b)
 #include "/Kernel/I386/BootMemory.HC"
 
 #include "/Kernel/I386/A20.HC"
+
+#include "T:/SymbolIndex.HC"
