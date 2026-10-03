@@ -12053,3 +12053,15 @@ The helpers run without publishing new definitions inside the measured pool
 cycle. This pool check does not prove private stack/control allocation recovery
 or disposal of a task that is never activated. The new baseline is running in
 `build/i386-creator-pin-public-tasks`; its behavior branch remains unverified.
+
+That public baseline now observes `Spawn`, `Exit` and `TaskQueIns` missing,
+with all lookup controls and public delay services present. The presence run
+passes exact VGA and preserves its source image; the expected missing-service
+verdict is not execution of the 41 behavior commands.
+
+The pressure-fix integration runner also terminates on the stale loader-layout
+verifier it loaded before the host fix. Its three persisted indexed module
+graphs pass the updated verifier
+(`build/i386-conditional-pressure-fix-kernel/module-layout-recheck.json`). Both
+old full integration runs remain failed overall; artifact rechecking does not
+replace the final integration gates that their early verifier exit skipped.
