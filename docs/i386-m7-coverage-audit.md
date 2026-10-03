@@ -98,3 +98,9 @@ of temporary backend staging flags. Error recovery preserves prior definitions.
 This does not establish allocation-failure/owned-heap cleanup or final native
 compiler-provider installation; those remain open. The raw lexer and its
 original marker compatibility contract still pass.
+
+The all-twelve-module native loader checkpoint now passes the 386 executable
+audit, including its native division template, and normal keyboard/VGA boot
+on 8 MiB no-FPU TCG in 56.381575 seconds. Its startup budget passes. The full
+workstation run remains active. This source epoch predates the final conditional
+frontend; current-source two-generation and release qualification remain open.

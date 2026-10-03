@@ -179,8 +179,9 @@ image: require fully guest-built installation and timing before closing the
 self-hosting startup gate. The current retained rebuild and full workstation
 suite have passed for that loader checkpoint: all twelve modules build natively
 and the installed image boots independently, while the development workstation
-suite passes within its latency targets. No-FPU TCG timing and workstation
-checks on the fully guest-built image have started. That source epoch predates
+suite passes within its latency targets. The fully guest-built image passes its 386 executable audit and normal
+8 MiB no-FPU TCG keyboard/VGA boot in 56.381575 seconds, within the 60-second
+budget. Its full workstation run is still active. That source epoch predates
 the conditional frontend below; it does not qualify the new compiler source.
 
 Expression `#if` now uses the existing native expression evaluator, with the

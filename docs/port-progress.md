@@ -11778,3 +11778,11 @@ against an isolated export directory. Inspection showed that host edits do not
 change those running guest inputs, so implementation continued without
 restarting the older jobs. Their evidence retains its original source epoch;
 it does not qualify the new compiler source.
+
+The fully guest-built loader-index image now passes its executable audit,
+including the native compiler's division template, and the normal 8 MiB
+`486,-fpu` TCG keyboard/VGA check. Startup is 56.381575 seconds; the unchanged
+60-second budget passes (`build/i386-symbol-index-fully-native-keyboard/budget.json`).
+This establishes the timing target for that all-twelve-module native checkpoint,
+not the later conditional-compiler source. Its complete workstation suite
+and the final conditional compiler-provider build remain live.
