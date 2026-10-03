@@ -8,6 +8,7 @@ class CI386OwnedTask
   CI386Heap *heap;
   U32 allocation_size,signature;
   CI386Heap local_heap;
+  CI386Task *creator;
 };
 public _intern 0x15 CI386Task *I386TaskSelf();
 public extern U0 I386TaskReturn();

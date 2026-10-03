@@ -1348,15 +1348,16 @@ def verify_native_loader_module(disk):
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built original module loader')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=26 or
+    if (total!=len(module) or size<1024 or size&7 or count!=34 or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid original module loader layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
     expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
-        'I386FindSymbol','I386LoadBoundAt','I386LoadBoundInto','I386LoadInto',
+        'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386LoadBoundAt','I386LoadBoundInto','I386LoadInto',
         'I386ModuleValid','I386NameEqual'))
-    if exported!=expected or sum(kind==2 for kind,*_ in rows)!=18 or \
+    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+    if exported!=expected or len(calls)!=23 or any(name not in expected for name in calls) or \
             any(kind not in (1,2) or offset>=size or not length or name<strings or
                 name+length>=total for kind,offset,name,length in rows):
         raise ValueError('Original module loader records differ from source')
@@ -1365,7 +1366,7 @@ def verify_native_loader_module(disk):
                 name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
                 for name in ('Kernel/I386/ModuleLoad.HC','Kernel/I386/ModuleCheck.HC')},
             'functions':[name.decode() for name in expected],
-            'internal_calls':18}
+            'internal_calls':23}
 
 
 def verify_native_alloc_module(disk):
@@ -1376,17 +1377,18 @@ def verify_native_alloc_module(disk):
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built original module allocation unit')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=44 or
+    if (total!=len(module) or size<1024 or size&7 or count!=52 or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid original module allocation unit layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
     expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
-        'I386FindSymbol','I386HeapAlloc','I386HeapFree','I386HeapInit',
+        'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386HeapAlloc','I386HeapFree','I386HeapInit',
         'I386HeapRegionValid','I386HeapSize','I386HeapValid','I386LoadAlloc',
         'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
         'I386LoadInto','I386ModuleValid','I386NameEqual'))
-    if exported!=expected or sum(kind==2 for kind,*_ in rows)!=28 or \
+    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+    if exported!=expected or len(calls)!=33 or any(name not in expected for name in calls) or \
             any(kind not in (1,2) or offset>=size or not length or name<strings or
                 name+length>=total for kind,offset,name,length in rows):
         raise ValueError('Original module allocation records differ from source')
@@ -1396,7 +1398,7 @@ def verify_native_alloc_module(disk):
                 for name in ('Kernel/I386/ModuleAlloc.HC','Kernel/I386/ModuleLoad.HC',
                              'Kernel/I386/ModuleCheck.HC','Kernel/I386/Heap.HC')},
             'functions':[name.decode() for name in expected],
-            'internal_calls':28}
+            'internal_calls':33}
 
 
 def verify_native_file_module(disk):
@@ -1407,13 +1409,13 @@ def verify_native_file_module(disk):
             struct.unpack_from('<H',module,4)[0]!=2:
         raise ValueError('Missing guest-built original RedSea module loader')
     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=69 or
+    if (total!=len(module) or size<1024 or size&7 or count!=77 or
             records!=32+size or strings!=records+16*count or strings>total):
         raise ValueError('Invalid original RedSea module loader layout')
     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
     exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
     expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
-        'I386FindSymbol','I386HeapAlloc','I386HeapFree','I386HeapInit',
+        'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386HeapAlloc','I386HeapFree','I386HeapInit',
         'I386HeapRegionValid','I386HeapSize','I386HeapValid','I386LoadAlloc',
         'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
         'I386LoadInto','I386ModuleValid','I386NameEqual',
@@ -1421,7 +1423,7 @@ def verify_native_file_module(disk):
         'I386RedSeaLoadSet','I386RedSeaLoadSetBound'))
     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
     imports=sorted(name for name in calls if name not in exported)
-    if exported!=expected or len(calls)!=49 or \
+    if exported!=expected or len(calls)!=54 or \
             imports!=sorted(2*[b'I386RedSeaExtent',b'I386RedSeaRead',b'I386RedSeaValid']) or \
             any(kind not in (1,2) or offset>=size or not length or name<strings or
                 name+length>=total for kind,offset,name,length in rows):

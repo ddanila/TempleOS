@@ -22,6 +22,10 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
       private_size>0xFFFFFFFF-header-stack_size) return 0;
   total=header+stack_size+private_size;
   flags=I386IrqSave;
+  if(parent!=s->current && (!s->current || s->current->owner!=s ||
+      s->current->finished || s->current->finishing || s->current->lifetime_refs==0xFFFFFFFF)) {
+    I386IrqRestore(flags); return 0;
+  }
   owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
@@ -49,6 +53,10 @@ public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
     if(!parent->hash_table || !parent->symbol_state || !parent->symbol_clone || !parent->symbol_destroy ||
         !(*parent->symbol_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
   }
+  //Inherited state belongs to the parent; entry code can belong to the creator.
+  if(parent!=s->current) {
+    owned->creator=s->current; owned->creator->lifetime_refs++;
+  }
   if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
   I386IrqRestore(flags);
   return owned;
@@ -62,6 +70,7 @@ spawn_fail:
   if(owned->task.heap_state && (!owned->task.heap_destroy || !(*owned->task.heap_destroy)(&owned->task))) {
     I386IrqRestore(flags); return 0;
   }
+  if(owned->creator) owned->creator->lifetime_refs--;
   I386HeapFree(heap,owned);
   I386IrqRestore(flags);
   return 0;
@@ -76,17 +85,23 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
 {//Readable live owned record required. Never destroy from its own stack.
   U32 flags=I386IrqSave;
   CI386Heap *heap;
+  CI386Task *creator;
   Bool result;
   if (!owned || owned->signature!=0x54323349 || !owned->task.owner ||
       !owned->task.finished || owned->task.owner->current==&owned->task) {
     I386IrqRestore(flags); return FALSE;
   }
   heap=owned->heap;
+  creator=owned->creator;
+  if(creator && (creator->owner!=owned->task.owner || !creator->lifetime_refs)) {
+    I386IrqRestore(flags); return FALSE;
+  }
   if (I386HeapSize(heap,owned)!=owned->allocation_size ||
       !I386SchedReap(owned->task.owner,&owned->task)) {
     I386IrqRestore(flags); return FALSE;
   }
   result=I386HeapFree(heap,owned);
+  if(result && creator) creator->lifetime_refs--;
   I386IrqRestore(flags);
   return result;
 }

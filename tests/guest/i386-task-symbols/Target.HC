@@ -99,7 +99,7 @@ I64 ScopeTest()
     }
     if(grand && grand->task.finished && workers[0]->task.finished && workers[1]->task.finished) break;
   }
-  if(errors || scope_done!=3 || !protected_parent || root.lifetime_refs!=2 ||
+  if(errors || scope_done!=3 || !protected_parent || root.lifetime_refs!=3 ||
       HashFind("Shared",symbols,HTT_DEFINE_STR)!=&root_symbol) return 8;
   if(!I386TaskDestroy(grand) || workers[0]->task.lifetime_refs!=1 || I386TaskDestroy(workers[0]) ||
       !I386CmpCtrlDel(workers[0]->task.memory,retained_control) ||

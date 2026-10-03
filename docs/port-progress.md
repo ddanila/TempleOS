@@ -11986,3 +11986,43 @@ The expanded symbol fixture exceeded its old transfer capacity. Its bounded
 832-sector profile ends at the relocated first arena at `0x78000`. The arena
 retains its 64 KiB size and ends at `0x88000`, below the boot stack; both stage
 bounds and the 386 instruction audit pass. The OS boot limit remains unchanged.
+
+The latest public task baseline remains red on the selected-parent image:
+`build/i386-selected-parent-public-tasks/result.json` observes `Spawn` and `Exit`
+missing while lookup controls, `Yield` and `Sleep` pass. Its 35-command behavior
+branch is consequently still unexecuted.
+
+A new native creator-lifetime contract first fails with case `0x7B`
+(`build/i386-creator-pin-before.log`): a returned creator has no reference while
+its differently parented child remains alive. The owned task now retains its
+creator when selected parent and current differ, rejects reference overflow
+before allocation, and releases that reference only after successful child
+destruction. Same-parent bootstrap calls retain their existing behavior and ABI.
+The heap fixture now passes, including deferred creator destruction and exact
+heap/control-heap recovery (14 reclamations), as do the selected-parent symbol
+and legacy task fixtures and their 386 instruction audits. Bootstrap rebuilding
+passes. These private checks do not establish public child rings or root reaping.
+
+The creator-pinning kernel cross-build passes its executable and boot audits
+at 484,704 flat bytes. Normal no-FPU boot is running in
+`build/i386-creator-pin-keyboard`. Guest-built flat capacity remains unverified;
+the cross-built size does not establish that the complete native image fits.
+
+The allocation-error compiler provider finishes rebuilding inside the guest:
+1,723,750 bytes, 3,597 records, 408 exports, SHA-256
+`ff894a2fa84f3def086f7298e1a4538c6a634ed123e82fd557f964c03bb0006d`.
+Its selected-provider installation verifies exact bytes and independent 8 MiB
+no-FPU boot (`build/i386-conditional-pressure-fix-native-installed/result.json`),
+and its 23-command JIT regression passes. Installed-provider AOT qualification
+is running. This image predates selected-parent and creator-pin kernel changes.
+
+The earlier cleanup-only integration runner terminates on a stale host verifier:
+its persisted native loader includes the symbol-index helpers, while the layout
+oracle still required the old 26-record graph. The loader, allocation and file
+loader verifiers now require 34, 52 and 77 records, respectively, with their
+explicit indexed exports, closed internal bindings and unchanged resident
+imports. All three persisted artifacts pass rechecking; malformed count,
+export-kind and offset cases remain rejected
+(`build/i386-conditional-owned-heap-kernel/module-layout-recheck.json`). This
+does not retrospectively claim a complete integration pass. The pressure-fix
+integration runner remains live with its original verifier loaded.
