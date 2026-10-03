@@ -155,3 +155,5 @@ U0 MemoryProbe(I64 phase)
 #define Fs I386TaskSelf
 #define LBEqu MemoryLockedBitEqu
 #include "/Kernel/TaskDelayCore.HC"
+
+#include "/Kernel/I386/TaskRuntimeCore.HC"

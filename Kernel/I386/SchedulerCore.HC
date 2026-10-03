@@ -1,3 +1,12 @@
+#ifdef I386_TASK_RETAINED_BUILD
+#define I386_TASK_IMPLEMENTATION_ASM 0
+#else
+#ifdef I386_TASK_NATIVE_BUILD
+#define I386_TASK_IMPLEMENTATION_ASM 1
+#else
+#define I386_TASK_IMPLEMENTATION_ASM 0
+#endif
+#endif
 #include "/Kernel/I386/Scheduler.HH"
 #include "/Kernel/I386/Cpu.HH"
 //Single CPU. Only Wake may be called from a maskable IRQ; never use from NMI.
@@ -7,6 +16,7 @@ I64 I386TaskHeapHooks(CI386Task *task)
   return (task->code_heap!=0) | (task->data_heap!=0)<<1 | (task->heap_state!=0)<<2 |
     (task->heap_clone!=0)<<3 | (task->heap_destroy!=0)<<4;
 }
+#ifndef I386_TASK_RETAINED_BUILD
 public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   U0 (*swap)(CI386Context *old,CI386Context *next))
 {
@@ -35,6 +45,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   s->focus=0; s->jiffies=0;
   return TRUE;
 }
+#endif
 public Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task)
 {//Initialize a fresh context without making it runnable; caller owns its stack.
   U32 flags=I386IrqSave;
@@ -66,7 +77,7 @@ public Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task)
 public Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task)
 {//Attach a prepared dormant task once. Does not switch the current context.
   U32 flags=I386IrqSave;
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
   U32 invalid[1];
   invalid[0]=0;
   asm {
@@ -129,7 +140,7 @@ public Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task)
     I386IrqRestore(flags); return FALSE;
   }
 #endif
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
   //Both rings store task-base pointers. IF remains clear through both insertions.
   asm {
     PUSH EAX
@@ -179,6 +190,7 @@ Bool I386SchedReady(CI386Task *task)
     !(task->task_flags & (1<<TASKf_SUSPENDED|1<<TASKf_AWAITING_MSG)) &&
     task->wake_jiffy<=now;
 }
+#ifndef I386_TASK_RETAINED_BUILD
 public Bool I386SchedSetClock(CI386Scheduler *s,I64 *jiffies)
 {//Bind once, before any worker attachment or context switch.
   U32 flags=I386IrqSave;
@@ -189,6 +201,7 @@ public Bool I386SchedSetClock(CI386Scheduler *s,I64 *jiffies)
   s->jiffies=jiffies;
   I386IrqRestore(flags); return TRUE;
 }
+#endif
 CI386Task *I386SchedNext(CI386Task *task)
 {//IF clear. An IRQ may make a task eligible; never return an ineligible task.
   CI386Task *first=task;
@@ -295,6 +308,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   I386IrqRestore(flags);
   return TRUE;
 }
+#ifndef I386_TASK_RETAINED_BUILD
 public Bool I386SchedBlock(CI386Scheduler *s)
 {//Caller must mask IRQs before checking an IRQ-owned wait condition.
   U32 flags=I386IrqSave;
@@ -314,6 +328,7 @@ public Bool I386SchedBlock(CI386Scheduler *s)
   I386IrqRestore(flags);
   return TRUE;
 }
+#endif
 public Bool I386SchedWake(CI386Scheduler *s,CI386Task *task)
 {//IRQ-safe queue insertion only; does not switch or preempt the running task.
   U32 flags=I386IrqSave;
@@ -326,6 +341,7 @@ public Bool I386SchedWake(CI386Scheduler *s,CI386Task *task)
   I386IrqRestore(flags);
   return TRUE;
 }
+#ifndef I386_TASK_RETAINED_BUILD
 public Bool I386SchedIdle(CI386Scheduler *s,U0 (*idle)())
 {//Root only. Public flags may suspend tasks that remain privately runnable.
   U32 flags=I386IrqSave;
@@ -361,3 +377,4 @@ public Bool I386SchedSetCleanup(CI386Scheduler *s,U0 (*cleanup)(CI386Task *task)
   I386IrqRestore(flags);
   return TRUE;
 }
+#endif

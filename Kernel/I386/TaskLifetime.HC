@@ -1,6 +1,15 @@
+#ifdef I386_TASK_RETAINED_BUILD
+#define I386_TASK_IMPLEMENTATION_ASM 0
+#else
+#ifdef I386_TASK_NATIVE_BUILD
+#define I386_TASK_IMPLEMENTATION_ASM 1
+#else
+#define I386_TASK_IMPLEMENTATION_ASM 0
+#endif
+#endif
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/Cpu.HH"
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
 #assert offset(CI386OwnedTask.task)==0
 #endif
 //Link Context, Scheduler, Heap and Cpu once. Requires working Fs task binding.
@@ -19,7 +28,7 @@ public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total;
   U32 flags,invalid[1];
   creator[0]=0;
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
   //Validate native pointer fields directly, retaining the C checks for other targets.
   invalid[0]=0;
   asm {
@@ -61,7 +70,7 @@ public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   if (!s || !s->root || !s->bind || !parent || parent->owner!=s ||
       parent->addr!=parent || parent->finished || parent->finishing) return 0;
 #endif
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
   invalid[0]=0;
   asm {
     PUSH EAX
@@ -128,7 +137,7 @@ public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   flags=I386IrqSave;
   if(parent!=s->current) {
     creator[0]=s->current;
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
     invalid[0]=0;
     asm {
       PUSH EAX
@@ -235,7 +244,7 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
   CI386Task *creator[1];
   U32 invalid[1];
   Bool result;
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
   invalid[0]=0;
   asm {
     PUSH EAX
@@ -272,7 +281,7 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
   heap=owned->heap;
   creator[0]=owned->creator;
   if(creator[0]) {
-#ifdef I386_TASK_NATIVE_BUILD
+#if I386_TASK_IMPLEMENTATION_ASM
     invalid[0]=0;
     asm {
       PUSH EAX

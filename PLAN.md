@@ -4199,3 +4199,32 @@ distinct 79-byte file. Each guest-built i386 generation reads and saves the
 original-authored bytes unchanged under `486,-fpu` TCG on a copy of its
 persistent session disk. The package requires both reverse-path QEMU verdicts
 and verifies 88 files. Manual observation remains deferred.
+
+Retained public-task runtime foundation (2026-10-03):
+MemoryRuntime now shares task preparation, activation, finish and reap source
+under local names, using the installed scheduler switch and binding callbacks.
+Heap initialization is shared through HeapInit.HC, without a new resident
+kernel export. Public Spawn, Exit and TaskQueIns remain unimplemented; these
+private helpers do not satisfy the public lifecycle gate.
+
+Explicit nested preprocessor guards select a numeric implementation flag:
+the original compiler expands macros inside defined(...) expressions, which
+incorrectly selected the larger C implementation in the boot kernel. The
+corrected source passes two original compiler/kernel generations
+(build/i386-retained-task-core-guard-bootstrap.log). The isolated cross build
+passes and retains the previous 483,408-byte flat kernel size
+(build/i386-retained-task-core-guard-kernel/result.json).
+
+The separate retained lifecycle fixture passes 20 dormant-create, idle-yield,
+activate, private-allocation, normal-return and destroy cycles against the
+core scheduler, with exact bootstrap heap recovery, public/private ring
+restoration and FS/GS binding checks
+(build/i386-task-runtime-core-test/result.json). The original task corpus
+also passes (build/i386-tasks-test/result.json). Both retain their existing
+320 KiB transfer bound and first heap arena at physical 0x60000.
+The installed native HolyC compiler rebuilds MemoryRuntime successfully
+(build/i386-retained-task-core-native-memory/result.json); this is module
+build evidence, not an installed guest-built provider or full self-hosting
+gate. The current flat native build/install is still running in
+build/i386-retained-task-core-native-flat. Complete public policy, managed
+reaping, child rings and never-activated disposal remain the next work.

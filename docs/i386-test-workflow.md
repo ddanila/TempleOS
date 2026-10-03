@@ -1019,3 +1019,19 @@ It preserves the source disk and checker hashes, uses a writable working copy,
 and saves the matching module/loader report. The module must fit the corpus's
 existing 2,048-byte packet. These tests do not establish allocation-failure or
 exact conditional-owned heap cleanup.
+
+The retained task runtime shares the installed scheduler's switch and binding
+callbacks. Run its focused interoperability fixture after the source bootstrap:
+
+```sh
+python3 tools/test-rebuild.py
+python3 tools/test-i386.py --tasks --task-runtime-core
+python3 tools/test-i386.py --tasks
+```
+
+The focused fixture writes `build/i386-task-runtime-core-test/result.json` and
+checks 20 dormant creation/activation/normal-return/destruction cycles, private
+allocation reclamation, exact bootstrap heap accounting, both task rings and
+FS/GS binding. It uses a separate image to stay below the existing task fixture
+memory limit. This verifies private retained helpers; public Spawn/Exit/TaskQueIns
+and automatic reaping still require the public task contract tests.
