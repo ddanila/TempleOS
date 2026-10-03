@@ -11821,3 +11821,23 @@ requires all 27 cases in each of the two phases. The full diagnostic build is
 running in `build/i386-conditional-owned-heap-kernel`; no pass is claimed yet.
 These checks use the compiler's own heap and remain outside normal startup.
 Allocation exhaustion is still an open, distinct contract.
+
+The installed native compiler's AOT retry now passes:
+`build/i386-native-conditionals-final-native-aot-retry/result.json` records
+15 exact-VGA compile commands, JIT result 98 and loaded AOT result 99 across
+41 loader cases. The guest-built 813-byte output has SHA-256
+`33457f848f31e5b341b66f86ed575e6dd0bb5efeec7eb85dfcef418957e0c755`,
+matching the earlier cross-provider output. Source and checker hashes are
+preserved. This qualifies the final guest-built compiler provider's tested
+language behavior, rather than relying on its earlier intermediate version.
+
+`build/i386-expression-conditionals-final-native-installed/instruction-audit/result.json`
+also passes: the installed compiler bytes satisfy the 386 allowlist, including
+the native division template. The 482,104-byte cross-built flat payload matches
+the installed boot image, and the filesystem bitmap matches all reachable
+extents (837 files). The other modules remain cross-built in this focused image;
+this is not current-source full native release qualification.
+
+The five new private-heap conditional cases have passed in the boot diagnostic
+phase. The task phase and full integration run remain active, so the two-phase
+ownership gate is not yet closed.

@@ -202,6 +202,10 @@ records, 407 exports). Installation verifies its bytes and independently boots
 with 8 MiB and no FPU. Installed-provider JIT/AOT qualification is running;
 installation alone does not establish that language behavior.
 The installed-provider JIT contract now passes all 23 keyboard/VGA commands.
+Its AOT contract also passes: 15 compile commands and 41 loader cases verify
+JIT result 98 versus loaded AOT result 99. The installed native provider passes
+the 386 instruction audit, including its division template, and the filesystem
+allocation audit. Other modules in this focused image remain cross-built.
 Five new diagnostic input cases require exact private-heap recovery after
 nested and floating conditions, JIT mode selection, a failed expression with
 atomic macro rollback, and an answer-callback exception. Both compiler phases
