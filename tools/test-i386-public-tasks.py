@@ -54,6 +54,12 @@ def behavior_commands():
         ('Bool LifeDefaultFinish(){CTaskLifeProbe *p=LifeState;I64 end=cnts.jiffies+2000;while(LifeHas(p->parent,p->child)&&cnts.jiffies<end)Yield;return !LifeHas(p->parent,p->child)&&p->stage==2&&!p->errors;}', []),
         ('LifeDefaultStart;', ['1']),
         ('LifeDefaultFinish;', ['1']),
+        ('U0 LifeNestedLeaf(U8 *data){CTaskLifeProbe *p=data;if(Fs!=p->child||Fs->parent_task!=p->parent||!LifeHeaps(Fs,p->parent)||!LifeSymbols(Fs,p->parent))p->errors|=4;MAlloc(2048);p->stage=2;}', []),
+        ('Bool LifeNestedRecord(){CTask *t=LifeState->child;return t&&t->parent_task==LifeState->parent&&t->hash_table->next==LifeState->parent->hash_table&&LifeHas(LifeState->parent,t);}', []),
+        ('U0 LifeNestedCreator(U8 *data){CTaskLifeProbe *p=data;p->child=Spawn(&LifeNestedLeaf,p,"Nested",-1,p->parent,8192);if(!LifeNestedRecord)p->errors|=2;}', []),
+        ('Bool LifeNestedStart(){CTaskLifeProbe *p=LifeState;p->parent=Fs;p->stage=p->errors=0;p->child=0;return Spawn(&LifeNestedCreator,p,"Creator",-1,Fs,8192)!=0;}', []),
+        ('LifeNestedStart;', ['1']),
+        ('LifeFinish;', ['1']),
         ('Free(LifeState);', []),
         ('6*7;', ['42']),
     ]

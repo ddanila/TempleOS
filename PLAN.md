@@ -221,6 +221,9 @@ arena, and advances into an expression conditional. Zero space must throw
 restore conditional flags, controls, references, interrupt state and exact heap
 counters. Its diagnostic run is active; this does not cover every individual
 allocation site or close the release gate.
+The first pressure run stops during attempt zero before recording a completion.
+Diagnostic checkpoints have been added to distinguish exception registration,
+flag cleanup and unwind failures; the cause remains under investigation.
 
 ### Next public task package: ownership through exit
 
@@ -228,6 +231,10 @@ The next failing contract is `tools/test-i386-public-tasks.py`. On the
 public-delay image its lookup controls pass and `Spawn`/`Exit` fail. The
 behavior branch is specified but cannot execute until those services exist;
 its presence-only red result is not evidence of working task lifecycle.
+The contract now also creates a task from inside a child while selecting the
+root as its explicit parent, then requires root-based symbol inheritance and
+child-ring membership. This distinguishes the chosen parent from the creator;
+these behavior checks remain unexecuted while `Spawn` and `Exit` are absent.
 
 1. **Create through the original public contract.** Keep `Spawn`'s original
    signature and defaults. Bind the single CPU's `Gs->seth_task` to its root,

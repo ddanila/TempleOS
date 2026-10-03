@@ -32,6 +32,7 @@ U0 ProbeConditionalOutMem(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
   for(attempt=0;attempt<4;attempt++) {
+    KernelLog("CONDITIONAL PRESSURE START "); KernelHex(attempt); KernelLog("\n");
     cc=probe->files->control_new("0 #if (6*7)==42\n42;\n#else\ninvalid skipped syntax\n#endif\n",
         CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,"Probe/ConditionalOutMem.HC");
     if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
@@ -52,6 +53,9 @@ U0 ProbeConditionalOutMem(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
       if(!attempt || cc->cur_i64!=42 || cc->flags&CCF_IN_IF) KernelStop;
       accepted=1;
     } catch {
+      KernelLog("CONDITIONAL PRESSURE EXCEPTION "); KernelHex(task->except_ch);
+      KernelLog(" "); KernelHex(cc->flags); KernelLog(" ");
+      KernelHex(task->active_controls); KernelLog("\n");
       if(attempt==3 || task->except_ch!='OutMem' || cc->flags&CCF_IN_IF ||
           task->last_cc!=cc || task->active_controls!=2) KernelStop;
       task->catch_except=TRUE; accepted=1; failures++;

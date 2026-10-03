@@ -11873,3 +11873,20 @@ is pending. The earlier `i386-conditional-owned-heap-kernel` integration run
 uses its already-packaged sources and does not contain the pressure cases.
 This is a conditional lexer/evaluator pressure test, not proof that every
 allocation site has been individually fault-injected.
+
+The first conditional-pressure diagnostic run is red: it stops during attempt
+zero before any `CONDITIONAL PRESSURE CASE` completion. The runner is terminal
+and its log is preserved at `build/i386-conditional-pressure-kernel/boot/debug.log`.
+New start/exception checkpoints will identify the exception value, conditional
+flags and active-control count on the next run. Source inspection shows that
+exception registration itself allocates from the private heap, and the
+conditional helper currently sets its flag before entering `try`; that is a
+candidate failure path, not yet a confirmed diagnosis. Expectations have not
+been relaxed.
+
+The public task contract now has 35 behavior commands (maximum 226 bytes).
+Its new nested creator selects the root as a different explicit parent and
+requires root-based symbol inheritance, public heap ownership and root child
+membership before both tasks retire. This catches implementations that always
+clone the current task. The behavior branch remains unexecuted while public
+`Spawn` and `Exit` are missing; host command-shape/presence checks pass.
