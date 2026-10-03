@@ -939,7 +939,11 @@ python3 tools/check-i386-startup-budget.py \
 
 The installer verifies persisted module bytes, uses a separate writable copy
 for independent boot, preserves the source/candidate hashes and rejects output
-paths that would overwrite its source. These outputs predate the public-delay
+paths that would overwrite its source. To qualify a single rebuilt provider,
+add `--module CompilerRuntime` (repeat `--module` for multiple providers).
+The report lists only the selected providers; this does not establish that
+the other installed modules were built natively. Omitting the option still
+requires and installs all six retained providers. These outputs predate the public-delay
 change. The installed image's observed 71.383183-second startup fails the
 60-second budget; a component installation pass does not promote it to M7.
 

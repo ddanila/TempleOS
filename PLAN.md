@@ -197,8 +197,10 @@ uses explicit module-source mode because interactive controls also use AOT
 backend staging internally; source-language mode cannot follow that temporary
 backend flag. Allocation-failure and exact owned-heap cleanup still need
 separate oracles before the complete conditional ownership contract closes.
-The final compiler-provider native rebuild is running; do not claim its result
-from earlier versions that lacked the final mode fix.
+The final compiler-provider native rebuild passes (1,722,646 bytes, 3,594
+records, 407 exports). Installation verifies its bytes and independently boots
+with 8 MiB and no FPU. Installed-provider JIT/AOT qualification is running;
+installation alone does not establish that language behavior.
 
 ### Next public task package: ownership through exit
 

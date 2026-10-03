@@ -11786,3 +11786,18 @@ including the native compiler's division template, and the normal 8 MiB
 This establishes the timing target for that all-twelve-module native checkpoint,
 not the later conditional-compiler source. Its complete workstation suite
 and the final conditional compiler-provider build remain live.
+
+The final conditional compiler-provider rebuild has now passed:
+`build/i386-expression-conditionals-final-native-compiler/result.json` records
+1,722,646 bytes, 3,594 records and 407 exports, with module SHA-256
+`b8a8a1c30e3234b8aaca8640e7bb046522c9fdbbb3764ef6fa528acc7e47e91f`.
+The retained installer now accepts repeatable `--module` selections, retaining
+its byte checks, source preservation and independent boot checks. This allows
+qualifying that final provider without claiming a rebuild of the other five.
+Installation on a copied image passes, including exact module bytes, source
+preservation and an independent 8 MiB no-FPU boot with arithmetic and document
+allocation checks (`build/i386-expression-conditionals-final-native-installed/result.json`).
+Candidate disk SHA-256:
+`db3dbf16f913eebd2f70a5a419f31ed9539cd17678ad99bea5d0fc1e26d348f9`.
+Installed-provider JIT/AOT tests are running; that behavior is not yet claimed.
+The earlier all-twelve-module workstation run remains live.
