@@ -91,16 +91,17 @@ that its history is contained in `main`.
   The public-pool observation passes all nine separate-command cycles with
   exact recovery in every snapshot. Bootstrap recovery is measured through
   four cycles only; the fifth creation times out during header loading.
-- Next fix same-call User creation followed by synchronous Kill: the isolated
-  native fixture creates the child but exceeds its whole-command timeout during
-  the stop path, while
-  original TempleOS completes the same behavior. An asynchronous-request
-  diagnostic is running. Expensive child header loading shares that timeout,
-  so distinguish latency from a permanent cancellation stall before changing
-  cancellation policy. Finish full workstation and repeated-cycle
-  qualification, then optimize declaration-loading latency. Then test repeated
-  creation resource recovery and improve fresh-child declaration-loading latency.
-  Updated all-native/two-generation release qualification remains required.
+- The extended same-call User/Kill observation passes: header loading takes
+  about 111 seconds and retirement about 19 seconds, exceeding the earlier
+  120-second combined-command limit. An indefinite cancellation stall is not
+  established. Optimize declaration-loading and teardown latency rather than
+  changing cancellation policy on that evidence.
+- A CPU-root declaration-sharing prototype passes its matching original rebuild
+  and i386 build/audit in an isolated checkout. Focused runtime gates are running;
+  main's runtime source is unchanged. Finish workstation/recovery qualification
+  and validate startup memory, inheritance and task-local isolation before
+  promoting the prototype. Updated all-native/two-generation release
+  qualification remains required.
 
 Earlier source-epoch checkpoints below are historical; they do not supersede
 this status or close the outstanding qualification gates.

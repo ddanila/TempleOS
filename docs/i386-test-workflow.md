@@ -3554,3 +3554,23 @@ matching original x64 two-generation rebuild; its i386 build is running in
 runtime result is claimed yet. Startup memory, child readiness, inherited
 include guards and task-local definition isolation still need qualification
 before applying the change to main.
+
+### Same-call timeout resolved as latency
+
+`build/i386-user-cycle-native-long-observation/result.json` passes the unchanged
+synchronous create/kill behavior on 8 MiB `486,-fpu` TCG, with exact VGA and
+unchanged source disk. Phase times show creation starts at 98.385991 seconds,
+headers begin at 98.436331, headers finish at 209.111057 and retirement completes
+at 227.997553. The measured cycle is about 129.61 seconds: roughly 110.67 seconds
+for headers and 18.89 seconds for retirement. This exceeds the old 120-second
+combined-command timeout. The 600-second diagnostic establishes functional
+completion; it does not meet a faster interactive latency requirement. The
+evidence does not justify changing cancellation semantics to fix a permanent
+stall.
+
+The root-declaration prototype's i386 build and all-module instruction audit
+complete successfully; boot kernel remains 483384 bytes. Its focused same-call
+cycle, creation shortcuts and 16-case User tests are running in
+`build/i386-root-declarations-cycle`, `build/i386-root-declarations-hotkeys` and
+`build/i386-root-declarations-user-16`. Prototype artifacts remain distinct from
+main's mixed native-provider image. No runtime acceptance is claimed yet.
