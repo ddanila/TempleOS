@@ -19,7 +19,10 @@ def main():
     parser.add_argument('--hash-visible', action='store_true', help='Require original public HTT_FILE cache visibility through Fs hash-table chain')
     parser.add_argument('--hash-removal', action='store_true', help='Remove the public cache entry and require a fresh disk read and repopulation')
     parser.add_argument('--prepare-fixture', action='store_true', help='Populate resident bytes on the disposable candidate before a separate cold boot')
+    parser.add_argument('--empty', action='store_true', help='Qualify zero-byte resident files and their cache entries')
     args = parser.parse_args()
+    if args.empty and (args.compressed or args.shared_lifetime):
+        parser.error('--empty cannot combine with --compressed or --shared-lifetime')
     if args.hash_removal and not args.hash_visible:
         parser.error('--hash-removal requires --hash-visible')
     out = args.out.resolve()
@@ -47,13 +50,22 @@ def main():
                   'ColdPacked("C:/Probe/ReadResident.BIN.Z",0x400)',
                   'ColdPacked("C:/Probe/ReadResident.BIN",0x400)',
                   'ReadOwned("C:/Probe/ReadResident.BIN.Z")']
+    if args.empty:
+        setup_buffer, setup_size = '0', 0
+        selected = [definitions[0],
+                    'Bool ColdEmpty(U8 *name,I64 attr){I64 n=-1,a=-1;U8 *p=FileRead(name,&n,&a);Bool ok=p&&n==0&&a==attr&&p[0]==0;Free(p);return ok;}',
+                    'Bool ColdOwnedEmpty(U8 *name){U8 *p=FileRead(name),*q=FileRead(name);Bool ok=p&&q&&p!=q&&MHeapCtrl(p)==Fs->data_heap&&MHeapCtrl(q)==Fs->data_heap;if(ok){p[0]=90;ok=q[0]==0;}Free(p);Free(q);return ok;}']
+        checks = ['ColdEmpty("C:/Probe/ReadResident.BIN",0xA00)',
+                  'ColdEmpty("C:/Probe/ReadResident.BIN",0)',
+                  'ColdOwnedEmpty("C:/Probe/ReadResident.BIN")']
+    report['empty'] = args.empty
     report['prepare_fixture'] = args.prepare_fixture
     report['compressed'] = args.compressed
     report['shared_lifetime'] = args.shared_lifetime
     report['hash_visible'] = args.hash_visible
     report['hash_removal'] = args.hash_removal
     if args.hash_visible:
-        selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<=0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
+        selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
         checks += [f'ColdHash("C:/Probe/{filename}")']
     if args.hash_removal:
         selected += ['CHashTable *ColdOwner(CHash *e){CHashTable *t=Fs->hash_table;CHash *p;I64 i;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e)return t;p=p->next;}}t=t->next;}return 0;}',
@@ -78,7 +90,8 @@ def main():
         lines = ['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+[s.replace('C:/Probe/','B:/') for s in selected]
         lines += ['U0 ColdReads(){U8 *name;CHashGeneric *entry;']
         if args.compressed:lines.append('ReadSeed;')
-        lines += [f'if(FileWrite("B:/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200)<=0){{Report("FAIL setup\\n");return;}}',
+        bad_write = '!=-1' if args.empty else '<=0'
+        lines += [f'if(FileWrite("B:/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200){bad_write}){{Report("FAIL setup\\n");return;}}',
                   f'name=FileNameAbs("B:/{filename}");entry=HashFind(name,adam_task->hash_table,HTT_FILE);Free(name);',
                   'if(!entry){Report("FAIL resident cache setup\\n");return;}HashRemDel(entry,adam_task->hash_table);']
         for index, check in enumerate(checks):
@@ -93,7 +106,8 @@ def main():
             prepare = [(source,[]) for source in definitions[:2]]
             if args.compressed:
                 prepare += [('ReadSeed;',[])]
-            prepare += [(f'FileWrite("C:/Probe/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200)>0;',['1'])]
+            good_write = '==-1' if args.empty else '>0'
+            prepare += [(f'FileWrite("C:/Probe/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200){good_write};',['1'])]
             prepare_runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
             report['fixture_preparation'] = prepare_runner(candidate,out/'fixture-preparation',snapshot=False,
                 cpu='486,-fpu',qmp_stdio=True,startup_check={'status':'ok','answers':[],'commands':prepare})

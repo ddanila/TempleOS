@@ -9005,3 +9005,34 @@ git apply --check passes. Fresh bootstrap/cross-build is running in
 `build/file-resident-public-prototype/build/file-resident-public-removal-scoped`.
 Runtime/hash/removal/recovery qualification remains open. Cd native retained
 construction is still live at its compiler-module command.
+
+Scoped removal build and empty resident oracle (2026-10-05):
+Fresh bootstrap/cross-build completes for the stack-view removal candidate
+(`build/file-resident-public-prototype/build/file-resident-public-removal-scoped`).
+Instruction audit passes; kernel 483192 bytes; whole source disk SHA-256
+`e3dc26aa7e6c58951b54d4df45524e68d1843fd0c204690df33e48e37b24fba1`.
+The source disk hash distinguishes the revised retained modules from the
+earlier candidate despite the unchanged early flat-kernel hash.
+
+Cold tests now support --empty: zero-length resident write succeeds with the
+original -1 return, first disk attributes then cached attributes, independently
+owned zero-terminated buffers, public cache visibility and instance/removal
+checks. Zero stored size is valid; the public hash checker now rejects negative
+sizes rather than zero. --empty rejects compressed/shared-lifetime combinations
+that lack corresponding expectations. The empty original oracle passes.
+Python compilation/CLI and diff whitespace checks pass.
+
+Scoped candidate boots and passes separate fixture preparation for ordinary,
+compressed and empty resident files on no-FPU 8 MiB QEMU. All cold runs fail
+at cached attributes after a successful initial disk read; the write-populated
+recovery run also fails at its cached read before the twenty-cycle gate.
+Results: `build/public-resident-scoped-cold`, `...-packed-cold`, `...-empty-cold`,
+`...-recovery`. Source images remain unchanged. These are failures, not cache
+ownership/removal passes. A diagnostic in `build/public-resident-scoped-diagnostic`
+confirms first read size 4 and attr 2560, but HashFind of the resident filename
+in Fs's public table chain returns false. Publication visibility is still open.
+
+Main's original bootstrap has been restored and passes in
+`build/main-bootstrap-restored.log`. Cd native construction remains live and
+has advanced from CompilerRuntime to CompilerProbe. Neither resident nor Cd
+OS source is promoted by this update.
