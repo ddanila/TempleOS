@@ -7968,8 +7968,9 @@ inference, archive allocation/cleanup and replacement attribute publication.
 These changes are not promoted or qualified. Its original bootstrap rebuild
 passes. The first cross compilation rejected NULL in an early header context;
 the candidate now uses numeric zero and restores saved interrupt state on
-unsupported-attribute rejection. Cross compilation is running again before
-the existing write/include/execute contract. A successful ordinary write does
+unsupported-attribute rejection. The source-epoch guard correctly requires
+a fresh bootstrap after those edits; bootstrap rebuilding followed by cross
+compilation is running before the existing write/include/execute contract. A successful ordinary write does
 not prove compressed output works.
 
 After the executable .Z contract passes, qualify seven/eight-bit input, dictionary
