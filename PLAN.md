@@ -6062,3 +6062,32 @@ has SHA-256 `58ab899923d48879c927e24be06c986436fb1ed4da04a9918ba5219c83dd060e` (
 The unchanged document checker and existing root document-editing regression are
 running in `build/i386-terminal-documents-green` and
 `build/i386-terminal-documents-editing`; runtime qualification remains pending.
+
+### Concurrent text editors pass; idle terminal break contract
+
+The frozen `test-i386-terminal-documents.py` passes in
+`build/i386-terminal-documents-green/result.json` against image
+58ab899923d48879c927e24be06c986436fb1ed4da04a9918ba5219c83dd060e.
+All VGA checkpoints pass on 8 MiB with 486,-fpu, startup 57.34 seconds and
+11 parent commands. Both named terminal headings survive editor exit; focus
+returns to the surviving editor and then root. Exact parent public-heap recovery
+and shell arithmetic pass. Independently read saved files are `/One.DD` =
+`6f6e652105` and `/Two.DD` = `74776f3f05` (one! and two? plus cursor byte).
+The source disk is unchanged. The original baseline fails at the first restored
+terminal heading with the same checker hash. Root document-editing regression
+continues in `build/i386-terminal-documents-editing`.
+
+Added `tools/test-i386-terminal-idle-break.py`, frozen SHA-256
+2c454f385cbb95b8cfd2de281114e35b5d74ca319598e36e372a075496e5c6b9.
+It sends hardware Ctrl-Alt-C while One is idle after defining a variable, then
+requires a usable prompt, the retained value, sibling isolation and ordinary
+focus/exit/heap recovery. Baseline is running in
+`build/i386-terminal-idle-break-red`; no result is claimed yet. The original
+`Kernel/KTask.HC` UserTaskCont catches and reports exceptions before continuing
+the input loop. The native wrapper currently propagates the idle-loop exception;
+this is the next behavioral gap to verify and repair.
+
+This does not close sprite/mouse concurrency, background compilation, abnormal
+cleanup, full debugging, current-source native reproducibility or release gates.
+The older console-35 provider build remains live in
+`build/i386-debug-exception-retained` and cannot qualify the terminal changes.

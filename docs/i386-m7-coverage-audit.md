@@ -13,9 +13,12 @@ definitions/history, programmatic focus, exit/refocus and parent public-heap
 recovery. The newer Ctrl-Alt-N image in `build/i386-terminal-hotkeys-kernel`
 (SHA-256 `444bfb1b7ee9de7e0ac6e4b609b2fd066798c649a9baec47a989165e81657229`)
 passes build/audit, hardware Ctrl-Alt-N cycling and ordinary keyboard checks.
-The two-editor contract passes switching, editing and saving through its first
-editor exit, then fails because the console loses its terminal name. A shared
-task-aware heading fix is under verification; the full workflow remains open.
+The heading-fix image `build/i386-terminal-documents-kernel/kernel.img`
+(SHA-256 `58ab899923d48879c927e24be06c986436fb1ed4da04a9918ba5219c83dd060e`)
+passes the two-editor contract: independent live text documents, focus cycling,
+editing/save, named terminal restoration, exit/refocus, exact parent public-heap
+recovery and independent persisted-byte verification. Root document-editing
+regression is still running. Idle terminal break recovery is the next contract.
 
 The preceding memory-17 registration-fix image passes the full 513-command
 workstation suite in `build/i386-public-macro-registration-workstation`, including
