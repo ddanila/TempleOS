@@ -3947,3 +3947,31 @@ on native-built providers, not exhaustive resource recovery. Startup is
 66.404226066 seconds on 8 MiB no-FPU TCG; the unchanged timing gate fails in
 `build/i386-root-declarations-native-cycle-budget.json`. Keep that failure
 visible separately from the functional pass.
+
+### Native root-header boot profile and heap-search prototype
+
+The updated profiler distinguishes `ROOT USER HEADERS begin/ok` from ordinary
+console headers and startup source; its six ordered phase transitions pass.
+`build/i386-root-declarations-native-profile/result.json` completes on preserved
+native target 22a5c9e2, using the installed modules' own symbol maps. Root headers
+have 506 samples: 181 allocation, 165 free and 96 heap scan (442 combined).
+Foundation has 148 samples, 110 in module validation. The dominant allocation
+and free stacks run through lexer identifier publication and frontend
+publication under ConsoleInit. Pausing for samples invalidates elapsed-time
+benchmarking; the independently measured 66.404-second boot failure remains
+the timing evidence.
+
+The isolated `build/cpu-debug-prototype` heap change preserves full-arena
+validation before mutation, first-fit allocation, exact pointer matching,
+coalescing and the portable path. The later block search uses bounded U32
+assembly. Matching original two-generation rebuild passes. Both existing
+heap corpora pass in `build/i386-heap-test` and `build/i386-heap-source-test`
+inside that checkout, with 49 public heap layout checks, 1024 churn rounds and
+three lifetime/pool/backing cycles each. Its i386 integration build is running
+in `build/cpu-debug-prototype/build/i386-heap-seek`. No speed or native boot-size
+claim is made yet; the optimization remains isolated.
+
+The current-main inline-assembly regression also passes in
+`build/i386-breakpoint-asm-main-inline/result.json`, including loader-required
+operand forms, character immediates and a block over 256 bytes, with the source
+preserved. Startup for that cross-built image is 58.431377 seconds.

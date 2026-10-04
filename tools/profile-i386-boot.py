@@ -39,6 +39,10 @@ def phase(log):
         return 'after_headers'
     if 'PUBLIC HEADERS begin\n' in log:
         return 'public_headers'
+    if 'ROOT USER HEADERS ok\n' in log:
+        return 'after_root_headers'
+    if 'ROOT USER HEADERS begin\n' in log:
+        return 'root_headers'
     return 'foundation'
 
 

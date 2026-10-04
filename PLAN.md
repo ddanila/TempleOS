@@ -2,6 +2,15 @@
 
 ## Objective and status
 
+The native startup profile in `build/i386-root-declarations-native-profile`
+attributes 442/506 root-header samples to heap allocation/free/scan and
+110/148 foundation samples to module validation. Sampling is not a benchmark.
+An isolated heap-search prototype retains whole-arena validation before any
+mutation and uses bounded U32 assembly for the later block search. Both heap
+corpora pass, including 49 public layout checks and 1024 churn rounds each.
+Its integrated build is pending; speed benefit and native boot-area fit remain
+unproven, and main heap sources remain unchanged.
+
 The pre-Help fully guest-built image passes a same-call empty User create/kill
 cycle in 0.352 seconds (`build/i386-root-declarations-native-cycle`), confirming
 shared-root header speed on native-built providers. Its measured no-FPU 8 MiB
@@ -12,8 +21,7 @@ Native inline assembly now recognizes the original `INT3` and `BPT` mnemonics
 and emits 0xCC. The same six-command checker rejects the old compiler and
 passes on the isolated updated image without executing a trap. The promoted
 main original rebuild, i386 build and audits pass; all thirteen module/flat
-artifacts match that tested prototype. The existing inline-assembly regression
-is running on main. CPU-trap dispatch/resumption remains a separate failing
+artifacts match that tested prototype. The existing inline-assembly regression passes on main. CPU-trap dispatch/resumption remains a separate failing
 contract; opcode support does not establish debugger completion.
 
 All six retained providers at the pre-Help root-declaration source epoch now
