@@ -8208,3 +8208,36 @@ fails on the undefined FileFind identifier. Next preserve original CDirEntry
 layout/metadata, caller-owned full_name allocation, output zeroing on failure,
 wildcard behavior and invalid-flag exceptions before implementing the API.
 The existence-only contract is not sufficient for full FileFind parity.
+
+## Main archive requalification and FileFind metadata TDD
+
+`build/file-write-main-archive-parity/result.json` passes the tightened
+twenty-two-command replacement contract on the promoted main image. All eight
+final archives match original compressed bytes; intermediate/final write
+returns, updated dates/attributes, exact VGA and independent filesystem checks
+pass. Source image SHA-256 is
+`abeb0150295a422d6908687e13d920eb17c62fd119571f8fc60374ea95ad652b`; it remains
+unchanged. Main native retained rebuilding is still live in
+`build/file-write-main-native-build`; no native-generation result is claimed.
+
+The FileFind test now checks entry attributes, persisted size/cluster/date, an
+allocated canonical full_name belonging to the caller's task heap and released
+with Free, whole-record zeroing on missing lookup, literal wildcard rejection
+and an FUF exception for unsupported flags. It retains existence, file/directory
+filters, alternate .Z, parent and NULL cases. The helper uses a record modeled
+on the original CDirEntry fields; public CDirEntry declaration/layout exposure
+remains a distinct required contract. Do not claim the modeled record proves
+the public type is available in the port.
+
+`build/public-file-find-owned-metadata-red/result.json` passes every original
+oracle check, then confirms native file setup followed by compilation failure
+on undefined FileFind in the metadata helper. Initial quoting in the new
+exception helper was corrected before this run. There is no green native
+FileFind implementation yet. Next extract/share the actual original directory
+entry declaration, expose the full public signature, and implement the tested
+metadata/lookup/ownership/exception behavior through task-owned file services.
+Add explicit heap/error cleanup and full native qualification before promotion.
+
+The isolated FileRead epoch now has its own full workstation run live in
+`build/public-file-read-workstation`. This is separate from the passed earlier
+FileWrite epoch; FileRead remains unpromoted until its own broader qualification.
