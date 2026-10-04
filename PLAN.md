@@ -7216,3 +7216,21 @@ and User/task-creation integration, full debugger/API behavior and reproducible
 release disk/environment/packaging work remain required. Physical hardware
 verification stays deferred. Next resume native formatter integration against
 the original-HolyC oracle and existing failing native tests.
+
+### Original formatter oracle adds TempleOS-specific semantics
+
+`tools/test-i386-format-strings.py` now checks 30 cases, adding null strings,
+packed multi-character `%c`, packed uppercase `%C`, explicit `%3ts` truncation,
+comma-separated decimal/hexadecimal, zero-delimited `%z` list substitution and
+dynamic floating precision. These augment integer boundaries, buffer growth
+and variadic checks without replacing the original formatter semantics with
+C printf assumptions. Maximum submitted line remains 184 bytes.
+
+`build/i386-format-temple-semantics-original/result.json` passes all 30 cases
+on original x64 TempleOS. Checker SHA-256:
+`63502c1faf82e0f411f90e1c5cf8159c20e70e9d135731eb7711ce239fd97ab5`.
+The same native oracle is running against second-generation target 44ed8c88
+in `build/i386-format-temple-semantics-native-red`; native MStrPrint remains
+unintegrated, so a native pass is not claimed. Continue connecting the shared
+original formatter and its symbol/raw-mode dependencies, then implement User
+and task creation while preserving the original programming model.

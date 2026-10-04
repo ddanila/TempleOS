@@ -36,6 +36,14 @@ CASES = [
     ('FormatCheck(MStrPrint("%f",1.5),"2");', ['1']),
     ('FormatCheck(MStrPrint("%.2f",1.5),"1.50");', ['1']),
     ('FormatCheck(MStrPrint("%s:%d:%X","value",42,255),"value:42:FF");', ['1']),
+    ('FormatCheck(MStrPrint("%s",NULL),"");', ['1']),
+    ('FormatCheck(MStrPrint("%c",\'abc\'),"abc");', ['1']),
+    ('FormatCheck(MStrPrint("%C",\'abc\'),"ABC");', ['1']),
+    ('FormatCheck(MStrPrint("%3ts","HolyC"),"Hol");', ['1']),
+    ('FormatCheck(MStrPrint("%,d",1234567),"1,234,567");', ['1']),
+    ('FormatCheck(MStrPrint("%,X",0x1234ABCD),"1234,ABCD");', ['1']),
+    ('FormatCheck(MStrPrint("%z",1,"zero\\0one\\0two\\0"),"one");', ['1']),
+    ('FormatCheck(MStrPrint("%.*f",2,1.5),"1.50");', ['1']),
 ]
 
 
