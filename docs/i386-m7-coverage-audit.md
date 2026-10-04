@@ -38,7 +38,8 @@ booted. `build/i386-terminal-debug-cleanup-selfhost-audit` verifies all twelve
 executable ranges, installed payload and filesystem. Its 487344-byte flat image
 has 80 bytes spare. It includes terminals, Kill and debugger task cleanup,
 but predates zero-exception/mode restoration, heap scan and formatter extraction.
-No-FPU TCG keyboard/startup verification is running. The earlier compiler-59,
+No-FPU TCG keyboard/exact-VGA passes, but startup at 65.445 seconds fails
+the 60-second budget. Its full workstation suite is running. The earlier compiler-59,
 memory-17/console-35 selfhost result is historical evidence. Current-source
 two-generation reproducibility and release qualification remain open; the older
 95-file local bundle is not a current release.

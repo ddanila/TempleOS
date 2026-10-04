@@ -6673,3 +6673,19 @@ Normal no-FPU TCG keyboard/startup verification is running in
 completed fully guest-built snapshot: compiler 59, memory 18, console 36,
 including terminals/Kill/debugger cleanup but predating zero/mode/heap/formatter
 changes. Second-generation and current-source release qualification stay open.
+
+### Fully guest-built cleanup snapshot: startup budget fails
+
+The ordinary no-FPU TCG keyboard/exact-VGA check passes on unchanged fully
+native target 239bacc0 in
+`build/i386-terminal-debug-cleanup-selfhost-keyboard/result.json`.
+Its startup is 65.44467783393338 seconds.
+`build/i386-terminal-debug-cleanup-selfhost-budget.json` explicitly FAILS the
+60-second gate by 5.44467783393338 seconds. Do not promote the functional
+pass as startup qualification or infer a proven cause from host concurrency.
+
+The full workstation suite is now running on that fully guest-built target in
+`build/i386-terminal-debug-cleanup-selfhost-workstation`. The newer heap-scan
+provider build continues independently. Its eventual fully native image needs
+its own timing measurement; the prior 56.216-second development result used
+cross-built retained modules and cannot settle this gate.
