@@ -119,6 +119,7 @@ extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelConsoleLoad();
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
+U8 kernel_console_bindings[14]={0,19,10,40,41,18,13,14,33,32,46,42,34,16};
 U8 kernel_compiler_bindings[25]={0,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41,60};
 U8 kernel_probe_bindings[25]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27,23};
 U8 kernel_files_bindings[29]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56};
@@ -691,14 +692,10 @@ U0 KernelConsoleLoad()
 {
   CI386ModuleBinding bindings[47];
   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
-  U8 indices[14];
   U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
   U8 *local_names="MAlloc\0CAlloc\0Free\0MSize2\0MAllocIdent\0StrNew\0MemCpy\0MemSet\0HashTableNew\0HashDefineLstAdd\0DefineLstLoad\0";
   I64 i;
-  indices[0]=0; indices[1]=19; indices[2]=10; indices[3]=40; indices[4]=41; indices[5]=18;
-  indices[6]=13; indices[7]=14; indices[8]=33; indices[9]=32; indices[10]=46; indices[11]=42;
-  indices[12]=34; indices[13]=16;
-  KernelBindings(bindings,indices,14,14);
+  KernelBindings(bindings,kernel_console_bindings,14,14);
   for(i=14;i<25;i++) {
     KernelBinding(&bindings[i],public_names); bindings[i].name=local_names;
     while(*public_names++);

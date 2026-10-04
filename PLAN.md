@@ -7393,3 +7393,41 @@ cycles with exact shared-task data/code heap recovery. This broad check covers
 the existing console/compiler, software math, graphics, document editing,
 filesystem and navigation workflow; it does not replace verification of an
 updated all-native release image. The native Kernel build remains active.
+
+### Native formatter kernel exceeds the current boot reservation
+
+The native Kernel source build finishes successfully in
+`build/i386-native-formatter-kernel-selfbuild/result.json`, using the installed
+native-built console: module 539549 bytes, SHA-256
+`22e6ad401690d7077b9b0751873724c8f6a4af9054d99546b6fc1b672e3377fa`.
+Its linked payload with the five cross-built boot helpers is 488256 bytes,
+832 above the existing 487424-byte BIOS reservation. This source-build pass
+is not a boot-image pass. Do not enlarge the reservation without checking the
+boot stack/memory layout.
+
+KernelConsoleLoad now uses a fixed 14-byte global binding-index table, matching
+the other service loaders, instead of generating fourteen stack assignments.
+The symbol indices and imported providers remain the same. Original two-
+generation rebuild passes (log `build/native-formatter-binding-table-rebuild.log`).
+Cross-build and native-size verification of this compaction are pending.
+
+The original User creation oracle passes on the current bootstrap in
+`build/i386-formatter-user-original`. The same checker fails on the installed
+native formatter image in `build/i386-formatter-user-native-red`: User is absent
+at the initial availability check, so creation cases are not reached; the source
+disk is unchanged. Checker SHA-256:
+`521478343b9e2c2dcde494d5265c95d5ca48a31e81f38102467c73c85e10d71e`.
+After the boot-size gate, implement User with the original default Adam/CPU-root
+parent, terminal-readiness handshake and formatted input delivery to the child.
+Startup commands must run in the child; retain newline/partial-input behavior,
+copy queued text into child-owned storage, and free it during normal consumption
+or forced task cleanup. Do not substitute execution in the caller for XTalk.
+Extend automation to creation hotkeys, focus and repeated task/heap recovery
+before calling User integration complete. Physical/manual checks remain deferred.
+
+The binding-index table compaction cross-build/386 audit passes in
+`build/i386-formatter-binding-table-kernel/result.json`: flat payload 483384
+bytes, 1000 fewer than the previous formatter cross-build. The port is now
+rebuilding Kernel.HC in `build/i386-formatter-binding-table-selfbuild`; its
+native-size result remains pending. Do not infer that the native payload fits
+from the smaller cross-built payload alone.
