@@ -8518,3 +8518,10 @@ navigation-to-VGA is 0.258 seconds. This qualifies the corrected source image
 `d10e8a3cdc4e46e39264f1e5d0e89ae9f279885d8e73344245151556f8e151b2`,
 not the subsequent resident-cache prototype. Native retained rebuilding remains
 running before installation/full native qualification and promotion.
+
+Resident ABI-41 original bootstrap and cross construction now pass in the
+isolated checkout. The cross kernel is 483184 bytes and the 386 boot instruction
+audit passes. The strengthened resident public read/write oracle is running in
+`build/public-file-resident-write-cache-green` against that image; the directory
+name is prospective and no passing runtime result is claimed. Cold cache
+population, lifecycle cleanup and full compatibility remain open.
