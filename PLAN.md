@@ -5991,3 +5991,40 @@ build/i386-public-macro-registration-workstation/result.json, 513 commands,
 long-document update, 8 MiB and 486,-fpu. Updated the coverage audit's opening
 snapshot summary to distinguish these epochs and the completed earlier native
 self-hosted image. The full objective remains open.
+
+### Two-terminal workflow green; Ctrl-Alt-N implementation pending runtime gate
+
+The revised frozen terminal checker now records a matching baseline failure and
+implementation pass in build/i386-terminals-paced-{red,green}/result.json.
+The green run passes 11 parent commands and every child-terminal VGA checkpoint:
+independent definitions/history, programmatic focus, exit/refocus, child-list
+reclamation, exact parent public-heap recovery and shell arithmetic. It uses
+8 MiB, 486,-fpu and an unchanged image, with 58.93-second startup.
+The dedicated overflow checker also passes in
+build/i386-terminals-keyboard-loss/result.json: exactly one root input reset,
+queued CALL survives exactly once, Shift state resets and typing recovers.
+Its frozen checker is c3e4e1b5bc9531095a0644d3144b5c68ea2fd339e57d21f7734530765462e201.
+These results qualify image 6051ee26f0405f92e4dc2682c9738ce5c30141c68a6a11d4e35156cad0e2f5d0.
+
+Added a separate hardware Ctrl-Alt-N contract in
+`tools/test-i386-terminal-hotkeys.py`, SHA-256
+f413ce423d6e1c5d237ad6d39f2bb9e4a173cb087a75ba5adce49b5c3591a23a.
+The baseline in build/i386-terminal-hotkeys-red/result.json fails at its first
+hotkey focus change; the saved screen remains on One with its definition intact.
+The fixture requires visible One/Two/root cycling, independent histories and
+values, exit/refocus and heap recovery. The runner now supports a focus-next
+hardware chord alongside its existing break chord.
+
+The keyboard worker handles Ctrl-Alt-N outside IRQ context, cycles eligible live
+terminal records, consumes the N make/release pair and latches until release to
+avoid repeated cycling while held. Keyboard discontinuity clears that latch.
+Public service layout remains console 36. Both original rebuild generations,
+fresh cross-build and 386 boot audit pass. Image
+build/i386-terminal-hotkeys-kernel/kernel.img, SHA-256
+444bfb1b7ee9de7e0ac6e4b609b2fd066798c649a9baec47a989165e81657229.
+Hotkey behavior and ordinary keyboard regression are running in
+build/i386-terminal-hotkeys-{green,keyboard}; no runtime pass is claimed yet.
+Repeated-key, inhibited-window, creation-hotkey, document/background-work,
+private-resource and debugger/terminal combinations need further coverage.
+Current-source native generations, complete M7 and release qualification remain
+open; the older console-35 six-provider native build remains live.

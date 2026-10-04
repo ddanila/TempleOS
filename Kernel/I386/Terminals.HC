@@ -9,6 +9,7 @@ class CNativeTerminal {
   Bool owns_planes,running;
 };
 CNativeTerminal *native_terminal_head,*native_terminal_root;
+Bool native_terminal_focus_held;
 CNativeTerminal *NativeTerminalFind(CTask *task)
 {
   CNativeTerminal *terminal=native_terminal_head;
@@ -43,6 +44,7 @@ I64 *NativeTerminalLossSeen()
 U0 NativeTerminalDiscardKeyboard()
 {
   CNativeTerminal *terminal=native_terminal_head;
+  native_terminal_focus_held=FALSE;
   while(terminal) {
     NativeKeyboardDiscard(terminal->task); terminal=terminal->next;
   }
@@ -140,6 +142,35 @@ CTask *NativeWinFocus(CTask *task=NULL)
     ConsolePresentText(&terminal->surface);
   }
   return task;
+}
+Bool NativeTerminalFocusKey(CI386KeyEvent *event)
+{//Run in the keyboard worker, never IRQ context. Consume the hotkey's pair.
+  CNativeTerminal *terminal,*start;
+  Bool held;
+  if(((event->scan>>32)&255)!=0x31) return FALSE;
+  if(event->type==MSG_KEY_UP) {
+    held=native_terminal_focus_held;
+    native_terminal_focus_held=FALSE;
+    return held;
+  }
+  if(event->type!=MSG_KEY_DOWN) return FALSE;
+  if(native_terminal_focus_held) return TRUE;
+  if((event->scan&0xC00)!=0xC00) return FALSE;
+  native_terminal_focus_held=TRUE;
+  terminal=NativeTerminalFind(sys_focus_task);
+  if(terminal) terminal=terminal->next;
+  if(!terminal) terminal=native_terminal_head;
+  start=terminal;
+  if(!terminal) return TRUE;
+  do {
+    if(TaskValidate(terminal->task) && !terminal->task->finishing &&
+        !(terminal->task->win_inhibit&1)) {
+      NativeWinFocus(terminal->task); return TRUE;
+    }
+    terminal=terminal->next;
+    if(!terminal) terminal=native_terminal_head;
+  } while(terminal!=start);
+  return TRUE;
 }
 U0 NativeUserTaskCont()
 {

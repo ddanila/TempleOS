@@ -317,8 +317,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                 if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
                                     raise ValueError(f'{latency_name} exceeded visible-update budget')
                                 latency_started=None; latency_name=None
-                        elif action.get('hotkey')=='break':
-                            key('ctrl',True); key('alt',True); press('c');
+                        elif action.get('hotkey') in ('break','focus-next'):
+                            key('ctrl',True); key('alt',True)
+                            press('c' if action['hotkey']=='break' else 'n');
                             key('alt',False); key('ctrl',False)
                         elif 'ctrl_key' in action:
                             key('ctrl',True)

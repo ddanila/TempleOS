@@ -46,7 +46,7 @@ U0 NativeKeyboardWorker(U8 *data)
     if(decoded<0) {
       native_keyboard_losses++;
       NativeTerminalDiscardKeyboard;
-    } else if(decoded) {
+    } else if(decoded && !NativeTerminalFocusKey(&event)) {
       target=sys_focus_task;
       if(!TaskValidate(target)) target=native_keyboard_owner;
       if(!reported) {
