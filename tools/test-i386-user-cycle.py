@@ -35,7 +35,8 @@ def main():
     try:
         definitions = list(DEFINITIONS)
         if args.async_stop:
-            definitions[-2] = 'Bool UserCycleStop(){UserCycleLog("USER CYCLE stop\\n");Bool ok=Kill(UserProbeTask,FALSE);I64 end=cnts.jiffies+200;while(UserProbeHas&&cnts.jiffies<end)Yield;WinFocus(Fs);if(!UserProbeHas)UserCycleLog("USER CYCLE retired\\n");return ok&&!UserProbeHas;}'
+            definitions.insert(-2, 'U0 UserCycleState(){U8 s[128];StrPrint(s,"USER CYCLE state %X %d %d\\n",GetRFlags,cnts.jiffies,UserProbeHas);UserCycleLog(s);}')
+            definitions[-2] = 'Bool UserCycleStop(){UserCycleLog("USER CYCLE stop\\n");Bool ok=Kill(UserProbeTask,FALSE);UserCycleState;I64 i;for(i=0;i<20&&UserProbeHas;i++)Yield;UserCycleState;WinFocus(Fs);if(!UserProbeHas)UserCycleLog("USER CYCLE retired\\n");return ok&&!UserProbeHas;}'
         commands = [(s, []) for s in definitions] + [('UserOneCycle;', ['1']), ('6*7;', ['42'])]
         if any(len(s) > 255 for s, _ in commands):
             raise ValueError('Cycle fixture exceeds interactive line limit')

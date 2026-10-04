@@ -3483,3 +3483,16 @@ the failure; it is not a replacement for synchronous Kill compatibility.
 Separate-command bootstrap observations have recovered both public-pool
 counters and bootstrap used bytes/allocation count exactly through three
 cycles. That run is still live and does not excuse the same-call wait bug.
+
+The first asynchronous diagnostic is terminal:
+`build/i386-user-cycle-native-async/result.json` fails by console timeout, with
+start/created/stop markers and no retired marker. Because that version logs
+nothing between the Kill request and the wait, it does not localize the stop
+path further. Its checker SHA-256 matches the passing original synchronous
+comparison (`d8e06a94e8256377a1865b3294379db369525900317e717916051063d76ebdfd`).
+
+The updated `--async-stop` diagnostic emits interrupt flags, jiffies and child
+membership immediately after Kill returns and after at most 20 yields. This
+uses an iteration bound rather than relying on timer progress to stop the
+diagnostic, and retains the synchronous fixture as the compatibility contract.
+The new run is pending in `build/i386-user-cycle-native-async-state`.
