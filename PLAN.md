@@ -8752,3 +8752,16 @@ in exact expected directories by the independent disk walker. The native run
 is pending in `build/public-cd-red`. Default home, drive changes and broader
 error compatibility remain separate tests; do not replace original partial
 progress with an assumed all-or-nothing directory commit.
+
+The public Cd native contract now fails at the missing Cd call after setup,
+matching the earlier shared-cache directory test. Implementation has begun in
+the isolated main-only `build/file-cd-prototype`, preserving the ABI-42 resident
+source used by live qualification runs. The candidate adds a file-service Cd
+callback and public _CD export (file ABI 43), walks and validates components
+in order, optionally creates missing directories, and commits the last valid
+directory even when a later component fails. Nested filesystem borrowing is
+balanced before replacing task directory state. Fresh original bootstrap and
+cross construction are running in that checkout. This code is unqualified;
+home aliases, whitespace/control handling, public task-field consistency,
+drive/error behavior and heap recovery require additional contracts before
+promotion. No partial source implementation closes the original Cd requirement.
