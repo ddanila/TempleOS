@@ -6201,3 +6201,48 @@ Installation and independent boot are now running in
 `build/i386-debug-exception-retained-install`, preserving that source. This
 epoch includes compiler-59/memory-17 named exception support, but predates
 console-36 terminals. Current-source native reproducibility remains open.
+
+### Publish public Kill through the retained task provider
+
+The explicit publication baseline fails in
+`build/i386-terminal-kill-publication-red`: Kill is absent before the forced
+editor cleanup workflow can run. The existing original cancellation contract
+passes all nine cases in `build/i386-terminal-kill-original/result.json`, checker
+0732d2ff19d4a1a795bca70a65c8104982b96504592a292c5e29e4474453cb4b.
+
+Added MemoryKill in Kernel/I386/TaskKill.HC and public _KILL binding. Memory
+services advance to version 18 with 43 bindings; the three data bindings retain
+their data kind, while Kill is a function. Normal requests set the existing
+termination flag; the scheduler/Exit retain responsibility for callback recovery,
+children and cleanup. Asynchronous requests preserve wake/suspend flags. The
+just_break branch preserves the original caller-Break/Shift-Esc distinction and
+requests a deferred focused break for self. Self-break and I/O cancellation
+remain explicitly unqualified by the existing nine-case contract.
+
+Both original rebuild generations pass. Fresh i386 build is running in
+`build/i386-terminal-kill-kernel`; runtime public cancellation and forced-editor
+cleanup must pass before this API is considered qualified.
+
+The console-35 six-provider installation and independent boot now pass in
+`build/i386-debug-exception-retained-install/result.json`, installed disk SHA-256
+a3c127614021dcbf06f9e1c7818fabafa51b62be4d2e0e13da1f71c98b00ac91.
+All installed module bytes match their guest-built inputs and source is unchanged.
+The full guest flat build/install is running in `build/i386-debug-exception-selfhost`.
+This epoch predates terminals and memory-18 Kill; current-source native release
+qualification remains open.
+
+The strengthened background checker now passes in
+`build/i386-terminal-background-live-session/result.json`, SHA-256
+9639f89b195407e6fe8167356455eedda056b0a43299f426b53f566ad047c96d.
+A completion is observed between the visible editor-open checkpoint and editor
+exit. All VGA checks, compiled value, persisted Work.DD bytes and parent heap
+recovery pass: 14 parent commands, 8 MiB, 486,-fpu, 56.00-second startup and
+unchanged recovery image a9a664ae. This is concurrent document compilation, not
+a complete background OS rebuild.
+
+Memory-18 Kill candidate builds and passes the 386 boot audit, with unchanged
+483360-byte cross-built flat kernel size. Image
+`build/i386-terminal-kill-kernel/kernel.img` SHA-256 `201cb474230f705e00e8cef8d84bb42966e0b9710272456811a0c2e652b981e0`.
+The nine-case public cancellation corpus and forced-editor cleanup workflow are
+running in `build/i386-terminal-kill-public` and `build/i386-terminal-kill-green`.
+No native cancellation runtime pass is claimed yet.

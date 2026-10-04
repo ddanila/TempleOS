@@ -23,10 +23,11 @@ baseline failure and candidate pass in `build/i386-terminal-idle-break-editor-{r
 Candidate image `a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8`
 survives two breaks, supports editor sessions after each, retains definitions
 and passes normal terminal cleanup. Existing interrupt regression passes all 16 commands. The first background
-compiler/editor workflow passes visible/file/cleanup checks; a stricter
-completion-during-editor oracle is running. Forced editor-task cleanup is
-unverified: its helper fails to compile, and an explicit Kill publication
-check is running to isolate the missing public API.
+compiler/editor workflow passes visible/file/cleanup checks; the stricter
+completion-during-editor oracle also passes in
+`build/i386-terminal-background-live-session` (14 commands, 56.00-second startup). Forced editor-task cleanup is
+unverified: Kill publication fails explicitly. The original cancellation oracle
+passes nine cases; a memory-18 implementation is under build/runtime verification.
 
 The preceding memory-17 registration-fix image passes the full 513-command
 workstation suite in `build/i386-public-macro-registration-workstation`, including
@@ -37,8 +38,9 @@ focused-keyboard image in `build/i386-public-keyboard-focused-break-selfhost`:
 six native retained providers plus six native flat modules, independent boot and
 installed-image audit pass. Its 487344-byte flat image leaves 80 bytes in the boot
 area. The compiler-59/console-35 native provider build passes all six modules in
-`build/i386-debug-exception-retained`; installation/independent boot are running
-in `build/i386-debug-exception-retained-install`. It predates task-owned terminals.
+`build/i386-debug-exception-retained`; installation/independent boot pass
+in `build/i386-debug-exception-retained-install`. The guest flat build/install
+is running in `build/i386-debug-exception-selfhost`. It predates task-owned terminals.
 Current-source two-generation reproducibility and release qualification remain
 open. The older 95-file local bundle is historical evidence, not a current release.
 

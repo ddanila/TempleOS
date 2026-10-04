@@ -2036,3 +2036,28 @@ Root `document-editing` regression is now PASS: 169 commands with exact VGA,
 provider build also passes all six modules. Installation/independent boot are
 running in `build/i386-debug-exception-retained-install`; this source epoch
 predates terminal changes and does not qualify current-source reproducibility.
+
+The Kill publication baseline now fails explicitly. Original nine-case public
+cancellation oracle passes in `build/i386-terminal-kill-original`. The new
+memory-18 candidate will be checked with both the public cancellation corpus
+and the frozen forced-editor-exit workflow. Self-break/I/O cancellation are not
+covered by that corpus. The original two-generation rebuild passes; candidate
+cross-build/runtime qualification is pending.
+
+Console-35 retained installation/independent boot passed with all six guest-built
+modules unchanged. The next native flat build/install is running in
+`build/i386-debug-exception-selfhost`; it predates current terminal/Kill work.
+
+The stricter background oracle now passes in
+`build/i386-terminal-background-live-session`: 14 commands, exact VGA, a
+completed compilation while the editor is open, compiled value 42, exact saved
+bytes and parent heap recovery. Startup is 56.00 seconds on 8 MiB, 486,-fpu.
+
+Kill candidate cross-build and 386 boot audit pass. Native qualification runs:
+
+```sh
+python3 tools/test-i386-public-task-kill.py build/i386-terminal-kill-kernel/kernel.img --out build/i386-terminal-kill-public
+python3 tools/test-i386-terminal-kill.py build/i386-terminal-kill-kernel/kernel.img --out build/i386-terminal-kill-green
+```
+
+Both runs are active; runtime results remain pending.

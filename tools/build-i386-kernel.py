@@ -242,7 +242,7 @@ def memory_runtime_layout(module):
     if external_imports != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386HeapValid',
                        'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts'}:
         raise ValueError('Unexpected memory-runtime import contract')
-    for name in ('Main', 'MemoryBind', 'MemoryProbe', 'Yield', 'Sleep', 'SleepUntil', 'Spawn', 'Exit', 'TaskQueIns', 'MemoryManagedYield', 'MemoryTaskMsg', 'MemoryPostMsg', 'MemoryMsg', 'MemorySuspend', 'MemoryIsSuspended', 'MemoryJobsHndlr', 'MemoryScanMsg', 'MemoryGetMsg', 'MemoryFlushMsgs'):
+    for name in ('Main', 'MemoryBind', 'MemoryProbe', 'Yield', 'Sleep', 'SleepUntil', 'Spawn', 'Exit', 'TaskQueIns', 'MemoryManagedYield', 'MemoryTaskMsg', 'MemoryPostMsg', 'MemoryMsg', 'MemorySuspend', 'MemoryIsSuspended', 'MemoryJobsHndlr', 'MemoryScanMsg', 'MemoryGetMsg', 'MemoryFlushMsgs', 'MemoryKill'):
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing memory service {name}')
     #A locked assignment must use one locked bit operation on either branch.
@@ -265,7 +265,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 17:
+    if struct.unpack_from('<I', module, version_offset)[0] != 18:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],

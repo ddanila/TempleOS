@@ -8,4 +8,5 @@ public _extern _EXIT U0 Exit();
 public _extern _TASK_QUE_INS U0 TaskQueIns(CTask *task,CTask *pred=0);
 public _extern _SUSPEND Bool Suspend(CTask *task=0,Bool state=1);
 public _extern _IS_SUSPENDED Bool IsSuspended(CTask *task=0);
+public _extern _KILL Bool Kill(CTask *task,Bool wait=1,Bool just_break=0);
 #endif
