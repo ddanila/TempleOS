@@ -8333,3 +8333,40 @@ used bytes and 7068 allocations. Both physical snapshots match. Exact VGA,
 original functional oracle and filesystem checks pass; source disk is unchanged.
 These port-only allocation invariants are separate from the original functional
 oracle. FileFind/FileRead remain isolated pending full and native qualification.
+
+## FileFind early-rejection compatibility bug: matched red/green
+
+The strengthened FileFind contract has `--edge-cases` for NULL-name and
+invalid-drive output preservation, contradictory file/directory filters and
+parent-search rejection when the starting directory does not exist. The
+original oracle passes all cases. The prior candidate fails
+`build/public-file-find-early-rejection-red` at
+FindUntouched("Z:/NoFindDrive.BIN"): it clears the caller's record, whereas
+original FileFind returns early without touching that record. NULL rejection
+already preserves it.
+
+An isolated correction in `build/file-find-rejection-prototype` distinguishes
+early drive rejection (-1) from a normal miss (0) and success (1) through an
+I64 private callback, with file-service ABI 40. The public API remains Bool
+FileFind: it preserves output on early rejection, clears it on a normal miss
+and publishes an owned full_name on success. Existing ABI-39 qualification
+runs retain their original source epoch. The service-size source assertion
+is corrected to 100 bytes for the added callback. Fresh original bootstrap
+and cross/instruction audits pass in the corrected checkout.
+
+`build/public-file-find-early-rejection-green/result.json` passes 36 commands
+with actual public CDirEntry, named flags, original functional oracle, edge
+cases and twenty mixed allocation-recovery cycles including invalid drives.
+Startup is 24.898 seconds on 8 MiB 486 without FPU. Public task heap usage
+recovers exactly; read-only QMP snapshots show private heap used bytes
+5347720 and allocation count 7080 unchanged. Exact VGA and independent
+filesystem checks pass. Source image SHA-256:
+`d10e8a3cdc4e46e39264f1e5d0e89ae9f279885d8e73344245151556f8e151b2`.
+The source image remains unchanged.
+
+The source-aware full workstation run remains live on the earlier ABI-39
+candidate; its eventual result will not qualify the ABI-40 correction. Main
+FileWrite generation-two retained rebuilding/comparison also remains live.
+Before promotion, require the corrected candidate's full workstation and
+regressions/native construction, and continue resident/file-error compatibility
+work. No narrower test closes the OS release objective.

@@ -41,6 +41,7 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--public-entry',action='store_true',help='Require the public CDirEntry type instead of a modeled record')
     parser.add_argument('--public-flags',action='store_true',help='Require original named FUF constants')
+    parser.add_argument('--edge-cases',action='store_true',help='Require original early-rejection output preservation and filter boundaries')
     parser.add_argument('--heap-cycles',type=int,default=0,help='Port-only repeated public/private allocation recovery (1..50)')
     args=parser.parse_args()
     if args.heap_cycles<0 or args.heap_cycles>50 or args.heap_cycles and not args.public_entry:
@@ -49,6 +50,14 @@ def main():
     if args.public_entry:
         definitions=[s.replace('CFindEntry','CDirEntry') for s in definitions[1:]]
     checks=list(CHECKS)
+    if args.edge_cases:
+        record='CFindEntry'
+        if args.public_entry:record='CDirEntry'
+        definitions.append('Bool FindUntouched(U8 *name){'+record+' de;I64 i;U8 *p=&de;MemSet(p,90,sizeof(de));if(FileFind(name,&de))return FALSE;for(i=0;i<sizeof(de);i++)if(p[i]!=90)return FALSE;return TRUE;}')
+        checks += ['FindUntouched(0)','FindUntouched("Z:/NoFindDrive.BIN")',
+                   '!FileFind("C:/Probe/FindRaw.BIN",0,0xC00)',
+                   '!FileFind("C:/Probe/FindChild",0,0xC00)',
+                   '!FileFind("C:/Probe/NoFindDir/FindRaw.BIN",0,0x100000)']
     if args.public_flags:
         for value,name in [('0x140000','FUF_SCAN_PARENTS|FUF_Z_OR_NOT_Z'),('0x100000','FUF_SCAN_PARENTS'),('0x40000','FUF_Z_OR_NOT_Z'),('0x800','FUF_JUST_FILES'),('0x400','FUF_JUST_DIRS')]:
             checks=[source.replace(value,name) if 'FileFind(' in source else source for source in checks]
@@ -77,6 +86,8 @@ def main():
             commands += [('Bool FindRound(){return FindName("C:/Probe/FindRaw.BIN")&&FindMissing()&&FindBadFlags()&&FileFind("C:/Probe/FindChild/FindPacked.BIN",0,0x140000)&&!FileFind("C:/Probe/FindChild",0,0x800);}',[]),
                          ('Bool FindRecovery(I64 cycles){I64 i,used=Fs->data_heap->used_u8s;for(i=0;i<cycles;i++)if(!FindRound())return FALSE;return used==Fs->data_heap->used_u8s;}',[]),
                          ('FindRound;',['1']),(f'FindRecovery({args.heap_cycles});',['1'])]
+            if args.edge_cases:
+                commands[-4]=(commands[-4][0].replace(';}', '&&FindUntouched(\"Z:/NoFindDrive.BIN\");}'),[])
         commands.append(('6*7;',['42']))
         runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.heap_cycles:
@@ -86,7 +97,7 @@ def main():
             startup_check={'status':'ok','answers':[],'commands':commands})
         verify=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume']
         report['filesystem']=verify(candidate)
-        report.update(result='pass',public_directory_entry=args.public_entry,public_flags=args.public_flags,heap_recovery_cycles=args.heap_cycles)
+        report.update(result='pass',public_directory_entry=args.public_entry,public_flags=args.public_flags,heap_recovery_cycles=args.heap_cycles,edge_cases=args.edge_cases)
     except Exception as error:
         report['error']=str(error);raise
     finally:
