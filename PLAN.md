@@ -6360,3 +6360,44 @@ its explicit assignment-value assertion, in
 bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564.
 The matching native run, zero-exception regressions, workstation suite and
 captured cleanup-snapshot native provider build remain active.
+
+### Cancellation behavior and zero exceptions green; mode-state and timing gates
+
+The revised native public Kill contract passes all 69 commands/nine cases in
+`build/i386-terminal-kill-public-value/result.json`, matching the original
+checker bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564.
+The unchanged cleanup image 9812e5d5 passes exact VGA and includes pre-entry,
+running/sleeping/suspended exit, callback recovery, unchanged async flags, caller
+Break and Shift-Esc. Self-break and I/O cancellation remain outside this corpus.
+Its 62.19-second start exceeds the separate 60-second timing gate.
+
+Zero-exception, named-exception and explicit Dbg regressions all pass on
+unchanged zero-case image
+0a90d205983f37f08cf8b47cd11a963dfeec026695c7e60f95c46e6372778608 in
+`build/i386-debug-zero-{exception-green,named-regression,explicit-regression}`.
+They pass 9/9/7 commands and exact VGA, including Exception: 0 and caller/source
+on the zero case. Recorded starts are 64.93/64.92/72.05 seconds.
+`build/i386-debug-zero-startup-budget.json` explicitly fails the zero-case
+measurement by 4.93 seconds. Functional pass does not qualify startup timing;
+the cause of these slower starts has not been established.
+
+Original Fault2 enables DbgMode during a debugger session and restores its
+previous state. The native session had not done so. Added normal mode-state
+contract `tools/test-i386-debug-mode.py` (e64985d4d1e3a204521cab401301924fb76540255a1011f54877e3142b523104),
+checking active mode and restoration of prior false and true values; baseline
+runs in `build/i386-debug-mode-red`. Added forced-exit mode regression
+`tools/test-i386-debug-mode-kill.py` (5404ba531016e0023dcc3562a5bc69a6cb226c86d80004d50809715f8552fe68),
+requiring false mode after killing a debugger task and using a survivor.
+Native sessions now save/enable mode and restore it on normal return or chained
+forced cleanup. Fresh original rebuild is running; runtime proof remains pending.
+Full workstation and native-provider builds remain live on the immutable cleanup
+snapshot, predating zero/mode changes. Complete current-source qualification
+including timing, full debugger features and two generations remains open.
+
+Mode-state baseline is terminal FAIL: VGA explicitly shows IsDbgMode returning
+0 at the debugger prompt. The mode-state implementation passes both original
+rebuild generations, fresh cross-build and the 386 boot audit, with 483360 flat
+bytes. Candidate `build/i386-debug-mode-kernel/kernel.img` SHA-256:
+`3354b49895533bb2267d8c840877fc609b780319911436463a9c28bd5f7e54a1`. Normal false/true restoration and forced-exit
+restoration tests are running in `build/i386-debug-mode-green` and
+`build/i386-debug-mode-kill-green`; no runtime pass is claimed yet.

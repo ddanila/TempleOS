@@ -2132,3 +2132,24 @@ field assignment `KillState->stage=3;` (result 3). The original oracle now check
 that assignment value as well. Revised checker `bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564` is running in
 `build/i386-terminal-kill-{original-value,public-value}`. Do not count the
 previous mismatch as a cancellation implementation failure or as a full pass.
+
+Revised native public Kill corpus passes 69 commands/nine cases. Zero, named and
+explicit debugger regressions also pass. Their measured starts exceed the
+60-second gate (62.19 seconds for Kill, 64.93/64.92/72.05 for debugger runs).
+`build/i386-debug-zero-startup-budget.json` is a formal timing FAIL; do not
+promote these functional passes as complete timing qualification.
+
+New `test-i386-debug-mode.py` checks IsDbgMode inside Dbg and restoration of
+prior false/true state; baseline is running in `build/i386-debug-mode-red`.
+`test-i386-debug-mode-kill.py` additionally requires mode restoration after
+forced debugger exit. Implementation and build verification are in progress.
+
+Mode-state baseline fails with IsDbgMode == 0 inside Dbg. Candidate build and
+386 audit pass, image SHA-256 `3354b49895533bb2267d8c840877fc609b780319911436463a9c28bd5f7e54a1`. Run qualification:
+
+```sh
+python3 tools/test-i386-debug-mode.py build/i386-debug-mode-kernel/kernel.img --out build/i386-debug-mode-green
+python3 tools/test-i386-debug-mode-kill.py build/i386-debug-mode-kernel/kernel.img --out build/i386-debug-mode-kill-green
+```
+
+Both are active; startup timing is still a separate open gate.

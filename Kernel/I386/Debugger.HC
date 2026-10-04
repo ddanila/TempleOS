@@ -3,12 +3,14 @@
 #include "/Kernel/SemaTypes.HH"
 CI386Task *console_debug_task;
 Bool console_debug_go;
+Bool console_debug_previous_mode;
 U8 *console_debug_backup;
 U0 (*console_debug_cleanup)(CI386Task *task);
 U0 ConsoleDebugTaskCleanup(CI386Task *task)
 {//Forced task exit bypasses the debugger's stack-local return path.
   U8 *backup=console_debug_backup;
   if(console_debug_task!=task) return;
+  NativeDebugMode(console_debug_previous_mode);
   task->cleanup=console_debug_cleanup;
   console_debug_task=NULL; console_debug_go=FALSE;
   console_debug_backup=NULL; console_debug_cleanup=NULL;
@@ -66,6 +68,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
     if(!backup) throw('OutMem');
     for(i=0;i<153600;i++) backup[i]=console_planes[i];
     for(i=0;i<sizeof(CI386Text);i++) p[i]=q[i];
+    console_debug_previous_mode=NativeDebugMode(TRUE);
     console_debug_backup=backup; console_debug_cleanup=task->cleanup;
     task->cleanup=&ConsoleDebugTaskCleanup;
     console_debug_task=task; console_debug_go=FALSE; sys_focus_task=task;
@@ -120,6 +123,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
     I386HeapFree(console_config->heap,backup); ConsolePresent;
   }
   if(console_debug_task==task) {
+    NativeDebugMode(console_debug_previous_mode);
     task->cleanup=console_debug_cleanup;
     console_debug_backup=NULL; console_debug_cleanup=NULL;
     console_debug_task=NULL; console_debug_go=FALSE;
