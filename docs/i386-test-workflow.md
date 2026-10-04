@@ -4090,3 +4090,22 @@ contracts and `--compare-installed` against first-generation target 6fc8eb0b.
 That exact-byte comparison remains pending, as do the second flat build and
 release qualification. Kernel/Compiler sources remain unchanged during these
 runs. CPU-trap debugger continuation remains an independent failing contract.
+
+### Optimized fully native workstation qualification
+
+`build/i386-heap-seek-selfhost-workstation/result.json` now PASSes on the
+fully guest-built first-generation target
+`6fc8eb0b3ebc632e58f6b1d4fcf1dfc5f0350233648fbf62fb7b3d215cfcb63b`.
+The 8 MiB `486,-fpu` TCG run completes 513 native commands / 576 submitted
+lines, all exact VGA checkpoints and 20 document development cycles with
+exact shared task data/code heap recovery. Startup is 33.014209438 seconds;
+long-document visible update is 0.372473826 seconds, below the planned
+one-second limit. The unchanged 60-second startup checker PASSes in
+`build/i386-heap-seek-selfhost-workstation-budget.json`; its input evidence
+SHA-256 is `7d67d64824c47633660545f8957888137c629062eafd7a07c19e0b774ee2e917`.
+
+This closes the current first-generation workstation gate. The live
+second-generation retained build is still compiling ConsoleRuntime; final
+installed-byte comparison, second-generation flat construction/audits and
+release qualification remain pending. CPU-trap continuation remains failing.
+Kernel/Compiler and the live build driver remain unchanged.
