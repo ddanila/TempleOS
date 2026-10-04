@@ -3687,3 +3687,26 @@ resolve that inherited descriptor while preserving interactive direct-scope
 publication checks and existing allocation/schema validation. Its matching
 original rebuild is running in the isolated checkout; module/runtime acceptance
 is still pending. Fix this regression before native root-sharing promotion.
+
+### Inherited forward completion: isolated build and focused regression
+
+The isolated module-only inherited lookup fix passes its matching original
+two-generation rebuild and i386 build/audit in
+`build/root-declaration-prototype/build/i386-module-inheritance`. The resumed
+six-provider qualification in `build/i386-module-inheritance-native-build` has
+progressed past the previous CHashFun rejection and is compiling functions;
+provider completion/installation is not yet claimed.
+
+`tools/test-i386-module-inherited-forward.py` creates a small source document
+including SymbolTypes.HH, builds it into a persisted T32M, checks its Main export
+and verifies the inherited CPU-root CHashFun retains its identity and opaque
+shape. The test uses a writable disk copy and verifies the original disk hash.
+It does not execute the output module or replace full provider self-builds.
+
+The first test revision reproduces main's frontend rejection; the repaired
+image passes its guest checks but fails the host source comparison because
+DocWrite saves a trailing CH_CURSOR byte. The fixture now expects that exact
+byte rather than stripping saved content. Matching revised red/green runs are
+pending in `build/i386-module-inherited-forward-red-v2` and
+`build/i386-module-inherited-forward-green-v2`. Treat earlier incomplete verdicts
+as diagnostic evidence only. Main has not yet adopted the completion fix.
