@@ -104,7 +104,8 @@ that its history is contained in `main`.
   nine-cycle exact public/bootstrap recovery and Tab isolation pass. The change
   is now applied to main; its original rebuild and i386 build/audit pass.
   All six retained providers are rebuilding in the guest, and main-image strict
-  recovery is running. Native runtime and startup qualification remain open. Updated all-native/two-generation release
+  recovery passes all nine cycles (58.411265-second startup). Native runtime
+  and startup qualification remain open. Updated all-native/two-generation release
   qualification remains required.
 
 Earlier source-epoch checkpoints below are historical; they do not supersede

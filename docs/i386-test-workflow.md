@@ -3640,3 +3640,24 @@ through NUL, but these unspecified string-tail bytes are still a cross-build
 reproducibility concern. Keep the actual main-image runtime check and record
 this for deterministic source initialization; do not claim byte-identical boot
 artifacts or silently normalize bytes in evidence.
+
+### Main recovery and deterministic keyword gate
+
+`build/i386-root-declarations-main-recovery/result.json` passes strict nine-cycle
+recovery, with all ten bootstrap snapshots at 5326856 used bytes/7161 allocations
+and exact public-pool/task-heap/child-count recovery. Startup is 58.411265 seconds
+on 8 MiB `486,-fpu` TCG; the source disk is unchanged.
+
+`tools/audit-i386-keyword-table.py` independently checks the exported 73-entry
+keyword descriptor table against OpCodes.DD and hash-type constants, including
+all twelve bytes of each name array. It is a keyword-data gate, not a substitute
+for ABI/ISA audit. The existing main cross-built Kernel fails this new gate in
+`build/i386-keyword-tail-main-red.json`: nonzero bytes follow the NUL in `include`.
+
+In the isolated checkout, the keyword generator emits twelve explicit byte
+initializers per name, including zero fill. Inventory and type/value constants
+remain unchanged. Generator checks and the matching original two-generation
+rebuild pass; the updated i386 build is running in
+`build/root-declaration-prototype/build/i386-keyword-initialization`. Gate and
+runtime acceptance are pending. Main Kernel/Compiler sources stay frozen for
+the ongoing six-provider native build.
