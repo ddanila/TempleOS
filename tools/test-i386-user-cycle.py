@@ -7,6 +7,8 @@ from pathlib import Path
 import runpy
 import subprocess
 import sys
+import threading
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT/'tools/test-i386-user-create.py'
@@ -23,15 +25,33 @@ def main():
     parser.add_argument('disk', type=Path, nargs='?')
     parser.add_argument('--original', action='store_true')
     parser.add_argument('--async-stop', action='store_true')
+    parser.add_argument('--command-timeout', type=float, default=120)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     if args.original == (args.disk is not None):
         parser.error('Specify either --original or an i386 disk')
+    if args.command_timeout <= 0:
+        parser.error('Command timeout must be positive')
     args.out.mkdir(parents=True, exist_ok=True)
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     checker, base, disk = sha(Path(__file__)), sha(BASE), sha(args.disk) if args.disk else None
     report = {'result': 'fail', 'checker_sha256': checker, 'base_sha256': base,
-              'disk_sha256': disk, 'async_stop': args.async_stop, 'scope': 'One empty User create/kill cycle inside one HolyC call, with phase markers; not resource recovery'}
+              'disk_sha256': disk, 'async_stop': args.async_stop, 'command_timeout': args.command_timeout, 'scope': 'One empty User create/kill cycle inside one HolyC call, with phase markers; not resource recovery'}
+    timings = []
+    stop = threading.Event()
+    started = time.monotonic()
+    log_path = args.out/('original/debug.log' if args.original else 'behavior/debug.log')
+    def observe():
+        seen = 0
+        while not stop.wait(.05):
+            if log_path.exists():
+                phases = [line for line in log_path.read_text().splitlines()
+                          if line.startswith(('USER CYCLE ', 'USER headers ', 'USER input '))]
+                for phase in phases[seen:]:
+                    timings.append({'phase': phase, 'seconds_since_start': time.monotonic()-started})
+                seen = len(phases)
+    watcher = threading.Thread(target=observe, daemon=True)
+    watcher.start()
     try:
         definitions = list(DEFINITIONS)
         if args.async_stop:
@@ -54,12 +74,15 @@ def main():
         else:
             runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
             report['behavior'] = runner(args.disk, args.out/'behavior', cpu='486,-fpu',
-                qmp_stdio=True, startup_check={'status':'ok', 'answers':[], 'commands':commands, 'command_timeout':120})
+                qmp_stdio=True, startup_check={'status':'ok', 'answers':[], 'commands':commands, 'command_timeout':args.command_timeout})
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)
         raise
     finally:
+        stop.set()
+        watcher.join()
+        report['phase_timings'] = timings
         log = args.out/('original/debug.log' if args.original else 'behavior/debug.log')
         report['phases'] = [s for s in log.read_text().splitlines() if s.startswith('USER CYCLE ')] if log.exists() else []
         report['source_disk_unchanged'] = args.disk is None or sha(args.disk) == disk

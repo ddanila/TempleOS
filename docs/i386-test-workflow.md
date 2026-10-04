@@ -3517,3 +3517,28 @@ The bootstrap observer now preserves parsed partial snapshots and the last
 checkpoint in future failure reports. Its extraction was checked against the
 terminal run's five paired snapshots and exact bootstrap counters. Historical
 result JSON remains unchanged; that run used the earlier checker.
+
+### Nine-cycle native public-pool result
+
+`build/i386-user-recovery-native-observations/result.json` passes 52 commands
+on 8 MiB `486,-fpu` TCG, with exact VGA checkpoints, unchanged source disk and
+54.306944-second startup. All ten snapshots (initial plus nine alternating
+empty/executed create/kill cycles) exactly match: root child count one,
+public-pool used/reserved bytes 1368064/1379328, caller heap 1354760 and
+CPU-root public heap zero. This uses the same observation checker as the
+original-system comparison (`5b3893c023b73541e6b5b028bc680d920c6485b2d3c2698f31a19d9c25fa2ae0`).
+It establishes recovery for these measured public counters. Bootstrap coverage
+is still only four completed cycles, and same-call completion remains open.
+
+The bounded asynchronous state diagnostic is terminal:
+`build/i386-user-cycle-native-async-state/result.json` observes
+`USER CYCLE state 202 188552 1` after Kill returns, then times out before the
+post-yield measurement. Thus the request returns with IF enabled and the child
+still linked; this rules out a stall within that asynchronous Kill call, not
+latency or failure during the following yields.
+
+The cycle checker now records phase observation times and accepts an explicit
+`--command-timeout`. The unchanged synchronous behavior is being observed with
+600 seconds in `build/i386-user-cycle-native-long-observation`. This extended
+diagnostic is intended to distinguish expensive creation/cleanup from a
+permanent wait; it does not waive normal acceptance latency requirements.

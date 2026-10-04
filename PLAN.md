@@ -88,7 +88,9 @@ that its history is contained in `main`.
   recovery acceptance invariant; do not copy original retention into the port.
   The native exact-recovery experiment times out during its first measured
   cycle after header loading; it does not establish a counter mismatch.
-  Public-pool and bootstrap observations are running to separate these issues.
+  The public-pool observation passes all nine separate-command cycles with
+  exact recovery in every snapshot. Bootstrap recovery is measured through
+  four cycles only; the fifth creation times out during header loading.
 - Next fix same-call User creation followed by synchronous Kill: the isolated
   native fixture creates the child but exceeds its whole-command timeout during
   the stop path, while
