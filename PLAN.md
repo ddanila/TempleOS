@@ -4549,17 +4549,6 @@ private I/O cancellation, dormant disposal, late clone-hook failure accounting,
 uncaught exception policy and full self-hosted generation/release qualification
 remain open.
 
-### Loss recovery preserves queued work
-
-The hardware-loss checker now also queues a JOBT_CALL before resuming the
-decoder, then yields so overflow recovery runs before ordinary console scanning.
-After the single reset, the callback must have run exactly once; lower-case
-typing still returns 42. The expanded checker passes on the focused-break image
-in build/i386-public-keyboard-loss-queued-job/result.json, with exact VGA and
-unchanged source disk. This extends the earlier reset/modifier-only result to
-the planned non-keyboard-job preservation invariant. Arbitrary focused-child
-discontinuity notification and macro recording remain separate open contracts.
-The full workstation suite and six-provider native rebuild remain live.
 
 
 Public cancellation tests-first contract (2026-10-04):
@@ -5566,3 +5555,15 @@ rebuild remains live in build/i386-public-keyboard-focused-break-retained.
 Neither pending run is a qualification result. Macro recording, arbitrary
 child loss recovery, multiple terminals, debugging and complete release gates
 remain open.
+
+### Loss recovery preserves queued work
+
+The hardware-loss checker now also queues a JOBT_CALL before resuming the
+decoder, then yields so overflow recovery runs before ordinary console scanning.
+After the single reset, the callback must have run exactly once; lower-case
+typing still returns 42. The expanded checker passes on the focused-break image
+in build/i386-public-keyboard-loss-queued-job/result.json, with exact VGA and
+unchanged source disk. This extends the earlier reset/modifier-only result to
+the planned non-keyboard-job preservation invariant. Arbitrary focused-child
+discontinuity notification and macro recording remain separate open contracts.
+The full workstation suite and six-provider native rebuild remain live.
