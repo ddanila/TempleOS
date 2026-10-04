@@ -2909,3 +2909,23 @@ The writable three-boot persistence workflow is running in
 and actual speaker-output qualification remain pending. Byte-identical native
 executables and these workstation passes do not close native formatter/User,
 full debugger/API support or reproducible release packaging.
+
+### Second-generation three-boot DolDoc persistence passes
+
+`build/i386-heap-asm-scan-gen2-selfhost-doldoc/result.json` passes 107
+create/edit/save commands, 56 reopen commands and 15 revision checks across
+three independent 8 MiB no-FPU boots, with exact VGA throughout. Startup
+measurements are 56.57473006192595, 53.96432991186157 and
+53.91442803107202 seconds, all below 60 seconds. Interrupt-to-recovery VGA
+latency is 0.26818493101745844 seconds.
+
+Saved programs execute after reboot and revisions persist through the third
+boot. The independent filesystem walker verifies 18 directories, 874 files,
+18522 owned sectors and bitmap equality with reachable extents, including
+rename/delete, cross-directory move and directory lifecycle checks. Source
+44ed8c88 is unchanged. Final writable candidate SHA-256:
+`c9bf56e972295b4eb298ac81c3f8ca477ae9978a9e71fdba32761114eb36549b`.
+
+Actual speaker-output verification is running in
+`build/i386-heap-asm-scan-gen2-selfhost-speaker`. Native formatter/User,
+complete debugger/API support and reproducible release packaging remain open.

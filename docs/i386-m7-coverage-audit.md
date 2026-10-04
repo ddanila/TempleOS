@@ -60,7 +60,10 @@ Installation and independent 8 MiB no-FPU boot pass in
 and linked boot bytes match the first generation exactly. Whole disk layout
 differs. Second-generation workstation qualification passes 513 commands with exact VGA
 and heap recovery, 54.770-second startup and 0.370-second long-document update.
-Three-boot persistence is running; audio and release qualification remain pending. Full
+Three-boot persistence passes 107/56/15 commands with exact VGA, retained
+programs/revisions and consistent filesystem extents; all boots are below
+60 seconds and interrupt recovery is 0.268 seconds. Audio verification is
+running; release qualification remains pending. Full
 two-generation and release qualification remain open.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent
