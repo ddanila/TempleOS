@@ -3542,3 +3542,15 @@ The cycle checker now records phase observation times and accepts an explicit
 600 seconds in `build/i386-user-cycle-native-long-observation`. This extended
 diagnostic is intended to distinguish expensive creation/cleanup from a
 permanent wait; it does not waive normal acceptance latency requirements.
+
+### Isolated root-declaration prototype
+
+An isolated checkout at `build/root-declaration-prototype` (only `main`, fork
+remote) loads declaration-only `PublicUser.HH` in ConsoleInit after installing
+console exports, using the actual CPU-root compiler scope. The main source
+tree and the images under regression are unchanged. The prototype passes its
+matching original x64 two-generation rebuild; its i386 build is running in
+`build/root-declaration-prototype/build/i386-root-declarations`. No prototype
+runtime result is claimed yet. Startup memory, child readiness, inherited
+include guards and task-local definition isolation still need qualification
+before applying the change to main.
