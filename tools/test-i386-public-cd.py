@@ -26,8 +26,12 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--task-fields', action='store_true', help='Require public Fs->cur_dir to reflect every directory change and partial failure')
+    parser.add_argument('--special-paths', action='store_true', help='Require default/home and original whitespace/control trimming')
     args = parser.parse_args()
     checks = list(CHECKS)
+    if args.special_paths:
+        checks += ['Cd()', 'Cd(0)', 'Cd("~")', 'Cd("~/")',
+                   'Cd("  .  ")', 'Cd("\\t.\\n")', 'Cd("C:/")']
     if args.task_fields:
         expected_dirs = {'Cd("C:/Probe")':'/Probe','Cd("CdChild")':'/Probe/CdChild',
                          'Cd("..")':'/Probe','Cd("")':'/Probe','Cd(".")':'/Probe',
@@ -46,6 +50,7 @@ def main():
     report = dict(result='fail', source_disk_sha256=hashlib.sha256(original).hexdigest(),
                   scope='Public Cd: relative/parent/empty/dot, partial progress on failure, nested make_dirs; not default home/drive/error parity')
     report['public_task_fields'] = args.task_fields
+    report['special_paths'] = args.special_paths
     try:
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)

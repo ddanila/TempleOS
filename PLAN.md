@@ -8795,3 +8795,18 @@ passes twenty-four in `build/public-cd-task-fields-candidate/result.json`, start
 partially failed path changes, exact VGA and persisted directory/write audit pass.
 Home/drive/error compatibility, recovery cycles and broad/native qualification
 remain open before Cd promotion.
+
+Promoted FileRead/FileFind second-generation retained rebuilding passes in
+`build/public-file-find-gen2-native-build/result.json`: all six retained modules
+are byte-identical to the first native installation. Generated source disk
+SHA-256 `bbd4a018f21f567ebc6df1c87b99887145cc2351706adfed2e860481fb1efcdc`.
+Generation-two installation/boot checks are running in
+`build/public-file-find-gen2-native-install`; complete twelve-module/flat/boot
+comparison remains pending.
+
+The Cd checker gains `--special-paths`: default/NULL/home paths plus original
+whitespace/control trimming. Original oracle passes in
+`build/public-cd-special-red/oracle/debug.log`; native behavior is running against
+the current candidate. Home may differ between environments, so these checks
+require successful API behavior rather than assuming an identical configured
+home directory. The task-field contract still checks explicit path targets.
