@@ -90,9 +90,12 @@ that its history is contained in `main`.
   cycle after header loading; it does not establish a counter mismatch.
   Public-pool and bootstrap observations are running to separate these issues.
 - Next fix same-call User creation followed by synchronous Kill: the isolated
-  native fixture creates the child but waits indefinitely during Kill, while
+  native fixture creates the child but exceeds its whole-command timeout during
+  the stop path, while
   original TempleOS completes the same behavior. An asynchronous-request
-  diagnostic is running. Finish full workstation and repeated-cycle
+  diagnostic is running. Expensive child header loading shares that timeout,
+  so distinguish latency from a permanent cancellation stall before changing
+  cancellation policy. Finish full workstation and repeated-cycle
   qualification, then optimize declaration-loading latency. Then test repeated
   creation resource recovery and improve fresh-child declaration-loading latency.
   Updated all-native/two-generation release qualification remains required.

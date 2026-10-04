@@ -12,6 +12,19 @@ DEPENDENCIES = ['observe-i386-user-recovery.py', 'test-i386-user-recovery.py',
                 'test-i386-user-create.py', 'test-i386-public-task-accounting.py']
 
 
+def read_observations(log):
+    result = {}
+    for tag, name, fields in [('POOL', 'pool', 6), ('BOOT', 'bootstrap', 3)]:
+        rows = [list(map(int, m.split())) for m in re.findall(
+            r'^USER '+tag+r' ((?:-?\d+ ?)+)$', log, re.M)]
+        if any(len(row) != fields for row in rows):
+            raise ValueError('Malformed '+tag+' observation')
+        result[name+'_observations'] = rows
+    result['pool_columns'] = ['cycle', 'root_children', 'pool_used', 'pool_reserved', 'caller_heap_used', 'root_heap_used']
+    result['bootstrap_columns'] = ['cycle', 'heap_used', 'allocations']
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
@@ -43,21 +56,26 @@ def main():
         report['behavior'] = runner(args.disk, args.out/'behavior', cpu='486,-fpu',
             qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
                                          'commands': commands, 'command_timeout': 120})
-        log = (args.out/'behavior/debug.log').read_text()
-        for tag, fields in [('POOL', 6), ('BOOT', 3)]:
-            rows = [list(map(int, m.split())) for m in re.findall(
-                r'^USER '+tag+r' ((?:-?\d+ ?)+)$', log, re.M)]
-            if len(rows) != 10 or any(len(r) != fields for r in rows) or [r[0] for r in rows] != list(range(10)):
-                raise ValueError('Missing or malformed '+tag+' observations')
-            report[tag.lower()+'_observations'] = rows
-        report['pool_columns'] = ['cycle', 'root_children', 'pool_used', 'pool_reserved', 'caller_heap_used', 'root_heap_used']
-        report['bootstrap_columns'] = ['cycle', 'heap_used', 'allocations']
+        report.update(read_observations((args.out/'behavior/debug.log').read_text()))
+        for tag in ('pool', 'bootstrap'):
+            rows = report[tag+'_observations']
+            if len(rows) != 10 or [r[0] for r in rows] != list(range(10)):
+                raise ValueError('Missing or unordered '+tag+' observations')
         report['layout_headers_sha256'] = headers
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)
         raise
     finally:
+        log = args.out/'behavior/debug.log'
+        if report['result'] != 'pass' and log.exists():
+            try:
+                report.update(read_observations(log.read_text()))
+                checkpoint = args.out/'behavior/checkpoint.json'
+                if checkpoint.exists():
+                    report['last_checkpoint'] = json.loads(checkpoint.read_text())
+            except Exception as observation_error:
+                report['observation_error'] = str(observation_error)
         report['source_disk_unchanged'] = sha(args.disk) == disk_hash
         if not report['source_disk_unchanged'] or sha(Path(__file__)) != checker or any(sha(ROOT/'tools'/n) != h for n, h in hashes.items()):
             report.update(result='fail', error='Disk or checker changed during observation')

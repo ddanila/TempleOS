@@ -3496,3 +3496,24 @@ membership immediately after Kill returns and after at most 20 yields. This
 uses an iteration bound rather than relying on timer progress to stop the
 diagnostic, and retains the synchronous fixture as the compatibility contract.
 The new run is pending in `build/i386-user-cycle-native-async-state`.
+
+### Bootstrap observation timeout: scope correction
+
+`build/i386-user-bootstrap-observations/result.json` is terminal and fails by
+console timeout at the fifth `UserProbeStart(FALSE);`, with `USER headers begin`
+but no header-completion marker. The five paired snapshots (initial plus four
+completed cycles) in its debug log all show public-pool used/reserved bytes
+1368064/1379328, root child count one, and bootstrap 5348304 used bytes/7104
+allocations. This proves recovery through those four measured cycles, not the
+planned nine. No allocation leak is established by this timeout.
+
+The same-call cycle fixture's 120-second limit covers both header compilation
+and stop. Its stop marker narrows the last observed phase but does not prove an
+indefinite wait. The implementation queue now calls for distinguishing latency
+from cancellation failure before modifying the port. The original-system
+cycle pass establishes required behavior, not a comparable host-time budget.
+
+The bootstrap observer now preserves parsed partial snapshots and the last
+checkpoint in future failure reports. Its extraction was checked against the
+terminal run's five paired snapshots and exact bootstrap counters. Historical
+result JSON remains unchanged; that run used the earlier checker.
