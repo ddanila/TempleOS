@@ -29,6 +29,7 @@ def commands():
             'final_rows': heading[:-1] + ['dbg> 6*7;', '42', 'dbg> G;'],
             'exit_key': 'ret',
             'end': 'DEBUG TEST return\n',
+            'preserve_history': True,
         }),
         ('DebugStage;', ['2']),
         ('6*7;', ['42']),

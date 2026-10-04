@@ -1639,3 +1639,35 @@ Installation and independent boot are running in
 must remain distinct from current memory-17/console-34 qualification. Current
 workstation, native generations, exception/source/register debugging,
 multiple terminals, timing and release gates remain open.
+
+### Debugger history oracle correction and native provider installation
+
+The console-34 required-services probe now passes on the debugger image:
+`build/i386-debug-publication-green/result.json`, 8 MiB, 486,-fpu, exact VGA,
+55.86-second startup, unchanged disk. This only proves publication.
+
+The first session run reached all debugger-screen checkpoints, evaluated the
+expression and logged return from G, then failed its final console expectation.
+Inspection of the saved screen shows preserved original console history, which
+is the intended implementation behavior. The checker had used the runner's
+history-clearing default. It now explicitly requires preserved history; no
+kernel or common-runner behavior was weakened to meet that expectation.
+The revised frozen checker SHA-256 is
+64b6c039f8812a7d2697d4df7401301aa8d9fda72b8f46b4a2a7f37023ae5fdd.
+Both baseline and implementation runs are pending in
+`build/i386-debug-session-history-red` and
+`build/i386-debug-session-history-green`. The earlier failure is retained in
+`build/i386-debug-session-green/result.json`; do not report it as a full pass.
+
+All six guest-built memory-16/console-33 providers installed and independently
+booted successfully in
+`build/i386-public-keyboard-focused-break-retained-install/result.json`.
+Candidate SHA-256:
+3ffed5e14a7c8bc61e247b127a8ac40aad79d4f3edcb66e8d96c9f4889984bdb.
+Installation preserves all module bytes and the source/candidate images; the
+8 MiB boot executes arithmetic and the document-allocation checker.
+The flat-kernel self-hosting build is now live in
+`build/i386-public-keyboard-focused-break-selfhost`, using these six native
+providers without cross-retained inputs. This remains an earlier source epoch;
+it does not qualify the new debugger or current release. Full current-source
+native generations, terminal/debugger workflows and release gates remain open.
