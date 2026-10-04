@@ -6463,3 +6463,34 @@ suite is running on mode image 3354b498 in `build/i386-debug-mode-workstation`;
 no full-suite pass is claimed. The older cleanup-snapshot native provider build
 continues with its already-loaded runner and immutable source/reference images;
 changing the inactive workstation command list does not change that execution.
+
+### Portable size lookup: one complete scan
+
+The heap profile motivates eliminating the second block-chain traversal from
+portable I386HeapSize. I386HeapScan now records an exact used-payload match
+while validating the entire physical chain, then checks aggregate counters
+before returning the requested byte count. I386HeapValid uses the same scan
+without a lookup. No cached metadata, block/control layout changes, or weaker
+corruption checks are introduced; the assembly branch is unchanged.
+
+The existing allocator/ownership corpus and strengthened 160-mutation matrix
+must pass in both portable and assembly variants. Current-source rebuild and
+runtime checks are underway. Native compilation, flat-kernel size (the earlier
+native image had only 80 bytes spare), and end-to-end startup measurements are
+required before treating this as a verified performance improvement. The extra
+lookup comparison in validity-only scans may offset the saved lookup traversal;
+measure the complete workload before deciding whether to retain this design.
+
+The scan implementation now passes both original rebuild generations and both
+heap variants (`build/i386-heap-{source-test,test}/result.json`), including the
+strengthened corruption rejection and public heap lifetime/churn corpus.
+Cross-compiling the portable test produces 176416 bytes versus 176680 before
+this change; this isolated test size is not the native boot-image size.
+Fresh cross-build output is `build/i386-heap-scan-kernel`. Native flat build,
+boot-area fit and performance qualification remain pending.
+
+Fresh cross-build and 386 boot audit pass. Image SHA-256: `38fbbde26954101563a481fc2655157d7459dc7c40c06c3bd611318ba1c94bbd`.
+A development native flat build is running in `build/i386-heap-scan-flat`,
+using verified cross-built retained modules (`--cross-retained`). This run
+will test guest compilation, boot-area fit and independent boot; it is not
+full native-provider or two-generation self-hosting qualification.

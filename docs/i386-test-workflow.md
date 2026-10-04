@@ -2215,3 +2215,17 @@ suite is running on mode image 3354b498 in `build/i386-debug-mode-workstation`;
 no full-suite pass is claimed. The older cleanup-snapshot native provider build
 continues with its already-loaded runner and immutable source/reference images;
 changing the inactive workstation command list does not change that execution.
+
+The scan implementation now passes both original rebuild generations and both
+heap variants (`build/i386-heap-{source-test,test}/result.json`), including the
+strengthened corruption rejection and public heap lifetime/churn corpus.
+Cross-compiling the portable test produces 176416 bytes versus 176680 before
+this change; this isolated test size is not the native boot-image size.
+Fresh cross-build output is `build/i386-heap-scan-kernel`. Native flat build,
+boot-area fit and performance qualification remain pending.
+
+Fresh cross-build and 386 boot audit pass. Image SHA-256: `38fbbde26954101563a481fc2655157d7459dc7c40c06c3bd611318ba1c94bbd`.
+A development native flat build is running in `build/i386-heap-scan-flat`,
+using verified cross-built retained modules (`--cross-retained`). This run
+will test guest compilation, boot-area fit and independent boot; it is not
+full native-provider or two-generation self-hosting qualification.
