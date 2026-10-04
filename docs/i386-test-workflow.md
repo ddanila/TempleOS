@@ -2255,3 +2255,18 @@ ed514687, with a 56.21559963794425-second startup.
 budget. This qualifies this development-image observation, not a fully
 guest-built release or a controlled before/after performance improvement.
 The earlier over-budget observations remain valid for their recorded images.
+
+### Current-source retained-provider qualification started
+
+The guest-built flat image ed514687 now seeds the current-source six-provider
+build in `build/i386-heap-scan-retained`. It uses the matching cross-built
+export contracts in `build/i386-heap-scan-kernel/exports`, no-FPU QEMU/KVM and
+16 MiB build memory. This is a separate source epoch from the still-running
+cleanup-snapshot provider build; neither run is restarted or its inputs edited.
+
+After a provider PASS, install those exact persisted modules with
+`test-i386-retained-install.py`, boot the installed candidate, and run
+`test-i386-selfhost-install.py` without --cross-retained. Audit the resulting
+fully guest-built image using --guest-compiler-template, then measure TCG
+startup/workstation behavior. A second native generation with installed-module
+comparison is still required; starting this run does not satisfy that gate.
