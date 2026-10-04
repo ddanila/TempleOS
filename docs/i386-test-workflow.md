@@ -4369,3 +4369,18 @@ A direct guest ExceptionEntry compilation check is live in
 `build/cpu-trap-layout-top-asm` to verify the specific prior rejection.
 Neither guest verdict is available yet; flat size and promotion remain
 pending. These builds keep cross-built retained providers explicit.
+
+The merged layout's direct guest compilation rejected `SUB`. Its full flat
+run was stopped intentionally after that independent rejection (exit 130).
+Replacing `SUB ESP,68` with supported signed-immediate `ADD ESP,-68`
+now passes a fresh original rebuild, cross instruction/keyword audits
+(483168-byte kernel), direct guest ExceptionEntry construction in
+`build/cpu-trap-add-top-asm/result.json` and five-cycle continuation in
+`build/cpu-trap-add-repeat/result.json`. The direct native assembly bundle
+therefore passes the existing compiler bounds without broadening its
+assembler. The prior SUB rejection remains historical evidence.
+
+Full six-module guest flat-development construction is now running in
+`build/cpu-trap-layout-prototype/build/cpu-trap-add-flat-development`, with
+verified cross-retained inputs. Flat size/install/boot remain pending;
+prototype OS code is not yet promoted.
