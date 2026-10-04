@@ -1,5 +1,18 @@
+diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
+index 30b15c64..93a78265 100644
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -397,7 +397,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
+   console_doc_exports[134].str="_FILE_WRITE";
+   console_doc_exports[134].val=(&FileWrite+0)(U64);
+   console_doc_exports[135].str="_FILE_READ";
+-  console_doc_exports[135].val=(&FileRead+0)(U64);
++  console_doc_exports[135].val=(&NativePublicFileRead+0)(U64);
+   console_doc_exports[136].str="_FILE_FIND";
+   console_doc_exports[136].val=(&FileFind+0)(U64);
+   for(i=0;i<137;i++) {
 diff --git a/Kernel/I386/DocumentRuntime.HC b/Kernel/I386/DocumentRuntime.HC
-index 457b7e30..bc79bf93 100644
+index 457b7e30..dc026a1c 100644
 --- a/Kernel/I386/DocumentRuntime.HC
 +++ b/Kernel/I386/DocumentRuntime.HC
 @@ -46,6 +46,7 @@ U8 *NativeDocCAlloc(I64 size,CTask *task=0)
@@ -21,31 +34,9 @@ index 457b7e30..bc79bf93 100644
 -      !console_config->files->write_public) return 0;
 -  if(!cdt) cdt=NativeNow;
 -  return console_config->files->write_public(filename,buffer,size,cdt,attr);
-+  I64 result,bytes,attributes;U8 *name=0,*stored=0;CHashGeneric *entry;
-+  if(!console_config || !console_config->files || !console_config->files->write_public)return 0;
-+  if(!cdt)cdt=NativeNow;
-+  result=console_config->files->write_public(filename,buffer,size,cdt,attr);
-+  if(!result)return result;
-+  try {
-+    name=console_config->files->name_abs(console_config->heap,filename,"");
-+    if(name) {
-+      if(attr&0x200) {
-+        stored=console_config->files->read_raw(console_config->heap,name,&bytes,&attributes,0);
-+        if(stored)NativeResidentPut(name,stored,bytes);
-+      } else {
-+        entry=NativeResidentLookup(name);if(entry)NativeResidentRemove(entry);
-+      }
-+    }
-+  } catch {
-+    if(stored)I386HeapFree(console_config->heap,stored);
-+    if(name)I386HeapFree(console_config->heap,name);throw;
-+  }
-+  if(stored)I386HeapFree(console_config->heap,stored);
-+  if(name)I386HeapFree(console_config->heap,name);
-+  return result;
- }
+-}
 -
- public U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+-public U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
 -{//The service owns its private buffer; public callers own an ordinary allocation.
 -  U8 *buffer,*result=0;
 -  I64 size=0,attr=0;
@@ -54,16 +45,47 @@ index 457b7e30..bc79bf93 100644
 -  if(!console_config || !console_config->files || !console_config->files->read) return 0;
 -  buffer=console_config->files->read(console_config->heap,filename,&size,&attr,0);
 -  if(!buffer) return 0;
++  I64 result,bytes,attributes;U8 *name=0,*stored=0;CHashGeneric *entry;
++  if(!console_config || !console_config->files || !console_config->files->write_public)return 0;
++  if(!cdt)cdt=NativeNow;
++  result=console_config->files->write_public(filename,buffer,size,cdt,attr);
++  if(!result)return result;
+   try {
+-    result=MAlloc(size+1);
+-    MemCpy(result,buffer,size);
+-    result[size]=0;
++    name=console_config->files->name_abs(console_config->heap,filename,0);
++    if(name) {
++      if(attr&0x200) {
++        stored=console_config->files->read_raw(console_config->heap,name,&bytes,&attributes,0);
++        if(stored)NativeResidentPut(name,stored,bytes);
++      } else {
++        entry=NativeResidentLookup(name);if(entry)NativeResidentRemove(entry);
++      }
++    }
+   } catch {
+-    I386HeapFree(console_config->heap,buffer);
+-    throw;
+-  }
+-  if(!I386HeapFree(console_config->heap,buffer)) {
+-    Free(result); throw('FileRead');
++    if(stored)I386HeapFree(console_config->heap,stored);
++    if(name)I386HeapFree(console_config->heap,name);throw;
+   }
+-  if(_size) *_size=size;
+-  if(_attr) *_attr=attr;
++  if(stored)I386HeapFree(console_config->heap,stored);
++  if(name)I386HeapFree(console_config->heap,name);
++  return result;
++}
++public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
 +{
 +  U8 *name=0,*alternate=0,*stored=0,*result=0,*chosen;
 +  CHashGeneric *entry;I64 bytes=0,attr=0,size=0;
 +  if(_size)*_size=0;if(_attr)*_attr=0;
 +  if(!console_config || !console_config->files)return 0;
-   try {
--    result=MAlloc(size+1);
--    MemCpy(result,buffer,size);
--    result[size]=0;
-+    name=console_config->files->name_abs(console_config->heap,filename,"");
++  try {
++    name=console_config->files->name_abs(console_config->heap,filename,0);
 +    if(name) {
 +      alternate=NativeResidentAlt(name);entry=NativeResidentLookup(name);
 +      if(!entry && alternate)entry=NativeResidentLookup(alternate);
@@ -80,15 +102,7 @@ index 457b7e30..bc79bf93 100644
 +        }
 +      }
 +    }
-   } catch {
--    I386HeapFree(console_config->heap,buffer);
--    throw;
--  }
--  if(!I386HeapFree(console_config->heap,buffer)) {
--    Free(result); throw('FileRead');
--  }
--  if(_size) *_size=size;
--  if(_attr) *_attr=attr;
++  } catch {
 +    if(stored)I386HeapFree(console_config->heap,stored);
 +    if(alternate)I386HeapFree(console_config->heap,alternate);
 +    if(name)I386HeapFree(console_config->heap,name);throw;
@@ -254,6 +268,39 @@ index 62bdacba..02fdabd4 100644
    I64 (*find_public)(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 flags);
  };
  #endif
+diff --git a/Kernel/I386/FormatterRuntime.HC b/Kernel/I386/FormatterRuntime.HC
+index 6a099dd7..050ca73c 100644
+--- a/Kernel/I386/FormatterRuntime.HC
++++ b/Kernel/I386/FormatterRuntime.HC
+@@ -80,26 +80,8 @@ done:
+ #include "/Kernel/FunSegCacheCore.HC"
+ #include "/Kernel/StrPrintFunSegCore.HC"
+ U8 *NativeFormatterFileRead(U8 *filename,I64 *_size=NULL,I64 *_attr=NULL)
+-{//The file service lends bootstrap-heap bytes; formatter buffers use Free.
+-  U8 *buffer,*result=NULL;
+-  I64 size=0,attr=0,exception=0;
+-  Bool failed=FALSE;
+-  if(_size) *_size=0;
+-  if(_attr) *_attr=0;
+-  if(!console_config || !console_config->files || !console_config->files->read)
+-    return NULL;
+-  buffer=(*console_config->files->read)(console_config->heap,filename,&size,&attr,NULL);
+-  if(!buffer) return NULL;
+-  try {
+-    result=MAlloc(size+1); MemCpy(result,buffer,size); result[size]=0;
+-  } catch {
+-    failed=TRUE; exception=Fs->except_ch; Fs->catch_except=TRUE;
+-  }
+-  I386HeapFree(console_config->heap,buffer);
+-  if(failed) throw(exception,TRUE);
+-  if(_size) *_size=size;
+-  if(_attr) *_attr=attr;
+-  return result;
++{//Formatter reads share the public cache and caller-owned buffer contract.
++  return NativePublicFileRead(filename,_size,_attr);
+ }
+ #define FileRead NativeFormatterFileRead
+ #define ì (0x7FF0000000000000(F64))
 diff --git a/Kernel/I386/HashPublic.HC b/Kernel/I386/HashPublic.HC
 index f59d7405..990653d6 100644
 --- a/Kernel/I386/HashPublic.HC
@@ -389,7 +436,7 @@ index eafa38c4..1aad1d33 100644
        count>entry->size-offset || count>0xFFFFFFFF ||
        (buffer+0)(U64)>0x100000000-count) return -1;
 diff --git a/Kernel/I386/TaskFileRead.HC b/Kernel/I386/TaskFileRead.HC
-index 5fdc97ee..9e563b6b 100644
+index 5fdc97ee..c6f63237 100644
 --- a/Kernel/I386/TaskFileRead.HC
 +++ b/Kernel/I386/TaskFileRead.HC
 @@ -1,6 +1,6 @@
@@ -409,7 +456,17 @@ index 5fdc97ee..9e563b6b 100644
      if(!I386TaskFilesRelease(state)) {
        if(result) I386HeapFree(heap,result);
        if(absolute) I386HeapFree(heap,absolute);
-@@ -71,3 +71,6 @@ U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
+@@ -59,7 +59,8 @@ U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
+   U8 *extended=0,*absolute=0;
+   state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
+   if(state) {
+-    extended=I386ExtDft(heap,name,extension);
++    if(extension)extended=I386ExtDft(heap,name,extension);
++    else absolute=I386FileNameAbs(heap,&paths,name);
+     if(extended) {
+       absolute=I386FileNameAbs(heap,&paths,extended);
+       I386HeapFree(heap,extended);
+@@ -71,3 +72,6 @@ U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
    }
    I386IrqRestore(flags); return absolute;
  }

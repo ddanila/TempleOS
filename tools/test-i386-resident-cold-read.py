@@ -20,6 +20,7 @@ def main():
     parser.add_argument('--hash-removal', action='store_true', help='Remove the public cache entry and require a fresh disk read and repopulation')
     parser.add_argument('--prepare-fixture', action='store_true', help='Populate resident bytes on the disposable candidate before a separate cold boot')
     parser.add_argument('--empty', action='store_true', help='Qualify zero-byte resident files and their cache entries')
+    parser.add_argument('--dotless', action='store_true', help='Use a filename without an extension and require its exact public cache key')
     args = parser.parse_args()
     if args.empty and (args.compressed or args.shared_lifetime):
         parser.error('--empty cannot combine with --compressed or --shared-lifetime')
@@ -58,6 +59,10 @@ def main():
         checks = ['ColdEmpty("C:/Probe/ReadResident.BIN",0xA00)',
                   'ColdEmpty("C:/Probe/ReadResident.BIN",0)',
                   'ColdOwnedEmpty("C:/Probe/ReadResident.BIN")']
+    if args.dotless:
+        filename = filename.replace('.BIN', '')
+        checks = [check.replace('ReadResident.BIN', 'ReadResident') for check in checks]
+    report['dotless'] = args.dotless
     report['empty'] = args.empty
     report['prepare_fixture'] = args.prepare_fixture
     report['compressed'] = args.compressed

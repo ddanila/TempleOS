@@ -9071,3 +9071,37 @@ need not equal the persistent public root, so that result alone does not prove
 wrong ownership; do not reinterpret it as a cache contract failure. Cd's native
 retained job remains live and has advanced through the compiler/console/file
 commands to MemoryRuntime. The full release objective remains incomplete.
+
+Public FileRead binding correction and Cd native installation (2026-10-05):
+The cache failure is traced to a macro collision: FormatterRuntime defines
+FileRead as NativeFormatterFileRead before ConsoleBind takes &FileRead. Thus
+_FILE_READ selects the formatter's disk-only helper instead of the new public
+cache implementation. This also explains why read-side trace hooks did not
+appear while write-side CACHE PUT did. Do not attribute those failures to
+cache insertion itself.
+
+The candidate names its implementation NativePublicFileRead and explicitly
+binds _FILE_READ to that function. NativeFormatterFileRead delegates to it,
+sharing one public ownership/cache policy. Temporary trace instrumentation is
+removed. Fresh bootstrap/cross-build and instruction audit pass in
+`build/file-resident-public-prototype/build/file-resident-public-bound`; cold
+public ownership/removal and write/read recovery tests are running.
+
+Cold tests add --dotless and exact public cache-key expectations. Original
+oracle passes in `build/public-resident-dotless-oracle-red/oracle/debug.log`.
+Using an empty extension would append a period to a dotless name, so the next
+candidate lets the name service normalize directly when extension=NULL and
+public read/write wrappers use that mode. Explicit requested extensions retain
+the existing path. Fresh build is running in `build/file-resident-public-exact-name`
+under the isolated prototype. The archived patch contains explicit binding,
+formatter delegation and exact-name normalization; git apply --check passes.
+Runtime parity is still unproven, and no OS source promotion is claimed.
+
+Cd's retained native build passes all six modules in
+`build/public-cd-special-native-build/result.json`; retained installation and
+independent boot pass in `build/public-cd-special-native-install/result.json`,
+installed disk SHA-256
+`75a4389c0d137428781f48b65e0d4275902131ae44d996056feeb444be813f2f`.
+Full native construction/install starts in `build/public-cd-special-selfhost`,
+using both retained provenance results. These native builds use KVM CPU 486
+with FPU available; they do not establish the separate full no-FPU build gate.
