@@ -4207,3 +4207,29 @@ errors and unchanged source. WAV SHA-256:
 `ccbdd47558db00e97d401cf3095738d8ed7c76dfbc9c398a1dc5ebb8f61f82e7`.
 These are emulator verdicts. Full CPU debugger/API parity and current release
 packaging/publication remain open.
+
+### Current native CPU breakpoint baseline
+
+`build/i386-heap-seek-selfhost-cpu-trap-red/result.json` FAILs on the qualified
+first-generation target 6fc8eb0b, with source image preserved. Checker SHA:
+`50e93b3703532900221720901765fe33cddda0f37e841912b20023aaf1e1df38`.
+Preparation succeeds; actual vector 3 at EIP 0x281BDA reaches KernelFault
+and halts. Continuation/EAX/IF/TF/debugger-mode assertions do not execute.
+
+The implementation experiment uses `build/cpu-trap-resume-prototype`, a
+main-only isolated checkout with the user's fork remote. Required design:
+copy the normalized CPU frame into task-owned state without allocation,
+yielding or enabling IF in exception dispatch; redirect exception return
+to a normal-task trampoline; enter the existing debugger only after IRET
+restores the interrupted execution flags; resume the saved EIP with exact
+register restoration and explicitly controlled TF. Reject unsupported or
+nested traps safely. Forced task exit must reclaim debugger state without
+resuming a dead task. The console service ABI must carry capture and normal
+context entry separately. This design is not yet implemented or verified.
+
+The initial continuation contract remains only the first CPU-debugger step.
+Register inspection/editing, explicit G target, single-step/debug exceptions,
+managed breakpoints and concurrent-task ownership need their own observable
+contracts before the full debugger requirement is complete. Retain the
+qualified baseline image and repeat instruction/size/workstation/native
+construction checks after any promoted implementation change.
