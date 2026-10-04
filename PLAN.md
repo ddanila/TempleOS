@@ -7194,3 +7194,25 @@ rename/delete, cross-directory move and directory lifecycle checks. Source
 Actual speaker-output verification is running in
 `build/i386-heap-asm-scan-gen2-selfhost-speaker`. Native formatter/User,
 complete debugger/API support and reproducible release packaging remain open.
+
+### Second-generation speaker output passes; two native generations qualified for existing workflows
+
+`build/i386-heap-asm-scan-gen2-selfhost-speaker/result.json` passes on
+unchanged target 44ed8c88 under 8 MiB `486,-fpu` TCG. Independent 44100 Hz
+PCM analysis observes stable 440 Hz then 880 Hz tones. Settled off/reset
+intervals each emit zero new WAV bytes over at least 1.5 seconds; all four
+sound commands also pass exact VGA. Startup is 53.91643884219229 seconds.
+Captured WAV SHA-256:
+`53e42268f35d41ef9b3f5fa84f826bef07f800ede20304d30596058f9063fd03`.
+Checker SHA-256:
+`c6a6d41106cac752a742e16871bb0452b10ad15a1189aa58504a6e309532e4f0`.
+
+Both native generations now pass the existing workstation, startup/latency,
+three-boot persistence and actual emulated-audio workflows. All twelve native
+modules and the linked boot image are byte-identical between generations;
+whole disk layouts differ. This completes the current snapshot's two-generation
+workflow verification, not the full OS objective. Native original formatter
+and User/task-creation integration, full debugger/API behavior and reproducible
+release disk/environment/packaging work remain required. Physical hardware
+verification stays deferred. Next resume native formatter integration against
+the original-HolyC oracle and existing failing native tests.
