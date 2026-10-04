@@ -1503,3 +1503,22 @@ memory-16 image records missing sys_macro_head publication. Memory version 17
 adds the recording state and pre-filter copy path. Both original rebuild
 generations pass; native verification is pending. This is not macro playback/UI
 or allocation-failure qualification. Keep the checker and image frozen per run.
+
+All six native macro cases and all 19 message cases pass on memory version 17.
+The macro run records a 77.76-second startup (over budget); the same-image
+message run records 56.62 seconds. Functional verdicts do not waive the timing
+profile gate.
+
+Allocation recovery has a separate native-only fault contract:
+
+```sh
+python3 tools/test-i386-public-message-allocation.py IMAGE --out build/message-allocation
+```
+
+It temporarily patches the public MAllocIdent entry on a snapshot to throw
+OutMem, with IRQs disabled, then restores and checks its bytes. Root-public-heap
+usage and both job rings must recover exactly. The corrected fixture records
+fault_injected=true and a cleanup failure before the source fix; its first
+hash-type compilation failure was not a valid behavioral red. The copy path
+now frees its unqueued destination job before propagating the exception.
+Fresh-image verification is pending; this covers one allocation site only.

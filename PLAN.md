@@ -5599,3 +5599,35 @@ and 386 boot instruction audit also pass (483360 flat bytes). Native macro
 verification is running in build/i386-public-macro-green, and the full public
 message regression is running on the same immutable image in
 build/i386-public-macro-messages. These runs remain pending.
+
+### Native macro pass and copy-allocation recovery red
+
+Memory-17 passes the six frozen macro-recording cases in
+build/i386-public-macro-green/result.json: 20 commands, 486,-fpu, 8 MiB,
+exact VGA, unchanged image. All 19 public message cases also pass on the same
+image in build/i386-public-macro-messages/result.json (82 commands).
+The macro run's 77.76-second startup exceeds the 60-second gate; the message
+run records 56.62 seconds on that image. These are functional results, not a
+blanket timing qualification; a controlled timing profile remains required.
+
+Added tools/test-i386-public-message-allocation.py. On a snapshot it redirects
+MAllocIdent's entry to an OutMem-throwing HolyC helper, with IRQs disabled during
+the patch, then restores and verifies the original five code bytes. It requires
+exact root-public-heap recovery and empty/unlocked destination/recording rings,
+plus subsequent arithmetic. The first fixture attempted an unavailable public
+hash-record type and failed before injection; it is not a behavioral red.
+The corrected fixture uses the public function address and records a genuine
+red in build/i386-public-macro-allocation-red-v2/result.json: fault_injected
+is true, the OutMem catch marker is present, cleanup returns false, and the
+source disk is unchanged. Frozen checker SHA-256:
+55e8ed900a7f994d9b87242ecacafeaf5450522eb0e55220dc8d4be4df3f36a8.
+
+TaskMsg allocates the destination job before copying it for recording. A copy
+exception previously leaked that unqueued job. The copy is now guarded by a
+cleanup catch that frees it and permits normal exception propagation; neither
+ring is touched before a successful copy. Both original rebuild generations pass for this
+fix; fresh cross-build is running in build/i386-public-macro-copy-recovery-kernel.
+The same frozen fault checker is required afterward. This
+single injected allocation site does not qualify all posting failures.
+Earlier full workstation and six-provider runs remain live for their captured
+memory-16 epoch. Current-source full self-hosting/release gates remain open.

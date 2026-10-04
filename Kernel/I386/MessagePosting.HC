@@ -26,7 +26,12 @@ CJob *MemoryTaskMsg(CTask *target,CTask *master,
   //Match original TaskMsg: record only positive key-down, before filtering.
   if((memory_semas[SEMA_RECORD_MACRO].val&1) &&
       target!=memory_macro_task && msg_code==MSG_KEY_DOWN) {
-    copy=MemoryIdent(job,memory_root);
+    try { copy=MemoryIdent(job,memory_root); }
+    catch {
+      //The job has not entered either ring. Release it before propagation;
+      //leaving catch_except clear preserves the original allocation exception.
+      MemoryFree(job);
+    }
     irq=I386IrqSave;
     last=memory_macro_head.last;
     copy->last=last; copy->next=last->next;
