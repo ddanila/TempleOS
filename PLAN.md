@@ -6557,3 +6557,28 @@ on unchanged development image ed514687. The corrected checker is running in
 Implementation must preserve the full User(fmt, ...) API and default ownership.
 Ctrl-Alt-T creation and visible terminal editing/focus remain separate follow-up
 checks; passing the publication probe alone will not satisfy terminal creation.
+
+### User dependency: original-backed formatted strings
+
+The corrected User baseline is terminal FAIL at the publication assertion in
+`build/i386-user-create-red-fixed/result.json`: User is absent on unchanged
+ed514687. The original behavior contract passes. Implementation tracing found
+that User requires formatted string generation and XTalk input delivery, neither
+currently exposed by the native public API. Do not replace the full variadic
+API with a fixture-specific formatter.
+
+Added `tools/test-i386-format-strings.py`: 17 shared cases cover literals,
+percent escaping, signed/unsigned/hex/binary, characters/strings, width,
+zero-padding, dynamic width, precision, float output and mixed variadic values.
+Allocated results are compared and freed. The original x64 oracle passes in
+`build/i386-format-original-fixed/result.json`; checker SHA-256
+`51a85c43b4b2f71eb5df828fadbda6d19fddcc93f63fc13a8cad117975a55b3f`.
+These are selected cases, not complete TempleOS format-language coverage.
+
+Observed original semantics correct three initial printf-based expectations:
+%-5d with 42 gives three leading spaces and 42; %.3s leaves HolyC untruncated;
+%f with 1.5 yields 2 unless a decimal precision is supplied. Those outputs are
+now frozen in the oracle. Native baseline is running in `build/i386-format-red`.
+Next implementation work must preserve original formatting and task ownership,
+then provide User and hardware creation workflows; no implementation pass is
+claimed by adding these tests.
