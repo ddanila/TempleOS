@@ -8537,3 +8537,20 @@ validation, reads, writes, repair and independent filesystem auditing, while
 retaining rejection of deleted/unsupported bits. Verify the failed candidate's
 persisted state before discarding it; do not assume an unsuccessful API return
 means disk publication did not occur. Runtime result remains pending.
+
+That first resident-cache run has now failed at the resident write checkpoint
+with the recorded console timeout. Its preserved writable candidate contains
+`/Probe/ReadResident.BIN` with attr 0xA00, size 4 and bytes `410042ff` (A, NUL,
+B, 0xFF): publication happened before the failed post-write resolution.
+Raw record inspection is saved in
+`build/public-file-resident-write-cache-green/persisted-resident-record.json`.
+The corrected isolated independent auditor also verifies the complete volume,
+including that resident entry: 873 files, 17506 owned sectors and bitmap matching
+reachable extents, saved in `persisted-volume-audit.json` beside that record.
+This proves persisted state, not working public resident reads.
+
+The isolated correction admits resident metadata while retaining deleted-bit
+rejection in RedSea directory/read/write/repair guards. Its independent auditor
+recognizes ordinary/resident and compressed/resident regular-file combinations
+(0x800, 0xA00, 0xC00, 0xE00). Fresh original bootstrap passes and cross compilation
+is running in `build/file-resident-metadata`; runtime qualification remains open.
