@@ -4125,3 +4125,28 @@ Installation and independent boot are running in
 `build/i386-heap-seek-gen2-native-install`. This retained-provider result
 does not establish second-generation flat-kernel construction, complete
 image reproducibility, debugger completion or release readiness.
+
+Second-generation exact retained installation and independent 8 MiB KVM
+`486` boot now PASS in `build/i386-heap-seek-gen2-native-install/result.json`.
+All six installed payload bytes match their guest-built inputs; the source
+and installed candidate are preserved during the boot test. Independent
+`6*7` and `DocAllocationCheck` checks pass. Candidate SHA-256:
+`93c5539e0bcdb28dc8826cf5355ed752374191f1e210cc6769b5d7b48b254a98`.
+This boot is not a no-FPU TCG timing measurement.
+
+Second-generation flat construction is running in
+`build/i386-heap-seek-gen2-selfhost`, using both verified retained build and
+installation reports. Its command is:
+
+```sh
+python3 tools/test-i386-selfhost-install.py \
+  --disk build/i386-heap-seek-gen2-native-install/candidate.img \
+  --retained-build-result build/i386-heap-seek-gen2-native-build/result.json \
+  --retained-install-result build/i386-heap-seek-gen2-native-install/result.json \
+  --out build/i386-heap-seek-gen2-selfhost \
+  --accel kvm --cpu 486 --qmp-stdio --command-timeout 3600
+```
+
+After it passes, audit the installed image with `--guest-compiler-template`
+and compare generation module/flat bytes and installed boot areas with
+`tools/audit-i386-generations.py`. These verdicts remain pending.
