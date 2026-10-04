@@ -8680,3 +8680,18 @@ NUL termination and fresh owned buffers. A compressed fixture preparation
 session is running in `build/public-file-resident-compressed-fixture`; original
 and native compressed qualification are pending. This checks stored archive
 ownership plus expansion rather than assuming ordinary residence proves it.
+
+Compressed resident fixture preparation passes, and the isolated independent
+auditor rejects all ten metadata/extent/bitmap corruptions against that actual
+compressed resident entry in
+`build/public-file-resident-compressed-fixture/corruption-audit.json`.
+The original compressed cold-read oracle passes; native expanded/cached/alternate
+ownership checks are running in `build/public-file-resident-compressed-cold-green`.
+
+The public FileRead checker adds `--resident-recovery` (requires `--resident`)
+for twenty port-only create/update/read/remove cache cycles. It checks exact
+public task heap recovery and uses the existing read-only QMP observer around
+the cycle call to check private used bytes/allocation count. Original functional
+oracle remains separate from allocator-accounting assertions. This qualification
+is running in `build/public-file-resident-lifecycle-recovery`. It covers removal
+of individual entries, not whole mounted-service teardown or allocation failure.

@@ -43,7 +43,10 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--parents',action='store_true',help='Require original parent search for absolute child paths')
     parser.add_argument('--resident',action='store_true',help='Require resident writes, owned cached reads and replacement back to ordinary storage')
+    parser.add_argument('--resident-recovery',action='store_true',help='Twenty port-only resident cache create/remove cycles with public/private heap recovery')
     args=parser.parse_args()
+    if args.resident_recovery and not args.resident:
+        parser.error('--resident-recovery requires --resident')
     checks=list(CHECKS)
     definitions=list(DEFINITIONS)
     if args.parents:
@@ -93,8 +96,19 @@ def main():
         #Write setup first so an undefined FileRead is a qualified API failure.
         commands=[(DEFINITIONS[0],[]),(DEFINITIONS[1],[]),('ReadSeed;',[])]+[(check+';',['1']) for check in checks[:3]]
         commands += [(source,[]) for source in definitions[2:]]
-        commands += [(check+';',['1']) for check in checks[3:]]+[('6*7;',['42'])]
-        runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
+        commands += [(check+';',['1']) for check in checks[3:]]
+        if args.resident_recovery:
+            commands += [('U8 *ResidentName="C:/Probe/ReadResident.BIN";',[]),
+                         ('Bool ResidentRound(){return ResidentWrite(ResidentName,90,0x200)&&ResidentRead(ResidentName,90,0)&&ResidentWrite(ResidentName,67,0)&&ResidentRead(ResidentName,67,0x800);}',[]),
+                         ('Bool FindRecovery(){I64 i,used=Fs->data_heap->used_u8s;for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return Fs->data_heap->used_u8s==used;}',[]),
+                         ('FindRecovery;',['1'])]
+        commands += [('6*7;',['42'])]
+        if args.resident_recovery:
+            #The read-only observer recognizes FindRecovery as its sampling boundary.
+            commands[-2]=('FindRecovery();',['1'])
+            runner=runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](candidate,report)
+        else:
+            runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
             startup_check={'status':'ok','answers':[],'commands':commands})
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
@@ -112,7 +126,8 @@ def main():
         stored,expanded,kind=struct.unpack_from('<qqB',archive)
         if kind!=3 or expanded!=64 or stored>=81:
             raise ValueError('Compressed read fixture did not exercise eight-bit expansion')
-        report.update(result='pass',parent_search=args.parents,resident=args.resident)
+        report.update(result='pass',parent_search=args.parents,resident=args.resident,
+                      resident_recovery_cycles=20 if args.resident_recovery else 0)
     except Exception as error:
         report['error']=str(error);raise
     finally:
