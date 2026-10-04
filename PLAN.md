@@ -7085,3 +7085,14 @@ from the unchanged native target is active in
 `build/i386-heap-asm-scan-gen2-largest-first`, with exact installed-module
 comparison enabled. Python compilation and diff whitespace checks pass;
 guest build success remains unproven until this new run completes.
+
+### Compiler-first retry publishes a byte-identical native compiler
+
+The active `build/i386-heap-asm-scan-gen2-largest-first` run successfully
+publishes `RetainedCompilerRuntime.t32m` and advances to `CompilerProbe`.
+An independent read of the saved compiler output compares equal, byte for
+byte, with the installed first-generation compiler: 1738306 bytes, SHA-256
+`c99504863728b790424f1ed6b182f2223cf47fe1a06642113af57b7a3c6abd75`.
+The earlier compiler-publication space failure is avoided with this ordering.
+The remaining five provider builds, complete comparison, installation and
+flat-kernel rebuild are still pending; this is not a complete two-generation pass.
