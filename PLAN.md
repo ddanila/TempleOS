@@ -6,7 +6,9 @@ The promoted CPU-trap epoch now passes fully native twelve-module
 construction/install/boot/audits and five-cycle continuation. Its native
 workstation passes 513 commands, exact VGA and 20 exact heap-recovery cycles:
 startup 33.068 seconds and long-document update 0.205 seconds. Formal startup
-budget passes. Second-generation retained rebuilding/comparison remains live.
+budget passes. Second-generation retained rebuilding passes: all six modules
+match the installed first generation byte for byte. Exact installation and
+independent 8 MiB boot pass; second-generation flat construction is running.
 FileWrite is still an isolated experiment: ordinary/explicit/default-date
 and lifecycle contracts pass, but .Z write/include fails; complete
 compression/resident/API and release requirements remain open.
@@ -18,8 +20,9 @@ debugging pass on the prototype; full workstation passes 513 commands.
 Main's fresh original rebuild and i386 instruction/keyword audits pass,
 and all thirteen emitted artifacts match the corrected tested prototype.
 Guest flat-development construction/install/boot/audits pass at 487304 bytes
-(120 spare), using cross-built retained providers. Updated fully native
-providers/generations remain unqualified. Single-step, managed breakpoints,
+(120 spare), using cross-built retained providers. The first fully native
+generation is qualified as described above; second-generation flat comparison
+remains pending. Single-step, managed breakpoints,
 register inspection/editing and concurrent debugger sessions remain open.
 
 The fully guest-built optimized image passes installed 386/boot/filesystem and
@@ -7944,3 +7947,35 @@ alongside this work rather than assuming document operations expose them.
 Then rerun the six malformed/oversized publication cases and require exact
 whole-target preservation. Full executable truncation remains a distinct
 boot-format integrity requirement.
+
+## CPU-trap generation-two checkpoint and compression experiment
+
+`build/cpu-trap-main-gen2-native-build/result.json` records successful native
+construction of all six retained providers and byte identity with the installed
+first generation (`build/cpu-trap-main-selfhost/target.img`, SHA-256
+`b43b2e027a917f244d2a2fe2e1a97144b6ec05b45fd3e70cb830d4fa2f19a565`).
+`build/cpu-trap-main-gen2-native-install/result.json` records exact installation
+and independent 8 MiB 486 boot, arithmetic and document allocation checks.
+The resulting candidate SHA-256 is
+`5ff979ad0f5002cfa5bbaeaefc75731ddc945dca9684a79caf04f2e0f47637d8`.
+Full second-generation self-hosted construction is running in
+`build/cpu-trap-main-gen2-selfhost`; installed audits and twelve-module/flat/boot
+comparison must pass before claiming this epoch reproducible.
+
+The isolated FileWrite prototype now has a candidate native archive encoder
+adapted from the original dictionary compression, filename-based .Z attribute
+inference, archive allocation/cleanup and replacement attribute publication.
+These changes are not promoted or qualified. Its original bootstrap rebuild
+passes. The first cross compilation rejected NULL in an early header context;
+the candidate now uses numeric zero and restores saved interrupt state on
+unsupported-attribute rejection. Cross compilation is running again before
+the existing write/include/execute contract. A successful ordinary write does
+not prove compressed output works.
+
+After the executable .Z contract passes, qualify seven/eight-bit input, dictionary
+growth/recycling, incompressible fallback, empty/replacement writes and original
+archive interoperability. Extend independent filesystem audits to legitimate
+compressed records while retaining extent, overlap, bitmap and corruption
+checks. Resident-file semantics and the remaining public file APIs still need
+original-behavior inventory. None of these partial checks closes the release
+goal or the debugger and boot-capacity work above.
