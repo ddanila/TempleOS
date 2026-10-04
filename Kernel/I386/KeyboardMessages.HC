@@ -45,7 +45,7 @@ U0 NativeKeyboardWorker(U8 *data)
     decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
     if(decoded<0) {
       native_keyboard_losses++;
-      NativeKeyboardDiscard(native_keyboard_owner);
+      NativeTerminalDiscardKeyboard;
     } else if(decoded) {
       target=sys_focus_task;
       if(!TaskValidate(target)) target=native_keyboard_owner;
@@ -60,7 +60,7 @@ U0 NativeKeyboardWorker(U8 *data)
       } catch {
         I386TaskSelf->catch_except=TRUE;
         native_keyboard_losses++;
-        NativeKeyboardDiscard(native_keyboard_owner);
+        NativeTerminalDiscardKeyboard;
       }
     }
     I386SchedYield(I386TaskSelf->owner);
@@ -95,11 +95,11 @@ Bool NativeKeyboardStart()
 }
 I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE)
 {//All console/document clients consume the public task queue, not the decoder.
-  I64 code;
+  I64 code,*seen=NativeTerminalLossSeen;
   if(!native_keyboard_task || reader!=console_config->reader || !event) return -1;
   while(TRUE) {
-    if(native_keyboard_losses!=native_keyboard_seen) {
-      native_keyboard_seen=native_keyboard_losses;
+    if(native_keyboard_losses!=*seen) {
+      *seen=native_keyboard_losses;
       return -1;
     }
     code=(*native_keyboard_hooks.scan)(&event->ch,&event->scan,

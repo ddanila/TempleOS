@@ -100,7 +100,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0)
   if(backup) {
     for(i=0;i<153600;i++) console_planes[i]=backup[i];
     for(i=0;i<sizeof(CI386Text);i++) q[i]=p[i];
-    console_text.dirty_first=0; console_text.dirty_last=60;
+    NativeTerminalText()->dirty_first=0; NativeTerminalText()->dirty_last=60;
     I386HeapFree(console_config->heap,backup); ConsolePresent;
   }
   console_debug_task=NULL; console_debug_go=FALSE; sys_focus_task=focus;

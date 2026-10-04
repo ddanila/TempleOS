@@ -1,4 +1,4 @@
-//Retained single-owner VGA console and native command input.
+//Retained task-owned VGA consoles and native command input.
 #include "/Kernel/Types.HH"
 #include "/Kernel/NumericLimits.HH"
 #define TRUE 1
@@ -30,8 +30,19 @@ import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386ConsoleConfig *console_config;
-CI386Text console_text;
-U8 *console_planes;
+CI386Text console_default_text;
+U8 *console_default_planes;
+extern CI386Text *NativeTerminalText();
+extern U8 **NativeTerminalPlanes();
+extern Bool NativeTerminalVisible();
+extern U0 NativeTerminalAdoptRoot();
+extern U0 NativeUserTaskCont();
+extern U0 NativeUserCmdLine(I64 dummy=0);
+extern CTask *NativeWinFocus(CTask *task=0);
+extern I64 *NativeTerminalLossSeen();
+extern U0 NativeTerminalDiscardKeyboard();
+#define console_text (*NativeTerminalText())
+#define console_planes (*NativeTerminalPlanes())
 extern U0 ConsolePresent();
 extern Bool NativeKeyboardStart();
 extern I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE);
@@ -62,7 +73,7 @@ U8 console_diagnostic_filename[256];
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[123];
+CI386KernelSymbol console_doc_exports[126];
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
 extern Bool NativeIsDebugMode();
@@ -334,7 +345,13 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[121].val=(&NativeDebugMode+0)(U64);
   console_doc_exports[122].str="_IS_DBG_MODE";
   console_doc_exports[122].val=(&NativeIsDebugMode+0)(U64);
-  for(i=0;i<123;i++) {
+  console_doc_exports[123].str="_USER_CMD_LINE";
+  console_doc_exports[123].val=(&NativeUserCmdLine+0)(U64);
+  console_doc_exports[124].str="_USER_TASK_CONT";
+  console_doc_exports[124].val=(&NativeUserTaskCont+0)(U64);
+  console_doc_exports[125].str="_WIN_FOCUS";
+  console_doc_exports[125].val=(&NativeWinFocus+0)(U64);
+  for(i=0;i<126;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -389,15 +406,11 @@ Bool ConsoleDisplay()
   return TRUE;
 }
 U0 ConsoleKeys(I64 unused)
-{//Single console/input owner. Each complete line is a recoverable compiler input.
-  CI386KeyEvent event;
-  U8 line[256];
-  I64 length=0,decoded,ch,spaces,header_used,
-      mouse_x=0,mouse_y=0,mouse_buttons=0,mouse_packets=0,
-      next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets;
-  Bool mouse_visible=FALSE;
+{//Root startup; ordinary and spawned terminals share task-owned input loops.
+  I64 header_used;
   CI386Task *task=I386TaskSelf;
   CI386TaskSymbols *scope=task->symbol_state;
+  NativeTerminalAdoptRoot;
   sys_focus_task=task;
   //Fresh scheduler entries have IF clear. Devices and task services are ready;
   //allow timer/keyboard delivery during startup compilation and user execution.
@@ -413,8 +426,19 @@ U0 ConsoleKeys(I64 unused)
     KernelLog("STARTUP source ok\n");
   else KernelLog("STARTUP source error\n");
   if(!NativeKeyboardStart) { KernelLog("KEYBOARD MESSAGE start failed\n"); KernelStop; }
-  I386TextWrite(&console_text,"> "); ConsolePresent;
   KernelLog("DONE native kernel startup\n");
+  NativeUserTaskCont;
+}
+
+U0 NativeTerminalInput()
+{
+  CI386KeyEvent event;
+  U8 line[256];
+  I64 length=0,decoded,ch,spaces,
+      mouse_x=0,mouse_y=0,mouse_buttons=0,mouse_packets=0,
+      next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets;
+  Bool mouse_visible=FALSE;
+  I386TextWrite(&console_text,"> "); ConsolePresent;
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   while(1) {
     decoded=NativeReadKey(console_config->reader,&event,FALSE);
@@ -449,7 +473,7 @@ U0 ConsoleKeys(I64 unused)
       }
       ConsolePresent;
     }
-    if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+    if(NativeTerminalVisible && MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
         next_mouse_packets!=mouse_packets) {
       if(mouse_visible)
         NativeMousePlaneMove(console_planes,mouse_x,mouse_y,next_mouse_x,next_mouse_y);
@@ -472,9 +496,9 @@ U0 ConsoleKeys(I64 unused)
 #include "/Kernel/I386/ConsoleInput.HC"
 #include "/Kernel/I386/Debugger.HC"
 
-U0 ConsolePresent()
+U0 ConsolePresentText(CI386Text *surface)
 {
-  I64 rows=I386TextPresent(&console_text),i;
+  I64 rows=I386TextPresent(surface),i;
   U8 message[13],*prefix="VGA ROWS ";
   if(rows<0) KernelStop;
   if(rows) {
@@ -482,6 +506,11 @@ U0 ConsolePresent()
     message[9]='0'+rows/10; message[10]='0'+rows%10;
     message[11]=10; message[12]=0; KernelLog(message);
   }
+}
+
+U0 ConsolePresent()
+{
+  if(NativeTerminalVisible) ConsolePresentText(&console_text);
 }
 
 #include "/Kernel/I386/KbcInputCancel.HC"
@@ -512,3 +541,5 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/GraphicsFrame.HC"
 
 #include "/Kernel/I386/KeyboardMessages.HC"
+
+#include "/Kernel/I386/Terminals.HC"

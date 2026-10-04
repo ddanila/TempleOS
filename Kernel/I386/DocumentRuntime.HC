@@ -2186,13 +2186,13 @@ I64 NativeHelpDraw(U8 *name,U8 *text,I64 size,I64 start,
   I386TextWrite(&console_text,"TempleOS i386\nHelp: ");
   I386TextWrite(&console_text,name); I386TextWrite(&console_text,"\n\n");
   while(link_index<link_count && links[link_index].end<=start) link_index++;
-  while(index<size && console_text.row<59) {
+  while(index<size && NativeTerminalText()->row<59) {
     if(link_index==selected && index==links[link_index].start) {
-      console_text.foreground=15; console_text.background=1;
+      NativeTerminalText()->foreground=15; NativeTerminalText()->background=1;
     }
     I386TextPut(&console_text,text[index++]);
     if(link_index<link_count && index==links[link_index].end) {
-      console_text.foreground=0; console_text.background=15; link_index++;
+      NativeTerminalText()->foreground=0; NativeTerminalText()->background=15; link_index++;
     }
   }
   ConsolePresent;

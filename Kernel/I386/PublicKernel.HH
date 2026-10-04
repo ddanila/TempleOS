@@ -6,6 +6,7 @@
 #include "/Kernel/I386/PublicTask.HH"
 #include "/Kernel/I386/PublicMessage.HH"
 #include "/Kernel/I386/PublicDebug.HH"
+#include "/Kernel/I386/PublicTerminal.HH"
 #include "/Kernel/I386/Bit.HH"
 #include "/Kernel/I386/Queue.HH"
 #include "/Kernel/DocTypes.HH"

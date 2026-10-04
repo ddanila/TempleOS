@@ -15,6 +15,6 @@ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
 }
 U0 NativeTextBaseRestore()
 {
-  console_text.dirty_first=0; console_text.dirty_last=60;
+  NativeTerminalText()->dirty_first=0; NativeTerminalText()->dirty_last=60;
   ConsolePresent;
 }

@@ -5925,3 +5925,42 @@ alone does not prove multiple usable terminals.
 The compiler-59/console-35 six-provider native rebuild and memory-17 full
 workstation run remain live for their captured images. The complete OS/M7 and
 release objective remains open.
+
+### Task-owned terminal implementation — runtime gate pending
+
+The frozen two-terminal checker records a genuine baseline publication failure
+in `build/i386-terminals-red-v2/result.json`; UserCmdLine/WinFocus are absent.
+Checker SHA-256: 7ae586737c2e44ada32c8497983681988777723fb75d4796a95b2e3cd3980e26.
+
+Console services advance to version 36. Added original public UserCmdLine,
+UserTaskCont and WinFocus bindings. Terminal instances own their text surface,
+planar storage, document, input-loop stack and keyboard-loss observation.
+Renderer accessors select the current task's surface across cooperative yields;
+background terminal display/mouse updates cannot overwrite the focused view.
+Focus explicitly presents the selected terminal. The existing scheduler cleanup
+hook releases/unlinks terminal state before compiler/symbol/heap teardown,
+chains an earlier cleanup callback and refocuses a surviving terminal. Child
+terminals own a public put_doc; root startup adopts the existing console display.
+Keyboard discontinuity now discards pending keyboard messages for registered
+terminals and the focused receiver while keeping unrelated jobs, and each
+terminal observes the loss independently.
+
+The first cross-build failed on NULL used before its declaration; a subsequent
+build rejected structure member selection through the display-return expression.
+Corrected the early default to 0 and used pointer member access at affected
+renderer sites. Both original rebuild generations and the fresh corrected
+cross-build/386 boot audit pass. Image:
+`build/i386-terminals-kernel-pointer/kernel.img`, SHA-256
+6051ee26f0405f92e4dc2682c9738ce5c30141c68a6a11d4e35156cad0e2f5d0.
+The frozen terminal workflow and ordinary keyboard regression are running in
+`build/i386-terminals-green` and `build/i386-terminals-keyboard`; runtime
+qualification is pending, not inferred from publication or compilation.
+
+This first implementation still needs visible workflow results, document and
+background-work integration, hotkey/window-order behavior, failure/kill/resource
+coverage and debugger/terminal interactions. Only one debugger session can
+currently be active; exiting inside a debugger requires explicit teardown
+coverage. UserTaskCont input-layer exception recovery and broader WinFocus
+parity need further contracts. The earlier compiler-59/console-35 six-provider
+build and memory-17 workstation run remain live on their distinct snapshots.
+Current-source native generations and the complete M7/release gates remain open.
