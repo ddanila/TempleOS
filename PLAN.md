@@ -8494,3 +8494,16 @@ and expand for ordinary reads. Cross construction has started in that checkout's
 Cold disk population, explicit service-lifetime cleanup, allocation/failed-write
 semantics, cache compatibility across raw/internal consumers and updated ABI
 qualification remain required. This prototype is not promoted to main.
+
+Main's fully native generation-two archive replacement qualification passes in
+`build/file-write-main-gen2-native-archive-parity/result.json`: 22 commands on
+8 MiB `486,-fpu`, exact original archive bytes across all eight fixture classes,
+exact VGA and independently valid filesystem allocation. Startup is 35.434
+seconds. The full native workstation run remains pending.
+
+The resident prototype's first cross-build stopped before guest compilation
+because its fresh checkout lacked `build/rebuild-test/result.json`. Its own
+original two-generation bootstrap rebuild is now running. Internal raw reads
+are kept on the disk path instead of inheriting public cached-read attributes.
+The prototype file-service ABI advances to 41 for the changed shared volume
+layout. These changes have no runtime qualification yet.
