@@ -4,46 +4,38 @@ This audit follows the six numbered outcomes in [PLAN.md](../PLAN.md#final-goal-
 Passing a component corpus or finding a public function does not prove the
 complete user workflow. Human observation and physical hardware remain optional.
 
-The first task-owned-terminal runtime is compiler 59, console 36 and memory 17 in
-`build/i386-terminals-kernel-pointer/kernel.img` (SHA-256
-`6051ee26f0405f92e4dc2682c9738ce5c30141c68a6a11d4e35156cad0e2f5d0`).
-Ordinary keyboard, explicit debugger and named-exception inspection checks pass
-on that image. Its two-terminal workflow and intentional keyboard-loss check also pass: separate
-definitions/history, programmatic focus, exit/refocus and parent public-heap
-recovery. The newer Ctrl-Alt-N image in `build/i386-terminal-hotkeys-kernel`
-(SHA-256 `444bfb1b7ee9de7e0ac6e4b609b2fd066798c649a9baec47a989165e81657229`)
-passes build/audit, hardware Ctrl-Alt-N cycling and ordinary keyboard checks.
-The heading-fix image `build/i386-terminal-documents-kernel/kernel.img`
-(SHA-256 `58ab899923d48879c927e24be06c986436fb1ed4da04a9918ba5219c83dd060e`)
-passes the two-editor contract: independent live text documents, focus cycling,
-editing/save, named terminal restoration, exit/refocus, exact parent public-heap
-recovery and independent persisted-byte verification. Root document-editing
-regression passes 169 commands with exact VGA. The idle Ctrl-Alt-C contract now has matching
-baseline failure and candidate pass in `build/i386-terminal-idle-break-editor-{red,green}`.
-Candidate image `a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8`
-survives two breaks, supports editor sessions after each, retains definitions
-and passes normal terminal cleanup. Existing interrupt regression passes all 16 commands. The first background
-compiler/editor workflow passes visible/file/cleanup checks; the stricter
-completion-during-editor oracle also passes in
-`build/i386-terminal-background-live-session` (14 commands, 56.00-second startup). Forced editor-task cleanup passes on memory-18 image 201cb474. The broader
-cancellation corpus found unpublished CH_SHIFT_ESC during setup; shared-header
-publication is under verification. Killing a debugger task leaves DbgBusy in the
-survivor on the baseline; the chained task cleanup fix now passes the frozen
-workflow on image 9812e5d5. Explicit and named-exception regressions also pass.
+The latest cross-built source snapshot is compiler 59, memory 18 and console
+36 in `build/i386-heap-scan-kernel/kernel.img` (SHA-256
+`38fbbde26954101563a481fc2655157d7459dc7c40c06c3bd611318ba1c94bbd`).
+It passes the original two-generation rebuild, cross-build and 386 boot audit.
+Both portable and assembly heap corpora pass, including corruption rejection
+without arena/control mutation. Its portable size lookup now combines lookup
+with complete validation. Guest compilation, boot-area fit and startup benefit
+are still being checked in `build/i386-heap-scan-flat`; that development run
+uses cross-built retained providers and cannot prove full self-hosting.
 
-The preceding memory-17 registration-fix image passes the full 513-command
-workstation suite in `build/i386-public-macro-registration-workstation`, including
-20 document cycles with exact heap recovery, a 55.56-second startup and
-0.315-second long-document update. It predates debugger/terminal changes.
-The newest completed fully guest-built epoch is compiler 59, memory 17 and
-console 35 in `build/i386-debug-exception-selfhost`: all six retained providers
-and six flat modules were guest-built, installed and independently booted.
-`build/i386-debug-exception-selfhost-audit` passes all twelve executable ranges,
-installed payload and filesystem checks. Its 487344-byte flat image leaves
-80 bytes in the boot area. It predates task-owned terminals, Kill and debugger
-cleanup. The earlier memory-16/console-33 result remains historical evidence.
-Current-source two-generation reproducibility and release qualification remain
-open. The older 95-file local bundle is historical evidence, not a current release.
+Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent
+editors, background compilation during editing, idle Ctrl-Alt-C recovery,
+forced editor/debugger exit, and the 69-command public Kill contract. Debugger
+coverage includes explicit entry/return, named and zero-valued exceptions,
+source attribution, active mode and prior-mode restoration after normal or
+forced exit. These passes belong to the individual image snapshots recorded
+in PLAN.md and the workflow document; they are not a consolidated current-image
+release pass. The mode-image full workstation run is active in
+`build/i386-debug-mode-workstation`. The preceding cleanup-image attempt failed
+at a test that redeclared debugger G; the distinct-name forward-call regression
+passes, and the full fixture has been corrected.
+
+The newest completed fully guest-built epoch remains compiler 59, memory 17,
+console 35 in `build/i386-debug-exception-selfhost`: six retained providers and
+six flat modules were guest-built, installed and independently booted.
+`build/i386-debug-exception-selfhost-audit` verifies all twelve executable
+ranges, installed payload and filesystem. Its 487344-byte flat image has
+80 bytes spare. It predates task-owned terminals, Kill and debugger cleanup.
+The cleanup-snapshot provider build is active in
+`build/i386-terminal-debug-cleanup-retained`. Current-source two-generation
+reproducibility and release qualification remain open. The older 95-file local
+bundle is historical evidence, not a current release.
 
 | Required outcome | Executable test and independent oracle | Current status / missing evidence |
 | --- | --- | --- |
@@ -60,9 +52,9 @@ open. The older 95-file local bundle is historical evidence, not a current relea
 | 5: No FPU, 386 executable regions, pinned environment | No-FPU QEMU execution plus boot/installed/JIT/inline-assembly audits cover their classified ranges; command manifests record CPU, RAM, accelerator and devices. | New flat development image passes installed 386/RedSea audit. Complete current-source live JIT coverage and a consolidated environment record (host, QEMU, BIOS hash, pinned machine/storage/peripherals) remain open. Emulator evidence does not certify a physical 386. |
 | 6: Reviewable published result and x64 regression | `test-rebuild.py` boots rebuilt x64 compiler/kernel and rebuilds again. Packaging checks source/image evidence; the standalone verifier checks files, decompressed image and audio independently. | Fresh x64 regression passes. A single fresh/resumable qualification command, matching full evidence, published versioned artifacts and downloaded-artifact smoke test remain open. The local bundle is an earlier-source candidate, not a published release. |
 
-Next implementation order: finish measuring the optimized fully guest-built
-image, then close public task/terminal and debugging behavior using failing
-visible tests. Keep these failures in the qualification report; a publication
+Next implementation order: finish the live workstation/provider/flat builds,
+check native boot-area fit and startup timing, then close the remaining
+terminal and debugger behavior with failing visible tests. Keep these failures in the qualification report; a publication
 probe turning green is only the first step toward its associated behavior gate.
 
 The optimized fully guest-built installed image now passes its 386 executable,
