@@ -8391,3 +8391,24 @@ regression in `build/public-file-find-rejection-read-regression`. Neither result
 is assumed from ABI-39 success. Main's FileWrite generation-two native retained
 build remains running; FileRead/FileFind implementations remain isolated pending
 their qualification and promotion.
+
+ABI-40 public FileRead regression now passes in
+`build/public-file-find-rejection-read-regression/result.json`: 27 commands,
+including parent search, binary and expanded `.Z` reads, alternate-name lookup,
+independent owned buffers, empty/missing files and twenty read/free recovery
+cycles. The original functional oracle, exact VGA and independent filesystem
+audit pass; the source disk remains unchanged. Startup is 25.698 seconds on
+8 MiB `486,-fpu`. Resident-file compatibility remains outside this result.
+The corrected candidate's native retained build has started in
+`build/public-file-find-rejection-native-build`; it is not yet qualified.
+
+Main FileWrite generation-two retained rebuilding has completed successfully
+in `build/file-write-main-gen2-native-build/result.json`. All six modules are
+byte-identical to those installed in generation one, whose disk SHA-256 is
+`c45551301c49a71a348d7014555f613f4473910c7cb662d05b1c0bc5dff2abf7`.
+The generated source disk SHA-256 is
+`9d7eae520e0a1a177500e8d285486b4858fd353bbe304c0452b0b03a51cbbf20`.
+Generation-two retained installation and independent boot are running in
+`build/file-write-main-gen2-native-install`. Rebuilding the other six modules,
+installing the flat kernel and comparing complete generations still remain;
+the retained comparison alone does not prove whole-system reproducibility.
