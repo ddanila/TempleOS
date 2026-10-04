@@ -280,10 +280,7 @@ Bool Raw(Bool val)
   return !LBEqu(&Fs->display_flags,DISPLAYf_NOT_RAW,!val);
 }
 
-Bool IsRaw()
-{//Are we in BLACK & WHITE raw scrn mode?
-  return !Bt(&Fs->display_flags,DISPLAYf_NOT_RAW);
-}
+#include "/Kernel/IsRawCore.HC"
 
 Bool SingleUser(Bool val)
 {//Set single-user mode.

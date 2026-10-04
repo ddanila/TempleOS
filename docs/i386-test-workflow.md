@@ -3018,3 +3018,33 @@ Validation: both original compiler/kernel rebuild generations passed in
 source hashes (log `build/formatter-cache-core-rebuild.log`). All 34 original
 formatter cases passed in `build/i386-format-cache-core-original/result.json`
 (log `build/format-cache-core-original.log`).
+
+### Native original task display-mode query
+
+The original IsRaw body is byte-preserved in `Kernel/IsRawCore.HC`, included
+by both KMisc.HC and the retained i386 console. The native console publishes
+`_IS_RAW`, and PublicWindow.HH exposes the original IsRaw API. It queries the
+current task's DISPLAYf_NOT_RAW flag; this does not implement Raw switching
+or establish rendering parity. Console service version stays 36 because its
+service-record ABI and existing exports are unchanged; the new export is additive.
+
+The original two-generation compiler/kernel rebuild passes in
+`build/rebuild-test/result.json` (log `build/israw-core-rebuild.log`). The new
+cross-build/386 instruction audit passes in `build/i386-display-query-kernel`;
+boot kernel size remains 483088 bytes, with no new import binding. Its native
+display-query test is recorded below after completion.
+
+`tools/test-i386-display-query.py` checks API availability on the native target,
+current-task mode queries in both flag states, restoration and continued HolyC
+execution. Its helper restores the full display flags before returning. The
+original six-case oracle passes in `build/i386-display-query-original`.
+The formatter oracle now has 36 cases, adding allocated `%P` output in raw
+and windowed modes. All 36 pass on original TempleOS in
+`build/i386-format-display-mode-original/result.json`, checker SHA-256
+`9ce7ae6d6d5df079308725ce52be7f9320aadf3922e0d0f3746b8af7eea34c9c`.
+Native MStrPrint, formatter symbol scanning/cache integration, and full User
+creation behavior remain required; these tests do not establish their completion.
+
+The native display-query oracle passes on an 8 MiB `486,-fpu` QEMU boot in
+`build/i386-display-query-native/result.json`; its source disk is unchanged.
+Checker SHA-256: `f78b2368525c9b3786c3a82331f61ea860eb8a80dd1184e8109af7bb30949bea`.
