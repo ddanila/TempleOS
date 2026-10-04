@@ -7249,3 +7249,21 @@ uses `IsRaw` to select linked output. Preserve original nearest-symbol lookup,
 function/export distinction, offset/truncation formatting and display-mode
 behavior when adding the native dependency bridge; do not replace it with
 only the existing debugger's function-allocation lookup.
+
+### Shared original symbol lookup and pointer-formatting cores
+
+`Kernel/FunSeg.HC` now includes `FunSegLookupCore.HC` for HasLower and
+HashFunSegFind, and `StrPrintFunSegCore.HC` for StrPrintFunSeg. Both extracted
+bodies are byte-preserved; expanding the two includes reproduces the previous
+file exactly. Architecture-dependent task scanning and cache management remain
+in FunSeg.HC. This prepares reuse of original nearest-symbol selection and
+pointer formatting by the native formatter without duplicating their behavior.
+
+The original two-generation compiler/kernel rebuild passes in
+`build/rebuild-test/result.json` (log `build/formatter-symbol-core-rebuild.log`).
+The formatter oracle now has 34 cases, adding function pointer name+offset,
+comma-mode name-only output and both null-pointer forms. All 34 pass on original
+TempleOS in `build/i386-format-symbol-core-original/result.json`.
+Checker SHA-256: `015cd3c5ca7f7569a4a6c53922772c82affd28c7f9f2fff5587142e66ad48285`.
+Native integration is still pending; these extraction and original-oracle
+passes do not imply native MStrPrint availability.

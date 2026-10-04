@@ -44,6 +44,10 @@ CASES = [
     ('FormatCheck(MStrPrint("%,X",0x1234ABCD),"1234,ABCD");', ['1']),
     ('FormatCheck(MStrPrint("%z",1,"zero\\0one\\0two\\0"),"one");', ['1']),
     ('FormatCheck(MStrPrint("%.*f",2,1.5),"1.50");', ['1']),
+    ('FormatCheck(MStrPrint("%p",&FormatGrowCheck),"&FormatGrowCheck+0x0000");', ['1']),
+    ('FormatCheck(MStrPrint("%,p",&FormatGrowCheck),"&FormatGrowCheck");', ['1']),
+    ('FormatCheck(MStrPrint("%p",0),"0");', ['1']),
+    ('FormatCheck(MStrPrint("%,p",0),".");', ['1']),
 ]
 
 
