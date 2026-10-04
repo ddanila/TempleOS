@@ -10,15 +10,13 @@ budget passes. Second-generation retained rebuilding passes: all six modules
 match the installed first generation byte for byte. Exact installation and
 independent 8 MiB boot pass. Second-generation self-hosted flat construction,
 installed audits and twelve-module/flat/boot byte comparison also pass.
-FileWrite is still an isolated experiment: ordinary/explicit/default-date
-and lifecycle contracts pass. The initial .Z write/include/execute contract
-and compressed-record filesystem corruption checks now pass. Eight archive
-fixtures match original bytes, including dictionary recycling and fallback;
-An isolated public FileRead contract also passes binary/eight-bit expansion,
-metadata/ownership and exact read/free heap recovery.
-Ordinary metadata/lifecycle/default-date regression tests pass after fixing
-a directory-relocation return bug. Full workstation qualification is running; complete
-compression/resident/API and release requirements remain open.
+Ordinary/compressed FileWrite is now promoted: exact cluster/date/attribute
+semantics, original archive parity/replacement and the full 513-command
+workstation suite pass on its prototype. Main's fresh original rebuild/cross
+audits pass and all thirteen emitted artifacts match that qualified prototype.
+Native retained rebuilding and main-image archive requalification are running.
+Public FileRead remains isolated; its parent-search contract also passes.
+Resident caching, FileFind, broader errors and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
 frames, normal-context debugger entry and full exception-frame return. Five
@@ -8168,3 +8166,45 @@ failure cleanup. The current wrapper temporarily uses both private and public
 buffers; qualify larger-file peak memory and consider direct public allocation
 in the service before claiming complete 8 MiB file API parity. Repeat full
 workstation/native builds/generation checks after architectural promotion.
+
+## Public file API: FileWrite promotion and next contracts
+
+Full FileWrite workstation qualification passes in
+`build/public-file-write-resolve-workstation/result.json`: 513 commands, exact
+VGA and twenty exact shared heap-recovery document cycles. Startup is 24.495
+seconds; long-document update is 0.255 seconds. The unchanged formal startup
+budget passes in `build/public-file-write-resolve-workstation-budget.json`.
+
+Main now contains the tested ordinary/compressed five-argument I64 FileWrite,
+explicit/default timestamp behavior, bounded original dictionary encoder and
+post-publication full-path resolution after directory relocation. The public
+export is registered and the file-service ABI is 38. Replacement accepts an
+optional attribute update while existing callers preserve attributes by default.
+Legacy private Boolean writes keep their existing behavior. Resident attributes
+and cache parity remain unsupported and explicitly unfinished.
+
+`build/file-write-main-original-cross-build.log` passes the fresh original
+bootstrap and cross-build/instruction/keyword audits.
+`build/file-write-main-byte-comparison.json` proves all twelve T32Ms and
+Kernel32.BIN match the fully tested prototype byte for byte. Main native
+retained reconstruction is running in `build/file-write-main-native-build`;
+main archive replacement requalification is running in
+`build/file-write-main-archive-parity`. Native installation/flat generation
+comparison remains required for this newly promoted source epoch.
+
+The FileRead test now optionally exercises parent search with `--parents`.
+`build/public-file-read-parent-red/result.json` is actually a PASS: 27 commands,
+original oracle, absolute child-path raw lookup and alternate .Z parent lookup,
+exact VGA and read/free recovery. No implementation change was necessary;
+the interactive task uses the existing worker read service's parent search.
+The result directory's intended red name must not be mistaken for a failure.
+This qualifies those parent cases, not every root/task/search combination.
+
+New `tools/test-i386-public-file-find.py` validates original Bool FileFind
+existence, file/directory filters, explicit alternate .Z and parent-search
+flags, missing names and NULL. Its original oracle passes;
+`build/public-file-find-red` performs successful directory/file setup, then
+fails on the undefined FileFind identifier. Next preserve original CDirEntry
+layout/metadata, caller-owned full_name allocation, output zeroing on failure,
+wildcard behavior and invalid-flag exceptions before implementing the API.
+The existence-only contract is not sufficient for full FileFind parity.

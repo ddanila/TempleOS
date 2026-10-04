@@ -41,7 +41,13 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--parents',action='store_true',help='Require original parent search for absolute child paths')
     args=parser.parse_args()
+    checks=list(CHECKS)
+    if args.parents:
+        checks[3:3]=['DirMk("C:/Probe/ReadChild")',
+                     'ReadCheck("C:/Probe/ReadChild/ReadRaw.BIN",0x800)',
+                     'ReadPacked("C:/Probe/ReadChild/ReadPacked.BIN")']
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
     candidate=out/'candidate.img'
     if candidate==args.disk.resolve():parser.error('output overlaps source')
@@ -53,7 +59,7 @@ def main():
         overlay=out/'overlay';overlay.mkdir(exist_ok=True)
         lines=['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+DEFINITIONS
         lines.append('U0 OriginalReads(){CArcCompress *arc;U8 *line;ReadSeed;')
-        for index,check in enumerate(CHECKS[:-2]):
+        for index,check in enumerate(checks[:-2]):
             check=check.replace('C:/Probe/','B:/')
             lines.append(f'if(!({check})){{Report("FAIL original FileRead case {index}\\n");return;}}')
         lines+=['arc=CompressBuf(ReadPackedBytes,64);line=MStrPrint("EXPORT ReadPacked.arc %X %X\\n",arc,arc->compressed_size);Report(line);Free(line);',
@@ -64,9 +70,9 @@ def main():
         report['original_oracle']='pass'
         report['heap_recovery_scope']='Port-only exact current-task accounting across twenty read/free cycles; excluded from original functional oracle'
         #Write setup first so an undefined FileRead is a qualified API failure.
-        commands=[(DEFINITIONS[0],[]),(DEFINITIONS[1],[]),('ReadSeed;',[])]+[(check+';',['1']) for check in CHECKS[:3]]
+        commands=[(DEFINITIONS[0],[]),(DEFINITIONS[1],[]),('ReadSeed;',[])]+[(check+';',['1']) for check in checks[:3]]
         commands += [(source,[]) for source in DEFINITIONS[2:]]
-        commands += [(check+';',['1']) for check in CHECKS[3:]]+[('6*7;',['42'])]
+        commands += [(check+';',['1']) for check in checks[3:]]+[('6*7;',['42'])]
         runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
             startup_check={'status':'ok','answers':[],'commands':commands})
@@ -82,7 +88,7 @@ def main():
         stored,expanded,kind=struct.unpack_from('<qqB',archive)
         if kind!=3 or expanded!=64 or stored>=81:
             raise ValueError('Compressed read fixture did not exercise eight-bit expansion')
-        report['result']='pass'
+        report.update(result='pass',parent_search=args.parents)
     except Exception as error:
         report['error']=str(error);raise
     finally:

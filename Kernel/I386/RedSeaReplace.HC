@@ -4,7 +4,7 @@ extern Bool I386RedSeaValid(CI386RedSea *v);
 extern Bool I386RedSeaDirectory(CI386RedSea *v,I64 block,U8 *sector,I64 *size);
 extern U0 I386RedSeaPutWord(U8 *p,U64 value);
 #endif
-public I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0)
+public I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0,I64 attr=-1)
 {//1 replaced, 0 absent/full, -1 invalid/I/O. Requires exclusive file ownership.
   U8 sector[512],*raw;
   CI386RedSeaEntry old,fresh;
@@ -40,6 +40,7 @@ found:
   }
   if (!I386RedSeaFlush(volume)) goto io_fail;
   //Publish the new extent in the same slot, retaining the name and attributes.
+  if(attr>=0) {raw[0]=attr;raw[1]=attr>>8;}
   I386RedSeaPutWord(raw+40,fresh.block);
   I386RedSeaPutWord(raw+48,size);
   I386RedSeaPutWord(raw+56,datetime);

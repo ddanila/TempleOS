@@ -2384,3 +2384,11 @@ U0 ConsoleDocumentStart()
 #include "/Kernel/I386/Date.HC"
 
 #include "/Kernel/I386/GraphicsContext.HC"
+
+public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
+{
+  if(!console_config || !console_config->files ||
+      !console_config->files->write_public) return 0;
+  if(!cdt) cdt=NativeNow;
+  return console_config->files->write_public(filename,buffer,size,cdt,attr);
+}

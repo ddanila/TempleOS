@@ -41,7 +41,7 @@ public extern I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8
 public extern I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name);
 public extern I64 I386RedSeaRename(CI386RedSea *volume,I64 directory,U8 *old_name,U8 *new_name);
 public extern I64 I386RedSeaDirDelete(CI386RedSea *volume,I64 directory,U8 *name);
-public extern I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0);
+public extern I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0,I64 attr=-1);
 //Caller-owned zeroable scratch, one byte per on-disk bitmap byte. Reconcile only
 //after a successful mount and before publishing the volume to allocators.
 public extern Bool I386RedSeaRepairBitmap(CI386RedSea *volume,U8 *scratch,I64 bytes);

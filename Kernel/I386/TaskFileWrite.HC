@@ -1,6 +1,6 @@
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
-Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
+I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,Bool public_mode)
 {
   U32 flags=I386IrqSave;
   CI386Task *task=I386TaskSelf;
@@ -11,11 +11,21 @@ Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
   CI386RedSeaEntry parent,existing;
   U8 *absolute=0,*path,*leaf,*cursor;
   I64 drive,status;
-  Bool result=FALSE;
+  CArcCompress *archive=0;
+  I64 result=0;
+  if(size<0) size=0;
+  if(attr&~0xC00) {I386IrqRestore(flags);return 0;}
   state=I386TaskFilesBorrow(task,&paths,&volumes);
   if(state && task->owner && size>=0 && (!size || buffer)) {
     absolute=I386FileNameAbs(state->heap,&paths,filename);
     if(absolute) {
+      if(public_mode) attr=FileAttr(absolute,attr)|0x800;
+      else attr=0x800;
+      if(attr&0x400) {
+        archive=I386CompressBuf(state->heap,buffer,size);
+        if(!archive) goto file_write_release;
+        buffer=archive; size=archive->compressed_size;
+      }
       drive=absolute[0]; if('a'<=drive<='z') drive-=32;
       if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
         volume=volumes->letter[drive-'A']; path=absolute+2;
@@ -39,17 +49,22 @@ Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
           if(parent.block) {
             status=I386RedSeaFind(volume,parent.block,leaf,&existing);
             if(status==1)
-              status=I386RedSeaReplace(volume,parent.block,leaf,buffer,size,0);
+              status=I386RedSeaReplace(volume,parent.block,leaf,buffer,size,datetime,attr);
             else if(!status)
-              status=I386RedSeaCreate(volume,parent.block,leaf,buffer,size,0);
+              status=I386RedSeaCreate(volume,parent.block,leaf,buffer,size,datetime,attr);
             if(status!=1) KernelLog("FILE WRITE mutation error\n");
-            result=status==1;
+            if(status==1 && I386RedSeaResolve(volume,volume->root,path,&existing)==1) {
+              if(size) result=existing.block;
+              else result=-1;
+            }
           }
           if(!I386RedSeaEnd(volume)) {
             KernelLog("FILE WRITE end error\n"); result=FALSE;
           }
         }
       }
+file_write_release:
+      if(archive) I386HeapFree(state->heap,archive);
       I386HeapFree(state->heap,absolute);
     }
   }
@@ -57,6 +72,14 @@ Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
     KernelLog("FILE WRITE release error\n"); result=FALSE;
   }
   I386IrqRestore(flags); return result;
+}
+
+I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr)
+{ return I386TaskFileWriteCore(filename,buffer,size,datetime,attr,TRUE); }
+Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
+{
+  if(size<0) return FALSE;
+  return I386TaskFileWriteCore(filename,buffer,size,0,0,FALSE)!=0;
 }
 
 Bool I386TaskFileDelete(U8 *filename)

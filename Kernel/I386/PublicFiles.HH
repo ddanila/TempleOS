@@ -1,5 +1,7 @@
 #ifndef I386_PUBLIC_FILES_INCLUDED
 #define I386_PUBLIC_FILES_INCLUDED
+#include "/Kernel/DateTypes.HH"
+public _extern _FILE_WRITE I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);
 public _extern _DIR_MK Bool DirMk(U8 *filename,I64 entry_cnt=0);
 public _extern _DIR I64 Dir(U8 *filename=NULL);
 public _extern _ED_DIR Bool EdDir(U8 *directory=NULL);
