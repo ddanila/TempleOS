@@ -15,6 +15,7 @@ def main():
     parser.add_argument('disk', type=Path, help='Bootable image with /Probe/ReadResident.BIN containing A,NUL,B,255 and resident metadata')
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--compressed', action='store_true', help='Require a resident .Z fixture containing the 64-byte ReadPackedBytes seed')
+    parser.add_argument('--shared-lifetime', action='store_true', help='Require cache reuse across child task exit and directory-state replacement')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -42,17 +43,26 @@ def main():
                   'ColdPacked("C:/Probe/ReadResident.BIN",0x400)',
                   'ReadOwned("C:/Probe/ReadResident.BIN.Z")']
     report['compressed'] = args.compressed
+    report['shared_lifetime'] = args.shared_lifetime
+    if args.shared_lifetime:
+        cached_check = checks[1]
+        owned_check = checks[-1]
+        selected += ['I64 ColdTaskResult=0;',
+                     'U0 ColdTask(U8 *data){if('+cached_check+'&&'+owned_check+')ColdTaskResult=1;else ColdTaskResult=2;}',
+                     'Bool ColdChild(){I64 end=cnts.jiffies+2000;ColdTaskResult=0;if(!Spawn(&ColdTask,0,"ColdRead",-1,Fs,8192))return FALSE;while(!ColdTaskResult&&cnts.jiffies<end)Yield;Yield;return ColdTaskResult==1;}']
+        checks += ['ColdChild','Cd("C:/Probe")',cached_check,'Cd("C:/")',cached_check]
     try:
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)
-        lines = ['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+selected
+        lines = ['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+[s.replace('C:/Probe/','B:/') for s in selected]
         lines += ['U0 ColdReads(){U8 *name;CHashGeneric *entry;']
         if args.compressed:lines.append('ReadSeed;')
         lines += [f'if(FileWrite("B:/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200)<=0){{Report("FAIL setup\\n");return;}}',
                   f'name=FileNameAbs("B:/{filename}");entry=HashFind(name,adam_task->hash_table,HTT_FILE);Free(name);',
                   'if(!entry){Report("FAIL resident cache setup\\n");return;}HashRemDel(entry,adam_task->hash_table);']
         for index, check in enumerate(checks):
-            lines.append('if(!('+check.replace('C:/Probe/','B:/')+')){Report("FAIL cold case '+str(index)+'\\n");return;}')
+            check=check.replace('C:/Probe/','B:/').replace('"C:/Probe"','"B:/"').replace('"C:/"','"B:/"')
+            lines.append('if(!('+check+')){Report("FAIL cold case '+str(index)+'\\n");return;}')
         lines += ['Report("DONE cold resident\\n");}', 'ColdReads;']
         (overlay/'Once.HC').write_text('\n'.join(lines)+'\n')
         subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(out/'oracle.iso')], cwd=ROOT, check=True)

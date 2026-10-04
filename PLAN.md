@@ -8714,3 +8714,12 @@ The ABI-42 full workstation suite is running in
 `build/public-file-resident-workstation`; native retained rebuilding for this
 exact source image is running in `build/public-file-resident-native-build`.
 Neither result is assumed from the focused contracts.
+
+The cold resident checker adds `--shared-lifetime`: a spawned child reads the
+already populated cache and verifies independently owned buffers; after child
+completion the parent changes its current directory and reads the same absolute
+cached name again. The original functional oracle passes in
+`build/public-file-resident-shared-lifetime/oracle/debug.log`. Native qualification
+is running against the ABI-42 persisted fixture. This tests the shared Adam-style
+lifetime across task and directory state changes; whole-service teardown and
+allocation failure remain separate requirements.
