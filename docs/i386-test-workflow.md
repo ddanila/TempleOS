@@ -3937,3 +3937,13 @@ It does not replace current-source two-generation or release qualification.
 
 The promoted main Help check also passes all nine commands with exact VGA in
 `build/i386-help-sort-main-help/result.json`, with 58.631367-second startup.
+
+The fully guest-built pre-Help image now passes the same-call User cycle in
+`build/i386-root-declarations-native-cycle/result.json`: 17 commands, exact VGA,
+source preserved, matching checker 1c6f9171. Start-to-retirement is
+0.352312204 seconds (headers about 0.100618 seconds, retirement about
+0.201351 seconds). This confirms functional completion and shared-header speed
+on native-built providers, not exhaustive resource recovery. Startup is
+66.404226066 seconds on 8 MiB no-FPU TCG; the unchanged timing gate fails in
+`build/i386-root-declarations-native-cycle-budget.json`. Keep that failure
+visible separately from the functional pass.

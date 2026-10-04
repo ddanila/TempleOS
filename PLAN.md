@@ -2,6 +2,12 @@
 
 ## Objective and status
 
+The pre-Help fully guest-built image passes a same-call empty User create/kill
+cycle in 0.352 seconds (`build/i386-root-declarations-native-cycle`), confirming
+shared-root header speed on native-built providers. Its measured no-FPU 8 MiB
+startup is 66.404 seconds: the unchanged 60-second budget fails. Functional
+self-hosting and this task cycle therefore do not close startup qualification.
+
 Native inline assembly now recognizes the original `INT3` and `BPT` mnemonics
 and emits 0xCC. The same six-command checker rejects the old compiler and
 passes on the isolated updated image without executing a trap. The promoted
