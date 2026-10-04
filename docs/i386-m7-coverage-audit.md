@@ -4,7 +4,7 @@ This audit follows the six numbered outcomes in [PLAN.md](../PLAN.md#final-goal-
 Passing a component corpus or finding a public function does not prove the
 complete user workflow. Human observation and physical hardware remain optional.
 
-The latest cross-built source snapshot is compiler 59, memory 18 and console
+The heap-scan qualification snapshot is compiler 59, memory 18 and console
 36 in `build/i386-heap-scan-kernel/kernel.img` (SHA-256
 `38fbbde26954101563a481fc2655157d7459dc7c40c06c3bd611318ba1c94bbd`).
 It passes the original two-generation rebuild, cross-build and 386 boot audit.
@@ -16,6 +16,17 @@ The installed 386/filesystem audit passes in
 `build/i386-heap-scan-flat-cross-retained-audit`. Normal no-FPU TCG keyboard/VGA and the 60-second startup gate pass at
 56.216 seconds. A controlled before/after speed benefit remains unproven. This development image uses cross-built retained providers and
 cannot prove full self-hosting.
+
+All six retained providers now build inside that guest in
+`build/i386-heap-scan-retained`; export-set and console allocation-wrapper
+checks pass. Installation is running in `build/i386-heap-scan-retained-install`.
+This is not yet an installed fully native qualification pass.
+
+The newer formatter-extraction source revision 2470ed94 passes the original
+two-generation rebuild, all 17 original formatter cases, and cross-build/386
+instruction audit in `build/i386-format-core-kernel` (no boot test). Native
+formatter/User integration remains open; this refactor baseline must not be
+confused with the older images' runtime evidence.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent
 editors, background compilation during editing, idle Ctrl-Alt-C recovery,

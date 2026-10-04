@@ -6689,3 +6689,34 @@ The full workstation suite is now running on that fully guest-built target in
 provider build continues independently. Its eventual fully native image needs
 its own timing measurement; the prior 56.216-second development result used
 cross-built retained modules and cannot settle this gate.
+
+### Heap-scan snapshot: guest-built retained providers pass
+
+`build/i386-heap-scan-retained/result.json` passes compilation of all six
+retained modules inside the no-FPU guest, module parsing and reference export
+set checks, including the console allocation-wrapper check. Source disk SHA-256:
+`d79d32be4350a6e991148d9e2fc87224ed453ad036938df2f79f3d48f78d73bb`.
+Guest-built ConsoleRuntime is 960921 bytes, SHA-256
+`9d71ebbc01f2e83c6333d7bde8af59b25713f4a9526afdb6f699ec5bdb6899df`.
+The checker compares export sets, not binary equality to cross-built modules.
+
+Installation and independent boot verification are running in
+`build/i386-heap-scan-retained-install`, using a writable copy of that source.
+Next, build/install all six flat modules using these guest-built providers,
+audit the installed image, and measure its ordinary no-FPU TCG startup against
+the unchanged 60-second gate. The development-image timing does not qualify
+this fully native path. This snapshot includes heap-scan and debugger zero/mode
+fixes but predates formatter extraction. The older cleanup snapshot's full
+workstation suite remains live; neither run proves current-source release
+qualification or two native generations.
+
+### Shared formatter extraction: baseline verification complete
+
+The original two-generation rebuild passes after extraction of the unchanged
+formatter into `Kernel/StrPrintCore.HC`. All 17 original formatting cases pass
+in `build/i386-format-core-original/result.json`. The cross-build and 386 boot
+instruction audit pass in `build/i386-format-core-kernel`; its result records
+source revision `2470ed94dcea403c6d56e37fd6b08463c9a90406`, a 483360-byte
+kernel, and no boot test. These checks establish the refactor baseline only.
+Native MStrPrint and User integration, creation hotkeys and their native green
+workflow tests remain implementation work.
