@@ -1,3 +1,8 @@
+class CNativeTextInput {
+  CNativeTextInput *next;
+  U8 *text;
+  I64 offset;
+};
 class CNativeTerminal {
   CNativeTerminal *next,*previous;
   CI386Task *task;
@@ -6,6 +11,9 @@ class CNativeTerminal {
   CDoc *document;
   U0 (*cleanup)(CI386Task *task);
   I64 loss_seen;
+  U8 *input_line;
+  I64 input_capacity;
+  CNativeTextInput *input_head,*input_tail;
   Bool owns_planes,running;
 };
 CNativeTerminal *native_terminal_head,*native_terminal_root;
@@ -54,12 +62,17 @@ U0 NativeTerminalRelease(CI386Task *task)
 {//Scheduler calls this while the finishing task and its public heaps are live.
   CNativeTerminal *terminal=NativeTerminalFind(task),*focus;
   U32 irq;
+  CNativeTextInput *input;
   if(!terminal) return;
   if(terminal->cleanup) terminal->cleanup(task);
   if(terminal->document) {
     if(task->put_doc==terminal->document) task->put_doc=NULL;
     DocDel(terminal->document);
   }
+  while(input=terminal->input_head) {
+    terminal->input_head=input->next; Free(input->text); Free(input);
+  }
+  Free(terminal->input_line);
   irq=I386IrqSave;
   focus=terminal->next;
   if(!focus) focus=terminal->previous;
@@ -210,5 +223,127 @@ U0 NativeUserCmdLine(I64 dummy=0)
     terminal=NativeTerminalCreate;
     NativeTerminalConsoleHeading;
   }
+  KernelLog("USER headers begin\n");
+  if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
+      "UserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD))
+    throw('UserHdr',TRUE);
+  KernelLog("USER headers ok\n");
+  if(!HashFind("ST_COLORS",Fs->hash_table,HTT_DEFINE_STR))
+    DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
+  KernelLog("USER input begin\n");
   NativeUserTaskCont;
+}
+
+U8 *NativeTerminalLine(I64 required)
+{//Keep input storage in the terminal so break and forced exit cannot leak it.
+  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+  U8 *line;
+  I64 capacity;
+  if(!terminal || required<1 || required>I32_MAX/2) throw('TermInpt');
+  if(required>terminal->input_capacity) {
+    capacity=terminal->input_capacity;
+    if(capacity<256) capacity=256;
+    while(capacity<required) capacity*=2;
+    line=MAlloc(capacity,terminal->task);
+    if(terminal->input_line) {
+      MemCpy(line,terminal->input_line,terminal->input_capacity);
+      Free(terminal->input_line);
+    }
+    terminal->input_line=line; terminal->input_capacity=capacity;
+  }
+  return terminal->input_line;
+}
+I64 NativeTerminalInputKey(CI386KeyEvent *event)
+{
+  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+  CNativeTextInput *input;
+  I64 ch;
+  U32 flags;
+  if(!terminal) throw('TermInpt');
+  flags=I386IrqSave;
+  input=terminal->input_head;
+  if(input) {
+    ch=input->text[input->offset++];
+    if(!input->text[input->offset]) {
+      terminal->input_head=input->next;
+      if(!terminal->input_head) terminal->input_tail=NULL;
+    } else input=NULL;
+    event->type=MSG_KEY_DOWN; event->ch=ch; event->scan=0;
+    I386IrqRestore(flags);
+    if(input) { Free(input->text); Free(input); }
+    return 1;
+  }
+  I386IrqRestore(flags);
+  return NativeReadKey(console_config->reader,event,FALSE);
+}
+U0 NativeTaskWait(CTask *task=NULL,Bool cmd_line_pmt=FALSE)
+{
+  CTask *target;
+  if(!task) task=Fs;
+  while(TaskValidate(task)) {
+    target=task->last_input_filter_task;
+    if(!TaskValidate(target) || target==Fs) return;
+    if(Bt(&target->task_flags,TASKf_IDLE) &&
+        (!cmd_line_pmt || Bt(&target->task_flags,TASKf_CMD_LINE_PMT))) return;
+    I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll;
+  }
+}
+U0 NativeXTalk(CTask *task,U8 *fmt,...)
+{//Format in the sender; the queued copy belongs to the destination task.
+  CNativeTerminal *terminal;
+  CNativeTextInput *input=NULL;
+  U8 *text=NULL;
+  I64 exception=0;
+  Bool failed=FALSE;
+  U32 irq;
+  NativeTaskWait(task);
+  terminal=NativeTerminalFind(task);
+  if(!terminal || !TaskValidate(task) || task(CI386Task *)->finishing)
+    throw('TaskDead');
+  try {
+    text=StrPrintJoin(NULL,fmt,argc,argv);
+    if(*text) {
+      input=CAlloc(sizeof(CNativeTextInput),task);
+      input->text=StrNew(text,task);
+    }
+  } catch {
+    failed=TRUE; exception=Fs->except_ch; Fs->catch_except=TRUE;
+  }
+  Free(text);
+  if(failed) {
+    if(input) { Free(input->text); Free(input); }
+    throw(exception,TRUE);
+  }
+  if(!input) return;
+  irq=I386IrqSave;
+  if(terminal->input_tail) terminal->input_tail->next=input;
+  else terminal->input_head=input;
+  terminal->input_tail=input;
+  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT);
+  I386SchedWake(task(CI386Task *)->owner,task);
+  I386IrqRestore(irq);
+}
+CTask *NativeUser(U8 *fmt=NULL,...)
+{
+  CTask *task;
+  U8 *text=NULL;
+  I64 exception=0;
+  Bool failed=FALSE;
+  task=(*native_user_providers.spawn)(&NativeUserCmdLine,NULL,NULL,-1,NULL,0,256);
+  if(!task) return NULL;
+  try {
+    NativeTaskWait(task);
+    if(fmt) {
+      text=StrPrintJoin(NULL,fmt,argc,argv);
+      NativeXTalk(task,text);
+    }
+  } catch {
+    failed=TRUE; exception=Fs->except_ch; Fs->catch_except=TRUE;
+  }
+  Free(text);
+  if(failed) {
+    (*native_user_providers.kill)(task,TRUE,FALSE);
+    throw(exception,TRUE);
+  }
+  return task;
 }

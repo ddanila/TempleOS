@@ -7478,3 +7478,45 @@ stages and newline/partial-input semantics. The tight boot reservation favors
 using existing provider interfaces or validated published provider callbacks in
 the console module; any new boot bindings require a measured size check.
 Creation hotkeys, focus and repeated heap recovery remain additional gates.
+
+
+### User/XTalk integration in progress (2026-10-04)
+
+The native console now publishes User, XTalk and TaskWait using the existing
+validated Spawn/Kill exports, without adding boot-kernel imports. User preserves
+the CPU-root default parent and two formatting stages. XTalk queues a copy owned
+by the destination terminal; terminal cleanup frees queued text and its growing
+input buffer. Input is no longer limited to 255 bytes. PublicUser.HH loads public
+declarations in CPU-root children without repeating singleton console/graphics
+initialization. Child-header and terminal-readiness trace points use debug output.
+
+The original two-generation rebuild and cross build pass for this implementation:
+`build/i386-user-child-init-trace-kernel/result.json` records 483384 boot-kernel
+bytes. This remains a cross-built, mixed-provider test image, not an all-native
+release qualification. The preceding child-header image passes all 41 formatter
+cases in `build/i386-user-input-child-headers-format/result.json`, 47 commands,
+8 MiB 486,-fpu, with the source disk unchanged.
+
+The initial native User test hit the default 30-second command timeout while
+loading child declarations. Independent 120-second probes pass on both the
+untraced and traced builds (`build/i386-user-child-init-latency/result.json` and
+`build/i386-user-child-init-trace-probe/result.json`). Accordingly this fixture
+allows 120 seconds per command; assertions and the 16 cases are unchanged. The
+revised checker passes on original TempleOS in
+`build/i386-user-child-init-original-120/result.json`. Checker SHA-256:
+`f3efc65826b2ceb3de4b84a8c66e3a62f254109ee06f942e3cfe8a8a8f0ce52e`.
+The two-terminal regression passes in
+`build/i386-user-child-init-terminals/result.json`: 11 commands, separate
+definitions/history, focus switching, exit refocus, child reclamation and exact
+parent public-heap recovery, 8 MiB 486,-fpu, source unchanged. Native full-case
+User run FAILS in `build/i386-user-child-init-native-120/result.json`: empty
+creation returns 1, but UserProbeStop returns 0 and the expected-1 checkpoint
+times out. The source disk is unchanged. Formatted/partial/long-input cases
+are not reached. A separate child-lifetime probe is the next diagnostic; empty
+creation does not prove the child remains valid or can be reclaimed correctly.
+
+Remaining gates include creation hotkeys, repeated task/heap recovery, full
+workstation regression and native console rebuilding/installing before updated
+all-native image qualification. Broader TaskWait service-queue and input-filter
+semantics still need explicit coverage; current queued text targets terminals.
+The complete self-hosting/reproducible-release objective remains open.

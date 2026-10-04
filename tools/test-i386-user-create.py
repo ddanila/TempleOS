@@ -86,7 +86,8 @@ def main():
                 raise ValueError('User fixture exceeds interactive line limit')
             runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
             report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
-                qmp_stdio=True, startup_check={'status':'ok','answers':[], 'commands':commands})
+                qmp_stdio=True, startup_check={'status':'ok','answers':[], 'commands':commands,
+                    'command_timeout':120})
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)

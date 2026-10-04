@@ -43,6 +43,18 @@ extern CTask *NativeWinFocus(CTask *task=0);
 extern I64 *NativeTerminalLossSeen();
 extern U0 NativeTerminalDiscardKeyboard();
 extern Bool NativeTerminalFocusKey(CI386KeyEvent *event);
+extern U8 *NativeTerminalLine(I64 required);
+extern I64 NativeTerminalInputKey(CI386KeyEvent *event);
+extern CTask *NativeUser(U8 *fmt=0,...);
+extern U0 NativeXTalk(CTask *task,U8 *fmt,...);
+extern U0 NativeTaskWait(CTask *task=0,Bool cmd_line_pmt=FALSE);
+class CI386UserProviders {
+  CTask *(*spawn)(U0 (*entry)(U8 *data),U8 *data,U8 *name,I64 cpu,
+    CTask *parent,I64 stack_size,I64 flags);
+  Bool (*kill)(CTask *task,Bool wait,Bool just_break);
+};
+CI386UserProviders native_user_providers;
+
 #define console_text (*NativeTerminalText())
 #define console_planes (*NativeTerminalPlanes())
 extern U0 ConsolePresent();
@@ -78,7 +90,7 @@ extern Bool NativeIsDebugMode();
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[131];
+CI386KernelSymbol console_doc_exports[134];
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
 extern Bool NativeIsDebugMode();
@@ -97,10 +109,17 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
 {
   CI386Task *task=I386TaskSelf;
   I64 i;
+  CI386KernelSymbol *provider;
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
       config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+  provider=HashFind("_SPAWN",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_user_providers.spawn=provider->val;
+  provider=HashFind("_KILL",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_user_providers.kill=provider->val;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   I386KeyboardReset(&console_hotkeys);
   console_doc_exports[0].str="_DOC_LOCK";
@@ -366,7 +385,13 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[129].val=(&CatPrint+0)(U64);
   console_doc_exports[130].str="_MSTR_PRINT";
   console_doc_exports[130].val=(&MStrPrint+0)(U64);
-  for(i=0;i<131;i++) {
+  console_doc_exports[131].str="_USER";
+  console_doc_exports[131].val=(&NativeUser+0)(U64);
+  console_doc_exports[132].str="_XTALK";
+  console_doc_exports[132].val=(&NativeXTalk+0)(U64);
+  console_doc_exports[133].str="_TASK_WAIT";
+  console_doc_exports[133].val=(&NativeTaskWait+0)(U64);
+  for(i=0;i<134;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -448,7 +473,7 @@ U0 ConsoleKeys(I64 unused)
 U0 NativeTerminalInput()
 {
   CI386KeyEvent event;
-  U8 line[256];
+  U8 *line=NativeTerminalLine(256);
   I64 length=0,decoded,ch,spaces,
       mouse_x=0,mouse_y=0,mouse_buttons=0,mouse_packets=0,
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets;
@@ -456,7 +481,8 @@ U0 NativeTerminalInput()
   I386TextWrite(&console_text,"> "); ConsolePresent;
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   while(1) {
-    decoded=NativeReadKey(console_config->reader,&event,FALSE);
+    decoded=NativeTerminalInputKey(&event);
+    if(decoded>0) I386TaskSelf->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT);
     if(decoded && mouse_visible) {
       NativeMousePlaneHide(console_planes,mouse_x,mouse_y);
       mouse_visible=FALSE;
@@ -480,10 +506,12 @@ U0 NativeTerminalInput()
         length=0; I386TextWrite(&console_text,"> ");
       } else if(ch==9) {
         spaces=8-length%8;
-        while(spaces-- && length<255) {
+        line=NativeTerminalLine(length+spaces+1);
+        while(spaces--) {
           line[length++]=32; I386TextPut(&console_text,32);
         }
-      } else if(ch>=32 && ch<=255 && length<255) {
+      } else if(ch>=32 && ch<=255) {
+        line=NativeTerminalLine(length+2);
         line[length++]=ch; I386TextPut(&console_text,ch);
       }
       ConsolePresent;
@@ -499,7 +527,11 @@ U0 NativeTerminalInput()
       mouse_x=next_mouse_x; mouse_y=next_mouse_y;
       mouse_buttons=next_mouse_buttons; mouse_packets=next_mouse_packets;
     }
-    if(!decoded) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
+    if(!decoded) {
+      I386TaskSelf->task_flags|=1<<TASKf_IDLE;
+      if(!length) I386TaskSelf->task_flags|=1<<TASKf_CMD_LINE_PMT;
+      I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll;
+    }
   }
 }
 
