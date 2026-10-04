@@ -18,8 +18,11 @@ Original `Adam/AHash.HC` sorts entries by name. An isolated alphabetical
 category prototype passes the original two-generation rebuild and i386 build.
 The unchanged main image fails the alphabetical oracle; the prototype passes
 all nine focused no-FPU Help commands with exact VGA (58.120-second startup).
-Its full workstation suite is running in `build/i386-help-sort-workstation`.
-Main OS sources remain frozen for the running six-provider native build.
+Its full workstation suite passes all 513 commands, 576 lines, exact VGA and
+20 document cycles with exact heap recovery in `build/i386-help-sort-workstation`.
+Startup passes the unchanged budget at 58.169 seconds; the long-document update
+is 0.433 seconds. Main OS sources remain frozen for the running six-provider
+native build; promotion of the validated sorting change is pending.
 
 Full self-hosting qualification now requires the retained-build and installation
 verdicts to form a matching disk/payload chain before flat-kernel construction.

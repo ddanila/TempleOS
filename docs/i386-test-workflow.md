@@ -3863,3 +3863,13 @@ INT3 mnemonic before execution. The first patched-byte fixture in
 a value. Neither establishes CPU dispatch behavior. The final checker isolates
 those preparation details in functions and verifies them before invoking the
 trap. Keep the runtime failure and assembler support gap separately open.
+
+The isolated sorting image now passes the complete workstation suite in
+`build/i386-help-sort-workstation/result.json`: 513 commands, 576 lines, exact
+VGA at every checkpoint and 20 bounded document cycles with exact shared-heap
+recovery. No-FPU TCG startup is 58.169028506 seconds on 8 MiB; the unchanged
+60-second checker passes in `build/i386-help-sort-workstation-budget.json`.
+Long-document update is 0.432723586 seconds, below the one-second budget.
+This establishes integration on the isolated cross-built image identified
+above; it does not establish native provider qualification or release readiness.
+Promotion remains pending while the main-source native build completes.
