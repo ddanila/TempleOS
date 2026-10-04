@@ -4270,3 +4270,17 @@ exit/cleanup, broader register inspection/editing, stepping, managed
 breakpoints and concurrent debugger ownership remain required. Full
 workstation and guest-native flat size/construction qualification must pass
 before promotion; the qualified native flat has only 952 bytes spare.
+
+The CPU-trap checker now accepts `--cycles 1..20` and compares the live
+shared task heap after each resumed probe against its warmed baseline.
+Five cycles PASS on the isolated prototype in
+`build/cpu-trap-repeat-green/result.json` (44 commands, exact VGA, EAX/IF/TF
+and debugger-mode recovery, source unchanged, startup 23.691972967 seconds).
+The identical checker FAILs at actual vector 3 on qualified native main
+in `build/cpu-trap-repeat-red/result.json`, source unchanged. Checker SHA:
+`2eb225904dfccce77d92241dfd6f5091ec65e8a26321b16b910a5410f338283d`.
+This verifies repeatability and warmed live-heap recovery in the exercised
+root-task path, not forced exit, backing-pool reclamation or simultaneous
+debuggers. Prototype full workstation testing is running in
+`build/cpu-trap-resume-prototype/build/cpu-trap-workstation`; implementation
+remains unpromoted pending broader regression and guest flat-size checks.

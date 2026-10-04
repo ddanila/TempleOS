@@ -9,12 +9,12 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def commands():
+def commands(cycles=1):
     heading = ['TempleOS i386', 'HolyC debugger', '',
                'Exception: BreakPt', 'Function: CpuTrapInstruction',
                'Source: FL:C:/Console.HC,1', 'dbg> ']
-    return [
-        ('I64 CpuTrapStage=0,CpuTrapResult=0;', []),
+    checks = [
+        ('I64 CpuTrapStage=0,CpuTrapResult=0,CpuTrapHeap=0,CpuTrapClean=1;', []),
         ('U0 CpuTrapLog(U8 *s){while(*s)OutU8(0xE9,*s++);}', []),
         ('I64 CpuTrapInstruction(){U32 value=0;asm { MOV EAX,0x11223344 NOP NOP NOP MOV U32 &value[EBP],EAX } return value;}', []),
         ('U8 *CpuTrapBytes=(&CpuTrapInstruction+0)(U64);I64 CpuTrapOffset=0;', []),
@@ -22,7 +22,7 @@ def commands():
         ('CpuTrapFind;', ['1']),
         ('U0 CpuTrapPatch(){CpuTrapBytes[CpuTrapOffset]=0xCC;}', []),
         ('CpuTrapPatch;CpuTrapBytes[CpuTrapOffset]==0xCC;', ['1']),
-        ('U0 CpuTrapProbe(){CpuTrapStage=1;CpuTrapLog("CPU TRAP enter\\n");CpuTrapResult=CpuTrapInstruction;CpuTrapStage=2;CpuTrapLog("CPU TRAP resumed\\n");}', []),
+        ('U0 CpuTrapProbe(){CpuTrapStage=1;CpuTrapLog("CPU TRAP enter\\n");CpuTrapResult=CpuTrapInstruction;if(CpuTrapHeap&&Fs->data_heap->used_u8s!=CpuTrapHeap)CpuTrapClean=0;CpuTrapHeap=Fs->data_heap->used_u8s;CpuTrapStage=2;CpuTrapLog("CPU TRAP resumed\\n");}', []),
         ('CpuTrapProbe;', [], {
             'begin': 'CPU TRAP enter\n',
             'initial_rows': heading,
@@ -39,28 +39,34 @@ def commands():
         }),
         ('CpuTrapStage;', ['2']),
         ('CpuTrapResult==0x11223344;', ['1']),
+        ('CpuTrapClean;', ['1']),
         ('IsDbgMode;', ['0']),
         ('(GetRFlags&0x300)==0x200;', ['1']),
         ('6*7;', ['42']),
     ]
+    return checks[:9] + checks[9:] * cycles
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--cycles', type=int, default=1,
+                        help='Repeated trap/resume cycles; first warms resource accounting')
     args = parser.parse_args()
+    if args.cycles < 1 or args.cycles > 20:
+        parser.error('--cycles must be between 1 and 20')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
-    report = dict(checker_sha256=checker, disk_sha256=disk,
+    report = dict(checker_sha256=checker, disk_sha256=disk, cycles=args.cycles,
                   scope='Actual INT3 CPU trap, function/source and state inspection, G resumes after INT3 with EAX intact, restored debugger mode/IF/TF and shell recovery; not breakpoint installation, stepping or complete register inspection')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
             qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
-                                         'commands': commands()})
+                                         'commands': commands(args.cycles)})
         if sha(Path(__file__)) != checker:
             raise ValueError('CPU trap checker changed during execution')
         report['result'] = 'pass'
