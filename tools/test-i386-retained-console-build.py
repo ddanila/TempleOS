@@ -41,7 +41,8 @@ def main():
                for kind, offset, name, length in rows if kind == 1]
     required = {'Main', 'ConsoleInit', 'DocExe', 'ExeDoc', 'DocEd',
                 'I386BuildModule', 'NativeDocClipPasteAtomicCheck',
-                'StrPrintJoin', 'StrPrint', 'CatPrint', 'MStrPrint', 'IsRaw'}
+                'StrPrintJoin', 'StrPrint', 'CatPrint', 'MStrPrint', 'IsRaw',
+                'NativeUser', 'NativeXTalk', 'NativeTaskWait'}
     if not required <= set(exports) or len(set(exports)) != len(exports):
         raise ValueError('Retained console exports are missing or duplicated')
     result = {'result': 'pass', 'bytes': len(module), 'records': count,

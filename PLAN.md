@@ -7520,3 +7520,63 @@ workstation regression and native console rebuilding/installing before updated
 all-native image qualification. Broader TaskWait service-queue and input-filter
 semantics still need explicit coverage; current queued text targets terminals.
 The complete self-hosting/reproducible-release objective remains open.
+
+
+### User oracle green and public-symbol retirement fixed (2026-10-04)
+
+The cleanup failure above is resolved on the current cross-built test image.
+A diagnostic split records `K1H1`: Kill succeeds but the child remains linked.
+The reaper trace in `build/i386-user-stop-values-probe/debug.log` shows file
+state already cleared and symbol state still attached. Public DefineLstLoad
+metadata belongs to a task's public heap; the bootstrap symbol destructor had
+attempted to free it through the bootstrap allocator.
+
+MemoryTaskPublicSymbols now removes public-heap entries from the task's own hash
+table before the existing bootstrap symbol destructor runs. It uses the original
+shared SymbolHashDel visitor with a release callback that selects the allocation
+owner, and checks table/public-heap locks before beginning. Compiler executable
+and static storage retain their separate lifetime policy. The fix is in the
+retained memory provider; the boot kernel and its import list do not grow.
+One-time deferred/pinned reaper diagnostics remain available through debug output.
+
+Original two-generation rebuilding passes. The corrected cross build passes in
+`build/i386-user-public-symbol-cleanup-imports-kernel/result.json`, including
+386 instruction auditing, with 483384 boot-kernel bytes. All 16 shared User
+cases PASS in `build/i386-user-public-symbol-cleanup-native-16/result.json`:
+28 commands, 8 MiB 486,-fpu TCG, startup 47.67935970192775 seconds, exact VGA
+checkpoints and source disk unchanged. Empty/formatted/partial/percent-escaped/
+long startup commands all execute and retire correctly. The revised checker
+SHA-256 remains `f3efc65826b2ceb3de4b84a8c66e3a62f254109ee06f942e3cfe8a8a8f0ce52e`.
+This supersedes the earlier red cleanup result without deleting its evidence.
+
+The two-terminal regression also passes in
+`build/i386-user-public-symbol-cleanup-terminals/result.json`: 11 commands,
+8 MiB 486,-fpu, separate definitions/history, focus and exit refocus, child
+reclamation and exact parent public-heap recovery; source disk unchanged.
+
+The port's native compiler rebuilds MemoryRuntime successfully in
+`build/i386-user-public-symbol-cleanup-memory-selfbuild/result.json`:
+306979 bytes, 923 records, 138 exports matching the cross-built contract.
+Native module SHA-256:
+`aae46daffee9437fd2802d9b61d4601c99730992f7c116679791e64b86292bd9`.
+Its installation and independent boot pass in
+`build/i386-user-public-symbol-cleanup-memory-install/result.json`, on a copied
+image with the other providers and boot kernel cross-built. Candidate disk SHA:
+`cd3acb0ce8d85f91bfee27fa78740cf9c38f99bfbc3bd9fb09c2a59ae1ab4ba5`.
+The 386 instruction audit passes in
+`build/i386-user-public-symbol-cleanup-memory-audit/result.json` with the native
+MemoryRuntime and remaining cross-built providers. This is not an all-native
+release image, and the 16-case User runtime verdict above uses the cross-built
+memory provider.
+
+A native console build is running in
+`build/i386-user-public-symbol-cleanup-console-selfbuild` on the image containing
+native MemoryRuntime. Its independent export check now also requires NativeUser,
+NativeXTalk and NativeTaskWait. Its verdict is pending. Next install/audit the
+native console, rerun the User oracle on both native providers, then extend
+creation-hotkey, focus and repeated heap-recovery automation and run the full
+workstation gate. Fresh CPU-root children currently parse public declarations
+again; the 120-second fixture allowance is not a creation-latency acceptance
+criterion. Shared standard declarations and faster creation remain usability work.
+General service-queue/input-filter TaskWait semantics need broader coverage.
+The complete self-hosting, reproducible-release objective stays open.

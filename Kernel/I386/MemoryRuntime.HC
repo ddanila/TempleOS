@@ -5,6 +5,7 @@
 #include "/Kernel/I386/MemoryRuntime.HH"
 #include "/Kernel/I386/MemoryBacking.HH"
 #include "/Kernel/I386/TaskHeaps.HH"
+#include "/Kernel/I386/TaskSymbols.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/KernelSymbols.HH"
 #include "/Kernel/I386/MemoryPublic.HH"

@@ -5,7 +5,7 @@ class CMemoryTaskRecord {
   CI386OwnedTask *owned;
   U0 (*entry)(U8 *data);
   U0 (*end_callback)();
-  Bool child_linked,exiting;
+  Bool child_linked,exiting,reap_reported;
 };
 U0 MemoryJobQueDel(CJob *head)
 {//Task retirement owns both job rings, including cross-task auxiliary storage.
@@ -198,6 +198,37 @@ U0 MemoryTaskCheckExit()
   if(record && !record->exiting && !task->finishing && !task->io_locks &&
       !task->wait && task->task_flags&(1<<TASKf_KILL_TASK)) Exit;
 }
+U0 MemoryTaskSymbolFree(U8 *context,U8 *allocation)
+{//Public hash APIs and the compiler can contribute different metadata owners.
+  CI386Heap *heap=context;
+  if(!allocation) return;
+  if(I386HeapSize(heap,allocation)>=0) {
+    if(!I386HeapFree(heap,allocation)) KernelStop;
+  } else MemoryFree(allocation);
+}
+Bool MemoryTaskPublicSymbols(CI386Task *task)
+{//Remove task-owned public entries before the bootstrap symbol destructor.
+//Executable/static compiler storage keeps its separate lifetime policy.
+  CI386TaskSymbols *scope=task->symbol_state;
+  CI386TaskHeaps *heaps=task->heap_state;
+  CHash **link,*entry;
+  CSymbolRelease release;
+  I64 i;
+  if(!scope || scope->task!=task || scope->table!=task->hash_table ||
+      scope->table->locked_flags) return FALSE;
+  if(heaps && (heaps->control.locked_flags || heaps->control.bp->locked_flags)) return FALSE;
+  release.context=scope->heap; release.release=&MemoryTaskSymbolFree;
+  for(i=0;i<=scope->table->mask;i++) {
+    link=&scope->table->body[i];
+    while(entry=*link) {
+      if(I386HeapSize(scope->heap,entry)<0) {
+        *link=entry->next; entry->next=0;
+        SymbolHashDel(&release,entry);
+      } else link=&entry->next;
+    }
+  }
+  return TRUE;
+}
 U0 MemoryTaskReap()
 {//Release completed owned tasks from another live stack; never the current stack.
   U32 irq=I386IrqSave;
@@ -211,7 +242,15 @@ U0 MemoryTaskReap()
     progress=FALSE; last=0; record=memory_tasks;
     while(record) {
       next=record->next; task=&record->owned->task;
-      if(task!=I386TaskSelf && task->finished && !task->lifetime_refs) {
+      if(task!=I386TaskSelf && task->finished && task->lifetime_refs && !record->reap_reported) {
+        record->reap_reported=TRUE;
+        KernelLog("TASK REAP pinned "); KernelHex(task);
+        KernelHex(task->lifetime_refs); KernelHex(task->inherited_refs);
+        KernelHex(task->active_controls); KernelHex(task->compiler_cleanup_failed);
+        KernelHex(task->compiler_busy); KernelLog("\n");
+      }
+      if(task!=I386TaskSelf && task->finished && !task->lifetime_refs &&
+          MemoryTaskPublicSymbols(task)) {
         if(record->child_linked) {
           sibling_next=task->next_sibling_task; sibling_last=task->last_sibling_task;
           sibling_last->next_sibling_task=sibling_next;
@@ -221,6 +260,15 @@ U0 MemoryTaskReap()
           if(last) last->next=next; else memory_tasks=next;
           if(!I386HeapFree(memory_pool.heap,record)) KernelStop;
           progress=TRUE; goto memory_reap_advance;
+        }
+        if(!record->reap_reported) {
+          record->reap_reported=TRUE;
+          KernelLog("TASK REAP deferred "); KernelHex(task);
+          KernelHex(task->active_controls); KernelHex(task->compiler_cleanup_failed);
+          KernelHex(task->compiler_busy); KernelHex(task->file_state);
+          KernelHex(task->symbol_state); KernelHex(task->hash_table);
+          KernelHex(task->lifetime_refs); KernelHex(task->except_top);
+          KernelLog("\n");
         }
         if(record->child_linked) {
           sibling_last->next_sibling_task=task;

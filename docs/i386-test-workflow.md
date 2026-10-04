@@ -3213,3 +3213,41 @@ stages and newline/partial-input semantics. The tight boot reservation favors
 using existing provider interfaces or validated published provider callbacks in
 the console module; any new boot bindings require a measured size check.
 Creation hotkeys, focus and repeated heap recovery remain additional gates.
+
+
+### User/XTalk cleanup verification (2026-10-04)
+
+The current cross-built image passes all 16 shared User cases, including
+partial input completed by XTalk, two formatting stages, commands longer than
+512 bytes, execution in the child and cleanup after each creation path:
+
+```sh
+python3 tools/test-i386-user-create.py \
+  build/i386-user-public-symbol-cleanup-imports-kernel/kernel.img \
+  --out build/i386-user-public-symbol-cleanup-native-16
+```
+
+The fixture now allows 120 seconds per command because new CPU-root children
+load public declarations under no-FPU TCG. This allowance does not establish
+acceptable interactive creation latency. The original checker branch also
+passes all 16 cases with the same assertions. Native runtime evidence is in
+`build/i386-user-public-symbol-cleanup-native-16/result.json`: 28 commands,
+8 MiB 486,-fpu, exact VGA checkpoints, source disk unchanged.
+
+The preceding failure was a real cleanup defect, not only a timing problem:
+`build/i386-user-stop-values-probe/debug.log` reports Kill success and retained
+child-list membership. Public-heap hash entries now retire through the shared
+symbol visitor before bootstrap symbol teardown. Existing terminal isolation,
+focus, exit and exact parent public-heap recovery pass in
+`build/i386-user-public-symbol-cleanup-terminals/result.json`.
+
+Native MemoryRuntime compilation, installation/boot and 386 instruction audits
+pass in `build/i386-user-public-symbol-cleanup-memory-selfbuild/result.json`,
+`build/i386-user-public-symbol-cleanup-memory-install/result.json` and
+`build/i386-user-public-symbol-cleanup-memory-audit/result.json`. These prove a
+native memory provider with cross-built remaining providers. The full User
+runtime result above is on the cross-built image. Native console building is
+still running in `build/i386-user-public-symbol-cleanup-console-selfbuild`;
+installation and User tests on both native providers remain outstanding.
+Creation hotkeys, exhaustive recovery and updated full-workstation/all-native
+release gates are not established by these narrower checks.
