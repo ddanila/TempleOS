@@ -1,5 +1,6 @@
 //Public job-backed messages. Include after the task lifetime and heap provider.
 #include "/Kernel/NumericLimits.HH"
+#include "/Kernel/MessageCodes.HH"
 #define TaskValidate MemoryTaskValidate
 #include "/Kernel/TaskValidate.HC"
 U0 MemoryMessageWake(CTask *task)
@@ -13,7 +14,7 @@ CJob *MemoryTaskMsg(CTask *target,CTask *master,
   I64 msg_code,I64 arg1,I64 arg2,I64 flags)
 {
   CTask *task=target;
-  CJob *job,*last;
+  CJob *job,*last,*copy;
   U32 irq;
   if(!MemoryTaskValidate(task) || master && !MemoryTaskValidate(master) ||
       task->popup_task && !(task->task_flags&(1<<TASKf_FILTER_INPUT))) return 0;
@@ -22,6 +23,16 @@ CJob *MemoryTaskMsg(CTask *target,CTask *master,
   job->msg_code=msg_code;
   if(msg_code<0) job->msg_code=-msg_code;
   job->aux1=arg1; job->aux2=arg2; job->flags=flags;
+  //Match original TaskMsg: record only positive key-down, before filtering.
+  if((memory_semas[SEMA_RECORD_MACRO].val&1) &&
+      target!=memory_macro_task && msg_code==MSG_KEY_DOWN) {
+    copy=MemoryIdent(job,memory_root);
+    irq=I386IrqSave;
+    last=memory_macro_head.last;
+    copy->last=last; copy->next=last->next;
+    last->next->last=copy; last->next=copy;
+    I386IrqRestore(irq);
+  }
   irq=I386IrqSave;
   while(task->task_flags&(1<<TASKf_FILTER_INPUT) && !(flags&(1<<JOBf_DONT_FILTER)))
     task=task->next_input_filter_task;

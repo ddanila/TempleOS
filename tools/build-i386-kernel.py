@@ -265,7 +265,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing memory-runtime version')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 16:
+    if struct.unpack_from('<I', module, version_offset)[0] != 17:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],

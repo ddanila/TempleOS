@@ -5567,3 +5567,35 @@ unchanged source disk. This extends the earlier reset/modifier-only result to
 the planned non-keyboard-job preservation invariant. Arbitrary focused-child
 discontinuity notification and macro recording remain separate open contracts.
 The full workstation suite and six-provider native rebuild remain live.
+
+### Macro recording original contract and native red
+
+Added tools/test-i386-public-macro-recording.py with six original/native cases:
+recording disabled, positive key-down eligibility, FIFO copied metadata,
+macro-task exclusion, negative down/up pair exclusion and invalid-target rejection.
+Original TempleOS passes in build/i386-public-macro-original/result.json. The
+focused-break native image records a publication red in
+build/i386-public-macro-red/result.json: sys_macro_head lookup returns zero;
+source disk unchanged. Checker SHA-256:
+2010af53914c71e974e561e2e8f4255628c6460fbce8f66c1c5385b4e0ef3fd1.
+
+Extracted the original CSema layout and semaphore constants to SemaTypes.HH;
+KernelA.HH includes that shared definition, preserving its 128-byte records and
+21 slots. The native memory provider now publishes sys_semas, sys_macro_head
+and sys_macro_task as data exports, initializes the recording ring, and copies
+eligible TaskMsg records into it before input-filter routing. Existing function
+export indices and flat imports are unchanged; memory service version is 17.
+Public headers expose the original names. Both original rebuild generations
+pass for this source; the same macro contract is being rerun after the shared
+header extraction. Fresh cross-build is running in build/i386-public-macro-kernel.
+No native macro green result is claimed yet. Playback/UI, filter-specific
+recording combinations and allocation recovery remain outside these six cases.
+The earlier workstation and six-provider builds continue on their captured
+memory-16 keyboard snapshot; they cannot qualify this new provider.
+
+The shared-header original macro rerun passes in
+build/i386-public-macro-shared-original/result.json. The memory-17 cross-build
+and 386 boot instruction audit also pass (483360 flat bytes). Native macro
+verification is running in build/i386-public-macro-green, and the full public
+message regression is running on the same immutable image in
+build/i386-public-macro-messages. These runs remain pending.

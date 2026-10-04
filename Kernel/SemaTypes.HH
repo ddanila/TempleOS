@@ -1,0 +1,33 @@
+#ifndef KERNEL_SEMA_TYPES_INCLUDED
+#define KERNEL_SEMA_TYPES_INCLUDED
+#define DFT_CACHE_LINE_WIDTH	128
+
+//Semaphores
+class CSema
+{
+  Bool	val,pad[DFT_CACHE_LINE_WIDTH-1];
+};
+#define SEMA_DEBUG		0
+#define SEMA_RECORD_MACRO	1
+#define SEMA_SYS_TIMER		2
+#define SEMA_SYS_DATE		3
+#define SEMA_DBG_MODE		4
+#define SEMA_SND		5
+#define SEMA_HEAPLOG_ACTIVE	6
+#define SEMA_HEAPLOG_LOCK	7
+#define SEMA_REFRESH_IN_PROGRESS 8
+#define SEMA_FLUSH_VGA_IMAGE	9
+#define SEMA_SINGLE_USER	10
+#define SEMA_DSK_CACHE		11
+#define SEMA_FAR_CALL32		12
+#define SEMA_DEV_MEM		13
+#define SEMA_VGA		14
+#define SEMA_UPDATE_WIN_Z_BUF	15
+#define SEMA_TT			16
+#define SEMA_MUTE		17
+#define SEMA_JUST_PUMP_MSGS	18
+#define SEMA_TMBEAT		19
+#define SEMA_FIX		20
+#define SEMA_SEMAS_NUM		21
+#assert sizeof(CSema)==DFT_CACHE_LINE_WIDTH;
+#endif

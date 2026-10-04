@@ -1489,3 +1489,17 @@ yields to let overflow handling run, and requires that callback to execute
 exactly once afterward. This expanded contract passes in
 build/i386-public-keyboard-loss-queued-job/result.json on the focused-break image.
 The earlier reset-only result does not establish queued-job preservation.
+
+The TaskMsg macro-recording contract has original and native modes:
+
+```sh
+python3 tools/test-i386-public-macro-recording.py --original --out build/macro-original
+python3 tools/test-i386-public-macro-recording.py IMAGE --out build/macro-native
+```
+
+It checks copied FIFO metadata, recording eligibility, macro-task exclusion,
+negative-pair exclusion and invalid targets. The original six cases pass; the
+memory-16 image records missing sys_macro_head publication. Memory version 17
+adds the recording state and pre-filter copy path. Both original rebuild
+generations pass; native verification is pending. This is not macro playback/UI
+or allocation-failure qualification. Keep the checker and image frozen per run.

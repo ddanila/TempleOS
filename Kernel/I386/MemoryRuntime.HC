@@ -10,6 +10,7 @@
 #include "/Kernel/I386/MemoryPublic.HH"
 #include "/Kernel/I386/HashPublic.HH"
 #include "/Kernel/TimeTypes.HH"
+#include "/Kernel/SemaTypes.HH"
 import CCntsGlbls cnts;
 import Bool I386SchedYield(CI386Scheduler *s);
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
@@ -29,7 +30,10 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386BackingPool memory_pool;
 CI386Task *memory_root;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[39];
+CI386KernelSymbol memory_exports[42];
+CSema memory_semas[SEMA_SEMAS_NUM];
+CJob memory_macro_head;
+CTask *memory_macro_task;
 extern U0 MemoryTaskRootInit(CI386Task *root);
 extern Bool MemoryManagedYield(CI386Scheduler *scheduler);
 extern CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,I64 target_cpu=-1,CTask *parent=0,I64 stack_size=0,I64 flags=256);
@@ -53,7 +57,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//No arena is reserved until a task actually requests pages.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[39],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0";
+  U8 *addresses[42],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->gs || !root->owner || root->owner->root!=root ||
@@ -64,6 +68,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   }
   memory_pool.reclaim=&MemoryReclaim; memory_root=root; result=TRUE;
   MemoryTaskRootInit(root);
+  memory_macro_head.next=memory_macro_head.last=&memory_macro_head;
   addresses[0]=&MemoryAlloc; addresses[1]=&MemoryFree; addresses[2]=&MemorySize;
   addresses[3]=&MemorySize2; addresses[4]=&MemoryHeap; addresses[5]=&MemoryCAlloc;
   addresses[6]=&MemoryAligned; addresses[7]=&MemoryCAligned;
@@ -82,9 +87,13 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[33]=&MemorySuspend; addresses[34]=&MemoryIsSuspended;
   addresses[35]=&MemoryJobsHndlr;
   addresses[36]=&MemoryScanMsg; addresses[37]=&MemoryGetMsg; addresses[38]=&MemoryFlushMsgs;
-  for(i=0;i<39;i++) {
+  addresses[39]=memory_semas; addresses[40]=&memory_macro_head;
+  addresses[41]=&memory_macro_task;
+  for(i=0;i<42;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
-    memory_exports[i].kind=1; memory_exports[i].val=(addresses[i]+0)(U64);
+    memory_exports[i].kind=1;
+    if(i>=39) memory_exports[i].kind=3;
+    memory_exports[i].val=(addresses[i]+0)(U64);
     HashAdd(&memory_exports[i],symbols);
     while(*names) names++;
     names++;
