@@ -5262,3 +5262,22 @@ the final daemon-parent source is running; fresh cross-build and native tests
 are next. The ongoing retained guest build uses the earlier version-16 memory /
 version-32 console snapshot captured before these source edits and is now
 historical evidence for that snapshot, not the new routing implementation.
+
+### Keyboard routing build qualification started
+
+Console version 33 / memory version 16 cross-build passes
+(build/i386-public-keyboard-message-kernel/result.json), including the 386 boot
+instruction audit. Flat size remains 483016 bytes. The source used for this
+build passes both original rebuild generations. Runtime checks are running:
+
+- public GetMsg hardware make/break: build/i386-public-keyboard-messages-green;
+- ordinary console keyboard: build/i386-public-keyboard-console;
+- DolDoc edit/save/execute/reopen: build/i386-public-keyboard-doldoc;
+- interrupt break recovery: build/i386-public-keyboard-breaks.
+
+These are pending runs, not terminal qualification. They use 486,-fpu; the
+public/console checks run at 8 MiB and the DolDoc checker controls its session
+profiles. Focus switching, lost-input routing, macro recording and allocation
+failure remain additional requirements. The earlier six-provider guest rebuild
+is still live for its captured pre-routing snapshot; no current-source full
+self-hosting/release claim is made.

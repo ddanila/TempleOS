@@ -1361,3 +1361,16 @@ Console version 33 implements a single input worker plus public-message readers.
 Green keyboard delivery, focus/reset recovery, document editing and break
 regressions remain pending. Historical version-16/console-32 retained builds
 must not be presented as qualification for the new input routing source.
+
+For the keyboard routing change, pair the public GetMsg contract with the
+ordinary keyboard, breaks and DolDoc session checks:
+
+```sh
+python3 tools/i386-kernel-input.py build/i386-kernel/kernel.img --group keyboard --cpu 486,-fpu --qmp-stdio --out build/keyboard-console
+python3 tools/i386-kernel-input.py build/i386-kernel/kernel.img --group breaks --cpu 486,-fpu --qmp-stdio --out build/keyboard-breaks
+python3 tools/test-i386-doldoc-session.py build/i386-kernel/kernel.img --qmp-stdio --out build/keyboard-doldoc
+```
+
+The console-33 build and 386 boot audit pass; these runtime runs remain pending.
+A public key-pair pass alone does not qualify focus changes, stream loss or
+editor/compiler break recovery.
