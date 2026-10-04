@@ -39,6 +39,7 @@ class CI386Task:CTask
   Bool (*heap_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*heap_destroy)(CI386Task *task);
   CI386TaskWait *wait; //Borrowed until the waiting call resumes and returns.
+  U32 inherited_refs; //Subset of lifetime_refs: child heaps/symbols and entry code.
 };
 #define I386_WAIT_SLEEP 1
 #define I386_WAIT_JOIN 2

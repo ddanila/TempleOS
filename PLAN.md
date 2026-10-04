@@ -5403,3 +5403,44 @@ SHA-256: fc879b518a2f1280ce67097691861db5a2ec003534942881a5bda32bb90a6131.
 This is the pre-keyboard memory-16/console-32 snapshot, not current-source
 qualification. Installation of these exact guest-built providers and an
 independent boot are running in build/i386-public-message-scan-retained-install.
+
+### Distinguish inherited references from borrowed-operation references
+
+The first break change restores HotkeyWait(0), but the standalone break suite
+still fails at deferred unlock: the VGA frame contains the assignment answer
+2048 followed by Exception, instead of Exception alone. Compiler command-input
+checkpoints still require lifetime_refs==active_controls; the permanent
+keyboard worker's creator reference suppresses that earlier checkpoint.
+Focused-child delivery remains green on this intermediate image. The older
+enrollment DolDoc session is terminal incomplete at DocEd(break_doc), with its
+source image unchanged; a rerun is live on the intermediate break image.
+
+CI386Task now appends a private inherited_refs counter for the persistent
+subset of lifetime_refs: child heap/symbol inheritance and entry-code creator
+pins. Attach, rollback and retirement update both counters together. Kernel
+break polling requires no remaining borrowed-operation references; compiler
+polling permits active controls plus inherited references. Destruction still
+checks all lifetime_refs, and borrowed file contexts continue to defer breaks.
+The public CTask layout is unchanged. Existing heap/creator-pin regressions
+now also assert inherited-reference retention and release.
+
+Both original rebuild generations pass for this source. Fresh cross-build is
+running in build/i386-public-keyboard-inherited-refs-kernel; the native task-heap
+ownership/rollback corpus is also running. Break and DolDoc workflows remain
+unqualified for this new source.
+
+The historical six-provider installation and independent boot now pass in
+build/i386-public-message-scan-retained-install/result.json (486,-fpu, KVM,
+16 MiB install / 8 MiB boot, arithmetic and document-allocation checks).
+Installed candidate SHA-256:
+78670886167600f64d2108258e13d40993173b800f8cbc1778ab828d79f043d0.
+Native flat-kernel self-hosting is running from that guest-built-provider image
+in build/i386-public-message-scan-selfhost. This remains captured pre-keyboard
+snapshot evidence; it cannot qualify current inherited-reference changes.
+
+The inherited-reference cross-build and 386 boot audit now pass (483360 flat
+bytes). Native task-heap qualification passes in
+build/i386-task-heaps-test/result.json: four ownership/lifetime cycles,
+14 reclaims, selected-parent inheritance and creator-code pin/release,
+including the new inherited_refs assertions. The fresh break suite is running
+in build/i386-public-keyboard-inherited-refs-breaks. No break green result yet.

@@ -45,7 +45,7 @@ Bool I386TaskSymbolsClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
   table->next=parent->table;
   state->task=target; state->parent=parent; state->heap=heap; state->table=table;
   state->buckets=parent->buckets; state->signature=I386_TASK_SYMBOLS_MAGIC;
-  parent->children++; source->lifetime_refs++;
+  parent->children++; source->lifetime_refs++; source->inherited_refs++;
   target->hash_table=table; target->symbol_state=state;
   target->symbol_clone=&I386TaskSymbolsClone; target->symbol_destroy=&I386TaskSymbolsDestroy;
   result=TRUE;
@@ -85,7 +85,9 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
     if(!I386TaskStorageRelease(state->heap,storage)) goto symbols_destroy_done;
   }
   if(!I386HeapFree(state->heap,state)) goto symbols_destroy_done;
-  if(parent) { parent->children--; parent->task->lifetime_refs--; }
+  if(parent) {
+    parent->children--; parent->task->lifetime_refs--; parent->task->inherited_refs--;
+  }
   task->hash_table=0; task->symbol_state=0; task->symbol_clone=0; task->symbol_destroy=0;
   result=TRUE;
 symbols_destroy_done:

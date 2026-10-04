@@ -1,5 +1,5 @@
-//Only active controls are owned by this catch/unwind boundary. Other lifetime
-//references (for example a borrowed file context) must return normally first.
+//Active controls are owned by this catch/unwind boundary. Persistent child
+//references survive caught exceptions; borrowed contexts must return first.
 Bool I386CommandInputBreakReady(CI386Task *task)
 {
   U32 irq=I386IrqSave;
@@ -7,7 +7,7 @@ Bool I386CommandInputBreakReady(CI386Task *task)
     !(task->task_flags&(1<<TASKf_BREAK_LOCKED|1<<TASKf_BREAK_TO_SHIFT_ESC)) &&
     !task->wait && !task->blocked && !task->io_locks && !task->compiler_busy &&
     !task->compiler_cleanup_failed && !task->messages &&
-    task->lifetime_refs==task->active_controls;
+    task->lifetime_refs==task->active_controls+task->inherited_refs;
   I386IrqRestore(irq); return ready;
 }
 U0 I386ExecutionBreakPoll()

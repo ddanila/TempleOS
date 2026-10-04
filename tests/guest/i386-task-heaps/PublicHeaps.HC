@@ -127,7 +127,8 @@ I64 PublicTaskHeapTest()
           worker->data_heap->mem_task!=worker || !worker->heap_state ||
           I386TaskHeapsDestroy(worker)) return 109;
     }
-    if(root->lifetime_refs!=2 || state->children!=2 || I386TaskHeapsDestroy(root)) return 110;
+    if(root->lifetime_refs!=2 || root->inherited_refs!=2 ||
+        state->children!=2 || I386TaskHeapsDestroy(root)) return 110;
     SetRFlags(flags|0x200);
     for(j=0;j<4;j++) if(!I386SchedYield(&scheduler) || !(GetRFlags&0x200)) return 111;
     I386IrqSave;
@@ -148,7 +149,8 @@ I64 PublicTaskHeapTest()
       if(!I386TaskDestroy(heap_workers[i]) || root_payload[0]!=0xA7 ||
           heap_reclaims!=reclaims+1 || task_pool.retained>=retained) return 116;
     }
-    if(errors || root->lifetime_refs || state->children || heap.used || heap.allocations ||
+    if(errors || root->lifetime_refs || root->inherited_refs ||
+        state->children || heap.used || heap.allocations ||
         !I386HeapValid(&heap) || task_pool.used_u8s!=root_pages) return 117;
   }
   if(!SelectedParentTest(&heap)) return 122;
@@ -181,10 +183,12 @@ Bool CreatorPinTest(CI386Heap *heap)
   code_creator=I386TaskSpawn(&scheduler,heap,8192,&CreatorPinEntry,0);
   if(!code_creator || !I386SchedYield(&scheduler) || !code_child ||
       !code_creator->task.finished || code_child->task.finished ||
-      code_creator->task.lifetime_refs!=1 || I386TaskDestroy(code_creator)) return FALSE;
+      code_creator->task.lifetime_refs!=1 || code_creator->task.inherited_refs!=1 ||
+      I386TaskDestroy(code_creator)) return FALSE;
   if(!I386SchedYield(&scheduler) || !code_child->task.finished) return FALSE;
   heap_reclaim_target=&code_child->task;
-  if(!I386TaskDestroy(code_child) || code_creator->task.lifetime_refs) return FALSE;
+  if(!I386TaskDestroy(code_child) || code_creator->task.lifetime_refs ||
+      code_creator->task.inherited_refs) return FALSE;
   heap_reclaim_target=&code_creator->task;
   if(!I386TaskDestroy(code_creator) || scheduler.root->lifetime_refs ||
       heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||

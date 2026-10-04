@@ -57,7 +57,9 @@ Bool I386TaskHeapsAttach(CI386Task *task,CI386Heap *storage,CI386PublicPool *poo
   state->signature=I386_TASK_HEAPS_MAGIC;
   state->code_allocate=&I386TaskCodeAllocate;
   state->code_release=&I386TaskCodeRelease; state->code_capacity=&I386TaskCodeCapacity;
-  if(parent) { parent->children++; parent->task->lifetime_refs++; }
+  if(parent) {
+    parent->children++; parent->task->lifetime_refs++; parent->task->inherited_refs++;
+  }
   task->code_heap=task->data_heap=&state->control; task->heap_state=state;
   task->heap_clone=&I386TaskHeapsClone; task->heap_destroy=&I386TaskHeapsDestroy;
   return TRUE;
@@ -106,7 +108,9 @@ Bool I386TaskHeapsDestroy(CI386Task *task)
       !parent->task->lifetime_refs)) goto done;
   pool=state->control.bp;
   if(!I386MemHeapDestroy(&state->control) || !I386HeapFree(state->storage,state)) goto done;
-  if(parent) { parent->children--; parent->task->lifetime_refs--; }
+  if(parent) {
+    parent->children--; parent->task->lifetime_refs--; parent->task->inherited_refs--;
+  }
   task->code_heap=0; task->data_heap=0; task->heap_state=0;
   task->heap_clone=0; task->heap_destroy=0;
   if(pool->reclaim) (*pool->reclaim)(pool);

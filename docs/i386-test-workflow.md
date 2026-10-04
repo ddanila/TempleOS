@@ -1420,3 +1420,13 @@ causes the lifetime_refs guard in I386TaskBreakPoll to defer delivery. The guard
 is removed while operation-specific safety checks remain. A fresh build and
 break test are required for that new source; DolDoc remains running on the
 previous enrollment image.
+
+The intermediate break fix passes HotkeyWait(0), but fails deferred unlock
+because compiler polling still defers for the keyboard worker's creator pin.
+CI386Task now tracks inherited_refs separately from borrowed-operation refs;
+both kernel and compiler break checkpoints permit persistent child references
+while retaining borrowed-resource guards. Public CTask is unchanged. Both
+original rebuild generations pass; fresh cross-build and native task-heap
+counter/lifetime checks are running. Require a fresh break-suite pass before
+claiming recovery. The enrollment DolDoc run is terminal incomplete at
+DocEd(break_doc); its source disk is unchanged.

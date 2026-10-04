@@ -204,7 +204,7 @@ public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   }
   //Inherited state belongs to the parent; entry code can belong to the creator.
   owned->creator=creator[0];
-  if(creator[0]) creator[0]->lifetime_refs++;
+  if(creator[0]) { creator[0]->lifetime_refs++; creator[0]->inherited_refs++; }
   if(queued) {
     if(!I386SchedAdd(s,&owned->task)) goto spawn_fail;
   } else if(!I386SchedPrepare(s,&owned->task)) goto spawn_fail;
@@ -220,7 +220,9 @@ spawn_fail:
   if(owned->task.heap_state && (!owned->task.heap_destroy || !(*owned->task.heap_destroy)(&owned->task))) {
     I386IrqRestore(flags); return 0;
   }
-  if(owned->creator) owned->creator->lifetime_refs--;
+  if(owned->creator) {
+    owned->creator->lifetime_refs--; owned->creator->inherited_refs--;
+  }
   I386HeapFree(heap,owned);
   I386IrqRestore(flags);
   return 0;
@@ -320,7 +322,9 @@ public Bool I386TaskDestroy(CI386OwnedTask *owned)
     I386IrqRestore(flags); return FALSE;
   }
   result=I386HeapFree(heap,owned);
-  if(result && creator[0]) creator[0]->lifetime_refs--;
+  if(result && creator[0]) {
+    creator[0]->lifetime_refs--; creator[0]->inherited_refs--;
+  }
   I386IrqRestore(flags);
   return result;
 }

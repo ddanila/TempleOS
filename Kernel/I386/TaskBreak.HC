@@ -50,6 +50,7 @@ public Bool I386TaskBreakPoll()
       !(task->task_flags&(1<<TASKf_PENDING_BREAK)) ||
       task->task_flags&(1<<TASKf_BREAK_LOCKED|1<<TASKf_BREAK_TO_SHIFT_ESC) ||
       task->blocked || task->wait || task->io_locks ||
+      task->lifetime_refs!=task->inherited_refs ||
       task->compiler_busy || task->active_controls || task->compiler_cleanup_failed ||
       task->messages) {
     I386IrqRestore(flags); return FALSE;
