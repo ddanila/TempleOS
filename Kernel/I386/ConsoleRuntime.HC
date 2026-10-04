@@ -335,8 +335,12 @@ Bool ConsoleCancelRead(CI386Task *task)
 }
 Bool ConsoleKeyIrq(U8 data,U8 status)
 {//Called with IF clear; request only, never allocate, switch or throw here.
-  if(!I386KeyboardBreakKey(&console_hotkeys,data,status) || !console_break_task) return FALSE;
-  return I386TaskBreakRequest(console_break_task);
+  CI386Task *target;
+  if(!I386KeyboardBreakKey(&console_hotkeys,data,status)) return FALSE;
+  target=console_break_task;
+  if(TaskValidate(sys_focus_task)) target=sys_focus_task;
+  if(!target) return FALSE;
+  return I386TaskBreakRequest(target);
 }
 I64 Main(CI386ConsoleServices *services,I64 bytes)
 {

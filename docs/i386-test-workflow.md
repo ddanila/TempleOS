@@ -1439,3 +1439,20 @@ worker present. Focused-child break routing is still outside this result.
 Fresh full DolDoc, public message and job-dispatch regressions are running on
 that image; the intermediate-image DolDoc run is terminal incomplete at the
 editor break checkpoint and cannot qualify the new source.
+
+Focused-child interrupt routing has its own hardware-driven contract:
+
+```sh
+python3 tools/test-i386-public-keyboard-break-focus.py IMAGE --out build/focused-break
+```
+
+It requires a focused spawned HolyC loop to catch Ctrl-Alt-C as Break, restores
+console focus and checks arithmetic afterward. The inherited-reference image
+has a recorded red after child readiness and hotkey injection, with input disk
+unchanged. The IRQ handler now selects valid focus before the console fallback;
+both original rebuild generations pass and fresh native verification is pending.
+
+The captured pre-keyboard snapshot passes all-guest-provider flat self-hosting
+and independent executable/filesystem audit in
+build/i386-public-message-scan-selfhost and -selfhost-audit. These historical
+results do not cover current focus-routing changes.

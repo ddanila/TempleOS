@@ -5464,3 +5464,43 @@ dispatch regressions are also running against that image in the corresponding
 build/i386-public-keyboard-inherited-refs-messages and -jobs directories.
 The historical all-guest-provider flat rebuild remains live. Full current-source
 self-hosting, macro recording, input-loss recovery and release gates remain open.
+
+### Focused-task break red and historical native self-host pass
+
+Current-image direct job dispatch passes all eight cases and 46 commands in
+build/i386-public-keyboard-inherited-refs-jobs/result.json: 486,-fpu, 8 MiB,
+exact VGA pixels, unchanged input disk. Full messages and DolDoc remain live.
+
+Added tools/test-i386-public-keyboard-break-focus.py: focus a spawned HolyC
+loop, inject Ctrl-Alt-C, require that child to catch Break and restore console
+focus, then evaluate 6*7. The inherited-reference image records a genuine red
+in build/i386-public-keyboard-focused-break-red/result.json: child ready marker
+and successful initial VGA checkpoint, followed by timeout after hotkey
+injection; source disk unchanged. Checker SHA-256:
+5759682de7c24be29f4af7efd2822bf518af0ddd76d692a095f5ff1ba4ab1a41.
+
+The IRQ break handler previously always requested the console source task,
+even when a spawned child held input focus. It now requests the valid focused
+task, falling back to the submitting console task if focus is unavailable.
+IRQ behavior remains request-only. Both original rebuild generations pass;
+fresh cross-build is running in build/i386-public-keyboard-focused-break-kernel.
+Focused-child break delivery is not yet qualified.
+
+The captured memory-16/console-32 snapshot now passes native flat-kernel
+self-hosting with all six guest-built retained providers in
+build/i386-public-message-scan-selfhost/result.json: 487000 flat bytes,
+16 MiB build, 8 MiB independent boot, 486,-fpu KVM. Independent instruction,
+installed-payload and filesystem audit also passes in
+build/i386-public-message-scan-selfhost-audit/result.json. Target image SHA-256:
+443ce68122e6fcc06a3ed391c85f23fb174b521bb626d8b15d9c3c8c497ca09d.
+This is full guest-built-input evidence for that captured snapshot, not
+current-source two-generation reproducibility, workstation budgets or release
+qualification. The main coverage table now reflects available task services
+and distinguishes remaining terminal/debugging workflows.
+
+Full public messages now also pass on the inherited-reference image in
+build/i386-public-keyboard-inherited-refs-messages/result.json: 19 cases,
+82 commands, 486,-fpu, 8 MiB, exact VGA pixels and unchanged source disk.
+This confirms the prior message/job semantics survive hardware queue routing
+and the inherited-reference changes. It predates the focused-break IRQ fix;
+that fix still requires its fresh hardware contract result.
