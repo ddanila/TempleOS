@@ -7,9 +7,11 @@ The current-source full workstation attempt terminated at `help-index-link`
 the expected entries but their hash enumeration order differed after root
 declaration sharing. It is a failed integration run, not a workstation pass.
 Original `Adam/AHash.HC` sorts entries by name. An isolated alphabetical
-category prototype passes the original two-generation rebuild; its i386 build
-and focused red/green Help checks are pending. Main OS sources remain frozen
-for the running six-provider native build.
+category prototype passes the original two-generation rebuild and i386 build.
+The unchanged main image fails the alphabetical oracle; the prototype passes
+all nine focused no-FPU Help commands with exact VGA (58.120-second startup).
+Its full workstation suite is running in `build/i386-help-sort-workstation`.
+Main OS sources remain frozen for the running six-provider native build.
 
 Full self-hosting qualification now requires the retained-build and installation
 verdicts to form a matching disk/payload chain before flat-kernel construction.

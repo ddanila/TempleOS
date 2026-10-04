@@ -3822,3 +3822,20 @@ against the unchanged main image is running in `build/i386-help-sort-red`, using
 the alphabetical category oracle. Neither the prototype nor that focused run
 is a completed integration pass. Main Kernel/Compiler inputs remain unchanged
 while `build/i386-module-inheritance-native-build-long` runs.
+
+The alphabetical Help oracle now has a matched red/green observation. The main
+image terminates at the category VGA assertion in `build/i386-help-sort-red`.
+The isolated image passes all nine Help commands in
+`build/i386-help-sort-green/result.json`, including category selection, file
+opening and returning to the selected category, plus search/anchor links and
+heap recovery. CPU is `486,-fpu`, RAM 8 MiB, startup 58.119722 seconds, with every
+VGA pixel matched. Image SHA-256 is
+`1afc4a3e150556fce6219b5ed63c2e4375609c3cb86b403d3964c5a2a5848b8a`.
+The checker SHA-256 is
+`f095e48393fa1d64cd9af0d1d9fa10b93af7cb85fd7998df54bcb93575f5f4ad`;
+prototype DocumentRuntime SHA-256 is
+`1305e5a46baf35e7148b4ff612ba16aa5bb8545cfcba77621840d7ce01eb2148`.
+The matching original rebuild and i386 executable audit pass; boot kernel size
+is unchanged at 483384 bytes. Full workstation qualification is running in
+`build/i386-help-sort-workstation`. The sorted implementation and fixture remain
+isolated until that run and the main-source native build finish.
