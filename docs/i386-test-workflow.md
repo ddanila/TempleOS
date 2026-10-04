@@ -2738,3 +2738,24 @@ running in `build/i386-heap-asm-scan-selfhost-doldoc`. The second-generation
 retained build continues independently. The workstation pass does not replace
 persistence, second-generation, full API/debugger or reproducible-release
 qualification; native formatter/User integration remains unfinished.
+
+### Fully native DolDoc persistence and recovery pass across three boots
+
+`build/i386-heap-asm-scan-selfhost-doldoc/result.json` passes on an unchanged
+source target 9c74ad0a using a writable candidate: 107 create/edit/save commands,
+56 reopen commands and 15 revised-document commands, with exact VGA throughout.
+All three 8 MiB no-FPU boot measurements are below 60 seconds:
+53.71624059788883, 54.01201851526275 and 53.9515840052627 seconds.
+Interrupt-to-recovery VGA latency is 0.2707137567922473 seconds.
+
+Saved programs reopen and execute after reboot; revisions persist across the
+third boot. The independent filesystem walker verifies 18 directories,
+874 files and 18522 owned sectors, with bitmap matching reachable extents,
+including rename/delete, cross-directory move and directory lifecycle checks.
+Final writable candidate SHA-256:
+`543ecd0856e4c9237fff73e12c5669834b038a254c25c9fb6605dafc154abaf9`.
+
+Actual speaker-output verification is now running on the preserved fully native
+source in `build/i386-heap-asm-scan-selfhost-speaker`. The second-generation
+retained build continues. These workflow passes do not close native formatter/User,
+complete debugger/API support, second-generation or reproducible-release work.

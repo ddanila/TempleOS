@@ -47,8 +47,10 @@ with independent 8 MiB boot and installed instruction/filesystem audit passing.
 Its target is 9c74ad0a; ordinary 8 MiB no-FPU TCG keyboard/VGA and startup
 now pass at 53.687 seconds. Its full workstation suite passes 513 commands, exact VGA and 20 document
 cycles with exact heap recovery; startup passes at 53.786 seconds and visible
-update at 0.260 seconds. The three-boot DolDoc workflow and second-generation
-retained build (with exact installed-module comparison) are running. Full
+update at 0.260 seconds. The three-boot DolDoc workflow passes 107/56/15 commands with exact VGA,
+persistent programs and revisions, and matching filesystem extents/bitmap.
+Interrupt recovery is 0.271 seconds. Actual speaker verification and the
+second-generation retained build (with exact installed-module comparison) are running. Full
 two-generation and release qualification remain open.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent
