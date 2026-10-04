@@ -3661,3 +3661,29 @@ rebuild pass; the updated i386 build is running in
 `build/root-declaration-prototype/build/i386-keyword-initialization`. Gate and
 runtime acceptance are pending. Main Kernel/Compiler sources stay frozen for
 the ongoing six-provider native build.
+
+### Keyword determinism passes; inherited module completion is open
+
+The explicit twelve-byte initializer prototype passes
+`build/i386-keyword-tail-prototype-green.json`; independent injected tail-byte,
+type and value errors are all rejected by the audit. The same-call runtime
+cycle also passes in `build/i386-keyword-initialization-cycle/result.json`.
+Two separate cross-build executions produce all twelve modules and the linked
+flat image byte for byte: `build/i386-keyword-repeat-comparison.json`, 13
+artifacts and no differences. Main has not yet adopted this source change.
+
+The root-sharing six-provider build is terminal and fails while building its
+first CompilerRuntime source unit. The debug log reports frontend rejection at
+`C:/Kernel/SymbolTypes.HH:130`, the CHashFun definition; the build command returns
+zero and the harness subsequently times out awaiting success. Evidence is
+`build/i386-root-declarations-native-build/qemu/debug.log` and its checkpoint.
+The tool does not write a result JSON on this failure. No selected provider
+pass is claimed.
+
+Completion currently requires a forward descriptor directly in the parent's
+first table. Shared root declarations can be inherited through an intervening
+child table. The isolated fix permits module-source private completion to
+resolve that inherited descriptor while preserving interactive direct-scope
+publication checks and existing allocation/schema validation. Its matching
+original rebuild is running in the isolated checkout; module/runtime acceptance
+is still pending. Fix this regression before native root-sharing promotion.
