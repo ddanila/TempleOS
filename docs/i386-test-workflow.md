@@ -4157,3 +4157,22 @@ using first-generation target 6fc8eb0b as the preserved source. It exercises
 creation/replacement, persisted-byte and RedSea checks, reboot/reopen and
 execution, plus interrupt recovery. No final verdict or current-image
 interrupt-latency pass is available yet.
+
+Second-generation flat construction, installation and independent boot PASS
+in `build/i386-heap-seek-gen2-selfhost/result.json`. All twelve modules are
+guest-built with verified retained-provider provenance. Target SHA-256:
+`f4ac63ed0c0f5cf645d1c8f6ff02931d728ac56dbf87f9b10628e1630209282e`.
+Installed instruction/boot/RedSea/keyword audits PASS in
+`build/i386-heap-seek-gen2-selfhost-audit/result.json`.
+
+`build/i386-heap-seek-generation-identity/result.json` PASSes exact comparison
+of all twelve modules, the 486472-byte flat kernel and installed boot areas
+against first generation 6fc8eb0b. Flat SHA-256:
+`8d2f831e07580b1c240defadbfe37140821ae979db743fa50bbe6285b791626b`.
+Boot-area SHA-256:
+`7a03603c6e65292c9bfb08c86007e97e42cd60329af1fc1db7e97f0c44c2b3c3`.
+Both RedSea volumes have 16 directories, 865 files and 18819 owned sectors,
+with allocation bitmap matching reachable extents. Whole disk SHA values
+differ; this verdict establishes artifact and boot reproducibility.
+The live three-boot DolDoc workflow, full debugger functionality/API parity
+and release qualification remain separate requirements.
