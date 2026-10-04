@@ -3992,3 +3992,22 @@ The isolated cross-retained development flat build is running in
 native source assembly acceptance and boot-image fit using verified cross-built
 retained providers; it cannot establish full self-hosting or native-provider
 startup timing. Main heap sources remain unchanged pending these checks.
+
+The isolated heap-search guest flat-development build now passes in
+`build/cpu-debug-prototype/build/i386-heap-seek-native-development/result.json`.
+All six flat modules build in the guest, install and boot independently; retained
+providers are explicitly cross-built. Flat size is 486472 bytes (952 spare),
+SHA-256 `1f8ec5aedbba424a78b436b0e26da1b85e156e172372fe99c29a8c51743a9a26`.
+Target SHA-256 is
+`355d62b9d625659a1bfcafdd545467302c22e05a4dec27dddd757be59770ccee`.
+Instruction ranges, boot payload, filesystem and exact keyword data pass in
+`build/i386-heap-seek-native-development-audit`. Use the cross compiler template
+mode for this mixed development image (omit `--guest-compiler-template`);
+the first audit invocation with the guest-template flag rejected the cross-built
+compiler's template representation. The corrected audit passes.
+
+No-FPU 8 MiB keyboard/exact-VGA boot passes on that guest flat image in
+`build/i386-heap-seek-native-development-keyboard/result.json` at
+23.939021246 seconds. The unchanged startup-budget checker passes in its
+`-budget.json` report. Fully guest-built retained-provider startup and full
+workstation integration remain pending. The optimization remains isolated.

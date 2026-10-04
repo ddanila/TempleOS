@@ -10,9 +10,11 @@ mutation and uses bounded U32 assembly for the later block search. Both heap
 corpora pass, including 49 public layout checks and 1024 churn rounds each.
 Its integrated build and instruction/keyword audits pass, with a 482440-byte
 cross-built boot kernel (944 bytes smaller). No-FPU 8 MiB keyboard/exact-VGA
-boot passes at 23.484 seconds and meets the unchanged startup budget. Full
-workstation and guest flat-development builds are running. Fully guest-built
-timing and native boot-area fit remain unproven; main heap sources are unchanged.
+boot passes at 23.484 seconds and meets the unchanged startup budget. Full workstation testing is running. The guest flat-development build,
+installation, independent boot and audits pass at 486472 bytes (952 spare).
+No-FPU startup on that guest flat image passes at 23.939 seconds. Its retained
+providers remain cross-built, so fully guest-built timing remains unproven;
+main heap sources are unchanged.
 
 The pre-Help fully guest-built image passes a same-call empty User create/kill
 cycle in 0.352 seconds (`build/i386-root-declarations-native-cycle`), confirming
