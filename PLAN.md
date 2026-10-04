@@ -8765,3 +8765,12 @@ cross construction are running in that checkout. This code is unqualified;
 home aliases, whitespace/control handling, public task-field consistency,
 drive/error behavior and heap recovery require additional contracts before
 promotion. No partial source implementation closes the original Cd requirement.
+
+The Cd checker adds `--task-fields`: public Fs->cur_dir must match each
+successful path change and the last valid directory after failure. The original
+oracle passes in `build/public-cd-task-fields-red/oracle/debug.log`. Native run
+against the pre-Cd image is pending; the existing undefined Cd red already
+isolates the missing API. The new assertion prevents a private-only directory
+update from being mistaken for original public task-record compatibility.
+The Cd candidate's original bootstrap passes and cross module generation is
+running; no native behavior is qualified yet.

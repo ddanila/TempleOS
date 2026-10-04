@@ -25,7 +25,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--task-fields', action='store_true', help='Require public Fs->cur_dir to reflect every directory change and partial failure')
     args = parser.parse_args()
+    checks = list(CHECKS)
+    if args.task_fields:
+        expected_dirs = {'Cd("C:/Probe")':'/Probe','Cd("CdChild")':'/Probe/CdChild',
+                         'Cd("..")':'/Probe','Cd("")':'/Probe','Cd(".")':'/Probe',
+                         '!Cd("C:/Probe/CdMissing/Deeper")':'/Probe',
+                         'Cd("C:/Probe/CdMade/Deep",TRUE)':'/Probe/CdMade/Deep',
+                         'Cd("C:/")':'/'}
+        checks = [part for source in checks for part in
+                  ([source,f'!StrCmp(Fs->cur_dir,"{expected_dirs[source]}")']
+                   if source in expected_dirs else [source])]
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     candidate = out/'candidate.img'
@@ -34,11 +45,12 @@ def main():
     candidate.write_bytes(original)
     report = dict(result='fail', source_disk_sha256=hashlib.sha256(original).hexdigest(),
                   scope='Public Cd: relative/parent/empty/dot, partial progress on failure, nested make_dirs; not default home/drive/error parity')
+    report['public_task_fields'] = args.task_fields
     try:
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)
         lines = ['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}', 'U0 OriginalCd(){']
-        original_checks = ['DirMk("B:/Probe")']+[s.replace('C:/','B:/') for s in CHECKS]
+        original_checks = ['DirMk("B:/Probe")']+[s.replace('C:/','B:/') for s in checks]
         for index, source in enumerate(original_checks):
             lines.append(f'if(!({source})){{Report("FAIL Cd case {index}\\n");return;}}')
         lines += ['Report("DONE original Cd\\n");}', 'OriginalCd;']
@@ -48,7 +60,7 @@ def main():
         report['original_oracle'] = 'pass'
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
-                                   startup_check={'status':'ok','answers':[],'commands':[(s+';',['1']) for s in CHECKS]+[('6*7;',['42'])]})
+                                   startup_check={'status':'ok','answers':[],'commands':[(s+';',['1']) for s in checks]+[('6*7;',['42'])]})
         build = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         report['filesystem'] = build['verify_mutated_volume'](candidate)
         expected = {'/Probe/CdChild/Child.BIN':b'CHILD','/Probe/AfterFail.BIN':b'FAIL','/Probe/CdMade/Deep/Made.BIN':b'MADE'}
