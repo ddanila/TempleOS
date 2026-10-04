@@ -6895,3 +6895,20 @@ running in `build/i386-heap-asm-scan-retained`, using this installed image and
 rebuild the flat modules with those guest-built providers, audit with the guest
 compiler template and measure fully native startup. The cross-image workstation
 suite continues independently. No fully native timing pass is established yet.
+
+### Assembly heap scan: complete cross-image workstation suite passes
+
+`build/i386-heap-asm-scan-cross-workstation/result.json` passes all 513 native
+commands, exact VGA at every checkpoint, and 20 document development cycles
+with exact task data/code heap recovery. Startup is 46.07334640296176 seconds;
+`build/i386-heap-asm-scan-cross-workstation-budget.json` passes the unchanged
+60-second gate. Long-document input-to-visible latency is
+0.255388590041548 seconds, meeting the one-second gate. Evidence SHA-256:
+`da2f1ccbc3ff012bb202f0f5b7827d96a1f26c2aa6b511d91e962237811e90e8`.
+
+This run qualifies the tested workflows on cross-built image 4d57c57f, with
+the combined assembly heap scan. It does not establish fully guest-built
+startup or current-source two-generation release qualification. The native
+retained-provider build in `build/i386-heap-asm-scan-retained` remains active;
+installation, fully native flat rebuild, audit and timing follow its completion.
+Native formatter/User integration and the wider release requirements stay open.
