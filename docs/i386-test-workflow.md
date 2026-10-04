@@ -4571,3 +4571,21 @@ on current main in `build/public-file-write-lifecycle-red`. These ordinary
 write cases do not establish default Now, compressed/resident semantics,
 exhaustive failure recovery or complete public file API parity. Implementation
 remains isolated while native qualification runs.
+
+### FileWrite default-date failing contract and RTC prototype
+
+`tools/test-i386-public-file-write-now.py` independently compares the
+persisted default-date binary file against the host UTC execution interval
+(with explicit 120-second tolerance), cluster return and attributes.
+`build/public-file-write-now-red/result.json` FAILs on the explicit-date-only
+prototype: the file date is zero, outside that interval. Guest writes and
+filesystem checks execute; this is a real default-date semantic failure.
+
+The isolated FileWrite prototype now uses a bounded consistent RTC snapshot
+for zero cdt, with interrupt-protected CMOS access, BCD/12-hour decoding and
+Struct2Date minus local_time_offset. It retains the original 2000-based
+two-digit year convention and the boot RTC's disabled-NMI selector policy.
+Its fresh original rebuild is running before cross/runtime qualification.
+No default-date green is claimed; clock modes/offset/boundary/error cases
+need broader tests. Main OS sources remain unchanged while native workstation
+and second-generation provider checks run.
