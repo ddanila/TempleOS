@@ -1178,7 +1178,7 @@ python3 tools/test-i386-public-messages.py --original --out build/public-message
 python3 tools/test-i386-public-messages.py build/i386-kernel/kernel.img --out build/public-messages-i386
 ```
 
-The thirteen checks cover empty root/child job queues, 40 queued messages in FIFO order, destructive mask
+The fourteen checks cover empty root/child job queues, 40 queued messages in FIFO order, destructive mask
 filtering, negative message codes producing down/up events, FlushMsgs counts
 and zeroed outputs on an empty queue, and PostMsg/GetMsg delivery to a child.
 The native runner first checks MAlloc and Msg publication and then requires the
@@ -1191,7 +1191,9 @@ clearing AWAITING_MSG on both parent and popup. Links are restored before
 workers retire. These check routing against public task fields; they do not run
 the original InputFilterTask job loop or establish full window-manager behavior.
 These public APIs are not yet published in the port; the native command is a
-future acceptance gate, not a currently passing test. Non-message jobs, macro
+future acceptance gate, not a currently passing test. A queued JOBT_CALL must execute before a following message is returned and
+move to the completed queue with result 42 and DISPATCHED/DONE flags. The test
+then removes and frees that completed node. EXE_STR/SPAWN jobs, macro
 recording and allocation recovery are outside this contract.
 
 Check public task job-queue initialization independently of message delivery:

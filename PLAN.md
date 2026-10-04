@@ -4899,3 +4899,33 @@ input disk. Guest-built flat-image budget qualification is still required;
 these checks do not establish current-source self-hosted release readiness. This fixes a recipient-lifetime prerequisite, not public
 message posting; arbitrary unmapped-pointer safety is outside TaskValidate's
 original contract.
+
+### Message scanning includes job dispatch
+
+The message reference now passes fourteen original contracts
+(build/i386-public-message-job-call-original/result.json). The added case
+queues a JOBT_CALL before a message, then uses ScanMsg. The call must run,
+return 42 and enter the completed queue with DISPATCHED/DONE flags before
+the message is returned. The fixture removes/frees its completed job.
+This reflects original ScanMsg calling JobsHndlr for the current task;
+a message-only queue scanner would not preserve the programming model.
+EXE_STR/SPAWN job execution, macro recording and allocation recovery remain
+outside this reference and require further coverage.
+
+Continue implementation in this order:
+
+1. Publish TaskMsg/PostMsg/Msg against root-owned shared CJob allocations,
+   preserving metadata, paired events, filter routing and popup wake flags.
+   Keep recipient validation based on the shared original signature helper.
+2. Provide current-task job dispatch before ScanMsg/GetMsg. Preserve call
+   results, completion queues, exception handling, wake/focus flags and
+   execution of queued source/spawn requests; connect compiler/window hooks
+   where those services belong in separate retained providers.
+3. Qualify posting, dispatch, scanning, flushing and waiting together against
+   original references, plus cleanup and cancellation regressions. Complete
+   keyboard/public-message integration and macro recording coverage rather
+   than declaring the private bounded queue to be equivalent.
+
+The preceding-source broad native suite and current-source guest-built flat
+qualification remain live. No terminal pass is recorded for either here;
+public message services are still unpublished.
