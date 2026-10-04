@@ -13,8 +13,11 @@ def commands():
     definitions = [
         'U0 KeyLog(U8 *s){while(*s)OutU8(0xE9,*s++);}',
         'CTask *KeyLossWorker(){CTask *r=Fs->parent_task,*h=(&r->next_child_task)(U8 *)-offset(CTask.next_sibling_task),*t;for(t=r->next_child_task;t!=h;t=t->next_sibling_task)if(!StrCmp(t->task_name,"Keyboard"))return t;return NULL;}',
+        'I64 KeyLossCalls=0;',
+        'I64 KeyLossCall(U8 *data){KeyLossCalls++;return 1;}',
+        'U0 KeyLossQueue(){CJob *j=CAlloc(sizeof(CJob));j->job_code=JOBT_CALL;j->addr=&KeyLossCall;j->ctrl=&Fs->srv_ctrl;j->flags=1<<JOBf_FREE_ON_COMPLETE;QueIns(j,Fs->srv_ctrl.last_waiting);}',
         'Bool KeyLossPrime(){I64 a,s;KeyLog("KEY LOSS prime\\n");return GetMsg(&a,&s,1<<MSG_KEY_DOWN)==MSG_KEY_DOWN&&a==0&&(s&127)==42;}',
-        'Bool KeyLoss(){CTask *t=KeyLossWorker;if(!t||!KeyLossPrime)return FALSE;Suspend(t);KeyLog("KEY LOSS ready\\n");Sleep(2000);Suspend(t,FALSE);KeyLog("KEY LOSS done\\n");return TRUE;}',
+        'Bool KeyLoss(){CTask *t=KeyLossWorker;if(!t||!KeyLossPrime)return FALSE;Suspend(t);KeyLog("KEY LOSS ready\\n");Sleep(2000);KeyLossQueue;Suspend(t,FALSE);Yield;KeyLog("KEY LOSS done\\n");return TRUE;}',
     ]
     history = ['TempleOS i386', 'HolyC console', '']
     def typed(source):
@@ -28,7 +31,7 @@ def commands():
     interaction = {'begin': 'KEY LOSS prime\n', 'end': 'KEY LOSS done\n',
                    'initial_rows': before, 'final_rows': after,
                    'preserve_history': True, 'events': [{'shift_key': 'a'}, {'wait_log': 'KEY LOSS ready\n'}] + [action for _ in range(40) for action in ({'key': 'a'}, {'delay': 0.01})]}
-    return [(source, []) for source in definitions] + [(call, ['1', '> ', 'Input reset'], interaction), ('I64 loss_recovered=42;loss_recovered;', ['42'])]
+    return [(source, []) for source in definitions] + [(call, ['1', '> ', 'Input reset'], interaction), ('KeyLossCalls==1;', ['1']), ('I64 loss_recovered=42;loss_recovered;', ['42'])]
 
 
 def main():
@@ -41,7 +44,7 @@ def main():
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     disk_hash, checker = sha(args.disk), sha(Path(__file__))
     report = {'disk_sha256': disk_hash, 'checker_sha256': checker,
-              'scope': 'Hardware raw-queue overflow, exactly one console reset, discarded Shift release and recovered typing; not focused-child discontinuity notification'}
+              'scope': 'Hardware raw-queue overflow, exactly one console reset, discarded Shift release, queued CALL preserved exactly once and recovered typing; not focused-child discontinuity notification'}
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,

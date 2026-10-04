@@ -1483,3 +1483,9 @@ The full inherited-reference DolDoc three-boot session now passes: 178 commands,
 programs and independent filesystem/bitmap checks. Its image predates focused
 IRQ selection; the full latest-image workstation suite and newer guest-provider
 rebuild are running separately.
+
+The loss checker also enqueues a normal CALL job before decoder recovery,
+yields to let overflow handling run, and requires that callback to execute
+exactly once afterward. This expanded contract passes in
+build/i386-public-keyboard-loss-queued-job/result.json on the focused-break image.
+The earlier reset-only result does not establish queued-job preservation.
