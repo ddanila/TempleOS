@@ -2647,3 +2647,21 @@ startup or current-source two-generation release qualification. The native
 retained-provider build in `build/i386-heap-asm-scan-retained` remains active;
 installation, fully native flat rebuild, audit and timing follow its completion.
 Native formatter/User integration and the wider release requirements stay open.
+
+### Assembly heap scan: all six retained providers compile natively
+
+`build/i386-heap-asm-scan-retained/result.json` passes guest compilation,
+module parsing, export-set checks and the console allocation-wrapper check
+for all six retained providers. Source disk SHA-256:
+`e809791978764b4258fc0ce0cea1c82041563125b88582ce580411bff6cf9e7d`.
+The six output module hashes match the preceding heap-scan provider outputs;
+the new optimization resides in the flat boot kernel, not those providers.
+This is not yet a second complete native generation or release qualification.
+
+Installation, exact installed-byte checks and independent no-FPU boot are now
+running in `build/i386-heap-asm-scan-retained-install` on a writable source
+copy. After that passes, rebuild/install the flat modules using these native
+providers, audit the complete image with the guest compiler template, and
+measure ordinary TCG startup against the unchanged 60-second gate. The source
+snapshot includes formatter extraction but still lacks native formatter/User
+integration and the other open release requirements.
