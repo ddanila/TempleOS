@@ -2003,3 +2003,36 @@ code, exact foreground VGA, exact persisted `work` plus cursor byte 0x05, and
 normal task/parent-heap cleanup. It uses a writable copy and verifies that the
 source disk stays unchanged. Runtime result is pending. This is not a full-OS
 background rebuild or exhaustive concurrency test.
+
+The existing `breaks` group now passes 16 commands on the recovery candidate in
+`build/i386-terminal-idle-break-regression` (57.88-second startup, 8 MiB, 486,-fpu).
+
+### Forced terminal cleanup during editing
+
+```sh
+python3 tools/test-i386-terminal-kill.py build/i386-terminal-idle-break-kernel/kernel.img --out build/i386-terminal-kill-baseline
+```
+
+The checker kills One with a live unsaved editor from Two. It requires removal
+from the parent's child list, continued editing/save in Two, exact saved bytes,
+normal surviving-task exit and parent public-heap recovery. Checker SHA-256:
+`35bb0e3e829e26615cbfca9c139c8a5c62a9d6a7f053cb5ae0a59925810cca8f`.
+Baseline is running; no pass or failure is claimed yet.
+
+The first background run passes all visible/file/cleanup checks, but its counter
+interval also includes setup before editor entry. Use the strengthened checker
+`9639f89b195407e6fe8167356455eedda056b0a43299f426b53f566ad047c96d` and output `build/i386-terminal-background-live-session`
+for the stricter concurrency gate: a completed compilation must be observed
+after the editor visibly opens and before it closes. This run is pending.
+
+Forced-exit setup currently fails compiling the TermKill helper, before killing
+a terminal. The revised checker `c849ea2bb51c8edb9f2b5de99b1580afb9adf7d46709ba891cf71b70080fa15a` explicitly checks
+Kill publication first; its baseline is running in
+`build/i386-terminal-kill-publication-red`. The initial setup failure does not
+qualify actual forced cleanup behavior.
+
+Root `document-editing` regression is now PASS: 169 commands with exact VGA,
+57.34-second startup on the heading-fix image. The older console-35 native
+provider build also passes all six modules. Installation/independent boot are
+running in `build/i386-debug-exception-retained-install`; this source epoch
+predates terminal changes and does not qualify current-source reproducibility.

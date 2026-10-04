@@ -6151,3 +6151,53 @@ existing DocPutKey and names the executable document Background.HC.
 The heading-fix root document-editing regression and older console-35 native
 provider build are still running. Current-source native generations, complete
 debugging and release qualification remain open.
+
+### Interrupt regression passes; forced terminal cleanup contract
+
+`build/i386-terminal-idle-break-regression/result.json` passes all 16 existing
+interrupt commands on unchanged recovery image
+a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8.
+All VGA checkpoints match on 8 MiB with 486,-fpu; startup is 57.88 seconds.
+This extends the focused idle-break evidence to existing active execution
+interrupt cases. It does not prove every wait or debugger cancellation path.
+
+Added `tools/test-i386-terminal-kill.py`, SHA-256
+35bb0e3e829e26615cbfca9c139c8a5c62a9d6a7f053cb5ae0a59925810cca8f.
+One opens a text DolDoc and leaves unsaved changes; Two calls public Kill on
+One, verifies child-list removal, then opens/edits/saves its own document and
+exits. The oracle requires exact VGA, parent public-heap recovery, continued
+shell use and independently read Survivor.DD bytes (`ok` plus cursor byte 0x05).
+The baseline is running in `build/i386-terminal-kill-baseline`; no result is
+claimed. This targets forced exit while an editor is active; exhaustive private
+resource accounting, sprite/mouse and debugger cancellation remain open.
+
+Background fixture 7395f7f3e3a36667919ff1abd959a636576cb7e95a053ffd28c56c5efc472592
+passes in `build/i386-terminal-background-session/result.json`: 14 parent
+commands, 58.14-second startup, exact VGA and saved Work.DD bytes 776f726b05.
+The original image is unchanged. Its count spans document creation and editor
+use, so this result alone does not prove a compilation completed while the
+editor was actually open. The strengthened checker `9639f89b195407e6fe8167356455eedda056b0a43299f426b53f566ad047c96d`
+marks completed compilations after the editor's visible-open checkpoint and
+requires a newer completion before leaving the saved editor. It is running in
+`build/i386-terminal-background-live-session`; this stricter gate remains open.
+
+The initial forced-terminal-exit test fails during TermKill helper definition
+with `Invalid lval`, before any editor is killed. Current public source does not
+publish Kill, so this is not evidence of an editor cleanup failure. Revised
+checker `c849ea2bb51c8edb9f2b5de99b1580afb9adf7d46709ba891cf71b70080fa15a` adds an explicit Kill-publication assertion
+before that helper. It is running in
+`build/i386-terminal-kill-publication-red`. Resolve the public API gap before
+claiming the forced-exit workflow is covered.
+
+The root document-editing regression is now terminal PASS in
+`build/i386-terminal-documents-editing/result.json`: 169 commands, exact VGA,
+8 MiB, 486,-fpu and 57.34-second startup on heading-fix image 58ab8999.
+
+The console-35 native-provider build is also terminal PASS in
+`build/i386-debug-exception-retained/result.json`: all six retained modules
+were built in the guest. Source disk SHA-256:
+62e9f5e2d8069fd30d16525f03f6350d22919e0d7600f5f7fc17964bac09c0d5.
+Installation and independent boot are now running in
+`build/i386-debug-exception-retained-install`, preserving that source. This
+epoch includes compiler-59/memory-17 named exception support, but predates
+console-36 terminals. Current-source native reproducibility remains open.

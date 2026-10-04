@@ -18,12 +18,15 @@ The heading-fix image `build/i386-terminal-documents-kernel/kernel.img`
 passes the two-editor contract: independent live text documents, focus cycling,
 editing/save, named terminal restoration, exit/refocus, exact parent public-heap
 recovery and independent persisted-byte verification. Root document-editing
-regression is still running. The idle Ctrl-Alt-C contract now has matching
+regression passes 169 commands with exact VGA. The idle Ctrl-Alt-C contract now has matching
 baseline failure and candidate pass in `build/i386-terminal-idle-break-editor-{red,green}`.
 Candidate image `a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8`
 survives two breaks, supports editor sessions after each, retains definitions
-and passes normal terminal cleanup. Existing interrupt regression and a new
-background-compilation/foreground-editor workflow are running.
+and passes normal terminal cleanup. Existing interrupt regression passes all 16 commands. The first background
+compiler/editor workflow passes visible/file/cleanup checks; a stricter
+completion-during-editor oracle is running. Forced editor-task cleanup is
+unverified: its helper fails to compile, and an explicit Kill publication
+check is running to isolate the missing public API.
 
 The preceding memory-17 registration-fix image passes the full 513-command
 workstation suite in `build/i386-public-macro-registration-workstation`, including
@@ -33,8 +36,9 @@ The newest completed fully guest-built epoch is the memory-16/console-33
 focused-keyboard image in `build/i386-public-keyboard-focused-break-selfhost`:
 six native retained providers plus six native flat modules, independent boot and
 installed-image audit pass. Its 487344-byte flat image leaves 80 bytes in the boot
-area. A compiler-59/console-35 native provider build is running in
-`build/i386-debug-exception-retained`; it predates task-owned terminals.
+area. The compiler-59/console-35 native provider build passes all six modules in
+`build/i386-debug-exception-retained`; installation/independent boot are running
+in `build/i386-debug-exception-retained-install`. It predates task-owned terminals.
 Current-source two-generation reproducibility and release qualification remain
 open. The older 95-file local bundle is historical evidence, not a current release.
 
