@@ -2,6 +2,15 @@
 
 ## Objective and status
 
+The promoted CPU-trap epoch now passes fully native twelve-module
+construction/install/boot/audits and five-cycle continuation. Its native
+workstation passes 513 commands, exact VGA and 20 exact heap-recovery cycles:
+startup 33.068 seconds and long-document update 0.205 seconds. Formal startup
+budget passes. Second-generation retained rebuilding/comparison remains live.
+FileWrite is still an isolated experiment: ordinary/explicit/default-date
+and lifecycle contracts pass, but .Z write/include fails; complete
+compression/resident/API and release requirements remain open.
+
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
 frames, normal-context debugger entry and full exception-frame return. Five
 repeat cycles, six general-register markers and forced child exit/survivor

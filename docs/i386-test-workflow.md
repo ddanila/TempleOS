@@ -4605,3 +4605,22 @@ update-boundary/failure conditions or centuries; those remain required
 coverage, alongside compression/resident semantics and full native/size
 qualification before any FileWrite promotion. Main native workstation and
 second-generation provider checks remain live on their unchanged OS epoch.
+
+Fully native CPU-trap workstation qualification PASSes all 513 commands,
+exact VGA and 20 exact heap-recovery cycles in
+`build/cpu-trap-main-selfhost-workstation/result.json`: startup 33.068386981
+seconds, visible long-document update 0.204777493 seconds. The formal
+`-budget.json` startup verdict PASSes. Gen2 retained construction/comparison
+remains live; full release qualification is still open.
+
+`tools/test-i386-public-file-write-compressed.py` specifies original filename
+inference: write ASCII HolyC source as .HC.Z, include it and execute its
+function, then independently check date/0xC00 attributes and a CT_7_BIT
+archive header with correct persisted and expanded lengths.
+`build/public-file-write-compressed-red` FAILs on the ordinary-write prototype
+after FileWrite succeeds: include reports COMMAND ERROR. No execution or
+archive metadata assertions pass. The prototype writes raw bytes for .Z.
+Implement the original 7/8-bit compression algorithm and filename/attribute
+semantics, with fallback only where the original requires it, plus resident
+cache compatibility. Do not substitute an always-uncompressed archive for
+full compression behavior. FileWrite remains unpromoted.
