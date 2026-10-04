@@ -5298,3 +5298,25 @@ startup code or the keyboard worker runs. ConsoleInit only publishes the focus
 variable. Rebuild of this correction is running; a fresh cross-build and rerun
 of all four runtime checks are required. No syscall/API layout changes are
 introduced by this fix.
+
+### Keyboard focus correction did not restore input
+
+The corrected-focus build and 386 boot audit pass, but all four reruns still
+fail at initial typing (build/i386-public-keyboard-focus-green,
+build/i386-public-keyboard-focus-console, build/i386-public-keyboard-focus-breaks,
+build/i386-public-keyboard-focus-doldoc). Moving focus out of ConsoleInit fixes
+an incorrect assignment but does not establish that the worker runs or posts
+valid events. No keyboard green result is claimed.
+
+Added bounded debug-port markers for worker entry, its first decoded event and
+target signature, and the console/worker pointers returned by startup. Both
+original rebuild generations pass for this diagnostic source; fresh cross-build
+is running in build/i386-public-keyboard-trace-kernel. These markers do not add
+startup diagnostic workloads or alter the VGA console.
+
+Added a separate focused-child keyboard checker, keeping the existing public
+keyboard checker frozen during its runs. The first attempt failed at initial
+typing on the same broken image; its new fixture also contained a 258-byte
+line, which is now shortened below the 255-byte limit before qualification.
+Focus routing is still unqualified. The older retained guest rebuild remains
+live for its captured pre-keyboard-routing snapshot.

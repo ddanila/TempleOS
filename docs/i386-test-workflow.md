@@ -1380,3 +1380,18 @@ ConsoleInit had assigned focus to the kernel root before the console task was
 spawned. Initial focus is now assigned in ConsoleKeys entry. Fresh build and
 public-keyboard/ordinary-keyboard/break/DolDoc reruns are pending; the earlier
 build pass did not qualify interactive input.
+
+The initial-focus correction alone does not restore input: all four reruns
+still fail at initial typing. A fresh diagnostic image records worker entry,
+first decoded event/target signature and startup task pointers on the debug
+port. No keyboard green result is claimed.
+
+Focused-child delivery has a separate checker:
+
+```sh
+python3 tools/test-i386-public-keyboard-focus.py build/i386-kernel/kernel.img --out build/keyboard-focus
+```
+
+It gives a spawned child focus, injects `a` while that child waits in GetMsg,
+then restores console focus. Its source lines fit the 255-byte input limit;
+behavior remains unqualified until input routing itself works.

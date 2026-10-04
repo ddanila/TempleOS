@@ -38,6 +38,8 @@ U0 NativeKeyboardWorker(U8 *data)
   CI386KeyEvent event;
   CTask *target;
   I64 decoded;
+  Bool reported=FALSE;
+  KernelLog("KEYBOARD MESSAGE worker\n");
   SetRFlags(GetRFlags|512);
   while(TRUE) {
     decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
@@ -47,6 +49,12 @@ U0 NativeKeyboardWorker(U8 *data)
     } else if(decoded) {
       target=sys_focus_task;
       if(!TaskValidate(target)) target=native_keyboard_owner;
+      if(!reported) {
+        reported=TRUE;
+        KernelLog("KEYBOARD MESSAGE first "); KernelHex(event.type); KernelLog(" ");
+        KernelHex(event.ch); KernelLog(" "); KernelHex(target); KernelLog(" ");
+        KernelHex(target->task_signature); KernelLog("\n");
+      }
       try {
         (*native_keyboard_hooks.post)(target,event.type,event.ch,event.scan,0);
       } catch {
@@ -78,6 +86,8 @@ Bool NativeKeyboardStart()
   native_keyboard_owner=task;
   native_keyboard_task=(*native_keyboard_hooks.spawn)(&NativeKeyboardWorker,0,
     "Keyboard",-1,0,8192,256);
+  KernelLog("KEYBOARD MESSAGE start "); KernelHex(task); KernelLog(" ");
+  KernelHex(native_keyboard_task); KernelLog("\n");
   return native_keyboard_task!=0;
 }
 I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE)
