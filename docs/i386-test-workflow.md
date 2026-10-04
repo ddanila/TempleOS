@@ -2270,3 +2270,25 @@ After a provider PASS, install those exact persisted modules with
 fully guest-built image using --guest-compiler-template, then measure TCG
 startup/workstation behavior. A second native generation with installed-module
 comparison is still required; starting this run does not satisfy that gate.
+
+### Next TDD contract: public User terminal creation
+
+Added `tools/test-i386-user-create.py` with a shared original/native contract:
+empty terminal creation, formatted startup text executed in the created task,
+Adam child-list membership, synchronous Kill removal and continued root use.
+The corrected original x64 oracle passes in
+`build/i386-user-create-original-fixed/result.json`. Checker SHA-256:
+`521478343b9e2c2dcde494d5265c95d5ca48a31e81f38102467c73c85e10d71e`.
+
+The first fixture wrongly assumed caller-owned children and inherited caller
+symbols; original User uses Spawn with the default Adam parent. It also needs
+a newline in the submitted text to execute it. The frozen contract now checks
+Adam membership and uses formatted addresses to observe the child result and
+identity. These are oracle corrections, not requested behavior changes.
+
+The initial native baseline fails the publication assertion: User is absent
+on unchanged development image ed514687. The corrected checker is running in
+`build/i386-user-create-red-fixed`; no native behavior pass is claimed.
+Implementation must preserve the full User(fmt, ...) API and default ownership.
+Ctrl-Alt-T creation and visible terminal editing/focus remain separate follow-up
+checks; passing the publication probe alone will not satisfy terminal creation.
