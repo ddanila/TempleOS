@@ -1,0 +1,58 @@
+//Public job-backed messages. Include after the task lifetime and heap provider.
+#include "/Kernel/NumericLimits.HH"
+#define TaskValidate MemoryTaskValidate
+#include "/Kernel/TaskValidate.HC"
+U0 MemoryMessageWake(CTask *task)
+{
+  while(task && MemoryTaskValidate(task)) {
+    task->task_flags&=~(1<<TASKf_AWAITING_MSG);
+    task=task->popup_task;
+  }
+}
+CJob *MemoryTaskMsg(CTask *target,CTask *master,
+  I64 msg_code,I64 arg1,I64 arg2,I64 flags)
+{
+  CTask *task=target;
+  CJob *job,*last;
+  U32 irq;
+  if(!MemoryTaskValidate(task) || master && !MemoryTaskValidate(master) ||
+      task->popup_task && !(task->task_flags&(1<<TASKf_FILTER_INPUT))) return 0;
+  job=MemoryCAlloc(sizeof(CJob),memory_root);
+  job->master_task=master; job->job_code=JOBT_MSG;
+  job->msg_code=msg_code;
+  if(msg_code<0) job->msg_code=-msg_code;
+  job->aux1=arg1; job->aux2=arg2; job->flags=flags;
+  irq=I386IrqSave;
+  while(task->task_flags&(1<<TASKf_FILTER_INPUT) && !(flags&(1<<JOBf_DONT_FILTER)))
+    task=task->next_input_filter_task;
+  job->ctrl=&task->srv_ctrl;
+  while(task->srv_ctrl.flags&(1<<JOBCf_LOCKED)) {}
+  task->srv_ctrl.flags|=1<<JOBCf_LOCKED;
+  if(!MemoryTaskValidate(task)) {
+    task->srv_ctrl.flags&=~(1<<JOBCf_LOCKED);
+    MemoryFree(job); job=0;
+  } else {
+    task->task_flags&=~(1<<TASKf_IDLE);
+    MemoryMessageWake(task);
+    last=task->srv_ctrl.last_waiting;
+    job->last=last; job->next=last->next;
+    last->next->last=job; last->next=job;
+    task->srv_ctrl.flags&=~(1<<JOBCf_LOCKED);
+  }
+  I386IrqRestore(irq);
+  if(msg_code<0) MemoryTaskMsg(target,master,-msg_code+1,arg1,arg2,flags);
+  return job;
+}
+U0 MemoryPostMsg(CTask *task,I64 msg_code,I64 arg1,I64 arg2,I64 flags=0)
+{
+  if(MemoryTaskValidate(task)) {
+    if(task->task_flags&(1<<TASKf_INPUT_FILTER_TASK))
+      MemoryTaskMsg(task->last_input_filter_task,0,msg_code,arg1,arg2,
+        flags|1<<JOBf_DONT_FILTER);
+    else MemoryTaskMsg(task,0,msg_code,arg1,arg2,flags);
+  }
+}
+U0 MemoryMsg(I64 msg_code,I64 arg1,I64 arg2,I64 flags=0)
+{
+  MemoryPostMsg(I386TaskSelf,msg_code,arg1,arg2,flags);
+}

@@ -4926,6 +4926,42 @@ Continue implementation in this order:
    keyboard/public-message integration and macro recording coverage rather
    than declaring the private bounded queue to be equivalent.
 
-The preceding-source broad native suite and current-source guest-built flat
-qualification remain live. No terminal pass is recorded for either here;
-public message services are still unpublished.
+The preceding-source broad native suite still has no recorded terminal result.
+The signature-retirement snapshot's guest-built flat qualification passes, as
+recorded below. Public posting is now published; scanning and dispatch remain open.
+
+### Public message posting (qualified original and native contracts)
+
+Added original-signature TaskMsg/PostMsg/Msg declarations and root-owned
+job-backed implementations in the retained memory provider. Posted CJob
+records retain master, flags and full-width arguments; negative codes queue
+down/up pairs. Posting follows input-filter routes and clears recipient idle
+and popup-chain awaiting flags without changing wake deadlines. Task validity
+uses the shared original signature helper. The provider now exports 33
+services, version 13; its flat imports remain unchanged.
+
+A separate posting contract passes five original cases
+(build/i386-public-message-posting-original-v2/result.json): 40-event FIFO,
+paired events, invalid recipient/master rejection, full-width metadata,
+system-heap ownership and wake flags. It inspects and frees the public job nodes directly and does not
+use an alternate scanner to pretend ScanMsg is implemented. Both original
+rebuild generations and the fresh native build/386 boot audit pass
+(build/i386-public-message-posting-kernel/result.json). Native posting
+qualification passes in build/i386-public-message-posting-native-v2: five
+contracts and 15 commands on 486,-fpu at 8 MiB, with VGA checkpoints matching
+and the source disk unchanged. Twelve queued-job cleanup cases and five
+callback cases pass on the same image (build/i386-public-message-posting-queues
+and build/i386-public-message-posting-callbacks).
+Routing/popup qualification against this provider, failed-allocation recovery,
+job-aware scanning/waiting, keyboard adaptation and macro recording remain
+open. The posting provider does not yet implement macro recording. This is
+partial message-subsystem progress, not complete original message compatibility.
+
+The preceding signature-retirement source snapshot's guest-built flat image
+passes (build/i386-public-task-validity-native-flat/result.json): 487000 bytes,
+424 bytes spare. All six flat modules are guest-built; all retained modules
+remain cross-built development inputs. Build uses 16 MiB and independent boot
+uses 8 MiB on 486,-fpu. Its independent instruction audit passes
+(build/i386-public-task-validity-native-flat/instruction-audit/result.json). This
+proves the earlier snapshot's budget, not current version-13 provider release
+qualification or fully guest-built retained generations.

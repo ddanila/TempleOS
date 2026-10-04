@@ -1240,3 +1240,19 @@ green qualification of the scheduler fix passes at 8 MiB without an FPU.
 Native and retained scheduler regressions, queued-job cleanup and callback
 recovery checks also pass. This does not establish
 safety for arbitrary unmapped pointers.
+
+Verify message posting separately from scanning/job dispatch:
+
+```sh
+python3 tools/test-i386-public-message-posting.py --original --out build/message-posting-original
+python3 tools/test-i386-public-message-posting.py build/i386-kernel/kernel.img --out build/message-posting-native
+```
+
+Five contracts inspect actual CJob nodes for 40-event FIFO, paired messages,
+invalid task/master rejection, full-width metadata, system-heap ownership and
+idle/await wake flags.
+They remove and free nodes directly; they do not supply a replacement ScanMsg.
+Original and native version-13 provider qualification pass, including all VGA
+checkpoints at 8 MiB on 486,-fpu. Queued-job cleanup (12 cases) and callback
+recovery (5 cases) also pass on that image. Scanning, routing, macro recording and allocation recovery
+need their own checks.
