@@ -8582,3 +8582,17 @@ a Bool argument; the next isolated correction explicitly normalizes it with
 `(attr&0x200)!=0`. Fresh bootstrap/cross rebuilding is running in
 `build/file-resident-bool`. This is a source correction awaiting evidence that
 it resolves the observed cached-read failure.
+
+ABI-40 FileFind retained installation and independent boot now pass in
+`build/public-file-find-rejection-native-install/result.json`, installed disk
+SHA-256 `0224870ff3da5abf2019eb3a0fd8e3fcc33ef27af53201e89179f75b6da63bf4`.
+Full twelve-module native construction/install is running in
+`build/public-file-find-rejection-selfhost` with the verified build and install
+reports supplied as provenance. Full native artifact audits and runtime
+regressions remain necessary before promotion.
+
+The resident boolean correction's original bootstrap, cross construction and
+386 instruction audit pass; cross kernel remains 483184 bytes. The original
+functional oracle and native resident contract are running in
+`build/public-file-resident-bool-green`. The directory name does not imply a
+passing result, and cold cache population/lifecycle compatibility remain open.
