@@ -2367,3 +2367,25 @@ On success, independently audit all twelve module executable ranges and the
 installed filesystem, then qualify the fully guest-built image. This still
 uses the cleanup snapshot; it cannot certify subsequent mode/heap/formatter
 changes or the required second native generation.
+
+### Mode-image complete workstation suite passes
+
+`build/i386-debug-mode-workstation/result.json` passes all 513 native commands
+and 576 submitted lines with exact VGA, including 20 document development
+cycles with exact task data/code heap recovery. Startup is
+58.3255955548957 seconds; long-document input-to-visible-update latency is
+0.3174466756172478 seconds. `build/i386-debug-mode-workstation-budget.json`
+passes the unchanged 60-second startup gate. The visible-update measurement
+also meets the one-second gate; this run does not replace the separate
+interrupt-to-recovery latency workflow.
+
+Unchanged image SHA-256:
+`3354b49895533bb2267d8c840877fc609b780319911436463a9c28bd5f7e54a1`.
+Runner SHA-256:
+`3956a334692d4d9298f49b8cddd515ab0cb1f97a748bc32f78408d6c60101c51`.
+The corrected forward-call fixture passes within the complete suite, alongside
+compiler/math, window/graphics, keyboard/mouse, document/style/sprite/file
+navigation and Help coverage. This image includes terminals, Kill, debugger
+cleanup, zero exceptions and mode restoration. It predates portable heap-scan
+and formatter extraction and uses cross-built modules. Fully guest-built
+current-source two-generation and release qualification remain open.

@@ -24,8 +24,10 @@ coverage includes explicit entry/return, named and zero-valued exceptions,
 source attribution, active mode and prior-mode restoration after normal or
 forced exit. These passes belong to the individual image snapshots recorded
 in PLAN.md and the workflow document; they are not a consolidated current-image
-release pass. The mode-image full workstation run is active in
-`build/i386-debug-mode-workstation`. The preceding cleanup-image attempt failed
+release pass. The mode-image full workstation suite passes in
+`build/i386-debug-mode-workstation`: 513 commands, exact VGA, 20 document
+cycles with exact heap recovery, 58.326-second startup and 0.317-second visible
+update. Both measured budgets pass on that cross-built snapshot. The preceding cleanup-image attempt failed
 at a test that redeclared debugger G; the distinct-name forward-call regression
 passes, and the full fixture has been corrected.
 
