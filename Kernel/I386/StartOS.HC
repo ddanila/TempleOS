@@ -33,6 +33,7 @@ ConsoleDocumentStart;
 #include "/Kernel/I386/PublicGraphicsContext.HH"
 
 #include "/Kernel/I386/PublicWindow.HH"
+#include "/Kernel/I386/PublicFormat.HH"
 
 #include "/Kernel/I386/PublicSound.HH"
 

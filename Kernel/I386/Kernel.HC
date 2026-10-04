@@ -689,7 +689,7 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[39];
+  CI386ModuleBinding bindings[47];
   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
   U8 indices[14];
   U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
@@ -712,8 +712,17 @@ U0 KernelConsoleLoad()
   }
   KernelBinding(&bindings[37],"_STRCPY"); bindings[37].name="StrCpy";
   KernelBinding(&bindings[38],"I386HeapFree");
+  public_names="_MSIZE\0_ROUND\0_FLOOR\0_LOG10\0_POW10_I64\0_FLOOR_I64\0char_bmp_hex_numeric\0";
+  local_names="MSize\0Round\0Floor\0Log10\0Pow10I64\0FloorI64\0char_bmp_hex_numeric\0";
+  for(i=39;i<46;i++) {
+    KernelBinding(&bindings[i],public_names); bindings[i].name=local_names;
+    while(*public_names++);
+    while(*local_names++);
+  }
+  bindings[46].name="i386_idle"; bindings[46].kind=1;
+  bindings[46].address=(&i386_idle+0)(U64);
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,39,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,47,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;

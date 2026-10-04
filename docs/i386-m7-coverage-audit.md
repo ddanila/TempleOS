@@ -194,3 +194,12 @@ frontend; current-source two-generation and release qualification remain open.
 Latest timing evidence: cleanup/zero-case functional checks record 62.19–72.05-second starts. `build/i386-debug-zero-startup-budget.json` fails the 60-second budget. These observations do not yet establish the cause; startup qualification remains open.
 
 Latest mode-image observations pass startup at 59.439/59.375 seconds; the first has a formal budget pass. Earlier over-budget observations remain valid. The cleanup-image full workstation run failed at command-105: its private G definition conflicts with the newly published debugger G. Full current-source workstation qualification remains open.
+
+
+The newer formatter integration passes 41 original/native formatting cases on
+both the cross-built image and an image with a console rebuilt inside the port.
+See `build/i386-native-formatter-installed-41/result.json` and PLAN.md for exact
+artifact hashes. Its native console passes instruction audit and byte-preserving
+installation/8 MiB boot checks. This is a mixed-provider image; full workstation
+and updated native boot-kernel size checks are still running. User creation,
+full debugger and release reproducibility remain open.

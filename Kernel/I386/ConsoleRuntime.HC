@@ -73,10 +73,12 @@ U8 console_diagnostic_filename[256];
 #include "/Kernel/I386/TextBase.HC"
 #include "/Kernel/I386/Window.HC"
 #include "/Kernel/IsRawCore.HC"
+extern Bool NativeIsDebugMode();
+#include "/Kernel/I386/FormatterRuntime.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[127];
+CI386KernelSymbol console_doc_exports[131];
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
 extern Bool NativeIsDebugMode();
@@ -356,13 +358,21 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[125].val=(&NativeWinFocus+0)(U64);
   console_doc_exports[126].str="_IS_RAW";
   console_doc_exports[126].val=(&IsRaw+0)(U64);
-  for(i=0;i<127;i++) {
+  console_doc_exports[127].str="_STR_PRINT_JOIN";
+  console_doc_exports[127].val=(&StrPrintJoin+0)(U64);
+  console_doc_exports[128].str="_STR_PRINT";
+  console_doc_exports[128].val=(&StrPrint+0)(U64);
+  console_doc_exports[129].str="_CAT_PRINT";
+  console_doc_exports[129].val=(&CatPrint+0)(U64);
+  console_doc_exports[130].str="_MSTR_PRINT";
+  console_doc_exports[130].val=(&MStrPrint+0)(U64);
+  for(i=0;i<131;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
-  console_config=config; return TRUE;
+  console_config=config; dbg.fun_seg_cache=native_fun_seg_cache; return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)
 {

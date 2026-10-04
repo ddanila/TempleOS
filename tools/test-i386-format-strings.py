@@ -13,6 +13,8 @@ DEFINITIONS = [
     'Bool FormatCheck(U8 *text,U8 *expected){Bool ok=!StrCmp(text,expected);U8 *p=text;if(!ok){OutU8(0xE9,91);while(*p)OutU8(0xE9,*p++);OutU8(0xE9,93);OutU8(0xE9,10);}Free(text);return ok;}',
     'Bool FormatGrowCheck(){U8 *s=MAlloc(1025),*t;Bool ok;MemSet(s,65,1024);s[1024]=0;t=MStrPrint("%s",s);ok=!StrCmp(s,t);Free(t);Free(s);return ok;}',
     'Bool FormatModeCheck(Bool raw,U8 *expected){I64 flags=Fs->display_flags;U8 *s;if(raw)Btr(&Fs->display_flags,DISPLAYf_NOT_RAW);else Bts(&Fs->display_flags,DISPLAYf_NOT_RAW);s=MStrPrint("%P",0);Fs->display_flags=flags;return FormatCheck(s,expected);}',
+    'Bool FormatBufferCheck(){U8 s[256];StrPrint(s,"%d",6*7);CatPrint(s,":%s","HolyC");return !StrCmp(s,"42:HolyC");}',
+    'Bool FormatJoinCheck(){U8 s[256];I64 a[2];a[0]=42;a[1]=255;StrPrintJoin(s,"%d:%X",2,a);return !StrCmp(s,"42:FF");}',
 ]
 CASES = [
     ('FormatCheck(MStrPrint("plain"),"plain");', ['1']),
@@ -51,6 +53,11 @@ CASES = [
     ('FormatCheck(MStrPrint("%,p",0),".");', ['1']),
     ('FormatModeCheck(TRUE,"0");', ['1']),
     ('FormatModeCheck(FALSE,"$$LK,\\"0\\",A=\\"AD:0x0\\"$$");', ['1']),
+    ('FormatCheck(MStrPrint("%f",0x7FF0000000000000(F64)),"\\xEC");', ['1']),
+    ('FormatCheck(MStrPrint("%f",0xFFF0000000000000(F64)),"-\\xEC");', ['1']),
+    ('FormatCheck(MStrPrint("%e",0x7FF0000000000000(F64)),"           \\xEC");', ['1']),
+    ('FormatBufferCheck;', ['1']),
+    ('FormatJoinCheck;', ['1']),
 ]
 
 

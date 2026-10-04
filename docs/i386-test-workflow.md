@@ -3048,3 +3048,83 @@ creation behavior remain required; these tests do not establish their completion
 The native display-query oracle passes on an 8 MiB `486,-fpu` QEMU boot in
 `build/i386-display-query-native/result.json`; its source disk is unchanged.
 Checker SHA-256: `f78b2368525c9b3786c3a82331f61ea860eb8a80dd1184e8109af7bb30949bea`.
+
+### Original formatter integrated into the native console
+
+The retained console now includes the original StrPrintCore and shared
+FunSeg lookup/cache/pointer-formatting bodies. PublicFormat.HH exposes
+StrPrintJoin, StrPrint, CatPrint and MStrPrint through four additive console
+exports. The boot loader binds the existing public MSize and software-math
+providers plus the hexadecimal bitmap and native idle entry. FunSegFind adapts
+original nearest-symbol selection to the single-CPU task ring and mapped
+bootstrap/public-pool regions; the cache retains its original timestamp and
+name/offset behavior. Its private clock reads native jiffies atomically.
+The shared cache class body remains unchanged in FunSegTypes.HH.
+
+The formatter's file-read adapter copies service-owned bootstrap buffers into
+task allocations that the original formatter can release with Free. It releases
+the borrowed buffer before propagating allocation failure. Native display-mode
+queries continue to use the original IsRaw body. The original infinity macro's
+Latin-1 byte is present in the native compilation scope.
+
+The two-generation original compiler/kernel rebuild passes (log
+`build/native-formatter-infinity-rebuild.log`). Cross-build/386 instruction audit
+passes in `build/i386-native-formatter-bound-kernel`, with 484384 flat boot bytes.
+The 39-case original oracle passes in `build/i386-native-formatter-original-39`.
+The same oracle passes on the cross-built port in
+`build/i386-native-formatter-native-39/result.json`: 43 submitted commands,
+8 MiB, 486,-fpu, ordinary boot, startup 46.61360586201772 seconds, unchanged
+source disk. Checker SHA-256:
+`c72bfd6d7a6668ef180012396407efe97b4b12191bcd3c07e00a48e40bfcc0a6`.
+Cases cover growth, variadic arguments, integer boundaries, TempleOS-specific
+formatting, pointer names/nulls, allocated %P in both display modes and signed
+infinity. Original %e infinity uses eleven leading spaces; the oracle records
+that behavior. This selected coverage does not establish every format/API case.
+
+The native console source rebuild and full workstation regression are running
+in `build/i386-native-formatter-console-selfbuild` and
+`build/i386-native-formatter-workstation`. Their terminal verdicts will be
+recorded separately. New all-native boot-image size, provider installation,
+full formatter coverage, User creation, debugger completion and reproducible
+release packaging still require verification/work. Hardware checks stay deferred.
+
+The expanded 41-case formatter oracle also checks fixed-buffer StrPrint plus
+CatPrint and direct StrPrintJoin with explicit argument slots. It passes on
+original TempleOS (`build/i386-native-formatter-original-41`) and the cross-built
+port (`build/i386-native-formatter-native-41`): 47 commands, unchanged source
+image, 8 MiB 486,-fpu, startup 48.1894694827497 seconds. Checker SHA-256:
+`30b0b9048a1b5f317a6c64909eb198476c24e1233e368093e1e0b75f231aa8de`.
+
+The console now builds inside the port in
+`build/i386-native-formatter-console-selfbuild/result.json`: 1077946 bytes,
+3357 records and 340 function exports, including all four string APIs and IsRaw.
+Installation passes in `build/i386-native-formatter-console-install/result.json`,
+with byte-identical replacement and independent 8 MiB boot/DocAllocationCheck.
+The installer accepts explicit --module-file MODULE=/PATH mappings so the
+standalone console build's /Probe/RetainedConsole.t32m can be installed without
+renaming or rebuilding it. Default retained-provider paths remain unchanged.
+Native console SHA-256:
+`0e6ee740c769fd4d3e779e0edc9420e7afd5c354f6c0960835950d2ec94a571e`.
+Candidate disk SHA-256:
+`38676a4aa1985dbff2cb8b68fd415e5098bd3e590ec26024fef640479a969271`.
+
+All 41 formatter cases pass again with that installed native-built console in
+`build/i386-native-formatter-installed-41/result.json`, on 8 MiB 486,-fpu with
+the source disk unchanged. The twelve-module instruction audit passes with
+this native console and the remaining cross-built components in
+`build/i386-native-formatter-console-audit/result.json`. This mixed-provider
+image does not replace the previously fully qualified all-native generation.
+
+The full workstation suite remains active. A native Kernel source build is
+also running in `build/i386-native-formatter-kernel-selfbuild`; its result will
+measure the updated boot payload against the existing BIOS reservation before
+claiming a new all-native installation. Preserve these jobs/evidence and poll
+existing handles before starting additional builds.
+
+The full workstation regression now passes on the cross-built formatter image
+in `build/i386-native-formatter-workstation/result.json`: 513 native commands,
+576 submitted lines, all VGA pixels matched, 20 document-session resource
+cycles with exact shared-task data/code heap recovery. This broad check covers
+the existing console/compiler, software math, graphics, document editing,
+filesystem and navigation workflow; it does not replace verification of an
+updated all-native release image. The native Kernel build remains active.

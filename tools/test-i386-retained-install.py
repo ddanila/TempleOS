@@ -24,8 +24,23 @@ def main():
     parser.add_argument('--qmp-stdio', action='store_true', help='Use QMP stdio where Unix sockets are blocked')
     parser.add_argument('--module', choices=MODULES, action='append',
                         help='Install selected guest-built providers; default: all six')
+    parser.add_argument('--module-file', action='append', default=[], metavar='MODULE=/PATH',
+                        help='Override a selected module guest-build path inside the source disk')
     args = parser.parse_args()
     modules = tuple(dict.fromkeys(args.module or MODULES))
+    module_paths = {name: f'/Probe/Retained{name}.t32m' for name in modules}
+    seen = set()
+    for value in args.module_file:
+        name, separator, path = value.partition('=')
+        if (not separator or name not in modules or name in seen or
+                not path.startswith('/') or '..' in path.split('/') or
+                any(ch in path for ch in ('\"', '\\', '\n', '\r')) or
+                path.startswith('/Modules/I386/')):
+            parser.error('--module-file requires a unique selected MODULE=/PATH outside installed modules')
+        module_paths[name] = path
+        seen.add(name)
+    if len(set(module_paths.values())) != len(module_paths):
+        parser.error('Guest-build paths must be distinct')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     (out / 'result.json').unlink(missing_ok=True)
@@ -37,13 +52,13 @@ def main():
         raise ValueError('Installation outputs would overwrite the source image')
     shutil.copyfile(args.source, candidate)
     files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']
-    source_paths = {f'/Probe/Retained{name}.t32m' for name in modules}
+    source_paths = set(module_paths.values())
     built = files(candidate, source_paths)
     if set(built) != source_paths:
         raise ValueError(f'Missing guest-built retained modules: {source_paths - set(built)}')
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     commands = [(f'FileDel("C:/Modules/I386/{name}.t32m")&&'
-                 f'FileMove("C:/Probe/Retained{name}.t32m",'
+                 f'FileMove("C:{module_paths[name]}",'
                  f'"C:/Modules/I386/{name}.t32m");', ['1'])
                 for name in modules]
     run_input(candidate, out / 'replace', snapshot=False, ram_mib=16,
@@ -56,7 +71,7 @@ def main():
         raise ValueError('Retained replacement left a source copy or lost an installed module')
     for name in modules:
         if (installed[f'/Modules/I386/{name}.t32m'] !=
-                built[f'/Probe/Retained{name}.t32m']):
+                built[module_paths[name]]):
             raise ValueError(f'{name} changed while installing')
     candidate_hash = sha(candidate)
     shutil.copyfile(candidate, boot_disk)
@@ -69,9 +84,10 @@ def main():
         raise ValueError('Installation test changed a preserved source/candidate image')
     result = {'result': 'pass', 'installed': list(modules),
               'source_disk_sha256': source_hash, 'disk_sha256': candidate_hash,
+              'module_source_paths': module_paths,
               'cpu': args.cpu, 'accel': args.accel,
-              'module_sha256': {name: hashlib.sha256(built[f'/Probe/Retained{name}.t32m']).hexdigest() for name in modules},
-              'module_bytes': {name: len(built[f'/Probe/Retained{name}.t32m'])
+              'module_sha256': {name: hashlib.sha256(built[module_paths[name]]).hexdigest() for name in modules},
+              'module_bytes': {name: len(built[module_paths[name]])
                                for name in modules}}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)

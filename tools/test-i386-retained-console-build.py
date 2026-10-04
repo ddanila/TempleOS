@@ -40,7 +40,8 @@ def main():
     exports = [module[name:name + length].decode('ascii')
                for kind, offset, name, length in rows if kind == 1]
     required = {'Main', 'ConsoleInit', 'DocExe', 'ExeDoc', 'DocEd',
-                'I386BuildModule', 'NativeDocClipPasteAtomicCheck'}
+                'I386BuildModule', 'NativeDocClipPasteAtomicCheck',
+                'StrPrintJoin', 'StrPrint', 'CatPrint', 'MStrPrint', 'IsRaw'}
     if not required <= set(exports) or len(set(exports)) != len(exports):
         raise ValueError('Retained console exports are missing or duplicated')
     result = {'result': 'pass', 'bytes': len(module), 'records': count,

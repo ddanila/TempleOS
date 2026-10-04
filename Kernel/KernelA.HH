@@ -1505,15 +1505,7 @@ public class CScrnCastGlbls
 };
 
 #help_index "Debugging/FunSeg"
-#define FUN_SEG_CACHE_SIZE	256
-class CFunSegCache
-{
-  I64	base,limit;
-  F64	time_stamp;
-  U8	str[1]; //FUN_SEG_CACHE_STR_LEN
-$$=64;
-};
-#define FUN_SEG_CACHE_STR_LEN	(sizeof(CFunSegCache)-offset(CFunSegCache.str))
+#include "/Kernel/FunSegTypes.HH"
 
 #help_index "Debugging"
 class CMPCrash
