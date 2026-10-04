@@ -3360,3 +3360,17 @@ Native shortcut/User regressions are running in
 `build/i386-creation-hotkeys-native-runtime` and
 `build/i386-creation-hotkeys-native-user-16`; these build/audit results do not establish runtime acceptance
 or current-source all-native release qualification.
+
+### Experimental User recovery oracle
+
+`tools/test-i386-user-recovery.py` reuses the established User creation fixture
+and proposes eight alternating empty/executed create/kill cycles after one
+warmup. It checks CPU-root child count and shared public-pool used/reserved
+bytes, not bootstrap allocator accounting. It is **not an acceptance gate**:
+`build/i386-user-recovery-original/result.json` fails at case 4, the first measured
+cycle, on original TempleOS. Individual counter observations are required to
+separate deferred cleanup or pool retention from leaks and establish the actual
+original contract. The native comparison is running in
+`build/i386-user-recovery-native`; a native pass alone cannot validate this oracle.
+Do not use this experiment to claim exhaustive resource recovery or to impose
+unsupported behavior on the port.
