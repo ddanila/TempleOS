@@ -8463,3 +8463,18 @@ in `build/public-file-resident-replacement-red/oracle/debug.log`; its native
 run is pending and does not qualify a cache implementation. Reports now record
 requested parent/resident scope even on failure and describe excluded features
 according to the selected options.
+
+Main FileWrite generation two is now fully guest-built and installed:
+`build/file-write-main-gen2-selfhost/result.json` passes with all twelve modules,
+16 MiB build RAM and independent 8 MiB boot. Flat size remains 487304 bytes and
+SHA-256 `43594ce3239c33f3d475282b1cd90557622ab49bb4bc3d7e61df78f35657cd82`.
+The installed image's executable audit passes in
+`build/file-write-main-gen2-selfhost-audit`. The independent two-generation
+comparison passes in `build/file-write-main-native-generations.json`: all twelve
+module bytes, the flat kernel and boot area match exactly; both volume allocation
+maps match reachable extents. Generation-two disk SHA-256 is
+`babfe40f75ca83eda4c2b7bbeaf53821e112f83b0e43f601c03b84cc2f090fe2`.
+Whole disk hashes differ, so reproducibility here is the verified executable and
+boot artifacts, not identical whole-volume bytes. BIOS loading still has only
+120 bytes of spare flat payload capacity; capacity redesign and remaining public
+API compatibility/release gates are still open.
