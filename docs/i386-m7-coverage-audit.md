@@ -52,7 +52,10 @@ persistent programs and revisions, and matching filesystem extents/bitmap.
 Interrupt recovery is 0.271 seconds. Actual speaker verification passes in
 `build/i386-heap-asm-scan-selfhost-speaker`: captured 440/880 Hz PCM and zero
 new audio during settled off/reset intervals, with the source unchanged. The
-second-generation retained build (with exact installed-module comparison) is running. Full
+second-generation retained build reached a compiler publication failure: 3396
+contiguous sectors required, largest free run 2169 despite 6749 total free.
+The independent filesystem audit still passes; build-space remediation and
+exact installed-module comparison remain pending. Full
 two-generation and release qualification remain open.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent

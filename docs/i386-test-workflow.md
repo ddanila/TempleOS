@@ -2779,3 +2779,26 @@ build is still running with exact installed-provider comparison enabled;
 installation, flat rebuild and complete second-generation qualification remain
 pending. Native formatter/User, complete debugger/API support and reproducible
 release work also remain open.
+
+### Second-generation compiler publication hits contiguous-space exhaustion
+
+The second-generation retained build reaches compiler module publication but
+reports `FILE WRITE mutation error` and `BUILD MODULE REJECT` at stage 8,
+with compiled size `0x1A8642` (1738306 bytes). No pass is claimed; the harness
+is still awaiting its expected success response.
+
+Read-only inspection of `build/i386-heap-asm-scan-gen2-retained/source.img`
+finds 6749 free sectors but a largest contiguous run of only 2169 sectors.
+The compiler output requires 3396 contiguous sectors. The original native
+source target had 12210 free sectors and a largest run of 6451 sectors.
+The independent `verify_mutated_volume` walker passes on both images:
+source 16 directories/857 files/18501 owned sectors; build candidate
+16 directories/862 files/23962 owned sectors, with allocation bitmap matching
+reachable extents. The five earlier retained outputs consume the available
+large runs before compiler publication. This is a build-space/fragmentation
+failure, not evidence of a successful second generation or bitmap corruption.
+
+Next investigate intermediate-file lifetimes and contiguous build workspace
+requirements, preserve the failed candidate, and fix the build workflow or
+image layout before retrying. Retain exact installed-module comparison and
+complete installation/boot/audit checks; do not waive the two-generation gate.
