@@ -2701,3 +2701,23 @@ on that result. The 46-second cross-image timing does not substitute for it.
 This is the newest completed fully native snapshot. A second complete native
 generation, current-image workflows, native formatter/User and full release
 qualification remain open.
+
+### Fully native assembly heap scan: normal startup gate passes
+
+`build/i386-heap-asm-scan-selfhost-keyboard/result.json` passes ordinary
+keyboard and exact-VGA checks on fully native target 9c74ad0a under 8 MiB
+`486,-fpu` TCG. Startup is 53.687440753914416 seconds. The unchanged 60-second
+gate passes in `build/i386-heap-asm-scan-selfhost-startup-budget.json`.
+Evidence SHA-256:
+`0a0d909232de33aa5eeabe57bac7ad377a7d9a29a452bac07441d41edc5fac27`.
+This qualifies normal startup on the optimized fully native snapshot; the
+older 65-second failures remain historical evidence, not this image's verdict.
+
+The full workstation suite is running in
+`build/i386-heap-asm-scan-selfhost-workstation`. A second-generation retained
+build is running from the fully native target in
+`build/i386-heap-asm-scan-gen2-retained`, with exact comparison against the
+installed providers enabled. Continue through native installation, flat-module
+rebuild, complete image audit and second-generation workflow checks before
+claiming two complete generations. Native formatter/User, broader debugging
+and the other full release requirements remain open.
