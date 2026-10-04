@@ -5677,3 +5677,24 @@ latency is 0.491 seconds. This qualifies its captured snapshot, not memory-17.
 The six-provider guest rebuild remains live and is compiling frontend routines.
 Current-source native generations, multiple terminals, debugging and release
 qualification remain open; the complete M7 objective is unchanged.
+
+### Registration and copy-fault runtime qualification
+
+All three frozen checkers pass on image
+c39fbee87397f74249d627da22697c09f192523c498f39346450888fdf23c0a6:
+`build/i386-public-macro-registration-green/result.json` (registration fault),
+`build/i386-public-macro-registration-copy/result.json` (copy allocation fault),
+and `build/i386-public-macro-registration-macro/result.json` (six recording cases).
+Both fault reports confirm actual injection, exact root-public-heap recovery,
+empty/unlocked rings, restored entry bytes, exact VGA and subsequent arithmetic.
+All source disks remain unchanged. Startup measurements are respectively
+55.77, 58.78 and 55.52 seconds on 8 MiB, 486,-fpu; these focused measurements
+are not the complete controlled release timing profile.
+
+The full current-image workstation suite is now running in
+`build/i386-public-macro-registration-workstation`. The required-services probe
+is running in `build/i386-current-debug-publication-red`; public Dbg remains an
+implementation gap pending that current-image observation. A debugger must
+provide visible exception/context and source/function inspection plus a tested
+return/unwind; publishing the name alone cannot close M7. The earlier native
+six-provider build remains live for its distinct memory-16 source snapshot.
