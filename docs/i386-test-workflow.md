@@ -2759,3 +2759,23 @@ Actual speaker-output verification is now running on the preserved fully native
 source in `build/i386-heap-asm-scan-selfhost-speaker`. The second-generation
 retained build continues. These workflow passes do not close native formatter/User,
 complete debugger/API support, second-generation or reproducible-release work.
+
+### Fully native speaker waveform and silence verification pass
+
+`build/i386-heap-asm-scan-selfhost-speaker/result.json` passes on target
+`9c74ad0a40623d6d383caaf786cdb4f99251080d3b14e0b0b3bc01c59ff0cd5a`
+under 8 MiB `486,-fpu` TCG. Independent analysis of 44100 Hz mono PCM
+finds stable 440 Hz then 880 Hz tones. Both settled off/reset intervals
+emit zero new WAV bytes over at least 1.5 seconds each. All four sound
+commands pass exact VGA checks; the source image remains unchanged.
+Captured WAV SHA-256:
+`5c7dbbbfb54f7fe2b92227e27f90a02227e2c4d7f1fc53e6a6b629002bf51905`.
+Checker SHA-256:
+`c6a6d41106cac752a742e16871bb0452b10ad15a1189aa58504a6e309532e4f0`.
+
+This verifies emulated speaker output on the current fully native image.
+Physical hardware verification remains deferred. The second-generation retained
+build is still running with exact installed-provider comparison enabled;
+installation, flat rebuild and complete second-generation qualification remain
+pending. Native formatter/User, complete debugger/API support and reproducible
+release work also remain open.
