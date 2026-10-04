@@ -8647,3 +8647,22 @@ in `build/public-file-find-native-contract`, `build/public-file-read-native-cont
 and `build/public-file-find-native-workstation`. These results are pending;
 FileRead/FileFind remain isolated before promotion. Second-generation native
 reproducibility for this source epoch and release gates are still required.
+
+ABI-40 fully native public contracts now pass. FileRead parent search and
+binary/compressed/owned/empty/missing behavior pass 27 commands in
+`build/public-file-read-native-contract/result.json` (startup 34.786 seconds).
+FileFind passes 36 commands in `build/public-file-find-native-contract/result.json`
+with actual CDirEntry, named flags, edge cases and twenty mixed recovery cycles
+(startup 34.888 seconds). Public task heap recovery is exact; private QMP
+snapshots preserve used bytes 5368840 and allocation count 7080. Both contracts
+pass exact VGA and independent filesystem checks and preserve their source image.
+The native full workstation remains running. Second-generation retained rebuild
+and exact installed-module comparison has started in
+`build/public-file-find-gen2-native-build`; reproducibility is not assumed.
+
+The ABI-42 cold-cache prototype's original bootstrap and cross/386 audits pass.
+Its QEMU fixture session successfully writes a resident file and returns 42,
+then exits. A fresh boot of that persisted image is undergoing the cold-read
+contract in `build/public-file-resident-cold-green`; no cache contents survive
+the preparation session. The original cold-read oracle passes. Runtime verdict
+is pending, with compressed residency and lifetime cleanup still open.
