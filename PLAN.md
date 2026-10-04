@@ -5006,3 +5006,13 @@ Five original contracts pass
 state, preservation of caller flags/wake deadline, invalid signature rejection,
 child exclusion while suspended and scheduling after resume. Rebuild/native
 qualification is in progress; this does not publish job dispatch or Kill.
+
+Version-14 cross-build and boot instruction audit pass (483016 flat bytes), but
+both native interactive checks fail before commands during PublicKernel header
+publication: `Invalid lval`. The new Suspend default used TRUE before StartOS
+publishes boolean names in that compilation scope. PublicTask now spells the
+same default as literal 1, consistent with bootstrap header dependencies.
+Fresh rebuild and native qualification of this correction are pending; the
+failed runs are build/i386-public-suspend-native and
+build/i386-public-suspend-posting. They do not qualify suspension or posting on
+version 14. The preceding version-13 posting results remain separately valid.
