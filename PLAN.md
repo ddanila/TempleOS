@@ -76,8 +76,11 @@ that its history is contained in `main`.
   are running, so their runtime gates remain open.
 - A new experimental repeated-User recovery fixture fails on original TempleOS
   at its first measured cycle. Exact shared-pool recovery after one warmup is
-  therefore an unvalidated acceptance requirement; investigate the individual
-  child-count, used-byte and reserved-byte observations before changing the port.
+  therefore an unvalidated compatibility requirement. A separate observation
+  run completes nine original-system cycles: root child count stays at three,
+  reserved bytes stay fixed, and shared-pool used bytes grow by 4539904.
+  Compare native measurements and investigate ownership before defining the
+  recovery acceptance invariant; do not copy original retention into the port.
 - Next finish the affected native runtime gates. Then test repeated
   creation resource recovery and improve fresh-child declaration-loading latency.
   Updated all-native/two-generation release qualification remains required.

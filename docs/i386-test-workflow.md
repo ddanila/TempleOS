@@ -3374,3 +3374,22 @@ original contract. The native comparison is running in
 `build/i386-user-recovery-native`; a native pass alone cannot validate this oracle.
 Do not use this experiment to claim exhaustive resource recovery or to impose
 unsupported behavior on the port.
+
+`tools/observe-i386-user-recovery.py` records ten numbered snapshots (before
+creation, then after each of nine alternating empty/executed create/kill cycles)
+without assuming exact recovery. The structured report names the columns and
+rejects missing or unordered snapshots. A pass proves functional cycles and
+observation delivery, **not** resource recovery.
+
+Original-system observation passes in
+`build/i386-user-recovery-original-observations-v2/result.json`, checker SHA-256
+`5b3893c023b73541e6b5b028bc680d920c6485b2d3c2698f31a19d9c25fa2ae0`.
+Root child count is three in all ten snapshots; shared-pool reserved bytes stay
+at 2142068736. Used bytes grow from 286798336 to 291338240 (4539904 bytes),
+caller heap from 332136 to 333720, and CPU-root heap from 279698960 to 280377536.
+These are observations of this fixture, not proof of which allocations persist
+or an allowance to grow without bound on the 8 MiB port.
+
+The same observation fixture is running against the installed native providers
+in `build/i386-user-recovery-native-observations`. Inspect those measurements
+and allocation ownership before turning this into an acceptance gate.
