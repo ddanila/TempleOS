@@ -8452,3 +8452,14 @@ attributes. Qualify resident replacement with changed bytes, removal of residenc
 exact/alternate-name lookup, cold disk population after reboot, task independence,
 and bounded cache cleanup before promoting. Allocation and failed-write cache
 behavior require original-oracle cases rather than assumptions about atomicity.
+
+Resident replacement coverage is strengthened in the checker: write a different
+first byte while retaining residence, require the cached read to return it with
+attribute 0, then write another different byte without residence and require
+disk attribute 0x800. On success, the independent disk walker must also find
+the final replacement bytes. This prevents unchanged-payload fixtures from
+hiding stale cache entries. The strengthened original functional oracle passes
+in `build/public-file-resident-replacement-red/oracle/debug.log`; its native
+run is pending and does not qualify a cache implementation. Reports now record
+requested parent/resident scope even on failure and describe excluded features
+according to the selected options.

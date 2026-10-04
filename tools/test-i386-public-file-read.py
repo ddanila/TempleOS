@@ -45,17 +45,23 @@ def main():
     parser.add_argument('--resident',action='store_true',help='Require resident writes, owned cached reads and replacement back to ordinary storage')
     args=parser.parse_args()
     checks=list(CHECKS)
+    definitions=list(DEFINITIONS)
     if args.parents:
         checks[3:3]=['DirMk("C:/Probe/ReadChild")',
                      'ReadCheck("C:/Probe/ReadChild/ReadRaw.BIN",0x800)',
                      'ReadPacked("C:/Probe/ReadChild/ReadPacked.BIN")']
     if args.resident:
+        definitions += [
+            'Bool ResidentWrite(U8 *name,I64 byte,I64 attr){I64 c;ReadBytes[0]=byte;c=FileWrite(name,ReadBytes,4,0x1122334455667788,attr);ReadBytes[0]=65;return c>0;}',
+            'Bool ResidentRead(U8 *name,I64 byte,I64 attr){I64 n=-1,a=-1;U8 *p=FileRead(name,&n,&a);Bool ok=p&&n==4&&a==attr&&p[0]==byte&&p[1]==0&&p[2]==66&&p[3]==255&&p[4]==0;Free(p);return ok;}']
         checks[-2:-2]=[
             'FileWrite("C:/Probe/ReadResident.BIN",ReadBytes,4,0x1122334455667788,0x200)>0',
             'ReadCheck("C:/Probe/ReadResident.BIN",0)',
             'ReadOwned("C:/Probe/ReadResident.BIN")',
-            'FileWrite("C:/Probe/ReadResident.BIN",ReadBytes,4,0x1122334455667788)>0',
-            'ReadCheck("C:/Probe/ReadResident.BIN",0x800)']
+            'ResidentWrite("C:/Probe/ReadResident.BIN",90,0x200)',
+            'ResidentRead("C:/Probe/ReadResident.BIN",90,0)',
+            'ResidentWrite("C:/Probe/ReadResident.BIN",67,0)',
+            'ResidentRead("C:/Probe/ReadResident.BIN",67,0x800)']
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
     candidate=out/'candidate.img'
     if candidate==args.disk.resolve():parser.error('output overlaps source')
@@ -63,9 +69,16 @@ def main():
     (out/'result.json').unlink(missing_ok=True)
     report=dict(result='fail',source_disk_sha256=hashlib.sha256(original).hexdigest(),
                 scope='Public three-argument FileRead: binary/expanded/alternate .Z, size/attributes, terminator, independent allocations, empty and missing; not parent/resident/FileFind parity')
+    report.update(parent_search=args.parents,resident=args.resident)
+    exclusions=['FileFind parity']
+    if not args.parents:exclusions.insert(0,'parent search')
+    if not args.resident:exclusions.insert(0,'resident cache')
+    report['scope']=report['scope'].split('; not ')[0]+'; excludes '+', '.join(exclusions)
+    if args.resident:
+        report['scope']+='; additionally resident write-populated cache ownership, changed-byte replacement and removal of residence'
     try:
         overlay=out/'overlay';overlay.mkdir(exist_ok=True)
-        lines=['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+DEFINITIONS
+        lines=['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+definitions
         lines.append('U0 OriginalReads(){CArcCompress *arc;U8 *line;ReadSeed;')
         for index,check in enumerate(checks[:-2]):
             check=check.replace('C:/Probe/','B:/')
@@ -79,7 +92,7 @@ def main():
         report['heap_recovery_scope']='Port-only exact current-task accounting across twenty read/free cycles; excluded from original functional oracle'
         #Write setup first so an undefined FileRead is a qualified API failure.
         commands=[(DEFINITIONS[0],[]),(DEFINITIONS[1],[]),('ReadSeed;',[])]+[(check+';',['1']) for check in checks[:3]]
-        commands += [(source,[]) for source in DEFINITIONS[2:]]
+        commands += [(source,[]) for source in definitions[2:]]
         commands += [(check+';',['1']) for check in checks[3:]]+[('6*7;',['42'])]
         runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
@@ -87,9 +100,12 @@ def main():
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         report['filesystem']=build['verify_mutated_volume'](candidate)
         paths={'/Probe/ReadRaw.BIN','/Probe/ReadPacked.BIN.Z','/Probe/ReadEmpty.BIN'}
+        if args.resident:paths.add('/Probe/ReadResident.BIN')
         files=build['mutated_file_contents'](candidate,paths)
         if files.get('/Probe/ReadRaw.BIN')!=b'A\0B\xff' or files.get('/Probe/ReadEmpty.BIN')!=b'':
             raise ValueError('Public reads changed persisted bytes')
+        if args.resident and files.get('/Probe/ReadResident.BIN')!=b'C\0B\xff':
+            raise ValueError('Removing residence did not persist replacement bytes')
         archive=files.get('/Probe/ReadPacked.BIN.Z')
         if archive!=(out/'oracle/ReadPacked.arc').read_bytes():
             raise ValueError('Public reads changed persisted compressed bytes')
