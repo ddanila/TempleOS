@@ -106,8 +106,11 @@ that its history is contained in `main`.
   Main-image strict recovery passes all nine cycles (58.411265-second startup).
   The six-provider build fails its first CompilerRuntime unit at inherited
   CHashFun forward completion. Repair module-source handling of inherited
-  forward declarations before native promotion. A fix is being built in the
-  isolated checkout. Native runtime and startup qualification remain open. Updated all-native/two-generation release
+  forward declarations before native promotion. The focused matching red/green
+  gate now passes on the isolated repair, preserving the root forward class.
+  The module-only inherited lookup fix and explicit keyword-byte initialization
+  are applied to main; its original rebuild passes and i386 build is running.
+  The full isolated native-provider build remains live. Native runtime and startup qualification remain open. Updated all-native/two-generation release
   qualification remains required.
 
 Earlier source-epoch checkpoints below are historical; they do not supersede

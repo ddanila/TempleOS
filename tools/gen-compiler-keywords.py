@@ -22,7 +22,10 @@ def generate():
         constant = ('AKW_' if kind == 'ASM_KEYWORD' else 'KW_') + ('DFT' if name == 'default' else name.upper())
         if int(constants.get(constant, -1)) != value:
             raise ValueError(f'Keyword constant disagrees with opcode source: {name}')
-        records.append(f'  {{"{name}",HTT_{kind},{constant}}},')
+        #Fully initialize the fixed byte array: string initializer tails can
+        #contain bootstrap-compiler allocation residue after their NUL.
+        name_bytes = ','.join(str(byte) for byte in name.encode('ascii') + bytes(12-len(name)))
+        records.append(f'  {{{{{name_bytes}}},HTT_{kind},{constant}}},')
     return '#include "/Compiler/KeywordTable.HH"\n//Generated from OpCodes.DD by tools/gen-compiler-keywords.py.\nCCompilerKeyword compiler_keywords[COMPILER_KEYWORDS_NUM]={\n' + '\n'.join(records) + '\n};\n'
 
 

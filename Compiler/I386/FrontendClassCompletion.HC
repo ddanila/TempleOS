@@ -20,14 +20,20 @@ Bool I386ProgramClassReady(CHashClass *type)
 Bool I386CompletionTargetValid(CI386Frontend *state,CHashClass *type)
 {
   I64 i;
+  CHash *prior;
   if(!type || type->type&HTT_FUN || !(type->type&HTT_CLASS) || !type->str ||
       !Bt(&type->flags,Cf_EXTERN) || !I386ProgramClassReady(type) ||
       type->import_name || type->ie_lst || type->dbg_info ||
-      I386FrontendSingleFind(state,type->str,state->parent,HTT_CLASS)!=type ||
       I386HeapSize(state->heap,type)!=sizeof(CHashClass)*(PTR_STARS_NUM+1) ||
       I386HeapSize(state->heap,type->str)<=0 ||
       type->src_link && I386HeapSize(state->heap,type->src_link)<=0 ||
       type->idx && I386HeapSize(state->heap,type->idx)<=0) return FALSE;
+  //Module units complete private clones of inherited forward declarations.
+  //Interactive publication keeps its direct-scope ownership requirement.
+  if(state->cc->flags&CCF_MODULE_SOURCE)
+    prior=HashFind(type->str,state->parent,HTT_CLASS);
+  else prior=I386FrontendSingleFind(state,type->str,state->parent,HTT_CLASS);
+  if(prior!=type) return FALSE;
   for(i=1;i<=PTR_STARS_NUM;i++)
     if(type[i].ptr_stars_cnt!=i || type[i].size!=4 || type[i].raw_type!=RT_PTR ||
         type[i].member_lst_and_root || type[i].base_class || type[i].fwd_class) return FALSE;

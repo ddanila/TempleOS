@@ -3710,3 +3710,24 @@ byte rather than stripping saved content. Matching revised red/green runs are
 pending in `build/i386-module-inherited-forward-red-v2` and
 `build/i386-module-inherited-forward-green-v2`. Treat earlier incomplete verdicts
 as diagnostic evidence only. Main has not yet adopted the completion fix.
+
+### Matching forward-module red/green; fixes applied to main
+
+The corrected focused checker
+`d0f9f11e3be26f7924f70914acf82bb780720c0c877b5b01d980faff5cb51494` fails
+on the pre-fix main image at module compilation, with the original CHashFun
+frontend rejection (`build/i386-module-inherited-forward-red-v2/result.json`).
+It passes the repaired image in
+`build/i386-module-inherited-forward-green-v2/result.json`: ten commands,
+58.281468-second startup, exact VGA checkpoints, unchanged source disk,
+persisted source including its cursor marker, and only the Main export. Module
+SHA-256 is `30d9f862147498a29d35f82c5b684d8eaaa9ee0b9e813efc21b87b0394156264`.
+The root forward descriptor remains identical and opaque.
+
+Main now includes the module-source inherited-forward lookup and explicit
+twelve-byte keyword initialization. Interactive direct-scope completion checks
+remain in place. Main's matching original rebuild passes; i386 build/audit is
+running in `build/i386-module-inheritance-main`. The full isolated retained
+provider build is still live in `build/i386-module-inheritance-native-build`.
+Native build completion, installation and current-source release qualification
+remain required.
