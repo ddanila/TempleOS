@@ -5196,3 +5196,39 @@ outer suite's PASS/DONE verdict. Native eight-case qualification is running
 in build/i386-public-dispatch-exit-native on the existing version-16 image.
 The current-source retained guest build is still live and advancing through
 module function compilation; its terminal result remains pending.
+
+### Native exit completion and keyboard integration contract
+
+The eight-case direct-dispatch native suite passes
+(build/i386-public-dispatch-exit-native/result.json): 46 commands, 8 MiB on
+486,-fpu, matching VGA checkpoints, unchanged source disk. The corrected exit
+callback explicitly calls Exit; code after JobsHndlr remains unreachable.
+Current-source retained guest compilation has advanced into ConsoleRuntime;
+its overall terminal result remains pending.
+
+Added tools/test-i386-public-keyboard-messages.py. It waits until a HolyC
+function is blocked in GetMsg, injects QEMU make/break for `a`, and checks both
+public KEY_DOWN/KEY_UP events, ASCII 97 and scan code 0x1E, then console
+recovery with 6*7. The interaction harness can preserve console history for
+such commands; existing editor interactions keep their current default. The
+baseline attempt is running in build/i386-public-keyboard-messages-red. No
+red/green verdict is recorded before its terminal result is inspected.
+
+Next keyboard integration work:
+
+1. Establish a single scheduler-owned input consumer. ConsoleKeys currently
+   reads the decoded stream directly, as do six document paths; competing
+   consumers would steal events from public GetMsg clients.
+2. Route decoded make/break events through PostMsg to the focus task, allowing
+   an input worker to run while HolyC code waits or yields. Preserve the IRQ
+   break observer and its independent decoder state.
+3. Adapt console/document readers to consume public messages without duplicating
+   events. Preserve stream-loss/reset behavior, cancellation and popup/filter
+   routing; do not flush unrelated commands on a keyboard discontinuity.
+4. Qualify public GetMsg key delivery, focus switching, key pairing and lost
+   input alongside editor, break and exact VGA regressions. Preserve queued
+   non-keyboard messages during input recovery.
+5. Complete macro recording and allocation-recovery contracts, then qualify
+   guest-built providers through installation, independent boot and successive
+   self-hosting generations. Current guest builds are snapshot evidence, not
+   a substitute for qualifying subsequent keyboard changes.

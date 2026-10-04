@@ -1337,3 +1337,16 @@ JobsHndlr must remain unreachable. The initial returning callback was an
 invalid fixture assumption. Native eight-case qualification is pending in
 build/i386-public-dispatch-exit-native. Inner diagnostic phase markers avoid
 DONE so the harness waits for the complete suite verdict.
+
+The corrected eight-case dispatch native suite passes at 8 MiB on 486,-fpu
+with matching VGA checkpoints. Start keyboard/public-message integration with:
+
+```sh
+python3 tools/test-i386-public-keyboard-messages.py build/i386-kernel/kernel.img --out build/keyboard-messages
+```
+
+The checker injects `a` while HolyC waits in GetMsg, checks make/break ASCII and
+scan code, then checks console recovery. Its first baseline run is pending;
+this does not yet qualify focus switching, popup/filter keyboard routing or
+lost-input recovery. The harness preserve_history interaction flag retains
+console command rows; existing editor interactions retain their default.
