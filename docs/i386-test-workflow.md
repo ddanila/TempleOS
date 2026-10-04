@@ -1260,5 +1260,11 @@ need their own checks.
 The posting checker additionally tests forward and backward filter routing,
 DONT_FILTER bypass, popup rejection/direct delivery, and popup-chain wakeup,
 for eleven cases total. Original qualification passes; expanded native
-qualification is pending in build/i386-posting-routing-native. Fixtures restore
+qualification passes in build/i386-posting-routing-native at 8 MiB on
+486,-fpu with all VGA checkpoints matching. Fixtures restore
 task links before retirement and inspect actual CJob nodes without ScanMsg.
+
+The full message reference has fifteen original cases, including callback
+argument delivery and master-owned completion before message scanning.
+Native job dispatch/scanning is still open; a passing posting test does not
+qualify those services.

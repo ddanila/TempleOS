@@ -4974,7 +4974,20 @@ input-filter posting, popup-parent rejection, direct popup delivery and
 popup-chain wakeup. Two live worker tasks provide the fixture; their filter
 links and parent/popup relationships are restored before retirement. No scanner
 substitute is supplied. The original reference passes
-(build/i386-posting-routing-original/result.json); native qualification is
-running against the unchanged version-13 provider in
-build/i386-posting-routing-native. Earlier five-case native qualification and
+(build/i386-posting-routing-original/result.json); native qualification passes
+against the unchanged version-13 provider in
+build/i386-posting-routing-native: eleven cases, 44 commands, all VGA pixels
+matching at checkpoints, 8 MiB on 486,-fpu, source disk unchanged. Earlier five-case native qualification and
 cleanup/callback regression results remain valid for that provider.
+
+### Dispatch callback argument and master completion reference
+
+The original message reference now passes fifteen contracts
+(build/i386-message-master-call-original/result.json). The additional queued
+JOBT_CALL supplies argument 35 to a callback returning argument+7, names the
+current task as master, and checks its completed queue, result 42 and
+DISPATCHED/DONE flags before ScanMsg returns the following message. It removes
+and frees the completed job. Native dispatch/scanning is still unimplemented;
+this reference supplies acceptance evidence rather than native qualification.
+Queued source execution, spawned jobs, exception handling, focus/wake flags and
+macro recording still need their own coverage and implementation.
