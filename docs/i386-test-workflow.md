@@ -1350,3 +1350,14 @@ scan code, then checks console recovery. Its first baseline run is pending;
 this does not yet qualify focus switching, popup/filter keyboard routing or
 lost-input recovery. The harness preserve_history interaction flag retains
 console command rows; existing editor interactions retain their default.
+
+The corrected keyboard baseline is red in
+build/i386-public-keyboard-messages-red-v2: the fixture compiles, reaches GetMsg,
+injects `a`, and times out before completion. The first attempt's ports include
+failed to compile and did not constitute a keyboard red result. The checker now
+uses the preexisting OutU8 intrinsic without that include.
+
+Console version 33 implements a single input worker plus public-message readers.
+Green keyboard delivery, focus/reset recovery, document editing and break
+regressions remain pending. Historical version-16/console-32 retained builds
+must not be presented as qualification for the new input routing source.

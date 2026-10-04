@@ -11,7 +11,6 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def commands():
     definitions = [
-        '#include "/Kernel/I386/Ports.HH"',
         'U0 KeyLog(U8 *s){while(*s)OutU8(0xE9,*s++);}',
         'Bool KeyEvent(I64 code){I64 a,s;return GetMsg(&a,&s,1<<code)==code&&a==97&&(s&127)==30;}',
         'Bool KeyPublic(){Bool ok;FlushMsgs;KeyLog("KEY PUBLIC ready\\n");ok=KeyEvent(MSG_KEY_DOWN)&&KeyEvent(MSG_KEY_UP);KeyLog("KEY PUBLIC done\\n");return ok;}',

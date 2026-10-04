@@ -5232,3 +5232,33 @@ Next keyboard integration work:
    guest-built providers through installation, independent boot and successive
    self-hosting generations. Current guest builds are snapshot evidence, not
    a substitute for qualifying subsequent keyboard changes.
+
+### Keyboard delivery baseline and single-consumer implementation
+
+The first keyboard baseline failed during the fixture's unnecessary ports
+include, before injection. Removing that include uses the existing OutU8
+intrinsic. The corrected baseline is a verified red
+(build/i386-public-keyboard-messages-red-v2/result.json): KeyPublic reaches
+KEY PUBLIC ready, QEMU injects `a`, and the final VGA verdict times out without
+KEY PUBLIC done. The input disk remains unchanged. This proves the missing
+public keyboard delivery path rather than a fixture compilation failure.
+
+Added a scheduler-owned keyboard decoder in the retained console provider
+(version 33). It posts decoded events through the memory provider's PostMsg
+service to sys_focus_task, falling back to the console owner when the focus
+signature is invalid. Its default system parent keeps the daemon outside
+application child lists. All six document reads and ConsoleKeys now consume
+public key messages; only the worker reads the decoded hardware stream.
+Required services resolve through symbol tables without new flat imports.
+The IRQ break observer retains its independent decoder.
+
+On decoder loss or posting exception, the worker records a reset and removes
+only pending keyboard events from the console queue, under its queue lock;
+unrelated command jobs remain intact. Console/document readers report the
+reset through their existing -1 path. Focus transitions, recovery for other
+message clients, allocation failure and the full break/editor regression matrix
+still need qualification. No keyboard green result is claimed yet. Rebuild of
+the final daemon-parent source is running; fresh cross-build and native tests
+are next. The ongoing retained guest build uses the earlier version-16 memory /
+version-32 console snapshot captured before these source edits and is now
+historical evidence for that snapshot, not the new routing implementation.

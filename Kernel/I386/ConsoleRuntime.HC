@@ -32,6 +32,8 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 U8 *console_planes;
 extern U0 ConsolePresent();
+extern Bool NativeKeyboardStart();
+extern I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE);
 extern I64 NativeJobSource(U8 *text);
 CTask *sys_focus_task;
 extern Bool DocExe(CDoc *doc,I64 flags=0);
@@ -392,11 +394,12 @@ U0 ConsoleKeys(I64 unused)
   if(ConsoleSource("#include \"/Kernel/I386/StartOS.HC\"\n","ConsoleStartup.HC"))
     KernelLog("STARTUP source ok\n");
   else KernelLog("STARTUP source error\n");
+  if(!NativeKeyboardStart) { KernelLog("KEYBOARD MESSAGE start failed\n"); KernelStop; }
   I386TextWrite(&console_text,"> "); ConsolePresent;
   KernelLog("DONE native kernel startup\n");
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   while(1) {
-    decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+    decoded=NativeReadKey(console_config->reader,&event,FALSE);
     if(decoded && mouse_visible) {
       NativeMousePlaneHide(console_planes,mouse_x,mouse_y);
       mouse_visible=FALSE;
@@ -488,3 +491,5 @@ U0 I386DocBreakPoll()
 
 #include "/Kernel/I386/TextRender.HC"
 #include "/Kernel/I386/GraphicsFrame.HC"
+
+#include "/Kernel/I386/KeyboardMessages.HC"

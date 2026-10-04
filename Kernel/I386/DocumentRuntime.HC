@@ -582,7 +582,7 @@ Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
   try {
     while(!done) {
       activate=FALSE;
-      decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+      decoded=NativeReadKey(console_config->reader,&event,FALSE);
       if(decoded>0) {
         last_mouse_item=-1;
         if(delete_mode) {
@@ -1335,7 +1335,7 @@ Bool NativeDocFindPrompt(CDoc *doc,U8 *find,I64 *length,U8 *replace,
   I64 decoded;
   KernelLog("DOC FIND begin\n"); NativeDocFindDraw(doc,find,replace,*replacing);
   while(TRUE) {
-    decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+    decoded=NativeReadKey(console_config->reader,&event,FALSE);
     if(decoded>0 && event.type==2) {
       if(event.ch==CH_ESC) { KernelLog("DOC FIND end\n"); return FALSE; }
       if(event.ch=='\n' && *length) { KernelLog("DOC FIND end\n"); return TRUE; }
@@ -1578,7 +1578,7 @@ Bool NativeDocGotoPrompt(CDoc *doc,I64 *line)
   I64 decoded,length=0,value=0,index;
   digits[0]=0; KernelLog("DOC GOTO begin\n"); NativeDocGotoDraw(doc,digits);
   while(TRUE) {
-    decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+    decoded=NativeReadKey(console_config->reader,&event,FALSE);
     if(decoded>0 && event.type==2) {
       if(event.ch==CH_ESC) { KernelLog("DOC GOTO end\n"); return FALSE; }
       if(event.ch=='\n' && length) {
@@ -1634,7 +1634,7 @@ U0 NativeDocEditExecute(CDoc *doc)
   accepted=DocExe(doc);
   I386TextWrite(&console_text,"\nPress Esc to return to editor");
   ConsolePresent;
-  do decoded=I386KeyboardRead(console_config->reader,&event,TRUE);
+  do decoded=NativeReadKey(console_config->reader,&event,TRUE);
   while(decoded<=0 || event.type!=2 || event.ch!=27);
   if(!accepted && console_diagnostic_line && console_diagnostic_filename[0] &&
       !StrCmp(console_diagnostic_filename,doc->filename.name) &&
@@ -1698,7 +1698,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
     native_doc_mouse_visible=FALSE;
     KernelLog("DOC EDIT begin\n"); NativeDocEditDraw(doc,blink_phase);
     while(!done) {
-      decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+      decoded=NativeReadKey(console_config->reader,&event,FALSE);
       changed=FALSE; redraw=FALSE;
       if(decoded>0) {
         if(event.type==2 && (event.ch==CH_ESC || event.ch==CH_SHIFT_ESC)) {
@@ -2277,7 +2277,7 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
   try {
     while(!done) {
       activate=FALSE;
-      decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+      decoded=NativeReadKey(console_config->reader,&event,FALSE);
       if(decoded>0) {
         last_mouse_link=-1;
         if(event.type==2 && (event.ch==CH_ESC || event.ch==CH_SHIFT_ESC)) {
