@@ -6874,3 +6874,24 @@ build/install, installed audit and its own startup measurement still follow;
 the preceding native timing failure remains open until qualified replacement
 evidence exists. Formatter/User and the broader release requirements remain
 unfinished.
+
+### Assembly heap scan: guest flat build, installation and audit pass
+
+`build/i386-heap-asm-scan-flat/result.json` passes all six guest-built flat
+modules, installation and independent 8 MiB no-FPU boot. This development run
+uses verified cross-built retained providers. Flat size is 487072 bytes,
+272 bytes smaller than the preceding native flat payload, leaving 352 bytes
+in the boot envelope. Flat SHA-256:
+`f7afe15704d130b47025deed2b46fd50b67c9d5acd377ce5984520e7e83e16cb`.
+Target SHA-256:
+`d0c5933b92d9a780247202003065216ddda1b10c7943277cbdfcc2837247487a`.
+
+`build/i386-heap-asm-scan-flat-audit/result.json` passes executable ranges,
+installed boot payload/boot instructions and filesystem extent/bitmap checks.
+The default compiler template is appropriate here because retained providers
+are cross-built. Native compilation of all six retained providers is now
+running in `build/i386-heap-asm-scan-retained`, using this installed image and
+`build/i386-heap-asm-scan-kernel/exports` for export-set checks. After installation,
+rebuild the flat modules with those guest-built providers, audit with the guest
+compiler template and measure fully native startup. The cross-image workstation
+suite continues independently. No fully native timing pass is established yet.
