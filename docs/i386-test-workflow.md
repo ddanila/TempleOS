@@ -1529,3 +1529,31 @@ fault and unchanged input image. Green verifies exact heap/ring cleanup and
 code restoration, then console arithmetic, on 486,-fpu at 8 MiB. The same image
 also passes all six macro-recording cases again. This covers copy allocation,
 not every allocation/exception-registration failure path or release timing.
+
+### Exception-handler registration allocation safety
+
+The frozen registration-fault checker
+`tools/test-i386-public-message-registration.py` redirects `SysTry` only after
+its own handler is registered. On the preceding image it records a genuine
+OutMem fault and fails exact root-heap recovery:
+`build/i386-public-macro-registration-red/result.json`.
+Checker SHA-256: bcce34de9c14314dcfe47df0be27ca6ae81a7a6c43d186c9ad453342880a4b19.
+
+Recording now registers its cleanup handler before allocating either job.
+Message construction is shared with the ordinary posting path; a copy failure
+still frees the unqueued original and propagates the exception. Both original
+rebuild generations and the fresh cross-build/386 boot audit pass. Image:
+`build/i386-public-macro-registration-kernel/kernel.img`, SHA-256
+c39fbee87397f74249d627da22697c09f192523c498f39346450888fdf23c0a6.
+Registration-fault, copy-fault and six-case recording checks are running in
+`build/i386-public-macro-registration-{green,copy,macro}`; runtime qualification
+is pending, not inferred from the build.
+
+The earlier memory-16 full workstation run has now passed:
+`build/i386-public-keyboard-focused-break-workstation/result.json`, 513 native
+commands, 8 MiB, 486,-fpu, 53.56-second startup, exact VGA checkpoints and 20
+bounded document cycles with exact heap recovery. Its long-document navigation
+latency is 0.491 seconds. This qualifies its captured snapshot, not memory-17.
+The six-provider guest rebuild remains live and is compiling frontend routines.
+Current-source native generations, multiple terminals, debugging and release
+qualification remain open; the complete M7 objective is unchanged.

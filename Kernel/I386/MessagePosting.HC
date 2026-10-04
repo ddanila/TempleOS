@@ -10,23 +10,31 @@ U0 MemoryMessageWake(CTask *task)
     task=task->popup_task;
   }
 }
-CJob *MemoryTaskMsg(CTask *target,CTask *master,
-  I64 msg_code,I64 arg1,I64 arg2,I64 flags)
+CJob *MemoryMessageNew(CTask *master,I64 msg_code,I64 arg1,I64 arg2,I64 flags)
 {
-  CTask *task=target;
-  CJob *job,*last,*copy;
-  U32 irq;
-  if(!MemoryTaskValidate(task) || master && !MemoryTaskValidate(master) ||
-      task->popup_task && !(task->task_flags&(1<<TASKf_FILTER_INPUT))) return 0;
-  job=MemoryCAlloc(sizeof(CJob),memory_root);
+  CJob *job=MemoryCAlloc(sizeof(CJob),memory_root);
   job->master_task=master; job->job_code=JOBT_MSG;
   job->msg_code=msg_code;
   if(msg_code<0) job->msg_code=-msg_code;
   job->aux1=arg1; job->aux2=arg2; job->flags=flags;
+  return job;
+}
+CJob *MemoryTaskMsg(CTask *target,CTask *master,
+  I64 msg_code,I64 arg1,I64 arg2,I64 flags)
+{
+  CTask *task=target;
+  CJob *job=0,*last,*copy;
+  U32 irq;
+  if(!MemoryTaskValidate(task) || master && !MemoryTaskValidate(master) ||
+      task->popup_task && !(task->task_flags&(1<<TASKf_FILTER_INPUT))) return 0;
   //Match original TaskMsg: record only positive key-down, before filtering.
   if((memory_semas[SEMA_RECORD_MACRO].val&1) &&
       target!=memory_macro_task && msg_code==MSG_KEY_DOWN) {
-    try { copy=MemoryIdent(job,memory_root); }
+    try {
+      //Registration itself can fail: allocate nothing until it has succeeded.
+      job=MemoryMessageNew(master,msg_code,arg1,arg2,flags);
+      copy=MemoryIdent(job,memory_root);
+    }
     catch {
       //The job has not entered either ring. Release it before propagation;
       //leaving catch_except clear preserves the original allocation exception.
@@ -37,7 +45,7 @@ CJob *MemoryTaskMsg(CTask *target,CTask *master,
     copy->last=last; copy->next=last->next;
     last->next->last=copy; last->next=copy;
     I386IrqRestore(irq);
-  }
+  } else job=MemoryMessageNew(master,msg_code,arg1,arg2,flags);
   irq=I386IrqSave;
   while(task->task_flags&(1<<TASKf_FILTER_INPUT) && !(flags&(1<<JOBf_DONT_FILTER)))
     task=task->next_input_filter_task;
