@@ -5016,3 +5016,17 @@ Fresh rebuild and native qualification of this correction are pending; the
 failed runs are build/i386-public-suspend-native and
 build/i386-public-suspend-posting. They do not qualify suspension or posting on
 version 14. The preceding version-13 posting results remain separately valid.
+
+### Job callback exception reference
+
+The original message reference passes sixteen contracts
+(build/i386-message-call-exception-original/result.json). A queued JOBT_CALL
+throws JobTest; original JobsHndlr handles the exception, places the job in the
+completed queue with DISPATCHED/DONE flags and its initially zero result, then
+ScanMsg returns the following message. The fixture frees the completed node.
+This adds a recovery contract for native dispatch; it does not prove general
+uncaught child-exception isolation, which remains open.
+
+The Suspend header correction passes both original rebuild generations.
+Its fresh native build is running in build/i386-public-suspend-fixed-kernel;
+native runtime qualification remains pending.

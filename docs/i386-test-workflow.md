@@ -1279,3 +1279,8 @@ python3 tools/test-i386-public-task-suspend.py build/i386-kernel/kernel.img --ou
 Five contracts cover the previous-state return, NULL caller, signature rejection,
 preservation of flags/deadline, suspended-child exclusion and resume. Original
 qualification passes; version-14 native qualification remains pending.
+
+The full message reference now has sixteen original contracts. The added queued
+callback throws JobTest; completion flags/queue and subsequent message delivery
+must still succeed. This exercises the job handler's exception recovery, not
+general uncaught child-exception isolation. Native dispatch remains open.

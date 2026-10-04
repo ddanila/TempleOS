@@ -48,6 +48,11 @@ def behavior_commands():
         'I64 MsgCallArg(U8 *data){return data(I64)+7;}',
         'U0 MsgMasterQueue(){MsgCallQueue;MsgCallJob->addr=&MsgCallArg;MsgCallJob->fun_arg=35;MsgCallJob->master_task=Fs;}',
         'Bool MsgMasterScan(){I64 a,b;FlushMsgs;MsgMasterQueue;Msg(MSG_CMD,141,142);return ScanMsg(&a,&b)==MSG_CMD&&a==141&&b==142&&MsgCallDone&&MsgCallJob->master_task==Fs;}',
+        "I64 MsgCallThrow(U8 *data){throw('JobTest',TRUE);return 99;}",
+        'U0 MsgExceptQueue(){MsgCallQueue;MsgCallJob->addr=&MsgCallThrow;}',
+        'Bool MsgExceptDone(){return Fs->srv_ctrl.next_done==MsgCallJob&&!MsgCallJob->res&&Bt(&MsgCallJob->flags,JOBf_DISPATCHED)&&Bt(&MsgCallJob->flags,JOBf_DONE);}',
+        'Bool MsgExceptScan(){I64 a,b;FlushMsgs;MsgExceptQueue;Msg(MSG_CMD,151,152);return ScanMsg(&a,&b)==MSG_CMD&&a==151&&b==152&&MsgExceptDone;}',
+
 
     ]
     commands = [(source, []) for source in definitions]
@@ -56,7 +61,7 @@ def behavior_commands():
                  ('MsgBypass;', ['1']), ('MsgBackward;', ['1']), ('MsgPopupFall;', ['1']), ('MsgPopupReject;', ['1']),
                  ('MsgPopupOwn;', ['1']), ('MsgPopupWake;', ['1']), ('MsgPopupUnlink;', []), ('MsgRouteStop;', ['1']),
                  ('Free(MsgRoute);', [])]
-    commands += [('MsgCallScan;', ['1']), ('MsgCallFree;', []), ('MsgMasterScan;', ['1']), ('MsgCallFree;', [])]
+    commands += [('MsgCallScan;', ['1']), ('MsgCallFree;', []), ('MsgMasterScan;', ['1']), ('MsgCallFree;', []), ('MsgExceptScan;', ['1']), ('MsgCallFree;', [])]
     commands.append(('6*7;', ['42']))
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Message contract exceeds the interactive line limit')
@@ -80,7 +85,7 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:35]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:39]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
@@ -90,6 +95,7 @@ if(ok){ok=MsgRouteStart;if(ok){MsgRouteLink;ok=MsgFilter&&MsgBypass&&MsgBackward
 Free(MsgRoute);
 if(ok){ok=MsgCallScan;MsgCallFree;}
 if(ok){ok=MsgMasterScan;MsgCallFree;}
+if(ok){ok=MsgExceptScan;MsgCallFree;}
 if(ok)Report("PASS original public messages\\n");
 else Report("FAIL original public messages\\n");
 Report("DONE original public messages\\n");
@@ -116,8 +122,8 @@ Report("DONE original public messages\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
-    report.update(checker_sha256=checker, cases=15,
-                  scope='Public messages: root/child empty job rings/flags, 40-event FIFO, destructive mask filtering, negative-code down/up pair, FlushMsgs count and empty outputs, PostMsg/GetMsg child delivery; forward input-filter routing, DONT_FILTER bypass and backward filter posting; popup parent fallback, parent-post rejection, own delivery and popup wake flags; CALL job dispatch/completion before message scan, callback argument and master-owned completion; not EXE_STR/SPAWN jobs, macro recording or allocation recovery')
+    report.update(checker_sha256=checker, cases=16,
+                  scope='Public messages: root/child empty job rings/flags, 40-event FIFO, destructive mask filtering, negative-code down/up pair, FlushMsgs count and empty outputs, PostMsg/GetMsg child delivery; forward input-filter routing, DONT_FILTER bypass and backward filter posting; popup parent fallback, parent-post rejection, own delivery and popup wake flags; CALL job dispatch/completion before message scan, callback argument, master-owned completion and throwing callback recovery; not EXE_STR/SPAWN jobs, macro recording or allocation recovery')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 
