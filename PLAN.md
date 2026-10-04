@@ -6734,3 +6734,21 @@ The full native flat build/install is now running in
 mode. After it completes, audit the installed executable ranges/filesystem and
 measure no-FPU TCG startup. This remains the pre-formatter heap-scan snapshot;
 current-source two-generation and release qualification remain open.
+
+### Formatter port: 64-bit boundaries and allocation growth baseline
+
+`tools/test-i386-format-strings.py` now contains 22 cases. The added cases
+exercise signed I64 minimum/maximum, unsigned U64 maximum, hexadecimal output
+spanning both 32-bit halves, and a 1024-character string that requires output
+allocation growth. The growth helper compares every byte and frees both
+buffers. All interactive definitions/commands remain below 256 characters.
+
+All 22 cases pass on original TempleOS in
+`build/i386-format-boundaries-original/result.json`. Checker SHA-256:
+`8a701bcc987f57b91c53b2a4307c11f27b768b7050e5d714cf322e9b06a0be7f`.
+The same checker fails on unchanged native development image ed514687 in
+`build/i386-format-boundaries-native-red/result.json`: the initial HashFind
+returns 0 on the captured VGA screen, so the expected 1 times out. Formatting
+cases are not reached. This confirms the missing MStrPrint integration, not a
+formatting mismatch; full format-language parity is still outside this corpus.
+The native build/install and older cleanup workstation suite remain running.

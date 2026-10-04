@@ -11,9 +11,15 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 DEFINITIONS = [
     'Bool FormatCheck(U8 *text,U8 *expected){Bool ok=!StrCmp(text,expected);U8 *p=text;if(!ok){OutU8(0xE9,91);while(*p)OutU8(0xE9,*p++);OutU8(0xE9,93);OutU8(0xE9,10);}Free(text);return ok;}',
+    'Bool FormatGrowCheck(){U8 *s=MAlloc(1025),*t;Bool ok;MemSet(s,65,1024);s[1024]=0;t=MStrPrint("%s",s);ok=!StrCmp(s,t);Free(t);Free(s);return ok;}',
 ]
 CASES = [
     ('FormatCheck(MStrPrint("plain"),"plain");', ['1']),
+    ('FormatCheck(MStrPrint("%d",0x7FFFFFFFFFFFFFFF),"9223372036854775807");', ['1']),
+    ('FormatCheck(MStrPrint("%d",0x8000000000000000),"-9223372036854775808");', ['1']),
+    ('FormatCheck(MStrPrint("%u",0xFFFFFFFFFFFFFFFF),"18446744073709551615");', ['1']),
+    ('FormatCheck(MStrPrint("%X",0x123456789ABCDEF0),"123456789ABCDEF0");', ['1']),
+    ('FormatGrowCheck;', ['1']),
     ('FormatCheck(MStrPrint("%%"),"%");', ['1']),
     ('FormatCheck(MStrPrint("%d",-42),"-42");', ['1']),
     ('FormatCheck(MStrPrint("%u",42),"42");', ['1']),
