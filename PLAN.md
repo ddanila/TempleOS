@@ -5444,3 +5444,23 @@ build/i386-task-heaps-test/result.json: four ownership/lifetime cycles,
 14 reclaims, selected-parent inheritance and creator-code pin/release,
 including the new inherited_refs assertions. The fresh break suite is running
 in build/i386-public-keyboard-inherited-refs-breaks. No break green result yet.
+
+### Break recovery with a permanent keyboard worker qualified
+
+The inherited-reference image now passes the full breaks group in
+build/i386-public-keyboard-inherited-refs-breaks/result.json: 16 native commands,
+486,-fpu, 8 MiB, all VGA pixels matched. This includes immediate and deferred
+unlock delivery, loop/goto/do-loop break checkpoints, caught breaks and resumed
+console arithmetic. Image SHA-256:
+fa4dbe968f8e48923be3ee804d978c8550319f59b19e97664a278f37d58e601c.
+This resolves the creator-reference regression observed after adding the
+permanent keyboard worker; it does not qualify focused-child break routing.
+
+The intermediate image's DolDoc rerun is terminal incomplete at the same
+DocEd(break_doc) checkpoint, with the source disk unchanged. A fresh full
+DolDoc session is running against the inherited-reference image in
+build/i386-public-keyboard-inherited-refs-doldoc. Public message and direct job
+dispatch regressions are also running against that image in the corresponding
+build/i386-public-keyboard-inherited-refs-messages and -jobs directories.
+The historical all-guest-provider flat rebuild remains live. Full current-source
+self-hosting, macro recording, input-loss recovery and release gates remain open.

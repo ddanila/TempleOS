@@ -1430,3 +1430,12 @@ original rebuild generations pass; fresh cross-build and native task-heap
 counter/lifetime checks are running. Require a fresh break-suite pass before
 claiming recovery. The enrollment DolDoc run is terminal incomplete at
 DocEd(break_doc); its source disk is unchanged.
+
+The inherited-reference image passes the full breaks group (16 commands,
+486,-fpu, 8 MiB, exact VGA pixels) in
+build/i386-public-keyboard-inherited-refs-breaks/result.json. Immediate/deferred
+delivery and generated loop checkpoints recover with the permanent keyboard
+worker present. Focused-child break routing is still outside this result.
+Fresh full DolDoc, public message and job-dispatch regressions are running on
+that image; the intermediate-image DolDoc run is terminal incomplete at the
+editor break checkpoint and cannot qualify the new source.
