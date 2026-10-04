@@ -4233,3 +4233,14 @@ managed breakpoints and concurrent-task ownership need their own observable
 contracts before the full debugger requirement is complete. Retain the
 qualified baseline image and repeat instruction/size/workstation/native
 construction checks after any promoted implementation change.
+
+The isolated CPU-trap prototype now contains task-owned normalized-frame
+storage, separate capture/debug console callbacks (experimental console ABI
+37), normal-context debugger entry and a complete POP-segments/POPAD/IRET
+return trampoline in the existing ExceptionEntry module. It accepts only
+vector 3 with CS=8 and saved IF set, rejecting nested/unsupported cases.
+The qualified main OS sources remain unchanged. Prototype construction
+requires its own original rebuild evidence; that prerequisite is running
+in `build/cpu-trap-resume-prototype/build/rebuild-test`. The initial cross
+build stopped for missing prerequisite evidence, before compiling this code.
+No prototype build, continuation, cleanup or size verdict is claimed yet.
