@@ -8810,3 +8810,24 @@ whitespace/control trimming. Original oracle passes in
 the current candidate. Home may differ between environments, so these checks
 require successful API behavior rather than assuming an identical configured
 home directory. The task-field contract still checks explicit path targets.
+
+Resident ABI-42 full workstation passes all 513 native commands, exact VGA and
+twenty task heap-recovery cycles in `build/public-file-resident-workstation/result.json`.
+Startup is 27.311 seconds on 8 MiB `486,-fpu`; formal budget passes and source
+image is unchanged. Long-document update is 0.265 seconds. This does not waive
+the failing public HTT_FILE cache visibility requirement; resident code remains
+isolated pending programming-model integration and native qualification.
+
+Promoted FileRead/FileFind generation-two retained installation and independent
+boot pass in `build/public-file-find-gen2-native-install/result.json`, disk SHA-256
+`1d39cf80ef11c0a1e78c22d04ea9471c5241a2889f37ae7b63d2a9f85822afe1`.
+Full native construction/install is running in `build/public-file-find-gen2-selfhost`.
+Complete generation comparison remains pending.
+
+Cd special-path correction is isolated in `build/file-cd-special-prototype`:
+expand home components using the configured home directory, trim leading and
+trailing whitespace with the existing bitmap and remove non-whitespace control
+bytes before walking components. Path capacity includes home expansion; the
+temporary cleaned buffer is released. Fresh bootstrap/cross construction is
+running there. The prior candidate's Cd("~") checkpoint remains the pending
+special-path runtime failure; these source changes are not yet runtime-qualified.
