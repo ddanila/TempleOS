@@ -14,7 +14,8 @@ Ordinary/compressed FileWrite is now promoted: exact cluster/date/attribute
 semantics, original archive parity/replacement and the full 513-command
 workstation suite pass on its prototype. Main's fresh original rebuild/cross
 audits pass and all thirteen emitted artifacts match that qualified prototype.
-Native retained rebuilding and main-image archive requalification are running.
+Native retained rebuilding passes all six providers, and main-image archive
+requalification passes. Native installation/boot checks are running.
 Public FileRead remains isolated; its parent-search contract also passes.
 Resident caching, FileFind, broader errors and release requirements remain open.
 
@@ -8241,3 +8242,46 @@ Add explicit heap/error cleanup and full native qualification before promotion.
 The isolated FileRead epoch now has its own full workstation run live in
 `build/public-file-read-workstation`. This is separate from the passed earlier
 FileWrite epoch; FileRead remains unpromoted until its own broader qualification.
+
+## FileFind implementation: public entry and named-flag contracts pass
+
+The isolated `build/file-find-prototype` carries the tested FileRead wrapper
+and adds FileFind through a versioned file-service callback (ABI 39). It
+shares the original CDirEntry declaration in Kernel/DirEntryTypes.HH and
+original supported flags in Kernel/FileFindFlags.HH with KernelA.HH and
+native public headers. Original header bytes outside those extracted sections
+are preserved. The service performs exact-name lookup, file/directory filters,
+optional .Z and ordered parent search through task-owned volumes; normalized
+parent paths strictly shorten and lookup attempts are bounded. The public
+wrapper validates flags, zeros missing-entry output and converts the service's
+private name into a current-task public allocation released with Free.
+
+Fresh original bootstrap rebuilding and cross/instruction audits pass in
+`build/file-find-prototype/build/file-find-public-flags`. Cross boot payload
+is 483176 bytes. The earlier candidate passes actual-public-entry checks in
+`build/public-file-find-public-entry-green`; the previous FileRead-only image
+fails that strengthened contract in `build/public-file-find-public-entry-red`.
+Named constants are separately qualified: original oracle passes, the prior
+candidate fails at undefined FUF_JUST_FILES in
+`build/public-file-find-named-flags-red`, then the updated candidate passes
+`build/public-file-find-public-flags-green/result.json`.
+
+The final contract passes twenty-six commands on 8 MiB 486 without FPU,
+actual public CDirEntry, named FUF flags, canonical current-task-owned full_name,
+metadata/lookup/zeroing/FUF-exception behavior, exact VGA and independent
+filesystem verification. Startup is 24.648 seconds. Source image SHA-256:
+`c655cc6298bdaa805d39948c1778d59ec93ad48ed4d673c2aa3dd80ea11f51b9`.
+The source remains unchanged. Full workstation qualification is running in
+`build/public-file-find-workstation`; FileRead regression including parent
+lookup is running in `build/public-file-find-read-regression`. Neither FileFind
+nor FileRead is promoted. More failure cleanup and broader task/drive/name
+cases remain required; this contract is not the entire release gate.
+
+Main FileWrite native retained construction now passes all six providers in
+`build/file-write-main-native-build/result.json`. The resulting source image
+SHA-256 is
+`6d50e30cec0158286c52673987fbf9e799704dbe2958839e49eaf5ed71a76ca2`.
+Exact retained installation and independent boot are running in
+`build/file-write-main-native-install`; flat reconstruction and two-generation
+comparison remain open for this promoted epoch. The separate earlier FileRead
+workstation run remains live; no result is claimed prematurely.

@@ -39,7 +39,16 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--public-entry',action='store_true',help='Require the public CDirEntry type instead of a modeled record')
+    parser.add_argument('--public-flags',action='store_true',help='Require original named FUF constants')
     args=parser.parse_args()
+    definitions=list(DEFINITIONS)
+    if args.public_entry:
+        definitions=[s.replace('CFindEntry','CDirEntry') for s in definitions[1:]]
+    checks=list(CHECKS)
+    if args.public_flags:
+        for value,name in [('0x140000','FUF_SCAN_PARENTS|FUF_Z_OR_NOT_Z'),('0x100000','FUF_SCAN_PARENTS'),('0x40000','FUF_Z_OR_NOT_Z'),('0x800','FUF_JUST_FILES'),('0x400','FUF_JUST_DIRS')]:
+            checks=[source.replace(value,name) if 'FileFind(' in source else source for source in checks]
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
     candidate=out/'candidate.img'
     if candidate==args.disk.resolve():parser.error('output overlaps source')
@@ -47,10 +56,12 @@ def main():
     (out/'result.json').unlink(missing_ok=True)
     report=dict(result='fail',source_disk_sha256=hashlib.sha256(original).hexdigest(),
                 scope='Public Bool FileFind existence/filter/alternate/parent/null behavior; metadata/full_name ownership/failure zeroing/invalid flags; modeled record, not public CDirEntry declaration parity')
+    if args.public_entry:
+        report['scope']=report['scope'].replace('modeled record, not public CDirEntry declaration parity','actual public CDirEntry')
     try:
         overlay=out/'overlay';overlay.mkdir(exist_ok=True)
-        lines=['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+[s.replace('C:/Probe/','B:/') for s in DEFINITIONS]+['U0 OriginalFind(){']
-        for index,source in enumerate(SETUP+CHECKS):
+        lines=['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+[s.replace('C:/Probe/','B:/') for s in definitions]+['U0 OriginalFind(){']
+        for index,source in enumerate(SETUP+checks):
             source=source.replace('C:/Probe/','B:/')
             lines.append(f'if(!({source})){{Report("FAIL original FileFind case {index}\\n");return;}}')
         lines+=['Report("DONE original FileFind\\n");}','OriginalFind;']
@@ -58,13 +69,13 @@ def main():
         subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(out/'oracle.iso')],cwd=ROOT,check=True)
         subprocess.run(['python3','tools/guest-run.py',str(out/'oracle.iso'),'--out',str(out/'oracle'),'--timeout','180','--qmp-stdio'],cwd=ROOT,check=True)
         report['original_oracle']='pass'
-        commands=[(source+';',['1']) for source in SETUP]+[(source,[]) for source in DEFINITIONS]+[(source+';',['1']) for source in CHECKS]+[('6*7;',['42'])]
+        commands=[(source+';',['1']) for source in SETUP]+[(source,[]) for source in definitions]+[(source+';',['1']) for source in checks]+[('6*7;',['42'])]
         runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
             startup_check={'status':'ok','answers':[],'commands':commands})
         verify=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume']
         report['filesystem']=verify(candidate)
-        report['result']='pass'
+        report.update(result='pass',public_directory_entry=args.public_entry,public_flags=args.public_flags)
     except Exception as error:
         report['error']=str(error);raise
     finally:
