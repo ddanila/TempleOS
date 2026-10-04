@@ -14,7 +14,7 @@ EXCEPTIONS = ROOT / 'tools/test-i386-public-task-exceptions.py'
 END_CALLBACKS = ROOT / 'tools/test-i386-public-task-end-callbacks.py'
 
 
-def behavior_commands(disk):
+def accounting_layouts(disk):
     build = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))
     paths = {'/Kernel/I386/Memory.HH', '/Kernel/I386/MemoryBacking.HH', '/Kernel/I386/Heap.HH'}
     headers = build['mutated_file_contents'](disk, paths)
@@ -36,6 +36,11 @@ def behavior_commands(disk):
     layout_commands = [('extern class CBootPool;', [])] + [
         (layouts[name], []) for name in names]
     layout_commands.append(('public extern Bool I386HeapValid(CBootHeap *heap);', []))
+    return layout_commands, {path: hashlib.sha256(data).hexdigest() for path, data in headers.items()}
+
+
+def behavior_commands(disk):
+    layout_commands, header_hashes = accounting_layouts(disk)
     contract = runpy.run_path(str(CONTRACT))['behavior_commands']()
     definitions = [(source, []) for source, _ in contract
                    if source.startswith(('class ', 'I64 ', 'Bool ', 'U0 ', 'CTaskLifeProbe *'))]
@@ -79,7 +84,7 @@ def behavior_commands(disk):
     ]
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Accounting contract exceeds the interactive line limit')
-    return commands, {path: hashlib.sha256(data).hexdigest() for path, data in headers.items()}
+    return commands, header_hashes
 
 
 def main():

@@ -3393,3 +3393,25 @@ or an allowance to grow without bound on the 8 MiB port.
 The same observation fixture is running against the installed native providers
 in `build/i386-user-recovery-native-observations`. Inspect those measurements
 and allocation ownership before turning this into an acceptance gate.
+
+### Native shortcut result and bootstrap observations
+
+The installed guest-built MemoryRuntime/ConsoleRuntime image passes creation
+shortcuts in `build/i386-creation-hotkeys-native-runtime/result.json`: 15 commands
+on 8 MiB `486,-fpu` TCG, 52.185862-second startup, exact VGA checkpoints and
+unchanged source disk. This covers Ctrl-Alt-T/Esc creation, focused child HolyC
+input/Exit and plain/shift rejection, not typematic or exhaustive recovery.
+
+The experimental native exact-recovery run is terminal and fails by console
+timeout at `UserCycle(FALSE);`, after `USER headers ok` and `USER input begin`.
+Evidence is `build/i386-user-recovery-native/result.json`. This does not prove
+which recovery counter differs or even that the recovery expression completed.
+
+`tools/observe-i386-user-bootstrap.py` adds separate bootstrap used-byte and
+allocation-count snapshots to the public-pool observations. It extracts only
+layout declarations from the tested disk, verifies the backing signature and
+heap validity, and records header and dependency hashes. Results remain
+observations, not a recovery acceptance verdict. The run is pending in
+`build/i386-user-bootstrap-observations`. The shared layout extractor was
+refactored from the existing task-accounting tool; its generated 107 commands
+and header provenance were compared before/after and are exactly unchanged.

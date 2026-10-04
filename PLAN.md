@@ -48,7 +48,8 @@ update. Its boot kernel and remaining providers are cross-built. A newer
 cross-built image passes terminal creation and focus shortcuts; the updated native
 providers have built and passed the independent twelve-module instruction/ABI audit.
 The current cross-image programmatic User regression passes all 16 cases;
-installation passes, and affected native-image runtime gates are running. Older
+installation and the native creation-shortcut gate pass; User and focus runtime
+gates are still running. Older
 fully guest-built startup results exceed the 60-second target. Functional passes and package
 hash verification do not by themselves close these gaps. The historical
 “next” sections below record the implementation sequence; the following work
@@ -73,7 +74,8 @@ that its history is contained in `main`.
   48.720395-second startup on 8 MiB no-FPU TCG). Updated MemoryRuntime and
   ConsoleRuntime build inside TempleOS and pass the independent all-module
   instruction/ABI audit. Installation passes; native creation and User regressions
-  are running, so their runtime gates remain open.
+  creation passes all 15 commands with exact VGA checkpoints (52.185862-second
+  startup); programmatic User and Tab-focus gates are still running.
 - A new experimental repeated-User recovery fixture fails on original TempleOS
   at its first measured cycle. Exact shared-pool recovery after one warmup is
   therefore an unvalidated compatibility requirement. A separate observation
@@ -81,6 +83,9 @@ that its history is contained in `main`.
   reserved bytes stay fixed, and shared-pool used bytes grow by 4539904.
   Compare native measurements and investigate ownership before defining the
   recovery acceptance invariant; do not copy original retention into the port.
+  The native exact-recovery experiment times out during its first measured
+  cycle after header loading; it does not establish a counter mismatch.
+  Public-pool and bootstrap observations are running to separate these issues.
 - Next finish the affected native runtime gates. Then test repeated
   creation resource recovery and improve fresh-child declaration-loading latency.
   Updated all-native/two-generation release qualification remains required.
