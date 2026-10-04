@@ -1604,3 +1604,38 @@ applicable breakpoint/stepping requirements, and verify nested failure and
 resource recovery. Multiple interactive terminals and the complete current
 native-generation/release gates remain open. The latest full workstation and
 older six-provider native build are still running on separate captured images.
+
+### Explicit HolyC debugger implementation — runtime checks pending
+
+The frozen debugger checker records a genuine publication red on the preceding
+image in `build/i386-debug-session-red/result.json`: Dbg is absent, so the
+required publication expression returns false. SHA-256:
+0e3f90a309dce36b68fbf9116b8f1c0f3dc58ab952c5672abd2c61e1610af22f.
+
+Added native Dbg and G bindings through PublicDebug.HH and console services
+version 34. Explicit Dbg preserves the planar display and console state, shows
+the message/value and a function whose executable allocation contains the
+caller return IP, and evaluates HolyC commands in a nested prompt. G requests
+continuation; the display/focus and allocated backup are restored on return or
+propagated failure. Nested debugger entry is rejected. The 32-bit G default
+uses U32_MAX; non-default IP/task control is explicitly unsupported and throws.
+This is initial explicit-session support, not the complete debugger contract.
+
+Both original rebuild generations, the fresh cross-build and 386 boot audit
+pass. An early cross-build attempt ran before its bootstrap result was available
+and terminated with FileNotFoundError; the sequential retry passes. Image
+`build/i386-debug-session-kernel/kernel.img`, SHA-256
+78e46172f7d0bca1c75c12bbbd67d75835ffd3924a5525360fb49ade1a081e48.
+The frozen session checker and required-services probe are running in
+`build/i386-debug-session-green` and `build/i386-debug-publication-green`.
+These are pending runtime results, not a debugger usability pass.
+
+The memory-16 focused-keyboard six-provider guest build has now passed all six
+module layout/export comparisons in
+`build/i386-public-keyboard-focused-break-retained/result.json`. Its source
+image SHA-256 is ded01e5c8d76ab2ec1273a23f07753a9ab1ee06464bc8a845bd0e766f2f75c1a.
+Installation and independent boot are running in
+`build/i386-public-keyboard-focused-break-retained-install`. This older epoch
+must remain distinct from current memory-17/console-34 qualification. Current
+workstation, native generations, exception/source/register debugging,
+multiple terminals, timing and release gates remain open.
