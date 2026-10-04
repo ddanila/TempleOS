@@ -3753,3 +3753,26 @@ Main-image inherited-module regression is running in
 running in `build/i386-module-inheritance-main-workstation`. The isolated
 six-provider build remains active, progressing through CompilerRuntime
 functions. Completion and native installation/runtime qualification remain open.
+
+### Gated main build and current module regression pass
+
+`build/i386-module-inheritance-main-gated/result.json` passes the integrated
+instruction and 73-descriptor keyword-data audits. All twelve modules and the
+linked flat image match the preceding main build byte for byte, recorded in
+`build/i386-module-inheritance-main-repeat.json` (13 artifacts, no differences).
+
+The focused main-image regression passes in
+`build/i386-module-inherited-forward-main/result.json`: ten commands,
+58.624633-second startup, exact VGA checkpoints, unchanged source disk and the
+same persisted Main module hash as the isolated green test. Root forward-class
+identity/opaque shape is preserved.
+
+The isolated six-provider build is terminal after its 900-second command
+timeout during CompilerRuntime generation, last observed at
+I386FrontendAssembly. Its logs show function-generation progress and no new
+frontend rejection at that point; they do not prove CompilerRuntime completion.
+The tool has no success result JSON for this attempt. A fresh build from the
+gated main image is running in `build/i386-module-inheritance-native-build-long`
+with 3600 seconds per build command. This is an explicit build observation
+budget, not a waiver of startup/interactive latency or no-FPU qualification.
+The current full workstation regression remains live.

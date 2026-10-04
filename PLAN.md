@@ -112,7 +112,10 @@ that its history is contained in `main`.
   are applied to main; its original rebuild and i386 build/audit pass.
   The keyword-data gate is integrated into the normal build audit. Main-image
   module and full workstation regressions are running.
-  The full isolated native-provider build remains live. Native runtime and startup qualification remain open. Updated all-native/two-generation release
+  The full isolated native-provider build hits its 900-second command limit
+  during CompilerRuntime function generation. A fresh main-image build is
+  running with a 3600-second diagnostic build limit; provider acceptance
+  remains open. Native runtime and startup qualification remain open. Updated all-native/two-generation release
   qualification remains required.
 
 Earlier source-epoch checkpoints below are historical; they do not supersede
