@@ -8831,3 +8831,17 @@ bytes before walking components. Path capacity includes home expansion; the
 temporary cleaned buffer is released. Fresh bootstrap/cross construction is
 running there. The prior candidate's Cd("~") checkpoint remains the pending
 special-path runtime failure; these source changes are not yet runtime-qualified.
+
+The prior Cd candidate's special-path run now fails at Cd("~"), after default
+and NULL-home calls succeed. The corrected home/trimming checkout passes fresh
+original bootstrap, cross construction and 386 instruction audit (483184-byte
+cross kernel). Combined special-path and public task-field qualification is
+running in `build/public-cd-special-green`; no runtime pass is claimed.
+
+Resident ABI-42 native retained rebuilding passes all six modules in
+`build/public-file-resident-native-build/result.json`, generated source disk
+SHA-256 `3618973caa8bfe32611f033ae04324e1f55392c090277f39f8544808bb2416a1`.
+Retained installation/independent boot checks are running in
+`build/public-file-resident-native-install`. Native construction and public
+hash-model compatibility remain open; private-cache contract success is not
+complete resident support.
