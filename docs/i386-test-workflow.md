@@ -4429,3 +4429,15 @@ rebuilding natively in `build/cpu-trap-main-native-build`, using current
 `build/cpu-trap-main/exports` contracts and 3600-second command budgets.
 CompilerRuntime remains live; no fully native result for this epoch exists
 yet. Kernel/Compiler sources and the loaded build harness stay frozen.
+
+### BIOS fixed-load boundary baseline
+
+`tools/test-i386-boot-load-boundary.py` puts a nonzero marker at the final
+permitted payload byte in a preserved standard disk copy, boots it with
+8 MiB `486,-fpu` QEMU, and checks the byte in guest RAM plus 6*7 through
+exact VGA. It PASSes in `build/cpu-trap-main-boot-boundary/result.json`: the
+487424-byte load window reaches address 0x87FFF, with unchanged filesystem
+bytes and source image. Startup is 23.897774333 seconds. This exercises
+the BIOS boundary of the present payload format, not an independently
+linked maximum-size kernel or oversized/truncated-publication rejection.
+Those contracts and boot-capacity implementation remain open.
