@@ -8370,3 +8370,24 @@ FileWrite generation-two retained rebuilding/comparison also remains live.
 Before promotion, require the corrected candidate's full workstation and
 regressions/native construction, and continue resident/file-error compatibility
 work. No narrower test closes the OS release objective.
+
+The earlier ABI-39 source-aware workstation run has now finished successfully:
+`build/public-file-find-source-aware-workstation/result.json` reports all 513
+native commands, exact VGA pixels at every checkpoint, twenty document resource
+cycles with exact task heap recovery, and an unchanged source disk. This covers
+the candidate with SHA-256
+`c655cc6298bdaa805d39948c1778d59ec93ad48ed4d673c2aa3dd80ea11f51b9`.
+Startup was 24.237 seconds on 8 MiB QEMU with `486,-fpu`; the explicit 60-second
+timing gate passes in
+`build/public-file-find-source-aware-workstation-budget.json`. The long-document
+navigation-to-VGA measurement was 0.375 seconds. The result's private heap
+observation records module location/provenance only: this full run did not take
+private allocator recovery snapshots. Those are covered by the separate mixed
+FileFind recovery test, not inferred from this workstation report.
+
+The corrected ABI-40 candidate is undergoing its own full workstation run in
+`build/public-file-find-rejection-workstation` and public FileRead/parent-search
+regression in `build/public-file-find-rejection-read-regression`. Neither result
+is assumed from ABI-39 success. Main's FileWrite generation-two native retained
+build remains running; FileRead/FileFind implementations remain isolated pending
+their qualification and promotion.
