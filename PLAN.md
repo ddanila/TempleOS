@@ -6401,3 +6401,39 @@ bytes. Candidate `build/i386-debug-mode-kernel/kernel.img` SHA-256:
 `3354b49895533bb2267d8c840877fc609b780319911436463a9c28bd5f7e54a1`. Normal false/true restoration and forced-exit
 restoration tests are running in `build/i386-debug-mode-green` and
 `build/i386-debug-mode-kill-green`; no runtime pass is claimed yet.
+
+### Debugger mode verified; workstation collision and boot profile
+
+Both mode-state checks pass on unchanged image
+`3354b49895533bb2267d8c840877fc609b780319911436463a9c28bd5f7e54a1`:
+`build/i386-debug-mode-green/result.json` (13 commands) and
+`build/i386-debug-mode-kill-green/result.json` (14 commands). Exact VGA verifies
+active mode, normal restoration of prior false/true mode, and forced-exit
+restoration with a surviving debugger task and parent public heap recovery.
+No-FPU TCG, 8 MiB starts are 59.439 and 59.375 seconds.
+`build/i386-debug-mode-startup-budget.json` passes for the first observation.
+This does not supersede the earlier 62–72-second failures or establish
+fully guest-built timing/reproducible release qualification.
+
+`build/i386-debug-mode-boot-profile/result.json` records 608 statistical PC
+samples on the same unchanged image. Heap allocation/free/size/validation
+account for 146/166 public-header samples and 364/389 startup-source samples.
+Caller stacks often involve identifier publication. The profiler pauses QEMU;
+its duration is not a startup benchmark. Any optimization must preserve full
+heap validation, exact string allocation sizes and atomic failure behavior.
+
+The cleanup-snapshot full workstation run is terminal FAIL at compiler
+command-105 (`build/i386-terminal-debug-cleanup-workstation/checkpoint.json`).
+Its fixture declares `I64 G()` despite the now-public debugger `U0 G(...)`;
+VGA shows Compilation failed. This run is not a full-suite pass. A focused
+`tools/test-i386-forward-call.py` retains the forward declaration, call and
+unresolved-extern recovery assertions with distinct ForwardValue/ForwardCaller
+names and checks that public G remains present. Runtime verification is pending.
+The shared workstation runner remains unchanged while the earlier native
+provider build is live; update the colliding fixture before the next full run.
+
+The focused forward-call check now passes all six commands with exact VGA on
+unchanged mode image 3354b498. Evidence: `build/i386-forward-call-green/result.json`;
+checker SHA-256 `1f2e0b7b47ef8057a5fb33fd7a0d42e17ee1969eb03456cb69498b180e7889cb`.
+This verifies the distinct-name fixture without weakening forward-resolution
+or failed-compilation recovery checks; it does not qualify the full suite.
