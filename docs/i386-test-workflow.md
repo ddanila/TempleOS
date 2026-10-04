@@ -4244,3 +4244,29 @@ requires its own original rebuild evidence; that prerequisite is running
 in `build/cpu-trap-resume-prototype/build/rebuild-test`. The initial cross
 build stopped for missing prerequisite evidence, before compiling this code.
 No prototype build, continuation, cleanup or size verdict is claimed yet.
+
+### CPU breakpoint continuation: isolated first green
+
+The prototype's original two-generation rebuild PASSes. Its cross build
+PASSes instruction/keyword audits in
+`build/cpu-trap-resume-prototype/build/cpu-trap-initial`, with a 483168-byte
+boot kernel (728 bytes larger than qualified main). Experimental console ABI
+37 required updating the isolated harness version contract.
+
+The unchanged checker
+`50e93b3703532900221720901765fe33cddda0f37e841912b20023aaf1e1df38`
+now PASSes all 15 commands in
+`build/cpu-trap-resume-prototype/build/cpu-trap-initial-continuation/result.json`.
+Image SHA-256:
+`ca66901a4340d43a4351fc66284ee11f2cb1156b47d6e4af217e29fbaa2b3623`.
+Actual INT3 enters the debugger with expected function/source and task state;
+G resumes with EAX 0x11223344 preserved. Debugger mode, IF/TF and shell
+recovery assertions pass with exact VGA on 8 MiB `486,-fpu`; source unchanged.
+Startup is 23.595790695 seconds. This contrasts with the same checker's
+qualified-native vector-3 halt baseline.
+
+The implementation remains isolated and unpromoted. Repeated traps, forced
+exit/cleanup, broader register inspection/editing, stepping, managed
+breakpoints and concurrent debugger ownership remain required. Full
+workstation and guest-native flat size/construction qualification must pass
+before promotion; the qualified native flat has only 952 bytes spare.
