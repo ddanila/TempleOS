@@ -1984,3 +1984,22 @@ the oracle: IRQ exception delivery and decoded ^C can be observed in either
 order. The initial checker found an unhandled Break/kernel failure. A revised
 matching baseline is running in `build/i386-terminal-idle-break-editor-red`;
 recovery runtime qualification is pending.
+
+Idle-break paired red/green results now pass the recovery gate described above.
+The candidate starts in 58.73 seconds on 8 MiB and 486,-fpu, with exact VGA and
+unchanged source image. Existing interrupt regression is running in
+`build/i386-terminal-idle-break-regression`.
+
+### Background compilation with a foreground editor
+
+```sh
+python3 tools/test-i386-terminal-background.py build/i386-terminal-idle-break-kernel/kernel.img --out build/i386-terminal-background-session
+```
+
+Checker SHA-256: `7395f7f3e3a36667919ff1abd959a636576cb7e95a053ffd28c56c5efc472592`.
+One repeatedly executes a HolyC document; Two edits/saves Work.DD. The check
+requires compilation progress during the editor session, value 42 from compiled
+code, exact foreground VGA, exact persisted `work` plus cursor byte 0x05, and
+normal task/parent-heap cleanup. It uses a writable copy and verifies that the
+source disk stays unchanged. Runtime result is pending. This is not a full-OS
+background rebuild or exhaustive concurrency test.

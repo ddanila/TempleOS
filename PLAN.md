@@ -6123,3 +6123,31 @@ The recovery candidate now passes the fresh cross-build and 386 boot audit
 live in `build/i386-terminal-idle-break-editor-{red,green}`; no runtime pass
 is claimed. The unchanged heading-fix image's document-editing regression and
 the older console-35 native-provider build also remain live.
+
+### Idle terminal recovery green; background compiler/editor workflow
+
+The revised frozen checker 6809b4786a85ea9a3f5d27b5e7ad811eb8593e6af1a03c3db28e6cb5d35e6051
+now has paired evidence in `build/i386-terminal-idle-break-editor-{red,green}`.
+The baseline again hits unhandled Break/kernel failure. The candidate passes
+both idle breaks, a visible editor session after each, retained definitions,
+sibling isolation, focus/exit and exact parent public-heap recovery. All VGA
+checkpoints pass: 11 parent commands, 8 MiB, 486,-fpu, 58.73-second startup.
+Its unchanged image SHA-256 is
+a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8.
+Existing `breaks` regression is running in
+`build/i386-terminal-idle-break-regression`.
+
+Added `tools/test-i386-terminal-background.py`, SHA-256 `7395f7f3e3a36667919ff1abd959a636576cb7e95a053ffd28c56c5efc472592`.
+One repeatedly compiles/executes a HolyC document while Two opens, edits and
+saves another. The oracle requires the compilation count to advance across
+that editor session, the compiled assignment to produce 42, independent VGA
+checks, exact saved Work.DD bytes, and terminal/parent-heap cleanup. It does not
+prove concurrent full-OS builds. The corrected fixture runs in
+`build/i386-terminal-background-session`; no result is claimed yet. An initial
+setup attempt was deliberately stopped during boot after finding it referenced
+unpublished DocPrint; it is not behavioral red evidence. The current setup uses
+existing DocPutKey and names the executable document Background.HC.
+
+The heading-fix root document-editing regression and older console-35 native
+provider build are still running. Current-source native generations, complete
+debugging and release qualification remain open.

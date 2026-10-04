@@ -18,10 +18,12 @@ The heading-fix image `build/i386-terminal-documents-kernel/kernel.img`
 passes the two-editor contract: independent live text documents, focus cycling,
 editing/save, named terminal restoration, exit/refocus, exact parent public-heap
 recovery and independent persisted-byte verification. Root document-editing
-regression is still running. An idle Ctrl-Alt-C baseline produces an unhandled
-Break and kernel failure. Recovery is implemented but runtime verification is
-pending; the revised contract checks two breaks, usable editor sessions and
-retained definitions before normal terminal cleanup.
+regression is still running. The idle Ctrl-Alt-C contract now has matching
+baseline failure and candidate pass in `build/i386-terminal-idle-break-editor-{red,green}`.
+Candidate image `a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8`
+survives two breaks, supports editor sessions after each, retains definitions
+and passes normal terminal cleanup. Existing interrupt regression and a new
+background-compilation/foreground-editor workflow are running.
 
 The preceding memory-17 registration-fix image passes the full 513-command
 workstation suite in `build/i386-public-macro-registration-workstation`, including
