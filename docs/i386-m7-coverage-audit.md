@@ -4,15 +4,25 @@ This audit follows the six numbered outcomes in [PLAN.md](../PLAN.md#final-goal-
 Passing a component corpus or finding a public function does not prove the
 complete user workflow. Human observation and physical hardware remain optional.
 
-The previous fully guest-built candidate and its second generation are the
-`selfhost-install-capacity-lexfix{,-gen2}-kvm/target.img` images. The 95-file
-local bundle records their evidence. The startup optimization changes
-`Heap.HC`, `ModuleCheck.HC` and `ModuleLoad.HC`; those older images do not prove
-the new source. A fresh cross build and a guest flat-kernel development build
-provide focused evidence, and the optimized-source six-module native rebuild has completed and installed successfully. The optimized cross image now
-passes the full no-FPU workstation suite; the guest flat development image
-passes the writable three-boot document session. Preserve that distinction when qualifying the next candidate. The subsequent
-public-delay implementation is a newer source state and needs its own results.
+The latest cross-built runtime is compiler 59, console 36 and memory 17 in
+`build/i386-terminals-kernel-pointer/kernel.img` (SHA-256
+`6051ee26f0405f92e4dc2682c9738ce5c30141c68a6a11d4e35156cad0e2f5d0`).
+Ordinary keyboard, explicit debugger and named-exception inspection checks pass
+on that image. Its two-terminal workflow and intentional keyboard-loss check
+are pending; publication/build success does not close terminal usability.
+
+The preceding memory-17 registration-fix image passes the full 513-command
+workstation suite in `build/i386-public-macro-registration-workstation`, including
+20 document cycles with exact heap recovery, a 55.56-second startup and
+0.315-second long-document update. It predates debugger/terminal changes.
+The newest completed fully guest-built epoch is the memory-16/console-33
+focused-keyboard image in `build/i386-public-keyboard-focused-break-selfhost`:
+six native retained providers plus six native flat modules, independent boot and
+installed-image audit pass. Its 487344-byte flat image leaves 80 bytes in the boot
+area. A compiler-59/console-35 native provider build is running in
+`build/i386-debug-exception-retained`; it predates task-owned terminals.
+Current-source two-generation reproducibility and release qualification remain
+open. The older 95-file local bundle is historical evidence, not a current release.
 
 | Required outcome | Executable test and independent oracle | Current status / missing evidence |
 | --- | --- | --- |
@@ -23,7 +33,7 @@ public-delay implementation is a newer source state and needs its own results.
 | 2: On-machine debugging and runtime exception inspection | Existing editor execution tests show `Exception`, recover to the editor and run corrected source. The publication probe also checks original `Dbg`. | Public `Dbg` publication and explicit-session red/green now pass on the console-34 image. The independent VGA contract checks message/value/caller function, nested HolyC expression, `G` continuation, restored history and shell recovery. The compiler-59/console-35 image also passes the named runtime exception/source-link red/green workflow before compiler cleanup, with state inspection and G-driven unwind. Saved registers, exact instruction-line mapping, zero exceptions, breakpoints/stepping and nested resource/error recovery remain open; these passes do not close the full debugging requirement. |
 | 3: Executable DolDoc with graphics, save/reboot/reopen/re-execute | `test-i386-doldoc-session.py` runs three writable boots with exact VGA and saved-byte comparisons; its independent RedSea walker audits all reachable extents and bitmap bits. Sprite and formatted/binary execution cases cover selected records. `test-i386-doc-style-compat.py` uses original x64 TempleOS as a bidirectional file-format oracle. | Previous generations and the optimized guest flat development image pass the tested workflow and record surface. Repeat after fully guest-built promotion; broad original record/API parity remains a separate inventory. |
 | 3: VGA, keyboard, mouse, timer/disk and speaker together | Workstation groups inspect exact VGA, injected PS/2 events and guest PIT/IRQ results. `test-i386-speaker-output.py` independently analyses 440/880 Hz PCM and observes zero audio emission during off/reset intervals. | Both previous guest generations pass audio. Repeat on the newly promoted image; register checks alone are insufficient. |
-| 4: Guest rebuild/install/cold boot for two generations | `test-i386-retained-build.py`, `test-i386-retained-install.py`, `test-i386-selfhost-install.py` and `audit-i386-generations.py` audit persisted modules, flat image and boot area byte for byte. Independent installed-image audits reject malformed or non-386 code. | Previous generations reproduce twelve modules. The captured pre-keyboard memory-16/console-32 image now guest-builds all six retained providers, installs them and passes an independent boot. Its native flat-kernel build, installation, independent boot and executable/filesystem audit pass in build/i386-public-message-scan-selfhost and -selfhost-audit (487000 bytes). This does not qualify the newer keyboard/inherited-reference source or current-source two-generation reproducibility. |
+| 4: Guest rebuild/install/cold boot for two generations | `test-i386-retained-build.py`, `test-i386-retained-install.py`, `test-i386-selfhost-install.py` and `audit-i386-generations.py` audit persisted modules, flat image and boot area byte for byte. Independent installed-image audits reject malformed or non-386 code. | Previous generations reproduce twelve modules. The focused-keyboard memory-16/console-33 epoch now passes all six native provider builds, installation, flat-kernel build, independent boot and executable/filesystem audit in build/i386-public-keyboard-focused-break-selfhost and -selfhost-audit (487344 bytes). It includes inherited-reference and focused-keyboard work, but predates memory-17, debugger and terminal changes. Current-source two-generation reproducibility remains open. |
 | 5: 8 MiB interactive, 16 MiB rebuild, bounded allocations | Workstation resource cycles require exact shared-heap recovery; `test-i386-resource-profile.py` records live/reserved peaks and checks the arena against installed RAM. Heap corpora exercise corruption, exhaustion, foreign pointers, coalescing and public ownership. | Focused optimized heap/loader corpora pass. Requalify all resource bounds on the full new candidate and include measurements in the release report. |
 | 5: Startup and edit/interrupt latency budgets | `check-i386-startup-budget.py` enforces 60 seconds. The workstation long-document visible-update case and three-boot interrupt-to-recovery case enforce one second. | Previous guest-built startup fails at 73–74 seconds. The optimized cross-image full suite passes at 50.501 seconds with a 0.314-second visible update. The guest flat development session has 50.506–53.144-second boots and 0.271-second interrupt recovery, with cross-built retained modules. Fully guest-built timing remains open. Promotion must require both visible-latency measurements, not merely the suite's pass label. |
 | 5: No FPU, 386 executable regions, pinned environment | No-FPU QEMU execution plus boot/installed/JIT/inline-assembly audits cover their classified ranges; command manifests record CPU, RAM, accelerator and devices. | New flat development image passes installed 386/RedSea audit. Complete current-source live JIT coverage and a consolidated environment record (host, QEMU, BIOS hash, pinned machine/storage/peripherals) remain open. Emulator evidence does not certify a physical 386. |

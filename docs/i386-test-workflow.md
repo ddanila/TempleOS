@@ -1844,3 +1844,30 @@ coverage. UserTaskCont input-layer exception recovery and broader WinFocus
 parity need further contracts. The earlier compiler-59/console-35 six-provider
 build and memory-17 workstation run remain live on their distinct snapshots.
 Current-source native generations and the complete M7/release gates remain open.
+
+### Terminal test pacing and completed regression evidence
+
+The initial terminal run passes separate displays, first-terminal definition
+and focus switching, then its unpaced text action overflows the hardware queue.
+The retained log records INPUT RESET before the truncated expression; this run
+is a failure, not a terminal usability pass. The fixture now acknowledges each
+four-character batch against independent expected VGA rows, matching the normal
+console runner's input discipline. It retains every isolation, focus, exit and
+heap assertion. Frozen checker SHA-256:
+0ac80003e40b5a7983b7cfed7872a1745d593ca85f062fd8c4434b4cc6fa6344.
+Matching baseline/current runs are live in build/i386-terminals-paced-{red,green}.
+The dedicated intentional overflow checker is live in
+build/i386-terminals-keyboard-loss; bounded-queue loss behavior remains a
+separate required contract.
+
+On the console-36 terminal image, ordinary keyboard behavior passes in
+build/i386-terminals-keyboard (57.64-second startup). Explicit debugger and
+named-exception regressions pass in build/i386-terminals-debug-session and
+build/i386-terminals-debug-exception (59.05 and 59.35 seconds), with exact VGA
+and unchanged disks. These focused results do not prove full terminal integration.
+The preceding memory-17 registration-fix workstation run is now terminal PASS:
+build/i386-public-macro-registration-workstation/result.json, 513 commands,
+20 exact-heap-recovery document cycles, 55.56-second startup, 0.315-second
+long-document update, 8 MiB and 486,-fpu. Updated the coverage audit's opening
+snapshot summary to distinguish these epochs and the completed earlier native
+self-hosted image. The full objective remains open.

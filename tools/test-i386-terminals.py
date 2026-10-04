@@ -25,9 +25,18 @@ def commands():
         'Bool TermRun(){TermRoot=Fs;FlushMsgs;TermBefore=Fs->data_heap->used_u8s;TermSpawn;Sleep(100);TermLog("TERMINAL TEST enter\\n");TermFocus(TermOne);return TermWait;}',
     ]
     events = []
+    current_rows = one
+    def type_text(text, label):
+        for start in range(0, len(text), 4):
+            end = min(start + 4, len(text))
+            events.extend([{'text': text[start:end]},
+                           {'expect_rows': current_rows[:-1] + [current_rows[-1] + text[:end]],
+                            'label': f'{label}-typing-{end}'}])
     def enter(text, rows, label):
-        events.extend([{'text': text}, {'key': 'ret'},
-                       {'expect_rows': rows, 'label': label}])
+        nonlocal current_rows
+        type_text(text, label)
+        events.extend([{'key': 'ret'}, {'expect_rows': rows, 'label': label}])
+        current_rows = rows
     one1 = one[:-1] + ['> I64 terminal_value=11;', '> ']
     enter('I64 terminal_value=11;', one1, 'one-definition')
     two0 = two
@@ -44,7 +53,7 @@ def commands():
     enter('TermFinish;', two3, 'one-exit-refocus')
     two4 = two3[:-1] + ['> terminal_value;', '22', '> ']
     enter('terminal_value;', two4, 'two-value')
-    events.append({'text': 'TermFinish;'})
+    type_text('TermFinish;', 'two-exit')
     specs = [(source, ['1'] if i == 0 else []) for i, source in enumerate(definitions)]
     specs += [('TermRun;', ['1'], {
         'begin': 'TERMINAL TEST enter\n', 'initial_rows': one,
