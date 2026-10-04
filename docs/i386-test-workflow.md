@@ -4497,3 +4497,19 @@ contract has not passed. This experiment currently handles contiguous
 ordinary writes only; default Now, compression/resident semantics and
 compatibility of existing internal write callers still require work before
 promotion. Main Kernel/Compiler sources are unchanged for native qualification.
+
+Promoted CPU-trap exact native-provider installation and independent 8 MiB
+boot PASS in `build/cpu-trap-main-native-install/result.json`. Fully native
+six-module flat reconstruction is running in `build/cpu-trap-main-selfhost`,
+with both required retained provenance reports. Final flat/native debugger
+workflow and generation qualification remain pending.
+
+The first FileWrite prototype cross build passes, but both public metadata
+and boot rejection runs stop during ROOT USER HEADERS: PublicFiles uses
+CDate before DateTypes is included. These are startup failures, not file
+contract passes. The isolated header now includes DateTypes explicitly,
+and the legacy Boolean wrapper retains its previous negative-size rejection
+and attribute behavior while the new public core is developed separately.
+A fresh original rebuild is running before corrected cross construction.
+Default Now, compression/resident behavior and complete API parity remain
+open; no FileWrite implementation is promoted to main.
