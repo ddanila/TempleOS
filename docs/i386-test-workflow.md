@@ -3435,3 +3435,28 @@ HolyC call and records start/created/stop/retired phase markers, including on
 failure. It checks completion and resumed arithmetic, not counters. The native
 run is pending in `build/i386-user-cycle-native`; use it to distinguish a
 create/kill wait from the strict fixture's later recovery expression.
+
+### Updated native User regression
+
+`build/i386-creation-hotkeys-native-user-16/result.json` passes all 16 cases
+and 28 commands on the installed guest-built MemoryRuntime/ConsoleRuntime
+image: 8 MiB `486,-fpu` TCG, 52.391379-second startup, exact VGA checkpoints
+and unchanged source disk. Together with creation and Tab tests, this qualifies
+the affected focused behavior; it does not close exhaustive recovery or
+all-native/two-generation qualification. Full workstation regression is running
+in `build/i386-creation-hotkeys-native-workstation`.
+
+The bootstrap observer's first empty create/kill cycle returns to 5348304 used
+bytes and 7104 allocations, exactly its initial snapshot, while public-pool
+counters also recover. Later cycles are still running. This is narrower than
+the final repeated-recovery requirement.
+
+For fresh-child declaration latency, the next architectural candidate is to
+load declaration-only `PublicUser.HH` once in the CPU-root scope, after console
+exports are installed and with a valid root-owned compiler control. Child
+scopes can inherit the stable declarations; singleton `StartOS.HC` remains an
+initial-console operation. `I386FrontendPublish` requires the actual control's
+owner and destination scope to match: redirecting a child hash pointer is not
+a valid shortcut. Check root initialization order, peak memory, inheritance
+guards and definition isolation before implementing this. Both startup and
+child readiness must be measured; moving cost into boot alone is insufficient.

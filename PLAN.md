@@ -49,7 +49,7 @@ cross-built image passes terminal creation and focus shortcuts; the updated nati
 providers have built and passed the independent twelve-module instruction/ABI audit.
 The current cross-image programmatic User regression passes all 16 cases;
 installation and the native creation-shortcut gate pass; User and focus runtime
-gates are still running. Older
+gates pass. Repeated User resource qualification remains open. Older
 fully guest-built startup results exceed the 60-second target. Functional passes and package
 hash verification do not by themselves close these gaps. The historical
 “next” sections below record the implementation sequence; the following work
@@ -77,7 +77,8 @@ that its history is contained in `main`.
   creation passes all 15 commands with exact VGA checkpoints (52.185862-second
   startup). The native Tab-focus gate also passes its 11 commands, exact VGA
   history/refocus checks and parent-heap recovery (56.120742-second startup).
-  The programmatic User gate remains running.
+  The native programmatic User gate passes all 16 cases/28 commands with
+  52.391379-second startup. Full workstation regression is running.
 - A new experimental repeated-User recovery fixture fails on original TempleOS
   at its first measured cycle. Exact shared-pool recovery after one warmup is
   therefore an unvalidated compatibility requirement. A separate observation
@@ -88,7 +89,7 @@ that its history is contained in `main`.
   The native exact-recovery experiment times out during its first measured
   cycle after header loading; it does not establish a counter mismatch.
   Public-pool and bootstrap observations are running to separate these issues.
-- Next finish the affected native runtime gates. Then test repeated
+- Next finish full workstation and repeated-cycle qualification. Then test repeated
   creation resource recovery and improve fresh-child declaration-loading latency.
   Updated all-native/two-generation release qualification remains required.
 
