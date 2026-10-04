@@ -7234,3 +7234,18 @@ in `build/i386-format-temple-semantics-native-red`; native MStrPrint remains
 unintegrated, so a native pass is not claimed. Continue connecting the shared
 original formatter and its symbol/raw-mode dependencies, then implement User
 and task creation while preserving the original programming model.
+
+### Current native formatter oracle remains red at API availability
+
+`build/i386-format-temple-semantics-native-red/result.json` fails on preserved
+second-generation target 44ed8c88 with checker 63502c1f. The initial
+`HashFind("MStrPrint",Fs->hash_table,HTT_FUN)!=0` check does not produce the
+expected success value; the harness times out at startup-command-00. The
+30 formatting cases are not reached. The same checker passes all 30 cases
+on original TempleOS. Native formatter integration therefore remains required.
+
+Source inspection confirms `%p`/`%P` call original `StrPrintFunSeg` and `%P`
+uses `IsRaw` to select linked output. Preserve original nearest-symbol lookup,
+function/export distinction, offset/truncation formatting and display-mode
+behavior when adding the native dependency bridge; do not replace it with
+only the existing debugger's function-allocation lookup.
