@@ -1671,3 +1671,16 @@ The flat-kernel self-hosting build is now live in
 providers without cross-retained inputs. This remains an earlier source epoch;
 it does not qualify the new debugger or current release. Full current-source
 native generations, terminal/debugger workflows and release gates remain open.
+
+### Explicit debugger session red/green
+
+The revised frozen history checker now records both terminal results:
+`build/i386-debug-session-history-red/result.json` fails on the old image's
+absent Dbg publication; `build/i386-debug-session-history-green/result.json`
+passes all seven commands on the console-34 debugger image. Checker SHA-256
+64b6c039f8812a7d2697d4df7401301aa8d9fda72b8f46b4a2a7f37023ae5fdd is identical.
+The green run verifies exact VGA for message/value/function, debugger expression
+inspection, G continuation, restored console history, caller state and shell
+arithmetic. It uses 8 MiB, 486,-fpu, boots in 56.72 seconds and preserves the
+source disk. Exception/register/source inspection, breakpoint/stepping behavior,
+nested error/resource recovery and complete M7 remain unqualified.
