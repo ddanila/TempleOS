@@ -4441,3 +4441,16 @@ bytes and source image. Startup is 23.897774333 seconds. This exercises
 the BIOS boundary of the present payload format, not an independently
 linked maximum-size kernel or oversized/truncated-publication rejection.
 Those contracts and boot-capacity implementation remain open.
+
+`tools/test-i386-boot-payload-rejection.py` defines six guest publication
+rejection cases and requires the complete target disk to remain unchanged.
+Its current run `build/cpu-trap-main-payload-rejection-v3` FAILs during
+fixture creation: public FileWrite is an undefined identifier. No installer
+rejection assertion executes. The preliminary first run stopped on output
+from top-level fixture assignments; helpers now avoid that output.
+
+The file-service write callback exists and DocWrite uses it, but public
+FileWrite binding/parity is missing. Implement and independently qualify
+that original public API, then rerun these publication cases. Do not label
+this fixture failure as oversized-payload rejection evidence. Truncated
+executable integrity and maximum-size linking remain separate open gates.

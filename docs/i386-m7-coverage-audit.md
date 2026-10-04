@@ -236,3 +236,10 @@ bytes (152 spare), 386 instruction audit, and 41 formatter cases passing on an
 This still uses cross-built helpers/providers. The next User oracle has 16
 original passing cases covering partial input, double percent formatting and
 long startup input; native User remains absent at its availability check.
+
+Current explicit API gap: public FileWrite is undefined on the promoted
+CPU-trap main image. The retained file service has a write callback and
+DocWrite can save documents, but those do not prove original FileWrite
+compatibility. Boot payload-rejection fixtures fail before publication for
+this reason (`build/cpu-trap-main-payload-rejection-v3`). Add original
+signature/return-value/byte persistence/error tests before binding it.
