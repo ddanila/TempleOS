@@ -30,6 +30,12 @@ def behavior_commands():
         'Bool DispatchSpawn(){DispatchSpawnQueue;return JobsHndlr(GetRFlags)==1&&DispatchDone(0)&&DispatchJob->spawned_task&&DispatchJob->spawned_task->parent_task==Fs;}',
         'Bool DispatchRun(){I64 end=cnts.jiffies+2000;while(!DispatchStage&&cnts.jiffies<end)Yield;return DispatchStage==42;}',
         'Bool DispatchFinish(){I64 end=cnts.jiffies+2000;DispatchStop=TRUE;while(DispatchStage!=43&&cnts.jiffies<end)Yield;return DispatchStage==43;}',
+        'Bool DispatchEmpty(){return Fs->srv_ctrl.next_waiting==(&Fs->srv_ctrl.next_waiting)(CJob *)&&Fs->srv_ctrl.next_done==(&Fs->srv_ctrl.next_done)(CJob *)&&!Fs->srv_ctrl.flags;}',
+        'Bool DispatchAutoFree(){I64 used=Fs->data_heap->used_u8s;DispatchQueue;DispatchJob->aux_str=StrNew("Owned job text");DispatchJob->flags=1<<JOBf_FREE_ON_COMPLETE;return JobsHndlr(GetRFlags)==1&&DispatchEmpty&&Fs->data_heap->used_u8s==used;}',
+        'Bool DispatchInhibitDone(){return JobsHndlr(GetRFlags)==1&&DispatchDone(42)&&sys_focus_task==Fs->parent_task;}',
+        'U0 DispatchInhibitQueue(){DispatchQueue;DispatchJob->master_task=Fs;DispatchJob->flags=1<<JOBf_FOCUS_MASTER;sys_focus_task=Fs->parent_task;Fs->win_inhibit|=1;}',
+        'Bool DispatchInhibit(){CTask *old=sys_focus_task;I64 f=Fs->win_inhibit;Bool ok;DispatchInhibitQueue;ok=DispatchInhibitDone;Fs->win_inhibit=f;sys_focus_task=old;return ok;}',
+
     ]
     commands = [(source, []) for source in definitions]
     for name in ('DispatchOrdinary','DispatchException','DispatchSource','DispatchMaster'):
@@ -37,7 +43,7 @@ def behavior_commands():
         if name=='DispatchSource': answers=['42','1']
         commands += [(name+';', answers), ('DispatchFree;', [])]
     commands += [('DispatchSpawn;', ['1']), ('DispatchRun;', ['1']),
-                 ('DispatchFinish;', ['1']), ('DispatchFree;', []), ('6*7;', ['42'])]
+                 ('DispatchFinish;', ['1']), ('DispatchFree;', []), ('DispatchAutoFree;', ['1']), ('DispatchInhibit;', ['1']), ('DispatchFree;', []), ('6*7;', ['42'])]
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Dispatch contract exceeds the interactive line limit')
     return commands
@@ -60,7 +66,7 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:17]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:22]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
@@ -70,6 +76,8 @@ if(ok){ok=DispatchException;DispatchFree;}
 if(ok){ok=DispatchSource;DispatchFree;}
 if(ok){ok=DispatchMaster;DispatchFree;}
 if(ok){ok=DispatchSpawn;if(ok)ok=DispatchRun;if(!DispatchFinish)ok=FALSE;DispatchFree;}
+if(ok)ok=DispatchAutoFree;
+if(ok){ok=DispatchInhibit;DispatchFree;}
 if(ok)Report("PASS original public job dispatch\\n");
 else Report("FAIL original public job dispatch\\n");
 Report("DONE original public job dispatch\\n");
@@ -96,8 +104,8 @@ Report("DONE original public job dispatch\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
-    report.update(checker_sha256=checker, cases=5,
-                  scope='JobsHndlr callback argument/result, callback exception, queued source result, master focus/wake and spawned-child parent/argument/lifecycle; not scanning, free/exit completion flags or macro recording')
+    report.update(checker_sha256=checker, cases=7,
+                  scope='JobsHndlr callback argument/result, callback exception, queued source result, master focus/wake and spawned-child parent/argument/lifecycle; FREE_ON_COMPLETE queue/heap recovery and inhibited focus; not scanning, exit completion flags or macro recording')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

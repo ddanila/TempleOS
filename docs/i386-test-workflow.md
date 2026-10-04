@@ -1317,3 +1317,9 @@ key-description filtering followed by ordinary key delivery and queue emptiness.
 The fixture restores caller inhibit flags. Native version-16 qualification is
 pending on the corrected scanning image; no keyboard hardware integration is
 implied by posting these events directly.
+
+The direct-dispatch checker now has seven original contracts, adding exact heap
+recovery for FREE_ON_COMPLETE (job and auxiliary string) and inhibited focus.
+Expanded native qualification is running on the version-16 image. Its queue
+cleanup and callback regressions pass at 8 MiB without an FPU; the full message
+run remains pending.

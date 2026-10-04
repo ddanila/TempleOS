@@ -5139,3 +5139,24 @@ message qualification is running in build/i386-public-message-scan-native,
 including this filtering case. Queue cleanup and callback regressions are
 running on the same image in build/i386-public-message-scan-queues and
 build/i386-public-message-scan-callbacks.
+
+### Completion flags and current-source retained rebuild
+
+The direct-dispatch reference passes seven original cases
+(build/i386-public-dispatch-flags-original/result.json). Added FREE_ON_COMPLETE
+checks require both queue rings empty/unlocked and task heap usage restored
+after freeing job plus auxiliary text. Added inhibited-focus checks preserve
+the chosen focus task and restore fixture state. Expanded native qualification
+is running in build/i386-public-dispatch-flags-native on the version-16 image.
+
+On that same image, twelve queued-job cleanup cases and five callback recovery
+cases pass (build/i386-public-message-scan-queues/result.json and
+build/i386-public-message-scan-callbacks/result.json), at 8 MiB on 486,-fpu with
+matching VGA checkpoints and unchanged input disk. Full nineteen-case message
+qualification remains running in build/i386-public-message-scan-native.
+
+Current-source guest compilation of all six retained providers is running in
+build/i386-public-message-scan-retained, using the version-16 cross-built input
+and matching export contracts, 16 MiB and 486,-fpu. This is only a build attempt;
+installation, independent boot, flat guest rebuild, subsequent generations and
+release qualification are not implied before their own results are verified.
