@@ -100,10 +100,11 @@ def main():
         if args.resident_recovery:
             commands += [('U8 *ResidentName="C:/Probe/ReadResident.BIN";',[]),
                          ('Bool ResidentRound(){return ResidentWrite(ResidentName,90,0x200)&&ResidentRead(ResidentName,90,0)&&ResidentWrite(ResidentName,67,0)&&ResidentRead(ResidentName,67,0x800);}',[]),
-                         ('Bool FindRecovery(){I64 i,used=Fs->data_heap->used_u8s;for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return Fs->data_heap->used_u8s==used;}',[]),
+                         ('Bool FindRecovery(){I64 i,u=Fs->data_heap->used_u8s,r=Fs->gs->seth_task->data_heap->used_u8s;for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return Fs->data_heap->used_u8s==u&&Fs->gs->seth_task->data_heap->used_u8s==r;}',[]),
                          ('FindRecovery;',['1'])]
         commands += [('6*7;',['42'])]
         if args.resident_recovery:
+            report['resident_heap_recovery_scope'] = 'Twenty create/update/remove cycles: exact caller and persistent public root task heap used bytes, plus independent private heap snapshots'
             #The read-only observer recognizes FindRecovery as its sampling boundary.
             commands[-2]=('FindRecovery();',['1'])
             runner=runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](candidate,report)

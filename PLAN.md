@@ -28,10 +28,13 @@ generations match across all twelve modules, flat kernel and boot area.
 
 Current unpromoted work is public filesystem compatibility. Cd passes its
 32-command focused contract and the full 513-command no-FPU workstation;
-retained native construction is underway. Resident ABI-44 cross-builds and
-boots, but binary/compressed/empty cold-cache tests fail public publication
-visibility. Original oracles pass. Public cache ownership, removal, replacement,
-recovery and native construction must qualify before promotion. The candidate
+retained native construction and installation now pass; full native kernel
+qualification is underway. The resident public binding correction passes an
+18-command cold ownership/removal contract and a 37-command write/read and
+caller/private recovery contract. Exact-name, compressed, empty and persistent
+root-heap recovery qualification plus the full workstation suite are running.
+Original oracles pass. Broader cache lifecycle/exception/include parity and
+native construction must qualify before promotion. The candidate
 source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
 temporary debug-port tracing is separate from that archived candidate.
 Broader errors, full debugger behavior and release requirements remain open.
@@ -9105,3 +9108,29 @@ installed disk SHA-256
 Full native construction/install starts in `build/public-cd-special-selfhost`,
 using both retained provenance results. These native builds use KVM CPU 486
 with FPU available; they do not establish the separate full no-FPU build gate.
+
+Resident binding green and expanded heap/no-FPU gates (2026-10-05):
+The explicit binding candidate passes `build/public-resident-bound-cold`: 18
+commands, startup 25.754 seconds, public entry/name/data ownership, zero/two
+instance rejection, public removal and disk repopulation, fresh caller-owned
+buffers, exact VGA and unchanged source/prepared disk. Its resident write/read
+recovery passes `build/public-resident-bound-recovery`: 37 commands, startup
+25.757 seconds, changed-byte replacement/removal and twenty lifecycle rounds.
+Caller used bytes and private allocator used 5378688/allocations 7169 recover
+exactly. This is not a persistent public root-heap accounting assertion.
+
+Strengthen the lifecycle gate to require unchanged used bytes for both Fs's
+public data heap and Fs->gs->seth_task's persistent public data heap after twenty
+rounds, retaining independent private allocator snapshots. The new helper is
+219 bytes, within the native input limit; Python/diff checks pass. Fresh exact-
+name candidate bootstrap/cross/instruction audit passes with source disk SHA-256
+`b70758f2843d0b22cfbba6cea9d46633b96e156a3ddc478536c16b8a10cb3c21`.
+Binary/compressed/dotless/empty cold ownership/removal contracts, strengthened
+recovery and the 513-command workstation are running against that same image.
+Do not extend the earlier passing scope to these pending results.
+
+Start qualified main's retained native rebuilding under TCG CPU 486,-fpu in
+`build/public-file-find-no-fpu-native-build`, all six providers and a 7200-second
+per-command bound. This is a live full no-FPU build attempt, not a pass; previous
+KVM builds with FPU available do not cover it. Cd full native construction is
+still live and has reached boot-image installation. Release gates remain open.
