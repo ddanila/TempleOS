@@ -2354,3 +2354,16 @@ Installation and independent boot are running in
 source. A full flat rebuild and installed-image audit must follow a PASS.
 The newer heap-scan provider build and mode-image workstation suite remain
 active. Do not combine their source epochs into a current-source release claim.
+
+The cleanup-snapshot installation and independent no-FPU boot now pass in
+`build/i386-terminal-debug-cleanup-retained-install/result.json`. All six
+installed provider byte sequences match the persisted guest outputs; source
+and candidate preservation checks pass. Candidate SHA-256:
+`b863d402e0a63b8984575e192272a68c0ed3641648ea6fc58cba4fd1b501c246`.
+
+A full flat-kernel build/install is running from that candidate in
+`build/i386-terminal-debug-cleanup-selfhost`, without --cross-retained.
+On success, independently audit all twelve module executable ranges and the
+installed filesystem, then qualify the fully guest-built image. This still
+uses the cleanup snapshot; it cannot certify subsequent mode/heap/formatter
+changes or the required second native generation.

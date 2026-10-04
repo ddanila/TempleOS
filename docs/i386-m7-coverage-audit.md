@@ -37,7 +37,8 @@ ranges, installed payload and filesystem. Its 487344-byte flat image has
 80 bytes spare. It predates task-owned terminals, Kill and debugger cleanup.
 The cleanup-snapshot six-provider build passes in
 `build/i386-terminal-debug-cleanup-retained`; installation and independent boot
-are running in `build/i386-terminal-debug-cleanup-retained-install`. Current-source two-generation
+pass in `build/i386-terminal-debug-cleanup-retained-install`. Its full flat
+build is running in `build/i386-terminal-debug-cleanup-selfhost`. Current-source two-generation
 reproducibility and release qualification remain open. The older 95-file local
 bundle is historical evidence, not a current release.
 
