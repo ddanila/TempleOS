@@ -1968,3 +1968,19 @@ This does not close sprite/mouse concurrency, background compilation, abnormal
 cleanup, full debugging, current-source native reproducibility or release gates.
 The older console-35 provider build remains live in
 `build/i386-debug-exception-retained` and cannot qualify the terminal changes.
+
+### Idle terminal cancellation recovery
+
+```sh
+python3 tools/test-i386-terminal-idle-break.py build/i386-terminal-idle-break-kernel/kernel.img --out build/i386-terminal-idle-break-editor-green
+```
+
+The current checker (SHA-256
+`6809b4786a85ea9a3f5d27b5e7ad811eb8593e6af1a03c3db28e6cb5d35e6051`)
+sends two idle Ctrl-Alt-C chords. After each, it opens/closes a text editor and
+checks the named terminal display; it then verifies retained state, sibling
+isolation and task cleanup. Cancellation-message ordering is intentionally not
+the oracle: IRQ exception delivery and decoded ^C can be observed in either
+order. The initial checker found an unhandled Break/kernel failure. A revised
+matching baseline is running in `build/i386-terminal-idle-break-editor-red`;
+recovery runtime qualification is pending.

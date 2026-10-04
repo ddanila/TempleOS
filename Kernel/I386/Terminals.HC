@@ -175,13 +175,21 @@ Bool NativeTerminalFocusKey(CI386KeyEvent *event)
 U0 NativeUserTaskCont()
 {
   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+  Bool retry;
   if(!terminal) terminal=NativeTerminalCreate;
   if(terminal->running) throw('TermBusy');
   terminal->running=TRUE;
-  try { NativeTerminalInput; }
-  catch {
-    terminal->running=FALSE;
-  }
+  do {
+    retry=FALSE;
+    try { NativeTerminalInput; }
+    catch {
+      //Like UserTaskCont, keep the user's task and definitions after a break.
+      I386TaskSelf->catch_except=TRUE;
+      I386TextWrite(&console_text,"Exception\n");
+      ConsolePresent;
+      retry=TRUE;
+    }
+  } while(retry);
   terminal->running=FALSE;
 }
 U0 NativeTerminalConsoleHeading()

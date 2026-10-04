@@ -39,10 +39,26 @@ def commands():
         current_rows = rows
     one1 = one[:-1] + ['> I64 terminal_value=11;', '> ']
     enter('I64 terminal_value=11;', one1, 'one-definition')
-    events.append({'hotkey': 'break'})
-    one1 = one1[:-1] + ['> ^C', '> Exception', '> ']
-    events.append({'expect_rows': one1, 'label': 'idle-break-recovered'})
-    enter('terminal_value;', one1[:-1] + ['> terminal_value;', '11', '> '], 'retained-after-break')
+    source = 'CDoc *break_doc=DocNew("C:/Break.DD",Fs);'
+    enter(source, one1[:-1] + ['> ' + source, '> '], 'recovery-document')
+    editor = ['TempleOS i386', 'DolDoc editor', 'C:/Break.DD', '',
+              bytes([0xDB]).decode('cp437')]
+    for cycle in range(2):
+        marker = 'THROW 0000006B61657242\n'
+        events.extend([{'mark_log': marker}, {'hotkey': 'break'},
+                       {'wait_log_after': marker}, {'delay': 0.2}])
+        #The IRQ break and decoded ^C can be observed in either order. Require
+        #a real editor session after recovery, not incidental prompt history.
+        source = 'DocEd(break_doc);'
+        for start in range(0, len(source), 4):
+            events.extend([{'text': source[start:start+4]}, {'delay': 0.1}])
+        events.extend([{'key': 'ret'}, {'expect_rows': editor,
+                       'label': 'recovered-editor-' + str(cycle)}, {'key': 'esc'}])
+        current_rows = one[:-1] + ['1', '> ']
+        events.append({'expect_rows': current_rows,
+                       'label': 'recovered-console-' + str(cycle)})
+    enter('DocDel(break_doc);', current_rows[:-1] + ['> DocDel(break_doc);', '> '], 'delete-recovery-document')
+    enter('terminal_value;', current_rows[:-1] + ['> terminal_value;', '11', '> '], 'retained-after-break')
     one1 = current_rows
     two0 = two
     enter('TermFocus(TermTwo);', two0, 'two-focus')
@@ -82,7 +98,7 @@ def main():
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk,
-                  scope='Idle hardware Ctrl-Alt-C recovery in One, retained definition, sibling isolation, focus and exit, exact parent public heap recovery; not active editor/compiler cancellation or all private resources')
+                  scope='Two idle hardware Ctrl-Alt-C recoveries in One, usable editor after each, retained definition, sibling isolation, focus and exit, exact parent public heap recovery; not active editor/compiler cancellation or all private resources')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',

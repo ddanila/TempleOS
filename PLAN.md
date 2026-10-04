@@ -6091,3 +6091,35 @@ This does not close sprite/mouse concurrency, background compilation, abnormal
 cleanup, full debugging, current-source native reproducibility or release gates.
 The older console-35 provider build remains live in
 `build/i386-debug-exception-retained` and cannot qualify the terminal changes.
+
+### Idle terminal Break reaches an unhandled exception; recovery implementation
+
+The initial idle-break baseline is terminal FAIL in
+`build/i386-terminal-idle-break-red/result.json`. After One defines its variable,
+the hardware chord logs `THROW 0000006B61657242`, `UNHANDLED` and
+`FAIL native kernel`. The failure is an actual unhandled Break, not merely a
+prompt mismatch. The original UserTaskCont catches/reports and resumes.
+
+NativeUserTaskCont now catches the input-loop exception, marks it handled,
+reports it and resumes with the same terminal/task/definitions. The reentry
+guard stays set through recovery and clears only on normal loop completion.
+Both original rebuild generations pass; a fresh cross-build is running.
+
+The initial checker over-specified the order of IRQ Break and decoded ^C text.
+Revised frozen checker SHA-256
+6809b4786a85ea9a3f5d27b5e7ad811eb8593e6af1a03c3db28e6cb5d35e6051
+requires two breaks and a real editor session after each, then independently
+checks the retained variable, sibling isolation, focus/exit and parent public
+heap recovery. It does not require a particular incidental cancellation-message
+order. The revised baseline runs against the unchanged heading-fix image in
+`build/i386-terminal-idle-break-editor-red`; no result is claimed yet.
+The same checker will run on the recovery candidate. Full debugging, private
+resource failure paths, current native generations and release remain open.
+
+The recovery candidate now passes the fresh cross-build and 386 boot audit
+(483360 flat kernel bytes), in addition to the original two-generation rebuild.
+`build/i386-terminal-idle-break-kernel/kernel.img` SHA-256:
+`a9a664ae3111a362526057187d1d47bde9e82ef0bb42503abf752d870438a5f8`. Revised paired baseline/candidate checks are
+live in `build/i386-terminal-idle-break-editor-{red,green}`; no runtime pass
+is claimed. The unchanged heading-fix image's document-editing regression and
+the older console-35 native-provider build also remain live.
