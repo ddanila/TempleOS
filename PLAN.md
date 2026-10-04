@@ -5631,3 +5631,21 @@ The same frozen fault checker is required afterward. This
 single injected allocation site does not qualify all posting failures.
 Earlier full workstation and six-provider runs remain live for their captured
 memory-16 epoch. Current-source full self-hosting/release gates remain open.
+
+### Macro-copy allocation cleanup green
+
+Both original rebuild generations, the fresh memory-17 cross-build and 386
+boot audit pass. The same frozen allocation checker that recorded the actual
+copy fault now passes in build/i386-public-macro-allocation-green/result.json:
+fault_injected=true, 16 commands, 486,-fpu, 8 MiB, exact VGA, unchanged input
+disk. It verifies root-heap recovery, empty/unlocked job rings, restored code
+bytes and subsequent arithmetic. Image SHA-256:
+80669f3ca6d97b8d39e7ca41e19d38b315c11949c1264254acaa446b05c9a8cb.
+All six macro cases also pass again on that image in
+build/i386-public-macro-copy-recovery/result.json (20 commands). Their boots
+record 57.36 and 56.12 seconds respectively; a full controlled candidate timing
+profile remains required rather than treating these narrow passes as release
+qualification. Other allocation sites, including exception-handler registration,
+still need coverage. The older full workstation and six-provider native runs
+remain live for their memory-16 snapshot; current-source self-hosting and the
+remaining terminal/debugging/release gates are open.

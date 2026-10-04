@@ -1522,3 +1522,10 @@ fault_injected=true and a cleanup failure before the source fix; its first
 hash-type compilation failure was not a valid behavioral red. The copy path
 now frees its unqueued destination job before propagating the exception.
 Fresh-image verification is pending; this covers one allocation site only.
+
+The frozen copy-allocation checker now has a genuine red/green pair:
+-macro-allocation-red-v2 and -macro-allocation-green both record the injected
+fault and unchanged input image. Green verifies exact heap/ring cleanup and
+code restoration, then console arithmetic, on 486,-fpu at 8 MiB. The same image
+also passes all six macro-recording cases again. This covers copy allocation,
+not every allocation/exception-registration failure path or release timing.
