@@ -4335,3 +4335,19 @@ window is 256 bytes. This covers six general-register markers, not complete
 register inspection/editing or stack/segment/flags preservation under every
 condition. The full prototype workstation remains live in mouse tests;
 assembly-layout correction and guest flat construction remain pending.
+
+Initial CPU-trap prototype workstation integration now PASSes in
+`build/cpu-trap-resume-prototype/build/cpu-trap-workstation/result.json`: all
+513 commands/576 lines, exact VGA and 20 exact shared-heap recovery cycles.
+8 MiB `486,-fpu` startup is 23.802352321 seconds; the formal budget PASSes
+in `build/cpu-trap-initial-workstation-budget.json`. Long-document update
+is 0.375444596 seconds, below one second. This does not erase the same
+prototype's guest ExceptionEntry compilation failure.
+
+The trampoline is now merged into ExceptionEntry's single existing assembly
+block, with KernelDebugCpu imported before code, in main-only isolated
+`build/cpu-trap-layout-prototype` (fork remote). The provenance guard correctly
+rejects reuse of the older original rebuild after this source edit. A fresh
+original two-generation rebuild is running there; corrected cross/guest
+construction and runtime verdicts remain pending. The initial checkout and
+qualified main images remain preserved.
