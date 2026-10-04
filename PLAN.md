@@ -7267,3 +7267,19 @@ TempleOS in `build/i386-format-symbol-core-original/result.json`.
 Checker SHA-256: `015cd3c5ca7f7569a4a6c53922772c82affd28c7f9f2fff5587142e66ad48285`.
 Native integration is still pending; these extraction and original-oracle
 passes do not imply native MStrPrint availability.
+
+### Shared original function-symbol cache
+
+`Kernel/FunSegCacheCore.HC` now contains the original FunSegCacheAdd and
+FunSegCacheFind bodies. Expanding its include in FunSeg.HC reproduces the
+previous source byte for byte, including cache bounds, timestamp handling,
+name copying and the SYS_IDLE_PT special case. This completes extraction of
+the reusable lookup, cache and pointer-formatting bodies; native task scanning,
+code-address validation, clock/display adapters and formatter publication
+still need implementation. No native formatting pass is claimed.
+
+Validation: both original compiler/kernel rebuild generations passed in
+`build/rebuild-test/result.json`, with the new shared source included in the
+source hashes (log `build/formatter-cache-core-rebuild.log`). All 34 original
+formatter cases passed in `build/i386-format-cache-core-original/result.json`
+(log `build/format-cache-core-original.log`).
