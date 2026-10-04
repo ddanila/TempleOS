@@ -58,8 +58,9 @@ all six providers with exact installed-byte equality and a consistent filesystem
 Installation and independent 8 MiB no-FPU boot pass in
 `build/i386-heap-asm-scan-gen2-largest-first-install`. The native flat rebuild and installed-image audit now pass; all twelve modules
 and linked boot bytes match the first generation exactly. Whole disk layout
-differs. Second-generation workstation qualification is running; persistence,
-audio and release qualification remain pending. Full
+differs. Second-generation workstation qualification passes 513 commands with exact VGA
+and heap recovery, 54.770-second startup and 0.370-second long-document update.
+Three-boot persistence is running; audio and release qualification remain pending. Full
 two-generation and release qualification remain open.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent

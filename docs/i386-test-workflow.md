@@ -2891,3 +2891,21 @@ running in `build/i386-heap-asm-scan-gen2-selfhost-workstation`. Startup and
 interaction budgets, persistence and audio still need current-generation
 qualification. Native formatter/User, full debugger/API support and release
 packaging remain open.
+
+### Second-generation complete workstation and timing gates pass
+
+`build/i386-heap-asm-scan-gen2-selfhost-workstation/result.json` passes
+513 native commands/576 submitted lines with exact VGA checkpoints on the
+second-generation target 44ed8c88 under 8 MiB `486,-fpu` TCG. Twenty bounded
+document development cycles recover exact task data/code heap use.
+Startup is 54.769869497045875 seconds; the unchanged 60-second gate passes
+in `build/i386-heap-asm-scan-gen2-selfhost-workstation-budget.json`.
+Long-document input-to-visible latency is 0.3696982068940997 seconds,
+meeting the one-second gate. Evidence SHA-256:
+`25fe22b771449b43d79f3c44f935b330a4b7684e5791050937749fc2fc1556d8`.
+
+The writable three-boot persistence workflow is running in
+`build/i386-heap-asm-scan-gen2-selfhost-doldoc`. Second-generation persistence
+and actual speaker-output qualification remain pending. Byte-identical native
+executables and these workstation passes do not close native formatter/User,
+full debugger/API support or reproducible release packaging.
