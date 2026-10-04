@@ -44,7 +44,7 @@ def behavior_commands():
         'U0 MsgCallQueue(){MsgCallJob=CAlloc(sizeof(CJob));MsgCallJob->ctrl=&Fs->srv_ctrl;MsgCallJob->job_code=JOBT_CALL;MsgCallJob->addr=&MsgCall;QueIns(MsgCallJob,Fs->srv_ctrl.last_waiting);}',
         'Bool MsgCallDone(){return Fs->srv_ctrl.next_done==MsgCallJob&&MsgCallJob->res==42&&Bt(&MsgCallJob->flags,JOBf_DISPATCHED)&&Bt(&MsgCallJob->flags,JOBf_DONE);}',
         'Bool MsgCallScan(){I64 a,b;FlushMsgs;MsgCallQueue;Msg(MSG_CMD,131,132);return ScanMsg(&a,&b)==MSG_CMD&&a==131&&b==132&&MsgCallDone;}',
-        'U0 MsgCallFree(){QueRem(MsgCallJob);Free(MsgCallJob);}',
+        'U0 MsgCallFree(){QueRem(MsgCallJob);Free(MsgCallJob->aux_str);Free(MsgCallJob);}',
         'I64 MsgCallArg(U8 *data){return data(I64)+7;}',
         'U0 MsgMasterQueue(){MsgCallQueue;MsgCallJob->addr=&MsgCallArg;MsgCallJob->fun_arg=35;MsgCallJob->master_task=Fs;}',
         'Bool MsgMasterScan(){I64 a,b;FlushMsgs;MsgMasterQueue;Msg(MSG_CMD,141,142);return ScanMsg(&a,&b)==MSG_CMD&&a==141&&b==142&&MsgCallDone&&MsgCallJob->master_task==Fs;}',
@@ -52,6 +52,15 @@ def behavior_commands():
         'U0 MsgExceptQueue(){MsgCallQueue;MsgCallJob->addr=&MsgCallThrow;}',
         'Bool MsgExceptDone(){return Fs->srv_ctrl.next_done==MsgCallJob&&!MsgCallJob->res&&Bt(&MsgCallJob->flags,JOBf_DISPATCHED)&&Bt(&MsgCallJob->flags,JOBf_DONE);}',
         'Bool MsgExceptScan(){I64 a,b;FlushMsgs;MsgExceptQueue;Msg(MSG_CMD,151,152);return ScanMsg(&a,&b)==MSG_CMD&&a==151&&b==152&&MsgExceptDone;}',
+        'I64 MsgSpawnStage=0,MsgSpawnArg=0;Bool MsgSpawnStop=FALSE;',
+        'I64 MsgSpawnWorker(U8 *data){MsgSpawnArg=data(I64);MsgSpawnStage=1;while(!MsgSpawnStop)Yield;MsgSpawnStage=2;return 0;}',
+        'U0 MsgSpawnQueue(){MsgCallQueue;MsgCallJob->job_code=JOBT_SPAWN_TASK;MsgCallJob->addr=&MsgSpawnWorker;MsgCallJob->fun_arg=42;MsgCallJob->aux_str=StrNew("JobChild");MsgCallJob->aux1=Fs;MsgCallJob->aux2=8192;MsgCallJob->flags=256;}',
+        'Bool MsgSpawnScan(){I64 a,b;FlushMsgs;MsgSpawnQueue;Msg(MSG_CMD,161,162);return ScanMsg(&a,&b)==MSG_CMD&&a==161&&b==162&&MsgExceptDone&&MsgCallJob->spawned_task&&MsgCallJob->spawned_task->parent_task==Fs;}',
+        'Bool MsgSpawnRun(){I64 end=cnts.jiffies+2000;while(!MsgSpawnStage&&cnts.jiffies<end)Yield;return MsgSpawnStage==1&&MsgSpawnArg==42;}',
+        'Bool MsgSpawnFinish(){I64 end=cnts.jiffies+2000;MsgSpawnStop=TRUE;while(MsgSpawnStage!=2&&cnts.jiffies<end)Yield;return MsgSpawnStage==2;}',
+        'U0 MsgSourceQueue(){MsgCallQueue;MsgCallJob->job_code=JOBT_EXE_STR;MsgCallJob->aux_str=StrNew("6*7;");}',
+        'Bool MsgSourceScan(){I64 a,b;FlushMsgs;MsgSourceQueue;Msg(MSG_CMD,171,172);return ScanMsg(&a,&b)==MSG_CMD&&a==171&&b==172&&MsgCallDone;}',
+
 
 
     ]
@@ -62,6 +71,7 @@ def behavior_commands():
                  ('MsgPopupOwn;', ['1']), ('MsgPopupWake;', ['1']), ('MsgPopupUnlink;', []), ('MsgRouteStop;', ['1']),
                  ('Free(MsgRoute);', [])]
     commands += [('MsgCallScan;', ['1']), ('MsgCallFree;', []), ('MsgMasterScan;', ['1']), ('MsgCallFree;', []), ('MsgExceptScan;', ['1']), ('MsgCallFree;', [])]
+    commands += [('MsgSpawnScan;', ['1']), ('MsgSpawnRun;', ['1']), ('MsgSpawnFinish;', ['1']), ('MsgCallFree;', []), ('MsgSourceScan;', ['1']), ('MsgCallFree;', [])]
     commands.append(('6*7;', ['42']))
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Message contract exceeds the interactive line limit')
@@ -85,7 +95,7 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:39]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:47]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
@@ -96,6 +106,8 @@ Free(MsgRoute);
 if(ok){ok=MsgCallScan;MsgCallFree;}
 if(ok){ok=MsgMasterScan;MsgCallFree;}
 if(ok){ok=MsgExceptScan;MsgCallFree;}
+if(ok){ok=MsgSpawnScan;if(ok)ok=MsgSpawnRun;if(!MsgSpawnFinish)ok=FALSE;MsgCallFree;}
+if(ok){ok=MsgSourceScan;MsgCallFree;}
 if(ok)Report("PASS original public messages\\n");
 else Report("FAIL original public messages\\n");
 Report("DONE original public messages\\n");
@@ -122,8 +134,8 @@ Report("DONE original public messages\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
-    report.update(checker_sha256=checker, cases=16,
-                  scope='Public messages: root/child empty job rings/flags, 40-event FIFO, destructive mask filtering, negative-code down/up pair, FlushMsgs count and empty outputs, PostMsg/GetMsg child delivery; forward input-filter routing, DONT_FILTER bypass and backward filter posting; popup parent fallback, parent-post rejection, own delivery and popup wake flags; CALL job dispatch/completion before message scan, callback argument, master-owned completion and throwing callback recovery; not EXE_STR/SPAWN jobs, macro recording or allocation recovery')
+    report.update(checker_sha256=checker, cases=18,
+                  scope='Public messages: root/child empty job rings/flags, 40-event FIFO, destructive mask filtering, negative-code down/up pair, FlushMsgs count and empty outputs, PostMsg/GetMsg child delivery; forward input-filter routing, DONT_FILTER bypass and backward filter posting; popup parent fallback, parent-post rejection, own delivery and popup wake flags; CALL job dispatch/completion before message scan, callback argument, master-owned completion and throwing callback recovery; queued SPAWN_TASK parent/argument/lifecycle and EXE_STR result; not macro recording or allocation recovery')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

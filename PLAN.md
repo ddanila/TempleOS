@@ -5050,4 +5050,20 @@ PUBLIC HEADERS ok, resolving the earlier startup publication failure.
 Suspension runtime qualification passes in
 build/i386-public-suspend-fixed-native: five cases and 16 commands at 8 MiB on
 486,-fpu, all VGA checkpoints match and source disk is unchanged. Posting
-regression is still running in build/i386-public-suspend-fixed-posting.
+regression passes in build/i386-public-suspend-fixed-posting: eleven cases,
+44 commands, matching VGA checkpoints at 8 MiB on 486,-fpu, unchanged source
+disk.
+
+### Spawn and source job acceptance contracts
+
+The original message reference now passes eighteen cases
+(build/i386-message-spawn-source-original-v2/result.json). A queued
+JOBT_SPAWN_TASK must complete before the following message, publish its child
+pointer and requested parent, and run that child with argument 42. The child
+stays live until explicitly released; the fixture waits for its completion.
+A queued JOBT_EXE_STR compiles `6*7;` and must retain result 42 and completion
+flags before the following message is returned. Completed jobs and auxiliary
+strings are freed. The initial fixture failed to compile due to an invalid
+parent cast; the corrected rerun passes. These references cover all three
+original dispatch kinds; native dispatch/scanning remains open, as do further
+completion-flag, allocation-failure and macro-recording contracts.

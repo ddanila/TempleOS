@@ -1286,3 +1286,9 @@ The full message reference now has sixteen original contracts. The added queued
 callback throws JobTest; completion flags/queue and subsequent message delivery
 must still succeed. This exercises the job handler's exception recovery, not
 general uncaught child-exception isolation. Native dispatch remains open.
+
+The full message reference now has eighteen original cases, adding queued
+spawn parent/argument/lifecycle and queued source execution result 42. Fixtures
+release the spawned child and free completed jobs plus auxiliary source/name
+strings. Native dispatch/scanning remains unimplemented. The corrected
+version-14 posting regression separately passes all eleven posting cases.
