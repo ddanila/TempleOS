@@ -4553,3 +4553,21 @@ installation and independent boot in `build/cpu-trap-main-selfhost`, with
 Installed 386/boot/RedSea/keyword audits PASS in its `-audit` directory.
 Five-cycle continuation remains running in `build/cpu-trap-main-selfhost-repeat`.
 Current workstation, second-generation and release qualification remain open.
+
+The fully native promoted debugger image now PASSes five-cycle continuation
+in `build/cpu-trap-main-selfhost-repeat`, with exact VGA and preserved source.
+Startup is 33.224857890 seconds; its formal `-budget.json` verdict PASSes.
+Full workstation is running in `build/cpu-trap-main-selfhost-workstation`.
+Second-generation retained construction/exact installed comparison is running
+in `build/cpu-trap-main-gen2-native-build`, using current cross export contracts.
+
+`tools/test-i386-public-file-write-lifecycle.py` PASSes all nine commands
+and independent filesystem/metadata checks on the isolated prototype in
+`build/public-file-write-lifecycle-green`: replacement binary bytes and
+cluster return, explicit replacement timestamp, empty/negative-size success
+return -1 with no data extent, invalid-parent zero return/no file, valid
+bitmap and source preservation. The same checker FAILs at undefined FileWrite
+on current main in `build/public-file-write-lifecycle-red`. These ordinary
+write cases do not establish default Now, compressed/resident semantics,
+exhaustive failure recovery or complete public file API parity. Implementation
+remains isolated while native qualification runs.
