@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def commands():
     heading = ['TempleOS i386', 'HolyC debugger', '',
                'Exception: Probe', 'Function: ExceptionProbe',
-               'Source: FL:Console.HC,1', 'dbg> ']
+               'Source: FL:C:/Console.HC,1', 'dbg> ']
     return [
         ('HashFind("DbgMode",Fs->hash_table,HTT_FUN)!=0;', ['1']),
         ('I64 ExceptionStage=0;', []),

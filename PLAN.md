@@ -5850,3 +5850,41 @@ filesystem checks. The 487344-byte linked kernel leaves 80 bytes within the
 qualified earlier epoch, not two current-source generations or release proof.
 Current-source terminal/debugger integration, native generations and release
 qualification remain open.
+
+### Canonical exception source-link oracle and current native rebuild
+
+The console-35 explicit-session regression passes in
+`build/i386-debug-exception-explicit/result.json`: seven commands, exact VGA,
+56.10-second startup, 8 MiB, 486,-fpu, unchanged source image.
+The initial exception run reaches its debugger display but fails the expected
+source-link row. Its preserved screenshot shows canonical
+`FL:C:/Console.HC,1`; the fixture had incorrectly assumed a relative path.
+Corrected the independent expected row to that canonical form without changing
+kernel behavior. The revised frozen checker SHA-256 is
+94bca5f0f13c21a37a2795f8a814cb6d660e56f010ddb3cf7a590f7e9227aade.
+Matching baseline and implementation runs are live in
+`build/i386-debug-exception-canonical-red` and
+`build/i386-debug-exception-canonical-green`; their results remain pending.
+
+Started the six-provider native rebuild for the captured compiler-59,
+console-35, memory-17 image in `build/i386-debug-exception-retained`, comparing
+against its exact cross-built exports. This is the next current-source native
+qualification step; neither the earlier self-hosting pass nor the cross-build
+proves these guest outputs before the run completes.
+
+For the next multiple-terminal implementation, the existing source audit finds
+that hardware delivery already targets sys_focus_task and queues are public
+and task-owned. Console text, planar storage, command input and rendering
+ownership are still singleton state. Use original UserCmdLine/UserTaskCont and
+WinFocus semantics rather than inventing a separate terminal command model.
+Each terminal must own its line buffer, display history and document state,
+while HolyC definitions remain in its task symbol scope. Focus changes select
+which display is presented, without cancelling another task's work. Required
+visible tests must cover two live terminals with separate definitions/history,
+background cooperative work, focus switching, document edits and exit/resource
+reclamation. Keep display binding correct across compiler/document yields;
+switching one global buffer only at command boundaries cannot meet the goal.
+The native flat image's measured 80-byte headroom makes any scheduler/private
+layout growth a boot-image sizing gate, not an assumption. Runtime exception
+inspection, full debugging and the complete release remain open until their
+matching behavioral and integration evidence is recorded.
