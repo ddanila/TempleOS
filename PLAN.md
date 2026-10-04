@@ -14,7 +14,9 @@ FileWrite is still an isolated experiment: ordinary/explicit/default-date
 and lifecycle contracts pass. The initial .Z write/include/execute contract
 and compressed-record filesystem corruption checks now pass. Eight archive
 fixtures match original bytes, including dictionary recycling and fallback;
-ordinary metadata/lifecycle/default-date regression tests pass after fixing
+An isolated public FileRead contract also passes binary/eight-bit expansion,
+metadata/ownership and exact read/free heap recovery.
+Ordinary metadata/lifecycle/default-date regression tests pass after fixing
 a directory-relocation return bug. Full workstation qualification is running; complete
 compression/resident/API and release requirements remain open.
 
@@ -8122,3 +8124,47 @@ separate flag, not automatically inferred from .T by FileAttr. FileAttr infers
 .Z compression and .C contiguous storage. Public FileRead/FileFind and resident
 cache interoperability still require original-behavior tests and implementation.
 Do not call plain compressed write parity full file API compatibility.
+
+## Public FileRead: original-oracle red/green checkpoint
+
+`tools/test-i386-public-file-read.py` first validates the original three-argument
+API in an original guest, then checks the port independently. It covers exact
+binary bytes, size/attributes, trailing NUL, a real CT_8_BIT compressed archive
+(64 expanded bytes), alternate .Z lookup, distinct current-task-owned buffers,
+mutation of one buffer without affecting another or persisted bytes, empty
+files and missing-file output reset. Persisted compressed bytes must match
+an archive exported by the original compressor.
+
+The initial functional original oracle passes, then
+`build/public-file-read-compressed-red` fails on undefined FileRead after
+successful file setup. The final strengthened version has the same qualified
+red result in `build/public-file-read-final-red`. Exact original heap-counter
+recovery across repeated reads did not pass; it is explicitly excluded from
+the original functional oracle rather than reported as original behavior.
+The port still must recover its exact current-task heap count over twenty
+read/free cycles for both raw and compressed files.
+
+The isolated `build/file-read-prototype` carries the already tested ordinary/
+compressed FileWrite epoch and adds public FileRead plus a native export.
+It uses the existing file service, copies the terminated result into a current-
+task public allocation and releases the service's private buffer, including
+allocation exception cleanup. It resets optional size/attribute outputs on
+failure. No file-service layout change is needed for this wrapper.
+Fresh original bootstrap/cross compilation and instruction audits pass in
+`build/file-read-prototype/build/file-read-public`.
+
+`build/public-file-read-green/result.json` passes all twenty-four commands,
+original functional oracle, both exact twenty-cycle heap-recovery checks,
+exact VGA and independent filesystem/extent/bitmap checks on 8 MiB 486 without
+FPU. Startup is 25.148 seconds. Source image SHA-256:
+`379160ced32bcb73bc37a54e90dbbff50db6e82defc01144128ae84f5ce6b4a0`.
+The source image remains unchanged. The wrapper remains isolated and is not
+promoted. Full FileWrite workstation qualification remains live in its prior
+source epoch; its result does not qualify this later FileRead epoch.
+
+Next tests must establish parent-directory search, resident-cache coherence,
+missing/invalid/malformed archive behavior, public FileFind and allocation/IO
+failure cleanup. The current wrapper temporarily uses both private and public
+buffers; qualify larger-file peak memory and consider direct public allocation
+in the service before claiming complete 8 MiB file API parity. Repeat full
+workstation/native builds/generation checks after architectural promotion.
