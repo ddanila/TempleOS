@@ -8702,3 +8702,15 @@ first disk attr 0xE00 then cached attr 0x400, exact and alternate-name expansion
 of the 64-byte binary fixture, owned buffers, exact VGA and byte-for-byte
 unchanged candidate/source disks. This qualifies compressed cold reads for
 that fixture, not larger dictionary/cache limits or failed allocations.
+
+Resident entry lifecycle recovery passes in
+`build/public-file-resident-lifecycle-recovery/result.json`: 37 commands, original
+functional oracle, twenty create/update/read/remove cycles with exact public
+task heap recovery, and private QMP used bytes 5365784/allocation count 7159
+unchanged before/after. Startup is 25.050 seconds on 8 MiB `486,-fpu`; VGA and
+independent filesystem audit pass, source image unchanged. This qualifies entry
+removal recovery, not whole-service teardown or allocation-failure paths.
+The ABI-42 full workstation suite is running in
+`build/public-file-resident-workstation`; native retained rebuilding for this
+exact source image is running in `build/public-file-resident-native-build`.
+Neither result is assumed from the focused contracts.
