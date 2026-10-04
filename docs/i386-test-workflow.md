@@ -4061,3 +4061,16 @@ Candidate SHA-256 is
 The provenance-enforced six-flat-module rebuild is now running in
 `build/i386-heap-seek-selfhost`, with the matching retained-build result.
 No-FPU timing and integrated fully guest-built workflows remain pending.
+
+The current optimized epoch now completes full self-hosted construction in
+`build/i386-heap-seek-selfhost/result.json`: six native retained providers plus
+six guest-built flat modules, exact installation and independent 8 MiB boot.
+The result records the matching retained build/install evidence hashes. Flat
+size is 486472 bytes (952 spare), SHA-256
+`8d2f831e07580b1c240defadbfe37140821ae979db743fa50bbe6285b791626b`.
+Target SHA-256 is
+`6fc8eb0b3ebc632e58f6b1d4fcf1dfc5f0350233648fbf62fb7b3d215cfcb63b`.
+The installed image audit is in `build/i386-heap-seek-selfhost-audit`; no-FPU
+8 MiB keyboard/exact-VGA startup testing is running in
+`build/i386-heap-seek-selfhost-keyboard`. A completed self-hosted build is not
+a full workflow, second-generation reproducibility or release verdict.
