@@ -5320,3 +5320,24 @@ typing on the same broken image; its new fixture also contained a 258-byte
 line, which is now shortened below the 255-byte limit before qualification.
 Focus routing is still unqualified. The older retained guest rebuild remains
 live for its captured pre-keyboard-routing snapshot.
+
+### Keyboard bootstrap queue enrollment
+
+The diagnostic cross-build passes its 386 instruction audit, but the public
+keyboard run in build/i386-public-keyboard-trace/result.json fails at initial
+typing with the source disk unchanged. Its log records a nonzero keyboard task
+and normal startup, but no worker entry or decoded-event marker.
+
+Source inspection identifies an ordering defect: the private boot console's
+public job rings are initialized by MemoryTaskEnsure on its first managed
+yield. NativeReadKey now calls ScanMsg before that yield; JobsHndlr therefore
+reads an uninitialized waiting ring before scheduling the keyboard worker.
+NativeKeyboardStart now performs the managed yield before spawning the worker
+or scanning public messages. This preserves the existing enrollment mechanism
+for private boot workers and introduces no public API or module-layout change.
+
+Both original rebuild generations pass for this fix (build/rebuild-test).
+A fresh cross-build is running in build/i386-public-keyboard-enrolled-kernel;
+runtime verification remains required. This is a source fix, not a keyboard
+qualification result. Focus, input loss, macro recording and
+current-source self-hosting/release qualification remain open.

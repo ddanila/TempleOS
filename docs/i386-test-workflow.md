@@ -1395,3 +1395,10 @@ python3 tools/test-i386-public-keyboard-focus.py build/i386-kernel/kernel.img --
 It gives a spawned child focus, injects `a` while that child waits in GetMsg,
 then restores console focus. Its source lines fit the 255-byte input limit;
 behavior remains unqualified until input routing itself works.
+
+The worker-trace image reaches startup and logs a nonzero spawned worker, but
+never logs worker entry before the initial-typing timeout. The boot console
+must enroll its public job rings through a managed yield before its first
+ScanMsg. NativeKeyboardStart now performs that yield. Both original rebuild
+generations pass; fresh-image runtime verification is pending. The failure is
+recorded in build/i386-public-keyboard-trace/result.json (unchanged input disk).
