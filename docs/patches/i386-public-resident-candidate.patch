@@ -255,26 +255,28 @@ index 62bdacba..02fdabd4 100644
  };
  #endif
 diff --git a/Kernel/I386/HashPublic.HC b/Kernel/I386/HashPublic.HC
-index f59d7405..f01bcba2 100644
+index f59d7405..990653d6 100644
 --- a/Kernel/I386/HashPublic.HC
 +++ b/Kernel/I386/HashPublic.HC
-@@ -48,3 +48,17 @@ I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table)
+@@ -48,3 +48,19 @@ I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table)
    if(entry) return MemoryHashLstAdd(entry->data,type,table);
    return 0;
  }
 +
 +Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1)
-+{//Original single-table instance selection must resolve this exact entry.
-+  CHash *found;CHash **link;U32 flags;
++{//A stack view limits the existing lookup to the original single-table scope.
++  CHashTable single;CHash *found;CHash **link;U32 flags;I64 i;
 +  if(!entry || !table)return FALSE;
 +  flags=I386IrqSave;
-+  found=HashSingleTableFind(entry->str,table,entry->type&~HTG_FLAGS_MASK,instance);
++  MemoryCopy(&single,table,sizeof(CHashTable));single.next=0;
++  found=HashFind(entry->str,&single,entry->type&~HTG_FLAGS_MASK,instance);
 +  if(found!=entry){I386IrqRestore(flags);return FALSE;}
-+  link=HashBucketFind(entry->str,table);
-+  while(*link && *link!=entry)link=&(*link)->next;
-+  if(*link!=entry){I386IrqRestore(flags);return FALSE;}
-+  *link=entry->next;I386IrqRestore(flags);
-+  MemoryHashDel(entry);return TRUE;
++  for(i=0;i<=table->mask;i++) {
++    link=table->body+i;
++    while(*link && *link!=entry)link=&(*link)->next;
++    if(*link==entry){*link=entry->next;I386IrqRestore(flags);MemoryHashDel(entry);return TRUE;}
++  }
++  I386IrqRestore(flags);return FALSE;
 +}
 diff --git a/Kernel/I386/HashPublic.HH b/Kernel/I386/HashPublic.HH
 index 65aa8c6d..7ea4f0d9 100644
@@ -287,19 +289,10 @@ index 65aa8c6d..7ea4f0d9 100644
 +extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
  #endif
 diff --git a/Kernel/I386/MemoryRuntime.HC b/Kernel/I386/MemoryRuntime.HC
-index 23b3bf96..2c2c4254 100644
+index 23b3bf96..1764b1f7 100644
 --- a/Kernel/I386/MemoryRuntime.HC
 +++ b/Kernel/I386/MemoryRuntime.HC
-@@ -24,6 +24,8 @@ import U0 KernelLog(U8 *text);
- import U0 KernelHex(U64 value);
- import U0 KernelStop();
- import U0 HashAdd(CHash *entry,CHashTable *table);
-+import CHash **HashBucketFind(U8 *name,CHashTable *table);
-+import CHash *HashSingleTableFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
- import U0 SysTry(U8 *catch_start,U8 *untry_start);
- import U0 SysUntry();
- import CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
-@@ -31,7 +33,7 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
+@@ -31,7 +31,7 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
  CI386BackingPool memory_pool;
  CI386Task *memory_root;
  U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
@@ -308,7 +301,7 @@ index 23b3bf96..2c2c4254 100644
  CSema memory_semas[SEMA_SEMAS_NUM];
  CJob memory_macro_head;
  CTask *memory_macro_task;
-@@ -59,7 +61,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
+@@ -59,7 +59,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
  {//No arena is reserved until a task actually requests pages.
    U32 flags=I386IrqSave;
    Bool result=FALSE;
@@ -317,7 +310,7 @@ index 23b3bf96..2c2c4254 100644
    I64 i;
    if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
        !root || !root->gs || !root->owner || root->owner->root!=root ||
-@@ -91,8 +93,8 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
+@@ -91,8 +91,8 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
    addresses[36]=&MemoryScanMsg; addresses[37]=&MemoryGetMsg; addresses[38]=&MemoryFlushMsgs;
    addresses[39]=memory_semas; addresses[40]=&memory_macro_head;
    addresses[41]=&memory_macro_task;

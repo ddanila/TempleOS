@@ -8982,3 +8982,26 @@ disk on no-FPU 8 MiB QEMU. Source disk SHA-256
 No private-heap recovery assertion is inferred from the metadata-only observer.
 Retained native construction starts in `build/public-cd-special-native-build`;
 drive/error and Cd-specific recovery qualification remains open.
+
+Cold-fixture automation and module binding correction (2026-10-05):
+Cold resident tests add --prepare-fixture: populate only the disposable image
+through public FileWrite in a separate no-FPU boot, then qualify a fresh boot.
+Record preparation and cold-fixture SHA-256; require read-only cold operations
+to preserve that prepared baseline and always preserve the supplied source.
+The original oracle remains independent. Python compilation and CLI pass.
+
+The imported-helper removal candidate cross-builds and passes the instruction
+audit but fails at runtime MemoryRuntime loading: HashBucketFind and
+HashSingleTableFind are not published kernel bindings. The new cold fixture
+and recovery runs therefore fail before any cache behavior can be qualified.
+Do not treat a cross-build/layout pass as module binding or runtime evidence.
+The correction uses the already-published HashFind through a stack copy of the
+table with next=NULL; its body still references the original buckets, preserving
+single-table instance/use-counter behavior without changing the shared chain.
+After exact identity selection, unlink from that table and call the existing
+destructor with original IRQ restoration order. Removed the extra imports and
+auditor allowances. The archived candidate patch reflects this correction;
+git apply --check passes. Fresh bootstrap/cross-build is running in
+`build/file-resident-public-prototype/build/file-resident-public-removal-scoped`.
+Runtime/hash/removal/recovery qualification remains open. Cd native retained
+construction is still live at its compiler-module command.

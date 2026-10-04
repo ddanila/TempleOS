@@ -18,6 +18,7 @@ def main():
     parser.add_argument('--shared-lifetime', action='store_true', help='Require cache reuse across child task exit and directory-state replacement')
     parser.add_argument('--hash-visible', action='store_true', help='Require original public HTT_FILE cache visibility through Fs hash-table chain')
     parser.add_argument('--hash-removal', action='store_true', help='Remove the public cache entry and require a fresh disk read and repopulation')
+    parser.add_argument('--prepare-fixture', action='store_true', help='Populate resident bytes on the disposable candidate before a separate cold boot')
     args = parser.parse_args()
     if args.hash_removal and not args.hash_visible:
         parser.error('--hash-removal requires --hash-visible')
@@ -46,6 +47,7 @@ def main():
                   'ColdPacked("C:/Probe/ReadResident.BIN.Z",0x400)',
                   'ColdPacked("C:/Probe/ReadResident.BIN",0x400)',
                   'ReadOwned("C:/Probe/ReadResident.BIN.Z")']
+    report['prepare_fixture'] = args.prepare_fixture
     report['compressed'] = args.compressed
     report['shared_lifetime'] = args.shared_lifetime
     report['hash_visible'] = args.hash_visible
@@ -87,11 +89,21 @@ def main():
         subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(out/'oracle.iso')], cwd=ROOT, check=True)
         subprocess.run(['python3','tools/guest-run.py',str(out/'oracle.iso'),'--out',str(out/'oracle'),'--timeout','180','--qmp-stdio'], cwd=ROOT, check=True)
         report['original_oracle'] = 'pass'
+        if args.prepare_fixture:
+            prepare = [(source,[]) for source in definitions[:2]]
+            if args.compressed:
+                prepare += [('ReadSeed;',[])]
+            prepare += [(f'FileWrite("C:/Probe/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200)>0;',['1'])]
+            prepare_runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
+            report['fixture_preparation'] = prepare_runner(candidate,out/'fixture-preparation',snapshot=False,
+                cpu='486,-fpu',qmp_stdio=True,startup_check={'status':'ok','answers':[],'commands':prepare})
+        cold_baseline = candidate.read_bytes()
+        report['cold_fixture_sha256'] = hashlib.sha256(cold_baseline).hexdigest()
         commands = [(source,[]) for source in selected]+[(check+';',['1']) for check in checks]+[('6*7;',['42'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
                                    startup_check={'status':'ok','answers':[],'commands':commands})
-        if candidate.read_bytes() != original:
+        if candidate.read_bytes() != cold_baseline:
             raise ValueError('Read-only cold cache contract changed disk bytes')
         report['candidate_disk_unchanged'] = True
         report['result'] = 'pass'
