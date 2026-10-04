@@ -4188,3 +4188,22 @@ the same shared arena, so these values must not be added together. Arena
 base 1114112 plus size 7143424 fits within installed 8 MiB RAM.
 This measures the exercised document corpus, not every possible workload.
 The three-boot persistence/interrupt workflow remains running separately.
+
+### Current fully native persistence and speaker qualification
+
+`build/i386-heap-seek-selfhost-doldoc-session/result.json` PASSes all three
+8 MiB `486,-fpu` boots on preserved first-generation target 6fc8eb0b.
+Creation/edit/save, reboot/reopen, revised re-execution, nested/relative
+paths and rename/move/delete cycles pass with exact VGA and persisted-byte
+checks. The final RedSea bitmap matches reachable extents (18 directories,
+882 files, 18840 owned sectors). Source image remains unchanged.
+Interrupt-to-recovery VGA is 0.216029367 seconds, below one second. Startup
+is 33.326298730 / 33.073723438 / 33.236156186 seconds; all three formal
+startup checks pass in the stage-specific `-budget.json` reports.
+
+`build/i386-heap-seek-selfhost-speaker/result.json` also PASSes: captured
+440/880 Hz waveform and off/reset no-emission intervals, with no emission
+errors and unchanged source. WAV SHA-256:
+`ccbdd47558db00e97d401cf3095738d8ed7c76dfbc9c398a1dc5ebb8f61f82e7`.
+These are emulator verdicts. Full CPU debugger/API parity and current release
+packaging/publication remain open.

@@ -11,9 +11,11 @@ installation and independent boot pass. Second-generation flat construction and 
 comparison passes all twelve modules, flat kernel and installed boot bytes.
 The current resource profile passes 20 cycles with 1352496-byte live baseline,
 1356112-byte live peak and 1356800-byte reserved peak; its arena fits 8 MiB. The current fully native
-three-boot DolDoc session is live in
-`build/i386-heap-seek-selfhost-doldoc-session`; persistence and interrupt
-latency are not yet qualified for this image. Older rows below retain their
+three-boot DolDoc session passes in
+`build/i386-heap-seek-selfhost-doldoc-session`: persistence, exact VGA,
+filesystem integrity and 0.216-second interrupt recovery. All three
+33-second boots pass the startup budget. Captured speaker tone/off/reset
+checks pass in `build/i386-heap-seek-selfhost-speaker`. Older rows below retain their
 historical evidence and must not override this checkpoint. CPU-trap
 continuation/stepping/register inspection, complete API parity and release
 qualification remain open.

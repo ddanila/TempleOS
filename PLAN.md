@@ -13,7 +13,10 @@ are byte-identical to the installed first generation. Exact installation and
 independent 8 MiB boot pass. Second-generation flat construction and installed
 image audits pass. All twelve modules, the 486472-byte flat kernel and installed
 boot bytes match the first generation exactly; both RedSea volumes pass.
-Current fully native three-boot DolDoc qualification is running. CPU-trap debugging and release qualification remain
+Current fully native three-boot DolDoc qualification passes exact VGA,
+persistence/filesystem checks and 0.216-second interrupt recovery; all three
+33-second boots pass the startup budget. Captured PC-speaker tone and
+off/reset silence checks also pass. CPU-trap debugging and release qualification remain
 open; this timing pass does not establish the whole OS goal.
 
 The heap-search optimization is now promoted to main. Both heap corpora, the
