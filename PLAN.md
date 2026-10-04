@@ -5888,3 +5888,14 @@ The native flat image's measured 80-byte headroom makes any scheduler/private
 layout growth a boot-image sizing gate, not an assumption. Runtime exception
 inspection, full debugging and the complete release remain open until their
 matching behavioral and integration evidence is recorded.
+
+### Runtime exception source inspection red/green
+
+Both revised checker runs are terminal. The baseline fails on absent DbgMode;
+`build/i386-debug-exception-canonical-green/result.json` passes all nine
+commands with the identical frozen checker. It verifies Probe exception text,
+ExceptionProbe function, canonical FL:C:/Console.HC,1 source link, live state
+inspection, G-driven unwind, no execution after throw, mode restoration and
+subsequent shell arithmetic. Exact VGA checkpoints pass and source remains
+unchanged on 8 MiB, 486,-fpu. This qualifies the named exception/source workflow,
+not saved registers, stepping/breakpoints, zero exceptions or complete M7.
