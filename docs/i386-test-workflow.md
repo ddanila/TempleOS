@@ -4513,3 +4513,19 @@ and attribute behavior while the new public core is developed separately.
 A fresh original rebuild is running before corrected cross construction.
 Default Now, compression/resident behavior and complete API parity remain
 open; no FileWrite implementation is promoted to main.
+
+Corrected FileWrite header cross construction/audits PASS in the isolated
+`build/file-write-headers`. All six oversized/header/entry publication
+rejection cases PASS in `build/boot-payload-rejection-headers-green`, with
+the entire target disk unchanged and preserved original source.
+
+The public FileWrite guest commands pass, and independent raw metadata
+comparison PASSes in `build/public-file-write-headers-green/metadata-observation.json`:
+returned cluster matches the persisted entry, bytes are A/NUL/B/0xFF,
+length is four, date is 0x1122334455667788 and attributes are 0x800.
+The full contract result remains FAIL: verify_mutated_volume rejects any
+nonzero file date, a historical zero-date fixture assumption incompatible
+with the explicitly requested timestamp. Correct that general audit policy
+without dropping extent/bitmap checks and rerun the unchanged contract.
+Default Now/compression/resident behavior and broader FileWrite tests remain
+open; the partial prototype is unpromoted.
