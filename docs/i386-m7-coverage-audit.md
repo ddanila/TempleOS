@@ -55,8 +55,9 @@ new audio during settled off/reset intervals, with the source unchanged. The
 second-generation retained build initially failed from contiguous-space exhaustion.
 The larger-first retry in `build/i386-heap-asm-scan-gen2-largest-first` passes
 all six providers with exact installed-byte equality and a consistent filesystem.
-Installation and independent boot verification are running; native flat rebuild
-and second-generation workflows remain pending. Full
+Installation and independent 8 MiB no-FPU boot pass in
+`build/i386-heap-asm-scan-gen2-largest-first-install`. The native flat rebuild
+is running; its audit/comparison and second-generation workflows remain pending. Full
 two-generation and release qualification remain open.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent

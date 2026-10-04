@@ -2851,3 +2851,20 @@ Installation and independent 8 MiB no-FPU boot verification are running in
 complete installed-image audit and second-generation workflows still need
 qualification. This provider-level reproducibility pass does not close the
 complete two-generation or release requirements.
+
+### Second-generation retained installation and independent boot pass
+
+`build/i386-heap-asm-scan-gen2-largest-first-install/result.json` passes
+installation of all six native providers with exact byte preservation and
+removal of their build-output paths. An independent writable boot copy runs
+`6*7` and `DocAllocationCheck` successfully under 8 MiB `486,-fpu` KVM.
+Preserved source and candidate images remain unchanged by that boot test.
+Installed candidate SHA-256:
+`c516f9595a43f8626b0b4163ad048f483af64b798bb8859bf4998a5d78e8774b`.
+
+The six flat-kernel modules and guest boot image are now rebuilding from this
+candidate in `build/i386-heap-asm-scan-gen2-selfhost`, without cross-retained
+inputs. Complete installed-image audit, first/second-generation flat-output
+comparison and second-generation workflow qualification remain pending.
+Native formatter/User, full debugger/API coverage and reproducible release
+qualification remain open.
