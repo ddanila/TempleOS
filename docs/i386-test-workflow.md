@@ -1330,3 +1330,10 @@ commands), and the seven-case direct-dispatch qualification passes, both at
 The checker now includes a pending eighth EXIT_ON_COMPLETE fixture; its first
 original run timed out, so do not treat that added case as a validated oracle
 until the phase-marked rerun is diagnosed.
+
+The eighth EXIT_ON_COMPLETE oracle is now corrected and passes on original
+TempleOS: the end callback explicitly calls Exit, and servant code after
+JobsHndlr must remain unreachable. The initial returning callback was an
+invalid fixture assumption. Native eight-case qualification is pending in
+build/i386-public-dispatch-exit-native. Inner diagnostic phase markers avoid
+DONE so the harness waits for the complete suite verdict.

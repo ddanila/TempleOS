@@ -37,7 +37,7 @@ def behavior_commands():
         'Bool DispatchInhibit(){CTask *old=sys_focus_task;I64 f=Fs->win_inhibit;Bool ok;DispatchInhibitQueue;ok=DispatchInhibitDone;Fs->win_inhibit=f;sys_focus_task=old;return ok;}',
         'I64 DispatchExitStage=0,DispatchExitAfter=0;',
         'I64 DispatchExitCall(U8 *data){DispatchExitStage=2;return 42;}',
-        'U0 DispatchExitEnd(){if(DispatchExitStage==2)DispatchExitStage=3;else DispatchExitStage=99;}',
+        'U0 DispatchExitEnd(){if(DispatchExitStage==2)DispatchExitStage=3;else DispatchExitStage=99;Exit;}',
         'U0 DispatchExitWorker(U8 *data){Fs->task_end_cb=&DispatchExitEnd;DispatchQueue;DispatchJob->addr=&DispatchExitCall;DispatchJob->flags=1<<JOBf_EXIT_ON_COMPLETE|1<<JOBf_FREE_ON_COMPLETE;JobsHndlr(GetRFlags);DispatchExitAfter=1;}',
         'Bool DispatchExit(){CTask *t=Spawn(&DispatchExitWorker,0,"JobExit",-1,Fs,8192);I64 end=cnts.jiffies+2000;if(!t)return FALSE;while(DispatchExitStage!=3&&cnts.jiffies<end)Yield;return DispatchExitStage==3&&!DispatchExitAfter;}',
 
@@ -86,7 +86,7 @@ if(ok)ok=DispatchAutoFree;
 if(ok){ok=DispatchInhibit;DispatchFree;}
 Report("START dispatch exit contract\\n");
 if(ok)ok=DispatchExit;
-Report("DONE dispatch exit contract\\n");
+Report("TRACE dispatch exit complete\\n");
 if(ok)Report("PASS original public job dispatch\\n");
 else Report("FAIL original public job dispatch\\n");
 Report("DONE original public job dispatch\\n");

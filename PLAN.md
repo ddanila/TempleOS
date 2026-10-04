@@ -5180,3 +5180,19 @@ The seven-case dispatch and nineteen-case message passes use the earlier
 captured checkers and are not invalidated by adding this unqualified case.
 Current-source guest rebuild of all six retained providers remains live in
 build/i386-public-message-scan-retained, currently compiling MemoryRuntime.
+
+### Exit-on-completion oracle corrected
+
+The EXIT_ON_COMPLETE fixture's callback now explicitly calls Exit, matching
+original TaskEnd's redirected-callback semantics and the existing callback
+reference. The original seven-case suite was unaffected; the new fixture's
+returning callback was an invalid termination assumption. The phase-marked
+run confirmed the stall at that case and was stopped after diagnosis.
+
+The corrected eight-case original dispatch suite passes
+(build/i386-public-dispatch-exit-original-final/result.json). Its diagnostic
+completion marker uses TRACE rather than DONE so guest-run waits for the
+outer suite's PASS/DONE verdict. Native eight-case qualification is running
+in build/i386-public-dispatch-exit-native on the existing version-16 image.
+The current-source retained guest build is still live and advancing through
+module function compilation; its terminal result remains pending.
