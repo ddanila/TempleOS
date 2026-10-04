@@ -852,9 +852,9 @@ def verify_mutated_volume(disk):
             attr,name,child,length,date=record(block*512+offset)
             if not name: terminated=True; break
             if attr&0x100: continue
-            if (date and attr!=0x800) or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
+            if (date and attr not in (0x800,0xC00)) or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
             if attr==0x810: directory(child,block)
-            elif attr==0x800:
+            elif attr in (0x800,0xC00):
                 if length: claim(child,length)
                 elif child: raise ValueError('Empty mutation-probe file owns blocks')
                 files+=1
@@ -892,7 +892,7 @@ def mutated_file_contents(disk, wanted):
             if attr&0x100: continue
             child_path=path+'/'+name
             if attr==0x810: directory(child,child_path)
-            elif attr==0x800 and child_path in wanted:
+            elif attr in (0x800,0xC00) and child_path in wanted:
                 found[child_path]=image[child*512:child*512+length] if length else b''
         visiting.remove(block)
     directory(root,'')

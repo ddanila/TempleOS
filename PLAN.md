@@ -8,9 +8,11 @@ workstation passes 513 commands, exact VGA and 20 exact heap-recovery cycles:
 startup 33.068 seconds and long-document update 0.205 seconds. Formal startup
 budget passes. Second-generation retained rebuilding passes: all six modules
 match the installed first generation byte for byte. Exact installation and
-independent 8 MiB boot pass; second-generation flat construction is running.
+independent 8 MiB boot pass. Second-generation self-hosted flat construction,
+installed audits and twelve-module/flat/boot byte comparison also pass.
 FileWrite is still an isolated experiment: ordinary/explicit/default-date
-and lifecycle contracts pass, but .Z write/include fails; complete
+and lifecycle contracts pass. The initial .Z write/include/execute contract
+and compressed-record filesystem corruption checks now pass; complete
 compression/resident/API and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
@@ -21,8 +23,7 @@ Main's fresh original rebuild and i386 instruction/keyword audits pass,
 and all thirteen emitted artifacts match the corrected tested prototype.
 Guest flat-development construction/install/boot/audits pass at 487304 bytes
 (120 spare), using cross-built retained providers. The first fully native
-generation is qualified as described above; second-generation flat comparison
-remains pending. Single-step, managed breakpoints,
+generation and second-generation artifact comparison pass as described above. Single-step, managed breakpoints,
 register inspection/editing and concurrent debugger sessions remain open.
 
 The fully guest-built optimized image passes installed 386/boot/filesystem and
@@ -7980,3 +7981,60 @@ compressed records while retaining extent, overlap, bitmap and corruption
 checks. Resident-file semantics and the remaining public file APIs still need
 original-behavior inventory. None of these partial checks closes the release
 goal or the debugger and boot-capacity work above.
+
+## CPU-trap epoch: two-generation qualification passes
+
+`build/cpu-trap-main-gen2-selfhost/result.json` and
+`build/cpu-trap-main-gen2-selfhost-audit/result.json` pass full guest-built
+construction, installation/independent boot and installed executable audits.
+`build/cpu-trap-main-generations-audit.json` passes exact comparison of all
+twelve modules, the 487304-byte flat payload and installed boot area, plus
+independent extent/bitmap verification of both RedSea volumes. Flat SHA-256:
+`dd9a2080f5d89010e1827ae9727e456ccc5e0caab81ee762ec73534abe435218`.
+Second-generation disk SHA-256:
+`2ce117d75adae9313e646461b8fc47103b5ad538241ba13e5f15622e15d9eba1`.
+Whole disk hashes differ; the executable artifacts and boot bytes match.
+This closes the current CPU-trap epoch's generation comparison, not the
+remaining debugger, boot-capacity, public API or release requirements.
+
+The corrected isolated compression prototype passes fresh original bootstrap
+rebuilding and cross compilation/instruction audits in
+`build/file-write-prototype/build/file-write-compression-zero`. Its native
+write/include/execute contract is running. This does not yet qualify archive
+interoperability, dictionary-boundary behavior or compressed filesystem audits.
+
+The dated-file corruption test now accepts a selectable filename, for reuse
+on a real compressed fixture, and rejects unsupported attributes and compressed
+records lacking contiguous storage. All six corruption cases pass on the
+ordinary dated fixture (`build/redsea-date-audit-attributes-test.json`), keeping
+overlap, out-of-volume, bitmap and invalid-name coverage.
+
+## Initial compressed FileWrite contract passes in isolation
+
+`build/public-file-write-compressed-encoder/result.json` first proved native
+write/include/execution, exact VGA and archive header/metadata, then failed the
+ordinary-only filesystem auditor. The auditor now permits exactly ordinary
+contiguous (0x800) and compressed contiguous (0xC00) file records and reads
+either through the independent directory walker. Directory date restrictions,
+extent bounds/overlap checks and exact reachable-sector bitmap checks remain.
+
+`build/public-file-write-compressed-audit-green/result.json` passes all four
+guest commands on 8 MiB 486 without FPU, archive type CT_7_BIT, requested date,
+0xC00 attributes and full independent filesystem verification; the source
+disk remains unchanged. This establishes one ASCII HolyC .Z write that the
+native compiler can include and execute, not general encoder parity.
+
+Both ordinary and actual compressed fixtures pass all six corruption cases:
+`build/redsea-date-audit-attributes-test.json` and
+`build/redsea-compressed-date-audit-test.json`. Reproduce the compressed check:
+
+```sh
+python3 tools/test-i386-redsea-date-audit.py \
+  build/public-file-write-compressed-encoder/candidate.img \
+  --name PublicCompressed.HC.Z
+```
+
+The encoder/FileWrite implementation remains isolated pending the wider
+archive and API requirements above. Next use original compression/expansion
+as interoperability oracles and test dictionary growth/recycling, 8-bit data,
+fallback, empty/replacement and heap/error cleanup before promotion.

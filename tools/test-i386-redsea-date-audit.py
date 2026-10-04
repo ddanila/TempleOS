@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ensure dated regular files pass while extent and bitmap corruptions fail."""
+"""Ensure dated ordinary/compressed files pass while metadata corruptions fail."""
 import argparse
 import json
 from pathlib import Path
@@ -12,11 +12,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('disk', type=Path, help='Image containing dated PublicWrite.BIN')
+    parser.add_argument('disk', type=Path, help='Image containing a dated file')
+    parser.add_argument('--name', default='PublicWrite.BIN', help='Dated directory-entry filename')
     args = parser.parse_args()
     verify = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume']
     original = args.disk.read_bytes()
-    marker = original.find(b'PublicWrite.BIN\0')
+    name = args.name.encode('ascii')
+    if not name or len(name)>37 or '/' in args.name:
+        parser.error('--name must be a single RedSea filename')
+    marker = original.find(name+b'\0')
     offset = marker-2
     if marker<0 or offset%64 or not struct.unpack_from('<Q',original,offset+56)[0]:
         raise ValueError('Missing dated directory-entry fixture')
@@ -26,6 +30,12 @@ def main():
     bitmap_blocks = struct.unpack_from('<q',original,2048*512+32)[0]
     first = 2048+bitmap_blocks+1
     mutations = {}
+    bad = bytearray(original)
+    struct.pack_into('<H',bad,offset,0xC02)
+    mutations['unsupported-attributes'] = bad
+    bad = bytearray(original)
+    struct.pack_into('<H',bad,offset,0x400)
+    mutations['noncontiguous-compressed'] = bad
     bad = bytearray(original)
     struct.pack_into('<q',bad,offset+40,root)
     mutations['overlap'] = bad
@@ -52,7 +62,7 @@ def main():
                 raise AssertionError(f'Auditor accepted {name}')
     if args.disk.read_bytes()!=original:
         raise ValueError('Source fixture changed')
-    print(json.dumps({'result':'pass','dated_volume':baseline,'rejected':rejected},indent=2))
+    print(json.dumps({'result':'pass','dated_volume':baseline,'filename':args.name,'rejected':rejected},indent=2))
 
 
 if __name__=='__main__':
