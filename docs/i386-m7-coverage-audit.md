@@ -56,8 +56,10 @@ second-generation retained build initially failed from contiguous-space exhausti
 The larger-first retry in `build/i386-heap-asm-scan-gen2-largest-first` passes
 all six providers with exact installed-byte equality and a consistent filesystem.
 Installation and independent 8 MiB no-FPU boot pass in
-`build/i386-heap-asm-scan-gen2-largest-first-install`. The native flat rebuild
-is running; its audit/comparison and second-generation workflows remain pending. Full
+`build/i386-heap-asm-scan-gen2-largest-first-install`. The native flat rebuild and installed-image audit now pass; all twelve modules
+and linked boot bytes match the first generation exactly. Whole disk layout
+differs. Second-generation workstation qualification is running; persistence,
+audio and release qualification remain pending. Full
 two-generation and release qualification remain open.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent

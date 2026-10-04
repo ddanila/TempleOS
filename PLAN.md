@@ -7133,3 +7133,26 @@ inputs. Complete installed-image audit, first/second-generation flat-output
 comparison and second-generation workflow qualification remain pending.
 Native formatter/User, full debugger/API coverage and reproducible release
 qualification remain open.
+
+### Second-generation native kernel, exact comparison and image audit pass
+
+`build/i386-heap-asm-scan-gen2-selfhost/result.json` passes all six native
+flat-module builds, guest boot-image link/install and independent 8 MiB
+`486,-fpu` boot (16 MiB build). All six retained inputs were guest-built.
+Target disk SHA-256:
+`44ed8c88293ff940fd2c1c73837424c62bd9b4224e4479723a2505aa7c3c5043`.
+
+Direct comparison in `build/i386-heap-asm-scan-gen2-selfhost/comparison.json`
+proves all twelve module files and `/Probe/GuestBoot.bin` byte-identical to
+the first generation. The flat image is 487072 bytes (352 spare), SHA-256
+`f7afe15704d130b47025deed2b46fd50b67c9d5acd377ce5984520e7e83e16cb`.
+Whole disk hashes differ because filesystem allocation/layout differs; this
+is executable-output reproducibility, not a reproducible release disk claim.
+
+`build/i386-heap-asm-scan-gen2-selfhost-audit/result.json` passes installed
+386 executable/boot-payload/boot-instruction and filesystem checks using the
+guest compiler template. The full second-generation workstation suite is
+running in `build/i386-heap-asm-scan-gen2-selfhost-workstation`. Startup and
+interaction budgets, persistence and audio still need current-generation
+qualification. Native formatter/User, full debugger/API support and release
+packaging remain open.
