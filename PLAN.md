@@ -23,8 +23,8 @@ fully native FileWrite image are now running.
 Public FileRead and FileFind are now promoted with file-service ABI 40. Their
 public contracts, fully native twelve-module build/install/audit and native
 513-command workstation pass. Main's fresh bootstrap/cross/386 audits pass and
-all thirteen emitted artifacts match the qualified prototype. Second-generation
-native reproducibility is still running. Resident caching has an
+all thirteen emitted artifacts match the qualified prototype. Two fully native
+generations match across all twelve modules, flat kernel and boot area. Resident caching has an
 original-oracle failing port test. Broader errors and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
@@ -8865,3 +8865,16 @@ The strengthened oracle/native test is running in
 `build/public-file-resident-hash-ownership-red`. Public cache lookup and removal
 must share one authoritative ownership model; the current private cache is
 still unpromoted despite its narrower passing read contracts.
+
+Promoted FileRead/FileFind ABI-40 second-generation full native construction,
+installation and independent 8 MiB boot now pass. Installed executable audit
+passes in `build/public-file-find-gen2-selfhost-audit`; independent generation
+comparison passes in `build/public-file-find-native-generations.json`: twelve
+modules, 487312-byte flat kernel and boot area are identical, both volumes have
+valid reachable-extent bitmaps. Flat SHA-256 remains
+`ba745336478c5ab39f80ed14f51224bcd6f1fb10c0806a5a540a114298422b59`.
+Second disk SHA-256 is
+`f9f20d1723af29b08c92f80e5729f0c6528c0c46bafded44dc1f268365649d2c`;
+whole disk bytes differ, so the reproduced artifacts are modules/flat/boot.
+The strengthened resident public-hash ownership original oracle also passes;
+its native verdict remains pending.
