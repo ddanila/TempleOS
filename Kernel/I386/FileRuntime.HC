@@ -24,6 +24,7 @@ import Bool I386AtaFlushPolled(CI386Ata *disk,I64 polls,CI386AtaPoll *poll);
 import Bool I386SchedBlock(CI386Scheduler *scheduler);
 import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
 import Bool I386SchedYield(CI386Scheduler *scheduler);
+extern I64 I386TaskFileFind(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 flags);
 extern I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr);
 extern Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0);
 extern Bool I386TaskDirMk(U8 *filename,I64 entry_cnt=0);
@@ -91,13 +92,13 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   binding->address=(&I386ArcEntryGet+0)(U64);
   return TRUE;
 }
-#assert sizeof(CI386FileServices)==96
+#assert sizeof(CI386FileServices)==100
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
-  services->read_raw=&I386TaskFileReadRaw;
+  services->read_raw=&I386TaskFileReadRaw; services->find_public=&I386TaskFileFind;
   services->install_boot=&I386TaskInstallBoot;
   services->install_image=&I386TaskInstallBootImage;
   services->name_abs=&I386TaskFileNameAbs;
@@ -138,5 +139,6 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/RedSeaDirDelete.HC"
 #include "/Kernel/I386/Compress.HC"
 #include "/Kernel/I386/TaskFileWrite.HC"
+#include "/Kernel/I386/TaskFileFind.HC"
 #include "/Kernel/I386/InstallBootArea.HC"
 #include "/Kernel/I386/TaskCompiler.HC"

@@ -1,6 +1,9 @@
 #ifndef I386_PUBLIC_FILES_INCLUDED
 #define I386_PUBLIC_FILES_INCLUDED
 #include "/Kernel/DateTypes.HH"
+#include "/Kernel/DirEntryTypes.HH"
+#include "/Kernel/FileFindFlags.HH"
+public _extern _FILE_FIND Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 public _extern _FILE_WRITE I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);
 public _extern _DIR_MK Bool DirMk(U8 *filename,I64 entry_cnt=0);
 public _extern _DIR I64 Dir(U8 *filename=NULL);
@@ -23,4 +26,5 @@ public _extern _I386_BUILD_MODULE I64 I386BuildModule(
 //Link six boot modules to a flat file at 0x11000; publication is separate.
 public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(
   U8 *kernel_module,U8 *helper_directory,U8 *target);
+public _extern _FILE_READ U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0);
 #endif

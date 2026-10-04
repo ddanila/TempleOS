@@ -852,23 +852,11 @@ class CISOPriDesc
 
 #help_index "File/Low Level;File/Program Routines"
 //CDirEntry flags (Used by $LK,"FileMgr",A="MN:FileMgr"$())
-#define CDIR_FILENAME_LEN	38 //Must include terminator zero
-public class CDirEntry
-{
-  CDirEntry *next,*parent,*sub;
-  U8	*full_name;
-  I64	user_data,user_data2;
-
-  U0	start;
-  U16	attr;
-  U8	name[CDIR_FILENAME_LEN];
-  I64	clus,size;
-  CDate datetime;
-};
-#define CDIR_SIZE (sizeof(CDirEntry)-offset(CDirEntry.start))
+#include "/Kernel/DirEntryTypes.HH"
 
 #help_index "File/Program Routines"
 //File Util Flags
+#include "/Kernel/FileFindFlags.HH"
 //See $LK,"ST_FILE_UTIL_FLAGS",A="MN:ST_FILE_UTIL_FLAGS"$
 #define FUf_RECURSE		0
 #define FUf_DIFF		1
@@ -910,17 +898,13 @@ public class CDirEntry
 #define FUF_MAP			0x0000080 //m
 #define FUF_EXPAND		0x0000100 //x
 #define FUF_SINGLE		0x0000200 //s
-#define FUF_JUST_DIRS		0x0000400 //D
-#define FUF_JUST_FILES		0x0000800 //F
 #define FUF_JUST_TXT		0x0001000 //T
 #define FUF_JUST_DD		0x0002000 //$$
 #define FUF_JUST_SRC		0x0004000 //S
 #define FUF_JUST_AOT		0x0008000 //A
 #define FUF_JUST_JIT		0x0010000 //J
 #define FUF_JUST_GR		0x0020000 //G
-#define FUF_Z_OR_NOT_Z		0x0040000 //Z
 #define FUF_CLUS_ORDER	0x0080000 //O Move disk head one direction
-#define FUF_SCAN_PARENTS	0x0100000 //P
 #define FUF_FLATTEN_TREE	0x0200000 //f
 #define FUF_WHOLE_LABELS	0x0400000 //l
 #define FUF_WHOLE_LABELS_BEFORE	0x0800000 //lb
@@ -929,8 +913,6 @@ public class CDirEntry
 #define FUG_FILES_FIND	(FUF_RECURSE|FUF_SINGLE|FUF_CLUS_ORDER|\
   FUF_JUST_DIRS|FUF_JUST_FILES|FUF_JUST_TXT|FUF_JUST_DD|\
   FUF_JUST_SRC|FUF_JUST_AOT|FUF_JUST_JIT|FUF_JUST_GR|FUF_FLATTEN_TREE)
-#define FUG_FILE_FIND	(FUF_JUST_DIRS|FUF_JUST_FILES|FUF_Z_OR_NOT_Z|\
-  FUF_SCAN_PARENTS)
 
 #help_index "File/Low Level"
 //See $LK,"ST_BLKDEV_TYPES",A="MN:ST_BLKDEV_TYPES"$

@@ -2392,3 +2392,57 @@ public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
   if(!cdt) cdt=NativeNow;
   return console_config->files->write_public(filename,buffer,size,cdt,attr);
 }
+
+public U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+{//The service owns its private buffer; public callers own an ordinary allocation.
+  U8 *buffer,*result=0;
+  I64 size=0,attr=0;
+  if(_size) *_size=0;
+  if(_attr) *_attr=0;
+  if(!console_config || !console_config->files || !console_config->files->read) return 0;
+  buffer=console_config->files->read(console_config->heap,filename,&size,&attr,0);
+  if(!buffer) return 0;
+  try {
+    result=MAlloc(size+1);
+    MemCpy(result,buffer,size);
+    result[size]=0;
+  } catch {
+    I386HeapFree(console_config->heap,buffer);
+    throw;
+  }
+  if(!I386HeapFree(console_config->heap,buffer)) {
+    Free(result); throw('FileRead');
+  }
+  if(_size) *_size=size;
+  if(_attr) *_attr=attr;
+  return result;
+}
+
+public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
+{
+  CDirEntry entry;
+  CDirEntry *selected=0;
+  U8 *name=0;
+  I64 i,length;
+  I64 result;
+  if(flags&~0x140C00) throw('FUF');
+  if(!filename) return FALSE;
+  if(_de) {
+    selected=&entry;
+  }
+  if(!console_config || !console_config->files || !console_config->files->find_public) return FALSE;
+  result=console_config->files->find_public(console_config->heap,filename,selected,flags);
+  if(result!=1) {
+    if(!result && _de) for(i=0;i<sizeof(CDirEntry);i++)_de(U8 *)[i]=0;
+    return FALSE;
+  }
+  if(!_de) return TRUE;
+  length=0;while(entry.full_name[length])length++;
+  try {
+    name=MAlloc(length+1);MemCpy(name,entry.full_name,length+1);
+  } catch {
+    I386HeapFree(console_config->heap,entry.full_name);throw;
+  }
+  if(!I386HeapFree(console_config->heap,entry.full_name)) {Free(name);throw('FileFind');}
+  entry.full_name=name;MemCpy(_de,&entry,sizeof(CDirEntry));return TRUE;
+}

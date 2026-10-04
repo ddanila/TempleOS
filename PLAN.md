@@ -20,9 +20,11 @@ flat construction/installed audits pass for two generations. All twelve modules,
 flat kernel and boot area match between generations; whole-volume bytes differ.
 Archive replacement and full no-FPU workstation requalification on the second
 fully native FileWrite image are now running.
-Public FileRead and FileFind remain isolated. The corrected FileFind candidate
-passes its public contract and FileRead parent-search regression; full workstation
-and native retained rebuilding are still running. Resident caching has an
+Public FileRead and FileFind are now promoted with file-service ABI 40. Their
+public contracts, fully native twelve-module build/install/audit and native
+513-command workstation pass. Main's fresh bootstrap/cross/386 audits pass and
+all thirteen emitted artifacts match the qualified prototype. Second-generation
+native reproducibility is still running. Resident caching has an
 original-oracle failing port test. Broader errors and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
@@ -8774,3 +8776,22 @@ isolates the missing API. The new assertion prevents a private-only directory
 update from being mistaken for original public task-record compatibility.
 The Cd candidate's original bootstrap passes and cross module generation is
 running; no native behavior is qualified yet.
+
+Public FileRead/FileFind ABI-40 is promoted to main after native public contracts
+and full 513-command workstation qualification. Native startup is 35.179 seconds,
+long-document update 0.265 seconds and formal startup budget passes. Main's fresh
+original bootstrap and cross/386 audits pass in `build/file-read-find-main`;
+`build/file-read-find-main-artifact-comparison.json` proves all twelve modules
+and Kernel32.BIN exactly match the qualified corrected prototype. This includes
+shared original CDirEntry/flags, owned public FileRead buffers, FileFind full_name
+ownership and early-rejection output preservation. Resident caching/Cd remain
+isolated. Second-generation FileRead/FileFind native qualification is pending;
+promotion does not close remaining API or release requirements.
+
+The isolated Cd candidate's original bootstrap/cross/386 audits pass. Ordinary
+Cd contract passes sixteen commands; strengthened public task-field contract
+passes twenty-four in `build/public-cd-task-fields-candidate/result.json`, startup
+27.319 seconds on 8 MiB no-FPU QEMU. Public Fs->cur_dir matches successful and
+partially failed path changes, exact VGA and persisted directory/write audit pass.
+Home/drive/error compatibility, recovery cycles and broad/native qualification
+remain open before Cd promotion.
