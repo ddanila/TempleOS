@@ -4109,3 +4109,19 @@ second-generation retained build is still compiling ConsoleRuntime; final
 installed-byte comparison, second-generation flat construction/audits and
 release qualification remain pending. CPU-trap continuation remains failing.
 Kernel/Compiler and the live build driver remain unchanged.
+
+### Optimized second-generation retained reproducibility
+
+`build/i386-heap-seek-gen2-native-build/result.json` PASSes all six guest-built
+providers and exact comparison with installed first-generation target
+`6fc8eb0b3ebc632e58f6b1d4fcf1dfc5f0350233648fbf62fb7b3d215cfcb63b`.
+CompilerRuntime, CompilerProbe, ConsoleRuntime, MemoryRuntime, FileRuntime
+and Startup each reproduce their first-generation payload bytes exactly.
+The resulting writable construction disk SHA-256 is
+`60adc1af0035d086d7bd3fb24ee14ba626e46ce1a5f52fcf37ee052d33457d92`.
+Export checks and ConsoleRuntime allocation-wrapper checks also pass.
+
+Installation and independent boot are running in
+`build/i386-heap-seek-gen2-native-install`. This retained-provider result
+does not establish second-generation flat-kernel construction, complete
+image reproducibility, debugger completion or release readiness.
