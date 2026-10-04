@@ -852,7 +852,7 @@ def verify_mutated_volume(disk):
             attr,name,child,length,date=record(block*512+offset)
             if not name: terminated=True; break
             if attr&0x100: continue
-            if date or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
+            if (date and attr!=0x800) or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
             if attr==0x810: directory(child,block)
             elif attr==0x800:
                 if length: claim(child,length)

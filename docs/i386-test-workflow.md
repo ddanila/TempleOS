@@ -4529,3 +4529,27 @@ with the explicitly requested timestamp. Correct that general audit policy
 without dropping extent/bitmap checks and rerun the unchanged contract.
 Default Now/compression/resident behavior and broader FileWrite tests remain
 open; the partial prototype is unpromoted.
+
+### Dated regular-file auditing and first public write green
+
+verify_mutated_volume now accepts nonzero timestamps on regular 0x800 files;
+all extent/ownership/bitmap/name and existing directory fixture checks remain
+enforced. `tools/test-i386-redsea-date-audit.py` PASSes the dated file image
+and rejects independently mutated overlapping/out-of-volume extents, flipped
+allocation bitmap and invalid name (`build/redsea-date-audit-test.json`).
+
+The unchanged public FileWrite contract now PASSes end to end in
+`build/public-file-write-date-audit-green/result.json` on the isolated
+prototype: actual cluster return, exact binary bytes, explicit timestamp,
+contiguous attributes and full filesystem integrity/source preservation.
+This first ordinary-write green does not establish default Now, replacement,
+error/empty/compressed/resident behavior or full FileWrite parity. The OS
+implementation remains isolated.
+
+The promoted CPU-trap fully native twelve-module image PASSes construction,
+installation and independent boot in `build/cpu-trap-main-selfhost`, with
+487304-byte flat SHA dd9a2080 and target SHA
+`b43b2e027a917f244d2a2fe2e1a97144b6ec05b45fd3e70cb830d4fa2f19a565`.
+Installed 386/boot/RedSea/keyword audits PASS in its `-audit` directory.
+Five-cycle continuation remains running in `build/cpu-trap-main-selfhost-repeat`.
+Current workstation, second-generation and release qualification remain open.
