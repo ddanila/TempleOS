@@ -15,10 +15,15 @@ semantics, original archive parity/replacement and the full 513-command
 workstation suite pass on its prototype. Main's fresh original rebuild/cross
 audits pass and all thirteen emitted artifacts match that qualified prototype.
 Native retained rebuilding passes all six providers, and main-image archive
-requalification passes. Native installation/boot and fully native twelve-module flat construction/
-installed audits pass; second-generation retained comparison is running.
-Public FileRead remains isolated; its parent-search contract also passes.
-Resident caching, FileFind, broader errors and release requirements remain open.
+requalification passes. Native installation/boot and fully native twelve-module
+flat construction/installed audits pass for two generations. All twelve modules,
+flat kernel and boot area match between generations; whole-volume bytes differ.
+Archive replacement and full no-FPU workstation requalification on the second
+fully native FileWrite image are now running.
+Public FileRead and FileFind remain isolated. The corrected FileFind candidate
+passes its public contract and FileRead parent-search regression; full workstation
+and native retained rebuilding are still running. Resident caching has an
+original-oracle failing port test. Broader errors and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
 frames, normal-context debugger entry and full exception-frame return. Five
