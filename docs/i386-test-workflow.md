@@ -4011,3 +4011,33 @@ No-FPU 8 MiB keyboard/exact-VGA boot passes on that guest flat image in
 23.939021246 seconds. The unchanged startup-budget checker passes in its
 `-budget.json` report. Fully guest-built retained-provider startup and full
 workstation integration remain pending. The optimization remains isolated.
+
+### Heap-search promotion and register-preserving CPU-trap contract
+
+The isolated heap optimization passes the full workstation suite in
+`build/i386-heap-seek-workstation/result.json`: 513 commands, 576 lines, exact
+VGA and 20 document cycles with exact shared-heap recovery. Startup is
+23.638717247 seconds, and the unchanged startup gate passes. Long-document
+update is 0.254742163 seconds. This complements both heap corpora and the
+guest flat-development build/audit/boot, without proving fully native retained
+provider timing.
+
+The implementation is promoted to main. Its original two-generation rebuild
+passes in `build/rebuild-test/result.json` (log `build/heap-seek-main-rebuild.log`).
+The i386 build and instruction/keyword audits pass in `build/i386-heap-seek-main`.
+`build/i386-heap-seek-main-promotion-comparison.json` confirms all twelve T32M
+modules and Kernel32.BIN match the fully qualified prototype exactly. The boot
+kernel is 482440 bytes. All six retained providers are rebuilding natively in
+`build/i386-heap-seek-native-build`, using that byte-identical prototype image
+and its export contracts; the run has advanced past CompilerRuntime and is
+building CompilerProbe. Final payload audits remain pending.
+
+The CPU-trap checker now returns a known EAX value from the interrupted helper
+after `G` and compares it with 0x11223344. This rejects an implementation that
+continues execution but loses EAX. The updated checker SHA-256 is
+`50e93b3703532900221720901765fe33cddda0f37e841912b20023aaf1e1df38`.
+Its pre-heap main-image red result is in
+`build/i386-debug-cpu-trap-register-red/result.json`: preparation succeeds, then
+`CPU TRAP enter` is followed by vector 3 and `FAIL native kernel`. Source disk
+remains unchanged. Register return, mode/IF/TF restoration and shell recovery
+remain unexecuted assertions, not established behavior.

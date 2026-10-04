@@ -14,15 +14,15 @@ def commands():
                'Exception: BreakPt', 'Function: CpuTrapInstruction',
                'Source: FL:C:/Console.HC,1', 'dbg> ']
     return [
-        ('I64 CpuTrapStage=0;', []),
+        ('I64 CpuTrapStage=0,CpuTrapResult=0;', []),
         ('U0 CpuTrapLog(U8 *s){while(*s)OutU8(0xE9,*s++);}', []),
-        ('U0 CpuTrapInstruction(){asm { NOP NOP NOP }}', []),
+        ('I64 CpuTrapInstruction(){U32 value=0;asm { MOV EAX,0x11223344 NOP NOP NOP MOV U32 &value[EBP],EAX } return value;}', []),
         ('U8 *CpuTrapBytes=(&CpuTrapInstruction+0)(U64);I64 CpuTrapOffset=0;', []),
         ('Bool CpuTrapFind(){while(CpuTrapOffset<128&&(CpuTrapBytes[CpuTrapOffset]!=0x90||CpuTrapBytes[CpuTrapOffset+1]!=0x90||CpuTrapBytes[CpuTrapOffset+2]!=0x90))CpuTrapOffset++;return CpuTrapOffset<128;}', []),
         ('CpuTrapFind;', ['1']),
         ('U0 CpuTrapPatch(){CpuTrapBytes[CpuTrapOffset]=0xCC;}', []),
         ('CpuTrapPatch;CpuTrapBytes[CpuTrapOffset]==0xCC;', ['1']),
-        ('U0 CpuTrapProbe(){CpuTrapStage=1;CpuTrapLog("CPU TRAP enter\\n");CpuTrapInstruction;CpuTrapStage=2;CpuTrapLog("CPU TRAP resumed\\n");}', []),
+        ('U0 CpuTrapProbe(){CpuTrapStage=1;CpuTrapLog("CPU TRAP enter\\n");CpuTrapResult=CpuTrapInstruction;CpuTrapStage=2;CpuTrapLog("CPU TRAP resumed\\n");}', []),
         ('CpuTrapProbe;', [], {
             'begin': 'CPU TRAP enter\n',
             'initial_rows': heading,
@@ -38,6 +38,7 @@ def commands():
             'preserve_history': True,
         }),
         ('CpuTrapStage;', ['2']),
+        ('CpuTrapResult==0x11223344;', ['1']),
         ('IsDbgMode;', ['0']),
         ('(GetRFlags&0x300)==0x200;', ['1']),
         ('6*7;', ['42']),
@@ -54,7 +55,7 @@ def main():
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk,
-                  scope='Actual INT3 CPU trap, function/source and state inspection, G resumes after INT3, restored debugger mode/IF/TF and shell recovery; not breakpoint installation, stepping or complete register inspection')
+                  scope='Actual INT3 CPU trap, function/source and state inspection, G resumes after INT3 with EAX intact, restored debugger mode/IF/TF and shell recovery; not breakpoint installation, stepping or complete register inspection')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',

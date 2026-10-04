@@ -2,6 +2,20 @@
 
 ## Objective and status
 
+The heap-search optimization is now promoted to main. Both heap corpora, the
+matching original rebuild and i386 build/audits pass. All thirteen module/flat
+artifacts match the qualified prototype exactly. That image passes 513
+workstation commands, exact VGA and 20 exact heap-recovery cycles, with
+23.639-second startup and 0.255-second visible update. Its guest flat-development
+build fits at 486472 bytes and boots at 23.939 seconds, using cross-built retained
+providers. All six retained providers are rebuilding natively for this source
+epoch; fully guest-built timing and two-generation qualification remain open.
+
+The CPU-trap continuation test now also requires an EAX marker to survive
+resumption. Its preparation passes on the pre-heap main image, then vector 3
+still halts the kernel (`build/i386-debug-cpu-trap-register-red`). No continuation
+or register-preservation assertion has passed yet.
+
 The native startup profile in `build/i386-root-declarations-native-profile`
 attributes 442/506 root-header samples to heap allocation/free/scan and
 110/148 foundation samples to module validation. Sampling is not a benchmark.
