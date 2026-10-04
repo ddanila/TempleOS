@@ -6752,3 +6752,24 @@ returns 0 on the captured VGA screen, so the expected 1 times out. Formatting
 cases are not reached. This confirms the missing MStrPrint integration, not a
 formatting mismatch; full format-language parity is still outside this corpus.
 The native build/install and older cleanup workstation suite remain running.
+
+### Heap-scan snapshot: all twelve guest-built modules and image audit pass
+
+`build/i386-heap-scan-selfhost/result.json` passes the six flat-module guest
+build/install with all six guest-built retained providers and independent
+8 MiB `486,-fpu` boot (16 MiB build). No cross-retained mode was used. Target
+SHA-256: `66819bf5b517d80a937bee1491022eea6988d021c7ad5edbbf64bff61c02e7ba`.
+The flat payload is 487344 bytes (80 bytes spare), SHA-256
+`f4b4b6a5b707f0461c94b1a8abcdb57ec36d81991f04f89640b65636b95b03cc`.
+Its flat bytes match the earlier cleanup snapshot; this is not evidence of a
+flat-kernel size or performance improvement from the heap work.
+
+`build/i386-heap-scan-selfhost-audit/result.json` passes the twelve executable
+ranges, installed boot payload and boot instruction audit, and filesystem
+extent/bitmap checks with the guest compiler template selected. Ordinary
+8 MiB no-FPU TCG keyboard/VGA verification is running in
+`build/i386-heap-scan-selfhost-keyboard`; evaluate its own startup against the
+unchanged 60-second gate. This is now the newest completed fully guest-built
+snapshot, including debugger zero/mode fixes and predating formatter extraction.
+Current-source two-generation, full workflow and release qualification remain
+open. The older cleanup snapshot's workstation suite is still running.

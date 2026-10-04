@@ -20,9 +20,13 @@ cannot prove full self-hosting.
 All six retained providers now build inside that guest in
 `build/i386-heap-scan-retained`; export-set and console allocation-wrapper
 checks pass. Installation, exact installed bytes and independent 8 MiB no-FPU
-boot pass in `build/i386-heap-scan-retained-install`. The six flat modules are
-now building in `build/i386-heap-scan-selfhost` using those guest-built providers.
-This is not yet a fully native image qualification pass.
+boot pass in `build/i386-heap-scan-retained-install`. All six flat modules
+now build/install using those guest-built providers in `build/i386-heap-scan-selfhost`;
+independent 8 MiB no-FPU boot passes. The installed twelve-module instruction
+and filesystem audit passes in `build/i386-heap-scan-selfhost-audit`. Target
+SHA-256 is `66819bf5b517d80a937bee1491022eea6988d021c7ad5edbbf64bff61c02e7ba`.
+Its no-FPU TCG startup qualification is running; complete workflow qualification
+and a second native generation remain open.
 
 The newer formatter-extraction source revision 2470ed94 passes the original
 two-generation rebuild, all 17 original formatter cases, and cross-build/386
@@ -44,7 +48,7 @@ update. Both measured budgets pass on that cross-built snapshot. The preceding c
 at a test that redeclared debugger G; the distinct-name forward-call regression
 passes, and the full fixture has been corrected.
 
-The newest completed fully guest-built epoch is compiler 59, memory 18,
+The preceding cleanup fully guest-built epoch is compiler 59, memory 18,
 console 36 in `build/i386-terminal-debug-cleanup-selfhost`: six retained
 providers and six flat modules were guest-built, installed and independently
 booted. `build/i386-terminal-debug-cleanup-selfhost-audit` verifies all twelve
