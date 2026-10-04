@@ -4074,3 +4074,19 @@ The installed image audit is in `build/i386-heap-seek-selfhost-audit`; no-FPU
 8 MiB keyboard/exact-VGA startup testing is running in
 `build/i386-heap-seek-selfhost-keyboard`. A completed self-hosted build is not
 a full workflow, second-generation reproducibility or release verdict.
+
+The fully guest-built optimized target 6fc8eb0b now passes its installed
+386 executable/boot/filesystem and keyword audits in
+`build/i386-heap-seek-selfhost-audit/result.json`. Ordinary no-FPU 8 MiB TCG
+keyboard/exact-VGA boot passes in `build/i386-heap-seek-selfhost-keyboard` at
+32.920473797 seconds. The unchanged 60-second checker passes in its
+`-budget.json` report, closing the previous 66.404-second native-image failure
+for this source epoch.
+
+Full native workstation qualification is running in
+`build/i386-heap-seek-selfhost-workstation`. Second-generation retained rebuilding
+is running in `build/i386-heap-seek-gen2-native-build`, with current export
+contracts and `--compare-installed` against first-generation target 6fc8eb0b.
+That exact-byte comparison remains pending, as do the second flat build and
+release qualification. Kernel/Compiler sources remain unchanged during these
+runs. CPU-trap debugger continuation remains an independent failing contract.

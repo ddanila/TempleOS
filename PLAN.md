@@ -2,6 +2,13 @@
 
 ## Objective and status
 
+The fully guest-built optimized image passes installed 386/boot/filesystem and
+keyword audits plus ordinary 8 MiB no-FPU keyboard/exact-VGA startup at
+32.920 seconds, below the unchanged 60-second gate. Full native workstation
+qualification and a second-generation retained rebuild with exact installed-byte
+comparison are running. CPU-trap debugging and release qualification remain
+open; this timing pass does not establish the whole OS goal.
+
 The heap-search optimization is now promoted to main. Both heap corpora, the
 matching original rebuild and i386 build/audits pass. All thirteen module/flat
 artifacts match the qualified prototype exactly. That image passes 513
