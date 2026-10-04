@@ -56,9 +56,10 @@ def main():
     if args.hash_removal:
         selected += ['CHashTable *ColdOwner(CHash *e){CHashTable *t=Fs->hash_table;CHash *p;I64 i;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e)return t;p=p->next;}}t=t->next;}return 0;}',
                      'Bool ColdRemove(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE);CHashTable *t;if(!e)return FALSE;t=ColdOwner(e);if(!t)return FALSE;HashRemDel(e,t);return !HashFind(name,Fs->hash_table,HTT_FILE); }']
+        selected += ['Bool ColdKeep(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE);CHashTable *t=ColdOwner(e);if(!e||!t)return FALSE;return !HashRemDel(e,t,0)&&!HashRemDel(e,t,2)&&HashFind(name,Fs->hash_table,HTT_FILE)==e;}']
         fresh = checks[0]
         cached = checks[1]
-        checks += [f'ColdRemove("C:/Probe/{filename}")', fresh, cached, f'ColdHash("C:/Probe/{filename}")']
+        checks += [f'ColdKeep("C:/Probe/{filename}")', f'ColdRemove("C:/Probe/{filename}")', fresh, cached, f'ColdHash("C:/Probe/{filename}")']
     if args.shared_lifetime:
         cached_check = checks[1]
         owned_check = f'ReadOwned("C:/Probe/{filename}")'

@@ -8949,3 +8949,36 @@ resident binary data through public FileWrite; fresh cold reads and public
 entry/name/data ownership qualification are now running in
 `build/public-file-resident-public-hash-cold`. No runtime/hash ownership pass
 or OS source promotion is claimed yet. Cd workstation remains live.
+
+Resident cache correction and Cd regression qualification (2026-10-05):
+ABI-44 first resident read/write recovery and cold hash runs fail at the first
+read. The name service requires a non-NULL extension; wrappers passed NULL
+so normalization returned NULL. Both wrappers now pass an empty extension.
+The earlier build-only result is not a runtime pass.
+
+The candidate implements public HashRemDel through MemoryRuntime: select the
+requested instance in one table, require exact entry identity, unlink with IRQs
+saved, then use the existing public hash destructor. It adds the public default
+instance declaration and one memory export. First cross-build catches missing
+HashBucketFind imports; explicit bucket/single-table imports are now present
+and a fresh bootstrap/cross-build is running. No removal-runtime pass is
+claimed. Cold removal tests additionally require instances zero and two to
+fail without deleting the sole entry; the original oracle passes in
+`build/public-file-resident-hash-instance-red/oracle/debug.log`.
+
+The complete unpromoted source is archived as
+`docs/patches/i386-public-resident-candidate.patch`, relative to
+`1705dbae188ad875aa526daaedc424317cae467a`; git apply --check also passes
+against current main. This patch preserves reviewable/recoverable work without
+qualifying it as the main OS implementation. Parent cache keys, failure and
+allocation rollback, lifecycle, public removal and native builds remain gates.
+
+Cd special-path candidate passes all 513 workstation commands in
+`build/public-cd-special-workstation/result.json`: 24.645-second startup,
+0.255-second long-document response, exact VGA checkpoints, twenty document
+cycles with exact task heap recovery, filesystem audit and unchanged source
+disk on no-FPU 8 MiB QEMU. Source disk SHA-256
+`d71a5b36522a60960b9fe24f69c85dedbf753bae8732606f408331fc0f13955e`.
+No private-heap recovery assertion is inferred from the metadata-only observer.
+Retained native construction starts in `build/public-cd-special-native-build`;
+drive/error and Cd-specific recovery qualification remains open.
