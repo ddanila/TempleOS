@@ -14,8 +14,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path, help='Image containing a dated file')
     parser.add_argument('--name', default='PublicWrite.BIN', help='Dated directory-entry filename')
+    parser.add_argument('--builder', type=Path, default=ROOT/'tools/build-i386-kernel.py',
+                        help='Auditor implementation to qualify, including an isolated port candidate')
+    parser.add_argument('--resident', action='store_true', help='Require a resident fixture and reject resident metadata corruptions')
     args = parser.parse_args()
-    verify = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume']
+    verify = runpy.run_path(str(args.builder.resolve()))['verify_mutated_volume']
     original = args.disk.read_bytes()
     name = args.name.encode('ascii')
     if not name or len(name)>37 or '/' in args.name:
@@ -25,6 +28,8 @@ def main():
     if marker<0 or offset%64 or not struct.unpack_from('<Q',original,offset+56)[0]:
         raise ValueError('Missing dated directory-entry fixture')
     baseline = verify(args.disk)
+    if args.resident and struct.unpack_from('<H',original,offset)[0] not in (0xA00,0xE00):
+        raise ValueError('Fixture is not a resident regular file')
     block = struct.unpack_from('<q',original,offset+40)[0]
     root = struct.unpack_from('<q',original,2048*512+24)[0]
     bitmap_blocks = struct.unpack_from('<q',original,2048*512+32)[0]
@@ -49,6 +54,14 @@ def main():
     bad = bytearray(original)
     bad[offset+2] = ord('/')
     mutations['invalid-name'] = bad
+    if args.resident:
+        for name, attr in [('resident-unsupported-attributes',0xA02),
+                           ('resident-noncontiguous',0x200),
+                           ('resident-compressed-noncontiguous',0x600),
+                           ('resident-deleted-live-extent',0xB00)]:
+            bad = bytearray(original)
+            struct.pack_into('<H',bad,offset,attr)
+            mutations[name] = bad
     rejected = {}
     with tempfile.TemporaryDirectory() as directory:
         for name, data in mutations.items():
@@ -62,7 +75,9 @@ def main():
                 raise AssertionError(f'Auditor accepted {name}')
     if args.disk.read_bytes()!=original:
         raise ValueError('Source fixture changed')
-    print(json.dumps({'result':'pass','dated_volume':baseline,'filename':args.name,'rejected':rejected},indent=2))
+    print(json.dumps({'result':'pass','dated_volume':baseline,'filename':args.name,
+                      'auditor':str(args.builder.resolve()),'resident':args.resident,
+                      'rejected':rejected},indent=2))
 
 
 if __name__=='__main__':

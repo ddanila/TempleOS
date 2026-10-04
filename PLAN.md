@@ -8554,3 +8554,15 @@ rejection in RedSea directory/read/write/repair guards. Its independent auditor
 recognizes ordinary/resident and compressed/resident regular-file combinations
 (0x800, 0xA00, 0xC00, 0xE00). Fresh original bootstrap passes and cross compilation
 is running in `build/file-resident-metadata`; runtime qualification remains open.
+
+The dated-filesystem corruption checker now accepts an explicit `--builder`
+auditor and `--resident` fixture qualification. Against the isolated resident
+auditor and preserved resident entry it passes all ten rejection cases in
+`build/public-file-resident-write-cache-green/resident-corruption-audit.json`:
+the existing unsupported-bit, noncontiguous, overlap, extent, bitmap and name
+cases plus resident unsupported bits, missing contiguous storage, compressed
+resident without contiguous storage and a deleted entry retaining live extents.
+This demonstrates that admitting resident metadata preserves these independent
+filesystem rejection checks. The corrected runtime has passed its resident
+write checkpoint and reached the first cached-read check; no complete runtime
+pass is claimed.
