@@ -1311,3 +1311,9 @@ on 486,-fpu with matching VGA checkpoints. Version-16 adds public scanning,
 waiting and flushing; its full eighteen-case native message qualification is
 pending. Queued source execution prints 42 before the boolean fixture result,
 which the checker now expects explicitly.
+
+The full message reference now has nineteen original cases, adding inhibited
+key-description filtering followed by ordinary key delivery and queue emptiness.
+The fixture restores caller inhibit flags. Native version-16 qualification is
+pending on the corrected scanning image; no keyboard hardware integration is
+implied by posting these events directly.

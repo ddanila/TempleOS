@@ -60,6 +60,8 @@ def behavior_commands():
         'Bool MsgSpawnFinish(){I64 end=cnts.jiffies+2000;MsgSpawnStop=TRUE;while(MsgSpawnStage!=2&&cnts.jiffies<end)Yield;return MsgSpawnStage==2;}',
         'U0 MsgSourceQueue(){MsgCallQueue;MsgCallJob->job_code=JOBT_EXE_STR;MsgCallJob->aux_str=StrNew("6*7;");}',
         'Bool MsgSourceScan(){I64 a,b;FlushMsgs;MsgSourceQueue;Msg(MSG_CMD,171,172);return ScanMsg(&a,&b)==MSG_CMD&&a==171&&b==172&&MsgCallDone;}',
+        'Bool MsgKeyDesc(){I64 a,b,f=Fs->win_inhibit;Bool ok;FlushMsgs;Fs->win_inhibit|=1<<12;Msg(MSG_KEY_DOWN,0,0x80000000);Msg(MSG_KEY_DOWN,181,182);ok=ScanMsg(&a,&b)==MSG_KEY_DOWN&&a==181&&b==182&&ScanMsg==0;Fs->win_inhibit=f;return ok;}',
+
 
 
 
@@ -72,6 +74,7 @@ def behavior_commands():
                  ('Free(MsgRoute);', [])]
     commands += [('MsgCallScan;', ['1']), ('MsgCallFree;', []), ('MsgMasterScan;', ['1']), ('MsgCallFree;', []), ('MsgExceptScan;', ['1']), ('MsgCallFree;', [])]
     commands += [('MsgSpawnScan;', ['1']), ('MsgSpawnRun;', ['1']), ('MsgSpawnFinish;', ['1']), ('MsgCallFree;', []), ('MsgSourceScan;', ['42', '1']), ('MsgCallFree;', [])]
+    commands.append(('MsgKeyDesc;', ['1']))
     commands.append(('6*7;', ['42']))
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Message contract exceeds the interactive line limit')
@@ -95,7 +98,7 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:47]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:48]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
@@ -108,6 +111,7 @@ if(ok){ok=MsgMasterScan;MsgCallFree;}
 if(ok){ok=MsgExceptScan;MsgCallFree;}
 if(ok){ok=MsgSpawnScan;if(ok)ok=MsgSpawnRun;if(!MsgSpawnFinish)ok=FALSE;MsgCallFree;}
 if(ok){ok=MsgSourceScan;MsgCallFree;}
+if(ok)ok=MsgKeyDesc;
 if(ok)Report("PASS original public messages\\n");
 else Report("FAIL original public messages\\n");
 Report("DONE original public messages\\n");
@@ -134,8 +138,8 @@ Report("DONE original public messages\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
-    report.update(checker_sha256=checker, cases=18,
-                  scope='Public messages: root/child empty job rings/flags, 40-event FIFO, destructive mask filtering, negative-code down/up pair, FlushMsgs count and empty outputs, PostMsg/GetMsg child delivery; forward input-filter routing, DONT_FILTER bypass and backward filter posting; popup parent fallback, parent-post rejection, own delivery and popup wake flags; CALL job dispatch/completion before message scan, callback argument, master-owned completion and throwing callback recovery; queued SPAWN_TASK parent/argument/lifecycle and EXE_STR result; not macro recording or allocation recovery')
+    report.update(checker_sha256=checker, cases=19,
+                  scope='Public messages: root/child empty job rings/flags, 40-event FIFO, destructive mask filtering, negative-code down/up pair, FlushMsgs count and empty outputs, PostMsg/GetMsg child delivery; forward input-filter routing, DONT_FILTER bypass and backward filter posting; popup parent fallback, parent-post rejection, own delivery and popup wake flags; CALL job dispatch/completion before message scan, callback argument, master-owned completion and throwing callback recovery; queued SPAWN_TASK parent/argument/lifecycle and EXE_STR result; key-description inhibition; not macro recording or allocation recovery')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

@@ -5124,3 +5124,18 @@ scanner now uses the original SCf_KEY_DESC bit 31 explicitly, alongside the
 original WIf_SELF_KEY_DESC bit 12, and removes the unnecessary scan-code include.
 A fresh original rebuild of this correction is running. No version-16 native
 runtime pass is recorded; preceding version-15 results remain separately valid.
+
+### Key-description filtering acceptance
+
+The full message reference passes nineteen original cases
+(build/i386-message-key-description-original/result.json). With inhibit bit 12
+set, a KEY_DOWN carrying scan bit 31 must be discarded, while the following
+ordinary key event must be delivered and leave the queue empty. The fixture
+restores the caller's inhibit flags. This exercises the scanner path that
+captures aux2 before freeing the job. Both rebuild generations pass after the
+constant-dependency correction; the fresh version-16 native build and 386 boot instruction audit pass
+in build/i386-public-message-scan-fixed-kernel (483016 flat bytes). Native
+message qualification is running in build/i386-public-message-scan-native,
+including this filtering case. Queue cleanup and callback regressions are
+running on the same image in build/i386-public-message-scan-queues and
+build/i386-public-message-scan-callbacks.
