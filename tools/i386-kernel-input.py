@@ -321,6 +321,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                             key('ctrl',True); key('alt',True)
                             press('c' if action['hotkey']=='break' else 'n');
                             key('alt',False); key('ctrl',False)
+                        elif 'keys' in action:
+                            chord=action['keys']
+                            if not isinstance(chord,list) or not chord or not all(isinstance(k,str) for k in chord):
+                                raise ValueError('A key chord requires a nonempty list of key names')
+                            for modifier in chord[:-1]: key(modifier,True)
+                            try: press(chord[-1])
+                            finally:
+                                for modifier in reversed(chord[:-1]): key(modifier,False)
                         elif 'ctrl_key' in action:
                             key('ctrl',True)
                             if action.get('shift'): key('shift',True)

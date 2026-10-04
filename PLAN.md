@@ -41,9 +41,12 @@ chronology is in [port progress](docs/port-progress.md).
 
 M7 remains open. Complete original feature parity is not established, release
 publication is pending, and startup qualification of a fully guest-built image
-with the latest source remains open. The loader-index development image now
-passes the full no-FPU workstation suite with 50.241406-second startup and a
-0.261061-second long-document update; its retained inputs are cross-built. Older
+with the latest source remains open. The latest integration image with guest-built
+MemoryRuntime and ConsoleRuntime passes the full no-FPU workstation suite:
+513 commands, 51.426694-second startup and a 0.370859-second long-document
+update. Its boot kernel and remaining providers are cross-built. A newer
+cross-built image passes terminal creation and focus shortcuts; updated native
+provider building and programmatic User regression are still running. Older
 fully guest-built startup results exceed the 60-second target. Functional passes and package
 hash verification do not by themselves close these gaps. The historical
 “next” sections below record the implementation sequence; the following work
@@ -52,6 +55,25 @@ queue supersedes their stale status and priority statements.
 All work stays in our fork, `ddanila/TempleOS`, directly on `main`, without
 feature branches or PRs. The former `archive` branch was removed after verifying
 that its history is contained in `main`.
+
+### Latest implementation checkpoint (2026-10-04)
+
+- Guest-built User providers pass the 16-case User oracle, 41 formatter cases
+  and the complete 513-command workstation suite on the mixed-provider image.
+  Evidence: `build/i386-user-native-providers-workstation/result.json`.
+- Ctrl-Alt-T and Ctrl-Alt-Esc now create a User task asynchronously in the keyboard
+  worker; the child focuses itself after loading declarations. Ctrl-Alt-N and
+  Ctrl-Alt-Tab cycle focus. The current cross-built image passes focused QEMU
+  creation/input/Exit/cleanup and focus-history/heap-recovery tests. Plain and
+  Ctrl-Alt-Shift creation variants do not create a task. New boot imports are
+  unnecessary; boot-kernel size stays 483384 bytes.
+- Next finish the current User regression/native-provider builds, install and
+  audit their outputs, and rerun the affected runtime gates. Then test repeated
+  creation resource recovery and improve fresh-child declaration-loading latency.
+  Updated all-native/two-generation release qualification remains required.
+
+Earlier source-epoch checkpoints below are historical; they do not supersede
+this status or close the outstanding qualification gates.
 
 The public-delay slice now passes its focused cross-image no-FPU test:
 `Yield`, `Sleep` and `SleepUntil` reuse the original delay core and preserve
@@ -7636,3 +7658,62 @@ Broader TaskWait/input-filter and cancellation behavior, debugger/workstation
 completion, an updated all-native image and reproducible release packaging
 remain part of the full objective. These mixed-provider successes do not close
 those gates or establish release readiness.
+
+
+### Creation shortcuts: original oracle to QEMU red/green (2026-10-04)
+
+The pending workstation run on guest-built MemoryRuntime/ConsoleRuntime now
+PASSES in `build/i386-user-native-providers-workstation/result.json`: 513 commands,
+576 lines, 8 MiB 486,-fpu TCG, startup 51.42669410491362 seconds, exact VGA
+checkpoints, 20 document cycles with exact task data/code heap recovery, and
+0.3708586450666189-second long-document update. This image predates the new
+shortcut source and has cross-built boot/remaining providers.
+
+The QMP driver now accepts explicit key chords. Its control run reuses the
+existing Ctrl-Alt-N focus oracle and PASSES in
+`build/i386-keyboard-chord-focus-control/result.json` (11 commands). The new
+`tools/test-i386-terminal-create-hotkeys.py` is grounded in the six original
+KbdBuildSC oracle cases, adds actual QEMU input delivery, and requires a focused
+VGA child, child 6*7, Exit, CPU-root child-list cleanup and resumed root input.
+It catches possible Shift-Esc break behavior when testing no creation; it does
+not claim that Shift variants have no other input action.
+
+The position-corrected creation fixture first FAILS on the prior image at
+Ctrl-Alt-T in `build/i386-terminal-create-hotkeys-native-red-v2/result.json`:
+no new child marker appears; later cases are not reached; source unchanged.
+The identical checker PASSES on the new cross-built image in
+`build/i386-terminal-create-hotkeys-native-green/result.json`: 15 outer commands,
+8 MiB 486,-fpu TCG, startup 50.196653900202364 seconds, exact VGA checkpoints,
+source unchanged. Both Ctrl-Alt-T and Ctrl-Alt-Esc create, focus, execute 6*7,
+Exit and reclaim the child; plain/Shift variants do not create a child.
+Checker SHA: `29a6b3529acd7c009a78bf578efa9143b946699f2691ed82dec2c96f9d9ec154`.
+Driver SHA: `abd7c8f863fb7233d41f47efec9febd6e73ea56ca4bb7b47d606fba62c0782de`.
+New image SHA: `dfec38e37d3faf7371b71ad3bafbc197a6f924600b846e0094e7f90a4e3a80e0`.
+
+Creation runs in the keyboard worker, not IRQ context. It spawns a child that
+loads declarations and focuses itself, allowing keyboard decoding to continue
+while startup proceeds. Programmatic UserCmdLine still ignores its original
+dummy argument and uses the same initialization without forcing focus.
+Per-key held state consumes make/break pairs with IRQ-protected updates. The
+handler rejects Shift variants, maps Esc to creation and Tab to focus cycling.
+No boot imports or provider ABI change is needed. Original two-generation
+rebuilding and cross-image 386 audits pass; boot-kernel size stays 483384 bytes.
+
+The focus checker now accepts `--focus-key n|tab` and records the selected key.
+Both variants PASS on the new image in
+`build/i386-terminal-n-hotkeys-regression/result.json` and
+`build/i386-terminal-tab-alias-native-green-labeled/result.json` (11 commands each,
+8 MiB 486,-fpu, exact VGA, independent definitions/history, exit refocus, exact
+parent public-heap recovery, source unchanged). The initial Tab run's report
+had a stale N scope label; use the labeled rerun as authoritative evidence.
+The prior image's labeled Tab red run is still running in
+`build/i386-terminal-tab-alias-native-red-labeled`.
+
+The full 16-case programmatic User regression is running in
+`build/i386-creation-hotkeys-user-regression-16`. Updated native MemoryRuntime
+and ConsoleRuntime building is running in `build/i386-creation-hotkeys-native-build`.
+Keep OS sources frozen until these jobs finish. Then install/audit those native
+outputs and rerun creation, focus and User gates before updated workstation
+integration. Typematic parity, exhaustive repeated-creation resource recovery,
+fresh-child latency, broader TaskWait/filter/cancellation behavior, updated
+all-native images and reproducible release qualification remain open.

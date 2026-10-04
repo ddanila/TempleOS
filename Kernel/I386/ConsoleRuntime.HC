@@ -43,6 +43,7 @@ extern CTask *NativeWinFocus(CTask *task=0);
 extern I64 *NativeTerminalLossSeen();
 extern U0 NativeTerminalDiscardKeyboard();
 extern Bool NativeTerminalFocusKey(CI386KeyEvent *event);
+extern U0 NativeUserHotkey(U8 *data);
 extern U8 *NativeTerminalLine(I64 required);
 extern I64 NativeTerminalInputKey(CI386KeyEvent *event);
 extern CTask *NativeUser(U8 *fmt=0,...);

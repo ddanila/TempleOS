@@ -17,7 +17,7 @@ class CNativeTerminal {
   Bool owns_planes,running;
 };
 CNativeTerminal *native_terminal_head,*native_terminal_root;
-Bool native_terminal_focus_held;
+U64 native_terminal_hotkeys_held;
 CNativeTerminal *NativeTerminalFind(CTask *task)
 {
   CNativeTerminal *terminal=native_terminal_head;
@@ -52,7 +52,9 @@ I64 *NativeTerminalLossSeen()
 U0 NativeTerminalDiscardKeyboard()
 {
   CNativeTerminal *terminal=native_terminal_head;
-  native_terminal_focus_held=FALSE;
+  U32 irq=I386IrqSave;
+  native_terminal_hotkeys_held=0;
+  I386IrqRestore(irq);
   while(terminal) {
     NativeKeyboardDiscard(terminal->task); terminal=terminal->next;
   }
@@ -157,19 +159,33 @@ CTask *NativeWinFocus(CTask *task=NULL)
   return task;
 }
 Bool NativeTerminalFocusKey(CI386KeyEvent *event)
-{//Run in the keyboard worker, never IRQ context. Consume the hotkey's pair.
+{//Run in the keyboard worker, never IRQ context. Consume each hotkey's pair.
   CNativeTerminal *terminal,*start;
+  I64 raw=(event->scan>>32)&255;
+  U64 mask;
+  U32 irq;
   Bool held;
-  if(((event->scan>>32)&255)!=0x31) return FALSE;
+  if(raw!=0x31 && raw!=0x0F && raw!=0x14 && raw!=1) return FALSE;
+  if(event->type!=MSG_KEY_DOWN && event->type!=MSG_KEY_UP) return FALSE;
+  mask=1<<raw; irq=I386IrqSave;
   if(event->type==MSG_KEY_UP) {
-    held=native_terminal_focus_held;
-    native_terminal_focus_held=FALSE;
-    return held;
+    held=(native_terminal_hotkeys_held&mask)!=0;
+    native_terminal_hotkeys_held&=~mask;
+    I386IrqRestore(irq); return held;
   }
-  if(event->type!=MSG_KEY_DOWN) return FALSE;
-  if(native_terminal_focus_held) return TRUE;
-  if((event->scan&0xC00)!=0xC00) return FALSE;
-  native_terminal_focus_held=TRUE;
+  if(native_terminal_hotkeys_held&mask) { I386IrqRestore(irq); return TRUE; }
+  if((event->scan&0xE00)!=0xC00) { I386IrqRestore(irq); return FALSE; }
+  native_terminal_hotkeys_held|=mask; I386IrqRestore(irq);
+  if(raw==0x14 || raw==1) {
+    //The new task loads declarations and focuses itself. Keep decoding input
+    //while it starts instead of waiting here with the keyboard worker blocked.
+    try { (*native_user_providers.spawn)(&NativeUserHotkey,NULL,NULL,-1,NULL,0,256); }
+    catch {
+      I386TaskSelf->catch_except=TRUE;
+      KernelLog("USER hotkey spawn failed\n");
+    }
+    return TRUE;
+  }
   terminal=NativeTerminalFind(sys_focus_task);
   if(terminal) terminal=terminal->next;
   if(!terminal) terminal=native_terminal_head;
@@ -214,7 +230,7 @@ U0 NativeTerminalConsoleHeading()
     I386TextWrite(&terminal->surface,"\n\n");
   } else I386TextWrite(&console_text,console_title);
 }
-U0 NativeUserCmdLine(I64 dummy=0)
+U0 NativeUserConsoleStart(Bool focus)
 {
   CNativeTerminal *terminal;
   SetRFlags(GetRFlags|512);
@@ -230,9 +246,12 @@ U0 NativeUserCmdLine(I64 dummy=0)
   KernelLog("USER headers ok\n");
   if(!HashFind("ST_COLORS",Fs->hash_table,HTT_DEFINE_STR))
     DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
+  if(focus) NativeWinFocus(I386TaskSelf);
   KernelLog("USER input begin\n");
   NativeUserTaskCont;
 }
+U0 NativeUserCmdLine(I64 dummy=0) { NativeUserConsoleStart(FALSE); }
+U0 NativeUserHotkey(U8 *data) { NativeUserConsoleStart(TRUE); }
 
 U8 *NativeTerminalLine(I64 required)
 {//Keep input storage in the terminal so break and forced exit cannot leak it.

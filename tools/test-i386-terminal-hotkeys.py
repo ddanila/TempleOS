@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def commands():
+def commands(focus_key="n"):
     root = ['TempleOS i386', 'HolyC console', '']
     one = root[:2] + ['Task: One', '', '> ']
     two = root[:2] + ['Task: Two', '', '> ']
@@ -31,6 +31,7 @@ def commands():
         if index == 0:
             root_busy.append('1')
     root_busy += ['> TermRun;', '']
+    focus_action = {'hotkey': 'focus-next'} if focus_key == 'n' else {'keys': ['ctrl', 'alt', focus_key]}
     events = []
     current_rows = one
     def type_text(text, label):
@@ -47,15 +48,15 @@ def commands():
     one1 = one[:-1] + ['> I64 terminal_value=11;', '> ']
     enter('I64 terminal_value=11;', one1, 'one-definition')
     two0 = two
-    events.extend([{'hotkey': 'focus-next'}, {'expect_rows': two0, 'label': 'two-hotkey-focus'}])
+    events.extend([dict(focus_action), {'expect_rows': two0, 'label': 'two-hotkey-focus'}])
     current_rows = two0
     two1 = two[:-1] + ['> HashFind("terminal_value",Fs->hash_table,HTT_GLBL_VAR)!=0;', '0', '> ']
     enter('HashFind("terminal_value",Fs->hash_table,HTT_GLBL_VAR)!=0;', two1, 'two-isolation')
     two2 = two1[:-1] + ['> I64 terminal_value=22;', '> ']
     enter('I64 terminal_value=22;', two2, 'two-definition')
     one2 = one1
-    events.extend([{'hotkey': 'focus-next'}, {'expect_rows': root_busy[-60:], 'label': 'root-hotkey-focus'},
-                   {'hotkey': 'focus-next'}, {'expect_rows': one2, 'label': 'one-hotkey-history'}])
+    events.extend([dict(focus_action), {'expect_rows': root_busy[-60:], 'label': 'root-hotkey-focus'},
+                   dict(focus_action), {'expect_rows': one2, 'label': 'one-hotkey-history'}])
     current_rows = one2
     one3 = one2[:-1] + ['> terminal_value;', '11', '> ']
     enter('terminal_value;', one3, 'one-value')
@@ -81,18 +82,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--focus-key', choices=('n', 'tab'), default='n')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk,
-                  scope='Hardware Ctrl-Alt-N cycles One/Two/root with independent histories and definitions, exit refocus and parent public heap recovery; not terminal creation hotkey or window stacking parity')
+                  focus_key=args.focus_key,
+                  scope=f'Hardware Ctrl-Alt-{args.focus_key} cycles One/Two/root with independent histories and definitions, exit refocus and parent public heap recovery; not terminal creation hotkey or window stacking parity')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
             qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
-                                         'commands': commands()})
+                                         'commands': commands(args.focus_key)})
         if sha(Path(__file__)) != checker:
             raise ValueError('Debugger checker changed during execution')
         report['result'] = 'pass'

@@ -3295,3 +3295,45 @@ non-IRQ decoder, not QEMU hardware delivery or native-port shortcut behavior.
 Full native-provider workstation testing is running in
 `build/i386-user-native-providers-workstation`; that verdict and an updated
 all-native release qualification remain outstanding.
+
+
+### Creation and focus shortcuts (2026-10-04)
+
+On `build/i386-user-creation-hotkeys-kernel/kernel.img`, Ctrl-Alt-T and
+Ctrl-Alt-Esc create a terminal and focus it after declaration loading.
+Ctrl-Alt-N and Ctrl-Alt-Tab cycle focus. The current implementation is
+cross-built; updated native-provider rebuilding is still running.
+
+```sh
+python3 tools/test-i386-terminal-create-hotkeys.py \
+  build/i386-user-creation-hotkeys-kernel/kernel.img --out build/create-check
+python3 tools/test-i386-terminal-hotkeys.py \
+  build/i386-user-creation-hotkeys-kernel/kernel.img --focus-key tab --out build/tab-check
+```
+
+`build/i386-terminal-create-hotkeys-native-red-v2/result.json` proves the creation
+fixture fails on the prior image at Ctrl-Alt-T. The identical checker passes on
+the updated cross-built image in
+`build/i386-terminal-create-hotkeys-native-green/result.json`: 15 outer commands,
+actual QMP key delivery, both creation aliases, focused VGA child, child 6*7,
+Exit, child-list retirement, plain/Shift no-creation and resumed root. A possible
+Shift-Esc break is caught; no-creation does not mean the chord has no other action.
+The generic chord driver separately passes the existing focus control in
+`build/i386-keyboard-chord-focus-control/result.json`.
+
+Both N and Tab focus checks pass in
+`build/i386-terminal-n-hotkeys-regression/result.json` and
+`build/i386-terminal-tab-alias-native-green-labeled/result.json`, including
+history/definition isolation, exit refocus and exact parent public-heap recovery.
+All three gates use 8 MiB 486,-fpu TCG, exact VGA checkpoints and preserved sources.
+They do not qualify typematic behavior, exhaustive creation heap recovery or
+acceptable creation latency. Fresh children still load declarations again.
+
+The earlier image with guest-built MemoryRuntime/ConsoleRuntime also completes
+its full workstation suite in `build/i386-user-native-providers-workstation/result.json`:
+513 commands, 576 lines, 20 document cycles with exact task data/code heap
+recovery, 51.426694-second startup and 0.370859-second visible update. That image
+predates these shortcut changes. New User regression and native-provider build
+results remain pending in `build/i386-creation-hotkeys-user-regression-16` and
+`build/i386-creation-hotkeys-native-build`; installation, runtime requalification
+and updated all-native release gates remain outstanding.
