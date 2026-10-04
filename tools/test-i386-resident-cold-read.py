@@ -54,7 +54,8 @@ def main():
         selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<=0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
         checks += [f'ColdHash("C:/Probe/{filename}")']
     if args.hash_removal:
-        selected += ['Bool ColdRemove(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE),*p;CHashTable *t=Fs->hash_table;I64 i;if(!e)return FALSE;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e){HashRemDel(e,t);return !HashFind(name,Fs->hash_table,HTT_FILE);}p=p->next;}}t=t->next;}return FALSE; }']
+        selected += ['CHashTable *ColdOwner(CHash *e){CHashTable *t=Fs->hash_table;CHash *p;I64 i;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e)return t;p=p->next;}}t=t->next;}return 0;}',
+                     'Bool ColdRemove(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE);CHashTable *t;if(!e)return FALSE;t=ColdOwner(e);if(!t)return FALSE;HashRemDel(e,t);return !HashFind(name,Fs->hash_table,HTT_FILE); }']
         fresh = checks[0]
         cached = checks[1]
         checks += [f'ColdRemove("C:/Probe/{filename}")', fresh, cached, f'ColdHash("C:/Probe/{filename}")']
@@ -66,6 +67,9 @@ def main():
                      'Bool ColdChild(){I64 end=cnts.jiffies+2000;ColdTaskResult=0;if(!Spawn(&ColdTask,0,"ColdRead",-1,Fs,8192))return FALSE;while(!ColdTaskResult&&cnts.jiffies<end)Yield;Yield;return ColdTaskResult==1;}']
         checks += ['ColdChild','Cd("C:/Probe")',cached_check,'Cd("C:/")',cached_check]
     try:
+        for source in selected:
+            if len(source) > 255:
+                raise ValueError(f'Native helper exceeds 255-byte input limit: {source[:40]}')
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)
         lines = ['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+[s.replace('C:/Probe/','B:/') for s in selected]

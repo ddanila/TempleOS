@@ -8926,3 +8926,26 @@ table failed the original oracle because the entry belongs to an ancestor;
 the test now explicitly locates the owning table. Python compilation, CLI
 parsing and diff whitespace checks pass. Cd's full workstation run remains
 live; its focused 32-command result is still the qualified boundary.
+
+Public-cache candidate build and bounded removal test (2026-10-05):
+The removal oracle passes, but its initial native helper exceeded the 255-byte
+interactive input limit. Split owner-table lookup and removal into separate
+functions and add a preflight helper-length check before oracle construction.
+The bounded oracle passes; the ABI-42 candidate fails while defining ColdRemove
+(`build/public-file-resident-hash-removal-bounded-red`), before exercising
+removal. Public HashRemDel is absent from the port's current public hash API,
+so this is an additional compatibility obligation, not evidence about removal
+behavior. Neither failing run modifies the source disk.
+
+The corrected ABI-44 candidate completes fresh original bootstrap and cross
+build in `build/file-resident-public-prototype/build/file-resident-public`.
+386 boot audit passes (96 BIOS and 33 protected-mode instructions); kernel is
+483192 bytes, SHA-256
+`63641eed250557faca96a4ceb8c19cf02c7ac063712d611b8ed3d7d9bd99926f`.
+This is build evidence only. Resident read/write plus twenty-cycle public/private
+heap recovery is running in `build/public-file-resident-public-hash-recovery`.
+A separate no-FPU 8 MiB fixture-population boot passes (25.147 seconds), writing
+resident binary data through public FileWrite; fresh cold reads and public
+entry/name/data ownership qualification are now running in
+`build/public-file-resident-public-hash-cold`. No runtime/hash ownership pass
+or OS source promotion is claimed yet. Cd workstation remains live.
