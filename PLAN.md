@@ -7706,8 +7706,11 @@ Both variants PASS on the new image in
 8 MiB 486,-fpu, exact VGA, independent definitions/history, exit refocus, exact
 parent public-heap recovery, source unchanged). The initial Tab run's report
 had a stale N scope label; use the labeled rerun as authoritative evidence.
-The prior image's labeled Tab red run is still running in
-`build/i386-terminal-tab-alias-native-red-labeled`.
+The identical labeled Tab checker FAILS on the prior image in
+`build/i386-terminal-tab-alias-native-red-labeled/result.json`: the first
+focus change does not reach the expected VGA terminal; source unchanged.
+Red and green checker SHA:
+`d46842561c2a7aeeb594d9aacfc0e8b5bbd433ee655f45efeb1909f483979748`.
 
 The full 16-case programmatic User regression is running in
 `build/i386-creation-hotkeys-user-regression-16`. Updated native MemoryRuntime
