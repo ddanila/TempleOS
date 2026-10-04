@@ -4384,3 +4384,24 @@ Full six-module guest flat-development construction is now running in
 `build/cpu-trap-layout-prototype/build/cpu-trap-add-flat-development`, with
 verified cross-retained inputs. Flat size/install/boot remain pending;
 prototype OS code is not yet promoted.
+
+### Corrected CPU trampoline guest flat construction
+
+`build/cpu-trap-layout-prototype/build/cpu-trap-add-flat-development/result.json`
+PASSes six guest-built flat modules, installation and independent 8 MiB boot.
+Flat size is 487304 bytes, leaving 120 bytes before the current loader limit.
+Flat SHA-256:
+`dd9a2080f5d89010e1827ae9727e456ccc5e0caab81ee762ec73534abe435218`.
+Target SHA-256:
+`d0eaadccedb1b3708620ac5bc6efe9bda3d780c7fe15b1837c058aa631337cc3`.
+Retained inputs are verified cross-built development providers: this is not
+a fully native twelve-module result. Installed instruction/boot/RedSea and
+keyword audits PASS in `build/cpu-trap-add-flat-audit/result.json`.
+
+Both three-cycle register banks and forced CPU-debugger child exit PASS on
+the corrected cross image in `build/cpu-trap-add-bank0`, `-bank1` and `-kill`.
+Five-cycle continuation on the installed guest flat image is live in
+`build/cpu-trap-add-flat-repeat`. Promotion is pending that verdict.
+Full native providers, updated generations and release qualification must
+be repeated after promotion. Further debugger features will require
+addressing the near-full boot payload rather than waiving its size limit.
