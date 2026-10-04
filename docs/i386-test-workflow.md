@@ -4464,3 +4464,21 @@ green publication verdict. PLAN.md records independent metadata/return,
 error, empty-file, timestamp/attribute and compressed/resident parity work.
 The current retained rebuild is live in ConsoleRuntime after compiler
 providers; main OS sources remain frozen for that qualification epoch.
+
+### Original public FileWrite contract baseline
+
+`tools/test-i386-public-file-write.py` creates an embedded-NUL/binary payload
+through the original five-argument API and compares the positive returned
+cluster with an independent persisted directory record. It also requires
+exact four bytes, explicit timestamp 0x1122334455667788, contiguous attribute
+0x800, valid RedSea ownership and preserved source image.
+
+`build/public-file-write-red/result.json` currently FAILs at the FileWrite
+call/declaration (frontend Invalid lval). Payload and report-helper preparation
+pass, but no file or metadata assertion executes. The earlier rejection
+fixture independently reports FileWrite undefined. This is failing API
+coverage, not a successful filesystem test. Existing Boolean internal writes
+are not sufficient to satisfy this public cluster-return contract. Empty,
+error, replacement, default-date, compression and resident parity remain
+additional planned contracts. Native CPU-trap provider qualification remains
+live on main; its Kernel/Compiler source epoch stays frozen.
