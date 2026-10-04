@@ -8666,3 +8666,17 @@ then exits. A fresh boot of that persisted image is undergoing the cold-read
 contract in `build/public-file-resident-cold-green`; no cache contents survive
 the preparation session. The original cold-read oracle passes. Runtime verdict
 is pending, with compressed residency and lifetime cleanup still open.
+
+ABI-42 cold ordinary resident reads now pass in
+`build/public-file-resident-cold-green/result.json`: original functional oracle,
+first disk attributes 0xA00 then cached attributes 0, independently owned buffers,
+exact VGA, unchanged source image and unchanged entire candidate disk. The
+fixture was written in a previous QEMU process, so this exercises an initially
+empty cache. Compressed residence and shared lifetime cleanup remain open.
+
+The cold resident checker gains `--compressed` for a 64-byte binary `.Z` fixture:
+first disk attributes 0xE00, cached attributes 0x400, cached alternate-name reads,
+NUL termination and fresh owned buffers. A compressed fixture preparation
+session is running in `build/public-file-resident-compressed-fixture`; original
+and native compressed qualification are pending. This checks stored archive
+ownership plus expansion rather than assuming ordinary residence proves it.

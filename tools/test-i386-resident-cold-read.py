@@ -14,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path, help='Bootable image with /Probe/ReadResident.BIN containing A,NUL,B,255 and resident metadata')
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--compressed', action='store_true', help='Require a resident .Z fixture containing the 64-byte ReadPackedBytes seed')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -26,16 +27,29 @@ def main():
                   scope='Resident disk population, first disk attributes then cached attributes, fresh owned reads')
     definitions = runpy.run_path(str(ROOT/'tools/test-i386-public-file-read.py'))['DEFINITIONS']
     selected = [definitions[0], definitions[2], definitions[4]]
+    filename = 'ReadResident.BIN'
     checks = ['ReadCheck("C:/Probe/ReadResident.BIN",0xA00)',
               'ReadCheck("C:/Probe/ReadResident.BIN",0)',
               'ReadOwned("C:/Probe/ReadResident.BIN")']
+    setup_buffer, setup_size = 'ReadBytes', 4
+    if args.compressed:
+        filename += '.Z'
+        setup_buffer, setup_size = 'ReadPackedBytes', 64
+        selected = [definitions[0],definitions[1],definitions[4],
+                    'Bool ColdPacked(U8 *name,I64 attr){I64 n=-1,a=-1;U8 *p=FileRead(name,&n,&a);Bool ok=p&&n==64&&a==attr&&p[0]==65&&p[1]==0&&p[2]==255&&p[63]==65&&p[64]==0;Free(p);return ok;}']
+        checks = ['ColdPacked("C:/Probe/ReadResident.BIN.Z",0xE00)',
+                  'ColdPacked("C:/Probe/ReadResident.BIN.Z",0x400)',
+                  'ColdPacked("C:/Probe/ReadResident.BIN",0x400)',
+                  'ReadOwned("C:/Probe/ReadResident.BIN.Z")']
+    report['compressed'] = args.compressed
     try:
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)
         lines = ['U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}']+selected
-        lines += ['U0 ColdReads(){U8 *name;CHashGeneric *entry;',
-                  'if(FileWrite("B:/ReadResident.BIN",ReadBytes,4,0x1122334455667788,0x200)<=0){Report("FAIL setup\\n");return;}',
-                  'name=FileNameAbs("B:/ReadResident.BIN");entry=HashFind(name,adam_task->hash_table,HTT_FILE);Free(name);',
+        lines += ['U0 ColdReads(){U8 *name;CHashGeneric *entry;']
+        if args.compressed:lines.append('ReadSeed;')
+        lines += [f'if(FileWrite("B:/{filename}",{setup_buffer},{setup_size},0x1122334455667788,0x200)<=0){{Report("FAIL setup\\n");return;}}',
+                  f'name=FileNameAbs("B:/{filename}");entry=HashFind(name,adam_task->hash_table,HTT_FILE);Free(name);',
                   'if(!entry){Report("FAIL resident cache setup\\n");return;}HashRemDel(entry,adam_task->hash_table);']
         for index, check in enumerate(checks):
             lines.append('if(!('+check.replace('C:/Probe/','B:/')+')){Report("FAIL cold case '+str(index)+'\\n");return;}')
