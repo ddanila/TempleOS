@@ -4051,3 +4051,13 @@ hash and the resulting source-disk hash. Installation is running in
 `build/i386-heap-seek-native-install`; native-provider boot timing, the matching
 flat rebuild, integrated native workflows and second-generation reproducibility
 remain pending. This is completed construction evidence, not a release pass.
+
+The optimized epoch's native retained installation passes in
+`build/i386-heap-seek-native-install/result.json`: all six payloads match their
+build hashes, preserved source/candidate disks remain unchanged by the boot
+check, and an independent 8 MiB KVM boot evaluates 6*7 and DocAllocationCheck.
+Candidate SHA-256 is
+`ed8e5e33b1f2f1c1643133df27883a6dd821210dfcce6793c398c4c09b340d4d`.
+The provenance-enforced six-flat-module rebuild is now running in
+`build/i386-heap-seek-selfhost`, with the matching retained-build result.
+No-FPU timing and integrated fully guest-built workflows remain pending.

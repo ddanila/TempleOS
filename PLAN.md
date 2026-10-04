@@ -9,9 +9,10 @@ workstation commands, exact VGA and 20 exact heap-recovery cycles, with
 23.639-second startup and 0.255-second visible update. Its guest flat-development
 build fits at 486472 bytes and boots at 23.939 seconds, using cross-built retained
 providers. All six retained providers now pass native construction and payload/export
-checks for this source epoch in `build/i386-heap-seek-native-build`. Installation
-is running; fully guest-built timing and two-generation qualification remain
-open.
+checks for this source epoch in `build/i386-heap-seek-native-build`. Exact installation and independent 8 MiB boot pass in
+`build/i386-heap-seek-native-install`. The six-module guest flat rebuild is
+running in `build/i386-heap-seek-selfhost`; fully guest-built timing and
+two-generation qualification remain open.
 
 The CPU-trap continuation test now also requires an EAX marker to survive
 resumption. Its preparation passes on the pre-heap main image, then vector 3
