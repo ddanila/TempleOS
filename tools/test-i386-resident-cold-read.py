@@ -81,6 +81,8 @@ def main():
                      'U0 ColdTask(U8 *data){if('+cached_check+'&&'+owned_check+')ColdTaskResult=1;else ColdTaskResult=2;}',
                      'Bool ColdChild(){I64 end=cnts.jiffies+2000;ColdTaskResult=0;if(!Spawn(&ColdTask,0,"ColdRead",-1,Fs,8192))return FALSE;while(!ColdTaskResult&&cnts.jiffies<end)Yield;Yield;return ColdTaskResult==1;}']
         checks += ['ColdChild','Cd("C:/Probe")',cached_check,'Cd("C:/")',cached_check]
+    if args.hash_visible:
+        checks.insert(1, f'ColdHash("C:/Probe/{filename}")')
     try:
         for source in selected:
             if len(source) > 255:

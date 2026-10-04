@@ -24,8 +24,17 @@ Public FileRead and FileFind are now promoted with file-service ABI 40. Their
 public contracts, fully native twelve-module build/install/audit and native
 513-command workstation pass. Main's fresh bootstrap/cross/386 audits pass and
 all thirteen emitted artifacts match the qualified prototype. Two fully native
-generations match across all twelve modules, flat kernel and boot area. Resident caching has an
-original-oracle failing port test. Broader errors and release requirements remain open.
+generations match across all twelve modules, flat kernel and boot area.
+
+Current unpromoted work is public filesystem compatibility. Cd passes its
+32-command focused contract and the full 513-command no-FPU workstation;
+retained native construction is underway. Resident ABI-44 cross-builds and
+boots, but binary/compressed/empty cold-cache tests fail public publication
+visibility. Original oracles pass. Public cache ownership, removal, replacement,
+recovery and native construction must qualify before promotion. The candidate
+source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
+temporary debug-port tracing is separate from that archived candidate.
+Broader errors, full debugger behavior and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
 frames, normal-context debugger entry and full exception-frame return. Five
@@ -9036,3 +9045,29 @@ Main's original bootstrap has been restored and passes in
 `build/main-bootstrap-restored.log`. Cd native construction remains live and
 has advanced from CompilerRuntime to CompilerProbe. Neither resident nor Cd
 OS source is promoted by this update.
+
+Publication tracing and sharper cold gate (2026-10-05):
+When --hash-visible is selected, cold tests now check entry/name/data public
+ownership immediately after the first disk read, before checking cached
+attributes. Retain the later ownership check as well. The revised original
+oracle passes in `build/public-resident-publication-red/oracle/debug.log`;
+the old candidate reaches the new ColdHash checkpoint, exposing publication
+independently of later cached attribute behavior. Python compilation and
+diff checks pass. The top status now separates qualified main, unpromoted Cd
+and the failing resident candidate rather than leaving current work buried
+only in the chronological record.
+
+Temporary debug-port instrumentation is isolated in the prototype and is not
+part of the archived candidate patch or promoted OS. Its fresh bootstrap/cross
+build passes. Fixture preparation logs show CACHE LOOKUP for the expected
+filename returning NULL, followed by CACHE PUT for the same filename and size
+4. This proves the write wrapper invokes publication, not that insertion succeeds.
+A second trace adds created/owner pointers and immediate post-insertion lookup;
+its fresh build is running in `build/file-resident-public-prototype/build/
+file-resident-public-trace2`. Further runtime evidence is required.
+
+A diagnostic expecting Fs->gs->seth_task==Fs returns false. The console task
+need not equal the persistent public root, so that result alone does not prove
+wrong ownership; do not reinterpret it as a cache contract failure. Cd's native
+retained job remains live and has advanced through the compiler/console/file
+commands to MemoryRuntime. The full release objective remains incomplete.
