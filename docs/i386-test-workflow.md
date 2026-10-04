@@ -3873,3 +3873,29 @@ Long-document update is 0.432723586 seconds, below the one-second budget.
 This establishes integration on the isolated cross-built image identified
 above; it does not establish native provider qualification or release readiness.
 Promotion remains pending while the main-source native build completes.
+
+### Main Help promotion and retained native installation
+
+The isolated Help implementation and alphabetical category fixture are now
+applied to main. The matching original two-generation rebuild passes in
+`build/rebuild-test/result.json` (log `build/help-sort-main-rebuild.log`).
+The i386 build, instruction audit and deterministic keyword gate pass in
+`build/i386-help-sort-main/result.json`; boot kernel remains 483384 bytes.
+`build/i386-help-sort-main-promotion-comparison.json` verifies all twelve T32M
+modules and Kernel32.BIN equal the fully qualified isolated prototype exactly.
+A focused current-main Help check is running in `build/i386-help-sort-main-help`.
+
+The earlier root-declaration source epoch now completes all six native retained
+providers in `build/i386-module-inheritance-native-build-long/result.json`.
+This closes its inherited-forward build rejection and replaces the earlier
+900-second incomplete attempt with completed payload/export audits. Installation
+passes in `build/i386-module-inheritance-native-install/result.json`, preserving
+each native payload exactly and independently booting an 8 MiB copy. Candidate
+SHA-256 is `63429476aaad0e398d7ca4862de02b5fe441d9e399849dc775047458747d8dfa`.
+
+The provenance-enforced flat self-hosting run uses that candidate and its
+retained-build result in `build/i386-module-inheritance-selfhost`. It is still
+running. Those native modules predate alphabetical Help, so neither installation
+nor the ongoing flat build establishes full self-hosting of the newer main
+source. Two native generations, CPU-trap debugger behavior and release
+qualification remain open.

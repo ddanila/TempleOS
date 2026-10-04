@@ -1857,8 +1857,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             index_selected_backgrounds={(3,index):1 for index in range(24,38)}
             category_rows=['TempleOS i386','Help: HI:Data Types/Circular Queue','',
                            'Data Types/Circular Queue','','C:/Doc/Que.DD.Z','',
-                           'CCPU','CWinScroll','CQue','CTask','QueInit','QueInsRev',
-                           'QueIns','QueRem','']
+                           'CCPU','CQue','CTask','CWinScroll','QueInit','QueIns',
+                           'QueInsRev','QueRem','']
             category_selected_colors={(5,index):15 for index in range(len('C:/Doc/Que.DD.Z'))}
             category_selected_backgrounds={(5,index):1 for index in range(len('C:/Doc/Que.DD.Z'))}
             submit('HelpHeap("C:/Doc/DolDoc.DD");', ['0'], 'help-index-link', interaction={

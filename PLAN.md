@@ -2,6 +2,14 @@
 
 ## Objective and status
 
+All six retained providers at the pre-Help root-declaration source epoch now
+pass native construction/export checks and exact installation with independent
+8 MiB boot (`build/i386-module-inheritance-native-build-long` and
+`build/i386-module-inheritance-native-install`). A six-module guest flat-kernel
+rebuild using that verified chain is running in
+`build/i386-module-inheritance-selfhost`. This proves neither the newer Help
+source epoch nor current two-generation release qualification.
+
 A new debugger CPU-trap contract is red in
 `build/i386-debug-cpu-trap-byte-red-v2/result.json`. Verified native code bytes
 execute an actual `INT3`; the kernel logs vector 3 and halts before a debugger
@@ -21,8 +29,10 @@ all nine focused no-FPU Help commands with exact VGA (58.120-second startup).
 Its full workstation suite passes all 513 commands, 576 lines, exact VGA and
 20 document cycles with exact heap recovery in `build/i386-help-sort-workstation`.
 Startup passes the unchanged budget at 58.169 seconds; the long-document update
-is 0.433 seconds. Main OS sources remain frozen for the running six-provider
-native build; promotion of the validated sorting change is pending.
+is 0.433 seconds. The sorting implementation and alphabetical fixture are now promoted to main.
+Its matching original rebuild, i386 build and keyword/instruction audits pass;
+all 13 module/flat artifacts match the qualified prototype byte-for-byte.
+A focused main-image Help check is running.
 
 Full self-hosting qualification now requires the retained-build and installation
 verdicts to form a matching disk/payload chain before flat-kernel construction.

@@ -2025,61 +2025,61 @@ Bool NativeHelpRawTarget(U8 *source,I64 target_start,I64 target_end,
   link->target[out]=0;
   return out>2;
 }
-U8 *NativeHelpIndexPlain(U8 *topic,I64 *_size,CNativeHelpLink *links,
-                         I64 *_link_count)
-{//Build a live category page from all retained public #help_file registrations.
+I64 NativeHelpIndexSymbols(U8 *topic,CHashSrcSym **symbols,Bool files,I64 limit)
+{//Keep category order independent of hash buckets and scope placement.
   CHashTable *table=Fs->hash_table;
   CHashSrcSym *symbol;
-  U8 *result;
-  I64 bucket,index,out=0,count=0,size,topic_size;
-  if(!topic || !*topic || !(result=MAlloc(16384))) return NULL;
-  topic_size=StrLen(topic);
-  for(index=0;index<topic_size && out<16382;index++) result[out++]=topic[index];
-  if(out<16382) result[out++]='\n';
-  if(out<16382) result[out++]='\n';
-  while(table && count<128) {
-    for(bucket=0;bucket<=table->mask && count<128;bucket++) {
+  I64 bucket,count=0,index,topic_size=StrLen(topic);
+  Bool matches;
+  while(table && count<limit) {
+    for(bucket=0;bucket<=table->mask && count<limit;bucket++) {
       symbol=table->body[bucket];
-      while(symbol && count<128) {
-        if(symbol->type&HTT_HELP_FILE && symbol->type&HTF_PUBLIC &&
-            !(symbol->type&HTF_PRIVATE) && symbol->idx && symbol->str &&
+      while(symbol && count<limit) {
+        matches=FALSE;
+        if(files) matches=(symbol->type&HTT_HELP_FILE)!=0;
+        else matches=(symbol->type&HTG_SRC_SYM) &&
+          !(symbol->type&HTT_HELP_FILE) && symbol->src_link;
+        if(matches && symbol->type&HTF_PUBLIC && !(symbol->type&HTF_PRIVATE) &&
+            symbol->idx && symbol->str &&
             NativeHelpIndexMatch(symbol->idx,topic,topic_size)) {
-          size=StrLen(symbol->str);
-          if(out+size+1<16383 &&
-              NativeHelpRawTarget(symbol->str,0,size,&links[count])) {
-            links[count].start=out;
-            for(index=0;index<size;index++) result[out++]=symbol->str[index];
-            links[count].end=out; result[out++]='\n'; count++;
+          index=count;
+          while(index && StrCmp(symbols[index-1]->str,symbol->str)>0) {
+            symbols[index]=symbols[index-1]; index--;
           }
+          symbols[index]=symbol; count++;
         }
         symbol=symbol->next;
       }
     }
     table=table->next;
   }
-  if(count && out<16382) result[out++]='\n';
-  table=Fs->hash_table;
-  while(table && count<128) {
-    for(bucket=0;bucket<=table->mask && count<128;bucket++) {
-      symbol=table->body[bucket];
-      while(symbol && count<128) {
-        if(symbol->type&HTG_SRC_SYM && !(symbol->type&HTT_HELP_FILE) &&
-            symbol->type&HTF_PUBLIC && !(symbol->type&HTF_PRIVATE) &&
-            symbol->idx && symbol->str && symbol->src_link &&
-            NativeHelpIndexMatch(symbol->idx,topic,topic_size)) {
-          size=StrLen(symbol->str);
-          if(out+size+1<16383 &&
-              NativeHelpRawTarget(symbol->src_link,0,StrLen(symbol->src_link),
-                                  &links[count])) {
-            links[count].start=out;
-            for(index=0;index<size;index++) result[out++]=symbol->str[index];
-            links[count].end=out; result[out++]='\n'; count++;
-          }
-        }
-        symbol=symbol->next;
+  return count;
+}
+U8 *NativeHelpIndexPlain(U8 *topic,I64 *_size,CNativeHelpLink *links,
+                         I64 *_link_count)
+{//Help files precede symbols; both groups use the original alphabetical order.
+  CHashSrcSym *symbols[128],*symbol;
+  U8 *result,*target;
+  I64 index,out=0,count=0,size,topic_size,group,item,total;
+  if(!topic || !*topic || !(result=MAlloc(16384))) return NULL;
+  topic_size=StrLen(topic);
+  for(index=0;index<topic_size && out<16382;index++) result[out++]=topic[index];
+  if(out<16382) result[out++]='\n';
+  if(out<16382) result[out++]='\n';
+  for(group=0;group<2;group++) {
+    total=NativeHelpIndexSymbols(topic,symbols,group==0,128-count);
+    for(item=0;item<total;item++) {
+      symbol=symbols[item]; target=symbol->src_link;
+      if(!group) target=symbol->str;
+      size=StrLen(symbol->str);
+      if(out+size+1<16383 &&
+          NativeHelpRawTarget(target,0,StrLen(target),&links[count])) {
+        links[count].start=out;
+        for(index=0;index<size;index++) result[out++]=symbol->str[index];
+        links[count].end=out; result[out++]='\n'; count++;
       }
     }
-    table=table->next;
+    if(!group && count && out<16382) result[out++]='\n';
   }
   if(!count) {
     U8 *missing="No registered help files.\n";
