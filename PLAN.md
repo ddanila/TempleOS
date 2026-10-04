@@ -8483,3 +8483,14 @@ Whole disk hashes differ, so reproducibility here is the verified executable and
 boot artifacts, not identical whole-volume bytes. BIOS loading still has only
 120 bytes of spare flat payload capacity; capacity redesign and remaining public
 API compatibility/release gates are still open.
+
+Resident implementation has begun in the isolated main-only checkout
+`build/file-resident-prototype`, based on the corrected FileRead/FileFind source.
+It adds mounted-service shared entries owning names and stored bytes in the
+private heap, exact/alternate cached reads returning fresh owned buffers, and
+write-driven replacement/removal. Compressed entries retain stored archive bytes
+and expand for ordinary reads. Cross construction has started in that checkout's
+`build/file-resident-write-cache`; no passing build or runtime result is claimed.
+Cold disk population, explicit service-lifetime cleanup, allocation/failed-write
+semantics, cache compatibility across raw/internal consumers and updated ABI
+qualification remain required. This prototype is not promoted to main.
