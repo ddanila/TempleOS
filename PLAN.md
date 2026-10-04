@@ -8431,3 +8431,22 @@ The port run is pending; its resident write is expected to expose the existing
 attribute-mask limitation, but that failure is not yet qualified evidence.
 This test covers write-populated caches and ownership, not cold disk cache
 population, compressed resident entries, alias coherence or cache teardown.
+
+The corrected resident test has now reached a qualified port failure in
+`build/public-file-resident-cached-attr-red/result.json`: original functional
+oracle passes, but the native resident FileWrite expression returns 0 instead
+of the required positive cluster. The source image is unchanged. This isolates
+the known rejection of attr 0x200 before any cache-read qualification; the later
+resident ownership/replacement cases have not executed on the port.
+
+Resident implementation must use a shared, explicitly owned cache with the
+mounted file-service lifetime, matching the original Adam-owned HTT_FILE model.
+Do not attach owned entries to CI386TaskFiles: its Set path frees and replaces
+the state on directory changes, and Clone/Destroy serve individual tasks.
+Keep cache storage separate from caller-owned returned buffers. Cache compressed
+stored bytes, then decode each returned read, as original DskFile.HC does; cached
+attributes derive from FileAttr(cache-name,0), while uncached reads expose disk
+attributes. Qualify resident replacement with changed bytes, removal of residence,
+exact/alternate-name lookup, cold disk population after reboot, task independence,
+and bounded cache cleanup before promoting. Allocation and failed-write cache
+behavior require original-oracle cases rather than assumptions about atomicity.
