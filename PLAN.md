@@ -8525,3 +8525,15 @@ audit passes. The strengthened resident public read/write oracle is running in
 `build/public-file-resident-write-cache-green` against that image; the directory
 name is prospective and no passing runtime result is claimed. Cold cache
 population, lifecycle cleanup and full compatibility remain open.
+
+The first resident-cache runtime reaches the resident write checkpoint but has
+not produced the required successful answer. Source inspection identifies an
+additional storage-layer gap: RedSea directory record validation rejects
+attr 0x200 (`attr & 0x300`), and read/write/repair checks also reject resident
+metadata. Thus accepting residence only in TaskFileWrite is insufficient:
+publication may precede the failed post-write resolution. The next correction
+must consistently admit resident regular-file metadata through directory
+validation, reads, writes, repair and independent filesystem auditing, while
+retaining rejection of deleted/unsupported bits. Verify the failed candidate's
+persisted state before discarding it; do not assume an unsuccessful API return
+means disk publication did not occur. Runtime result remains pending.
