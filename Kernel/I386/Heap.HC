@@ -1,7 +1,7 @@
 #include "/Kernel/I386/HeapInit.HC"
 
 //The guest source compiler uses the portable validator until it can rebuild
-//the 386 assembly block. The boot kernel retains the faster original path.
+//the 386 assembly block. Both paths validate and locate in one full scan.
 #ifdef I386_HEAP_SOURCE_BUILD
 I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
 {//Check the whole physical block chain before trusting metadata for mutation.
@@ -36,22 +36,18 @@ I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
   return requested;
 }
 
-public Bool I386HeapValid(CI386Heap *hc)
-{
-  return I386HeapScan(hc,0)>=0;
-}
-
 #else
-public Bool I386HeapValid(CI386Heap *hc)
+I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
 {//Check the whole physical block chain before trusting metadata for mutation.
   //This hot loop uses bounded U32 arithmetic: each span is checked against the
   //remaining arena before advancing, so used/count cannot overflow. The region
   //check retains the wide address-overflow and control/arena overlap checks.
   Bool valid=FALSE;
-  U32 last_free=0;
+  U32 last_free=0,requested=0xFFFFFFFF;
+  U8 *target=ptr-16;
   if (!hc || hc->signature!=I386_HEAP_MAGIC ||
       !I386HeapRegionValid(hc,hc->base,hc->size) ||
-      hc->peak>hc->size || hc->used>hc->peak) return FALSE;
+      hc->peak>hc->size || hc->used>hc->peak) return -1;
   asm {
     MOV EBX,U32 &hc[EBP]
     MOV ESI,U32 CI386Heap.base[EBX]
@@ -81,6 +77,12 @@ public Bool I386HeapValid(CI386Heap *hc)
     ADD EDI,EAX
     ADD EDX,1
     MOV U32 &last_free[EBP],0
+    CMP ESI,U32 &target[EBP]
+    JNE @@40
+    PUSH EAX
+    MOV EAX,U32 CI386HeapBlock.requested[ESI]
+    MOV U32 &requested[EBP],EAX
+    POP EAX
     JMP @@40
 @@30:
     CMP U32 &last_free[EBP],0
@@ -99,10 +101,19 @@ public Bool I386HeapValid(CI386Heap *hc)
     MOV U8 &valid[EBP],1
 @@90:
   }
-  return valid;
+  //No requested size can equal the sentinel: every arena needs a header.
+  if(!valid) return -1;
+  if(!ptr) return 0;
+  if(requested==0xFFFFFFFF) return -1;
+  return requested;
 }
 
 #endif
+public Bool I386HeapValid(CI386Heap *hc)
+{
+  return I386HeapScan(hc,0)>=0;
+}
+
 public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Try-allocation: NULL on invalid size, corruption or exhaustion; no OutMem wrapper yet.
   CI386HeapBlock *block,*rest;
@@ -138,23 +149,9 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 
 public I64 I386HeapSize(CI386Heap *hc,U8 *ptr)
 {//Requested byte count, or -1 for an invalid or freed pointer.
-#ifdef I386_HEAP_SOURCE_BUILD
-  //Search while validating the complete chain. Do not accept an early match
-  //until all later blocks and aggregate counters have been checked.
+  //Do not accept an early match until later blocks and counters are checked.
   if(!ptr) return -1;
   return I386HeapScan(hc,ptr);
-#else
-  CI386HeapBlock *block;
-  U32 offset=0;
-  if (!ptr || !I386HeapValid(hc)) return -1;
-  while (offset<hc->size) {
-    block=hc->base+offset;
-    if (hc->base+offset+16==ptr && block->tag==I386_HEAP_USED)
-      return block->requested;
-    offset+=block->span;
-  }
-  return -1;
-#endif
 }
 
 public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)

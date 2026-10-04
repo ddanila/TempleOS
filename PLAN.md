@@ -6812,3 +6812,28 @@ variants and the independent corruption oracle, and then be measured on a
 new fully native image. Do not interpret paused profile elapsed time as boot
 timing or claim a speedup before that measurement. Native formatter/User
 integration and the remaining full release requirements remain open.
+
+### Boot-kernel heap size lookup shares the assembly validation scan
+
+`Kernel/I386/Heap.HC` now uses I386HeapScan in both implementations. The
+assembly path records a matching used allocation's requested size, continues
+through every later block, and returns it only after aggregate validation.
+This removes the second physical-chain traversal from I386HeapSize. Invalid,
+foreign, freed and interior pointers still return -1; valid zero-size
+allocations return 0. NULL remains invalid for size lookup and selects
+validation-only behavior inside the shared scan.
+
+The fresh original two-generation rebuild passes
+(`build/heap-asm-scan-rebuild.log`). Both `tools/test-i386.py --heap` and
+`--heap --heap-source` pass, including the independent corruption oracle and
+rejection without arena/control mutation. The cross-build and 386 instruction
+audit pass in `build/i386-heap-asm-scan-kernel`: 483088 kernel bytes, 272 fewer
+than the preceding 483360-byte cross-build. Cross-build size is not a measured
+fully guest-built size or performance improvement.
+
+A guest flat build/install is running in `build/i386-heap-asm-scan-flat`, with
+explicit verified cross-retained development inputs. After its audit and boot
+checks, rebuild the retained providers in the guest and qualify a fully native
+image against the unchanged startup gate. The old 65.149-second timing failure
+is not cleared by these component passes. Formatter/User integration and the
+remaining full release requirements are still open.
