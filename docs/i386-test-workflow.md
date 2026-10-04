@@ -1684,3 +1684,49 @@ inspection, G continuation, restored console history, caller state and shell
 arithmetic. It uses 8 MiB, 486,-fpu, boots in 56.72 seconds and preserves the
 source disk. Exception/register/source inspection, breakpoint/stepping behavior,
 nested error/resource recovery and complete M7 remain unqualified.
+
+### Runtime exception inspection before compiler cleanup
+
+Added `tools/test-i386-debug-exception.py`, frozen SHA-256
+c649641431bcafa5d3f01d706b4f3b84222a7beb3812f166bc8d9c872003ca90.
+The existing explicit-debugger image gives a publication red in
+`build/i386-debug-exception-red/result.json`: DbgMode is absent. The new
+contract requires original Probe exception text, ExceptionProbe function,
+source link FL:Console.HC,1, visible state inspection, G-driven unwind and
+shell recovery without executing the statement after throw.
+
+Compiler input now has a typed, optional inspection callback invoked after its
+catch returns and before its control is unwound. It saves/restores the original
+exception frame pointer and caller trace around nested inspection. Callback
+failure still reaches cleanup and reports an inspection diagnostic. The console
+uses this hook when DbgMode is enabled, resolving a live executable allocation
+and its canonical source link. Compiler/allocation errors and keyboard Break
+are excluded from this first inspection path. DbgMode/IsDbgMode use the original
+SEMA_DBG_MODE bit and setter returns the previous value. The retained module
+updates that bit under the existing single-CPU IRQ guard; an initial cross-build
+failed on undeclared LBEqu and is retained as a build failure, not a behavioral
+red. Interfaces advance to compiler 59 and console 35.
+
+Both original rebuild generations and the corrected cross-build/386 boot audit
+pass. Image `build/i386-debug-exception-kernel-fixed/kernel.img`, SHA-256
+e815c2160ae42d17108e2f74aa87c02e48c6e64eecfe7d5b8f823df7a5124fed.
+Exception inspection and explicit-session regression checks are now running in
+`build/i386-debug-exception-green` and `build/i386-debug-exception-explicit`.
+Their runtime results are pending. Saved hardware registers, exact instruction
+line mapping, zero-valued exception display, stepping/breakpoints and nested
+resource/error paths remain unqualified; this does not close debugging or M7.
+
+The earlier memory-16 focused-keyboard native pipeline now passes retained
+build, installation, guest flat-kernel build and independent 8 MiB boot:
+`build/i386-public-keyboard-focused-break-selfhost/result.json`. It uses all
+six guest-built retained and all six guest-built flat modules, 16 MiB build RAM,
+486,-fpu, and preserves its source. Target SHA-256:
+a0e6763b903c230514d8b40b035e3a1abfd06c3127ceb6ddb84ce131b0b055ac.
+The independent audit in
+`build/i386-public-keyboard-focused-break-selfhost-audit/result.json` passes
+all twelve executable module ranges, linked image, installed boot payload and
+filesystem checks. The 487344-byte linked kernel leaves 80 bytes within the
+487424-byte limit; further flat-kernel growth must be measured. This is one
+qualified earlier epoch, not two current-source generations or release proof.
+Current-source terminal/debugger integration, native generations and release
+qualification remain open.

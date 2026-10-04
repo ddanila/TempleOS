@@ -62,8 +62,11 @@ U8 console_diagnostic_filename[256];
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[121];
+CI386KernelSymbol console_doc_exports[123];
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
+extern Bool NativeDebugMode(Bool value);
+extern Bool NativeIsDebugMode();
+extern U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception);
 extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
 U32 console_version=I386_CONSOLE_VERSION;
 extern Bool NativeGraphicsStart();
@@ -327,7 +330,11 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[119].val=(&NativeDebug+0)(U64);
   console_doc_exports[120].str="_DEBUG_GO";
   console_doc_exports[120].val=(&NativeDebugGo+0)(U64);
-  for(i=0;i<121;i++) {
+  console_doc_exports[121].str="_DBG_MODE";
+  console_doc_exports[121].val=(&NativeDebugMode+0)(U64);
+  console_doc_exports[122].str="_IS_DBG_MODE";
+  console_doc_exports[122].val=(&NativeIsDebugMode+0)(U64);
+  for(i=0;i<123;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;

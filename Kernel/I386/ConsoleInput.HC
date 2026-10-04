@@ -56,6 +56,7 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   input.flags=flags; input.source=source; input.filename=filename; input.context=&execution;
   input.document=document;
   input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
+  input.inspect_exception=&ConsoleDebugException;
   //Required public-header publication must finish before an interactive target exists.
   irq=I386IrqSave;
   previous_break=console_break_task;

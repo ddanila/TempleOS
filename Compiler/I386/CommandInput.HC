@@ -36,7 +36,8 @@ Bool I386CommandInput(CI386CommandInput *input)
   CPrsSymbolServices *symbols;
   CI386FrontendCode *output;
   U8 *code;
-  I64 raw_type,value;
+  I64 raw_type,value,i,saved_rbp;
+  U8 *saved_callers[TASK_EXCEPT_CALLERS];
   Bool accepted=FALSE,raised=FALSE,interrupted=FALSE,unwound;
   U32 irq;
   if(!input) return FALSE;
@@ -100,6 +101,18 @@ Bool I386CommandInput(CI386CommandInput *input)
         I386CommandInputBreakReady(task)) {
       interrupted=TRUE; input->exception='Break';
     }
+  }
+  if(raised && input->inspect_exception && input->exception!='Compiler' &&
+      input->exception!='OutMem' && input->exception!='Break') {
+    saved_rbp=task->except_rbp;
+    for(i=0;i<TASK_EXCEPT_CALLERS;i++) saved_callers[i]=task->except_callers[i];
+    try { input->inspect_exception(input->context,task,cc,input->exception); }
+    catch {
+      task->catch_except=TRUE;
+      if(input->diagnostic) input->diagnostic(input->context,cc,0,"Debugger inspection failed");
+    }
+    task->except_ch=input->exception; task->except_rbp=saved_rbp;
+    for(i=0;i<TASK_EXCEPT_CALLERS;i++) task->except_callers[i]=saved_callers[i];
   }
   if(cc) { input->errors=cc->error_cnt; input->warnings=cc->warning_cnt; }
   unwound=I386CmpCtrlUnwind(task,boundary);

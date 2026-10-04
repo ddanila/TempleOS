@@ -16,6 +16,8 @@ class CI386CommandInput {
   I64 commands,answers,errors,warnings,exception;
   //Borrowed for this synchronous input. The caller keeps it locked and live.
   CDoc *document;
+  //Inspect the caught runtime exception while its compiler control is still live.
+  U0 (*inspect_exception)(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception);
 };
 extern Bool I386CommandInput(CI386CommandInput *input);
 #endif

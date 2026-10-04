@@ -20,7 +20,7 @@
 #include "/Kernel/I386/Module.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_COMPILER_SERVICES_VERSION 58
+#define I386_COMPILER_SERVICES_VERSION 59
 //Versioned caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
