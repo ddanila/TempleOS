@@ -4422,3 +4422,10 @@ This promotion establishes initial breakpoint continuation only. Main's
 updated fully native provider/generation qualification and remaining CPU
 debugger functionality still need implementation/testing; 120-byte guest
 flat headroom is not sufficient justification to drop any planned feature.
+
+Promoted main now independently PASSes five-cycle continuation in
+`build/cpu-trap-main-repeat/result.json`. All six retained providers are
+rebuilding natively in `build/cpu-trap-main-native-build`, using current
+`build/cpu-trap-main/exports` contracts and 3600-second command budgets.
+CompilerRuntime remains live; no fully native result for this epoch exists
+yet. Kernel/Compiler sources and the loaded build harness stay frozen.

@@ -7880,3 +7880,36 @@ outputs and rerun creation, focus and User gates before updated workstation
 integration. Typematic parity, exhaustive repeated-creation resource recovery,
 fresh-child latency, broader TaskWait/filter/cancellation behavior, updated
 all-native images and reproducible release qualification remain open.
+
+## Next architecture work: boot capacity and complete CPU debugging
+
+The promoted breakpoint bridge consumes nearly all current guest flat
+capacity: 487304 of 487424 bytes. The limit comes from the fixed 960-sector
+BIOS load area minus its 4096-byte stage, not from available installed RAM.
+Do not waive the size guard or remove planned debugger/API functionality.
+Keep current qualified images as reproducible baselines.
+
+First establish a capacity contract with automated boundary fixtures:
+maximum valid payload boots, one-byte oversized payload is rejected before
+publication, a truncated payload never executes, and boot publication leaves
+RedSea metadata/file extents unchanged. Both host construction and guest
+I386BuildBootImage/installation must enforce the same format. Include
+8 MiB no-FPU cold boot and two-generation artifact/boot reproducibility.
+
+Then evaluate moving additional implementation into retained modules versus
+extending the staged loader. Prefer retaining a small resident kernel and
+using existing module services where that removes the bottleneck cleanly.
+If a larger initial payload is necessary, use a bounded BIOS staging buffer
+and protected-mode relocation with explicit load ranges, entry validation
+and stack/EBDA separation; increasing the low-memory sector count alone is
+not sufficient architecture. Choose the implementation from measured boot
+module sizes and failing capacity fixtures. Preserve legacy BIOS, 386-only
+instructions, VGA, 8 MiB interactive RAM and guest rebuild/install semantics.
+
+Complete CPU debugging with observable contracts for S/single-step vector 1,
+register inspection/editing and explicit G target, managed breakpoint
+installation/removal/re-arm, and concurrent task ownership. Each must prove
+state/continuation and cleanup through real guest execution. Existing
+INT3 continuation, six-register markers and forced-child exit cover only
+the initial bridge. Full native qualification and all release gates remain
+required after these architectural changes.
