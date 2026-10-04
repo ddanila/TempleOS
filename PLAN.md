@@ -6930,3 +6930,19 @@ providers, audit the complete image with the guest compiler template, and
 measure ordinary TCG startup against the unchanged 60-second gate. The source
 snapshot includes formatter extraction but still lacks native formatter/User
 integration and the other open release requirements.
+
+### Assembly heap scan: native provider installation and boot pass
+
+`build/i386-heap-asm-scan-retained-install/result.json` passes replacement of
+all six retained providers, exact installed-byte verification, preserved
+source/candidate checks and independent 8 MiB `486,-fpu` boot under KVM.
+Candidate SHA-256:
+`5bf3336394bb361ed6651b3ecd0f6eae2cbada01bb6f84be218bcd3761e91a18`.
+
+The six flat modules are now rebuilding/installing with these native providers
+in `build/i386-heap-asm-scan-selfhost`, without cross-retained development mode.
+After completion, audit all twelve executable ranges and installed filesystem
+with the guest compiler template, then measure ordinary no-FPU TCG startup.
+The cross-image timing pass does not replace that measurement. This snapshot
+still lacks native formatter/User integration, and current-source two-generation
+and complete release qualification remain open.
