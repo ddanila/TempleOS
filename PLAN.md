@@ -8878,3 +8878,26 @@ Second disk SHA-256 is
 whole disk bytes differ, so the reproduced artifacts are modules/flat/boot.
 The strengthened resident public-hash ownership original oracle also passes;
 its native verdict remains pending.
+
+Resident ABI-42 full native construction/install/8 MiB boot passes in
+`build/public-file-resident-selfhost/result.json`; installed executable audit
+passes in `build/public-file-resident-selfhost-audit`. Flat kernel is 487320
+bytes (104 bytes spare), SHA-256
+`11c95cab33da1a1ef5acf765e055ae3b0b94d81cf503026fb893d874299fbb40`.
+Public hash-model compatibility still blocks resident promotion.
+
+The stronger hash-ownership run reached BAD PUBLIC MEMORY at ColdHash. Its
+checker now explicitly returns FALSE for a missing entry/buffer before calling
+MHeapCtrl; the guarded original oracle passes and native qualification is
+running in `build/public-file-resident-hash-guarded-red`. Do not infer valid
+public ownership from that earlier kernel failure.
+
+Public cache restructuring begins in `build/file-resident-public-prototype`:
+file-service ABI 44 adds stored-byte reading with original alternate/parent
+lookup and archive expansion callbacks. This candidate removes private cache
+lookup/publication from the file worker, so a future public hash cache will be
+authoritative rather than a mirror with independent stale entries. Public
+root-owned cache records/names/buffers, read/write wrappers, removal coherence
+and runtime qualification are still to implement. No build/pass is claimed for
+this intermediate source. Cd full workstation is running separately against
+its qualified focused-contract source.

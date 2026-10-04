@@ -47,7 +47,7 @@ def main():
     report['shared_lifetime'] = args.shared_lifetime
     report['hash_visible'] = args.hash_visible
     if args.hash_visible:
-        selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);return e&&e->user_data0&&e->user_data1>0&&MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
+        selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<=0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
         checks += [f'ColdHash("C:/Probe/{filename}")']
     if args.shared_lifetime:
         cached_check = checks[1]
