@@ -1464,3 +1464,22 @@ the input disk and recovers console arithmetic. The unchanged console breaks
 group also passes all 16 commands on that image. The new six-provider retained
 build uses build/i386-public-keyboard-focused-break-kernel/exports as frozen
 references; older guest-built images cannot qualify this epoch.
+
+The hardware overflow contract is:
+
+```sh
+python3 tools/test-i386-public-keyboard-loss.py IMAGE --out build/keyboard-loss
+```
+
+It primes Shift through GetMsg, suspends the public Keyboard task, overflows the
+raw queue using QMP keys, then resumes it. Exact VGA checks require one reset
+and recovered lower-case HolyC input; the debug log must contain exactly one
+INPUT RESET, and the source image must remain unchanged. It passes on the
+focused-break image in build/i386-public-keyboard-loss/result.json. It does not
+establish arbitrary focused-child loss notification.
+
+The full inherited-reference DolDoc three-boot session now passes: 178 commands,
+52.69–53.36-second startup, 0.3925-second editor interrupt recovery, persisted
+programs and independent filesystem/bitmap checks. Its image predates focused
+IRQ selection; the full latest-image workstation suite and newer guest-provider
+rebuild are running separately.

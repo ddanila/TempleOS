@@ -5526,3 +5526,31 @@ reference accounting and focused interrupts. Installation, flat self-hosting,
 two-generation reproducibility and complete workstation/release qualification
 remain required after that rebuild. Input-loss and macro contracts, multiple
 interactive terminals and debugging remain open.
+
+### Three-boot DolDoc and hardware loss recovery pass
+
+The inherited-reference image passes the complete three-boot DolDoc session in
+build/i386-public-keyboard-inherited-refs-doldoc/result.json: 107 create/edit/save
+commands, 56 reopen commands and 15 revised-program commands, 486,-fpu, 8 MiB,
+all VGA pixels matched. Boots take 52.69–53.36 seconds; measured editor
+interrupt-to-visible-recovery is 0.3925 seconds. Persistent relative/nested
+source, rename/move/delete cycles and independent filesystem reachability/bitmap
+checks pass; the source disk remains unchanged. This image predates only the
+focused-task IRQ selection change and is not a fully guest-built release.
+
+Added tools/test-i386-public-keyboard-loss.py. It consumes a Shift make through
+GetMsg, suspends the named keyboard task, injects enough make/break events to
+overflow the 64-byte raw queue, resumes the decoder and requires exactly one
+visible INPUT RESET. Lower-case HolyC typing and an answer of 42 afterward
+check discarded modifier-release recovery. No private queue-memory writes or
+changes to the common input runner are used. The checker passes on the latest
+focused-break image in build/i386-public-keyboard-loss/result.json: six commands,
+486,-fpu, 8 MiB, exact VGA pixels, unchanged source disk. It qualifies console
+overflow recovery, not discontinuity notification to arbitrary focused children.
+
+Full workstation integration is running on that same latest image in
+build/i386-public-keyboard-focused-break-workstation; the six-provider native
+rebuild remains live in build/i386-public-keyboard-focused-break-retained.
+Neither pending run is a qualification result. Macro recording, arbitrary
+child loss recovery, multiple terminals, debugging and complete release gates
+remain open.
