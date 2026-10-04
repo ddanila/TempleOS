@@ -4351,3 +4351,21 @@ rejects reuse of the older original rebuild after this source edit. A fresh
 original two-generation rebuild is running there; corrected cross/guest
 construction and runtime verdicts remain pending. The initial checkout and
 qualified main images remain preserved.
+
+### Merged CPU trampoline layout
+
+The corrected layout checkout passes a fresh original rebuild and cross
+construction/instruction/keyword audits in
+`build/cpu-trap-layout-prototype/build/cpu-trap-layout`. All twelve T32Ms
+and Kernel32.BIN are byte-identical to the initial prototype; comparison
+PASSes in `build/cpu-trap-layout-byte-comparison.json`. Thus its emitted
+workstation code matches the initial 513-command qualified prototype.
+
+Five-cycle continuation also PASSes on the corrected image in
+`build/cpu-trap-layout-repeat/result.json`, using the current main checker.
+The six-module guest flat-development rebuild is live in
+`build/cpu-trap-layout-prototype/build/cpu-trap-layout-flat-development`.
+A direct guest ExceptionEntry compilation check is live in
+`build/cpu-trap-layout-top-asm` to verify the specific prior rejection.
+Neither guest verdict is available yet; flat size and promotion remain
+pending. These builds keep cross-built retained providers explicit.
