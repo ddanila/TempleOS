@@ -2508,3 +2508,21 @@ unchanged 60-second gate. This is now the newest completed fully guest-built
 snapshot, including debugger zero/mode fixes and predating formatter extraction.
 Current-source two-generation, full workflow and release qualification remain
 open. The older cleanup snapshot's workstation suite is still running.
+
+### Fully guest-built heap-scan snapshot: functional boot passes, timing fails
+
+`build/i386-heap-scan-selfhost-keyboard/result.json` passes ordinary keyboard
+and exact-VGA checks on target 66819bf5 under 8 MiB `486,-fpu` TCG. Startup is
+65.14852777728811 seconds. The unchanged checker explicitly FAILS the 60-second
+gate in `build/i386-heap-scan-selfhost-startup-budget.json`, by
+5.148527777288109 seconds. Evidence SHA-256:
+`22e933ba0b10b538c31c2a2a8c9d260eec5e63de77c182008122accc90c7edfb`.
+
+A QMP instruction-sampling run is now active in
+`build/i386-heap-scan-selfhost-profile` on the unchanged fully guest-built image.
+Use that image's installed modules for symbol attribution. Its paused elapsed
+time is not a benchmark. Earlier cross-built/development timing and profiles
+cannot establish the cause of this failure; the portable source heap change
+also does not replace the boot kernel's assembly validator. Keep the startup
+gate open while identifying the actual native bottleneck. The older cleanup
+workstation suite continues through file navigation checks.
