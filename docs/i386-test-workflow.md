@@ -3574,3 +3574,28 @@ cycle, creation shortcuts and 16-case User tests are running in
 `build/i386-root-declarations-cycle`, `build/i386-root-declarations-hotkeys` and
 `build/i386-root-declarations-user-16`. Prototype artifacts remain distinct from
 main's mixed native-provider image. No runtime acceptance is claimed yet.
+
+### Root-declaration focused results
+
+The isolated cross-built prototype (disk SHA-256
+`d4a8229bcacad8120420c2614c6374d0ebe63cdd42736450effb1caf14215cbe`) passes
+the same-call cycle, 16-case User oracle and creation shortcuts in
+`build/i386-root-declarations-cycle`, `build/i386-root-declarations-user-16`
+and `build/i386-root-declarations-hotkeys`. All use 8 MiB `486,-fpu` TCG, exact
+VGA checks and unchanged source disks.
+
+The same cycle checker records start at 110.817482 seconds and retirement at
+111.170215 (about 0.35 seconds). Header loading spans about 0.10 seconds,
+retirement about 0.20. The prior mixed-native image measured about 129.61
+seconds; provider provenance differs, so native rebuild qualification is still
+required before claiming this speed for the native release candidate.
+Startup is 59.827704 seconds for the cycle, 59.934938 for shortcuts and
+63.546689 for User. The startup target is not reliably satisfied.
+
+The bootstrap observer now offers `--require-recovery`, requiring all ten
+snapshots in order and exact child/public-pool/task-heap/bootstrap counters
+after every cycle. Its mismatch detector rejects independent injected public
+and bootstrap drift. Observation-only remains the default. Prototype recovery
+qualification with that flag is running in
+`build/i386-root-declarations-recovery`; Tab-focus isolation is running in
+`build/i386-root-declarations-tab`. Main's runtime source is unchanged.

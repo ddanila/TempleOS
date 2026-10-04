@@ -97,7 +97,10 @@ that its history is contained in `main`.
   established. Optimize declaration-loading and teardown latency rather than
   changing cancellation policy on that evidence.
 - A CPU-root declaration-sharing prototype passes its matching original rebuild
-  and i386 build/audit in an isolated checkout. Focused runtime gates are running;
+  and i386 build/audit in an isolated checkout. Same-call creation/retirement
+  drops from about 130 seconds to 0.35 seconds; User and creation-shortcut gates
+  pass. Startup ranges from 59.83 to 63.55 seconds in these runs, so the
+  60-second target is not reliably met. Focus isolation and recovery are running;
   main's runtime source is unchanged. Finish workstation/recovery qualification
   and validate startup memory, inheritance and task-local isolation before
   promoting the prototype. Updated all-native/two-generation release

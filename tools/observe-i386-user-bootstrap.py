@@ -25,17 +25,30 @@ def read_observations(log):
     return result
 
 
+def require_recovery(observations):
+    for name in ('pool', 'bootstrap'):
+        rows = observations[name+'_observations']
+        if len(rows) != 10 or [row[0] for row in rows] != list(range(10)):
+            raise ValueError('Incomplete '+name+' recovery observations')
+        baseline = rows[0][1:]
+        for row in rows[1:]:
+            if row[1:] != baseline:
+                raise ValueError(name+' counters did not recover after cycle '+str(row[0]))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--require-recovery', action='store_true',
+                        help='Require exact measured counters after all nine cycles')
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     hashes = {name: sha(ROOT/'tools'/name) for name in DEPENDENCIES}
     checker, disk_hash = sha(Path(__file__)), sha(args.disk)
     report = {'result': 'fail', 'checker_sha256': checker, 'disk_sha256': disk_hash,
-              'dependencies_sha256': hashes,
+              'dependencies_sha256': hashes, 'require_recovery': args.require_recovery,
               'scope': 'Observation only: nine User create/kill cycles, public-pool and bootstrap heap counters; not resource recovery acceptance'}
     try:
         accounting = runpy.run_path(str(ROOT/'tools/test-i386-public-task-accounting.py'))
@@ -61,6 +74,10 @@ def main():
             rows = report[tag+'_observations']
             if len(rows) != 10 or [r[0] for r in rows] != list(range(10)):
                 raise ValueError('Missing or unordered '+tag+' observations')
+        if args.require_recovery:
+            require_recovery(report)
+            report['recovery'] = 'pass'
+            report['scope'] = 'Nine separate-command User cycles with exact CPU-root child count, public-pool/task-heap and bootstrap used-byte/allocation recovery; not same-call latency, peak memory or fragmentation stress'
         report['layout_headers_sha256'] = headers
         report['result'] = 'pass'
     except Exception as error:
