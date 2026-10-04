@@ -4321,3 +4321,17 @@ bundle stays within the existing 256-byte and relocation bounds, rebuild
 and repeat the guest construction. The live workstation run still uses
 the initial immutable image; prototype sources remain frozen until it
 finishes. Main OS sources remain unchanged.
+
+`tools/test-i386-cpu-register-resume.py` checks distinct markers in two
+register banks (`--bank 0`: EAX/EBX/ECX; `--bank 1`: EDX/ESI/EDI), keeping
+each source line within the 255-byte console limit. Both banks PASS three
+real trap/resume cycles on prototype ca66901a, in
+`build/cpu-trap-registers-bank0-v2/result.json` and
+`build/cpu-trap-registers-bank1-v2/result.json` (30 commands each, exact VGA,
+source unchanged, warmed heap and IF/TF/debugger-mode assertions).
+The preliminary oversized-line run and 128-byte marker-search runs did not
+execute traps and are not CPU register failures. The tested revised search
+window is 256 bytes. This covers six general-register markers, not complete
+register inspection/editing or stack/segment/flags preservation under every
+condition. The full prototype workstation remains live in mouse tests;
+assembly-layout correction and guest flat construction remain pending.
