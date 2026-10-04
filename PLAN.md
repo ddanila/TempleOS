@@ -5341,3 +5341,32 @@ A fresh cross-build is running in build/i386-public-keyboard-enrolled-kernel;
 runtime verification remains required. This is a source fix, not a keyboard
 qualification result. Focus, input loss, macro recording and
 current-source self-hosting/release qualification remain open.
+
+The first enrollment cross-build rejected `task->owner`: `task` is a public
+CTask, while owner is a private CI386Task field. The yield now accesses owner
+through I386TaskSelf, matching existing console scheduler calls. Both original
+rebuild generations pass with this correction. Fresh cross-build output is
+build/i386-public-keyboard-enrolled-fixed-kernel; runtime verification is still
+pending. The failed earlier build is not a runnable qualification image.
+
+### Public hardware keyboard delivery qualified
+
+The corrected enrollment image passes cross-build and the 386 boot instruction
+audit (483016 flat kernel bytes). The public keyboard checker now passes in
+build/i386-public-keyboard-enrolled-fixed/result.json on 486,-fpu, 8 MiB:
+five commands, hardware make/break through GetMsg with ASCII/scan assertions,
+all VGA pixels matched, resumed console evaluates 6*7 to 42, input disk unchanged.
+Its image SHA-256 is
+860802b94d957b743d76643f7c46329a564668c08ffe2c60a0dac3dc765082ce;
+checker SHA-256 is
+b17bd16b5727284dfba42f6059ffde6e8866f1eb003d91ed0aeed162e64fb6a6.
+The debug log now records worker entry and its first decoded event, supporting
+the bootstrap ordering diagnosis. Both original rebuild generations pass.
+
+Broader fresh-image checks are running: focused child delivery in
+build/i386-public-keyboard-enrolled-focus, ordinary keyboard in
+build/i386-public-keyboard-enrolled-console, break recovery in
+build/i386-public-keyboard-enrolled-breaks, and DolDoc workflows in
+build/i386-public-keyboard-enrolled-doldoc. These are pending, not qualification
+claims. Input loss, macro recording, allocation recovery and current-source
+full self-hosting/release verification remain open.

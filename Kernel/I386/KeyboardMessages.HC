@@ -73,7 +73,7 @@ Bool NativeKeyboardStart()
   if(native_keyboard_task) return FALSE;
   //The boot console is a private scheduler task until its first managed yield.
   //Enroll its public job queues before NativeReadKey can scan them.
-  if(!I386SchedYield(task->owner)) return FALSE;
+  if(!I386SchedYield(I386TaskSelf->owner)) return FALSE;
   symbol=HashFind("_SPAWN",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!symbol) return FALSE;
   native_keyboard_hooks.spawn=symbol->val;

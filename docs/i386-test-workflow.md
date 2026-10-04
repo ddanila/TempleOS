@@ -1402,3 +1402,12 @@ must enroll its public job rings through a managed yield before its first
 ScanMsg. NativeKeyboardStart now performs that yield. Both original rebuild
 generations pass; fresh-image runtime verification is pending. The failure is
 recorded in build/i386-public-keyboard-trace/result.json (unchanged input disk).
+
+The enrollment fix passes the public keyboard checker on
+build/i386-public-keyboard-enrolled-fixed-kernel/kernel.img, 486,-fpu, 8 MiB.
+build/i386-public-keyboard-enrolled-fixed/result.json records all VGA pixels
+matched, both GetMsg key events validated, console arithmetic recovery, and
+unchanged source disk. Worker entry is present in its debug log. Focused-child,
+ordinary keyboard, breaks and DolDoc reruns are running in the corresponding
+build/i386-public-keyboard-enrolled-* directories; this narrow pass does not
+qualify those additional workflows.
