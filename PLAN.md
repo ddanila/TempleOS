@@ -5899,3 +5899,29 @@ inspection, G-driven unwind, no execution after throw, mode restoration and
 subsequent shell arithmetic. Exact VGA checkpoints pass and source remains
 unchanged on 8 MiB, 486,-fpu. This qualifies the named exception/source workflow,
 not saved registers, stepping/breakpoints, zero exceptions or complete M7.
+
+### Two-terminal visible acceptance contract
+
+Added `tools/test-i386-terminals.py`. It uses original UserCmdLine/WinFocus
+interfaces and public Spawn/Exit rather than private queue or scheduler writes.
+Two live terminals must display separate named histories, define the same
+variable name with different values in independent task scopes, switch focus
+and recover the first history/value, exit with visible refocus to the survivor,
+then return to the root console. It checks both child-list reclamation and exact
+parent public-heap recovery, followed by shell arithmetic. Expected VGA rows are
+fixed independently of guest output. This initial contract excludes document
+sessions, background compilation, all private resource pools and hotkey routing;
+those remain mandatory integration extensions rather than implied passes.
+
+The initial fixture validation rejected a source line over the 255-byte console
+limit before boot. It is not a behavioral red. Split the parent wait helper so
+all source lines fit (largest 218 bytes), and started the baseline in
+`build/i386-terminals-red-v2`. Runtime result is pending. The implementation
+must provide task-owned rendering/input state across cooperative yields and
+teardown notification before task heaps/symbols are destroyed; keeping a list
+of pointers to already freed task buffers cannot satisfy exit/refocus safety.
+Existing keyboard delivery already follows the public focus pointer, but this
+alone does not prove multiple usable terminals.
+The compiler-59/console-35 six-provider native rebuild and memory-17 full
+workstation run remain live for their captured images. The complete OS/M7 and
+release objective remains open.
