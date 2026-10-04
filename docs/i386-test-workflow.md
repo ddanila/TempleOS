@@ -4284,3 +4284,24 @@ root-task path, not forced exit, backing-pool reclamation or simultaneous
 debuggers. Prototype full workstation testing is running in
 `build/cpu-trap-resume-prototype/build/cpu-trap-workstation`; implementation
 remains unpromoted pending broader regression and guest flat-size checks.
+
+### Forced exit from a CPU breakpoint
+
+`tools/test-i386-cpu-debug-kill.py` compiles and executes actual INT3 in a
+child terminal, verifies the breakpoint debugger via exact VGA, switches
+focus, kills that child and enters the explicit debugger in its survivor.
+The survivor evaluates 6*7, returns through G, exits and recovers the parent
+public heap exactly. All 13 commands PASS on prototype ca66901a in
+`build/cpu-trap-kill-green/result.json` (8 MiB `486,-fpu`, source unchanged).
+The identical checker FAILs at actual vector 3 on qualified native main
+in `build/cpu-trap-kill-red/result.json`, source unchanged. Checker SHA:
+`e4fc058ffdfd45bf705112daaa414785fe86106de19cca1dcdc1bc985bb441ae`.
+This establishes the exercised forced-exit/cleanup path, not simultaneous
+debugger sessions or exhaustive private-resource accounting.
+
+Full prototype workstation testing remains live in `cpu-trap-workstation`;
+its guest six-module flat-development build is live in
+`build/cpu-trap-resume-prototype/build/cpu-trap-flat-development`. The latter
+uses verified cross-built retained inputs and is a size/construction check,
+not a fully native retained-provider or release verdict. OS sources remain
+frozen during these jobs and are not promoted to main.
