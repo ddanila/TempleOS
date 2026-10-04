@@ -35,6 +35,12 @@ def behavior_commands():
         'Bool DispatchInhibitDone(){return JobsHndlr(GetRFlags)==1&&DispatchDone(42)&&sys_focus_task==Fs->parent_task;}',
         'U0 DispatchInhibitQueue(){DispatchQueue;DispatchJob->master_task=Fs;DispatchJob->flags=1<<JOBf_FOCUS_MASTER;sys_focus_task=Fs->parent_task;Fs->win_inhibit|=1;}',
         'Bool DispatchInhibit(){CTask *old=sys_focus_task;I64 f=Fs->win_inhibit;Bool ok;DispatchInhibitQueue;ok=DispatchInhibitDone;Fs->win_inhibit=f;sys_focus_task=old;return ok;}',
+        'I64 DispatchExitStage=0,DispatchExitAfter=0;',
+        'I64 DispatchExitCall(U8 *data){DispatchExitStage=2;return 42;}',
+        'U0 DispatchExitEnd(){if(DispatchExitStage==2)DispatchExitStage=3;else DispatchExitStage=99;}',
+        'U0 DispatchExitWorker(U8 *data){Fs->task_end_cb=&DispatchExitEnd;DispatchQueue;DispatchJob->addr=&DispatchExitCall;DispatchJob->flags=1<<JOBf_EXIT_ON_COMPLETE|1<<JOBf_FREE_ON_COMPLETE;JobsHndlr(GetRFlags);DispatchExitAfter=1;}',
+        'Bool DispatchExit(){CTask *t=Spawn(&DispatchExitWorker,0,"JobExit",-1,Fs,8192);I64 end=cnts.jiffies+2000;if(!t)return FALSE;while(DispatchExitStage!=3&&cnts.jiffies<end)Yield;return DispatchExitStage==3&&!DispatchExitAfter;}',
+
 
     ]
     commands = [(source, []) for source in definitions]
@@ -43,7 +49,7 @@ def behavior_commands():
         if name=='DispatchSource': answers=['42','1']
         commands += [(name+';', answers), ('DispatchFree;', [])]
     commands += [('DispatchSpawn;', ['1']), ('DispatchRun;', ['1']),
-                 ('DispatchFinish;', ['1']), ('DispatchFree;', []), ('DispatchAutoFree;', ['1']), ('DispatchInhibit;', ['1']), ('DispatchFree;', []), ('6*7;', ['42'])]
+                 ('DispatchFinish;', ['1']), ('DispatchFree;', []), ('DispatchAutoFree;', ['1']), ('DispatchInhibit;', ['1']), ('DispatchFree;', []), ('DispatchExit;', ['1']), ('6*7;', ['42'])]
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Dispatch contract exceeds the interactive line limit')
     return commands
@@ -66,7 +72,7 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:22]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:27]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
@@ -78,6 +84,9 @@ if(ok){ok=DispatchMaster;DispatchFree;}
 if(ok){ok=DispatchSpawn;if(ok)ok=DispatchRun;if(!DispatchFinish)ok=FALSE;DispatchFree;}
 if(ok)ok=DispatchAutoFree;
 if(ok){ok=DispatchInhibit;DispatchFree;}
+Report("START dispatch exit contract\\n");
+if(ok)ok=DispatchExit;
+Report("DONE dispatch exit contract\\n");
 if(ok)Report("PASS original public job dispatch\\n");
 else Report("FAIL original public job dispatch\\n");
 Report("DONE original public job dispatch\\n");
@@ -104,8 +113,8 @@ Report("DONE original public job dispatch\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
-    report.update(checker_sha256=checker, cases=7,
-                  scope='JobsHndlr callback argument/result, callback exception, queued source result, master focus/wake and spawned-child parent/argument/lifecycle; FREE_ON_COMPLETE queue/heap recovery and inhibited focus; not scanning, exit completion flags or macro recording')
+    report.update(checker_sha256=checker, cases=8,
+                  scope='JobsHndlr callback argument/result, callback exception, queued source result, master focus/wake and spawned-child parent/argument/lifecycle; FREE_ON_COMPLETE queue/heap recovery and inhibited focus; EXIT_ON_COMPLETE callback and no return after dispatch; not scanning or macro recording')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

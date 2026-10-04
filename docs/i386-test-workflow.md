@@ -1323,3 +1323,10 @@ recovery for FREE_ON_COMPLETE (job and auxiliary string) and inhibited focus.
 Expanded native qualification is running on the version-16 image. Its queue
 cleanup and callback regressions pass at 8 MiB without an FPU; the full message
 run remains pending.
+
+Version-16 full native message qualification passes nineteen contracts (82
+commands), and the seven-case direct-dispatch qualification passes, both at
+8 MiB on 486,-fpu with matching VGA checkpoints and unchanged source disk.
+The checker now includes a pending eighth EXIT_ON_COMPLETE fixture; its first
+original run timed out, so do not treat that added case as a validated oracle
+until the phase-marked rerun is diagnosed.

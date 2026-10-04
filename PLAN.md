@@ -5160,3 +5160,23 @@ build/i386-public-message-scan-retained, using the version-16 cross-built input
 and matching export contracts, 16 MiB and 486,-fpu. This is only a build attempt;
 installation, independent boot, flat guest rebuild, subsequent generations and
 release qualification are not implied before their own results are verified.
+
+### Native message consumption qualification
+
+Full version-16 message qualification passes
+(build/i386-public-message-scan-native/result.json): nineteen contracts, 82
+commands, all VGA pixels match at each checkpoint, 8 MiB on 486,-fpu, unchanged
+source disk. Seven direct-dispatch contracts also pass on that same image
+(build/i386-public-dispatch-flags-native/result.json), including exact heap
+recovery for FREE_ON_COMPLETE and inhibited focus. Queue cleanup/callback
+regressions pass as recorded above. Keyboard adaptation, macro recording,
+allocation-failure contracts and release self-hosting generations remain open.
+
+A new EXIT_ON_COMPLETE reference fixture times out on original TempleOS
+(build/i386-public-dispatch-exit-original). The saved screen shows the OS alive;
+no exit-contract pass is claimed. A phase-marked reference rerun is running in
+build/i386-public-dispatch-exit-original-trace to identify the stalled fixture.
+The seven-case dispatch and nineteen-case message passes use the earlier
+captured checkers and are not invalidated by adding this unqualified case.
+Current-source guest rebuild of all six retained providers remains live in
+build/i386-public-message-scan-retained, currently compiling MemoryRuntime.
