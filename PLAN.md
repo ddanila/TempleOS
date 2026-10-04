@@ -8507,3 +8507,14 @@ original two-generation bootstrap rebuild is now running. Internal raw reads
 are kept on the disk path instead of inheriting public cached-read attributes.
 The prototype file-service ABI advances to 41 for the changed shared volume
 layout. These changes have no runtime qualification yet.
+
+The corrected ABI-40 FileFind candidate now passes its full workstation suite in
+`build/public-file-find-rejection-workstation/result.json`: all 513 native
+commands, exact VGA at every checkpoint, twenty document cycles with exact task
+heap recovery, and unchanged source disk. Startup is 24.394 seconds on 8 MiB
+`486,-fpu`; the explicit 60-second gate passes in
+`build/public-file-find-rejection-workstation-budget.json`. Long-document
+navigation-to-VGA is 0.258 seconds. This qualifies the corrected source image
+`d10e8a3cdc4e46e39264f1e5d0e89ae9f279885d8e73344245151556f8e151b2`,
+not the subsequent resident-cache prototype. Native retained rebuilding remains
+running before installation/full native qualification and promotion.
