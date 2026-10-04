@@ -5370,3 +5370,36 @@ build/i386-public-keyboard-enrolled-breaks, and DolDoc workflows in
 build/i386-public-keyboard-enrolled-doldoc. These are pending, not qualification
 claims. Input loss, macro recording, allocation recovery and current-source
 full self-hosting/release verification remain open.
+
+### Keyboard focus pass and break-recovery regression
+
+The enrollment image also passes the focused-child checker in
+build/i386-public-keyboard-enrolled-focus/result.json (seven commands,
+486,-fpu, 8 MiB, all VGA pixels matched, unchanged input disk). The child takes
+focus, consumes both hardware key events through GetMsg, and restores console
+input. Ordinary keyboard tests pass in
+build/i386-public-keyboard-enrolled-console/result.json on the same image.
+
+Break recovery fails at HotkeyWait(0) in
+build/i386-public-keyboard-enrolled-breaks: the IRQ request reaches the pending
+break bit, allowing the wait to return, but execution reports COMMAND OK rather
+than Exception. Spawning the root-parented keyboard worker retains a creator
+reference to the console for code lifetime. I386TaskBreakPoll previously
+deferred delivery for any lifetime_refs, so that permanent worker suppresses
+breaks indefinitely. Lifetime references still prevent task retirement; break
+polling now relies on its existing blocked/wait, I/O, compiler/control, cleanup
+and message-operation guards instead of rejecting inherited child references.
+
+The break fix is not yet qualified. Both original rebuild generations pass;
+fresh cross-build is running in build/i386-public-keyboard-break-fixed-kernel
+and must be followed by the break regression. The enrollment-image
+passes above do not cover this new source. DolDoc workflows remain running on
+the immutable enrollment image. Full self-hosting/release gates remain open.
+
+The older six-provider guest rebuild is now terminal PASS in
+build/i386-public-message-scan-retained/result.json. All six generated T32Ms
+pass layout/export audits against the captured reference exports. Source image
+SHA-256: fc879b518a2f1280ce67097691861db5a2ec003534942881a5bda32bb90a6131.
+This is the pre-keyboard memory-16/console-32 snapshot, not current-source
+qualification. Installation of these exact guest-built providers and an
+independent boot are running in build/i386-public-message-scan-retained-install.

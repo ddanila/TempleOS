@@ -1411,3 +1411,12 @@ unchanged source disk. Worker entry is present in its debug log. Focused-child,
 ordinary keyboard, breaks and DolDoc reruns are running in the corresponding
 build/i386-public-keyboard-enrolled-* directories; this narrow pass does not
 qualify those additional workflows.
+
+Focused-child delivery and ordinary keyboard checks now pass on the enrollment
+image (build/i386-public-keyboard-enrolled-focus and
+build/i386-public-keyboard-enrolled-console). Break recovery fails at the first
+HotkeyWait(0) checkpoint: the permanent keyboard worker's creator reference
+causes the lifetime_refs guard in I386TaskBreakPoll to defer delivery. The guard
+is removed while operation-specific safety checks remain. A fresh build and
+break test are required for that new source; DolDoc remains running on the
+previous enrollment image.
