@@ -17,7 +17,10 @@ def main():
     parser.add_argument('--compressed', action='store_true', help='Require a resident .Z fixture containing the 64-byte ReadPackedBytes seed')
     parser.add_argument('--shared-lifetime', action='store_true', help='Require cache reuse across child task exit and directory-state replacement')
     parser.add_argument('--hash-visible', action='store_true', help='Require original public HTT_FILE cache visibility through Fs hash-table chain')
+    parser.add_argument('--hash-removal', action='store_true', help='Remove the public cache entry and require a fresh disk read and repopulation')
     args = parser.parse_args()
+    if args.hash_removal and not args.hash_visible:
+        parser.error('--hash-removal requires --hash-visible')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     candidate = out/'candidate.img'
@@ -46,9 +49,15 @@ def main():
     report['compressed'] = args.compressed
     report['shared_lifetime'] = args.shared_lifetime
     report['hash_visible'] = args.hash_visible
+    report['hash_removal'] = args.hash_removal
     if args.hash_visible:
         selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<=0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
         checks += [f'ColdHash("C:/Probe/{filename}")']
+    if args.hash_removal:
+        selected += ['Bool ColdRemove(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE),*p;CHashTable *t=Fs->hash_table;I64 i;if(!e)return FALSE;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e){HashRemDel(e,t);return !HashFind(name,Fs->hash_table,HTT_FILE);}p=p->next;}}t=t->next;}return FALSE; }']
+        fresh = checks[0]
+        cached = checks[1]
+        checks += [f'ColdRemove("C:/Probe/{filename}")', fresh, cached, f'ColdHash("C:/Probe/{filename}")']
     if args.shared_lifetime:
         cached_check = checks[1]
         owned_check = f'ReadOwned("C:/Probe/{filename}")'

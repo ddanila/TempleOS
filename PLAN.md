@@ -8901,3 +8901,28 @@ root-owned cache records/names/buffers, read/write wrappers, removal coherence
 and runtime qualification are still to implement. No build/pass is claimed for
 this intermediate source. Cd full workstation is running separately against
 its qualified focused-contract source.
+
+Resident public-hash ownership follow-up (2026-10-05): the guarded original
+oracle passes; the ABI-42 native candidate fails at ColdHash without changing
+the source disk (`build/public-file-resident-hash-guarded-red/result.json`).
+This confirms the public hash contract remains a promotion blocker.
+
+The isolated ABI-44 candidate now implements root-task public allocations for
+CHashGeneric records, names and stored bytes, public hash lookup/publication,
+replacement/removal and caller-owned decoded FileRead buffers. Its first
+bootstrap passes, but cross compilation rejects an undeclared Gs expression;
+that expression now uses Fs->gs and a fresh bootstrap/cross-build is running.
+No ABI-44 runtime qualification or promotion is claimed. Parent-resolution
+cache keys, failed-write behavior and removal/exception coherence still need
+qualification against original TempleOS.
+
+The cold-read test adds --hash-removal (requires --hash-visible): locate the
+entry's owning table in the public hash chain, remove it with HashRemDel, then
+require disk attributes on the first read, cached attributes on the next, and
+new public heap-owned cache objects. The original oracle reports DONE cold
+resident in `build/public-file-resident-hash-removal-owner-red/oracle/debug.log`;
+the native run remains pending. A preliminary attempt removing from Fs's own
+table failed the original oracle because the entry belongs to an ancestor;
+the test now explicitly locates the owning table. Python compilation, CLI
+parsing and diff whitespace checks pass. Cd's full workstation run remains
+live; its focused 32-command result is still the qualified boundary.
