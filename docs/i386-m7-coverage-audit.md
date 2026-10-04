@@ -51,6 +51,12 @@ update. Both measured budgets pass on that cross-built snapshot. The preceding c
 at a test that redeclared debugger G; the distinct-name forward-call regression
 passes, and the full fixture has been corrected.
 
+The cleanup fully guest-built workstation suite now passes all 513 commands,
+exact VGA and 20 document cycles with exact heap recovery. Its visible-update
+latency is 0.258 seconds, but startup fails the gate at 64.995 seconds. Evidence
+is in `build/i386-terminal-debug-cleanup-selfhost-workstation` and its budget
+report; this predates the subsequent heap and formatter changes.
+
 The preceding cleanup fully guest-built epoch is compiler 59, memory 18,
 console 36 in `build/i386-terminal-debug-cleanup-selfhost`: six retained
 providers and six flat modules were guest-built, installed and independently

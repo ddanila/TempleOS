@@ -2572,3 +2572,22 @@ checks, rebuild the retained providers in the guest and qualify a fully native
 image against the unchanged startup gate. The old 65.149-second timing failure
 is not cleared by these component passes. Formatter/User integration and the
 remaining full release requirements are still open.
+
+### Fully guest-built cleanup snapshot: complete workstation suite passes
+
+`build/i386-terminal-debug-cleanup-selfhost-workstation/result.json` passes
+all 513 native commands, exact VGA at every checkpoint, and 20 document
+cycles with exact task data/code heap recovery. This run uses the fully native
+cleanup target 239bacc0 and predates debugger zero/mode fixes, portable/assembly
+heap-scan changes and formatter extraction. Long-document input-to-visible
+latency is 0.2579392488114536 seconds, meeting the one-second gate.
+
+Startup is 64.99476048490033 seconds;
+`build/i386-terminal-debug-cleanup-selfhost-workstation-budget.json` FAILS the
+60-second gate by 4.9947604849003255 seconds. Evidence SHA-256:
+`31b18a438583b12c7b4624a982765717da8c74c276ff8c13a412fe5f4a23173e`.
+The full functional pass must not be reported as timing or current-source
+release qualification. The optimized assembly-scan guest flat build remains
+running; its cross-built image is receiving a separate keyboard/startup check
+in `build/i386-heap-asm-scan-cross-keyboard`. That development check cannot
+substitute for fully native startup measurement.
