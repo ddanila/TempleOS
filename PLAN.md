@@ -8,8 +8,11 @@ attributes 442/506 root-header samples to heap allocation/free/scan and
 An isolated heap-search prototype retains whole-arena validation before any
 mutation and uses bounded U32 assembly for the later block search. Both heap
 corpora pass, including 49 public layout checks and 1024 churn rounds each.
-Its integrated build is pending; speed benefit and native boot-area fit remain
-unproven, and main heap sources remain unchanged.
+Its integrated build and instruction/keyword audits pass, with a 482440-byte
+cross-built boot kernel (944 bytes smaller). No-FPU 8 MiB keyboard/exact-VGA
+boot passes at 23.484 seconds and meets the unchanged startup budget. Full
+workstation and guest flat-development builds are running. Fully guest-built
+timing and native boot-area fit remain unproven; main heap sources are unchanged.
 
 The pre-Help fully guest-built image passes a same-call empty User create/kill
 cycle in 0.352 seconds (`build/i386-root-declarations-native-cycle`), confirming

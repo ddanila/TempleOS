@@ -3975,3 +3975,20 @@ The current-main inline-assembly regression also passes in
 `build/i386-breakpoint-asm-main-inline/result.json`, including loader-required
 operand forms, character immediates and a block over 256 bytes, with the source
 preserved. Startup for that cross-built image is 58.431377 seconds.
+
+The heap-search prototype integrated build and executable/keyword audits now
+pass in `build/cpu-debug-prototype/build/i386-heap-seek/result.json`.
+The cross-built boot kernel is 482440 bytes, 944 bytes smaller than main's
+483384-byte baseline. Image SHA-256 is
+`6db997ffe5c0c75c76a1a7edff8d7587450b02a68151f8930721d9e7ace8c38e`.
+Normal no-FPU 8 MiB TCG keyboard/exact-VGA boot passes in
+`build/i386-heap-seek-keyboard/result.json` at 23.484112070 seconds; the unchanged
+60-second checker passes in `build/i386-heap-seek-keyboard-budget.json`. This is
+a recorded cross-image timing, not a controlled fully native speed comparison.
+
+Full workstation regression is running in `build/i386-heap-seek-workstation`.
+The isolated cross-retained development flat build is running in
+`build/cpu-debug-prototype/build/i386-heap-seek-native-development`. It checks
+native source assembly acceptance and boot-image fit using verified cross-built
+retained providers; it cannot establish full self-hosting or native-provider
+startup timing. Main heap sources remain unchanged pending these checks.
