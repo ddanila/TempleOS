@@ -4041,3 +4041,13 @@ Its pre-heap main-image red result is in
 `CPU TRAP enter` is followed by vector 3 and `FAIL native kernel`. Source disk
 remains unchanged. Register return, mode/IF/TF restoration and shell recovery
 remain unexecuted assertions, not established behavior.
+
+The heap-search source epoch now passes all six native retained providers in
+`build/i386-heap-seek-native-build/result.json`, including exact export contracts
+and the console allocation-wrapper check. Module sizes are CompilerRuntime
+1739257, CompilerProbe 1231080, ConsoleRuntime 1096428, FileRuntime 302036,
+MemoryRuntime 306979 and Startup 407 bytes. The result records each payload
+hash and the resulting source-disk hash. Installation is running in
+`build/i386-heap-seek-native-install`; native-provider boot timing, the matching
+flat rebuild, integrated native workflows and second-generation reproducibility
+remain pending. This is completed construction evidence, not a release pass.
