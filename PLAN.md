@@ -6856,3 +6856,21 @@ release qualification. The optimized assembly-scan guest flat build remains
 running; its cross-built image is receiving a separate keyboard/startup check
 in `build/i386-heap-asm-scan-cross-keyboard`. That development check cannot
 substitute for fully native startup measurement.
+
+### Assembly heap scan: cross-built normal boot meets the startup gate
+
+`build/i386-heap-asm-scan-cross-keyboard/result.json` passes ordinary keyboard
+and exact-VGA checks under 8 MiB `486,-fpu` TCG. Startup is
+45.82201023912057 seconds; the unchanged 60-second checker passes in
+`build/i386-heap-asm-scan-cross-startup-budget.json`. Cross-built disk SHA-256:
+`4d57c57f5ee1751997c215f570580af2bb46a905ea40c660c89410c177fab1b0`.
+This is evidence for the optimized cross-built snapshot, not a controlled
+before/after speed comparison or a fully guest-built timing pass.
+
+The complete workstation regression suite is now running on the same image in
+`build/i386-heap-asm-scan-cross-workstation`. The guest flat build in
+`build/i386-heap-asm-scan-flat` continues independently. Fully native retained
+build/install, installed audit and its own startup measurement still follow;
+the preceding native timing failure remains open until qualified replacement
+evidence exists. Formatter/User and the broader release requirements remain
+unfinished.
