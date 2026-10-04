@@ -6,8 +6,11 @@ passing. Its no-FPU 8 MiB full workstation passes 513 commands, exact VGA
 and 20 exact shared-heap recovery cycles: startup 33.014209438 seconds and
 long-document visible update 0.372473826 seconds. All six second-generation
 retained providers reproduce their installed first-generation bytes exactly;
-installation and independent boot pass. Second-generation flat construction
-is live in `build/i386-heap-seek-gen2-selfhost`. The current fully native
+installation and independent boot pass. Second-generation flat construction and installed audits pass in
+`build/i386-heap-seek-gen2-selfhost` and its audit directory; generation
+comparison passes all twelve modules, flat kernel and installed boot bytes.
+The current resource profile passes 20 cycles with 1352496-byte live baseline,
+1356112-byte live peak and 1356800-byte reserved peak; its arena fits 8 MiB. The current fully native
 three-boot DolDoc session is live in
 `build/i386-heap-seek-selfhost-doldoc-session`; persistence and interrupt
 latency are not yet qualified for this image. Older rows below retain their

@@ -4176,3 +4176,15 @@ with allocation bitmap matching reachable extents. Whole disk SHA values
 differ; this verdict establishes artifact and boot reproducibility.
 The live three-boot DolDoc workflow, full debugger functionality/API parity
 and release qualification remain separate requirements.
+
+### Current fully native resource bounds
+
+`build/i386-heap-seek-selfhost-resource-profile/resource-result.json` PASSes
+on first-generation target 6fc8eb0b with 8 MiB `486,-fpu` TCG. All 20 document
+development cycles recover the exact shared task heap. Live baseline is
+1352496 bytes, live peak 1356112 bytes and reserved peak 1356800 bytes;
+temporary live growth is 3616 bytes. Public data/code counters both report
+the same shared arena, so these values must not be added together. Arena
+base 1114112 plus size 7143424 fits within installed 8 MiB RAM.
+This measures the exercised document corpus, not every possible workload.
+The three-boot persistence/interrupt workflow remains running separately.
