@@ -1908,3 +1908,34 @@ Repeated-key, inhibited-window, creation-hotkey, document/background-work,
 private-resource and debugger/terminal combinations need further coverage.
 Current-source native generations, complete M7 and release qualification remain
 open; the older console-35 six-provider native build remains live.
+
+### Concurrent terminal document contract
+
+Run the automated two-editor session on a disposable writable copy:
+
+```sh
+python3 tools/test-i386-terminal-documents.py build/i386-terminal-documents-kernel/kernel.img --out build/i386-terminal-documents-green
+```
+
+The checker copies the input to `OUT/session.img`, opens independent One/Two
+DolDoc documents, types and saves different contents, cycles focus through root,
+returns to each editor, revises and saves, and exits both editors and tasks.
+VGA comparisons require named console headings after editor exit. The host then
+reads the saved RedSea files and requires exactly `one!` and `two?`, each followed
+by DolDoc's cursor byte 0x05. Parent public-heap recovery and a final shell answer
+are required too. The original input image must remain unchanged.
+
+Frozen checker SHA-256:
+`e14a082848c68820bb5d47bd0951d1aadbfb782ec4df00d4a1823cfe0a9a90a8`.
+The baseline in `build/i386-terminal-documents-red` fails at the first restored
+console title; it displays the generic root heading. A task-aware heading fix
+is under verification. This contract excludes sprites, mouse interaction,
+restart persistence, abnormal cleanup and general background compilation.
+
+The preceding Ctrl-Alt-N and ordinary keyboard checks are now PASS in
+`build/i386-terminal-hotkeys-{green,keyboard}`, on the unchanged 444bfb1b image.
+
+Heading-fix candidate: `build/i386-terminal-documents-kernel/kernel.img`, SHA-256
+`58ab899923d48879c927e24be06c986436fb1ed4da04a9918ba5219c83dd060e`. Original two-generation rebuild, cross-build and
+386 boot audit pass. Concurrent-editor green and root `document-editing`
+regression runs are active; inspect their result files before claiming a pass.

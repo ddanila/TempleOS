@@ -1666,7 +1666,7 @@ U0 NativeDocEditConsoleRestore()
   native_dir_mouse_visible=FALSE;
   native_help_mouse_visible=FALSE;
   if(!I386TextInit(&console_text,console_planes,sys_font_std)) KernelStop;
-  I386TextWrite(&console_text,"TempleOS i386\nHolyC console\n\n");
+  NativeTerminalConsoleHeading;
   ConsolePresent;
 }
 extern Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor);

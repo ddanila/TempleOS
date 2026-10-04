@@ -12,7 +12,10 @@ on that image. Its two-terminal workflow and intentional keyboard-loss check als
 definitions/history, programmatic focus, exit/refocus and parent public-heap
 recovery. The newer Ctrl-Alt-N image in `build/i386-terminal-hotkeys-kernel`
 (SHA-256 `444bfb1b7ee9de7e0ac6e4b609b2fd066798c649a9baec47a989165e81657229`)
-has build/audit passes; its hotkey and keyboard runtime checks are pending.
+passes build/audit, hardware Ctrl-Alt-N cycling and ordinary keyboard checks.
+The two-editor contract passes switching, editing and saving through its first
+editor exit, then fails because the console loses its terminal name. A shared
+task-aware heading fix is under verification; the full workflow remains open.
 
 The preceding memory-17 registration-fix image passes the full 513-command
 workstation suite in `build/i386-public-macro-registration-workstation`, including

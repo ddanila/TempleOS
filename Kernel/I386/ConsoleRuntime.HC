@@ -36,6 +36,7 @@ extern CI386Text *NativeTerminalText();
 extern U8 **NativeTerminalPlanes();
 extern Bool NativeTerminalVisible();
 extern U0 NativeTerminalAdoptRoot();
+extern U0 NativeTerminalConsoleHeading();
 extern U0 NativeUserTaskCont();
 extern U0 NativeUserCmdLine(I64 dummy=0);
 extern CTask *NativeWinFocus(CTask *task=0);

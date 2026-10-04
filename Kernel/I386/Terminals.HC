@@ -184,6 +184,15 @@ U0 NativeUserTaskCont()
   }
   terminal->running=FALSE;
 }
+U0 NativeTerminalConsoleHeading()
+{
+  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+  if(terminal && terminal!=native_terminal_root) {
+    I386TextWrite(&terminal->surface,"TempleOS i386\nHolyC console\nTask: ");
+    I386TextWrite(&terminal->surface,terminal->task->task_title);
+    I386TextWrite(&terminal->surface,"\n\n");
+  } else I386TextWrite(&console_text,console_title);
+}
 U0 NativeUserCmdLine(I64 dummy=0)
 {
   CNativeTerminal *terminal;
@@ -191,9 +200,7 @@ U0 NativeUserCmdLine(I64 dummy=0)
   terminal=NativeTerminalFind(I386TaskSelf);
   if(!terminal) {
     terminal=NativeTerminalCreate;
-    I386TextWrite(&terminal->surface,"TempleOS i386\nHolyC console\nTask: ");
-    I386TextWrite(&terminal->surface,I386TaskSelf->task_title);
-    I386TextWrite(&terminal->surface,"\n\n");
+    NativeTerminalConsoleHeading;
   }
   NativeUserTaskCont;
 }

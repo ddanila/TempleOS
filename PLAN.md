@@ -6028,3 +6028,37 @@ Repeated-key, inhibited-window, creation-hotkey, document/background-work,
 private-resource and debugger/terminal combinations need further coverage.
 Current-source native generations, complete M7 and release qualification remain
 open; the older console-35 six-provider native build remains live.
+
+### Ctrl-Alt-N green; concurrent editor identity regression
+
+The frozen hotkey checker now passes in
+`build/i386-terminal-hotkeys-green/result.json`: 11 parent commands, exact VGA
+at every child checkpoint, independent definitions/history, One/Two/root
+cycling, exit/refocus and parent public-heap recovery. Startup is 57.54 seconds
+on 8 MiB with 486,-fpu. Ordinary keyboard regression also passes in
+`build/i386-terminal-hotkeys-keyboard` (59.69 seconds). Both use unchanged
+image 444bfb1b7ee9de7e0ac6e4b609b2fd066798c649a9baec47a989165e81657229.
+
+Added `tools/test-i386-terminal-documents.py`: two live text DolDoc editors,
+hardware focus cycling, distinct edits and saves, editor exit to the named
+terminal, task exit/refocus, parent heap recovery and independently checked
+persisted file bytes. It writes only a dedicated copy of the source image.
+The baseline `build/i386-terminal-documents-red/result.json` fails at
+`one-console-title`: the saved VGA screen shows the generic console heading
+after Escape, losing `Task: One`. Earlier checkpoints pass, including saving
+both documents, restoring One's editor and saving its revised text. This is
+partial baseline evidence, not a passing full document workflow.
+
+A shared `NativeTerminalConsoleHeading` now supplies the initial child console
+and document-editor restoration headings. Root consoles retain their existing
+heading. Original rebuild, fresh cross-build and the frozen document contract
+will qualify this change; no runtime pass is claimed yet. Sprite/mouse sessions,
+abnormal terminal cleanup, background compilation, complete debugger behavior,
+current-source native generations and release qualification remain open.
+
+Both original rebuild generations, the fresh i386 cross-build and 386 boot audit
+pass for the heading fix. Candidate `build/i386-terminal-documents-kernel/kernel.img`
+has SHA-256 `58ab899923d48879c927e24be06c986436fb1ed4da04a9918ba5219c83dd060e` (483360 flat kernel bytes).
+The unchanged document checker and existing root document-editing regression are
+running in `build/i386-terminal-documents-green` and
+`build/i386-terminal-documents-editing`; runtime qualification remains pending.
