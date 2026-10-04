@@ -38,7 +38,7 @@ def behavior_commands():
             commands.append(('KillReady;', ['1']))
         commands.append((f'KillCancel({kind});', ['1']))
         if kind == 4:
-            commands.extend([('KillResume;', ['1']), ('KillState->stage=3;', [])])
+            commands.extend([('KillResume;', ['1']), ('KillState->stage=3;', ['3'])])
         commands.extend([('KillDead;', ['1']), ('KillStale;', ['1'])])
     commands.extend([('KillStart(1);', ['1']), ('KillReady;', ['1']),
                      ('KillShift;', ['1']), ('KillHas(Fs,KillState->task);', ['1']),

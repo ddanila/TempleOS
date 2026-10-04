@@ -48,7 +48,8 @@ U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL)
   if(ip!=U32_MAX || task && task!=I386TaskSelf) throw('DbgArg');
   console_debug_go=TRUE;
 }
-U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0)
+U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+  Bool is_exception=FALSE)
 {
   CI386Task *task=I386TaskSelf;
   CI386Text saved;
@@ -70,8 +71,9 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0)
     console_debug_task=task; console_debug_go=FALSE; sys_focus_task=task;
     I386TextInit(&console_text,console_planes,sys_font_std);
     I386TextWrite(&console_text,"TempleOS i386\nHolyC debugger\n\n");
-    if(exception) {
+    if(is_exception) {
       I386TextWrite(&console_text,"Exception: ");
+      if(!exception) I386TextPut(&console_text,'0');
       for(i=0;i<8;i++) {
         ch=(exception>>(i*8))&255;
         if(!ch) break;
@@ -85,7 +87,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0)
     I386TextWrite(&console_text,"\nFunction: ");
     if(fun) I386TextWrite(&console_text,fun->str);
     else I386TextWrite(&console_text,"unknown");
-    if(exception) {
+    if(is_exception) {
       I386TextWrite(&console_text,"\nSource: ");
       if(fun && fun->src_link) I386TextWrite(&console_text,fun->src_link);
       else I386TextWrite(&console_text,"unknown");
@@ -164,5 +166,5 @@ U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception)
       exception=='Compiler' || exception=='OutMem') return;
   for(i=0;i<TASK_EXCEPT_CALLERS && !fun;i++)
     fun=ConsoleDebugFunction(task->except_callers[i]);
-  ConsoleDebugSession(NULL,0,fun,exception);
+  ConsoleDebugSession(NULL,0,fun,exception,TRUE);
 }

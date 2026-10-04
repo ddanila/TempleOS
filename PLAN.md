@@ -6307,3 +6307,56 @@ Independent console-35 installed-image audit is now PASS in
 module ranges satisfy the 386 allowlist, boot payload matches the guest-built
 flat image and filesystem allocation matches reachable extents. This completes
 that older source epoch's single-generation native build/install/audit pipeline.
+
+### Debugger cleanup green; broader qualification and zero exception handling
+
+On unchanged cleanup image
+9812e5d53b8ca91070c4f1f4f6d8b93e166bb45d57805efabfb59a945765ec85,
+forced-debugger-exit now passes in `build/i386-terminal-debug-kill-green`: 13
+commands, 58.17-second startup, all VGA checkpoints and parent heap recovery.
+The survivor enters Dbg after the victim is killed, evaluates 42 and G returns.
+The explicit Dbg/G and named-exception regressions also pass in
+`build/i386-terminal-debug-cleanup-{session,exception}` (7 and 9 commands,
+58.31/58.18-second starts). All use 8 MiB, 486,-fpu and unchanged source disks.
+The broader public cancellation corpus is still running.
+
+Started full workstation integration and all six native retained-provider builds
+for this captured cleanup snapshot in
+`build/i386-terminal-debug-cleanup-workstation` and
+`build/i386-terminal-debug-cleanup-retained`. Their image and reference exports
+remain fixed. They predate the following zero-exception change.
+
+Added `tools/test-i386-debug-zero-exception.py`, frozen SHA-256
+5469a779edf6feab6ddf853e54c0dabea68bb01bd12b05a3462b23e2ad3e4f2f.
+It throws zero with DbgMode enabled, requires exception/function/source display,
+inspects pre-unwind state and G-unwinds back to a usable shell. Baseline is
+running in `build/i386-debug-zero-exception-red`. ConsoleDebugSession now takes
+an explicit exception/session discriminator rather than using code zero as
+absence, and displays `Exception: 0`. The original rebuild is running; no new
+build/runtime pass is claimed. The original broader debugger requirements and
+current-source two-generation release qualification remain open.
+
+The zero-exception baseline is terminal FAIL: its VGA screen shows an empty
+Message, Value 0 and caller name, with no runtime exception/source heading.
+Both original rebuild generations, the fresh cross-build and 386 boot audit
+pass for the fix. Image `build/i386-debug-zero-kernel/kernel.img` SHA-256
+`0a90d205983f37f08cf8b47cd11a963dfeec026695c7e60f95c46e6372778608`. Frozen zero-case green plus named-exception
+and explicit-session regressions are running in
+`build/i386-debug-zero-{exception-green,named-regression,explicit-regression}`.
+No runtime pass is claimed yet.
+
+The public Kill corpus progressed through callback recovery, then stopped at
+`KillState->stage=3;`: the native screen prints 3, while the fixture expected no
+output. Corrected that expected result and strengthened the original oracle to
+check the assignment's value explicitly. Revised checker SHA-256 `bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564`
+is running on original and native systems in
+`build/i386-terminal-kill-original-value` and `build/i386-terminal-kill-public-value`.
+This is a fixture correction, not an OS behavior change; the full native
+cancellation corpus remains unqualified until its revised run completes.
+
+The revised original cancellation oracle now passes all nine cases, including
+its explicit assignment-value assertion, in
+`build/i386-terminal-kill-original-value/result.json`. Checker SHA-256
+bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564.
+The matching native run, zero-exception regressions, workstation suite and
+captured cleanup-snapshot native provider build remain active.

@@ -2095,3 +2095,40 @@ Independent console-35 installed-image audit is now PASS in
 module ranges satisfy the 386 allowlist, boot payload matches the guest-built
 flat image and filesystem allocation matches reachable extents. This completes
 that older source epoch's single-generation native build/install/audit pipeline.
+
+Forced debugger exit, ordinary Dbg/G and named-exception regressions now pass
+on cleanup image 9812e5d5. Full workstation integration and six native provider
+builds are running on that immutable snapshot in
+`build/i386-terminal-debug-cleanup-{workstation,retained}`.
+
+### Zero-valued exceptions
+
+`tools/test-i386-debug-zero-exception.py` throws zero and requires a runtime
+exception heading, caller/source, pre-unwind state and G-driven shell recovery.
+Frozen checker SHA-256:
+`5469a779edf6feab6ddf853e54c0dabea68bb01bd12b05a3462b23e2ad3e4f2f`.
+Baseline `build/i386-debug-zero-exception-red` is running. The implementation
+now distinguishes a runtime exception from explicit Dbg independently of its
+code; build/runtime qualification remains pending.
+
+Zero-case baseline failed with Message/Value rather than exception/source UI.
+The candidate in `build/i386-debug-zero-kernel` passes original rebuilds,
+cross-build and 386 audit; image SHA-256 `0a90d205983f37f08cf8b47cd11a963dfeec026695c7e60f95c46e6372778608`.
+Zero, named and explicit-session runtime checks are running.
+
+The cancellation corpus needed an expected-output correction for the standalone
+field assignment `KillState->stage=3;` (result 3). The original oracle now checks
+that assignment value as well. Revised checker `bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564` is running in
+`build/i386-terminal-kill-{original-value,public-value}`. Do not count the
+previous mismatch as a cancellation implementation failure or as a full pass.
+
+Zero-case baseline failed with Message/Value rather than exception/source UI.
+The candidate in `build/i386-debug-zero-kernel` passes original rebuilds,
+cross-build and 386 audit; image SHA-256 `0a90d205983f37f08cf8b47cd11a963dfeec026695c7e60f95c46e6372778608`.
+Zero, named and explicit-session runtime checks are running.
+
+The cancellation corpus needed an expected-output correction for the standalone
+field assignment `KillState->stage=3;` (result 3). The original oracle now checks
+that assignment value as well. Revised checker `bef6aaf3ca4afbd4c5d8baea9c520921781d2f01da9f25d4cd480b406c9ae564` is running in
+`build/i386-terminal-kill-{original-value,public-value}`. Do not count the
+previous mismatch as a cancellation implementation failure or as a full pass.
