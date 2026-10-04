@@ -1278,7 +1278,9 @@ python3 tools/test-i386-public-task-suspend.py build/i386-kernel/kernel.img --ou
 
 Five contracts cover the previous-state return, NULL caller, signature rejection,
 preservation of flags/deadline, suspended-child exclusion and resume. Original
-qualification passes; version-14 native qualification remains pending.
+and corrected version-14 native qualification pass (five cases, 16 commands,
+8 MiB on 486,-fpu, matching VGA checkpoints). The earlier version-14 image
+failed during header publication; the literal-default correction resolves it.
 
 The full message reference now has sixteen original contracts. The added queued
 callback throws JobTest; completion flags/queue and subsequent message delivery

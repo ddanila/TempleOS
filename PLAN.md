@@ -4926,7 +4926,9 @@ Continue implementation in this order:
    keyboard/public-message integration and macro recording coverage rather
    than declaring the private bounded queue to be equivalent.
 
-The preceding-source broad native suite still has no recorded terminal result.
+The preceding-source broad native suite now passes for its version-12 snapshot
+(build/i386-public-job-records-kernel-v2/result.json); it is not current-source
+qualification.
 The signature-retirement snapshot's guest-built flat qualification passes, as
 recorded below. Public posting is now published; scanning and dispatch remain open.
 
@@ -5030,3 +5032,22 @@ uncaught child-exception isolation, which remains open.
 The Suspend header correction passes both original rebuild generations.
 Its fresh native build is running in build/i386-public-suspend-fixed-kernel;
 native runtime qualification remains pending.
+
+### Historical broad-suite result and corrected header boot
+
+The broad shared-job-record build/test run is terminal success
+(build/i386-public-job-records-kernel-v2/result.json): memory provider version 12,
+128 header-layout checks in both phases, interactive VGA/compiler checks,
+module rejection, disk/tree installation and original-reader document round
+trip. Its manifest records revision a09c03c4 with a dirty worktree, and flat
+kernel size 482936. This is historical evidence for that captured source, not
+qualification for later posting/suspension changes or full release readiness.
+
+The corrected version-14 build passes its 386 boot instruction audit and
+produces a 483016-byte flat kernel
+(build/i386-public-suspend-fixed-kernel/result.json). Native logs confirm
+PUBLIC HEADERS ok, resolving the earlier startup publication failure.
+Suspension runtime qualification passes in
+build/i386-public-suspend-fixed-native: five cases and 16 commands at 8 MiB on
+486,-fpu, all VGA checkpoints match and source disk is unchanged. Posting
+regression is still running in build/i386-public-suspend-fixed-posting.
