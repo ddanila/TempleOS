@@ -30,6 +30,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--replace',action='store_true',help='Replace every archive with another fixture before inspection')
     args=parser.parse_args()
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
     candidate=out/'candidate.img'
@@ -51,6 +52,9 @@ def main():
                       f'line=MStrPrint("EXPORT {name}.arc %X %X\\n",arc,arc->compressed_size);Report(line);Free(line);Free(check);Free(src);']
         lines += ['Report("DONE archive oracle\\n");}','Oracle;']
         (overlay/'Once.HC').write_text('\n'.join(lines)+'\n')
+        report['oracle_bootstrap']={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+            for name in ('0000Boot/0000Kernel.BIN.C','Compiler/Compiler.BIN')}
+        report['oracle_script_sha256']=hashlib.sha256((overlay/'Once.HC').read_bytes()).hexdigest()
         subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(out/'oracle.iso')],cwd=ROOT,check=True)
         subprocess.run(['python3','tools/guest-run.py',str(out/'oracle.iso'),'--out',str(out/'oracle'),'--timeout','180','--qmp-stdio'],cwd=ROOT,check=True)
         commands=[('U8 ArchiveBytes[65536];',[]),
@@ -58,6 +62,16 @@ def main():
                   ('I64 ArchiveWrite(U8 *name,I64 size,I64 mode){U32 r=0x12345678;I64 i;for(i=0;i<size;i++){r=r*1664525+1013904223;ArchiveBytes[i]=ArchiveByte(r,mode);}return FileWrite(name,ArchiveBytes,size,0x1122334455667788)>0;}',[])]
         for name,size,mode in CASES:
             commands.append((f'ArchiveWrite("C:/Probe/{name}.BIN.Z",{size},{mode});',['1']))
+        final_cases=list(CASES)
+        expected_date=DATE
+        if args.replace:
+            commands.append(('I64 ArchiveDate=0x1122334455667789;',[]))
+            commands.append(('I64 ArchiveReplace(U8 *name,I64 size,I64 mode){if(!ArchiveWrite(name,size,mode))return 0;return FileWrite(name,ArchiveBytes,size,ArchiveDate)>0;}',[]))
+            final_cases=[]
+            for (name,_,_), (source,size,mode) in zip(CASES,reversed(CASES)):
+                commands.append((f'ArchiveReplace("C:/Probe/{name}.BIN.Z",{size},{mode});',['1']))
+                final_cases.append((name,size,mode,source))
+            expected_date=DATE+1
         commands.append(('6*7;',['42']))
         runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
@@ -68,20 +82,22 @@ def main():
         names={f'/Probe/{name}.BIN.Z' for name,_,_ in CASES}
         files=build['mutated_file_contents'](candidate,names)
         results={}
-        for name,size,mode in CASES:
+        for case in final_cases:
+            name,size,mode=case[:3]
+            source=case[3] if len(case)>3 else name
             path=f'/Probe/{name}.BIN.Z';entry=find(candidate,path)
-            archive=files.get(path);expected=(out/'oracle'/(name+'.arc')).read_bytes()
+            archive=files.get(path);expected=(out/'oracle'/(source+'.arc')).read_bytes()
             if archive!=expected:raise ValueError(f'{name}: native archive differs from original')
-            if not entry or entry['date']!=DATE or entry['attr']!=0xC00:
+            if not entry or entry['date']!=expected_date or entry['attr']!=0xC00:
                 raise ValueError(f'{name}: archive metadata differs')
             stored,expanded,kind=struct.unpack_from('<qqB',archive)
             if stored!=len(archive) or expanded!=size:raise ValueError(f'{name}: invalid archive header')
-            if name=='single8' and kind!=3:raise ValueError('Eight-bit one-byte encoding was not exercised')
-            if name.startswith('fallback') and kind!=1:raise ValueError(f'{name}: fallback was not exercised')
-            if name.startswith('dictionary') and (kind!=(2 if mode==1 else 3) or (stored-18)*8//12<=4096):
+            if source=='single8' and kind!=1:raise ValueError('One eight-bit byte must use the original capacity fallback')
+            if source.startswith('fallback') and kind!=1:raise ValueError(f'{name}: fallback was not exercised')
+            if source.startswith('dictionary') and (kind!=(2 if mode==1 else 3) or (stored-18)*8//12<=4096):
                 raise ValueError('Dictionary fixture did not emit enough codes to require recycling')
             results[name]=dict(bytes=stored,expanded=expanded,type=kind,sha256=hashlib.sha256(archive).hexdigest())
-        report.update(result='pass',cases=results)
+        report.update(result='pass',cases=results,replacements=args.replace)
     except Exception as error:
         report['error']=str(error);raise
     finally:

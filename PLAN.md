@@ -12,7 +12,10 @@ independent 8 MiB boot pass. Second-generation self-hosted flat construction,
 installed audits and twelve-module/flat/boot byte comparison also pass.
 FileWrite is still an isolated experiment: ordinary/explicit/default-date
 and lifecycle contracts pass. The initial .Z write/include/execute contract
-and compressed-record filesystem corruption checks now pass; complete
+and compressed-record filesystem corruption checks now pass. Eight archive
+fixtures match original bytes, including dictionary recycling and fallback;
+ordinary metadata/lifecycle/default-date regression tests pass after fixing
+a directory-relocation return bug. Full workstation qualification is running; complete
 compression/resident/API and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
@@ -8073,3 +8076,49 @@ bootstrap and cross build are running in
 whole original-parity contract and lifecycle/metadata tests before promotion.
 This is a real return-value/API bug discovered by larger fixtures, not evidence
 that all dictionary or error-path requirements are complete.
+
+## Archive parity and ordinary API regression checkpoint
+
+The corrected isolated build passes fresh original bootstrap/cross construction
+and 386 instruction audits. Its image SHA-256 is
+`abeb0150295a422d6908687e13d920eb17c62fd119571f8fc60374ea95ad652b`.
+`build/public-file-write-resolve-metadata`,
+`build/public-file-write-resolve-lifecycle` and
+`build/public-file-write-resolve-now` pass the existing positive-cluster/binary
+metadata, replacement/empty/negative/missing-parent and default-date contracts.
+
+`build/public-file-write-archive-parity-resolve-corrected/result.json` passes
+all eight original archive comparisons, twelve guest commands, exact VGA,
+dates/attributes and full independent filesystem verification. Seven-bit
+dictionary output is 38552 bytes; eight-bit dictionary output is 38832 bytes
+for 65536-byte inputs, both byte-identical to original output and large enough
+to require dictionary recycling. Both random 32768-byte fixtures exercise
+CT_NONE fallback. One eight-bit byte also uses the original capacity fallback:
+it cannot fit the initial nine-bit code in its one-byte payload allowance.
+The earlier test expectation of CT_8_BIT for that single byte was incorrect
+and was corrected from the actual original oracle, without changing the encoder.
+
+`build/public-file-write-archive-replacements/result.json` passes twenty-two
+guest commands and swaps all eight filenames to reversed fixture contents,
+including large-to-empty and empty-to-large archives. Persisted bytes match
+the original counterpart, timestamps change to the requested value, and
+reachable extents exactly match the allocation bitmap. A tightened run in
+`build/public-file-write-archive-replacements-returns-fixed` also checks the
+intermediate replacement write's return and records original bootstrap/script
+hashes; that tightened run passes all twenty-two guest commands, original byte
+comparisons, dates/attributes and filesystem checks. The original-bootstrap hash collection initially
+used incorrect filenames and was corrected to 0000Boot/0000Kernel.BIN.C and
+Compiler/Compiler.BIN before this run.
+
+Full 513-command workstation qualification is running in
+`build/public-file-write-resolve-workstation`. This remains an isolated source
+epoch; no FileWrite/encoder implementation is promoted yet.
+
+Original API inventory confirms FileRead returns a fresh terminated allocation,
+expanded size and stored attributes, tries the alternate .Z filename and parent
+directories, and consults/updates the shared resident cache. FileWrite refreshes
+or removes that cache as attributes change. RS_ATTR_RESIDENT is 0x200; it is a
+separate flag, not automatically inferred from .T by FileAttr. FileAttr infers
+.Z compression and .C contiguous storage. Public FileRead/FileFind and resident
+cache interoperability still require original-behavior tests and implementation.
+Do not call plain compressed write parity full file API compatibility.
