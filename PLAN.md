@@ -7431,3 +7431,50 @@ bytes, 1000 fewer than the previous formatter cross-build. The port is now
 rebuilding Kernel.HC in `build/i386-formatter-binding-table-selfbuild`; its
 native-size result remains pending. Do not infer that the native payload fits
 from the smaller cross-built payload alone.
+
+### Compacted native kernel fits and boots; User input oracle expanded
+
+`build/i386-formatter-binding-table-selfbuild/result.json` passes the native
+Kernel source build: 538661-byte module, SHA-256
+`df996db03c5d16a3e41cee85f530d300adfbfdff3966379d42583eeef92c0d6e`.
+The linked payload is 487272 bytes, leaving 152 bytes of the existing BIOS
+reservation. The native payload shrank by 984 bytes; do not substitute the
+1000-byte cross-build reduction for this measured native result.
+
+The native-built kernel with five cross-built boot helpers passes the twelve-
+module executable instruction audit in
+`build/i386-formatter-binding-table-native-audit/result.json`. Its boot disk
+preserves the source filesystem and BIOS stage (provenance in
+`build/i386-formatter-binding-table-boot/image.json`). All 41 formatter cases
+pass on that boot image in `build/i386-formatter-binding-table-boot-41/result.json`:
+47 commands, 8 MiB 486,-fpu, startup 45.36108453664929 seconds, source disk
+unchanged. Flat SHA-256:
+`f8be177a6d59d65f3955cb6e6f5694f7bbee0b0abcb1bab248a1b78e0e4b20c8`.
+Disk SHA-256:
+`c080e1be622ad6a10238f05f1b54542d8b7176cd7f12aadbcc4b9ef8d71dfd90`.
+This is a mixed-provider image, not an updated all-native release qualification.
+
+`tools/test-i386-user-create.py` now has 16 cases. Original behavior establishes
+that a partial startup string does not execute until XTalk delivers its newline;
+User performs two formatting stages, so four percent signs are required to send
+one literal modulo operator into the child; and a startup line with over 512
+bytes must execute successfully. The test confirms execution in the child,
+Adam/CPU-root child membership, cleanup after four creation paths and continued
+HolyC execution. The original branch now runs the shared case table and stops
+dependent cases on the first failure, avoiding a later Kill on an invalid handle.
+
+All 16 cases pass on original TempleOS in
+`build/i386-user-complete-oracle-original/result.json`. The same checker remains
+red on the compacted native-kernel image in
+`build/i386-user-complete-oracle-native-red/result.json`: the initial User
+availability check fails, so the 16 cases are not reached; source disk unchanged.
+Checker SHA-256:
+`f13e3f4691525e3b14cb613b946c365d8747a3025fa16605d24a38e135d116df`.
+
+Next implement the original User/TaskWait/XTalk behavior with child-owned queued
+input and cleanup. Grow terminal input storage beyond the current fixed 256-byte
+line rather than truncating the now-tested long command. Preserve the two format
+stages and newline/partial-input semantics. The tight boot reservation favors
+using existing provider interfaces or validated published provider callbacks in
+the console module; any new boot bindings require a measured size check.
+Creation hotkeys, focus and repeated heap recovery remain additional gates.

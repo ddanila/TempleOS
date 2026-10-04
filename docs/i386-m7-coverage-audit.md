@@ -209,3 +209,10 @@ The formatter snapshot's full workstation regression subsequently passes in
 exact VGA checkpoints and 20 resource cycles with exact shared-task heap
 recovery. Startup is 47.03001209674403 seconds on 8 MiB 486,-fpu. The native
 boot-kernel build remains active; updated all-native image qualification is open.
+
+The formatter kernel compaction now has measured native evidence: 487272 flat
+bytes (152 spare), 386 instruction audit, and 41 formatter cases passing on an
+8 MiB no-FPU boot. See `build/i386-formatter-binding-table-boot-41/result.json`.
+This still uses cross-built helpers/providers. The next User oracle has 16
+original passing cases covering partial input, double percent formatting and
+long startup input; native User remains absent at its availability check.

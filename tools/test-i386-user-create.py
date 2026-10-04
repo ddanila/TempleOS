@@ -15,11 +15,26 @@ DEFINITIONS = [
     'Bool UserProbeWait(){I64 end=cnts.jiffies+2000;while(UserProbeSeen!=42&&cnts.jiffies<end)Yield;return UserProbeSeen==42&&UserProbeCaller==UserProbeTask;}',
     'Bool UserProbeStart(Bool f){UserProbeSeen=0;UserProbeCaller=NULL;if(f)UserProbeTask=User("*(0x%X)(I64 *)=42;*(0x%X)(CTask **)=Fs;\\n",&UserProbeSeen,&UserProbeCaller);else UserProbeTask=User;return UserProbeTask!=NULL&&UserProbeTask!=Fs&&UserProbeHas;}',
     'Bool UserProbeStop(){Bool ok=Kill(UserProbeTask);WinFocus(Fs);return ok&&!UserProbeHas;}',
+    'Bool UserProbePartial(){UserProbeSeen=0;UserProbeCaller=NULL;UserProbeTask=User("*(0x%X)(I64 *)=42;*(0x%X)(CTask **)=Fs;",&UserProbeSeen,&UserProbeCaller);return UserProbeTask!=NULL&&UserProbeTask!=Fs&&UserProbeHas;}',
+    'Bool UserProbeIdle(){I64 end=cnts.jiffies+250;while(cnts.jiffies<end)Yield;return UserProbeSeen==0&&UserProbeCaller==NULL;}',
+    'Bool UserProbeFlush(){XTalk(UserProbeTask,"\\n");return UserProbeWait;}',
+    'Bool UserProbeModulo(){UserProbeSeen=0;UserProbeCaller=NULL;UserProbeTask=User("*(0x%X)(I64 *)=6*7%%%%50;*(0x%X)(CTask **)=Fs;\\n",&UserProbeSeen,&UserProbeCaller);return UserProbeTask!=NULL&&UserProbeHas;}',
+
+
+    'U8 *UserProbeLongText(){U8 *s=MAlloc(1024);MemSet(s,32,512);StrPrint(s+512,"*(0x%X)(I64 *)=42;*(0x%X)(CTask **)=Fs;\\n",&UserProbeSeen,&UserProbeCaller);return s;}',
+    'Bool UserProbeLong(){U8 *s=UserProbeLongText;UserProbeSeen=0;UserProbeCaller=NULL;UserProbeTask=User(s);Free(s);return UserProbeTask!=NULL&&UserProbeHas;}',
 ]
 
 CASES = [('UserProbeStart(FALSE);', ['1']), ('UserProbeStop;', ['1']),
          ('UserProbeStart(TRUE);', ['1']), ('UserProbeWait;', ['1']),
-         ('UserProbeStop;', ['1']), ('6*7;', ['42'])]
+         ('UserProbeStop;', ['1']),
+         ('UserProbePartial;', ['1']), ('UserProbeIdle;', ['1']),
+         ('UserProbeFlush;', ['1']), ('UserProbeStop;', ['1']),
+         ('UserProbeModulo;', ['1']), ('UserProbeWait;', ['1']),
+         ('UserProbeStop;', ['1']),
+         ('UserProbeLong;', ['1']), ('UserProbeWait;', ['1']),
+         ('UserProbeStop;', ['1']),
+         ('6*7;', ['42'])]
 
 
 def main():
@@ -35,22 +50,24 @@ def main():
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker = sha(Path(__file__))
     report = dict(result='fail', checker_sha256=checker,
-                  scope='User empty/formatted startup, execution in child, child-list cleanup; not hotkeys, window layout or exhaustive resource recovery')
+                  scope='User empty/formatted/partial startup, newline completion through XTalk, double-format percent escaping, startup input over 512 bytes, execution in child, child-list cleanup; not hotkeys, window layout or exhaustive resource recovery')
     try:
         if args.original:
             overlay = out / 'overlay'
             overlay.mkdir(exist_ok=True)
             source = '\n'.join(DEFINITIONS) + '\n'
             (overlay / 'Definitions.HC').write_text(source)
-            (overlay / 'Once.HC').write_text('''U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}
-#include "T:/Definitions.HC"
-Report("START original User creation\\n");
-Bool ok=UserProbeStart(FALSE)&&UserProbeStop;
-if(ok)ok=UserProbeStart(TRUE)&&UserProbeWait&&UserProbeStop;
-if(ok)Report("PASS original User creation\\n");
-else Report("FAIL original User creation\\n");
-Report("DONE original User creation\\n");
-''')
+            checks = '\n'.join(
+                'if(ok&&(' + command[:-1] + ')!=' + expected[0] +
+                '){ok=FALSE;Report("CASE ' + str(index) + '\\n");}'
+                for index, (command, expected) in enumerate(CASES))
+            (overlay / 'Once.HC').write_text(
+                'U0 Report(U8 *s){while(*s)OutU8(0xE9,*s++);}' + '\n' +
+                '#include "T:/Definitions.HC"\nReport("START original User creation\\n");\n' +
+                'Bool ok=TRUE;\n' + checks + '\n' +
+                'if(ok)Report("PASS original User creation\\n");' +
+                'else Report("FAIL original User creation\\n");\n' +
+                'Report("DONE original User creation\\n");\n')
             iso = out / 'original.iso'
             subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay',
                             'build/rebuild-test/overlay', '--overlay', str(overlay),
