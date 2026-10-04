@@ -6494,3 +6494,29 @@ A development native flat build is running in `build/i386-heap-scan-flat`,
 using verified cross-built retained modules (`--cross-retained`). This run
 will test guest compilation, boot-area fit and independent boot; it is not
 full native-provider or two-generation self-hosting qualification.
+
+### Portable heap scan: native build and installed-image audit pass
+
+`build/i386-heap-scan-flat/result.json` passes: the guest compiler built all
+six flat modules, assembled/installed them and booted the result independently
+with 8 MiB and no FPU. The flat image is 487344 bytes (80 bytes spare), SHA-256
+`31b085b97abae02e19df4f1506819f6fcb68a716b2ffb26db20e620baa2f4e69`.
+Target disk SHA-256:
+`ed51468756aac925962e33f885ce3534ae615c1957c8998d78caa682e595d142`.
+The six retained providers remain verified cross-built development inputs;
+this is not a fully guest-built generation.
+
+`build/i386-heap-scan-flat-cross-retained-audit/result.json` passes all twelve
+module executable ranges, boot ranges, installed-payload comparison and RedSea
+reachable-extent/bitmap checks. The first audit invocation incorrectly selected
+--guest-compiler-template and rejected the cross-built compiler layout; rerunning
+with the correct default layout passes without changing the image or auditor.
+The KVM boot measurement is not TCG budget evidence. A normal 8 MiB no-FPU TCG
+keyboard/startup check is running in `build/i386-heap-scan-flat-keyboard`.
+
+The normal no-FPU TCG keyboard check now passes exact VGA on unchanged target
+ed514687, with a 56.21559963794425-second startup.
+`build/i386-heap-scan-flat-startup-budget.json` passes the unchanged 60-second
+budget. This qualifies this development-image observation, not a fully
+guest-built release or a controlled before/after performance improvement.
+The earlier over-budget observations remain valid for their recorded images.

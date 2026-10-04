@@ -10,9 +10,12 @@ The latest cross-built source snapshot is compiler 59, memory 18 and console
 It passes the original two-generation rebuild, cross-build and 386 boot audit.
 Both portable and assembly heap corpora pass, including corruption rejection
 without arena/control mutation. Its portable size lookup now combines lookup
-with complete validation. Guest compilation, boot-area fit and startup benefit
-are still being checked in `build/i386-heap-scan-flat`; that development run
-uses cross-built retained providers and cannot prove full self-hosting.
+with complete validation. Guest compilation, installation and independent boot pass in
+`build/i386-heap-scan-flat`; the flat image remains 487344 bytes (80 bytes spare).
+The installed 386/filesystem audit passes in
+`build/i386-heap-scan-flat-cross-retained-audit`. Normal no-FPU TCG keyboard/VGA and the 60-second startup gate pass at
+56.216 seconds. A controlled before/after speed benefit remains unproven. This development image uses cross-built retained providers and
+cannot prove full self-hosting.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent
 editors, background compilation during editing, idle Ctrl-Alt-C recovery,
