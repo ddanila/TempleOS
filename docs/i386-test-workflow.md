@@ -3599,3 +3599,25 @@ and bootstrap drift. Observation-only remains the default. Prototype recovery
 qualification with that flag is running in
 `build/i386-root-declarations-recovery`; Tab-focus isolation is running in
 `build/i386-root-declarations-tab`. Main's runtime source is unchanged.
+
+### Root-declaration change promoted to main
+
+The prototype passes strict nine-cycle public/bootstrap recovery in
+`build/i386-root-declarations-recovery/result.json`: all ten bootstrap snapshots
+are 5326856 used bytes/7161 allocations, with public counters and CPU-root child
+count also exactly stable. Startup is 58.508295 seconds. Tab isolation passes in
+`build/i386-root-declarations-tab/result.json`, with 58.573605-second startup,
+independent histories/definitions, refocus and parent-heap recovery. Both use
+8 MiB no-FPU TCG and unchanged source disks.
+
+The ConsoleInit root-declaration change is now applied to main. Its matching
+original x64 two-generation rebuild passes in `build/rebuild-test/result.json`;
+the main i386 build is running in `build/i386-root-declarations-main`. Prototype
+functional results do not substitute for updated guest-built providers or
+all-native/two-generation release qualification. Startup remains close to its
+budget and must be qualified again.
+
+The previous native-provider integration image completes the full workstation
+regression in `build/i386-creation-hotkeys-native-workstation/result.json`:
+513 commands/576 lines, 53.657661-second startup and 0.257098-second long-document
+update on 8 MiB `486,-fpu` TCG. This source epoch predates shared root declarations.

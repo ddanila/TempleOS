@@ -43,7 +43,7 @@ M7 remains open. Complete original feature parity is not established, release
 publication is pending, and startup qualification of a fully guest-built image
 with the latest source remains open. The latest integration image with guest-built
 MemoryRuntime and ConsoleRuntime passes the full no-FPU workstation suite:
-513 commands, 51.426694-second startup and a 0.370859-second long-document
+513 commands, 53.657661-second startup and a 0.257098-second long-document
 update. Its boot kernel and remaining providers are cross-built. A newer
 cross-built image passes terminal creation and focus shortcuts; the updated native
 providers have built and passed the independent twelve-module instruction/ABI audit.
@@ -101,7 +101,9 @@ that its history is contained in `main`.
   drops from about 130 seconds to 0.35 seconds; User and creation-shortcut gates
   pass. Startup ranges from 59.83 to 63.55 seconds in these runs, so the
   60-second target is not reliably met. Focus isolation and recovery are running;
-  main's runtime source is unchanged. Finish workstation/recovery qualification
+  nine-cycle exact public/bootstrap recovery and Tab isolation pass. The change
+  is now applied to main and its original rebuild passes; the main i386 build
+  is running. Native-provider qualification remains open. Finish startup qualification
   and validate startup memory, inheritance and task-local isolation before
   promoting the prototype. Updated all-native/two-generation release
   qualification remains required.

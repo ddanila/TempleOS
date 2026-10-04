@@ -398,7 +398,13 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
     if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
-  console_config=config; dbg.fun_seg_cache=native_fun_seg_cache; return TRUE;
+  console_config=config; dbg.fun_seg_cache=native_fun_seg_cache;
+  //The immortal CPU root owns shared declarations; children inherit its scope.
+  KernelLog("ROOT USER HEADERS begin\n");
+  if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
+      "RootUserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
+  KernelLog("ROOT USER HEADERS ok\n");
+  return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)
 {
