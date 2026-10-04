@@ -3899,3 +3899,41 @@ running. Those native modules predate alphabetical Help, so neither installation
 nor the ongoing flat build establishes full self-hosting of the newer main
 source. Two native generations, CPU-trap debugger behavior and release
 qualification remain open.
+
+### Breakpoint assembly encoding and full native flat build
+
+`tools/test-i386-breakpoint-asm.py` compiles `NOP INT3 NOP` and `NOP BPT NOP`,
+checks the emitted 0x90/0xCC/0x90 byte sequence and ordinary HolyC recovery,
+without executing either trap. Current pre-fix main is red in
+`build/i386-breakpoint-asm-red/result.json`, with the INT3 definition rejected.
+The isolated compiler change passes all six commands in
+`build/i386-breakpoint-asm-green/result.json`, on 8 MiB no-FPU TCG, with exact VGA
+and 58.585581-second startup. Checker SHA-256 is
+`e6641d2e97a73e6fa4c47f65e6019fa9594895086bb115808a8f368a99a88a18`;
+image SHA-256 is
+`2c02421f0388878a0e544ee0f79b9bd49ee45741fe13a2c3e1c5d7199565d0aa`.
+Both tests preserve their source images.
+
+The one-line opcode selection is promoted to main. Its matching original
+rebuild and i386 build/audits pass in `build/rebuild-test/result.json` and
+`build/i386-breakpoint-asm-main/result.json`. The promotion comparison proves
+all twelve modules and flat kernel byte-identical to the green prototype in
+`build/i386-breakpoint-asm-main-promotion-comparison.json`. The existing inline
+assembly regression is running in `build/i386-breakpoint-asm-main-inline`.
+CPU trap inspection, resumption and stepping remain unimplemented.
+
+The pre-Help root-declaration source epoch now passes the complete guest flat
+build/install/independent boot in `build/i386-module-inheritance-selfhost`.
+All twelve modules are guest-built. Target SHA-256 is
+`22a5c9e20b2c698ec2deda5b8a9bff7f4f251802e4701e1343182d6d6b59bb78`;
+flat bytes are 487384 (40 bytes spare), SHA-256
+`ff4c21d753a4ab3ce37d4f3b2575eff868064ba12db36a4c83aae10f6039d87c`.
+Retained build/install verdict hashes are recorded in the result. The installed
+386 executable ranges, boot payload, filesystem and exact keyword data audit
+pass in `build/i386-module-inheritance-selfhost-audit`. A no-FPU native User
+creation/retirement check is running in `build/i386-root-declarations-native-cycle`.
+This native epoch predates the Help sorting and new assembly mnemonic changes.
+It does not replace current-source two-generation or release qualification.
+
+The promoted main Help check also passes all nine commands with exact VGA in
+`build/i386-help-sort-main-help/result.json`, with 58.631367-second startup.

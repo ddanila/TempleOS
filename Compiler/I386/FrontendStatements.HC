@@ -304,6 +304,7 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else if(!StrCmp(cc->cur_str,"CLD")) opcode=0xFC;
       else if(!StrCmp(cc->cur_str,"STD")) opcode=0xFD;
       else if(!StrCmp(cc->cur_str,"NOP")) opcode=0x90;
+      else if(!StrCmp(cc->cur_str,"INT3") || !StrCmp(cc->cur_str,"BPT")) opcode=0xCC;
       else if(!StrCmp(cc->cur_str,"CLC")) opcode=0xF8;
       else if(!StrCmp(cc->cur_str,"STC")) opcode=0xF9;
       else if(!StrCmp(cc->cur_str,"MOV")) opcode=0;

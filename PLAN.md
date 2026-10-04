@@ -2,21 +2,31 @@
 
 ## Objective and status
 
+Native inline assembly now recognizes the original `INT3` and `BPT` mnemonics
+and emits 0xCC. The same six-command checker rejects the old compiler and
+passes on the isolated updated image without executing a trap. The promoted
+main original rebuild, i386 build and audits pass; all thirteen module/flat
+artifacts match that tested prototype. The existing inline-assembly regression
+is running on main. CPU-trap dispatch/resumption remains a separate failing
+contract; opcode support does not establish debugger completion.
+
 All six retained providers at the pre-Help root-declaration source epoch now
 pass native construction/export checks and exact installation with independent
 8 MiB boot (`build/i386-module-inheritance-native-build-long` and
-`build/i386-module-inheritance-native-install`). A six-module guest flat-kernel
-rebuild using that verified chain is running in
-`build/i386-module-inheritance-selfhost`. This proves neither the newer Help
-source epoch nor current two-generation release qualification.
+`build/i386-module-inheritance-native-install`). The six-module guest flat-kernel rebuild, installation and independent boot
+pass in `build/i386-module-inheritance-selfhost`; all twelve modules are now
+guest-built at that epoch. The installed 386/boot/filesystem and keyword audits
+pass. Flat size is 487384 bytes, only 40 bytes below the loader limit. This
+proves neither the newer Help/assembly source epoch nor current two-generation
+release qualification.
 
 A new debugger CPU-trap contract is red in
 `build/i386-debug-cpu-trap-byte-red-v2/result.json`. Verified native code bytes
 execute an actual `INT3`; the kernel logs vector 3 and halts before a debugger
 prompt. Required next behavior is captured CPU state, inspection and `G`
-continuation after the trap with IF restored and TF cleared. Native assembler
-`INT3` publication is a separate gap; the fixture uses supported NOP bytes and
-an independently checked 0xCC patch to isolate runtime dispatch.
+continuation after the trap with IF restored and TF cleared. Native assembler `INT3`/`BPT` encoding now passes a separate red/green
+contract and is implemented on main. The CPU-trap fixture uses supported NOP
+bytes and an independently checked 0xCC patch to isolate runtime dispatch.
 
 The current-source full workstation attempt terminated at `help-index-link`
 (`build/i386-module-inheritance-main-workstation`): the live category contained
