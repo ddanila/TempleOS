@@ -3839,3 +3839,27 @@ The matching original rebuild and i386 executable audit pass; boot kernel size
 is unchanged at 483384 bytes. Full workstation qualification is running in
 `build/i386-help-sort-workstation`. The sorted implementation and fixture remain
 isolated until that run and the main-source native build finish.
+
+### CPU breakpoint debugger failing contract
+
+Run `python3 tools/test-i386-debug-cpu-trap.py IMAGE --out OUTPUT`.
+The checker compiles three NOP bytes, locates that sequence in a bounded scan,
+patches and verifies the first byte as 0xCC, then calls the helper. It requires
+a visible debugger identifying the function/source, state inspection, `G`
+continuation after the actual trap, stage 2, restored debugger mode and IF,
+cleared TF and ordinary HolyC recovery. It does not prove installed software
+breakpoint policy, stepping or complete register inspection.
+
+Current main is red in `build/i386-debug-cpu-trap-byte-red-v2/result.json`: all
+preparation commands pass; `CpuTrapProbe` logs `CPU TRAP enter`, followed by
+`FAULT 0000000000000003 00000000002817FD` and `FAIL native kernel`.
+The source image remains unchanged. The visible debugger assertion times out;
+no continuation assertions execute. This is actual CPU dispatch failure, not
+a rejected assembler statement.
+
+The first attempt in `build/i386-debug-cpu-trap-red` rejects the unsupported
+INT3 mnemonic before execution. The first patched-byte fixture in
+`build/i386-debug-cpu-trap-byte-red` fails because a top-level scan also prints
+a value. Neither establishes CPU dispatch behavior. The final checker isolates
+those preparation details in functions and verifies them before invoking the
+trap. Keep the runtime failure and assembler support gap separately open.

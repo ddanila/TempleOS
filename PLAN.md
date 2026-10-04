@@ -2,6 +2,14 @@
 
 ## Objective and status
 
+A new debugger CPU-trap contract is red in
+`build/i386-debug-cpu-trap-byte-red-v2/result.json`. Verified native code bytes
+execute an actual `INT3`; the kernel logs vector 3 and halts before a debugger
+prompt. Required next behavior is captured CPU state, inspection and `G`
+continuation after the trap with IF restored and TF cleared. Native assembler
+`INT3` publication is a separate gap; the fixture uses supported NOP bytes and
+an independently checked 0xCC patch to isolate runtime dispatch.
+
 The current-source full workstation attempt terminated at `help-index-link`
 (`build/i386-module-inheritance-main-workstation`): the live category contained
 the expected entries but their hash enumeration order differed after root
