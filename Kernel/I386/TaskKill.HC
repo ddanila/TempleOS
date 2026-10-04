@@ -1,4 +1,5 @@
 //Public cancellation policy over the retained single-CPU task runtime.
+#include "/Kernel/CharCodes.HH"
 Bool MemoryKill(CTask *task,Bool wait=TRUE,Bool just_break=FALSE)
 {
   U32 irq=I386IrqSave;
@@ -11,7 +12,7 @@ Bool MemoryKill(CTask *task,Bool wait=TRUE,Bool just_break=FALSE)
     if(task!=I386TaskSelf) {
       //Original Kill(other,,TRUE) invokes Break on the caller.
       if(I386TaskSelf->task_flags&(1<<TASKf_BREAK_TO_SHIFT_ESC))
-        MemoryMsg(MSG_KEY_DOWN,0x1C,0x20100000201);
+        MemoryMsg(MSG_KEY_DOWN,CH_SHIFT_ESC,0x20100000201);
       else {
         I386TaskSelf->wake_jiffy=0;
         MemoryMessageWake(I386TaskSelf);

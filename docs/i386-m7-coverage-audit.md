@@ -25,22 +25,22 @@ survives two breaks, supports editor sessions after each, retains definitions
 and passes normal terminal cleanup. Existing interrupt regression passes all 16 commands. The first background
 compiler/editor workflow passes visible/file/cleanup checks; the stricter
 completion-during-editor oracle also passes in
-`build/i386-terminal-background-live-session` (14 commands, 56.00-second startup). Forced editor-task cleanup is
-unverified: Kill publication fails explicitly. The original cancellation oracle
-passes nine cases; a memory-18 implementation is under build/runtime verification.
+`build/i386-terminal-background-live-session` (14 commands, 56.00-second startup). Forced editor-task cleanup passes on memory-18 image 201cb474. The broader
+cancellation corpus found unpublished CH_SHIFT_ESC during setup; shared-header
+publication is under verification. Killing a debugger task leaves DbgBusy in the
+survivor; a chained task cleanup fix is under build/runtime verification.
 
 The preceding memory-17 registration-fix image passes the full 513-command
 workstation suite in `build/i386-public-macro-registration-workstation`, including
 20 document cycles with exact heap recovery, a 55.56-second startup and
 0.315-second long-document update. It predates debugger/terminal changes.
-The newest completed fully guest-built epoch is the memory-16/console-33
-focused-keyboard image in `build/i386-public-keyboard-focused-break-selfhost`:
-six native retained providers plus six native flat modules, independent boot and
-installed-image audit pass. Its 487344-byte flat image leaves 80 bytes in the boot
-area. The compiler-59/console-35 native provider build passes all six modules in
-`build/i386-debug-exception-retained`; installation/independent boot pass
-in `build/i386-debug-exception-retained-install`. The guest flat build/install
-is running in `build/i386-debug-exception-selfhost`. It predates task-owned terminals.
+The newest completed fully guest-built epoch is compiler 59, memory 17 and
+console 35 in `build/i386-debug-exception-selfhost`: all six retained providers
+and six flat modules were guest-built, installed and independently booted.
+`build/i386-debug-exception-selfhost-audit` passes all twelve executable ranges,
+installed payload and filesystem checks. Its 487344-byte flat image leaves
+80 bytes in the boot area. It predates task-owned terminals, Kill and debugger
+cleanup. The earlier memory-16/console-33 result remains historical evidence.
 Current-source two-generation reproducibility and release qualification remain
 open. The older 95-file local bundle is historical evidence, not a current release.
 

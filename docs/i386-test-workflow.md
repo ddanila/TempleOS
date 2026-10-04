@@ -2061,3 +2061,37 @@ python3 tools/test-i386-terminal-kill.py build/i386-terminal-kill-kernel/kernel.
 ```
 
 Both runs are active; runtime results remain pending.
+
+The forced-editor workflow now passes on memory-18 image 201cb474: 13 commands,
+56.62-second startup, exact VGA/Survivor.DD bytes and parent heap recovery.
+The public cancellation corpus stopped earlier in setup because CH_SHIFT_ESC
+was unpublished; the shared public character-code header now supplies it.
+
+### Debugger ownership after forced terminal exit
+
+```sh
+python3 tools/test-i386-terminal-debug-kill.py build/i386-terminal-debug-cleanup-kernel/kernel.img --out build/i386-terminal-debug-kill-green
+```
+
+Frozen checker cc7aea1e4f2b9a08fc153e3f18ea30029bb5c748e7a51b5b20734607de23d76c
+kills One inside Dbg and requires Two to enter Dbg, evaluate 42, G back and exit
+with parent heap recovery. Baseline fails with DbgBusy in
+`build/i386-terminal-debug-kill-red`. A chained task cleanup hook now owns the
+debugger backup and releases it on forced exit; build/runtime qualification is
+pending. This is not a register/stepping or exhaustive private-allocation test.
+
+Corrected cleanup candidate build/audit passes:
+`build/i386-terminal-debug-cleanup-kernel-fixed/kernel.img`, SHA-256
+`9812e5d53b8ca91070c4f1f4f6d8b93e166bb45d57805efabfb59a945765ec85`. Four runtime checks are active: public Kill,
+forced debugger exit, explicit Dbg/G and named exception inspection.
+
+The older console-35 full guest build/install/boot passes in
+`build/i386-debug-exception-selfhost` (487344 bytes, 16 MiB build/8 MiB boot,
+486,-fpu, all twelve modules guest-built). Independent installed-image audit is
+running; this source predates terminal/Kill changes.
+
+Independent console-35 installed-image audit is now PASS in
+`build/i386-debug-exception-selfhost-audit/result.json`: all twelve executable
+module ranges satisfy the 386 allowlist, boot payload matches the guest-built
+flat image and filesystem allocation matches reachable extents. This completes
+that older source epoch's single-generation native build/install/audit pipeline.

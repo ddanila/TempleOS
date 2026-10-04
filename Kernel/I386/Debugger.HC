@@ -3,6 +3,18 @@
 #include "/Kernel/SemaTypes.HH"
 CI386Task *console_debug_task;
 Bool console_debug_go;
+U8 *console_debug_backup;
+U0 (*console_debug_cleanup)(CI386Task *task);
+U0 ConsoleDebugTaskCleanup(CI386Task *task)
+{//Forced task exit bypasses the debugger's stack-local return path.
+  U8 *backup=console_debug_backup;
+  if(console_debug_task!=task) return;
+  task->cleanup=console_debug_cleanup;
+  console_debug_task=NULL; console_debug_go=FALSE;
+  console_debug_backup=NULL; console_debug_cleanup=NULL;
+  if(backup) I386HeapFree(console_config->heap,backup);
+  if(task->cleanup) (*task->cleanup)(task);
+}
 CHashFun *ConsoleDebugFunction(U8 *address)
 {//Only name a function whose executable allocation contains the return IP.
   CHashTable *table=I386TaskSelf->hash_table;
@@ -53,6 +65,8 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0)
     if(!backup) throw('OutMem');
     for(i=0;i<153600;i++) backup[i]=console_planes[i];
     for(i=0;i<sizeof(CI386Text);i++) p[i]=q[i];
+    console_debug_backup=backup; console_debug_cleanup=task->cleanup;
+    task->cleanup=&ConsoleDebugTaskCleanup;
     console_debug_task=task; console_debug_go=FALSE; sys_focus_task=task;
     I386TextInit(&console_text,console_planes,sys_font_std);
     I386TextWrite(&console_text,"TempleOS i386\nHolyC debugger\n\n");
@@ -103,7 +117,12 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0)
     NativeTerminalText()->dirty_first=0; NativeTerminalText()->dirty_last=60;
     I386HeapFree(console_config->heap,backup); ConsolePresent;
   }
-  console_debug_task=NULL; console_debug_go=FALSE; sys_focus_task=focus;
+  if(console_debug_task==task) {
+    task->cleanup=console_debug_cleanup;
+    console_debug_backup=NULL; console_debug_cleanup=NULL;
+    console_debug_task=NULL; console_debug_go=FALSE;
+  }
+  sys_focus_task=focus;
   if(raised) throw(failure,TRUE);
 }
 

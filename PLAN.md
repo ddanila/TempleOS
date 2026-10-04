@@ -6246,3 +6246,64 @@ Memory-18 Kill candidate builds and passes the 386 boot audit, with unchanged
 The nine-case public cancellation corpus and forced-editor cleanup workflow are
 running in `build/i386-terminal-kill-public` and `build/i386-terminal-kill-green`.
 No native cancellation runtime pass is claimed yet.
+
+### Forced editor exit green; debugger lifetime and character-code fixes
+
+The frozen forced-editor checker c849ea2bb51c8edb9f2b5de99b1580afb9adf7d46709ba891cf71b70080fa15a
+passes in `build/i386-terminal-kill-green/result.json`, against unchanged
+memory-18 image 201cb474230f705e00e8cef8d84bb42966e0b9710272456811a0c2e652b981e0.
+It verifies killed-child removal, surviving editor/save, exact Survivor.DD bytes
+6f6b05, task exit and exact parent public-heap recovery. All VGA checkpoints
+pass: 13 parent commands, 8 MiB, 486,-fpu, 56.62-second startup.
+
+The broader public cancellation corpus fails during KillShift definition, before
+its behavioral cases: CH_SHIFT_ESC is not published. PublicKernel.HH now includes
+the original shared CharCodes.HH; MemoryKill uses that same named constant. The
+unchanged corpus must be rerun. A build guard correctly rejected the stale
+original-rebuild snapshot after this header edit; the rebuild is being refreshed.
+
+Added `tools/test-i386-terminal-debug-kill.py`, frozen SHA-256
+cc7aea1e4f2b9a08fc153e3f18ea30029bb5c748e7a51b5b20734607de23d76c.
+Its baseline in `build/i386-terminal-debug-kill-red` reaches Kill successfully,
+then the survivor's Dbg call throws DbgBusy. Forced exit bypassed stack-local
+debugger cleanup, leaving global ownership and the saved display allocation.
+Debugger sessions now chain the task cleanup hook, release the saved buffer and
+clear ownership on forced exit, then run the prior terminal cleanup. Normal
+return restores the prior hook. Fresh builds and matching runtime tests are
+pending; full debugger functionality and private-resource accounting stay open.
+
+The debugger-cleanup cross-build rejected an initialized local function-pointer
+declaration in ConsoleDebugTaskCleanup. The helper now restores and invokes
+the task's existing typed cleanup field instead. This preserves callback chaining
+without relying on that unsupported declaration form. The fresh original rebuild
+is running again; no successful cleanup-candidate build or runtime pass is
+claimed yet. Baseline DbgBusy and the forced-editor workflow pass remain valid
+evidence for their unchanged memory-18 image.
+
+The corrected cleanup candidate now passes both original rebuild generations,
+fresh cross-build and 386 boot audit (483360 cross-built flat bytes). Image
+`build/i386-terminal-debug-cleanup-kernel-fixed/kernel.img` SHA-256:
+`9812e5d53b8ca91070c4f1f4f6d8b93e166bb45d57805efabfb59a945765ec85`. Unchanged public cancellation corpus, frozen
+debugger-kill contract, explicit Dbg/G regression and named-exception regression
+are running in `build/i386-terminal-kill-public-chars`,
+`build/i386-terminal-debug-kill-green`, and
+`build/i386-terminal-debug-cleanup-{session,exception}`. Runtime qualification
+remains pending.
+
+The older console-35/memory-17 full guest kernel build/install/boot passes in
+`build/i386-debug-exception-selfhost/result.json`: six native flat modules plus
+six guest-built retained modules, 16 MiB build and 8 MiB boot with 486,-fpu.
+Flat image is 487344 bytes (80 bytes below the boot-area limit), SHA-256
+e2cb9667b8fc89a839cc3965fbb18c2df8201f51c52e4cd1fcd5112259b35d3b.
+Installed image SHA-256:
+9de62eea59e62c6e3ce14934347e563413da8db5ec7f9983ba7395f4a98b6b9a.
+Independent installed/executable audit is running in
+`build/i386-debug-exception-selfhost-audit`. These results predate terminals,
+Kill and debugger cleanup; current-source two-generation qualification remains
+open.
+
+Independent console-35 installed-image audit is now PASS in
+`build/i386-debug-exception-selfhost-audit/result.json`: all twelve executable
+module ranges satisfy the 386 allowlist, boot payload matches the guest-built
+flat image and filesystem allocation matches reachable extents. This completes
+that older source epoch's single-generation native build/install/audit pipeline.

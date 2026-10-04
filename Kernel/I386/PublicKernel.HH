@@ -2,6 +2,7 @@
 #define I386_PUBLIC_KERNEL_INCLUDED
 //Load with I386_INPUT_ATOMIC_DEFINES so failed headers remain retryable.
 #include "/Kernel/I386/PublicTaskTypes.HH"
+#include "/Kernel/CharCodes.HH"
 #include "/Kernel/I386/PublicMemory.HH"
 #include "/Kernel/I386/PublicTask.HH"
 #include "/Kernel/I386/PublicMessage.HH"
