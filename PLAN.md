@@ -8566,3 +8566,19 @@ This demonstrates that admitting resident metadata preserves these independent
 filesystem rejection checks. The corrected runtime has passed its resident
 write checkpoint and reached the first cached-read check; no complete runtime
 pass is claimed.
+
+Corrected FileFind ABI-40 native retained rebuilding now passes all six modules
+in `build/public-file-find-rejection-native-build/result.json`. Generated source
+disk SHA-256 is
+`3ee4c6be13690baeb2783208f48c1e5dd40777dc9b2bdcbb9d215bb56dbdc0cb`.
+Retained installation and independent boot are running in
+`build/public-file-find-rejection-native-install`; full native construction and
+promotion remain pending.
+
+The resident metadata correction's runtime failed at the first cached-read
+checkpoint, after the resident write passed. The original oracle passes and
+the source image is unchanged. Cache publication passed the raw mask 0x200 to
+a Bool argument; the next isolated correction explicitly normalizes it with
+`(attr&0x200)!=0`. Fresh bootstrap/cross rebuilding is running in
+`build/file-resident-bool`. This is a source correction awaiting evidence that
+it resolves the observed cached-read failure.
