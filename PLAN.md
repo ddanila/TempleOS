@@ -8738,3 +8738,17 @@ qualification is running. The current private mounted-service cache must not
 be treated as complete original programming-model compatibility without this
 public hash integration. Shared cache semantics and public Adam-style hash
 ownership/removal need qualification, not just equivalent FileRead output.
+
+Resident public-hash visibility now has a qualified native failure: original
+oracle passes, earlier FileRead/ownership checks pass, then the run times out
+at ColdHash("C:/Probe/ReadResident.BIN"). The current private cache does not
+publish HTT_FILE entries in the public task hash-table chain. Public cache
+integration remains an original programming-model requirement before promotion.
+
+New `tools/test-i386-public-cd.py` provides the Cd implementation contract.
+Original oracle passes relative/parent/empty/dot paths, partial path progress
+on failure and nested make_dirs. Writes following those changes must be found
+in exact expected directories by the independent disk walker. The native run
+is pending in `build/public-cd-red`. Default home, drive changes and broader
+error compatibility remain separate tests; do not replace original partial
+progress with an assumed all-or-nothing directory commit.
