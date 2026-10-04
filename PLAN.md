@@ -5504,3 +5504,25 @@ build/i386-public-keyboard-inherited-refs-messages/result.json: 19 cases,
 This confirms the prior message/job semantics survive hardware queue routing
 and the inherited-reference changes. It predates the focused-break IRQ fix;
 that fix still requires its fresh hardware contract result.
+
+### Focused-child break routing qualified
+
+The fresh focused-break cross-build and instruction audit pass (483360 flat
+bytes). The same checker that recorded the red now passes on that image in
+build/i386-public-keyboard-focused-break-green/result.json: six commands,
+486,-fpu, 8 MiB, exact VGA pixels, unchanged source disk. The focused spawned
+HolyC task catches Break, restores console focus, and console arithmetic
+returns 42. Image SHA-256:
+e39f7ea1606d395aeb2f6d0b5c548eea2c9f05b16e40ccb6ad09629599d6814c.
+The ordinary console break suite also passes all 16 commands on the same image
+in build/i386-public-keyboard-focused-break-console/result.json.
+
+The inherited-reference DolDoc session has completed create/edit/save and is
+running its second-boot reopen phase; no full three-boot pass yet. A fresh
+six-provider guest rebuild is now running from the focused-break image in
+build/i386-public-keyboard-focused-break-retained, with its own frozen export
+references. This newer epoch includes public keyboard routing, inherited
+reference accounting and focused interrupts. Installation, flat self-hosting,
+two-generation reproducibility and complete workstation/release qualification
+remain required after that rebuild. Input-loss and macro contracts, multiple
+interactive terminals and debugging remain open.

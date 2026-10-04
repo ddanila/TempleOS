@@ -1456,3 +1456,11 @@ The captured pre-keyboard snapshot passes all-guest-provider flat self-hosting
 and independent executable/filesystem audit in
 build/i386-public-message-scan-selfhost and -selfhost-audit. These historical
 results do not cover current focus-routing changes.
+
+Focused-task break now has a red/green pair from the same frozen checker:
+build/i386-public-keyboard-focused-break-{red,green}/result.json. Green uses
+the focused-break image on 486,-fpu at 8 MiB, matches all VGA pixels, preserves
+the input disk and recovers console arithmetic. The unchanged console breaks
+group also passes all 16 commands on that image. The new six-provider retained
+build uses build/i386-public-keyboard-focused-break-kernel/exports as frozen
+references; older guest-built images cannot qualify this epoch.
