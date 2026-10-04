@@ -8596,3 +8596,19 @@ The resident boolean correction's original bootstrap, cross construction and
 functional oracle and native resident contract are running in
 `build/public-file-resident-bool-green`. The directory name does not imply a
 passing result, and cold cache population/lifecycle compatibility remain open.
+
+The normalized resident-cache flag now passes the complete write-populated
+contract in `build/public-file-resident-bool-green/result.json`: 33 commands,
+original oracle, exact VGA, independent filesystem audit, owned cached read
+buffers, changed-byte resident replacement and changed-byte removal of residence.
+The source image is unchanged. This does not establish cold cache population,
+compressed residence or service-lifetime cleanup.
+
+New `tools/test-i386-resident-cold-read.py` checks first disk-read attributes
+0xA00 followed by cached-read attributes 0 and independently owned buffers. The
+original oracle explicitly removes its write-populated Adam cache entry before
+reading; it passes in `build/public-file-resident-cold-red/oracle/debug.log`.
+The native run boots the preserved resident disk fixture with an empty cache;
+its result is pending. Successful read-only qualification must also preserve
+the entire candidate disk. This supplies the next contract before implementing
+disk-populated caching.
