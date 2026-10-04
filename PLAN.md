@@ -7067,3 +7067,21 @@ Next investigate intermediate-file lifetimes and contiguous build workspace
 requirements, preserve the failed candidate, and fix the build workflow or
 image layout before retrying. Retain exact installed-module comparison and
 complete installation/boot/audit checks; do not waive the two-generation gate.
+
+### Retained rebuild schedules larger modules first
+
+The default retained-build workflow now orders independent modules by descending
+installed byte size before compiling them. RedSea requires contiguous extents;
+writing small outputs first had consumed the runs needed by the final compiler
+output. Explicit `--module` order remains unchanged, and successful reports
+record `module_order`. Exact module bytes, export checks and installation gates
+are unchanged. This mitigates build-output fragmentation; it does not add
+filesystem compaction or guarantee success on an arbitrarily fragmented disk.
+
+The failed guest had returned to its prompt after rejecting publication. Its
+harness was explicitly interrupted (exit 130) instead of waiting for the
+remaining success-response timeout; the failed image is preserved. A fresh run
+from the unchanged native target is active in
+`build/i386-heap-asm-scan-gen2-largest-first`, with exact installed-module
+comparison enabled. Python compilation and diff whitespace checks pass;
+guest build success remains unproven until this new run completes.

@@ -88,12 +88,19 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     (out / 'result.json').unlink(missing_ok=True)
     source = out / 'source.img'
+    files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']
     if not args.audit_only:
         if args.resume:
             if not source.is_file():
                 parser.error(f'cannot resume without {source}')
         else:
             shutil.copyfile(args.disk, source)
+        if not args.modules:
+            # RedSea files need contiguous extents. These modules are independent;
+            # reserve space for the largest outputs before smaller ones fragment it.
+            installed = files(source, {f'/Modules/I386/{name}.t32m' for name in selected})
+            selected = tuple(sorted(selected, key=lambda name:
+                -len(installed[f'/Modules/I386/{name}.t32m'])))
         commands = [(f'I386BuildModule("C:/Kernel/I386/{name}.HC",'
                      f'"C:/Probe/Retained{name}.t32m",TRUE)>0;', ['1'])
                     for name in selected]
@@ -103,7 +110,6 @@ def main():
                   startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [],
                       'command_timeout': args.command_timeout, 'commands': commands})
-    files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']
     wanted = {f'/Probe/Retained{name}.t32m' for name in selected}
     actual = files(source, wanted)
     comparison = None
@@ -111,6 +117,7 @@ def main():
         installed_paths = {f'/Modules/I386/{name}.t32m' for name in selected}
         comparison = files(args.compare_installed, installed_paths)
     result = {'result': 'pass', 'source_disk_sha256': sha256(source),
+              'module_order': list(selected),
               'modules': {}}
     for name in selected:
         path = f'/Probe/Retained{name}.t32m'
