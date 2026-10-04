@@ -5281,3 +5281,20 @@ profiles. Focus switching, lost-input routing, macro recording and allocation
 failure remain additional requirements. The earlier six-provider guest rebuild
 is still live for its captured pre-routing snapshot; no current-source full
 self-hosting/release claim is made.
+
+### Keyboard routing initial-focus correction
+
+The first console-33 runtime runs fail before accepting their first command:
+public keyboard, ordinary keyboard, breaks, and the DolDoc session all time out
+at initial typing. The image reaches normal startup; no keyboard green result
+is claimed. The DolDoc result records an unchanged source disk and an incomplete
+create/edit/save phase. Results/logs are in the four directories above.
+
+ConsoleInit executes in the kernel root task before Kernel spawns ConsoleKeys.
+Setting sys_focus_task there directed the new input worker's messages to the
+valid kernel root, which does not consume console input. Initial focus now
+moves to ConsoleKeys entry, where the actual console task is available, before
+startup code or the keyboard worker runs. ConsoleInit only publishes the focus
+variable. Rebuild of this correction is running; a fresh cross-build and rerun
+of all four runtime checks are required. No syscall/API layout changes are
+introduced by this fix.

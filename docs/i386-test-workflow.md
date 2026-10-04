@@ -1374,3 +1374,9 @@ python3 tools/test-i386-doldoc-session.py build/i386-kernel/kernel.img --qmp-std
 The console-33 build and 386 boot audit pass; these runtime runs remain pending.
 A public key-pair pass alone does not qualify focus changes, stream loss or
 editor/compiler break recovery.
+
+The first console-33 runtime runs time out during initial command typing.
+ConsoleInit had assigned focus to the kernel root before the console task was
+spawned. Initial focus is now assigned in ConsoleKeys entry. Fresh build and
+public-keyboard/ordinary-keyboard/break/DolDoc reruns are pending; the earlier
+build pass did not qualify interactive input.

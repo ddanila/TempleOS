@@ -320,7 +320,6 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[117].val=(&NativeJobSource+0)(U64);
   console_doc_exports[118].str="_SYS_FOCUS_TASK";
   console_doc_exports[118].val=(&sys_focus_task+0)(U64);
-  sys_focus_task=task;
   for(i=0;i<119;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
@@ -381,6 +380,7 @@ U0 ConsoleKeys(I64 unused)
   Bool mouse_visible=FALSE;
   CI386Task *task=I386TaskSelf;
   CI386TaskSymbols *scope=task->symbol_state;
+  sys_focus_task=task;
   //Fresh scheduler entries have IF clear. Devices and task services are ready;
   //allow timer/keyboard delivery during startup compilation and user execution.
   SetRFlags(GetRFlags|0x200);
