@@ -1292,3 +1292,16 @@ spawn parent/argument/lifecycle and queued source execution result 42. Fixtures
 release the spawned child and free completed jobs plus auxiliary source/name
 strings. Native dispatch/scanning remains unimplemented. The corrected
 version-14 posting regression separately passes all eleven posting cases.
+
+Qualify job dispatch independently of message scanning:
+
+```sh
+python3 tools/test-i386-public-job-dispatch.py --original --out build/dispatch-original
+python3 tools/test-i386-public-job-dispatch.py build/i386-kernel/kernel.img --out build/dispatch-native
+```
+
+Five contracts cover all three dispatch kinds, callback recovery, master
+wake/focus and spawned-child lifecycle. Original qualification passes; native
+version-15 qualification is pending. Source execution prints 42 before the
+fixture's boolean result. These checks do not supply a scanner or qualify
+free/exit completion flags, inhibited focus, cancellation or allocation errors.

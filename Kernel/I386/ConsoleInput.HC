@@ -129,3 +129,10 @@ U0 ConsoleSubmit(U8 *line)
   if(ConsoleSource(line,"Console.HC")) KernelLog("COMMAND OK\n");
   else KernelLog("COMMAND ERROR\n");
 }
+
+I64 NativeJobSource(U8 *text)
+{//Job strings execute in the servant's live compilation scope.
+  I64 value=0;
+  ConsoleSourceResult(text,"Job.HC",0,&value);
+  return value;
+}

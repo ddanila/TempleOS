@@ -13,4 +13,5 @@ public _extern _CTRLS_UPDATE U0 CtrlsUpdate(CTask *task);
 public _extern _CTRL_INSIDE Bool CtrlInside(CCtrl *c,I64 x,I64 y);
 public _extern _WIN_Z_BUF_UPDATE U0 WinZBufUpdate();
 public _extern _WIN_INSIDE Bool WinInside(I64 x,I64 y,CTask *task=NULL,I64 border=0);
+public _extern _SYS_FOCUS_TASK CTask *sys_focus_task;
 #endif

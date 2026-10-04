@@ -5067,3 +5067,28 @@ strings are freed. The initial fixture failed to compile due to an invalid
 parent cast; the corrected rerun passes. These references cover all three
 original dispatch kinds; native dispatch/scanning remains open, as do further
 completion-flag, allocation-failure and macro-recording contracts.
+
+### Native public job dispatch implementation (qualification pending)
+
+Added JobsHndlr to the retained memory provider (version 15, 36 exports,
+unchanged flat import set). It executes original CALL, SPAWN_TASK and EXE_STR
+jobs, records dispatch/completion results, handles callback exceptions,
+completes into master/servant queues, honors FREE_ON_COMPLETE and
+EXIT_ON_COMPLETE, wakes suspended masters and updates sys_focus_task unless
+self-focus is inhibited. The retained console provider publishes a private
+source-execution hook and the focus variable; job source compiles in the
+servant's live scope. The dispatcher resolves those services through public
+symbol tables rather than adding flat imports. Missing services raise JobSvc;
+this does not silently convert queued source into a no-op.
+
+Five direct-dispatch contracts pass on original TempleOS
+(build/i386-public-dispatch-original/result.json): callback argument/result,
+callback exception completion, queued source result, master wake/focus and
+spawned-child parent/argument/lifecycle. Both original rebuild generations pass.
+Fresh native build and 386 boot audit pass in build/i386-public-dispatch-kernel
+(483016 flat bytes). Direct-dispatch qualification is running in
+build/i386-public-dispatch-native; posting regressions are running in
+build/i386-public-dispatch-posting.
+Free/exit completion flags, inhibited focus, failures and cancellation need
+further runtime coverage. ScanMsg/GetMsg/FlushMsgs are not yet published;
+keyboard adaptation and macro recording remain open.

@@ -32,6 +32,8 @@ CI386ConsoleConfig *console_config;
 CI386Text console_text;
 U8 *console_planes;
 extern U0 ConsolePresent();
+extern I64 NativeJobSource(U8 *text);
+CTask *sys_focus_task;
 extern Bool DocExe(CDoc *doc,I64 flags=0);
 extern I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
 public Bool MouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0)
@@ -57,7 +59,7 @@ U8 console_diagnostic_filename[256];
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[117];
+CI386KernelSymbol console_doc_exports[119];
 U32 console_version=I386_CONSOLE_VERSION;
 extern Bool NativeGraphicsStart();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
@@ -312,10 +314,15 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[115].val=(&I386InstallBootImage+0)(U64);
   console_doc_exports[116].str="_EXE_DOC";
   console_doc_exports[116].val=(&ExeDoc+0)(U64);
-  for(i=0;i<117;i++) {
+  console_doc_exports[117].str="_I386_JOB_SOURCE";
+  console_doc_exports[117].val=(&NativeJobSource+0)(U64);
+  console_doc_exports[118].str="_SYS_FOCUS_TASK";
+  console_doc_exports[118].val=(&sys_focus_task+0)(U64);
+  sys_focus_task=task;
+  for(i=0;i<119;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78) console_doc_exports[i].kind=3;
+    if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   console_config=config; return TRUE;
