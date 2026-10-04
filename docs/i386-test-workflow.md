@@ -3731,3 +3731,25 @@ running in `build/i386-module-inheritance-main`. The full isolated retained
 provider build is still live in `build/i386-module-inheritance-native-build`.
 Native build completion, installation and current-source release qualification
 remain required.
+
+### Current main audit and automatic keyword gate
+
+`build/i386-module-inheritance-main/result.json` completes the current main
+i386 build/audit with 483384 boot bytes. Its keyword table passes the standalone
+auditor in `build/i386-module-inheritance-main/keyword-data-standalone.json`.
+The updated combined module instruction/data audit also passes in
+`build/i386-module-inheritance-main-integrated-audit`.
+
+The regular `build-i386-kernel.py` audit now validates the keyword table and
+writes `keyword-data-audit.json`; fresh build reports include that result and
+the keyword-checker hash in build-input provenance. This rejects future
+nonzero name tails automatically rather than relying on a separate manual
+audit command. The build that produced the current image predates integration
+of the gate; a fresh gated build is running in
+`build/i386-module-inheritance-main-gated`.
+
+Main-image inherited-module regression is running in
+`build/i386-module-inherited-forward-main`; the complete workstation suite is
+running in `build/i386-module-inheritance-main-workstation`. The isolated
+six-provider build remains active, progressing through CompilerRuntime
+functions. Completion and native installation/runtime qualification remain open.

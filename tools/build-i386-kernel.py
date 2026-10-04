@@ -616,6 +616,12 @@ def audit(exports, out, guest_compiler_template=False):
         if resident: base+=size
     if base!=len(image): raise ValueError('Unclassified trailing kernel bytes')
     (out/'kernel-assembly.txt').write_text('\n'.join(listing)+'\n')
+    keyword_checker = ROOT/'tools/audit-i386-keyword-table.py'
+    keyword_module = (exports/'Kernel.t32m').read_bytes()
+    keyword_audit = runpy.run_path(str(keyword_checker))['audit'](keyword_module)
+    keyword_audit.update(module_sha256=hashlib.sha256(keyword_module).hexdigest(),
+                         checker_sha256=hashlib.sha256(keyword_checker.read_bytes()).hexdigest())
+    (out/'keyword-data-audit.json').write_text(json.dumps(keyword_audit,indent=2)+'\n')
     return image
 
 
@@ -2277,11 +2283,12 @@ def main():
             'bootstrap':bootstrap['generations'][-1],
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
-                'tools/build-i386-kernel.py','tools/audit-i386-boot.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
+                'tools/build-i386-kernel.py','tools/audit-i386-boot.py','tools/audit-i386-keyword-table.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
                 'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                 'tools/i386-kernel-input.py','tools/test-i386-doc-compat.py','tests/guest/i386-doc-compat/Once.HC','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                 'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
             'boot_instruction_audit':boot_audit,
+            'keyword_data_audit':json.loads((out/'keyword-data-audit.json').read_text()),
             'tools':{'python':sys.version,
                      'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},

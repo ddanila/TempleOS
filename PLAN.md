@@ -109,7 +109,9 @@ that its history is contained in `main`.
   forward declarations before native promotion. The focused matching red/green
   gate now passes on the isolated repair, preserving the root forward class.
   The module-only inherited lookup fix and explicit keyword-byte initialization
-  are applied to main; its original rebuild passes and i386 build is running.
+  are applied to main; its original rebuild and i386 build/audit pass.
+  The keyword-data gate is integrated into the normal build audit. Main-image
+  module and full workstation regressions are running.
   The full isolated native-provider build remains live. Native runtime and startup qualification remain open. Updated all-native/two-generation release
   qualification remains required.
 
