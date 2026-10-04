@@ -27,7 +27,8 @@ and filesystem audit passes in `build/i386-heap-scan-selfhost-audit`. Target
 SHA-256 is `66819bf5b517d80a937bee1491022eea6988d021c7ad5edbbf64bff61c02e7ba`.
 Its no-FPU TCG keyboard/VGA check passes, but startup is 65.149 seconds and
 `build/i386-heap-scan-selfhost-startup-budget.json` fails the 60-second gate.
-A profile of this native image is running. Complete workflow qualification
+The completed profile attributes 140/150 public-header and 340/367 startup-source
+samples to boot-kernel heap operations; it is not a timing benchmark. Complete workflow qualification
 and a second native generation remain open.
 
 The newer formatter-extraction source revision 2470ed94 passes the original

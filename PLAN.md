@@ -6791,3 +6791,24 @@ cannot establish the cause of this failure; the portable source heap change
 also does not replace the boot kernel's assembly validator. Keep the startup
 gate open while identifying the actual native bottleneck. The older cleanup
 workstation suite continues through file navigation checks.
+
+### Fully native boot profile identifies the active heap path
+
+`build/i386-heap-scan-selfhost-profile/result.json` completes on unchanged
+fully native target 66819bf5, with 656 statistical instruction samples and
+installed-module symbol attribution. In the public-header phase, heap
+Alloc/Free/Size/Valid account for 140 of 150 samples (52/39/29/20). During
+startup source they account for 340 of 367 samples (92/84/79/85). Foundation
+has 98 of 139 samples in I386ModuleValid. Profiler SHA-256:
+`37f22fb8d7d18978097efc94002c0064fcd096eeb78c83cfc43e4bf43160dc34`.
+
+The next performance change should target the active boot-kernel heap path,
+whose assembly validator and subsequent size lookup still traverse separately.
+Preserve complete-chain validation, rejection of later corruption, unchanged
+arena/control on failure, and exact requested sizes. The portable source scan
+alone did not change this path. Any implementation must fit the boot envelope
+(current fully native flat image has only 80 spare bytes), pass both heap
+variants and the independent corruption oracle, and then be measured on a
+new fully native image. Do not interpret paused profile elapsed time as boot
+timing or claim a speedup before that measurement. Native formatter/User
+integration and the remaining full release requirements remain open.
