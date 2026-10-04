@@ -1305,3 +1305,9 @@ wake/focus and spawned-child lifecycle. Original qualification passes; native
 version-15 qualification is pending. Source execution prints 42 before the
 fixture's boolean result. These checks do not supply a scanner or qualify
 free/exit completion flags, inhibited focus, cancellation or allocation errors.
+
+Version-15 direct-dispatch native qualification passes all five cases at 8 MiB
+on 486,-fpu with matching VGA checkpoints. Version-16 adds public scanning,
+waiting and flushing; its full eighteen-case native message qualification is
+pending. Queued source execution prints 42 before the boolean fixture result,
+which the checker now expects explicitly.

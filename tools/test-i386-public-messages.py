@@ -71,7 +71,7 @@ def behavior_commands():
                  ('MsgPopupOwn;', ['1']), ('MsgPopupWake;', ['1']), ('MsgPopupUnlink;', []), ('MsgRouteStop;', ['1']),
                  ('Free(MsgRoute);', [])]
     commands += [('MsgCallScan;', ['1']), ('MsgCallFree;', []), ('MsgMasterScan;', ['1']), ('MsgCallFree;', []), ('MsgExceptScan;', ['1']), ('MsgCallFree;', [])]
-    commands += [('MsgSpawnScan;', ['1']), ('MsgSpawnRun;', ['1']), ('MsgSpawnFinish;', ['1']), ('MsgCallFree;', []), ('MsgSourceScan;', ['1']), ('MsgCallFree;', [])]
+    commands += [('MsgSpawnScan;', ['1']), ('MsgSpawnRun;', ['1']), ('MsgSpawnFinish;', ['1']), ('MsgCallFree;', []), ('MsgSourceScan;', ['42', '1']), ('MsgCallFree;', [])]
     commands.append(('6*7;', ['42']))
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Message contract exceeds the interactive line limit')

@@ -5092,3 +5092,35 @@ build/i386-public-dispatch-posting.
 Free/exit completion flags, inhibited focus, failures and cancellation need
 further runtime coverage. ScanMsg/GetMsg/FlushMsgs are not yet published;
 keyboard adaptation and macro recording remain open.
+
+### Job-aware public message consumption (native qualification pending)
+
+Version-15 direct-dispatch native qualification passes
+(build/i386-public-dispatch-native/result.json): five contracts, 32 commands,
+matching VGA checkpoints at 8 MiB on 486,-fpu and unchanged input disk. This
+qualifies that captured dispatcher image, not subsequent scanning changes.
+Its eleven-case posting regression also passes
+(build/i386-public-dispatch-posting/result.json): 44 commands with matching VGA
+checkpoints on the same unchanged image.
+
+Added ScanMsg/GetMsg/FlushMsgs to the retained memory provider (version 16,
+39 exports, unchanged flat imports). ScanMsg executes pending current-task jobs
+before consuming messages, destructively filters by mask, zeroes empty outputs,
+falls back to popup parents and honors key-description inhibition. It captures
+arguments before freeing the job, avoiding the original aux2 read after free.
+GetMsg yields with the original idle-bit behavior; FlushMsgs returns the number
+of consumed messages. Both original rebuild generations pass. Native build is
+running in build/i386-public-message-scan-kernel; runtime qualification remains
+pending. The current eighteen-case original reference passes
+(build/i386-message-full-source-original/result.json); its native expectations
+include the result printed by queued source execution. Keyboard integration,
+macro recording, allocation recovery and additional completion flags remain
+open. No current-source self-hosted release qualification is claimed.
+
+The initial version-16 cross-build fails before MemoryRuntime export because
+SCF_KEY_DESC is absent from the split scan-code header
+(build/i386-public-message-scan-kernel/exports/compiler-log.DD). The retained
+scanner now uses the original SCf_KEY_DESC bit 31 explicitly, alongside the
+original WIf_SELF_KEY_DESC bit 12, and removes the unnecessary scan-code include.
+A fresh original rebuild of this correction is running. No version-16 native
+runtime pass is recorded; preceding version-15 results remain separately valid.

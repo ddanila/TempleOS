@@ -29,7 +29,7 @@ import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386BackingPool memory_pool;
 CI386Task *memory_root;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[36];
+CI386KernelSymbol memory_exports[39];
 extern U0 MemoryTaskRootInit(CI386Task *root);
 extern Bool MemoryManagedYield(CI386Scheduler *scheduler);
 extern CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,I64 target_cpu=-1,CTask *parent=0,I64 stack_size=0,I64 flags=256);
@@ -41,6 +41,9 @@ extern U0 MemoryMsg(I64 msg_code,I64 arg1,I64 arg2,I64 flags=0);
 extern Bool MemorySuspend(CTask *task=0,Bool state=TRUE);
 extern Bool MemoryIsSuspended(CTask *task=0);
 extern I64 MemoryJobsHndlr(I64 run_flags,CTask *task=0);
+extern I64 MemoryScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0);
+extern I64 MemoryGetMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0);
+extern I64 MemoryFlushMsgs(CTask *task=0);
 extern U0 MemoryReclaim(CI386PublicPool *pool);
 extern U0 MemoryProbe(I64 phase);
 extern U0 Yield();
@@ -50,7 +53,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//No arena is reserved until a task actually requests pages.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[36],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0";
+  U8 *addresses[39],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->gs || !root->owner || root->owner->root!=root ||
@@ -78,7 +81,8 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[30]=&MemoryTaskMsg; addresses[31]=&MemoryPostMsg; addresses[32]=&MemoryMsg;
   addresses[33]=&MemorySuspend; addresses[34]=&MemoryIsSuspended;
   addresses[35]=&MemoryJobsHndlr;
-  for(i=0;i<36;i++) {
+  addresses[36]=&MemoryScanMsg; addresses[37]=&MemoryGetMsg; addresses[38]=&MemoryFlushMsgs;
+  for(i=0;i<39;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1; memory_exports[i].val=(addresses[i]+0)(U64);
     HashAdd(&memory_exports[i],symbols);
@@ -180,3 +184,5 @@ Bool MemoryCoreYield(CI386Scheduler *scheduler) { return I386SchedYield(schedule
 #include "/Kernel/I386/MessagePosting.HC"
 
 #include "/Kernel/I386/JobDispatch.HC"
+
+#include "/Kernel/I386/MessageScan.HC"
