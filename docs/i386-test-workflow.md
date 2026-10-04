@@ -3415,3 +3415,23 @@ observations, not a recovery acceptance verdict. The run is pending in
 `build/i386-user-bootstrap-observations`. The shared layout extractor was
 refactored from the existing task-accounting tool; its generated 107 commands
 and header provenance were compared before/after and are exactly unchanged.
+
+The guest-built-provider Tab-focus test passes in
+`build/i386-creation-hotkeys-native-tab/result.json`: 11 commands, exact VGA
+checkpoints, separate histories/definitions, exit refocus and exact parent
+public-heap recovery, on 8 MiB `486,-fpu` TCG. Startup is 56.120742 seconds
+and the source disk is unchanged. This is focus behavior, not exhaustive
+creation resource accounting.
+
+The first empty create/kill cycle in the native observation run has unchanged
+public-pool used/reserved and caller/root heap counters (1368064, 1379328,
+1354760, 0), with root child count one before and after. The run is still live;
+these two snapshots do not qualify repeated recovery. The failed strict
+fixture's final PPM shows `UserCycle(FALSE);` with no returned result, rather
+than a visible false verdict.
+
+`tools/test-i386-user-cycle.py` isolates an empty create/kill cycle inside one
+HolyC call and records start/created/stop/retired phase markers, including on
+failure. It checks completion and resumed arithmetic, not counters. The native
+run is pending in `build/i386-user-cycle-native`; use it to distinguish a
+create/kill wait from the strict fixture's later recovery expression.

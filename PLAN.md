@@ -75,7 +75,9 @@ that its history is contained in `main`.
   ConsoleRuntime build inside TempleOS and pass the independent all-module
   instruction/ABI audit. Installation passes; native creation and User regressions
   creation passes all 15 commands with exact VGA checkpoints (52.185862-second
-  startup); programmatic User and Tab-focus gates are still running.
+  startup). The native Tab-focus gate also passes its 11 commands, exact VGA
+  history/refocus checks and parent-heap recovery (56.120742-second startup).
+  The programmatic User gate remains running.
 - A new experimental repeated-User recovery fixture fails on original TempleOS
   at its first measured cycle. Exact shared-pool recovery after one warmup is
   therefore an unvalidated compatibility requirement. A separate observation
