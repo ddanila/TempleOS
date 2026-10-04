@@ -4305,3 +4305,19 @@ its guest six-module flat-development build is live in
 uses verified cross-built retained inputs and is a size/construction check,
 not a fully native retained-provider or release verdict. OS sources remain
 frozen during these jobs and are not promoted to main.
+
+The initial prototype guest flat-development build fails at ExceptionEntry:
+its second top-level `asm` block is rejected (`Invalid top-level assembly
+entry`). The cross build accepted it, so cross-only proof was insufficient.
+Evidence is retained in its `build/debug.log` and
+`construction-failure.json`. The driver was intentionally stopped with
+SIGINT after the observed rejection (terminal exit 130), not restarted for
+a polling timeout. No flat installation/boot verdict is claimed.
+
+The guest compiler explicitly permits one top-level assembly bundle per
+module. Move the trampoline into ExceptionEntry's existing block and place
+its import with the other import before emitted code. Verify the combined
+bundle stays within the existing 256-byte and relocation bounds, rebuild
+and repeat the guest construction. The live workstation run still uses
+the initial immutable image; prototype sources remain frozen until it
+finishes. Main OS sources remain unchanged.
