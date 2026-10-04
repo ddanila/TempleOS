@@ -45,7 +45,9 @@ build/install and image audit pass with 487072 flat bytes (352 spare), using
 cross-built retained providers. All twelve modules now build/install natively in `build/i386-heap-asm-scan-selfhost`,
 with independent 8 MiB boot and installed instruction/filesystem audit passing.
 Its target is 9c74ad0a; ordinary 8 MiB no-FPU TCG keyboard/VGA and startup
-now pass at 53.687 seconds. Its full workstation suite and second-generation
+now pass at 53.687 seconds. Its full workstation suite passes 513 commands, exact VGA and 20 document
+cycles with exact heap recovery; startup passes at 53.786 seconds and visible
+update at 0.260 seconds. The three-boot DolDoc workflow and second-generation
 retained build (with exact installed-module comparison) are running. Full
 two-generation and release qualification remain open.
 

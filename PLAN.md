@@ -6986,3 +6986,20 @@ installed providers enabled. Continue through native installation, flat-module
 rebuild, complete image audit and second-generation workflow checks before
 claiming two complete generations. Native formatter/User, broader debugging
 and the other full release requirements remain open.
+
+### Fully native assembly heap scan: complete workstation and timing pass
+
+`build/i386-heap-asm-scan-selfhost-workstation/result.json` passes all 513
+native commands/576 submitted lines on fully native target 9c74ad0a, with
+exact VGA and 20 document cycles with exact task data/code heap recovery.
+Startup is 53.786390606779605 seconds; the unchanged 60-second checker passes
+in `build/i386-heap-asm-scan-selfhost-workstation-budget.json`. Long-document
+input-to-visible latency is 0.2600506618618965 seconds, meeting its one-second
+gate. Evidence SHA-256:
+`8246e118b853e16070edf2a6248f2b48dd1806c3c276006fcd71c0bacf4f7207`.
+
+The writable three-boot DolDoc save/reboot/reopen/re-execute workflow is now
+running in `build/i386-heap-asm-scan-selfhost-doldoc`. The second-generation
+retained build continues independently. The workstation pass does not replace
+persistence, second-generation, full API/debugger or reproducible-release
+qualification; native formatter/User integration remains unfinished.
