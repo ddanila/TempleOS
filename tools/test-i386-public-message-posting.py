@@ -21,8 +21,32 @@ def behavior_commands():
         'Bool PostWakeFlags(I64 f,I64 w){return Fs->task_flags==(f&~(1<<TASKf_IDLE|1<<TASKf_AWAITING_MSG))&&Fs->wake_jiffy==w;}',
         'Bool PostWake(){I64 f=Fs->task_flags,w=Fs->wake_jiffy;Bool ok;LBts(&Fs->task_flags,TASKf_IDLE);LBts(&Fs->task_flags,TASKf_AWAITING_MSG);PostMsg(Fs,MSG_CMD,61,62);ok=PostWakeFlags(f,w);Fs->task_flags=f;return ok&&PostPop(Fs,MSG_CMD,61,62);}',
     ]
+    definitions += [
+        'class CPostRoute{CTask *a,*b;I64 retired;Bool done;};',
+        'CPostRoute *PostRoute=CAlloc(sizeof(CPostRoute));',
+        'U0 PostRouteWorker(U8 *data){while(!PostRoute->done)Yield;PostRoute->retired++;}',
+        'Bool PostRouteStart(){PostRoute->a=Spawn(&PostRouteWorker,0,"RouteA",-1,Fs,8192);PostRoute->b=Spawn(&PostRouteWorker,0,"RouteB",-1,Fs,8192);return PostRoute->a&&PostRoute->b;}',
+        'Bool PostEmpty(CTask *t){return t->srv_ctrl.next_waiting==(&t->srv_ctrl.next_waiting)(CJob *);}',
+        'U0 PostRouteLink(){CTask *a=PostRoute->a,*b=PostRoute->b;a->next_input_filter_task=a->last_input_filter_task=b;b->next_input_filter_task=b->last_input_filter_task=a;LBts(&a->task_flags,TASKf_FILTER_INPUT);LBts(&b->task_flags,TASKf_INPUT_FILTER_TASK);}',
+        'Bool PostFilter(){PostMsg(PostRoute->a,MSG_CMD,71,72);return PostPop(PostRoute->b,MSG_CMD,71,72)&&PostEmpty(PostRoute->a);}',
+        'Bool PostBypass(){PostMsg(PostRoute->a,MSG_CMD,81,82,1<<JOBf_DONT_FILTER);return PostPop(PostRoute->a,MSG_CMD,81,82)&&PostEmpty(PostRoute->b);}',
+        'Bool PostBackward(){PostMsg(PostRoute->b,MSG_CMD,91,92);return PostPop(PostRoute->a,MSG_CMD,91,92)&&PostEmpty(PostRoute->b);}',
+        'U0 PostRouteUnlink(){CTask *a=PostRoute->a,*b=PostRoute->b;LBtr(&a->task_flags,TASKf_FILTER_INPUT);LBtr(&b->task_flags,TASKf_INPUT_FILTER_TASK);a->next_input_filter_task=a->last_input_filter_task=a;b->next_input_filter_task=b->last_input_filter_task=b;}',
+        'U0 PostPopupLink(){PostRouteUnlink;PostRoute->a->popup_task=PostRoute->b;PostRoute->b->parent_task=PostRoute->a;}',
+        'Bool PostPopupReject(){PostMsg(PostRoute->a,MSG_CMD,101,102);return PostEmpty(PostRoute->a)&&PostEmpty(PostRoute->b);}',
+        'Bool PostPopupOwn(){PostMsg(PostRoute->b,MSG_CMD,111,112);return PostPop(PostRoute->b,MSG_CMD,111,112)&&PostEmpty(PostRoute->a);}',
+        'Bool PostPopupWoke(){CTask *a=PostRoute->a,*b=PostRoute->b;Bool ok=!Bt(&a->task_flags,TASKf_AWAITING_MSG)&&!Bt(&b->task_flags,TASKf_AWAITING_MSG);LBtr(&a->task_flags,TASKf_FILTER_INPUT);return ok&&PostPop(a,MSG_CMD,121,122)&&PostEmpty(b);}',
+        'Bool PostPopupWake(){CTask *a=PostRoute->a,*b=PostRoute->b;LBts(&a->task_flags,TASKf_FILTER_INPUT);LBts(&a->task_flags,TASKf_AWAITING_MSG);LBts(&b->task_flags,TASKf_AWAITING_MSG);PostMsg(a,MSG_CMD,121,122,1<<JOBf_DONT_FILTER);return PostPopupWoke;}',
+        'U0 PostPopupUnlink(){PostRoute->a->popup_task=NULL;PostRoute->b->parent_task=Fs;}',
+        'Bool PostRouteStop(){I64 end=cnts.jiffies+2000;PostRouteUnlink;PostRoute->done=TRUE;while(PostRoute->retired!=2&&cnts.jiffies<end)Yield;return PostRoute->retired==2;}',
+    ]
     commands = [(source, []) for source in definitions]
     commands += [(name+';', ['1']) for name in ('PostFIFO','PostPair','PostInvalid','PostMeta','PostWake')]
+    commands += [('PostRouteStart;', ['1']), ('PostRouteLink;', []),
+                 ('PostFilter;', ['1']), ('PostBypass;', ['1']), ('PostBackward;', ['1']),
+                 ('PostPopupLink;', []), ('PostPopupReject;', ['1']), ('PostPopupOwn;', ['1']),
+                 ('PostPopupWake;', ['1']), ('PostPopupUnlink;', []), ('PostRouteStop;', ['1']),
+                 ('Free(PostRoute);', [])]
     commands.append(('6*7;', ['42']))
     if any(len(source.encode('ascii')) > 255 for source, _ in commands):
         raise ValueError('Posting contract exceeds the interactive line limit')
@@ -46,12 +70,14 @@ def main():
     if args.original:
         overlay = out / 'overlay'
         overlay.mkdir(exist_ok=True)
-        source = '\n'.join(source for source, _ in commands[:7]) + '\n'
+        source = '\n'.join(source for source, _ in commands[:24]) + '\n'
         (overlay / 'Definitions.HC').write_text(source)
         (overlay / 'Once.HC').write_text('''U0 Report(U8 *text){while(*text)OutU8(0xE9,*text++);}
 #include "T:/Definitions.HC"
 Report("START original public message posting\\n");
 Bool ok=PostFIFO&&PostPair&&PostInvalid&&PostMeta&&PostWake;
+if(ok){ok=PostRouteStart;if(ok){PostRouteLink;ok=PostFilter&&PostBypass&&PostBackward;PostPopupLink;if(!PostPopupReject||!PostPopupOwn||!PostPopupWake)ok=FALSE;PostPopupUnlink;if(!PostRouteStop)ok=FALSE;}}
+Free(PostRoute);
 if(ok)Report("PASS original public message posting\\n");
 else Report("FAIL original public message posting\\n");
 Report("DONE original public message posting\\n");
@@ -78,8 +104,8 @@ Report("DONE original public message posting\\n");
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
-    report.update(checker_sha256=checker, cases=5,
-                  scope='TaskMsg/PostMsg/Msg: 40-event FIFO, paired events, invalid task/master rejection, full-width metadata, system-heap ownership and idle/await wake flags; not scanning, routing or macro recording')
+    report.update(checker_sha256=checker, cases=11,
+                  scope='TaskMsg/PostMsg/Msg: 40-event FIFO, paired events, invalid task/master rejection, full-width metadata, system-heap ownership and idle/await wake flags; forward/backward filter routing, bypass, popup rejection/delivery and popup-chain wake; not scanning or macro recording')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

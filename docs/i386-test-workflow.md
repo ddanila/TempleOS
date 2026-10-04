@@ -1256,3 +1256,9 @@ Original and native version-13 provider qualification pass, including all VGA
 checkpoints at 8 MiB on 486,-fpu. Queued-job cleanup (12 cases) and callback
 recovery (5 cases) also pass on that image. Scanning, routing, macro recording and allocation recovery
 need their own checks.
+
+The posting checker additionally tests forward and backward filter routing,
+DONT_FILTER bypass, popup rejection/direct delivery, and popup-chain wakeup,
+for eleven cases total. Original qualification passes; expanded native
+qualification is pending in build/i386-posting-routing-native. Fixtures restore
+task links before retirement and inspect actual CJob nodes without ScanMsg.

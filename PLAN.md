@@ -4965,3 +4965,16 @@ uses 8 MiB on 486,-fpu. Its independent instruction audit passes
 (build/i386-public-task-validity-native-flat/instruction-audit/result.json). This
 proves the earlier snapshot's budget, not current version-13 provider release
 qualification or fully guest-built retained generations.
+
+### Expanded posting routing contracts
+
+The posting checker now has eleven cases. Six additional cases directly inspect
+public CJob queues after forward filter routing, DONT_FILTER bypass, backward
+input-filter posting, popup-parent rejection, direct popup delivery and
+popup-chain wakeup. Two live worker tasks provide the fixture; their filter
+links and parent/popup relationships are restored before retirement. No scanner
+substitute is supplied. The original reference passes
+(build/i386-posting-routing-original/result.json); native qualification is
+running against the unchanged version-13 provider in
+build/i386-posting-routing-native. Earlier five-case native qualification and
+cleanup/callback regression results remain valid for that provider.
