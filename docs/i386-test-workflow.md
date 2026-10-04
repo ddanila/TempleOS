@@ -4482,3 +4482,18 @@ are not sufficient to satisfy this public cluster-return contract. Empty,
 error, replacement, default-date, compression and resident parity remain
 additional planned contracts. Native CPU-trap provider qualification remains
 live on main; its Kernel/Compiler source epoch stays frozen.
+
+All six promoted CPU-trap providers now PASS native construction, export
+contracts and console allocation-wrapper checks in
+`build/cpu-trap-main-native-build/result.json`. Exact installation and
+independent boot are running in `build/cpu-trap-main-native-install`.
+Updated native flat/generation/workstation/release verdicts remain pending.
+
+The main-only isolated `build/file-write-prototype` now contains an initial
+FileWrite cluster-return service path, explicit timestamp propagation and
+public five-argument binding. Its fresh original rebuild PASSes; cross
+construction is running in its `build/file-write`. The public metadata
+contract has not passed. This experiment currently handles contiguous
+ordinary writes only; default Now, compression/resident semantics and
+compatibility of existing internal write callers still require work before
+promotion. Main Kernel/Compiler sources are unchanged for native qualification.
