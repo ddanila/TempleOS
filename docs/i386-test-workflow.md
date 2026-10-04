@@ -3802,3 +3802,23 @@ retain their separate cross-build checks and cannot use guest evidence options.
 The harness suite passes all 17 tests, including rejection of eight mutated
 guest provenance chains. This links existing build/install evidence; it does
 not establish current-source two-generation qualification by itself.
+
+### Shared-root Help category integration failure
+
+The full current-source workstation run in
+`build/i386-module-inheritance-main-workstation` terminated with a VGA timeout
+at `help-index-link`, after entering `HI:Data Types/Circular Queue`. The saved
+`help-index-link-hi-category.ppm` shows the expected help file and eight symbols,
+but their order differs from the fixture. The previous hash-order fixture is
+not an alphabetical oracle. Original `Adam/AHash.HC` sorts category entries by
+name, with help-file entries first.
+
+The isolated checkout `build/root-declaration-prototype` now gathers at most
+128 registrations into a bounded stack array and sorts each group by name. It
+retains the existing page/link limits and uses no additional heap allocation.
+The matching original two-generation rebuild passes. Its i386 build is pending
+in `build/root-declaration-prototype/build/i386-help-sort`; a focused Help run
+against the unchanged main image is running in `build/i386-help-sort-red`, using
+the alphabetical category oracle. Neither the prototype nor that focused run
+is a completed integration pass. Main Kernel/Compiler inputs remain unchanged
+while `build/i386-module-inheritance-native-build-long` runs.

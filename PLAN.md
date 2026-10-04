@@ -2,6 +2,15 @@
 
 ## Objective and status
 
+The current-source full workstation attempt terminated at `help-index-link`
+(`build/i386-module-inheritance-main-workstation`): the live category contained
+the expected entries but their hash enumeration order differed after root
+declaration sharing. It is a failed integration run, not a workstation pass.
+Original `Adam/AHash.HC` sorts entries by name. An isolated alphabetical
+category prototype passes the original two-generation rebuild; its i386 build
+and focused red/green Help checks are pending. Main OS sources remain frozen
+for the running six-provider native build.
+
 Full self-hosting qualification now requires the retained-build and installation
 verdicts to form a matching disk/payload chain before flat-kernel construction.
 All six providers must match both reports; the resulting report records their
