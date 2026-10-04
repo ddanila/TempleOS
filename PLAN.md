@@ -6582,3 +6582,23 @@ now frozen in the oracle. Native baseline is running in `build/i386-format-red`.
 Next implementation work must preserve original formatting and task ownership,
 then provide User and hardware creation workflows; no implementation pass is
 claimed by adding these tests.
+
+### Shared original formatting core extracted
+
+Moved the original string-building functions into `Kernel/StrPrintCore.HC`
+and formatting flags into `Kernel/StrPrintTypes.HH`. `Kernel/StrPrint.HC`
+includes the core and retains Print/PrintErr/PrintWarn console wrappers.
+The moved function bodies were verified byte-for-byte against the preceding
+revision, preserving Latin-1 characters. Both original rebuild generations
+and all 17 original formatting cases pass in
+`build/i386-format-core-original/result.json`. Fresh cross-build is running
+in `build/i386-format-core-kernel`; no native formatting implementation pass
+is claimed.
+
+The native formatting baseline is terminal FAIL at missing MStrPrint in
+`build/i386-format-red/result.json` (unchanged ed514687). Reusing the core
+requires native address/function-segment formatting, IsRaw state and the
+existing allocation, software math, date, file and DolDoc services. Preserve
+those format families rather than limiting implementation to the current
+17-case corpus. User/XTalk and hardware creation remain subsequent work.
+The provider/workstation runs keep their captured pre-extraction images.

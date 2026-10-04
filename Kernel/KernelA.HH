@@ -1574,18 +1574,7 @@ class CProgress
 };
 
 #help_index "Char/Operations"
-#define PRTF_PAD_ZERO		0x001
-#define PRTF_LEFT_JUSTIFY	0x002
-#define PRTF_TRUNCATE		0x004
-#define PRTF_COMMA		0x008
-#define PRTF_DOLLAR		0x010
-#define PRTF_SLASH		0x020
-#define PRTF_QUESTION		0x040
-#define PRTF_AUX_FMT_NUM	0x080
-#define PRTF_DECIMAL		0x100
-#define PRTF_NEG		0x200
-#define PRTF_NEG_E		0x400
-#define PRTF_NEG_AUX_FMT_NUM	0x800
+#include "/Kernel/StrPrintTypes.HH"
 
 #help_index "Misc/Host"
 //Host Operating System
