@@ -16,6 +16,7 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--compressed', action='store_true', help='Require a resident .Z fixture containing the 64-byte ReadPackedBytes seed')
     parser.add_argument('--shared-lifetime', action='store_true', help='Require cache reuse across child task exit and directory-state replacement')
+    parser.add_argument('--hash-visible', action='store_true', help='Require original public HTT_FILE cache visibility through Fs hash-table chain')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -44,9 +45,13 @@ def main():
                   'ReadOwned("C:/Probe/ReadResident.BIN.Z")']
     report['compressed'] = args.compressed
     report['shared_lifetime'] = args.shared_lifetime
+    report['hash_visible'] = args.hash_visible
+    if args.hash_visible:
+        selected += ['Bool ColdHash(U8 *name){CHashGeneric *entry=HashFind(name,Fs->hash_table,HTT_FILE);return entry&&entry->user_data0&&entry->user_data1>0;}']
+        checks += [f'ColdHash("C:/Probe/{filename}")']
     if args.shared_lifetime:
         cached_check = checks[1]
-        owned_check = checks[-1]
+        owned_check = f'ReadOwned("C:/Probe/{filename}")'
         selected += ['I64 ColdTaskResult=0;',
                      'U0 ColdTask(U8 *data){if('+cached_check+'&&'+owned_check+')ColdTaskResult=1;else ColdTaskResult=2;}',
                      'Bool ColdChild(){I64 end=cnts.jiffies+2000;ColdTaskResult=0;if(!Spawn(&ColdTask,0,"ColdRead",-1,Fs,8192))return FALSE;while(!ColdTaskResult&&cnts.jiffies<end)Yield;Yield;return ColdTaskResult==1;}']

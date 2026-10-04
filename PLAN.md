@@ -8723,3 +8723,18 @@ cached name again. The original functional oracle passes in
 is running against the ABI-42 persisted fixture. This tests the shared Adam-style
 lifetime across task and directory state changes; whole-service teardown and
 allocation failure remain separate requirements.
+
+The shared-lifetime native run passes its child-task cache/ownership check but
+fails at `Cd("C:/Probe")`: guest frontend reports an undefined identifier.
+Public Cd declaration/export compatibility is therefore a prerequisite for
+the directory-state part of this test; this failure is not evidence of cache
+loss during directory replacement. The complete test remains failing.
+
+The cold checker also gains `--hash-visible`: require the populated resident
+file to be discoverable as CHashGeneric through public
+HashFind(name,Fs->hash_table,HTT_FILE), with stored pointer and size. The original
+oracle passes in `build/public-file-resident-hash-red/oracle/debug.log`; native
+qualification is running. The current private mounted-service cache must not
+be treated as complete original programming-model compatibility without this
+public hash integration. Shared cache semantics and public Adam-style hash
+ownership/removal need qualification, not just equivalent FileRead output.
