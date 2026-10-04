@@ -203,3 +203,9 @@ artifact hashes. Its native console passes instruction audit and byte-preserving
 installation/8 MiB boot checks. This is a mixed-provider image; full workstation
 and updated native boot-kernel size checks are still running. User creation,
 full debugger and release reproducibility remain open.
+
+The formatter snapshot's full workstation regression subsequently passes in
+`build/i386-native-formatter-workstation/result.json`: 513 commands, 576 lines,
+exact VGA checkpoints and 20 resource cycles with exact shared-task heap
+recovery. Startup is 47.03001209674403 seconds on 8 MiB 486,-fpu. The native
+boot-kernel build remains active; updated all-native image qualification is open.
