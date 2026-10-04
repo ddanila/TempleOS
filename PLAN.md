@@ -45,8 +45,10 @@ with the latest source remains open. The latest integration image with guest-bui
 MemoryRuntime and ConsoleRuntime passes the full no-FPU workstation suite:
 513 commands, 51.426694-second startup and a 0.370859-second long-document
 update. Its boot kernel and remaining providers are cross-built. A newer
-cross-built image passes terminal creation and focus shortcuts; updated native
-provider building and programmatic User regression are still running. Older
+cross-built image passes terminal creation and focus shortcuts; the updated native
+providers have built and passed the independent twelve-module instruction/ABI audit.
+The current cross-image programmatic User regression passes all 16 cases;
+installation passes, and affected native-image runtime gates are running. Older
 fully guest-built startup results exceed the 60-second target. Functional passes and package
 hash verification do not by themselves close these gaps. The historical
 “next” sections below record the implementation sequence; the following work
@@ -67,8 +69,12 @@ that its history is contained in `main`.
   creation/input/Exit/cleanup and focus-history/heap-recovery tests. Plain and
   Ctrl-Alt-Shift creation variants do not create a task. New boot imports are
   unnecessary; boot-kernel size stays 483384 bytes.
-- Next finish the current User regression/native-provider builds, install and
-  audit their outputs, and rerun the affected runtime gates. Then test repeated
+- The current cross-image User regression passes all 16 cases (28 commands,
+  48.720395-second startup on 8 MiB no-FPU TCG). Updated MemoryRuntime and
+  ConsoleRuntime build inside TempleOS and pass the independent all-module
+  instruction/ABI audit. Installation passes; native creation and User regressions
+  are running, so their runtime gates remain open.
+- Next finish the affected native runtime gates. Then test repeated
   creation resource recovery and improve fresh-child declaration-loading latency.
   Updated all-native/two-generation release qualification remains required.
 

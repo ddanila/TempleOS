@@ -3337,3 +3337,26 @@ predates these shortcut changes. New User regression and native-provider build
 results remain pending in `build/i386-creation-hotkeys-user-regression-16` and
 `build/i386-creation-hotkeys-native-build`; installation, runtime requalification
 and updated all-native release gates remain outstanding.
+
+### Updated shortcut provider qualification (2026-10-04)
+
+The current cross-image User regression passes all 16 cases/28 commands on
+8 MiB `486,-fpu` TCG, with exact VGA checkpoints and an unchanged source disk:
+`build/i386-creation-hotkeys-user-regression-16/result.json`. Startup is
+48.720395 seconds. This checks programmatic User behavior, not shortcut delivery
+or exhaustive resource recovery.
+
+`build/i386-creation-hotkeys-native-build/result.json` records successful
+guest builds of MemoryRuntime (306979 bytes, 138 exports) and ConsoleRuntime
+(1096790 bytes, 347 exports). Their SHA-256 values are respectively
+`aae46daffee9437fd2802d9b61d4601c99730992f7c116679791e64b86292bd9` and
+`711bc2afd77ccb0c916417e4f3d07fa3e3fcdc427f8efd62c05b62f870690c51`.
+The independent twelve-module instruction/ABI audit passes in
+`build/i386-creation-hotkeys-native-audit/result.json`. Boot and the other
+providers remain cross-built. Installation passes in
+`build/i386-creation-hotkeys-native-install/result.json`; candidate disk SHA-256
+is `88c42c7ded6cba4f5c9029e4ca41c5ab1d2f4da3e8c2736bcd8aa37f0ac389d6`.
+Native shortcut/User regressions are running in
+`build/i386-creation-hotkeys-native-runtime` and
+`build/i386-creation-hotkeys-native-user-16`; these build/audit results do not establish runtime acceptance
+or current-source all-native release qualification.
