@@ -1,5 +1,20 @@
 # M7 requirement-to-test audit
 
+Current optimized-source checkpoint: all twelve modules are guest-built in
+`build/i386-heap-seek-selfhost`, with installed 386/boot/RedSea/keyword audits
+passing. Its no-FPU 8 MiB full workstation passes 513 commands, exact VGA
+and 20 exact shared-heap recovery cycles: startup 33.014209438 seconds and
+long-document visible update 0.372473826 seconds. All six second-generation
+retained providers reproduce their installed first-generation bytes exactly;
+installation and independent boot pass. Second-generation flat construction
+is live in `build/i386-heap-seek-gen2-selfhost`. The current fully native
+three-boot DolDoc session is live in
+`build/i386-heap-seek-selfhost-doldoc-session`; persistence and interrupt
+latency are not yet qualified for this image. Older rows below retain their
+historical evidence and must not override this checkpoint. CPU-trap
+continuation/stepping/register inspection, complete API parity and release
+qualification remain open.
+
 This audit follows the six numbered outcomes in [PLAN.md](../PLAN.md#final-goal-a-fully-working-templeos-on-a-pc-compatible-machine).
 Passing a component corpus or finding a public function does not prove the
 complete user workflow. Human observation and physical hardware remain optional.

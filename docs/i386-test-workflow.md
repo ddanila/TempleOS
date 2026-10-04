@@ -4150,3 +4150,10 @@ python3 tools/test-i386-selfhost-install.py \
 After it passes, audit the installed image with `--guest-compiler-template`
 and compare generation module/flat bytes and installed boot areas with
 `tools/audit-i386-generations.py`. These verdicts remain pending.
+
+Current fully guest-built three-boot DolDoc qualification is running in
+`build/i386-heap-seek-selfhost-doldoc-session` with `486,-fpu` and QMP stdio,
+using first-generation target 6fc8eb0b as the preserved source. It exercises
+creation/replacement, persisted-byte and RedSea checks, reboot/reopen and
+execution, plus interrupt recovery. No final verdict or current-image
+interrupt-latency pass is available yet.
