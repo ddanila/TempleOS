@@ -1268,3 +1268,14 @@ The full message reference has fifteen original cases, including callback
 argument delivery and master-owned completion before message scanning.
 Native job dispatch/scanning is still open; a passing posting test does not
 qualify those services.
+
+Verify public suspension and scheduler eligibility:
+
+```sh
+python3 tools/test-i386-public-task-suspend.py --original --out build/suspend-original
+python3 tools/test-i386-public-task-suspend.py build/i386-kernel/kernel.img --out build/suspend-native
+```
+
+Five contracts cover the previous-state return, NULL caller, signature rejection,
+preservation of flags/deadline, suspended-child exclusion and resume. Original
+qualification passes; version-14 native qualification remains pending.

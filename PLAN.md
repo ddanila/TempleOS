@@ -4991,3 +4991,18 @@ and frees the completed job. Native dispatch/scanning is still unimplemented;
 this reference supplies acceptance evidence rather than native qualification.
 Queued source execution, spawned jobs, exception handling, focus/wake flags and
 macro recording still need their own coverage and implementation.
+
+### Public suspension for master wakeup (native qualification pending)
+
+Added original-signature Suspend and IsSuspended to the retained memory
+provider (version 14, 35 exports, unchanged flat import contract). Suspend
+validates the original task signature with interrupts saved, changes only the
+SUSPENDED bit and returns its previous state; NULL means the current task.
+The existing scheduler already skips suspended tasks. Job completion can use
+this API to clear master suspension without changing wake deadlines.
+
+Five original contracts pass
+(build/i386-public-suspend-original-v2/result.json): default caller and previous
+state, preservation of caller flags/wake deadline, invalid signature rejection,
+child exclusion while suspended and scheduling after resume. Rebuild/native
+qualification is in progress; this does not publish job dispatch or Kill.

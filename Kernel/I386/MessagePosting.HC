@@ -56,3 +56,24 @@ U0 MemoryMsg(I64 msg_code,I64 arg1,I64 arg2,I64 flags=0)
 {
   MemoryPostMsg(I386TaskSelf,msg_code,arg1,arg2,flags);
 }
+
+Bool MemorySuspend(CTask *task=0,Bool state=TRUE)
+{//Return the previous bit, preserving the original public contract.
+  Bool result=FALSE;
+  U32 irq=I386IrqSave;
+  if(!task) task=I386TaskSelf;
+  if(MemoryTaskValidate(task)) {
+    result=(task->task_flags&(1<<TASKf_SUSPENDED))!=0;
+    if(state) task->task_flags|=1<<TASKf_SUSPENDED;
+    else task->task_flags&=~(1<<TASKf_SUSPENDED);
+  }
+  I386IrqRestore(irq);
+  return result;
+}
+Bool MemoryIsSuspended(CTask *task=0)
+{
+  if(!task) task=I386TaskSelf;
+  if(MemoryTaskValidate(task))
+    return (task->task_flags&(1<<TASKf_SUSPENDED))!=0;
+  return FALSE;
+}
