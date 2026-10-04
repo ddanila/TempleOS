@@ -2,6 +2,17 @@
 
 ## Objective and status
 
+CPU breakpoint continuation is now promoted to main: task-owned saved CPU
+frames, normal-context debugger entry and full exception-frame return. Five
+repeat cycles, six general-register markers and forced child exit/survivor
+debugging pass on the prototype; full workstation passes 513 commands.
+Main's fresh original rebuild and i386 instruction/keyword audits pass,
+and all thirteen emitted artifacts match the corrected tested prototype.
+Guest flat-development construction/install/boot/audits pass at 487304 bytes
+(120 spare), using cross-built retained providers. Updated fully native
+providers/generations remain unqualified. Single-step, managed breakpoints,
+register inspection/editing and concurrent debugger sessions remain open.
+
 The fully guest-built optimized image passes installed 386/boot/filesystem and
 keyword audits plus ordinary 8 MiB no-FPU keyboard/exact-VGA startup at
 32.920 seconds, below the unchanged 60-second gate. Full native workstation

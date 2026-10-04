@@ -4,6 +4,7 @@
 asm {
 USE32
 IMPORT I386ExceptionDispatch;
+IMPORT KernelDebugCpu;
 i386_exception_0::
   PUSH 0
   PUSH 0
@@ -80,6 +81,21 @@ i386_exception_common:
   PUSH 0
   PUSH EAX
   CALL I386ExceptionDispatch
+  POP GS
+  POP FS
+  POP ES
+  POP DS
+  POPAD
+  ADD ESP,8
+  IRET
+
+//Normal-task entry after exception IRET, with original stack pointer restored.
+i386_debug_cpu_entry::
+  ADD ESP,-68
+  MOV EAX,ESP
+  PUSH 0
+  PUSH EAX
+  CALL KernelDebugCpu
   POP GS
   POP FS
   POP ES

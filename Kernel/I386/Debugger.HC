@@ -172,3 +172,27 @@ U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception)
     fun=ConsoleDebugFunction(task->except_callers[i]);
   ConsoleDebugSession(NULL,0,fun,exception,TRUE);
 }
+
+Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
+{//Called with IF clear: no allocation, console IO or scheduling.
+  CI386Task *task=I386TaskSelf;
+  U8 *src=frame,*dst;
+  I64 i;
+  if(!task || task->debug_cpu_active || console_debug_task ||
+      frame->vector!=3 || frame->cs!=8 || !(frame->eflags&0x200)) return FALSE;
+  dst=&task->debug_cpu_frame;
+  for(i=0;i<sizeof(CI386ExceptionFrame);i++) dst[i]=src[i];
+  task->debug_cpu_active=TRUE; return TRUE;
+}
+U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
+{//Normal task context; reconstruct a complete exception-return frame.
+  CI386Task *task=I386TaskSelf;
+  U8 *src=&task->debug_cpu_frame,*dst=frame;
+  I64 i;
+  if(!task->debug_cpu_active || !(GetRFlags&0x200)) KernelStop;
+  ConsoleDebugSession(NULL,0,
+    ConsoleDebugFunction(task->debug_cpu_frame.eip(U8 *)),'BreakPt',TRUE);
+  task->debug_cpu_frame.eflags&=~0x100;
+  for(i=0;i<sizeof(CI386ExceptionFrame);i++) dst[i]=src[i];
+  task->debug_cpu_active=FALSE;
+}

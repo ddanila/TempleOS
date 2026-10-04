@@ -37,6 +37,7 @@
 #include "/Kernel/I386/MemoryRuntime.HH"
 #include "/Kernel/I386/KernelSymbols.HH"
 import U0 i386_idle();
+import U0 i386_debug_cpu_entry();
 U8 *kernel_ready_message="READY native kernel foundation\n";
 CI386Scheduler kernel_scheduler;
 CI386Task kernel_root;
@@ -258,8 +259,19 @@ U0 KernelIrq(CI386IrqFrame *frame)
   }
   I386PicEoi(frame->irq);
 }
+public U0 KernelDebugCpu(CI386ExceptionFrame *frame)
+{
+  if(!kernel_console.cpu_debug) KernelStop;
+  kernel_console.cpu_debug(frame);
+}
 U0 KernelFault(CI386ExceptionFrame *frame)
 {
+  if(kernel_display_ready && kernel_console.cpu_capture &&
+      kernel_console.cpu_capture(frame)) {
+    frame->eip=(&i386_debug_cpu_entry)(U32);
+    frame->eflags&=~0x100;
+    return;
+  }
   KernelLog("FAULT "); KernelHex(frame->vector); KernelLog(" ");
   KernelHex(frame->eip); KernelLog("\n"); KernelStop;
 }

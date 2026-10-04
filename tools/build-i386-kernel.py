@@ -201,7 +201,7 @@ def console_runtime_layout(module):
             else: imports[symbol] = name
     if set(imports) != {'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'char_bmp_hex_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew'}:
         raise ValueError('Unexpected console import contract')
-    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq'):
+    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
@@ -221,7 +221,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 36:
+    if struct.unpack_from('<I', module, version_offset)[0] != 37:
         raise ValueError('Unexpected console version')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
@@ -3009,7 +3009,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=36,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=37,image_bytes=csize,retained_heap_bytes=cspan,
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:

@@ -4405,3 +4405,20 @@ Five-cycle continuation on the installed guest flat image is live in
 Full native providers, updated generations and release qualification must
 be repeated after promotion. Further debugger features will require
 addressing the near-full boot payload rather than waiving its size limit.
+
+### Initial CPU continuation promoted to main
+
+Main now includes the corrected task-owned CPU frame and normal-context
+debugger bridge/trampoline, with console ABI 37. Capture handles same-ring
+vector 3 with saved IF enabled; unsupported/nested faults retain the fatal
+path. Existing debugger cleanup supports the tested forced-child-exit path.
+G restores the captured registers/EIP/flags with TF cleared.
+
+Fresh main original rebuild and `build/cpu-trap-main` construction/audits
+PASS. All twelve modules plus Kernel32.BIN match the corrected prototype
+exactly (`build/cpu-trap-main-byte-comparison.json`). Installed guest flat
+five-cycle continuation PASSes in `build/cpu-trap-add-flat-repeat`.
+This promotion establishes initial breakpoint continuation only. Main's
+updated fully native provider/generation qualification and remaining CPU
+debugger functionality still need implementation/testing; 120-byte guest
+flat headroom is not sufficient justification to drop any planned feature.

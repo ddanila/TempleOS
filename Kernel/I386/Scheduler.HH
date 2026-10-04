@@ -2,6 +2,7 @@
 #define I386_SCHEDULER_INCLUDED
 #include "/Kernel/I386/Context.HH"
 #include "/Kernel/I386/Heap.HH"
+#include "/Kernel/I386/Exception.HH"
 extern class CI386Scheduler;
 extern class CI386TaskWait;
 #include "/Kernel/HashTypes.HH"
@@ -39,6 +40,8 @@ class CI386Task:CTask
   Bool (*heap_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);
   Bool (*heap_destroy)(CI386Task *task);
   CI386TaskWait *wait; //Borrowed until the waiting call resumes and returns.
+  CI386ExceptionFrame debug_cpu_frame;
+  U32 debug_cpu_active;
   U32 inherited_refs; //Subset of lifetime_refs: child heaps/symbols and entry code.
 };
 #define I386_WAIT_SLEEP 1

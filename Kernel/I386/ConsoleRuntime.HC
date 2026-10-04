@@ -87,6 +87,8 @@ U8 console_diagnostic_filename[256];
 #include "/Kernel/I386/Window.HC"
 #include "/Kernel/IsRawCore.HC"
 extern Bool NativeIsDebugMode();
+extern Bool ConsoleCpuCapture(CI386ExceptionFrame *frame);
+extern U0 ConsoleCpuDebug(CI386ExceptionFrame *frame);
 #include "/Kernel/I386/FormatterRuntime.HC"
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
@@ -427,6 +429,7 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
   services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
   services->cancel_read=&ConsoleCancelRead;
   services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
+  services->cpu_capture=&ConsoleCpuCapture; services->cpu_debug=&ConsoleCpuDebug;
   return 1;
 }
 Bool ConsoleDisplay()
