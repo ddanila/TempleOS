@@ -8695,3 +8695,10 @@ the cycle call to check private used bytes/allocation count. Original functional
 oracle remains separate from allocator-accounting assertions. This qualification
 is running in `build/public-file-resident-lifecycle-recovery`. It covers removal
 of individual entries, not whole mounted-service teardown or allocation failure.
+
+Compressed cold-cache runtime now passes in
+`build/public-file-resident-compressed-cold-green/result.json`: original oracle,
+first disk attr 0xE00 then cached attr 0x400, exact and alternate-name expansion
+of the 64-byte binary fixture, owned buffers, exact VGA and byte-for-byte
+unchanged candidate/source disks. This qualifies compressed cold reads for
+that fixture, not larger dictionary/cache limits or failed allocations.
