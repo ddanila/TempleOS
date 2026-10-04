@@ -2189,3 +2189,29 @@ unchanged mode image 3354b498. Evidence: `build/i386-forward-call-green/result.j
 checker SHA-256 `1f2e0b7b47ef8057a5fb33fd7a0d42e17ee1969eb03456cb69498b180e7889cb`.
 This verifies the distinct-name fixture without weakening forward-resolution
 or failed-compilation recovery checks; it does not qualify the full suite.
+
+### Both heap validators covered before startup optimization
+
+Added `tools/test-i386.py --heap --heap-source`: it uses the existing heap
+corpus with I386_HEAP_SOURCE_BUILD enabled, in a separate output directory.
+The default --heap still tests the 386 assembly validator. Results explicitly
+identify the selected validator. This cross-compiles the portable implementation;
+it does not replace native self-hosted generation qualification.
+
+Strengthened `tests/guest/i386-heap/Validation.HC`: for every invalid mutation
+in the existing 160-case header/control matrix, size lookup, allocation,
+zero-sized allocation and free must reject it without changing either the
+arena or heap control record. Corruption after a valid early allocation is
+included. The independent pre-optimization validator remains the oracle.
+Both variants pass runtime and instruction audit in
+`build/i386-heap-test/result.json` and `build/i386-heap-source-test/result.json`.
+Validation fixture SHA-256: `ff2a93a30288f3ce23d23306e45e90a337250ff09f0f5868c5e4bafe2f746c36`.
+No allocator optimization is claimed yet.
+
+The full workstation fixture now uses ForwardValue/ForwardCaller instead of
+redeclaring debugger G, preserving both forward-call and failed-compilation
+recovery assertions. The focused six-command test already passed. The full
+suite is running on mode image 3354b498 in `build/i386-debug-mode-workstation`;
+no full-suite pass is claimed. The older cleanup-snapshot native provider build
+continues with its already-loaded runner and immutable source/reference images;
+changing the inactive workstation command list does not change that execution.

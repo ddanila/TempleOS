@@ -25,6 +25,15 @@ Bool HeapValidReference(CI386Heap *hc)
   return used==hc->used && count==hc->allocations;
 }
 
+Bool HeapRejectsCorruption(CI386Heap *hc,U8 *arena,U8 *ptr)
+{//A valid early allocation must not hide corruption later in the chain.
+  U64 arena_hash=Hash(arena,256),control_hash=Hash(hc,sizeof(CI386Heap));
+  if(I386HeapSize(hc,ptr)!=-1 || I386HeapAlloc(hc,1) ||
+      I386HeapAlloc(hc,0,TRUE) || I386HeapFree(hc,ptr)) return FALSE;
+  return Hash(arena,256)==arena_hash &&
+    Hash(hc,sizeof(CI386Heap))==control_hash;
+}
+
 I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
 {
   U8 *p,*q,*r;
@@ -46,6 +55,7 @@ I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
     for(k=0;k<8;k++) {
       *word=values[k]; before=Hash(arena,256);
       if(I386HeapValid(hc)!=HeapValidReference(hc) || Hash(arena,256)!=before) return 303;
+      if(!HeapValidReference(hc) && !HeapRejectsCorruption(hc,arena,p)) return 308;
       checks++;
     }
     *word=old;
@@ -61,6 +71,7 @@ I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
     for(k=0;k<8;k++) {
       *word=values[k]; before=Hash(arena,256);
       if(I386HeapValid(hc)!=HeapValidReference(hc) || Hash(arena,256)!=before) return 304;
+      if(!HeapValidReference(hc) && !HeapRejectsCorruption(hc,arena,p)) return 308;
       checks++;
     }
     *word=old;
