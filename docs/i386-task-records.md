@@ -132,3 +132,11 @@ with original reference, native red and native green results. Queue cleanup
 and callback regressions also pass on the new 8 MiB no-FPU image. This establishes
 link lifetime; public message delivery and input-filter job execution remain
 open.
+
+Public task validity now ends at scheduler retirement: after cleanup and ring
+detachment, the signature is cleared before waking joiners and switching.
+Heap locks can defer physical reclamation while TaskValidate already returns
+false, matching the original OS. The signature-based TaskValidate helper remains
+shared with the original; its constructed-record behavior is preserved. Original
+reference, native red/green, scheduler, queue-cleanup and callback tests pass.
+The larger flat kernel still needs guest-build budget qualification.

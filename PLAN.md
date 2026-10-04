@@ -4866,3 +4866,36 @@ passes (build/i386-public-message-codes-native/result.json): all eighteen
 values are evaluated from the loaded public header on 486,-fpu at 8 MiB,
 with exact VGA checks and an unchanged input disk. This change
 only supplies the shared constants and does not publish message services.
+
+### Task validity at retirement
+
+TaskValidate already exists in the retained window provider and shares the
+original signature/range check; do not replace it with a different registry
+contract. A tests-first lifecycle check now exposes a scheduler gap: a task
+retired while its heap is locked still passes TaskValidate until reaping.
+The original OS invalidates its signature at retirement.
+
+The new tools/test-i386-public-task-validity.py passes three original contracts
+(build/i386-public-task-validity-original/result.json): current/root validity,
+live child validity, and dead child invalidity before releasing its heap lock.
+A preceding native image gives verified red, ValidateHold=0 where 1 is required
+(build/i386-public-task-validity-native-red/result.json), with frozen checker
+and unchanged input disk. Scheduler finish now clears the public task signature
+after cleanup and ring detachment, before waking joiners/switching. Callback
+recovery remains before actual retirement. Deferred heap/storage cleanup can
+continue through private ownership records without advertising a live task.
+
+The original two-generation rebuild, native build and 386 boot audit pass
+(build/i386-public-task-validity-kernel/result.json). The cross-built flat
+kernel is 483016 bytes, 80 bytes larger than the preceding source epoch.
+Native scheduler and retained task-core regressions pass
+(build/i386-task-validity-scheduler.log and
+build/i386-task-validity-retained.log). Public validity green and callback/queue
+regressions also pass (build/i386-public-task-validity-native/result.json,
+build/i386-public-task-validity-callbacks/result.json and
+build/i386-public-task-validity-queues/result.json). All three runtime checks
+use the same immutable 486,-fpu image at 8 MiB, with exact VGA and unchanged
+input disk. Guest-built flat-image budget qualification is still required;
+these checks do not establish current-source self-hosted release readiness. This fixes a recipient-lifetime prerequisite, not public
+message posting; arbitrary unmapped-pointer safety is outside TaskValidate's
+original contract.

@@ -1223,3 +1223,18 @@ self-links. The original reference passes, and the preceding native image has
 a verified red result. The new implementation passes green qualification and the queued-job cleanup
 and callback regressions on the same 8 MiB no-FPU image. This does not run the
 input-filter job loop.
+
+Verify public task validity before deferred storage reclamation:
+
+```sh
+python3 tools/test-i386-public-task-validity.py --original --out build/task-validity-original
+python3 tools/test-i386-public-task-validity.py build/i386-kernel/kernel.img --out build/task-validity-native
+```
+
+The current/root task and live child must validate. The child then retires with
+its heap locked; it must stop validating before the lock is released and storage
+is reaped. Original reference and preceding-image native red are verified;
+green qualification of the scheduler fix passes at 8 MiB without an FPU.
+Native and retained scheduler regressions, queued-job cleanup and callback
+recovery checks also pass. This does not establish
+safety for arbitrary unmapped pointers.

@@ -301,6 +301,8 @@ public Bool I386SchedFinish(CI386Scheduler *s)
   old->last_task->next_task=old->next_task;
   old->next_task->last_task=old->last_task;
   old->next_task=0; old->last_task=0;
+  //Public validity ends at retirement, before deferred storage reclamation.
+  old->task_signature=0;
   for (waiter=old->join_head;waiter;waiter=waiter->join_next)
     I386SchedWake(s,waiter);
   next=I386SchedNext(next);
