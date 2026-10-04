@@ -100,12 +100,11 @@ that its history is contained in `main`.
   and i386 build/audit in an isolated checkout. Same-call creation/retirement
   drops from about 130 seconds to 0.35 seconds; User and creation-shortcut gates
   pass. Startup ranges from 59.83 to 63.55 seconds in these runs, so the
-  60-second target is not reliably met. Focus isolation and recovery are running;
+  60-second target is not reliably met.
   nine-cycle exact public/bootstrap recovery and Tab isolation pass. The change
-  is now applied to main and its original rebuild passes; the main i386 build
-  is running. Native-provider qualification remains open. Finish startup qualification
-  and validate startup memory, inheritance and task-local isolation before
-  promoting the prototype. Updated all-native/two-generation release
+  is now applied to main; its original rebuild and i386 build/audit pass.
+  All six retained providers are rebuilding in the guest, and main-image strict
+  recovery is running. Native runtime and startup qualification remain open. Updated all-native/two-generation release
   qualification remains required.
 
 Earlier source-epoch checkpoints below are historical; they do not supersede

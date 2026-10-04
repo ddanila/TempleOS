@@ -3621,3 +3621,22 @@ The previous native-provider integration image completes the full workstation
 regression in `build/i386-creation-hotkeys-native-workstation/result.json`:
 513 commands/576 lines, 53.657661-second startup and 0.257098-second long-document
 update on 8 MiB `486,-fpu` TCG. This source epoch predates shared root declarations.
+
+### Main build and six-provider qualification
+
+`build/i386-root-declarations-main/result.json` completes the main i386 build
+and instruction audit, with 483384 boot bytes and disk SHA-256
+`277fc38d3469be170fff6616246b2434bac2c8190b9c814eec293e120dd69a1d`.
+All six retained providers are now rebuilding under 16 MiB KVM in
+`build/i386-root-declarations-native-build`, using this build's export contracts.
+Main-image strict recovery is running in `build/i386-root-declarations-main-recovery`.
+No native rebuild/installation/runtime result is claimed yet.
+
+Comparison with the tested prototype finds all eleven retained/helper modules
+byte-identical. Kernel.t32m and the linked flat image differ; all 135 module
+differences are after the terminating NUL inside the 12-byte keyword-name
+arrays. All 73 runtime names, types and values match. KeywordsInit copies only
+through NUL, but these unspecified string-tail bytes are still a cross-build
+reproducibility concern. Keep the actual main-image runtime check and record
+this for deterministic source initialization; do not claim byte-identical boot
+artifacts or silently normalize bytes in evidence.
