@@ -8038,3 +8038,38 @@ The encoder/FileWrite implementation remains isolated pending the wider
 archive and API requirements above. Next use original compression/expansion
 as interoperability oracles and test dictionary growth/recycling, 8-bit data,
 fallback, empty/replacement and heap/error cleanup before promotion.
+
+## Original archive parity test finds directory-relocation return bug
+
+New `tools/test-i386-public-file-write-archive-parity.py` generates deterministic
+fixtures, boots the original implementation to CompressBuf/ExpandBuf round-trip
+and export each archive, then compares native FileWrite output byte for byte
+through the independent RedSea walker. Eight cases cover empty/one-byte input,
+repetition, seven/eight-bit dictionary growth/recycling and incompressible
+fallback. Dictionary fixtures must emit enough bits to require more than 4096
+codes even at maximum 12-bit width; fallback fixtures must use CT_NONE.
+The native run also checks exact VGA, requested dates/attributes, complete
+extent/bitmap consistency and unchanged source disk.
+
+The first test helper exceeded the shell's 255-character input limit; it was
+split into ordinary short definitions before retrying. The ordinary-write
+baseline fails the empty .Z write contract in
+`build/public-file-write-archive-parity-red`; no compression parity is claimed
+for that image. The candidate reaches the dictionary7 write in
+`build/public-file-write-archive-parity-split`, but reports zero despite
+persisting the correct file. Independent inspection proves all five archives
+written up to that point match original bytes exactly (empty, single7, single8,
+repeat7 and dictionary7), and the volume passes extent/bitmap verification.
+The complete eight-case test remains failed, including unexecuted dictionary8
+and fallback cases.
+
+Creating dictionary7 grows/relocates its parent directory. The new public
+wrapper's post-create cluster lookup still uses the former parent block, so
+it reports failure for a successful mutation. The isolated candidate now
+resolves the complete file path from the current root after publication,
+instead of looking through the potentially stale parent. A fresh original
+bootstrap and cross build are running in
+`build/file-write-prototype/build/file-write-compression-resolve`; rerun the
+whole original-parity contract and lifecycle/metadata tests before promotion.
+This is a real return-value/API bug discovered by larger fixtures, not evidence
+that all dictionary or error-path requirements are complete.
