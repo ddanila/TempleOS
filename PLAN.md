@@ -8612,3 +8612,23 @@ The native run boots the preserved resident disk fixture with an empty cache;
 its result is pending. Successful read-only qualification must also preserve
 the entire candidate disk. This supplies the next contract before implementing
 disk-populated caching.
+
+Main's fully native generation-two workstation now passes all 513 commands,
+exact VGA and twenty task heap-recovery cycles in
+`build/file-write-main-gen2-native-workstation/result.json`. Startup is 35.190
+seconds on 8 MiB `486,-fpu`; formal startup budget passes. Long-document update
+is 0.258 seconds. Source disk remains unchanged. Combined with the exact two
+native generations and native archive parity this qualifies those FileWrite
+runtime/build paths, not the remaining API/release requirements.
+
+The cold resident test failed at its first disk read, before its cached-read
+expectation: FileRead.HC's ReadAll guard separately rejects resident bit 0x200.
+That guard is now corrected in the isolated candidate. Cold population work
+retains stored bytes before optional decompression, inserts resident entries in
+the shared cache and preserves first-read disk attributes. Cache storage now
+uses an explicitly retained mounted-service heap selected at file-service init,
+instead of inheriting a potentially transient reader heap. The shared layout
+and stored-byte loader contract advance the isolated file-service ABI to 42.
+The initial rebuild was deliberately interrupted to include the newly found
+ReadAll correction; the complete fresh bootstrap/cross build is now running in
+`build/file-resident-cold`. Runtime parity and lifecycle cleanup remain open.
