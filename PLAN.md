@@ -8632,3 +8632,18 @@ and stored-byte loader contract advance the isolated file-service ABI to 42.
 The initial rebuild was deliberately interrupted to include the newly found
 ReadAll correction; the complete fresh bootstrap/cross build is now running in
 `build/file-resident-cold`. Runtime parity and lifecycle cleanup remain open.
+
+Corrected FileRead/FileFind ABI-40 now passes fully native twelve-module
+construction, installation and independent 8 MiB boot in
+`build/public-file-find-rejection-selfhost/result.json`. Installed executable
+audit passes in `build/public-file-find-rejection-selfhost-audit`. Flat kernel
+is 487312 bytes (112 bytes spare), SHA-256
+`ba745336478c5ab39f80ed14f51224bcd6f1fb10c0806a5a540a114298422b59`.
+Installed disk SHA-256 is
+`0fcefcd645ddb173570245e58e0ab8f92a367649ae506fa5180ac68de0f20ecf`.
+Native-image public FileFind edge/ownership/twenty mixed heap-cycle contract,
+FileRead parent-search contract and full workstation requalification are running
+in `build/public-file-find-native-contract`, `build/public-file-read-native-contract`
+and `build/public-file-find-native-workstation`. These results are pending;
+FileRead/FileFind remain isolated before promotion. Second-generation native
+reproducibility for this source epoch and release gates are still required.
