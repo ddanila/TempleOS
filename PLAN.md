@@ -15,7 +15,8 @@ semantics, original archive parity/replacement and the full 513-command
 workstation suite pass on its prototype. Main's fresh original rebuild/cross
 audits pass and all thirteen emitted artifacts match that qualified prototype.
 Native retained rebuilding passes all six providers, and main-image archive
-requalification passes. Native installation/boot checks are running.
+requalification passes. Native installation/boot and fully native twelve-module flat construction/
+installed audits pass; second-generation retained comparison is running.
 Public FileRead remains isolated; its parent-search contract also passes.
 Resident caching, FileFind, broader errors and release requirements remain open.
 
@@ -8285,3 +8286,50 @@ Exact retained installation and independent boot are running in
 `build/file-write-main-native-install`; flat reconstruction and two-generation
 comparison remain open for this promoted epoch. The separate earlier FileRead
 workstation run remains live; no result is claimed prematurely.
+
+## FileFind cleanup proof and source-view oracle correction
+
+Main FileWrite retained installation passes in
+`build/file-write-main-native-install/result.json`, followed by full native
+construction/installation/independent boot in
+`build/file-write-main-selfhost/result.json`. All twelve modules are guest-built.
+Flat payload is 487304 bytes (120 spare); SHA-256:
+`43594ce3239c33f3d475282b1cd90557622ab49bb4bc3d7e61df78f35657cd82`.
+Installed target SHA-256:
+`c45551301c49a71a348d7014555f613f4473910c7cb662d05b1c0bc5dff2abf7`.
+`build/file-write-main-selfhost-audit` passes installed executable/386/boot/
+filesystem audits. Second-generation retained rebuilding/comparison is running
+in `build/file-write-main-gen2-native-build`; reproducibility is not yet claimed
+for this epoch.
+
+FileRead regression on the combined isolated FileFind epoch passes all 27
+commands, including parent lookup and exact read/free recovery, in
+`build/public-file-find-read-regression/result.json`. The separate FileRead
+and FileFind full workstation runs both terminate at help-man-page-link: the
+viewer correctly shows the appended FileRead declaration but the test's exact
+source-screen fixture still expects the former PublicFiles.HH contents. These
+are failed full runs, not full workstation qualification.
+
+`tools/test-i386-source-aware-workstation.py` now runs the complete original
+suite through an in-memory harness adapter with an independent disk-based
+source-view oracle. It locates the unique Dir declaration in the packaged
+header, wraps its following source lines to 80 columns, and retains exact VGA
+comparison and every other suite check. It does not derive expected content
+from the guest screen or guest-provided source-link metadata. The replacement
+full run is live in `build/public-file-find-source-aware-workstation`. The old
+FileFind process was already terminal when cancellation was attempted; no live
+job was restarted merely because observation expired. Existing harness files
+were not modified while jobs were live.
+
+The initial private-heap cleanup probe stopped at an unsupported internal
+TaskFiles.HH include before executing recovery cycles. The new read-only QMP
+observer locates kernel_heap from the bounded boot-module data export, validates
+its signature/arena bounds and observes used bytes plus allocation count before
+and after the cycle command. It records module/harness hashes.
+`build/public-file-find-qmp-heap-recovery/result.json` passes thirty commands
+and twenty mixed lookup/name-release/missing/filter/parent/FUF-exception cycles:
+public task heap usage recovers exactly, and private heap returns to 5346256
+used bytes and 7068 allocations. Both physical snapshots match. Exact VGA,
+original functional oracle and filesystem checks pass; source disk is unchanged.
+These port-only allocation invariants are separate from the original functional
+oracle. FileFind/FileRead remain isolated pending full and native qualification.

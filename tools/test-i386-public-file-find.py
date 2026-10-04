@@ -41,7 +41,10 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--public-entry',action='store_true',help='Require the public CDirEntry type instead of a modeled record')
     parser.add_argument('--public-flags',action='store_true',help='Require original named FUF constants')
+    parser.add_argument('--heap-cycles',type=int,default=0,help='Port-only repeated public/private allocation recovery (1..50)')
     args=parser.parse_args()
+    if args.heap_cycles<0 or args.heap_cycles>50 or args.heap_cycles and not args.public_entry:
+        parser.error('--heap-cycles requires --public-entry and a count from 1 to 50')
     definitions=list(DEFINITIONS)
     if args.public_entry:
         definitions=[s.replace('CFindEntry','CDirEntry') for s in definitions[1:]]
@@ -69,13 +72,21 @@ def main():
         subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(out/'oracle.iso')],cwd=ROOT,check=True)
         subprocess.run(['python3','tools/guest-run.py',str(out/'oracle.iso'),'--out',str(out/'oracle'),'--timeout','180','--qmp-stdio'],cwd=ROOT,check=True)
         report['original_oracle']='pass'
-        commands=[(source+';',['1']) for source in SETUP]+[(source,[]) for source in definitions]+[(source+';',['1']) for source in checks]+[('6*7;',['42'])]
+        commands=[(source+';',['1']) for source in SETUP]+[(source,[]) for source in definitions]+[(source+';',['1']) for source in checks]
+        if args.heap_cycles:
+            commands += [('Bool FindRound(){return FindName("C:/Probe/FindRaw.BIN")&&FindMissing()&&FindBadFlags()&&FileFind("C:/Probe/FindChild/FindPacked.BIN",0,0x140000)&&!FileFind("C:/Probe/FindChild",0,0x800);}',[]),
+                         ('Bool FindRecovery(I64 cycles){I64 i,used=Fs->data_heap->used_u8s;for(i=0;i<cycles;i++)if(!FindRound())return FALSE;return used==Fs->data_heap->used_u8s;}',[]),
+                         ('FindRound;',['1']),(f'FindRecovery({args.heap_cycles});',['1'])]
+        commands.append(('6*7;',['42']))
         runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
+        if args.heap_cycles:
+            observer=runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input']
+            runner=observer(candidate,report)
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
             startup_check={'status':'ok','answers':[],'commands':commands})
         verify=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume']
         report['filesystem']=verify(candidate)
-        report.update(result='pass',public_directory_entry=args.public_entry,public_flags=args.public_flags)
+        report.update(result='pass',public_directory_entry=args.public_entry,public_flags=args.public_flags,heap_recovery_cycles=args.heap_cycles)
     except Exception as error:
         report['error']=str(error);raise
     finally:
