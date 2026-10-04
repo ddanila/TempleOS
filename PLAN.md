@@ -5698,3 +5698,29 @@ implementation gap pending that current-image observation. A debugger must
 provide visible exception/context and source/function inspection plus a tested
 return/unwind; publishing the name alone cannot close M7. The earlier native
 six-provider build remains live for its distinct memory-16 source snapshot.
+
+### Explicit debugger session contract (implementation pending)
+
+The current-image required-services probe records a valid failure in
+`build/i386-current-debug-publication-red/result.json`: memory/file controls
+and Spawn/Exit/Yield/Sleep are present; only Dbg is absent. Its console run
+passes exact VGA checks on the unchanged memory-17 image. This is publication
+evidence, not usable debugging.
+
+Added `tools/test-i386-debug-session.py`, a separate black-box contract for
+explicit Dbg entry from a named HolyC function. It requires visible message,
+numeric value and function name, evaluates an expression within the debugger,
+uses original-style `G;` to continue, checks the caller's subsequent state and
+runs arithmetic back at the shell. The checker is running against the existing
+image in `build/i386-debug-session-red`; its runtime result is pending. The
+fixed rows are an independent expected UI, not copied from guest output.
+
+Implementation should preserve the public Dbg signature and HolyC command
+model, retain caller context while inspecting, and restore focus/input state
+on continuation. This first contract does not close debugging: subsequent
+work must preserve and inspect runtime exception context before unwinding,
+resolve source/function locations, cover register/context inspection and the
+applicable breakpoint/stepping requirements, and verify nested failure and
+resource recovery. Multiple interactive terminals and the complete current
+native-generation/release gates remain open. The latest full workstation and
+older six-provider native build are still running on separate captured images.
