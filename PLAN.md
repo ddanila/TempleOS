@@ -8434,9 +8434,11 @@ population, compressed resident entries, alias coherence or cache teardown.
 
 The corrected resident test has now reached a qualified port failure in
 `build/public-file-resident-cached-attr-red/result.json`: original functional
-oracle passes, but the native resident FileWrite expression returns 0 instead
-of the required positive cluster. The source image is unchanged. This isolates
-the known rejection of attr 0x200 before any cache-read qualification; the later
+oracle passes, but the native run times out waiting for the positive result at
+the resident FileWrite expression (checkpoint startup-command-21). TaskFileWrite
+source rejects attr 0x200 with return 0; the harness did not persist a screenshot
+of that failing answer, so the recorded runtime verdict is a checkpoint timeout.
+The source image is unchanged. The later
 resident ownership/replacement cases have not executed on the port.
 
 Resident implementation must use a shared, explicitly owned cache with the
