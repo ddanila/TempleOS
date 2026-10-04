@@ -8845,3 +8845,23 @@ Retained installation/independent boot checks are running in
 `build/public-file-resident-native-install`. Native construction and public
 hash-model compatibility remain open; private-cache contract success is not
 complete resident support.
+
+Corrected Cd special paths and public task fields pass thirty-two commands in
+`build/public-cd-special-green/result.json`, startup 25.701 seconds on 8 MiB
+no-FPU QEMU. Original oracle, exact VGA and independent persisted writes/paths
+audit pass. This includes configured default/NULL/home handling, whitespace and
+control trimming plus the earlier partial-failure/mkdir contracts. Drive/error
+boundaries, recovery cycles and broad/native construction remain open.
+
+Resident native retained installation and independent boot pass in
+`build/public-file-resident-native-install/result.json`, installed disk SHA-256
+`3420d94acdcbe04b6806dc9163bc4153e72647cf8890e6729e29197886d50b9d`.
+Full native construction/install is running in `build/public-file-resident-selfhost`.
+
+Public resident hash qualification is strengthened: MHeapCtrl must recognize
+the CHashGeneric entry, its name and stored-byte buffer. Merely publishing
+private heap pointers would violate original allocation/removal ownership.
+The strengthened oracle/native test is running in
+`build/public-file-resident-hash-ownership-red`. Public cache lookup and removal
+must share one authoritative ownership model; the current private cache is
+still unpromoted despite its narrower passing read contracts.
