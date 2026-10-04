@@ -7580,3 +7580,59 @@ again; the 120-second fixture allowance is not a creation-latency acceptance
 criterion. Shared standard declarations and faster creation remain usability work.
 General service-queue/input-filter TaskWait semantics need broader coverage.
 The complete self-hosting, reproducible-release objective stays open.
+
+
+### Guest-built User providers verified and shortcut oracle established (2026-10-04)
+
+The console build previously marked pending now PASSES in
+`build/i386-user-public-symbol-cleanup-console-selfbuild/result.json`:
+1093897 bytes, 3434 records, 345 function exports. Its required-export check
+includes NativeUser, NativeXTalk and NativeTaskWait, in addition to the existing
+formatter, document/editor and build interfaces. Console module SHA-256:
+`7d60b7825eb009dfe44bbf4e75fd4d96d09126f8417200694b26f28536c91efb`.
+It was built inside the port on the image with guest-built MemoryRuntime.
+
+Installation and independent boot PASS in
+`build/i386-user-native-providers-install/result.json`. The installation preserves
+the existing native MemoryRuntime; other providers and the boot kernel remain
+cross-built. Both native providers pass the complete 386 instruction audit in
+`build/i386-user-native-providers-audit/result.json`. Candidate disk SHA-256:
+`08477a7cb9e856f3b6920d3a89068afacafad212aff1500fcab7386a08b55b2e`.
+
+All 16 User oracle cases now PASS on this installed native-provider image in
+`build/i386-user-native-providers-16/result.json`: 28 commands, 8 MiB 486,-fpu
+TCG, startup 51.58985512610525 seconds, source disk unchanged, exact VGA
+checkpoints. This proves child creation, empty/formatted/partial/percent-escaped/
+long input, execution and cleanup for code emitted by the port's compiler.
+All 41 formatter cases PASS in
+`build/i386-user-native-providers-format-41/result.json`: 47 commands, startup
+51.982766072265804 seconds, same machine and disk-preservation contract.
+Hardware Ctrl-Alt-N focus cycling also PASSES in
+`build/i386-user-native-providers-focus-hotkeys/result.json`: 11 commands,
+startup 51.88247529184446 seconds, independent histories/definitions, exit
+refocus and exact parent public-heap recovery. That test does not create terminals.
+
+`tools/test-i386-original-user-hotkeys.py` establishes the next TDD reference.
+It resolves the original private KbdBuildSC routine from the CPU-root symbol
+table and submits real make/break bytes to its non-IRQ decoder. Six cases PASS
+in `build/i386-user-creation-hotkeys-original-position/result.json`: Ctrl-Alt-T
+and Ctrl-Alt-Esc each create and reclaim one CPU-root User child; plain T/Esc
+and their Ctrl-Alt-Shift variants do not create one. The fixture identifies the
+new node before the previous last child, matching original TaskQueInsChild;
+it does not assume a head or tail insertion. Decoder scope is explicit: this is
+not QEMU hardware delivery, focus or typematic qualification, and does not prove
+the port's creation hotkeys. Checker SHA-256:
+`c14ffb5770c544b91a1396de6939cd7efcb117cb354d821ed8a519024b484335`.
+Earlier fixture attempts and their failures remain in build directories as
+historical evidence; only the position-corrected result proves these six cases.
+
+The full workstation gate is running on the native-provider candidate in
+`build/i386-user-native-providers-workstation`; its verdict is pending.
+Keep Kernel/Compiler sources frozen until it finishes. Next use the shortcut
+reference to add QEMU creation/focus/cleanup checks and implement Ctrl-Alt-T,
+Ctrl-Alt-Esc and the original Ctrl-Alt-Tab focus alias. Then qualify repeated
+User resource recovery and address fresh-child declaration-loading latency.
+Broader TaskWait/input-filter and cancellation behavior, debugger/workstation
+completion, an updated all-native image and reproducible release packaging
+remain part of the full objective. These mixed-provider successes do not close
+those gates or establish release readiness.

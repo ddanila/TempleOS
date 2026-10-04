@@ -3251,3 +3251,47 @@ still running in `build/i386-user-public-symbol-cleanup-console-selfbuild`;
 installation and User tests on both native providers remain outstanding.
 Creation hotkeys, exhaustive recovery and updated full-workstation/all-native
 release gates are not established by these narrower checks.
+
+
+### Runtime verification with guest-built User providers (2026-10-04)
+
+Native ConsoleRuntime and MemoryRuntime now build, install and pass 386 auditing.
+The candidate is `build/i386-user-native-providers-install/candidate.img`;
+its SHA-256 is
+`08477a7cb9e856f3b6920d3a89068afacafad212aff1500fcab7386a08b55b2e`.
+The boot kernel and remaining providers are cross-built. Reproduce the three
+passed runtime gates with fresh output directories:
+
+```sh
+python3 tools/test-i386-user-create.py \
+  build/i386-user-native-providers-install/candidate.img --out build/user-native-check
+python3 tools/test-i386-format-strings.py \
+  build/i386-user-native-providers-install/candidate.img --out build/format-native-check
+python3 tools/test-i386-terminal-hotkeys.py \
+  build/i386-user-native-providers-install/candidate.img --out build/focus-native-check
+```
+
+Their current results are respectively
+`build/i386-user-native-providers-16/result.json`,
+`build/i386-user-native-providers-format-41/result.json` and
+`build/i386-user-native-providers-focus-hotkeys/result.json`. All pass on
+8 MiB 486,-fpu TCG with exact VGA checkpoints and source disk preservation:
+16 User cases/28 commands, 41 formatter cases/47 commands, and 11 commands
+covering hardware Ctrl-Alt-N focus, history/definition isolation, exit refocus
+and parent public-heap recovery.
+
+The next shortcut reference is automated:
+
+```sh
+python3 tools/test-i386-original-user-hotkeys.py --out build/original-user-hotkey-check
+```
+
+Six original decoder cases pass in
+`build/i386-user-creation-hotkeys-original-position/result.json`. The fixture
+resolves private KbdBuildSC metadata and calls the original routine with
+make/break bytes, checks CPU-root child counts, and kills each created child.
+It proves Ctrl-Alt-T/Esc creation plus plain/shift rejection in the original
+non-IRQ decoder, not QEMU hardware delivery or native-port shortcut behavior.
+Full native-provider workstation testing is running in
+`build/i386-user-native-providers-workstation`; that verdict and an updated
+all-native release qualification remain outstanding.
