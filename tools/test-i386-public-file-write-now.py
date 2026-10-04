@@ -45,6 +45,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--offset-days',type=int,default=0,choices=(-1,0,1))
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -62,6 +63,9 @@ def main():
         ('U0 WriteReport(I64 v){U8 *s="FILEWRITE BLOCK ",*digits="0123456789ABCDEF";I64 i;while(*s)OutU8(0xE9,*s++);for(i=60;i>=0;i-=4)OutU8(0xE9,digits[(v>>i)&15]);OutU8(0xE9,10);}', []),
         (f'I64 WriteBlock=FileWrite("C:{WANTED}",WriteBytes,4,0,0x800);WriteBlock>0;', ['1']),
         ('WriteReport(WriteBlock);', []), ('6*7;', ['42'])]
+    if args.offset_days:
+        commands.insert(0,(f'U0 SetWriteOffset(){{local_time_offset={args.offset_days*(1<<32)};}}SetWriteOffset;',[]))
+    report['offset_days']=args.offset_days
     try:
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(candidate,out/'behavior',snapshot=False,
@@ -79,7 +83,8 @@ def main():
         def cdate(value):
             seconds=value.hour*3600+value.minute*60+value.second
             return ((value.date().toordinal()+364)<<32)+(seconds*(1<<32)//86400)
-        if not cdate(before)<=entry['date']<=cdate(after):
+        offset=args.offset_days*(1<<32)
+        if not cdate(before)-offset<=entry['date']<=cdate(after)-offset:
             raise ValueError('Default FileWrite date is outside UTC execution interval')
         report.update(result='pass',entry=entry,utc_interval=[before.isoformat(),after.isoformat()])
     except Exception as error:

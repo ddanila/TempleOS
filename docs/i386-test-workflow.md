@@ -4589,3 +4589,19 @@ Its fresh original rebuild is running before cross/runtime qualification.
 No default-date green is claimed; clock modes/offset/boundary/error cases
 need broader tests. Main OS sources remain unchanged while native workstation
 and second-generation provider checks run.
+
+RTC-backed FileWrite prototype original rebuild and cross audits PASS in
+`build/file-write-prototype/build/file-write-now`. The default-date contract
+now PASSes in `build/public-file-write-now-green`, including independent UTC
+interval, raw binary/cluster/attribute metadata and complete filesystem audit.
+The nine-command ordinary lifecycle regression PASSes on that image in
+`build/public-file-write-now-lifecycle`.
+
+The clock checker also accepts `--offset-days -1|0|1`. Both +1 and -1 cases
+PASS in `build/public-file-write-offset-plus` and `-minus`, proving persisted
+date follows RTC-derived UTC minus local_time_offset. These runs use the
+explicit 120-second clock tolerance. They do not exercise all RTC encodings,
+update-boundary/failure conditions or centuries; those remain required
+coverage, alongside compression/resident semantics and full native/size
+qualification before any FileWrite promotion. Main native workstation and
+second-generation provider checks remain live on their unchanged OS epoch.
