@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT/'tools/test-i386-user-create.py'
@@ -18,29 +20,48 @@ DEFINITIONS = runpy.run_path(str(BASE))['DEFINITIONS'] + [
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('disk', type=Path)
+    parser.add_argument('disk', type=Path, nargs='?')
+    parser.add_argument('--original', action='store_true')
+    parser.add_argument('--async-stop', action='store_true')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
+    if args.original == (args.disk is not None):
+        parser.error('Specify either --original or an i386 disk')
     args.out.mkdir(parents=True, exist_ok=True)
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    checker, base, disk = sha(Path(__file__)), sha(BASE), sha(args.disk)
+    checker, base, disk = sha(Path(__file__)), sha(BASE), sha(args.disk) if args.disk else None
     report = {'result': 'fail', 'checker_sha256': checker, 'base_sha256': base,
-              'disk_sha256': disk, 'scope': 'One empty User create/kill cycle inside one HolyC call, with phase markers; not resource recovery'}
+              'disk_sha256': disk, 'async_stop': args.async_stop, 'scope': 'One empty User create/kill cycle inside one HolyC call, with phase markers; not resource recovery'}
     try:
-        commands = [(s, []) for s in DEFINITIONS] + [('UserOneCycle;', ['1']), ('6*7;', ['42'])]
+        definitions = list(DEFINITIONS)
+        if args.async_stop:
+            definitions[-2] = 'Bool UserCycleStop(){UserCycleLog("USER CYCLE stop\\n");Bool ok=Kill(UserProbeTask,FALSE);I64 end=cnts.jiffies+200;while(UserProbeHas&&cnts.jiffies<end)Yield;WinFocus(Fs);if(!UserProbeHas)UserCycleLog("USER CYCLE retired\\n");return ok&&!UserProbeHas;}'
+        commands = [(s, []) for s in definitions] + [('UserOneCycle;', ['1']), ('6*7;', ['42'])]
         if any(len(s) > 255 for s, _ in commands):
             raise ValueError('Cycle fixture exceeds interactive line limit')
-        runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
-        report['behavior'] = runner(args.disk, args.out/'behavior', cpu='486,-fpu',
-            qmp_stdio=True, startup_check={'status':'ok', 'answers':[], 'commands':commands, 'command_timeout':120})
+        if args.original:
+            overlay = args.out/'overlay'
+            overlay.mkdir(exist_ok=True)
+            source = '\n'.join(definitions)+'\nBool ok=UserOneCycle;\n'
+            source += 'if(ok)UserCycleLog("PASS original User cycle\\n");else UserCycleLog("FAIL original User cycle\\n");UserCycleLog("DONE original User cycle\\n");\n'
+            (overlay/'Once.HC').write_text(source)
+            iso = args.out/'original.iso'
+            subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay', 'build/rebuild-test/overlay', '--overlay', str(overlay), '--output', str(iso)], cwd=ROOT, check=True)
+            subprocess.run([sys.executable, 'tools/guest-run.py', str(iso), '--out', str(args.out/'original'), '--timeout', '90'], cwd=ROOT, check=True)
+            if 'PASS original User cycle\n' not in (args.out/'original/debug.log').read_text():
+                raise ValueError('Missing original cycle verdict')
+        else:
+            runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
+            report['behavior'] = runner(args.disk, args.out/'behavior', cpu='486,-fpu',
+                qmp_stdio=True, startup_check={'status':'ok', 'answers':[], 'commands':commands, 'command_timeout':120})
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)
         raise
     finally:
-        log = args.out/'behavior/debug.log'
+        log = args.out/('original/debug.log' if args.original else 'behavior/debug.log')
         report['phases'] = [s for s in log.read_text().splitlines() if s.startswith('USER CYCLE ')] if log.exists() else []
-        report['source_disk_unchanged'] = sha(args.disk) == disk
+        report['source_disk_unchanged'] = args.disk is None or sha(args.disk) == disk
         if not report['source_disk_unchanged'] or sha(Path(__file__)) != checker or sha(BASE) != base:
             report.update(result='fail', error='Disk or checker changed during execution')
         (args.out/'result.json').write_text(json.dumps(report, indent=2)+'\n')

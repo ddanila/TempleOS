@@ -3460,3 +3460,26 @@ owner and destination scope to match: redirecting a child hash pointer is not
 a valid shortcut. Check root initialization order, peak memory, inheritance
 guards and definition isolation before implementing this. Both startup and
 child readiness must be measured; moving cost into boot alone is insufficient.
+
+### Same-call User/Kill compatibility failure
+
+The isolated synchronous native run is terminal:
+`build/i386-user-cycle-native/result.json` fails by console timeout with
+`start`, `created`, `stop` markers and no `retired` marker. Its checker is
+`5d8052d9aacffc4f89ccffb38d7a252cf64966f75a6ef352b3c4cc9b0a52b967`.
+Thus the wait occurs after User creation and during the stop path, before any
+recovery comparison. This must not be described as a pool-counter failure.
+
+The cycle tool now supports `--original` and `--async-stop`. The default
+synchronous HolyC definitions are unchanged. Original TempleOS passes the
+default same-call cycle in `build/i386-user-cycle-original/result.json`, with
+all four phase markers; updated checker SHA-256 is
+`d8e06a94e8256377a1865b3294379db369525900317e717916051063d76ebdfd`.
+The native `--async-stop` diagnostic is running in
+`build/i386-user-cycle-native-async`. It requests Kill without waiting, then
+yields for a bounded interval and checks child-list retirement. This diagnoses
+the failure; it is not a replacement for synchronous Kill compatibility.
+
+Separate-command bootstrap observations have recovered both public-pool
+counters and bootstrap used bytes/allocation count exactly through three
+cycles. That run is still live and does not excuse the same-call wait bug.
