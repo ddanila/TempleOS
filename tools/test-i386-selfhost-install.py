@@ -15,6 +15,27 @@ RETAINED = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
 BOOT_AREA = 2048 * 512
 
 
+def verify_retained_provenance(build, installation, disk_hash, retained):
+    if build.get('result') != 'pass' or installation.get('result') != 'pass':
+        raise ValueError('Retained build and installation must both pass')
+    if installation.get('disk_sha256') != disk_hash:
+        raise ValueError('Retained installation disk differs from supplied disk')
+    if installation.get('source_disk_sha256') != build.get('source_disk_sha256'):
+        raise ValueError('Retained installation does not match the build disk')
+    if not build.get('source_disk_sha256'):
+        raise ValueError('Retained build has no disk provenance')
+    if set(installation.get('installed', [])) != set(RETAINED):
+        raise ValueError('Full self-hosting requires all six retained providers')
+    for name in RETAINED:
+        payload = retained[f'/Modules/I386/{name}.t32m']
+        digest = hashlib.sha256(payload).hexdigest()
+        record = build.get('modules', {}).get(name, {})
+        if record.get('sha256') != digest or record.get('bytes') != len(payload):
+            raise ValueError(f'Retained build payload differs: {name}')
+        if installation.get('module_sha256', {}).get(name) != digest:
+            raise ValueError(f'Retained installation payload differs: {name}')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path,
@@ -27,6 +48,10 @@ def main():
                         help='Development-only flat build with verified cross-built retained inputs; not full self-hosting evidence')
     parser.add_argument('--cross-build', type=Path,
                         help='Isolated cross-build directory for --cross-retained provenance')
+    parser.add_argument('--retained-build-result', type=Path,
+                        help='Required guest retained-build result for full self-hosting')
+    parser.add_argument('--retained-install-result', type=Path,
+                        help='Retained installation result; defaults to result.json beside --disk')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
     parser.add_argument('--command-timeout', type=int, default=2400,
@@ -34,6 +59,10 @@ def main():
     args = parser.parse_args()
     if args.cross_build and not args.cross_retained:
         parser.error('--cross-build requires --cross-retained')
+    if not args.cross_retained and not args.retained_build_result:
+        parser.error('Full self-hosting requires --retained-build-result')
+    if args.cross_retained and (args.retained_build_result or args.retained_install_result):
+        parser.error('Guest retained provenance cannot accompany --cross-retained')
     cross_build = args.cross_build.resolve() if args.cross_build else ROOT / 'build/i386-kernel'
     if args.command_timeout <= 0:
         parser.error('--command-timeout must be positive')
@@ -51,6 +80,7 @@ def main():
     if set(retained) != retained_paths:
         raise ValueError('Source disk does not contain all guest-built retained modules')
     cross_manifest_hash = None
+    retained_evidence = None
     if args.cross_retained:
         manifest_path = cross_build / 'result.json'
         manifest = json.loads(manifest_path.read_text())
@@ -63,6 +93,15 @@ def main():
             if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != digest:
                 raise ValueError(f'Development cross-build source changed: {name}')
         cross_manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    else:
+        install_path = args.retained_install_result or args.disk.parent / 'result.json'
+        build_bytes = args.retained_build_result.read_bytes()
+        install_bytes = install_path.read_bytes()
+        verify_retained_provenance(json.loads(build_bytes), json.loads(install_bytes),
+                                   hashlib.sha256(original).hexdigest(), retained)
+        retained_evidence = {
+            'build_result_sha256': hashlib.sha256(build_bytes).hexdigest(),
+            'install_result_sha256': hashlib.sha256(install_bytes).hexdigest()}
     commands = [(f'I386BuildModule("D:/Kernel/I386/{name}.HC",'
                  f'"D:/Modules/I386/{name}.t32m",TRUE)>0;', ['1'])
                 for name in FLAT]
@@ -114,6 +153,7 @@ def main():
               'source_disk_sha256': hashlib.sha256(original).hexdigest(),
               'target_disk_sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
               'cross_build_manifest_sha256': cross_manifest_hash,
+              'retained_evidence': retained_evidence,
               'cpu': args.cpu, 'build_ram_mib': 16, 'boot_ram_mib': 8,
               'scope': 'Development flat-kernel build only; not full M7 self-hosting qualification' if args.cross_retained else 'Guest flat-kernel build with supplied guest-built retained modules'}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')

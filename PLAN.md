@@ -2,6 +2,13 @@
 
 ## Objective and status
 
+Full self-hosting qualification now requires the retained-build and installation
+verdicts to form a matching disk/payload chain before flat-kernel construction.
+All six providers must match both reports; the resulting report records their
+evidence hashes. The 17-test harness suite passes, including eight mismatched
+chain rejection cases. Current-source native builds and workstation checks
+remain in progress; this gate alone does not establish release readiness.
+
 **Acceptance revision (2026-10-03):** Repeatable QEMU automation is the
 functional acceptance gate. A person is not required to repeat the automated
 boot, edit/execute/error/interrupt, persistence, rebuild or installation checks.

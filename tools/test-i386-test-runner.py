@@ -133,6 +133,33 @@ class SpeakerWaveformTests(unittest.TestCase):
 
 
 class DevelopmentBuildProvenanceTests(unittest.TestCase):
+    def test_guest_retained_chain_rejects_mismatched_evidence(self):
+        import copy
+        module = runpy.run_path(str(Path(__file__).with_name('test-i386-selfhost-install.py')))
+        retained = {f'/Modules/I386/{name}.t32m': name.encode()
+                    for name in module['RETAINED']}
+        records = {name: {'sha256': hashlib.sha256(name.encode()).hexdigest(),
+                          'bytes': len(name)} for name in module['RETAINED']}
+        build = {'result': 'pass', 'source_disk_sha256': 'built-disk', 'modules': records}
+        installation = {'result': 'pass', 'source_disk_sha256': 'built-disk',
+                        'disk_sha256': 'installed-disk', 'installed': list(records),
+                        'module_sha256': {name: record['sha256'] for name, record in records.items()}}
+        verify = module['verify_retained_provenance']
+        verify(build, installation, 'installed-disk', retained)
+        for fault in ('build-verdict', 'install-verdict', 'disk', 'build-disk',
+                      'missing-provider', 'build-payload', 'install-payload', 'payload-size'):
+            left, right = copy.deepcopy(build), copy.deepcopy(installation)
+            if fault == 'build-verdict': left['result'] = 'fail'
+            if fault == 'install-verdict': right['result'] = 'fail'
+            if fault == 'disk': right['disk_sha256'] = 'old-disk'
+            if fault == 'build-disk': right['source_disk_sha256'] = 'other-build'
+            if fault == 'missing-provider': right['installed'].pop()
+            if fault == 'build-payload': left['modules']['Startup']['sha256'] = 'wrong'
+            if fault == 'install-payload': right['module_sha256']['Startup'] = 'wrong'
+            if fault == 'payload-size': left['modules']['Startup']['bytes'] += 1
+            with self.subTest(fault=fault), self.assertRaises(ValueError):
+                verify(left, right, 'installed-disk', retained)
+
     def test_changed_inputs_reject_before_qemu_and_clear_old_verdict(self):
         for fault, message in (('disk', 'cross-built disk'),
                                ('module', 'retained input differs'),

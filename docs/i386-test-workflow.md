@@ -110,6 +110,7 @@ python3 tools/test-i386-retained-install.py \
   --out build/i386-kernel/retained-install-gen2-fixed
 python3 tools/test-i386-selfhost-install.py \
   --disk build/i386-kernel/retained-install-gen2-fixed/candidate.img \
+  --retained-build-result build/i386-kernel/retained-build-gen2-fixed/result.json \
   --out build/i386-kernel/selfhost-install-gen2-fixed
 python3 tools/audit-i386-generations.py \
   --first build/i386-kernel/selfhost-install-fixed/target.img \
@@ -236,8 +237,18 @@ functions near that boundary. A timeout is not a guest build failure.
 To reproduce the no-FPU Generation 3 gates on the exact Generation 2 disk:
 
 ```sh
-python3 tools/test-i386-selfhost-install.py \
+python3 tools/test-i386-retained-build.py \
   --disk build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --compare-installed build/i386-kernel/selfhost-install-gen2-fixed/target.img \
+  --out build/i386-kernel/retained-build-gen3-tcg-nofpu \
+  --accel tcg --cpu 486,-fpu --command-timeout 7200
+python3 tools/test-i386-retained-install.py \
+  --source build/i386-kernel/retained-build-gen3-tcg-nofpu/source.img \
+  --out build/i386-kernel/retained-install-gen3-tcg-nofpu \
+  --accel tcg --cpu 486,-fpu
+python3 tools/test-i386-selfhost-install.py \
+  --disk build/i386-kernel/retained-install-gen3-tcg-nofpu/candidate.img \
+  --retained-build-result build/i386-kernel/retained-build-gen3-tcg-nofpu/result.json \
   --accel tcg --cpu 486,-fpu --command-timeout 7200 \
   --out build/i386-kernel/selfhost-install-gen3-tcg-nofpu-long
 python3 tools/audit-i386-generations.py \
@@ -3776,3 +3787,18 @@ gated main image is running in `build/i386-module-inheritance-native-build-long`
 with 3600 seconds per build command. This is an explicit build observation
 budget, not a waiver of startup/interactive latency or no-FPU qualification.
 The current full workstation regression remains live.
+
+### Retained provenance before full self-hosting
+
+Full `test-i386-selfhost-install.py` runs now require
+`--retained-build-result` and a retained installation verdict. The latter defaults
+to `result.json` beside `--disk`; use `--retained-install-result` to override it.
+Both verdicts must pass, the build disk must match the installation source,
+the installed disk must match the supplied image, and all six providers must
+match the build size/hash and installation hash. These checks run before QEMU.
+The output records both evidence-file hashes. Cross-retained development runs
+retain their separate cross-build checks and cannot use guest evidence options.
+
+The harness suite passes all 17 tests, including rejection of eight mutated
+guest provenance chains. This links existing build/install evidence; it does
+not establish current-source two-generation qualification by itself.
