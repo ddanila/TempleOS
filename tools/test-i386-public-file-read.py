@@ -42,12 +42,20 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--parents',action='store_true',help='Require original parent search for absolute child paths')
+    parser.add_argument('--resident',action='store_true',help='Require resident writes, owned cached reads and replacement back to ordinary storage')
     args=parser.parse_args()
     checks=list(CHECKS)
     if args.parents:
         checks[3:3]=['DirMk("C:/Probe/ReadChild")',
                      'ReadCheck("C:/Probe/ReadChild/ReadRaw.BIN",0x800)',
                      'ReadPacked("C:/Probe/ReadChild/ReadPacked.BIN")']
+    if args.resident:
+        checks[-2:-2]=[
+            'FileWrite("C:/Probe/ReadResident.BIN",ReadBytes,4,0x1122334455667788,0x200)>0',
+            'ReadCheck("C:/Probe/ReadResident.BIN",0)',
+            'ReadOwned("C:/Probe/ReadResident.BIN")',
+            'FileWrite("C:/Probe/ReadResident.BIN",ReadBytes,4,0x1122334455667788)>0',
+            'ReadCheck("C:/Probe/ReadResident.BIN",0x800)']
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
     candidate=out/'candidate.img'
     if candidate==args.disk.resolve():parser.error('output overlaps source')
@@ -88,7 +96,7 @@ def main():
         stored,expanded,kind=struct.unpack_from('<qqB',archive)
         if kind!=3 or expanded!=64 or stored>=81:
             raise ValueError('Compressed read fixture did not exercise eight-bit expansion')
-        report.update(result='pass',parent_search=args.parents)
+        report.update(result='pass',parent_search=args.parents,resident=args.resident)
     except Exception as error:
         report['error']=str(error);raise
     finally:

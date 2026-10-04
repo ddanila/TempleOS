@@ -8412,3 +8412,22 @@ Generation-two retained installation and independent boot are running in
 `build/file-write-main-gen2-native-install`. Rebuilding the other six modules,
 installing the flat kernel and comparing complete generations still remain;
 the retained comparison alone does not prove whole-system reproducibility.
+
+Generation-two retained installation and independent boot now pass in
+`build/file-write-main-gen2-native-install/result.json`, with installed disk
+SHA-256 `83ee4c3c273abb8e073116a7ddf4c3a71dab8ad718aeab3d4401736393627ff2`.
+The full native kernel construction has started in
+`build/file-write-main-gen2-selfhost`, using those verified retained-build and
+installation reports as provenance. Its result is still pending.
+
+The public FileRead checker now has `--resident` for resident writes, fresh
+owned cached reads and replacing a resident file with ordinary storage. The
+initial oracle attempt (`build/public-file-resident-red`) rejected our assumed
+cached attribute of 0x800. Original DskFile.HC initializes cached-read attributes
+through FileAttr(name,0), so a cached `.BIN` read reports 0; an ordinary disk
+read after removing residence reports 0x800. The corrected original functional
+oracle passes in `build/public-file-resident-cached-attr-red/oracle/debug.log`.
+The port run is pending; its resident write is expected to expose the existing
+attribute-mask limitation, but that failure is not yet qualified evidence.
+This test covers write-populated caches and ownership, not cold disk cache
+population, compressed resident entries, alias coherence or cache teardown.
