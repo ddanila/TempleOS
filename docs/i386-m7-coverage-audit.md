@@ -31,18 +31,17 @@ update. Both measured budgets pass on that cross-built snapshot. The preceding c
 at a test that redeclared debugger G; the distinct-name forward-call regression
 passes, and the full fixture has been corrected.
 
-The newest completed fully guest-built epoch remains compiler 59, memory 17,
-console 35 in `build/i386-debug-exception-selfhost`: six retained providers and
-six flat modules were guest-built, installed and independently booted.
-`build/i386-debug-exception-selfhost-audit` verifies all twelve executable
-ranges, installed payload and filesystem. Its 487344-byte flat image has
-80 bytes spare. It predates task-owned terminals, Kill and debugger cleanup.
-The cleanup-snapshot six-provider build passes in
-`build/i386-terminal-debug-cleanup-retained`; installation and independent boot
-pass in `build/i386-terminal-debug-cleanup-retained-install`. Its full flat
-build is running in `build/i386-terminal-debug-cleanup-selfhost`. Current-source two-generation
-reproducibility and release qualification remain open. The older 95-file local
-bundle is historical evidence, not a current release.
+The newest completed fully guest-built epoch is compiler 59, memory 18,
+console 36 in `build/i386-terminal-debug-cleanup-selfhost`: six retained
+providers and six flat modules were guest-built, installed and independently
+booted. `build/i386-terminal-debug-cleanup-selfhost-audit` verifies all twelve
+executable ranges, installed payload and filesystem. Its 487344-byte flat image
+has 80 bytes spare. It includes terminals, Kill and debugger task cleanup,
+but predates zero-exception/mode restoration, heap scan and formatter extraction.
+No-FPU TCG keyboard/startup verification is running. The earlier compiler-59,
+memory-17/console-35 selfhost result is historical evidence. Current-source
+two-generation reproducibility and release qualification remain open; the older
+95-file local bundle is not a current release.
 
 | Required outcome | Executable test and independent oracle | Current status / missing evidence |
 | --- | --- | --- |

@@ -2389,3 +2389,22 @@ navigation and Help coverage. This image includes terminals, Kill, debugger
 cleanup, zero exceptions and mode restoration. It predates portable heap-scan
 and formatter extraction and uses cross-built modules. Fully guest-built
 current-source two-generation and release qualification remain open.
+
+### Cleanup snapshot: all twelve guest-built modules installed and audited
+
+`build/i386-terminal-debug-cleanup-selfhost/result.json` passes the six-flat
+module build, installation and independent 8 MiB no-FPU boot using all six
+previously guest-built retained providers. No cross-retained development mode
+was used. Flat size is 487344 bytes (80 bytes spare); flat SHA-256
+`f4b4b6a5b707f0461c94b1a8abcdb57ec36d81991f04f89640b65636b95b03cc`.
+Target disk SHA-256:
+`239bacc0433422c21d936d179365f4db95f101f42d7d64087ea01e12bca6611d`.
+
+`build/i386-terminal-debug-cleanup-selfhost-audit/result.json` passes all
+twelve executable ranges, installed boot payload, boot instruction audit and
+RedSea extent/bitmap checks with the guest-compiler-template layout selected.
+Normal no-FPU TCG keyboard/startup verification is running in
+`build/i386-terminal-debug-cleanup-selfhost-keyboard`. This is the newest
+completed fully guest-built snapshot: compiler 59, memory 18, console 36,
+including terminals/Kill/debugger cleanup but predating zero/mode/heap/formatter
+changes. Second-generation and current-source release qualification stay open.
