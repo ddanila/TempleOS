@@ -2831,3 +2831,23 @@ byte, with the installed first-generation compiler: 1738306 bytes, SHA-256
 The earlier compiler-publication space failure is avoided with this ordering.
 The remaining five provider builds, complete comparison, installation and
 flat-kernel rebuild are still pending; this is not a complete two-generation pass.
+
+### Second-generation retained providers all match installed native bytes
+
+`build/i386-heap-asm-scan-gen2-largest-first/result.json` passes all six
+retained builds, export contracts and console allocation-wrapper checks.
+Every generated provider matches its installed first-generation counterpart
+byte for byte on native target 9c74ad0a. Build order is CompilerRuntime,
+CompilerProbe, ConsoleRuntime, FileRuntime, MemoryRuntime, Startup.
+The larger-first schedule avoids the earlier contiguous-space failure on
+this source image without changing the outputs or relaxing comparison.
+
+Build candidate SHA-256:
+`d7d93fef0589291f7a340ec5f700f939427c3a92deaf49c9a41904a5ce5c02b6`.
+The independent filesystem walker passes: 16 directories, 863 files,
+27358 owned sectors, allocation bitmap matching reachable extents.
+Installation and independent 8 MiB no-FPU boot verification are running in
+`build/i386-heap-asm-scan-gen2-largest-first-install`. Native flat rebuild,
+complete installed-image audit and second-generation workflows still need
+qualification. This provider-level reproducibility pass does not close the
+complete two-generation or release requirements.
