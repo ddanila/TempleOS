@@ -42,8 +42,10 @@ The newer assembly heap scan passes both heap variants and the cross-built
 including exact VGA and 20 cycles with exact heap recovery. Startup passes at
 46.073 seconds and visible-update latency is 0.255 seconds. Its guest flat
 build/install and image audit pass with 487072 flat bytes (352 spare), using
-cross-built retained providers. Rebuilding those providers natively is still
-running; these development results do not clear the fully native timing gate.
+cross-built retained providers. All twelve modules now build/install natively in `build/i386-heap-asm-scan-selfhost`,
+with independent 8 MiB boot and installed instruction/filesystem audit passing.
+Its target is 9c74ad0a and ordinary TCG startup verification is running; the
+cross-image results do not clear the fully native timing gate.
 
 Recorded component passes cover independent terminals, Ctrl-Alt-N, concurrent
 editors, background compilation during editing, idle Ctrl-Alt-C recovery,

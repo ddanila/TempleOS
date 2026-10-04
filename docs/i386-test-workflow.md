@@ -2681,3 +2681,23 @@ with the guest compiler template, then measure ordinary no-FPU TCG startup.
 The cross-image timing pass does not replace that measurement. This snapshot
 still lacks native formatter/User integration, and current-source two-generation
 and complete release qualification remain open.
+
+### Assembly heap scan: complete native image builds, installs and audits
+
+`build/i386-heap-asm-scan-selfhost/result.json` passes all six guest-built flat
+modules using all six guest-built retained providers, installation and independent
+8 MiB `486,-fpu` boot (16 MiB build). No cross-retained mode was used.
+Flat payload: 487072 bytes, 352 bytes spare, SHA-256
+`f7afe15704d130b47025deed2b46fd50b67c9d5acd377ce5984520e7e83e16cb`.
+Target SHA-256:
+`9c74ad0a40623d6d383caaf786cdb4f99251080d3b14e0b0b3bc01c59ff0cd5a`.
+
+`build/i386-heap-asm-scan-selfhost-audit/result.json` passes all twelve
+executable ranges, installed boot payload and boot instructions, and filesystem
+extent/bitmap checks with the guest compiler template selected. Ordinary 8 MiB
+no-FPU TCG keyboard/VGA and startup measurement are now running in
+`build/i386-heap-asm-scan-selfhost-keyboard`; assess the unchanged 60-second gate
+on that result. The 46-second cross-image timing does not substitute for it.
+This is the newest completed fully native snapshot. A second complete native
+generation, current-image workflows, native formatter/User and full release
+qualification remain open.
