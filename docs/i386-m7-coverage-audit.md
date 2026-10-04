@@ -35,8 +35,9 @@ six flat modules were guest-built, installed and independently booted.
 `build/i386-debug-exception-selfhost-audit` verifies all twelve executable
 ranges, installed payload and filesystem. Its 487344-byte flat image has
 80 bytes spare. It predates task-owned terminals, Kill and debugger cleanup.
-The cleanup-snapshot provider build is active in
-`build/i386-terminal-debug-cleanup-retained`. Current-source two-generation
+The cleanup-snapshot six-provider build passes in
+`build/i386-terminal-debug-cleanup-retained`; installation and independent boot
+are running in `build/i386-terminal-debug-cleanup-retained-install`. Current-source two-generation
 reproducibility and release qualification remain open. The older 95-file local
 bundle is historical evidence, not a current release.
 

@@ -2337,3 +2337,20 @@ existing allocation, software math, date, file and DolDoc services. Preserve
 those format families rather than limiting implementation to the current
 17-case corpus. User/XTalk and hardware creation remain subsequent work.
 The provider/workstation runs keep their captured pre-extraction images.
+
+### Cleanup-snapshot native providers pass
+
+`build/i386-terminal-debug-cleanup-retained/result.json` passes all six
+persisted guest-built providers against the matching export contracts.
+Source disk SHA-256:
+`33fc78cf811e3d147578f06a3d367c7f99c8615b2d249d4dee250285a89567ee`.
+Module sizes: Startup 407, MemoryRuntime 300832, FileRuntime 302036,
+ConsoleRuntime 960074, CompilerProbe 1231080, CompilerRuntime 1738306 bytes.
+This snapshot includes terminals, Kill and debugger task cleanup; it predates
+zero-exception/mode restoration, the portable heap scan and formatter extraction.
+
+Installation and independent boot are running in
+`build/i386-terminal-debug-cleanup-retained-install` on a copy of the preserved
+source. A full flat rebuild and installed-image audit must follow a PASS.
+The newer heap-scan provider build and mode-image workstation suite remain
+active. Do not combine their source epochs into a current-source release claim.
