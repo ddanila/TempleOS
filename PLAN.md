@@ -7913,3 +7913,25 @@ state/continuation and cleanup through real guest execution. Existing
 INT3 continuation, six-register markers and forced-child exit cover only
 the initial bridge. Full native qualification and all release gates remain
 required after these architectural changes.
+
+## Public file API parity discovered by capacity fixtures
+
+The payload-rejection fixture cannot yet create files: public FileWrite
+is undefined. Original FileWrite is I64 FileWrite(filename,buffer,size,
+CDate cdt=0,attr=0); RedSea success returns the allocated cluster, failure
+returns zero, and an empty file uses INVALID_CLUS (-1). It does not return
+a Boolean or byte count. Preserve these semantics in tests and bindings.
+
+Use independent persisted RedSea inspection to compare the return value
+with the directory entry's cluster, exact binary bytes/length and requested
+timestamp/attributes. Cover replacement, relative/current-drive paths,
+empty and negative-size original behavior, invalid parent/name and failed
+allocation/write without corrupting existing files or leaking task heaps.
+Test default date behavior against the original API's Now semantics.
+Compression (.Z/RS_ATTR_COMPRESSED) and resident-file behavior need explicit
+compatibility inventory/oracles; existing DocWrite or a Boolean service
+wrapper does not establish those requirements. Audit FileRead and FileFind
+alongside this work rather than assuming document operations expose them.
+Then rerun the six malformed/oversized publication cases and require exact
+whole-target preservation. Full executable truncation remains a distinct
+boot-format integrity requirement.

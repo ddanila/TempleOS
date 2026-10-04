@@ -35,7 +35,7 @@ def main():
     for name, size, setup in cases:
         if setup:
             commands.append((f'U0 RejectSetup{size}{len(commands)}(){{{setup}}}RejectSetup{size}{len(commands)};', []))
-        commands.extend([(f'FileWrite("C:/Probe/RejectBoot.bin",RejectPayload,{size});', ['1']),
+        commands.extend([(f'FileWrite("C:/Probe/RejectBoot.bin",RejectPayload,{size})>0;', ['1']),
                          ('I386InstallBootImage("C:/","D:/","C:/Probe/RejectBoot.bin");', ['0'])])
     commands.extend([('Free(RejectPayload);', []), ('6*7;', ['42'])])
     report = dict(result='fail', cases=[row[0] for row in cases],

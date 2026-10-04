@@ -4454,3 +4454,13 @@ FileWrite binding/parity is missing. Implement and independently qualify
 that original public API, then rerun these publication cases. Do not label
 this fixture failure as oversized-payload rejection evidence. Truncated
 executable integrity and maximum-size linking remain separate open gates.
+
+Original source audit corrects FileWrite fixture expectations: successful
+nonempty RedSea FileWrite returns the cluster, not TRUE. The publication
+fixture now tests `FileWrite(...)>0`. Original signature includes cdt and
+attr defaults; original RedSea empty-file success returns INVALID_CLUS (-1).
+Public FileWrite remains unimplemented; this fixture correction is not a
+green publication verdict. PLAN.md records independent metadata/return,
+error, empty-file, timestamp/attribute and compressed/resident parity work.
+The current retained rebuild is live in ConsoleRuntime after compiler
+providers; main OS sources remain frozen for that qualification epoch.
