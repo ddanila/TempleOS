@@ -19,8 +19,10 @@ cannot prove full self-hosting.
 
 All six retained providers now build inside that guest in
 `build/i386-heap-scan-retained`; export-set and console allocation-wrapper
-checks pass. Installation is running in `build/i386-heap-scan-retained-install`.
-This is not yet an installed fully native qualification pass.
+checks pass. Installation, exact installed bytes and independent 8 MiB no-FPU
+boot pass in `build/i386-heap-scan-retained-install`. The six flat modules are
+now building in `build/i386-heap-scan-selfhost` using those guest-built providers.
+This is not yet a fully native image qualification pass.
 
 The newer formatter-extraction source revision 2470ed94 passes the original
 two-generation rebuild, all 17 original formatter cases, and cross-build/386

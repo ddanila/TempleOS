@@ -2455,3 +2455,17 @@ source revision `2470ed94dcea403c6d56e37fd6b08463c9a90406`, a 483360-byte
 kernel, and no boot test. These checks establish the refactor baseline only.
 Native MStrPrint and User integration, creation hotkeys and their native green
 workflow tests remain implementation work.
+
+### Heap-scan snapshot: retained installation and independent boot pass
+
+`build/i386-heap-scan-retained-install/result.json` passes installation of all
+six guest-built retained providers, exact installed-byte comparisons and an
+independent 8 MiB boot with `486,-fpu` under KVM. The preserved candidate disk
+SHA-256 is `b232d79d555c828944558b47b4eaf77b96fef3ab8d66701ee8c185bf09ee16fa`.
+Both source and candidate preservation checks pass.
+
+The full native flat build/install is now running in
+`build/i386-heap-scan-selfhost` against that candidate, without cross-retained
+mode. After it completes, audit the installed executable ranges/filesystem and
+measure no-FPU TCG startup. This remains the pre-formatter heap-scan snapshot;
+current-source two-generation and release qualification remain open.
