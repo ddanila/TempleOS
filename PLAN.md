@@ -11639,3 +11639,28 @@ Full concurrent-file-audit and flags host --test processes remain live
 startup. Additional checks remain in progress. Integrated no-FPU retained
 build PID 3677763 remains live after about 69 minutes. The single-step flags
 red run remains live; neither flags nor stack runtime results are yet claimed.
+
+Physical return-stack candidate implemented (2026-10-05):
+The S/flags red run reached its flags-step-reentry screenshot after editing
+CF and S, then failed its EAX/TF/result condition. The public-stack red run
+compiled/executed, accepted the public RSP edit and G, and timed out at
+CpuTrapResult==CpuStackTop. Both preserve unchanged source disks; neither is
+a frontend failure or green qualification.
+
+New isolated build/debug-stack-prototype layers on the flags candidate.
+KernelDebugCpu returns the desired exception-frame address (public RSP minus
+68 bytes). ExceptionEntry's debugger return path disables interrupts after
+the C call has returned, copies all 17 frame words in overlap-safe direction,
+sets ESP to the relocated frame, restores segments/registers and uses IRET.
+This avoids copying onto a live C return address and restores physical ESP to
+the selected public RSP. IF remains clear only for relocation/restoration;
+IRET restores the edited flags with G/S's TF policy. Default same-stack return
+skips the copy. No runtime green or overlap-case coverage yet claimed.
+Full docs/patches/i386-debug-stack-candidate.patch applies cleanly to main.
+
+Fresh original bootstrap runs in build/debug-stack-bootstrap.log (PID 3722244).
+Dependent build/debug-stack-pipeline.json checks both generations/all source
+hashes, full diagnostics, five alternate-stack cycles, five S/flags and five
+G/flags cycles, then IP/S, IP/G, simultaneous traps, breakpoint ownership and
+managed-kill regressions. Source epochs of other running qualifications stay
+fixed. Full native/installed/release gates remain necessary before promotion.
