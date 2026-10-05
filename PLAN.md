@@ -11703,3 +11703,23 @@ preflight; the -4 runtime red is pending against reader-ip.
 build/debug-stack-overlap-pipeline.json runs five cycles in each direction
 only after the complete stack prerequisite passes. Current focused stack
 failure must be resolved before treating either overlap path as qualified.
+
+Stack failure narrowed by actual address trace (2026-10-05):
+The first observation helper cannot index a string literal directly in the
+native frontend (Missing ')' diagnostic); preserve build/debug-stack-observe.
+The corrected digits-pointer helper compiles and logs from the resumed
+function in build/debug-stack-observe-digits/debug.log:
+observed return value 0000000000000000, requested stack 0000000000294E20.
+The function returns zero, not merely the old stack address. That weakens a
+simple 'ESP relocation ignored' explanation; inspect the fixture's emitted
+instructions and local-value handling before changing the return mechanism.
+The emitted ExceptionEntry module contains the intended CLI, both 17-word
+copy loops, MOV ESP,EDX, register restoration and IRET; emitted KernelDebugCpu
+loads public RSP offset 228 and returns RSP-68. These inspections establish
+code shape, not successful physical stack behavior.
+
+New fixed-image build/debug-stack-observe-code.py logs the guest-compiled
+function bytes for diagnosis. It runs separately without candidate edits.
+Five focused S/flags cycles also run in
+build/debug-public-step-flags-focused-green on the G/flags-qualified image.
+Complete host qualification and native/release gates remain open.
