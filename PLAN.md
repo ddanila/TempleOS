@@ -11621,3 +11621,21 @@ same-ring IRET: POPAD ignores saved_esp, and ExceptionEntry.HC currently
 returns using the frame's original stack, so simply editing the saved_esp
 field cannot implement public RSP edits. It needs an explicit return-frame
 relocation mechanism plus a real alternate-stack test before qualification.
+
+Public physical-stack TDD fixture (2026-10-05):
+New tools/test-i386-debug-public-stack.py allocates an alternate stack before
+resource warmup, edits Fs->rsp while paused at actual INT3, and requires the
+compiled function's MOV EAX,ESP to observe that exact alternate address after
+G. MOV ESP,EBP restores the original function frame before its epilogue;
+normal result, mode/IF/TF, arithmetic and repeated heap checks remain.
+This distinguishes real stack selection from public-shadow-only edits.
+Five-cycle preflight checks independent interactions and command limits.
+The red runtime is running against reader-ip in build/debug-public-stack-red;
+frontend and actual failure checkpoint must be inspected before attributing a
+failure to stack relocation. No alternate-stack implementation/green claimed.
+
+Full concurrent-file-audit and flags host --test processes remain live
+(PIDs 3716380 and 3719172); both diagnostic guests reach DONE native kernel
+startup. Additional checks remain in progress. Integrated no-FPU retained
+build PID 3677763 remains live after about 69 minutes. The single-step flags
+red run remains live; neither flags nor stack runtime results are yet claimed.
