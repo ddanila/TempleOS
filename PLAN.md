@@ -9311,3 +9311,5 @@ Persisted fixture equality, input immutability and the independent RedSea
 bitmap audit remain mandatory. No native pass is claimed yet. ABI-45 exact
 45-command recovery, full workstation and retained native construction remain
 live; their handles/checkpoints were revalidated without restarting them.
+
+ABI-45 exact resident recovery now passes: build/public-resident-include-recovery/result.json reports all 45 commands and twenty resident create/update/remove cycles, exact caller/root public heap recovery and independent private allocator snapshots, VGA parity, persisted raw/compressed/replacement bytes, valid filesystem and unchanged source disk. This qualifies the bridge epoch for this recovery scope; include-specific exception/child lifetime and full native release gates remain open.
