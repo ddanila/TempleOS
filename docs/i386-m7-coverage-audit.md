@@ -7,7 +7,10 @@ installed twelve-module image and independent 386/bitmap audit in
 Its second native generation and installed no-FPU workstation are running.
 Fresh three-boot DolDoc persistence and captured speaker-output checks now run
 on that installation in `...-installed-doldoc-session` and `...-installed-speaker`.
-Their verdicts are pending. ABI-47 integrates public Cd and passes focused
+The three-boot DolDoc workflow and captured speaker output now pass. A fresh
+pinned resource profile also passes twenty cycles, measuring 1352496 live
+baseline and 1356112 peak bytes. These are ABI-46 installed results.
+ABI-47 integrates public Cd and passes focused
 original/native cache, compiler/DolDoc, write and exact heap-recovery contracts;
 its workstation and native-generation chain remain pending. Historical greens
 below cannot substitute for these current-source installed workflow checks.

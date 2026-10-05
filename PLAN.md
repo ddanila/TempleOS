@@ -10160,3 +10160,17 @@ are temporary copies; actual raw evidence is unchanged. This closes the new
 resource-provenance check for this installed source epoch. Current integrated
 native/FPU-free construction and workstation, second native generation and
 installed three-boot DolDoc remain pending, with their actual handles rechecked.
+
+Installed three-boot DolDoc workflow green (2026-10-05):
+build/public-resident-write-parent-installed-doldoc-session/result.json passes
+107 create/edit/save commands, 56 reopen/execute commands and 15 revised-content
+commands over three cold boots on the fully native ABI-46 installation with
+486,-fpu / 8 MiB. Startup times are 47.659644, 43.520826 and 43.465267 seconds;
+interrupt-to-recovery VGA is 0.297959 seconds. All exact VGA checkpoints pass.
+Persisted project and relative-source bytes, rename/delete/move/directory
+cycles and reachable extent bitmap pass (18 directories, 888 files, 19054
+owned sectors). Source and final session SHA-256 identities are independently
+rechecked, and a separate matching-builder full volume audit confirms the
+bitmap/tree. These are actual persistence/reboot workflows, not one-boot
+console checks. The final integrated image still needs equivalent installed
+qualification; current native generations and workstation remain pending.
