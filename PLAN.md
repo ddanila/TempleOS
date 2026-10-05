@@ -12141,3 +12141,25 @@ build/extended-kernel-prototype/build/extended-bootstrap.log, generation 1.
 After both bootstrap generations pass, run tools/test-i386.py --memory in that
 checkout. High linking, extended packaging and native installation still need
 coordinated implementation; no OS runtime or memory-test pass is claimed.
+
+Extended memory candidate qualified; installer candidate advances (2026-10-05):
+Fresh original bootstrap passed both generations. Candidate --memory is PASS
+in build/extended-kernel-prototype/build/i386-memory-test/result.json, two BIOS
+boot variants, 8 MiB/486, compiled guest execution and instruction audit. This
+covers sector rounding, high-image/heap nonoverlap and nine malformed handoffs
+with output preservation, along with previous legacy arena checks. Preserve
+its exact source patch i386-extended-memory-candidate.patch and bootstrap
+under build/rebuild-memory-qualified; do not transfer this pass to later edits.
+
+Candidate I386BuildBootImage now selects the high link base and extended
+capacity only from a matching extended-stage/image handoff. Native boot-area
+publication recognizes E32B source-stage metadata, validates version/base,
+regenerates exact length/FNV checksum, and writes/pads only LBA 9–2047 before
+publishing sector zero last. Legacy source stages retain their old capacity.
+Full cumulative patch docs/patches/i386-extended-install-candidate.patch applies
+cleanly to main. Installer changes have no runtime qualification yet; guest
+cross-linker/host packager/auditor integration and source-format negatives still
+remain. Fresh changed-source bootstrap runs PID 3751065/session 89067 in
+build/extended-kernel-prototype/build/extended-installer-bootstrap.log. Follow
+with actual oversized high-linked kernel boot and independent native install
+sector/hash/volume comparisons; release remains incomplete.
