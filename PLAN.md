@@ -12377,3 +12377,24 @@ extended-assembler-immediate-kernel.log. Earlier capacity full test and rejected
 native tests retain their handles/evidence; no repeated unchanged restart.
 Next actual native exception check must use the new resident compiler image.
 Full installation, two native generations and release remain incomplete.
+
+Actual native exception rebuild green (2026-10-05):
+build/native-exception-immediate-fixed/result.json PASS using the resident
+compiler on the immediate/capacity-fixed extended image, 8 MiB/KVM/486.
+Actual ExceptionEntry.HC compiles, generated module layout is valid and all
+18 exports match the cross-built export contract. Native module SHA256
+efd70d4951af804776ddc0f175d5dc1468e974dd26fc50a20edd73bf5dc2649e.
+Startup 22.237485487014055 seconds; all pinned inputs unchanged. This closes
+the actual compiler rejection, not module byte equivalence or two generations.
+Complete six-retained-module native build now runs in a newly launched retained-build process, output build/extended-immediate-native-build.
+
+Existing isolated text-frames group PASS, four exact pixel modes and break/
+restore, five commands, 8 MiB/486, startup 28.763167825061828, same trace-qualified
+disk SHA256 6e940d61a7207f99251f21c86adbe224533b9b2576da58ed38bb3994b15cf713.
+Failure is dependent on prior full-session work; memory pressure is a hypothesis.
+Instrumented full-session diagnostic live PID 3764870/session 10237, script
+build/text-memory-session.py and generated source, output build/text-memory-session.
+It logs task data-heap use before each text mode while preserving original full
+sequence. No measurements or full-suite success claimed before completion.
+New combined candidate full --test remains live. Physical verification stays
+deferred and full objective remains incomplete.
