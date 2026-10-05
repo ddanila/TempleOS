@@ -1,0 +1,40 @@
+diff --git a/Kernel/I386/TextRender.HC b/Kernel/I386/TextRender.HC
+index 31eac248..6a92b6ee 100644
+--- a/Kernel/I386/TextRender.HC
++++ b/Kernel/I386/TextRender.HC
+@@ -1,17 +1,31 @@
+ #include "/Kernel/TextRenderCore.HC"
+ #include "/Kernel/GraphicsFrameCore.HC"
++extern Bool NativeGraphicsReady();
++extern U8 *NativeGraphicsPlanes();
++extern Bool graphics_presenting;
+ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
+   Bool hide_col=FALSE,Bool hide_row=FALSE)
+ {
+   U8 *pixels=0,*planes=0;
+-  Bool result=FALSE;
++  Bool result=FALSE,borrowed=FALSE;
++  if(NativeGraphicsReady) {
++    if(graphics_presenting || !gr.dc2 ||
++        gr.dc2->dc_signature!=DCS_SIGNATURE_VAL ||
++        gr.dc2->width_internal!=640 || gr.dc2->height!=480 ||
++        !gr.dc2->body) return FALSE;
++    pixels=gr.dc2->body; planes=NativeGraphicsPlanes;
++    if(!planes) return FALSE;
++    graphics_presenting=TRUE; borrowed=TRUE;
++  }
+   try {
+-    pixels=CAlloc(307200); planes=CAlloc(153600);
++    if(!borrowed) { pixels=CAlloc(307200); planes=CAlloc(153600); }
+     TextRenderCore(pixels,i386_text_base,text.font,80,60,blink,pan_x,pan_y,hide_col,hide_row);
+     GraphicsPlanarCore(planes,pixels);
+     result=I386VgaRows(planes,0,480);
+-  } catch { Free(planes); Free(pixels); }
+-  Free(planes); Free(pixels); return result;
++  } catch { }
++  if(borrowed) graphics_presenting=FALSE;
++  else { Free(planes); Free(pixels); }
++  return result;
+ }
+ U0 NativeTextBaseRestore()
+ {

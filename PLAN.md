@@ -12457,3 +12457,27 @@ reservation handle3791133 remains live before its measurement phase. Preserve
 same handles and evidence; no new pass for these longer runs. Contract document
 updated with capacity boundaries and remaining BIOS read-error/padding-negative,
 installation, full-session and release gates. Physical testing stays deferred.
+
+Late-session renderer path narrowed; owned-buffer reuse candidate (2026-10-05):
+Reservation diagnostic reaches FramePresentProbe in full original sequence,
+then COMMAND ERROR. Direct renderer invocation fails before TextFrameDemo's
+own loop/break logic. Recorded data/code live/reserved tuples are both
+1479760/1489408 (shared public heap); they do not measure private kernel arena
+fragmentation, so exact exception cause remains open. Preserve diagnostic.
+
+Text renderer allocates an additional 307200-byte packed surface and 153600-byte
+planes although NativeGraphicsStart already owns a working gr.dc2 surface and
+plane buffer. New separate build/extended-render-reuse-prototype uses validated
+current-owner buffers when graphics is ready, rejects concurrent presentation,
+sets/restores shared presentation guard, and preserves allocation fallback for
+callers without an initialized owned graphics context. It does not free borrowed
+buffers and preserves complete text-render/plane/VGA semantics. Single cleanup
+on fallback exceptions remains included. Full delta
+ docs/patches/i386-text-render-reuse-candidate.patch applies to root main;
+combine with cumulative extended kernel and assembler deltas, replacing earlier
+single-cleanup-only renderer delta. No pixel or full-suite pass claimed yet.
+Fresh original bootstrap live session72277, log
+build/extended-render-reuse-prototype/build/extended-render-reuse-bootstrap.log.
+Then rerun all four exact pixel/hotkey frames and full long sequence at 8 MiB.
+Prior native-generation candidate sources remain frozen and current installation
+process continues independently. Full release remains incomplete.
