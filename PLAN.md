@@ -9868,3 +9868,25 @@ cold native behavior QEMU handles were directly revalidated live; final
 verdicts remain pending. The current native retained construction and main
 no-FPU native construction also remain live; no restart is inferred from
 elapsed time, and the queued install/audit/generation chains remain required.
+
+Current native retained build green; combined cold gate exposes Cd gap (2026-10-05):
+build/public-resident-write-parent-native-build/result.json passes all six
+native modules. The dependent pipeline has advanced to retained-install.
+FileRuntime now has 349015 bytes, 824 records and 122 exports; later full flat
+installation and generation comparison remain required.
+
+build/public-resident-write-parent-cold-compressed/result.json fails after
+original oracle and native fixture preparation pass. Native debug output
+shows ColdChild completing successfully, followed by Cd("C:/Probe") reporting
+Undefined identifier; the expected-success console check then times out.
+Thus the combined shared-lifetime/directory-state contract remains red for
+the actual current candidate. Public Cd exists only in its separate prototype
+and must be integrated with the current canonical cache architecture before
+this gate can pass. No cache-only pass is substituted for the full contract,
+and this result is not explained away as slow observation. The ordinary
+mutation companion remains pending and may expose the same integration gap.
+
+The resident include test's help/report wording no longer hardcodes ABI-45
+for the allocation-failure scope; source-layout hashes already identify the
+actual tested candidate. CLI help and diff checks pass; runtime behavior is
+unchanged and existing evidence files remain untouched.

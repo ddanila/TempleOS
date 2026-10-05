@@ -62,7 +62,7 @@ def main():
     parser.add_argument('--document', action='store_true', help='Also require DocRead to see the edited cache')
     parser.add_argument('--removal', action='store_true', help='Remove cache and require include to reload and repopulate from disk')
     parser.add_argument('--default-extension', action='store_true', help='Include a bare name and require original HC.Z default/alternate resolution')
-    parser.add_argument('--allocation-failure', action='store_true', help='Native-only ABI-45 allocation failure and borrowed file-state recovery')
+    parser.add_argument('--allocation-failure', action='store_true', help='Native-only public-cache allocation failure and borrowed file-state recovery')
     parser.add_argument('--failure-recovery', action='store_true', help='Independently snapshot private heap across the allocation failure and subsequent include')
     parser.add_argument('--child', action='store_true', help='Require cached file/document reads in a child and cache survival after synchronous Kill')
     parser.add_argument('--failure-public-recovery', action='store_true', help='Also require exact caller/root public heap recovery with validated key-up quiescence')
@@ -199,7 +199,7 @@ def main():
             commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)
                         for source, answers in commands]
         if args.allocation_failure:
-            report['failure_scope'] = 'Native-only ABI-45: force public allocation rejection, restore cache metadata, require file-state busy zero'
+            report['failure_scope'] = 'Native-only public cache: force public allocation rejection, restore cache metadata, require file-state busy zero'
             commands += [
                 ('Bool CodeSize(I64 n){CHashGeneric *e=HashFind("C:/Probe/CacheInclude.HC",adam_task->hash_table,HTT_FILE);if(!e)return FALSE;e->user_data1=n;return TRUE;}', []),
                 ('class CacheFailTask:CTask{U32 private_prefix[15];U8 *file_state,*file_clone,*file_destroy;U32 lifetime_refs;};', []),
