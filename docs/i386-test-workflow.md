@@ -4725,3 +4725,26 @@ gen2-selfhost-audit,generation-identity}. Its prototype auditor and matching
 stage listing are used. No pending gate is a pass, and earlier step/cache
 candidate evidence cannot qualify the updated register console. Main remains
 unchanged while candidate sources are pinned. No release completion claimed.
+
+Wider register editing and explicit G address TDD (2026-10-05):
+the corrected bank chain passes ECX/EDX/EBX/ESI/EDI, each two semantic
+edit/step/resume cycles with 25 commands, exact VGA and unchanged image.
+Startup seconds respectively 27.217041, 33.844262, 27.508514, 29.485299,
+30.344232. The final EAX bank run remains pending; its separate five-cycle
+EAX gate already passes. This does not cover EBP/ESP or other-task contexts.
+build/debug-register-forced-kill/result.json passes stepped-task teardown
+on the register source, 13 commands, startup 33.758595 seconds, exact VGA,
+unchanged image, surviving debugger and parent public heap recovery.
+
+New tools/test-i386-debug-go-address.py specifies original G(ip) behavior:
+a real INT3 stops before MOV EAX,0x55667788; explicit G skips that verified
+five-byte instruction so a subsequent store preserves 0x11223344. Ordinary
+continuation would store 0x55667788, making the chosen-IP effect observable.
+Opcode and all immediate bytes are checked before the trap. The first run
+build/debug-go-address-red failed at setup because pointer assignment printed
+an address; this is fixture failure, not OS evidence. The corrected fixture
+assigns inside a U0 helper and runs in build/debug-go-address-quiet-red.
+Verdict remains pending. It preserves independent repeated interactions and
+pins dependencies; other-task resume and managed breakpoints remain open.
+Register full workstation/native generations remain pending on unchanged
+sources. Release completion and promotion are not claimed.
