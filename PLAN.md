@@ -9755,3 +9755,30 @@ is not a completed verdict; later turns must revalidate actual processes.
 This is first-generation qualification only. Independent installed audit,
 second-generation byte equality, installed no-FPU workstation, matching
 x86-64 regression and release publication remain required before completion.
+
+Current parent candidate failure/child gates green (2026-10-05):
+Authoritative results in
+build/public-resident-write-parent-failure-recovery/result.json and
+build/public-resident-write-parent-child/result.json both pass, including the
+original oracle, exact VGA checkpoints, unchanged input/persisted baseline,
+and independent reachable-extent/bitmap audits (16 directories, 871 files,
+17575 owned sectors). Both run with 486,-fpu and 8 MiB RAM.
+The 29-command allocation rejection/recovery gate restores caller/root public
+used bytes and independently observed private heap usage exactly: 5386936
+bytes and 7124 allocations before and after, with matching heap identity and
+signature. Restored cache metadata permits subsequent successful inclusion;
+file-state borrowing and task references recover. The 23-command child gate
+checks shared cache reads and DolDoc access, forced child teardown, parent
+reuse, removal/repopulation, and default-extension inclusion. It does not
+prove natural child exit or arbitrary child lifetime reclamation.
+
+The previous attempted-write epoch's six-module retained build also passes
+in build/public-resident-write-attempt-native-build/result.json; it is separate
+from current parent qualification and cannot substitute for it.
+Current parent native builder PID 3600449 and QEMU PID 3600450, dependent
+pipeline PID 3603043, workstation QEMU PID 3600441, and main no-FPU builder
+PID 3552346/QEMU PID 3552347 were directly revalidated live. Compiler debug
+output shows current parent CompilerProbe construction, main no-FPU console
+construction, and ongoing workstation file-editor commands. These jobs remain
+pending. No source promotion, generation reproducibility, full no-FPU native
+build, or release completion is claimed from this evidence.
