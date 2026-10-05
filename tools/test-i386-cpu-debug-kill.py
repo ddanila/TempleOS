@@ -71,7 +71,7 @@ def main():
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk, single_step=args.single_step,
-                  scope='Kill a terminal at real INT3, then enter Dbg in a survivor, evaluate and G back, exit and recover parent public heap; not all private resources or complete register/step coverage')
+                  scope=('Kill a terminal after hardware single-step reentry' if args.single_step else 'Kill a terminal at real INT3') + ', then enter Dbg in a survivor, evaluate and G back, exit and recover parent public heap; not all private resources or complete register/step coverage')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',

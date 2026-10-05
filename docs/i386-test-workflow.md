@@ -4624,3 +4624,26 @@ Implement the original 7/8-bit compression algorithm and filename/attribute
 semantics, with fallback only where the original requires it, plus resident
 cache compatibility. Do not substitute an always-uncompressed archive for
 full compression behavior. FileWrite remains unpromoted.
+
+Integrated cache/Cd native generation equality and stepped-task teardown
+verified (2026-10-05): the integrated generation pipeline completes PASS.
+An independent rerun in build/file-cd-resident-integrated-generation-identity-recheck
+confirms twelve identical native modules, a 487336-byte identical flat kernel,
+and identical installed boot area across both generations. Flat SHA-256:
+8eebe3e5df7f4928b438628dd1b49464a12f55291fb18e5706811258d271345f.
+Boot-area SHA-256:
+39c511c316094a6cf4dcdd01aab0f77b307637e1a6772861ad9764eca09a360f.
+Both volumes have 16 directories, 872 files and 19073 owned sectors with
+bitmaps matching reachable extents. Whole disk images differ; this gate
+claims module/flat/boot equality, not whole-volume byte equality.
+
+build/debug-single-step-forced-kill/result.json passes --single-step:
+13 commands on 486,-fpu / 8 MiB, exact VGA, startup 28.422164 seconds,
+source image unchanged. A terminal is killed after vector-1 step reentry;
+the survivor can enter Dbg, evaluate, resume and exit, with parent public
+heap recovery. The checker report now names the selected entry path.
+This verifies stepped-task teardown, not complete private-resource or
+register/breakpoint coverage. Integrated no-FPU retained builder PID 3614380,
+single-step retained builder PID 3631600 and workstation QEMU PID 3631601
+remain directly confirmed live. Their pending results are separate gates;
+main OS source remains ABI 40 and no release completion is claimed.
