@@ -68,7 +68,7 @@ index 30b15c64..2fe069bd 100644
    KernelLog("ROOT USER HEADERS begin\n");
    if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
 diff --git a/Kernel/I386/Debugger.HC b/Kernel/I386/Debugger.HC
-index b7186ce0..adac894d 100644
+index b7186ce0..a144c1f3 100644
 --- a/Kernel/I386/Debugger.HC
 +++ b/Kernel/I386/Debugger.HC
 @@ -1,3 +1,124 @@
@@ -196,7 +196,7 @@ index b7186ce0..adac894d 100644
  #include "/Kernel/I386/TaskHeaps.HH"
  #include "/Kernel/I386/Frame.HH"
  #include "/Kernel/SemaTypes.HH"
-@@ -6,6 +127,53 @@ Bool console_debug_go;
+@@ -6,6 +127,54 @@ Bool console_debug_go;
  Bool console_debug_previous_mode;
  U8 *console_debug_backup;
  U0 (*console_debug_cleanup)(CI386Task *task);
@@ -213,7 +213,8 @@ index b7186ce0..adac894d 100644
 +U0 NativeBptTaskCleanup(CI386Task *task)
 +{//Restore code before public heaps or executable allocations disappear.
 +  CBpt *record,*next;
-+  U0 (*previous)(CI386Task *task)=task->debug_bpt_cleanup;
++  U0 (*previous)(CI386Task *task);
++  previous=task->debug_bpt_cleanup;
 +  NativeBptApply(task,FALSE);
 +  record=task->bpt_lst;task->bpt_lst=NULL;
 +  while(record) { next=record->next;Free(record);record=next; }
@@ -250,7 +251,7 @@ index b7186ce0..adac894d 100644
  U0 ConsoleDebugTaskCleanup(CI386Task *task)
  {//Forced task exit bypasses the debugger's stack-local return path.
    U8 *backup=console_debug_backup;
-@@ -47,7 +215,35 @@ CHashFun *ConsoleDebugFunction(U8 *address)
+@@ -47,7 +216,35 @@ CHashFun *ConsoleDebugFunction(U8 *address)
  U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL)
  {
    if(console_debug_task!=I386TaskSelf) throw('DbgState');
@@ -287,7 +288,7 @@ index b7186ce0..adac894d 100644
    console_debug_go=TRUE;
  }
  U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
-@@ -178,10 +374,23 @@ Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
+@@ -178,10 +375,23 @@ Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
    CI386Task *task=I386TaskSelf;
    U8 *src=frame,*dst;
    I64 i;
@@ -312,7 +313,7 @@ index b7186ce0..adac894d 100644
    task->debug_cpu_active=TRUE; return TRUE;
  }
  U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
-@@ -190,9 +399,14 @@ U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
+@@ -190,9 +400,14 @@ U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
    U8 *src=&task->debug_cpu_frame,*dst=frame;
    I64 i;
    if(!task->debug_cpu_active || !(GetRFlags&0x200)) KernelStop;

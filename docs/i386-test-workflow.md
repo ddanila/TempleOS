@@ -4980,3 +4980,22 @@ build/debug-managed-candidate-bootstrap.log. Cross build, managed runtime
 green, shared-code ownership, other-task controls, cleanup and broader/native
 qualification remain required. Existing live source epochs stay unchanged;
 no promotion, complete debugger or release readiness is claimed.
+
+Managed candidate cross parse failure corrected (2026-10-05): original
+bootstrap passes on the initial managed source, but cross build terminates
+FAIL while compiling ConsoleRuntime. Preserved compiler-log.DD identifies
+Debugger.HC line 143: HolyC rejects a function-pointer local declaration with
+an initializer. Separate declaration and assignment correct that syntax.
+The archived managed patch is updated and applies cleanly; a fresh bootstrap
+runs in build/debug-managed-corrected-bootstrap.log to pin the changed source
+before another cross build. No cross or managed runtime green is claimed;
+size/386/cleanup/native gates remain pending. The failure is compile evidence,
+not an observation timeout, and previous successful source epochs remain
+untouched.
+
+Independent progress: build/debug-register-selfhost/result.json now passes
+full native flat construction/installation/boot on register source; its
+second generation is pending. build/debug-single-step-gen2-native-build passes
+all six modules with exact installed comparison; complete twelve-module/flat/
+boot equality remains pending. Later managed/address source is not qualified
+by those results. Main and release completion remain open.
