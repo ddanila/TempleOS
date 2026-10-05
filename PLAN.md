@@ -12334,3 +12334,28 @@ It invokes real NativeTextBasePresent after compiling TextFrameDemo and restores
 the display; investigate longer-test memory pressure separately if fresh passes.
 Native ExceptionEntry check remains awaiting harness terminal failure after
 observed guest rejection; capacity-fixed image needs a fresh test afterward.
+
+Native top assembly immediate gap and renderer probe correction (2026-10-05):
+Capacity-fixed native ExceptionEntry still rejects, reported at line 0x71.
+Inspection identifies preceding MOV ECX,17: top assembler supports register/
+memory MOV and special AX immediate, but no U32 register immediate. Parsing
+advances to the next mnemonic before rejecting the operand form, so the reported
+JC position alone did not identify the missing operation. Updated assembler
+candidate emits B8+register plus little-endian immediate with explicit signed/
+unsigned 32-bit bounds. Capacity correction remains necessary independently.
+Small cumulative top-assembly patch updated; git apply --check passes.
+
+Fresh separate build/extended-assembler-immediate-prototype combines extended
+kernel, assembler instructions/capacity/immediate and renderer single-cleanup
+patch. Original bootstrap live session 97542 in build/
+extended-assembler-immediate-bootstrap.log. No native compiler green claimed.
+Older capacity image/full test and focused native check retain their evidence;
+repeat actual exception compilation only on newly built resident compiler.
+
+Fresh renderer probe ended with COMMAND OK but screen expectation timed out:
+NativeTextBasePresent changes the displayed surface, so expecting a text answer
+before restoring it is an invalid oracle. Preserve first probe as inconclusive,
+not a renderer failure. New build/text-base-extended-restored-probe.py restores
+the display within a wrapper before returning its Bool and is live session
+95025. Original full TextFrameDemo COMMAND ERROR remains independently valid
+and unresolved. No completed graphics, installer or release pass claimed.

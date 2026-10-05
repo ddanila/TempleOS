@@ -1,5 +1,5 @@
 diff --git a/Compiler/I386/TopAssembly.HC b/Compiler/I386/TopAssembly.HC
-index 86703f9b..2b49c49c 100644
+index 86703f9b..26871e6b 100644
 --- a/Compiler/I386/TopAssembly.HC
 +++ b/Compiler/I386/TopAssembly.HC
 @@ -8,7 +8,7 @@ U0 I386FrontendTopName(CI386Frontend *state,U8 *dst,U8 *src)
@@ -46,7 +46,18 @@ index 86703f9b..2b49c49c 100644
            if(opcode==0 && cc->token==TK_IDENT && cc->cur_str &&
                (!StrCmp(cc->cur_str,"DS") || !StrCmp(cc->cur_str,"ES") ||
                 !StrCmp(cc->cur_str,"FS") || !StrCmp(cc->cur_str,"GS"))) {
-@@ -199,19 +202,31 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+@@ -189,6 +192,10 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+                 (src.kind==1 || src.kind==2 && src.size==4)) {
+               I386FrontendAsmByte(state,bytes,&count,0x8B);
+               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
++            } else if(opcode==0 && dst.kind==1 && dst.size==4 &&
++                src.kind==3 && src.value>=I32_MIN && src.value<=U32_MAX) {
++              I386FrontendAsmByte(state,bytes,&count,0xB8+dst.register_code);
++              I386FrontendAsmDword(state,bytes,&count,src.value);
+             } else if(opcode==0 && dst.kind==2 && dst.size==4 &&
+                 src.kind==1 && src.size==4) {
+               I386FrontendAsmByte(state,bytes,&count,0x89);
+@@ -199,19 +206,31 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
                I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
              } else if(opcode==2 && dst.kind==1 && src.kind==1 &&
                  dst.size==4 && src.size==4) {
@@ -81,7 +92,7 @@ index 86703f9b..2b49c49c 100644
          } else if(!StrCmp(name,"CALL")) {
            if(cc->token==TK_IDENT && cc->cur_str && !StrCmp(cc->cur_str,"U32")) {
              I386FrontendAsmOperand(state,cc,&dst);
-@@ -229,7 +244,8 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+@@ -229,7 +248,8 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
              calls[call_count].offset=count; call_count++;
              I386FrontendAsmDword(state,bytes,&count,0);
            }
@@ -91,7 +102,7 @@ index 86703f9b..2b49c49c 100644
            if(!StrCmp(name,"JMP") && cc->token==TK_IDENT && cc->cur_str &&
                I386FrontendAsmReg(cc->cur_str)>=0) {
              I386FrontendAsmOperand(state,cc,&dst);
-@@ -240,9 +256,12 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+@@ -240,9 +260,12 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
              if(cc->token!=TK_IDENT || branch_count>=64) I386FrontendUnavailable(state);
              I386FrontendTopName(state,branches[branch_count].name,cc->cur_str);
              I386FrontendLex(state,cc);
