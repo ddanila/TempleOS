@@ -151,6 +151,9 @@ def main():
         try:
             report['volume_audit'] = auditor['verify_mutated_volume'](candidate)
             persisted = auditor['mutated_file_contents'](candidate, {'/Probe/CacheInclude.HC'})
+            report['fixture_persisted'] = '/Probe/CacheInclude.HC' in persisted
+            if not report['fixture_persisted']:
+                raise ValueError('Include fixture was never persisted; inspect the earlier boot/oracle failure')
             report['persisted_source_unchanged'] = persisted.get('/Probe/CacheInclude.HC') == CODE.encode('ascii')
             if not report['persisted_source_unchanged']:
                 raise ValueError('Persisted include source differs from the original fixture')

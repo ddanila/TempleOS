@@ -9436,3 +9436,19 @@ happy-path original/document/removal/default-name parity is live in
 build/public-resident-propagation-parity. Neither runtime gate is complete yet.
 Earlier full workstation and both retained builders remain live and progress;
 do not treat their earlier source epoch results as propagation-fix evidence.
+
+Propagation module binding correction (2026-10-05):
+Both fresh runtime runs terminate during boot with FILES REJECT load reclaimed,
+before user headers and before writing the include fixture. This is a kernel
+module import-binding rejection, not the allocation-failure verdict. Kernel's
+FileRuntime allowlist still held 29 providers and omitted the new SysTry and
+SysUntry imports. Add existing published provider indices 40/41 and resize
+only the file-loader binding list/stack buffer to 31. The explicit module
+import audit already requires those helpers; no broad binding relaxation.
+The propagation patch now includes this binding correction and applies cleanly
+to main. Fresh bootstrap and dependent cross build run under the
+file-resident-public-propagation-bound source epoch. Runtime tests must be
+rerun on its resulting image. The test report now identifies an absent include
+fixture separately from changed persisted bytes, retaining boot error evidence.
+Original parity oracles passed, but neither rejected image reached native
+behavior qualification. The candidate remains unpromoted.
