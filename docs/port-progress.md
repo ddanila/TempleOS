@@ -12324,3 +12324,20 @@ M7 acceptance, coverage audit and support matrix opening checkpoints refreshed
 to name the complete candidate and distinguish older Caller native/package
 passes from its still-open full/native/release gates. Historical evidence kept;
 no old-source result relabeled as a current-source pass.
+
+
+### Original binary document compatibility requalified (2026-10-05)
+
+`build/text-run-failure-original-binary-compat/result.json` terminal PASS on the
+complete text-run/failure-coverage cross image: native DocBinaryPersistenceCheck
+creates the37-byte canonical sprite/bin document, original x64 TempleOS reads
+and saves it, and exported NativeRoundTrip.DD matches every byte. Source image
+unchanged. This qualifies that binary fixture, not all original document forms
+or the eventual native installed image. Styled bidirectional compatibility still
+awaits this epoch's three-boot session output.
+
+The fresh20-job debugger regression has completed EAX and ECX register jobs:
+both five cycles /49 commands PASS at486withoutFPU/8MiB with unchanged source
+image and exact VGA. Aggregate still running; no20-job PASS claimed.
+Current candidate full/native and earlier Caller full-chain no-FPU runs were
+confirmed live. No promotion or release claim.
