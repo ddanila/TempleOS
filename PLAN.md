@@ -9890,3 +9890,26 @@ The resident include test's help/report wording no longer hardcodes ABI-45
 for the allocation-failure scope; source-layout hashes already identify the
 actual tested candidate. CLI help and diff checks pass; runtime behavior is
 unchanged and existing evidence files remain untouched.
+
+Public Cd/current resident-cache integration candidate prepared (2026-10-05):
+Both compressed and ordinary mutation cold-cache gates fail at public Cd;
+native cache/child checks complete before Undefined identifier. This drives
+integration rather than removing the directory-state requirement.
+A separate main-only fork checkout in
+build/file-cd-resident-integrated-prototype combines the archived current
+parent/write/cache code with TaskCd.HC, public _CD binding, service callback
+and declaration. File services advance to ABI 47 (one additional callback);
+the matching service-size assertion and auditor version advance together.
+The old Cd prototype's private cache and storage changes are not copied.
+Running ABI-46 native installation/generation sources remain unchanged.
+
+The complete candidate is archived in
+docs/patches/i386-public-cd-resident-integrated-candidate.patch and applies
+cleanly to current main. The initial cross-build stopped because this new
+checkout lacked its required original-bootstrap manifest, before any native
+verdict. Its fresh two-generation original bootstrap is now running, followed
+by the cross build only on bootstrap success. Logs:
+build/file-cd-resident-integrated-bootstrap.log and
+build/file-cd-resident-integrated-build.log. Runtime Cd/cold-cache parity,
+full workstation and native generations are required after successful build;
+this candidate is not promoted or qualified merely by patch applicability.
