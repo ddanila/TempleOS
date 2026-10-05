@@ -12399,3 +12399,32 @@ original compatibility now uses that snapshot in
 `build/text-run-failure-original-style-compat`. It does not assume completion
 of the full three-boot session. No current combined runtime/native/full-suite
 PASS or release claim yet.
+
+
+### Redraw combination still fails undo; arrival capture prototype (2026-10-05)
+
+`build/text-run-redraw-focused/result.json` terminal FAIL at continuous typing
+undo. Captured VGA showsab after undoingabc. No subsequent large-source/allocation
+checks in that combined session completed. Earlier redraw-only full-workstation
+PASS remains source-specific; bounded redraw is insufficient for reliable
+arrival-time grouping under the current run conditions. No budget/expectation
+relaxed. Combined native build stays frozen and running.
+
+New isolated `build/key-arrival-candidate` starts from the combined patch.
+Incremental `docs/patches/i386-key-arrival-capture-prototype.patch` records a
+private timestamp per raw queue slot at IRQ-safe publication, from the existing
+scheduler clock, and captures that timestamp before a successful raw pop.
+Overflow does not overwrite retained timestamps; head/count ordering remains.
+This is only the capture layer. It has apply-check PASS, not build/runtime
+qualification, and does not fix undo yet. Next, transport event arrival time
+through decoded events and job-backed public keyboard messages, with explicit
+private job ownership/cleanup and unchanged public CJob layout, filtering and
+scan semantics; then group undo by arrival time. Do not repurpose public scan
+bits/res fields, bypass filters, or lengthen the grouping window.
+
+`build/text-run-failure-original-style-compat/result.json` terminal PASS for the
+preceding failure-coverage first-boot snapshot: original78-byte native styled
+round trip is exact; original-authored79-byte document then imports and saves
+exactly on i386486withoutFPU/8MiB (five commands,46.161secondstartup).
+Snapshot hash6bb195a896db9eb495dddf6b8bd5f8b8a83e9f499000bfd4c563d33636995a3a
+unchanged. This does not imply the complete three-boot or newest-source PASS.

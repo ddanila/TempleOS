@@ -1,0 +1,32 @@
+--- a/Kernel/I386/KbcInput.HH
++++ b/Kernel/I386/KbcInput.HH
+@@ -6,2 +6,3 @@
+   CI386KbcQueue queue;
++  I64 arrival_jiffies[64],last_arrival_jiffy; //Private, aligned with raw ring slots.
+   CI386Scheduler *scheduler;
+--- a/Kernel/I386/KbcInput.HC
++++ b/Kernel/I386/KbcInput.HC
+@@ -9,2 +9,3 @@
+   I386KbcQueueInit(&input->queue);
++  input->last_arrival_jiffy=0;
+   input->scheduler=scheduler; input->waiter=0; input->read_cancelled=0;
+@@ -17,2 +18,8 @@
+   if (input && input->scheduler) {
++    if(input->queue.count<64) {
++      if(input->scheduler->jiffies)
++        input->arrival_jiffies[(input->queue.head+input->queue.count)&63]=
++          *input->scheduler->jiffies;
++      else input->arrival_jiffies[(input->queue.head+input->queue.count)&63]=0;
++    }
+     result=I386KbcQueuePut(&input->queue,data,status);
+--- a/Kernel/I386/KbcInputRead.HC
++++ b/Kernel/I386/KbcInputRead.HC
+@@ -18,3 +18,7 @@
+   registration.cancelled=FALSE; registration.cancelling=FALSE;
+-  while (!I386KbcQueueGet(&input->queue,data,status)) {
++  while (TRUE) {
++    if(input->queue.count) {
++      input->last_arrival_jiffy=input->arrival_jiffies[input->queue.head];
++      if(I386KbcQueueGet(&input->queue,data,status)) break;
++    }
+     if (!wait || self==s->root) { I386IrqRestore(flags); return FALSE; }
