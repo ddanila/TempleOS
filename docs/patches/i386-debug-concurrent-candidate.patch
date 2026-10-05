@@ -1,5 +1,5 @@
 diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
-index 30b15c64..9ba3e010 100644
+index 30b15c64..1a3e62ff 100644
 --- a/Kernel/I386/ConsoleRuntime.HC
 +++ b/Kernel/I386/ConsoleRuntime.HC
 @@ -87,17 +87,27 @@ U8 console_diagnostic_filename[256];
@@ -39,7 +39,7 @@ index 30b15c64..9ba3e010 100644
  Bool ConsoleInit(CI386ConsoleConfig *config)
  {
    CI386Task *task=I386TaskSelf;
-@@ -397,16 +408,41 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
+@@ -397,16 +408,42 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
    console_doc_exports[134].str="_FILE_WRITE";
    console_doc_exports[134].val=(&FileWrite+0)(U64);
    console_doc_exports[135].str="_FILE_READ";
@@ -74,16 +74,17 @@ index 30b15c64..9ba3e010 100644
    }
    console_config=config; dbg.fun_seg_cache=native_fun_seg_cache;
 +  NativeBreakpointInstall;
-+  config->files->public_reader(&NativeResidentReadBridge);
 +  if(config->defer_root_headers) return TRUE;
 +  return ConsoleRootHeaders;
 +}
 +Bool ConsoleRootHeaders()
 +{
++  //Publish the resident reader with root declarations, after early diagnostics.
++  console_config->files->public_reader(&NativeResidentReadBridge);
    //The immortal CPU root owns shared declarations; children inherit its scope.
    KernelLog("ROOT USER HEADERS begin\n");
    if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
-@@ -435,6 +471,7 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
+@@ -435,6 +472,7 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
    services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
    services->cancel_read=&ConsoleCancelRead;
    services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
@@ -120,7 +121,7 @@ index 9162d571..ae915b15 100644
  };
  #endif
 diff --git a/Kernel/I386/Debugger.HC b/Kernel/I386/Debugger.HC
-index b7186ce0..3f60621d 100644
+index b7186ce0..a12ea796 100644
 --- a/Kernel/I386/Debugger.HC
 +++ b/Kernel/I386/Debugger.HC
 @@ -1,19 +1,200 @@
@@ -334,7 +335,7 @@ index b7186ce0..3f60621d 100644
    if(backup) I386HeapFree(console_config->heap,backup);
    if(task->cleanup) (*task->cleanup)(task);
  }
-@@ -46,9 +227,44 @@ CHashFun *ConsoleDebugFunction(U8 *address)
+@@ -46,9 +227,47 @@ CHashFun *ConsoleDebugFunction(U8 *address)
  }
  U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL)
  {
@@ -348,6 +349,8 @@ index b7186ce0..3f60621d 100644
 +    I386TaskSelf->debug_cpu_frame.eip=(ip+0)(U64);
 +    I386TaskSelf->rip=(ip+0)(U64);
 +  }
++  //Public RIP edits and explicit G(ip) select the same physical return IP.
++  if(I386TaskSelf->debug_cpu_active) I386TaskSelf->debug_cpu_frame.eip=(I386TaskSelf->rip+0)(U64);
 +  if(I386TaskSelf->debug_cpu_active) I386TaskSelf->debug_cpu_frame.eflags&=~0x100;
 +  if(I386TaskSelf->debug_cpu_active) {
 +    if(BptFind(I386TaskSelf->debug_cpu_frame.eip(U8 *))) {
@@ -375,6 +378,7 @@ index b7186ce0..3f60621d 100644
 +    I386TaskSelf->debug_cpu_frame.eip=(ip+0)(U64);
 +    I386TaskSelf->rip=(ip+0)(U64);
 +  }
++  I386TaskSelf->debug_cpu_frame.eip=(I386TaskSelf->rip+0)(U64);
 +  LBts(&I386TaskSelf->task_flags,TASKf_DISABLE_BPTS);
 +  NativeBptApply(I386TaskSelf,FALSE);
 +  I386TaskSelf->debug_cpu_frame.eflags|=0x100;
@@ -382,7 +386,7 @@ index b7186ce0..3f60621d 100644
  }
  U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
    Bool is_exception=FALSE)
-@@ -60,7 +276,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+@@ -60,7 +279,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
    U8 *backup,*p=&saved,*q=&console_text,line[256];
    I64 i,length=0,decoded,ch,failure=0;
    Bool raised=FALSE;
@@ -391,7 +395,7 @@ index b7186ce0..3f60621d 100644
    //Register cleanup before acquiring the display buffer.
    backup=NULL;
    try {
-@@ -68,10 +284,10 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+@@ -68,10 +287,10 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
      if(!backup) throw('OutMem');
      for(i=0;i<153600;i++) backup[i]=console_planes[i];
      for(i=0;i<sizeof(CI386Text);i++) p[i]=q[i];
@@ -405,7 +409,7 @@ index b7186ce0..3f60621d 100644
      I386TextInit(&console_text,console_planes,sys_font_std);
      I386TextWrite(&console_text,"TempleOS i386\nHolyC debugger\n\n");
      if(is_exception) {
-@@ -96,7 +312,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+@@ -96,7 +315,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
        else I386TextWrite(&console_text,"unknown");
      }
      I386TextWrite(&console_text,"\ndbg> "); ConsolePresent;
@@ -414,7 +418,7 @@ index b7186ce0..3f60621d 100644
        decoded=NativeReadKey(console_config->reader,&event,TRUE);
        if(decoded<0) {length=0;I386TextWrite(&console_text,"\nInput reset\ndbg> ");}
        else if(decoded && event.type==2) {
-@@ -106,7 +322,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+@@ -106,7 +325,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
          else if(ch==10) {
            line[length]=0; I386TextPut(&console_text,10);
            ConsoleSource(line,"Debugger.HC"); length=0;
@@ -423,7 +427,7 @@ index b7186ce0..3f60621d 100644
          } else if(ch>=32 && ch<=255 && length<255) {
            line[length++]=ch; I386TextPut(&console_text,ch);
          }
-@@ -122,11 +338,11 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+@@ -122,11 +341,11 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
      NativeTerminalText()->dirty_first=0; NativeTerminalText()->dirty_last=60;
      I386HeapFree(console_config->heap,backup); ConsolePresent;
    }
@@ -440,7 +444,7 @@ index b7186ce0..3f60621d 100644
    }
    sys_focus_task=focus;
    if(raised) throw(failure,TRUE);
-@@ -166,7 +382,7 @@ U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception)
+@@ -166,7 +385,7 @@ U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception)
  {
    CHashFun *fun=NULL;
    I64 i;
@@ -449,7 +453,7 @@ index b7186ce0..3f60621d 100644
        exception=='Compiler' || exception=='OutMem') return;
    for(i=0;i<TASK_EXCEPT_CALLERS && !fun;i++)
      fun=ConsoleDebugFunction(task->except_callers[i]);
-@@ -178,10 +394,23 @@ Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
+@@ -178,10 +397,23 @@ Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
    CI386Task *task=I386TaskSelf;
    U8 *src=frame,*dst;
    I64 i;
@@ -475,7 +479,7 @@ index b7186ce0..3f60621d 100644
    task->debug_cpu_active=TRUE; return TRUE;
  }
  U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
-@@ -190,9 +419,14 @@ U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
+@@ -190,9 +422,14 @@ U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
    U8 *src=&task->debug_cpu_frame,*dst=frame;
    I64 i;
    if(!task->debug_cpu_active || !(GetRFlags&0x200)) KernelStop;

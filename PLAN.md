@@ -11349,3 +11349,27 @@ regressions still need terminal PASS. Keep this source fixed throughout that
 qualification; any direct-IP implementation belongs to a later source epoch.
 Frozen installed G2 speaker/resource gates pass; remaining gates continue.
 No root candidate promotion or release-complete claim.
+
+Public RIP edit red; resident bridge publication deferred with root headers
+(2026-10-05): build/debug-public-ip-red reaches INT3, accepts direct Fs->rip
+editing and G, then times out at the stored-result check. The saved CPU return
+frame still controls default G. Candidate NativeDebugGo and NativeDebugStep
+now copy the public RIP into saved eip after optional explicit-IP selection;
+G2 shares the G path. Stack/flags edits and other-task controls remain separate.
+
+Full split diagnostics still fail after all six BOOTSTRAP SOURCE records.
+ConsoleInit installed the resident reader bridge before phase 0, while early
+bootstrap fixtures enforce exact compiler allocation reclamation. The cache's
+role in that failure is a working hypothesis. Candidate now installs this
+bridge in ConsoleRootHeaders, alongside root declaration publication after
+early diagnostics. Export binding remains available before phase 0; normal
+boot still uses the same root publication function. No assertions are removed.
+
+Updated full patch applies cleanly to main. Fresh source bootstrap and full
+--test/public-IP/concurrent/ownership/managed-kill pipeline are running or
+queued in build/debug-concurrent-reader-ip-pipeline.json; candidate output
+build/debug-concurrent-prototype/build/debug-concurrent-reader-ip. Neither
+new correction is yet a qualified build/runtime green. G2 native chain has
+advanced to gen2-selfhost; frozen installed DolDoc joins speaker/resource
+with PASS, workstation remains pending. Main OS is unpromoted and release
+completion remains open.
