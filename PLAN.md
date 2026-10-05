@@ -10106,3 +10106,22 @@ image with TCG 486,-fpu / 8 MiB. It checks exact recovery, shared data/code
 accounting and that the reported arena fits guest RAM. Final resource verdict
 is pending. Three-boot DolDoc persistence and broader installed/current
 workstation/native generations remain live or pending, not release completion.
+
+Promoted main no-FPU six-module native construction green (2026-10-05):
+build/public-file-find-no-fpu-native-build/result.json passes all six retained
+modules: CompilerRuntime, CompilerProbe, ConsoleRuntime, FileRuntime,
+MemoryRuntime and Startup. The preserved qemu/command.json independently
+confirms machine pc, TCG, CPU 486,-fpu and 16 MiB RAM on its disposable source
+image. The long-lived builder/QEMU handles are now terminal, with an actual
+pass report and successful process log; no timeout-based restart occurred.
+This proves retained native construction without an FPU for promoted ABI-40
+main, not just interactive boot, and does not prove full flat installation or
+current integrated ABI-47 construction.
+
+The exact equivalent current integrated-source build is now running in
+build/file-cd-resident-integrated-no-fpu-native-build with --accel tcg
+--cpu 486,-fpu --command-timeout 7200, its matching image and cross export
+references, and 16 MiB RAM. This remains pending and preserves separate
+evidence from the KVM integrated builder. Current KVM generation builders,
+workstation QEMU and installed DolDoc driver were directly revalidated live.
+Peak resource, installed persistence and final native generations remain open.
