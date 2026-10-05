@@ -12458,3 +12458,27 @@ all three persistence boots at486withoutFPU/8MiB. Starts47.661/41.262/43.968seco
 source epoch retains its separate full-suite undo failure. Original binary and
 styled bidirectional compatibility passes already recorded. These are not
 arrival-time candidate acceptance and do not establish release completion.
+
+
+### Corrected keyboard hook declaration; message regression prepared (2026-10-05)
+
+First arrival-time cross-build terminal FAIL, compiler-log identifies the timed
+PostKey call's sixth argument. Inspection found that the scripted edit had
+added arrival to Spawn's declaration instead of Post's. Spawn restored to seven
+original arguments, Post now six and Scan five. Earlier failed build retained.
+Corrected1,270-source/two-generation original bootstrap PASS; fresh cross build
+runs in `build/key-arrival-kernel-v2`. Archive updated; apply-check PASS.
+
+New `tools/test-i386-key-arrival-messages.py` checks hook publication,1500ms
+consumer delay with unchanged100timestamp, public PostMsg untimed fallback,
+public ScanMsg argument parity, two exact root-heap cleanup cycles and IF
+restoration. Posts and scans execute in the same submitted command so synthetic
+keys cannot leak to the prompt. Command bounds and syntax PASS; runtime pending.
+Existing continuous/separated undo remains the user-visible acceptance gate.
+Filtering, overflow and macro/cancellation lifecycle still need qualification.
+
+Preceding complete text-run/failure-coverage debugger regression is now terminal
+PASS all20jobs in `build/text-run-failure-debugger-regression/result.json`, with
+five-cycle repeat jobs and corrected step-stack fixture. This is cross-image
+7d1a168ebed992d747ba268b96f2cfc9678c8bad91cc1773289feeadabe548da,
+not arrival-time or redraw-combined source qualification. Release remains open.

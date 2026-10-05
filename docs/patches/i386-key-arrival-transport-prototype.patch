@@ -79,12 +79,11 @@
  public extern U0 I386KeyboardReset(CI386KeyboardState *state);
 --- a/Kernel/I386/KeyboardMessages.HC
 +++ b/Kernel/I386/KeyboardMessages.HC
-@@ -4,5 +4,5 @@
-   CTask *(*spawn)(U0 (*entry)(U8 *data),U8 *data,U8 *name,I64 cpu,
--    CTask *parent,I64 stack_size,I64 flags);
-+    CTask *parent,I64 stack_size,I64 flags,I64 arrival);
-   U0 (*post)(CTask *task,I64 code,I64 a,I64 b,I64 flags);
+@@ -5,4 +5,4 @@
+     CTask *parent,I64 stack_size,I64 flags);
+-  U0 (*post)(CTask *task,I64 code,I64 a,I64 b,I64 flags);
 -  I64 (*scan)(I64 *a,I64 *b,I64 mask,CTask *task);
++  U0 (*post)(CTask *task,I64 code,I64 a,I64 b,I64 flags,I64 arrival);
 +  I64 (*scan)(I64 *a,I64 *b,I64 mask,CTask *task,I64 *arrival);
    U0 (*free)(U8 *address);
 @@ -58,3 +58,3 @@
