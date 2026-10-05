@@ -2567,7 +2567,7 @@ index 716d308f..58c7a845 100644
      if not (0<boot_end<510 and 0<stage_end<4096):
          raise ValueError('Boot code boundaries exceed reserved regions')
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index 75ae27fe..1e77acc1 100644
+index 75ae27fe..50022e47 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
 @@ -43,6 +43,17 @@ def kernel_flag_disk_offset(exports, symbol):
@@ -2696,7 +2696,7 @@ index 75ae27fe..1e77acc1 100644
      total,size,count,records,strings=struct.unpack_from('<5I',module,12)
      if (total!=len(module) or size<1024 or size&7 or
 -            count!=(81 if source_built else 65) or
-+            count!=(107 if source_built else 87) or
++            count!=(109 if source_built else 87) or
              records!=32+size or strings!=records+16*count or strings>total):
          raise ValueError('Invalid original RedSea creator layout')
      rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
@@ -2714,8 +2714,8 @@ index 75ae27fe..1e77acc1 100644
      if source_built: expected_imports.add(b'I386ExecutionBreakPoll')
 -    if exported!=expected or len(calls)!=(75 if source_built else 59) or \
 -            len(polls)!=(16 if source_built else 0) or \
-+    if exported!=expected or len(calls)!=(98 if source_built else 78) or \
-+            len(polls)!=(20 if source_built else 0) or \
++    if exported!=expected or len(calls)!=(100 if source_built else 78) or \
++            len(polls)!=(22 if source_built else 0) or \
              any(offset<1 or offset>size-4 or module[32+offset-1]!=0xE8 or
                  module[32+offset:32+offset+4]!=b'\0'*4 for offset in polls) or \
              imports!=expected_imports or \

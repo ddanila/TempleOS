@@ -13023,3 +13023,21 @@ calls includes three new extent helpers; exact verifier updated and artifact PAS
 Source-built creator poll/count extension remains provisional until real native
 source-build gate reaches it; no claim of qualification from raw-module checks.
 Root OS remains unpromoted ABI40; latest caller candidate cumulative patch updated.
+
+
+Source-built creator exact-contract red/green (2026-10-05):
+New tools/test-i386-native-create-build.py invokes real I386BuildModule without
+the template flag, retains the emitted module and checks exact creator exports,
+imports, relocated break-poll callsites and source identity. Initial native compile
+passed but old provisional107/98/20 record/call/poll verifier rejected artifact.
+Observed source-built module has109 records,100 calls,22 polls and nine exports.
+Corrected exact109/100/22 contract verifies retained artifact and a fresh real
+compile: build/native-create-record-contract-green/result.json PASS, all input
+hashes unchanged. Raw-module87/78 contract remains distinct and unchanged.
+Updated cumulative public Caller patch applies to current main. Separate host
+contract candidate build/public-caller-archive-current has identical all1270
+bootstrap source hashes; both actual generation binaries and final overlay hashes
+also verified before immutable bootstrap reuse. Pure host-verifier change; reuse
+is not a new bootstrap rebuild. Full corrected suite now running session24089,
+build/public-caller-contract-kernel. Older provisional-count suite remains frozen.
+Native generation2 rebuilds remain live; release qualification still open.
