@@ -12059,3 +12059,21 @@ Then rebuild/install/reboot two generations with identical native payload,
 repeat required 8 MiB/no-FPU/workstation/resource gates and rerun debugger
 trace regressions on that image. Code-size efficiency can add headroom but
 must not replace a scalable boot-image contract. Full release remains open.
+
+Extended boot-load TDD begins (2026-10-05):
+New tools/test-i386-extended-boot-load.py places a distinctive 16-byte marker
+at the end of a 640 KiB payload range beyond the legacy 487424-byte ceiling,
+inside the existing reserved boot area. It requires that tail at an explicitly
+selected high-memory payload base, then ordinary console arithmetic; snapshot
+source/candidate preservation and unchanged filesystem bytes remain checked.
+Fresh output required; payload is bounded before the volume and below 8 MiB.
+This is an independent load-reach oracle, not a complete payload-header or
+installation test. No declared-length metadata for a future format is guessed.
+
+The legacy parser-stack disk runs this red in build/extended-boot-load-red
+with target base 0x100000. No result yet claimed. Implement the extended loader
+only alongside explicit length/entry/handoff contracts and validate the actual
+oversized kernel, not just this padded marker fixture. Follow with truncated/
+oversized/low-memory rejection, installed boot-area preservation, two native
+generations and exact source/code/resource checks. Physical hardware remains
+deferred; current full release qualification remains incomplete.
