@@ -10521,3 +10521,29 @@ not qualified or promoted. The full source archive is
 Its fresh original bootstrap runs under PID 3636946. An earlier accidental
 bootstrap launch before register edits was explicitly stopped; its outputs
 are not register evidence. Cross build and runtime green remain required.
+
+Captured EAX inspection/editing first runtime green (2026-10-05):
+the register candidate passes fresh original two-generation bootstrap;
+all 1269 source-manifest hashes are independently rechecked. Cross build,
+31 FileRuntime binding guard and 386 boot audit pass (96 BIOS / 33 protected
+mode instructions). Native kernel stays 483208 bytes. Candidate image SHA:
+e4982d319372819149be514d3c3a4b63bc90c9238ebf6d39055de717a520cc64.
+
+The first candidate runtime run failed only because pointer assignment prints
+its dynamic address. A visually inspected screenshot establishes this fixture
+mismatch, not an OS failure. The checker now evaluates the assignment's
+non-null comparison and expects 1, avoiding address-dependent VGA output.
+build/debug-register-edit-nonnull-green/result.json passes 17 commands on
+486,-fpu / 8 MiB, startup 25.954454 seconds, all exact VGA checkpoints and
+unchanged source. TaskRegAddr reads captured EAX=0x11223344; writing the
+original I64 pointer changes the next stepped store and final G result to
+0x55667788. Mode/flags and shell recovery pass. Five repeated cycles run in
+build/debug-register-edit-repeat; the matching stable-output baseline red
+runs in build/debug-register-edit-nonnull-red. Their results remain pending.
+This is one register's semantic green, not full debugger or release coverage.
+
+The unchanged single-step candidate now passes six-module native construction
+in build/debug-single-step-native-build. Its dependent retained installation
+is directly confirmed live as PID 3640181. Full native generations remain
+pending. The register candidate has not yet passed its own native generation
+or full workstation gates and remains an archived isolated implementation.

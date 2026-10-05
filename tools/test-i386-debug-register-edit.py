@@ -19,7 +19,7 @@ def commands(cycles=1):
             continue
         source, answers, interaction = check
         heading = interaction['initial_rows']
-        inspect = 'CpuReg=TaskRegAddr(Fs,0);'
+        inspect = '(CpuReg=TaskRegAddr(Fs,0))!=0;'
         value = 'CpuReg[0]==0x11223344;'
         edit = 'CpuReg[0]=0x55667788;'
         events = interaction['events']
@@ -27,9 +27,9 @@ def commands(cycles=1):
         prefix = events[2]['expect_rows'][:-1]
         events[3:3] = [
             {'text': inspect}, {'key': 'ret'},
-            {'expect_rows': prefix + ['dbg> ' + inspect, 'dbg> '], 'label': 'register-address'},
+            {'expect_rows': prefix + ['dbg> ' + inspect, '1', 'dbg> '], 'label': 'register-address'},
             {'text': value}, {'key': 'ret'},
-            {'expect_rows': prefix + ['dbg> ' + inspect, 'dbg> ' + value, '1', 'dbg> '], 'label': 'captured-eax'},
+            {'expect_rows': prefix + ['dbg> ' + inspect, '1', 'dbg> ' + value, '1', 'dbg> '], 'label': 'captured-eax'},
             {'text': edit}, {'key': 'ret'},
         ]
         # Returning from S opens a fresh debugger document.
