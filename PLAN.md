@@ -7,8 +7,9 @@ public resident-cache/Cd candidate is ABI 47 and is not yet promoted. Its fresh
 original bootstrap/cross/386 audits, 32-command public Cd contract, 32-command
 compressed cold-cache/directory-state contract, 29-command allocation recovery
 and 45-command resident twenty-cycle recovery pass. Ordinary cold mutation
-and combined include/DolDoc/write/child also pass. Full workstation and fully
-native generation qualification are still running. The preceding ABI-46 candidate already passes
+and combined include/DolDoc/write/child also pass. Its full 513-command
+workstation and six native retained modules pass; installed-generation
+qualification is still running. The preceding ABI-46 candidate already passes
 full native twelve-module installation/audit and is rebuilding generation two.
 Neither candidate's partial evidence establishes complete M7 or release readiness.
 
@@ -10205,3 +10206,23 @@ is directly confirmed live; second full flat construction/audits and twelve-
 module/flat/boot-area comparison are still required. Integrated ABI-47 retained
 and no-FPU builders, workstation, empty/dotless cold checks remain pending.
 No earlier-source result establishes final integrated-image qualification.
+
+Integrated full workstation/native retained greens (2026-10-05):
+build/file-cd-resident-integrated-workstation/result.json passes all 513
+commands on 486,-fpu / 8 MiB: startup 35.971482 seconds, long-document VGA
+update 0.268792 seconds, exact checkpoints and twenty document-development
+heap-recovery cycles. build/file-cd-resident-integrated-native-build/result.json
+passes all six retained modules; native FileRuntime is 365483 bytes with
+847 records and 124 exports. Its native pipeline advances to retained-install.
+These are this source epoch's own results, not earlier cache/Cd prototype passes.
+
+The native pipeline process is directly revalidated live. A dependent installed
+workflow chain in build/file-cd-resident-integrated-installed-workflows.py
+requires both full native selfhost and installed 386 audit passes before
+running full no-FPU workstation, three-boot DolDoc persistence, captured speaker
+and fresh pinned resource tests on disposable images/copies of its target.
+Each has an independent verdict/log under build/file-cd-resident-integrated-
+installed-{workstation,doldoc-session,speaker,resource-pinned}; all four are
+required for the chain pass. State is ...-installed-workflows.json. These are
+queued, not completed. Second native generation, fully no-FPU construction,
+empty/dotless contracts and remaining M7/release requirements stay open.
