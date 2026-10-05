@@ -12423,3 +12423,20 @@ fails at the same TextFrameDemo command; source-proven cleanup fix did not
 resolve the original trigger. Preserve exact input artifacts and native pass.
 Next investigate exception/allocator failure with complete reserved/live/free
 measurements while independent native generations run. Full release open.
+
+Renderer reservation diagnostic advances (2026-10-05):
+Revalidated current root main/fork and clean worktree. Native generations is
+confirmed live PID 3790555, first gen1-install/replace stage (fresh current
+handle supersedes earlier launch PID assumptions); preserve same output and
+candidate source pins. No installation pass claimed.
+
+New full-session diagnostic build/text-reservation-session.py, generated source
+build/text-reservation-instrumented-source.py, is live PID 3791133/session27112.
+It records data and code heap used_u8s and alloced_u8s before rendering, then
+calls NativeTextBasePresent and restores the display before checking Bool at
+the exact full-session phase preceding TextFrameDemo. This distinguishes direct
+renderer allocation/display failure from later demo/exception/break handling.
+Previous task-only numbers remain valid but insufficient for memory diagnosis.
+No reservation measurements or new runtime pass claimed yet. Continue current
+handles; full graphics sequence, installed native generations and release remain
+open. Root OS changes remain candidate patches until integrated qualification.
