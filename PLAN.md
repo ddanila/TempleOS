@@ -10146,3 +10146,17 @@ build/public-resident-write-parent-installed-resource-pinned with TCG
 486,-fpu / 8 MiB. Its verdict remains pending; no input manifest is retrofitted
 onto older measured evidence. This improves reproducible release validation
 without changing the OS or the running candidate sources.
+
+Fresh pinned installed resource profile green (2026-10-05):
+build/public-resident-write-parent-installed-resource-pinned/resource-result.json
+passes with recorded disk SHA-256
+2ce19d94fd33275f2ab9402821406b378a4688fce8d3865c89e9412825009785,
+TCG 486,-fpu / 8 MiB, unchanged source and verified preserved QEMU profile.
+Twenty development cycles measure 1352496 live baseline, 1356112 live peak,
+1365504 reserved peak and 3616 temporary live growth; the arena fits guest
+RAM. A completed-evidence parser check accepts the correct pinned input and
+rejects both another image and an altered preserved CPU command. Test fixtures
+are temporary copies; actual raw evidence is unchanged. This closes the new
+resource-provenance check for this installed source epoch. Current integrated
+native/FPU-free construction and workstation, second native generation and
+installed three-boot DolDoc remain pending, with their actual handles rechecked.
