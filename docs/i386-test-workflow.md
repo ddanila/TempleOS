@@ -5346,3 +5346,22 @@ fresh build/diagnostic run is required before claiming the fix works.
 An accidentally launched root bootstrap was stopped immediately; its partial
 root build/rebuild-test output is unqualified and must be refreshed if used.
 No root source changes or candidate promotion; release completion stays open.
+
+Concurrent normal-resumption fixture focus corrected (2026-10-05):
+build/debug-concurrent-interactive-traps times out at first-still-paused,
+after both CPU traps, second expression/G and IsDbgMode==1 pass. The retained
+PPM at startup-command-10-first-still-paused shows the parent root terminal,
+not a kernel failure: focus-next from terminal Two cycles to the third/root
+terminal rather than terminal One. The checker now uses TermFocus(TermOne)
+and records that command in the second terminal's expected restored history.
+The prior failure remains under its original checker identity. A fresh run
+on the same pre-binding-order image is build/debug-concurrent-explicit-focus;
+no full normal-resumption verdict is yet claimed.
+
+The binding-order-corrected source completes both original bootstrap
+generations; all 1270 manifest hashes independently match. Fresh full
+build/diagnostic qualification runs in the clone's build/debug-concurrent-bound
+with log build/debug-concurrent-bound-build.log. The earlier diagnostic
+failure stays retained and remains unresolved until this run passes.
+Other-source G2 native/installed workflows and no-FPU retry continue separately;
+none substitute for qualification of the current candidate or release scope.

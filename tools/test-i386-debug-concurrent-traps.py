@@ -35,8 +35,8 @@ def commands():
     enter('G;', two_return, 'second-resumed')
     two_return = two_return[:-1]+['> IsDbgMode;', '1', '> ']
     enter('IsDbgMode;', two_return, 'mode-retained-for-first-session')
-    events.extend([{'hotkey': 'focus-next'}, {'expect_rows': debug, 'label': 'first-still-paused'}])
-    current = debug
+    two_return = two_return[:-1]+['> TermFocus(TermOne);', '> ']
+    enter('TermFocus(TermOne);', debug, 'first-still-paused')
     enter('6*7;', debug[:-1]+['dbg> 6*7;', '42', 'dbg> '], 'first-live-debugger')
     one_return = one[:-1]+['> ConcurrentTrap;', '> ']
     enter('G;', one_return, 'first-resumed')
