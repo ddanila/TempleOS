@@ -12375,3 +12375,27 @@ Other jobs and aggregate still running. Its three-boot DolDoc session progresses
 through its first boot (at styled/blink serialization checks), not complete.
 Current full suites, native builds and no-FPU chain remain live. These results
 are retained by source epoch and do not qualify the combined redraw changes.
+
+
+### Combined candidate cross-build and preceding native rebuild (2026-10-05)
+
+Combined `build/text-run-redraw-candidate/build/text-run-redraw-kernel` cross
+build PASS:495,992-byte kernel,386 boot audit96BIOS/209protectedinstructions.
+`build/text-run-redraw-focused` now checks serialized continuous/separated undo,
+DocAllocationCheck13, three exact large-source round trips and binary
+persistence8 on486withoutFPU/8MiB in one session. Six-provider native rebuild
+starts in `build/text-run-redraw-native-build`; source is frozen.
+
+Preceding text-run-only `build/document-run-native-build-v2/result.json` now
+terminal PASS all six providers, source diskSHA256
+131e0811a989c4af38bf30240819f6750b3b8fe514272d3b106808c3d1a2c871.
+Its ConsoleRuntime1159954bytes/3707records passes the new allocation-wrapper
+relocation contract. That epoch failed full-suite undo grouping; this native
+pass does not qualify the combined redraw/failure13 source.
+
+Preceding failure-coverage DolDoc session has completed its first boot and
+created immutable `after-create.img`; reopen is running. Styled bidirectional
+original compatibility now uses that snapshot in
+`build/text-run-failure-original-style-compat`. It does not assume completion
+of the full three-boot session. No current combined runtime/native/full-suite
+PASS or release claim yet.
