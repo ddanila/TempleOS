@@ -9804,3 +9804,17 @@ in build/public-resident-write-parent-generations-pipeline.json; running state
 alone proves no qualification. All steps stop on failure. These are queued
 checks, not green verdicts. Installed no-FPU workstation, full no-FPU native
 construction, remaining M7 behavior/performance and release gates stay open.
+
+Matching candidate x86-64 regression started (2026-10-05):
+The public-write-parent candidate now runs tools/test-rebuild.py from its
+isolated source checkout, with OUT redirected to
+build/public-resident-write-parent-x64-rebuild. This preserves earlier
+bootstrap results. The driver hashes its candidate OS source files, rebuilds
+Compiler.BIN and Kernel.BIN in original x86-64 TempleOS, boots the resulting
+binaries, and rebuilds both again. Its manifest records source hashes and
+binary differences; the scope is boot/self-rebuild regression, not x86-64
+bit reproducibility or complete behavior coverage. Log:
+build/public-resident-write-parent-x64-rebuild.log. This is pending, and the
+candidate source must remain fixed while it runs. Both current i386 builders,
+workstation QEMU, and queued generation wrapper were directly revalidated
+live before launching this independent regression. No gates are waived.
