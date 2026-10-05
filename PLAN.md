@@ -12881,3 +12881,22 @@ Public FileWrite returns a positive block number (existing public-file tests
 and I386TaskFileWritePublic contract), so corrected test requires >0. Independent
 exact-content/extent/directory-size/reboot oracles remain unchanged. New run
 build/move-directory-growth-public-write session72733; no growth PASS yet.
+
+
+Prepared extent-transfer I/O recovery PASS (2026-10-05):
+build/extended-transfer-io-matrix-four/result.json PASS all eight independently
+armed real guest write/flush failures: writes1/2/3 recover source, write4
+recovers destination; flushes1/2 recover source, flushes3/4 recover destination.
+Each recovery clears journal, verifies exactly one complete IO payload, and
+validates unique filesystem ownership/bitmap (873 files,17782 owned sectors).
+Scope is prepared destination slot, not interrupted directory expansion.
+Strict trimmed memory probe now also passed the mutation reproduction's former
+failure point: FILE MOVE PROBE4 then phase1 MEMORY PROBE and PARSER MEMORY PROBE
+in build/memory-baseline-mutation-isolated/boot/debug.log. Full reproduction and
+full suite remain running; no complete suite result inferred from these markers.
+Directory-growth fixture setup corrected to DirMk(...,5), because entry_cnt is
+user capacity and implementation adds three bookkeeping entries before rounding.
+Observed prior ...8 request produced1024 rather than512; prior failure retained.
+New build/move-directory-growth-full-sector session90911 verifies512 before move,
+requires1024 afterward, same file extent/metadata/exact filler bytes and reboot.
+No growth PASS claimed yet. Existing public FileWrite >0 contract retained.

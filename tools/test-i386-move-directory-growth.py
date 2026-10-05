@@ -30,7 +30,7 @@ def main():
     locate = runpy.run_path(str(ROOT/'tools/test-i386-transfer-recovery.py'))['locate']
     services = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
     try:
-        setup = [('DirMk("C:/GrowthSource",8)&&DirMk("C:/GrowthTarget",8);', ['1']),
+        setup = [('DirMk("C:/GrowthSource",5)&&DirMk("C:/GrowthTarget",5);', ['1']),
                  ('FileWrite("C:/GrowthSource/Move.HC","MOVE",4)>0;', ['1'])]
         setup += [(f'FileWrite("C:/GrowthTarget/F{i}.HC","F",1)>0;', ['1']) for i in range(5)]
         report['prepare'] = runner(disk, args.out/'prepare', snapshot=False, accel='kvm',
