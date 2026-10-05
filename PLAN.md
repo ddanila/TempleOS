@@ -13687,3 +13687,33 @@ round trip is exact; original-authored79-byte document then imports and saves
 exactly on i386486withoutFPU/8MiB (five commands,46.161secondstartup).
 Snapshot hash6bb195a896db9eb495dddf6b8bd5f8b8a83e9f499000bfd4c563d33636995a3a
 unchanged. This does not imply the complete three-boot or newest-source PASS.
+
+
+### Arrival-time transport candidate bootstrapped (2026-10-05)
+
+Isolated `build/key-arrival-candidate` now carries raw IRQ publication time
+through decoded CI386KeyEvent, private job-owned message tail, timed scan, editor
+prefetch and undo grouping. Public CJob layout/arguments are unchanged. The
+public PostMsg wrapper and private timed post share the same input-filter path;
+public ScanMsg remains a four-argument wrapper. The tail has a signature and
+size guard; untimed messages use the existing clock fallback. Generic job Free,
+flush/discard and teardown own the whole allocation without an extra sidecar.
+IRQ masking keeps publication and timestamp assignment atomic. Undo retains the
+same one-second boundary; grouping samples event arrival rather than redraw
+completion. Private decoded-event ABI changes, so Console version40 and host
+version checks advance together; two private memory hook exports are appended.
+
+`docs/patches/i386-key-arrival-transport-prototype.patch` applies after the
+combined text-run/redraw patch (includes the earlier raw capture layer).
+Apply-check/host syntax PASS. Fresh1,270-source/two-generation original bootstrap
+PASS; cross build running in `build/key-arrival-kernel`. No native, runtime undo
+or message-lifetime qualification PASS claimed yet. Existing red captures and
+other live candidates untouched. Required next checks include delayed-consumer
+time preservation, public/synthetic message fallback, filters, overflow, flush,
+macro ownership and exact cleanup as well as unchanged undo expectations.
+
+Preceding `build/text-run-failure-doldoc-session/result.json` now terminal PASS
+all three persistence boots at486withoutFPU/8MiB. Starts47.661/41.262/43.968seconds;
+source epoch retains its separate full-suite undo failure. Original binary and
+styled bidirectional compatibility passes already recorded. These are not
+arrival-time candidate acceptance and do not establish release completion.
