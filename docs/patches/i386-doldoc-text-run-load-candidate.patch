@@ -32,8 +32,22 @@
 +          DocInsEntry(doc,text_entry);
 +          text_entry=NULL; text_tag=NULL;
 +        } catch { Free(text_tag); Free(text_entry); }
-+        continue;
++        index--; //The common increment below reaches the next boundary.
 +      } else if(source[index]=='\n' || source[index]=='\t' || source[index]==36)
          DocPutKey(doc,source[index],0);
        else return FALSE;
        index++;
+--- a/tools/test-i386-retained-build.py
++++ b/tools/test-i386-retained-build.py
+@@ -56,7 +56,10 @@
+     calls = [module[name:name + length].decode('ascii')
+              for kind, offset, name, length in rows
+              if kind == 2 and start <= offset < end]
+-    if calls.count('NativeDocCAlloc') != 4 or calls.count('NativeDocMAlloc') != 1:
++    # Four structured-record allocations, two tags, and one canonical text base.
++    if (calls.count('NativeDocCAlloc') != 4 or
++            calls.count('NativeDocMAlloc') != 2 or
++            calls.count('DocEntryNewBase') != 1):
+         raise ValueError('Guest-built document loader bypasses allocation wrappers')
+ 
+ 

@@ -13355,3 +13355,27 @@ three cycles on 486 without FPU / 8 MiB, with immutable disk/script/helper hashe
 The one-cycle existing-image red run is underway in
 `build/public-caller-large-source-red`. The original 180-second failure captures
 remain retained; this fixture uses the usual command observation timeout.
+
+
+### Text-run regression red and corrected candidate (2026-10-05)
+
+The one-cycle large-source fixture is terminal FAIL in
+`build/public-caller-large-source-red/result.json`: FileRead/size succeeded;
+DocRead did not produce its expected answer within the standard 30-second
+observation window. This is a reproducible red fixture, independently of the
+earlier 180-second OutMem captures.
+
+The first text-run cross-build explicitly reported `FAIL kernel cross-build`;
+its compiler log identifies an undefined identifier at the candidate's
+`continue` statement. This was a source syntax error, not a build timeout.
+The corrected candidate uses the common loop increment and backs up the run
+index once, with identical boundary progress. The corrected-source original
+bootstrap produced both generation ISOs; a fresh `document-run-kernel-v2`
+cross-build is running. Prior failed build retained.
+
+The archived candidate delta also updates the native loader relocation audit:
+require four direct NativeDocCAlloc calls, two NativeDocMAlloc calls, and one
+DocEntryNewBase call. That canonical base allocator itself uses the wrapped
+CAlloc. This preserves allocation-failure injection coverage rather than
+silently bypassing its audit. Delta apply-check PASS. Runtime green and native
+provider qualification remain pending; root OS sources are unpromoted.
