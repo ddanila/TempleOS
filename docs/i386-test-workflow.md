@@ -4833,3 +4833,30 @@ python3 tools/test-i386-native-generations.py \
 
 Run with a fresh output directory. This command is documented for the pending
 provider build; it has not yet completed the tracked runner's full sequence.
+
+Explicit-address candidate broad regressions and tracked generation queue
+(2026-10-05): build/debug-go-address-forced-kill/result.json passes killing
+an actual step-paused task, surviving debugger use and parent public heap
+recovery, 13 commands on 486,-fpu / 8 MiB, startup 37.606528 seconds,
+exact VGA and unchanged source. This is current address-enabled console
+teardown evidence, not substituted from its register predecessor.
+
+Full workstation runs in build/debug-go-address-workstation (Python 3649198,
+QEMU 3649199); five default S cycles run in ...-default-step. Six-register
+edit regression runs in build/debug-go-address-register-banks-pipeline.py,
+outputs ...-register-bank-{ecx,edx,ebx,esi,edi,eax}; all are pending.
+An earlier generated launcher accidentally renamed the test tool path and
+terminated before testing; its failure is preserved in
+build/debug-go-address-banks-independent-pipeline.json. The corrected chain
+uses the unchanged tracked register-bank test and proper address-candidate
+image. No runtime failure or pass is inferred from the launcher error.
+
+Native retained builder 3648197 remains directly live. The dependent process
+3649325 in build/debug-go-address-native-generations-wait.py now waits for
+that exact handle and requires six PASS modules, with the tracked runner's
+SHA pinned while waiting. It then runs tools/test-i386-native-generations.py
+into fresh build/debug-go-address-native-generations. State is
+build/debug-go-address-native-generations-wait.json. This is queued first
+full execution of the tracked runner; no generation PASS yet. Earlier live
+step/register/native and integrated no-FPU gates continue without restart.
+Main OS source remains unpromoted and the full release objective stays open.
