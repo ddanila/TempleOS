@@ -10721,3 +10721,22 @@ build/debug-go-address-native-generations-wait.json. This is queued first
 full execution of the tracked runner; no generation PASS yet. Earlier live
 step/register/native and integrated no-FPU gates continue without restart.
 Main OS source remains unpromoted and the full release objective stays open.
+
+Managed breakpoint lifecycle TDD started (2026-10-05): new
+ tools/test-i386-debug-breakpoint-lifecycle.py derives a bounded executable
+NOP fixture and specifies original BptS/BptR/BptFind/B/B2 return values,
+duplicate installation, registration without live patching, toggle semantics,
+two-breakpoint removal count and exact byte/list restoration. Two rounds
+construct as 48 commands within the console input limit. Original contract
+source and imported fixture dependencies are pinned. The expected red runs
+in build/debug-breakpoint-lifecycle-red on the fixed address-resume candidate;
+no verdict yet. This is lifecycle coverage, not managed CPU trap, rewind,
+step/rearm, shared-code ownership, task-exit cleanup or original-runtime oracle.
+Those remain required debugger work; no narrower completion is claimed.
+
+Current address-source regression results: build/debug-go-address-default-step
+passes five default S cycles and 49 commands, while ...-register-bank-ecx
+and ...-register-bank-edx each pass two edit/step/resume cycles and 25 commands.
+These establish retained default behavior alongside explicit-IP greens;
+remaining banks, full workstation and native generation gates continue on
+unchanged candidate sources. Release and promotion remain open.
