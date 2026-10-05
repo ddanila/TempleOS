@@ -11859,3 +11859,26 @@ with dependent build/debug-owned-stack-reap-pipeline.json and a fresh build
 output. Previous bootstrap archived as rebuild-owned-stack-before-reap;
 failed outputs remain intact. Fixed prior candidates' host/native qualification
 continues independently; no source epoch or release completion is conflated.
+
+CPU-debugger self-exit test; next stale console audit identified (2026-10-05):
+New tools/test-i386-debug-cpu-self-exit.py repeats five independent terminal
+sessions: actual INT3, TermFinish/Exit from the CPU debugger prompt, focus
+transfer, mode restored, survivor arithmetic, then both children reaped and
+exact parent public heap recovery. Command/independence preflight passes.
+This exercises self-exit on the new owned execution stack; it is not a direct
+private kernel-allocation count audit. Runtime runs in
+build/debug-cpu-self-exit-owned-stack on the fresh reap candidate image.
+Five alternate-stack S cycles also run in build/debug-public-step-stack-owned-green.
+No result yet claimed; candidate remains fixed while full --test runs.
+
+Concurrent-file-audit, flags and stack full --test runs are now terminal FAIL
+at Missing retained console, after earlier diagnostic startup and workflow
+activity. Their host parser expects 10 tokens (three layout values plus six
+services), but Console ABI38 logs 13 tokens (plus cpu_capture, cpu_debug and
+root_headers). Console layout already requires these exports but omits their
+three addresses from its expected entries. The next host audit fix must add
+all three offsets in interface order and verify every address; simply loosening
+row length is insufficient. Preserve all failed outputs; neither full gate
+is PASS. Reap candidate still runs; do not mutate its source epoch during that
+qualification. Earlier focused flags/G-stack/overlap greens remain scoped to
+their exact images and do not close the release gate.
