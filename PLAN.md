@@ -12999,3 +12999,27 @@ preserves full implementation; patch/syntax checks PASS. Fresh bootstrap session
 Earlier intermediate caller prototypes are superseded; live main qualification
 sources remain untouched. Accidental root bootstrap invocation was stopped,
 its partial output retained separately and original root bootstrap restored.
+
+
+Public Caller green, growth recovery and generation1 checkpoint (2026-10-05):
+build/public-caller-green/result.json PASS eight commands on new console39,
+negative/excessive depth return0, Caller0/1 addresses independently bounded by
+live Body/Outer allocations. Source/checker unchanged. Fresh original bootstrap
+and source-qualified cross/386 boot audit PASS; full caller suite now session18126,
+build/public-caller-full-kernel. No full-suite PASS yet.
+build/move-growth-failures/result.json PASS17: nine write and eight flush failures,
+each armed before full-directory transfer, reboot recovery retains one complete
+IO file plus exact five existing F files, clean journal/bitmap/unique ownership,
+all pinned inputs unchanged. Interrupted-growth gate covered on fixture source.
+TEST-fixed generation1 retained installation/native flat build/install/boot/386
+audit PASS; runner now generation2 retained build. Latest baseline generations
+also running separately, no result transferred between candidate sources.
+Baseline full suite terminated at native allocation verifier after mutation
+startup. Actual module54 records,20 exports,34 calls matches current HeapScan
+source; old expectation52/19/33 stale. File loader similarly79/24/55 rather than
+77/23/54. Root and caller candidate verifiers updated exact contracts, current
+retained artifacts PASS. Candidate creator raw module87 records,9 exports,78
+calls includes three new extent helpers; exact verifier updated and artifact PASS.
+Source-built creator poll/count extension remains provisional until real native
+source-build gate reaches it; no claim of qualification from raw-module checks.
+Root OS remains unpromoted ABI40; latest caller candidate cumulative patch updated.

@@ -2567,7 +2567,7 @@ index 716d308f..58c7a845 100644
      if not (0<boot_end<510 and 0<stage_end<4096):
          raise ValueError('Boot code boundaries exceed reserved regions')
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index e6adaabc..4eb9d4e8 100644
+index e6adaabc..1e77acc1 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
 @@ -43,6 +43,17 @@ def kernel_flag_disk_offset(exports, symbol):
@@ -2691,6 +2691,90 @@ index e6adaabc..4eb9d4e8 100644
                  found[child_path]=image[child*512:child*512+length] if length else b''
          visiting.remove(block)
      directory(root,'')
+@@ -1383,18 +1403,18 @@ def verify_native_alloc_module(disk):
+             struct.unpack_from('<H',module,4)[0]!=2:
+         raise ValueError('Missing guest-built original module allocation unit')
+     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+-    if (total!=len(module) or size<1024 or size&7 or count!=52 or
++    if (total!=len(module) or size<1024 or size&7 or count!=54 or
+             records!=32+size or strings!=records+16*count or strings>total):
+         raise ValueError('Invalid original module allocation unit layout')
+     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+     exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+     expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
+         'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386HeapAlloc','I386HeapFree','I386HeapInit',
+-        'I386HeapRegionValid','I386HeapSize','I386HeapValid','I386LoadAlloc',
++        'I386HeapRegionValid','I386HeapScan','I386HeapSize','I386HeapValid','I386LoadAlloc',
+         'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
+         'I386LoadInto','I386ModuleValid','I386NameEqual'))
+     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+-    if exported!=expected or len(calls)!=33 or any(name not in expected for name in calls) or \
++    if exported!=expected or len(calls)!=34 or any(name not in expected for name in calls) or \
+             any(kind not in (1,2) or offset>=size or not length or name<strings or
+                 name+length>=total for kind,offset,name,length in rows):
+         raise ValueError('Original module allocation records differ from source')
+@@ -1404,7 +1424,7 @@ def verify_native_alloc_module(disk):
+                 for name in ('Kernel/I386/ModuleAlloc.HC','Kernel/I386/ModuleLoad.HC',
+                              'Kernel/I386/ModuleCheck.HC','Kernel/I386/Heap.HC')},
+             'functions':[name.decode() for name in expected],
+-            'internal_calls':33}
++            'internal_calls':34}
+ 
+ 
+ def verify_native_file_module(disk):
+@@ -1415,21 +1435,21 @@ def verify_native_file_module(disk):
+             struct.unpack_from('<H',module,4)[0]!=2:
+         raise ValueError('Missing guest-built original RedSea module loader')
+     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+-    if (total!=len(module) or size<1024 or size&7 or count!=77 or
++    if (total!=len(module) or size<1024 or size&7 or count!=79 or
+             records!=32+size or strings!=records+16*count or strings>total):
+         raise ValueError('Invalid original RedSea module loader layout')
+     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+     exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+     expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
+         'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386HeapAlloc','I386HeapFree','I386HeapInit',
+-        'I386HeapRegionValid','I386HeapSize','I386HeapValid','I386LoadAlloc',
++        'I386HeapRegionValid','I386HeapScan','I386HeapSize','I386HeapValid','I386LoadAlloc',
+         'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
+         'I386LoadInto','I386ModuleValid','I386NameEqual',
+         'I386RedSeaLoad','I386RedSeaLoadBound',
+         'I386RedSeaLoadSet','I386RedSeaLoadSetBound'))
+     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+     imports=sorted(name for name in calls if name not in exported)
+-    if exported!=expected or len(calls)!=54 or \
++    if exported!=expected or len(calls)!=55 or \
+             imports!=sorted(2*[b'I386RedSeaExtent',b'I386RedSeaRead',b'I386RedSeaValid']) or \
+             any(kind not in (1,2) or offset>=size or not length or name<strings or
+                 name+length>=total for kind,offset,name,length in rows):
+@@ -1457,14 +1477,14 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
+         raise ValueError('Missing guest-built original RedSea creator')
+     total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+     if (total!=len(module) or size<1024 or size&7 or
+-            count!=(81 if source_built else 65) or
++            count!=(107 if source_built else 87) or
+             records!=32+size or strings!=records+16*count or strings>total):
+         raise ValueError('Invalid original RedSea creator layout')
+     rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
+     exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
+     expected=sorted(x.encode() for x in ('I386RedSeaCreate','I386RedSeaCreateGetWord',
+         'I386RedSeaGrowDirectory','I386RedSeaGrowRoot','I386RedSeaNewName',
+-        'I386RedSeaReparentRootChildren'))
++        'I386RedSeaReparentRootChildren','I386RedSeaExtentSlot','I386RedSeaPublishExtent','I386RedSeaUnlinkExtent'))
+     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+     polls=[offset for kind,offset,name,length in rows if kind==2 and
+            module[name:name+length]==b'I386ExecutionBreakPoll']
+@@ -1474,8 +1494,8 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
+         'I386RedSeaFlush','I386RedSeaAlloc','I386RedSeaFree',
+         'I386RedSeaFind','I386RedSeaWrite')}
+     if source_built: expected_imports.add(b'I386ExecutionBreakPoll')
+-    if exported!=expected or len(calls)!=(75 if source_built else 59) or \
+-            len(polls)!=(16 if source_built else 0) or \
++    if exported!=expected or len(calls)!=(98 if source_built else 78) or \
++            len(polls)!=(20 if source_built else 0) or \
+             any(offset<1 or offset>size-4 or module[32+offset-1]!=0xE8 or
+                 module[32+offset:32+offset+4]!=b'\0'*4 for offset in polls) or \
+             imports!=expected_imports or \
 @@ -1790,6 +1810,7 @@ def verify_native_target_format(disk, exports, out):
      if len(set(offsets))!=3 or any(struct.unpack_from('<I',changed,offset)[0] for offset in offsets):
          raise ValueError('Invalid target formatter boot flags')
