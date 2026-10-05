@@ -1,5 +1,5 @@
 diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
-index 30b15c64..cb5564c6 100644
+index 30b15c64..9ba3e010 100644
 --- a/Kernel/I386/ConsoleRuntime.HC
 +++ b/Kernel/I386/ConsoleRuntime.HC
 @@ -87,17 +87,27 @@ U8 console_diagnostic_filename[256];
@@ -31,7 +31,15 @@ index 30b15c64..cb5564c6 100644
  extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
  U32 console_version=I386_CONSOLE_VERSION;
  extern Bool NativeGraphicsStart();
-@@ -397,16 +407,36 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
+@@ -108,6 +118,7 @@ extern Bool ConsoleDisplay();
+ extern U0 ConsoleKeys(I64 unused);
+ extern U0 ConsoleSubmit(U8 *line);
+ extern Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0);
++extern Bool ConsoleRootHeaders();
+ Bool ConsoleInit(CI386ConsoleConfig *config)
+ {
+   CI386Task *task=I386TaskSelf;
+@@ -397,16 +408,41 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
    console_doc_exports[134].str="_FILE_WRITE";
    console_doc_exports[134].val=(&FileWrite+0)(U64);
    console_doc_exports[135].str="_FILE_READ";
@@ -67,9 +75,50 @@ index 30b15c64..cb5564c6 100644
    console_config=config; dbg.fun_seg_cache=native_fun_seg_cache;
 +  NativeBreakpointInstall;
 +  config->files->public_reader(&NativeResidentReadBridge);
++  if(config->defer_root_headers) return TRUE;
++  return ConsoleRootHeaders;
++}
++Bool ConsoleRootHeaders()
++{
    //The immortal CPU root owns shared declarations; children inherit its scope.
    KernelLog("ROOT USER HEADERS begin\n");
    if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
+@@ -435,6 +471,7 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
+   services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
+   services->cancel_read=&ConsoleCancelRead;
+   services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
++  services->root_headers=&ConsoleRootHeaders;
+   services->cpu_capture=&ConsoleCpuCapture; services->cpu_debug=&ConsoleCpuDebug;
+   return 1;
+ }
+diff --git a/Kernel/I386/ConsoleRuntime.HH b/Kernel/I386/ConsoleRuntime.HH
+index 9162d571..ae915b15 100644
+--- a/Kernel/I386/ConsoleRuntime.HH
++++ b/Kernel/I386/ConsoleRuntime.HH
+@@ -5,7 +5,7 @@
+ #include "/Kernel/I386/KeyboardRead.HH"
+ #include "/Kernel/I386/Mouse.HH"
+ //Native task extensions include public heap ownership callbacks.
+-#define I386_CONSOLE_VERSION 37
++#define I386_CONSOLE_VERSION 38
+ class CI386ConsoleConfig {
+   CI386Heap *heap;
+   CI386CompilerServices *compiler;
+@@ -17,6 +17,7 @@ class CI386ConsoleConfig {
+   CI386MouseState *mouse;
+   I64 *jiffies;
+   U32 pit_divisor;
++  Bool defer_root_headers;
+ };
+ class CI386ConsoleServices {
+   U32 version,bytes;
+@@ -28,5 +29,6 @@ class CI386ConsoleServices {
+   Bool (*key_irq)(U8 data,U8 status);
+   Bool (*cpu_capture)(CI386ExceptionFrame *frame);
+   U0 (*cpu_debug)(CI386ExceptionFrame *frame);
++  Bool (*root_headers)();
+ };
+ #endif
 diff --git a/Kernel/I386/Debugger.HC b/Kernel/I386/Debugger.HC
 index b7186ce0..3f60621d 100644
 --- a/Kernel/I386/Debugger.HC
@@ -830,7 +879,7 @@ index 65aa8c6d..7ea4f0d9 100644
 +extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
  #endif
 diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
-index 940d53f2..ace4c087 100644
+index 940d53f2..276f65ef 100644
 --- a/Kernel/I386/Kernel.HC
 +++ b/Kernel/I386/Kernel.HC
 @@ -117,13 +117,14 @@ extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64
@@ -849,22 +898,28 @@ index 940d53f2..ace4c087 100644
  U8 kernel_memory_bindings[16]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45};
  extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
  extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
-@@ -155,10 +156,13 @@ I64 Main(CI386BootInfo *info,I64 unused)
+@@ -155,10 +156,19 @@ I64 Main(CI386BootInfo *info,I64 unused)
    KernelCompilerLoad;
    KernelFileLoad;
    KernelMemoryLoad;
 -  if(kernel_diagnostics) KernelCompilerProbe(0);
 +  //Load the large temporary provider before console allocation fragments RAM.
 +  if(kernel_diagnostics) KernelCompilerProbeLoad;
++  if(!kernel_diagnostics) {
    if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
++  }
    if(!I386KbcInputInit(&kernel_input,&kernel_scheduler)) KernelStop;
    KernelConsoleLoad;
 +  //Public-header probes require the real console/debugger exports.
-+  if(kernel_diagnostics) KernelCompilerProbe(0);
++  if(kernel_diagnostics) {
++    KernelCompilerProbe(0);
++  if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
++    if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
++  }
    KernelStartup;
    if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
    KernelLog("STORAGE TASK BOUND\n");
-@@ -534,23 +538,27 @@ U0 KernelCompilerLoad()
+@@ -534,23 +544,27 @@ U0 KernelCompilerLoad()
      KernelLog("PUBLIC MATH REBIND CHECK\n");
    }
  }
@@ -906,7 +961,7 @@ index 940d53f2..ace4c087 100644
    if(I386HeapSize(&kernel_heap,kernel_probe_image)!=kernel_probe_size) KernelStop;
    used=kernel_heap.used; allocations=kernel_heap.allocations;
    probe.version=I386_COMPILER_PROBE_VERSION; probe.bytes=sizeof(CI386CompilerProbe);
-@@ -624,11 +632,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
+@@ -624,11 +638,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
  }
  U0 KernelFileLoad()
  {
@@ -921,6 +976,13 @@ index 940d53f2..ace4c087 100644
    kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
    if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=1 ||
        !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
+@@ -738,5 +752,6 @@ U0 KernelConsoleLoad()
+   kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
+   kernel_console_config.mouse=&kernel_mouse;
+   kernel_console_config.pit_divisor=kernel_timer.divisor;
++  kernel_console_config.defer_root_headers=kernel_diagnostics;
+   if(!kernel_console.init(&kernel_console_config)) KernelStop;
+ }
 diff --git a/Kernel/I386/MemoryRuntime.HC b/Kernel/I386/MemoryRuntime.HC
 index 23b3bf96..1ccd07f5 100644
 --- a/Kernel/I386/MemoryRuntime.HC
@@ -1309,9 +1371,27 @@ index ccf4a3ff..a0102e8e 100644
    task->cur_dir=(state+1)(U8 *);
    result=TRUE;
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index e6adaabc..22f3a92c 100644
+index e6adaabc..9c8a7a82 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
+@@ -201,7 +201,7 @@ def console_runtime_layout(module):
+             else: imports[symbol] = name
+     if set(imports) != {'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'char_bmp_hex_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew'}:
+         raise ValueError('Unexpected console import contract')
+-    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug'):
++    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders'):
+         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
+     for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
+                  'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
+@@ -221,7 +221,7 @@ def console_runtime_layout(module):
+     if exports.get('console_version', (0, 0))[0] != 3:
+         raise ValueError('Missing console version')
+     version_offset = 32+exports['console_version'][1]
+-    if struct.unpack_from('<I', module, version_offset)[0] != 37:
++    if struct.unpack_from('<I', module, version_offset)[0] != 38:
+         raise ValueError('Unexpected console version')
+     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
+                 entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
 @@ -310,14 +310,14 @@ def file_runtime_layout(module):
              if kind in (1, 3): exports[symbol] = (kind, offset)
              else: imports[symbol] = name
@@ -1359,6 +1439,15 @@ index e6adaabc..22f3a92c 100644
              retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
              move_failure_stages=4,
              task_volume_bound=True, task_context_inherited=True,
+@@ -3010,7 +3010,7 @@ def main():
+             raise ValueError('Console interface/image accounting mismatch')
+         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
+             raise ValueError('Missing retained keyboard cancellation callback probe')
+-        result['console_runtime']=dict(version=37,image_bytes=csize,retained_heap_bytes=cspan,
++        result['console_runtime']=dict(version=38,image_bytes=csize,retained_heap_bytes=cspan,
+             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
+         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
+             if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
 diff --git a/Kernel/I386/PublicDebugTypes.HH b/Kernel/I386/PublicDebugTypes.HH
 new file mode 100644
 index 00000000..93b398ea

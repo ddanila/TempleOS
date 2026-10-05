@@ -11310,3 +11310,23 @@ bootstrap, full diagnostic run and interactive/native regression qualification.
 The current patch remains an unqualified intermediate implementation.
 Frozen G2 installed gates and its original native chain remain separate live
 qualification work; no promotion or release completeness is claimed.
+
+Console export/root-header initialization split implemented in candidate
+(2026-10-05): private console interface becomes version 38, adding
+CI386ConsoleConfig.defer_root_headers and CI386ConsoleServices.root_headers.
+ConsoleInit still binds actual services and ownership hooks, then normally
+publishes root headers through ConsoleRootHeaders. Diagnostic initialization
+sets the deferral flag, leaves scalar/public root publication until phase-0
+compiler diagnostics finish, then loads scalar aliases and invokes the same
+root-header callback. The provider remains preloaded early; phase 1 and all
+existing assertions remain. Builder requires the new callback export and
+version 38. Full patch applies cleanly to main.
+
+A fresh original bootstrap runs in the clone's
+build/debug-concurrent-bootstrap-split.log; dependent full --test and
+concurrent/breakpoint/managed-kill regressions are queued in
+build/debug-concurrent-split-pipeline.json, candidate output
+build/debug-concurrent-prototype/build/debug-concurrent-split. This is an
+implemented source candidate, not a build/runtime PASS. Earlier diagnostic
+failures and earlier interactive greens remain tied to their original images.
+No root candidate promotion or complete parity/release claim.
