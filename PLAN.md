@@ -9832,3 +9832,18 @@ or broad x86-64 behavioral coverage. The manifest's git revision identifies
 the prototype base; its source hashes identify the actual dirty candidate.
 Current parent i386 native builder and full workstation QEMU remain live;
 installed audits and second-generation 386 identity are still pending.
+
+Current candidate cold resident-cache requalification started (2026-10-05):
+Two fresh original-oracle/fixture-preparation/separate-cold-boot tests run
+against the public-write-parent image, using 486,-fpu:
+build/public-resident-write-parent-cold-compressed exercises serialized .Z
+reads, first-versus-cached attributes, public hash visibility/removal,
+adam_task ownership, child reuse and directory-state replacement;
+build/public-resident-write-parent-cold-mutation additionally edits ordinary
+cached bytes and requires later reads to observe the edits while disk bytes
+remain unchanged. Both use --prepare-fixture --shared-lifetime --hash-visible
+--hash-removal --adam-root; the former adds --compressed, the latter
+--cache-mutation. The tool explicitly disallows compressed mutation, so these
+are separate contracts rather than an unsupported combined invocation.
+Results are pending; candidate and input disk equality are required by each
+gate. Existing earlier-epoch cold-cache greens are not substituted for these.
