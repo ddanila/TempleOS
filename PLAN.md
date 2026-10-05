@@ -13175,3 +13175,19 @@ recomputed native origin in
 build/memory-baseline-release-packaging/installed-workflows. Public Caller
 native-generation pipeline reaches first selfhost stage; full qualification
 and promotion remain required. Release stays open.
+
+
+One-image debugger regression command (2026-10-05):
+Added tools/test-i386-debugger-regression.py, freezing helpers/VGA font/original
+KDbg contract source and pinning one image throughout20jobs. Covers6general
+register banks, G/S flags, S/IP, G/S stack, initial alternate trap, bidirectional
+stack overlap, breakpoint lifecycle/task-switch/shared-address ownership,
+concurrent-repeat/kill and public Caller debugger-stack behavior. Repeated
+fixtures run5cycles by default; ownership/kill retain fixed scenarios. Every
+accepted job must PASS8MiB486,-fpu exactVGA and unchanged disk identity; aggregate
+cannot pass missing/failed jobs. All20fixture generators satisfy255-byte input
+limit. Latest Caller candidate regression now live in
+build/public-caller-debugger-regression (two workers). No runtime aggregate PASS
+claimed; existing historical debugger greens not transferred automatically.
+Native Caller first-generation selfhost and packaged workstation runs remain
+live. Root remains ABI40, newer candidate unpromoted, release remains open.

@@ -5713,3 +5713,28 @@ The integrated candidate passed 52 VGA-checked commands over five cycles on
 8 MiB with CPU 486,-fpu in build/debug-cpu-public-caller-five/result.json.
 The original input image stayed unchanged. This is source-specific debugger
 stack evidence, not a claim about arbitrary freed frames or every stack depth.
+
+
+Consolidated debugger regression (2026-10-05):
+
+```sh
+python3 tools/test-i386-debugger-regression.py path/to/kernel.img \
+  --cycles 5 --workers 2 --out build/debugger-regression
+```
+
+The runner freezes Python helpers, the VGA font and original debugger contract
+source. All 20 jobs use one immutable disk on 8 MiB with `486,-fpu`, checking
+exact VGA and unchanged input hashes. Jobs cover six general-register banks,
+public G/S carry edits, public S instruction-pointer edits, G/S stack edits,
+initial alternate-stack traps, overlapping stack relocation in both directions,
+managed breakpoint lifecycle, task-switch ownership, shared-address ownership,
+repeated concurrent traps, forced debugger-task exit and public Caller on the
+dedicated debugger stack. Repeated fixtures use the requested cycle count;
+ownership/kill fixtures retain their existing fixed scenarios.
+
+Results arrive separately under `jobs` in the aggregate `result.json`.
+The aggregate passes only when every expected job passes on that exact image.
+Two worker processes are the default; no source or runtime result is borrowed
+from historical candidate images. This suite is debugger regression coverage,
+not proof of every debugger API, a native rebuild, or complete release acceptance.
+Latest-source qualification is running in `build/public-caller-debugger-regression`.
