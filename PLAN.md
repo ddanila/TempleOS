@@ -12163,3 +12163,23 @@ remain. Fresh changed-source bootstrap runs PID 3751065/session 89067 in
 build/extended-kernel-prototype/build/extended-installer-bootstrap.log. Follow
 with actual oversized high-linked kernel boot and independent native install
 sector/hash/volume comparisons; release remains incomplete.
+
+Oversized high-linked kernel build starts (2026-10-05):
+Changed installer source original bootstrap passes both generations. Candidate
+cross-linker now links all six boot modules at 0x100000; host resident absolute
+address checks, packaging, capacity and build-input pins use the extended stage.
+Metadata checksum is computed from the exact flat payload before assembly.
+Legacy stage remains available. Candidate boot auditor classifies separate
+entry32/load32/bios16/copy32 executable ranges, excluding metadata/GDT/padding.
+Exact CALL EAX bytes are audited explicitly because installed ndisasm emits
+FF D0 as two db records; unfamiliar encodings still reject. Isolated stage audit
+passes 96 BIOS and 155 stage instructions in build/extended-audit-fixed.json.
+Earlier alignment and mnemonic/disassembler audit failures remain preserved.
+
+Full cumulative docs/patches/i386-extended-kernel-candidate.patch applies cleanly.
+Actual --test build is confirmed live PID 3751945/session 11047 in
+build/extended-kernel-prototype/build/extended-native-kernel.log; output
+build/extended-native-kernel. No kernel boot pass claimed yet. Native independent
+installed-image expectations still use the legacy layout and must be updated
+before qualification. Early IDT and BIOS/KBC A20 fallback remain open; full
+8 MiB/no-FPU/rebuild/install/reboot/release qualification is not complete.
