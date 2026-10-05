@@ -10445,3 +10445,21 @@ gen2-native-build,gen2-native-install,gen2-selfhost,gen2-selfhost-audit,
 generation-identity}. Matching candidate stage listing and auditor are used;
 all results remain pending. No earlier-source native generations qualify the
 changed step-enabled console. Existing sources remain fixed during these jobs.
+
+Five repeated hardware-step cycles green; forced step-debugger exit gate
+started (2026-10-05): build/debug-single-step-repeat/result.json passes five
+store-step/reentry/G cycles and 49 commands on 486,-fpu / 8 MiB, startup
+26.456843 seconds with exact VGA, result/mode/IF/TF and warmed public heap
+checks. Source/checker identity stays unchanged. This broadens the first
+single-cycle functional green without asserting full debugger completion.
+
+The existing CPU-debugger forced-kill test now has --single-step. Its victim
+executes INT3 followed by NOPs, S must reenter the debugger after one hardware
+instruction, then another terminal kills that paused task. The survivor must
+enter Dbg, evaluate, G back, exit and restore the parent public heap. This
+checks cleanup after vector-1 step entry; all private resources, explicit
+new-IP/other-task stepping, registers and managed breakpoints remain open.
+The fresh gate runs in build/debug-single-step-forced-kill, verdict pending.
+Integrated generation-two retained construction passes all six modules with
+installed byte equality and now installs them; full generation comparison
+and integrated no-FPU construction remain pending on their existing handles.
