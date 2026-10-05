@@ -17,6 +17,7 @@ def commands(cycles=1):
     checks += [
         ('U0 CpuBptInit(){CpuBptAddr=CpuTrapBytes+CpuTrapOffset+2;}', []),
         ('CpuBptInit;CpuBptAddr[0]==0x90&&CpuBptAddr[-1]==0x90;', ['1']),
+        ('Bool CpuBptDeferred(){Bool set=BptS(CpuBptAddr,0,FALSE);Bool safe=CpuBptAddr[0]==0x90&&BptFind(CpuBptAddr)!=0;Bool rem=BptR(CpuBptAddr,0,FALSE);return !set&&safe&&rem&&CpuBptAddr[0]==0x90;}', []),
     ]
     lifecycle = [
         ('BptS(CpuBptAddr);', ['0']),
@@ -26,9 +27,8 @@ def commands(cycles=1):
         ('BptR(CpuBptAddr);', ['1']),
         ('CpuBptAddr[0]==0x90&&BptFind(CpuBptAddr)==0;', ['1']),
         ('BptR(CpuBptAddr);', ['0']),
-        ('BptS(CpuBptAddr,0,FALSE);', ['0']),
-        ('CpuBptAddr[0]==0x90&&BptFind(CpuBptAddr)!=0;', ['1']),
-        ('BptR(CpuBptAddr,0,FALSE);', ['1']),
+        # Observe deferred registration before command input can yield/rearm.
+        ('CpuBptDeferred;', ['1']),
         ('B(CpuBptAddr);', ['0']),
         ('CpuBptAddr[0]==0xCC;', ['1']),
         ('B(CpuBptAddr);', ['1']),

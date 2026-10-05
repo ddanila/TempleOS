@@ -5047,3 +5047,30 @@ modules also pass; tracked tools/test-i386-native-generations.py is directly
 live as PID 3660287 at gen1-install. Full tracked-chain completion remains
 pending. Neither earlier-source generation nor workstation results substitute
 for managed source qualification; main remains unpromoted and release open.
+
+Managed breakpoint first runtime greens and deferred-registration fixture
+(2026-10-05): build/debug-managed-trap-green/result.json passes 21 commands
+on 486,-fpu / 8 MiB, startup 29.533144 seconds, exact VGA and unchanged source.
+Managed store opcode trap rewinds, S executes the restored store before
+reentry, G rearms it, and B2 removes/restores the record. Result, mode/flags
+and existing public heap probe pass. This is demonstrated semantic red to
+green, not just API binding. Five cycles run in ...-trap-repeat.
+
+build/debug-managed-kill-step passes 15 commands, startup 29.425224 seconds,
+exact VGA and unchanged source. Child-installed breakpoint on parent code
+is stepped, victim killed, entry byte restored, shared function executes in
+the survivor, then surviving Dbg/G and parent public heap recovery pass.
+The initial-entry kill path now runs in ...-kill-entry. Complete concurrent
+ownership/private-resource coverage and full original API remain open.
+
+Managed-source lifecycle test terminates FAIL at the separate command after
+BptS(...,live=FALSE). Its expected unpatched-byte assertion conflicts with
+the original scheduler model: deferred registration avoids patching during
+the call, but the next task restore applies registered breakpoints. The
+checker now performs registration/byte-and-record checks/removal in one
+synchronous helper before command input can yield, preserving the immediate
+API contract without forbidding scheduler reapplication. Corrected runtime
+runs in build/debug-managed-lifecycle-deferred; no pass yet. Preserve the
+failure in ...-lifecycle. Full workstation runs in ...-workstation on this
+fixed managed image. Existing candidate sources remain frozen during gates;
+G2/other-task/debugger and native/release completion remain open.
