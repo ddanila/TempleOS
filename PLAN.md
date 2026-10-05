@@ -13217,3 +13217,34 @@ firmware or guest runtime coverage. Support matrix updated with latest measured
 checkpoint and explicit historical boundaries. Latest Caller native pipeline
 now generation2 retained rebuild; debuggerEAX/ECX jobs PASS, aggregate stilllive.
 Full source promotion, newest packaged qualification and release remain open.
+
+
+Delivered source gate and packaged undo/timing failures (2026-10-05):
+Latest Caller first native generation construction/install/independent boot/audit
+PASS at500344bytes, flatSHA256
+7225dc9413ab42ce99e6bfafbd3844969faca99516bb4a34307d8364ceeb53fb;
+diskSHA2560f045c4a67c3bcb34a468697c9a3e0c14c66a9f1c7ea0809d7769aad5104b1cb.
+Started its own full four-job/budget-enforced workstation qualification in
+build/public-caller-gen1-workflows. Native generation2 retained build remainslive.
+
+Added tools/audit-i386-delivered-source.py to audit exact packaged source/doc
+path set and bytes, filesystem ownership, candidate source hashes and baseGit
+revision/dirty status. First native Caller and packaged memory-baseline each
+PASS all851files. Wrong source epoch and mutated Kernel.HC byte in otherwise
+valid volume rejected; retained source-audit-mutations.json PASS. Dirty candidate
+identity does not establish clean committed release sources; promotion remains.
+
+TEST-fixed packaged aggregate terminal FAIL at undo-typing-run; focused suite
+fails same checkpoint. Actual captured VGA showsab afterundoabc, so no complete
+packaged workstation PASS. Functionallypassing three-boot DolDoc exceedsstartup
+budget62.791/66.179/66.449seconds. Memory-baseline packaged DolDoc also functionally
+passes but budget gate rejects72.512/67.184/63.654seconds. All original budgets
+remain unchanged. No failure transferred to OS or packaging cause without proof.
+Fixture sends individual QMP requests perkey; editor separates runs after1jiffy
+second. Added bounded1..4character batch_text interaction and focused
+ tools/test-i386-doldoc-undo-timing.py. Same-image batched and serialized tests
+now run in build/native-release-packaging/undo-batched andundo-serialized, testing
+continuousabc undo and2-second separateda/b runs; no verdictyet. Existingfull
+fixture remains unchanged, avoiding premature masking of its failing gate.
+All6register-bank jobs and G/Sflags/Gstack/SIP latestCaller nowPASS; remaining
+regression jobs live. Sourcepromotion and release readiness remainopen.

@@ -372,6 +372,19 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         elif 'mouse_button' in action:
                             command('input-send-event',events=[{'type':'btn','data':{
                                 'down':action.get('down',True),'button':action['mouse_button']}}])
+                        elif 'batch_text' in action:
+                            text=action['batch_text']
+                            if not text or len(text)>4:
+                                raise ValueError('A keyboard batch must contain 1..4 characters')
+                            events=[]
+                            for ch in text:
+                                shift=ch.isupper() or ch in shifted
+                                if shift: events.append({'type':'key','data':{'down':True,'key':{'type':'qcode','data':'shift'}}})
+                                code=plain.get(ch,ch.lower())
+                                for down in (True,False):
+                                    events.append({'type':'key','data':{'down':down,'key':{'type':'qcode','data':code}}})
+                                if shift: events.append({'type':'key','data':{'down':False,'key':{'type':'qcode','data':'shift'}}})
+                            command('input-send-event',events=events)
                         elif 'text' in action:
                             for ch in action['text']:
                                 shift=ch.isupper() or ch in shifted

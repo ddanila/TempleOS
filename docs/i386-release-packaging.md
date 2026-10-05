@@ -105,3 +105,34 @@ These inputs belong to their own source epochs and establish the validator's
 behavior, not a new runtime qualification. The memory-baseline packaged image
 now passes its native audit; its four installed workflows are running with
 budget enforcement in `build/memory-baseline-release-packaging/installed-workflows`.
+
+
+Audit the delivered source tree against the candidate before release promotion:
+
+```sh
+python3 tools/audit-i386-delivered-source.py \
+  --disk path/to/native/target.img --repository path/to/candidate \
+  --out build/delivered-source.json
+```
+
+The audit validates filesystem ownership and compares the exact live source/doc
+path set and every byte against the package contract: Kernel, Compiler,
+Adam/DolDoc, Adam/Gr, Adam/Ctrls and Doc, including HC/HH/DD/PRJ files. Missing,
+extra or altered source files fail. It includes untracked candidate source and
+records the base Git revision separately from whether candidate sources differ
+from that revision. A dirty candidate is not claimed as a clean release revision.
+
+Both the first fully native public Caller image and packaged memory-baseline
+image pass all 851 delivered source/doc files in their respective
+`gen1-delivered-source.json` and `delivered-source.json` reports. A wrong candidate
+source epoch and a one-byte source mutation inside an otherwise valid filesystem
+are rejected in `build/public-caller-native-generations/source-audit-mutations.json`.
+
+The TEST-fixed packaged four-job suite is now terminal FAIL at the timed undo
+checkpoint. The captured VGA retains `ab` after undoing the injected `abc` run.
+Its focused compiler/navigation/documents/editing run fails at the same point.
+The three-boot DolDoc workflow passes functionally but its 62.791/66.179/66.449
+second boots exceed the unchanged 60-second budget. The memory-baseline packaged
+DolDoc workflow likewise passes functionally but the enforced budget rejects
+72.512/67.184/63.654 second starts. These failures remain open; earlier unpackaged
+functional and timing passes do not replace them.
