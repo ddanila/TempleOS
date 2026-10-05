@@ -12720,3 +12720,22 @@ final stage. These are loader tests, not full TempleOS integration qualification
 Cumulative docs/patches/i386-early-idt-integrated-candidate.patch applies to main.
 Full OS suites and retained six-module rebuild remain live; native generation
 installation and release acceptance remain open. Physical/manual tests deferred.
+
+
+Native extent-transfer validation and harness checksum work (2026-10-05):
+build/extended-transfer-native-build/result.json PASS all six retained native
+modules, source SHA256 7a36c58992e6e6f4aba3875c3d1e61d45a08976037c1c59f2e376bd951965d0e.
+Native outputs pass module/export contracts; this does not claim cross-build
+byte equality. build/fragmented-module-move-green/result.json PASS using that
+retained source: actual ConsoleRuntime 1154987 bytes, original extent 25661
+preserved, unique filesystem ownership/bitmap verified, five interactive
+commands, 16 MiB QEMU 486, source inputs unchanged. This reproduces the native
+installation fragmentation condition, not just the artificial low-space case.
+Two-generation validation now running in build/extended-transfer-native-generations
+(session65702); requires rebuild/install/reboot evidence before qualification.
+Separate early-IDT candidate harness fixes ten remaining payload-flag mutation
+sites to refresh E32B checksum before saving, including target format/mount,
+source tree copy, write/flush recovery and clearing mutation flags. Python
+syntax check PASS; real file-I/O failure matrix running session95631 in
+build/extended-checksum-io-matrix. No matrix PASS claimed yet. Preserved full
+candidate patch updated; live older full-suite/native-generation sources frozen.
