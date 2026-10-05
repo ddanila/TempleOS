@@ -5385,3 +5385,23 @@ Actual five-cycle execution is build/debug-concurrent-repeat; verdict pending.
 The corrected --test boot now reaches console binding/root headers, but full
 public-header diagnostics and all later checks still need terminal PASS.
 No promotion or full release readiness is claimed.
+
+Repeated concurrent sessions green; diagnostics separate provider load/run
+(2026-10-05): build/debug-concurrent-repeat passes five cycles / 31 commands
+on 486,-fpu / 8 MiB, startup 30.942262 seconds, exact VGA and unchanged image.
+Each cycle verifies two live INT3 contexts, independent expression/G, shared
+debug-mode lifetime and parent public heap recovery. This is still the
+original task-local interactive image, not the revised diagnostic-order source.
+
+The binding-order attempt in build/debug-concurrent-bound fails earlier at
+PROBE REJECT load reclaimed, after ROOT USER HEADERS ok. Full diagnostic
+acceptance is not achieved. Late loading adds the large temporary compiler
+provider after console residency; allocation pressure/fragmentation is a
+working hypothesis, not yet independently proven. The candidate now separates
+KernelCompilerProbeLoad from execution: load before console allocations,
+execute phase 0 after the real console exports bind, retain phase 1 and its
+assertions/release. New fresh bootstrap and dependent --test pipeline are
+running; state build/debug-concurrent-preload-pipeline.json, candidate out
+build/debug-concurrent-prototype/build/debug-concurrent-preload. The updated
+full patch applies cleanly to main. No diagnostic fix PASS, promotion or
+complete debugger/release qualification is claimed.

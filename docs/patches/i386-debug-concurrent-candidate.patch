@@ -830,10 +830,17 @@ index 65aa8c6d..7ea4f0d9 100644
 +extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
  #endif
 diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
-index 940d53f2..3d140156 100644
+index 940d53f2..ace4c087 100644
 --- a/Kernel/I386/Kernel.HC
 +++ b/Kernel/I386/Kernel.HC
-@@ -123,7 +123,7 @@ U8 kernel_startup_bindings[3]={0,1,2};
+@@ -117,13 +117,14 @@ extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64
+ extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version);
+ extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes);
+ extern U0 KernelCompilerProbe(I64 phase);
++extern U0 KernelCompilerProbeLoad();
+ extern U0 KernelConsoleLoad();
+ extern U0 KernelSymbols();
+ U8 kernel_startup_bindings[3]={0,1,2};
  U8 kernel_console_bindings[14]={0,19,10,40,41,18,13,14,33,32,46,42,34,16};
  U8 kernel_compiler_bindings[25]={0,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41,60};
  U8 kernel_probe_bindings[25]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27,23};
@@ -842,11 +849,13 @@ index 940d53f2..3d140156 100644
  U8 kernel_memory_bindings[16]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45};
  extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
  extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
-@@ -155,10 +155,11 @@ I64 Main(CI386BootInfo *info,I64 unused)
+@@ -155,10 +156,13 @@ I64 Main(CI386BootInfo *info,I64 unused)
    KernelCompilerLoad;
    KernelFileLoad;
    KernelMemoryLoad;
 -  if(kernel_diagnostics) KernelCompilerProbe(0);
++  //Load the large temporary provider before console allocation fragments RAM.
++  if(kernel_diagnostics) KernelCompilerProbeLoad;
    if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
    if(!I386KbcInputInit(&kernel_input,&kernel_scheduler)) KernelStop;
    KernelConsoleLoad;
@@ -855,7 +864,49 @@ index 940d53f2..3d140156 100644
    KernelStartup;
    if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
    KernelLog("STORAGE TASK BOUND\n");
-@@ -624,11 +625,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
+@@ -534,23 +538,27 @@ U0 KernelCompilerLoad()
+     KernelLog("PUBLIC MATH REBIND CHECK\n");
+   }
+ }
++U0 KernelCompilerProbeLoad()
++{//Keep load-time temporary buffers ahead of resident console allocations.
++  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)];
++  I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
++  if(kernel_probe_image) KernelStop;
++  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
++  kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
++  if(!kernel_probe_image) {
++    KernelHeapCheck(used,allocations);
++    KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
++  }
++  kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
++  kernel_probe_span=kernel_heap.used-used;
++  if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
++}
+ U0 KernelCompilerProbe(I64 phase)
+-{//Load once with boot disk ownership; the task call performs no disk I/O.
+-  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)]; CI386CompilerProbe probe;
++{//Run both phases with real public exports; provider was loaded before console.
++  CI386CompilerProbe probe;
+   I64 (*entry)(CI386CompilerProbe *probe,I64 bytes);
+   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
+-  if(phase==0) {
+-    if(kernel_probe_image) KernelStop;
+-    KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+-    kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
+-    if(!kernel_probe_image) {
+-      KernelHeapCheck(used,allocations);
+-      KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
+-    }
+-    kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
+-    kernel_probe_span=kernel_heap.used-used;
+-    if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
+-  } else if(phase!=1 || !kernel_probe_image) KernelStop;
++  if((phase!=0 && phase!=1) || !kernel_probe_image) KernelStop;
+   if(I386HeapSize(&kernel_heap,kernel_probe_image)!=kernel_probe_size) KernelStop;
+   used=kernel_heap.used; allocations=kernel_heap.allocations;
+   probe.version=I386_COMPILER_PROBE_VERSION; probe.bytes=sizeof(CI386CompilerProbe);
+@@ -624,11 +632,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
  }
  U0 KernelFileLoad()
  {
