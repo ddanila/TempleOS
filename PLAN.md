@@ -13555,3 +13555,20 @@ removal and rename; all three rejected with the explicit path-set error before
 revision reporting. These are audit mutation checks, not newer-image acceptance.
 Syntax and diff checks PASS. Text-run full/native and Caller no-FPU chains
 remain running; release qualification is incomplete.
+
+
+### Complete candidate debugger and DolDoc sessions underway (2026-10-05)
+
+Fresh complete-candidate 20-job/five-cycle debugger regression now runs in
+`build/text-run-failure-debugger-regression`, with frozen corrected step-stack
+input fixture and diskSHA2567d1a168ebed992d747ba268b96f2cfc9678c8bad91cc1773289feeadabe548da.
+Three-boot executable DolDoc persistence starts in
+`build/text-run-failure-doldoc-session`, 486withoutFPU/8MiB, to qualify styles,
+editing, save/reopen/revise and persistent filesystem behavior for the text-run
+source epoch. Its styled output will feed bidirectional original compatibility
+when complete. These are running cross-image gates, not native acceptance.
+
+M7 acceptance, coverage audit and support matrix opening checkpoints refreshed
+to name the complete candidate and distinguish older Caller native/package
+passes from its still-open full/native/release gates. Historical evidence kept;
+no old-source result relabeled as a current-source pass.

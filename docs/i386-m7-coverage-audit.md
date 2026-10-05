@@ -1,5 +1,27 @@
 # M7 requirement-to-test audit
 
+Current qualification (2026-10-05): main OS services remain ABI40. The complete
+unpromoted ABI47 text-run candidate is preserved in
+[the cumulative patch](patches/i386-text-run-integrated-candidate.patch).
+Its fresh original bootstrap, cross-build/386 boot audit and 15-command
+no-FPU/8MiB document session pass, including both text-run allocation failures,
+heap recovery, three exact large-source round trips and binary persistence.
+Full suite, six native providers, 20 debugger jobs and three-boot DolDoc session
+are running. Candidate promotion, its two native generations, its own packaged
+five-job qualification and release publication remain open.
+
+The preceding Caller epoch has two matching native generations, deterministic
+packaging, native/source audits and four installed workflows with passing
+budgets. It still fails the newly added large-source gate; those passes do not
+qualify the complete text-run candidate. The full no-FPU native generation chain
+is separately running on that Caller epoch. Physical hardware verification is
+deferred; human observation is optional. See [PLAN.md](../PLAN.md) for the goal.
+
+## Historical coverage checkpoints
+
+The following results belong to the named earlier images and source epochs.
+Their pending statements do not describe the current qualification queue.
+
 Current filesystem integration checkpoint (2026-10-05): promoted main remains
 file ABI 40; the ABI-46 public cache/write-parent candidate has a fully native
 installed twelve-module image and independent 386/bitmap audit in

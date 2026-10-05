@@ -4,19 +4,27 @@ Manual observation is optional exploratory feedback; functional acceptance uses
 automated QEMU evidence. Historical manual-gate notes below are superseded by
 the 2026-10-03 acceptance revision in PLAN.md.
 
-The next work is the [automated release qualification queue](../PLAN.md#next-goal-an-automatically-qualified-m7-release).
-The [requirement-to-test audit](i386-m7-coverage-audit.md) distinguishes
-existing passes from uncovered outcomes. Public task/terminal work and runtime
-exception inspection remain open; the current-source publication probe fails
-for `Spawn`, `Exit`, `Yield`, `Sleep` and `Dbg`. This table records earlier
-self-hosting evidence and does not qualify the new startup optimization. In particular, current no-FPU boots take 73–74 seconds against
-the plan's 60-second target. The startup-budget checker now reports that failure; startup optimization
-remains open. Both guest-built generations pass an automated 440/880 Hz
-waveform and off/reset emission oracle. Publication follows complete qualification;
-removing the manual gate does not make M7 complete.
+Current qualification (2026-10-05): main OS services remain ABI40. The complete
+unpromoted ABI47 text-run candidate is preserved in
+[the cumulative patch](patches/i386-text-run-integrated-candidate.patch).
+Its fresh original bootstrap, cross-build/386 boot audit and 15-command
+no-FPU/8MiB document session pass, including both text-run allocation failures,
+heap recovery, three exact large-source round trips and binary persistence.
+Full suite, six native providers, 20 debugger jobs and three-boot DolDoc session
+are running. Candidate promotion, its two native generations, its own packaged
+five-job qualification and release publication remain open.
 
-This is the current evidence map for [M7 in PLAN.md](../PLAN.md#following-big-goal-m7-self-hosting-32-bit-templeos-workstation).
-The current candidate is
+The preceding Caller epoch has two matching native generations, deterministic
+packaging, native/source audits and four installed workflows with passing
+budgets. It still fails the newly added large-source gate; those passes do not
+qualify the complete text-run candidate. The full no-FPU native generation chain
+is separately running on that Caller epoch. Physical hardware verification is
+deferred; human observation is optional. See [PLAN.md](../PLAN.md) for the goal.
+
+## Historical workstation evidence
+
+This is the historical evidence map for [M7 in PLAN.md](../PLAN.md#following-big-goal-m7-self-hosting-32-bit-templeos-workstation).
+The candidate at that checkpoint was
 `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img`
 (SHA-256 `a7c111f8f139f4121283916ff80e1d173069753b173e1bb1e4c90ace191db96c`).
 It contains twelve guest-built modules and a 482,384-byte flat image, and

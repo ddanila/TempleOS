@@ -1,19 +1,21 @@
 # i386 QEMU support matrix
 
-Latest checkpoint (2026-10-05): the TEST-fixed candidate's second fully native
-generation passes all four installed workflows in
-`build/top-test-fixed-gen2-workflows/result.json`: full no-FPU workstation,
-three-boot executable DolDoc persistence, captured speaker output and bounded
-resource cycles. Its separate `budget-verdict.json` passes all startup and
-visible-response targets: workstation startup 55.840 seconds, long-document
-update 0.943 seconds, DolDoc starts 56.737/49.423/49.285 seconds, interrupt
-recovery 0.291 seconds. The installed image SHA256 is
-`a8ff05bd47dbba9f987af563731c9b2a3e6847f5b84f3885cc338757baf2c6db`.
+Current qualification (2026-10-05): main OS services remain ABI40. The complete
+unpromoted ABI47 text-run candidate is preserved in
+[the cumulative patch](patches/i386-text-run-integrated-candidate.patch).
+Its fresh original bootstrap, cross-build/386 boot audit and 15-command
+no-FPU/8MiB document session pass, including both text-run allocation failures,
+heap recovery, three exact large-source round trips and binary persistence.
+Full suite, six native providers, 20 debugger jobs and three-boot DolDoc session
+are running. Candidate promotion, its two native generations, its own packaged
+five-job qualification and release publication remain open.
 
-This evidence precedes the memory-baseline and public Caller changes. Those
-newer candidates remain unpromoted and are being qualified separately; main
-OS file services remain ABI 40. Final release publication remains open.
-QEMU results do not certify physical 386 hardware. Human observation is optional.
+The preceding Caller epoch has two matching native generations, deterministic
+packaging, native/source audits and four installed workflows with passing
+budgets. It still fails the newly added large-source gate; those passes do not
+qualify the complete text-run candidate. The full no-FPU native generation chain
+is separately running on that Caller epoch. Physical hardware verification is
+deferred; human observation is optional. See [PLAN.md](../PLAN.md) for the goal.
 
 ## Firmware and machine record
 
