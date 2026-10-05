@@ -13088,3 +13088,24 @@ The newer memory-baseline native generations and latest public Caller native
 build/full suites remain live and retain their own source-specific gates.
 Root OS remains unpromoted ABI40. Next release work requires latest-source
 qualification and deterministic whole-image packaging; release remains open.
+
+
+Deterministic whole-disk native packaging (2026-10-05):
+Added tools/package-i386-native-image.py and docs/i386-release-packaging.md.
+Actual TEST-fixed generation1/2 live trees match all873 file contents, attributes
+and dates. Sorted live-tree placement preserves native boot area and every live
+file, removes tombstones/slack/unreachable bytes and rebuilds bitmap. Both
+packaged disk images now match byte for byte: SHA256
+ a25fc4a39eda36441e8000669934def9c850e6a48f9951c43197806de016d7b9.
+Independent filesystem ownership/readback PASS;16dirs873files19275owned sectors.
+Repackaging is byte-identical; existing-output and pending-journal inputs rejected.
+Independent packaged native executable/boot metadata/padding audit PASS in
+build/native-release-packaging/native-audit/result.json. Initial invocation used
+cross-built compiler marker mode and failed; preserved under packaging/audit,
+corrected native-template mode matches existing generation qualification.
+Packaged-image QEMU boot PASS on8MiB486,-fpu: normal interactive startup and
+6*7=42 VGA-checked, image hash unchanged. Focused compiler/file-navigation/
+DolDoc documents/editing workflows now running on a fresh writable copy; no
+runtime PASS transferred from unpackaged image. Whole workstation/latest-source qualification and release
+promotion remain open. Memory-baseline generation2 now reached selfhost; public
+Caller retained native build remains live. Root OS remains unpromoted ABI40.
