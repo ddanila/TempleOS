@@ -11556,3 +11556,23 @@ verifying the bytes before executing. New run
 build/debug-public-flags-bytes-red is pending. Five-cycle preflight verifies
 independent events and command limits. No flags implementation/runtime green,
 root promotion or complete release readiness is claimed.
+
+ABI-47 FileRuntime host qualification updated (2026-10-05):
+The concurrent candidate audit now requires all six additional exported services
+(write_public, read_stored, expand, public_reader, cd, find_public), derives
+addresses from their module exports, parses the complete 31-token FILES row,
+and checks every added address. These addresses are also recorded in results.
+Independent inspection of inherited-zero's captured boot validates all six;
+all 1270 original-bootstrap source hashes still match. The complete updated
+candidate patch applies cleanly to main. Fresh full --test qualification runs
+in build/debug-concurrent-prototype/build/debug-concurrent-file-audit;
+its log is build/debug-concurrent-file-audit-cross-build.log. Captured-row
+validation is not a complete diagnostic/build PASS. Root OS remains unpromoted.
+
+The corrected byte-patched flags fixture is terminal FAIL in
+build/debug-public-flags-bytes-red/result.json. Its guest reaches
+CpuTrapResult==0x12 after captured/public carry checks and G, then the console
+check times out. This is runtime evidence beyond the earlier frontend failure;
+physical flags restoration still needs implementation and green verification.
+The integrated no-FPU retained-build retry remains live (PID 3677763).
+Complete self-hosting/release qualification remains open.
