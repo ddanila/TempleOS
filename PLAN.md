@@ -3,6 +3,13 @@
 ## Objective and status
 
 Latest qualification state (2026-10-05): main OS services remain ABI 40.
+Newest integration candidate combines canonical text-run loading/failure
+coverage with bounded editor redraw coalescing:
+[combined candidate patch](docs/patches/i386-text-run-redraw-integrated-candidate.patch).
+Its fresh bootstrap is running; earlier greens do not qualify this combination.
+The text-run-only full suite failed undo grouping, while the redraw-only
+candidate passed the full 513-command keyboard/workstation stage.
+
 The complete unpromoted ABI-47 candidate is archived in
 [the integrated text-run candidate patch](docs/patches/i386-text-run-integrated-candidate.patch).
 It includes the extended BIOS loader and early IDT, public filesystem and
@@ -13589,3 +13596,22 @@ both five cycles /49 commands PASS at486withoutFPU/8MiB with unchanged source
 image and exact VGA. Aggregate still running; no20-job PASS claimed.
 Current candidate full/native and earlier Caller full-chain no-FPU runs were
 confirmed live. No promotion or release claim.
+
+
+### Text-run plus redraw integration after full-suite undo failure (2026-10-05)
+
+Text-run-only `build/document-run-load-candidate/build/document-run-full-kernel`
+is terminal FAIL in the keyboard stage at undo-typing-run. Captured VGA after
+undoingabc containsa and caret rather than empty text. Large-source focused
+success therefore did not establish full editing acceptance. The separate
+redraw-only candidate's `build/undo-redraw-full-kernel/input/result.json` is
+terminal PASS:513 native commands and20 document heap-recovery cycles, including
+that unchanged undo check. Its overall full suite remains running beyond input.
+
+Fresh `build/text-run-redraw-candidate` combines the complete text-run/failure
+coverage patch with the bounded8-event redraw coalescing change. Existing
+candidate sources are untouched. Original bootstrap running. New cumulative
+archive `docs/patches/i386-text-run-redraw-integrated-candidate.patch` applies to
+current rootmain; apply-check PASS. No runtime, native or full-suite PASS yet
+for this combination. Previous failure captures and source-specific results
+remain retained. Candidate qualification and release remain open.
