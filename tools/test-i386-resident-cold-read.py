@@ -22,7 +22,10 @@ def main():
     parser.add_argument('--empty', action='store_true', help='Qualify zero-byte resident files and their cache entries')
     parser.add_argument('--dotless', action='store_true', help='Use a filename without an extension and require its exact public cache key')
     parser.add_argument('--adam-root', action='store_true', help='Require the original adam_task global and its ownership of public cache allocations')
+    parser.add_argument('--cache-mutation', action='store_true', help='Require public cache-byte edits to affect fresh reads without changing disk bytes')
     args = parser.parse_args()
+    if args.cache_mutation and (not args.adam_root or args.compressed or args.empty):
+        parser.error('--cache-mutation requires --adam-root and an ordinary nonempty fixture')
     if args.adam_root and not args.hash_visible:
         parser.error('--adam-root requires --hash-visible')
     if args.empty and (args.compressed or args.shared_lifetime):
@@ -72,6 +75,7 @@ def main():
     report['shared_lifetime'] = args.shared_lifetime
     report['hash_visible'] = args.hash_visible
     report['adam_root'] = args.adam_root
+    report['cache_mutation'] = args.cache_mutation
     report['hash_removal'] = args.hash_removal
     if args.hash_visible:
         selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
@@ -80,6 +84,11 @@ def main():
         selected += ['Bool ColdAdamOwn(U8 *p){return MHeapCtrl(p)==adam_task->data_heap;}',
                      'Bool ColdRoot(U8 *name){CHashGeneric *e=HashFind(name,adam_task->hash_table,HTT_FILE);if(!e)return FALSE;return ColdAdamOwn(e)&&ColdAdamOwn(e->str)&&ColdAdamOwn(e->user_data0); }']
         checks += [f'ColdRoot("C:/Probe/{filename}")']
+    if args.cache_mutation:
+        selected += ['Bool ColdMutate(U8 *name,I64 v){CHashGeneric *e=HashFind(name,adam_task->hash_table,HTT_FILE);U8 *p;if(!e||e->user_data1!=4)return FALSE;p=e->user_data0;p[0]=v;return TRUE;}',
+                     'Bool ColdChanged(U8 *name){I64 n,a;U8 *p=FileRead(name,&n,&a);Bool ok=p&&n==4&&a==0&&p[0]==90&&p[1]==0&&p[2]==66&&p[3]==255&&p[4]==0;Free(p);return ok;}']
+        checks += [f'ColdMutate("C:/Probe/{filename}",90)', f'ColdChanged("C:/Probe/{filename}")',
+                   f'ColdMutate("C:/Probe/{filename}",65)', checks[1]]
     if args.hash_removal:
         selected += ['CHashTable *ColdOwner(CHash *e){CHashTable *t=Fs->hash_table;CHash *p;I64 i;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e)return t;p=p->next;}}t=t->next;}return 0;}',
                      'Bool ColdRemove(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE);CHashTable *t;if(!e)return FALSE;t=ColdOwner(e);if(!t)return FALSE;HashRemDel(e,t);return !HashFind(name,Fs->hash_table,HTT_FILE); }']

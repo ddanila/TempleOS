@@ -35,7 +35,9 @@ caller/private recovery contract. Binary, compressed, dotless and empty cold own
 The 513-command workstation and exact caller/root/private heap recovery now
 pass. The apparent 96-byte residue is a validated harness key-up message;
 message-quiescent snapshots retain the exact recovery requirement. Original
-adam_task namespace/ownership qualification is the next candidate gate.
+adam_task namespace/ownership qualification passes binary and compressed cold
+tests. Public cache mutation passes for FileRead, but compiler include parity
+is red: original TempleOS uses the edited cache; the candidate uses disk bytes.
 Original oracles pass. Broader cache lifecycle/exception/include parity and
 native construction must qualify before promotion. The candidate
 source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
@@ -9205,3 +9207,33 @@ adam_task->data_heap and lookup via adam_task->hash_table; they are running in
 is claimed yet. The archived patch includes the additive public data export
 and passes git apply --check. Full no-FPU main retained construction remains
 live at CompilerRuntime. Broader original-model/release gates remain open.
+
+Public cache mutation and compiler include contract (2026-10-05):
+Adam namespace/ownership cold contracts pass 22 binary and 24 compressed
+commands. The new --cache-mutation contract passes the original oracle and
+28 native commands in build/public-resident-adam-mutation: edit public
+HTT_FILE bytes, read the edit through FileRead, restore bytes, remove/repopulate
+cache, exact VGA; source and cold candidate disk bytes remain unchanged.
+Startup is 24.502 seconds on the no-FPU 8 MiB configuration.
+
+New tools/test-i386-resident-include.py establishes an original-model red gate.
+Use --builder build/file-resident-public-prototype/tools/build-i386-kernel.py
+for the ABI-44 resident metadata auditor. The original oracle passes with a
+heap-owned FileWrite buffer. Native public cache mutation and FileRead pass,
+but #include produces 42 from persisted RootCacheValue=6*7; instead of 49
+from the edited resident buffer. Checkpoint startup-command-07 and its VGA
+capture establish the value; this is not merely a timeout inference.
+Independent RedSea audit passes (16 directories, 871 files, 17544 owned
+sectors); persisted source is unchanged and the input image is unchanged.
+Evidence: build/public-resident-include-owned-red/result.json. The earlier
+literal-buffer oracle was invalid; use StrNew to honor original FileWrite
+buffer ownership before drawing compatibility conclusions.
+
+Next architectural gate: compiler includes and document reads must share the
+canonical original public resident cache, with proper private/public heap
+conversion and no recursion through the public disk fallback. Keep this red
+contract until the bridge produces the original result; then requalify cache
+ownership/recovery, full workstation, native construction and generations.
+The current public-cache candidate remains unpromoted. Both retained builders
+are confirmed live: main 486,-fpu TCG is still compiling CompilerRuntime;
+Adam candidate KVM is compiling ConsoleRuntime. Neither is a completed gate.
