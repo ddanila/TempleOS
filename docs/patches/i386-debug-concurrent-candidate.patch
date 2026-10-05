@@ -1036,7 +1036,7 @@ index 23b3bf96..1ccd07f5 100644
      HashAdd(&memory_exports[i],symbols);
      while(*names) names++;
 diff --git a/Kernel/I386/PublicDebug.HH b/Kernel/I386/PublicDebug.HH
-index 54f3228c..dc3e34cd 100644
+index 54f3228c..974783b1 100644
 --- a/Kernel/I386/PublicDebug.HH
 +++ b/Kernel/I386/PublicDebug.HH
 @@ -5,4 +5,13 @@ public _extern _DBG U0 Dbg(U8 *msg=0,I64 msg_num=0);
@@ -1046,11 +1046,11 @@ index 54f3228c..dc3e34cd 100644
 +public _extern _DEBUG_STEP U0 S(U8 *ip=U32_MAX,CTask *task=0);
 +public _extern _TASK_REG_ADDR I64 *TaskRegAddr(CTask *task,I64 reg_num);
 +#include "/Kernel/I386/PublicDebugTypes.HH"
-+public _extern _BPT_FIND CBpt *BptFind(U8 *addr,CTask *task=0,Bool rem=FALSE);
-+public _extern _BPT_SET Bool BptS(U8 *addr,CTask *task=0,Bool live=TRUE);
-+public _extern _BPT_REMOVE Bool BptR(U8 *addr,CTask *task=0,Bool live=TRUE,Bool rem=TRUE);
-+public _extern _BPT_TOGGLE Bool B(U8 *addr,CTask *task=0,Bool live=TRUE);
-+public _extern _BPT_CLEAR I64 B2(CTask *task=0,Bool live=TRUE);
++public _extern _BPT_FIND CBpt *BptFind(U8 *addr,CTask *task=0,Bool rem=0);
++public _extern _BPT_SET Bool BptS(U8 *addr,CTask *task=0,Bool live=1);
++public _extern _BPT_REMOVE Bool BptR(U8 *addr,CTask *task=0,Bool live=1,Bool rem=1);
++public _extern _BPT_TOGGLE Bool B(U8 *addr,CTask *task=0,Bool live=1);
++public _extern _BPT_CLEAR I64 B2(CTask *task=0,Bool live=1);
 +public _extern _DEBUG_GO_CLEAR U0 G2(U8 *ip=U32_MAX,CTask *task=0);
  #endif
 diff --git a/Kernel/I386/PublicFiles.HH b/Kernel/I386/PublicFiles.HH

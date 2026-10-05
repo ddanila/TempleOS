@@ -5532,3 +5532,30 @@ build/debug-concurrent-reader-ip/boot in the candidate clone. A separate
 focused direct-IP run uses that generated interactive image in
 build/debug-public-ip-green; verdict pending. This does not bypass the
 unresolved diagnostic gate or establish promotion/release completeness.
+
+Direct public RIP editing green; G2 native generations independently verified
+(2026-10-05): build/debug-public-ip-green passes 18 commands on 486,-fpu /
+8 MiB, startup 26.753895 seconds, exact VGA and unchanged source. Direct
+Fs->rip edits followed by default G skip the verified MOV and store/return
+the expected marker. This proves the tested current-task G path, not stack/
+flags edits, other-task control or the revised header-default source epoch.
+
+build/debug-go-clear-native-generations completes PASS. Independent audit
+build/debug-go-clear-generation-identity-recheck passes all 12 modules,
+flat 487336 bytes, flat SHA256
+677fc890aea419321b03fa299edfc546240122bfa153af43f67c7a93b3547fe9,
+boot SHA256
+9daa68fd0f77c3ea8b3120c70db0a2af8afe277a7dce37a75c9b548db38ed1e6.
+Both volumes: 16 directories, 873 files, 19135 owned sectors with matching
+reachable-extent bitmaps. Whole disk hashes differ as expected. These are
+G2-source results, separate from the later task-local/diagnostic/IP candidate.
+
+PublicDebug.HH introduced TRUE/FALSE default arguments, while PublicUser.HH
+publishes those macros only after PublicKernel.HH. The diagnostic header
+probe loads PublicKernel independently. Candidate defaults now use equivalent
+0/1 literals, matching the self-contained neighboring public headers.
+This removes an actual include-order dependency; whether it resolves the
+observed Invalid lval still requires runtime proof. Updated patch applies
+cleanly; fresh bootstrap and --test/public-IP/concurrent/ownership/kill gates
+run or queue in build/debug-concurrent-header-defaults-pipeline.json.
+No diagnostic PASS, root promotion or full release qualification is claimed.
