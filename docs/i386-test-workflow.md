@@ -5426,3 +5426,26 @@ DolDoc execute the frozen paths. Full four-gate verdict remains pending.
 The preload diagnostic pipeline separately reaches console loading with the
 provider already resident; its terminal result is still pending. Candidate
 promotion, full parity and release completion remain open.
+
+Diagnostic preload advances to scalar probe; initialization split required
+(2026-10-05): build/debug-concurrent-preload-pipeline terminates at cross-build.
+Its boot log passes console binding/root headers, provider loading and
+backend/parser/symbol probes, then logs all six SCALAR TYPE records and
+FAIL native kernel. This is distinct from the earlier missing debugger export
+and late provider load failures. The current moved phase-0 execution runs
+after root public/scalar declarations publish; the fixtures expect to create
+those declarations themselves. Full diagnostics are still failing, not fixed.
+
+Next architectural correction: split console export binding from root-header
+publication. Keep temporary provider loading early; bind real console/debugger
+exports while leaving public root headers deferred; execute original phase-0
+compiler fixtures; load scalar/public root declarations; retain ordinary
+startup and phase-1 fixtures. Express the split as an explicit private config
+option plus a root-header service callback, version the changed private
+console interface and update its size/version audits. Normal boot should
+publish root headers once as before. Do not fake missing exports, weaken
+scalar assertions or drop either phase. This needs a new source epoch,
+bootstrap, full diagnostic run and interactive/native regression qualification.
+The current patch remains an unqualified intermediate implementation.
+Frozen G2 installed gates and its original native chain remain separate live
+qualification work; no promotion or release completeness is claimed.
