@@ -12121,3 +12121,23 @@ and coordinated linker, heap reservation, native installer and auditor work.
 No integrated TempleOS or release completion claimed. Existing long-running
 native-generation and no-FPU build processes remain live; their sources stay
 frozen. Physical verification remains deferred.
+
+Extended image reservation candidate begins (2026-10-05):
+Separate main checkout build/extended-kernel-prototype applies the cumulative
+frame-walking candidate and adds a 16-byte image handoff type plus validated,
+sector-rounded high-image reservation. Kernel Main requires the new handoff
+when the loader reports its exact 4096-byte stage, then passes both kernel
+stack and high image reservations into arena selection. Legacy larger stage
+images keep the old reservation path. New memory fixture covers a 655361-byte
+payload rounded to 655872, heap starting at 0x1A0200 through 8 MiB, nine invalid
+handoffs and unchanged output on rejection. These tests are not yet qualified.
+
+Full cumulative source is archived in
+ docs/patches/i386-extended-memory-candidate.patch (git apply --check passes).
+The first --memory attempt stopped on missing fresh bootstrap, before compiling
+or executing the fixture; preserve build/extended-memory-test.log. Fresh original
+bootstrap is confirmed live as PID 3750438/session 86180, output
+build/extended-kernel-prototype/build/extended-bootstrap.log, generation 1.
+After both bootstrap generations pass, run tools/test-i386.py --memory in that
+checkout. High linking, extended packaging and native installation still need
+coordinated implementation; no OS runtime or memory-test pass is claimed.
