@@ -12933,3 +12933,19 @@ i386-memory-baseline-integrated-candidate.patch. Python syntax and patch check
 PASS. Fresh original bootstrap PASS; source-qualified cross-build running
 session38551, build/growth-failure-kernel.log. No growth
 failure matrix PASS claimed. Existing full-suite and native builds untouched.
+
+
+Final early-IDT loader boundary qualification (2026-10-05):
+build/extended-early-idt-maximum/result.json PASS13 at exact payload capacity
+1043968 bytes (2039 sectors before filesystem LBA2048). Final stage386 audit
+PASS96 BIOS/209 stage instructions. build/extended-early-idt-unaligned/result.json
+PASS13 with655361-byte payload, exercising exact-byte checksum over a partial
+last sector. Same final early-IDT stage as combined memory-baseline candidate;
+source hashes pinned. Covers streamed payload markers/handoff and rejection
+cases, not native generation installation or physical-PC qualification.
+Interrupted-growth fixture source-qualified cross-build PASS with fresh original
+bootstrap and386 boot audit. Full17-case proposed write/flush growth matrix now
+running session60661 under build/move-growth-failures. Each failing operation
+must fire before its case can pass, then recovery checks one IO name, existing
+five F files and filesystem. No matrix result claimed yet; native/build suites
+remain live on frozen sources and are not restarted.
