@@ -13,6 +13,7 @@ def commands():
     checks = runpy.run_path(str(ROOT / 'tools/test-i386-debug-cpu-trap.py'))['commands']()
     checks[0] = (checks[0][0] + 'I64 CpuStepFinal=0;U32 *CpuStepValue=0;', [])
     checks[2] = ('I64 CpuTrapInstruction(){U32 value=0;CpuStepFinal=0;CpuStepValue=&value;asm { MOV EAX,0x11223344 NOP NOP NOP MOV U32 &value[EBP],EAX }CpuStepFinal=1;return value;}', [])
+    checks[4] = ('Bool CpuTrapFind(){I64 n=MSize(CpuTrapBytes);while(CpuTrapOffset+2<n&&(CpuTrapBytes[CpuTrapOffset]!=0x90||CpuTrapBytes[CpuTrapOffset+1]!=0x90||CpuTrapBytes[CpuTrapOffset+2]!=0x90))CpuTrapOffset++;return CpuTrapOffset+2<n;}', [])
     checks[6] = ('U0 CpuTrapPatch(){CpuTrapBytes[CpuTrapOffset+2]=0xCC;}', [])
     checks[7] = ('CpuTrapPatch;CpuTrapBytes[CpuTrapOffset+2]==0xCC;', ['1'])
     source, answers, interaction = checks[9]

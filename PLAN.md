@@ -10348,3 +10348,16 @@ from PublicDebug.HH, so the expected missing-function gate is now running;
 actual failure evidence is pending rather than inferred from that declaration.
 The current candidate source remains fixed for its installed/generation jobs.
 A separate debugger implementation candidate is needed after observing red.
+
+Single-step fixture search corrected before implementation (2026-10-05):
+The first single-step TDD run fails at CpuTrapFind before any S command.
+The expanded test function outgrows the inherited 128-byte triple-NOP search.
+This is fixture failure, not a demonstrated S red. The checker now obtains
+MSize of the generated executable allocation and searches only within that
+allocation, requiring all three bytes to lie inside it. Public code-allocation
+MSize is already covered by the workstation suite. This removes the arbitrary
+function-length limit and avoids reading past the executable allocation.
+A fresh run in build/file-cd-resident-integrated-single-step-sized-red now
+uses this corrected fixture; actual missing-S evidence remains pending. The
+first failure evidence is preserved and no OS source is changed to accommodate
+it. Existing native-generation/workflow/no-FPU builds remain on fixed sources.
