@@ -9782,3 +9782,25 @@ output shows current parent CompilerProbe construction, main no-FPU console
 construction, and ongoing workstation file-editor commands. These jobs remain
 pending. No source promotion, generation reproducibility, full no-FPU native
 build, or release completion is claimed from this evidence.
+
+Current-source installed audit and second generation queued (2026-10-05):
+The live first-generation native pipeline is now followed by
+build/public-resident-write-parent-generations-pipeline.py. It waits on the
+specific live first-generation pipeline process, requires a successful fully
+guest-built retained/flat report, then independently audits the installed
+image's twelve executable modules, 386 boot instructions, installed flat
+payload and filesystem. Audit source paths are /Modules/I386/Kernel.t32m and
+/Probe/GuestBoot.bin; the matching candidate kernel-stage.lst is used.
+
+After that audit succeeds, the installed first generation supplies the second
+six-module retained build, with --compare-installed requiring exact retained
+payload equality. Retained installation and full second-generation native
+flat build follow with both provenance manifests, then a second independent
+installed audit and audit-i386-generations.py compare all twelve modules,
+flat image and full boot area byte-for-byte. Outputs use
+build/public-resident-write-parent-gen2-* and
+build/public-resident-write-parent-generation-identity. Pipeline state lives
+in build/public-resident-write-parent-generations-pipeline.json; running state
+alone proves no qualification. All steps stop on failure. These are queued
+checks, not green verdicts. Installed no-FPU workstation, full no-FPU native
+construction, remaining M7 behavior/performance and release gates stay open.
