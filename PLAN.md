@@ -12510,3 +12510,24 @@ Renderer reuse bootstrap PASS both generations; full --test live session32659,
 output build/extended-render-reuse-prototype/build/extended-render-reuse-kernel.
 Native candidate sources remain preserved; full release and native generations
 still incomplete.
+
+Fragmented native-module move TDD and renderer compile fix (2026-10-05):
+New tools/test-i386-fragmented-module-move.py prepares the exact prior three
+retained replacements and ConsoleRuntime deletion on a writable source copy,
+then requires cross-directory native module move success, preserved extent/
+size/date/attributes/payload and boot area, source disappearance and independent
+filesystem ownership integrity. Pins source and checker dependencies; fresh
+output required. Run from actual six-module build source. Red run live
+session71898, build/fragmented-module-move-red; no test pass claimed. This is
+an actual installation-derived reproducer, not interrupted-metadata recovery.
+
+Renderer reuse cross-build is terminal FAIL at forward graphics_presenting
+variable: original compiler cannot use that undeclared storage in this module
+context. Preserve exports/compiler-log.DD and old bootstrap as
+build/rebuild-before-lock-functions. Candidate now calls explicit graphics lock/
+unlock functions defined alongside the actual presenting state; all validation
+and owned-buffer cleanup remain. Updated renderer patch includes GraphicsFrame
+helper definitions and applies cleanly. Fresh changed-source bootstrap live
+session18478, log extended-render-lock-bootstrap.log. Only then rebuild/test its
+actual ConsoleRuntime. Native generations remain failed pending file-move fix;
+no installer/release success claimed.

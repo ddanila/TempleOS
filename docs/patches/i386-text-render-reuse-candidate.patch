@@ -1,13 +1,32 @@
+diff --git a/Kernel/I386/GraphicsFrame.HC b/Kernel/I386/GraphicsFrame.HC
+index b85e0775..2b1d4051 100644
+--- a/Kernel/I386/GraphicsFrame.HC
++++ b/Kernel/I386/GraphicsFrame.HC
+@@ -8,6 +8,13 @@ Bool NativeGraphicsReady()
+     gr.dc==graphics_persistent && gr.dc2==graphics_frame && gr.text_base==i386_text_base &&
+     gr.win_z_buf==graphics_zbuffer && gr.win_uncovered_bitmap==graphics_uncovered;
+ }
++Bool NativeGraphicsTextLock()
++{
++  if(!NativeGraphicsReady || graphics_presenting) return FALSE;
++  graphics_presenting=TRUE; return TRUE;
++}
++U0 NativeGraphicsTextUnlock()
++{ graphics_presenting=FALSE; }
+ U8 *NativeGraphicsPlanes()
+ {
+   if(NativeGraphicsReady) return graphics_planes;
 diff --git a/Kernel/I386/TextRender.HC b/Kernel/I386/TextRender.HC
-index 31eac248..6a92b6ee 100644
+index 31eac248..f6afba08 100644
 --- a/Kernel/I386/TextRender.HC
 +++ b/Kernel/I386/TextRender.HC
-@@ -1,17 +1,31 @@
+@@ -1,17 +1,33 @@
  #include "/Kernel/TextRenderCore.HC"
  #include "/Kernel/GraphicsFrameCore.HC"
 +extern Bool NativeGraphicsReady();
 +extern U8 *NativeGraphicsPlanes();
-+extern Bool graphics_presenting;
++extern Bool NativeGraphicsTextLock();
++extern U0 NativeGraphicsTextUnlock();
  Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
    Bool hide_col=FALSE,Bool hide_row=FALSE)
  {
@@ -15,13 +34,14 @@ index 31eac248..6a92b6ee 100644
 -  Bool result=FALSE;
 +  Bool result=FALSE,borrowed=FALSE;
 +  if(NativeGraphicsReady) {
-+    if(graphics_presenting || !gr.dc2 ||
++    if(!gr.dc2 ||
 +        gr.dc2->dc_signature!=DCS_SIGNATURE_VAL ||
 +        gr.dc2->width_internal!=640 || gr.dc2->height!=480 ||
 +        !gr.dc2->body) return FALSE;
 +    pixels=gr.dc2->body; planes=NativeGraphicsPlanes;
 +    if(!planes) return FALSE;
-+    graphics_presenting=TRUE; borrowed=TRUE;
++    if(!NativeGraphicsTextLock) return FALSE;
++    borrowed=TRUE;
 +  }
    try {
 -    pixels=CAlloc(307200); planes=CAlloc(153600);
@@ -32,7 +52,7 @@ index 31eac248..6a92b6ee 100644
 -  } catch { Free(planes); Free(pixels); }
 -  Free(planes); Free(pixels); return result;
 +  } catch { }
-+  if(borrowed) graphics_presenting=FALSE;
++  if(borrowed) NativeGraphicsTextUnlock;
 +  else { Free(planes); Free(pixels); }
 +  return result;
  }
