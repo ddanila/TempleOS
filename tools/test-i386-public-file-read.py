@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import runpy
 import struct
@@ -100,7 +101,11 @@ def main():
         if args.resident_recovery:
             commands += [('U8 *ResidentName="C:/Probe/ReadResident.BIN";',[]),
                          ('Bool ResidentRound(){return ResidentWrite(ResidentName,90,0x200)&&ResidentRead(ResidentName,90,0)&&ResidentWrite(ResidentName,67,0)&&ResidentRead(ResidentName,67,0x800);}',[]),
-                         ('Bool FindRecovery(){I64 i,u=Fs->data_heap->used_u8s,r=Fs->gs->seth_task->data_heap->used_u8s;for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return Fs->data_heap->used_u8s==u&&Fs->gs->seth_task->data_heap->used_u8s==r;}',[]),
+                         ('U0 ResidentHeapText(U8 *s){while(*s)OutU8(0xE9,*s++);}',[]),
+                         ('U0 ResidentHeapHex(I64 n){U8 *d="0123456789ABCDEF";I64 i;for(i=60;i>=0;i-=4)OutU8(0xE9,d[(n>>i)&15]);OutU8(0xE9,10);}',[]),
+                         ('I64 ResidentRootUsed(){return Fs->gs->seth_task->data_heap->used_u8s;}',[]),
+                         ('Bool ResidentHeaps(I64 u,I64 r){I64 v=Fs->data_heap->used_u8s,s=ResidentRootUsed;ResidentHeapText("RESIDENT HEAPS\\n");ResidentHeapHex(u);ResidentHeapHex(v);ResidentHeapHex(r);ResidentHeapHex(s);return u==v&&r==s;}',[]),
+                         ('Bool FindRecovery(){I64 i,u=Fs->data_heap->used_u8s,r=ResidentRootUsed;ResidentHeapText("RESIDENT BEFORE\\n");ResidentHeapHex(u);ResidentHeapHex(r);for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return ResidentHeaps(u,r);}',[]),
                          ('FindRecovery;',['1'])]
         commands += [('6*7;',['42'])]
         if args.resident_recovery:
@@ -132,6 +137,16 @@ def main():
     except Exception as error:
         report['error']=str(error);raise
     finally:
+        trace=out/'behavior/debug.log'
+        if args.resident_recovery and trace.exists():
+            match=re.search(r'RESIDENT HEAPS\n'+r'([0-9A-F]{16})\n'*4,trace.read_text(errors='replace'))
+            if match:
+                values=[int(value,16) for value in match.groups()]
+                report['resident_public_heap_observation']=dict(zip(('caller_before','caller_after','root_before','root_after'),values))
+                report['resident_public_heap_observation']['result']='pass' if values[0]==values[1] and values[2]==values[3] else 'fail'
+            initial=re.search(r'RESIDENT BEFORE\n'+r'([0-9A-F]{16})\n'*2,trace.read_text(errors='replace'))
+            if initial:
+                report['resident_public_heap_initial']={'caller':int(initial[1],16),'root':int(initial[2],16)}
         report['source_disk_unchanged']=args.disk.read_bytes()==original
         if not report['source_disk_unchanged']:report.update(result='fail',error='Source changed')
         (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')

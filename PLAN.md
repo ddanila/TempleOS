@@ -31,8 +31,10 @@ Current unpromoted work is public filesystem compatibility. Cd passes its
 retained native construction and installation now pass; full native kernel
 qualification is underway. The resident public binding correction passes an
 18-command cold ownership/removal contract and a 37-command write/read and
-caller/private recovery contract. Exact-name, compressed, empty and persistent
-root-heap recovery qualification plus the full workstation suite are running.
+caller/private recovery contract. Binary, compressed, dotless and empty cold ownership/removal contracts now pass.
+Persistent root-heap recovery still fails: twenty rounds leave 96 bytes beyond
+the zero baseline while the caller heap recovers exactly. Diagnostic snapshots
+and the full workstation suite are running.
 Original oracles pass. Broader cache lifecycle/exception/include parity and
 native construction must qualify before promotion. The candidate
 source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
@@ -9134,3 +9136,37 @@ Start qualified main's retained native rebuilding under TCG CPU 486,-fpu in
 per-command bound. This is a live full no-FPU build attempt, not a pass; previous
 KVM builds with FPU available do not cover it. Cd full native construction is
 still live and has reached boot-image installation. Release gates remain open.
+
+Exact-name cold gates and persistent-root diagnostics (2026-10-05):
+All exact-name cold ownership/removal gates pass on the same ABI-44 candidate:
+`build/public-resident-exact-cold` (18 commands, startup 31.883 seconds),
+`...-packed-cold` (20, 31.664), `...-dotless-cold` (18, 30.882),
+`...-empty-cold` (18, 32.126). Each original oracle passes, public entry/name/data
+allocations are recognized, removal rejects wrong instances and repopulates
+from disk, VGA matches and source/prepared disk bytes remain unchanged.
+
+Strengthened `build/public-resident-exact-recovery` fails at FindRecovery,
+although the earlier caller/private-only recovery passed. Keep the stronger
+gate. Diagnostic helpers now emit caller/root before/after counters through
+the debug port and persist parsed observations even on failure. Real trace
+in `build/public-resident-exact-root-heap-trace/behavior/debug.log` records
+caller 1358816 -> 1358816 and root 0 -> 96 after twenty rounds. Regex extraction
+of those actual bytes passes. A further run in
+`build/public-resident-exact-root-before-trace` emits initial counters before
+the loop, to distinguish remaining allocations from a saved-baseline problem.
+No explanation or root-heap recovery pass is inferred yet. Each generated
+helper fits 255 bytes; the loop helper is 222 bytes. Python/diff checks pass.
+
+Cd full native construction/install/8 MiB boot passes in
+`build/public-cd-special-selfhost/result.json`: flat 487320 bytes (104 bytes
+spare), SHA-256
+`c5b0a6b5ecf48e58cf46e2b506c269262067fa3a0c8119062f81f31e4414210f`,
+target disk SHA-256
+`d873e42fdc4aff88941dbddad678731d823fe94997b5fbde95ef3ec37d6ad3fa`.
+Installed executable/boot/filesystem audit passes in
+`build/public-cd-special-selfhost-audit`, using the target's twelve modules
+and /Probe/GuestBoot.bin. The initial audit invocation used legacy Gen2 paths
+and correctly rejected missing inputs; the successful audit uses the actual
+installed artifact paths. Public-Cd broader drive/error/recovery parity,
+resident root accounting and release requirements remain open. Main no-FPU
+TCG native rebuilding and the exact-name 513-command workstation remain live.
