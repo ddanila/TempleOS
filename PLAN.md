@@ -10010,3 +10010,25 @@ ordinary rejected-write lifecycle flags. It requires current-source original
 parity, independent persisted bytes/bitmap and unchanged input. Current
 allocation recovery, twenty resident recovery cycles, workstation and native
 builders were directly revalidated live; their final results remain pending.
+
+Integrated allocation recovery green and native generations queued (2026-10-05):
+build/file-cd-resident-integrated-failure-recovery/result.json passes original
+oracle and 29 no-FPU / 8 MiB commands, startup 37.257480 seconds, exact VGA
+checkpoints and disk/baseline equality. Caller/root public used bytes recover;
+private heap independently returns exactly to 5404104 bytes and 7132
+allocations, with unchanged heap identity and signature. Borrow/reference
+recovery and successful inclusion after the forced OutMem also pass. This
+qualifies the integrated source rather than inheriting ABI-46 recovery.
+
+Native retained builder PID 3611305 and QEMU PID 3611308 were confirmed live.
+build/file-cd-resident-integrated-generations-pipeline.py now waits on that
+exact handle, requires a six-module pass, then runs retained installation,
+full twelve-module native construction/install/boot with both provenance
+reports, independent installed 386/bitmap audit, second-generation retained
+build with --compare-installed, second retained installation/full flat build,
+second independent audit and complete generation byte comparison. All steps
+stop on failure. Matching stage listing and ABI-47 auditor are used throughout.
+Outputs use build/file-cd-resident-integrated-{native-install,selfhost,
+selfhost-audit,gen2-native-build,gen2-native-install,gen2-selfhost,
+gen2-selfhost-audit,generation-identity}; running state is not a green verdict.
+Installed no-FPU workstation and the remaining M7/release gates stay required.
