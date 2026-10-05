@@ -9739,3 +9739,19 @@ not inherited passes from previous source epochs. The complete M7 pipeline,
 x86-64 regression, fully native twelve-module/install/boot/audits, generation
 reproducibility and published/downloaded artifact verification remain required.
 No promotion or release completion is claimed.
+
+Current-source full native installation chain queued (2026-10-05):
+The parent candidate's 45-command exact twenty-cycle resident recovery passes
+in build/public-resident-write-parent-recovery/result.json; caller/root used
+bytes exactly recover. Full workstation, failure recovery and child parity
+remain live. The exact native retained builder handle was revalidated live.
+A dependent pipeline now waits on that handle and requires a six-module pass,
+then runs retained installation and full native twelve-module/flat install/boot
+with both retained provenance manifests. It fails closed if the required job
+vanishes or a prerequisite fails; no build is restarted by this observer.
+Outputs: build/public-resident-write-parent-native-install and ...-selfhost;
+state: build/public-resident-write-parent-native-pipeline.json. A running state
+is not a completed verdict; later turns must revalidate actual processes.
+This is first-generation qualification only. Independent installed audit,
+second-generation byte equality, installed no-FPU workstation, matching
+x86-64 regression and release publication remain required before completion.
