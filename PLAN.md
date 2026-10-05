@@ -10486,3 +10486,16 @@ register/breakpoint coverage. Integrated no-FPU retained builder PID 3614380,
 single-step retained builder PID 3631600 and workstation QEMU PID 3631601
 remain directly confirmed live. Their pending results are separate gates;
 main OS source remains ABI 40 and no release completion is claimed.
+
+Captured-register editing TDD gate started (2026-10-05):
+tools/test-i386-debug-register-edit.py derives the actual INT3/store/S/G
+fixture and requires the original TaskRegAddr(CTask *,I64) I64-pointer API.
+Before stepping, captured EAX must equal 0x11223344; assigning 0x55667788
+through that pointer must change the next single-stepped store and final
+function result. Existing mode/flags/public-heap checks remain. Dependency
+hashes pin both imported debugger checkers; source/checker identities are
+checked. This is an EAX semantic gate, not full register/API completion or
+an original-runtime oracle. Fixture construction and Python syntax pass.
+The unmodified step candidate runs as the expected red in
+build/debug-register-edit-red; runtime verdict remains pending. Existing
+qualification jobs and candidate sources remain unchanged.
