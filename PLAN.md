@@ -10981,3 +10981,26 @@ open. Five G2 cycles run in ...-go-clear-repeat, five guarded G/G2 cycles in
 build/debug-go-clear-native-build. No pending gate is a pass; previous
 managed/address native results cannot qualify the changed console. Main
 remains unpromoted and complete release readiness remains unproven.
+
+Repeated G2/guard green and stack-register inspection gate (2026-10-05):
+build/debug-go-clear-repeat and build/debug-go-blocked-repeat each pass five
+cycles and 69 commands on 486,-fpu / 8 MiB, exact VGA, restored store/code/
+record state, mode/flags/public heap probe and unchanged image. Startup
+33.040126 / 34.479657 seconds. Full workstation now runs in
+build/debug-go-clear-workstation. Native retained builder 3668924 is directly
+confirmed live; the dependent build/debug-go-clear-native-generations-wait.py
+requires that exact six-module PASS and pinned tracked runner before fresh
+build/debug-go-clear-native-generations. Both broader gates remain pending.
+
+New tools/test-i386-debug-stack-registers.py compares TaskRegAddr ESP/EBP
+slots with GetRSP/GetRBP captured inside the interrupted function before
+INT3, then requires ordinary S/G store/result/mode/flag recovery. It pins
+fixture dependencies and constructs independent repeated interactions;
+source helper is 199 characters, within the console limit. Native exception
+entry inspection confirms PUSHAD precedes four segment pushes: saved ESP
+points to vector/error/EIP/CS/flags, hence the candidate's +20 conversion to
+interrupted ESP. Runtime in build/debug-stack-registers is pending; the
+source calculation alone does not prove public stack-register correctness.
+Stack editing, instruction-pointer/flags edits, other-task controls,
+concurrent ownership, original runtime comparisons and release completion
+remain open. Main OS and live candidate sources remain unchanged.
