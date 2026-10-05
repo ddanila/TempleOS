@@ -11330,3 +11330,22 @@ build/debug-concurrent-prototype/build/debug-concurrent-split. This is an
 implemented source candidate, not a build/runtime PASS. Earlier diagnostic
 failures and earlier interactive greens remain tied to their original images.
 No root candidate promotion or complete parity/release claim.
+
+Direct public instruction-pointer TDD gate added (2026-10-05):
+New tools/test-i386-debug-public-ip.py derives the independently verified
+five-byte MOV skip fixture from the G(ip) checker. It changes Fs->rip via a
+U0 helper and invokes default G, requiring the original EAX marker to reach
+the store/result instead of the skipped MOV immediate. This proves physical
+instruction selection rather than merely reading a changed shadow field.
+Own/base/G-address/single-step/CPU checker and input image identities are
+pinned. Fixture preflight verifies five independent interactions and line
+length bounds. First run build/debug-public-ip-red uses the fixed G2 image;
+verdict pending. Direct stack/flags edits and other-task control remain open.
+
+The split-initialization candidate completes both bootstrap generations;
+its dependent pipeline independently checks all 1270 source hashes and now
+cross-builds in build/debug-concurrent-split. Its diagnostics and subsequent
+regressions still need terminal PASS. Keep this source fixed throughout that
+qualification; any direct-IP implementation belongs to a later source epoch.
+Frozen installed G2 speaker/resource gates pass; remaining gates continue.
+No root candidate promotion or release-complete claim.
