@@ -28,6 +28,8 @@ def main():
     parser.add_argument('--repository',type=Path,default=ROOT,
                         help='Use the qualified candidate repository for format/boot auditors')
     args=parser.parse_args()
+    if args.out.exists():
+        parser.error('Use a fresh output directory; existing audit evidence is preserved')
     repository=args.repository.resolve()
     inputs={str(path.resolve()):hashlib.sha256(path.read_bytes()).hexdigest()
             for path in (args.source,args.installed,args.stage_listing,Path(__file__),

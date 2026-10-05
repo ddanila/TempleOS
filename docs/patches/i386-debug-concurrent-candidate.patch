@@ -19,6 +19,22 @@ index fb2baf47..b7c15b2c 100644
  I64 I386FrontendDefine(U8 *context,U8 *name,U8 *list)
  {
    if(StrCmp(list,"ST_U64_REGS")) I386FrontendUnavailable(context);
+diff --git a/Kernel/I386/CompilerHeaderProbe.HC b/Kernel/I386/CompilerHeaderProbe.HC
+index 35c7bf98..b2728672 100644
+--- a/Kernel/I386/CompilerHeaderProbe.HC
++++ b/Kernel/I386/CompilerHeaderProbe.HC
+@@ -97,9 +97,9 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+   accepted=probe->compiler->input(&input);
+   KernelLog("PUBLIC HEADER PUBLISHED "); KernelHex(accepted); KernelLog(" ");
+   KernelHex(input.warnings); KernelLog(" "); KernelHex(forward->size); KernelLog("\n");
+-  //CCPU retains the existing count-only unused-forward warning. Assertions
++  //CCPU and the completed CBpt retain count-only unused-forward warnings. Assertions
+   //must produce no diagnostic, and no additional warning is accepted.
+-  if(!accepted || input.warnings!=1 || answer.diagnostics ||
++  if(!accepted || input.warnings!=2 || answer.diagnostics ||
+       ProbeSymbolFind(0,"CTask",table,HTT_CLASS)!=forward ||
+       Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
+   before_used=heap->used; before_allocations=heap->allocations;
 diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
 index 30b15c64..1a3e62ff 100644
 --- a/Kernel/I386/ConsoleRuntime.HC
@@ -1396,7 +1412,7 @@ index ccf4a3ff..a0102e8e 100644
    task->cur_dir=(state+1)(U8 *);
    result=TRUE;
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index e6adaabc..9c8a7a82 100644
+index e6adaabc..579b1918 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
 @@ -201,7 +201,7 @@ def console_runtime_layout(module):
@@ -1464,15 +1480,24 @@ index e6adaabc..9c8a7a82 100644
              retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
              move_failure_stages=4,
              task_volume_bound=True, task_context_inherited=True,
-@@ -3010,7 +3010,7 @@ def main():
+@@ -3010,8 +3010,16 @@ def main():
              raise ValueError('Console interface/image accounting mismatch')
          if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
              raise ValueError('Missing retained keyboard cancellation callback probe')
 -        result['console_runtime']=dict(version=37,image_bytes=csize,retained_heap_bytes=cspan,
 +        result['console_runtime']=dict(version=38,image_bytes=csize,retained_heap_bytes=cspan,
              rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
++        # Both header attempts complete exactly these unused forward classes.
++        for section in log.split('PUBLIC HEADER PROBE START ')[1:]:
++            header = section.split('PUBLIC HEADER PUBLISHED ', 1)[0]
++            warnings = [line.removeprefix('FRONTEND SYMBOL WARNING unused extern ')
++                        for line in header.splitlines()
++                        if line.startswith('FRONTEND SYMBOL WARNING ')]
++            if warnings != ['CCPU', 'CBpt', 'CCPU', 'CBpt']:
++                raise ValueError('Unexpected public-header warning identities')
          for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
              if sorted(int(line.split()[-1],16) for line in log.splitlines() if line.startswith(marker)) != [0,1]:
+                 raise ValueError(f'Missing public-header probe: {marker}')
 diff --git a/Kernel/I386/PublicDebugTypes.HH b/Kernel/I386/PublicDebugTypes.HH
 new file mode 100644
 index 00000000..93b398ea

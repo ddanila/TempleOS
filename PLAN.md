@@ -11485,3 +11485,23 @@ full diagnostic/regression pipeline run/queue in
 build/debug-concurrent-warning-names-pipeline.json. Updated full patch applies
 cleanly; no warning identity or full diagnostic PASS yet claimed. Root OS code
 remains unpromoted and full release scope stays open.
+
+Public-header warning identities confirmed; exact contract updated (2026-10-05):
+The warning-name source builds and reaches its original assertion. Actual
+boot log identifies unused extern CCPU and CBpt for both rollback and
+successful header attempts, then PUBLIC HEADER PUBLISHED 1 / 2 / 0x3E0.
+Candidate header probe now requires exactly two count-only warnings, preserving
+all other compilation, allocation, type identity and later zero-warning checks.
+Host full-build audit additionally requires the exact warning-name sequence
+CCPU, CBpt, CCPU, CBpt in each header-probe section; a new warning kind/name
+still fails. This adjusts the fixture for the completed canonical breakpoint
+class rather than accepting arbitrary warning growth. Fresh bootstrap and
+full diagnostic/regression pipeline run/queue in
+build/debug-concurrent-warning-contract-pipeline.json; verdict pending.
+
+Guest-image auditor also rejects existing output trees before reading inputs.
+A real preflight test supplies a missing source and an existing qualified audit
+output, requires exit 2 and verifies its result hash remains unchanged.
+This prevents failed reruns from leaving stale PASS evidence in a reused tree.
+Updated candidate patch applies cleanly to main. Full diagnostics, later-source
+native/installed qualification, promotion and release completeness remain open.
