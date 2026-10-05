@@ -2,6 +2,21 @@
 
 ## Objective and status
 
+Latest qualification state (2026-10-05): the cumulative ABI-47 candidate now
+uses the extended high-memory BIOS loader, early IDT, extent-transfer moves,
+renderer buffer reuse, corrected native TEST encoding and a strict memory
+probe baseline after trimming empty storage. It remains unpromoted; current
+main OS services are ABI 40. The preserved integration artifact is
+[the memory-baseline candidate patch](docs/patches/i386-memory-baseline-integrated-candidate.patch).
+Latest evidence includes no-FPU complete-OS boot, five debugger trace cycles,
+native SysTry red/green encoding regression, and actual native fragmented-module
+move. A prior native generation boot failed on the TEST defect; corrected
+six-module rebuilding and full memory-baseline suite are running. Prepared
+write/flush recovery and directory-growth qualification are also running.
+These specific results do not establish M7 or release readiness. The entries
+below retain earlier checkpoint evidence; do not transfer their passes to a
+newer source/image without rerunning the corresponding gate.
+
 Current promoted filesystem services remain ABI 40. The newer integrated
 public resident-cache/Cd candidate is ABI 47 and is not yet promoted. Its fresh
 original bootstrap/cross/386 audits, 32-command public Cd contract, 32-command
@@ -12837,3 +12852,17 @@ original bootstrap running session81051 before full cross-build/test. Preserved
 full docs/patches/i386-memory-baseline-integrated-candidate.patch applies to main
 and includes native TEST fix, early IDT, extent transfer and corrected harness.
 Do not treat diagnostic localization or candidate as a full-suite PASS.
+
+
+Destination-directory growth contract (2026-10-05):
+Added tools/test-i386-move-directory-growth.py. Guest prepares two eight-entry
+(one-sector) directories, source MOVE payload and five destination files; host
+oracle checks exact initial directory size512. Guest move must grow destination
+to1024 on a fresh directory extent while moved file attr/block/size/date remain
+identical to source. Existing filler bytes and moved payload are checked exactly,
+source name disappears, filesystem bitmap/unique ownership verified, read-only
+writable reboot checks42 and must leave disk SHA256 unchanged. Input/checker/
+helper sources pinned throughout. Real run session35952 in
+build/move-directory-growth; no PASS claimed until terminal report. Interrupted
+directory-growth writes remain a separate open requirement. PLAN opening now
+explicitly identifies latest unpromoted candidate and historical evidence scope.
