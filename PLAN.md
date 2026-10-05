@@ -12028,3 +12028,34 @@ build/debug-trace-task-guard-pipeline.json uses a new output and retains all
 caller/alternate-stack/exception/cleanup/flags/IP/concurrency gates. No new
 frame-walking runtime green claimed. Fixed earlier stack native chain remains
 live in gen1 self-hosting; current source native/release gates remain open.
+
+Frame-walker build reaches native boot-capacity gate (2026-10-05):
+Guarded task declaration fixes the kernel member parse failure; both original
+bootstrap generations pass and all 1270 hashes match. Cross-build now produces
+Kernel32.BIN 490960 bytes, but the current six-module flat boot-image limit is
+487424 (960*512-4096). It exceeds the declared reservation by 3536 bytes and
+full --test stops before image packaging. Preserve debug-trace-task-guard
+exports, stage listing and instruction audit. Parser-stack's flat image is
+487400 bytes, only 24 bytes below that limit. No runtime trace image is qualified.
+
+This makes boot capacity architectural work, not a debugger-only checklist.
+The BIOS loader reads all 960 sectors contiguously from physical 0x10000;
+protected entry uses stack top 0x90000, and legacy memory/EBDA checks reserve
+that stack. Raising sector constants alone risks stack/image overlap and
+would leave native BuildBootImage/InstallBootArea/selfhost audit contracts
+inconsistent. Preserve all frame/ownership checks; do not remove features to
+fit the limit. Plan an extended native boot format that streams or stages a
+larger kernel into verified high memory, with a versioned handoff and a safe
+bootstrap stack. Update linker base/relocations, memory reservation, compiler
+cross-build, guest BuildBootImage, install writes, independent boot/image
+verifiers and both native generations together. Keep the legacy layout's
+acceptance/rejection contracts explicit while adding the extended layout.
+
+Tests first: a payload larger than the current reservation must boot and
+produce a source-identical installed boot area; verify first/last loaded bytes,
+nonoverlap with stack/EBDA/arena, insufficient-memory rejection, truncated or
+oversized image rejection, bounded sector writes and volume preservation.
+Then rebuild/install/reboot two generations with identical native payload,
+repeat required 8 MiB/no-FPU/workstation/resource gates and rerun debugger
+trace regressions on that image. Code-size efficiency can add headroom but
+must not replace a scalable boot-image contract. Full release remains open.
