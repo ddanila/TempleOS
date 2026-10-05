@@ -126,7 +126,7 @@ def main():
             commands += [
                 ('Bool CodeSize(I64 n){CHashGeneric *e=HashFind("C:/Probe/CacheInclude.HC",adam_task->hash_table,HTT_FILE);if(!e)return FALSE;e->user_data1=n;return TRUE;}', []),
                 ('class CacheFailTask:CTask{U32 private_prefix[15];U8 *file_state;};', []),
-                ('Bool CacheBorrowClear(){U8 *p=Fs(CacheFailTask *)->file_state;if(!p)return FALSE;return *(p+24)(U32 *)==0;}', []),
+                ('Bool CacheBorrowClear(){U8 *p=Fs(CacheFailTask *)->file_state;U32 *b;if(!p)return FALSE;b=(p+24)(U32 *);return b[0]==0;}', []),
                 ('sizeof(CTask)==992&&offset(CacheFailTask.file_state)==1052;', ['1']),
                 ('CacheBorrowClear;', ['1']),
                 ('CodeSize(0x100000000);', ['1']),

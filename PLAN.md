@@ -9358,3 +9358,5 @@ The live run predates the source fingerprint guard; its same disk layout was
 independently validated afterwards. This is not a verified red result yet.
 Full workstation and both retained builders are revalidated live; the candidate
 remains unpromoted until exception cleanup and the other open gates qualify.
+
+First allocation-failure run is terminal at observer declaration: VGA shows Error: Missing ) for unary dereference/cast syntax. Fault injection never executed, so this is a harness defect, not OS exception evidence. Helper now assigns the cast pointer separately and reads b[0]. Python/whitespace checks pass; corrected fingerprint-guarded run is live in build/public-resident-include-oom-observer-fixed.
