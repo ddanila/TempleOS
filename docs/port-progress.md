@@ -12275,3 +12275,18 @@ loader, both allocation-failure cases and matching host contracts. Root apply
 check PASS. Incremental patches and original failure captures remain retained.
 This archive is a candidate, not source promotion or completed release; running
 text-run-only and Caller no-FPU qualifications stay pinned to their own epochs.
+
+
+### Complete text-run focused acceptance passed (2026-10-05)
+
+`build/text-run-failure-focused/result.json` terminal PASS: 15 exact-VGA commands,
+486withoutFPU /8MiB, startup31.180seconds. DocAllocationCheck13 passes before
+and after three exact 11,210-byte source round trips, followed by binary
+persistence8. Both text entry/tag failure injections, exact task-heap recovery,
+successful reuse and binary read/write/save remain checked. Cross-image SHA256
+7d1a168ebed992d747ba268b96f2cfc9678c8bad91cc1773289feeadabe548da.
+Full suite starts in
+`build/document-run-failure-candidate/build/text-run-failure-full-kernel`;
+six-native-provider build remains live. This focused pass is not native,
+full-suite or release qualification. PLAN opening status refreshed to separate
+current acceptance from historical source epochs and ended qualification runs.

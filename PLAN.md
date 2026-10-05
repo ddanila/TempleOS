@@ -3,27 +3,38 @@
 ## Objective and status
 
 Latest qualification state (2026-10-05): main OS services remain ABI 40.
-The latest unpromoted ABI-47 candidate adds public Caller to the extended
-high-memory BIOS loader, early IDT, extent-transfer moves, renderer buffer
-reuse, corrected native TEST encoding and trimmed memory-probe baseline.
-Its integration artifact is
-[the public Caller candidate patch](docs/patches/i386-public-caller-integrated-candidate.patch).
-Public Caller passes normal-stack, corrupt-frame and five-cycle dedicated CPU
-debugger-stack gates. Its complete suite remains live; both fully native generations now pass.
-Its first native workstation passes functionally but fails startup budgets;
-packaged runtime qualification and a newer redraw candidate remain pending.
+The complete unpromoted ABI-47 candidate is archived in
+[the integrated text-run candidate patch](docs/patches/i386-text-run-integrated-candidate.patch).
+It includes the extended BIOS loader and early IDT, public filesystem and
+resident-cache work, extent-transfer moves, debugger/Caller work, renderer
+buffer reuse, corrected native TEST encoding, memory-probe normalization, and
+canonical DolDoc text-run loading with both allocation-failure cases.
 
-The preceding memory-baseline candidate completes both fully native generations:
-12 identical modules, flat kernel and boot area, independent installation/boot
-and executable/filesystem audits. Deterministic packaging also makes their whole
-disk images byte-identical while preserving all live file contents, attributes
-and dates. This does not automatically qualify the newer Caller sources.
-The earlier TEST-fixed generation2 passes three-boot DolDoc, captured speaker
-and bounded-resource gates; its full workstation remains running. Its packaged
-image passes native audits and no-FPU boot within the unchanged 60-second budget;
-full packaged-image workflows are running with independently recomputed native
-origin. No complete M7 or release claim is made. Historical checkpoint entries
-below retain their source-specific evidence.
+The complete candidate passes the fresh original 1,270-source two-generation
+bootstrap, cross-build and 386 boot instruction audit. Its focused 15-command
+no-FPU / 8 MiB session passes both text-run allocation failure/recovery cases,
+three exact large-source load/save/free cycles, and binary persistence. Its
+full suite and six-provider native rebuild are running. It is not promoted.
+
+The preceding Caller source epoch passes two fully native generations, twelve
+module/flat/boot byte identity, deterministic whole-disk packaging, independent
+native and delivered-source audits, and all four installed workflow jobs with
+startup/latency budgets. It fails the newly added large-source DocRead gate;
+that failure drove the text-run candidate. Its complete no-FPU native chain is
+running and has passed its first installation stage. Those results do not
+qualify the newer source epoch. Earlier timing failures remain recorded.
+
+Remaining release gates include the complete candidate's full suite, native
+providers and two-generation identity, its own packaged image/source audits,
+the new five-job installed qualification, and complete debugger requalification.
+No complete M7 or release claim is made. Physical hardware testing remains
+deferred; automated QEMU acceptance is the current verification target.
+
+### Historical source checkpoints
+
+The following entries describe earlier source epochs. Their running/pending
+statements are historical; current results are summarized above and in the
+latest dated evidence entries below. Evidence does not transfer across epochs.
 
 Current promoted filesystem services remain ABI 40. The newer integrated
 public resident-cache/Cd candidate is ABI 47 and is not yet promoted. Its fresh
@@ -13512,3 +13523,18 @@ loader, both allocation-failure cases and matching host contracts. Root apply
 check PASS. Incremental patches and original failure captures remain retained.
 This archive is a candidate, not source promotion or completed release; running
 text-run-only and Caller no-FPU qualifications stay pinned to their own epochs.
+
+
+### Complete text-run focused acceptance passed (2026-10-05)
+
+`build/text-run-failure-focused/result.json` terminal PASS: 15 exact-VGA commands,
+486withoutFPU /8MiB, startup31.180seconds. DocAllocationCheck13 passes before
+and after three exact 11,210-byte source round trips, followed by binary
+persistence8. Both text entry/tag failure injections, exact task-heap recovery,
+successful reuse and binary read/write/save remain checked. Cross-image SHA256
+7d1a168ebed992d747ba268b96f2cfc9678c8bad91cc1773289feeadabe548da.
+Full suite starts in
+`build/document-run-failure-candidate/build/text-run-failure-full-kernel`;
+six-native-provider build remains live. This focused pass is not native,
+full-suite or release qualification. PLAN opening status refreshed to separate
+current acceptance from historical source epochs and ended qualification runs.
