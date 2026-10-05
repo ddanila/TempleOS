@@ -9847,3 +9847,24 @@ remain unchanged. Both use --prepare-fixture --shared-lifetime --hash-visible
 are separate contracts rather than an unsupported combined invocation.
 Results are pending; candidate and input disk equality are required by each
 gate. Existing earlier-epoch cold-cache greens are not substituted for these.
+
+Current parent candidate full workstation green (2026-10-05):
+build/public-resident-write-parent-workstation/result.json passes all 513
+native commands (576 submitted lines) with 486,-fpu and 8 MiB RAM in ordinary
+interactive boot. Startup is 28.983919 seconds and long-document update-to-VGA
+latency is 0.381036 seconds, within the unchanged 60/1-second budgets.
+All VGA pixels match at every checkpoint. The suite covers native compilation,
+persistent definitions, error recovery, integer/software F64 answers, public
+allocation, window/graphics/document operations, file editor/browser behavior,
+and twenty document-development cycles with exact task data/code heap
+recovery. This is the current ABI-46 parent/staging candidate's own broad
+workstation result, replacing the previously pending verdict for this epoch.
+It does not prove installed-generation workstation behavior, complete debugger
+interaction, full M7 semantics, no-FPU native construction, or release readiness.
+
+Current compressed and ordinary mutation cold-cache tests have both passed
+the original TempleOS oracle and fixture-preparation stages. Their separate
+cold native behavior QEMU handles were directly revalidated live; final
+verdicts remain pending. The current native retained construction and main
+no-FPU native construction also remain live; no restart is inferred from
+elapsed time, and the queued install/audit/generation chains remain required.
