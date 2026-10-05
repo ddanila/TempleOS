@@ -11576,3 +11576,25 @@ check times out. This is runtime evidence beyond the earlier frontend failure;
 physical flags restoration still needs implementation and green verification.
 The integrated no-FPU retained-build retry remains live (PID 3677763).
 Complete self-hosting/release qualification remains open.
+
+Public flags resume candidate (2026-10-05):
+Original Kernel/KDbg.HC G clears public task rflags TF on accepted resume;
+S sets it. New build/debug-flags-prototype preserves that contract: G/S copy
+the public flags shadow into the physical 32-bit exception-return frame, after
+clearing/setting TF. Accepted G updates flags after the managed-breakpoint
+resume guard, so a blocked G does not commit the pending flags edit. G2 uses
+G's path. This does not restrict edits to arithmetic flags. Direct ESP edits,
+other-task debugger controls and full debugger parity remain outstanding.
+Full cumulative docs/patches/i386-debug-flags-candidate.patch applies to main;
+source is isolated from the concurrent candidate's still-running full test.
+
+An initial bootstrap launch followed a failed edit command caused by a wrong
+relative working-directory path; it was explicitly stopped, descendants
+terminated, and its incomplete output preserved as
+build/debug-flags-prototype/build/rebuild-before-flags-edit-incomplete.
+The source edit then succeeded and a fresh bootstrap runs in
+build/debug-flags-bootstrap.log (PID 3718918). The dependent
+build/debug-flags-pipeline.json verifies both bootstrap generations and all
+source hashes, runs the full cross-build/diagnostics, then five carry-edit
+cycles plus public S/IP, G/IP, simultaneous traps, shared breakpoint ownership
+and managed-kill regressions. No flags green or candidate promotion claimed.
