@@ -10125,3 +10125,24 @@ references, and 16 MiB RAM. This remains pending and preserves separate
 evidence from the KVM integrated builder. Current KVM generation builders,
 workstation QEMU and installed DolDoc driver were directly revalidated live.
 Peak resource, installed persistence and final native generations remain open.
+
+Installed resource result and cached-evidence provenance fix (2026-10-05):
+The installed ABI-46 resource run passes twenty document-development cycles:
+live baseline 1352496 bytes, peak 1356112, reserved peak 1365504 and temporary
+live growth 3616. Arena 1114112 + 7143424 fits 8 MiB. This historical result
+has preserved runtime/profile evidence but predates the new input pin below.
+
+A negative cached-evidence experiment proved test-i386-resource-profile.py
+--parse-only accepted another --disk before the fix. The tool now records
+resource-input.json before fresh execution with resolved disk, SHA-256,
+CPU/accelerator/RAM, then verifies source equality and the preserved machine,
+CPU/accelerator/RAM, drive and snapshot command. Cached parsing requires an
+exact input identity; unpinned historical evidence fails closed and must be
+remeasured. The same negative fixture now rejects instead of reporting pass.
+Final resource-result.json includes disk hash, accelerator and source equality.
+
+Fresh pinned qualification runs in
+build/public-resident-write-parent-installed-resource-pinned with TCG
+486,-fpu / 8 MiB. Its verdict remains pending; no input manifest is retrofitted
+onto older measured evidence. This improves reproducible release validation
+without changing the OS or the running candidate sources.

@@ -2,6 +2,7 @@
 """Measure live and peak document-session heap use in an 8 MiB QEMU guest."""
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -24,6 +25,17 @@ def main():
                         help='Parse a completed run without starting QEMU again')
     args = parser.parse_args()
     out = args.out.resolve()
+    identity = {'disk': str(args.disk.resolve()),
+                'disk_sha256': hashlib.sha256(args.disk.read_bytes()).hexdigest(),
+                'cpu': '486,-fpu', 'accel': args.accel, 'ram_mib': 8}
+    provenance = out / 'resource-input.json'
+    if args.parse_only:
+        if not provenance.exists() or json.loads(provenance.read_text()) != identity:
+            raise ValueError('Resource input identity missing or differs; run fresh qualification')
+    else:
+        out.mkdir(parents=True, exist_ok=True)
+        (out / 'resource-result.json').unlink(missing_ok=True)
+        provenance.write_text(json.dumps(identity, indent=2) + '\n')
     commands = [('#include "/Kernel/I386/DocSessionResourceCheck.HC"', []),
                 ('DocSessionResourceCheck;', ['Exception'] * 21 + ['21']),
                 ("U0 ResourceHex(I64 v){I64 i,n;for(i=60;i>=0;i-=4){n=(v>>i)&15;if(n<10)OutU8(0xE9,'0'+n);else OutU8(0xE9,'A'+n-10);}}", []),
@@ -38,6 +50,16 @@ def main():
                       'commands': commands})
     elif json.loads((out / 'result.json').read_text())['result'] != 'pass':
         raise ValueError('No passing QEMU run to parse')
+    if hashlib.sha256(args.disk.read_bytes()).hexdigest() != identity['disk_sha256']:
+        raise ValueError('Resource source disk changed')
+    command = json.loads((out / 'command.json').read_text())
+    for flag, expected in [('-machine', 'pc'), ('-cpu', identity['cpu']),
+                           ('-accel', args.accel), ('-m', '8')]:
+        if command.count(flag) != 1 or command[command.index(flag)+1] != expected:
+            raise ValueError('Resource QEMU profile differs: ' + flag)
+    drives = [command[i+1] for i, value in enumerate(command) if value == '-drive']
+    if drives != ['file=' + identity['disk'] + ',format=raw,if=ide'] or '-snapshot' not in command:
+        raise ValueError('Resource QEMU disk or snapshot profile differs')
     log = (out / 'debug.log').read_text()
     arena = re.findall(r'^ARENA ([0-9A-Fa-f]{16}) ([0-9A-Fa-f]{16})$', log, re.M)
     if len(arena) != 1:
@@ -57,6 +79,8 @@ def main():
             values['doc_session_heap_reserved_peak']):
         raise ValueError('Guest resource values violate shared-heap accounting')
     result = {'result': 'pass', 'cpu': '486,-fpu', 'ram_mib': 8,
+              'disk_sha256': identity['disk_sha256'], 'accel': args.accel,
+              'source_disk_unchanged': True,
               'arena_start': arena_start, 'arena_bytes': arena_bytes,
               'document_development_cycles': 20, 'bytes': values,
               'temporary_live_growth': values['doc_session_heap_peak'] -
