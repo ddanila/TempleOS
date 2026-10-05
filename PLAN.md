@@ -9313,3 +9313,29 @@ bitmap audit remain mandatory. No native pass is claimed yet. ABI-45 exact
 live; their handles/checkpoints were revalidated without restarting them.
 
 ABI-45 exact resident recovery now passes: build/public-resident-include-recovery/result.json reports all 45 commands and twenty resident create/update/remove cycles, exact caller/root public heap recovery and independent private allocator snapshots, VGA parity, persisted raw/compressed/replacement bytes, valid filesystem and unchanged source disk. This qualifies the bridge epoch for this recovery scope; include-specific exception/child lifetime and full native release gates remain open.
+
+Cache removal and default-extension qualification (2026-10-05):
+build/public-resident-include-removal/result.json passes all 17 commands on
+486,-fpu / 8 MiB: mutation reaches FileRead, DocRead and includes; HashRemDel
+forces disk result 42; the include republishes HTT_FILE and fresh public
+mutation/read verifies it. Exact VGA, unchanged persisted source/input image
+and independent bitmap audit pass. Startup is 28.220 seconds.
+
+The include tool adds --default-extension. Only compiler include names drop
+.HC; write, cache lookup, document read and disk audit still use the exact
+physical filename. This tests original HC.Z default plus alternate resolution
+rather than accidentally changing the fixture. Original oracle passes with
+--document --removal --default-extension; native run is live in
+build/public-resident-include-default. Runtime pass remains pending.
+
+Source audit of exception cleanup identifies a concrete promotion requirement:
+I386LexTaskFileInclude borrows file state (busy and lifetime_refs incremented)
+before invoking the installed callback. NativePublicFileRead can throw OutMem
+from public allocations, so an exception may bypass release and IRQ restore.
+Add a deliberate allocation-failure include test with restored cache metadata,
+then require exact private/public recovery and subsequent directory-state
+replacement/task exit before accepting a fix. The private read ABI returns
+failure pointers/booleans; choose cleanup/propagation behavior to preserve the
+original externally visible error while keeping state releasable. Do not
+promote the current happy-path bridge on parity/recovery greens alone.
+Full workstation and native builders remain live and progressing.

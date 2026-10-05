@@ -27,6 +27,7 @@ def main():
                         help='Independent image auditor matching the candidate file ABI')
     parser.add_argument('--document', action='store_true', help='Also require DocRead to see the edited cache')
     parser.add_argument('--removal', action='store_true', help='Remove cache and require include to reload and repopulate from disk')
+    parser.add_argument('--default-extension', action='store_true', help='Include a bare name and require original HC.Z default/alternate resolution')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -40,6 +41,7 @@ def main():
                   scope='Public cache source mutation must affect compiler #include; persisted source stays original')
     report['document'] = args.document
     report['removal'] = args.removal
+    report['default_extension'] = args.default_extension
     try:
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)
@@ -64,6 +66,9 @@ def main():
                 'if(RootCacheValue!=42){Report("FAIL disk include\n");return;}',
                 'if(!MutateCode("B:/CacheInclude.HC")||!CachedCode("B:/CacheInclude.HC")){Report("FAIL repopulate\n");return;}']
         #HolyC strings need literal escape sequences, not embedded line breaks.
+        if args.default_extension:
+            oracle = [line.replace('CacheInclude.HC', 'CacheInclude') if '#include' in line else line
+                      for line in oracle]
         oracle = [line.replace('\n', '\\n') for line in oracle]
         (overlay/'Once.HC').write_text('\n'.join(oracle)+'\n')
         subprocess.run(['python3', 'tools/build-iso.py', '--overlay', str(overlay),
@@ -89,6 +94,9 @@ def main():
                          ('MutateCode("C:/Probe/CacheInclude.HC");', ['1']),
                          ('CachedCode("C:/Probe/CacheInclude.HC");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
+        if args.default_extension:
+            commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)
+                        for source, answers in commands]
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
                                    qmp_stdio=True, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
         report['result'] = 'pass'
