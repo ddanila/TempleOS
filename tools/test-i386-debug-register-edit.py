@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Require TaskRegAddr to inspect and edit captured EAX before S and G."""
 import argparse
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -11,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def commands(cycles=1):
     checks = runpy.run_path(str(ROOT / 'tools/test-i386-debug-single-step.py'))['commands'](cycles)
+    checks = [deepcopy(check) for check in checks]
     checks[0] = (checks[0][0] + 'I64 *CpuReg=0;', [])
     for index, check in enumerate(checks):
         if len(check) != 3:

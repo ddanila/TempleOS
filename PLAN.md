@@ -10547,3 +10547,31 @@ in build/debug-single-step-native-build. Its dependent retained installation
 is directly confirmed live as PID 3640181. Full native generations remain
 pending. The register candidate has not yet passed its own native generation
 or full workstation gates and remains an archived isolated implementation.
+
+Step workstation green and independent register-cycle fixtures (2026-10-05):
+build/debug-single-step-workstation/result.json passes all 513 commands on
+486,-fpu / 8 MiB, startup 26.706914 seconds and visible long-document update
+0.266207 seconds. Exact VGA and twenty exact shared-heap development cycles
+pass. This is the unchanged step-enabled candidate, not the newer register
+candidate's workstation qualification.
+
+The five-cycle EAX checker fails before completing its first interaction.
+Inspection finds a fixture aliasing bug: base repetition shares one interaction
+object and the register wrapper inserts its actions once per repeated list
+entry. A new two-cycle ECX run also terminates before qualification; preserve
+both failures. The wrapper now deep-copies each check independently before
+inserting actions. A construction check proves five distinct interaction
+objects, each with exactly one TaskRegAddr call. Corrected EAX repetition
+runs in build/debug-register-edit-independent-repeat; runtime remains pending.
+
+New tools/test-i386-debug-register-banks.py extends the semantic fixture to
+EAX/ECX/EDX/EBX/ESI/EDI using their original register numbers. Each selected
+register is loaded before INT3 and supplies the subsequent store; debugger
+pointer inspection/editing must change its stepped result. All six fixtures
+construct within the console input limit, with dependency hashes pinned.
+The corrected two-cycle-per-register chain runs in
+build/debug-register-banks-independent-pipeline.py; results are pending.
+EBP/ESP, instruction-pointer/flags edits, complete other-task state and release
+coverage remain open. Register candidate six-module native construction is
+directly confirmed live as PID 3641122; prior step-source native builds cannot
+substitute for it. Candidate sources and main OS remain unchanged.
