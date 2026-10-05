@@ -9723,3 +9723,19 @@ Earlier ABI-46 attempted-byte and main no-FPU retained builders remain live.
 Still required before promotion: current-source failure/child/full workstation,
 native twelve-module/install/boot/audits and generation reproducibility. Physical
 hardware/manual gates remain deferred; these are automated QEMU checks.
+
+Parent creation/context parity green (2026-10-05):
+build/public-resident-write-parent-parity/result.json passes original oracle
+and 16 no-FPU / 8 MiB commands: two missing parent levels created, original
+19 bytes persisted/read, caller directory/drive unchanged, rejected .Z cache
+publication/expansion and ordinary removal correct. Independent bitmap/tree
+and input/baseline equality checks pass; no rejected long filename is persisted.
+
+Exact resident recovery, full 513-command workstation and six-module KVM
+retained build are live for this image in build/public-resident-write-parent-recovery,
+...-workstation and ...-native-build. Fresh all-heap failure recovery and child
+teardown parity run in ...-failure-recovery and ...-child. These are pending,
+not inherited passes from previous source epochs. The complete M7 pipeline,
+x86-64 regression, fully native twelve-module/install/boot/audits, generation
+reproducibility and published/downloaded artifact verification remain required.
+No promotion or release completion is claimed.
