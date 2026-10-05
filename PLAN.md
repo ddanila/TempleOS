@@ -10499,3 +10499,25 @@ an original-runtime oracle. Fixture construction and Python syntax pass.
 The unmodified step candidate runs as the expected red in
 build/debug-register-edit-red; runtime verdict remains pending. Existing
 qualification jobs and candidate sources remain unchanged.
+
+Register fixture and isolated implementation work (2026-10-05):
+build/debug-register-edit-red terminates FAIL after the verified pre-store
+checkpoint; frontend reports Invalid lval at the debugger pointer declaration.
+This does not establish the intended missing-API red. The fixture now declares
+its I64 pointer during normal setup and assigns TaskRegAddr(Fs,0) in the
+debugger. The corrected run is build/debug-register-edit-assignment-red;
+verdict and precise failure interpretation remain pending.
+
+The isolated main-only clone build/debug-register-prototype retains fork-only
+origin and implements the original TaskRegAddr switch/pointer shape. Captured
+32-bit registers populate canonical public I64 task slots; seven POPAD-restored
+register slots copy back before exception return. Scheduler inspection confirms
+switching uses private CI386Context, avoiding debugger-shadow clobber by yield.
+ESP is displayed from PUSHAD's saved ESP plus the five exception words; edits
+to ESP, RIP and flags need a complete return-frame policy and remain open,
+as do other-task/register-bank and invalid-index semantics. This candidate is
+not qualified or promoted. The full source archive is
+ docs/patches/i386-debug-register-candidate.patch (applies cleanly to main).
+Its fresh original bootstrap runs under PID 3636946. An earlier accidental
+bootstrap launch before register edits was explicitly stopped; its outputs
+are not register evidence. Cross build and runtime green remain required.

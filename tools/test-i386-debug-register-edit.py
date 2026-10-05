@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def commands(cycles=1):
     checks = runpy.run_path(str(ROOT / 'tools/test-i386-debug-single-step.py'))['commands'](cycles)
+    checks[0] = (checks[0][0] + 'I64 *CpuReg=0;', [])
     for index, check in enumerate(checks):
         if len(check) != 3:
             if check[0] == 'CpuTrapResult==0x11223344;':
@@ -18,7 +19,7 @@ def commands(cycles=1):
             continue
         source, answers, interaction = check
         heading = interaction['initial_rows']
-        inspect = 'I64 *CpuReg=TaskRegAddr(Fs,0);'
+        inspect = 'CpuReg=TaskRegAddr(Fs,0);'
         value = 'CpuReg[0]==0x11223344;'
         edit = 'CpuReg[0]=0x55667788;'
         events = interaction['events']
