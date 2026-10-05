@@ -14,7 +14,7 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def observed_input(disk, report, private=True):
+def observed_input(disk, report, private=True, boundary=None):
     build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
     module=build['mutated_file_contents'](disk,{'/Modules/I386/Kernel.t32m'}).get('/Modules/I386/Kernel.t32m')
     if private and (not module or len(module)<32):raise ValueError('Missing kernel module for private heap observation')
@@ -31,7 +31,10 @@ def observed_input(disk, report, private=True):
     report['private_heap_observation']=evidence
 
     def observe(phase,source,command,out):
-        if not private or not source.startswith('FindRecovery('):return
+        if not private:return
+        if boundary:
+            if source != boundary[0 if phase=='before' else 1]:return
+        elif not source.startswith('FindRecovery('):return
         def sample():
             path=out/('kernel-heap-'+phase+'.bin')
             command('pmemsave',val=address,size=24,filename=str(path))
@@ -48,7 +51,7 @@ def observed_input(disk, report, private=True):
             if all(evidence['before'][field]==evidence['after'][field] for field in ('base','capacity','used','allocations','signature')):
                 evidence['result']='pass';return
             if time.monotonic()>=deadline:
-                evidence['result']='fail';raise ValueError('FileFind cycles did not recover private heap bytes/allocation count')
+                evidence['result']='fail';raise ValueError('Observed commands did not recover private heap bytes/allocation count')
             time.sleep(.05)
 
     def source_rows(image):

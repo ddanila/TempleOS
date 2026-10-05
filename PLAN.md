@@ -9497,3 +9497,29 @@ modules in build/public-resident-include-native-build/result.json (KVM). Its
 source disk SHA is 02203a00cb76df1752b0a086f06f82b92103d1723ee18320ecea48d45c19d433.
 These earlier-epoch greens do not qualify the newer propagation fix or prove
 full native install/reproducibility. Main no-FPU retained build remains live.
+
+Allocation failure green on loader-corrected propagation candidate (2026-10-05):
+build/public-resident-include-oom-propagation-loader/result.json passes all
+24 commands on 486,-fpu / 8 MiB. Fault include reports Out of memory, returns
+to prompt, restored metadata permits later include result 49, file-state busy
+is zero, and task lifetime_refs exactly matches its before value. Exact VGA,
+source/input immutability and independent RedSea bitmap audit pass. Startup
+26.055 seconds. This closes the fatal rethrow-loop gate for this injection;
+it does not establish every exception or all allocator recovery behavior.
+
+Original/document/removal/default-name parity passes all 17 commands in
+build/public-resident-propagation-loader-parity/result.json, startup 26.150
+seconds, exact VGA and disk audits/immutability. Fresh exact resident recovery,
+full workstation and KVM retained native construction are live in
+build/public-resident-propagation-loader-recovery, ...-workstation and
+...-native-build. These are the propagation epoch, not the earlier bridge.
+
+The include tool adds --failure-recovery (requires --allocation-failure).
+The read-only heap observer accepts optional explicit command boundaries,
+retaining its existing FileFind default. It samples private heap before the
+reference baseline and after restored-metadata successful include plus value
+check, requiring exact used bytes, allocations, base/capacity/signature;
+peak is allowed to grow. Expected VGA commands remain unchanged. Python and
+whitespace checks pass; the stronger 25-command gate is live in
+build/public-resident-propagation-failure-recovery. Public allocator recovery
+and child-task lifetime remain distinct gates, not implied by this snapshot.

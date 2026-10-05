@@ -50,7 +50,10 @@ def main():
     parser.add_argument('--removal', action='store_true', help='Remove cache and require include to reload and repopulate from disk')
     parser.add_argument('--default-extension', action='store_true', help='Include a bare name and require original HC.Z default/alternate resolution')
     parser.add_argument('--allocation-failure', action='store_true', help='Native-only ABI-45 allocation failure and borrowed file-state recovery')
+    parser.add_argument('--failure-recovery', action='store_true', help='Independently snapshot private heap across the allocation failure and subsequent include')
     args = parser.parse_args()
+    if args.failure_recovery and not args.allocation_failure:
+        parser.error('--failure-recovery requires --allocation-failure')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     candidate = out/'candidate.img'
@@ -66,6 +69,7 @@ def main():
     report['removal'] = args.removal
     report['default_extension'] = args.default_extension
     report['allocation_failure'] = args.allocation_failure
+    report['failure_recovery'] = args.failure_recovery
     if layout:
         report['failure_layout_sources'] = layout
     try:
@@ -141,6 +145,11 @@ def main():
                 ('CacheBorrowClear;', ['1']),
                 ('CacheRefsSame;', ['1']),
                 ('#include "C:/Probe/CacheInclude.HC"', ['49'])]
+        if args.failure_recovery:
+            commands += [('RootCacheValue==49;', ['1'])]
+            report['failure_heap_scope'] = 'Private used bytes/allocation count/signature across allocation rejection, metadata restoration and successful include; public heap recovery is a separate gate'
+            runner = runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](
+                candidate, report, boundary=('CacheRefsBefore;', 'RootCacheValue==49;'))
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
                                    qmp_stdio=True, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
         report['result'] = 'pass'
