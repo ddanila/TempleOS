@@ -12610,3 +12610,23 @@ and is still required. Recovery-corrected source six retained native modules
 build live PID3799572/session62892, out build/extended-transfer-native-build.
 After it passes, repeat actual fragmented native-module move and two generations.
 Keep exact candidate sources frozen; root OS not yet promoted. Full release open.
+
+Legacy journal compatibility and malformed-transfer rejection green (2026-10-05):
+build/transfer-recovery-legacy/result.json PASS for independently copied legacy
+version-one duplicate extent: reboot rolls back destination, retains source,
+clears intent, preserves payload/boot bytes and passes bitmap ownership audit.
+New tools/test-i386-transfer-rejection.py tests native mount under TCG486,-fpu
+on independently encoded bad checksum, unknown version, source size mismatch,
+source block mismatch and destination block mismatch. All five PASS in
+build/transfer-journal-rejection/result.json: START native kernel then FAIL
+before REDSEA publication, backing disk bytes unchanged after QEMU exits,
+inputs unchanged. This validates fail-closed mount behavior for these metadata
+classes, not all malformed strings/IO interruption or arbitrary corrupted FS.
+
+Recovery-corrected full interactive test now reaches compiler command19 after
+all four text-frame modes in the long sequence (checkpoint.json); former
+TextFrameDemo failure point is passed. No terminal full --test pass yet claimed.
+Both cross-build full tests and six-module retained native build remain live;
+continue existing processes and source pins. Next actual fragmented native
+module fixture and two generations depend on that native build. Physical
+verification deferred, root OS candidate promotion/release still open.
