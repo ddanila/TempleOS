@@ -10671,3 +10671,26 @@ build in build/debug-go-address-native-build (KVM); earlier step/register
 native outputs cannot qualify it. All three current-source gates are pending.
 Register-source full workstation/generation and original step generation
 qualification continue on their unchanged sources.
+
+Repeated explicit-address cycles and tracked native-generation runner
+(2026-10-05): build/debug-go-address-repeat/result.json and
+build/debug-step-address-repeat/result.json each pass five cycles and 49
+commands on 486,-fpu / 8 MiB, exact VGA, restored mode/flags, warmed public
+heap checks and unchanged image. Startup 31.922704 / 32.074851 seconds.
+These qualify repeated current-task G(ip)/S(ip), not other-task resume or
+complete debugger/release behavior. Native builds remain pending.
+
+New tools/test-i386-native-generations.py replaces candidate-specific temporary
+chain scripts for future qualification. It consumes an already qualified six-
+module retained build and matching candidate repository/stage listing, then
+runs retained install, native flat construction and installed audit, a second
+retained build with exact installed comparison, second install/flat/audit,
+and twelve-module/flat/boot equality. It preserves stage logs and results,
+pins candidate source files including untracked HC/HH candidates plus tools,
+and checks inputs/source identity before and after stages. Each stage must
+report PASS; native retained origin must be guest-built supplied inputs.
+It requires a fresh output directory, preserving previous evidence.
+Python syntax/help pass. Actual CLI negative checks reject an incomplete
+provider set before creating output, and refuse an existing evidence directory.
+Full runner execution remains pending; existing live chains are not restarted.
+No release-ready qualification claim is made from preflight checks.
