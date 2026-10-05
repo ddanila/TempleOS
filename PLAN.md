@@ -9703,3 +9703,23 @@ requires both unchanged after write/read, and frees its owned directory copy
 on either Boolean outcome. Both helper lines fit 255 bytes (largest 233).
 Required next gates: original strengthened oracle, parent-create green, rejected
 raw/.Z lifecycle, all-heap/child recovery, full workstation and native generations.
+
+Broad propagation qualification and parent candidate build (2026-10-05):
+ABI-45 full workstation completes successfully in
+build/public-resident-propagation-loader-workstation/result.json: 513 commands,
+no-FPU 8 MiB, exact VGA, twenty exact document task data/code heap cycles;
+startup 26.308 seconds, long-document visible update 0.435 seconds. Source
+image remains SHA 70aa242c2358718cb9440c95c0f2d2a43de97af114357f420eb47b0ef03c9247.
+The same epoch's retained native construction completes all six modules in
+build/public-resident-propagation-loader-native-build/result.json (KVM).
+These greens are not later ABI-46 parent/staging qualification.
+
+The parent walker candidate's fresh original bootstrap, cross build, explicit
+binding guard and 386 audit pass. Kernel remains 483200 bytes. Strengthened
+original/parent-context/rejected-compressed lifecycle gate runs in
+build/public-resident-write-parent-parity; exact twenty-cycle resident recovery
+runs in build/public-resident-write-parent-recovery. Runtime verdicts pending.
+Earlier ABI-46 attempted-byte and main no-FPU retained builders remain live.
+Still required before promotion: current-source failure/child/full workstation,
+native twelve-module/install/boot/audits and generation reproducibility. Physical
+hardware/manual gates remain deferred; these are automated QEMU checks.
