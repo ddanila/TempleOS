@@ -9945,3 +9945,31 @@ which reads the module's exported version and requires ABI 47. The completed
 build is reused; no compiler job is restarted. Public Cd original/native parity
 is now running, with both combined cold-cache checks following only on pass.
 Runtime and installed-generation gates remain open.
+
+Full native parent installation/audit and integrated Cd green (2026-10-05):
+build/public-resident-write-parent-selfhost/result.json passes twelve native
+modules, guest-linked flat construction, installation and independent 8 MiB
+boot with retained build/install provenance. Flat size is 487328 bytes
+(96 bytes below the current BIOS limit); SHA-256:
+95b03ab60e754405149915f9120843bece7240e716f7412a2f06ca6745220d6b.
+Installed target SHA-256:
+2ce19d94fd33275f2ab9402821406b378a4688fce8d3865c89e9412825009785.
+build/public-resident-write-parent-selfhost-audit/result.json independently
+passes all twelve executable regions, 386 boot instructions, matching installed
+flat payload and reachable filesystem bitmap (16 directories, 871 files,
+19033 owned sectors). Second-generation retained build is confirmed live.
+A fresh full no-FPU 8 MiB workstation suite now runs on this installed target
+in build/public-resident-write-parent-installed-workstation, using a writable
+copy. First-generation build/audit is not generation identity or release proof.
+
+build/file-cd-resident-integrated-cd/result.json passes the original oracle and
+32 native commands on 486,-fpu / 8 MiB, startup 25.449113 seconds and exact
+VGA checkpoints. Relative/parent/empty/dot paths, partial failure progress,
+nested make_dirs, default/home/whitespace cases and public Fs directory fields
+pass. Independent directory writes and volume audit pass (19 directories,
+874 files, 17618 owned sectors), with source unchanged. Broader drive/error
+parity remains unproved. The dependent combined compressed cold-cache test
+is now running; ordinary cache mutation follows on pass. Native six-module
+construction also runs for this integrated image in
+build/file-cd-resident-integrated-native-build. No earlier ABI-46 native
+result is substituted for this new ABI-47 source epoch.
