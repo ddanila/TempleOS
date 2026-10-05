@@ -33,6 +33,7 @@ def main():
     repository=args.repository.resolve()
     inputs={str(path.resolve()):hashlib.sha256(path.read_bytes()).hexdigest()
             for path in (args.source,args.installed,args.stage_listing,Path(__file__),
+                         ROOT/'tools/i386_boot_area.py',
                          *sorted((repository/'tools').glob('*.py')))}
     args.out.mkdir(parents=True,exist_ok=True)
     build=load('i386_build',Path('tools/build-i386-kernel.py'),repository)
@@ -51,6 +52,10 @@ def main():
     installed=args.installed.read_bytes()
     if len(installed)!=32768*512 or installed[512+4096:512+4096+len(flat)]!=flat:
         raise ValueError('Installed boot payload differs from the guest-built flat image')
+    publication=load('i386_boot_publication',Path('tools/i386_boot_area.py'))
+    expected=publication.expected_boot_area(installed,flat)
+    if installed[:len(expected)]!=expected:
+        raise ValueError('Installed boot metadata, checksum or payload padding differs')
     filesystem=build.verify_mutated_volume(args.installed)
     build.audit(exports,args.out,guest_compiler_template=args.guest_compiler_template)
     boot_result=boot.audit(installed,args.stage_listing.read_text())
@@ -64,6 +69,7 @@ def main():
                        for name in names},
             'linked_module_executable_ranges':'386 instruction allowlist pass',
             'boot':boot_result,'installed_payload':'matches guest-built flat image',
+            'boot_metadata_and_padding':'independently verified',
             'filesystem':filesystem}
     if any(hashlib.sha256(Path(name).read_bytes()).hexdigest()!=digest
            for name,digest in inputs.items()):

@@ -12246,3 +12246,20 @@ extended-native-kernel-checksum-fixed. It has reached runtime diagnostics.
 Its source checkout stays unchanged while qualification runs. Prior corrected
 standalone diagnostic guest-run ended exit zero with DONE native kernel startup;
 this does not substitute for full --test and installation/release gates.
+
+Extended installed audit and trace qualification advance (2026-10-05):
+Host audit-i386-guest-image now independently reconstructs installed boot
+metadata/checksum/padding via the pinned root tools/i386_boot_area.py oracle.
+It retains whole-disk/module/filesystem/386 audits; using a qualified historical
+repository for compiler formats does not require that clone to carry the new
+oracle. Python compilation and host diff check pass; no installed guest-image
+pass claimed for this addition yet.
+
+Actual oversized frame-walking disk is under focused trace test PID 3756360/
+session 63069, out build/debug-cpu-trace-extended. Candidate extended full test
+PID 3754261 remains live. Assembler-fix fresh original bootstrap passes both
+generations, and new full build/test PID 3756326/session 85119 runs in
+build/extended-assembler-prototype/build/extended-assembler-kernel.log. Keep
+both candidate sources frozen during these runs. This is not yet evidence that
+the resident compiler rebuilds ExceptionEntry; verify actual native build and
+byte equality after the new image qualifies. Full objective stays open.
