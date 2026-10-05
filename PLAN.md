@@ -13144,3 +13144,12 @@ qualification still required; earlier TEST-fixed runtime passes not transferred.
 TEST-fixed generation2 three-boot DolDoc, speaker and resource jobs now PASS;
 aggregate remains running on full workstation. Public Caller source remains
 newer and unpromoted, with native/full qualification running. Release stays open.
+
+
+Latest public Caller six-provider native build completes (2026-10-05):
+build/public-caller-native-build/result.json now PASS actual native construction
+of all six retained providers. Started its own eight-stage native generation
+pipeline in build/public-caller-native-generations against the frozen corrected
+public Caller repository and stage listing. Older TEST-fixed/memory-baseline
+native passes are not substituted. Packaged TEST-fixed speaker/resource jobs
+also PASS; full workstation and DolDoc aggregate still running. Release open.
