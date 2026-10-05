@@ -10187,3 +10187,21 @@ The full integrated workstation is directly confirmed advancing through
 original-document compatibility; both KVM native builders and the integrated
 TCG no-FPU builder are directly revalidated live. Sources remain fixed and
 no incomplete results are promoted.
+
+Installed full workstation and retained generation reproducibility green
+(2026-10-05): build/public-resident-write-parent-installed-workstation/result.json
+passes all 513 native commands on the fully native ABI-46 target with
+486,-fpu / 8 MiB. Startup 37.710675 seconds and long-document update 0.571427
+seconds pass budgets; exact VGA and twenty document-development heap-recovery
+cycles pass. This is installed-image evidence, complementing the preceding
+cross-image workstation result.
+
+build/public-resident-write-parent-gen2-native-build/result.json passes all
+six native retained providers and byte_identical_to_installed against target
+2ce19d94fd33275f2ab9402821406b378a4688fce8d3865c89e9412825009785.
+Independent extraction/hashing of all six installed modules matches the
+second-generation report's native payload hashes. Second retained installation
+is directly confirmed live; second full flat construction/audits and twelve-
+module/flat/boot-area comparison are still required. Integrated ABI-47 retained
+and no-FPU builders, workstation, empty/dotless cold checks remain pending.
+No earlier-source result establishes final integrated-image qualification.
