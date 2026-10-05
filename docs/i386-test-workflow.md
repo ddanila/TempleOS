@@ -5019,3 +5019,31 @@ Runtime is not started before a usable managed candidate exists. This does
 not prove all concurrent/shared-code ownership or private resource cleanup.
 Existing qualification continues on unchanged earlier epochs; main remains
 unpromoted and the complete release objective is still open.
+
+Managed candidate cross green; current runtime gates started (2026-10-05):
+console-output corrected original bootstrap and cross build pass. All 1270
+source hashes are independently checked; 31 bindings and 386 boot audit pass
+(96 BIOS / 33 protected instructions). The private cleanup slot leaves native
+kernel at 483208 bytes. Image SHA-256:
+86bca6ce6a1196c52a28a71024e0fe0d2792c60fd3b6b6427da4de26d59f0b52.
+Managed store-step/rearm runs in build/debug-managed-trap-green, stepped
+managed parent-code victim kill in build/debug-managed-kill-step, and lifecycle
+regression in build/debug-managed-lifecycle. All verdicts are pending; compile
+success does not prove scheduler, cleanup or managed execution semantics.
+
+Single-step-source native generations now pass full twelve-module/flat/boot
+identity. Independent rerun build/debug-single-step-generation-identity-recheck
+passes: flat 487336 bytes, SHA
+ a959ce9581ca34cd23d8e946a4fa6b56771975f5a3ff1d8fd16a8b2a3e0ff5b8;
+boot-area SHA
+ f87f7191e2a8e4ce632405fa1810aaf1a402814395ce25174de7502bf6eefd11.
+Both volumes have 16 directories, 872 files, 19077 owned sectors and bitmaps
+matching reachable extents; whole images differ, not claimed byte-identical.
+
+Address-source full workstation passes 513 commands and twenty exact shared-
+heap development cycles on 486,-fpu / 8 MiB: startup 37.885299 seconds,
+long-document update 0.450070 seconds, exact VGA. Its six native retained
+modules also pass; tracked tools/test-i386-native-generations.py is directly
+live as PID 3660287 at gen1-install. Full tracked-chain completion remains
+pending. Neither earlier-source generation nor workstation results substitute
+for managed source qualification; main remains unpromoted and release open.
