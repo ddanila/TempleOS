@@ -12554,3 +12554,23 @@ then rerun retained installation/two native generations. Bitmap reconciliation
 and durable journal correctness must be verified together before promotion.
 Renderer lock-function bootstrap passed; its runtime validation remains pending.
 Full objective remains open.
+
+Transfer journal mount-order audit corrected (2026-10-05):
+Extent-move original bootstrap passes both generations; first cross-build/full
+--test runs session85443 in build/extended-move-extent-prototype. Do not transfer
+runtime evidence from this source to recovery-complete source. Mount source
+inspection finds existing bitmap ownership repair precedes move recovery. A
+pending shared-extent transfer temporarily exposes two names for one data extent
+and would be rejected by repair before journal rollback can unlink the duplicate.
+
+Separate build/extended-transfer-recovery-prototype reads the volume move mode
+at mount: version-two transfer intent is validated/replayed before bitmap repair;
+legacy copy intent retains repair-before-replay. Journal validation includes
+checksum and exact source/destination extent metadata before unlink. Full
+cumulative extent-move patch updated with this mount ordering, applies cleanly.
+Fresh original bootstrap runs session52904, extended-transfer-recovery-bootstrap.log.
+No crash-recovery or complete installation green claimed. Required interruption
+fixtures must independently prove both duplicate-name rollback and source-absent
+commit, bitmap uniqueness and legacy-journal behavior. Build new kernel, run
+actual fragmented move and native generation gates on exact corrected source.
+Renderer pixel/full-session and release qualification remain open.

@@ -1495,7 +1495,7 @@ index 8a11ceb5..d934cdd4 100644
    }
    if(!I386AtaFlushPolled(target,100000,0) ||
 diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
-index 940d53f2..d8abe273 100644
+index 940d53f2..b1b2f305 100644
 --- a/Kernel/I386/Kernel.HC
 +++ b/Kernel/I386/Kernel.HC
 @@ -117,27 +117,32 @@ extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64
@@ -1592,7 +1592,26 @@ index 940d53f2..d8abe273 100644
  }
  U0 KernelFault(CI386ExceptionFrame *frame)
  {
-@@ -534,23 +570,27 @@ U0 KernelCompilerLoad()
+@@ -348,12 +384,17 @@ U0 KernelDisplay()
+ U0 KernelStorage(CI386BootInfo *info)
+ {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
+   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
+-  U8 *bitmap;
++  U8 *bitmap,move_header[512];
+   I64 bitmap_bytes;
+   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
+       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
+       !I386AtaIdentify(&kernel_disk,0,0) ||
+       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
++  //Transfer intents can temporarily expose two names for the same extent.
++  //Resolve only that validated journal mode before namespace ownership repair.
++  if(!I386RedSeaSectorRead(&kernel_volume,kernel_volume.start,move_header)) KernelStop;
++  if((move_header+48)(U64 *)[0]==0x3245564F4D323349 &&
++      !I386RedSeaMoveRecover(&kernel_volume)) KernelStop;
+   bitmap_bytes=(kernel_volume.first-kernel_volume.start-1)*512;
+   bitmap=I386HeapAlloc(&kernel_heap,bitmap_bytes,TRUE);
+   if(!bitmap || !I386RedSeaRepairBitmap(&kernel_volume,bitmap,bitmap_bytes) ||
+@@ -534,23 +575,27 @@ U0 KernelCompilerLoad()
      KernelLog("PUBLIC MATH REBIND CHECK\n");
    }
  }
@@ -1634,7 +1653,7 @@ index 940d53f2..d8abe273 100644
    if(I386HeapSize(&kernel_heap,kernel_probe_image)!=kernel_probe_size) KernelStop;
    used=kernel_heap.used; allocations=kernel_heap.allocations;
    probe.version=I386_COMPILER_PROBE_VERSION; probe.bytes=sizeof(CI386CompilerProbe);
-@@ -624,11 +664,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
+@@ -624,11 +669,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
  }
  U0 KernelFileLoad()
  {
@@ -1649,7 +1668,7 @@ index 940d53f2..d8abe273 100644
    kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
    if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=1 ||
        !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
-@@ -738,5 +778,6 @@ U0 KernelConsoleLoad()
+@@ -738,5 +783,6 @@ U0 KernelConsoleLoad()
    kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
    kernel_console_config.mouse=&kernel_mouse;
    kernel_console_config.pit_divisor=kernel_timer.divisor;
