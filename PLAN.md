@@ -10782,3 +10782,35 @@ Full native implementation must preserve those behaviors, task/code ownership
 and cleanup. Current candidate does not implement rewind/step/rearm or task
 switch handling; lifecycle compilation is not full debugger completion.
 Earlier live qualification stays pinned; main and release readiness remain open.
+
+Breakpoint lifecycle green and register native/workstation qualification
+(2026-10-05): build/debug-breakpoint-lifecycle-green/result.json passes
+28 commands on 486,-fpu / 8 MiB, startup 34.466079 seconds, exact VGA and
+unchanged source. Original lifecycle return values, duplicate/live=False/
+toggle/two-record clear and byte/list restoration pass. Five rounds now run
+in build/debug-breakpoint-lifecycle-repeat. Managed store-trap runtime is
+still pending and is not qualified by this lifecycle green.
+
+build/debug-register-native-build/result.json passes all six native retained
+modules; build/debug-register-workstation/result.json passes all 513 commands,
+exact VGA and twenty exact shared-heap development cycles on 486,-fpu / 8 MiB.
+Startup 33.207068 seconds, long-document update 0.340859 seconds. Retained
+installation passes and full native flat construction is directly live as
+3651884 / QEMU 3651885. These qualify register-source construction/workstation,
+not the later address/breakpoint consoles or complete release readiness.
+
+Managed breakpoint architecture next: the existing scheduler bind callback
+runs with IRQs masked after selecting next but before context swap, while
+FS still names the outgoing task. A retained wrapper can restore outgoing
+record bytes, apply incoming breakpoints unless TASKf_DISABLE_BPTS, then
+chain the original platform binder. Preserve its segment/current-task checks
+and avoid allocation/scheduling in the hook. Captured managed INT3 needs
+record lookup at saved EIP-1, rewind and original-byte restoration; S disables
+breakpoint application and requests TF, G clears disable/TF and reapplies.
+Direct G at a breakpoint must retain the original step/remove requirement.
+Task cleanup must restore/remove records while public heaps/code still live,
+including forced kill from another terminal. Shared-code ownership, other-task
+registration/resume and original runtime comparisons need dedicated tests.
+This design follows original Fault2 and Sched.HC behavior; it is not implemented
+or proved by the existing hook alone. Candidate sources stay fixed during
+qualification; main OS remains unpromoted and release scope remains intact.
