@@ -28,6 +28,14 @@ db 0xE9
 dd entry-($+4)
 times 8-($-$$) db 0
 entry:
+    cmp dword [0x5030],0x42323345
+    jne fail
+    cmp dword [0x5034],1
+    jne fail
+    cmp dword [0x5038],0x100000
+    jne fail
+    cmp dword [0x503C],655360
+    jne fail
     cmp dword [0x100000+512],0x1234A5C1
     jne fail
     cmp dword [0x100000+655360-4],0xECB749D5
@@ -69,6 +77,19 @@ db 0xC1,0x36,0x5A,0x92,0x0F,0xB8,0xE4,0x7D,0x6A,0x03,0x8F,0x21,0xD5,0x49,0xB7,0x
         damaged=bytearray(built)
         damaged[512+offset:512+offset+4]=value.to_bytes(4,'little')
         cases.append((name,bytes(damaged),8,'B'))
+    # Rehash malformed payloads so these exercise entry validation, not checksum.
+    for name,offset,replacement in [
+            ('entry-opcode',0,b'\x90'),
+            ('entry-reserved',5,b'\x01'),
+            ('entry-before-body',1,(2).to_bytes(4,'little')),
+            ('entry-past-end',1,(len(raw)-5).to_bytes(4,'little'))]:
+        damaged=bytearray(built)
+        damaged[4608+offset:4608+offset+len(replacement)]=replacement
+        checksum=2166136261
+        for byte in damaged[4608:]:checksum=((checksum^byte)*16777619)&0xFFFFFFFF
+        damaged[544:548]=checksum.to_bytes(4,'little')
+        cases.append((name,bytes(damaged),8,'B'))
+    cases.append(('truncated-payload',built[:-512],8,'B'))
     try:
         for name,body,ram,expected in cases:
             disk=out/(name+'.img');disk.write_bytes(body+bytes(16*1024*1024-len(body)))

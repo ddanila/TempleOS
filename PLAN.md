@@ -12109,3 +12109,15 @@ rebuild/install/reboot generations, then rerun debugger trace and release
 resource/workstation/no-FPU gates. Physical hardware verification stays deferred.
 Existing debug-stack native-generation and integrated no-FPU native-build
 processes were confirmed live during this checkpoint; no new pass claimed.
+
+Extended handoff and entry negatives verified (2026-10-05):
+build/extended-loader-handoff-entry/result.json passes 13 isolated cases.
+The valid payload checks all four image handoff fields. Four malformed entry
+cases carry recomputed checksums, so opcode/reserved-byte/before-body/past-end
+rejection is independent of integrity rejection. A removed final sector padded
+by the fixed-size disk is rejected by checksum; this is not BIOS read failure.
+See docs/i386-extended-boot-contract.md for exact disk/metadata/memory contracts
+and coordinated linker, heap reservation, native installer and auditor work.
+No integrated TempleOS or release completion claimed. Existing long-running
+native-generation and no-FPU build processes remain live; their sources stay
+frozen. Physical verification remains deferred.
