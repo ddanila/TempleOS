@@ -11437,3 +11437,29 @@ one-warning assertion. Preserve this new failure; do not relax the assertion
 until the additional warning is identified and its cause reviewed. Fresh
 source bootstrap/all 1270 hashes and cross export succeed, but full --test
 remains unqualified. Main candidate promotion and release completion stay open.
+
+Frozen G2 installed suite and repeated direct-IP editing qualified
+(2026-10-05): build/debug-go-clear-installed-frozen completes PASS with all
+154 pinned disk/prerequisite/snapshot inputs unchanged. All four gates pass:
+workstation 513 commands, 486,-fpu / 8 MiB startup 56.826717 seconds,
+long-document update 0.257375 seconds; DolDoc three-boot persistence and
+filesystem audit; speaker observed 440/880 Hz, 7.754036-second recording;
+resource 20 development cycles, temporary live growth 3616 bytes. Input disk
+SHA256 21875e97acc987b736232fb8f0b4d701eb0126193776ce78203c843f7fffa4b5
+is unchanged. This frozen run uses the original flat-identity prerequisite
+schema; future runs require the newly added whole-disk audit field. These
+are G2-source results, not qualification of the later diagnostic/IP candidate.
+
+build/debug-public-ip-repeat passes five cycles / 50 commands, 486,-fpu /
+8 MiB startup 28.365170 seconds, exact VGA and unchanged reader/IP image.
+Public RIP edits/default G repeatedly select the expected physical store.
+
+Extra header warning source investigation: PublicTaskTypes forwards CBpt;
+PublicDebugTypes now completes it. PrsClassCore issues unused-extern warning
+when a completed forward has use_cnt<3; the preexisting CCPU warning and new
+CBpt completion suggest the extra count, but names need runtime confirmation.
+Candidate I386FrontendWarning now logs kind and symbol without changing count
+or any assertion. Fresh bootstrap and dependent --test pipeline run/queue in
+build/debug-concurrent-warning-trace-pipeline.json. Updated full patch applies
+cleanly. Diagnostic acceptance, later-source native/installed qualification,
+root promotion, full parity and release completeness remain open.

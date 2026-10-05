@@ -1,3 +1,21 @@
+diff --git a/Compiler/I386/Frontend.HC b/Compiler/I386/Frontend.HC
+index fb2baf47..3793d26e 100644
+--- a/Compiler/I386/Frontend.HC
++++ b/Compiler/I386/Frontend.HC
+@@ -936,7 +936,12 @@ Bool I386FrontendOption(U8 *context,I64 index)
+   return Bt(&state->cc->opts,index);
+ }
+ U0 I386FrontendWarning(U8 *context,CCmpCtrl *cc,I64 kind,CHashSrcSym *symbol)
+-{ cc->warning_cnt++; }
++{
++  cc->warning_cnt++;
++  KernelLog("FRONTEND SYMBOL WARNING "); KernelHex(kind); KernelLog(" ");
++  if(symbol && symbol->str) KernelLog(symbol->str);
++  KernelLog("\n");
++}
+ I64 I386FrontendDefine(U8 *context,U8 *name,U8 *list)
+ {
+   if(StrCmp(list,"ST_U64_REGS")) I386FrontendUnavailable(context);
 diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
 index 30b15c64..1a3e62ff 100644
 --- a/Kernel/I386/ConsoleRuntime.HC
