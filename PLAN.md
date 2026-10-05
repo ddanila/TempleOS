@@ -13328,3 +13328,30 @@ That is an inspection finding, not a proven cause of this failure. A direct
 `build/public-caller-file-read-focus` to separate file access from parsing.
 The existing redraw candidate full suite and six-provider native build were
 confirmed live. No OS source was promoted and release qualification remains open.
+
+
+### Canonical text-run loading candidate (2026-10-05)
+
+`build/public-caller-file-read-focus/focused-result.json` PASS on the packaged
+native Caller disk, 486 without FPU / 8 MiB: direct FileRead returned all 11,210
+bytes and Free returned normally. Startup measured 40.959 seconds. Thus the
+large DocRead failure is beyond direct file retrieval in this comparison.
+
+Inspection found that ordinary input at the end sentinel creates a fresh text
+entry per character: DocBasicEditCore inserts it but leaves the insertion point
+at the sentinel. The existing loader calls this once per byte. The isolated
+`build/document-run-load-candidate` constructs canonical text records for runs,
+allocating each tag once; dollar, cursor, newline and tab boundaries retain the
+existing path. Allocation cleanup precedes exception propagation. Archived as
+`docs/patches/i386-doldoc-text-run-load-candidate.patch`, to apply after the latest
+Caller cumulative patch. Apply-check and fixture syntax checks PASS. Original
+bootstrap has produced both generation ISOs; final manifest is authoritative.
+Cross-build is underway. No runtime PASS or promotion claimed yet.
+
+`tools/test-i386-doldoc-large-source.py` adds a focused regression: read the real
+source, repeatedly DocRead with cursor serialization disabled, DocSave and check
+exact size/content against FileRead, then free document and buffer. Default is
+three cycles on 486 without FPU / 8 MiB, with immutable disk/script/helper hashes.
+The one-cycle existing-image red run is underway in
+`build/public-caller-large-source-red`. The original 180-second failure captures
+remain retained; this fixture uses the usual command observation timeout.
