@@ -12531,3 +12531,26 @@ helper definitions and applies cleanly. Fresh changed-source bootstrap live
 session18478, log extended-render-lock-bootstrap.log. Only then rebuild/test its
 actual ConsoleRuntime. Native generations remain failed pending file-move fix;
 no installer/release success claimed.
+
+Fragmented move red and extent-transfer candidate (2026-10-05):
+build/fragmented-module-move-red/result.json terminal FAIL at exact final move,
+inputs unchanged; prior three replacement commands and deletion succeeded.
+New independent build/extended-move-extent-prototype implements prepared target
+slot/directory growth before intent, publishes target metadata referencing the
+source's existing extent, tombstones source without freeing data, then clears
+intent. Distinct version-two transfer magic distinguishes shared-extent recovery
+from historical version-one copied-extent recovery. With both names present,
+transfer recovery removes destination metadata without freeing shared data;
+legacy copy recovery still frees its duplicate. Destination extent must match
+recorded source in transfer mode. No whole-file allocation/copy on new move.
+
+Full cumulative docs/patches/i386-redsea-extent-move-candidate.patch applies
+cleanly to main (includes extended kernel/assembler/renderer changes; use it
+instead of layering overlapping older patches). Fresh original bootstrap live
+session72685, extended-move-extent-bootstrap.log. This is unqualified candidate
+code: run red fixture green, verify metadata-only writes/content/ownership,
+existing failure stages, directory growth and mount/IO interruption recovery,
+then rerun retained installation/two native generations. Bitmap reconciliation
+and durable journal correctness must be verified together before promotion.
+Renderer lock-function bootstrap passed; its runtime validation remains pending.
+Full objective remains open.
