@@ -830,7 +830,7 @@ index 65aa8c6d..7ea4f0d9 100644
 +extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
  #endif
 diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
-index 940d53f2..222e567e 100644
+index 940d53f2..3d140156 100644
 --- a/Kernel/I386/Kernel.HC
 +++ b/Kernel/I386/Kernel.HC
 @@ -123,7 +123,7 @@ U8 kernel_startup_bindings[3]={0,1,2};
@@ -842,7 +842,20 @@ index 940d53f2..222e567e 100644
  U8 kernel_memory_bindings[16]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45};
  extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
  extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
-@@ -624,11 +624,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
+@@ -155,10 +155,11 @@ I64 Main(CI386BootInfo *info,I64 unused)
+   KernelCompilerLoad;
+   KernelFileLoad;
+   KernelMemoryLoad;
+-  if(kernel_diagnostics) KernelCompilerProbe(0);
+   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
+   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler)) KernelStop;
+   KernelConsoleLoad;
++  //Public-header probes require the real console/debugger exports.
++  if(kernel_diagnostics) KernelCompilerProbe(0);
+   KernelStartup;
+   if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
+   KernelLog("STORAGE TASK BOUND\n");
+@@ -624,11 +625,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
  }
  U0 KernelFileLoad()
  {

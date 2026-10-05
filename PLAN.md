@@ -11187,3 +11187,23 @@ paused, kills the first from the second debugger, requires the survivor's
 mode and expression/G to remain valid, then requires mode restored and
 parent heap recovery. Verdicts are pending. Retain the diagnostic failure
 regardless of interactive results; it remains required work before promotion.
+
+Concurrent paused-task kill green and diagnostic binding-order correction
+(2026-10-05): build/debug-concurrent-interactive-kill passes 14 commands on
+486,-fpu / 8 MiB, startup 35.755512 seconds, exact VGA and unchanged disk.
+Two real INT3 sessions coexist; killing the first preserves the second's
+IsDbgMode==1, expression 42 and G, then mode returns to 0 and the parent
+public heap recovers. This is the pre-binding-order-correction image;
+independent normal resumption of both tasks remains a separate running gate.
+
+Kernel.HC invoked phase-0 compiler/public-header diagnostics after memory
+binding but before KernelConsoleLoad. PublicDebug.HH now requires real
+console exports, so that ordering cannot load the full public header set.
+The new candidate moves the entire phase-0 compiler probe immediately after
+KernelConsoleLoad; phase-1 and all two-phase assertions remain intact.
+Updated full candidate patch applies cleanly to main. Fresh candidate
+bootstrap runs in .../build/debug-concurrent-bootstrap-bound.log, then a
+fresh build/diagnostic run is required before claiming the fix works.
+An accidentally launched root bootstrap was stopped immediately; its partial
+root build/rebuild-test output is unqualified and must be refreshed if used.
+No root source changes or candidate promotion; release completion stays open.
