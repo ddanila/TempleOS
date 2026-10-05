@@ -9404,3 +9404,19 @@ The first cleanup candidate's bootstrap passes and cross construction is live;
 it still contains the invalid bare rethrow and is not a valid fix yet. Keep its
 snapshot stable until that build completes, then create the propagation-correct
 source epoch and rerun this red gate before broad qualification.
+
+Propagation-correct candidate implemented (2026-10-05):
+The first cleanup cross build finishes successfully (386 instruction audit,
+483192-byte kernel), but it remains semantically invalid at rethrow boundaries.
+New docs/patches/i386-public-resident-propagation-candidate.patch replaces bare
+throw in newly added resident allocation/copy/public read/write cleanup catches
+with rejected catches (catch_except FALSE). Private normal-read and include
+cleanup also reject their catches after freeing names, releasing borrow and
+restoring flags. The established dispatcher preserves the original OutMem and
+selects outer handlers. FileRuntime requires SysTry/SysUntry, with unused throw
+import removed from its explicit contract. No global exception semantics change.
+Patch applies cleanly to main; whitespace checks pass. Fresh original candidate
+bootstrap is running in build/resident-public-propagation-bootstrap.log.
+Required next actions: cross build, rerun the verified allocation-failure gate,
+then exact private/public recovery, child/directory replacement and broader
+workstation/native generation qualification. No runtime fix claimed yet.
