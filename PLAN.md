@@ -10390,3 +10390,16 @@ second startups and 0.222433-second interrupt recovery), with independent
 source/session hashes and matching-builder bitmap audit (18 directories,
 889 files, 19094 owned sectors). Installed workstation/generation identity
 and no-FPU construction remain pending; no single-step pass is claimed yet.
+
+Single-step candidate dependent runtime qualification queued (2026-10-05):
+The actual candidate bootstrap/build shell handle is directly confirmed live.
+build/debug-single-step-runtime-pipeline.py waits on that exact handle and
+uses only build/debug-single-step-prototype/build/debug-single-step output,
+verifying its input disk SHA-256 against the candidate build report. It then
+runs the corrected single-instruction store/reentry/G contract followed by
+five ordinary CPU-trap continuation cycles, stopping on failure. Outputs are
+build/debug-single-step-single-step and build/debug-single-step-continuation;
+state is build/debug-single-step-runtime-pipeline.json. Neither is a pass yet.
+The unrelated root-cwd baseline remains separate evidence and is not read by
+this chain. Current ABI-47 installed workstation, generation reproducibility
+and no-FPU native construction remain pending on their existing sources.
