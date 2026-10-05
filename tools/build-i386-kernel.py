@@ -2239,6 +2239,7 @@ def main():
     out=args.out.resolve()
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
+    run(sys.executable,'tools/check-i386-file-bindings.py')
     run(sys.executable,'tools/gen-compiler-keywords.py','--check')
     run(sys.executable,'tools/gen-i386-public-math.py','--check')
     run(sys.executable,'tools/gen-i386-date.py','--check')

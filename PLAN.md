@@ -9475,3 +9475,25 @@ These runtime checks are pending. The earlier full run cannot count as a
 513-command pass. Both retained builders remain live and unmodified.
 
 Bound candidate still rejects FileRuntime at boot: the provider array grew to 31 but actual KernelFileLoad retained stack/count 29 because the prior edit matched its forward declaration. Source inspection confirms the mismatch. Actual function body now uses 31 consistently for stack, KernelBindings and KernelServiceLoad. No fault or full workstation behavior executed on the rejected image. Archive updated; new loader-corrected original bootstrap is running.
+
+Loader contract guard and fresh qualification (2026-10-05):
+The source loader check tools/check-i386-file-bindings.py now runs before cross
+construction. It requires the provider-array initializer/declaration, actual
+file-loader stack and both call counts to agree, rejects duplicate/out-of-range
+provider indices, and requires every explicit FileRuntime import to be allowed.
+Main's 29 and candidate's 31 bindings pass; deliberately reproducing the 31/29
+mismatch is rejected. Python/whitespace checks pass. Existing archived candidate
+still applies to main with this guard. Do not widen the allowlist implicitly.
+
+Corrected loader original bootstrap/cross/386 audit passes; kernel 483200 bytes.
+Disk SHA256: 70aa242c2358718cb9440c95c0f2d2a43de97af114357f420eb47b0ef03c9247.
+The strengthened failure test and document/removal/default-name parity are
+running on this image in build/public-resident-include-oom-propagation-loader
+and build/public-resident-propagation-loader-parity. Runtime verdicts pending.
+The earlier help group now passes all nine no-FPU 8 MiB checks with exact VGA
+in build/public-resident-include-help-dynamic/result.json; startup 25.197 seconds.
+The original ABI-45 happy-path bridge retained native build completes all six
+modules in build/public-resident-include-native-build/result.json (KVM). Its
+source disk SHA is 02203a00cb76df1752b0a086f06f82b92103d1723ee18320ecea48d45c19d433.
+These earlier-epoch greens do not qualify the newer propagation fix or prove
+full native install/reproducibility. Main no-FPU retained build remains live.
