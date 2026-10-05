@@ -12630,3 +12630,21 @@ Both cross-build full tests and six-module retained native build remain live;
 continue existing processes and source pins. Next actual fragmented native
 module fixture and two generations depend on that native build. Physical
 verification deferred, root OS candidate promotion/release still open.
+
+Low-space extent move test starts while native rebuild runs (2026-10-05):
+New tools/test-i386-low-space-move.py constructs a validated disposable volume
+with a regular reserve file occupying the largest free extent, leaving every
+free extent smaller than loaded ConsoleRuntime. Actual guest FileMove must move
+that module between directories and back, preserving extent/size/date/attributes,
+payload, allocation bitmap and boot area; source input/checker pins unchanged.
+It verifies fixture and final reachable filesystem ownership independently.
+Run live session4129, out build/low-space-module-move, exact recovery-corrected
+disk. This is resource/metadata ownership coverage, not the native installation-
+derived fragmentation fixture or crash interruption coverage. No pass claimed.
+
+Full recovery-corrected interactive suite has reached document nested-lock tests
+after all graphics/text and compiler groups. Same retained native six-module
+build remains confirmed live PID3799572; full --test PID3797124 continues. Keep
+current handles/source pins rather than restart on duration. On native build
+success run original fragmented-module fixture and two-generation install chain.
+Full release objective stays open.
