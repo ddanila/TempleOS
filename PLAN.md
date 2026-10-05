@@ -9637,3 +9637,23 @@ ABI-46 exact resident recovery is live in build/public-resident-write-attempt-re
 Required remaining parity work includes attempted compressed bytes and original
 parent creation/replacement semantics, alongside failure cleanup, child lifetime,
 full workstation and native generations. Earlier broad tests/builds remain live.
+
+Rejected write lifecycle green; compressed attempt gate (2026-10-05):
+build/public-resident-write-attempt-removal/result.json passes original oracle
+and all 13 native no-FPU / 8 MiB commands. Rejected resident write publishes
+readable attempted bytes; rejected ordinary write removes the cache entry.
+Disk result remains failure and independent audit confirms no long-name file
+was persisted. Exact VGA, baseline fixture/input equality and RedSea audit
+pass (16 directories, 871 files, 17568 owned sectors). Startup 29.030 seconds.
+This verifies the original-model mismatch fixed by ABI 46 for ordinary bytes.
+
+The tool adds --failed-write-compressed (requires --failed-write), changing
+only the rejected target to .Z. FileRead must expand the staged archive back
+to the original 19 bytes; then ordinary rejected replacement must remove it.
+Original oracle passes; native 13-command gate is live in
+build/public-resident-write-attempt-compressed. Candidate exact twenty-cycle
+resident recovery is still live. Fresh all-heap allocation-failure recovery
+and six-module KVM retained construction now run on the ABI-46 disk in
+build/public-resident-write-attempt-failure-recovery and ...-native-build.
+Earlier ABI-45 full workstation/native builds and main no-FPU retained build
+remain live. These pending gates do not support promotion or release completion.

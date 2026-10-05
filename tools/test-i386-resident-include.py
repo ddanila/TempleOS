@@ -62,14 +62,18 @@ def main():
     parser.add_argument('--child', action='store_true', help='Require cached file/document reads in a child and cache survival after synchronous Kill')
     parser.add_argument('--failure-public-recovery', action='store_true', help='Also require exact caller/root public heap recovery with validated key-up quiescence')
     parser.add_argument('--failed-write', action='store_true', help='Compare original resident cache publication after an invalid disk filename write')
+    parser.add_argument('--failed-write-compressed', action='store_true', help='Use a rejected .Z filename and require the cached serialized bytes to expand correctly')
     parser.add_argument('--failed-write-lifecycle', action='store_true', help='Also compare cache removal after an ordinary rejected write')
     args = parser.parse_args()
+    rejected_name = REJECTED_NAME+('.Z' if args.failed_write_compressed else '')
     if args.failure_recovery and not args.allocation_failure:
         parser.error('--failure-recovery requires --allocation-failure')
     if args.child and not args.document:
         parser.error('--child requires --document')
     if args.failure_public_recovery and not args.failure_recovery:
         parser.error('--failure-public-recovery requires --failure-recovery')
+    if args.failed_write_compressed and not args.failed_write:
+        parser.error('--failed-write-compressed requires --failed-write')
     if args.failed_write_lifecycle and not args.failed_write:
         parser.error('--failed-write-lifecycle requires --failed-write')
     out = args.out.resolve()
@@ -90,6 +94,7 @@ def main():
     report['failure_recovery'] = args.failure_recovery
     report['child'] = args.child
     report['failure_public_recovery'] = args.failure_public_recovery
+    report['failed_write_compressed'] = args.failed_write_compressed
     report['failed_write'] = args.failed_write
     report['failed_write_lifecycle'] = args.failed_write_lifecycle
     if layout:
@@ -125,12 +130,12 @@ def main():
         if args.failed_write:
             oracle.insert(oracle.index('U0 IncludeCache(){'), FAILED_WRITE)
             oracle.insert(oracle.index('Report("DONE resident include\n");}'),
-                          f'if(!FailedWriteCache("B:/{REJECTED_NAME}")){{Report("FAIL rejected write cache\n");return;}}')
+                          f'if(!FailedWriteCache("B:/{rejected_name}")){{Report("FAIL rejected write cache\n");return;}}')
             if args.failed_write_lifecycle:
                 index = oracle.index('U0 IncludeCache(){')
                 oracle[index:index] = [FAILED_DROP]
                 index = oracle.index('Report("DONE resident include\n");}')
-                oracle[index:index] = [f'if(!FailedDrop("B:/{REJECTED_NAME}")){{Report("FAIL rejected removal\n");return;}}']
+                oracle[index:index] = [f'if(!FailedDrop("B:/{rejected_name}")){{Report("FAIL rejected removal\n");return;}}']
         #HolyC strings need literal escape sequences, not embedded line breaks.
         if args.default_extension:
             oracle = [line.replace('CacheInclude.HC', 'CacheInclude') if '#include' in line else line
@@ -169,10 +174,10 @@ def main():
         if args.failed_write:
             index = next(i for i, (source, _) in enumerate(commands) if source.startswith('FileWrite('))
             commands.insert(index, (FAILED_WRITE, []))
-            commands += [(f'FailedWriteCache("C:/Probe/{REJECTED_NAME}");', ['1'])]
+            commands += [(f'FailedWriteCache("C:/Probe/{rejected_name}");', ['1'])]
             if args.failed_write_lifecycle:
                 commands[index:index] = [(FAILED_DROP, [])]
-                commands += [(f'FailedDrop("C:/Probe/{REJECTED_NAME}");', ['1'])]
+                commands += [(f'FailedDrop("C:/Probe/{rejected_name}");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.default_extension:
             commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)
@@ -224,10 +229,10 @@ def main():
             report['volume_audit'] = auditor['verify_mutated_volume'](candidate)
             wanted = {'/Probe/CacheInclude.HC'}
             if args.failed_write:
-                wanted.add('/Probe/'+REJECTED_NAME)
+                wanted.add('/Probe/'+rejected_name)
             persisted = auditor['mutated_file_contents'](candidate, wanted)
             if args.failed_write:
-                report['rejected_write_not_persisted'] = '/Probe/'+REJECTED_NAME not in persisted
+                report['rejected_write_not_persisted'] = '/Probe/'+rejected_name not in persisted
                 if not report['rejected_write_not_persisted']:
                     raise ValueError('Rejected write unexpectedly persisted a file')
             report['fixture_persisted'] = '/Probe/CacheInclude.HC' in persisted
