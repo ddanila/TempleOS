@@ -11152,3 +11152,20 @@ clone; no compilation or runtime green is yet claimed. G2 sources and their
 native/installed gates remain fixed. Other-task controls, nested same-task
 traps, direct stack/IP/flags edits, full parity and release completion remain
 open. Root main contains evidence/patches only, not promoted candidate code.
+
+Task-local debugger bootstrap qualified; shared-mode lifetime gate added
+(2026-10-05): build/debug-concurrent-prototype/build/rebuild-test/result.json
+records two completed original x86-64 bootstrap generations. All 1270 source
+hashes are independently checked against the fixed candidate. The dependent
+pipeline now runs tools/build-i386-kernel.py --test in the same clone; module
+exports are underway, so a final 386 build/boot PASS is still pending.
+
+The simultaneous-trap checker now also queries IsDbgMode in the second
+terminal after its G while the first session remains paused: required answer
+is 1. After both sessions exit, the parent requires IsDbgMode==0 before 42.
+This verifies the shared session-count lifetime, not merely two successful
+expressions. Preserve the prior red result under its recorded checker hash;
+the strengthened checker has a new identity. The pipeline will then run
+same-address ownership and managed single-step forced-kill regressions on
+the new image. Current stage/evidence is build/debug-concurrent-pipeline.json.
+No candidate promotion or complete debugger/release qualification is claimed.

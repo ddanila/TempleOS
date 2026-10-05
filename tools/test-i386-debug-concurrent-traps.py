@@ -33,6 +33,8 @@ def commands():
     enter('6*7;', debug[:-1]+['dbg> 6*7;', '42', 'dbg> '], 'second-live-debugger')
     two_return = two[:-1]+['> ConcurrentTrap;', '> ']
     enter('G;', two_return, 'second-resumed')
+    two_return = two_return[:-1]+['> IsDbgMode;', '1', '> ']
+    enter('IsDbgMode;', two_return, 'mode-retained-for-first-session')
     events.extend([{'hotkey': 'focus-next'}, {'expect_rows': debug, 'label': 'first-still-paused'}])
     current = debug
     enter('6*7;', debug[:-1]+['dbg> 6*7;', '42', 'dbg> '], 'first-live-debugger')
@@ -49,7 +51,7 @@ def commands():
         'begin': 'TERMINAL TEST enter\n', 'initial_rows': one, 'events': events,
         'final_rows': current[:-1]+['> TermFinish;'], 'exit_key': 'ret',
         'end': 'TERMINAL TEST return\n', 'preserve_history': True,
-    }), ('6*7;', ['42'])]
+    }), ('IsDbgMode;', ['0']), ('6*7;', ['42'])]
 
 
 def main():
@@ -64,7 +66,7 @@ def main():
     dependency = ROOT / 'tools/test-i386-terminals.py'
     report = dict(checker_sha256=checker, disk_sha256=disk,
                   dependency_sha256=sha(dependency),
-                  scope='Two simultaneously paused INT3 contexts: focus, expression, independent G and parent heap recovery; not other-task G/S or all nested exceptions')
+                  scope='Two simultaneously paused INT3 contexts: focus, expression, independent G, shared mode lifetime and parent heap recovery; not other-task G/S or all nested exceptions')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
