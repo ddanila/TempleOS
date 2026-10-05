@@ -10361,3 +10361,32 @@ A fresh run in build/file-cd-resident-integrated-single-step-sized-red now
 uses this corrected fixture; actual missing-S evidence remains pending. The
 first failure evidence is preserved and no OS source is changed to accommodate
 it. Existing native-generation/workflow/no-FPU builds remain on fixed sources.
+
+Single-step intended red observed and implementation candidate prepared
+(2026-10-05): the corrected fixture passes breakpoint search/patch, actual
+INT3 entry and pre-step local-zero check. Its exact VGA failure image shows
+`dbg> S;` followed by Undefined identifier. This is the intended missing-public-
+function red, distinct from the initial fixture-size failure.
+
+A separate main-only fork checkout in build/debug-single-step-prototype
+adds public _DEBUG_STEP/S, requires the active current-task CPU debugger,
+sets the saved frame's trap flag, accepts vector 1 through the existing CPU
+capture callback, and clears TF on debugger entry/G. The existing kernel
+exception-return bridge clears TF while executing debugger code; S enables
+it only for the returned debuggee frame. No global exception API is changed.
+The full candidate is archived in
+ docs/patches/i386-debug-single-step-candidate.patch and applies cleanly to main.
+Default/current-task S is targeted first; explicit new-IP/other-task arguments,
+managed breakpoints and complete register inspection/editing remain open.
+
+Fresh candidate original bootstrap followed by cross build runs with its
+actual checkout cwd; logs are build/debug-single-step-candidate-bootstrap.log
+and ...-candidate-build.log. An initial launch used root main's cwd and writes
+a separate root build/debug-single-step baseline; it is not candidate evidence.
+Correct candidate output is build/debug-single-step-prototype/build/debug-single-step.
+Current integrated qualification sources remain fixed. Integrated native
+three-boot DolDoc now passes (107/56/15 commands, 38.908934/37.949953/38.808444
+second startups and 0.222433-second interrupt recovery), with independent
+source/session hashes and matching-builder bitmap audit (18 directories,
+889 files, 19094 owned sectors). Installed workstation/generation identity
+and no-FPU construction remain pending; no single-step pass is claimed yet.
