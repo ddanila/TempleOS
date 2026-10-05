@@ -11463,3 +11463,25 @@ or any assertion. Fresh bootstrap and dependent --test pipeline run/queue in
 build/debug-concurrent-warning-trace-pipeline.json. Updated full patch applies
 cleanly. Diagnostic acceptance, later-source native/installed qualification,
 root promotion, full parity and release completeness remain open.
+
+Candidate-aware exact-volume audit and warning logger correction (2026-10-05):
+audit-i386-guest-image.py accepts --repository to use the qualified source's
+format/boot helpers; pins those Python helpers and its own implementation
+alongside disks/listing. This permits whole-disk re-audit without altering a
+fixed candidate. Both G2 generations pass in build/debug-go-clear-gen1-identity-audit
+and ...-gen2-identity-audit, flat 487336 bytes. Independent disk hashing matches
+21875e97acc987b736232fb8f0b4d701eb0126193776ce78203c843f7fffa4b5 and
+6427dd8ed5b19cd6508637f263517cc86fc3795fa610bbea0f62df141ce53e69.
+Installed preflight rejects a gen2 audit supplied for gen1 despite identical
+flat kernel hashes, without creating output. Prior installed workflows remain
+under their recorded schema; new qualification can use these stronger audits.
+
+The diagnostic warning-trace cross compiler fails explicitly at Frontend.HC
+KernelHex(kind): that logger symbol is not available to the compiler module.
+Retain its compiler-log.DD failure. Candidate warning names now print the
+three defined kinds as text through the existing KernelLog service, preserving
+count/assertions and naming the actual symbol. Fresh original bootstrap and
+full diagnostic/regression pipeline run/queue in
+build/debug-concurrent-warning-names-pipeline.json. Updated full patch applies
+cleanly; no warning identity or full diagnostic PASS yet claimed. Root OS code
+remains unpromoted and full release scope stays open.

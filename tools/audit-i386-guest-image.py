@@ -9,8 +9,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def load(name,path):
-    spec=importlib.util.spec_from_file_location(name,ROOT/path)
+def load(name,path,repository=ROOT):
+    spec=importlib.util.spec_from_file_location(name,repository/path)
     module=importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -25,12 +25,16 @@ def main():
     parser.add_argument('--kernel-module-path',default='/Probe/Gen2Kernel.t32m')
     parser.add_argument('--flat-path',default='/Probe/Gen2.bin')
     parser.add_argument('--guest-compiler-template',action='store_true')
+    parser.add_argument('--repository',type=Path,default=ROOT,
+                        help='Use the qualified candidate repository for format/boot auditors')
     args=parser.parse_args()
+    repository=args.repository.resolve()
     inputs={str(path.resolve()):hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in (args.source,args.installed,args.stage_listing)}
+            for path in (args.source,args.installed,args.stage_listing,Path(__file__),
+                         *sorted((repository/'tools').glob('*.py')))}
     args.out.mkdir(parents=True,exist_ok=True)
-    build=load('i386_build',Path('tools/build-i386-kernel.py'))
-    boot=load('i386_boot_audit',Path('tools/audit-i386-boot.py'))
+    build=load('i386_build',Path('tools/build-i386-kernel.py'),repository)
+    boot=load('i386_boot_audit',Path('tools/audit-i386-boot.py'),repository)
     names=build.DISK_MODULES
     wanted={args.kernel_module_path,args.flat_path}|{
         f'/Modules/I386/{name}.t32m' for name in names[1:]}
@@ -52,6 +56,7 @@ def main():
             'source_disk_sha256':inputs[str(args.source.resolve())],
             'installed_disk_sha256':inputs[str(args.installed.resolve())],
             'input_sha256':inputs,
+            'audit_repository':str(repository),
             'flat_sha256':hashlib.sha256(flat).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest()
                        for name in names},

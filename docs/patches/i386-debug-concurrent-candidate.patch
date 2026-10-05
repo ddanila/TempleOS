@@ -1,15 +1,18 @@
 diff --git a/Compiler/I386/Frontend.HC b/Compiler/I386/Frontend.HC
-index fb2baf47..3793d26e 100644
+index fb2baf47..b7c15b2c 100644
 --- a/Compiler/I386/Frontend.HC
 +++ b/Compiler/I386/Frontend.HC
-@@ -936,7 +936,12 @@ Bool I386FrontendOption(U8 *context,I64 index)
+@@ -936,7 +936,15 @@ Bool I386FrontendOption(U8 *context,I64 index)
    return Bt(&state->cc->opts,index);
  }
  U0 I386FrontendWarning(U8 *context,CCmpCtrl *cc,I64 kind,CHashSrcSym *symbol)
 -{ cc->warning_cnt++; }
 +{
 +  cc->warning_cnt++;
-+  KernelLog("FRONTEND SYMBOL WARNING "); KernelHex(kind); KernelLog(" ");
++  KernelLog("FRONTEND SYMBOL WARNING ");
++  if(!kind) KernelLog("unused extern ");
++  else if(kind==1) KernelLog("return mismatch ");
++  else KernelLog("argument mismatch ");
 +  if(symbol && symbol->str) KernelLog(symbol->str);
 +  KernelLog("\n");
 +}
