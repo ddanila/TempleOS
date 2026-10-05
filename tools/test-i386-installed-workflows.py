@@ -126,8 +126,12 @@ def main():
         result = json.loads(path.read_text())
         if result.get('result') != 'pass':
             raise ValueError(name + ' did not pass')
+        budget = runpy.run_path(str(snapshot / 'tools/check-i386-installed-budgets.py'))['assess_job'](name, result)
+        (out / (name + '-budget.json')).write_text(json.dumps(budget, indent=2) + '\n')
+        if budget['result'] != 'pass':
+            raise ValueError(name + ' failed startup/latency budgets: ' + '; '.join(budget['errors']))
         unchanged()
-        return {'result': result, 'result_sha256': sha(path)}
+        return {'result': result, 'result_sha256': sha(path), 'budget': budget}
 
     try:
         save()

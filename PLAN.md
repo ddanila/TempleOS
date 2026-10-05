@@ -13153,3 +13153,25 @@ pipeline in build/public-caller-native-generations against the frozen corrected
 public Caller repository and stage listing. Older TEST-fixed/memory-baseline
 native passes are not substituted. Packaged TEST-fixed speaker/resource jobs
 also PASS; full workstation and DolDoc aggregate still running. Release open.
+
+
+Installed workflow resource verdict enforced (2026-10-05):
+Added tools/check-i386-installed-budgets.py. A functional four-job aggregate
+PASS is insufficient without normal8MiB486,-fpu startup <=60seconds for the
+workstation and all three DolDoc boots, long-document visible update <=1second,
+and interrupt-to-recovery VGA <=1second. Nonpositive/nonfinite/missing timing
+is rejected. tools/test-i386-installed-workflows.py now records and enforces
+per-job budget verdicts before accepting a job. Frozen already-running helpers
+remain unchanged; their completed reports need the standalone budget checker.
+New tools/test-i386-installed-budgets.py accepts two actual recorded passing
+workstation/DolDoc results and rejects18timing mutations, preserving pinned
+inputs: build/native-release-packaging/budget-mutations-pinned.json PASS.
+This is budget-validator evidence, not new current-source runtime evidence.
+
+Memory-baseline packaged native audit now PASS in
+build/memory-baseline-release-packaging/native-audit/result.json. Started its
+four installed workflow gates with the new enforced budgets and independently
+recomputed native origin in
+build/memory-baseline-release-packaging/installed-workflows. Public Caller
+native-generation pipeline reaches first selfhost stage; full qualification
+and promotion remain required. Release stays open.

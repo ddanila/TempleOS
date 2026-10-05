@@ -84,3 +84,24 @@ SHA256 `177ffbd736f9ae5010377ccb8dcd9b2b22220ab151e1baeee4c8a5087f3a90d9`.
 These images have their own delivered source/runtime modules and still require
 packaged runtime qualification. Neither packaged epoch proves qualification of
 the newer public Caller candidate.
+
+
+New installed-workflow runs enforce the planned resource budgets before a job
+can pass: normal startup within 60 seconds for the workstation and each of the
+three DolDoc boots, visible long-document update within one second, and
+interrupt-to-recovery VGA within one second. Missing, nonpositive or non-finite
+measurements fail. Speaker/resource jobs retain their existing independent gates.
+Already-running frozen helpers do not gain this check retroactively. Assess
+their completed aggregate separately:
+
+```sh
+python3 tools/check-i386-installed-budgets.py path/to/workflows/result.json \
+  --out build/installed-budget-verdict.json
+```
+
+The budget validator passes two real recorded timing results and rejects 18
+targeted mutations in `build/native-release-packaging/budget-mutations-pinned.json`.
+These inputs belong to their own source epochs and establish the validator's
+behavior, not a new runtime qualification. The memory-baseline packaged image
+now passes its native audit; its four installed workflows are running with
+budget enforcement in `build/memory-baseline-release-packaging/installed-workflows`.
