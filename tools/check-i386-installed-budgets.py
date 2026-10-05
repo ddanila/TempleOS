@@ -19,6 +19,8 @@ def assess_job(name, data):
         boots['workstation'] = data
         latencies['long_document_up_to_vga'] = data.get(
             'interaction_latencies_seconds', {}).get('long_document_up_to_vga')
+    elif name == 'large-source':
+        boots['large-source'] = data.get('behavior', {})
     elif name == 'doldoc-session':
         for phase in ('create_edit_save', 'reopen_after_boot', 'revised_after_second_boot'):
             boots[phase] = data.get(phase, {})
@@ -43,8 +45,13 @@ def assess_job(name, data):
 def assess(report):
     jobs = report.get('jobs', {})
     required = {'workstation', 'doldoc-session', 'speaker', 'resource'}
+    version = report.get('qualification_version', 1)
+    if version == 2:
+        required.add('large-source')
+    elif version != 1:
+        return dict(result='invalid', errors=['Unsupported qualification version'])
     if report.get('result') != 'pass' or set(jobs) != required:
-        return dict(result='invalid', errors=['Require a complete passing four-job report'])
+        return dict(result='invalid', errors=['Require a complete passing qualification report'])
     results = {}
     for name in sorted(required):
         data = jobs[name].get('result')

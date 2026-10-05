@@ -13420,3 +13420,34 @@ real-source loads, exact size/content save round trips and normal cleanup;
 2d7fd3c986d208680cd6d8675b2a634ee3bda4e30835e82fbbe15038bea2615c.
 This proves the focused cross-image behavior, not full native or release
 qualification. Corrected baseline, D: replay and native provider results pending.
+
+
+### Text-run target gate and release regression coverage (2026-10-05)
+
+`build/document-run-target-mount/result.json` terminal PASS: five commands,
+8 MiB / 486, startup 30.372 seconds. Large real-source DocRead on D:, directory
+creation, Proof.HC write and reopen all pass exact VGA checks. Independent
+filesystem audit finds four directories, three files, 28 uniquely owned sectors
+and matching bitmap; proof hash
+c1d220747dd7c89dd74a10db16dbe42cfa21b74306700d71e342c4887d2888e5.
+This replays the previously failed mount gate on the new cross image.
+
+Corrected fixture baseline `build/public-caller-large-source-red-v2/result.json`
+terminal FAIL at DocRead after direct FileRead succeeds; candidate three-cycle
+green retained. `build/document-run-allocation-binary/focused-result.json` PASS
+on the same candidate, no FPU / 8 MiB: DocAllocationCheck returns12 and the
+existing binary persistence check returns8 including exact task-heap recovery.
+These existing checks do not exhaust every new text-run allocation failure.
+Candidate full suite `build/document-run-load-candidate/build/document-run-full-kernel`
+and six native provider rebuild `build/document-run-native-build-v2` confirmed
+running. Earlier redraw-only six-provider build terminal PASS; that is a
+separate source epoch and is not text-run native evidence.
+
+New installed workflow runs now require a fifth large-source job and record
+qualification_version2. It runs three real-source load/save/free cycles and
+also enforces the normal 60-second startup budget. The aggregate budget checker
+requires exactly these five jobs for version2, while historical version1 reports
+retain their four-job scope. Schema checks using recorded evidence accepted
+legacy/five-job shapes and rejected missing, failed and over-budget large-source
+jobs. This was validator testing, not a five-job runtime qualification. Existing
+frozen running suites unchanged. Full integration/release remains pending.

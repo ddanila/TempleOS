@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run four installed workstation gates on a qualified guest-built image."""
+"""Run five installed workstation gates on a qualified guest-built image."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
@@ -103,11 +103,12 @@ def main():
          [disk, '--cpu', '486,-fpu', '--qmp-stdio', '--writable-copy'], 'result.json'),
         ('doldoc-session', 'test-i386-doldoc-session.py',
          [disk, '--cpu', '486,-fpu', '--qmp-stdio'], 'result.json'),
+        ('large-source', 'test-i386-doldoc-large-source.py', [disk], 'result.json'),
         ('speaker', 'test-i386-speaker-output.py', [disk], 'result.json'),
         ('resource', 'test-i386-resource-profile.py',
          ['--disk', disk, '--accel', 'tcg'], 'resource-result.json'),
     ]
-    report = {'result': 'running', 'cpu': '486,-fpu', 'ram_mib': 8,
+    report = {'result': 'running', 'qualification_version': 2, 'cpu': '486,-fpu', 'ram_mib': 8,
               'accel': 'tcg', 'workers': args.workers, 'input_sha256': inputs,
               'harness_sha256': helper_identity, 'jobs': {},
               'image_origin': 'deterministically packaged native image' if origin_inputs else 'native installed image'}

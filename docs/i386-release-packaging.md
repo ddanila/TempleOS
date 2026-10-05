@@ -148,3 +148,11 @@ SHA256 `f8ef230f0fc6eebdfdfe894e59475e09a1ec5093513fbbb7aa13ee94808bace7`
 in `build/public-caller-release-packaging`. Their native executable and 851-file
 delivered-source audits pass; their own packaged runtime qualification is running.
 This source epoch precedes the isolated bounded redraw candidate.
+
+
+Current installed qualification runs record `qualification_version: 2` and
+require five jobs: workstation, DolDoc session, large real-source DolDoc round
+trip, speaker, and resource profile. The large-source job runs three repeated
+load/save/free cycles on 486 without an FPU and 8 MiB RAM, compares saved bytes
+to the original file, and uses the normal startup budget. Earlier four-job
+reports remain historical version1 evidence; they do not cover this new gate.
