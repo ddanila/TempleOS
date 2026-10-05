@@ -12290,3 +12290,20 @@ Full suite starts in
 six-native-provider build remains live. This focused pass is not native,
 full-suite or release qualification. PLAN opening status refreshed to separate
 current acceptance from historical source epochs and ended qualification runs.
+
+
+### Delivered-source audit stability strengthened (2026-10-05)
+
+The delivered-source verifier now pins its own script alongside image, FS helper
+and packer, and independently rescans the candidate source path set at the end.
+Added, removed or renamed source/doc files during the audit are rejected, not
+just edits to files in its initial inventory. No candidate OS/tool mutation.
+
+`build/public-caller-release-packaging/delivered-source-pinned-v2.json` PASS:
+851 files match the actual packaged Caller disk, with the audit self hash in
+input_sha256. `source-stability-mutations.json` PASS: disposable copies of those
+real sources were changed at the final inventory scan by actual file addition,
+removal and rename; all three rejected with the explicit path-set error before
+revision reporting. These are audit mutation checks, not newer-image acceptance.
+Syntax and diff checks PASS. Text-run full/native and Caller no-FPU chains
+remain running; release qualification is incomplete.

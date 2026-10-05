@@ -16,20 +16,24 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def source_paths(repository):
+    return {'/' + str(path.relative_to(repository)): path
+            for directory in DIRECTORIES
+            for path in (repository / directory).rglob('*')
+            if path.is_file() and path.suffix.upper() in SUFFIXES}
+
+
 def audit(disk, repository):
     repository = repository.resolve()
-    expected = {}
-    for directory in DIRECTORIES:
-        for path in (repository / directory).rglob('*'):
-            if path.is_file() and path.suffix.upper() in SUFFIXES:
-                expected['/' + str(path.relative_to(repository))] = path
+    expected = source_paths(repository)
     required = {'/Kernel/I386/Kernel.HC', '/Compiler/I386/Frontend.HC'}
     if not required <= set(expected):
         raise ValueError('Repository lacks required kernel/compiler source')
     identities = {name: sha(path) for name, path in sorted(expected.items())}
     helper = ROOT / 'tools/build-i386-kernel.py'
     packer = ROOT / 'tools/package-i386-native-image.py'
-    pins = {str(path.resolve()): sha(path) for path in (disk, helper, packer)}
+    pins = {str(path.resolve()): sha(path)
+            for path in (disk, helper, packer, Path(__file__))}
     build = runpy.run_path(str(helper))
     filesystem = build['verify_mutated_volume'](disk)
     # Inspect all live names too: a removed source must not remain in the image.
@@ -46,6 +50,8 @@ def audit(disk, repository):
     for name, digest in identities.items():
         if hashlib.sha256(files[name]).hexdigest() != digest:
             raise ValueError('Delivered source bytes differ: ' + name)
+    if source_paths(repository) != expected:
+        raise ValueError('Candidate source path set changed during audit')
     if any(sha(path) != identities[name] for name, path in expected.items()):
         raise ValueError('Candidate source changed during audit')
     if any(sha(Path(path)) != digest for path, digest in pins.items()):
