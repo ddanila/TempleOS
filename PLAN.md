@@ -12204,3 +12204,23 @@ Guest-run PID 3753862/session 63616 is confirmed live; continue that handle.
 Updated cumulative i386-extended-kernel-candidate.patch applies cleanly.
 Remaining installed-image expectations, full --test rerun, debugger trace,
 8 MiB/no-FPU and two native generations still need qualification.
+
+Independent extended boot publication oracle (2026-10-05):
+New tools/i386_boot_area.py reconstructs boot-area bytes from source-stage
+format and replacement flat payload, validates the entry and capacity, computes
+extended length/checksum independently, pads only the permitted payload sectors
+and preserves legacy stage/tail behavior. Reconstruction matches the exact
+493912-byte extended cross-built disk boot area. This comparison does not prove
+guest installer execution. Candidate linked-boot and selfhost-install checks
+now use this oracle instead of legacy-size-only expectations; cumulative patch
+updated and applies cleanly. Independent filesystem comparison remains required.
+
+Prior debug-stack native chain is terminal FAIL (process gone, result.json fail):
+gen1-selfhost actual guest compiler rejects ExceptionEntry.HC (FRONTEND ERROR
+CMP, source position 0x67). Preserve build/debug-stack-native-generations and
+chain results; do not claim native generation success or restart unchanged.
+Extended corrected diagnostic run PID 3753862 remains live and has progressed
+through public DolDoc layout diagnostics; no terminal pass yet claimed. Original
+integrated no-FPU retained-build retry PID 3677763 remains live. Full release,
+extended guest installer execution and native compiler failure diagnosis remain
+open.

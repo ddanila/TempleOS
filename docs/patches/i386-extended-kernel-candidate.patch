@@ -2030,7 +2030,7 @@ index 716d308f..efc8415c 100644
      if not (0<boot_end<510 and 0<stage_end<4096):
          raise ValueError('Boot code boundaries exceed reserved regions')
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index e6adaabc..7724f7d4 100644
+index e6adaabc..4c4ce55a 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
 @@ -43,6 +43,17 @@ def kernel_flag_disk_offset(exports, symbol):
@@ -2151,7 +2151,17 @@ index e6adaabc..7724f7d4 100644
                  found[child_path]=image[child*512:child*512+length] if length else b''
          visiting.remove(block)
      directory(root,'')
-@@ -2263,16 +2283,18 @@ def main():
+@@ -2124,7 +2144,8 @@ def verify_native_linked_boot_area(disk,exports,out,console):
+     if flat!=(exports/'Kernel32.BIN').read_bytes():
+         raise ValueError('Guest-linked boot image differs from cross build')
+     source=candidate.read_bytes();installed=target.read_bytes()
+-    expected=source[:4608]+flat+bytes(960*512-4096-len(flat))+source[512+960*512:2048*512]
++    from i386_boot_area import expected_boot_area
++    expected=expected_boot_area(source,flat)
+     if installed[:2048*512]!=expected or installed[2048*512:]!=initial[2048*512:]:
+         raise ValueError('Guest boot publication changed unexpected sectors')
+     integrity=verify_mutated_volume(target)
+@@ -2263,16 +2284,18 @@ def main():
      memory_layout=memory_runtime_layout((exports/'MemoryRuntime.t32m').read_bytes())
      disk=out/'kernel.img'
      stage_listing=out/'kernel-stage.lst'
@@ -2173,7 +2183,7 @@ index e6adaabc..7724f7d4 100644
          raise ValueError('Kernel stage exceeds its reserved 480 KiB load area')
      with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
      volume=package_volume(disk,exports)
-@@ -2284,7 +2306,7 @@ def main():
+@@ -2284,7 +2307,7 @@ def main():
              'bootstrap':bootstrap['generations'][-1],
              'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
              'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
@@ -2182,7 +2192,7 @@ index e6adaabc..7724f7d4 100644
                  'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                  'tools/i386-kernel-input.py','tools/test-i386-doc-compat.py','tests/guest/i386-doc-compat/Once.HC','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                  'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
-@@ -2293,7 +2315,7 @@ def main():
+@@ -2293,7 +2316,7 @@ def main():
              'tools':{'python':sys.version,
                       'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                       'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
@@ -2191,7 +2201,7 @@ index e6adaabc..7724f7d4 100644
              'kernel_sha256':hashlib.sha256(image).hexdigest(),
              'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
              'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
-@@ -2401,8 +2423,8 @@ def main():
+@@ -2401,8 +2424,8 @@ def main():
                      (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset'), (private_defines_address,'private_defines_offset'), (compiler_export_at_address,'export_at_offset')))):
              raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
          file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
@@ -2202,7 +2212,7 @@ index e6adaabc..7724f7d4 100644
          if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                  file_address<begin or file_address+file_size>begin+length or
                  file_include!=file_address+files_layout['include_offset'] or
-@@ -2425,7 +2447,13 @@ def main():
+@@ -2425,7 +2448,13 @@ def main():
                  file_export_at!=file_address+files_layout['export_at_offset'] or
                  file_read_raw!=file_address+files_layout['read_raw_offset'] or
                  file_install_boot!=file_address+files_layout['install_boot_offset'] or
@@ -2217,7 +2227,7 @@ index e6adaabc..7724f7d4 100644
              raise ValueError('File-runtime placement or service mismatch')
          if 'FILE MOVE PROBE ' in log:
              raise ValueError('Writable file mutation probe ran during read-only diagnostics')
-@@ -2442,8 +2470,14 @@ def main():
+@@ -2442,8 +2471,14 @@ def main():
                  log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                  not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
              raise ValueError('Retained disk include execution/rejection failed')
@@ -2233,7 +2243,7 @@ index e6adaabc..7724f7d4 100644
              move_failure_stages=4,
              task_volume_bound=True, task_context_inherited=True,
              decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
-@@ -3004,14 +3038,24 @@ def main():
+@@ -3004,14 +3039,24 @@ def main():
          result['compiler_runtime']['rejected']=verify_compiler_rejection(normal_disk,volume,out,runtime_layout)
          result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
          rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
@@ -2325,6 +2335,24 @@ index 3dca2a55..3a9449cb 100644
 +stage_code_end: times 4096-($-$$) db 0
  kernel_image: incbin KERNEL_FILE
  kernel_end:
+diff --git a/tools/test-i386-selfhost-install.py b/tools/test-i386-selfhost-install.py
+index a48ae868..0d7e4100 100644
+--- a/tools/test-i386-selfhost-install.py
++++ b/tools/test-i386-selfhost-install.py
+@@ -126,10 +126,10 @@ def main():
+     if set(flat_modules) != flat_paths:
+         raise ValueError('A guest-built flat-kernel module is missing')
+     flat = files(target, {'/Probe/GuestBoot.bin'}).get('/Probe/GuestBoot.bin')
+-    if not flat or len(flat) > 960 * 512 - 4096:
++    if not flat:
+         raise ValueError('Guest-linked boot image is missing or oversized')
+-    expected = (original[:4608] + flat + bytes(960 * 512 - 4096 - len(flat)) +
+-                original[512 + 960 * 512:BOOT_AREA])
++    from i386_boot_area import expected_boot_area
++    expected = expected_boot_area(original, flat)
+     if target.read_bytes()[:BOOT_AREA] != expected:
+         raise ValueError('Installed boot area differs from guest-linked image')
+     installed_bytes = target.read_bytes()
 diff --git a/Kernel/I386/PublicDebugTypes.HH b/Kernel/I386/PublicDebugTypes.HH
 new file mode 100644
 index 00000000..93b398ea
