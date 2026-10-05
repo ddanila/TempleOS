@@ -18,6 +18,9 @@ DOC = ('Bool CachedDoc(U8 *name){CDoc *d=DocRead(name);I64 n;U8 *p;Bool ok;'
        'if(!d)return FALSE;p=DocSave(d,&n);ok=p&&n>=19&&p[15]==55;Free(p);DocDel(d);return ok;}')
 REMOVE = ('Bool RemoveCode(U8 *name){CHashGeneric *e=HashFind(name,adam_task->hash_table,HTT_FILE);'
           'if(!e)return FALSE;return HashRemDel(e,adam_task->hash_table);}')
+CHILD = ['I64 CacheChildResult=0;',
+         'U0 CacheChild(U8 *n){if(CachedCode(n)&&CachedDoc(n))CacheChildResult=1;else CacheChildResult=2;while(1)Yield;}',
+         'Bool CacheChildCheck(U8 *n){CTask *t;I64 e=cnts.jiffies+2000;CacheChildResult=0;if(!(t=Spawn(&CacheChild,n,"CacheChild",-1,Fs,8192)))return FALSE;while(!CacheChildResult&&cnts.jiffies<e)Yield;return Kill(t)&&CacheChildResult==1;}']
 
 
 def failure_layout(auditor, disk):
@@ -51,9 +54,12 @@ def main():
     parser.add_argument('--default-extension', action='store_true', help='Include a bare name and require original HC.Z default/alternate resolution')
     parser.add_argument('--allocation-failure', action='store_true', help='Native-only ABI-45 allocation failure and borrowed file-state recovery')
     parser.add_argument('--failure-recovery', action='store_true', help='Independently snapshot private heap across the allocation failure and subsequent include')
+    parser.add_argument('--child', action='store_true', help='Require cached file/document reads in a child and cache survival after synchronous Kill')
     args = parser.parse_args()
     if args.failure_recovery and not args.allocation_failure:
         parser.error('--failure-recovery requires --allocation-failure')
+    if args.child and not args.document:
+        parser.error('--child requires --document')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     candidate = out/'candidate.img'
@@ -70,6 +76,7 @@ def main():
     report['default_extension'] = args.default_extension
     report['allocation_failure'] = args.allocation_failure
     report['failure_recovery'] = args.failure_recovery
+    report['child'] = args.child
     if layout:
         report['failure_layout_sources'] = layout
     try:
@@ -95,6 +102,11 @@ def main():
                 'ExePutS("#include \\"B:/CacheInclude.HC\\";\\n");',
                 'if(RootCacheValue!=42){Report("FAIL disk include\n");return;}',
                 'if(!MutateCode("B:/CacheInclude.HC")||!CachedCode("B:/CacheInclude.HC")){Report("FAIL repopulate\n");return;}']
+        if args.child:
+            index = oracle.index('U0 IncludeCache(){')
+            oracle[index:index] = CHILD
+            index = next(i for i, line in enumerate(oracle) if line.startswith('ExePutS('))
+            oracle.insert(index, 'if(!CacheChildCheck("B:/CacheInclude.HC")||!CachedCode("B:/CacheInclude.HC")||!CachedDoc("B:/CacheInclude.HC")){Report("FAIL child cache\n");return;}')
         #HolyC strings need literal escape sequences, not embedded line breaks.
         if args.default_extension:
             oracle = [line.replace('CacheInclude.HC', 'CacheInclude') if '#include' in line else line
@@ -123,6 +135,13 @@ def main():
                          ('RootCacheValue;', ['42']),
                          ('MutateCode("C:/Probe/CacheInclude.HC");', ['1']),
                          ('CachedCode("C:/Probe/CacheInclude.HC");', ['1'])]
+        if args.child:
+            index = next(i for i, (source, _) in enumerate(commands) if source.startswith('FileWrite('))
+            commands[index:index] = [(source, []) for source in CHILD]
+            index = next(i for i, (source, _) in enumerate(commands) if source.startswith('#include'))
+            commands[index:index] = [('CacheChildCheck("C:/Probe/CacheInclude.HC");', ['1']),
+                                     ('CachedCode("C:/Probe/CacheInclude.HC");', ['1']),
+                                     ('CachedDoc("C:/Probe/CacheInclude.HC");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.default_extension:
             commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)

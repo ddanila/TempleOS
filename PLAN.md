@@ -9523,3 +9523,22 @@ peak is allowed to grow. Expected VGA commands remain unchanged. Python and
 whitespace checks pass; the stronger 25-command gate is live in
 build/public-resident-propagation-failure-recovery. Public allocator recovery
 and child-task lifetime remain distinct gates, not implied by this snapshot.
+
+Private allocation-failure recovery green; child cache oracle (2026-10-05):
+build/public-resident-propagation-failure-recovery/result.json passes all
+25 commands on no-FPU 8 MiB. Independent QMP private snapshots exactly match:
+used 5379552 -> 5379552, allocations 7104 -> 7104, identical base/capacity/
+signature. Original normal oracle, OutMem prompt recovery, file borrow zero,
+exact task lifetime references, restored include 49, exact VGA, persisted-byte/
+bitmap audit and unchanged input all pass. Startup 28.018 seconds. This proves
+private recovery for the targeted failure, not every exception path/public heap.
+
+The include tool adds --child (requires --document). A child reads the edited
+public file cache and DocRead/DocSave, then remains yielding until the parent
+synchronously Kill's it. The parent must still read both cached forms and
+compile include 49; removal/default-name qualification remains composable.
+This explicitly exercises teardown instead of treating a completion flag as
+proof of task exit. All helpers fit 255 bytes (largest 229); Python/whitespace
+checks pass. Original oracle passes. Native 23-command test is live in
+build/public-resident-propagation-child. Full workstation, exact resident
+recovery and current retained native construction remain live. No promotion.
