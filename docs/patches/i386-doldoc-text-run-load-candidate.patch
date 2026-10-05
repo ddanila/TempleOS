@@ -1,18 +1,12 @@
 --- a/Kernel/I386/DocRecordLoadCore.HC
 +++ b/Kernel/I386/DocRecordLoadCore.HC
-@@ -3,6 +3,9 @@
- Bool NativeDocRecordLoadCore(CDoc *doc,U8 *source,I64 size)
- {
+@@ -5,2 +5,5 @@
    CDocEntry *entry,*cursor_entry=0;
 +  CDocEntry *text_entry=NULL;
 +  U8 *text_tag=NULL;
 +  I64 run_start,run_size;
    CDocBin *bin;
-   U8 *tag;
-   Bool found_cursor=FALSE;
-@@ -75,8 +78,24 @@
-         found_cursor=TRUE; cursor_entry=doc->head.last;
-         if(cursor_entry==doc) cursor_col=0;
+@@ -77,4 +80,20 @@
          else cursor_col=cursor_entry->max_col;
 -      } else if(source[index]=='\n' || source[index]=='\t' ||
 -          0x20<=source[index]<0x100)
@@ -35,13 +29,9 @@
 +        index--; //The common increment below reaches the next boundary.
 +      } else if(source[index]=='\n' || source[index]=='\t' || source[index]==36)
          DocPutKey(doc,source[index],0);
-       else return FALSE;
-       index++;
 --- a/tools/test-i386-retained-build.py
 +++ b/tools/test-i386-retained-build.py
-@@ -56,7 +56,10 @@
-     calls = [module[name:name + length].decode('ascii')
-              for kind, offset, name, length in rows
+@@ -58,3 +58,6 @@
               if kind == 2 and start <= offset < end]
 -    if calls.count('NativeDocCAlloc') != 4 or calls.count('NativeDocMAlloc') != 1:
 +    # Four structured-record allocations, two tags, and one canonical text base.
@@ -49,5 +39,3 @@
 +            calls.count('NativeDocMAlloc') != 2 or
 +            calls.count('DocEntryNewBase') != 1):
          raise ValueError('Guest-built document loader bypasses allocation wrappers')
- 
- 
