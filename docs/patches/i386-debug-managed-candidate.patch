@@ -68,7 +68,7 @@ index 30b15c64..2fe069bd 100644
    KernelLog("ROOT USER HEADERS begin\n");
    if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
 diff --git a/Kernel/I386/Debugger.HC b/Kernel/I386/Debugger.HC
-index b7186ce0..a144c1f3 100644
+index b7186ce0..11a30efe 100644
 --- a/Kernel/I386/Debugger.HC
 +++ b/Kernel/I386/Debugger.HC
 @@ -1,3 +1,124 @@
@@ -265,7 +265,7 @@ index b7186ce0..a144c1f3 100644
 +  if(I386TaskSelf->debug_cpu_active) I386TaskSelf->debug_cpu_frame.eflags&=~0x100;
 +  if(I386TaskSelf->debug_cpu_active) {
 +    if(BptFind(I386TaskSelf->debug_cpu_frame.eip(U8 *))) {
-+      "Use S, B2 or G2 before resuming a breakpoint.\n";
++      I386TextWrite(&console_text,"Use S, B2 or G2 before resuming a breakpoint.\n");
 +      return;
 +    }
 +    LBtr(&I386TaskSelf->task_flags,TASKf_DISABLE_BPTS);

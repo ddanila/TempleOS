@@ -4999,3 +4999,23 @@ second generation is pending. build/debug-single-step-gen2-native-build passes
 all six modules with exact installed comparison; complete twelve-module/flat/
 boot equality remains pending. Later managed/address source is not qualified
 by those results. Main and release completion remain open.
+
+Managed console integration fix and kill fixture prepared (2026-10-05):
+corrected bootstrap PASSes, but the separate corrected cross build terminates
+FAIL at a new integration issue. compiler-log.DD reports missing Print/PutChars
+headers for the breakpoint warning's implicit string-output statement.
+The candidate now uses existing I386TextWrite(&console_text,...) and a fresh
+bootstrap runs in build/debug-managed-console-bootstrap.log. The source
+archive is updated and applies cleanly. Neither failed build is a runtime
+PASS; cross, size, 386 and managed runtime evidence remain pending.
+
+New tools/test-i386-debug-managed-kill.py prepares parent-owned executable
+code, installs its breakpoint from a child terminal and optionally steps,
+then kills that child from the survivor. It requires original entry byte
+restoration, successful execution of the parent function by the survivor,
+surviving Dbg/G and exact parent public heap recovery. Terminal fixture hash
+is pinned; both entry paths construct within console limits and syntax passes.
+Runtime is not started before a usable managed candidate exists. This does
+not prove all concurrent/shared-code ownership or private resource cleanup.
+Existing qualification continues on unchanged earlier epochs; main remains
+unpromoted and the complete release objective is still open.
