@@ -10622,3 +10622,25 @@ Verdict remains pending. It preserves independent repeated interactions and
 pins dependencies; other-task resume and managed breakpoints remain open.
 Register full workstation/native generations remain pending on unchanged
 sources. Release completion and promotion are not claimed.
+
+Six-register edit chain complete; explicit-address resume red established
+(2026-10-05): build/debug-register-banks-independent-pipeline.json passes
+all six EAX/ECX/EDX/EBX/ESI/EDI runs, each two cycles, 25 commands, exact VGA,
+pinned dependencies and unchanged candidate image. EBP/ESP and complete
+other-task state remain open; this is not complete debugger coverage.
+
+build/debug-go-address-quiet-red terminates FAIL at G(CpuResumeIp) after
+opcode/immediate-byte and pre-store checks pass and a real INT3 debugger
+entry. Debug output records THROW DbgArg; the final VGA checkpoint shows
+G(CpuResumeIp) failing to resume. This establishes the intended missing
+explicit-address behavior, separate from the earlier setup-output failure.
+
+A main-only fork-origin clone build/debug-go-address-prototype now sets the
+saved exception EIP and public task RIP for explicit G/S addresses while
+preserving default behavior. Explicit address in a non-CPU debug session
+still raises DbgState; other-task arguments remain unimplemented. Its fresh
+original two-generation bootstrap passes with all 1269 source hashes
+independently verified. Cross build is running; no runtime green is claimed.
+Full source archive docs/patches/i386-debug-go-address-candidate.patch applies
+cleanly to main. Earlier register and step sources remain unchanged during
+live native/workstation/generation qualification. Release remains open.
