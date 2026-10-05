@@ -10174,3 +10174,16 @@ rechecked, and a separate matching-builder full volume audit confirms the
 bitmap/tree. These are actual persistence/reboot workflows, not one-boot
 console checks. The final integrated image still needs equivalent installed
 qualification; current native generations and workstation remain pending.
+
+Integrated cold edge contracts requalified from current source (2026-10-05):
+Fresh empty resident-file ownership/removal and dotless-name cache mutation
+checks now run in build/file-cd-resident-integrated-cold-empty and
+build/file-cd-resident-integrated-cold-dotless. Both preserve original oracles,
+prepare fixtures on disposable images, and use a separate no-FPU 8 MiB cold
+boot with public hash visibility/removal and adam_task ownership. Dotless
+also checks edits through the exact public cache key. Earlier ABI-44 edge
+greens are not taken as current ABI-47 verdicts. Final results are pending.
+The full integrated workstation is directly confirmed advancing through
+original-document compatibility; both KVM native builders and the integrated
+TCG no-FPU builder are directly revalidated live. Sources remain fixed and
+no incomplete results are promoted.
