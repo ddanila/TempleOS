@@ -14,7 +14,7 @@ def commands(cycles=1):
     base = runpy.run_path(str(ROOT / 'tools/test-i386-debug-cpu-trap.py'))['commands'](cycles)
     checks = [deepcopy(check) for check in base]
     checks[0] = (checks[0][0] + 'U8 *CpuStackBuf=MAlloc(4096);I64 CpuStackTop=(CpuStackBuf+3072)(U64);', [])
-    checks[2] = ('I64 CpuTrapInstruction(){U32 value=0;asm { MOV EAX,0x11223344 NOP NOP NOP NOP NOP NOP NOP MOV EAX,ESP MOV U32 &value[EBP],EAX MOV ESP,EBP }return value;}', [])
+    checks[2] = ('I64 CpuTrapInstruction(){U32 value=0,original;asm { MOV U32 &original[EBP],ESP MOV EAX,0x11223344 NOP NOP NOP NOP NOP NOP NOP MOV EAX,ESP MOV U32 &value[EBP],EAX MOV ESP,U32 &original[EBP] }return value;}', [])
     checks.insert(8, ('U0 CpuStackEdit(){Fs->rsp=CpuStackTop;}', []))
     for index, check in enumerate(checks):
         if len(check) != 3:
@@ -50,7 +50,7 @@ def main():
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk, cycles=args.cycles,
-                  scope='Public RSP edit, physical MOV EAX,ESP after G on allocated alternate stack, original EBP-based stack restoration, debugger mode/IF/TF and heap recovery; not S or other-task stack controls')
+                  scope='Public RSP edit, physical MOV EAX,ESP after G on allocated alternate stack, exact saved-ESP stack restoration, debugger mode/IF/TF and heap recovery; not S or other-task stack controls')
     dependency = ROOT / 'tools/test-i386-debug-cpu-trap.py'
     report['dependency_sha256'] = sha(dependency)
     try:

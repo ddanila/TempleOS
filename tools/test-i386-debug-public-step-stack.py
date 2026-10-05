@@ -44,7 +44,7 @@ def main():
     disk_hash, checker_hash = sha(args.disk), sha(Path(__file__))
     report = {'result': 'fail', 'disk_sha256': disk_hash, 'checker_sha256': checker_hash, 'cycles': args.cycles,
               'original_contract_source_sha256': sha(ROOT / 'Kernel/KDbg.HC'),
-              'scope': 'Native TDD: public RSP edit, S executes NOP on allocated alternate stack, exception capture overwrites public RSP with actual ESP and must match target with TF set; G observes physical ESP and restores original frame. Not overlap or other-task stack controls.'}
+              'scope': 'Native TDD: public RSP edit, S executes NOP on allocated alternate stack, exception capture overwrites public RSP with actual ESP and must match target with TF set; G observes physical ESP and restores exact saved ESP. Not overlap or other-task stack controls.'}
     try:
         dependencies = [ROOT / 'tools/test-i386-debug-public-stack.py', ROOT / 'tools/test-i386-debug-cpu-trap.py']
         report['dependency_sha256'] = {str(p.relative_to(ROOT)): sha(p) for p in dependencies}

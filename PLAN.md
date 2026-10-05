@@ -11723,3 +11723,23 @@ function bytes for diagnosis. It runs separately without candidate edits.
 Five focused S/flags cycles also run in
 build/debug-public-step-flags-focused-green on the G/flags-qualified image.
 Complete host qualification and native/release gates remain open.
+
+Saved-ESP fixture correction; S/flags green (2026-10-05):
+The guest function byte trace proves MOV ESP,EBP was followed by return-value
+expression pushes at EBP-4, overwriting the local result with zero. This was a
+fixture error; the earlier stack result cannot prove relocation failure.
+tools/test-i386-debug-public-stack.py now saves exact pre-trap ESP into a local
+before INT3 and restores it from that EBP-relative local after reading physical
+ESP, preserving local storage and saved registers for the compiler epilogue.
+No compiler-frame-size constant is assumed. G/S/overlap fixture preflight
+passes command limits. No stack fixture/dependency was live when changed.
+Fresh corrected red and five-cycle green run on unchanged old/stack images in
+build/debug-public-stack-saved-esp-red and ...-green; earlier failures preserved.
+Source implementation remains unchanged pending corrected runtime evidence.
+
+build/debug-public-step-flags-focused-green/result.json is PASS: five S/CF
+cycles on 486,-fpu, 8 MiB. Captured CF clear, public CF set, ADC executes with
+EAX 0x12 and TF at reentry before G finishes with clean mode/IF/TF/heap; source
+disk unchanged. G/flags and S/flags now have focused runtime greens on the
+same flags image. This does not prove all flags, other-task control, full
+host qualification, native builds or installed/release readiness.
