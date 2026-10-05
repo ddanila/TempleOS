@@ -9383,3 +9383,24 @@ cross build are running; no compiled/runtime pass for this cleanup is claimed.
 An inadvertently started main bootstrap is allowed to finish separately; it
 cannot qualify candidate edits. Happy-path bridge tests/builds continue from
 their immutable source disks and are not invalidated or restarted by this edit.
+
+Allocation failure now reaches a verified OS red gate (2026-10-05):
+build/public-resident-include-oom-typed-observer/result.json is terminal fail
+at startup-command-15 (include after CodeSize(0x100000000)). Typed observer
+compiles, layout/initial busy checks pass, and original normal oracle passes.
+Debug log repeatedly reports THROW 0000000000000000, then UNHANDLED and FAIL
+native kernel. Metadata restoration and borrow-zero check never execute, so
+this proves exception propagation failure, not an observed borrow-count leak.
+Persisted source/input immutability and independent volume audit still pass.
+
+ExceptRuntime.throw(0) dispatches a new zero exception. ExceptDispatch invokes
+the selected catch and propagates the original exception when catch_except
+remains FALSE after that catch returns. Bare throw inside cache cleanup catches
+therefore redispatches the current catch and loops. Correct these newly added
+cache catches and private-reader cleanup to return with catch_except FALSE,
+letting the established dispatcher pop them and preserve OutMem. Do not alter
+the global throw API to reinterpret zero or hide errors as missing files.
+The first cleanup candidate's bootstrap passes and cross construction is live;
+it still contains the invalid bare rethrow and is not a valid fix yet. Keep its
+snapshot stable until that build completes, then create the propagation-correct
+source epoch and rerun this red gate before broad qualification.
