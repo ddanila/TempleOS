@@ -1,0 +1,14 @@
+--- a/Compiler/I386/TopAssembly.HC
++++ b/Compiler/I386/TopAssembly.HC
+@@ -206,10 +206,7 @@
+               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+             } else if(opcode==2 && dst.kind==1 && src.kind==1 &&
+                 dst.size==4 && src.size==4) {
+-              if(!StrCmp(name,"JNZ")) opcode=0x85;
+-              else if(!StrCmp(name,"JZ")) opcode=0x84;
+-              else opcode=0x82;
+-              I386FrontendAsmByte(state,bytes,&count,opcode);
++              I386FrontendAsmByte(state,bytes,&count,0x85);
+               I386FrontendAsmModRM(state,bytes,&count,src.register_code,&dst);
+             } else if(opcode==3 && dst.kind==1 && dst.size==4 &&
+                 (src.kind==1 || src.kind==2 && src.size==4)) {

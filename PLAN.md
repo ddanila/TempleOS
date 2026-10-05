@@ -12773,3 +12773,27 @@ Fresh original bootstrap rebuild running session42997; must pass and match
 source hashes before cross-building this changed OS diagnostic candidate.
 Current early-IDT no-FPU debugger trace five-cycle test also running session21008.
 Recovery matrix and two native installation generations continue independently.
+
+
+Native generation and diagnostic follow-up (2026-10-05):
+Latest build/debug-cpu-trace-early-idt-five/result.json PASS five cycles,
+48 commands, 8 MiB 486,-fpu; live throwing-allocation caller bound and debugger
+G/mode/IF/TF/heap checks, source disk unchanged. Not all frame/error cases.
+Generation1 retained installation succeeded; native selfhost built and installed
+499736-byte payload, but its boot failed #UD at 0x179D57. Target.img disassembly
+shows SysTry registration CALL followed by bytes 82 C0 instead of TEST EAX,EAX
+85 C0. Source TopAssembly TEST register handler incorrectly used the branch
+opcode selector, producing 82; do not claim native generation boot success.
+Separate build/extended-top-test-fix restores fixed 85 TEST encoding, preserved
+as docs/patches/i386-top-assembly-test-encoding-fix.patch after integrated patch.
+Fresh original bootstrap for fix running session56114. Focused regression
+ tools/test-i386-native-systry-build.py compiles actual SysTry and independently
+requires 85 C0 after its unique registration call; red-source run session2028
+pending. Requalify corrected native modules/kernel/install/boot and generation2.
+I/O failure matrix passed four write-injection/recovery positions, then old
+fifth-write probe failed because no fifth write fired (move succeeded). Existing
+copy-based 7-write/6-flush fixture limits are stale for extent transfer; qualify
+all four writes/four flushes for the prepared-directory path and directory-growth
+path separately rather than infer coverage or weaken OS failure handling.
+Memory diagnostic fresh original two-generation bootstrap PASS; cross-build
+running session92192. Exact phase1 memory assertion remains open.
