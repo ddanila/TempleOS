@@ -12665,3 +12665,22 @@ changes, not all transient journal writes or power-loss durability. Earlier pass
 retains its original checker hash and narrower scope. Full test is still live
 in document checks; native retained build PID3799572 is confirmed live. No
 terminal full/native generation/release completion claimed.
+
+Bounded KBC loader A20 fallback qualified independently (2026-10-05):
+Standalone tools/i386-extended-stage.asm now checks existing A20, attempts the
+8042 output-port enable with bounded100000 polls and pending-byte drain, then
+verified port92 fallback if needed. Scratch bytes restored and alias/high-byte
+checks required before streaming. Checker --kbc-path fixture disables both gates,
+proves A20 initially off, and disallows fast fallback: actual controller path
+must reenable high-memory access. build/extended-loader-kbc/result.json PASS
+all13 cases; automatic path build/extended-loader-a20-automatic also PASS all13.
+These are standalone stage sources, not the frozen native-generation candidate;
+integrate with its executable-range auditor, rerun 386/no-FPU/image/native gates.
+BIOS enable alternative and physical hardware qualification are not claimed.
+
+Stronger low-space module move final byte comparison PASS in
+build/low-space-move-bounded-writes/result.json. Only final changed sector19828
+is in the affected directory; payload/bitmap/boot/all other backing bytes
+unchanged. This is final persistent bytes, not trace of transient journal writes.
+Current full-suite/native rebuild processes remain live; do not transfer loader
+fallback evidence to their older stage or claim release completion.

@@ -56,19 +56,51 @@ start32:
     mov dword [destination],0x100000
     mov al,[0x5028]
     mov [boot_drive],al
-    ;Prototype A20 path. Verify it rather than assuming port 92 succeeded.
+%ifdef A20_KBC_TEST
+    ;Fixture only: turn off both gates to force the verified controller path.
+    call a20_kbc_empty
+    jc fail32
+    mov al,0xD1
+    out 0x64,al
+    call a20_kbc_empty
+    jc fail32
+    mov al,0xDD
+    out 0x60,al
+    call a20_kbc_empty
+    jc fail32
     in al,0x92
+    and al,0xFC
+    out 0x92,al
+    call a20_test
+    jz fail32
+%endif
+    call a20_test
+    jz a20_ready
+    call a20_kbc_empty
+    jc a20_fast
+    mov al,0xD1
+    out 0x64,al
+    call a20_kbc_empty
+    jc a20_fast
+    mov al,0xDF
+    out 0x60,al
+    call a20_kbc_empty
+    jc a20_fast
+    call a20_test
+    jz a20_ready
+a20_fast:
+%ifdef A20_KBC_TEST
+    jmp fail32
+%endif
+    in al,0x92
+    cmp al,0xFF
+    je fail32
     and al,0xFE
     or al,2
     out 0x92,al
-    mov al,[0x5100]
-    mov bl,[0x105100]
-    mov byte [0x5100],0x12
-    mov byte [0x105100],0xA7
-    cmp byte [0x5100],0x12
-    mov [0x105100],bl
-    mov [0x5100],al
-    jne fail32
+    call a20_test
+    jnz fail32
+a20_ready:
     lgdt [extended_gdtr]
     jmp word 24:pm16-$$
 bits 16
@@ -195,6 +227,39 @@ fail32:
     jmp fail32
 switch16:
     jmp word 24:pm16-$$
+a20_test:
+    mov al,[0x5100]
+    mov bl,[0x105100]
+    mov byte [0x5100],0x12
+    mov byte [0x105100],0xA7
+    cmp byte [0x5100],0x12
+    jne a20_restore
+    cmp byte [0x105100],0xA7
+a20_restore:
+    mov [0x105100],bl
+    mov [0x5100],al
+    ret
+a20_kbc_empty:
+    mov ecx,100000
+a20_kbc_poll:
+    in al,0x80
+    in al,0x64
+    cmp al,0xFF
+    je a20_kbc_next
+    test al,1
+    jz a20_kbc_input
+    in al,0x60
+    jmp a20_kbc_next
+a20_kbc_input:
+    test al,2
+    jz a20_kbc_ok
+a20_kbc_next:
+    loop a20_kbc_poll
+    stc
+    ret
+a20_kbc_ok:
+    clc
+    ret
 times 4096-($-$$) db 0
 kernel_image: incbin KERNEL_FILE
 kernel_end:

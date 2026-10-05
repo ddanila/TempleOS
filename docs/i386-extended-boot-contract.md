@@ -44,7 +44,8 @@ zero. Its target offset must be at least 8 and below the declared length.
 4. Teach cross-build packaging and independent guest-image verification the
    same explicit disk layout, without trusting builder success alone. Audit
    all executable real-mode and protected-mode ranges for 386 instructions;
-   preserve initial exception handling and add verified BIOS/KBC A20 fallback.
+   preserve initial exception handling and integrate the independently tested
+   bounded KBC A20 path (already-enabled, controller enable, verified fast gate).
 5. Build the oversized frame-walking kernel, boot it with 8 MiB/no FPU, rerun
    the trace test, then qualify two native rebuild/install/reboot generations
    with independent byte and filesystem comparisons. Repeat workstation,

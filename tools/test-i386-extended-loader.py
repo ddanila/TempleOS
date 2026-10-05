@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--stage',type=Path,default=ROOT/'tools/i386-extended-stage.asm')
     parser.add_argument('--payload-bytes',type=int,default=655360)
+    parser.add_argument('--kbc-path',action='store_true',help='Force A20 off and require controller enable; disable fast fallback')
     args=parser.parse_args()
     if not 487424<args.payload_bytes<=2039*512:
         parser.error('Payload must exceed the legacy limit and fit before the volume')
@@ -71,7 +72,7 @@ db 0xC1,0x36,0x5A,0x92,0x0F,0xB8,0xE4,0x7D,0x6A,0x03,0x8F,0x21,0xD5,0x49,0xB7,0x
     fnv=2166136261
     for byte in raw:fnv=((fnv^byte)*16777619)&0xFFFFFFFF
     image=out/'loader.img'
-    subprocess.run(['nasm','-f','bin',f'-DKERNEL_FILE="{payload}"',f'-DPAYLOAD_FNV={fnv}','-l',str(out/'loader.lst'),str(args.stage.resolve()),'-o',str(image)],cwd=ROOT,check=True)
+    subprocess.run(['nasm','-f','bin',*(['-DA20_KBC_TEST=1'] if args.kbc_path else []),f'-DKERNEL_FILE="{payload}"',f'-DPAYLOAD_FNV={fnv}','-l',str(out/'loader.lst'),str(args.stage.resolve()),'-o',str(image)],cwd=ROOT,check=True)
     built=image.read_bytes()
     cases=[('valid',built,8,'EXTENDED LOAD PASS\n'),('checksum',built[:-1]+bytes([built[-1]^1]),8,'B'),('insufficient-memory',built,1,'B')]
     # Metadata is in the stage at disk sector one, independent of the payload.
@@ -116,7 +117,7 @@ db 0xC1,0x36,0x5A,0x92,0x0F,0xB8,0xE4,0x7D,0x6A,0x03,0x8F,0x21,0xD5,0x49,0xB7,0x
                     try:process.wait(timeout=5)
                     except subprocess.TimeoutExpired:process.kill();process.wait()
         if any(sha(Path(p))!=digest for p,digest in pins.items()):raise ValueError('Qualification sources changed')
-        report.update(result='pass',payload_bytes=len(raw),payload_sha256=sha(payload),load_base=0x100000)
+        report.update(result='pass',a20_path='forced-kbc' if args.kbc_path else 'automatic',payload_bytes=len(raw),payload_sha256=sha(payload),load_base=0x100000)
     except Exception as error:
         report['error']=str(error);raise
     finally:(out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
