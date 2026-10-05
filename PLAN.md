@@ -12704,3 +12704,19 @@ to current main and includes all relevant OS/loader/tool candidate changes.
 Prior native rebuild/full-suite runs confirmed live with their older stage;
 source pins remain frozen. Initial protected exception handling, BIOS fallback
 alternative and physical hardware remain unqualified; release stays open.
+
+
+Early protected-mode loader exception candidate (2026-10-05):
+Preserve a 256-entry early IDT in the extended 4096-byte stage. Restore
+physical-zero BIOS IDTR before real-mode disk calls and reload the protected
+IDTR before copying each sector. Faults emit F and halt; malformed boot inputs
+retain their B failure marker. Separate candidate avoids changing running builds.
+Evidence: build/extended-early-idt-loader/result.json PASS 13 ordinary cases;
+build/extended-early-idt-kbc/result.json PASS 13 forced-controller A20 cases;
+build/extended-early-idt-int3/result.json PASS forced INT3 before payload execution.
+Both forced fixture boot ISA audits PASS (96 BIOS, 210/225 stage instructions).
+Original ordinary run pins pre-fixture source; subsequent KBC/INT3 runs pin the
+final stage. These are loader tests, not full TempleOS integration qualification.
+Cumulative docs/patches/i386-early-idt-integrated-candidate.patch applies to main.
+Full OS suites and retained six-module rebuild remain live; native generation
+installation and release acceptance remain open. Physical/manual tests deferred.

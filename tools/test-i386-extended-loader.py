@@ -15,6 +15,7 @@ def main():
     parser.add_argument('--stage',type=Path,default=ROOT/'tools/i386-extended-stage.asm')
     parser.add_argument('--payload-bytes',type=int,default=655360)
     parser.add_argument('--kbc-path',action='store_true',help='Force A20 off and require controller enable; disable fast fallback')
+    parser.add_argument('--early-fault',action='store_true',help='Require a stage fixture that traps INT3 before loading the payload')
     args=parser.parse_args()
     if not 487424<args.payload_bytes<=2039*512:
         parser.error('Payload must exceed the legacy limit and fit before the volume')
@@ -72,7 +73,7 @@ db 0xC1,0x36,0x5A,0x92,0x0F,0xB8,0xE4,0x7D,0x6A,0x03,0x8F,0x21,0xD5,0x49,0xB7,0x
     fnv=2166136261
     for byte in raw:fnv=((fnv^byte)*16777619)&0xFFFFFFFF
     image=out/'loader.img'
-    subprocess.run(['nasm','-f','bin',*(['-DA20_KBC_TEST=1'] if args.kbc_path else []),f'-DKERNEL_FILE="{payload}"',f'-DPAYLOAD_FNV={fnv}','-l',str(out/'loader.lst'),str(args.stage.resolve()),'-o',str(image)],cwd=ROOT,check=True)
+    subprocess.run(['nasm','-f','bin',*(['-DA20_KBC_TEST=1'] if args.kbc_path else []),*(['-DEARLY_IDT_TEST=1'] if args.early_fault else []),f'-DKERNEL_FILE="{payload}"',f'-DPAYLOAD_FNV={fnv}','-l',str(out/'loader.lst'),str(args.stage.resolve()),'-o',str(image)],cwd=ROOT,check=True)
     built=image.read_bytes()
     cases=[('valid',built,8,'EXTENDED LOAD PASS\n'),('checksum',built[:-1]+bytes([built[-1]^1]),8,'B'),('insufficient-memory',built,1,'B')]
     # Metadata is in the stage at disk sector one, independent of the payload.
@@ -95,6 +96,9 @@ db 0xC1,0x36,0x5A,0x92,0x0F,0xB8,0xE4,0x7D,0x6A,0x03,0x8F,0x21,0xD5,0x49,0xB7,0x
         damaged[544:548]=checksum.to_bytes(4,'little')
         cases.append((name,bytes(damaged),8,'B'))
     cases.append(('truncated-payload',built[:-512],8,'B'))
+    if args.early_fault:
+        cases=[('early-int3',built,8,'F')]
+        report['scope']='Forced protected-mode INT3 reaches the early loader handler before payload execution'
     try:
         for name,body,ram,expected in cases:
             disk=out/(name+'.img');disk.write_bytes(body+bytes(16*1024*1024-len(body)))
