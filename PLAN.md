@@ -12739,3 +12739,19 @@ source tree copy, write/flush recovery and clearing mutation flags. Python
 syntax check PASS; real file-I/O failure matrix running session95631 in
 build/extended-checksum-io-matrix. No matrix PASS claimed yet. Preserved full
 candidate patch updated; live older full-suite/native-generation sources frozen.
+
+
+Early-IDT complete-OS boot qualification (2026-10-05):
+New tools/test-i386-extended-os-boot.py replaces only the loader of an existing
+E32B OS image after independently checking the exact payload checksum. It
+checks NASM output size and all bytes from payload through filesystem remain
+unchanged, audits boot instructions, then boots 8 MiB QEMU 486,-fpu and checks
+HolyC 6*7=42 with VGA checkpoint comparison. Source inputs are SHA256 pinned.
+build/extended-early-idt-os-boot/result.json PASS with the integrated A20 OS
+payload and final early-IDT candidate. Boot audit PASS 96 BIOS/209 stage
+instructions. This proves integrated normal boot and one interactive command;
+full suites, two native installation generations, all failure-matrix cases,
+and release qualification remain pending. Existing builds continue untouched.
+Reproduce with --disk build/extended-a20-integrated-prototype/build/extended-a20-integrated-kernel/kernel.img
+--stage build/extended-early-idt-prototype/tools/i386-extended-stage.asm
+--audit build/extended-early-idt-prototype/tools/audit-i386-boot.py --out NEW_DIR.
