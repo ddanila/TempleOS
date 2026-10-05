@@ -9280,3 +9280,5 @@ This is a KVM retained build, not the full no-FPU gate or ABI-45 requalification
 Main's no-FPU TCG retained process remains live and advances through compiler
 module output. Cache candidate promotion remains gated on recovery, exceptions,
 child ownership, full workstation and native reproducibility/install evidence.
+
+DolDoc cache parity also passes: build/public-resident-include-document-bridge/result.json reports original oracle and 11 native no-FPU / 8 MiB commands, exact VGA, unchanged persisted fixture/input disk and valid RedSea bitmap. DocRead/DocSave sees the same edited cache character as FileRead and compiler include. Full workstation remains running.
