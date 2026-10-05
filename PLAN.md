@@ -11032,3 +11032,26 @@ Both volumes have 16 directories, 872 files, 19089 owned sectors and bitmaps
 matching reachable extents. Whole disk images differ; no whole-volume identity
 claim. Later managed/G2 generations remain separate pending gates. Main OS
 is unpromoted and the full self-hosting/release objective remains open.
+
+Repeated physical stack inspection and task-specific shared-code breakpoint
+proof (2026-10-05): build/debug-stack-registers-asm-repeat passes five cycles
+and 44 commands on 486,-fpu / 8 MiB, startup 35.405312 seconds, exact VGA,
+physical ESP/EBP snapshots, result/mode/flags/public heap probe and unchanged
+source. Stack editing remains separate unimplemented scope.
+
+New tools/test-i386-debug-breakpoint-task-switch.py runs two terminals sharing
+parent-owned SharedProbe code. One installs a breakpoint, the other executes
+that code without trapping and sees no own record but the owner's record;
+the owner then traps, G2 clears/resumes, exits, and the survivor verifies and
+executes restored code. build/debug-breakpoint-task-switch passes 13 commands,
+startup 33.523962 seconds, exact VGA, unchanged source and parent public heap
+recovery. This directly exercises scheduler byte application and per-task
+lists rather than inferring them from source. Fixture dependency is pinned.
+
+The same checker now accepts --both-own: both terminals register the same
+address, first owner traps/clears/exits, second retains its independent record
+and traps/clears before code restoration/survivor exit. That fresh gate runs
+in build/debug-breakpoint-same-address; verdict pending. Sequential owner
+traps do not prove simultaneous debugger sessions, external other-task G/S,
+all concurrent ownership or complete release readiness. All candidate sources
+remain fixed while native/workstation gates continue; main OS unpromoted.
