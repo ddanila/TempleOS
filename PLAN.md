@@ -11683,3 +11683,23 @@ against their fixed newly built kernel images in
 build/debug-public-flags-focused-green and build/debug-public-stack-focused-green.
 They provide earlier runtime evidence but cannot replace full --test,
 self-hosting/native generations or installed/release gates.
+
+Focused flags green; stack physical result still fails (2026-10-05):
+build/debug-public-flags-focused-green/result.json is PASS: five G/CF-edit
+cycles, TCG 486,-fpu, 8 MiB, startup 35.78195754438639 seconds, physical ADC
+result 0x12 with mode/IF/TF/heap checks and source disk unchanged. This proves
+the selected carry-edit path, not all public flags or complete qualification.
+The stack candidate's focused five-cycle run is FAIL during the first final
+CpuTrapResult==CpuStackTop check, after actual trap/edit/G and shell return.
+No stack green is claimed. Isolated build/debug-stack-observe.py logs observed
+physical result and requested stack address to E9 for diagnosis on the fixed
+image; full candidate sources are not edited while qualification remains live.
+
+New tools/test-i386-debug-public-stack-overlap.py selects public RSP +/-4
+relative to the captured stack, then checks physical ESP and original-frame
+restoration. The 68-byte frame overlaps itself, exercising forward/backward
+copy paths. Both directions pass five-cycle independent-fixture/command-limit
+preflight; the -4 runtime red is pending against reader-ip.
+build/debug-stack-overlap-pipeline.json runs five cycles in each direction
+only after the complete stack prerequisite passes. Current focused stack
+failure must be resolved before treating either overlap path as qualified.
