@@ -12183,3 +12183,24 @@ build/extended-native-kernel. No kernel boot pass claimed yet. Native independen
 installed-image expectations still use the legacy layout and must be updated
 before qualification. Early IDT and BIOS/KBC A20 fallback remain open; full
 8 MiB/no-FPU/rebuild/install/reboot/release qualification is not complete.
+
+Oversized kernel reaches native entry (2026-10-05):
+Extended candidate cross-build produces 493912-byte Kernel32.BIN, SHA256
+c772f658ca50b60cdee6b8fd831ee7ff9a44fa31652dbab04f13b89a45a145f3,
+above the old 487424-byte limit. Boot instruction audit passes. First full test
+image rejects with B: diagnostic_disk changed the kernel data flag after the
+loader checksum was generated. Preserve extended-native-kernel/boot/debug.log;
+confirmed failed process 3751945 and children were stopped rather than waiting
+for its diagnostic timeout. No full --test pass claimed.
+
+Candidate harness now regenerates extended checksum after diagnostic and
+file-mutation flag edits. A corrected disposable diagnostic image boots to
+START native kernel, ARENA 0x178A00 size 0x667600, REDSEA, runtime and native
+resident diagnostics. This proves oversized native entry and observed arena
+nonoverlap, not complete diagnostics/release qualification. Exact corrected
+image kernel-diagnostics-checksum-fixed.img and logs in
+build/extended-kernel-prototype/build/extended-checksum-fixed-boot are retained.
+Guest-run PID 3753862/session 63616 is confirmed live; continue that handle.
+Updated cumulative i386-extended-kernel-candidate.patch applies cleanly.
+Remaining installed-image expectations, full --test rerun, debugger trace,
+8 MiB/no-FPU and two native generations still need qualification.

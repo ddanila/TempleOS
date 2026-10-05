@@ -2030,10 +2030,44 @@ index 716d308f..efc8415c 100644
      if not (0<boot_end<510 and 0<stage_end<4096):
          raise ValueError('Boot code boundaries exceed reserved regions')
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index e6adaabc..bb1f0569 100644
+index e6adaabc..7724f7d4 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
-@@ -201,7 +201,7 @@ def console_runtime_layout(module):
+@@ -43,6 +43,17 @@ def kernel_flag_disk_offset(exports, symbol):
+     return 512+4096+8+offset
+ 
+ 
++def refresh_extended_checksum(image):
++    if struct.unpack_from('<I',image,528)[0]!=0x42323345:return
++    magic,version,length,base=struct.unpack_from('<4I',image,528)
++    if version!=1 or base!=0x100000 or not 8<=length<=2039*512:
++        raise ValueError('Invalid extended image metadata')
++    checksum=2166136261
++    for byte in image[4608:4608+length]:
++        checksum=((checksum^byte)*16777619)&0xFFFFFFFF
++    struct.pack_into('<I',image,544,checksum)
++
++
+ def diagnostic_disk(disk, exports):
+     """Copy the normal disk and enable its validated, exported boot data flag."""
+     disk_offset=kernel_flag_disk_offset(exports,'kernel_diagnostics')
+@@ -53,6 +64,7 @@ def diagnostic_disk(disk, exports):
+     struct.pack_into('<I',changed,disk_offset,1)
+     if [i for i,(a,b) in enumerate(zip(original,changed)) if a!=b]!=[disk_offset]:
+         raise ValueError('Diagnostic disk changed more than its boot flag')
++    refresh_extended_checksum(changed)
+     path=disk.with_name('kernel-diagnostics.img'); path.write_bytes(changed)
+     return path,dict(path=str(path.relative_to(ROOT)),flag_disk_offset=disk_offset,
+                      disk_sha256=hashlib.sha256(changed).hexdigest())
+@@ -66,6 +78,7 @@ def mutation_probe_disk(disk, exports):
+     if len(set(offsets))!=2 or any(struct.unpack_from('<I',changed,offset)[0] for offset in offsets):
+         raise ValueError('Invalid file mutation probe flags')
+     for offset in offsets: struct.pack_into('<I',changed,offset,1)
++    refresh_extended_checksum(changed)
+     path=disk.with_name('kernel-file-mutation.img'); path.write_bytes(changed)
+     return path,offsets,hashlib.sha256(changed).hexdigest()
+ 
+@@ -201,7 +214,7 @@ def console_runtime_layout(module):
              else: imports[symbol] = name
      if set(imports) != {'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'char_bmp_hex_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew'}:
          raise ValueError('Unexpected console import contract')
@@ -2042,7 +2076,7 @@ index e6adaabc..bb1f0569 100644
          if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
      for name in ('IsEditableText', 'DocEntryNewBase', 'DocEntryNewTag', 'DocEntrySize',
                   'DocEntryCopy', 'DocFormFwd', 'DocFormBwd', 'DocDefaultsInit', 'DocInit',
-@@ -221,10 +221,11 @@ def console_runtime_layout(module):
+@@ -221,10 +234,11 @@ def console_runtime_layout(module):
      if exports.get('console_version', (0, 0))[0] != 3:
          raise ValueError('Missing console version')
      version_offset = 32+exports['console_version'][1]
@@ -2056,7 +2090,7 @@ index e6adaabc..bb1f0569 100644
  
  
  def memory_runtime_layout(module):
-@@ -310,14 +311,14 @@ def file_runtime_layout(module):
+@@ -310,14 +324,14 @@ def file_runtime_layout(module):
              if kind in (1, 3): exports[symbol] = (kind, offset)
              else: imports[symbol] = name
      if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
@@ -2074,7 +2108,7 @@ index e6adaabc..bb1f0569 100644
          raise ValueError('Unexpected file-runtime version')
      return dict(image_bytes=size+8, version_offset=version_offset,
          cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
-@@ -333,6 +334,12 @@ def file_runtime_layout(module):
+@@ -333,6 +347,12 @@ def file_runtime_layout(module):
          read_raw_offset=8+exports['I386TaskFileReadRaw'][1],
          install_boot_offset=8+exports['I386TaskInstallBoot'][1],
          install_image_offset=8+exports['I386TaskInstallBootImage'][1],
@@ -2087,7 +2121,7 @@ index e6adaabc..bb1f0569 100644
          export_at_offset=8+exports['I386FileRuntimeExportAt'][1],
          arc_entry_offset=8+exports['I386ArcEntryGet'][1],
          bind_offset=8+exports['I386FileRuntimeBind'][1],
-@@ -544,7 +551,7 @@ def audit(exports, out, guest_compiler_template=False):
+@@ -544,7 +564,7 @@ def audit(exports, out, guest_compiler_template=False):
                  elif kind==6:
                      if version!=3 or length or offset>size-4 or name_offset>=size or struct.unpack_from('<I',module,32+offset)[0]:
                          raise ValueError(f'Invalid {name} stored pointer')
@@ -2096,7 +2130,7 @@ index e6adaabc..bb1f0569 100644
                          raise ValueError('Flat kernel pointer uses the wrong load address')
              template = None
              if name == 'CompilerRuntime':
-@@ -852,9 +859,9 @@ def verify_mutated_volume(disk):
+@@ -852,9 +872,9 @@ def verify_mutated_volume(disk):
              attr,name,child,length,date=record(block*512+offset)
              if not name: terminated=True; break
              if attr&0x100: continue
@@ -2108,7 +2142,7 @@ index e6adaabc..bb1f0569 100644
                  if length: claim(child,length)
                  elif child: raise ValueError('Empty mutation-probe file owns blocks')
                  files+=1
-@@ -892,7 +899,7 @@ def mutated_file_contents(disk, wanted):
+@@ -892,7 +912,7 @@ def mutated_file_contents(disk, wanted):
              if attr&0x100: continue
              child_path=path+'/'+name
              if attr==0x810: directory(child,child_path)
@@ -2117,7 +2151,7 @@ index e6adaabc..bb1f0569 100644
                  found[child_path]=image[child*512:child*512+length] if length else b''
          visiting.remove(block)
      directory(root,'')
-@@ -2263,16 +2270,18 @@ def main():
+@@ -2263,16 +2283,18 @@ def main():
      memory_layout=memory_runtime_layout((exports/'MemoryRuntime.t32m').read_bytes())
      disk=out/'kernel.img'
      stage_listing=out/'kernel-stage.lst'
@@ -2139,7 +2173,7 @@ index e6adaabc..bb1f0569 100644
          raise ValueError('Kernel stage exceeds its reserved 480 KiB load area')
      with disk.open('r+b') as stream: stream.truncate(16*1024*1024)
      volume=package_volume(disk,exports)
-@@ -2284,7 +2293,7 @@ def main():
+@@ -2284,7 +2306,7 @@ def main():
              'bootstrap':bootstrap['generations'][-1],
              'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
              'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
@@ -2148,7 +2182,7 @@ index e6adaabc..bb1f0569 100644
                  'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                  'tools/i386-kernel-input.py','tools/test-i386-doc-compat.py','tests/guest/i386-doc-compat/Once.HC','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                  'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
-@@ -2293,7 +2302,7 @@ def main():
+@@ -2293,7 +2315,7 @@ def main():
              'tools':{'python':sys.version,
                       'qemu':subprocess.check_output(['qemu-system-i386','--version'],text=True).splitlines()[0],
                       'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
@@ -2157,7 +2191,7 @@ index e6adaabc..bb1f0569 100644
              'kernel_sha256':hashlib.sha256(image).hexdigest(),
              'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
              'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
-@@ -2401,8 +2410,8 @@ def main():
+@@ -2401,8 +2423,8 @@ def main():
                      (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset'), (private_defines_address,'private_defines_offset'), (compiler_export_at_address,'export_at_offset')))):
              raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
          file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
@@ -2168,7 +2202,7 @@ index e6adaabc..bb1f0569 100644
          if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                  file_address<begin or file_address+file_size>begin+length or
                  file_include!=file_address+files_layout['include_offset'] or
-@@ -2425,7 +2434,13 @@ def main():
+@@ -2425,7 +2447,13 @@ def main():
                  file_export_at!=file_address+files_layout['export_at_offset'] or
                  file_read_raw!=file_address+files_layout['read_raw_offset'] or
                  file_install_boot!=file_address+files_layout['install_boot_offset'] or
@@ -2183,7 +2217,7 @@ index e6adaabc..bb1f0569 100644
              raise ValueError('File-runtime placement or service mismatch')
          if 'FILE MOVE PROBE ' in log:
              raise ValueError('Writable file mutation probe ran during read-only diagnostics')
-@@ -2442,8 +2457,14 @@ def main():
+@@ -2442,8 +2470,14 @@ def main():
                  log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                  not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
              raise ValueError('Retained disk include execution/rejection failed')
@@ -2199,7 +2233,7 @@ index e6adaabc..bb1f0569 100644
              move_failure_stages=4,
              task_volume_bound=True, task_context_inherited=True,
              decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
-@@ -3004,14 +3025,24 @@ def main():
+@@ -3004,14 +3038,24 @@ def main():
          result['compiler_runtime']['rejected']=verify_compiler_rejection(normal_disk,volume,out,runtime_layout)
          result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
          rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
