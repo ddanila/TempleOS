@@ -12966,3 +12966,17 @@ combined memory-baseline image, 8 MiB486,-fpu, exact caller-allocation bound,
 G/mode/IF/TF/heap/VGA checks, source unchanged. Earlier stage-only result no
 longer substitutes for this current combined image. Full suite, latest retained
 rebuilding and interrupted-growth matrix remain live; no broad completion claim.
+
+
+Public Caller compatibility regression (2026-10-05):
+Kernel/I386/Debug.HC implements Caller, but current interactive provider does
+not bind/publish it. New tools/test-i386-public-caller.py on the latest combined
+image reaches INPUT LINE Caller(-1)==0 then FRONTEND ERROR Undefined identifier
+and COMMAND ERROR. build/public-caller-red preserves the expected red outcome.
+This public API is distinct from private exception caller tracing. Test requires
+negative/excessive depth rejection and independently bounds Caller(0)/Caller(1)
+within two live compiled function allocations. It does not claim malformed/
+freed/cyclic frame coverage or other-task TaskCaller semantics. Implement/publish
+Caller with valid private stack bounds in a separate candidate, qualify red/green,
+then extend debugger-stack/invalid-frame coverage. Existing live qualification
+sources remain frozen; original programming model compatibility stays required.
