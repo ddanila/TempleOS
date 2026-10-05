@@ -5773,3 +5773,12 @@ passing observations rather than treating a passing profile as qualification.
 The isolated bounded redraw candidate is preserved as
 `docs/patches/i386-doldoc-redraw-coalescing-candidate.patch`, to apply after the
 public Caller integration. Full native and workstation qualification is pending.
+
+
+For a full native two-generation check without an FPU, pass
+`--accel tcg --cpu 486,-fpu --qmp-stdio` to
+`tools/test-i386-native-generations.py`, together with the normal repository,
+qualified six-provider build, stage-listing and fresh output arguments.
+These CPU/QMP options apply to every build/install stage and are recorded in
+its report. Native development stages currently use16MiB; installed workflow
+qualification remains a separate8MiB gate.

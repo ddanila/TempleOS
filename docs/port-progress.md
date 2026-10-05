@@ -12214,3 +12214,27 @@ retain their four-job scope. Schema checks using recorded evidence accepted
 legacy/five-job shapes and rejected missing, failed and over-budget large-source
 jobs. This was validator testing, not a five-job runtime qualification. Existing
 frozen running suites unchanged. Full integration/release remains pending.
+
+
+### Full-chain no-FPU qualification started (2026-10-05)
+
+`tools/test-i386-native-generations.py` now accepts explicit `--cpu` and
+`--qmp-stdio`, forwards both to every retained-install, self-host and retained
+provider build, and records them in its manifest. Default CPU486 remains.
+The underlying three stage tools already support these options. Syntax/CLI
+checks PASS; runtime validation is underway, not complete.
+
+`build/public-caller-no-fpu-native-generations` starts from the independently
+qualified six-native-provider Caller build and pins its source/image evidence.
+It runs the full existing eight-stage two-generation chain with TCG,
+486 without FPU and QMP stdio. The first install QEMU process was observed live
+with `-cpu 486,-fpu -m 16 -qmp stdio`. This tests native install/rebuild at the
+existing16MiB development configuration; it does not replace8MiB installed
+workflows or prove an80386 runtime boot. No source/tool mutation to the pinned
+Caller candidate. Stage currently gen1-install; result running.
+
+Text-run native provider build and full suite separately confirmed live.
+Inspection confirms existing DocAllocationCheck injects DocRead failure4:
+following three DocNew allocations, this covers the new text entry allocation.
+It does not inject failure5 at the text tag allocation, so exhaustive new-run
+failure coverage remains a gap to close before promotion.

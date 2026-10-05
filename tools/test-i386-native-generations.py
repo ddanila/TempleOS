@@ -29,7 +29,12 @@ def main():
     parser.add_argument('--stage-listing', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
+    parser.add_argument('--cpu', default='486', help='CPU model for all native build/install boots')
+    parser.add_argument('--qmp-stdio', action='store_true')
     args = parser.parse_args()
+    runtime = ['--accel', args.accel, '--cpu', args.cpu]
+    if args.qmp_stdio:
+        runtime.append('--qmp-stdio')
     repo, retained, listing, out = [p.resolve() for p in
         (args.repository, args.retained_build, args.stage_listing, args.out)]
     if out.exists():
@@ -46,7 +51,8 @@ def main():
     sources = source_identity(repo)
     out.mkdir(parents=True)
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
-              'accel': args.accel, 'input_sha256': inputs,
+              'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio,
+              'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
 
     def save():
@@ -79,11 +85,11 @@ def main():
         prefix = 'gen' + str(number)
         install = out / (prefix + '-install')
         run(install.name, 'test-i386-retained-install.py', '--source', built / 'source.img',
-            '--out', install, '--accel', args.accel)
+            '--out', install, *runtime)
         native = out / (prefix + '-selfhost')
         result = run(native.name, 'test-i386-selfhost-install.py', '--disk', install / 'candidate.img',
             '--out', native, '--retained-build-result', built / 'result.json',
-            '--retained-install-result', install / 'result.json', '--accel', args.accel)
+            '--retained-install-result', install / 'result.json', *runtime)
         if result.get('retained_origin') != 'guest-built supplied inputs':
             raise ValueError('Native generation used unqualified retained providers')
         audit = out / (prefix + '-audit')
@@ -99,7 +105,7 @@ def main():
         built = out / 'gen2-retained-build'
         run(built.name, 'test-i386-retained-build.py', '--disk', first / 'target.img',
             '--reference-exports', audited / 'exports', '--compare-installed', first / 'target.img',
-            '--out', built, '--accel', args.accel)
+            '--out', built, *runtime)
         second, _ = generation(2, built)
         run('generation-identity', 'audit-i386-generations.py', '--first', first / 'target.img',
             '--second', second / 'target.img', '--out', out / 'generation-identity')
