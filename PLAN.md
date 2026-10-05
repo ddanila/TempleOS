@@ -10090,3 +10090,19 @@ for the final integrated image. The M7 coverage audit opening now identifies
 this current installed checkpoint and distinguishes the ABI-47 candidate from
 historical evidence. Native build and installed workstation handles were
 revalidated live before starting these independent checks.
+
+Installed captured speaker output green; peak resource measurement running
+(2026-10-05): build/public-resident-write-parent-installed-speaker/result.json
+passes actual captured 440/880 Hz tone sequence on the fully native ABI-46
+installation. WAV hash and assess_wav measurements are independently
+recomputed and match the recorded result; input disk stays unchanged. This
+is runtime waveform evidence, with the console sound contract, rather than
+only checking speaker registers. It does not substitute for corresponding
+final integrated-image audio qualification.
+
+build/public-resident-write-parent-installed-resource now measures live and
+peak heap usage over twenty document-development cycles on the same installed
+image with TCG 486,-fpu / 8 MiB. It checks exact recovery, shared data/code
+accounting and that the reported arena fits guest RAM. Final resource verdict
+is pending. Three-boot DolDoc persistence and broader installed/current
+workstation/native generations remain live or pending, not release completion.
