@@ -11766,3 +11766,27 @@ cross-build. This is independent early self-hosting evidence, not completion
 of the broader full --test or release gate. All candidate sources stay fixed.
 Native generations, alternate-stack S/overlap coverage, current installed
 workflows and final release artifact verification remain open.
+
+Alternate-stack S failure linked to exception ownership (2026-10-05):
+ExceptRuntime.HC I386ExceptEnter aborts with I386_EXCEPT_INVALID (status 1),
+channel zero when capture EBP/ESP are outside task->stk. Except.HC
+I386ExceptPush and dispatch impose the same single-stack bounds. After S on
+an alternate allocated stack, CPU capture/trampoline execute the debugger on
+that selected stack; ConsoleDebugSession's try registration cannot satisfy
+the original task-stack bounds. This matches the observed UNHANDLED 1 0.
+Do not weaken frame validation or mask the S failure. Architectural follow-up
+must separate debugger execution stack from selected CPU resume ESP, or model
+valid task stack regions explicitly, preserving nested exception records,
+frame walking, yielding, task-local sessions and cleanup. Include initial
+trap on an alternate stack, repeated S/G, throwing within debugger input,
+simultaneous tasks and forced-kill cleanup in qualification. Original stack
+owner/region validation remains an invariant; public RSP edits stay required.
+
+Both +/-4 overlapping G frame paths now run focused five-cycle tests on the
+unchanged stack image in build/debug-stack-overlap-{down,up}-focused.
+The guest six-module build remains active. A dependent
+build/debug-stack-native-chain.json queues the existing two-generation native
+install/rebuild/identity verifier after that retained result passes, pinning
+this candidate repository and exact kernel-stage listing. This early chain
+can provide reproducibility evidence while alternate-stack S remains open;
+it cannot qualify the candidate for promotion or release by itself.
