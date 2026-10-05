@@ -9989,3 +9989,24 @@ The resource tests use the matching ABI-47 builder for independent disk audits.
 Each has its own preserved original oracle and disposable native image.
 All final verdicts are pending; previous ABI-46 greens cannot establish
 these current-source gates. No OS source changes are made during qualification.
+
+Previously red compressed cold contract now green (2026-10-05):
+build/file-cd-resident-integrated-cold-compressed/result.json passes original
+oracle, fixture preparation, separate cold boot and all 32 native commands
+on 486,-fpu / 8 MiB. Startup is 29.857418 seconds; all VGA checkpoints match.
+First-disk/cached .Z reads, alternate suffix lookup, independent owned copies,
+adam_task cache ownership, hash removal/repopulation, child reuse and both
+public Cd directory-state changes pass. Candidate disk stays identical after
+read-only cache tests and input source remains unchanged. An independent
+matching-builder volume audit also passes (16 directories, 872 files, 17613
+owned sectors). This is an actual red-to-green result for the combined
+contract that failed on ABI 46; arbitrary/natural child heap teardown remains
+outside this gate's evidence. Ordinary cache mutation now runs next.
+
+Fresh combined compiler/DolDoc/public-write/forced-child qualification runs
+in build/file-cd-resident-integrated-include-write-child, with document,
+removal/default extension, child, parent-write, rejected compressed write and
+ordinary rejected-write lifecycle flags. It requires current-source original
+parity, independent persisted bytes/bitmap and unchanged input. Current
+allocation recovery, twenty resident recovery cycles, workstation and native
+builders were directly revalidated live; their final results remain pending.
