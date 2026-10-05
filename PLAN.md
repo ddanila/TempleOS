@@ -6,9 +6,9 @@ Current promoted filesystem services remain ABI 40. The newer integrated
 public resident-cache/Cd candidate is ABI 47 and is not yet promoted. Its fresh
 original bootstrap/cross/386 audits, 32-command public Cd contract, 32-command
 compressed cold-cache/directory-state contract, 29-command allocation recovery
-and 45-command resident twenty-cycle recovery pass. Ordinary cold mutation,
-combined include/DolDoc/write/child, full workstation and fully native generation
-qualification are still running. The preceding ABI-46 candidate already passes
+and 45-command resident twenty-cycle recovery pass. Ordinary cold mutation
+and combined include/DolDoc/write/child also pass. Full workstation and fully
+native generation qualification are still running. The preceding ABI-46 candidate already passes
 full native twelve-module installation/audit and is rebuilding generation two.
 Neither candidate's partial evidence establishes complete M7 or release readiness.
 
@@ -10055,3 +10055,24 @@ ownership, replacement and residence removal pass. Bitmap/tree audit passes
 Both native retained builder/QEMU pairs and the main no-FPU pair were directly
 revalidated live. Integrated ordinary cold mutation and combined child/write
 contracts remain pending; no jobs are restarted from an observation timeout.
+
+Integrated cold mutation and combined compatibility green (2026-10-05):
+build/file-cd-resident-integrated-cold-mutation/result.json passes original
+oracle, preparation and separate cold boot with 36 commands on 486,-fpu /
+8 MiB (startup 39.180465 seconds, exact VGA). Root-owned public cache-byte
+edits affect new reads, disk bytes remain identical, removal/repopulation,
+child reuse and both Cd changes pass. The matching-builder bitmap/tree audit
+is independently checked after this pass. The entire dependent Cd/compressed/
+ordinary mutation runtime chain is now complete; both previously red Cd
+integration contracts are green on ABI 47.
+
+build/file-cd-resident-integrated-include-write-child/result.json passes all
+30 commands and original oracle (startup 39.006435 seconds, exact VGA).
+Compiler/DolDoc edited-cache reads, removal/default-extension inclusion,
+forced child teardown and parent reuse, parent directory creation, rejected
+compressed-write publication and ordinary rejected-write removal pass.
+Independent audit proves expected nested-file persistence, rejected long-name
+absence, unchanged baseline source and unchanged input (18 directories,
+873 files, 17616 owned sectors). Current cross-manifest source hashes are
+independently rechecked before recording these results. Workstation/native
+builds, installed-generation requalification and release gates remain open.
