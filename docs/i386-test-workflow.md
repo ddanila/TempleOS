@@ -4899,3 +4899,25 @@ Managed trap rewind, stepping/rearming, task/code ownership and exit cleanup
 remain required implementation and test work. Existing address/register/step
 candidate sources are unchanged while their qualification jobs continue;
 main OS remains unpromoted and release completion is unproven.
+
+Breakpoint candidate build qualification and managed-store trap TDD
+(2026-10-05): fresh original two-generation bootstrap and cross build PASS,
+with 1270 source-manifest hashes independently verified, 31 FileRuntime
+bindings, 386 boot audit (96 BIOS / 33 protected instructions) and unchanged
+483208-byte native kernel. The lifecycle candidate's runtime gate runs in
+build/debug-breakpoint-lifecycle-green; PASS is still pending.
+
+New tools/test-i386-debug-managed-trap.py installs a managed BptS at the
+actual store opcode following the bounded NOP fixture. S must restore and
+execute that store before reentry; G must complete and rearm the opcode,
+then B2 must remove the record and restore code. It preserves existing
+result/mode/flags/public-heap checks and pins fixture dependencies.
+Independent two-cycle interactions construct within console input limits.
+The expected implementation-gap red runs in build/debug-managed-trap-red
+on the lifecycle-only candidate; no runtime verdict yet. Original contract
+inspection confirms Fault2 decrements RIP for INT3 and task switching restores
+old-task breakpoint bytes/reapplies runnable-task breakpoints unless disabled.
+Full native implementation must preserve those behaviors, task/code ownership
+and cleanup. Current candidate does not implement rewind/step/rearm or task
+switch handling; lifecycle compilation is not full debugger completion.
+Earlier live qualification stays pinned; main and release readiness remain open.
