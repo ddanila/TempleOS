@@ -11882,3 +11882,24 @@ row length is insufficient. Preserve all failed outputs; neither full gate
 is PASS. Reap candidate still runs; do not mutate its source epoch during that
 qualification. Earlier focused flags/G-stack/overlap greens remain scoped to
 their exact images and do not close the release gate.
+
+Complete Console ABI38 host audit corrected (2026-10-05):
+New isolated build/debug-console-audit-prototype has identical owned-reap OS
+sources, with a host-only audit update. Console layout derives all nine service
+addresses, including CPU capture/debug and root_headers, from required exports.
+The parser requires exactly 4+the version-checked service count tokens (13),
+compares every address and records the service-name/address mapping. Independent
+captured stack-image audit validates all nine addresses. All 1270 source hashes
+match both bootstrap generations; bootstrap artifacts copied independently
+from owned-reap without changing that still-running candidate. Fresh full test
+runs in build/debug-console-audit-cross-build.log; no overall PASS yet claimed.
+Full docs/patches/i386-debug-console-audit-candidate.patch applies cleanly.
+
+Owned-reap focused S/stack and CPU-self-exit runs are terminal FAIL/timeouts.
+S/stack reaches its first debugger heading but lacks the subsequent state
+checkpoint; self-exit reaches typing TermFinish at the debugger prompt but
+fails the expected focus-transfer checkpoint. Logs do not show the previous
+UNHANDLED 1 0. Preserve both outputs; inspect debugger input/scheduling and
+stack-region frame walking before attributing a new root cause. A displayed
+heading alone does not qualify command execution or owned-stack cleanup.
+Native and complete release gates remain open; root OS source remains unpromoted.
