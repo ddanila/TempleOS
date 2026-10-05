@@ -26,6 +26,8 @@ FAILED_WRITE = ('Bool FailedWriteCache(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1
                 'U8 *p=FileRead(n,&s);Bool ok=!r&&p&&s==19&&p[15]==54;Free(p);return ok;}')
 FAILED_DROP = ('Bool FailedDrop(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0);'
                'return !r&&!HashFind(n,adam_task->hash_table,HTT_FILE);}')
+PARENT_WRITE = ('Bool ParentWrite(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0),s;'
+                'U8 *p=FileRead(n,&s);Bool ok=r>0&&p&&s==19&&p[15]==54;Free(p);return ok;}')
 
 
 def failure_layout(auditor, disk):
@@ -64,6 +66,7 @@ def main():
     parser.add_argument('--failed-write', action='store_true', help='Compare original resident cache publication after an invalid disk filename write')
     parser.add_argument('--failed-write-compressed', action='store_true', help='Use a rejected .Z filename and require the cached serialized bytes to expand correctly')
     parser.add_argument('--failed-write-lifecycle', action='store_true', help='Also compare cache removal after an ordinary rejected write')
+    parser.add_argument('--parent-write', action='store_true', help='Require original FileWrite creation of missing nested parent directories')
     args = parser.parse_args()
     rejected_name = REJECTED_NAME+('.Z' if args.failed_write_compressed else '')
     if args.failure_recovery and not args.allocation_failure:
@@ -97,6 +100,7 @@ def main():
     report['failed_write_compressed'] = args.failed_write_compressed
     report['failed_write'] = args.failed_write
     report['failed_write_lifecycle'] = args.failed_write_lifecycle
+    report['parent_write'] = args.parent_write
     if layout:
         report['failure_layout_sources'] = layout
     try:
@@ -136,6 +140,10 @@ def main():
                 oracle[index:index] = [FAILED_DROP]
                 index = oracle.index('Report("DONE resident include\n");}')
                 oracle[index:index] = [f'if(!FailedDrop("B:/{rejected_name}")){{Report("FAIL rejected removal\n");return;}}']
+        if args.parent_write:
+            oracle.insert(oracle.index('U0 IncludeCache(){'), PARENT_WRITE)
+            oracle.insert(oracle.index('Report("DONE resident include\n");}'),
+                          'if(!ParentWrite("B:/CacheNewRoot/Deep/Parent.HC")){Report("FAIL parent creation\n");return;}')
         #HolyC strings need literal escape sequences, not embedded line breaks.
         if args.default_extension:
             oracle = [line.replace('CacheInclude.HC', 'CacheInclude') if '#include' in line else line
@@ -178,6 +186,10 @@ def main():
             if args.failed_write_lifecycle:
                 commands[index:index] = [(FAILED_DROP, [])]
                 commands += [(f'FailedDrop("C:/Probe/{rejected_name}");', ['1'])]
+        if args.parent_write:
+            index = next(i for i, (source, _) in enumerate(commands) if source.startswith('FileWrite('))
+            commands.insert(index, (PARENT_WRITE, []))
+            commands += [('ParentWrite("C:/Probe/CacheNewRoot/Deep/Parent.HC");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.default_extension:
             commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)
@@ -230,7 +242,13 @@ def main():
             wanted = {'/Probe/CacheInclude.HC'}
             if args.failed_write:
                 wanted.add('/Probe/'+rejected_name)
+            if args.parent_write:
+                wanted.add('/Probe/CacheNewRoot/Deep/Parent.HC')
             persisted = auditor['mutated_file_contents'](candidate, wanted)
+            if args.parent_write:
+                report['parent_write_persisted'] = persisted.get('/Probe/CacheNewRoot/Deep/Parent.HC') == CODE.encode('ascii')
+                if not report['parent_write_persisted']:
+                    raise ValueError('Nested-parent write did not persist the expected bytes')
             if args.failed_write:
                 report['rejected_write_not_persisted'] = '/Probe/'+rejected_name not in persisted
                 if not report['rejected_write_not_persisted']:

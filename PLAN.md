@@ -27,25 +27,26 @@ all thirteen emitted artifacts match the qualified prototype. Two fully native
 generations match across all twelve modules, flat kernel and boot area.
 
 Current unpromoted work is public filesystem compatibility. Cd passes its
-32-command focused contract and the full 513-command no-FPU workstation;
-retained native construction and installation now pass; full native kernel
-qualification is underway. The resident public binding correction passes an
-18-command cold ownership/removal contract and a 37-command write/read and
-caller/private recovery contract. Binary, compressed, dotless and empty cold ownership/removal contracts now pass.
-The 513-command workstation and exact caller/root/private heap recovery now
-pass. The apparent 96-byte residue is a validated harness key-up message;
-message-quiescent snapshots retain the exact recovery requirement. Original
-adam_task namespace/ownership qualification passes binary and compressed cold
-tests. Public cache mutation passes for FileRead, but compiler include parity
-is red: original TempleOS uses the edited cache; the candidate uses disk bytes.
-Original oracles pass. Broader cache lifecycle/exception/include parity and
-native construction must qualify before promotion. ABI-45 bridges canonical
-public cache reads into compiler includes and DolDoc; original and native
-11-command cache mutation parity pass. Its full workstation, heap recovery
-and retained native construction are running. The candidate
-source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
-temporary debug-port tracing is separate from that archived candidate.
-Broader errors, full debugger behavior and release requirements remain open.
+32-command focused contract, 513-command no-FPU workstation and native
+construction/install/audits; broader errors and integration remain open.
+The public resident cache has passed binary, compressed, dotless and empty
+cold ownership/removal tests and original adam_task namespace ownership.
+ABI-45 canonical public-cache bridges qualify FileRead, compiler includes and
+DolDoc mutation/removal/default-name parity, child teardown and allocation
+failure with exact caller/root/private recovery. Bare rethrow loops and missing
+file-loader exception bindings were found and fixed in that candidate.
+
+Current ABI-46 stages attempted serialized write bytes for canonical cache
+publication. Original and native rejected-write publication/removal pass for
+ordinary and .Z names (13 commands each); exact resident twenty-cycle recovery
+passes 45 commands. Fault recovery, child parity and retained native building
+are being requalified on ABI 46. Missing-parent FileWrite semantics now have
+an original-oracle gate; native verdict is pending. Full workstation and native
+generation/install reproducibility must qualify before promotion. Main remains
+on qualified ABI 40. Current candidate source is preserved in
+`docs/patches/i386-public-resident-write-attempt-candidate.patch`; earlier epoch
+patches and results remain separate evidence. Broad errors, full debugger
+behavior and release requirements remain open.
 
 CPU breakpoint continuation is now promoted to main: task-owned saved CPU
 frames, normal-context debugger entry and full exception-frame return. Five
@@ -9657,3 +9658,22 @@ and six-module KVM retained construction now run on the ABI-46 disk in
 build/public-resident-write-attempt-failure-recovery and ...-native-build.
 Earlier ABI-45 full workstation/native builds and main no-FPU retained build
 remain live. These pending gates do not support promotion or release completion.
+
+ABI-46 compressed/recovery greens and parent-creation oracle (2026-10-05):
+build/public-resident-write-attempt-compressed/result.json passes original
+oracle and 13 no-FPU / 8 MiB commands; cached .Z attempt bytes expand to the
+original source and ordinary rejected replacement removes cache. Exact VGA,
+no rejected persisted filename, unchanged source/input and valid volume pass;
+startup 25.702 seconds. ABI-46 exact twenty-cycle recovery passes 45 commands
+in build/public-resident-write-attempt-recovery: caller 1361744 -> same, root
+0 -> 0, private used 5397816 -> same and allocations 7243 -> same, exact VGA,
+persisted archive/raw/replacement and volume audits; startup 26.317 seconds.
+
+The include tool adds --parent-write: FileWrite to two missing parent levels
+must succeed, read back 19 original bytes and independently persist that file
+in a valid reachable directory tree. Original oracle passes. Native 11-command
+gate is live in build/public-resident-write-parent-red; no native red is claimed
+yet. This replaces speculation about parent behavior with a concrete contract.
+ABI-46 child/cache parity is requalifying in build/public-resident-write-attempt-child;
+all-heap failure recovery and native retained builds remain live. PLAN's current
+status is updated to distinguish these epochs from older historical greens.
