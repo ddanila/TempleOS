@@ -11790,3 +11790,24 @@ install/rebuild/identity verifier after that retained result passes, pinning
 this candidate repository and exact kernel-stage listing. This early chain
 can provide reproducibility evidence while alternate-stack S remains open;
 it cannot qualify the candidate for promotion or release by itself.
+
+Both overlapping return paths qualified; debugger stack design (2026-10-05):
+build/debug-stack-overlap-down-focused PASS five cycles, startup
+34.46285810414702 seconds. build/debug-stack-overlap-up-focused PASS five
+cycles, startup 35.17370137013495 seconds. Both TCG 486,-fpu/8 MiB check physical +/-4 ESP, exact original
+stack restoration, mode/IF/TF/heap recovery and unchanged source disk.
+These qualify both overlap-copy directions for G, not alternate-stack S.
+
+Implementation design for the next fixed source epoch: allocate a per-task
+owned debugger execution stack outside the IF-clear capture path; execute
+ConsoleCpuDebug there while keeping selected public RSP in the saved CPU
+frame. Exception capture/dispatch must validate frames against the original
+owned task stack or the owned debugger stack, preserving prior try records;
+never accept arbitrary address ranges by disabling bounds checks. Provide
+explicit ownership, lazy allocation, safe reuse and forced-kill/task-finish
+cleanup; do not free the currently executing stack. Keep task-local sessions
+and original resume flags/registers independent of debugger stack selection.
+First-trap-on-alternate-stack support must not depend on a prior original-stack
+trap. Verify allocation failure, nested throw/catch, yielding, simultaneous
+sessions, repeated S/G and cleanup as well as the existing red S/stack gate.
+Account for 8 MiB memory and native boot-image capacity before promotion.
