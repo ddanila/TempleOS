@@ -11991,3 +11991,23 @@ bounds; debugger-owned region support must preserve header/parent/cycle bounds
 and allocation ownership. No frame-walking green or complete trace claimed.
 Full host audits and the fixed pre-owned stack's native-generation chain remain
 active; newer candidate native/install/release qualification is outstanding.
+
+Checked debugger-region frame walker prototype (2026-10-05):
+Caller-identity TDD on parser-stack is terminal FAIL after actual Nested throw
+and catch; trace identity cannot be established with original-stack-only walks.
+New isolated build/debug-trace-stack-prototype adds task-aware frame bounds,
+parent and return helpers. Bounds accept the original stack or this task's
+exact live debugger allocation, checking heap size and full header/alignment.
+Within-region parents must advance beyond the header. Cross-region parents
+are allowed only from debugger region to original region; reverse edges are
+rejected, preserving acyclicity. Invalid/unowned frames stop before reads.
+throw's bounded caller array and the existing Caller source use these helpers;
+this does not establish public Caller export/API parity or every trace frame.
+
+Full docs/patches/i386-debug-trace-stack-candidate.patch applies cleanly.
+Fresh bootstrap runs in build/debug-trace-stack-bootstrap.log (PID 3742213),
+with dependent build/debug-trace-stack-pipeline.json: all bootstrap hashes,
+full --test, five caller-identity, initial alternate trap, nested catch, self-exit,
+S/stack and existing flags/IP/concurrency/ownership/kill regressions. No new
+runtime PASS yet claimed. Allocation failure, invalid/cycle walker negatives,
+private memory budget and current native/install/release gates remain open.
