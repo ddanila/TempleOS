@@ -5308,3 +5308,21 @@ the strengthened checker has a new identity. The pipeline will then run
 same-address ownership and managed single-step forced-kill regressions on
 the new image. Current stage/evidence is build/debug-concurrent-pipeline.json.
 No candidate promotion or complete debugger/release qualification is claimed.
+
+Concurrent candidate diagnostic boot failure retained (2026-10-05):
+The cross compiler exports all modules and completes Kernel32.BIN, but
+build/debug-concurrent-prototype/build/debug-concurrent/boot/debug.log fails
+inside PUBLIC HEADER PROBE: Expecting system sym in PublicDebug.HH,
+PUBLIC HEADER PUBLISHED 0 and FAIL native kernel. The --test pipeline
+therefore terminates at cross-build and does not run its dependent tests.
+This is an unresolved full diagnostic gate; it is not a 386 build/boot PASS
+and its cause has not yet been isolated to the new session changes.
+
+Separate interactive-image qualification now runs the strengthened trap
+checker in build/debug-concurrent-interactive-traps and new
+tools/test-i386-debug-concurrent-kill.py in
+build/debug-concurrent-interactive-kill. The latter keeps both INT3 sessions
+paused, kills the first from the second debugger, requires the survivor's
+mode and expression/G to remain valid, then requires mode restored and
+parent heap recovery. Verdicts are pending. Retain the diagnostic failure
+regardless of interactive results; it remains required work before promotion.
