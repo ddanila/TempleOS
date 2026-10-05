@@ -12797,3 +12797,23 @@ all four writes/four flushes for the prepared-directory path and directory-growt
 path separately rather than infer coverage or weaken OS failure handling.
 Memory diagnostic fresh original two-generation bootstrap PASS; cross-build
 running session92192. Exact phase1 memory assertion remains open.
+
+
+TEST encoding regression and follow-up qualification (2026-10-05):
+build/native-systry-test-red/result.json fails exactly on required 85 C0
+registration TEST bytes after actual guest compilation; compiler command/VGA
+passes but emitted instruction oracle rejects. This is a genuine red regression
+against the failing generation source, not just source-text inspection.
+Corrected build/extended-top-test-fix fresh original bootstrap PASS two
+rebuilds and source-qualified cross-build PASS (build/top-test-kernel). Native
+SysTry green attempt running session13699; full corrected six-module native
+rebuild running session13492 in build/top-test-fixed-native-build. Neither
+native result claimed PASS yet; two-generation integration must follow.
+Prepared-directory transfer failure matrix updated in preserved integrated
+candidate to four writes/four flushes, based on the four journal/publish/unlink/
+clear writes and flushes and observed fifth write never firing. Explicit scope
+excludes directory growth. New real matrix running session67680 under
+build/extended-transfer-io-matrix-four; old failed matrix retained unchanged.
+Memory diagnostic cross-build PASS; exact mutation reproduction now running
+session16279 in build/memory-probe-failure-detail, with accounting markers.
+Release and promotion to main OS source remain pending these integration gates.

@@ -2464,7 +2464,7 @@ index 716d308f..58c7a845 100644
      if not (0<boot_end<510 and 0<stage_end<4096):
          raise ValueError('Boot code boundaries exceed reserved regions')
 diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
-index e6adaabc..c13bb284 100644
+index e6adaabc..862a2cca 100644
 --- a/tools/build-i386-kernel.py
 +++ b/tools/build-i386-kernel.py
 @@ -43,6 +43,17 @@ def kernel_flag_disk_offset(exports, symbol):
@@ -2619,7 +2619,14 @@ index e6adaabc..c13bb284 100644
      if installed[:2048*512]!=expected or installed[2048*512:]!=initial[2048*512:]:
          raise ValueError('Guest boot publication changed unexpected sectors')
      integrity=verify_mutated_volume(target)
-@@ -2152,6 +2176,7 @@ def verify_file_io_failure_matrix(disk, exports, out):
+@@ -2146,12 +2170,13 @@ def verify_file_io_failure_matrix(disk, exports, out):
+     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
+     original=disk.read_bytes(); cases=[]
+     source='/Probe/MoveIoSource.HC'; destination='/Modules/MoveIoDestination.HC'
+-    for operation,limit in ((2,7),(3,6)):
++    for operation,limit in ((2,4),(3,4)):
+         for fail_after in range(1,limit+1):
+             work=out/f'file-io-failure-{operation}-{fail_after}'
              work.mkdir(parents=True,exist_ok=True)
              candidate=work/'kernel.img'; changed=bytearray(original)
              struct.pack_into('<I',changed,flag,(operation<<8)|fail_after)
@@ -2643,6 +2650,15 @@ index e6adaabc..c13bb284 100644
              candidate.write_bytes(changed)
              header=candidate.read_bytes()[2048*512:(2048+1)*512]
              if any(header[48:192]):
+@@ -2184,7 +2211,7 @@ def verify_file_io_failure_matrix(disk, exports, out):
+                           'outcome':'both' if len(files)==2 else
+                               ('source' if source in files else 'destination'),
+                           'filesystem_integrity':audit})
+-    return {'cases':cases,'writes':7,'flushes':6,'result':'pass'}
++    return {'cases':cases,'writes':4,'flushes':4,'scope':'Prepared destination directory extent transfer; directory growth is separate','result':'pass'}
+ 
+ 
+ def verify_file_replace_failure_matrix(disk, exports, out):
 @@ -2197,6 +2224,7 @@ def verify_file_replace_failure_matrix(disk, exports, out):
              work.mkdir(parents=True,exist_ok=True)
              candidate=work/'kernel.img'; changed=bytearray(original)
