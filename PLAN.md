@@ -6,7 +6,8 @@ Latest qualification state (2026-10-05): main OS services remain ABI 40.
 Newest integration candidate combines canonical text-run loading/failure
 coverage with bounded editor redraw coalescing:
 [combined candidate patch](docs/patches/i386-text-run-redraw-integrated-candidate.patch).
-Its fresh bootstrap is running; earlier greens do not qualify this combination.
+Its fresh 1,270-source/two-generation bootstrap passes; cross-build is running.
+Earlier runtime greens do not qualify this combination.
 The text-run-only full suite failed undo grouping, while the redraw-only
 candidate passed the full 513-command keyboard/workstation stage.
 
@@ -13615,3 +13616,18 @@ archive `docs/patches/i386-text-run-redraw-integrated-candidate.patch` applies t
 current rootmain; apply-check PASS. No runtime, native or full-suite PASS yet
 for this combination. Previous failure captures and source-specific results
 remain retained. Candidate qualification and release remain open.
+
+
+### Combined candidate original bootstrap passed (2026-10-05)
+
+`build/text-run-redraw-candidate/build/rebuild-test/result.json` now PASS:
+1,270 source hashes and two actual original compiler/kernel rebuild/reboot
+generations. Its cross build starts in `build/text-run-redraw-kernel`.
+No normal-boot, undo, large-source or native PASS yet for this combined epoch.
+
+The preceding complete text-run candidate's fresh debugger regression now
+passes all six register jobs: EAX, ECX, EDX, EBX, ESI and EDI, each five cycles.
+Other jobs and aggregate still running. Its three-boot DolDoc session progresses
+through its first boot (at styled/blink serialization checks), not complete.
+Current full suites, native builds and no-FPU chain remain live. These results
+are retained by source epoch and do not qualify the combined redraw changes.

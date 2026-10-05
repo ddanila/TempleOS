@@ -12360,3 +12360,18 @@ archive `docs/patches/i386-text-run-redraw-integrated-candidate.patch` applies t
 current rootmain; apply-check PASS. No runtime, native or full-suite PASS yet
 for this combination. Previous failure captures and source-specific results
 remain retained. Candidate qualification and release remain open.
+
+
+### Combined candidate original bootstrap passed (2026-10-05)
+
+`build/text-run-redraw-candidate/build/rebuild-test/result.json` now PASS:
+1,270 source hashes and two actual original compiler/kernel rebuild/reboot
+generations. Its cross build starts in `build/text-run-redraw-kernel`.
+No normal-boot, undo, large-source or native PASS yet for this combined epoch.
+
+The preceding complete text-run candidate's fresh debugger regression now
+passes all six register jobs: EAX, ECX, EDX, EBX, ESI and EDI, each five cycles.
+Other jobs and aggregate still running. Its three-boot DolDoc session progresses
+through its first boot (at styled/blink serialization checks), not complete.
+Current full suites, native builds and no-FPU chain remain live. These results
+are retained by source epoch and do not qualify the combined redraw changes.
