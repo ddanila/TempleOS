@@ -26,6 +26,8 @@ def main():
     parser.add_argument('--flat-path',default='/Probe/Gen2.bin')
     parser.add_argument('--guest-compiler-template',action='store_true')
     args=parser.parse_args()
+    inputs={str(path.resolve()):hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in (args.source,args.installed,args.stage_listing)}
     args.out.mkdir(parents=True,exist_ok=True)
     build=load('i386_build',Path('tools/build-i386-kernel.py'))
     boot=load('i386_boot_audit',Path('tools/audit-i386-boot.py'))
@@ -47,12 +49,18 @@ def main():
     build.audit(exports,args.out,guest_compiler_template=args.guest_compiler_template)
     boot_result=boot.audit(installed,args.stage_listing.read_text())
     result={'result':'pass','flat_bytes':len(flat),
+            'source_disk_sha256':inputs[str(args.source.resolve())],
+            'installed_disk_sha256':inputs[str(args.installed.resolve())],
+            'input_sha256':inputs,
             'flat_sha256':hashlib.sha256(flat).hexdigest(),
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest()
                        for name in names},
             'linked_module_executable_ranges':'386 instruction allowlist pass',
             'boot':boot_result,'installed_payload':'matches guest-built flat image',
             'filesystem':filesystem}
+    if any(hashlib.sha256(Path(name).read_bytes()).hexdigest()!=digest
+           for name,digest in inputs.items()):
+        raise ValueError('Audit inputs changed during execution')
     (args.out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
     print(f'PASS: guest-built 386 executable audit, {len(flat)} linked bytes')
 

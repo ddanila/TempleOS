@@ -5512,3 +5512,23 @@ new correction is yet a qualified build/runtime green. G2 native chain has
 advanced to gen2-selfhost; frozen installed DolDoc joins speaker/resource
 with PASS, workstation remains pending. Main OS is unpromoted and release
 completion remains open.
+
+Installed audit now pins whole input disks (2026-10-05):
+tools/audit-i386-guest-image.py records source/installed disk SHA256 plus
+stage-listing identity, and checks all unchanged before publishing PASS.
+Installed workflow preflight requires installed_disk_sha256 to match the
+native target disk. This rejects stale/legacy audits that identify only the
+flat payload. The actual main-baseline second-generation audit passes in
+build/public-file-find-gen2-identity-audit, flat 487312 bytes, whole disk SHA
+f9f20d1723af29b08c92f80e5729f0c6528c0c46bafded44dc1f268365649d2c;
+independent hashing confirms both recorded disk identities. Legacy G2 audit
+preflight rejects without creating output. Existing frozen runs retain their
+original weaker prerequisite schema; future qualification requires re-audit.
+
+Reader/IP candidate diagnostics advance through bootstrap/parser/task layout,
+then fail PublicDebug.HH with Invalid lval during actual public-header loading.
+The source fixes are not full diagnostic greens. Retain
+build/debug-concurrent-reader-ip/boot in the candidate clone. A separate
+focused direct-IP run uses that generated interactive image in
+build/debug-public-ip-green; verdict pending. This does not bypass the
+unresolved diagnostic gate or establish promotion/release completeness.

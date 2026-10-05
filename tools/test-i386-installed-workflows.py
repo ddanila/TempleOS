@@ -33,10 +33,11 @@ def main():
             native.get('target_disk_sha256') != digest):
         parser.error('Native prerequisite must qualify this exact guest-built disk')
     if (audit.get('result') != 'pass' or
+            audit.get('installed_disk_sha256') != digest or
             audit.get('installed_payload') != 'matches guest-built flat image' or
             not native.get('flat_sha256') or
             native['flat_sha256'] != audit.get('flat_sha256')):
-        parser.error('Installed audit must pass for the native flat payload')
+        parser.error('Installed audit must qualify this exact disk and native flat payload')
     # Execute frozen helpers so unrelated development cannot alter this run.
     out.mkdir(parents=True)
     snapshot = out / 'harness'
