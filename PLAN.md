@@ -10423,3 +10423,25 @@ build in ...-native-build. These are pending current-step-source gates; the
 previous integrated cache/Cd builds cannot substitute for the changed retained
 console. The source stays fixed while these jobs run. No promotion or release
 completion is claimed from the first functional green.
+
+Integrated native installed workflow chain complete (2026-10-05):
+build/file-cd-resident-integrated-installed-workflows.json passes all four
+required jobs. The installed full workstation passes 513 commands on
+486,-fpu / 8 MiB, startup 39.361013 seconds and long-document VGA update
+0.263004 seconds, with exact VGA and twenty exact shared-heap development
+cycles. Three-boot DolDoc, captured audio and pinned resource measurements
+pass as documented separately. This is current ABI-47 native installed-image
+workflow evidence. Second native generation and no-FPU retained construction
+are still directly confirmed live; complete release/M7 scope remains open.
+
+The single-step retained builder PID 3631600 is directly confirmed live.
+A dependent chain in build/debug-single-step-generations-pipeline.py now
+requires that exact six-module build pass, then retained installation, full
+native twelve-module construction/install/boot with provenance, installed
+386/bitmap audit, second retained build with installed-byte comparison,
+second installation/full flat/audit, and final twelve-module/flat/boot equality.
+Outputs use build/debug-single-step-{native-install,selfhost,selfhost-audit,
+gen2-native-build,gen2-native-install,gen2-selfhost,gen2-selfhost-audit,
+generation-identity}. Matching candidate stage listing and auditor are used;
+all results remain pending. No earlier-source native generations qualify the
+changed step-enabled console. Existing sources remain fixed during these jobs.
