@@ -10814,3 +10814,30 @@ registration/resume and original runtime comparisons need dedicated tests.
 This design follows original Fault2 and Sched.HC behavior; it is not implemented
 or proved by the existing hook alone. Candidate sources stay fixed during
 qualification; main OS remains unpromoted and release scope remains intact.
+
+Managed store-trap semantic red and isolated implementation (2026-10-05):
+build/debug-managed-trap-red fails after actual managed INT3 and S reentry.
+The visually inspected one-store checkpoint returns 0 for the expected
+stored marker before function completion. This demonstrates lost original
+instruction execution; it is separate from lifecycle API presence.
+Five lifecycle rounds pass in build/debug-breakpoint-lifecycle-repeat.
+
+A fork-only main clone build/debug-managed-prototype implements managed
+record lookup at saved EIP-1, rewind, restoration and disabled breakpoint
+state for S; G re-enables bytes unless still stopped on an installed
+breakpoint (prints a step/remove instruction and remains in debugger).
+A retained scheduler bind wrapper restores outgoing bytes, applies incoming
+records unless disabled, then chains the original platform binder. It does
+not allocate or schedule. First record registration installs a task cleanup
+wrapper and preserves the previous callback, including registration inside
+an active debugger. Cleanup restores bytes/frees records before chaining
+previous cleanup while task heaps/code remain live. A private task callback
+slot is added; kernel/flat-size effects still need fresh build evidence.
+These paths are implemented, not yet verified by task-switch/exit tests.
+
+Full source is docs/patches/i386-debug-managed-candidate.patch (clean apply
+to main). Fresh original bootstrap runs in
+build/debug-managed-candidate-bootstrap.log. Cross build, managed runtime
+green, shared-code ownership, other-task controls, cleanup and broader/native
+qualification remain required. Existing live source epochs stay unchanged;
+no promotion, complete debugger or release readiness is claimed.
