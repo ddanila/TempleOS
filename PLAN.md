@@ -12684,3 +12684,23 @@ is in the affected directory; payload/bitmap/boot/all other backing bytes
 unchanged. This is final persistent bytes, not trace of transient journal writes.
 Current full-suite/native rebuild processes remain live; do not transfer loader
 fallback evidence to their older stage or claim release completion.
+
+Integrated KBC extended stage enters qualification (2026-10-05):
+Separate build/extended-a20-integrated-prototype combines full transfer-recovery/
+renderer/assembler candidate with root tested KBC loader. Earlier stage patch
+context predates fallback; exclude that old stage hunk and retain current root
+stage, add explicit placed executable labels/near entry and updated exact ISA
+allowlist for RET/CLC/JE. Integrated --kbc-path passes all13 loader cases and
+exact boot instruction audit passes96 BIOS/207 stage instructions in
+build/extended-a20-integrated-kbc/boot-audit.json. This still precedes actual
+full OS/native installation qualification for the new stage.
+
+All1270 original-bootstrap source hashes match recovery-corrected bootstrap and
+both overlay generation binaries match its result. Reuse immutable qualified
+bootstrap (pure loader/host-tool changes); do not mislabel as fresh OS rebuild.
+Actual full --test now live session28025, extended-a20-integrated-kernel.log.
+Full cumulative docs/patches/i386-a20-integrated-candidate.patch applies cleanly
+to current main and includes all relevant OS/loader/tool candidate changes.
+Prior native rebuild/full-suite runs confirmed live with their older stage;
+source pins remain frozen. Initial protected exception handling, BIOS fallback
+alternative and physical hardware remain unqualified; release stays open.
