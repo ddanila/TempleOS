@@ -1,0 +1,71 @@
+--- a/Kernel/I386/MemoryRuntime.HC
++++ b/Kernel/I386/MemoryRuntime.HC
+@@ -142,6 +142,12 @@
+   MemoryHashProbe;
+   //Separate large allocations return pages immediately; a large request also
+   //forces growth beyond the first region. Both regions must return to bootstrap.
++  KernelLog("MEMORY CHECK HASH "); KernelHex(phase);
++  KernelLog(" "); KernelHex(memory_pool.owned_count);
++  KernelLog(" "); KernelHex(memory_pool.retained);
++  KernelLog(" "); KernelHex(memory_pool.used_u8s);
++  KernelLog(" "); KernelHex(memory_pool.heap->used);
++  KernelLog(" "); KernelHex(memory_pool.heap->allocations); KernelLog("\n");
+   p=MemoryAlloc(2048,task); capacity=MemorySize(p);
+   SetRFlags(GetRFlags|0x400);
+   if(MemorySet(p,0x15A,capacity)!=p+capacity || GetRFlags&0x400) KernelStop;
+@@ -152,25 +158,55 @@
+   if(MemoryCopy(p,q,capacity)!=p+capacity || GetRFlags&0x400) KernelStop;
+   MemoryFree(q); MemoryFree(p);
+   if(MemoryIdent(0) || MemoryCopy(0,0,0) || MemorySet(0,1,0)) KernelStop;
++  KernelLog("MEMORY CHECK COPY "); KernelHex(phase);
++  KernelLog(" "); KernelHex(memory_pool.owned_count);
++  KernelLog(" "); KernelHex(memory_pool.retained);
++  KernelLog(" "); KernelHex(memory_pool.used_u8s);
++  KernelLog(" "); KernelHex(memory_pool.heap->used);
++  KernelLog(" "); KernelHex(memory_pool.heap->allocations); KernelLog("\n");
+   p=MemoryStrNew(0,task); q=MemoryStrNew("VGA",task->code_heap);
+   if(p[0] || q[0]!='V' || q[1]!='G' || q[2]!='A' || q[3] ||
+       MemoryHeap(p)!=task->data_heap || MemoryHeap(q)!=task->code_heap ||
+       MemoryCopy(q+1,q,2)!=q+3 || q[1]!='V' || q[2]!='V' || q[3]) KernelStop;
+   MemoryFree(p); MemoryFree(q);
++  KernelLog("MEMORY CHECK STRINGS "); KernelHex(phase);
++  KernelLog(" "); KernelHex(memory_pool.owned_count);
++  KernelLog(" "); KernelHex(memory_pool.retained);
++  KernelLog(" "); KernelHex(memory_pool.used_u8s);
++  KernelLog(" "); KernelHex(memory_pool.heap->used);
++  KernelLog(" "); KernelHex(memory_pool.heap->allocations); KernelLog("\n");
+   if(!I386MemHeapTrim(task->data_heap) || I386MemBackingTrim(&memory_pool)<0) KernelStop;
+   p=MemoryAligned(2048,64,task,3); q=MemoryCAlloc(131000,task->code_heap);
+   if(!p || !q || memory_pool.owned_count!=2 || MemorySize(p)<2048 ||
+       MemorySize(q)<131000 || (p+0)(U64)%64!=3 || p(I64 *)[-1]>=0 || q[0] || q[130999] ||
+       MemoryHeap(p)!=task->data_heap || MemoryHeap(q)!=task->code_heap ||
+       MemorySize2(p)!=MemorySize(p)+offset(CMemUsed.start)) KernelStop;
++  KernelLog("MEMORY CHECK ALIGNED "); KernelHex(phase);
++  KernelLog(" "); KernelHex(memory_pool.owned_count);
++  KernelLog(" "); KernelHex(memory_pool.retained);
++  KernelLog(" "); KernelHex(memory_pool.used_u8s);
++  KernelLog(" "); KernelHex(memory_pool.heap->used);
++  KernelLog(" "); KernelHex(memory_pool.heap->allocations); KernelLog("\n");
+   p[0]=71; p[2047]=83; q[0]=97; q[130999]=109;
+   MemoryFree(q);
+   if(memory_pool.owned_count!=1 || p[0]!=71 || p[2047]!=83) KernelStop;
++  KernelLog("MEMORY CHECK LARGE FREE "); KernelHex(phase);
++  KernelLog(" "); KernelHex(memory_pool.owned_count);
++  KernelLog(" "); KernelHex(memory_pool.retained);
++  KernelLog(" "); KernelHex(memory_pool.used_u8s);
++  KernelLog(" "); KernelHex(memory_pool.heap->used);
++  KernelLog(" "); KernelHex(memory_pool.heap->allocations); KernelLog("\n");
+   MemoryFree(p);
+   p=MemoryCAligned(2048,256,0,5);
+   if((p+0)(U64)%256!=5 || p[0] || p[2047]) KernelStop;
+   MemoryFree(p); MemoryFree(0);
+   if(MemorySize(0) || MemorySize2(0) || MemoryHeap(0)) KernelStop;
++  KernelLog("MEMORY CHECK FINAL "); KernelHex(phase);
++  KernelLog(" "); KernelHex(memory_pool.owned_count);
++  KernelLog(" "); KernelHex(memory_pool.retained);
++  KernelLog(" "); KernelHex(memory_pool.used_u8s);
++  KernelLog(" "); KernelHex(memory_pool.heap->used);
++  KernelLog(" "); KernelHex(memory_pool.heap->allocations); KernelLog("\n");
+   if(memory_pool.owned_count || memory_pool.retained || memory_pool.used_u8s ||
+       memory_pool.heap->used!=before || memory_pool.heap->allocations!=allocations ||
+       !I386HeapValid(memory_pool.heap)) KernelStop;

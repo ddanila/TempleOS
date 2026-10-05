@@ -12755,3 +12755,21 @@ and release qualification remain pending. Existing builds continue untouched.
 Reproduce with --disk build/extended-a20-integrated-prototype/build/extended-a20-integrated-kernel/kernel.img
 --stage build/extended-early-idt-prototype/tools/i386-extended-stage.asm
 --audit build/extended-early-idt-prototype/tools/audit-i386-boot.py --out NEW_DIR.
+
+
+Current full-suite failure retained (2026-10-05):
+Both extent-transfer and recovery-corrected candidates reached FILE MOVE PROBE
+0000000000000004 and passed phase-1 STRING COPY / PUBLIC HASH TABLES / PUBLIC
+DEFINE LIST, then emitted FAIL native kernel during the mutation diagnostic.
+The first candidate terminated nonzero; the corrected candidate debug log also
+shows the failure. No full-suite PASS or storage-regression closure is claimed.
+Failure localizes to the remaining phase-1 MemoryProbe assertions, not the
+move-probe return. Exact assertion/cause remains unknown. Do not loosen memory
+checks or assume an allocation failure without evidence. Separate main/fork
+clone build/extended-memory-probe-diagnostic adds six diagnostic progress and
+backing-pool accounting markers while preserving every assertion, archived in
+docs/patches/i386-memory-probe-diagnostic.patch (apply after integrated patch).
+Fresh original bootstrap rebuild running session42997; must pass and match
+source hashes before cross-building this changed OS diagnostic candidate.
+Current early-IDT no-FPU debugger trace five-cycle test also running session21008.
+Recovery matrix and two native installation generations continue independently.
