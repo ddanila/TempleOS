@@ -10644,3 +10644,30 @@ independently verified. Cross build is running; no runtime green is claimed.
 Full source archive docs/patches/i386-debug-go-address-candidate.patch applies
 cleanly to main. Earlier register and step sources remain unchanged during
 live native/workstation/generation qualification. Release remains open.
+
+Explicit G/S address observable greens (2026-10-05): candidate cross build
+passes 31 bindings and 386 boot audit, 96 BIOS / 33 protected instructions;
+kernel remains 483208 bytes. Image SHA-256:
+e166c4767d1b036b50b49520ad653444318b58cc7d50cc91f048acf12118908e.
+build/debug-go-address-green/result.json passes explicit G(ip) skip/store/
+return semantics with 17 commands, startup 33.702441 seconds, exact VGA,
+restored mode/flags and unchanged source on 486,-fpu / 8 MiB.
+
+New tools/test-i386-debug-step-address.py derives the same verified skip
+fixture, invokes S(ip), requires fresh vector-1 debugger reentry after the
+chosen store but before function completion, and then G back. Baseline
+build/debug-step-address-red fails with THROW DbgArg after the trap;
+build/debug-step-address-green/result.json passes all 17 commands, startup
+34.285580 seconds, exact VGA and unchanged source. This establishes both
+address-resume and address-step behavior, not argument acceptance alone.
+Repeated interactions stay independent and all imported test sources are
+hash-pinned. Explicit addresses in non-CPU sessions and other-task resume,
+ESP/RIP direct edits, managed breakpoints and complete debugger coverage
+remain open; no release completion or promotion is claimed.
+
+Five G(ip) cycles run in build/debug-go-address-repeat and five S(ip) cycles
+in build/debug-step-address-repeat. This changed console's six native modules
+build in build/debug-go-address-native-build (KVM); earlier step/register
+native outputs cannot qualify it. All three current-source gates are pending.
+Register-source full workstation/generation and original step generation
+qualification continue on their unchanged sources.
