@@ -2,6 +2,16 @@
 
 ## Objective and status
 
+Current promoted filesystem services remain ABI 40. The newer integrated
+public resident-cache/Cd candidate is ABI 47 and is not yet promoted. Its fresh
+original bootstrap/cross/386 audits, 32-command public Cd contract, 32-command
+compressed cold-cache/directory-state contract, 29-command allocation recovery
+and 45-command resident twenty-cycle recovery pass. Ordinary cold mutation,
+combined include/DolDoc/write/child, full workstation and fully native generation
+qualification are still running. The preceding ABI-46 candidate already passes
+full native twelve-module installation/audit and is rebuilding generation two.
+Neither candidate's partial evidence establishes complete M7 or release readiness.
+
 The promoted CPU-trap epoch now passes fully native twelve-module
 construction/install/boot/audits and five-cycle continuation. Its native
 workstation passes 513 commands, exact VGA and 20 exact heap-recovery cycles:
@@ -10032,3 +10042,16 @@ Outputs use build/file-cd-resident-integrated-{native-install,selfhost,
 selfhost-audit,gen2-native-build,gen2-native-install,gen2-selfhost,
 gen2-selfhost-audit,generation-identity}; running state is not a green verdict.
 Installed no-FPU workstation and the remaining M7/release gates stay required.
+
+Integrated twenty-cycle resident recovery green (2026-10-05):
+build/file-cd-resident-integrated-recovery/result.json passes original oracle
+and 45 commands on 486,-fpu / 8 MiB, startup 37.279943 seconds and exact VGA.
+Twenty create/update/remove cycles return caller public used bytes exactly
+1361744 -> 1361744 and root 0 -> 0. Independent private snapshots return
+5417280 -> 5417280 used bytes and 7251 -> 7251 allocations, with matching
+heap identity/signature. Binary/expanded/alternate .Z reads, independent
+ownership, replacement and residence removal pass. Bitmap/tree audit passes
+(16 directories, 875 files, 17615 owned sectors); source remains unchanged.
+Both native retained builder/QEMU pairs and the main no-FPU pair were directly
+revalidated live. Integrated ordinary cold mutation and combined child/write
+contracts remain pending; no jobs are restarted from an observation timeout.
