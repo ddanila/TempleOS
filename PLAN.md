@@ -10935,3 +10935,27 @@ runs in build/debug-managed-lifecycle-deferred; no pass yet. Preserve the
 failure in ...-lifecycle. Full workstation runs in ...-workstation on this
 fixed managed image. Existing candidate sources remain frozen during gates;
 G2/other-task/debugger and native/release completion remain open.
+
+Repeated managed execution/cleanup greens and G2 TDD (2026-10-05):
+build/debug-managed-trap-repeat passes five managed store trap/step/rearm/
+remove cycles and 69 commands on 486,-fpu / 8 MiB, startup 27.675738 seconds,
+exact VGA, result/mode/flags/public-heap probe and unchanged source.
+...-kill-entry passes 15 commands, startup 33.631613 seconds, restoring and
+executing shared parent code in the survivor after killing a managed-entry
+victim. ...-lifecycle-deferred passes the corrected immediate deferred
+registration semantics and all lifecycle assertions, 27 commands, startup
+27.518313 seconds. Complete concurrent ownership remains open.
+
+New tools/test-i386-debug-go-clear.py requires original G2 behavior at the
+managed store trap: remove records, resume the restored store, verify result,
+restored code/list, empty B2 and flags/mode. The expected red
+build/debug-go-clear-red terminates with Undefined identifier at G2 after
+managed trap preparation; prior managed greens do not supply this API.
+A fork-origin main clone build/debug-go-clear-prototype binds G2 to a
+clear-then-NativeDebugGo wrapper with preserved current-task/state checks.
+Console exports rise 145 to 146. Fresh original bootstrap passes; cross
+build is running in build/debug-go-clear-build.log, runtime green pending.
+Full archive docs/patches/i386-debug-go-clear-candidate.patch applies cleanly
+to main. Other-task G2/focus, direct register control and complete debugger/
+release qualification remain open; current managed source stays frozen for
+workstation tests and main OS remains unpromoted.
