@@ -9587,3 +9587,30 @@ bitmap checks remain mandatory. That audit extension landed after the running
 process loaded its tool, so audit its candidate independently at completion.
 Exact twenty-cycle recovery, full workstation and retained native builds remain
 live and progress; candidate still unpromoted.
+
+Rejected resident write red and ABI-46 attempt-byte candidate (2026-10-05):
+build/public-resident-failed-write-red is terminal fail at command 10; exact
+VGA capture shows helper result 0 instead of original result 1. Original
+oracle passes. Independent audit confirms no rejected long-name file exists;
+input and baseline fixture remain unchanged. This establishes the cache
+publication mismatch after a disk mutation rejects a filename.
+
+New docs/patches/i386-public-resident-write-attempt-candidate.patch advances
+file-service ABI to 46. Optional private write metadata records whether a
+valid parent write context was reached, normalized name, effective attributes
+and attempted serialized bytes. Resident bytes are copied before freeing the
+compression buffer, including after physical mutation failure. Public FileWrite
+publishes/removes canonical cache based on this attempted context rather than
+rereading only successful disk writes. Invalid parent contexts remain ineligible;
+physical result is unchanged. Partial private staging allocations are cleaned
+and allocation failure propagates as OutMem through the established dispatcher.
+Ordinary writes stage only the key, not a duplicate file payload.
+
+Bindings remain the 31 explicitly verified providers. Patch applies cleanly to
+main; whitespace/binding checks pass. Fresh original candidate bootstrap runs
+in build/resident-public-attempt-cache-bootstrap.log. Compilation and runtime
+behavior are unverified. Required next gates include rejected-write green,
+ordinary/compressed/resident publication, invalid-context nonpublication,
+allocation failure/recovery, child teardown, full workstation and native builds.
+Earlier ABI-45 tests/builds continue from immutable disks; their results do not
+qualify the ABI-46 interface or new staging behavior.
