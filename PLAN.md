@@ -12263,3 +12263,27 @@ build/extended-assembler-prototype/build/extended-assembler-kernel.log. Keep
 both candidate sources frozen during these runs. This is not yet evidence that
 the resident compiler rebuilds ExceptionEntry; verify actual native build and
 byte equality after the new image qualifies. Full objective stays open.
+
+Extended debugger trace green and no-FPU retained build green (2026-10-05):
+build/debug-cpu-trace-extended/result.json is PASS for one actual CPU trap,
+nested throw/catch/yield and except_callers[0] identity in the live throwing
+function, followed by G and recovery checks. Exact disk SHA256
+6e940d61a7207f99251f21c86adbe224533b9b2576da58ed38bb3994b15cf713;
+source disk unchanged. This closes the earlier focused trace red for this image,
+not all frame/cycle/freed-memory coverage. Five-cycle qualification is live
+PID 3758330/session 76122, out build/debug-cpu-trace-extended-five.
+
+Long-running original integrated cache/Cd TCG 486,-fpu retained-build retry
+completed PASS for all six native modules in
+build/file-cd-resident-integrated-no-fpu-native-build-retry/result.json.
+Source disk SHA256 4dbe237e290d018fd848d7d7bd82cdc6ddc6bbcc192a14e43a84337b7cb5de7e.
+This evidence belongs to that historical source, not the extended/assembler
+candidate or current full-release qualification.
+
+New tools/test-i386-native-exception-build.py compiles actual ExceptionEntry.HC
+with resident compiler on a writable disk copy, validates module layout and
+cross-built export contract, pins inputs and retains native bytes/hash. It
+explicitly does not prove full generation or byte equivalence. New assembler
+candidate is under this check PID 3758460/session 57291, output
+build/native-exception-assembler-fixed. Both full kernel --test runs remain
+live; installer/release gates and native two-generation rebuild remain open.
