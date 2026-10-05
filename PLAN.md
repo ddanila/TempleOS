@@ -11420,3 +11420,20 @@ observed Invalid lval still requires runtime proof. Updated patch applies
 cleanly; fresh bootstrap and --test/public-IP/concurrent/ownership/kill gates
 run or queue in build/debug-concurrent-header-defaults-pipeline.json.
 No diagnostic PASS, root promotion or full release qualification is claimed.
+
+Direct public RIP single-step green; full headers compile with extra warning
+(2026-10-05): new tools/test-i386-debug-public-step-ip.py edits Fs->rip,
+uses default S and requires chosen-store execution before vector-1 reentry;
+G then finishes with the preserved marker. build/debug-public-step-ip-green
+passes 18 commands on 486,-fpu / 8 MiB, startup 28.113256 seconds, exact VGA
+and unchanged source. Dependencies are pinned and preflight verifies independent
+cycles/default S/line bounds. This uses the earlier reader/IP image. Five G
+edit/resume cycles separately run in build/debug-public-ip-repeat.
+
+The header-default source now passes actual public-header compilation:
+PUBLIC HEADER PUBLISHED 1, warning count 2, CTask size 0x3E0. It no longer
+fails Invalid lval. The full diagnostic run then stops at the existing
+one-warning assertion. Preserve this new failure; do not relax the assertion
+until the additional warning is identified and its cause reviewed. Fresh
+source bootstrap/all 1270 hashes and cross export succeed, but full --test
+remains unqualified. Main candidate promotion and release completion stay open.
