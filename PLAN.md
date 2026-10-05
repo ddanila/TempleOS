@@ -11598,3 +11598,26 @@ build/debug-flags-pipeline.json verifies both bootstrap generations and all
 source hashes, runs the full cross-build/diagnostics, then five carry-edit
 cycles plus public S/IP, G/IP, simultaneous traps, shared breakpoint ownership
 and managed-kill regressions. No flags green or candidate promotion claimed.
+
+Single-step flags contract test added (2026-10-05):
+New tools/test-i386-debug-public-step-flags.py derives the verified
+CLC/INT3/ADC fixture, preserves captured-CF-clear/public-CF-set checks, then
+uses S. At debugger reentry it requires Fs->rax==0x12, TF set and the function
+still active; G must then finish with result 0x12 and restored mode/IF/TF/heap.
+Dependencies, original debugger contract, checker and source disk are hashed.
+Five-cycle preflight confirms independently owned interaction objects and the
+255-character command limit. The actual red run against reader-ip is live in
+build/debug-public-step-flags-red; no runtime result yet claimed.
+A separate dependent build/debug-flags-step-pipeline.json waits for the full
+flags pipeline to pass before running five green step/flags cycles, without
+mutating any candidate currently under qualification.
+
+The concurrent-file-audit guest again reaches DONE native kernel startup;
+its complete host --test still runs additional normal/rejection/workflow
+checks, so no overall PASS is claimed. The flags candidate has matched all
+1270 bootstrap source hashes and is executing diagnostics. The integrated
+no-FPU retained-build retry remains live. Direct ESP support must account for
+same-ring IRET: POPAD ignores saved_esp, and ExceptionEntry.HC currently
+returns using the frame's original stack, so simply editing the saved_esp
+field cannot implement public RSP edits. It needs an explicit return-frame
+relocation mechanism plus a real alternate-stack test before qualification.
