@@ -13248,3 +13248,13 @@ continuousabc undo and2-second separateda/b runs; no verdictyet. Existingfull
 fixture remains unchanged, avoiding premature masking of its failing gate.
 All6register-bank jobs and G/Sflags/Gstack/SIP latestCaller nowPASS; remaining
 regression jobs live. Sourcepromotion and release readiness remainopen.
+
+
+Batched undo diagnostic is terminal red (2026-10-05):
+build/native-release-packaging/undo-batched/result.json FAIL at first
+continuous typing-run undo, before separated-run timing. A single QMP event
+batch does not close the failure, ruling out per-key host RPC gaps as the sole
+cause. Existing document editor samples grouping jiffies when consuming each
+key, after potentially costly redraws. Inspect arrival/consumption/render timing
+and actual clock semantics before changing grouping thresholds or expectations.
+Serialized comparison remains live. Release qualification remains open.
