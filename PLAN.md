@@ -9924,8 +9924,8 @@ live. This installation is the ABI-46 parent candidate, not ABI-47 Cd proof.
 The integrated Cd candidate's original bootstrap handle is confirmed live.
 A dependent runtime chain in
 build/file-cd-resident-integrated-runtime-pipeline.py waits on that specific
-bootstrap/cross-build shell handle and requires file_runtime.version 47 in
-the resulting build report. It then runs public Cd with --task-fields and
+bootstrap/cross-build shell handle and requires ABI 47 in the exported
+FileRuntime payload, verified against the build manifest and layout auditor. It then runs public Cd with --task-fields and
 --special-paths, followed by the previously red compressed and ordinary
 mutation cold-cache contracts, preserving --shared-lifetime and directory
 changes. Each step uses a fresh output and requires its own pass report; the
@@ -9933,3 +9933,15 @@ chain stops on first failure. Outputs use
 build/file-cd-resident-integrated-{cd,cold-compressed,cold-mutation}; state
 is build/file-cd-resident-integrated-runtime-pipeline.json. All remain pending.
 The actual bootstrap source and running earlier native sources stay fixed.
+
+Integrated Cd bootstrap/cross-build green (2026-10-05):
+The fresh original two-generation bootstrap and cross build finish successfully.
+The integrated kernel is 483208 bytes; the 386 boot allowlist passes 96 BIOS
+and 33 protected-mode instructions. The runtime wrapper's initial check used
+an absent file_runtime report field and stopped before tests; that was a
+wrapper error, not an OS failure. It now compares FileRuntime.t32m SHA-256
+with the manifest and invokes the candidate file_runtime_layout verifier,
+which reads the module's exported version and requires ABI 47. The completed
+build is reused; no compiler job is restarted. Public Cd original/native parity
+is now running, with both combined cold-cache checks following only on pass.
+Runtime and installed-generation gates remain open.
