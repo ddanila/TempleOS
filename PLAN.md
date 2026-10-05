@@ -12440,3 +12440,20 @@ Previous task-only numbers remain valid but insufficient for memory diagnosis.
 No reservation measurements or new runtime pass claimed yet. Continue current
 handles; full graphics sequence, installed native generations and release remain
 open. Root OS changes remain candidate patches until integrated qualification.
+
+Extended loader capacity boundaries qualified (2026-10-05):
+Checker now accepts explicit --payload-bytes, bounded above legacy capacity and
+before volume LBA2048. build/extended-loader-unaligned/result.json PASS for
+655361 bytes, and build/extended-loader-maximum/result.json PASS for 1043968
+bytes. Each executes all 13 valid/metadata/checksum/memory/entry/truncation
+cases under 486,-fpu/8 MiB (low-memory negative at 1 MiB). Exact destination
+first/tail and handoff fields verified, source disks/inputs unchanged. Maximum
+payload occupies through LBA2047; partial final sector validates declared-byte
+hashing rather than hashing full rounded storage. This remains independent
+loader fixture evidence, not full OS/native installation completion.
+
+Native-generation handle3790555 remains live at gen1-install, renderer heap
+reservation handle3791133 remains live before its measurement phase. Preserve
+same handles and evidence; no new pass for these longer runs. Contract document
+updated with capacity boundaries and remaining BIOS read-error/padding-negative,
+installation, full-session and release gates. Physical testing stays deferred.

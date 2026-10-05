@@ -61,7 +61,12 @@ invalid entry cases, and a missing payload sector represented by zero-filled
 media. This last case proves checksum rejection of missing data, not BIOS
 read-error recovery. Snapshot disks and pinned sources remain unchanged.
 
-Still required: maximum-capacity valid payload, non-sector-aligned payload and
-padding semantics, BIOS read failure, complete high-image reservation checks,
+The checker also accepts `--payload-bytes`. Both 655361 bytes (partial final
+sector) and maximum capacity 1043968 bytes pass all thirteen cases in
+`build/extended-loader-unaligned` and `build/extended-loader-maximum`. They verify
+exact declared-byte hashing and destination tail at both boundaries.
+
+Still required: explicit padding-corruption semantics, BIOS read failure,
+complete high-image reservation checks,
 source/target native installation safety, and integrated OS/release gates.
 Physical hardware verification remains deferred.

@@ -13,14 +13,17 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--stage',type=Path,default=ROOT/'tools/i386-extended-stage.asm')
+    parser.add_argument('--payload-bytes',type=int,default=655360)
     args=parser.parse_args()
+    if not 487424<args.payload_bytes<=2039*512:
+        parser.error('Payload must exceed the legacy limit and fit before the volume')
     out=args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
     sources=[Path(__file__).resolve(),args.stage.resolve(),ROOT/'tools/i386-bios.inc']
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     pins={str(p):sha(p) for p in sources}
-    report={'result':'fail','input_sha256':pins,'scope':'640 KiB streamed CHS payload, high-memory first/tail markers and checksum/memory rejection; not TempleOS integration or installation','cases':{}}
+    report={'result':'fail','input_sha256':pins,'scope':'Oversized streamed CHS payload, high-memory first/tail markers and handoff/checksum/memory/entry rejection; not TempleOS integration or installation','cases':{}}
     assembly=out/'payload.asm'
     assembly.write_text('''bits 32
 org 0x100000
@@ -60,10 +63,11 @@ dd 0x1234A5C1
 times 655360-16-($-$$) db 0
 db 0xC1,0x36,0x5A,0x92,0x0F,0xB8,0xE4,0x7D,0x6A,0x03,0x8F,0x21,0xD5,0x49,0xB7,0xEC
 ''')
+    assembly.write_text(assembly.read_text().replace('655360',str(args.payload_bytes)))
     payload=out/'payload.bin'
     subprocess.run(['nasm','-f','bin',str(assembly),'-o',str(payload)],check=True)
     raw=payload.read_bytes()
-    assert len(raw)==655360
+    assert len(raw)==args.payload_bytes
     fnv=2166136261
     for byte in raw:fnv=((fnv^byte)*16777619)&0xFFFFFFFF
     image=out/'loader.img'
