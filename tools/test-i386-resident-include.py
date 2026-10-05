@@ -21,6 +21,9 @@ REMOVE = ('Bool RemoveCode(U8 *name){CHashGeneric *e=HashFind(name,adam_task->ha
 CHILD = ['I64 CacheChildResult=0;',
          'U0 CacheChild(U8 *n){if(CachedCode(n)&&CachedDoc(n))CacheChildResult=1;else CacheChildResult=2;while(1)Yield;}',
          'Bool CacheChildCheck(U8 *n){CTask *t;I64 e=cnts.jiffies+2000;CacheChildResult=0;if(!(t=Spawn(&CacheChild,n,"CacheChild",-1,Fs,8192)))return FALSE;while(!CacheChildResult&&cnts.jiffies<e)Yield;return Kill(t)&&CacheChildResult==1;}']
+REJECTED_NAME = 'CacheRejected'+'X'*40+'.HC'
+FAILED_WRITE = ('Bool FailedWriteCache(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0x200),s;'
+                'U8 *p=FileRead(n,&s);Bool ok=!r&&p&&s==19&&p[15]==54;Free(p);return ok;}')
 
 
 def failure_layout(auditor, disk):
@@ -56,6 +59,7 @@ def main():
     parser.add_argument('--failure-recovery', action='store_true', help='Independently snapshot private heap across the allocation failure and subsequent include')
     parser.add_argument('--child', action='store_true', help='Require cached file/document reads in a child and cache survival after synchronous Kill')
     parser.add_argument('--failure-public-recovery', action='store_true', help='Also require exact caller/root public heap recovery with validated key-up quiescence')
+    parser.add_argument('--failed-write', action='store_true', help='Compare original resident cache publication after an invalid disk filename write')
     args = parser.parse_args()
     if args.failure_recovery and not args.allocation_failure:
         parser.error('--failure-recovery requires --allocation-failure')
@@ -81,6 +85,7 @@ def main():
     report['failure_recovery'] = args.failure_recovery
     report['child'] = args.child
     report['failure_public_recovery'] = args.failure_public_recovery
+    report['failed_write'] = args.failed_write
     if layout:
         report['failure_layout_sources'] = layout
     try:
@@ -111,6 +116,10 @@ def main():
             oracle[index:index] = CHILD
             index = next(i for i, line in enumerate(oracle) if line.startswith('ExePutS('))
             oracle.insert(index, 'if(!CacheChildCheck("B:/CacheInclude.HC")||!CachedCode("B:/CacheInclude.HC")||!CachedDoc("B:/CacheInclude.HC")){Report("FAIL child cache\n");return;}')
+        if args.failed_write:
+            oracle.insert(oracle.index('U0 IncludeCache(){'), FAILED_WRITE)
+            oracle.insert(oracle.index('Report("DONE resident include\n");}'),
+                          f'if(!FailedWriteCache("B:/{REJECTED_NAME}")){{Report("FAIL rejected write cache\n");return;}}')
         #HolyC strings need literal escape sequences, not embedded line breaks.
         if args.default_extension:
             oracle = [line.replace('CacheInclude.HC', 'CacheInclude') if '#include' in line else line
@@ -146,6 +155,10 @@ def main():
             commands[index:index] = [('CacheChildCheck("C:/Probe/CacheInclude.HC");', ['1']),
                                      ('CachedCode("C:/Probe/CacheInclude.HC");', ['1']),
                                      ('CachedDoc("C:/Probe/CacheInclude.HC");', ['1'])]
+        if args.failed_write:
+            index = next(i for i, (source, _) in enumerate(commands) if source.startswith('FileWrite('))
+            commands.insert(index, (FAILED_WRITE, []))
+            commands += [(f'FailedWriteCache("C:/Probe/{REJECTED_NAME}");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.default_extension:
             commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)
@@ -195,7 +208,14 @@ def main():
     finally:
         try:
             report['volume_audit'] = auditor['verify_mutated_volume'](candidate)
-            persisted = auditor['mutated_file_contents'](candidate, {'/Probe/CacheInclude.HC'})
+            wanted = {'/Probe/CacheInclude.HC'}
+            if args.failed_write:
+                wanted.add('/Probe/'+REJECTED_NAME)
+            persisted = auditor['mutated_file_contents'](candidate, wanted)
+            if args.failed_write:
+                report['rejected_write_not_persisted'] = '/Probe/'+REJECTED_NAME not in persisted
+                if not report['rejected_write_not_persisted']:
+                    raise ValueError('Rejected write unexpectedly persisted a file')
             report['fixture_persisted'] = '/Probe/CacheInclude.HC' in persisted
             if not report['fixture_persisted']:
                 raise ValueError('Include fixture was never persisted; inspect the earlier boot/oracle failure')

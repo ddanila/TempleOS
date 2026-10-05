@@ -9564,3 +9564,26 @@ The prior private-only 25-command pass remains separate evidence. Exact
 resident twenty-cycle recovery, full workstation and native retained builds
 remain live; checkpoints show continued command entry/function progress.
 Candidate remains unpromoted until the remaining gates finish.
+
+All-heap allocation-failure recovery green (2026-10-05):
+build/public-resident-propagation-failure-all-heaps/result.json passes all
+29 commands on 486,-fpu / 8 MiB, startup 28.167 seconds. Caller and persistent
+root public used-byte comparisons pass after strict key-up-only quiescence;
+independent private snapshots exactly match used 5381656 and allocations 7124,
+with identical base/capacity/signature. OutMem prompt recovery, zero borrow,
+exact lifetime references, later include 49, VGA, persisted bytes/volume and
+input immutability pass. This is the targeted failure contract, not all errors.
+
+New --failed-write original-model gate: attempt resident FileWrite with a
+filename longer than RedSea's directory-name capacity, require disk result 0
+but an owned FileRead from the published resident cache with original bytes.
+Original DskFile updates cache after the underlying RedSea write returns,
+whereas the candidate currently returns before cache update on disk result 0.
+Original oracle passes in build/public-resident-failed-write-red/oracle.
+Native 11-command qualification is live; do not infer a native red solely from
+source inspection. The independent audit additionally checks that the rejected
+long name does not become a persisted file; existing input/fixture equality and
+bitmap checks remain mandatory. That audit extension landed after the running
+process loaded its tool, so audit its candidate independently at completion.
+Exact twenty-cycle recovery, full workstation and retained native builds remain
+live and progress; candidate still unpromoted.
