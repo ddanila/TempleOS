@@ -12481,3 +12481,32 @@ build/extended-render-reuse-prototype/build/extended-render-reuse-bootstrap.log.
 Then rerun all four exact pixel/hotkey frames and full long sequence at 8 MiB.
 Prior native-generation candidate sources remain frozen and current installation
 process continues independently. Full release remains incomplete.
+
+Native installation fragmentation failure proved (2026-10-05):
+Native-generation process terminal FAIL at gen1-install while replacing
+ConsoleRuntime. Candidate deletes the old installed module but cross-directory
+FileMove returns false; native source remains under /Probe. Preserve generation
+logs, target candidate and bitmap. Independent new
+ tools/audit-i386-redsea-space.py verifies reachable filesystem/bitmap first,
+then reports aggregate free space and largest contiguous extent. Report
+build/extended-native-install-space.json: 3538944 free bytes in seven extents,
+largest1146368, native ConsoleRuntime1152984 bytes (needs1153024 sector-rounded).
+Disk SHA2564dc6fa9bbd545c56f54357fd58153fa365d872ae4f27e94f85c26f4919c22dc4.
+The current copy-publish-delete cross-directory move needs another contiguous
+full-file allocation, exceeding that largest gap despite enough total space.
+This changes next work from suspected heap allocation to file-move disk-space
+architecture. No native installation pass or automatic unchanged retry.
+
+TDD next: move a large regular file between directories on a fragmented valid
+volume with no file-sized free extent; require unchanged content/data extent,
+source disappearance, target publication, exact ownership bitmap, bounded
+metadata writes, rollback/recovery at each publication interruption. Implement
+an ownership-preserving directory move with durable intent and recovery instead
+of duplicating a live file's entire extent. Keep same-directory rename and
+existing negative/IO/recovery contracts. Installer ordering may improve space
+headroom but must not replace this general file-move correctness/resource gate.
+
+Renderer reuse bootstrap PASS both generations; full --test live session32659,
+output build/extended-render-reuse-prototype/build/extended-render-reuse-kernel.
+Native candidate sources remain preserved; full release and native generations
+still incomplete.
