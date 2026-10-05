@@ -11743,3 +11743,26 @@ EAX 0x12 and TF at reentry before G finishes with clean mode/IF/TF/heap; source
 disk unchanged. G/flags and S/flags now have focused runtime greens on the
 same flags image. This does not prove all flags, other-task control, full
 host qualification, native builds or installed/release readiness.
+
+Corrected G/stack green; alternate-stack S fails (2026-10-05):
+build/debug-public-stack-saved-esp-green/result.json PASS: five cycles/45
+commands, TCG 486,-fpu, 8 MiB, startup 31.750123808160424 seconds, physical
+MOV EAX,ESP equals requested stack and exact original ESP is restored; normal
+mode/IF/TF/heap checks pass, source disk unchanged. Identical corrected
+fixture on reader-ip is FAIL at its final physical stack check, proving the
+old return path cannot satisfy the contract. The earlier zero-result fixtures
+are preserved and superseded by this saved-ESP fixture evidence.
+
+build/debug-public-step-stack-saved-esp-green/result.json is FAIL during the
+first trap/edit/S interaction. Guest logs UNHANDLED 0000000000000001
+0000000000000000 then FAIL native kernel; it does not reach the expected
+single-step debugger reentry. Alternate-stack stepping remains a real open
+case, unlike the corrected G fixture. Investigate capture/debugger execution,
+stack ownership and unwinding on the selected stack; no S/stack green claimed.
+
+The fixed stack candidate now starts a six-retained-module guest build in
+build/debug-stack-native-build (KVM), with reference exports from its exact
+cross-build. This is independent early self-hosting evidence, not completion
+of the broader full --test or release gate. All candidate sources stay fixed.
+Native generations, alternate-stack S/overlap coverage, current installed
+workflows and final release artifact verification remain open.
