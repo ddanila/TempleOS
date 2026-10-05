@@ -10,7 +10,7 @@ and 45-command resident twenty-cycle recovery pass. Ordinary cold mutation
 and combined include/DolDoc/write/child also pass. Its full 513-command
 workstation and six native retained modules pass; installed-generation
 qualification is still running. The preceding ABI-46 candidate already passes
-full native twelve-module installation/audit and is rebuilding generation two.
+full native twelve-module installation/audit and two-generation byte identity.
 Neither candidate's partial evidence establishes complete M7 or release readiness.
 
 The promoted CPU-trap epoch now passes fully native twelve-module
@@ -10258,3 +10258,23 @@ not close stepping, user breakpoint installation, complete saved-register
 inspection or simultaneous debugger-session requirements. Full native
 integrated and previous-source generation-two builders were directly
 revalidated live, and installed workflows still wait for a successful audit.
+
+Parent candidate complete native generation identity; integrated CPU trap green
+(2026-10-05): build/public-resident-write-parent-generation-identity/result.json
+passes all twelve native modules, 487328-byte flat image and complete boot
+area equality across two independently built/installed generations. Both
+installed audits pass. Flat SHA-256 remains
+95b03ab60e754405149915f9120843bece7240e716f7412a2f06ca6745220d6b;
+second target is 24eb30c55e77ba107da6108dc56243681e76432a7c9feb824d3575f6263e9083.
+Both trees have valid bitmaps (16 directories, 871 files, 19033 owned sectors).
+Whole disk images differ; only the stated executable/module/boot identities
+are proven. This is fully native ABI-46 reproduction, not ABI-47 proof.
+
+build/file-cd-resident-integrated-cpu-trap/result.json passes five INT3/G
+cycles and 44 commands on 486,-fpu / 8 MiB, startup 26.959331 seconds with
+exact VGA, preserved EAX result, restored debugger mode/IF/TF and shell
+recovery. It does not prove S, managed breakpoints or complete register editing.
+The integrated full native driver is directly confirmed live at boot-image
+installation; its final audit and installed workflows remain pending. The
+existing integrated no-FPU retained builder remains live. Promotion/release
+still require the current source's remaining qualification.
