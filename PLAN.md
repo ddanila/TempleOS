@@ -9339,3 +9339,5 @@ failure pointers/booleans; choose cleanup/propagation behavior to preserve the
 original externally visible error while keeping state releasable. Do not
 promote the current happy-path bridge on parity/recovery greens alone.
 Full workstation and native builders remain live and progressing.
+
+Default-extension native qualification also passes all 17 no-FPU / 8 MiB commands: build/public-resident-include-default/result.json. Exact VGA, original oracle, persisted source/input immutability and independent filesystem audit pass. Both initial cache resolution and removal/disk repopulation work through the bare compiler include name.
