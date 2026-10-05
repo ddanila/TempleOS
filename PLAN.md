@@ -12077,3 +12077,35 @@ oversized kernel, not just this padded marker fixture. Follow with truncated/
 oversized/low-memory rejection, installed boot-area preservation, two native
 generations and exact source/code/resource checks. Physical hardware remains
 deferred; current full release qualification remains incomplete.
+
+Extended high-memory loader prototype verified (2026-10-05):
+The legacy load-reach oracle is now terminal FAIL in
+build/extended-boot-load-red; its source disk remains unchanged. New standalone
+tools/i386-extended-stage.asm retains the legacy BIOS first-stage and handoffs,
+reads payload sectors through a low-memory buffer and copies to 0x100000.
+Versioned E32B metadata declares exact length/base/FNV checksum; the loader
+bounds reads before filesystem LBA 2048, checks extended memory, verifies A20,
+checks complete payload integrity and validates its near-jump entry before
+publishing a separate image handoff at 0x5030. Legacy OS stage is unchanged.
+
+Run python3 tools/test-i386-extended-loader.py --out <fresh-directory>.
+Independent NASM fixture has 655360 payload bytes and checks first/tail markers
+at the high-memory destination. build/extended-loader-header-negatives/result.json
+passes eight QEMU TCG 486,-fpu cases: valid 8 MiB boot; checksum corruption;
+1 MiB insufficient memory; invalid magic/version/base; undersized and oversized
+length. Snapshot source disks and all pinned inputs remain unchanged.
+Payload SHA256: 57a2dd9d29c0fe923bfdfdfd42a986c4e278a465b00757a55a56420789d9c976.
+Earlier build/extended-loader-prototype and extended-loader-trace failures are
+preserved: fixture NASM optimized its jump to a short jump, violating the
+explicit E9 header. The corrected fixture emits the five-byte jump explicitly.
+
+This is isolated loader evidence, not an integrated TempleOS or installer pass.
+A20 currently uses verified port 92 only; BIOS/KBC fallback, early exception
+handling, complete executable-range 386 audit, actual high-linked kernel,
+high-image arena reservation, guest boot metadata/checksum regeneration,
+bounded native install and independent installed-image verification remain.
+Add truncated/entry/padding boundary negatives and qualify both native
+rebuild/install/reboot generations, then rerun debugger trace and release
+resource/workstation/no-FPU gates. Physical hardware verification stays deferred.
+Existing debug-stack native-generation and integrated no-FPU native-build
+processes were confirmed live during this checkpoint; no new pass claimed.
