@@ -12980,3 +12980,22 @@ freed/cyclic frame coverage or other-task TaskCaller semantics. Implement/publis
 Caller with valid private stack bounds in a separate candidate, qualify red/green,
 then extend debugger-stack/invalid-frame coverage. Existing live qualification
 sources remain frozen; original programming model compatibility stays required.
+
+
+Latest retained native PASS and public Caller binding candidate (2026-10-05):
+build/memory-baseline-native-build/result.json PASS all six native providers,
+sourceSHA256e0e66032d1349c7ea22ca52ffe6e33920c5d5e0ed531ee2b1ae832adde1064fb.
+Native MemoryRuntime312117 bytes SHA256
+ea14a46ed388784e7c57f745c03d6a473fbddd26ab491f658979f162cc5c2e52;
+other five provider hashes match TEST-fixed native source qualification. This
+qualifies retained rebuilding, not kernel installation/generation2. Actual
+latest-source two-generation runner started build/memory-baseline-native-generations.
+Separate build/extended-public-caller-bound-prototype adds NativeCaller using
+owned original/debug stack bounds, public _CALLER declaration and export, private
+kernel loader FrameParent/FrameReturn bindings, exact import allowlist and
+console version39. Cumulative i386-public-caller-integrated-candidate.patch
+preserves full implementation; patch/syntax checks PASS. Fresh bootstrap session
+36257 running before cross-build/green tests. No public Caller PASS claimed.
+Earlier intermediate caller prototypes are superseded; live main qualification
+sources remain untouched. Accidental root bootstrap invocation was stopped,
+its partial output retained separately and original root bootstrap restored.
