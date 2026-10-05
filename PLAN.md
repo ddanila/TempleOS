@@ -9,7 +9,8 @@ compressed cold-cache/directory-state contract, 29-command allocation recovery
 and 45-command resident twenty-cycle recovery pass. Ordinary cold mutation
 and combined include/DolDoc/write/child also pass. Its full 513-command
 workstation and six native retained modules pass; installed-generation
-qualification is still running. The preceding ABI-46 candidate already passes
+qualification is still running. Its first fully native twelve-module installed
+image and 386 audit now pass. The preceding ABI-46 candidate already passes
 full native twelve-module installation/audit and two-generation byte identity.
 Neither candidate's partial evidence establishes complete M7 or release readiness.
 
@@ -10278,3 +10279,23 @@ The integrated full native driver is directly confirmed live at boot-image
 installation; its final audit and installed workflows remain pending. The
 existing integrated no-FPU retained builder remains live. Promotion/release
 still require the current source's remaining qualification.
+
+Integrated full native installation/386 audit green (2026-10-05):
+build/file-cd-resident-integrated-selfhost/result.json passes all twelve native
+modules, flat construction, installation and independent 8 MiB boot with
+retained build/install provenance. Flat size 487336 bytes leaves 88 bytes
+inside the current BIOS payload limit; flat SHA-256:
+8eebe3e5df7f4928b438628dd1b49464a12f55291fb18e5706811258d271345f.
+Target SHA-256:
+5d37e3e92c0cab231aed01f4a8faf2e7b8c9a695a1ce48db1f54749f63ecf99f.
+The independent installed audit passes all twelve executable regions, BIOS/
+protected-mode 386 instructions, installed flat equality and filesystem bitmap.
+This is the integrated canonical cache/Cd ABI-47 source's own native result.
+
+Its second-generation retained build and all four dependent installed workflow
+jobs have started. Five-cycle CPU-trap/G continuation also runs directly on
+this installed target in build/file-cd-resident-integrated-installed-cpu-trap,
+so cross-image debugger evidence is not substituted for native emitted code
+and binding addresses. Full installed workstation/persistence/audio/pinned
+resources, current native generation identity and no-FPU retained construction
+remain pending; broader debugger/API and release requirements remain open.
