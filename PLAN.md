@@ -9818,3 +9818,17 @@ build/public-resident-write-parent-x64-rebuild.log. This is pending, and the
 candidate source must remain fixed while it runs. Both current i386 builders,
 workstation QEMU, and queued generation wrapper were directly revalidated
 live before launching this independent regression. No gates are waived.
+
+Matching candidate x86-64 self-rebuild green (2026-10-05):
+build/public-resident-write-parent-x64-rebuild/result.json is complete, and
+both native rebuilds finish with DONE rebuild. The second generation boots
+the first generation's generated compiler/kernel. All 1268 recorded source
+hashes were independently rechecked against the unchanged candidate checkout;
+all exported generation payload hashes also match the manifest. Compiler.BIN
+is 256592 bytes in each generation with 176 differing byte offsets;
+Kernel.BIN is 193088 bytes in each with 84 differing offsets. This satisfies
+the matching x86-64 boot/self-rebuild regression scope, not bit reproducibility
+or broad x86-64 behavioral coverage. The manifest's git revision identifies
+the prototype base; its source hashes identify the actual dirty candidate.
+Current parent i386 native builder and full workstation QEMU remain live;
+installed audits and second-generation 386 identity are still pending.
