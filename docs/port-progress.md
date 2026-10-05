@@ -12142,3 +12142,34 @@ DocEntryNewBase call. That canonical base allocator itself uses the wrapped
 CAlloc. This preserves allocation-failure injection coverage rather than
 silently bypassing its audit. Delta apply-check PASS. Runtime green and native
 provider qualification remain pending; root OS sources are unpromoted.
+
+
+### Text-run candidate builds; installed Caller workflows qualified (2026-10-05)
+
+Corrected text-run source bootstrap PASS: 1,270 sources and two generations in
+`build/document-run-load-candidate/build/rebuild-test/result.json`. Fresh cross
+build `document-run-kernel-v2` PASS, 495,992-byte kernel and 386 boot audit
+(96 BIOS / 209 protected-mode instructions). Three-cycle large-source regression,
+D: target-mount replay and six-provider native rebuild are running. The D: replay
+uses a writable copy of the earlier independently audited formatted target;
+source file bytes are unchanged. No full candidate suite or native PASS yet.
+
+First candidate focused run reached COMMAND OK and returned a valid DocRead
+pointer plus 1. It then failed exact VGA expectation because a standalone
+assignment prints its value. The fixture now uses distinct declaration
+initializers for each cycle, preserving exact byte-round-trip and free checks.
+Original failed run retained; corrected candidate and baseline runs are
+`build/document-run-large-source-green-v2` and
+`build/public-caller-large-source-red-v2`. Command-size preflight PASS for
+1, 3 and 20 cycles. Cross module audit cannot stand in for the native relocation
+audit: local cross calls are resolved internally and do not have its kind-2
+call-name records. Native audit remains pending.
+
+Earlier packaged Caller `build/public-caller-release-packaging/installed-workflows`
+is now terminal aggregate PASS, including all four workflow jobs and budgets.
+Workstation: 513 native commands, 576 submitted lines, 20 exact task-heap recovery
+cycles; startup 42.172 seconds and long-document update 0.272 seconds. DolDoc
+three boots 41.465 / 42.268 / 44.788 seconds; interrupt recovery 0.222 seconds.
+Speaker and resource jobs PASS. This is evidence for that immutable packaged
+Caller source epoch, not for the new text-run candidate. Earlier raw-image
+budget failures and large-document failure remain retained. Release open.

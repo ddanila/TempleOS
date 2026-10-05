@@ -10,13 +10,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def commands(cycles=3):
-    result=[('I64 lr_size=0,lr_saved_size=0;U8 *lr_raw=FileRead("C:/Kernel/I386/RedSeaCreate.HC",&lr_size);lr_size;', ['11210']),
-            ('CDoc *lr_doc;U8 *lr_saved;', [])]
+    result=[('I64 lr_size=0;U8 *lr_raw=FileRead("C:/Kernel/I386/RedSeaCreate.HC",&lr_size);lr_size;', ['11210'])]
     for cycle in range(cycles):
+        doc=f'lr_doc{cycle}';saved=f'lr_saved{cycle}';size=f'lr_size{cycle}'
         result.extend([
-            ('lr_doc=DocRead("C:/Kernel/I386/RedSeaCreate.HC",DOCF_NO_CURSOR);lr_doc!=0;', ['1']),
-            ('lr_saved=DocSave(lr_doc,&lr_saved_size);lr_saved_size==lr_size && !StrCmp(lr_saved,lr_raw);', ['1']),
-            ('DocDel(lr_doc);Free(lr_saved);6*7;', ['42'])])
+            (f'CDoc *{doc}=DocRead("C:/Kernel/I386/RedSeaCreate.HC",DOCF_NO_CURSOR);{doc}!=0;', ['1']),
+            (f'I64 {size}=0;U8 *{saved}=DocSave({doc},&{size});{size}==lr_size && !StrCmp({saved},lr_raw);', ['1']),
+            (f'DocDel({doc});Free({saved});6*7;', ['42'])])
     result.append(('Free(lr_raw);6*7;', ['42']))
     return result
 
