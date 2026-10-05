@@ -10740,3 +10740,23 @@ and ...-register-bank-edx each pass two edit/step/resume cycles and 25 commands.
 These establish retained default behavior alongside explicit-IP greens;
 remaining banks, full workstation and native generation gates continue on
 unchanged candidate sources. Release and promotion remain open.
+
+Managed breakpoint lifecycle missing-API red and candidate implementation
+(2026-10-05): build/debug-breakpoint-lifecycle-red terminates FAIL at the
+first BptS(CpuBptAddr), after normal executable/NOP fixture preparation.
+The frontend logs Undefined identifier and COMMAND ERROR. This establishes
+the missing lifecycle entry point; no later lifecycle assertion is a pass.
+
+A fork-origin main-only clone build/debug-breakpoint-prototype restores the
+canonical CBpt shape from Kernel/KernelA.HH and the original BptFind/BptS/
+BptR/B/B2 list/return/opcode semantics from Kernel/KDbg.HC. Native IRQ save/
+restore replaces PUSHFD/CLI/POPFD; current task uses I386TaskSelf, with the
+public allocation API for task-owned records. Five public bindings raise
+console exports from 140 to 145. Fresh original bootstrap is running in
+build/debug-breakpoint-candidate-bootstrap.log. Full source is archived in
+ docs/patches/i386-debug-breakpoint-candidate.patch and applies cleanly to
+main. This is an unqualified candidate; cross/runtime gates are still needed.
+Managed trap rewind, stepping/rearming, task/code ownership and exit cleanup
+remain required implementation and test work. Existing address/register/step
+candidate sources are unchanged while their qualification jobs continue;
+main OS remains unpromoted and release completion is unproven.
