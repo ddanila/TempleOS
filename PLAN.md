@@ -10403,3 +10403,23 @@ state is build/debug-single-step-runtime-pipeline.json. Neither is a pass yet.
 The unrelated root-cwd baseline remains separate evidence and is not read by
 this chain. Current ABI-47 installed workstation, generation reproducibility
 and no-FPU native construction remain pending on their existing sources.
+
+Single-step first observable green and broader qualification started
+(2026-10-05): the actual candidate original bootstrap, cross build and 386
+boot audit pass; kernel remains 483208 bytes. The runtime chain completes:
+build/debug-single-step-single-step/result.json passes store-before-return
+CPU single-step/reentry/G, and build/debug-single-step-continuation/result.json
+passes five ordinary INT3/G cycles. This is a demonstrated missing-S red to
+hardware-step green, not only a new public declaration. Existing frame return
+and debugger mode/IF/TF restoration remain covered. Default/current-task
+scope is unchanged; other-task/new-IP arguments and full breakpoint/register
+features remain open.
+
+The single-step checker now accepts --cycles (1..20) and repeats the full
+step/resume/result/mode/flag checks with the existing warmed heap equality
+probe. Five step cycles run in build/debug-single-step-repeat. Full no-FPU
+8 MiB workstation runs in ...-workstation and six native retained modules
+build in ...-native-build. These are pending current-step-source gates; the
+previous integrated cache/Cd builds cannot substitute for the changed retained
+console. The source stays fixed while these jobs run. No promotion or release
+completion is claimed from the first functional green.
