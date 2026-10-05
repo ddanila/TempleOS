@@ -9341,3 +9341,20 @@ promote the current happy-path bridge on parity/recovery greens alone.
 Full workstation and native builders remain live and progressing.
 
 Default-extension native qualification also passes all 17 no-FPU / 8 MiB commands: build/public-resident-include-default/result.json. Exact VGA, original oracle, persisted source/input immutability and independent filesystem audit pass. Both initial cache resolution and removal/disk repopulation work through the bare compiler include name.
+
+Native include allocation-failure regression gate (2026-10-05):
+The include tool adds --allocation-failure, explicitly native-only after the
+original functional oracle. Set the resident entry byte count to 0x100000000
+to force public allocation rejection without copying nonexistent data; require
+Out of memory from include, restore count 19, require borrowed file-state busy
+zero and successful cached include 49. Before injection the test checks busy
+zero, sizeof(CTask)==992 and observer file_state offset 1052. The tool validates
+on-image Scheduler/Context/TaskFiles source layouts before using this private
+ABI observer and records their SHA256s; unknown layouts require review.
+Current ABI-45 layout validation and Python compilation pass. The original
+normal include oracle passes; the native 19-command failure run is live in
+build/public-resident-include-oom-red, currently declaring its observer helper.
+The live run predates the source fingerprint guard; its same disk layout was
+independently validated afterwards. This is not a verified red result yet.
+Full workstation and both retained builders are revalidated live; the candidate
+remains unpromoted until exception cleanup and the other open gates qualify.
