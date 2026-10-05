@@ -11970,3 +11970,24 @@ complete three-byte NOP window before patching. Fresh bounded red/green runs
 are build/debug-initial-alternate-stack-bounded-{red,green}; no result yet.
 Complete host/native/install qualification, allocation-failure recovery,
 frame walking and private memory budgets remain open; candidate unpromoted.
+
+First trap on alternate stack qualified; caller-identity TDD (2026-10-05):
+build/debug-initial-alternate-stack-bounded-green PASS five cycles/45 commands,
+TCG 486,-fpu/8 MiB, startup 37.53534290520474 seconds, source disk unchanged.
+Physical ESP switches before the first actual INT3; captured RSP, debugger
+commands, G physical result and exact original ESP restoration all pass.
+The same bounded fixture on the pre-owned stack image fails with
+UNHANDLED 1 0 / FAIL native kernel on first trap, preserving the red evidence.
+Owned execution no longer depends on a prior original-stack debugger anchor.
+
+New tools/test-i386-debug-cpu-trace.py requires except_callers[0], recorded by
+throw on the debugger execution stack, to fall inside the live allocation of
+the actual throwing function. Its nested catch sleeps, then G and normal
+mode/IF/TF/heap checks remain. This is a bounded identity oracle, not merely
+nonzero pointer validation. Five independent fixtures pass command preflight.
+Runtime red runs on parser-stack in build/debug-cpu-trace-owned-red. Kernel
+Debug.HC Caller and ExceptRuntime.HC throw still walk only original task stack
+bounds; debugger-owned region support must preserve header/parent/cycle bounds
+and allocation ownership. No frame-walking green or complete trace claimed.
+Full host audits and the fixed pre-owned stack's native-generation chain remain
+active; newer candidate native/install/release qualification is outstanding.
