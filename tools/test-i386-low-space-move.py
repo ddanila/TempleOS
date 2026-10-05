@@ -76,6 +76,17 @@ def main():
         block, length = source[3:5]
         if after[block*512:block*512+length] != image[block*512:block*512+length]:raise ValueError('Move wrote payload')
         if after[:2048*512] != image[:2048*512]:raise ValueError('Move changed boot area')
+        allowed = []
+        for parent_block in (source[0], directory[3]):
+            parent_size = struct.unpack_from('<q', image, parent_block*512+48)[0]
+            allowed.append((parent_block*512, parent_block*512+parent_size))
+        changed_sectors = set()
+        for offset, (old, new) in enumerate(zip(image, after)):
+            if old != new:
+                if not any(begin <= offset < end for begin, end in allowed):
+                    raise ValueError('Move changed bytes outside its two directories')
+                changed_sectors.add(offset//512)
+        report['changed_directory_sectors'] = sorted(changed_sectors)
         report['filesystem'] = verify(candidate)
         if any(sha(Path(p)) != h for p, h in pins.items()):raise ValueError('Inputs changed')
         report['result'] = 'pass'

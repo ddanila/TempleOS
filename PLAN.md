@@ -12648,3 +12648,20 @@ build remains confirmed live PID3799572; full --test PID3797124 continues. Keep
 current handles/source pins rather than restart on duration. On native build
 success run original fragmented-module fixture and two-generation install chain.
 Full release objective stays open.
+
+Actual low-space same-extent move green (2026-10-05):
+build/low-space-module-move/result.json PASS on exact recovery-corrected image.
+ConsoleRuntime1060985 bytes moves out and back while largest free extent is only
+512 bytes. Extent/size/date/attributes, payload, allocation bitmap and boot area
+unchanged; both namespace transitions return1, arithmetic42, independently valid
+filesystem, input pins unchanged. This proves the new move avoids a full-file
+copy on that valid low-space fixture. Actual installation-derived fragmentation
+and two native generations still depend on the running six-module rebuild.
+
+Host oracle now compares every backing-image byte outside the two affected
+directories and reports changed directory sectors. New stronger run live
+session86012, build/low-space-move-bounded-writes. This checks final persistent
+changes, not all transient journal writes or power-loss durability. Earlier pass
+retains its original checker hash and narrower scope. Full test is still live
+in document checks; native retained build PID3799572 is confirmed live. No
+terminal full/native generation/release completion claimed.
