@@ -10299,3 +10299,20 @@ so cross-image debugger evidence is not substituted for native emitted code
 and binding addresses. Full installed workstation/persistence/audio/pinned
 resources, current native generation identity and no-FPU retained construction
 remain pending; broader debugger/API and release requirements remain open.
+
+Integrated native installed audio and pinned resource gates green (2026-10-05):
+build/file-cd-resident-integrated-installed-speaker/result.json passes captured
+440/880 Hz sequence and console tone/off/reset contract on target
+5d37e3e92c0cab231aed01f4a8faf2e7b8c9a695a1ce48db1f54749f63ecf99f.
+Input disk and WAV identities are independently rehashed; assess_wav is rerun
+and its measurements exactly match the recorded result. Source stays unchanged.
+
+build/file-cd-resident-integrated-installed-resource-pinned/resource-result.json
+passes TCG 486,-fpu / 8 MiB with that same pinned target identity and preserved
+QEMU configuration. Twenty development cycles measure live baseline 1352496,
+live peak 1356112, reserved peak 1365504 and temporary growth 3616 bytes, with
+shared code/data accounting and an arena that fits RAM. These are current
+ABI-47 native installed results rather than previous-source measurements.
+Installed workstation, three-boot DolDoc and CPU-trap checks remain pending;
+second native generation and no-FPU retained builders are revalidated live.
+Full debugger/API completion, promotion and release requirements remain open.
