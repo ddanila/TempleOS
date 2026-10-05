@@ -12398,3 +12398,28 @@ It logs task data-heap use before each text mode while preserving original full
 sequence. No measurements or full-suite success claimed before completion.
 New combined candidate full --test remains live. Physical verification stays
 deferred and full objective remains incomplete.
+
+Combined extended native six-module build PASS (2026-10-05):
+build/extended-immediate-native-build/result.json PASS, all six retained modules
+built by the actual resident compiler, source disk SHA256
+5a6de32b1d21c85e35f4b7843a7b818ea30a2caf0195336941782630a141823d.
+CompilerRuntime native SHA256 c9c22e68943caad9d01b1dbc50d0528ac804ed6014c64e5caa3a28ffb5d64ff9;
+other exact native/reference hashes retained in result. Cross/native binary
+identity is not claimed. Two native generations now run session 59834,
+build/extended-immediate-native-generations, repository
+build/extended-assembler-immediate-prototype, exact extended stage listing.
+Freeze candidate sources/tools while native chain qualifies installation,
+selfhost flat modules, independent boot audit and next generation.
+
+Instrumented session first failed compiling its diagnostic helper (inline for
+variable declaration unsupported). Preserve build/text-memory-session; stopped
+that observed failed process tree. Corrected declaration before loop reaches
+actual TextFrameDemo failure in build/text-memory-fixed-session, session65099.
+E9 nibble logs decode to 1479800 live task-data bytes before include and 1482336
+before TextFrameDemo(0). This only measures task live data, not code/private
+heap reservations, largest free block or complete memory pressure. Do not claim
+exhaustion from these numbers. Combined cleanup/assembler full --test also
+fails at the same TextFrameDemo command; source-proven cleanup fix did not
+resolve the original trigger. Preserve exact input artifacts and native pass.
+Next investigate exception/allocator failure with complete reserved/live/free
+measurements while independent native generations run. Full release open.
