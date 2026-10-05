@@ -9677,3 +9677,29 @@ yet. This replaces speculation about parent behavior with a concrete contract.
 ABI-46 child/cache parity is requalifying in build/public-resident-write-attempt-child;
 all-heap failure recovery and native retained builds remain live. PLAN's current
 status is updated to distinguish these epochs from older historical greens.
+
+Automatic parent creation verified red; candidate implemented (2026-10-05):
+build/public-resident-write-parent-red is terminal fail at ParentWrite. Debug
+reports parent resolve error for /Probe/CacheNewRoot/Deep and helper returns
+0; independent audit confirms expected nested bytes absent. Original oracle
+passes. This proves missing automatic parent creation on public FileWrite.
+ABI-46 all-heap allocation recovery passes 29 commands in
+build/public-resident-write-attempt-failure-recovery, and child teardown parity
+passes 23 in ...-child; both no-FPU / 8 MiB with exact VGA/disk audits.
+
+New docs/patches/i386-public-resident-write-parent-candidate.patch adds a
+public-write parent walker. Resolve each prefix under a balanced volume session;
+create missing prefixes via the existing directory mutation, reject non-directory
+or failed prefixes, restore temporarily truncated path on every return. The
+caller file/directory state stays borrowed and unchanged. Private writes retain
+their existing context requirements. Partial directory creation is not rolled
+back, matching original make_dirs behavior; regular-file-parent replacement
+and all failure-side-effect semantics still need their own measured contract.
+Service ABI remains 46. Binding/whitespace checks and patch application pass;
+fresh original bootstrap is running. No compiled/runtime pass yet.
+
+Parent oracle now also captures caller directory and drive before writing,
+requires both unchanged after write/read, and frees its owned directory copy
+on either Boolean outcome. Both helper lines fit 255 bytes (largest 233).
+Required next gates: original strengthened oracle, parent-create green, rejected
+raw/.Z lifecycle, all-heap/child recovery, full workstation and native generations.

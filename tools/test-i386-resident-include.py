@@ -26,8 +26,11 @@ FAILED_WRITE = ('Bool FailedWriteCache(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1
                 'U8 *p=FileRead(n,&s);Bool ok=!r&&p&&s==19&&p[15]==54;Free(p);return ok;}')
 FAILED_DROP = ('Bool FailedDrop(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0);'
                'return !r&&!HashFind(n,adam_task->hash_table,HTT_FILE);}')
-PARENT_WRITE = ('Bool ParentWrite(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0),s;'
-                'U8 *p=FileRead(n,&s);Bool ok=r>0&&p&&s==19&&p[15]==54;Free(p);return ok;}')
+PARENT_CONTEXT = ('Bool ParentContext(U8 *p,U8 *d){Bool ok=Fs->cur_dv==d&&!StrCmp(p,Fs->cur_dir);'
+                  'Free(p);return ok;}')
+PARENT_WRITE = ('Bool ParentWrite(U8 *n){U8 *old=StrNew(Fs->cur_dir),*drive=Fs->cur_dv,*p;'
+                'I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0),s;p=FileRead(n,&s);'
+                'Bool same=ParentContext(old,drive),ok=r>0&&p&&s==19&&p[15]==54&&same;Free(p);return ok;}')
 
 
 def failure_layout(auditor, disk):
@@ -141,7 +144,8 @@ def main():
                 index = oracle.index('Report("DONE resident include\n");}')
                 oracle[index:index] = [f'if(!FailedDrop("B:/{rejected_name}")){{Report("FAIL rejected removal\n");return;}}']
         if args.parent_write:
-            oracle.insert(oracle.index('U0 IncludeCache(){'), PARENT_WRITE)
+            index = oracle.index('U0 IncludeCache(){')
+            oracle[index:index] = [PARENT_CONTEXT, PARENT_WRITE]
             oracle.insert(oracle.index('Report("DONE resident include\n");}'),
                           'if(!ParentWrite("B:/CacheNewRoot/Deep/Parent.HC")){Report("FAIL parent creation\n");return;}')
         #HolyC strings need literal escape sequences, not embedded line breaks.
@@ -188,7 +192,7 @@ def main():
                 commands += [(f'FailedDrop("C:/Probe/{rejected_name}");', ['1'])]
         if args.parent_write:
             index = next(i for i, (source, _) in enumerate(commands) if source.startswith('FileWrite('))
-            commands.insert(index, (PARENT_WRITE, []))
+            commands[index:index] = [(PARENT_CONTEXT, []), (PARENT_WRITE, [])]
             commands += [('ParentWrite("C:/Probe/CacheNewRoot/Deep/Parent.HC");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.default_extension:
