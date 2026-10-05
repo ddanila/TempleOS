@@ -10,25 +10,23 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def commands(cycles=1):
-    base = runpy.run_path(str(ROOT / 'tools/test-i386-debug-single-step.py'))['commands'](cycles)
+    base = runpy.run_path(str(ROOT / 'tools/test-i386-debug-cpu-trap.py'))['commands']()
     from copy import deepcopy
     checks = [deepcopy(check) for check in base]
-    checks[0] = (checks[0][0] + 'I64 CpuFrameSp=0,CpuFrameBp=0;', [])
-    source, answers = checks[2]
-    source = source.replace('asm { MOV EAX,0x11223344', 'CpuFrameSp=GetRSP;CpuFrameBp=GetRBP;asm { MOV EAX,0x11223344')
-    checks[2] = (source, answers)
-    for index, check in enumerate(checks):
-        if len(check) != 3:
-            continue
-        source, answers, interaction = check
-        prefix = interaction['events'][2]['expect_rows'][:-1]
-        inspect = 'TaskRegAddr(Fs,4)[0]==CpuFrameSp&&TaskRegAddr(Fs,5)[0]==CpuFrameBp;'
-        interaction['events'][3:3] = [
-            {'text': inspect}, {'key': 'ret'},
-            {'expect_rows': prefix + ['dbg> ' + inspect, '1', 'dbg> '], 'label': 'captured-stack-registers'},
-        ]
-        checks[index] = (source, answers, interaction)
-    return checks
+    checks[0] = (checks[0][0] + 'U32 *CpuFrameSp=0,*CpuFrameBp=0;', [])
+    checks[2] = ('I64 CpuTrapInstruction(){U32 s=0,b=0;CpuFrameSp=&s;CpuFrameBp=&b;asm { MOV EAX,ESP MOV U32 &s[EBP],EAX MOV EAX,EBP MOV U32 &b[EBP],EAX NOP NOP NOP }return 0x11223344;}', [])
+    checks[4] = ('Bool CpuTrapFind(){I64 n=MSize(CpuTrapBytes);while(CpuTrapOffset+2<n&&(CpuTrapBytes[CpuTrapOffset]!=0x90||CpuTrapBytes[CpuTrapOffset+1]!=0x90||CpuTrapBytes[CpuTrapOffset+2]!=0x90))CpuTrapOffset++;return CpuTrapOffset+2<n;}', [])
+    source, answers, interaction = checks[9]
+    heading = interaction['initial_rows']
+    inspect = 'TaskRegAddr(Fs,4)[0]==CpuFrameSp[0]&&TaskRegAddr(Fs,5)[0]==CpuFrameBp[0];'
+    interaction['events'] = [
+        {'text': inspect}, {'key': 'ret'},
+        {'expect_rows': heading[:-1] + ['dbg> ' + inspect, '1', 'dbg> '], 'label': 'captured-stack-registers'},
+        {'text': 'G;'},
+    ]
+    interaction['final_rows'] = heading[:-1] + ['dbg> ' + inspect, '1', 'dbg> G;']
+    checks[9] = (source, answers, interaction)
+    return checks[:9] + [deepcopy(check) for _ in range(cycles) for check in checks[9:]]
 
 
 def main():
@@ -44,7 +42,7 @@ def main():
     disk_hash, checker_hash = sha(args.disk), sha(Path(__file__))
     report = {'result': 'fail', 'disk_sha256': disk_hash, 'checker_sha256': checker_hash, 'cycles': args.cycles,
               'original_contract_source_sha256': sha(ROOT / 'Kernel/KDbg.HC'),
-              'scope': 'Native TDD: TaskRegAddr ESP/EBP slots match GetRSP/GetRBP captured before INT3, then S/G preserve function result and flags/mode. Not stack-pointer editing or complete debugger coverage.'}
+              'scope': 'Native TDD: TaskRegAddr ESP/EBP slots match assembly snapshots taken immediately before INT3, then G preserves function result and flags/mode. Not stack-pointer editing or complete debugger coverage.'}
     try:
         dependencies = [ROOT / 'tools/test-i386-debug-single-step.py', ROOT / 'tools/test-i386-debug-cpu-trap.py']
         report['dependency_sha256'] = {str(p.relative_to(ROOT)): sha(p) for p in dependencies}

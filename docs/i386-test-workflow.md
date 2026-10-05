@@ -5143,3 +5143,31 @@ source calculation alone does not prove public stack-register correctness.
 Stack editing, instruction-pointer/flags edits, other-task controls,
 concurrent ownership, original runtime comparisons and release completion
 remain open. Main OS and live candidate sources remain unchanged.
+
+Physical ESP/EBP inspection green and register native generations verified
+(2026-10-05): initial build/debug-stack-registers fails its combined comparison
+of debugger slots with GetRSP/GetRBP values from separate HolyC assignments.
+The expectation compares different evaluation points; backend source shows
+GetRSP emits the current ESP inside expression evaluation, which can include
+compiler temporaries. This fixture does not establish a debugger conversion
+bug. Preserve its failure. The checker now captures physical ESP/EBP in one
+assembly block immediately before NOP/INT3, storing snapshots in live locals
+reachable through globals, without expression evaluation between capture
+and trap. It then compares public I64 slots with those U32 snapshots and G
+returns the expected result with mode/flags restored.
+
+build/debug-stack-registers-asm passes 16 commands on 486,-fpu / 8 MiB,
+startup 34.467013 seconds, exact VGA and unchanged image; dependency/checker
+identities remain pinned. Five independent cycles run in ...-asm-repeat.
+This proves inspection, not ESP/EBP editing or complete debugger coverage.
+
+Register-source full native generation equality PASS is independently rerun
+in build/debug-register-generation-identity-recheck: twelve identical native
+modules, flat 487336 bytes with SHA
+8eebe3e5df7f4928b438628dd1b49464a12f55291fb18e5706811258d271345f,
+boot area SHA
+39c511c316094a6cf4dcdd01aab0f77b307637e1a6772861ad9764eca09a360f.
+Both volumes have 16 directories, 872 files, 19089 owned sectors and bitmaps
+matching reachable extents. Whole disk images differ; no whole-volume identity
+claim. Later managed/G2 generations remain separate pending gates. Main OS
+is unpromoted and the full self-hosting/release objective remains open.
