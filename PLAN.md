@@ -9452,3 +9452,24 @@ rerun on its resulting image. The test report now identifies an absent include
 fixture separately from changed persisted bytes, retaining boot error evidence.
 Original parity oracles passed, but neither rejected image reached native
 behavior qualification. The candidate remains unpromoted.
+
+Bound propagation build and help-oracle correction (2026-10-05):
+Fresh bootstrap/cross/386 audit pass on the bound propagation candidate.
+Kernel is 483200 bytes (+8 for its specific helper bindings); disk SHA256:
+f5958d48c8eb36962f64c66ec38ce4eb6b91bf01698edc9c1a7f0af355357045.
+Allocation failure is rerunning on this image in
+build/public-resident-include-oom-propagation-bound; verdict pending.
+
+The earlier full ABI-45 workstation run is terminal at help-man-page-link.
+Its source viewer correctly shows the persisted three-argument FileRead
+addition in PublicFiles.HH, while the harness's hardcoded expected listing
+omits it. This is a source-fixture oracle mismatch, not established UI failure.
+The main harness now derives source-view rows from the independent persisted
+input disk reader, starting at a unique Dir declaration and retaining exact
+80-column wrapping and pixel matching. Expected rows never come from guest
+rendered output. Python checks and direct row verification pass (26 rows,
+including FileRead). Focused help group runs in
+build/public-resident-include-help-dynamic; the new propagation image's full
+workstation runs in build/public-resident-propagation-bound-workstation.
+These runtime checks are pending. The earlier full run cannot count as a
+513-command pass. Both retained builders remain live and unmodified.

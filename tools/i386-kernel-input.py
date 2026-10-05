@@ -20,6 +20,23 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def source_view_rows(disk, path, marker):
+    """Expected source pixels come from persisted input bytes, not guest output."""
+    import runpy
+    build = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
+    data = build['mutated_file_contents'](disk, {path}).get(path)
+    if data is None:
+        raise ValueError('Missing source-view fixture: '+path)
+    lines = data.decode('latin1').split('\n')
+    starts = [i for i, line in enumerate(lines) if line.startswith(marker)]
+    if len(starts) != 1:
+        raise ValueError('Source-view declaration is not unique: '+marker)
+    rows = ['TempleOS i386', 'Help: C:'+path, '']
+    for line in lines[starts[0]:]:
+        rows.extend(line[i:i+80] for i in range(0, len(line)+1, 80))
+    return rows
+
+
 def parent_death_signal():
     """Stop QEMU if a terminated test runner cannot reach its cleanup block."""
     if sys.platform != 'linux':
@@ -1810,28 +1827,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                       'Cmd Line Routines','','Take Tour','']
             cmd_selected_colors={(11,index):15 for index in range(10)}
             cmd_selected_backgrounds={(11,index):1 for index in range(10)}
-            dir_source_rows=['TempleOS i386','Help: C:/Kernel/I386/PublicFiles.HH','',
-                             'public _extern _DIR I64 Dir(U8 *filename=NULL);',
-                             'public _extern _ED_DIR Bool EdDir(U8 *directory=NULL);',
-                             'public _extern _FILE_DEL Bool FileDel(U8 *filename);',
-                             'public _extern _FILE_RENAME Bool FileRename(U8 *old_filename,U8 *new_filename);',
-                             'public _extern _DIR_DEL Bool DirDel(U8 *filename);',
-                             'public _extern _FILE_MOVE Bool FileMove(U8 *old_filename,U8 *new_filename);',
-                             '//Exact source/module-tree transport between mounted drives; -1 on failure.',
-                             '//A positive limit stops after that many files for a resumable bounded pass.',
-                             'public _extern _I386_INSTALL_TREE I64 I386InstallTree(',
-                             '  U8 *source,U8 *target,I64 limit=0);',
-                             'public _extern _I386_INSTALL_BOOT Bool I386InstallBoot(U8 *source,U8 *target);',
-                             '//Install a linked flat-image file with LBA 0 written last on a blank target.',
-                             'public _extern _I386_INSTALL_BOOT_IMAGE Bool I386InstallBootImage(',
-                             '  U8 *source,U8 *target,U8 *image_file);',
-                             '//Bootstrap modules execute before the interactive break service is loaded.',
-                             'public _extern _I386_BUILD_MODULE I64 I386BuildModule(',
-                             '  U8 *source,U8 *target,Bool boot_module=FALSE);',
-                             '//Link six boot modules to a flat file at 0x11000; publication is separate.',
-                             'public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(',
-                             '  U8 *kernel_module,U8 *helper_directory,U8 *target);',
-                             '#endif','']
+            dir_source_rows=source_view_rows(disk, '/Kernel/I386/PublicFiles.HH',
+                                             'public _extern _DIR I64 Dir(')
             submit('CHashSrcSym *help_mn_symbol=HashFind("Dir",Fs->hash_table,HTG_SRC_SYM);', [], 'help-man-page-symbol')
             submit('help_mn_symbol!=0;', ['1'], 'help-man-page-symbol-present')
             submit('help_mn_symbol->src_link!=0;', ['1'], 'help-man-page-source-present')
