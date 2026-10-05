@@ -13302,3 +13302,29 @@ not completed physical-stack assertion. Paced4characterchunks with exactVGA
 checkpoints preserve assertions; fresh5cycle/45command step-stack PASS on same
 image in build/public-caller-step-stack-paced. OriginalaggregateFAIL retained;
 no altered-runtime claim. Full promotion and release readiness remainopen.
+
+
+### Large document read failure narrowed (2026-10-05)
+
+The latest Caller full suites in `build/public-caller-archive-current` and
+`build/extended-public-caller-bound-prototype` stopped at the target-mount
+`DocRead("D:/Kernel/I386/RedSeaCreate.HC")!=0;` check after directory listing
+succeeded. They are failed suites, not full qualification passes.
+
+A fresh writable source/target-copy probe in
+`build/public-caller-target-read-focus/behavior` allowed 180 seconds for that
+command. It still failed; the final VGA capture explicitly says **Out of
+memory**, and the debug log records `COMMAND ERROR`. A separate snapshot probe
+against the packaged native Caller generation-two disk, in
+`build/public-caller-large-doc-c-focus`, also reached `COMMAND ERROR` while
+reading the same 11,210-byte source from C:. Both processes are terminal.
+This rules out treating the symptom as only a secondary-disk timeout; it does
+not yet identify whether file-read allocation or document construction fails.
+
+The parser currently inserts plain text through `DocPutKey`, whose shared
+editing core reallocates each growing text record for every inserted character.
+That is an inspection finding, not a proven cause of this failure. A direct
+`FileRead`/length/free probe is running in
+`build/public-caller-file-read-focus` to separate file access from parsing.
+The existing redraw candidate full suite and six-provider native build were
+confirmed live. No OS source was promoted and release qualification remains open.
