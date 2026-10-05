@@ -10246,3 +10246,15 @@ build/public-resident-write-parent-gen2-native-install/result.json; its full
 flat builder is directly confirmed live. Installed workflow/audit and complete
 generation comparisons remain pending; integrated no-FPU retained construction
 continues on its existing handle. No source promotion or release is claimed.
+
+Integrated CPU-trap debugger regression started (2026-10-05):
+The existing independent VGA INT3/function/source/state/G-resume checker now
+runs five cycles against the integrated ABI-47 image in
+build/file-cd-resident-integrated-cpu-trap. It requires preserved EAX result,
+restored debugger mode/IF/TF and shell recovery on 486,-fpu, with source/checker
+hash equality. This supplies current-source regression evidence for the
+already promoted CPU-trap continuation behavior; verdict is pending. It does
+not close stepping, user breakpoint installation, complete saved-register
+inspection or simultaneous debugger-session requirements. Full native
+integrated and previous-source generation-two builders were directly
+revalidated live, and installed workflows still wait for a successful audit.
