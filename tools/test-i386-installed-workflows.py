@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -36,10 +37,23 @@ def main():
             not native.get('flat_sha256') or
             native['flat_sha256'] != audit.get('flat_sha256')):
         parser.error('Installed audit must pass for the native flat payload')
-    # Pin transitive Python helpers as well as the font used by VGA checks.
+    # Execute frozen helpers so unrelated development cannot alter this run.
+    out.mkdir(parents=True)
+    snapshot = out / 'harness'
+    helper_sources = [ROOT / 'Kernel/FontStd.HC',
+                      *sorted((ROOT / 'tools').glob('*.py'))]
+    helper_identity = {}
+    for source in helper_sources:
+        digest = sha(source)
+        destination = snapshot / source.relative_to(ROOT)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+        if sha(destination) != digest or sha(source) != digest:
+            raise ValueError('Helper changed while creating snapshot: ' + str(source))
+        helper_identity[str(source.relative_to(ROOT))] = digest
     inputs = {str(p): sha(p) for p in
-              [disk, native_path, audit_path, ROOT / 'Kernel/FontStd.HC',
-               *sorted((ROOT / 'tools').glob('*.py'))]}
+              [disk, native_path, audit_path,
+               *[snapshot / name for name in helper_identity]]}
     jobs = [
         ('workstation', 'i386-kernel-input.py',
          [disk, '--cpu', '486,-fpu', '--qmp-stdio', '--writable-copy'], 'result.json'),
@@ -49,9 +63,9 @@ def main():
         ('resource', 'test-i386-resource-profile.py',
          ['--disk', disk, '--accel', 'tcg'], 'resource-result.json'),
     ]
-    out.mkdir(parents=True)
     report = {'result': 'running', 'cpu': '486,-fpu', 'ram_mib': 8,
-              'accel': 'tcg', 'input_sha256': inputs, 'jobs': {}}
+              'accel': 'tcg', 'input_sha256': inputs,
+              'harness_sha256': helper_identity, 'jobs': {}}
 
     def save():
         (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -64,9 +78,9 @@ def main():
         name, tool, arguments, result_name = job
         unchanged()
         with (out / (name + '.log')).open('w') as log:
-            subprocess.run([sys.executable, str(ROOT / 'tools' / tool),
+            subprocess.run([sys.executable, str(snapshot / 'tools' / tool),
                             *map(str, arguments), '--out', str(out / name)],
-                           cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, check=True)
+                           cwd=snapshot, stdout=log, stderr=subprocess.STDOUT, check=True)
         path = out / name / result_name
         result = json.loads(path.read_text())
         if result.get('result') != 'pass':

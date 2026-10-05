@@ -11266,3 +11266,24 @@ running; state build/debug-concurrent-preload-pipeline.json, candidate out
 build/debug-concurrent-prototype/build/debug-concurrent-preload. The updated
 full patch applies cleanly to main. No diagnostic fix PASS, promotion or
 complete debugger/release qualification is claimed.
+
+Installed qualification freezes its execution helpers (2026-10-05):
+The G2 installed DolDoc subprocess completes PASS, including three boots,
+persistence and filesystem integrity, but its wrapper marks the job failed
+with Qualification inputs changed during execution. The initial runner pinned
+all root tools; unrelated concurrent debugger fixture edits invalidated that
+identity. Preserve that wrapper result as unqualified; do not interpret the
+wrapper failure as a DolDoc OS failure or reuse it as four-gate PASS.
+
+Updated tools/test-i386-installed-workflows.py copies all Python helpers and
+Kernel/FontStd.HC into each fresh output's harness directory. Copy digests
+must match source digests, then all four subprocesses execute those copies
+with snapshot cwd. Disk/prerequisite and snapshot hashes remain checked
+before/after every job, so actual execution inputs stay pinned while root
+work continues. Existing-output and exact-native-disk preflight remain intact.
+A fresh G2 run is build/debug-go-clear-installed-frozen. Its 151 helper/font
+identities independently match; process arguments confirm workstation and
+DolDoc execute the frozen paths. Full four-gate verdict remains pending.
+The preload diagnostic pipeline separately reaches console loading with the
+provider already resident; its terminal result is still pending. Candidate
+promotion, full parity and release completion remain open.
