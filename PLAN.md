@@ -10316,3 +10316,17 @@ ABI-47 native installed results rather than previous-source measurements.
 Installed workstation, three-boot DolDoc and CPU-trap checks remain pending;
 second native generation and no-FPU retained builders are revalidated live.
 Full debugger/API completion, promotion and release requirements remain open.
+
+Integrated native installed CPU-trap debugger green (2026-10-05):
+build/file-cd-resident-integrated-installed-cpu-trap/result.json passes five
+INT3/G cycles and 44 commands on native target
+5d37e3e92c0cab231aed01f4a8faf2e7b8c9a695a1ce48db1f54749f63ecf99f,
+using 486,-fpu / 8 MiB. Startup 43.791605 seconds, exact debugger VGA,
+function/source/state inspection, EAX preservation, debugger mode/IF/TF
+restoration and shell recovery pass. Checker and source image hashes remain
+unchanged. This closes current installed continuation regression only;
+single-step S, managed breakpoints, complete register inspection/editing and
+concurrent debugger sessions remain explicit unimplemented/unproved scope.
+Installed workstation/DolDoc workflows and second native generation remain
+pending, with generation wrapper and no-FPU native builder directly confirmed
+live. Passing these limited debugger checks does not establish complete M7.
