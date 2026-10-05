@@ -5225,3 +5225,25 @@ qualification runner. Main OS remains unpromoted; G2 native/installed gates,
 other-task and simultaneous debugger behavior, full API parity and release
 artifacts remain open. The long no-FPU integrated build is confirmed live;
 no terminal verdict is claimed.
+
+Reusable installed workstation qualification (2026-10-05):
+tools/test-i386-installed-workflows.py replaces the ad hoc four-job wrapper.
+It requires a passing guest-built native result whose target hash matches
+--disk, plus a passing installed audit with the same flat payload hash.
+It runs workstation, three-boot DolDoc session, emulated speaker waveform
+and pinned resource profile in parallel on TCG / 486,-fpu / 8 MiB. It pins
+the disk, prerequisite results, Python helpers and VGA font before/after
+execution; retains per-job logs/results and rejects existing output trees.
+Preflight checks reject both existing evidence and a mismatched generation
+without creating the rejected output directory. Real execution is pending
+in build/debug-go-address-installed-workflows. The later G2 run is queued
+behind the confirmed live native runner, waiting for gen1 installed audit;
+its destination is build/debug-go-clear-installed-workflows. No four-gate
+PASS or release completion is claimed until all actual results pass.
+
+Example (substitute paths from the desired qualified generation):
+python3 tools/test-i386-installed-workflows.py \
+  --disk build/debug-go-address-native-generations/gen1-selfhost/target.img \
+  --native-result build/debug-go-address-native-generations/gen1-selfhost/result.json \
+  --installed-audit build/debug-go-address-native-generations/gen1-audit/result.json \
+  --out build/new-installed-workflows
