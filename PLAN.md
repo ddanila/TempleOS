@@ -11926,3 +11926,22 @@ hashes, full --test with the complete console audit, five CPU-self-exit cycles,
 S/stack, both overlap paths, G/stack, flags/IP/concurrency/ownership/kill gates.
 No new runtime green claimed. Allocation failure recovery, frame walking,
 private-resource accounting and native/release gates remain outstanding.
+
+Six-module guest build passes; nested catch/yield test added (2026-10-05):
+build/debug-stack-native-build/result.json is PASS for all six retained
+modules on the fixed stack candidate. Its dependent native-generations chain
+has passed gen1 installation and is running gen1 self-hosting. This source
+precedes owned execution/parser stacks; do not transfer its evidence to newer
+candidates. Complete two-generation flat-kernel identity remains pending.
+
+New tools/test-i386-debug-cpu-nested-catch.py compiles a helper with nested
+try/throw/catch and Sleep(10) inside the catch, then calls it from an actual
+INT3 debugger, expects 42, G and clean mode/IF/TF/repeated heap recovery.
+Five independent interaction/command-limit preflight passes. A one-cycle
+red runs on the owned-reap image without parser guard support; five cycles
+run on the fixed parser-stack image. This exercises exception capture/dispatch
+and yielding on the owned debugger stack, not just a simple expression.
+Focused self-exit and alternate-stack S also run on that parser image in
+build/debug-cpu-self-exit-parser-green and build/debug-public-step-stack-parser-green.
+No runtime result yet claimed. Full host audits, allocation failure recovery,
+frame walking, private accounting and installed/release gates remain open.
