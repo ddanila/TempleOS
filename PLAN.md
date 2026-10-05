@@ -10330,3 +10330,21 @@ concurrent debugger sessions remain explicit unimplemented/unproved scope.
 Installed workstation/DolDoc workflows and second native generation remain
 pending, with generation wrapper and no-FPU native builder directly confirmed
 live. Passing these limited debugger checks does not establish complete M7.
+
+Single-step TDD contract added before implementation (2026-10-05):
+tools/test-i386-debug-single-step.py runs against the integrated native target
+in build/file-cd-resident-integrated-single-step-red. It places INT3 at the last
+of three NOPs immediately before a known MOV store, verifies zero local state
+at entry, sends S, requires a fresh debugger entry, and checks the store's
+0x11223344 value while the function-return marker is still zero. G must then
+finish the function with the original result and restored flags/debugger mode.
+This rejects a no-op or continue-to-return implementation of S. Exact VGA and
+source/checker identity are retained; helper input lengths are checked.
+
+The contract is native TDD based on the original Kernel/KDbg.HC public S
+semantics, whose source hash is recorded; it does not claim an original-runtime
+oracle, managed breakpoint or full register test. Public S is currently absent
+from PublicDebug.HH, so the expected missing-function gate is now running;
+actual failure evidence is pending rather than inferred from that declaration.
+The current candidate source remains fixed for its installed/generation jobs.
+A separate debugger implementation candidate is needed after observing red.
