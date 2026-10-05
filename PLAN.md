@@ -11108,3 +11108,25 @@ python3 tools/test-i386-installed-workflows.py \
   --native-result build/debug-go-address-native-generations/gen1-selfhost/result.json \
   --installed-audit build/debug-go-address-native-generations/gen1-audit/result.json \
   --out build/new-installed-workflows
+
+Concurrent CPU-debugger TDD gate and no-FPU retry (2026-10-05):
+New tools/test-i386-debug-concurrent-traps.py keeps the first terminal paused
+at INT3, focuses the second and traps there too. Required behavior is two
+live contexts, expression evaluation and independent G, followed by terminal
+exit and parent public heap recovery. This is stronger than sequential
+same-address ownership. Its first run is build/debug-concurrent-traps-red;
+verdict pending. It pins its terminal fixture and source disk. The current
+candidate ConsoleCpuCapture explicitly rejects any second trap while global
+console_debug_task is occupied; original Kernel/KDbg.HC Dbg2 operates on Fs
+and its task continuation, so per-task paused contexts require architectural
+work. No candidate source is changed during native qualification.
+
+The previous integrated no-FPU native builder and QEMU handles disappeared
+without result.json or a recorded terminal exception. Preserve that run as
+incomplete, not PASS. A fresh run uses
+build/file-cd-resident-integrated-no-fpu-native-build-retry, TCG / 486,-fpu /
+16 MiB and a 10800-second per-command deadline (previously 7200). Its new
+process is live; the launch uses a retained execution session rather than
+an untracked background child. Installed address workflow speaker and
+resource gates already pass; workstation and DolDoc gates are still running.
+All later G2 installed-generation gates and the full release goal remain open.
