@@ -10226,3 +10226,23 @@ installed-{workstation,doldoc-session,speaker,resource-pinned}; all four are
 required for the chain pass. State is ...-installed-workflows.json. These are
 queued, not completed. Second native generation, fully no-FPU construction,
 empty/dotless contracts and remaining M7/release requirements stay open.
+
+Integrated cold edge gates and retained installation green (2026-10-05):
+build/file-cd-resident-integrated-cold-empty/result.json passes original oracle,
+fixture preparation and 22 separate-cold-boot commands on 486,-fpu / 8 MiB;
+startup 27.464066 seconds, exact VGA, correct empty public allocation/cache
+ownership/removal and unchanged candidate/input. The dotless companion passes
+28 commands, startup 27.514776 seconds, exact key ownership/mutation/removal,
+VGA and read-only disk equality. Separate matching-builder tree/bitmap audits
+pass: both have 16 directories/872 files, with 17612 empty-case and 17613
+dotless-case owned sectors. These close the current-source edge contracts.
+
+build/file-cd-resident-integrated-native-install/result.json passes all six
+native retained installations and independent boot; installed candidate hash
+06e593e0eabf310f6f28caca7b27fbb8942e28eecb3a5a1a2ac94a960fe14681.
+The integrated full-native selfhost process is directly confirmed live. The
+earlier ABI-46 generation-two retained installation also passes in
+build/public-resident-write-parent-gen2-native-install/result.json; its full
+flat builder is directly confirmed live. Installed workflow/audit and complete
+generation comparisons remain pending; integrated no-FPU retained construction
+continues on its existing handle. No source promotion or release is claimed.
