@@ -11226,3 +11226,23 @@ with log build/debug-concurrent-bound-build.log. The earlier diagnostic
 failure stays retained and remains unresolved until this run passes.
 Other-source G2 native/installed workflows and no-FPU retry continue separately;
 none substitute for qualification of the current candidate or release scope.
+
+Independent simultaneous CPU-debugger resumption green (2026-10-05):
+build/debug-concurrent-explicit-focus passes 13 commands on 486,-fpu /
+8 MiB, startup 31.450751 seconds, exact VGA at every checkpoint and unchanged
+source. Both terminal INT3 contexts remain alive; second expression/G works,
+IsDbgMode stays 1 for the paused first context, explicit TermFocus reaches
+that debugger, first expression/G works, both terminals exit and parent heap
+and IsDbgMode==0 recover. This qualifies the pre-binding-order-correction
+interactive image separately from the still-running corrected diagnostic build.
+
+New tools/test-i386-debug-concurrent-repeat.py compiles shared fixture helpers
+once and repeats session spawn/trap/resume/exit five times in one boot,
+resetting TermDone before each cycle. Each cycle gets independently copied
+VGA events; public heap and mode checks remain in every cycle. Own/base/
+terminal checker and source identities are pinned. Fixture preflight verifies
+five independent event lists, command length bounds and invalid cycle rejection.
+Actual five-cycle execution is build/debug-concurrent-repeat; verdict pending.
+The corrected --test boot now reaches console binding/root headers, but full
+public-header diagnostics and all later checks still need terminal PASS.
+No promotion or full release readiness is claimed.
