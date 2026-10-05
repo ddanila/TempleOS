@@ -12914,3 +12914,22 @@ build/memory-baseline-native-build. Earlier TEST-fixed native rebuild remains
 live; no restart. Isolated baseline mutation guest completed DONE native kernel
 startup with no FAIL; full suite remains separate and live. Two generations and
 release remain open; interrupted directory-growth matrix still required.
+
+
+Interrupted destination-growth fixture implementation (2026-10-05):
+Separate main/fork clone build/extended-growth-failure-prototype adds private
+raw operations6/7 mapping to write/flush failures. Before arming it prepares
+one full512-byte destination with five F files; source IO and move execute after
+arming. Original normal move/replace probes and normal startup remain separate.
+Candidate matrix accepts growth=True and checks both one complete IO namespace
+and exact five existing file payloads after recovery. Proposed coverage nine
+writes/eight flushes derives from allocation bitmap, old/new directory sectors,
+parent publication, old extent release, and four transfer-journal/name writes.
+Real runs must prove each injection fires; counts are not qualification yet.
+New tools/test-i386-move-growth-failures.py freezes disk, exports, helper sources
+and writes terminal pass/fail evidence with source hashes even on exceptions.
+Fixture delta docs/patches/i386-move-growth-failure-fixture.patch applies after
+i386-memory-baseline-integrated-candidate.patch. Python syntax and patch check
+PASS. Fresh original bootstrap PASS; source-qualified cross-build running
+session38551, build/growth-failure-kernel.log. No growth
+failure matrix PASS claimed. Existing full-suite and native builds untouched.

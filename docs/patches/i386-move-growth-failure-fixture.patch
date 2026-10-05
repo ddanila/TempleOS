@@ -1,0 +1,75 @@
+--- a/Kernel/I386/TaskFileWrite.HC
++++ b/Kernel/I386/TaskFileWrite.HC
+@@ -397,12 +397,12 @@
+   U8 *replacement="C:/Probe/ReplaceIo.HC";
+   I64 raw_operation=operation;
+   Bool result,fired;
+-  if(operation==4) raw_operation=2;
+-  if(operation==5) raw_operation=3;
+-  if((operation<2 || operation>5) || fail_after<1 || fail_after>16) {
++  if(operation==4 || operation==6) raw_operation=2;
++  if(operation==5 || operation==7) raw_operation=3;
++  if((operation<2 || operation>7) || fail_after<1 || fail_after>16) {
+     KernelLog("FILE IO PROBE invalid\n"); return FALSE;
+   }
+-  if(operation>=4) {
++  if(operation==4 || operation==5) {
+     I386TaskFileDelete(replacement);
+     if(!I386TaskFileWrite(replacement,"OLD",3)) {
+       KernelLog("FILE IO PROBE replace setup\n"); return FALSE;
+@@ -414,6 +414,17 @@
+     fired=i386_redsea_fail_fired;
+     I386RedSeaTaskFailArm(0,0);
+     return !result && fired;
++  }
++  if(operation==6 || operation==7) {
++    destination="C:/GrowthIo/Destination.HC";
++    if(!I386TaskDirMk("C:/GrowthIo",5) ||
++       !I386TaskFileWrite("C:/GrowthIo/F0.HC","F",1) ||
++       !I386TaskFileWrite("C:/GrowthIo/F1.HC","F",1) ||
++       !I386TaskFileWrite("C:/GrowthIo/F2.HC","F",1) ||
++       !I386TaskFileWrite("C:/GrowthIo/F3.HC","F",1) ||
++       !I386TaskFileWrite("C:/GrowthIo/F4.HC","F",1)) {
++      KernelLog("FILE IO PROBE growth setup\n"); return FALSE;
++    }
+   }
+   I386TaskFileDelete(source); I386TaskFileDelete(destination);
+   if(!I386TaskFileWrite(source,"IO",2)) {
+--- a/tools/build-i386-kernel.py
++++ b/tools/build-i386-kernel.py
+@@ -2165,12 +2165,14 @@
+             'filesystem_integrity':integrity,'result':'pass'}
+ 
+ 
+-def verify_file_io_failure_matrix(disk, exports, out):
++def verify_file_io_failure_matrix(disk, exports, out, growth=False):
+     """Interrupt each move write/flush, reboot-repair, then audit exact files."""
+     flag=kernel_flag_disk_offset(exports,'kernel_file_io_probe')
+     original=disk.read_bytes(); cases=[]
+     source='/Probe/MoveIoSource.HC'; destination='/Modules/MoveIoDestination.HC'
+-    for operation,limit in ((2,4),(3,4)):
++    if growth: destination='/GrowthIo/Destination.HC'
++    limits=((6,9),(7,8)) if growth else ((2,4),(3,4))
++    for operation,limit in limits:
+         for fail_after in range(1,limit+1):
+             work=out/f'file-io-failure-{operation}-{fail_after}'
+             work.mkdir(parents=True,exist_ok=True)
+@@ -2206,12 +2208,16 @@
+             files=mutated_file_contents(candidate,{source,destination})
+             if len(files)!=1 or any(content!=b'IO' for content in files.values()):
+                 raise ValueError('Raw file I/O recovery did not retain exactly one complete file')
+-            cases.append({'operation':'write' if operation==2 else 'flush',
++            if growth:
++                wanted={f'/GrowthIo/F{i}.HC':b'F' for i in range(5)}
++                if mutated_file_contents(candidate,set(wanted))!=wanted:
++                    raise ValueError('Interrupted directory growth changed existing files')
++            cases.append({'operation':'write' if operation in (2,6) else 'flush',
+                           'fail_after':fail_after,
+                           'outcome':'both' if len(files)==2 else
+                               ('source' if source in files else 'destination'),
+                           'filesystem_integrity':audit})
+-    return {'cases':cases,'writes':4,'flushes':4,'scope':'Prepared destination directory extent transfer; directory growth is separate','result':'pass'}
++    return {'cases':cases,'writes':9 if growth else 4,'flushes':8 if growth else 4,'scope':'Interrupted destination directory growth and extent transfer' if growth else 'Prepared destination directory extent transfer; directory growth is separate','result':'pass'}
+ 
+ 
+ def verify_file_replace_failure_matrix(disk, exports, out):
