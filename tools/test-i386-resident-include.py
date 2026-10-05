@@ -24,6 +24,8 @@ CHILD = ['I64 CacheChildResult=0;',
 REJECTED_NAME = 'CacheRejected'+'X'*40+'.HC'
 FAILED_WRITE = ('Bool FailedWriteCache(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0x200),s;'
                 'U8 *p=FileRead(n,&s);Bool ok=!r&&p&&s==19&&p[15]==54;Free(p);return ok;}')
+FAILED_DROP = ('Bool FailedDrop(U8 *n){I64 r=FileWrite(n,CacheCode,19,0x1122334455667788,0);'
+               'return !r&&!HashFind(n,adam_task->hash_table,HTT_FILE);}')
 
 
 def failure_layout(auditor, disk):
@@ -60,6 +62,7 @@ def main():
     parser.add_argument('--child', action='store_true', help='Require cached file/document reads in a child and cache survival after synchronous Kill')
     parser.add_argument('--failure-public-recovery', action='store_true', help='Also require exact caller/root public heap recovery with validated key-up quiescence')
     parser.add_argument('--failed-write', action='store_true', help='Compare original resident cache publication after an invalid disk filename write')
+    parser.add_argument('--failed-write-lifecycle', action='store_true', help='Also compare cache removal after an ordinary rejected write')
     args = parser.parse_args()
     if args.failure_recovery and not args.allocation_failure:
         parser.error('--failure-recovery requires --allocation-failure')
@@ -67,6 +70,8 @@ def main():
         parser.error('--child requires --document')
     if args.failure_public_recovery and not args.failure_recovery:
         parser.error('--failure-public-recovery requires --failure-recovery')
+    if args.failed_write_lifecycle and not args.failed_write:
+        parser.error('--failed-write-lifecycle requires --failed-write')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     candidate = out/'candidate.img'
@@ -86,6 +91,7 @@ def main():
     report['child'] = args.child
     report['failure_public_recovery'] = args.failure_public_recovery
     report['failed_write'] = args.failed_write
+    report['failed_write_lifecycle'] = args.failed_write_lifecycle
     if layout:
         report['failure_layout_sources'] = layout
     try:
@@ -120,6 +126,11 @@ def main():
             oracle.insert(oracle.index('U0 IncludeCache(){'), FAILED_WRITE)
             oracle.insert(oracle.index('Report("DONE resident include\n");}'),
                           f'if(!FailedWriteCache("B:/{REJECTED_NAME}")){{Report("FAIL rejected write cache\n");return;}}')
+            if args.failed_write_lifecycle:
+                index = oracle.index('U0 IncludeCache(){')
+                oracle[index:index] = [FAILED_DROP]
+                index = oracle.index('Report("DONE resident include\n");}')
+                oracle[index:index] = [f'if(!FailedDrop("B:/{REJECTED_NAME}")){{Report("FAIL rejected removal\n");return;}}']
         #HolyC strings need literal escape sequences, not embedded line breaks.
         if args.default_extension:
             oracle = [line.replace('CacheInclude.HC', 'CacheInclude') if '#include' in line else line
@@ -159,6 +170,9 @@ def main():
             index = next(i for i, (source, _) in enumerate(commands) if source.startswith('FileWrite('))
             commands.insert(index, (FAILED_WRITE, []))
             commands += [(f'FailedWriteCache("C:/Probe/{REJECTED_NAME}");', ['1'])]
+            if args.failed_write_lifecycle:
+                commands[index:index] = [(FAILED_DROP, [])]
+                commands += [(f'FailedDrop("C:/Probe/{REJECTED_NAME}");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         if args.default_extension:
             commands = [(source.replace('CacheInclude.HC', 'CacheInclude') if '#include' in source else source, answers)

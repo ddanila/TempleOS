@@ -9614,3 +9614,26 @@ ordinary/compressed/resident publication, invalid-context nonpublication,
 allocation failure/recovery, child teardown, full workstation and native builds.
 Earlier ABI-45 tests/builds continue from immutable disks; their results do not
 qualify the ABI-46 interface or new staging behavior.
+
+ABI-46 build and rejected-write lifecycle oracle correction (2026-10-05):
+Fresh original bootstrap and cross/386 audit pass, kernel 483200 bytes.
+Disk SHA256: d07634b2d7602819fa785ae3bfee4f27034739a6c01fb5bd87c6436c5bcec634.
+Exact twenty-cycle write/read recovery passes on the earlier ABI-45 propagation
+image: build/public-resident-propagation-loader-recovery/result.json, 45 commands,
+caller 1361744 -> 1361744, root 0 -> 0, private used 5394832 -> 5394832 and
+allocations 7243 -> 7243; exact VGA, persisted archive/raw/replacement and volume
+checks, unchanged input. This is not ABI-46 staging recovery evidence.
+
+--failed-write-lifecycle adds ordinary-write removal after rejected resident
+publication. An additional attempted assertion that a regular-file parent is
+an invalid unpublished context fails on original TempleOS before native boot
+(FAIL invalid context cache). That assumption is withdrawn; original
+FileWrite's DirContextNew uses make_dirs TRUE, so parent-path behavior must be
+measured before specifying nonpublication. Do not interpret that failed oracle
+as a port defect or assert all failed writes lack a valid context.
+The corrected lifecycle gate retains publication and ordinary removal; original
+oracle/native qualification run in build/public-resident-write-attempt-removal.
+ABI-46 exact resident recovery is live in build/public-resident-write-attempt-recovery.
+Required remaining parity work includes attempted compressed bytes and original
+parent creation/replacement semantics, alongside failure cleanup, child lifetime,
+full workstation and native generations. Earlier broad tests/builds remain live.
