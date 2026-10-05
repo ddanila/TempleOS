@@ -12224,3 +12224,25 @@ through public DolDoc layout diagnostics; no terminal pass yet claimed. Original
 integrated no-FPU retained-build retry PID 3677763 remains live. Full release,
 extended guest installer execution and native compiler failure diagnosis remain
 open.
+
+Native ExceptionEntry assembler failure localized (2026-10-05):
+Failed prior gen1 selfhost compiler stops at CMP in top-level asm, not the
+inline-asm frontend. Compiler/I386/TopAssembly.HC recognizes only MOV/LEA/TEST/
+XOR/ADD and JMP/JNZ there; debugger frame relocation additionally needs CMP,
+SUB, DEC, JZ and JC. Preserve original failed native-generation evidence.
+Separate build/extended-assembler-prototype applies extended kernel candidate
+plus exact register CMP, signed-byte immediate SUB, 32-bit register DEC and
+near JZ/JC encodings. Instruction semantics/frame ownership are unchanged.
+Small delta docs/patches/i386-top-assembly-debug-frame-candidate.patch applies
+cleanly to main (combine with cumulative extended kernel patch). No native
+compiler green claimed. Fresh bootstrap confirmed live PID 3756114/session
+9433, build/extended-assembler-prototype/build/extended-assembler-bootstrap.log.
+Follow by compiling actual ExceptionEntry.HC with the newly built resident
+compiler, comparing cross/native module bytes and repeating native generations.
+
+The corrected extended full --test is running independently at PID 3754261/
+session 82265, output build/extended-kernel-prototype/build/
+extended-native-kernel-checksum-fixed. It has reached runtime diagnostics.
+Its source checkout stays unchanged while qualification runs. Prior corrected
+standalone diagnostic guest-run ended exit zero with DONE native kernel startup;
+this does not substitute for full --test and installation/release gates.
