@@ -12011,3 +12011,20 @@ full --test, five caller-identity, initial alternate trap, nested catch, self-ex
 S/stack and existing flags/IP/concurrency/ownership/kill regressions. No new
 runtime PASS yet claimed. Allocation failure, invalid/cycle walker negatives,
 private memory budget and current native/install/release gates remain open.
+
+Frame helper forward-declaration ordering corrected (2026-10-05):
+Initial trace-stack original bootstrap passes, but cross-build is terminal
+FAIL in Kernel.HC at task->debug_stack_cleanup (Invalid member). Frame.HH's
+new unconditionally repeated CI386Task forward declaration appears after
+Scheduler.HH's complete class and replaces its visible member metadata in
+this compiler. This is a header dependency failure, not runtime frame evidence.
+Frame.HH now emits that forward declaration only before Scheduler.HH has been
+included; complete native task metadata remains available. Preserve the failed
+exports/compiler-log.DD and bootstrap as rebuild-trace-before-task-guard.
+
+Updated cumulative trace patch applies cleanly to main. Fresh bootstrap runs
+in build/debug-trace-task-guard-bootstrap.log (PID 3742629); dependent
+build/debug-trace-task-guard-pipeline.json uses a new output and retains all
+caller/alternate-stack/exception/cleanup/flags/IP/concurrency gates. No new
+frame-walking runtime green claimed. Fixed earlier stack native chain remains
+live in gen1 self-hosting; current source native/release gates remain open.

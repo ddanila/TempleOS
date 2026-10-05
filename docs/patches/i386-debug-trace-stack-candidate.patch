@@ -1165,14 +1165,16 @@ index a9f01186..ba5b2b74 100644
 +  return frame->return_address;
 +}
 diff --git a/Kernel/I386/Frame.HH b/Kernel/I386/Frame.HH
-index f5400ab4..16553044 100644
+index f5400ab4..881d5b25 100644
 --- a/Kernel/I386/Frame.HH
 +++ b/Kernel/I386/Frame.HH
-@@ -10,4 +10,8 @@ class CI386Frame
+@@ -10,4 +10,10 @@ class CI386Frame
  public extern Bool I386FrameValid(CI386Frame *frame,U8 *stack,I64 size);
  public extern CI386Frame *I386FrameParent(CI386Frame *frame,U8 *stack,I64 size);
  public extern U8 *I386FrameReturn(CI386Frame *frame,U8 *stack,I64 size);
++#ifndef I386_SCHEDULER_INCLUDED
 +extern class CI386Task;
++#endif
 +public extern Bool I386TaskFrameBounds(CI386Task *task,CI386Frame *frame,U8 **base,I64 *size);
 +public extern CI386Frame *I386TaskFrameParent(CI386Task *task,CI386Frame *frame);
 +public extern U8 *I386TaskFrameReturn(CI386Task *task,CI386Frame *frame);
