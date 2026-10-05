@@ -11811,3 +11811,28 @@ First-trap-on-alternate-stack support must not depend on a prior original-stack
 trap. Verify allocation failure, nested throw/catch, yielding, simultaneous
 sessions, repeated S/G and cleanup as well as the existing red S/stack gate.
 Account for 8 MiB memory and native boot-image capacity before promotion.
+
+Owned debugger execution stack prototype (2026-10-05):
+New build/debug-owned-stack-prototype keeps the stack candidate immutable.
+Private task fields track a lazy 64 KiB debugger allocation, its heap/size and
+prior cleanup hook. KernelDebugStack allocates outside IF-clear CPU capture;
+ExceptionEntry switches onto it before KernelDebugCpu. Resume still relocates
+the CPU return frame to selected public RSP, independently of debugger ESP.
+I386ExceptCaptureValid accepts the original task region or this task's exact
+live debugger allocation (heap size checked), preserving alignment/frame/ESP
+bounds. Exception registration and dispatch use this validator, allowing
+existing original-stack try records and debugger-stack records together.
+Arbitrary ranges are not accepted and public CTask layout is unchanged.
+Full docs/patches/i386-debug-owned-stack-candidate.patch applies cleanly.
+
+Fresh bootstrap runs in build/debug-owned-stack-bootstrap.log (PID 3730822).
+Dependent build/debug-owned-stack-pipeline.json verifies both generations and
+all source hashes, full --test and five S/stack cycles, both overlap directions,
+G/stack, S/G flags, IP, simultaneous traps, ownership and kill regressions.
+No runtime green claimed. Prototype cleanup chains the prior task hook and
+frees the allocation, but self-exit while currently executing on that stack
+requires deferred reclamation; do not claim cleanup complete. Allocation
+failure currently stops and must gain tested recovery. Multi-region frame
+walking, initial trap on alternate stack, nested throw/catch/yield, memory
+budgets and native boot capacity remain required. Existing fixed stack native
+build and older full suites continue independently.
