@@ -20,7 +20,7 @@ index fb2baf47..b7c15b2c 100644
  {
    if(StrCmp(list,"ST_U64_REGS")) I386FrontendUnavailable(context);
 diff --git a/Kernel/I386/CompilerHeaderProbe.HC b/Kernel/I386/CompilerHeaderProbe.HC
-index 35c7bf98..1d7ad2c4 100644
+index 35c7bf98..5bfeab5e 100644
 --- a/Kernel/I386/CompilerHeaderProbe.HC
 +++ b/Kernel/I386/CompilerHeaderProbe.HC
 @@ -49,6 +49,16 @@ I64 ProbeDocumentLayout(CI386CompilerProbe *probe,CI386CommandInput *input)
@@ -35,7 +35,7 @@ index 35c7bf98..1d7ad2c4 100644
 +    if(entry) return entry;
 +    table=table->next;
 +  }
-+  return NULL;
++  return 0;
 +}
  //Load the actual public headers, retry failure, and compare every public offset.
  U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)

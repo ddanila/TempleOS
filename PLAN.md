@@ -11523,3 +11523,16 @@ CCPU/CBpt warning sequence from phase 1's empty sequence. Updated patch applies
 cleanly. Fresh original bootstrap runs in the clone's
 build/debug-concurrent-bootstrap-inherited-headers.log; full build/diagnostic
 and later regressions remain required. Main source unpromoted; release open.
+
+Inherited-header helper compiler dependency corrected (2026-10-05):
+The first inherited-header candidate finishes both original bootstraps and
+all 1270 hashes match, but its i386 module export fails at CompilerHeaderProbe.HC
+line 60: return NULL. CompilerProbe includes TRUE/FALSE constants, not NULL;
+this is a helper compilation issue, not evidence against inherited-header
+semantics. Preserve build/debug-concurrent-inherited-headers/exports/compiler-log.DD.
+The helper now returns the equivalent zero pointer literal. Updated full patch
+applies cleanly to main. Fresh bootstrap and dependent full diagnostic/IP/
+concurrent/ownership/kill pipeline run/queue in
+build/debug-concurrent-inherited-zero-pipeline.json. No new header/runtime
+PASS yet claimed. Previous phase-0/full installed G2 evidence stays tied to
+its source epochs; root promotion and complete release qualification remain open.
