@@ -8,6 +8,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import runpy
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -16,10 +18,52 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verify_image_origin(disk, native, audit, native_disk=None, packaging_result=None):
+    """Bridge an audited native disk to its reproducibly packaged descendant."""
+    digest = sha(disk)
+    qualified = digest
+    inputs = []
+    if (native_disk is None) != (packaging_result is None):
+        raise ValueError('Provide both --native-disk and --packaging-result')
+    if native_disk is not None:
+        qualified = sha(native_disk)
+        report = json.loads(packaging_result.read_text())
+        if (report.get('result') != 'pass' or
+                report.get('source_sha256') != qualified or
+                report.get('image_sha256') != digest or
+                report.get('source_unchanged') is not True):
+            raise ValueError('Packaging report does not connect these exact images')
+        packer = ROOT / 'tools/package-i386-native-image.py'
+        pack = runpy.run_path(str(packer))['package']
+        # Recompute rather than trusting a claimed hash or modifying native evidence.
+        with tempfile.TemporaryDirectory(prefix='i386-package-origin-') as directory:
+            rebuilt = Path(directory) / 'native.img'
+            pack(native_disk, rebuilt)
+            if rebuilt.read_bytes() != disk.read_bytes():
+                raise ValueError('Disk differs from deterministic native packaging')
+        inputs = [native_disk, packaging_result, packer,
+                  ROOT / 'tools/build-i386-kernel.py']
+    if (native.get('result') != 'pass' or
+            native.get('retained_origin') != 'guest-built supplied inputs' or
+            native.get('target_disk_sha256') != qualified):
+        raise ValueError('Native prerequisite must qualify this exact native disk')
+    if (audit.get('result') != 'pass' or
+            audit.get('installed_disk_sha256') != digest or
+            audit.get('installed_payload') != 'matches guest-built flat image' or
+            not native.get('flat_sha256') or
+            native['flat_sha256'] != audit.get('flat_sha256')):
+        raise ValueError('Installed audit must qualify this exact disk and native flat payload')
+    return inputs
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('disk', 'native-result', 'installed-audit', 'out'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--native-disk', type=Path,
+                        help='Original qualified native image before deterministic packaging')
+    parser.add_argument('--packaging-result', type=Path,
+                        help='Packaging report connecting original and requested image')
     args = parser.parse_args()
     disk, native_path, audit_path, out = [p.resolve() for p in
         (args.disk, args.native_result, args.installed_audit, args.out)]
@@ -27,17 +71,12 @@ def main():
         parser.error('Use a fresh output directory; existing evidence is preserved')
     native = json.loads(native_path.read_text())
     audit = json.loads(audit_path.read_text())
-    digest = sha(disk)
-    if (native.get('result') != 'pass' or
-            native.get('retained_origin') != 'guest-built supplied inputs' or
-            native.get('target_disk_sha256') != digest):
-        parser.error('Native prerequisite must qualify this exact guest-built disk')
-    if (audit.get('result') != 'pass' or
-            audit.get('installed_disk_sha256') != digest or
-            audit.get('installed_payload') != 'matches guest-built flat image' or
-            not native.get('flat_sha256') or
-            native['flat_sha256'] != audit.get('flat_sha256')):
-        parser.error('Installed audit must qualify this exact disk and native flat payload')
+    try:
+        origin_inputs = verify_image_origin(disk, native, audit,
+            args.native_disk.resolve() if args.native_disk else None,
+            args.packaging_result.resolve() if args.packaging_result else None)
+    except ValueError as error:
+        parser.error(str(error))
     # Execute frozen helpers so unrelated development cannot alter this run.
     out.mkdir(parents=True)
     snapshot = out / 'harness'
@@ -53,7 +92,7 @@ def main():
             raise ValueError('Helper changed while creating snapshot: ' + str(source))
         helper_identity[str(source.relative_to(ROOT))] = digest
     inputs = {str(p): sha(p) for p in
-              [disk, native_path, audit_path,
+              [disk, native_path, audit_path, *origin_inputs,
                *[snapshot / name for name in helper_identity]]}
     jobs = [
         ('workstation', 'i386-kernel-input.py',
@@ -66,7 +105,8 @@ def main():
     ]
     report = {'result': 'running', 'cpu': '486,-fpu', 'ram_mib': 8,
               'accel': 'tcg', 'input_sha256': inputs,
-              'harness_sha256': helper_identity, 'jobs': {}}
+              'harness_sha256': helper_identity, 'jobs': {},
+              'image_origin': 'deterministically packaged native image' if origin_inputs else 'native installed image'}
 
     def save():
         (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')

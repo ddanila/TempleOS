@@ -54,3 +54,33 @@ on 8 MiB with `486,-fpu` in `boot-result.json`; its hash remains unchanged.
 Focused compiler, file-navigation, documents and document-editing gates are
 running on a fresh writable copy in `build/native-release-packaging/workflows`.
 These are additional runtime checks, not yet a full workstation qualification.
+
+
+To run all four installed workstation gates on the packaged descendant, retain
+its original native construction result and supply both origin inputs:
+
+```sh
+python3 tools/test-i386-installed-workflows.py \
+  --disk build/release-gen2.img \
+  --native-disk path/to/gen2/target.img \
+  --packaging-result build/release-gen2.img.json \
+  --native-result path/to/gen2/result.json \
+  --installed-audit path/to/packaged-audit/result.json \
+  --out build/packaged-workstation
+```
+
+The native result must match the original disk. The installed audit must match
+the packaged disk and the native flat kernel hash. The runner independently
+repackages the original disk and compares every byte before launching the four
+frozen helpers. It pins the additional inputs throughout the run.
+`tools/test-i386-packaged-origin.py` records six provenance acceptance/rejection
+cases using real native artifacts, including altered boot bytes hidden behind
+forged matching report hashes. This gate passes in
+`build/native-release-packaging/origin-mutations.json`.
+
+The memory-baseline epoch also completes both native generations and yields
+identical whole packaged disks in `build/memory-baseline-release-packaging`:
+SHA256 `177ffbd736f9ae5010377ccb8dcd9b2b22220ab151e1baeee4c8a5087f3a90d9`.
+These images have their own delivered source/runtime modules and still require
+packaged runtime qualification. Neither packaged epoch proves qualification of
+the newer public Caller candidate.

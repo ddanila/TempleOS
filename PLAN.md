@@ -2,20 +2,26 @@
 
 ## Objective and status
 
-Latest qualification state (2026-10-05): the cumulative ABI-47 candidate now
-uses the extended high-memory BIOS loader, early IDT, extent-transfer moves,
-renderer buffer reuse, corrected native TEST encoding and a strict memory
-probe baseline after trimming empty storage. It remains unpromoted; current
-main OS services are ABI 40. The preserved integration artifact is
-[the memory-baseline candidate patch](docs/patches/i386-memory-baseline-integrated-candidate.patch).
-Latest evidence includes no-FPU complete-OS boot, five debugger trace cycles,
-native SysTry red/green encoding regression, and actual native fragmented-module
-move. A prior native generation boot failed on the TEST defect; corrected
-six-module rebuilding and full memory-baseline suite are running. Prepared
-write/flush recovery and directory-growth qualification are also running.
-These specific results do not establish M7 or release readiness. The entries
-below retain earlier checkpoint evidence; do not transfer their passes to a
-newer source/image without rerunning the corresponding gate.
+Latest qualification state (2026-10-05): main OS services remain ABI 40.
+The latest unpromoted ABI-47 candidate adds public Caller to the extended
+high-memory BIOS loader, early IDT, extent-transfer moves, renderer buffer
+reuse, corrected native TEST encoding and trimmed memory-probe baseline.
+Its integration artifact is
+[the public Caller candidate patch](docs/patches/i386-public-caller-integrated-candidate.patch).
+Public Caller passes normal-stack, corrupt-frame and five-cycle dedicated CPU
+debugger-stack gates. Its complete suite and retained native build remain live.
+
+The preceding memory-baseline candidate completes both fully native generations:
+12 identical modules, flat kernel and boot area, independent installation/boot
+and executable/filesystem audits. Deterministic packaging also makes their whole
+disk images byte-identical while preserving all live file contents, attributes
+and dates. This does not automatically qualify the newer Caller sources.
+The earlier TEST-fixed generation2 passes three-boot DolDoc, captured speaker
+and bounded-resource gates; its full workstation remains running. Its packaged
+image passes native audits and no-FPU boot within the unchanged 60-second budget;
+full packaged-image workflows are running with independently recomputed native
+origin. No complete M7 or release claim is made. Historical checkpoint entries
+below retain their source-specific evidence.
 
 Current promoted filesystem services remain ABI 40. The newer integrated
 public resident-cache/Cd candidate is ABI 47 and is not yet promoted. Its fresh
@@ -13109,3 +13115,32 @@ DolDoc documents/editing workflows now running on a fresh writable copy; no
 runtime PASS transferred from unpackaged image. Whole workstation/latest-source qualification and release
 promotion remain open. Memory-baseline generation2 now reached selfhost; public
 Caller retained native build remains live. Root OS remains unpromoted ABI40.
+
+
+Packaged workstation provenance and memory-baseline native generations (2026-10-05):
+tools/test-i386-installed-workflows.py now accepts optional --native-disk and
+--packaging-result together. Native construction evidence must match original
+native disk; installed audit must match requested packaged image and same flat
+payload. Runner independently recomputes deterministic packaging and compares
+whole image bytes before starting frozen workstation/DolDoc/speaker/resource
+helpers. It pins original disk, packaging report and packaging helpers too.
+New tools/test-i386-packaged-origin.py passes six real-artifact acceptance/
+rejection cases in build/native-release-packaging/origin-mutations.json,
+including forged matching report/audit hashes over altered boot bytes.
+All input hashes unchanged. Full four-gate packaged suite is running in
+build/native-release-packaging/installed-workflows. Formal packaged boot timing
+passes51.399seconds versus60-second gate; full-suite budgets remain required.
+
+Memory-baseline epoch now completes all eight native-generation stages in
+build/memory-baseline-native-generations/result.json. All12modules match between
+native generations;499736-byte flat kernel SHA256
+fde141afbd6bf80e658e8678ed642f5293d3798fbff17b0265f275aeef866f7e;
+boot-areaSHA256c406a23b275f5a953e8026aacd9189cbd14a9271f4523b33bd450ad87eb2074c.
+Both volumes16dirs873files19279owned sectors with matching bitmaps.
+Both deterministically packaged memory-baseline disks match SHA256
+177ffbd736f9ae5010377ccb8dcd9b2b22220ab151e1baeee4c8a5087f3a90d9,
+19278owned sectors after directory compaction. Packaged memory-baseline runtime
+qualification still required; earlier TEST-fixed runtime passes not transferred.
+TEST-fixed generation2 three-boot DolDoc, speaker and resource jobs now PASS;
+aggregate remains running on full workstation. Public Caller source remains
+newer and unpromoted, with native/full qualification running. Release stays open.
