@@ -11836,3 +11836,26 @@ failure currently stops and must gain tested recovery. Multi-region frame
 walking, initial trap on alternate stack, nested throw/catch/yield, memory
 budgets and native boot capacity remain required. Existing fixed stack native
 build and older full suites continue independently.
+
+Owned-stack compiler dependency and deferred reclamation (2026-10-05):
+Initial owned-stack cross-build is terminal FAIL before i386 export: original
+compiler log reports undefined NULL in Kernel.HC's new cleanup helper. The
+original two-generation bootstrap passed; this was a kernel helper parse
+error, not runtime stack evidence. Preserve build/debug-owned-stack/exports.
+Kernel helper now uses zero pointer literals supported by this kernel's
+includes. No runtime owned-stack PASS yet claimed.
+
+Debugger cleanup now only restores/calls the previous cleanup hook. Actual
+owned debugger-stack validation/free occurs in I386SchedReap after its guard
+proves the task is finished and another task is current. This permits self-exit
+from the debugger execution stack without freeing the live stack. Ownership
+fields stay live until successful free; reaping failure preserves evidence.
+Repeated sessions reuse the bounded task-owned allocation. Updated cumulative
+patch applies cleanly. Allocation failure recovery and frame walking remain
+open; cleanup implementation still needs forced-kill/self-exit runtime tests.
+
+Fresh bootstrap runs in build/debug-owned-stack-reap-bootstrap.log (PID 3731662),
+with dependent build/debug-owned-stack-reap-pipeline.json and a fresh build
+output. Previous bootstrap archived as rebuild-owned-stack-before-reap;
+failed outputs remain intact. Fixed prior candidates' host/native qualification
+continues independently; no source epoch or release completion is conflated.

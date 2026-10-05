@@ -1113,7 +1113,7 @@ index 65aa8c6d..7ea4f0d9 100644
 +extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
  #endif
 diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
-index 940d53f2..987b6730 100644
+index 940d53f2..cb5abf03 100644
 --- a/Kernel/I386/Kernel.HC
 +++ b/Kernel/I386/Kernel.HC
 @@ -117,13 +117,14 @@ extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64
@@ -1153,7 +1153,7 @@ index 940d53f2..987b6730 100644
    KernelStartup;
    if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
    KernelLog("STORAGE TASK BOUND\n");
-@@ -259,10 +269,33 @@ U0 KernelIrq(CI386IrqFrame *frame)
+@@ -259,10 +269,32 @@ U0 KernelIrq(CI386IrqFrame *frame)
    }
    I386PicEoi(frame->irq);
  }
@@ -1162,9 +1162,8 @@ index 940d53f2..987b6730 100644
 +{
 +  U0 (*previous)(CI386Task *task);
 +  previous=task->debug_stack_cleanup;
-+  if(task->debug_stack && !I386HeapFree(task->debug_stack_heap,task->debug_stack)) KernelStop;
-+  task->debug_stack=NULL;task->debug_stack_size=0;task->debug_stack_heap=NULL;
-+  task->debug_stack_cleanup=NULL;task->cleanup=previous;
++  //Reap reclaims the execution stack only after switching to another task.
++  task->debug_stack_cleanup=0;task->cleanup=previous;
 +  if(previous) (*previous)(task);
 +}
 +public U8 *KernelDebugStack(CI386ExceptionFrame *frame)
@@ -1188,7 +1187,7 @@ index 940d53f2..987b6730 100644
  }
  U0 KernelFault(CI386ExceptionFrame *frame)
  {
-@@ -534,23 +567,27 @@ U0 KernelCompilerLoad()
+@@ -534,23 +566,27 @@ U0 KernelCompilerLoad()
      KernelLog("PUBLIC MATH REBIND CHECK\n");
    }
  }
@@ -1230,7 +1229,7 @@ index 940d53f2..987b6730 100644
    if(I386HeapSize(&kernel_heap,kernel_probe_image)!=kernel_probe_size) KernelStop;
    used=kernel_heap.used; allocations=kernel_heap.allocations;
    probe.version=I386_COMPILER_PROBE_VERSION; probe.bytes=sizeof(CI386CompilerProbe);
-@@ -624,11 +661,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
+@@ -624,11 +660,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
  }
  U0 KernelFileLoad()
  {
@@ -1245,7 +1244,7 @@ index 940d53f2..987b6730 100644
    kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
    if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=1 ||
        !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
-@@ -738,5 +775,6 @@ U0 KernelConsoleLoad()
+@@ -738,5 +774,6 @@ U0 KernelConsoleLoad()
    kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
    kernel_console_config.mouse=&kernel_mouse;
    kernel_console_config.pit_divisor=kernel_timer.divisor;
@@ -1426,6 +1425,27 @@ index faf5e602..601c6978 100644
    U32 inherited_refs; //Subset of lifetime_refs: child heaps/symbols and entry code.
  };
  #define I386_WAIT_SLEEP 1
+diff --git a/Kernel/I386/SchedulerCore.HC b/Kernel/I386/SchedulerCore.HC
+index 3c4b60a1..d4f47462 100644
+--- a/Kernel/I386/SchedulerCore.HC
++++ b/Kernel/I386/SchedulerCore.HC
+@@ -323,6 +323,16 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
+       task->next_cc!=&task->next_cc || task->last_cc!=&task->next_cc || s->focus==task) {
+     I386IrqRestore(flags); return FALSE;
+   }
++  //The finished task may have exited from its debugger execution stack.
++  //The guard above proves reclamation runs from another task's stack.
++  if(task->debug_stack) {
++    if(!task->debug_stack_heap || !task->debug_stack_size ||
++        I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size ||
++        !I386HeapFree(task->debug_stack_heap,task->debug_stack)) {
++      I386IrqRestore(flags); return FALSE;
++    }
++    task->debug_stack=0;task->debug_stack_size=0;task->debug_stack_heap=0;
++  }
+   if(task->file_state || task->file_clone || task->file_destroy) {
+     if(!task->file_state || !task->file_clone || !task->file_destroy ||
+         !(*task->file_destroy)(task) || task->file_state || task->file_clone || task->file_destroy) {
 diff --git a/Kernel/I386/TaskFileRead.HC b/Kernel/I386/TaskFileRead.HC
 index 5fdc97ee..d38cf173 100644
 --- a/Kernel/I386/TaskFileRead.HC
