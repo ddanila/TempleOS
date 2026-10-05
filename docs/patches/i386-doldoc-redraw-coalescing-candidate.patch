@@ -1,0 +1,59 @@
+diff --git a/Kernel/I386/DocumentRuntime.HC b/Kernel/I386/DocumentRuntime.HC
+index 64b598d1..2a5c4fe2 100644
+--- a/Kernel/I386/DocumentRuntime.HC
++++ b/Kernel/I386/DocumentRuntime.HC
+@@ -1673,19 +1673,19 @@ U0 NativeDocEditConsoleRestore()
+ extern Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor);
+ public Bool DocEd(CDoc *doc,I64 flags=0)
+ {//Native keyboard/VGA session over the canonical document model. Escape exits.
+-  CI386KeyEvent event;
++  CI386KeyEvent event,queued_key;
+   CDoc *old_put,*old_display;
+   U8 *browse_path,*picked_path=NULL;
+   U8 *undo_bodies[16];
+   I64 undo_sizes[16];
+   U8 find[128],replace[128];
+-  I64 decoded,blink_phase,next_blink_phase,find_length=0,replace_length=0,
++  I64 decoded,pending_key=0,queued_events=0,blink_phase,next_blink_phase,find_length=0,replace_length=0,
+       goto_line,undo_count=0,undo_index,undo_group_kind=0,undo_group_jiffy=0,
+       undo_kind,mouse_x,mouse_y,mouse_buttons=0,mouse_packets=0,
+       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets,
+       mouse_anchor=0,mouse_endpoint,mouse_scroll_rows,mouse_scroll_columns,
+       mouse_hit_y,mouse_hold_due=0,mouse_now,mouse_old_endpoint;
+-  Bool done=FALSE,changed,redraw,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
++  Bool done=FALSE,changed,redraw,dirty=FALSE,yield_frame,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
+   I64 save_status=0;
+   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL || flags) return FALSE;
+   find[0]=0; replace[0]=0;
+@@ -1699,7 +1699,12 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
+     native_doc_mouse_visible=FALSE;
+     KernelLog("DOC EDIT begin\n"); NativeDocEditDraw(doc,blink_phase);
+     while(!done) {
+-      decoded=NativeReadKey(console_config->reader,&event,FALSE);
++      if(pending_key) {
++        decoded=pending_key; pending_key=0;
++        event.type=queued_key.type; event.ch=queued_key.ch; event.scan=queued_key.scan;
++      } else decoded=NativeReadKey(console_config->reader,&event,FALSE);
++      if(decoded>0) queued_events++;
++      yield_frame=queued_events>=8;
+       changed=FALSE; redraw=FALSE;
+       if(decoded>0) {
+         if(event.type==2 && (event.ch==CH_ESC || event.ch==CH_SHIFT_ESC)) {
+@@ -1887,10 +1892,15 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
+       }
+       if(changed) save_status=0;
+       next_blink_phase=NativeDocEditBlinkPhase;
+-      if(changed || redraw || next_blink_phase!=blink_phase) {
++      if(changed || redraw || next_blink_phase!=blink_phase) dirty=TRUE;
++      //Retain one decoded key; never fetch past an accepted editor exit.
++      if(!done) pending_key=NativeReadKey(console_config->reader,&queued_key,FALSE);
++      if(dirty && (pending_key<=0 || yield_frame || done)) {
+         blink_phase=next_blink_phase; NativeDocEditDraw(doc,blink_phase,save_status);
++        dirty=FALSE; queued_events=0;
+       }
+-      if(!decoded) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
++      //Bound rendering delay and preserve cooperative progress during bursts.
++      if(!decoded || yield_frame) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
+     }
+   } catch {
+     Free(picked_path); picked_path=NULL;

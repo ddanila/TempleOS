@@ -64,7 +64,11 @@ def main():
                         help='Original qualified native image before deterministic packaging')
     parser.add_argument('--packaging-result', type=Path,
                         help='Packaging report connecting original and requested image')
+    parser.add_argument('--workers', type=int, default=1,
+                        help='Concurrent workflow jobs; default 1 avoids competing timing measurements')
     args = parser.parse_args()
+    if not 1 <= args.workers <= 4:
+        parser.error('--workers must be between 1 and 4')
     disk, native_path, audit_path, out = [p.resolve() for p in
         (args.disk, args.native_result, args.installed_audit, args.out)]
     if out.exists():
@@ -104,7 +108,7 @@ def main():
          ['--disk', disk, '--accel', 'tcg'], 'resource-result.json'),
     ]
     report = {'result': 'running', 'cpu': '486,-fpu', 'ram_mib': 8,
-              'accel': 'tcg', 'input_sha256': inputs,
+              'accel': 'tcg', 'workers': args.workers, 'input_sha256': inputs,
               'harness_sha256': helper_identity, 'jobs': {},
               'image_origin': 'deterministically packaged native image' if origin_inputs else 'native installed image'}
 
@@ -136,7 +140,7 @@ def main():
     try:
         save()
         errors = []
-        with ThreadPoolExecutor(max_workers=4) as pool:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
             futures = {pool.submit(run, job): job[0] for job in jobs}
             for future in as_completed(futures):
                 name = futures[future]

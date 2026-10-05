@@ -136,3 +136,15 @@ second boots exceed the unchanged 60-second budget. The memory-baseline packaged
 DolDoc workflow likewise passes functionally but the enforced budget rejects
 72.512/67.184/63.654 second starts. These failures remain open; earlier unpackaged
 functional and timing passes do not replace them.
+
+
+Installed workflow runs now default to one worker so their startup and response
+measurements do not compete with the other three jobs in the same run.
+`--workers 1..4` is explicit and recorded. This does not isolate unrelated host
+work or erase failures from earlier parallel runs; the budgets remain unchanged.
+
+Latest public Caller native generations also produce identical packaged disks:
+SHA256 `f8ef230f0fc6eebdfdfe894e59475e09a1ec5093513fbbb7aa13ee94808bace7`
+in `build/public-caller-release-packaging`. Their native executable and 851-file
+delivered-source audits pass; their own packaged runtime qualification is running.
+This source epoch precedes the isolated bounded redraw candidate.

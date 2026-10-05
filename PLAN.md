@@ -9,7 +9,9 @@ reuse, corrected native TEST encoding and trimmed memory-probe baseline.
 Its integration artifact is
 [the public Caller candidate patch](docs/patches/i386-public-caller-integrated-candidate.patch).
 Public Caller passes normal-stack, corrupt-frame and five-cycle dedicated CPU
-debugger-stack gates. Its complete suite and retained native build remain live.
+debugger-stack gates. Its complete suite remains live; both fully native generations now pass.
+Its first native workstation passes functionally but fails startup budgets;
+packaged runtime qualification and a newer redraw candidate remain pending.
 
 The preceding memory-baseline candidate completes both fully native generations:
 12 identical modules, flat kernel and boot area, independent installation/boot
@@ -13258,3 +13260,45 @@ cause. Existing document editor samples grouping jiffies when consuming each
 key, after potentially costly redraws. Inspect arrival/consumption/render timing
 and actual clock semantics before changing grouping thresholds or expectations.
 Serialized comparison remains live. Release qualification remains open.
+
+
+Undo clock profiling, bounded redraw candidate and latest native identity (2026-10-05):
+Added tools/profile-i386-undo-clock.py. In-memory AST insertion preserves all
+undo fixture/VGA checks, samples bounded cnts/kernel_input exports via readonly
+QMP, verifies public cnts address, and pins image/harness identity. Same old
+packaged image PASS at lower load: guestjiffies4380beforeabc,4400afterbatch,
+5690aftervisibleabc (1280jiffies); both continuous and2-second separatedundo pass.
+Earlier batched/serialized reds remain retained. Sampling can perturb timing;
+this is diagnosis, not a controlled benchmark or completed undo fix.
+
+Keyboard delivery passes through public task-message queues. Preserving raw
+arrival timestamps therefore also needs a message-lifetime/cleanup design;
+no private event/message ABI shortcut introduced. Isolated candidate
+build/undo-redraw-candidate instead retains one decoded event and coalesces
+pending redraws for at most8events, preserving ordering, avoiding reads past
+editor exit and yielding/break-polling at the bound. Archived delta
+ docs/patches/i386-doldoc-redraw-coalescing-candidate.patch applies after latest
+publicCaller integration. Fresh original1270source bootstrap and crossbuild/386
+boot audits PASS; batched andserialized focusedundo PASS on495992-byte cross
+image,28secondnormalboots. Fullsuite andsix-native-provider builds running;
+no native/latest-source runtime performance improvement or promotion claimed.
+
+Latest Caller native pipeline now all8stages PASS, twelve modules identical,
+500344-byte flatSHA2567225dc9413ab42ce99e6bfafbd3844969faca99516bb4a34307d8364ceeb53fb;
+bootSHA25610b115abd887b84e84ed6b138b9d5354838f8ff4e4e664e42f4aa9a9f5b2684b.
+Both packaged disks byte-identicalSHA256
+f8ef230f0fc6eebdfdfe894e59475e09a1ec5093513fbbb7aa13ee94808bace7.
+Packaged native audit and851delivered-source audit PASS. Its own packaged
+four-job workflow nowrunning; earlierfirst-native suite functionallypasses but
+budget rejects74.931secondworkstation and74.676firstDolDocboot. LaterDolDoc
+boots51.327/53.338pass; update0.377/interrupt0.417pass. These failures retained.
+New installed-workflow runner defaults to1worker to avoid competing timing
+measurements, accepts explicit1..4workers and recordschoice. Existingfrozen
+parallel runs unchanged; budgets not relaxed and hostload remains relevant.
+
+Latest Caller debugger aggregate terminal19PASS/1FAIL. Step-stack failed while
+enteringlongcheck expression: capturedVGA Inputreset and incomplete command,
+not completed physical-stack assertion. Paced4characterchunks with exactVGA
+checkpoints preserve assertions; fresh5cycle/45command step-stack PASS on same
+image in build/public-caller-step-stack-paced. OriginalaggregateFAIL retained;
+no altered-runtime claim. Full promotion and release readiness remainopen.

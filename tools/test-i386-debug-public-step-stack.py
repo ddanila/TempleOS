@@ -19,10 +19,16 @@ def commands(cycles=1):
         source, answers, interaction = check
         heading = interaction['initial_rows']
         condition = 'Fs->rsp==CpuStackTop&&(Fs->rflags&0x100)!=0&&CpuTrapStage==1;'
+        typed=[]
+        for start in range(0,len(condition),4):
+            end=min(start+4,len(condition))
+            typed += [{'text':condition[start:end]},
+                      {'expect_rows':heading[:-1]+[heading[-1]+condition[:end]],
+                       'label':'stack-check-typing-'+str(end)}]
         interaction['events'][-1:] = [
             {'text': 'S;'}, {'key': 'ret'},
             {'expect_rows': heading, 'label': 'stack-step-reentry'},
-            {'text': condition}, {'key': 'ret'},
+            *typed, {'key': 'ret'},
             {'expect_rows': heading[:-1] + ['dbg> ' + condition, '1', 'dbg> '], 'label': 'stack-after-step'},
             {'text': 'G;'},
         ]

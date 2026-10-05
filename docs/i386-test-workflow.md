@@ -5755,3 +5755,21 @@ use an ordinary boot command without audio-capture devices. Original disk hashes
 must stay unchanged. This records the environment at probe time, so retain a
 fresh record with release qualification rather than treating it as proof of
 which firmware an old result used.
+
+
+The alternate-stack single-step checker now paces its long register/state
+expression in four-character chunks with exact VGA checkpoints. A previous
+20-job regression recorded 19 passes and one keyboard `Input reset` during
+that expression; the physical-state assertion was not completed. The paced
+fixture passes five cycles on the unchanged image in
+`build/public-caller-step-stack-paced`. The original aggregate failure remains
+preserved; this is a fixture delivery correction, not an OS stepping fix.
+
+`tools/profile-i386-undo-clock.py` samples the clock and raw input queue around
+the exact undo fixture through read-only QMP. It verifies the public clock
+address against a bounded module data export and instruments only an in-memory
+copy of the input harness. Its samples can perturb timing; retain failed and
+passing observations rather than treating a passing profile as qualification.
+The isolated bounded redraw candidate is preserved as
+`docs/patches/i386-doldoc-redraw-coalescing-candidate.patch`, to apply after the
+public Caller integration. Full native and workstation qualification is pending.
