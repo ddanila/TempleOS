@@ -12817,3 +12817,23 @@ build/extended-transfer-io-matrix-four; old failed matrix retained unchanged.
 Memory diagnostic cross-build PASS; exact mutation reproduction now running
 session16279 in build/memory-probe-failure-detail, with accounting markers.
 Release and promotion to main OS source remain pending these integration gates.
+
+
+Native TEST green and memory-baseline candidate (2026-10-05):
+build/native-systry-test-green/result.json PASS actual guest compilation,
+registration TEST exactly 85 C0 and sole SysTry export; module SHA256
+4a8266a14b06c8ad0a10e4cf5dce7c078e1bf2203ef66f16456ba7df4dccb434.
+Red/green regression established. Full fixed native build remains running.
+Instrumented mutation diagnostic reached all six memory checkpoints then FAIL.
+Phase1 HASH private heap used 0x5F5588 / allocations0x1BA0, FINAL used0x5E5348 /
+allocations0x1B9F; difference exactly prior backing span0x10240 and one allocation.
+FINAL pool owned_count, retained and used_u8s all zero. The strict equality
+baseline was captured before empty allocation cache/backing reclamation.
+Separate build/extended-memory-baseline-fix requires zero live task allocations,
+trims task pages and backing arenas, asserts an empty pool, then captures baseline.
+All original final exact heap/allocation/empty-pool/integrity assertions remain.
+No relaxed inequality or omitted leak check. Qualification still pending; fresh
+original bootstrap running session81051 before full cross-build/test. Preserved
+full docs/patches/i386-memory-baseline-integrated-candidate.patch applies to main
+and includes native TEST fix, early IDT, extent transfer and corrected harness.
+Do not treat diagnostic localization or candidate as a full-suite PASS.
