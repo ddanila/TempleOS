@@ -9973,3 +9973,19 @@ is now running; ordinary cache mutation follows on pass. Native six-module
 construction also runs for this integrated image in
 build/file-cd-resident-integrated-native-build. No earlier ABI-46 native
 result is substituted for this new ABI-47 source epoch.
+
+Integrated source broad/resource qualification started (2026-10-05):
+The integrated compressed cold-cache QEMU, native retained builder, earlier
+installed no-FPU workstation and earlier second-generation retained builder
+are directly confirmed live. The integrated image now also runs its own:
+- full 513-command no-FPU / 8 MiB workstation suite in
+  build/file-cd-resident-integrated-workstation;
+- forced public allocation rejection with exact caller/root and independently
+  observed private heap recovery in
+  build/file-cd-resident-integrated-failure-recovery;
+- twenty resident create/update/remove cycles with exact heap recovery in
+  build/file-cd-resident-integrated-recovery.
+The resource tests use the matching ABI-47 builder for independent disk audits.
+Each has its own preserved original oracle and disposable native image.
+All final verdicts are pending; previous ABI-46 greens cannot establish
+these current-source gates. No OS source changes are made during qualification.
