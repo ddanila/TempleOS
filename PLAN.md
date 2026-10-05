@@ -12574,3 +12574,19 @@ fixtures must independently prove both duplicate-name rollback and source-absent
 commit, bitmap uniqueness and legacy-journal behavior. Build new kernel, run
 actual fragmented move and native generation gates on exact corrected source.
 Renderer pixel/full-session and release qualification remain open.
+
+Independent transfer journal reboot fixtures start (2026-10-05):
+Recovery-corrected original bootstrap passes both generations. Actual full kernel
+build/test is live session80886, extended-transfer-recovery-kernel.log, with new
+kernel.img available. New tools/test-i386-transfer-recovery.py constructs intent-
+only, duplicate-name shared-extent and committed-source-absent journal states
+independently on writable copies of that exact image. It encodes version-two
+journal/FNV metadata, reboots each state, requires arithmetic42, expected source/
+target namespace, original extent/content, cleared journal, unchanged boot area
+and independently valid unique ownership bitmap. Existing source input and tool
+pins must stay unchanged. Current runtime run live session67360 in
+build/transfer-recovery-boundaries. Python compilation/diff check pass; no runtime
+recovery green claimed yet. Scope is three durable publication boundaries, not
+every device-write interruption, directory growth, corrupt journals or legacy
+copy recovery. Fragmented module move and native generations remain to qualify.
+Full objective and renderer long-session qualification remain open.
