@@ -1,5 +1,17 @@
 # M7 requirement-to-test audit
 
+Current filesystem integration checkpoint (2026-10-05): promoted main remains
+file ABI 40; the ABI-46 public cache/write-parent candidate has a fully native
+installed twelve-module image and independent 386/bitmap audit in
+`build/public-resident-write-parent-selfhost` and `...-selfhost-audit`.
+Its second native generation and installed no-FPU workstation are running.
+Fresh three-boot DolDoc persistence and captured speaker-output checks now run
+on that installation in `...-installed-doldoc-session` and `...-installed-speaker`.
+Their verdicts are pending. ABI-47 integrates public Cd and passes focused
+original/native cache, compiler/DolDoc, write and exact heap-recovery contracts;
+its workstation and native-generation chain remain pending. Historical greens
+below cannot substitute for these current-source installed workflow checks.
+
 Current optimized-source checkpoint: all twelve modules are guest-built in
 `build/i386-heap-seek-selfhost`, with installed 386/boot/RedSea/keyword audits
 passing. Its no-FPU 8 MiB full workstation passes 513 commands, exact VGA

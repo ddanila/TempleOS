@@ -10076,3 +10076,17 @@ absence, unchanged baseline source and unchanged input (18 directories,
 873 files, 17616 owned sectors). Current cross-manifest source hashes are
 independently rechecked before recording these results. Workstation/native
 builds, installed-generation requalification and release gates remain open.
+
+Current native installed DolDoc/audio release gates started (2026-10-05):
+Three-boot DolDoc persistence/reopen/edit/execute/interrupt recovery runs on
+the completed ABI-46 native target in
+build/public-resident-write-parent-installed-doldoc-session with 486,-fpu
+and QMP stdio. Captured speaker tone/off/reset output runs in
+build/public-resident-write-parent-installed-speaker. Both preserve the input
+installation and require actual runtime evidence rather than sound-state
+assignments or one-boot persistence. Final verdicts remain pending, and these
+are earlier-source ABI-46 evidence; equivalent installed checks remain needed
+for the final integrated image. The M7 coverage audit opening now identifies
+this current installed checkpoint and distinguishes the ABI-47 candidate from
+historical evidence. Native build and installed workstation handles were
+revalidated live before starting these independent checks.
