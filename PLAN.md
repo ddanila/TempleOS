@@ -11945,3 +11945,28 @@ Focused self-exit and alternate-stack S also run on that parser image in
 build/debug-cpu-self-exit-parser-green and build/debug-public-step-stack-parser-green.
 No runtime result yet claimed. Full host audits, allocation failure recovery,
 frame walking, private accounting and installed/release gates remain open.
+
+Owned/parser stack focused runtime greens (2026-10-05):
+All on the same fixed parser-stack image, TCG 486,-fpu, 8 MiB and unchanged
+source disk: debug-public-step-stack-parser-green PASS five cycles/45 commands,
+startup 43.61391941085458 seconds; debug-cpu-nested-catch-parser-green PASS five
+cycles/45 commands, startup 44.03593344427645 seconds; and
+debug-cpu-self-exit-parser-green PASS five terminal sessions/31 commands,
+startup 43.647741994354874 seconds. They cover actual alternate-stack S and
+reentry/G, throwing/catching/sleeping within debugger input, and self-exit
+followed by surviving console commands, mode restoration and child reaping.
+Public repeated-heap checks pass; no direct private kernel-heap count claim.
+Nested-catch fixture on owned-reap without parser support is FAIL (preserved).
+
+New tools/test-i386-debug-initial-alternate-stack.py switches physical ESP in
+compiled code before the first INT3, verifies captured public RSP and command
+execution, then physical resume result and exact original ESP restoration.
+It needs no prior debugger trap/anchor. Five independent fixtures pass command
+limits. Initial launches were explicitly stopped to correct an inherited
+128-byte NOP finder that needlessly constrained the longer function. Outputs
+preserved as unqualified; no runtime failure claim from those interrupted runs.
+The finder now stays within MSize's actual code allocation, checking the
+complete three-byte NOP window before patching. Fresh bounded red/green runs
+are build/debug-initial-alternate-stack-bounded-{red,green}; no result yet.
+Complete host/native/install qualification, allocation-failure recovery,
+frame walking and private memory budgets remain open; candidate unpromoted.
