@@ -11903,3 +11903,26 @@ UNHANDLED 1 0. Preserve both outputs; inspect debugger input/scheduling and
 stack-region frame walking before attributing a new root cause. A displayed
 heading alone does not qualify command execution or owned-stack cleanup.
 Native and complete release gates remain open; root OS source remains unpromoted.
+
+Owned-stack command failure traced to parser headroom guard (2026-10-05):
+Inspection of the final failed PPM frames shows CpuTrapStage and TermFinish
+were received, but each returned Compilation failed. This is command
+compilation, not unresponsive keyboard input. NativeExpression.HC
+I386ParserStackCheck validates GetRBP only against task->stk and requires
+4096 bytes of headroom, so it rejects the new debugger execution stack even
+though exception registration now recognizes that exact owned allocation.
+
+New isolated build/debug-parser-stack-prototype extends the parser guard:
+original bounds remain primary; a frame outside them can select this task's
+exact live debugger allocation only if its heap size matches the owned size
+and it is at least 4096 bytes. The same end-address/frame bounds and 4 KiB
+headroom check then apply. No arbitrary region or guard bypass is introduced;
+existing compiler imports already include I386HeapSize. Existing candidates
+remain fixed. Full docs/patches/i386-debug-parser-stack-candidate.patch applies.
+
+Fresh bootstrap runs in build/debug-parser-stack-bootstrap.log (PID 3737455).
+Dependent build/debug-parser-stack-pipeline.json checks both generations/all
+hashes, full --test with the complete console audit, five CPU-self-exit cycles,
+S/stack, both overlap paths, G/stack, flags/IP/concurrency/ownership/kill gates.
+No new runtime green claimed. Allocation failure recovery, frame walking,
+private-resource accounting and native/release gates remain outstanding.
