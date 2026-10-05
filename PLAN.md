@@ -10575,3 +10575,27 @@ EBP/ESP, instruction-pointer/flags edits, complete other-task state and release
 coverage remain open. Register candidate six-module native construction is
 directly confirmed live as PID 3641122; prior step-source native builds cannot
 substitute for it. Candidate sources and main OS remain unchanged.
+
+Repeated register editing and wider candidate qualification (2026-10-05):
+build/debug-register-edit-independent-repeat/result.json passes five EAX
+inspection/edit/store/S/G cycles and 49 commands, exact VGA, startup 26.964408
+seconds on 486,-fpu / 8 MiB, unchanged image and pinned dependencies. This
+confirms the fixture aliasing correction and repeated EAX semantics including
+existing warmed public heap/mode/flag checks. The bank chain's ECX test passes
+two cycles and 25 commands, startup 27.217041 seconds; EDX is running, other
+bank verdicts remain pending. Complete register coverage is not claimed.
+
+The register candidate full 513-command workstation runs in
+build/debug-register-workstation (Python 3641740 / QEMU 3641741), and
+stepped-task teardown runs in build/debug-register-forced-kill (3641747 /
+3641748), both 486,-fpu / 8 MiB. Six retained native modules are being built
+by directly revalidated PID 3641122. A dependent chain, directly live as
+3641972, requires that exact build before installation, full native flat
+construction and installed audit, then a second retained build with exact
+installed comparison, installation/full flat/audit and twelve-module/flat/
+boot identity. Outputs are build/debug-register-{native-install,selfhost,
+selfhost-audit,gen2-native-build,gen2-native-install,gen2-selfhost,
+gen2-selfhost-audit,generation-identity}. Its prototype auditor and matching
+stage listing are used. No pending gate is a pass, and earlier step/cache
+candidate evidence cannot qualify the updated register console. Main remains
+unchanged while candidate sources are pinned. No release completion claimed.
