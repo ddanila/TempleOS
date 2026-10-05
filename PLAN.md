@@ -12314,3 +12314,23 @@ extended-assembler-capacity-bootstrap.log. After bootstrap, rebuild its resident
 compiler/image and repeat actual native ExceptionEntry test and byte/ISA audits.
 Keep older native failure evidence; resolve TextFrameDemo separately. Installer,
 two native generations and full release qualification remain open.
+
+Text-frame failure investigation and assembler capacity build (2026-10-05):
+Capacity-fixed assembler original bootstrap passes both generations. Actual
+kernel --test is live PID 3759719/session 94776, output
+build/extended-assembler-capacity-prototype/build/extended-assembler-capacity-kernel.
+Earlier assembler candidate full test independently repeats TextFrameDemo(0)
+COMMAND ERROR/timeout; preserve both full-run input artifacts. No full green.
+
+TextRender.HC NativeTextBasePresent allocates 307200+153600 temporary bytes.
+Its catch frees both buffers and unconditional epilogue frees them again:
+source-proven double cleanup on rendering/allocation exceptions. Archive small
+single-cleanup fix docs/patches/i386-text-render-cleanup-candidate.patch; applies
+cleanly, not yet runtime-qualified or applied to running candidates. This does
+not establish the exception's original cause or fix available memory.
+Focused 8 MiB fresh-console renderer probe is live PID 3761606/session 63677,
+script build/text-base-extended-probe.py, logs/output build/text-base-extended-probe.
+It invokes real NativeTextBasePresent after compiling TextFrameDemo and restores
+the display; investigate longer-test memory pressure separately if fresh passes.
+Native ExceptionEntry check remains awaiting harness terminal failure after
+observed guest rejection; capacity-fixed image needs a fresh test afterward.

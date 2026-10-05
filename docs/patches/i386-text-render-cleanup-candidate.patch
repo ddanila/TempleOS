@@ -1,0 +1,12 @@
+diff --git a/Kernel/I386/TextRender.HC b/Kernel/I386/TextRender.HC
+--- a/Kernel/I386/TextRender.HC
++++ b/Kernel/I386/TextRender.HC
+@@ -10,7 +10,7 @@ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
+     TextRenderCore(pixels,i386_text_base,text.font,80,60,blink,pan_x,pan_y,hide_col,hide_row);
+     GraphicsPlanarCore(planes,pixels);
+     result=I386VgaRows(planes,0,480);
+-  } catch { Free(planes); Free(pixels); }
++  } catch { }
+   Free(planes); Free(pixels); return result;
+ }
+ U0 NativeTextBaseRestore()
