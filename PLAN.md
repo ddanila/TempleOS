@@ -32,9 +32,10 @@ retained native construction and installation now pass; full native kernel
 qualification is underway. The resident public binding correction passes an
 18-command cold ownership/removal contract and a 37-command write/read and
 caller/private recovery contract. Binary, compressed, dotless and empty cold ownership/removal contracts now pass.
-Persistent root-heap recovery still fails: twenty rounds leave 96 bytes beyond
-the zero baseline while the caller heap recovers exactly. Diagnostic snapshots
-and the full workstation suite are running.
+The 513-command workstation and exact caller/root/private heap recovery now
+pass. The apparent 96-byte residue is a validated harness key-up message;
+message-quiescent snapshots retain the exact recovery requirement. Original
+adam_task namespace/ownership qualification is the next candidate gate.
 Original oracles pass. Broader cache lifecycle/exception/include parity and
 native construction must qualify before promotion. The candidate
 source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
@@ -9170,3 +9171,37 @@ and correctly rejected missing inputs; the successful audit uses the actual
 installed artifact paths. Public-Cd broader drive/error/recovery parity,
 resident root accounting and release requirements remain open. Main no-FPU
 TCG native rebuilding and the exact-name 513-command workstation remain live.
+
+Message-quiescent recovery and Adam public namespace (2026-10-05):
+The before-loop trace confirms the zero root baseline is not a saved-variable
+artifact. Remaining allocation is a queued job: RESIDENT JOBS reports job code
+1 (JOBT_MSG), message code 3 (MSG_KEY_UP), MSize2 96. MemoryMessageNew allocates
+these records from memory_root; the delayed Enter release accounts for the
+root heap delta. This was input-harness activity, not established cache leakage.
+
+Resident recovery now validates each pending job is root-owned and only a
+MSG_KEY_UP message before consuming it. Unexpected jobs fail rather than being
+discarded. Quiesce at both snapshot boundaries; retain exact used-byte equality
+for caller and persistent root plus independent private snapshots. All helper
+lines fit the 255-byte limit after splitting reporting from validation.
+`build/public-resident-exact-quiescent-recovery/result.json` passes 45 commands:
+caller 1361744 -> 1361744, root 0 -> 0, private allocator recovery pass, VGA
+match, independent persisted-byte/volume audit and unchanged source disk.
+
+Exact-name full workstation passes all 513 commands in
+`build/public-resident-exact-workstation/result.json`: no-FPU 8 MiB, startup
+33.007 seconds, long-document update 0.264 seconds, exact VGA and twenty document
+cycles with exact task heap recovery; source disk remains unchanged.
+
+Cold tests add --adam-root, requiring --hash-visible. Original oracle passes
+and native ABI-44 image fails while declaring ColdAdamOwn because adam_task is
+absent from its public namespace. The candidate now exposes that original
+global as a data export initialized to MemoryBind's persistent root task.
+Fresh bootstrap/cross/386 audit passes in
+`build/file-resident-public-prototype/build/file-resident-public-adam`.
+Binary/compressed cold tests require cache entry/name/buffer ownership by
+adam_task->data_heap and lookup via adam_task->hash_table; they are running in
+`build/public-resident-adam-cold` and `...-packed-cold`. No alias runtime pass
+is claimed yet. The archived patch includes the additive public data export
+and passes git apply --check. Full no-FPU main retained construction remains
+live at CompilerRuntime. Broader original-model/release gates remain open.

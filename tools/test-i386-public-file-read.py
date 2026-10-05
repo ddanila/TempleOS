@@ -103,13 +103,17 @@ def main():
                          ('Bool ResidentRound(){return ResidentWrite(ResidentName,90,0x200)&&ResidentRead(ResidentName,90,0)&&ResidentWrite(ResidentName,67,0)&&ResidentRead(ResidentName,67,0x800);}',[]),
                          ('U0 ResidentHeapText(U8 *s){while(*s)OutU8(0xE9,*s++);}',[]),
                          ('U0 ResidentHeapHex(I64 n){U8 *d="0123456789ABCDEF";I64 i;for(i=60;i>=0;i-=4)OutU8(0xE9,d[(n>>i)&15]);OutU8(0xE9,10);}',[]),
+                         ('U0 ResidentJobs(){CJob *h=&Fs->srv_ctrl.next_waiting,*j=h->next;ResidentHeapText("RESIDENT JOBS\\n");while(j!=h){ResidentHeapHex(j->job_code);ResidentHeapHex(j->msg_code);ResidentHeapHex(MSize2(j));j=j->next;}}',[]),
+                         ('Bool ResidentQuiet(){CJob *h=&Fs->srv_ctrl.next_waiting,*j=h->next;while(j!=h){if(j->job_code!=JOBT_MSG||j->msg_code!=MSG_KEY_UP||MHeapCtrl(j)!=Fs->gs->seth_task->data_heap)return FALSE;j=j->next;}FlushMsgs;return h->next==h;}',[]),
+                         ('U0 ResidentBefore(I64 u,I64 r){ResidentHeapText("RESIDENT BEFORE\\n");ResidentHeapHex(u);ResidentHeapHex(r);}',[]),
+                         ('Bool ResidentCounts(I64 u,I64 v,I64 r,I64 s){ResidentHeapText("RESIDENT HEAPS\\n");ResidentHeapHex(u);ResidentHeapHex(v);ResidentHeapHex(r);ResidentHeapHex(s);return u==v&&r==s;}',[]),
                          ('I64 ResidentRootUsed(){return Fs->gs->seth_task->data_heap->used_u8s;}',[]),
-                         ('Bool ResidentHeaps(I64 u,I64 r){I64 v=Fs->data_heap->used_u8s,s=ResidentRootUsed;ResidentHeapText("RESIDENT HEAPS\\n");ResidentHeapHex(u);ResidentHeapHex(v);ResidentHeapHex(r);ResidentHeapHex(s);return u==v&&r==s;}',[]),
-                         ('Bool FindRecovery(){I64 i,u=Fs->data_heap->used_u8s,r=ResidentRootUsed;ResidentHeapText("RESIDENT BEFORE\\n");ResidentHeapHex(u);ResidentHeapHex(r);for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return ResidentHeaps(u,r);}',[]),
+                         ('Bool ResidentHeaps(I64 u,I64 r){I64 v,s;ResidentJobs;if(!ResidentQuiet)return FALSE;v=Fs->data_heap->used_u8s;s=ResidentRootUsed;return ResidentCounts(u,v,r,s);}',[]),
+                         ('Bool FindRecovery(){I64 i,u,r;if(!ResidentQuiet)return FALSE;u=Fs->data_heap->used_u8s;r=ResidentRootUsed;ResidentBefore(u,r);for(i=0;i<20;i++)if(!ResidentRound)return FALSE;return ResidentHeaps(u,r);}',[]),
                          ('FindRecovery;',['1'])]
         commands += [('6*7;',['42'])]
         if args.resident_recovery:
-            report['resident_heap_recovery_scope'] = 'Twenty create/update/remove cycles: exact caller and persistent public root task heap used bytes, plus independent private heap snapshots'
+            report['resident_heap_recovery_scope'] = 'Only validated root-owned key-up jobs are quiesced before snapshots; twenty create/update/remove cycles: exact caller and persistent public root task heap used bytes, plus independent private heap snapshots'
             #The read-only observer recognizes FindRecovery as its sampling boundary.
             commands[-2]=('FindRecovery();',['1'])
             runner=runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](candidate,report)

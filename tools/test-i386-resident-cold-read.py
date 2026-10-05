@@ -21,7 +21,10 @@ def main():
     parser.add_argument('--prepare-fixture', action='store_true', help='Populate resident bytes on the disposable candidate before a separate cold boot')
     parser.add_argument('--empty', action='store_true', help='Qualify zero-byte resident files and their cache entries')
     parser.add_argument('--dotless', action='store_true', help='Use a filename without an extension and require its exact public cache key')
+    parser.add_argument('--adam-root', action='store_true', help='Require the original adam_task global and its ownership of public cache allocations')
     args = parser.parse_args()
+    if args.adam_root and not args.hash_visible:
+        parser.error('--adam-root requires --hash-visible')
     if args.empty and (args.compressed or args.shared_lifetime):
         parser.error('--empty cannot combine with --compressed or --shared-lifetime')
     if args.hash_removal and not args.hash_visible:
@@ -68,10 +71,15 @@ def main():
     report['compressed'] = args.compressed
     report['shared_lifetime'] = args.shared_lifetime
     report['hash_visible'] = args.hash_visible
+    report['adam_root'] = args.adam_root
     report['hash_removal'] = args.hash_removal
     if args.hash_visible:
         selected += ['Bool ColdHash(U8 *name){CHashGeneric *e=HashFind(name,Fs->hash_table,HTT_FILE);if(!e)return FALSE;if(!e->user_data0||e->user_data1<0)return FALSE;return MHeapCtrl(e)&&MHeapCtrl(e->str)&&MHeapCtrl(e->user_data0); }']
         checks += [f'ColdHash("C:/Probe/{filename}")']
+    if args.adam_root:
+        selected += ['Bool ColdAdamOwn(U8 *p){return MHeapCtrl(p)==adam_task->data_heap;}',
+                     'Bool ColdRoot(U8 *name){CHashGeneric *e=HashFind(name,adam_task->hash_table,HTT_FILE);if(!e)return FALSE;return ColdAdamOwn(e)&&ColdAdamOwn(e->str)&&ColdAdamOwn(e->user_data0); }']
+        checks += [f'ColdRoot("C:/Probe/{filename}")']
     if args.hash_removal:
         selected += ['CHashTable *ColdOwner(CHash *e){CHashTable *t=Fs->hash_table;CHash *p;I64 i;while(t){for(i=0;i<=t->mask;i++){p=t->body[i];while(p){if(p==e)return t;p=p->next;}}t=t->next;}return 0;}',
                      'Bool ColdRemove(U8 *name){CHash *e=HashFind(name,Fs->hash_table,HTT_FILE);CHashTable *t;if(!e)return FALSE;t=ColdOwner(e);if(!t)return FALSE;HashRemDel(e,t);return !HashFind(name,Fs->hash_table,HTT_FILE); }']
@@ -88,6 +96,8 @@ def main():
         checks += ['ColdChild','Cd("C:/Probe")',cached_check,'Cd("C:/")',cached_check]
     if args.hash_visible:
         checks.insert(1, f'ColdHash("C:/Probe/{filename}")')
+    if args.adam_root:
+        checks.insert(2, f'ColdRoot("C:/Probe/{filename}")')
     try:
         for source in selected:
             if len(source) > 255:
