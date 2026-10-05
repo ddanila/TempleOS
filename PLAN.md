@@ -39,7 +39,10 @@ adam_task namespace/ownership qualification passes binary and compressed cold
 tests. Public cache mutation passes for FileRead, but compiler include parity
 is red: original TempleOS uses the edited cache; the candidate uses disk bytes.
 Original oracles pass. Broader cache lifecycle/exception/include parity and
-native construction must qualify before promotion. The candidate
+native construction must qualify before promotion. ABI-45 bridges canonical
+public cache reads into compiler includes and DolDoc; original and native
+11-command cache mutation parity pass. Its full workstation, heap recovery
+and retained native construction are running. The candidate
 source is preserved in `docs/patches/i386-public-resident-candidate.patch`;
 temporary debug-port tracing is separate from that archived candidate.
 Broader errors, full debugger behavior and release requirements remain open.
@@ -9295,3 +9298,16 @@ in build/public-resident-include-workstation. The ABI-45 KVM retained six-module
 build is live in build/public-resident-include-native-build. Main's separate
 no-FPU TCG retained build also remains live with compiler function progress.
 All three candidate runs are pending; no promotion or full release claim.
+
+Compiler cache deletion/repopulation contract (2026-10-05):
+The include parity tool adds --removal. After the initial public mutation and
+cache-backed include result 49, HashRemDel removes the original public entry;
+a second include must yield disk result 42 and publish a new HTT_FILE entry.
+Mutating and reading that new entry proves publication and shared ownership
+rather than only a disk fallback. --document remains composable.
+Original TempleOS passes this extended oracle with --document --removal;
+the native 17-command run is live in build/public-resident-include-removal.
+Persisted fixture equality, input immutability and the independent RedSea
+bitmap audit remain mandatory. No native pass is claimed yet. ABI-45 exact
+45-command recovery, full workstation and retained native construction remain
+live; their handles/checkpoints were revalidated without restarting them.

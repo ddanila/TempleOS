@@ -15,6 +15,8 @@ READ = ('Bool CachedCode(U8 *name){I64 n;U8 *p=FileRead(name,&n);'
         'Bool ok=p&&n==19&&p[15]==55;Free(p);return ok;}')
 DOC = ('Bool CachedDoc(U8 *name){CDoc *d=DocRead(name);I64 n;U8 *p;Bool ok;'
        'if(!d)return FALSE;p=DocSave(d,&n);ok=p&&n>=19&&p[15]==55;Free(p);DocDel(d);return ok;}')
+REMOVE = ('Bool RemoveCode(U8 *name){CHashGeneric *e=HashFind(name,adam_task->hash_table,HTT_FILE);'
+          'if(!e)return FALSE;return HashRemDel(e,adam_task->hash_table);}')
 
 
 def main():
@@ -24,6 +26,7 @@ def main():
     parser.add_argument('--builder', type=Path, default=ROOT/'tools/build-i386-kernel.py',
                         help='Independent image auditor matching the candidate file ABI')
     parser.add_argument('--document', action='store_true', help='Also require DocRead to see the edited cache')
+    parser.add_argument('--removal', action='store_true', help='Remove cache and require include to reload and repopulate from disk')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -36,6 +39,7 @@ def main():
     report = dict(result='fail', source_disk_sha256=hashlib.sha256(original).hexdigest(),
                   scope='Public cache source mutation must affect compiler #include; persisted source stays original')
     report['document'] = args.document
+    report['removal'] = args.removal
     try:
         overlay = out/'overlay'
         overlay.mkdir(exist_ok=True)
@@ -51,6 +55,14 @@ def main():
             oracle.insert(5, DOC)
             oracle.insert(oracle.index('ExePutS("#include \\"B:/CacheInclude.HC\\";\\n");'),
                           'if(!CachedDoc("B:/CacheInclude.HC")){Report("FAIL cached document\n");return;}')
+        if args.removal:
+            oracle.insert(5, REMOVE)
+            index = oracle.index('Report("DONE resident include\n");}')
+            oracle[index:index] = [
+                'if(!RemoveCode("B:/CacheInclude.HC")){Report("FAIL remove\n");return;}',
+                'ExePutS("#include \\"B:/CacheInclude.HC\\";\\n");',
+                'if(RootCacheValue!=42){Report("FAIL disk include\n");return;}',
+                'if(!MutateCode("B:/CacheInclude.HC")||!CachedCode("B:/CacheInclude.HC")){Report("FAIL repopulate\n");return;}']
         #HolyC strings need literal escape sequences, not embedded line breaks.
         oracle = [line.replace('\n', '\\n') for line in oracle]
         (overlay/'Once.HC').write_text('\n'.join(oracle)+'\n')
@@ -69,6 +81,13 @@ def main():
         if args.document:
             commands.insert(4, (DOC, []))
             commands.insert(-2, ('CachedDoc("C:/Probe/CacheInclude.HC");', ['1']))
+        if args.removal:
+            commands.insert(4, (REMOVE, []))
+            commands += [('RemoveCode("C:/Probe/CacheInclude.HC");', ['1']),
+                         ('#include "C:/Probe/CacheInclude.HC"', ['42']),
+                         ('RootCacheValue;', ['42']),
+                         ('MutateCode("C:/Probe/CacheInclude.HC");', ['1']),
+                         ('CachedCode("C:/Probe/CacheInclude.HC");', ['1'])]
         runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
                                    qmp_stdio=True, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
