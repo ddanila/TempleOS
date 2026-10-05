@@ -31,8 +31,8 @@ def main():
     services = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
     try:
         setup = [('DirMk("C:/GrowthSource",8)&&DirMk("C:/GrowthTarget",8);', ['1']),
-                 ('FileWrite("C:/GrowthSource/Move.HC","MOVE",4)==4;', ['1'])]
-        setup += [(f'FileWrite("C:/GrowthTarget/F{i}.HC","F",1)==1;', ['1']) for i in range(5)]
+                 ('FileWrite("C:/GrowthSource/Move.HC","MOVE",4)>0;', ['1'])]
+        setup += [(f'FileWrite("C:/GrowthTarget/F{i}.HC","F",1)>0;', ['1']) for i in range(5)]
         report['prepare'] = runner(disk, args.out/'prepare', snapshot=False, accel='kvm',
                                    startup_check={'status': 'ok', 'answers': [], 'commands': setup})
         before = disk.read_bytes()

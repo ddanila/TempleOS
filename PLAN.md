@@ -12866,3 +12866,18 @@ helper sources pinned throughout. Real run session35952 in
 build/move-directory-growth; no PASS claimed until terminal report. Interrupted
 directory-growth writes remain a separate open requirement. PLAN opening now
 explicitly identifies latest unpromoted candidate and historical evidence scope.
+
+
+Memory diagnostic advancement and growth fixture correction (2026-10-05):
+Corrected memory-baseline candidate normal diagnostic boot has passed both
+MEMORY PROBE phases0/1 and parser memory phases0/1. Full suite remains live;
+mutation-specific reproduction isolated in build/memory-baseline-mutation-isolated
+(session51152) to avoid sharing the full suite's writable mutation image.
+An initial focused run was stopped to remove that potential path conflict;
+no PASS/FAIL outcome is inferred from the stopped run.
+Directory-growth fixture first expected FileWrite byte count4, then mistakenly
+used internal helper Bool semantics. Both failed expectation runs are retained.
+Public FileWrite returns a positive block number (existing public-file tests
+and I386TaskFileWritePublic contract), so corrected test requires >0. Independent
+exact-content/extent/directory-size/reboot oracles remain unchanged. New run
+build/move-directory-growth-public-write session72733; no growth PASS yet.
