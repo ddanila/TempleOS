@@ -5194,3 +5194,34 @@ in build/debug-breakpoint-same-address; verdict pending. Sequential owner
 traps do not prove simultaneous debugger sessions, external other-task G/S,
 all concurrent ownership or complete release readiness. All candidate sources
 remain fixed while native/workstation gates continue; main OS unpromoted.
+
+Same-address ownership and explicit-address native generations verified
+(2026-10-05): build/debug-breakpoint-same-address passes --both-own,
+13 commands on 486,-fpu / 8 MiB, startup 28.966642 seconds, exact VGA
+and unchanged source. Both terminals independently own the same code
+address; clearing/exiting the first preserves the second record and its
+subsequent trap. This covers sequential ownership, not simultaneous debuggers.
+
+build/debug-managed-workstation passes 513 commands on 486,-fpu / 8 MiB,
+startup 34.665548 seconds and long-document update 0.273430 seconds.
+The later G2 source separately passes build/debug-go-clear-workstation:
+513 commands, startup 36.198762 seconds, long-document update 0.375136
+seconds, exact VGA and 20 bounded document cycles with shared heap recovery.
+Its six retained modules pass in build/debug-go-clear-native-build;
+the exact live native-generation runner is now qualifying gen1-install.
+These results do not substitute for installed-image workflow acceptance.
+
+The earlier explicit-address G/S candidate completes the tracked two-generation
+runner in build/debug-go-address-native-generations. Independently rerunning
+its final audit in build/debug-go-address-generation-identity-recheck passes:
+all twelve modules match, flat size 487336 bytes, flat SHA256
+8eebe3e5df7f4928b438628dd1b49464a12f55291fb18e5706811258d271345f,
+boot-area SHA256
+39c511c316094a6cf4dcdd01aab0f77b307637e1a6772861ad9764eca09a360f.
+Both volumes have 16 directories, 872 files and 19091 owned sectors;
+bitmaps match reachable extents. Whole disk hashes differ, as expected.
+This also provides the first complete real execution of the tracked native
+qualification runner. Main OS remains unpromoted; G2 native/installed gates,
+other-task and simultaneous debugger behavior, full API parity and release
+artifacts remain open. The long no-FPU integrated build is confirmed live;
+no terminal verdict is claimed.
