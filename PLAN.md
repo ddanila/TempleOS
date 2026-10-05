@@ -9255,3 +9255,28 @@ Required gates include the existing red include contract, document cache
 mutation, allocation/exception cleanup, child-task ownership, recovery, full
 workstation and native generations. Callback exception unwinding through
 borrowed task file state needs particular qualification before promotion.
+
+Compiler include parity green on ABI-45 candidate (2026-10-05):
+Fresh original bootstrap and cross/386 audit pass; kernel remains 483192
+bytes. build/public-resident-include-bridge/result.json passes the original
+oracle and all nine native commands on 486,-fpu / 8 MiB. The previous disk
+result 42 becomes the required cache result 49. Exact VGA passes; independent
+RedSea audit passes with 16 directories, 871 files and 17558 owned sectors.
+Persisted source remains RootCacheValue=6*7; and input disk is unchanged.
+Candidate disk SHA256:
+334b339b1006569f58413a497abfa6c9c2f24f0a0928081ae94da2a371439ead.
+
+The include tool now offers --document: original and native DocRead/DocSave
+must expose the edited character before compiling the include. Original
+oracle passes; native qualification is running in
+build/public-resident-include-document-bridge. The full no-FPU workstation
+is running in build/public-resident-include-workstation. These are pending,
+not promotion evidence yet.
+
+The earlier Adam ABI-44 retained native build has completed all six modules:
+build/public-resident-adam-native-build/result.json passes, source disk SHA
+ ec523b3327c1c9684c7bf375affaf14ca517e25a28cf06bec0de3521b46468f5.
+This is a KVM retained build, not the full no-FPU gate or ABI-45 requalification.
+Main's no-FPU TCG retained process remains live and advances through compiler
+module output. Cache candidate promotion remains gated on recovery, exceptions,
+child ownership, full workstation and native reproducibility/install evidence.
