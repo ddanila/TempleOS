@@ -13410,3 +13410,13 @@ three boots 41.465 / 42.268 / 44.788 seconds; interrupt recovery 0.222 seconds.
 Speaker and resource jobs PASS. This is evidence for that immutable packaged
 Caller source epoch, not for the new text-run candidate. Earlier raw-image
 budget failures and large-document failure remain retained. Release open.
+
+
+Text-run focused green now terminal PASS in
+`build/document-run-large-source-green-v2/result.json`: three repeated 11,210-byte
+real-source loads, exact size/content save round trips and normal cleanup;
+11 commands with exact VGA checkpoints, 486 without FPU / 8 MiB, startup
+28.305 seconds. Image SHA256
+2d7fd3c986d208680cd6d8675b2a634ee3bda4e30835e82fbbe15038bea2615c.
+This proves the focused cross-image behavior, not full native or release
+qualification. Corrected baseline, D: replay and native provider results pending.
