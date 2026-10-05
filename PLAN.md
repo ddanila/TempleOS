@@ -9237,3 +9237,21 @@ ownership/recovery, full workstation, native construction and generations.
 The current public-cache candidate remains unpromoted. Both retained builders
 are confirmed live: main 486,-fpu TCG is still compiling CompilerRuntime;
 Adam candidate KVM is compiling ConsoleRuntime. Neither is a completed gate.
+
+Canonical reader bridge candidate (2026-10-05):
+Archived docs/patches/i386-public-resident-include-candidate.patch separately
+from the qualified ABI-44 patch. File services advance to ABI 45 with a
+public-reader installation callback. Console binding installs a bridge that
+uses NativePublicFileRead and copies its owned public buffer into the requested
+private heap. Ordinary task reads and task compiler includes consult this
+callback; raw/stored reads keep the disk path to prevent recursion. Includes
+retain default-extension and absolute-name normalization. Early bootstrap
+uses the existing disk implementation until the callback is installed.
+
+The patch applies cleanly to main; it remains unpromoted and unverified at
+runtime. Fresh prototype original bootstrap and dependent cross construction
+are running. Main original bootstrap has completed again successfully.
+Required gates include the existing red include contract, document cache
+mutation, allocation/exception cleanup, child-task ownership, recovery, full
+workstation and native generations. Callback exception unwinding through
+borrowed task file state needs particular qualification before promotion.
