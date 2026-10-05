@@ -11664,3 +11664,22 @@ hashes, full diagnostics, five alternate-stack cycles, five S/flags and five
 G/flags cycles, then IP/S, IP/G, simultaneous traps, breakpoint ownership and
 managed-kill regressions. Source epochs of other running qualifications stay
 fixed. Full native/installed/release gates remain necessary before promotion.
+
+Single-step physical-stack contract added (2026-10-05):
+tools/test-i386-debug-public-step-stack.py uses the alternate-stack fixture,
+selects public RSP then S, and requires a new exception capture's public RSP
+to equal the target with TF set and function still active. Capture derives
+RSP from actual saved ESP, so a stale edited shadow cannot satisfy this gate.
+G then must read the physical alternate ESP and restore the original function
+frame. The stepping fixture reserves 64 KiB with 48 KiB below the selected top
+for debugger/compiler work on the alternate stack. Five independent cycle
+objects and console command limits pass preflight. Red runs against reader-ip;
+build/debug-stack-step-pipeline.json waits for complete stack qualification
+before five green cycles. No S/stack runtime PASS yet claimed.
+
+The concurrent/flags/stack full build jobs remain live, not restarted for
+observation timeouts. Focused five-cycle G/flags and G/stack checks also run
+against their fixed newly built kernel images in
+build/debug-public-flags-focused-green and build/debug-public-stack-focused-green.
+They provide earlier runtime evidence but cannot replace full --test,
+self-hosting/native generations or installed/release gates.
