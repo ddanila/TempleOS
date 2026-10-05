@@ -10959,3 +10959,25 @@ Full archive docs/patches/i386-debug-go-clear-candidate.patch applies cleanly
 to main. Other-task G2/focus, direct register control and complete debugger/
 release qualification remain open; current managed source stays frozen for
 workstation tests and main OS remains unpromoted.
+
+G2 clear/resume and installed-breakpoint G guard green (2026-10-05):
+fresh candidate cross/31-binding/386 audit PASS with unchanged 483208-byte
+kernel; all 1270 bootstrap source hashes independently verified. Image SHA:
+8979dc89c46e81d76e4b6ab874e6b11d2309a1681d5b4c583664c69d60d6a90f.
+build/debug-go-clear-green passes 21 commands, startup 31.242170 seconds,
+exact VGA, correct restored-store result, empty breakpoint list/B2 and
+mode/flags/source recovery on 486,-fpu / 8 MiB. The missing-G2 red is now
+an observable clear-and-resume green.
+
+New tools/test-i386-debug-go-blocked.py first issues G at the managed store
+breakpoint, requires visible guidance and a still-zero store/function marker,
+then G2 clears/resumes. ...-blocked-green passes 21 commands, startup
+37.109442 seconds, exact VGA and unchanged source. This verifies stopped
+execution, not a warning alone. ...-go-clear-managed-regression passes two
+ordinary managed S/G/rearm/remove cycles, 33 commands, startup 31.189027
+seconds. Broader other-task/ownership/direct-register/release scope remains
+open. Five G2 cycles run in ...-go-clear-repeat, five guarded G/G2 cycles in
+...-go-blocked-repeat, and current-source six native modules build in
+build/debug-go-clear-native-build. No pending gate is a pass; previous
+managed/address native results cannot qualify the changed console. Main
+remains unpromoted and complete release readiness remains unproven.
