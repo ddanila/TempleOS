@@ -9913,3 +9913,23 @@ build/file-cd-resident-integrated-bootstrap.log and
 build/file-cd-resident-integrated-build.log. Runtime Cd/cold-cache parity,
 full workstation and native generations are required after successful build;
 this candidate is not promoted or qualified merely by patch applicability.
+
+Retained installation green; integrated Cd runtime chain queued (2026-10-05):
+build/public-resident-write-parent-native-install/result.json passes all six
+retained modules, with candidate disk
+ ea117714258b39147c52c563707b8418e5d0600fd4052d2500de850a2d2630d1.
+The corresponding full native kernel builder/QEMU are directly confirmed
+live. This installation is the ABI-46 parent candidate, not ABI-47 Cd proof.
+
+The integrated Cd candidate's original bootstrap handle is confirmed live.
+A dependent runtime chain in
+build/file-cd-resident-integrated-runtime-pipeline.py waits on that specific
+bootstrap/cross-build shell handle and requires file_runtime.version 47 in
+the resulting build report. It then runs public Cd with --task-fields and
+--special-paths, followed by the previously red compressed and ordinary
+mutation cold-cache contracts, preserving --shared-lifetime and directory
+changes. Each step uses a fresh output and requires its own pass report; the
+chain stops on first failure. Outputs use
+build/file-cd-resident-integrated-{cd,cold-compressed,cold-mutation}; state
+is build/file-cd-resident-integrated-runtime-pipeline.json. All remain pending.
+The actual bootstrap source and running earlier native sources stay fixed.
