@@ -5738,3 +5738,20 @@ Two worker processes are the default; no source or runtime result is borrowed
 from historical candidate images. This suite is debugger regression coverage,
 not proof of every debugger API, a native rebuild, or complete release acceptance.
 Latest-source qualification is running in `build/public-caller-debugger-regression`.
+
+
+Record the emulator and loaded firmware for an ordinary boot profile:
+
+```sh
+python3 tools/record-i386-qemu-environment.py path/to/boot/command.json \
+  --out build/qemu-environment
+```
+
+Requires local QEMU and `strace`. The probe opens verified disk copies, enables
+snapshots and pauses CPUs before guest execution. It records the exact machine
+behind the requested alias, PCI/ROM mappings, actual BIOS/VGA firmware opens and
+hashes, emulator binary/version and disk hashes. Unsupported options are rejected;
+use an ordinary boot command without audio-capture devices. Original disk hashes
+must stay unchanged. This records the environment at probe time, so retain a
+fresh record with release qualification rather than treating it as proof of
+which firmware an old result used.

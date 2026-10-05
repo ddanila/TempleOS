@@ -1,16 +1,43 @@
 # i386 QEMU support matrix
 
-This matrix records observed behavior for the last fully guest-built i386
-disk image. The current U32 startup optimization is a development revision
-and requires new all-module qualification; older image passes do not prove it. It is QEMU verification, not certification of physical 386
-hardware. The second-generation rebuild matches all twelve modules, the
-flat image and installed boot area byte for byte. Final M7 publication remains open. Human observation is optional exploratory
-feedback under the 2026-10-03 acceptance revision in `PLAN.md`.
+Latest checkpoint (2026-10-05): the TEST-fixed candidate's second fully native
+generation passes all four installed workflows in
+`build/top-test-fixed-gen2-workflows/result.json`: full no-FPU workstation,
+three-boot executable DolDoc persistence, captured speaker output and bounded
+resource cycles. Its separate `budget-verdict.json` passes all startup and
+visible-response targets: workstation startup 55.840 seconds, long-document
+update 0.943 seconds, DolDoc starts 56.737/49.423/49.285 seconds, interrupt
+recovery 0.291 seconds. The installed image SHA256 is
+`a8ff05bd47dbba9f987af563731c9b2a3e6847f5b84f3885cc338757baf2c6db`.
 
-Functional pass entries below do not imply every resource target passes.
-Current first/second-generation no-FPU startup measures 73.868/73.265 seconds,
-exceeding the plan's 60-second target. The startup-budget checker reports that failure. Both generations now pass
-automated audio waveform and off/reset emission checks.
+This evidence precedes the memory-baseline and public Caller changes. Those
+newer candidates remain unpromoted and are being qualified separately; main
+OS file services remain ABI 40. Final release publication remains open.
+QEMU results do not certify physical 386 hardware. Human observation is optional.
+
+## Firmware and machine record
+
+`tools/record-i386-qemu-environment.py` probes a recorded ordinary boot command
+with CPUs paused, byte-identical disk copies and snapshot writes. It records
+QMP machine resolution/PCI/ROM mappings and uses actual successful firmware
+opens to identify and hash ROM files. It pins the emulator binary and disks.
+This records the environment at probe time; it does not prove a historical
+run used unchanged firmware or establish runtime compatibility by itself.
+
+The packaged TEST-fixed boot profile is recorded in
+`build/native-release-packaging/environment-copied/result.json`:
+
+| Item | Observed value |
+| --- | --- |
+| QEMU | 10.2.1, Debian `1:10.2.1+ds-1ubuntu3.2` |
+| Machine alias and exact type | `pc` → `pc-i440fx-10.2` |
+| System BIOS | SeaBIOS `bios-256k.bin`, 262144 bytes, SHA256 `e26615f9ad430328f49ca105e570b2dc4490a08a34ea73d27cae8b809a30ee06` |
+| VGA ROM | `vgabios-stdvga.bin`, 39424 bytes, SHA256 `c944f5fd404a6553a32e1e0527081d40e6040d3ce1740d39766bff01871e4fde` |
+| Boot profile | `486,-fpu`, TCG, 8 MiB, raw IDE, networking disabled |
+
+Re-record this information for final release qualification and retain the exact
+command and binary/firmware hashes. The sections below preserve historical
+checkpoints; their "current" labels refer to those earlier source epochs.
 
 ## Tested emulator
 

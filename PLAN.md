@@ -13191,3 +13191,29 @@ build/public-caller-debugger-regression (two workers). No runtime aggregate PASS
 claimed; existing historical debugger greens not transferred automatically.
 Native Caller first-generation selfhost and packaged workstation runs remain
 live. Root remains ABI40, newer candidate unpromoted, release remains open.
+
+
+TEST-fixed installed workstation and measured environment (2026-10-05):
+build/top-test-fixed-gen2-workflows/result.json now PASS all4jobs: workstation,
+three-boot DolDoc, captured speaker and bounded-resource profile. Standalone
+budget-verdict.json PASS: workstation55.8401958896seconds; long-document update
+0.9431962478seconds; DolDoc boots56.7372322469/49.4227565979/49.2846939452;
+interrupt recovery0.2910941760. All unchanged planned budgets pass. This applies
+to TEST-fixed native generation2 before newer memory-baseline/publicCaller;
+those source-specific qualification gates remain open.
+
+Added tools/record-i386-qemu-environment.py: ordinary recorded boot profile,
+paused CPUs, byte-identical disk copies/snapshots, QMP machine/PCI/ROM mappings,
+actual successful firmware opens captured by strace, binary/disk hashes and
+host/version record. Rejects unsupported profile options. Fresh copied probe
+PASS in build/native-release-packaging/environment-copied/result.json: QEMU
+10.2.1 pc resolvespc-i440fx-10.2; systemBIOSSHA256
+ e26615f9ad430328f49ca105e570b2dc4490a08a34ea73d27cae8b809a30ee06;
+VGAROMSHA256c944f5fd404a6553a32e1e0527081d40e6040d3ce1740d39766bff01871e4fde.
+Earlier readonly+snapshot prototype rejected by QEMU; preserved environment-readonly
+output. Final tool isolates disk copies and verifies originals unchanged.
+Environment recording is at probe time, not proof of immutable historical
+firmware or guest runtime coverage. Support matrix updated with latest measured
+checkpoint and explicit historical boundaries. Latest Caller native pipeline
+now generation2 retained rebuild; debuggerEAX/ECX jobs PASS, aggregate stilllive.
+Full source promotion, newest packaged qualification and release remain open.
