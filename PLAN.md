@@ -12287,3 +12287,30 @@ explicitly does not prove full generation or byte equivalence. New assembler
 candidate is under this check PID 3758460/session 57291, output
 build/native-exception-assembler-fixed. Both full kernel --test runs remain
 live; installer/release gates and native two-generation rebuild remain open.
+
+Five-cycle trace green; top assembly capacity defect identified (2026-10-05):
+build/debug-cpu-trace-extended-five/result.json PASS, five cycles on the same
+oversized image, no-FPU CPU, source disk unchanged. Exact scope remains first
+caller identity after debugger-stack catch/yield plus G/recovery, not every
+frame, corrupted chains or failure injection.
+
+Extended full --test is terminal FAIL at interactive TextFrameDemo(0): guest
+logs COMMAND ERROR and the harness times out waiting for completion marker.
+Preserve extended-native-kernel-checksum-fixed/input, screenshots and logs.
+This is after native diagnostics/startup, not a loader failure. No full green.
+Separate native ExceptionEntry check progresses past CMP but rejects near JC
+(source line 0x71). No native rebuild success claimed. Inspection reveals
+TopAssembly code/temp arrays are 256 bytes but shared I386FrontendAsmByte
+permits 1024: expanded near-branch code can exceed actual storage before packing
+rejects. This is a source-proven buffer-bound mismatch; exact runtime effects
+beyond observed rejection remain unproved.
+
+New separate build/extended-assembler-capacity-prototype carries expanded asm
+instructions plus consistent 1024-byte temporary/bundle/pack bounds, retaining
+the existing emitter's limit. Updated small cumulative assembler delta patch
+applies cleanly to main. Fresh bootstrap live session 17356, log
+build/extended-assembler-capacity-prototype/build/
+extended-assembler-capacity-bootstrap.log. After bootstrap, rebuild its resident
+compiler/image and repeat actual native ExceptionEntry test and byte/ISA audits.
+Keep older native failure evidence; resolve TextFrameDemo separately. Installer,
+two native generations and full release qualification remain open.
