@@ -5675,3 +5675,23 @@ concurrent/ownership/kill pipeline run/queue in
 build/debug-concurrent-inherited-zero-pipeline.json. No new header/runtime
 PASS yet claimed. Previous phase-0/full installed G2 evidence stays tied to
 its source epochs; root promotion and complete release qualification remain open.
+
+Both guest header phases complete; host file-interface audit is stale
+(2026-10-05): inherited-zero diagnostic guest reaches DONE native kernel
+startup after both PUBLIC HEADER CASE phases and the full guest probes.
+The build host then fails at Missing file-runtime ownership evidence: its
+FILES row parser expects the older 25-token interface, while the candidate
+logs the added ABI-47 services. This is not a complete --test PASS. Preserve
+boot/logs; next update must verify every new service address against module
+exports, not merely relax the row length. Candidate source remains fixed.
+
+New tools/test-i386-debug-public-flags.py tests physical carry edits: capture
+CF clear, set public Fs->rflags CF, G, then ADC must change result from 0x11
+to 0x12, with mode/IF/TF/heap checks. Initial build/debug-public-flags-red fails
+before any trap because inline CLC/ADC reports unavailable frontend service.
+The fixture now compiles supported MOV/NOPs, finds the NOP window and patches
+independently NASM-verified bytes f8 cc 83 d0 00 (CLC/INT3/ADC EAX,byte 0),
+verifying the bytes before executing. New run
+build/debug-public-flags-bytes-red is pending. Five-cycle preflight verifies
+independent events and command limits. No flags implementation/runtime green,
+root promotion or complete release readiness is claimed.
