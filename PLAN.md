@@ -13041,3 +13041,20 @@ also verified before immutable bootstrap reuse. Pure host-verifier change; reuse
 is not a new bootstrap rebuild. Full corrected suite now running session24089,
 build/public-caller-contract-kernel. Older provisional-count suite remains frozen.
 Native generation2 rebuilds remain live; release qualification still open.
+
+
+Public Caller invalid-frame gate and generation2 identity (2026-10-05):
+Extended tools/test-i386-public-caller.py with --invalid-frames, preserving
+original eight-command baseline. Uses existing GetRBP intrinsic alias, saves and
+restores the current frame parent around each real Caller invocation. Three
+cases create self-cycle, misaligned parent and out-of-stack parent; Caller2 must
+return0, then valid CallerOuter address bounds must still pass. Latest integrated
+image build/public-caller-invalid-frames/result.json PASS14 commands, all pinned
+inputs unchanged. Not freed-frame/debugger-stack/other-task introspection proof.
+Latest public Caller retained native build running session97501 in
+build/public-caller-native-build. Earlier TEST-fixed generation2 retained build
+PASS six modules with SHA256 byte identity to generation1; retained installation
+also PASS, runner now gen2-selfhost. Latest baseline generation2 remains live;
+none of these outcomes qualify newer Caller native installation automatically.
+Storage qualification document updated with full17-case interrupted-growth PASS
+and explicit source/child-directory limits. Full suites remain live; release open.

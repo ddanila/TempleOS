@@ -13,6 +13,7 @@ candidate is preserved in `patches/i386-memory-baseline-integrated-candidate.pat
 | Actual native installation fragmentation | `build/fragmented-module-move-green/result.json` | PASS: 1,154,987-byte native ConsoleRuntime retains its extent; exact namespace and filesystem ownership checked. |
 | Only one free sector | `build/low-space-move-bounded-writes/result.json` | PASS: large module moves out and back with 512 bytes maximum free extent. Final disk bytes outside the two directories unchanged. This is not a trace of transient writes. |
 | Every prepared move write/flush failure | `build/extended-transfer-io-matrix-four/result.json` | PASS: four writes and four flushes, each armed independently, followed by recovery boot and complete-file/journal/bitmap checks. |
+| Interrupted destination expansion | `build/move-growth-failures/result.json` | PASS: nine write and eight flush failures; every armed failure fires, reboot recovery retains one complete moved file and all five existing files, with journal/ownership/bitmap checks and unchanged source inputs. |
 | Destination directory expansion | `build/move-directory-growth-full-sector/result.json` | PASS: a full 512-byte directory grows to 1,024 bytes on a fresh extent; moved data extent 19839 and metadata remain unchanged; five existing files and moved payload match exactly. Writable read-only reboot preserves the disk hash. |
 
 The eight recovery cases preserve exactly one name with the complete `IO`
@@ -54,8 +55,9 @@ that no fifth write occurred.
 
 ## Open qualification
 
-Interrupted destination-directory growth writes/flushes need their own failure
-matrix. Successful growth does not prove interrupted growth recovery. Complete
+The interrupted-growth matrix now passes on its dedicated fixture source; it
+does not automatically qualify later revisions or additional child-directory
+reparenting configurations. Complete
 current-source workstation acceptance, two native generations, resource budgets,
 386 executable audits and release publication remain open. Physical hardware
 and manual sessions remain deferred.

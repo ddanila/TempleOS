@@ -13,6 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--invalid-frames', action='store_true', help='Exercise temporary self, misaligned and out-of-stack frame links')
     args = parser.parse_args()
     if args.out.exists():
         parser.error('Use a fresh output directory')
@@ -31,6 +32,15 @@ def main():
         ('U0 CallerBind(){CallerBodyBase=(&CallerBody+0)(U64);CallerOuterBase=(&CallerOuter+0)(U64);CallerBodySize=MSize(CallerBodyBase);CallerOuterSize=MSize(CallerOuterBase);}', []),
         ('CallerBind;CallerBodySize>0&&CallerOuterSize>0;', ['1']),
         ('CallerOuter;', ['1'])]
+    if args.invalid_frames:
+        checks += [
+            ('_intern 0x71 U8 *CallerFrame();', []),
+            ('Bool CallerBad(U32 mode){U32 *p=CallerFrame();U32 save=p[0];Bool ok;if(mode==0)p[0]=(p+0)(U64);else if(mode==1)p[0]=(p+0)(U64)+1;else p[0]=1;ok=Caller(2)==0;p[0]=save;return ok;}', []),
+            ('CallerBad(0);', ['1']),
+            ('CallerBad(1);', ['1']),
+            ('CallerBad(2);', ['1']),
+            ('CallerOuter;', ['1'])]
+        report['scope'] = 'Public Caller depths0/1, bad-depth rejection, temporary cyclic/misaligned/out-of-stack links, then valid-stack reuse; not freed/debugger/other-task frames'
     try:
         report['behavior'] = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](
             args.disk, args.out/'behavior', cpu='486,-fpu', accel='kvm',
