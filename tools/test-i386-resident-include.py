@@ -28,7 +28,9 @@ def failure_layout(auditor, disk):
     expected = ('class CI386Task:CTask{CI386Context context;CI386Task *next,*last;'
                 'CI386Scheduler *owner;U32 finished,blocked;CI386Task *join_head,*join_next,*join_target;'
                 'CI386Heap *memory;U0 (*cleanup)(CI386Task *task);U32 finishing;'
-                'CI386MsgQueue *messages;CI386Except *except_top;U32 io_locks;U8 *file_state;')
+                'CI386MsgQueue *messages;CI386Except *except_top;U32 io_locks;U8 *file_state;'
+                'Bool (*file_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);'
+                'Bool (*file_destroy)(CI386Task *task);U32 lifetime_refs;')
     files = ('class CI386TaskFiles{CI386Heap *heap;CI386Task *task;CFilePathContext *environment;'
              'CI386FileVolumes *volumes;U32 signature,bytes,busy;U8 drive;};')
     if (clean(expected.encode()) not in clean(sources.get('/Kernel/I386/Scheduler.HH', b'')) or
@@ -125,14 +127,19 @@ def main():
             report['failure_scope'] = 'Native-only ABI-45: force public allocation rejection, restore cache metadata, require file-state busy zero'
             commands += [
                 ('Bool CodeSize(I64 n){CHashGeneric *e=HashFind("C:/Probe/CacheInclude.HC",adam_task->hash_table,HTT_FILE);if(!e)return FALSE;e->user_data1=n;return TRUE;}', []),
-                ('class CacheFailTask:CTask{U32 private_prefix[15];U8 *file_state;};', []),
+                ('class CacheFailTask:CTask{U32 private_prefix[15];U8 *file_state,*file_clone,*file_destroy;U32 lifetime_refs;};', []),
                 ('Bool CacheBorrowClear(){CacheFailTask *t=Fs;U32 *b=t->file_state;if(!b)return FALSE;b+=6;return b[0]==0;}', []),
-                ('sizeof(CTask)==992&&offset(CacheFailTask.file_state)==1052;', ['1']),
+                ('U32 CacheFailRefs;', []),
+                ('U0 CacheRefsBefore(){CacheFailTask *t=Fs;CacheFailRefs=t->lifetime_refs;}', []),
+                ('Bool CacheRefsSame(){CacheFailTask *t=Fs;return t->lifetime_refs==CacheFailRefs;}', []),
+                ('sizeof(CTask)==992&&offset(CacheFailTask.file_state)==1052&&offset(CacheFailTask.lifetime_refs)==1064;', ['1']),
                 ('CacheBorrowClear;', ['1']),
+                ('CacheRefsBefore;', []),
                 ('CodeSize(0x100000000);', ['1']),
                 ('#include "C:/Probe/CacheInclude.HC"', ['Out of memory']),
                 ('CodeSize(19);', ['1']),
                 ('CacheBorrowClear;', ['1']),
+                ('CacheRefsSame;', ['1']),
                 ('#include "C:/Probe/CacheInclude.HC"', ['49'])]
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
                                    qmp_stdio=True, startup_check={'status': 'ok', 'answers': [], 'commands': commands})

@@ -9420,3 +9420,19 @@ bootstrap is running in build/resident-public-propagation-bootstrap.log.
 Required next actions: cross build, rerun the verified allocation-failure gate,
 then exact private/public recovery, child/directory replacement and broader
 workstation/native generation qualification. No runtime fix claimed yet.
+
+Propagation candidate build qualified; stronger fault gate started (2026-10-05):
+Fresh original bootstrap passes, then cross construction and 386 instruction
+audit pass in build/file-resident-public-prototype/build/file-resident-public-propagation.
+The kernel remains 483192 bytes; this verifies compilation/import binding,
+not yet exception behavior. Candidate disk SHA256: dc949c634723f7bef678873fae34bf683bb9a807fcd5f52a0c1b6ad22f166962.
+The fault gate additionally records task lifetime_refs before injection and
+requires exact equality afterward, alongside file-state busy zero. Its observer
+class/layout guard includes file_clone/file_destroy/lifetime_refs, with runtime
+offset 1064 required. This checks reaping-blocking references as well as borrowed
+state. Python compilation and on-image fingerprint validation pass.
+Fresh native fault run is live in build/public-resident-include-oom-propagation;
+happy-path original/document/removal/default-name parity is live in
+build/public-resident-propagation-parity. Neither runtime gate is complete yet.
+Earlier full workstation and both retained builders remain live and progress;
+do not treat their earlier source epoch results as propagation-fix evidence.
