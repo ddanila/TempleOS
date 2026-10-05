@@ -55,11 +55,14 @@ def main():
     parser.add_argument('--allocation-failure', action='store_true', help='Native-only ABI-45 allocation failure and borrowed file-state recovery')
     parser.add_argument('--failure-recovery', action='store_true', help='Independently snapshot private heap across the allocation failure and subsequent include')
     parser.add_argument('--child', action='store_true', help='Require cached file/document reads in a child and cache survival after synchronous Kill')
+    parser.add_argument('--failure-public-recovery', action='store_true', help='Also require exact caller/root public heap recovery with validated key-up quiescence')
     args = parser.parse_args()
     if args.failure_recovery and not args.allocation_failure:
         parser.error('--failure-recovery requires --allocation-failure')
     if args.child and not args.document:
         parser.error('--child requires --document')
+    if args.failure_public_recovery and not args.failure_recovery:
+        parser.error('--failure-public-recovery requires --failure-recovery')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     candidate = out/'candidate.img'
@@ -77,6 +80,7 @@ def main():
     report['allocation_failure'] = args.allocation_failure
     report['failure_recovery'] = args.failure_recovery
     report['child'] = args.child
+    report['failure_public_recovery'] = args.failure_public_recovery
     if layout:
         report['failure_layout_sources'] = layout
     try:
@@ -166,9 +170,22 @@ def main():
                 ('#include "C:/Probe/CacheInclude.HC"', ['49'])]
         if args.failure_recovery:
             commands += [('RootCacheValue==49;', ['1'])]
-            report['failure_heap_scope'] = 'Private used bytes/allocation count/signature across allocation rejection, metadata restoration and successful include; public heap recovery is a separate gate'
+            if args.failure_public_recovery:
+                definitions = [
+                    ('I64 CacheCallerUsed,CacheRootUsed;', []),
+                    ('Bool CacheQuiet(){CJob *h=&Fs->srv_ctrl.next_waiting,*j=h->next;while(j!=h){if(j->job_code!=JOBT_MSG||j->msg_code!=MSG_KEY_UP||MHeapCtrl(j)!=adam_task->data_heap)return FALSE;j=j->next;}FlushMsgs;return h->next==h;}', []),
+                    ('Bool CacheHeapsSame(){if(!CacheQuiet)return FALSE;return Fs->data_heap->used_u8s==CacheCallerUsed&&adam_task->data_heap->used_u8s==CacheRootUsed;}', [])]
+                index = next(i for i, (source, _) in enumerate(commands) if source.startswith('U32 CacheFailRefs'))
+                commands[index:index] = definitions
+                commands = [(('Bool CacheRefsBefore(){CacheFailTask *t=Fs;if(!CacheQuiet)return FALSE;CacheFailRefs=t->lifetime_refs;CacheCallerUsed=Fs->data_heap->used_u8s;CacheRootUsed=adam_task->data_heap->used_u8s;return TRUE;}', answers)
+                             if source.startswith('U0 CacheRefsBefore') else
+                             (source, ['1'] if source=='CacheRefsBefore;' else answers))
+                            for source, answers in commands]
+                commands += [('CacheHeapsSame;', ['1'])]
+                report['public_failure_scope'] = 'Exact caller/root used bytes after quiescing only validated root-owned MSG_KEY_UP jobs; unexpected jobs fail'
+            report['failure_heap_scope'] = 'Private used bytes/allocation count/signature across allocation rejection, metadata restoration and successful include'
             runner = runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](
-                candidate, report, boundary=('CacheRefsBefore;', 'RootCacheValue==49;'))
+                candidate, report, boundary=('CacheRefsBefore;', 'CacheHeapsSame;' if args.failure_public_recovery else 'RootCacheValue==49;'))
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
                                    qmp_stdio=True, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
         report['result'] = 'pass'

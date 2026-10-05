@@ -9542,3 +9542,25 @@ proof of task exit. All helpers fit 255 bytes (largest 229); Python/whitespace
 checks pass. Original oracle passes. Native 23-command test is live in
 build/public-resident-propagation-child. Full workstation, exact resident
 recovery and current retained native construction remain live. No promotion.
+
+Child teardown parity green and complete heap-failure gate (2026-10-05):
+build/public-resident-propagation-child/result.json passes original oracle and
+23 native no-FPU / 8 MiB commands. Child reads cache-backed FileRead and DolDoc,
+parent synchronously terminates the still-live child, both parent reads and
+compiler include still see edited value 49. Default-extension/removal/disk
+repopulation remain correct. Exact VGA, disk/fixture immutability and volume
+audit pass. Startup 27.673 seconds. This proves cache survival across forced
+child teardown, not natural exit, every child exception or exact child heap
+recovery; those scopes should remain explicit.
+
+The include fault tool adds --failure-public-recovery (requires private failure
+recovery). It validates queued jobs are only root-owned MSG_KEY_UP, quiesces
+those at both public snapshots, and requires exact caller and persistent root
+used bytes around the allocation rejection and recovered include. Independent
+private snapshots now span the final public comparison too. No tolerances or
+unrelated jobs are accepted. Python/whitespace checks pass; the 29-command
+stronger gate is live in build/public-resident-propagation-failure-all-heaps.
+The prior private-only 25-command pass remains separate evidence. Exact
+resident twenty-cycle recovery, full workstation and native retained builds
+remain live; checkpoints show continued command entry/function progress.
+Candidate remains unpromoted until the remaining gates finish.
