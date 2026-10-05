@@ -5695,3 +5695,21 @@ verifying the bytes before executing. New run
 build/debug-public-flags-bytes-red is pending. Five-cycle preflight verifies
 independent events and command limits. No flags implementation/runtime green,
 root promotion or complete release readiness is claimed.
+
+
+Public Caller on the dedicated CPU debugger stack (2026-10-05):
+Run the automated gate against an image exporting public Caller:
+
+```sh
+python3 tools/test-i386-debug-cpu-trace.py path/to/kernel.img \
+  --public-caller --cycles 5 --out build/debug-cpu-public-caller
+```
+
+This checks Caller(0) and default Caller() against the live compiled allocations
+of the executing helper and its parent during a real debugger catch. It also
+checks the exception trace, catch yield, G resume, mode, IF/TF and heap recovery.
+Without --public-caller the previous trace gate remains usable on older images.
+The integrated candidate passed 52 VGA-checked commands over five cycles on
+8 MiB with CPU 486,-fpu in build/debug-cpu-public-caller-five/result.json.
+The original input image stayed unchanged. This is source-specific debugger
+stack evidence, not a claim about arbitrary freed frames or every stack depth.

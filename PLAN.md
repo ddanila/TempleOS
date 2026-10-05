@@ -13058,3 +13058,33 @@ also PASS, runner now gen2-selfhost. Latest baseline generation2 remains live;
 none of these outcomes qualify newer Caller native installation automatically.
 Storage qualification document updated with full17-case interrupted-growth PASS
 and explicit source/child-directory limits. Full suites remain live; release open.
+
+
+Native generation qualification and public Caller debugger stack (2026-10-05):
+The TEST-fixed source epoch completes all eight stages in
+build/top-test-fixed-native-generations/result.json: first installation,
+self-hosted boot and audit, second retained build, installation, self-hosted
+boot and audit, and generation identity. All 12 modules match byte for byte.
+The 499736-byte native flat kernel SHA256 is
+fde141afbd6bf80e658e8678ed642f5293d3798fbff17b0265f275aeef866f7e;
+boot-area SHA256 is
+c406a23b275f5a953e8026aacd9189cbd14a9271f4523b33bd450ad87eb2074c.
+Both volumes have 16 directories, 873 files and 19276 uniquely owned sectors,
+with allocation bitmaps matching reachable extents. Complete disk hashes differ:
+this proves executable/boot-area reproducibility, not release-disk reproducibility.
+Installed generation2 workstation workflows are running separately in
+build/top-test-fixed-gen2-workflows; no workstation PASS yet claimed.
+
+Added --public-caller to tools/test-i386-debug-cpu-trace.py. During a real
+CPU debugger catch, Caller(0) must return within CpuCallerValid's live compiled
+allocation, and default Caller() within its parent CpuTraceValid allocation.
+The existing exact throwing-function trace, catch yield, G resume, mode/IF/TF
+and heap recovery checks remain. Latest Caller image passes five cycles and
+52 VGA-checked commands on 8 MiB, 486,-fpu:
+build/debug-cpu-public-caller-five/result.json, source disk unchanged.
+This closes the dedicated-debugger-stack gap of the public Caller baseline;
+it does not prove arbitrary freed frames or other-task introspection.
+The newer memory-baseline native generations and latest public Caller native
+build/full suites remain live and retain their own source-specific gates.
+Root OS remains unpromoted ABI40. Next release work requires latest-source
+qualification and deterministic whole-image packaging; release remains open.

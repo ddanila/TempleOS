@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def commands(cycles=5):
+def commands(cycles=5, public_caller=False):
     from copy import deepcopy
     checks=[deepcopy(c) for c in runpy.run_path(str(ROOT/'tools/test-i386-debug-cpu-nested-catch.py'))['commands'](cycles)]
     checks[0]=(checks[0][0]+'U8 *CpuTraceAddr=0;I64 CpuTraceSize=0;',[])
@@ -27,6 +27,18 @@ def commands(cycles=5):
             if 'expect_rows' in event:event['expect_rows']=[r.replace('CpuNestedCatch==42;','CpuNestedCatch==1;') for r in event['expect_rows']]
         interaction['final_rows']=[r.replace('CpuNestedCatch==42;','CpuNestedCatch==1;') for r in interaction['final_rows']]
         checks[i]=(source,answers,interaction)
+    if public_caller:
+        index=next(i for i,c in enumerate(checks) if c[0].startswith('Bool CpuTraceValid()'))
+        checks[index:index]=[
+            ('U8 *CpuCallerAddr=0,*CpuCallerParent=0;I64 CpuCallerSize=0,CpuCallerParentSize=0;',[]),
+            ('Bool CpuCallerValid(){U8 *p=Caller(0),*q=Caller();return p>=CpuCallerAddr&&p<CpuCallerAddr+CpuCallerSize&&q>=CpuCallerParent&&q<CpuCallerParent+CpuCallerParentSize;}',[])]
+        index=next(i for i,c in enumerate(checks) if c[0].startswith('Bool CpuTraceValid()'))
+        source,answers=checks[index]
+        checks[index]=(source.replace('p<CpuTraceAddr+CpuTraceSize;', 'p<CpuTraceAddr+CpuTraceSize&&CpuCallerValid;'),answers)
+        index=next(i for i,c in enumerate(checks) if c[0]=='CpuTrapProbe;')
+        checks[index:index]=[
+            ('U0 CpuCallerBind(){CpuCallerAddr=(&CpuCallerValid+0)(U64);CpuCallerSize=MSize(CpuCallerAddr);CpuCallerParent=(&CpuTraceValid+0)(U64);CpuCallerParentSize=MSize(CpuCallerParent);}',[]),
+            ('CpuCallerBind;CpuCallerSize>0&&CpuCallerParentSize>0;',['1'])]
     return checks
 
 
@@ -36,6 +48,7 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--cycles', type=int, default=1,
                         help='Repeated trap/resume cycles; first warms resource accounting')
+    parser.add_argument('--public-caller', action='store_true', help='Check Caller0/default depth on the dedicated debugger stack')
     args = parser.parse_args()
     if args.cycles < 1 or args.cycles > 20:
         parser.error('--cycles must be between 1 and 20')
@@ -45,13 +58,15 @@ def main():
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk, cycles=args.cycles,
                   scope='Actual CPU debugger catch yields and requires except_callers[0] within the live compiled throwing function allocation; G and mode/IF/TF/heap recovery, not every frame or allocation failure')
+    if args.public_caller:
+        report['scope']+='; public Caller0/default depth bounded by live allocations on actual debugger stack'
     dependency = ROOT / 'tools/test-i386-debug-cpu-nested-catch.py'
     report['dependency_sha256'] = sha(dependency)
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
             qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
-                                         'commands': commands(args.cycles)})
+                                         'commands': commands(args.cycles,args.public_caller)})
         if sha(dependency) != report['dependency_sha256']:
             raise ValueError('CPU fixture changed during flags qualification')
         if sha(Path(__file__)) != checker:
