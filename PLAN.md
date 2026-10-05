@@ -9473,3 +9473,5 @@ build/public-resident-include-help-dynamic; the new propagation image's full
 workstation runs in build/public-resident-propagation-bound-workstation.
 These runtime checks are pending. The earlier full run cannot count as a
 513-command pass. Both retained builders remain live and unmodified.
+
+Bound candidate still rejects FileRuntime at boot: the provider array grew to 31 but actual KernelFileLoad retained stack/count 29 because the prior edit matched its forward declaration. Source inspection confirms the mismatch. Actual function body now uses 31 consistently for stack, KernelBindings and KernelServiceLoad. No fault or full workstation behavior executed on the rejected image. Archive updated; new loader-corrected original bootstrap is running.

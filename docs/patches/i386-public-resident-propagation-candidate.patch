@@ -376,7 +376,7 @@ index 65aa8c6d..7ea4f0d9 100644
 +extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
  #endif
 diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
-index 940d53f2..c70f22d9 100644
+index 940d53f2..222e567e 100644
 --- a/Kernel/I386/Kernel.HC
 +++ b/Kernel/I386/Kernel.HC
 @@ -123,7 +123,7 @@ U8 kernel_startup_bindings[3]={0,1,2};
@@ -388,6 +388,21 @@ index 940d53f2..c70f22d9 100644
  U8 kernel_memory_bindings[16]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45};
  extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
  extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
+@@ -624,11 +624,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
+ }
+ U0 KernelFileLoad()
+ {
+-  CI386ModuleBinding bindings[29];
++  CI386ModuleBinding bindings[31];
+   if(kernel_file_image || kernel_files.version) KernelStop;
+-  KernelBindings(bindings,kernel_files_bindings,29,sizeof(bindings)/sizeof(CI386ModuleBinding));
++  KernelBindings(bindings,kernel_files_bindings,31,sizeof(bindings)/sizeof(CI386ModuleBinding));
+   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
+-    bindings,29,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
++    bindings,31,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
+   if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=1 ||
+       !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
 diff --git a/Kernel/I386/MemoryRuntime.HC b/Kernel/I386/MemoryRuntime.HC
 index 23b3bf96..1ccd07f5 100644
 --- a/Kernel/I386/MemoryRuntime.HC
