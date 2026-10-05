@@ -11505,3 +11505,21 @@ output, requires exit 2 and verifies its result hash remains unchanged.
 This prevents failed reruns from leaving stale PASS evidence in a reused tree.
 Updated candidate patch applies cleanly to main. Full diagnostics, later-source
 native/installed qualification, promotion and release completeness remain open.
+
+Phase-0 full header diagnostics pass; inherited worker contract corrected
+(2026-10-05): warning-contract boot passes PUBLIC HEADER CASE 0, 128 task
+layout checks, 271 document checks and compiler recovery. Phase 1 reaches
+PUBLIC HEADER PUBLISHED 1 / 0 / 0: inherited root include guards skip declarations,
+while the fixture wrongly creates a new empty CTask forward. Preserve that
+failure; phase-0 success is not a full diagnostic PASS.
+
+Candidate header probe now keeps phase 0's fresh-publication/rollback contract.
+Phase 1 locates the inherited published CTask, requires its complete size and
+identity before/after failed atomic include and idempotent include, and requires
+zero warnings. Existing layout/document/allocation/control checks remain.
+Inherited public metadata lookup traverses parent tables; local rollback names
+still use local scope checks. Host warning audit distinguishes phase 0's exact
+CCPU/CBpt warning sequence from phase 1's empty sequence. Updated patch applies
+cleanly. Fresh original bootstrap runs in the clone's
+build/debug-concurrent-bootstrap-inherited-headers.log; full build/diagnostic
+and later regressions remain required. Main source unpromoted; release open.
