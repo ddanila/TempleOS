@@ -39,7 +39,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--case', action='append', choices=('intent', 'duplicate', 'committed'))
+    parser.add_argument('--case', action='append', choices=('intent', 'duplicate', 'committed', 'legacy-duplicate'))
     args = parser.parse_args()
     if args.out.exists():
         parser.error('Use a fresh output directory')
@@ -70,7 +70,7 @@ def main():
     runner = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
     verify = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume']
     try:
-        for case in args.case or ('intent', 'duplicate', 'committed'):
+        for case in args.case or ('intent', 'duplicate', 'committed', 'legacy-duplicate'):
             image = bytearray(original)
             header = 2048*512
             if any(image[header+48:header+192]):
@@ -86,11 +86,33 @@ def main():
             for byte in image[header+56:header+184]:
                 checksum = ((checksum ^ byte) * 0x100000001B3) & 0xFFFFFFFFFFFFFFFF
             struct.pack_into('<Q', image, header+184, checksum)
-            struct.pack_into('<Q', image, header+48, 0x3245564F4D323349)
+            magic = 0x3245564F4D323349
+            target_block = source[3]
+            if case == 'legacy-duplicate':
+                magic = 0x3145564F4D323349
+                _, sectors, _, bitmap_blocks, _ = struct.unpack_from('<5q', image, header+8)
+                first = 2048+bitmap_blocks+1
+                count = (source[4]+511)//512
+                run = 0
+                for block in range(first, 2048+sectors):
+                    bit = block-(first-1)
+                    occupied = image[(2048+1)*512+bit//8] & (1 << (bit%8))
+                    if occupied:run = 0
+                    else:run += 1
+                    if run == count:
+                        target_block = block-count+1
+                        break
+                else:raise ValueError('Legacy fixture needs space for copied extent')
+                for block in range(target_block, target_block+count):
+                    bit = block-(first-1)
+                    image[(2048+1)*512+bit//8] |= 1 << (bit%8)
+                begin = source[3]*512
+                image[target_block*512:target_block*512+source[4]] = original[begin:begin+source[4]]
+            struct.pack_into('<Q', image, header+48, magic)
             if case != 'intent':
                 struct.pack_into('<H38sqqQ', image, slot, source[2],
                                  b'TransferRecovery.HC'.ljust(38, b'\0'),
-                                 source[3], source[4], source[5])
+                                 target_block, source[4], source[5])
             if case == 'committed':
                 image[source[1]+1] |= 1
             disk = args.out/(case+'.img')

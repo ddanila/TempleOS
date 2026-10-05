@@ -12590,3 +12590,23 @@ recovery green claimed yet. Scope is three durable publication boundaries, not
 every device-write interruption, directory growth, corrupt journals or legacy
 copy recovery. Fragmented module move and native generations remain to qualify.
 Full objective and renderer long-session qualification remain open.
+
+Transfer boundary recovery and owned-buffer renderer green (2026-10-05):
+build/transfer-recovery-boundaries/result.json PASS for independently constructed
+intent-only, both-names-shared-extent and committed-source-absent reboot states.
+Each returns arithmetic42, clears journal, preserves original extent/content/
+boot area, exposes correct source or target and passes unique ownership bitmap
+audit. Exact disk SHA2567b4bb4c4f5e1565e16e70da1c0ce391eb69faafff174e18b10d3aadb10ada13b.
+All source/checker pins unchanged for that completed run. These three durable
+boundaries are not every IO interruption, malformed-journal or directory-growth
+qualification. Updated checker independently constructs historical legacy copied
+extent duplicate and bitmap allocation; legacy-only compatibility run live
+session89204, out build/transfer-recovery-legacy.
+
+Same source owned-buffer renderer passes all four exact text-frame pixel modes
+and break/restore at 8 MiB/486, five commands, startup28.616987181827426, output
+build/extended-render-reuse-text-frames. Full long-session --test remains running
+and is still required. Recovery-corrected source six retained native modules
+build live PID3799572/session62892, out build/extended-transfer-native-build.
+After it passes, repeat actual fragmented native-module move and two generations.
+Keep exact candidate sources frozen; root OS not yet promoted. Full release open.
