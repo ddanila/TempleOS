@@ -9282,3 +9282,16 @@ module output. Cache candidate promotion remains gated on recovery, exceptions,
 child ownership, full workstation and native reproducibility/install evidence.
 
 DolDoc cache parity also passes: build/public-resident-include-document-bridge/result.json reports original oracle and 11 native no-FPU / 8 MiB commands, exact VGA, unchanged persisted fixture/input disk and valid RedSea bitmap. DocRead/DocSave sees the same edited cache character as FileRead and compiler include. Full workstation remains running.
+
+ABI-45 recovery/native qualification started (2026-10-05):
+The public FileRead contract tool adds --builder, defaulting to main's image
+auditor. Use the candidate builder for resident attributes; this selects the
+independent metadata walker without changing allocator recovery requirements.
+Python compilation and whitespace checks pass. Original FileRead oracle passes
+for the fresh ABI-45 recovery run. Native 45-command twenty-cycle caller/root/
+private recovery is live in build/public-resident-include-recovery.
+The full no-FPU workstation advances through graphics, math and definitions
+in build/public-resident-include-workstation. The ABI-45 KVM retained six-module
+build is live in build/public-resident-include-native-build. Main's separate
+no-FPU TCG retained build also remains live with compiler function progress.
+All three candidate runs are pending; no promotion or full release claim.

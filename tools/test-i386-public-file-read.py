@@ -42,6 +42,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--builder',type=Path,default=ROOT/'tools/build-i386-kernel.py',
+                        help='Independent image auditor matching the candidate file ABI')
     parser.add_argument('--parents',action='store_true',help='Require original parent search for absolute child paths')
     parser.add_argument('--resident',action='store_true',help='Require resident writes, owned cached reads and replacement back to ordinary storage')
     parser.add_argument('--resident-recovery',action='store_true',help='Twenty port-only resident cache create/remove cycles with public/private heap recovery')
@@ -121,7 +123,7 @@ def main():
             runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
             startup_check={'status':'ok','answers':[],'commands':commands})
-        build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
+        build=runpy.run_path(str(args.builder.resolve()))
         report['filesystem']=build['verify_mutated_volume'](candidate)
         paths={'/Probe/ReadRaw.BIN','/Probe/ReadPacked.BIN.Z','/Probe/ReadEmpty.BIN'}
         if args.resident:paths.add('/Probe/ReadResident.BIN')
