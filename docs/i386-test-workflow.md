@@ -5269,3 +5269,25 @@ process is live; the launch uses a retained execution session rather than
 an untracked background child. Installed address workflow speaker and
 resource gates already pass; workstation and DolDoc gates are still running.
 All later G2 installed-generation gates and the full release goal remain open.
+
+Simultaneous CPU traps reproduce kernel failure; task-local session candidate
+(2026-10-05): build/debug-concurrent-traps-red fails after two actual
+ConcurrentTrap input calls. Its debug log reaches the first debugger, focus
+switch and second INT3, then FAULT vector 3 and FAIL native kernel. This is
+behavioral evidence of the global session-owner limitation, not a fixture
+compilation failure. Original Kernel/KDbg.HC Dbg2 uses Fs/UserTaskCont;
+independent task continuations must remain usable.
+
+New isolated main-only fork clone build/debug-concurrent-prototype applies
+all preceding candidate changes and replaces global debugger owner/go/backup/
+cleanup state with private CI386Task fields. Current-task G/S/G2 and breakpoint
+cleanup consult their own session. CPU capture rejects a trap within the
+same active session, but accepts another task's trap. A shared IRQ-protected
+session count preserves the initial debug-mode bit until the final session
+returns or is killed; terminal surfaces/planes were already task-specific.
+The full source patch is docs/patches/i386-debug-concurrent-candidate.patch
+and applies cleanly to main. Fresh original bootstrap is running in the new
+clone; no compilation or runtime green is yet claimed. G2 sources and their
+native/installed gates remain fixed. Other-task controls, nested same-task
+traps, direct stack/IP/flags edits, full parity and release completion remain
+open. Root main contains evidence/patches only, not promoted candidate code.
