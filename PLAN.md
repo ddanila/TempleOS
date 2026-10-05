@@ -12900,3 +12900,17 @@ Observed prior ...8 request produced1024 rather than512; prior failure retained.
 New build/move-directory-growth-full-sector session90911 verifies512 before move,
 requires1024 afterward, same file extent/metadata/exact filler bytes and reboot.
 No growth PASS claimed yet. Existing public FileWrite >0 contract retained.
+
+
+Extent-transfer qualification checkpoint (2026-10-05):
+build/move-directory-growth-full-sector/result.json PASS all three real boots,
+512->1024 destination growth on fresh extent, moved original extent19839,
+identical metadata and exact MOVE/five filler payloads, bitmap/unique ownership,
+8 MiB writable reboot with unchanged hash, all input hashes unchanged.
+Prepared eight-case recovery PASS remains separately scoped. Consolidated
+reviewable coverage/commands/limits in docs/i386-extent-transfer-qualification.md.
+Latest combined baseline source retained native rebuild started session82294,
+build/memory-baseline-native-build. Earlier TEST-fixed native rebuild remains
+live; no restart. Isolated baseline mutation guest completed DONE native kernel
+startup with no FAIL; full suite remains separate and live. Two generations and
+release remain open; interrupted directory-growth matrix still required.
