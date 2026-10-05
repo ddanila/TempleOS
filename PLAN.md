@@ -12949,3 +12949,20 @@ running session60661 under build/move-growth-failures. Each failing operation
 must fire before its case can pass, then recovery checks one IO name, existing
 five F files and filesystem. No matrix result claimed yet; native/build suites
 remain live on frozen sources and are not restarted.
+
+
+Corrected native retained build and latest debugger PASS (2026-10-05):
+build/top-test-fixed-native-build/result.json PASS all six retained providers,
+source diskSHA256957d5ddd1aee581b395b06d08e466fe2bfbebd1bee14ccda2376878c147c4d2d.
+Corrected native CompilerRuntime SHA256
+6b933d0ba99d4467848fd3e834fbc6101328e8f7c1ff1c72fefccf3a63b62fba,
+1747153 bytes. Other provider payload hashes match the prior retained candidate;
+this does not imply cross-build byte equality or latest baseline qualification.
+Actual corrected-source two-generation install/build/boot/audit now running
+session46610 in build/top-test-fixed-native-generations. Must pass to close the
+previous SysTry invalid-opcode generation failure. Its repository remains frozen.
+build/debug-cpu-trace-memory-baseline-five/result.json PASS five cycles on latest
+combined memory-baseline image, 8 MiB486,-fpu, exact caller-allocation bound,
+G/mode/IF/TF/heap/VGA checks, source unchanged. Earlier stage-only result no
+longer substitutes for this current combined image. Full suite, latest retained
+rebuilding and interrupted-growth matrix remain live; no broad completion claim.
