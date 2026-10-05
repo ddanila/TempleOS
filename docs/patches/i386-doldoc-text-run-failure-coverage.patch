@@ -1,0 +1,68 @@
+--- a/Kernel/I386/DocumentRuntime.HC
++++ b/Kernel/I386/DocumentRuntime.HC
+@@ -1534,3 +1534,3 @@
+   U8 *saved;
+-  I64 before,caught=0,result=NativeDocRecordSaveCheck,size;
++  I64 before,caught=0,result=NativeDocRecordSaveCheck,size,fail;
+   if(result!=4) return result;
+@@ -1546,10 +1546,14 @@
+   DocDel(doc); before=Fs->data_heap->used_u8s;
+-  NativeDocAllocArm(4);
+-  try { read_doc=DocRead("C:/AllocRead.DD"); }
+-  catch {
+-    if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
+-  }
+-  NativeDocAllocArm(0);
+-  if(read_doc) { DocDel(read_doc); read_doc=NULL; }
+-  if(!caught || Fs->data_heap->used_u8s!=before) return -12;
++  //Three DocNew allocations precede the text base and its tag.
++  for(fail=4;fail<=5;fail++) {
++    caught=0;
++    NativeDocAllocArm(fail);
++    try { read_doc=DocRead("C:/AllocRead.DD"); }
++    catch {
++      if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
++    }
++    NativeDocAllocArm(0);
++    if(read_doc) { DocDel(read_doc); read_doc=NULL; }
++    if(!caught || Fs->data_heap->used_u8s!=before) return -100-fail;
++  }
+   read_doc=DocRead("C:/AllocRead.DD");
+@@ -1564,3 +1568,3 @@
+   if(Fs->data_heap->used_u8s!=before) return -14;
+-  return 12;
++  return 13;
+ }
+--- a/tools/i386-kernel-input.py
++++ b/tools/i386-kernel-input.py
+@@ -1948,3 +1948,3 @@
+             active_group='document-editing'
+-            submit('DocAllocationCheck;', ['12'], 'doc-allocation-check')
++            submit('DocAllocationCheck;', ['13'], 'doc-allocation-check')
+             active_group='documents'
+@@ -1981,3 +1981,3 @@
+                     'submitted_lines':sum(1 for line in log.read_text().splitlines() if line.startswith('INPUT LINE ')),
+-                    'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':12, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
++                    'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':13, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
+             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+--- a/tools/test-i386-selfhost-install.py
++++ b/tools/test-i386-selfhost-install.py
+@@ -144,3 +144,3 @@
+                              'commands': [('6*7;', ['42']),
+-                                          ('DocAllocationCheck;', ['12'])]})
++                                          ('DocAllocationCheck;', ['13'])]})
+     if args.qmp_stdio and target.read_bytes() != installed_bytes:
+--- a/tools/test-i386-guest-install-recovery.py
++++ b/tools/test-i386-guest-install-recovery.py
+@@ -122,3 +122,3 @@
+             'status':'ok','answers':[],'command_timeout':120,
+-            'commands':[('6*7;',['42']),('DocAllocationCheck;',['12'])]})
++            'commands':[('6*7;',['42']),('DocAllocationCheck;',['13'])]})
+     return {'cut_lba':0,'interrupted_process':state['pid'],
+--- a/tools/test-i386-retained-install.py
++++ b/tools/test-i386-retained-install.py
+@@ -81,3 +81,3 @@
+                   'commands': [('6*7;', ['42']),
+-                               ('DocAllocationCheck;', ['12'])]})
++                               ('DocAllocationCheck;', ['13'])]})
+     if sha(candidate) != candidate_hash or sha(args.source) != source_hash:

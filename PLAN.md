@@ -13475,3 +13475,23 @@ Inspection confirms existing DocAllocationCheck injects DocRead failure4:
 following three DocNew allocations, this covers the new text entry allocation.
 It does not inject failure5 at the text tag allocation, so exhaustive new-run
 failure coverage remains a gap to close before promotion.
+
+
+### Both text-run allocation failures covered in next candidate (2026-10-05)
+
+New isolated `build/document-run-failure-candidate` applies the latest Caller
+integration, text-run loader and an additional failure-coverage delta. Its
+DocAllocationCheck injects DocRead allocation4 (text base) and5 (tag) after the
+three document allocations. Each must raise OutMem and restore exact task data
+heap usage; a successful exact read/save and final heap check follow both.
+Diagnostic success value increases12to13, and matching workstation, self-host,
+retained-install and install-recovery fixtures expect13 and report13cases.
+No public export layout or module ABI changes.
+
+Archived incremental delta
+`docs/patches/i386-doldoc-text-run-failure-coverage.patch` applies after
+`i386-doldoc-text-run-load-candidate.patch`. Apply-check and four Python fixture
+syntax checks PASS. Fresh original1,270-source two-generation bootstrap PASS;
+`build/text-run-failure-kernel` cross build running. Neither new failure case
+claimed runtime-qualified yet. Existing text-run full suite/native build and
+Caller full-chain no-FPU run remain separate frozen source epochs.
