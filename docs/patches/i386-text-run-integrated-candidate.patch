@@ -1,0 +1,2692 @@
+diff --git a/Compiler/I386/Frontend.HC b/Compiler/I386/Frontend.HC
+index fb2baf47..b7c15b2c 100644
+--- a/Compiler/I386/Frontend.HC
++++ b/Compiler/I386/Frontend.HC
+@@ -938,3 +938,11 @@ Bool I386FrontendOption(U8 *context,I64 index)
+ U0 I386FrontendWarning(U8 *context,CCmpCtrl *cc,I64 kind,CHashSrcSym *symbol)
+-{ cc->warning_cnt++; }
++{
++  cc->warning_cnt++;
++  KernelLog("FRONTEND SYMBOL WARNING ");
++  if(!kind) KernelLog("unused extern ");
++  else if(kind==1) KernelLog("return mismatch ");
++  else KernelLog("argument mismatch ");
++  if(symbol && symbol->str) KernelLog(symbol->str);
++  KernelLog("\n");
++}
+ I64 I386FrontendDefine(U8 *context,U8 *name,U8 *list)
+diff --git a/Compiler/I386/NativeExpression.HC b/Compiler/I386/NativeExpression.HC
+index f1518e6e..8cd8f6d3 100644
+--- a/Compiler/I386/NativeExpression.HC
++++ b/Compiler/I386/NativeExpression.HC
+@@ -32,2 +32,9 @@ Bool I386ParserStackCheck(CCmpCtrl *cc)
+   base=(&task->stk->stk_base)(U64); end=base+task->stk->stk_size;
++  //Debugger input runs on a separate exact live allocation owned by this task.
++  if((frame+0)(U64)<base || (frame+0)(U64)>end-8) {
++    if(!task->debug_stack || task->debug_stack_size<4096 ||
++        I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size)
++      throw('Compiler',TRUE);
++    base=(task->debug_stack+0)(U64);end=base+task->debug_stack_size;
++  }
+   if(end>0x100000000 || (frame+0)(U64)<base || (frame+0)(U64)>end-8 ||
+diff --git a/Compiler/I386/TopAssembly.HC b/Compiler/I386/TopAssembly.HC
+index 86703f9b..9646c0a3 100644
+--- a/Compiler/I386/TopAssembly.HC
++++ b/Compiler/I386/TopAssembly.HC
+@@ -10,3 +10,3 @@ class CI386FrontendTopBundle {
+   I64 bytes,export_count,call_count;
+-  U8 code[256];
++  U8 code[1024];
+   CI386AsmLabel exports[32];
+@@ -20,3 +20,3 @@ I64 I386FrontendTopPack(CI386Frontend *state,U8 *output,I64 capacity)
+   I64 i,j,length,string_bytes=0,record_count;
+-  if(!bundle || bundle->bytes<1 || bundle->bytes>256 ||
++  if(!bundle || bundle->bytes<1 || bundle->bytes>1024 ||
+       bundle->export_count<1 || bundle->export_count>32 ||
+@@ -50,3 +50,3 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+   CI386FrontendTopBundle *bundle;
+-  U8 bytes[256],name[32];
++  U8 bytes[1024],name[32];
+   I64 count=0,label_count=0,import_count=0,branch_count=0,call_count=0;
+@@ -152,3 +152,4 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+         } else if(!StrCmp(name,"MOV") || !StrCmp(name,"LEA") ||
+-            !StrCmp(name,"TEST") || !StrCmp(name,"XOR") || !StrCmp(name,"ADD")) {
++            !StrCmp(name,"TEST") || !StrCmp(name,"XOR") || !StrCmp(name,"ADD") ||
++            !StrCmp(name,"CMP") || !StrCmp(name,"SUB")) {
+           opcode=0;
+@@ -158,2 +159,4 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+           if(!StrCmp(name,"ADD")) opcode=4;
++          if(!StrCmp(name,"CMP")) opcode=5;
++          if(!StrCmp(name,"SUB")) opcode=6;
+           if(opcode==0 && cc->token==TK_IDENT && cc->cur_str &&
+@@ -191,2 +194,6 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
++            } else if(opcode==0 && dst.kind==1 && dst.size==4 &&
++                src.kind==3 && src.value>=I32_MIN && src.value<=U32_MAX) {
++              I386FrontendAsmByte(state,bytes,&count,0xB8+dst.register_code);
++              I386FrontendAsmDword(state,bytes,&count,src.value);
+             } else if(opcode==0 && dst.kind==2 && dst.size==4 &&
+@@ -207,6 +214,11 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+-            } else if(opcode==4 && dst.kind==1 && dst.size==4 &&
++            } else if(opcode==5 && dst.kind==1 && src.kind==1 &&
++                dst.size==4 && src.size==4) {
++              I386FrontendAsmByte(state,bytes,&count,0x3B);
++              I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
++            } else if((opcode==4 || opcode==6) && dst.kind==1 && dst.size==4 &&
+                 src.kind==3 && src.value>=-128 && src.value<=127) {
+               I386FrontendAsmByte(state,bytes,&count,0x83);
+-              I386FrontendAsmModRM(state,bytes,&count,0,&dst);
++              if(opcode==4) I386FrontendAsmModRM(state,bytes,&count,0,&dst);
++              else I386FrontendAsmModRM(state,bytes,&count,5,&dst);
+               I386FrontendAsmByte(state,bytes,&count,src.value);
+@@ -214,2 +226,6 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+           }
++        } else if(!StrCmp(name,"DEC")) {
++          I386FrontendAsmOperand(state,cc,&dst);
++          if(dst.kind!=1 || dst.size!=4) I386FrontendUnavailable(state);
++          I386FrontendAsmByte(state,bytes,&count,0x48+dst.register_code);
+         } else if(!StrCmp(name,"CALL")) {
+@@ -231,3 +247,4 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+           }
+-        } else if(!StrCmp(name,"JMP") || !StrCmp(name,"JNZ")) {
++        } else if(!StrCmp(name,"JMP") || !StrCmp(name,"JNZ") ||
++            !StrCmp(name,"JZ") || !StrCmp(name,"JC")) {
+           if(!StrCmp(name,"JMP") && cc->token==TK_IDENT && cc->cur_str &&
+@@ -242,5 +259,8 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
+             I386FrontendLex(state,cc);
+-            if(!StrCmp(name,"JNZ")) {
++            if(StrCmp(name,"JMP")) {
+               I386FrontendAsmByte(state,bytes,&count,0x0F);
+-              I386FrontendAsmByte(state,bytes,&count,0x85);
++              if(!StrCmp(name,"JNZ")) opcode=0x85;
++              else if(!StrCmp(name,"JZ")) opcode=0x84;
++              else opcode=0x82;
++              I386FrontendAsmByte(state,bytes,&count,opcode);
+             } else I386FrontendAsmByte(state,bytes,&count,0xE9);
+diff --git a/Kernel/I386/BootMemory.HC b/Kernel/I386/BootMemory.HC
+index a834683e..f1439fbc 100644
+--- a/Kernel/I386/BootMemory.HC
++++ b/Kernel/I386/BootMemory.HC
+@@ -57 +57,17 @@ public Bool I386BootArena(CI386BootInfo *info,CI386MemRange *reserved,
+ }
++
++Bool I386BootImageReserve(CI386BootInfo *info,CI386BootImageInfo *image,
++  CI386MemRange *result)
++{//Validate before publishing the sector-rounded live high-memory reservation.
++  U32 size;
++  if(!info || !image || !result || info->magic!=I386_BOOT_INFO_MAGIC ||
++      info->version!=1 || info->stage_begin!=0x10000 ||
++      info->stage_end!=0x11000 || !(info->flags&2) ||
++      info->extended_kib>65535 || image->magic!=I386_BOOT_IMAGE_MAGIC ||
++      image->version!=1 || image->base!=0x100000 ||
++      image->bytes<8 || image->bytes>2039*512) return FALSE;
++  size=(image->bytes+511)&~511;
++  if(size>info->extended_kib*1024) return FALSE;
++  result->base=image->base; result->size=size;
++  return TRUE;
++}
+diff --git a/Kernel/I386/BootMemory.HH b/Kernel/I386/BootMemory.HH
+index 68956e4f..1411395d 100644
+--- a/Kernel/I386/BootMemory.HH
++++ b/Kernel/I386/BootMemory.HH
+@@ -9,2 +9,9 @@ class CI386BootInfo
+ };
++#define I386_BOOT_IMAGE_ADDRESS 0x5030
++#define I386_BOOT_IMAGE_MAGIC 0x42323345
++class CI386BootImageInfo
++{
++  U32 magic,version,base,bytes;
++};
++#assert sizeof(CI386BootImageInfo)==16
+ class CI386MemRange
+@@ -15,2 +22,4 @@ class CI386MemRange
+ #assert sizeof(CI386MemRange)==8
++public extern Bool I386BootImageReserve(CI386BootInfo *info,
++  CI386BootImageInfo *image,CI386MemRange *result);
+ public extern Bool I386BootArena(CI386BootInfo *info,CI386MemRange *reserved,
+diff --git a/Kernel/I386/BuildBootImage.HC b/Kernel/I386/BuildBootImage.HC
+index 1f33c712..92097738 100644
+--- a/Kernel/I386/BuildBootImage.HC
++++ b/Kernel/I386/BuildBootImage.HC
+@@ -9,2 +9,3 @@ public I64 I386BuildBootImage(U8 *kernel_path,U8 *module_dir,U8 *target_path)
+   I64 sizes[6],i,j,prefix,required=8,result=-1;
++  I64 load_base=0x11000,capacity=960*512-4096;
+   CI386ModuleHeader *header;
+@@ -19,2 +20,7 @@ public I64 I386BuildBootImage(U8 *kernel_path,U8 *module_dir,U8 *target_path)
+     return -1;
++  if((0x5000)(U32 *)[6]==0x11000) {
++    if((0x5030)(U32 *)[0]!=0x42323345 || (0x5030)(U32 *)[1]!=1 ||
++        (0x5030)(U32 *)[2]!=0x100000) return -1;
++    load_base=0x100000; capacity=2039*512;
++  }
+   for(i=0;i<6;i++) { modules[i]=0; sizes[i]=0; }
+@@ -33,9 +39,9 @@ public I64 I386BuildBootImage(U8 *kernel_path,U8 *module_dir,U8 *target_path)
+     header=modules[i];
+-    if(header->code_size>960*512-4096-required) goto boot_image_done;
++    if(header->code_size>capacity-required) goto boot_image_done;
+     required+=header->code_size;
+   }
+-  required=I386LoadBoundAt(modules,sizes,6,0,0,"Main",0,0,0x11000);
+-  if(required<8 || required>960*512-4096 ||
++  required=I386LoadBoundAt(modules,sizes,6,0,0,"Main",0,0,load_base);
++  if(required<8 || required>capacity ||
+       !(image=I386HeapAlloc(heap,required))) goto boot_image_done;
+-  if(I386LoadBoundAt(modules,sizes,6,image,required,"Main",0,0,0x11000)!=required)
++  if(I386LoadBoundAt(modules,sizes,6,image,required,"Main",0,0,load_base)!=required)
+     goto boot_image_done;
+diff --git a/Kernel/I386/CompilerHeaderProbe.HC b/Kernel/I386/CompilerHeaderProbe.HC
+index 35c7bf98..5bfeab5e 100644
+--- a/Kernel/I386/CompilerHeaderProbe.HC
++++ b/Kernel/I386/CompilerHeaderProbe.HC
+@@ -51,2 +51,12 @@ I64 ProbeDocumentLayout(CI386CompilerProbe *probe,CI386CommandInput *input)
+ }
++CHash *ProbeHeaderFind(U8 *name,CHashTable *table,I64 mask)
++{//Worker diagnostics inherit the CPU root's published public declarations.
++  CHash *entry;
++  while(table) {
++    entry=ProbeSymbolFind(0,name,table,mask);
++    if(entry) return entry;
++    table=table->next;
++  }
++  return 0;
++}
+ //Load the actual public headers, retry failure, and compare every public offset.
+@@ -81,6 +91,11 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+   input.context=&answer; input.answer=&ProbeInputAnswer; input.diagnostic=&ProbeInputDiagnostic;
+-  input.source="extern class CTask;";
+-  if(!probe->compiler->input(&input)) KernelStop;
+-  forward=ProbeSymbolFind(0,"CTask",table,HTT_CLASS);
+-  if(!forward || !Bt(&forward->flags,Cf_EXTERN)) KernelStop;
++  if(probe->phase) {
++    forward=ProbeHeaderFind("CTask",table,HTT_CLASS);
++    if(!forward || Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
++  } else {
++    input.source="extern class CTask;";
++    if(!probe->compiler->input(&input)) KernelStop;
++    forward=ProbeSymbolFind(0,"CTask",table,HTT_CLASS);
++    if(!forward || !Bt(&forward->flags,Cf_EXTERN)) KernelStop;
++  }
+   before_used=heap->used; before_allocations=heap->allocations;
+@@ -89,6 +104,9 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+   if(probe->compiler->input(&input) || input.exception!='Compiler' ||
+-      !Bt(&forward->flags,Cf_EXTERN) || forward->size ||
+-      ProbeSymbolFind(0,"I386_PUBLIC_KERNEL_INCLUDED",table,HTT_DEFINE_STR) ||
+-      ProbeSymbolFind(0,"CCPU",table,HTT_CLASS) ||
+       heap->used!=before_used || heap->allocations!=before_allocations) KernelStop;
++  if(probe->phase) {
++    if(ProbeHeaderFind("CTask",table,HTT_CLASS)!=forward ||
++        Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
++  } else if(!Bt(&forward->flags,Cf_EXTERN) || forward->size ||
++      ProbeSymbolFind(0,"I386_PUBLIC_KERNEL_INCLUDED",table,HTT_DEFINE_STR) ||
++      ProbeSymbolFind(0,"CCPU",table,HTT_CLASS)) KernelStop;
+   KernelLog("PUBLIC HEADER ROLLBACK "); KernelHex(probe->phase); KernelLog("\n");
+@@ -99,6 +117,6 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+   KernelHex(input.warnings); KernelLog(" "); KernelHex(forward->size); KernelLog("\n");
+-  //CCPU retains the existing count-only unused-forward warning. Assertions
++  //CCPU and the completed CBpt retain count-only unused-forward warnings. Assertions
+   //must produce no diagnostic, and no additional warning is accepted.
+-  if(!accepted || input.warnings!=1 || answer.diagnostics ||
+-      ProbeSymbolFind(0,"CTask",table,HTT_CLASS)!=forward ||
++  if(!accepted || input.warnings!=2*(1-probe->phase) || answer.diagnostics ||
++      ProbeHeaderFind("CTask",table,HTT_CLASS)!=forward ||
+       Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
+@@ -107,3 +125,3 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+       heap->allocations!=before_allocations) KernelStop;
+-  help=ProbeSymbolFind(0,"C:/Doc/Que.DD.Z",table,HTT_HELP_FILE);
++  help=ProbeHeaderFind("C:/Doc/Que.DD.Z",table,HTT_HELP_FILE);
+   if(!help || !(help->type&HTF_PUBLIC) || !help->src_link || !help->idx ||
+@@ -258,3 +276,3 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+   if(checks!=271) KernelStop;
+-  document_type=ProbeSymbolFind(0,"CEdFindText",table,HTT_CLASS);
++  document_type=ProbeHeaderFind("CEdFindText",table,HTT_CLASS);
+   if(!document_type || !(document_member=document_type->member_lst_and_root) ||
+diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
+index 30b15c64..92c03210 100644
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -10,2 +10,5 @@
+ #include "/Kernel/I386/Cpu.HH"
++#include "/Kernel/I386/Frame.HH"
++import CI386Frame *I386TaskFrameParent(CI386Task *task,CI386Frame *frame);
++import U8 *I386TaskFrameReturn(CI386Task *task,CI386Frame *frame);
+ #include "/Kernel/I386/ExceptRuntime.HH"
+@@ -89,2 +92,3 @@ U8 console_diagnostic_filename[256];
+ extern Bool NativeIsDebugMode();
++extern U0 NativeBreakpointInstall();
+ extern Bool ConsoleCpuCapture(CI386ExceptionFrame *frame);
+@@ -95,3 +99,4 @@ CI386KeyboardState console_hotkeys;
+ CI386Task *console_break_task;
+-CI386KernelSymbol console_doc_exports[137];
++CI386KernelSymbol console_doc_exports[147];
++extern U8 *NativeCaller(I64 num=1);
+ extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
+@@ -100,2 +105,11 @@ extern Bool NativeIsDebugMode();
+ extern U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception);
++#include "/Kernel/I386/PublicDebugTypes.HH"
++extern CBpt *BptFind(U8 *addr,CTask *task=0,Bool rem=FALSE);
++extern Bool BptS(U8 *addr,CTask *task=0,Bool live=TRUE);
++extern Bool BptR(U8 *addr,CTask *task=0,Bool live=TRUE,Bool rem=TRUE);
++extern Bool B(U8 *addr,CTask *task=0,Bool live=TRUE);
++extern I64 B2(CTask *task=0,Bool live=TRUE);
++extern I64 *TaskRegAddr(CTask *task,I64 reg_num);
++extern U0 NativeDebugGoClear(U8 *ip=U32_MAX,CTask *task=NULL);
++extern U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL);
+ extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
+@@ -110,2 +124,3 @@ extern U0 ConsoleSubmit(U8 *line);
+ extern Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0);
++extern Bool ConsoleRootHeaders();
+ Bool ConsoleInit(CI386ConsoleConfig *config)
+@@ -399,6 +414,26 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
+   console_doc_exports[135].str="_FILE_READ";
+-  console_doc_exports[135].val=(&FileRead+0)(U64);
++  console_doc_exports[135].val=(&NativePublicFileRead+0)(U64);
+   console_doc_exports[136].str="_FILE_FIND";
+   console_doc_exports[136].val=(&FileFind+0)(U64);
+-  for(i=0;i<137;i++) {
++  console_doc_exports[137].str="_CD";
++  console_doc_exports[137].val=(&Cd+0)(U64);
++  console_doc_exports[138].str="_DEBUG_STEP";
++  console_doc_exports[138].val=(&NativeDebugStep+0)(U64);
++  console_doc_exports[139].str="_TASK_REG_ADDR";
++  console_doc_exports[139].val=(&TaskRegAddr+0)(U64);
++  console_doc_exports[140].str="_BPT_FIND";
++  console_doc_exports[140].val=(&BptFind+0)(U64);
++  console_doc_exports[141].str="_BPT_SET";
++  console_doc_exports[141].val=(&BptS+0)(U64);
++  console_doc_exports[142].str="_BPT_REMOVE";
++  console_doc_exports[142].val=(&BptR+0)(U64);
++  console_doc_exports[143].str="_BPT_TOGGLE";
++  console_doc_exports[143].val=(&B+0)(U64);
++  console_doc_exports[144].str="_BPT_CLEAR";
++  console_doc_exports[144].val=(&B2+0)(U64);
++  console_doc_exports[145].str="_DEBUG_GO_CLEAR";
++  console_doc_exports[145].val=(&NativeDebugGoClear+0)(U64);
++  console_doc_exports[146].str="_CALLER";
++  console_doc_exports[146].val=(&NativeCaller+0)(U64);
++  for(i=0;i<147;i++) {
+     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
+@@ -409,2 +444,10 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
+   console_config=config; dbg.fun_seg_cache=native_fun_seg_cache;
++  NativeBreakpointInstall;
++  if(config->defer_root_headers) return TRUE;
++  return ConsoleRootHeaders;
++}
++Bool ConsoleRootHeaders()
++{
++  //Publish the resident reader with root declarations, after early diagnostics.
++  console_config->files->public_reader(&NativeResidentReadBridge);
+   //The immortal CPU root owns shared declarations; children inherit its scope.
+@@ -437,2 +480,3 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
+   services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
++  services->root_headers=&ConsoleRootHeaders;
+   services->cpu_capture=&ConsoleCpuCapture; services->cpu_debug=&ConsoleCpuDebug;
+diff --git a/Kernel/I386/ConsoleRuntime.HH b/Kernel/I386/ConsoleRuntime.HH
+index 9162d571..ee321c0f 100644
+--- a/Kernel/I386/ConsoleRuntime.HH
++++ b/Kernel/I386/ConsoleRuntime.HH
+@@ -7,3 +7,3 @@
+ //Native task extensions include public heap ownership callbacks.
+-#define I386_CONSOLE_VERSION 37
++#define I386_CONSOLE_VERSION 39
+ class CI386ConsoleConfig {
+@@ -19,2 +19,3 @@ class CI386ConsoleConfig {
+   U32 pit_divisor;
++  Bool defer_root_headers;
+ };
+@@ -30,2 +31,3 @@ class CI386ConsoleServices {
+   U0 (*cpu_debug)(CI386ExceptionFrame *frame);
++  Bool (*root_headers)();
+ };
+diff --git a/Kernel/I386/Debug.HC b/Kernel/I386/Debug.HC
+index 298dba34..b83ba1d6 100644
+--- a/Kernel/I386/Debug.HC
++++ b/Kernel/I386/Debug.HC
+@@ -10,6 +10,6 @@ U8 *Caller(I64 num=1)
+   while(num--) {
+-    frame=I386FrameParent(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
++    frame=I386TaskFrameParent(task,frame);
+     if(!frame) return 0;
+   }
+-  return I386FrameReturn(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
++  return I386TaskFrameReturn(task,frame);
+ }
+diff --git a/Kernel/I386/Debugger.HC b/Kernel/I386/Debugger.HC
+index b7186ce0..8d55af24 100644
+--- a/Kernel/I386/Debugger.HC
++++ b/Kernel/I386/Debugger.HC
+@@ -1 +1,134 @@
++#include "/Kernel/I386/Frame.HH"
++U8 *NativeCaller(I64 num=1)
++{//Same public depth convention, with owned original/debug stack bounds.
++  CI386Task *task=I386TaskSelf;
++  CI386Frame *frame=GetRBP;
++  if(!task || !task->stk || num<0 || num>task->stk->stk_size/sizeof(CI386Frame)) return 0;
++  while(num--) {
++    frame=I386TaskFrameParent(task,frame);
++    if(!frame) return 0;
++  }
++  return I386TaskFrameReturn(task,frame);
++}
++#include "/Kernel/I386/PublicDebugTypes.HH"
++extern U0 NativeBptOwnTask(CTask *task);
++CBpt *BptFind(U8 *needle_addr,CTask *haystack_task=NULL,Bool rem=FALSE)
++{
++  CBpt *res=NULL,*tmpb,*tmpb1,*tmpb2;
++  if (!haystack_task) haystack_task=I386TaskSelf;
++  U32 irq=I386IrqSave;
++  tmpb1=&haystack_task->bpt_lst;
++  tmpb=haystack_task->bpt_lst;
++  while (tmpb) {
++    tmpb2=tmpb->next;
++    if (tmpb->addr==needle_addr) {
++      res=tmpb;
++      if (rem)
++	tmpb1->next=tmpb2;
++      else
++	tmpb1=&tmpb->next;
++    } else
++      tmpb1=&tmpb->next;
++    tmpb=tmpb2;
++  }
++  I386IrqRestore(irq);
++  return res;
++}
++
++Bool BptS(U8 *addr,CTask *task=NULL,Bool live=TRUE)
++{//Set breakpoint.
++  CBpt *tmpb;
++  Bool res=TRUE;
++  if (!task) task=I386TaskSelf;
++  U32 irq=I386IrqSave;
++  if (!(tmpb=BptFind(addr,task,FALSE))) {
++    tmpb=CAlloc(sizeof(CBpt),task);
++    tmpb->addr=addr;
++    tmpb->val=*addr;
++    res=FALSE;
++    tmpb->next=task->bpt_lst;
++    task->bpt_lst=tmpb;
++    NativeBptOwnTask(task);
++    if (task==I386TaskSelf && live)
++      *addr=0xCC;
++  }
++  I386IrqRestore(irq);
++  return res;
++}
++
++Bool BptR(U8 *addr,CTask *task=NULL,Bool live=TRUE,Bool rem=TRUE)
++{//Rem breakpoint.
++  CBpt *tmpb;
++  Bool res=FALSE;
++  if (!task) task=I386TaskSelf;
++  U32 irq=I386IrqSave;
++  if (tmpb=BptFind(addr,task,rem)) {
++    if (task==I386TaskSelf && live)
++      *tmpb->addr=tmpb->val;
++    res=TRUE;
++    if (rem)
++      Free(tmpb);
++  }
++  I386IrqRestore(irq);
++  return res;
++}
++
++Bool B(U8 *addr,CTask *task=NULL,Bool live=TRUE)
++{//Toggle breakpoint.
++//Return: TRUE if removed.
++  Bool res=FALSE;
++  U32 irq=I386IrqSave;
++  if (BptFind(addr,task,FALSE)) {
++    BptR(addr,task,live,TRUE);
++    res=TRUE;
++  } else
++    BptS(addr,task,live);
++  I386IrqRestore(irq);
++  return res;
++}
++
++I64 B2(CTask *task=NULL,Bool live=TRUE)
++{//Rem all breakpoints.
++//Return: cnt of removed.
++  I64 res=0;
++  CBpt *tmpb,*tmpb1;
++  if (!task) task=I386TaskSelf;
++  U32 irq=I386IrqSave;
++  tmpb=task->bpt_lst;
++  task->bpt_lst=NULL;
++  while (tmpb) {
++    tmpb1=tmpb->next;
++    if (task==I386TaskSelf && live)
++      *tmpb->addr=tmpb->val;
++    Free(tmpb);
++    tmpb=tmpb1;
++    res++;
++  }
++  I386IrqRestore(irq);
++  return res;
++}
++
++I64 *TaskRegAddr(CTask *task,I64 reg_num)
++{
++  switch (reg_num) {
++    case REG_RAX: return &task->rax;
++    case REG_RCX: return &task->rcx;
++    case REG_RDX: return &task->rdx;
++    case REG_RBX: return &task->rbx;
++    case REG_RSP: return &task->rsp;
++    case REG_RBP: return &task->rbp;
++    case REG_RSI: return &task->rsi;
++    case REG_RDI: return &task->rdi;
++    case 8 : return &task->r8;
++    case 9 : return &task->r9;
++    case 10: return &task->r10;
++    case 11: return &task->r11;
++    case 12: return &task->r12;
++    case 13: return &task->r13;
++    case 14: return &task->r14;
++    case 15: return &task->r15;
++  }
++  return NULL;
++}
++
+ #include "/Kernel/I386/TaskHeaps.HH"
+@@ -3,15 +136,75 @@
+ #include "/Kernel/SemaTypes.HH"
+-CI386Task *console_debug_task;
+-Bool console_debug_go;
++U32 console_debug_sessions;
+ Bool console_debug_previous_mode;
+-U8 *console_debug_backup;
+-U0 (*console_debug_cleanup)(CI386Task *task);
++U0 NativeDebugSessionEnter()
++{
++  U32 irq=I386IrqSave;
++  if(!console_debug_sessions) console_debug_previous_mode=NativeDebugMode(TRUE);
++  console_debug_sessions++;
++  I386IrqRestore(irq);
++}
++U0 NativeDebugSessionLeave()
++{
++  U32 irq=I386IrqSave;
++  if(!console_debug_sessions) KernelStop;
++  console_debug_sessions--;
++  if(!console_debug_sessions) NativeDebugMode(console_debug_previous_mode);
++  I386IrqRestore(irq);
++}
++U0 (*native_bpt_platform_bind)(CI386Task *task);
++U0 NativeBptApply(CTask *task,Bool active)
++{//IRQ-masked, no allocation or scheduling.
++  CBpt *record=task->bpt_lst;
++  while(record) {
++    if(active) *record->addr=0xCC;
++    else *record->addr=record->val;
++    record=record->next;
++  }
++}
++U0 NativeBptTaskCleanup(CI386Task *task)
++{//Restore code before public heaps or executable allocations disappear.
++  CBpt *record,*next;
++  U0 (*previous)(CI386Task *task);
++  previous=task->debug_bpt_cleanup;
++  NativeBptApply(task,FALSE);
++  record=task->bpt_lst;task->bpt_lst=NULL;
++  while(record) { next=record->next;Free(record);record=next; }
++  task->debug_bpt_cleanup=NULL;task->cleanup=previous;
++  if(previous) (*previous)(task);
++}
++U0 NativeBptOwnTask(CTask *task)
++{
++  CI386Task *native=task;
++  if(native->debug_session_active) {
++    if(native->debug_cleanup==&NativeBptTaskCleanup) return;
++    native->debug_bpt_cleanup=native->debug_cleanup;
++    native->debug_cleanup=&NativeBptTaskCleanup;
++  } else {
++    if(native->cleanup==&NativeBptTaskCleanup) return;
++    native->debug_bpt_cleanup=native->cleanup;
++    native->cleanup=&NativeBptTaskCleanup;
++  }
++}
++U0 NativeBreakpointBind(CI386Task *next)
++{//FS still names outgoing task; chain the original segment binder last.
++  NativeBptApply(I386TaskSelf,FALSE);
++  NativeBptApply(next,!Bt(&next->task_flags,TASKf_DISABLE_BPTS));
++  (*native_bpt_platform_bind)(next);
++}
++U0 NativeBreakpointInstall()
++{
++  U32 irq=I386IrqSave;
++  if(native_bpt_platform_bind || !I386TaskSelf->owner->bind) KernelStop;
++  native_bpt_platform_bind=I386TaskSelf->owner->bind;
++  I386TaskSelf->owner->bind=&NativeBreakpointBind;
++  I386IrqRestore(irq);
++}
+ U0 ConsoleDebugTaskCleanup(CI386Task *task)
+ {//Forced task exit bypasses the debugger's stack-local return path.
+-  U8 *backup=console_debug_backup;
+-  if(console_debug_task!=task) return;
+-  NativeDebugMode(console_debug_previous_mode);
+-  task->cleanup=console_debug_cleanup;
+-  console_debug_task=NULL; console_debug_go=FALSE;
+-  console_debug_backup=NULL; console_debug_cleanup=NULL;
++  U8 *backup=task->debug_backup;
++  if(!task->debug_session_active) return;
++  NativeDebugSessionLeave();
++  task->cleanup=task->debug_cleanup;
++  task->debug_session_active=FALSE; task->debug_go=FALSE;
++  task->debug_backup=NULL; task->debug_cleanup=NULL;
+   if(backup) I386HeapFree(console_config->heap,backup);
+@@ -48,5 +241,46 @@ U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL)
+ {
+-  if(console_debug_task!=I386TaskSelf) throw('DbgState');
+-  if(ip!=U32_MAX || task && task!=I386TaskSelf) throw('DbgArg');
+-  console_debug_go=TRUE;
++  if(!I386TaskSelf->debug_session_active) throw('DbgState');
++  if(task && task!=I386TaskSelf) throw('DbgArg');
++  if(ip!=U32_MAX) {
++    if(!I386TaskSelf->debug_cpu_active) throw('DbgState');
++    I386TaskSelf->debug_cpu_frame.eip=(ip+0)(U64);
++    I386TaskSelf->rip=(ip+0)(U64);
++  }
++  //Public RIP edits and explicit G(ip) select the same physical return IP.
++  if(I386TaskSelf->debug_cpu_active) I386TaskSelf->debug_cpu_frame.eip=(I386TaskSelf->rip+0)(U64);
++  if(I386TaskSelf->debug_cpu_active) {
++    if(BptFind(I386TaskSelf->debug_cpu_frame.eip(U8 *))) {
++      I386TextWrite(&console_text,"Use S, B2 or G2 before resuming a breakpoint.\n");
++      return;
++    }
++    //Resume public flags; G owns TF exactly as in the original debugger.
++    I386TaskSelf->rflags&=~0x100;
++    I386TaskSelf->debug_cpu_frame.eflags=I386TaskSelf->rflags;
++    LBtr(&I386TaskSelf->task_flags,TASKf_DISABLE_BPTS);
++    NativeBptApply(I386TaskSelf,TRUE);
++  }
++  I386TaskSelf->debug_go=TRUE;
++}
++U0 NativeDebugGoClear(U8 *ip=U32_MAX,CTask *task=NULL)
++{//Original G2: remove all managed records, then resume.
++  if(!I386TaskSelf->debug_session_active) throw('DbgState');
++  if(task && task!=I386TaskSelf) throw('DbgArg');
++  B2(task);
++  NativeDebugGo(ip,task);
++}
++U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL)
++{
++  if(!I386TaskSelf->debug_session_active || !I386TaskSelf->debug_cpu_active) throw('DbgState');
++  if(task && task!=I386TaskSelf) throw('DbgArg');
++  if(ip!=U32_MAX) {
++    if(!I386TaskSelf->debug_cpu_active) throw('DbgState');
++    I386TaskSelf->debug_cpu_frame.eip=(ip+0)(U64);
++    I386TaskSelf->rip=(ip+0)(U64);
++  }
++  I386TaskSelf->debug_cpu_frame.eip=(I386TaskSelf->rip+0)(U64);
++  LBts(&I386TaskSelf->task_flags,TASKf_DISABLE_BPTS);
++  NativeBptApply(I386TaskSelf,FALSE);
++  I386TaskSelf->rflags|=0x100;
++  I386TaskSelf->debug_cpu_frame.eflags=I386TaskSelf->rflags;
++  I386TaskSelf->debug_go=TRUE;
+ }
+@@ -62,3 +296,3 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+   Bool raised=FALSE;
+-  if(console_debug_task) throw('DbgBusy');
++  if(task->debug_session_active) throw('DbgBusy');
+   //Register cleanup before acquiring the display buffer.
+@@ -70,6 +304,6 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+     for(i=0;i<sizeof(CI386Text);i++) p[i]=q[i];
+-    console_debug_previous_mode=NativeDebugMode(TRUE);
+-    console_debug_backup=backup; console_debug_cleanup=task->cleanup;
++    NativeDebugSessionEnter();
++    task->debug_backup=backup; task->debug_cleanup=task->cleanup;
+     task->cleanup=&ConsoleDebugTaskCleanup;
+-    console_debug_task=task; console_debug_go=FALSE; sys_focus_task=task;
++    task->debug_session_active=TRUE; task->debug_go=FALSE; sys_focus_task=task;
+     I386TextInit(&console_text,console_planes,sys_font_std);
+@@ -98,3 +332,3 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+     I386TextWrite(&console_text,"\ndbg> "); ConsolePresent;
+-    while(!console_debug_go) {
++    while(!I386TaskSelf->debug_go) {
+       decoded=NativeReadKey(console_config->reader,&event,TRUE);
+@@ -108,3 +342,3 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+           ConsoleSource(line,"Debugger.HC"); length=0;
+-          if(!console_debug_go) I386TextWrite(&console_text,"dbg> ");
++          if(!I386TaskSelf->debug_go) I386TextWrite(&console_text,"dbg> ");
+         } else if(ch>=32 && ch<=255 && length<255) {
+@@ -124,7 +358,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
+   }
+-  if(console_debug_task==task) {
+-    NativeDebugMode(console_debug_previous_mode);
+-    task->cleanup=console_debug_cleanup;
+-    console_debug_backup=NULL; console_debug_cleanup=NULL;
+-    console_debug_task=NULL; console_debug_go=FALSE;
++  if(task->debug_session_active) {
++    NativeDebugSessionLeave();
++    task->cleanup=task->debug_cleanup;
++    task->debug_backup=NULL; task->debug_cleanup=NULL;
++    task->debug_session_active=FALSE; task->debug_go=FALSE;
+   }
+@@ -168,3 +402,3 @@ U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception)
+   I64 i;
+-  if(console_debug_task || !NativeIsDebugMode || exception=='Break' ||
++  if(task->debug_session_active || !NativeIsDebugMode || exception=='Break' ||
+       exception=='Compiler' || exception=='OutMem') return;
+@@ -180,6 +414,19 @@ Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
+   I64 i;
+-  if(!task || task->debug_cpu_active || console_debug_task ||
+-      frame->vector!=3 || frame->cs!=8 || !(frame->eflags&0x200)) return FALSE;
++  CBpt *managed=NULL;
++  if(!task || task->debug_cpu_active || task->debug_session_active ||
++      (frame->vector!=3 && frame->vector!=1) || frame->cs!=8 || !(frame->eflags&0x200)) return FALSE;
+   dst=&task->debug_cpu_frame;
+   for(i=0;i<sizeof(CI386ExceptionFrame);i++) dst[i]=src[i];
++  if(frame->vector==3) managed=BptFind((frame->eip-1)(U8 *),task);
++  if(managed) {
++    dst=&task->debug_cpu_frame;
++    task->debug_cpu_frame.eip--;
++    LBts(&task->task_flags,TASKf_DISABLE_BPTS);
++    NativeBptApply(task,FALSE);
++  }
++  //Public I64 debugger shadows; scheduling uses private CI386Context.
++  task->rax=frame->eax;task->rcx=frame->ecx;task->rdx=frame->edx;
++  task->rbx=frame->ebx;task->rbp=frame->ebp;task->rsi=frame->esi;task->rdi=frame->edi;
++  task->rip=task->debug_cpu_frame.eip;task->rflags=frame->eflags;
++  task->rsp=frame->saved_esp+20; //Past vector/error/eip/cs/eflags.
+   task->debug_cpu_active=TRUE; return TRUE;
+@@ -192,5 +439,10 @@ U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
+   if(!task->debug_cpu_active || !(GetRFlags&0x200)) KernelStop;
++  task->debug_cpu_frame.eflags&=~0x100;
+   ConsoleDebugSession(NULL,0,
+     ConsoleDebugFunction(task->debug_cpu_frame.eip(U8 *)),'BreakPt',TRUE);
+-  task->debug_cpu_frame.eflags&=~0x100;
++  //G/S commit IP/flags; exception-entry assembly relocates to public RSP.
++  task->debug_cpu_frame.eax=task->rax;task->debug_cpu_frame.ecx=task->rcx;
++  task->debug_cpu_frame.edx=task->rdx;task->debug_cpu_frame.ebx=task->rbx;
++  task->debug_cpu_frame.ebp=task->rbp;task->debug_cpu_frame.esi=task->rsi;
++  task->debug_cpu_frame.edi=task->rdi;
+   for(i=0;i<sizeof(CI386ExceptionFrame);i++) dst[i]=src[i];
+diff --git a/Kernel/I386/DocRecordLoadCore.HC b/Kernel/I386/DocRecordLoadCore.HC
+index df80f23f..e4b0f1cf 100644
+--- a/Kernel/I386/DocRecordLoadCore.HC
++++ b/Kernel/I386/DocRecordLoadCore.HC
+@@ -5,2 +5,5 @@ Bool NativeDocRecordLoadCore(CDoc *doc,U8 *source,I64 size)
+   CDocEntry *entry,*cursor_entry=0;
++  CDocEntry *text_entry=NULL;
++  U8 *text_tag=NULL;
++  I64 run_start,run_size;
+   CDocBin *bin;
+@@ -77,4 +80,20 @@ Bool NativeDocRecordLoadCore(CDoc *doc,U8 *source,I64 size)
+         else cursor_col=cursor_entry->max_col;
+-      } else if(source[index]=='\n' || source[index]=='\t' ||
+-          0x20<=source[index]<0x100)
++      } else if(0x20<=source[index]<0x100 && source[index]!=36) {
++        //Allocate canonical text runs; preserve dollar and cursor boundaries.
++        run_start=index;
++        while(index<text_size && 0x20<=source[index]<0x100 &&
++            source[index]!=36) index++;
++        run_size=index-run_start;
++        text_entry=NULL; text_tag=NULL;
++        try {
++          text_entry=DocEntryNewBase(doc,
++            DOCT_TEXT|doc->settings_head.dft_text_attr<<8);
++          text_tag=MAlloc(run_size+1,doc->mem_task);
++          MemCpy(text_tag,source+run_start,run_size); text_tag[run_size]=0;
++          text_entry->tag=text_tag; text_entry->max_col=run_size;
++          DocInsEntry(doc,text_entry);
++          text_entry=NULL; text_tag=NULL;
++        } catch { Free(text_tag); Free(text_entry); }
++        index--; //The common increment below reaches the next boundary.
++      } else if(source[index]=='\n' || source[index]=='\t' || source[index]==36)
+         DocPutKey(doc,source[index],0);
+diff --git a/Kernel/I386/DocumentRuntime.HC b/Kernel/I386/DocumentRuntime.HC
+index 457b7e30..0bfe3fef 100644
+--- a/Kernel/I386/DocumentRuntime.HC
++++ b/Kernel/I386/DocumentRuntime.HC
+@@ -48,2 +48,3 @@ U8 *NativeDocCAlloc(I64 size,CTask *task=0)
+ extern U0 DocReportLiteral(I64 mS,U8 *message);
++import U0 HashAdd(CHash *entry,CHashTable *table);
+ import CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
+@@ -1533,3 +1534,3 @@ public I64 DocAllocationCheck()
+   U8 *saved;
+-  I64 before,caught=0,result=NativeDocRecordSaveCheck,size;
++  I64 before,caught=0,result=NativeDocRecordSaveCheck,size,fail;
+   if(result!=4) return result;
+@@ -1545,10 +1546,14 @@ public I64 DocAllocationCheck()
+   DocDel(doc); before=Fs->data_heap->used_u8s;
+-  NativeDocAllocArm(4);
+-  try { read_doc=DocRead("C:/AllocRead.DD"); }
+-  catch {
+-    if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
++  //Three DocNew allocations precede the text base and its tag.
++  for(fail=4;fail<=5;fail++) {
++    caught=0;
++    NativeDocAllocArm(fail);
++    try { read_doc=DocRead("C:/AllocRead.DD"); }
++    catch {
++      if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
++    }
++    NativeDocAllocArm(0);
++    if(read_doc) { DocDel(read_doc); read_doc=NULL; }
++    if(!caught || Fs->data_heap->used_u8s!=before) return -100-fail;
+   }
+-  NativeDocAllocArm(0);
+-  if(read_doc) { DocDel(read_doc); read_doc=NULL; }
+-  if(!caught || Fs->data_heap->used_u8s!=before) return -12;
+   read_doc=DocRead("C:/AllocRead.DD");
+@@ -1563,3 +1568,3 @@ public I64 DocAllocationCheck()
+   if(Fs->data_heap->used_u8s!=before) return -14;
+-  return 12;
++  return 13;
+ }
+@@ -2387,32 +2392,57 @@ U0 ConsoleDocumentStart()
+ 
++#include "/Kernel/I386/PublicResident.HC"
+ public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
+ {
+-  if(!console_config || !console_config->files ||
+-      !console_config->files->write_public) return 0;
+-  if(!cdt) cdt=NativeNow;
+-  return console_config->files->write_public(filename,buffer,size,cdt,attr);
+-}
+-
+-public U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+-{//The service owns its private buffer; public callers own an ordinary allocation.
+-  U8 *buffer,*result=0;
+-  I64 size=0,attr=0;
+-  if(_size) *_size=0;
+-  if(_attr) *_attr=0;
+-  if(!console_config || !console_config->files || !console_config->files->read) return 0;
+-  buffer=console_config->files->read(console_config->heap,filename,&size,&attr,0);
+-  if(!buffer) return 0;
++  I64 result;CI386WriteCache cache;CHashGeneric *entry;
++  if(!console_config || !console_config->files || !console_config->files->write_public)return 0;
++  MemSet(&cache,0,sizeof(cache));cache.heap=console_config->heap;
++  if(!cdt)cdt=NativeNow;
+   try {
+-    result=MAlloc(size+1);
+-    MemCpy(result,buffer,size);
+-    result[size]=0;
++    result=console_config->files->write_public(filename,buffer,size,cdt,attr,&cache);
++    if(cache.eligible) {
++      if(!cache.name || ((cache.attr&0x200) && !cache.data))throw('OutMem',TRUE);
++      if(cache.attr&0x200)NativeResidentPut(cache.name,cache.data,cache.size);
++      else {entry=NativeResidentLookup(cache.name);if(entry)NativeResidentRemove(entry);}
++    }
+   } catch {
+-    I386HeapFree(console_config->heap,buffer);
+-    throw;
+-  }
+-  if(!I386HeapFree(console_config->heap,buffer)) {
+-    Free(result); throw('FileRead');
++    if(cache.data)I386HeapFree(cache.heap,cache.data);
++    if(cache.name)I386HeapFree(cache.heap,cache.name);Fs->catch_except=FALSE;
+   }
+-  if(_size) *_size=size;
+-  if(_attr) *_attr=attr;
++  if(cache.data)I386HeapFree(cache.heap,cache.data);
++  if(cache.name)I386HeapFree(cache.heap,cache.name);
++  return result;
++}
++public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
++{
++  U8 *name=0,*alternate=0,*stored=0,*result=0,*chosen;
++  CHashGeneric *entry;I64 bytes=0,attr=0,size=0;
++  if(_size)*_size=0;if(_attr)*_attr=0;
++  if(!console_config || !console_config->files)return 0;
++  try {
++    name=console_config->files->name_abs(console_config->heap,filename,0);
++    if(name) {
++      alternate=NativeResidentAlt(name);entry=NativeResidentLookup(name);
++      if(!entry && alternate)entry=NativeResidentLookup(alternate);
++      if(entry) {
++        if(NativeResidentZ(entry->str))attr=0x400;
++        result=NativeResidentCopy(entry->user_data0,entry->user_data1,attr,&size);
++      } else {
++        stored=console_config->files->read_stored(console_config->heap,filename,&bytes,&attr,0);
++        if(stored) {
++          chosen=name;
++          if(((attr&0x400)!=0)!=NativeResidentZ(name) && alternate)chosen=alternate;
++          if(attr&0x200)NativeResidentPut(chosen,stored,bytes);
++          result=NativeResidentCopy(stored,bytes,attr,&size);
++        }
++      }
++    }
++  } catch {
++    if(stored)I386HeapFree(console_config->heap,stored);
++    if(alternate)I386HeapFree(console_config->heap,alternate);
++    if(name)I386HeapFree(console_config->heap,name);Fs->catch_except=FALSE;
++  }
++  if(stored)I386HeapFree(console_config->heap,stored);
++  if(alternate)I386HeapFree(console_config->heap,alternate);
++  if(name)I386HeapFree(console_config->heap,name);
++  if(result) {if(_size)*_size=size;if(_attr)*_attr=attr;}
+   return result;
+@@ -2420,2 +2450,13 @@ public U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+ 
++//Copy canonical public bytes into the private caller heap; raw disk reads bypass this bridge.
++U8 *NativeResidentReadBridge(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr)
++{
++  I64 count=0,attributes=0;U8 *public_bytes,*result=0;
++  public_bytes=NativePublicFileRead(filename,&count,&attributes);
++  if(!public_bytes)return 0;
++  result=I386HeapAlloc(heap,count+1,FALSE);
++  if(result) {MemCpy(result,public_bytes,count+1);if(size)*size=count;if(attr)*attr=attributes;}
++  Free(public_bytes);return result;
++}
++
+ public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
+@@ -2448 +2489,4 @@ public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
+ }
++
++public Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE)
++{ return console_config->files->cd(dirname,make_dirs); }
+diff --git a/Kernel/I386/Except.HC b/Kernel/I386/Except.HC
+index 06a30526..2537c43e 100644
+--- a/Kernel/I386/Except.HC
++++ b/Kernel/I386/Except.HC
+@@ -1,2 +1,13 @@
+ #include "/Kernel/I386/Except.HH"
++Bool I386ExceptCaptureValid(CI386Task *task,CI386ExceptCapture *capture)
++{//Original stack or exact live debugger allocation owned by this task.
++  U8 *base;
++  I64 size;
++  if(!task || !task->stk || !capture || capture->esp&3 || capture->esp>capture->ebp) return FALSE;
++  base=(&task->stk->stk_base)(U8 *);size=task->stk->stk_size;
++  if(I386FrameValid(capture->ebp,base,size) && capture->esp>=(base+0)(U64)) return TRUE;
++  base=task->debug_stack;size=task->debug_stack_size;
++  if(!base || !size || I386HeapSize(task->debug_stack_heap,base)!=size) return FALSE;
++  return I386FrameValid(capture->ebp,base,size) && capture->esp>=(base+0)(U64);
++}
+ //Single CPU. Requires live task, heap and capture objects; no NMI callers.
+@@ -9,5 +20,3 @@ CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,CI386ExceptCapture *
+       !capture || !capture->catch_start || !capture->untry_start ||
+-      !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
+-      capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
+-      capture->esp>capture->ebp) {
++      !I386ExceptCaptureValid(task,capture)) {
+     I386IrqRestore(flags); return 0;
+@@ -66,5 +75,3 @@ I64 I386ExceptDispatch(CI386Task *task,I64 ch,
+     if(!capture->catch_start || !capture->untry_start ||
+-        !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
+-        capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
+-        capture->esp>capture->ebp) return I386_EXCEPT_INVALID;
++        !I386ExceptCaptureValid(task,capture)) return I386_EXCEPT_INVALID;
+     (*invoke)(capture);
+diff --git a/Kernel/I386/Except.HH b/Kernel/I386/Except.HH
+index 520dc442..b6786e84 100644
+--- a/Kernel/I386/Except.HH
++++ b/Kernel/I386/Except.HH
+@@ -20,2 +20,3 @@ class CI386Except
+ #assert sizeof(CI386Except)==48
++public extern Bool I386ExceptCaptureValid(CI386Task *task,CI386ExceptCapture *capture);
+ public extern CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,
+diff --git a/Kernel/I386/ExceptRuntime.HC b/Kernel/I386/ExceptRuntime.HC
+index ecd6c20f..b3996e75 100644
+--- a/Kernel/I386/ExceptRuntime.HC
++++ b/Kernel/I386/ExceptRuntime.HC
+@@ -32,5 +32,3 @@ Bool I386ExceptEnter(CI386ExceptCapture *capture)
+       !capture || !capture->catch_start || !capture->untry_start ||
+-      !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
+-      capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
+-      capture->esp>capture->ebp) I386ExceptAbort(task,I386_EXCEPT_INVALID,0);
++      !I386ExceptCaptureValid(task,capture)) I386ExceptAbort(task,I386_EXCEPT_INVALID,0);
+   return I386ExceptPush(task,task->memory,capture)!=0;
+@@ -54,4 +52,4 @@ U0 throw(I64 ch=0,Bool no_log=FALSE)
+   for(i=0;i<I386_EXCEPT_CALLERS;i++) {
+-    task->except_callers[i]=I386FrameReturn(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
+-    frame=I386FrameParent(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
++    task->except_callers[i]=I386TaskFrameReturn(task,frame);
++    frame=I386TaskFrameParent(task,frame);
+   }
+diff --git a/Kernel/I386/ExceptionEntry.HC b/Kernel/I386/ExceptionEntry.HC
+index d8f2cffd..52456dce 100644
+--- a/Kernel/I386/ExceptionEntry.HC
++++ b/Kernel/I386/ExceptionEntry.HC
+@@ -7,2 +7,3 @@ IMPORT I386ExceptionDispatch;
+ IMPORT KernelDebugCpu;
++IMPORT KernelDebugStack;
+ i386_exception_0::
+@@ -97,3 +98,37 @@ i386_debug_cpu_entry::
+   PUSH EAX
++  CALL KernelDebugStack
++  MOV ESP,EAX
++  MOV EAX,ESP
++  PUSH 0
++  PUSH EAX
+   CALL KernelDebugCpu
++  //C has returned: relocate the frame without overwriting a live C call.
++  //IF stays clear until IRET restores the selected public flags.
++  CLI
++  MOV EBX,ESP
++  CMP EAX,EBX
++  JZ i386_debug_cpu_restore
++  MOV EDX,EAX
++  MOV ECX,17
++  JC i386_debug_cpu_copy_forward
++  ADD EBX,64
++  ADD EAX,64
++i386_debug_cpu_copy_backward:
++  MOV ESI,U32 [EBX]
++  MOV U32 [EAX],ESI
++  SUB EBX,4
++  SUB EAX,4
++  DEC ECX
++  JNZ i386_debug_cpu_copy_backward
++  JMP i386_debug_cpu_copy_done
++i386_debug_cpu_copy_forward:
++  MOV ESI,U32 [EBX]
++  MOV U32 [EAX],ESI
++  ADD EBX,4
++  ADD EAX,4
++  DEC ECX
++  JNZ i386_debug_cpu_copy_forward
++i386_debug_cpu_copy_done:
++  MOV ESP,EDX
++i386_debug_cpu_restore:
+   POP GS
+diff --git a/Kernel/I386/FileContext.HC b/Kernel/I386/FileContext.HC
+index 551b63be..1b5f1812 100644
+--- a/Kernel/I386/FileContext.HC
++++ b/Kernel/I386/FileContext.HC
+@@ -4,5 +4,6 @@ U8 *I386FileReadAt(CI386Heap *heap,CFilePathContext *paths,
+   CI386FileVolumes *volumes,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0,
+-  Bool require_session=FALSE,Bool raw=FALSE)
++  Bool require_session=FALSE,Bool raw=FALSE,Bool stored_bytes=FALSE)
+ {
+-  U8 *absolute,*result=0;
++  U8 *absolute,*alternate=0,*result=0,*stored;
++  CI386ResidentFile *cached;
+   CI386RedSea *volume;
+@@ -17,4 +18,11 @@ U8 *I386FileReadAt(CI386Heap *heap,CFilePathContext *paths,
+     if(volume && (!require_session || volume->io)) result=I386RedSeaFileLoad(
+-      volume,heap,volume->root,absolute+2,&bytes,&attributes,TRUE,raw);
++      volume,heap,volume->root,absolute+2,&bytes,&attributes,TRUE,raw,!raw);
++    if(result && !raw && !stored_bytes) {
++      if(attributes&0x400) {
++        stored=result; result=I386ExpandBuf(heap,stored,bytes,&bytes);
++        I386HeapFree(heap,stored);
++      }
++    }
+   }
++file_context_done:
+   if(!result) { I386HeapFree(heap,absolute); return 0; }
+diff --git a/Kernel/I386/FileContext.HH b/Kernel/I386/FileContext.HH
+index 2080e999..fe97b270 100644
+--- a/Kernel/I386/FileContext.HH
++++ b/Kernel/I386/FileContext.HH
+@@ -5,3 +5,9 @@
+ //Borrowed mounted volumes, indexed by uppercase drive letter minus A.
+-class CI386FileVolumes { CI386RedSea *letter[26]; };
++class CI386ResidentFile {
++  CI386ResidentFile *next;
++  CI386Heap *heap;
++  U8 *name,*data;
++  I64 size;
++};
++class CI386FileVolumes { CI386RedSea *letter[26]; CI386ResidentFile *resident; CI386Heap *resident_heap; };
+ //Quiescent volumes/channel and IF clear. Paths/volumes stay stable throughout the call.
+@@ -11,3 +17,3 @@ public extern U8 *I386FileReadAt(CI386Heap *heap,CFilePathContext *paths,
+   CI386FileVolumes *volumes,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0,
+-  Bool require_session=FALSE,Bool raw=FALSE);
++  Bool require_session=FALSE,Bool raw=FALSE,Bool stored=FALSE);
+ #endif
+diff --git a/Kernel/I386/FileLoad.HC b/Kernel/I386/FileLoad.HC
+index 3bb794a7..fa116e35 100644
+--- a/Kernel/I386/FileLoad.HC
++++ b/Kernel/I386/FileLoad.HC
+@@ -59,3 +59,3 @@ I64 I386RedSeaFileLocate(CI386RedSea *volume,CI386Heap *heap,I64 directory,
+ U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
+-  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE)
++  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE,Bool stored_bytes=FALSE)
+ {
+@@ -71,3 +71,3 @@ U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
+   attributes=FileAttr(entry.name,entry.attr);
+-  if((attributes&RS_ATTR_COMPRESSED) && !raw_bytes) {
++  if((attributes&RS_ATTR_COMPRESSED) && !raw_bytes && !stored_bytes) {
+     result=I386ExpandBuf(heap,raw,bytes,&bytes);
+diff --git a/Kernel/I386/FileLoad.HH b/Kernel/I386/FileLoad.HH
+index 1ad282d5..8c330378 100644
+--- a/Kernel/I386/FileLoad.HH
++++ b/Kernel/I386/FileLoad.HH
+@@ -9,3 +9,3 @@
+ public extern U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
+-  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE);
++  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE,Bool stored_bytes=FALSE);
+ #endif
+diff --git a/Kernel/I386/FileRead.HC b/Kernel/I386/FileRead.HC
+index 02bd1a3d..07152096 100644
+--- a/Kernel/I386/FileRead.HC
++++ b/Kernel/I386/FileRead.HC
+@@ -6,3 +6,3 @@ U8 *I386RedSeaReadAll(CI386RedSea *volume,CI386Heap *heap,CI386RedSeaEntry *entr
+   if(GetRFlags&0x200 || !heap || !entry || entry->size<0 || entry->size>0xFFFFFFFF-24 ||
+-      (entry->attr&0x310) || !(entry->attr&0x800)) return 0;
++      (entry->attr&0x110) || !(entry->attr&0x800)) return 0;
+   buffer=I386HeapAlloc(heap,entry->size+1,FALSE);
+diff --git a/Kernel/I386/FileRuntime.HC b/Kernel/I386/FileRuntime.HC
+index 10229bd3..b1c91dcb 100644
+--- a/Kernel/I386/FileRuntime.HC
++++ b/Kernel/I386/FileRuntime.HC
+@@ -6,2 +6,3 @@
+ #include "/Kernel/I386/Cpu.HH"
++#include "/Kernel/I386/ExceptRuntime.HH"
+ #include "/Kernel/I386/RedSeaTask.HH"
+@@ -26,4 +27,5 @@ import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
+ import Bool I386SchedYield(CI386Scheduler *scheduler);
++extern Bool I386TaskCd(U8 *dirname,Bool make_dirs);
+ extern I64 I386TaskFileFind(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 flags);
+-extern I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr);
++extern I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,CI386WriteCache *cache=0);
+ extern Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0);
+@@ -47,3 +49,3 @@ import Bool I386RedSeaMoveIntentSet(CI386RedSea *volume,I64 source_parent,Bool s
+   U8 *source_name,I64 destination_parent,Bool destination_root,U8 *destination_name,
+-  CI386RedSeaEntry *source);
++  CI386RedSeaEntry *source,Bool transfer=FALSE);
+ import Bool I386RedSeaMoveIntentClear(CI386RedSea *volume);
+@@ -53,2 +55,4 @@ import U0 I386RedSeaPutWord(U8 *p,U64 value);
+ import U0 KernelLog(U8 *text);
++import U0 SysTry(U8 *catch_start,U8 *untry_start);
++import U0 SysUntry();
+ CI386AtaChannel file_channels[2];
+@@ -94,3 +98,3 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
+ }
+-#assert sizeof(CI386FileServices)==100
++#assert sizeof(CI386FileServices)==112
+ I64 Main(CI386FileServices *services,I64 bytes)
+@@ -100,3 +104,3 @@ I64 Main(CI386FileServices *services,I64 bytes)
+   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
+-  services->read_raw=&I386TaskFileReadRaw; services->find_public=&I386TaskFileFind;
++  services->public_reader=&I386TaskFilePublicReader; services->read_raw=&I386TaskFileReadRaw; services->read_stored=&I386TaskFileReadStored; services->expand=&I386ExpandBuf; services->find_public=&I386TaskFileFind; services->cd=&I386TaskCd;
+   services->install_boot=&I386TaskInstallBoot;
+@@ -125,2 +129,3 @@ I64 Main(CI386FileServices *services,I64 bytes)
+ #include "/Kernel/I386/FileLoad.HC"
++#include "/Kernel/I386/ResidentFiles.HC"
+ #include "/Kernel/I386/FileContext.HC"
+@@ -144 +149,3 @@ I64 Main(CI386FileServices *services,I64 bytes)
+ #include "/Kernel/I386/TaskCompiler.HC"
++
++#include "/Kernel/I386/TaskCd.HC"
+diff --git a/Kernel/I386/FileRuntime.HH b/Kernel/I386/FileRuntime.HH
+index 62bdacba..5b66e258 100644
+--- a/Kernel/I386/FileRuntime.HH
++++ b/Kernel/I386/FileRuntime.HH
+@@ -7,5 +7,11 @@
+ //Native task extensions include public heap ownership callbacks.
+-#define I386_FILE_SERVICES_VERSION 40
++#define I386_FILE_SERVICES_VERSION 47
+ //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
+ #include "/Kernel/DirEntryTypes.HH"
++class CI386WriteCache {
++  CI386Heap *heap;
++  U8 *name,*data;
++  I64 size,attr;
++  Bool eligible;
++};
+ class CI386FileServices {
+@@ -41,3 +47,7 @@ class CI386FileServices {
+   Bool (*install_image)(U8 *source,U8 *target,U8 *image,I64 bytes);
+-  I64 (*write_public)(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr);
++  I64 (*write_public)(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,CI386WriteCache *cache=0);
++  U8 *(*read_stored)(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name);
++  U8 *(*expand)(CI386Heap *heap,CArcCompress *archive,I64 bytes,I64 *size);
++  U0 (*public_reader)(U8 *callback);
++  Bool (*cd)(U8 *dirname,Bool make_dirs);
+   I64 (*find_public)(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 flags);
+diff --git a/Kernel/I386/FormatterRuntime.HC b/Kernel/I386/FormatterRuntime.HC
+index 6a099dd7..050ca73c 100644
+--- a/Kernel/I386/FormatterRuntime.HC
++++ b/Kernel/I386/FormatterRuntime.HC
+@@ -82,22 +82,4 @@ done:
+ U8 *NativeFormatterFileRead(U8 *filename,I64 *_size=NULL,I64 *_attr=NULL)
+-{//The file service lends bootstrap-heap bytes; formatter buffers use Free.
+-  U8 *buffer,*result=NULL;
+-  I64 size=0,attr=0,exception=0;
+-  Bool failed=FALSE;
+-  if(_size) *_size=0;
+-  if(_attr) *_attr=0;
+-  if(!console_config || !console_config->files || !console_config->files->read)
+-    return NULL;
+-  buffer=(*console_config->files->read)(console_config->heap,filename,&size,&attr,NULL);
+-  if(!buffer) return NULL;
+-  try {
+-    result=MAlloc(size+1); MemCpy(result,buffer,size); result[size]=0;
+-  } catch {
+-    failed=TRUE; exception=Fs->except_ch; Fs->catch_except=TRUE;
+-  }
+-  I386HeapFree(console_config->heap,buffer);
+-  if(failed) throw(exception,TRUE);
+-  if(_size) *_size=size;
+-  if(_attr) *_attr=attr;
+-  return result;
++{//Formatter reads share the public cache and caller-owned buffer contract.
++  return NativePublicFileRead(filename,_size,_attr);
+ }
+diff --git a/Kernel/I386/Frame.HC b/Kernel/I386/Frame.HC
+index a9f01186..ba5b2b74 100644
+--- a/Kernel/I386/Frame.HC
++++ b/Kernel/I386/Frame.HC
+@@ -24 +24,35 @@ U8 *I386FrameReturn(CI386Frame *frame,U8 *stack,I64 size)
+ }
++
++#include "/Kernel/I386/Task.HH"
++Bool I386TaskFrameBounds(CI386Task *task,CI386Frame *frame,U8 **base,I64 *size)
++{
++  U8 *region;
++  I64 bytes;
++  if(!task || !task->stk || !base || !size) return FALSE;
++  region=(&task->stk->stk_base)(U8 *);bytes=task->stk->stk_size;
++  if(I386FrameValid(frame,region,bytes)) {*base=region;*size=bytes;return TRUE;}
++  region=task->debug_stack;bytes=task->debug_stack_size;
++  if(!region || !bytes || I386HeapSize(task->debug_stack_heap,region)!=bytes ||
++      !I386FrameValid(frame,region,bytes)) return FALSE;
++  *base=region;*size=bytes;return TRUE;
++}
++CI386Frame *I386TaskFrameParent(CI386Task *task,CI386Frame *frame)
++{
++  CI386Frame *parent;
++  U8 *base,*parent_base;
++  I64 size,parent_size;
++  if(!I386TaskFrameBounds(task,frame,&base,&size)) return 0;
++  parent=frame->parent;
++  if(!I386TaskFrameBounds(task,parent,&parent_base,&parent_size)) return 0;
++  if(base==parent_base) {
++    if((parent+0)(U64)<(frame+0)(U64)+sizeof(CI386Frame)) return 0;
++  } else if(base!=task->debug_stack || parent_base!=(&task->stk->stk_base)(U8 *)) return 0;
++  return parent;
++}
++U8 *I386TaskFrameReturn(CI386Task *task,CI386Frame *frame)
++{
++  U8 *base;
++  I64 size;
++  if(!I386TaskFrameBounds(task,frame,&base,&size)) return 0;
++  return frame->return_address;
++}
+diff --git a/Kernel/I386/Frame.HH b/Kernel/I386/Frame.HH
+index f5400ab4..881d5b25 100644
+--- a/Kernel/I386/Frame.HH
++++ b/Kernel/I386/Frame.HH
+@@ -12,2 +12,8 @@ public extern CI386Frame *I386FrameParent(CI386Frame *frame,U8 *stack,I64 size);
+ public extern U8 *I386FrameReturn(CI386Frame *frame,U8 *stack,I64 size);
++#ifndef I386_SCHEDULER_INCLUDED
++extern class CI386Task;
++#endif
++public extern Bool I386TaskFrameBounds(CI386Task *task,CI386Frame *frame,U8 **base,I64 *size);
++public extern CI386Frame *I386TaskFrameParent(CI386Task *task,CI386Frame *frame);
++public extern U8 *I386TaskFrameReturn(CI386Task *task,CI386Frame *frame);
+ #endif
+diff --git a/Kernel/I386/GraphicsFrame.HC b/Kernel/I386/GraphicsFrame.HC
+index b85e0775..2b1d4051 100644
+--- a/Kernel/I386/GraphicsFrame.HC
++++ b/Kernel/I386/GraphicsFrame.HC
+@@ -10,2 +10,9 @@ Bool NativeGraphicsReady()
+ }
++Bool NativeGraphicsTextLock()
++{
++  if(!NativeGraphicsReady || graphics_presenting) return FALSE;
++  graphics_presenting=TRUE; return TRUE;
++}
++U0 NativeGraphicsTextUnlock()
++{ graphics_presenting=FALSE; }
+ U8 *NativeGraphicsPlanes()
+diff --git a/Kernel/I386/HashPublic.HC b/Kernel/I386/HashPublic.HC
+index f59d7405..990653d6 100644
+--- a/Kernel/I386/HashPublic.HC
++++ b/Kernel/I386/HashPublic.HC
+@@ -50 +50,17 @@ I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table)
+ }
++
++Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1)
++{//A stack view limits the existing lookup to the original single-table scope.
++  CHashTable single;CHash *found;CHash **link;U32 flags;I64 i;
++  if(!entry || !table)return FALSE;
++  flags=I386IrqSave;
++  MemoryCopy(&single,table,sizeof(CHashTable));single.next=0;
++  found=HashFind(entry->str,&single,entry->type&~HTG_FLAGS_MASK,instance);
++  if(found!=entry){I386IrqRestore(flags);return FALSE;}
++  for(i=0;i<=table->mask;i++) {
++    link=table->body+i;
++    while(*link && *link!=entry)link=&(*link)->next;
++    if(*link==entry){*link=entry->next;I386IrqRestore(flags);MemoryHashDel(entry);return TRUE;}
++  }
++  I386IrqRestore(flags);return FALSE;
++}
+diff --git a/Kernel/I386/HashPublic.HH b/Kernel/I386/HashPublic.HH
+index 65aa8c6d..7ea4f0d9 100644
+--- a/Kernel/I386/HashPublic.HH
++++ b/Kernel/I386/HashPublic.HH
+@@ -10,2 +10,3 @@ extern CHashDefineStr *MemoryDefineLstLoad(U8 *name,U8 *list);
+ extern I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table);
++extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
+ #endif
+diff --git a/Kernel/I386/InstallBootArea.HC b/Kernel/I386/InstallBootArea.HC
+index 8a11ceb5..d934cdd4 100644
+--- a/Kernel/I386/InstallBootArea.HC
++++ b/Kernel/I386/InstallBootArea.HC
+@@ -28,4 +28,6 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
+   U8 sector[512];
+-  I64 lba,i,offset,entry;
+-  if(!source || !target || !image || bytes<8 || bytes>960*512-4096 ||
++  I64 lba,i,offset,entry,capacity=960*512-4096,last_sector=960;
++  U32 checksum=2166136261;
++  Bool extended=FALSE;
++  if(!source || !target || !image || bytes<8 || bytes>2039*512 ||
+       image[0]!=0xE9 || image[5] || image[6] || image[7] ||
+@@ -37,4 +39,12 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
+   for(i=0;i<512;i++) if(sector[i]) return FALSE;
++  if(!I386AtaTransfer(source,1,sector,100000,FALSE,0)) return FALSE;
++  if((sector+16)(U32 *)[0]==0x42323345) {
++    if((sector+20)(U32 *)[0]!=1 || (sector+28)(U32 *)[0]!=0x100000)
++      return FALSE;
++    extended=TRUE; capacity=2039*512; last_sector=2047;
++    for(i=0;i<bytes;i++) checksum=(checksum^image[i])*16777619;
++  }
++  if(bytes>capacity) return FALSE;
+   for(lba=1;lba<2048;lba++) {
+-    if(lba>=9 && lba<=960) {
++    if(lba>=9 && lba<=last_sector) {
+       offset=(lba-9)*512;
+@@ -45,2 +55,6 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
+     } else if(!I386AtaTransfer(source,lba,sector,100000,FALSE,0)) return FALSE;
++    if(lba==1 && extended) {
++      (sector+24)(U32 *)[0]=bytes;
++      (sector+32)(U32 *)[0]=checksum;
++    }
+     if(!I386AtaTransfer(target,lba,sector,100000,TRUE,0)) return FALSE;
+diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
+index 940d53f2..eb01be0b 100644
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -80,6 +80,6 @@ CI386Keywords kernel_keywords;
+ CCntsGlbls cnts;
+-CI386KernelSymbol kernel_exports[61];
++CI386KernelSymbol kernel_exports[63];
+ CI386KernelSymbol kernel_resident_exports[64];
+ I64 kernel_resident_export_count;
+-U8 kernel_export_kinds[61]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
++U8 kernel_export_kinds[63]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+ CI386CompilerServices kernel_compiler;
+@@ -119,2 +119,3 @@ extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64
+ extern U0 KernelCompilerProbe(I64 phase);
++extern U0 KernelCompilerProbeLoad();
+ extern U0 KernelConsoleLoad();
+@@ -125,3 +126,3 @@ U8 kernel_compiler_bindings[25]={0,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,3
+ U8 kernel_probe_bindings[25]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27,23};
+-U8 kernel_files_bindings[29]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56};
++U8 kernel_files_bindings[31]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56,40,41};
+ U8 kernel_memory_bindings[16]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45};
+@@ -131,11 +132,15 @@ I64 Main(CI386BootInfo *info,I64 unused)
+ {
+-  CI386MemRange reserved,arena;
++  CI386MemRange reserved[2],arena;
+   CI386InterruptServices services;
+-  I64 pulse_used;
++  I64 pulse_used,reserved_count=1;
+   Bool mouse_ready;
+   KernelLog("START native kernel\n");
+-  reserved.base=0x88000; reserved.size=32768;
+-  if(!I386BootArena(info,&reserved,1,&arena) || !(info->flags&2) ||
++  reserved[0].base=0x88000; reserved[0].size=32768;
++  if(info && info->stage_end==0x11000) {
++    if(!I386BootImageReserve(info,I386_BOOT_IMAGE_ADDRESS,&reserved[1])) KernelStop;
++    reserved_count=2;
++  }
++  if(!I386BootArena(info,reserved,reserved_count,&arena) || !(info->flags&2) ||
+       info->extended_kib<128 || !I386A20Enable(FALSE) ||
+-      !I386BootArena(info,&reserved,1,&arena,TRUE) ||
++      !I386BootArena(info,reserved,reserved_count,&arena,TRUE) ||
+       !I386HeapInit(&kernel_heap,arena.base,arena.size)) KernelStop;
+@@ -157,6 +162,15 @@ I64 Main(CI386BootInfo *info,I64 unused)
+   KernelMemoryLoad;
+-  if(kernel_diagnostics) KernelCompilerProbe(0);
++  //Load the large temporary provider before console allocation fragments RAM.
++  if(kernel_diagnostics) KernelCompilerProbeLoad;
++  if(!kernel_diagnostics) {
+   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
++  }
+   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler)) KernelStop;
+   KernelConsoleLoad;
++  //Public-header probes require the real console/debugger exports.
++  if(kernel_diagnostics) {
++    KernelCompilerProbe(0);
++  if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
++    if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
++  }
+   KernelStartup;
+@@ -261,3 +275,24 @@ U0 KernelIrq(CI386IrqFrame *frame)
+ }
+-public U0 KernelDebugCpu(CI386ExceptionFrame *frame)
++U0 KernelDebugStackCleanup(CI386Task *task)
++{
++  U0 (*previous)(CI386Task *task);
++  previous=task->debug_stack_cleanup;
++  //Reap reclaims the execution stack only after switching to another task.
++  task->debug_stack_cleanup=0;task->cleanup=previous;
++  if(previous) (*previous)(task);
++}
++public U8 *KernelDebugStack(CI386ExceptionFrame *frame)
++{//Before debugger try/catch; allocation is outside the IRQ capture path.
++  CI386Task *task=I386TaskSelf;
++  if(!task->debug_cpu_active) KernelStop;
++  if(!task->debug_stack) {
++    task->debug_stack=I386HeapAlloc(task->memory,65536,FALSE);
++    if(!task->debug_stack) KernelStop;
++    task->debug_stack_size=65536;task->debug_stack_heap=task->memory;
++    task->debug_stack_cleanup=task->cleanup;task->cleanup=&KernelDebugStackCleanup;
++  }
++  if(I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size) KernelStop;
++  return task->debug_stack+task->debug_stack_size-sizeof(CI386ExceptionFrame);
++}
++public U8 *KernelDebugCpu(CI386ExceptionFrame *frame)
+ {
+@@ -265,2 +300,3 @@ public U0 KernelDebugCpu(CI386ExceptionFrame *frame)
+   kernel_console.cpu_debug(frame);
++  return (I386TaskSelf->rsp-sizeof(CI386ExceptionFrame))(U8 *);
+ }
+@@ -350,3 +386,3 @@ U0 KernelStorage(CI386BootInfo *info)
+   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
+-  U8 *bitmap;
++  U8 *bitmap,move_header[512];
+   I64 bitmap_bytes;
+@@ -356,2 +392,7 @@ U0 KernelStorage(CI386BootInfo *info)
+       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
++  //Transfer intents can temporarily expose two names for the same extent.
++  //Resolve only that validated journal mode before namespace ownership repair.
++  if(!I386RedSeaSectorRead(&kernel_volume,kernel_volume.start,move_header)) KernelStop;
++  if((move_header+48)(U64 *)[0]==0x3245564F4D323349 &&
++      !I386RedSeaMoveRecover(&kernel_volume)) KernelStop;
+   bitmap_bytes=(kernel_volume.first-kernel_volume.start-1)*512;
+@@ -416,3 +457,3 @@ U0 KernelSymbols()
+   I64 i,used;
+-  U8 *addresses[61],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0I386RedSeaMoveIntentSet\0I386RedSeaMoveIntentClear\0I386RedSeaExtent\0I386RedSeaRead\0I386RedSeaMount\0I386LexAttachDocRoot\0";
++  U8 *addresses[63],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0I386RedSeaMoveIntentSet\0I386RedSeaMoveIntentClear\0I386RedSeaExtent\0I386RedSeaRead\0I386RedSeaMount\0I386LexAttachDocRoot\0I386TaskFrameParent\0I386TaskFrameReturn\0";
+   CHashClass *record;
+@@ -483,3 +524,4 @@ U0 KernelSymbols()
+   addresses[60]=&I386LexAttachDocRoot;
+-  for(i=0;i<61;i++) {
++  addresses[61]=&I386TaskFrameParent; addresses[62]=&I386TaskFrameReturn;
++  for(i=0;i<63;i++) {
+     kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
+@@ -504,3 +546,3 @@ U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacit
+   I64 i;
+-  if(!bindings || !indices || count!=capacity || count<1 || count>61) KernelStop;
++  if(!bindings || !indices || count!=capacity || count<1 || count>63) KernelStop;
+   for(i=0;i<count;i++) {
+@@ -536,19 +578,23 @@ U0 KernelCompilerLoad()
+ }
++U0 KernelCompilerProbeLoad()
++{//Keep load-time temporary buffers ahead of resident console allocations.
++  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)];
++  I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
++  if(kernel_probe_image) KernelStop;
++  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
++  kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
++  if(!kernel_probe_image) {
++    KernelHeapCheck(used,allocations);
++    KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
++  }
++  kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
++  kernel_probe_span=kernel_heap.used-used;
++  if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
++}
+ U0 KernelCompilerProbe(I64 phase)
+-{//Load once with boot disk ownership; the task call performs no disk I/O.
+-  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)]; CI386CompilerProbe probe;
++{//Run both phases with real public exports; provider was loaded before console.
++  CI386CompilerProbe probe;
+   I64 (*entry)(CI386CompilerProbe *probe,I64 bytes);
+   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
+-  if(phase==0) {
+-    if(kernel_probe_image) KernelStop;
+-    KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+-    kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
+-    if(!kernel_probe_image) {
+-      KernelHeapCheck(used,allocations);
+-      KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
+-    }
+-    kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
+-    kernel_probe_span=kernel_heap.used-used;
+-    if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
+-  } else if(phase!=1 || !kernel_probe_image) KernelStop;
++  if((phase!=0 && phase!=1) || !kernel_probe_image) KernelStop;
+   if(I386HeapSize(&kernel_heap,kernel_probe_image)!=kernel_probe_size) KernelStop;
+@@ -626,7 +672,7 @@ U0 KernelFileLoad()
+ {
+-  CI386ModuleBinding bindings[29];
++  CI386ModuleBinding bindings[31];
+   if(kernel_file_image || kernel_files.version) KernelStop;
+-  KernelBindings(bindings,kernel_files_bindings,29,sizeof(bindings)/sizeof(CI386ModuleBinding));
++  KernelBindings(bindings,kernel_files_bindings,31,sizeof(bindings)/sizeof(CI386ModuleBinding));
+   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
+-    bindings,29,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
++    bindings,31,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
+@@ -704,3 +750,3 @@ U0 KernelConsoleLoad()
+ {
+-  CI386ModuleBinding bindings[47];
++  CI386ModuleBinding bindings[49];
+   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
+@@ -732,4 +778,6 @@ U0 KernelConsoleLoad()
+   bindings[46].address=(&i386_idle+0)(U64);
++  KernelBinding(&bindings[47],"I386TaskFrameParent");
++  KernelBinding(&bindings[48],"I386TaskFrameReturn");
+   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
+-    bindings,47,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
++    bindings,49,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
+@@ -740,2 +788,3 @@ U0 KernelConsoleLoad()
+   kernel_console_config.pit_divisor=kernel_timer.divisor;
++  kernel_console_config.defer_root_headers=kernel_diagnostics;
+   if(!kernel_console.init(&kernel_console_config)) KernelStop;
+diff --git a/Kernel/I386/MemoryRuntime.HC b/Kernel/I386/MemoryRuntime.HC
+index 23b3bf96..d54c7c6f 100644
+--- a/Kernel/I386/MemoryRuntime.HC
++++ b/Kernel/I386/MemoryRuntime.HC
+@@ -32,4 +32,5 @@ CI386BackingPool memory_pool;
+ CI386Task *memory_root;
++CTask *adam_task;
+ U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
+-CI386KernelSymbol memory_exports[43];
++CI386KernelSymbol memory_exports[45];
+ CSema memory_semas[SEMA_SEMAS_NUM];
+@@ -61,3 +62,3 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
+   Bool result=FALSE;
+-  U8 *addresses[43],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0";
++  U8 *addresses[45],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0";
+   I64 i;
+@@ -71,3 +72,3 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
+   memory_pool.reclaim=&MemoryReclaim; memory_root=root; result=TRUE;
+-  MemoryTaskRootInit(root);
++  MemoryTaskRootInit(root); adam_task=root;
+   memory_macro_head.next=memory_macro_head.last=&memory_macro_head;
+@@ -93,7 +94,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
+   addresses[41]=&memory_macro_task;
+-  addresses[42]=&MemoryKill;
+-  for(i=0;i<43;i++) {
++  addresses[42]=&MemoryKill; addresses[43]=&MemoryHashRemDel; addresses[44]=&adam_task;
++  for(i=0;i<45;i++) {
+     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
+     memory_exports[i].kind=1;
+-    if(i>=39 && i<=41) memory_exports[i].kind=3;
++    if(i>=39 && i<=41 || i==44) memory_exports[i].kind=3;
+     memory_exports[i].val=(addresses[i]+0)(U64);
+@@ -130,3 +131,3 @@ U0 MemoryProbe(I64 phase)
+   U32 flags=I386IrqSave;
+-  I64 before=memory_pool.heap->used,allocations=memory_pool.heap->allocations;
++  I64 before,allocations;
+   U8 *p,*q;
+@@ -138,2 +139,8 @@ U0 MemoryProbe(I64 phase)
+       phase && (task==memory_root || state->parent!=memory_root->heap_state)) KernelStop;
++  //The isolated probe starts after reclaiming empty task pages/backing arenas.
++  //Capture the strict baseline after trim so reclaimed cache is not a leak.
++  if(state->control.used_u8s || !I386MemHeapTrim(&state->control) ||
++      I386MemBackingTrim(&memory_pool)<0 || memory_pool.owned_count ||
++      memory_pool.retained || memory_pool.used_u8s) KernelStop;
++  before=memory_pool.heap->used; allocations=memory_pool.heap->allocations;
+   if(!StrCopyCheck(&MemoryStrCopy)) KernelStop;
+diff --git a/Kernel/I386/PublicDebug.HH b/Kernel/I386/PublicDebug.HH
+index 54f3228c..2e919837 100644
+--- a/Kernel/I386/PublicDebug.HH
++++ b/Kernel/I386/PublicDebug.HH
+@@ -3,2 +3,3 @@
+ #include "/Kernel/NumericLimits.HH"
++public _extern _CALLER U8 *Caller(I64 num=1);
+ public _extern _DBG U0 Dbg(U8 *msg=0,I64 msg_num=0);
+@@ -7,2 +8,11 @@ public _extern _DBG_MODE Bool DbgMode(Bool value);
+ public _extern _IS_DBG_MODE Bool IsDbgMode();
++public _extern _DEBUG_STEP U0 S(U8 *ip=U32_MAX,CTask *task=0);
++public _extern _TASK_REG_ADDR I64 *TaskRegAddr(CTask *task,I64 reg_num);
++#include "/Kernel/I386/PublicDebugTypes.HH"
++public _extern _BPT_FIND CBpt *BptFind(U8 *addr,CTask *task=0,Bool rem=0);
++public _extern _BPT_SET Bool BptS(U8 *addr,CTask *task=0,Bool live=1);
++public _extern _BPT_REMOVE Bool BptR(U8 *addr,CTask *task=0,Bool live=1,Bool rem=1);
++public _extern _BPT_TOGGLE Bool B(U8 *addr,CTask *task=0,Bool live=1);
++public _extern _BPT_CLEAR I64 B2(CTask *task=0,Bool live=1);
++public _extern _DEBUG_GO_CLEAR U0 G2(U8 *ip=U32_MAX,CTask *task=0);
+ #endif
+diff --git a/Kernel/I386/PublicFiles.HH b/Kernel/I386/PublicFiles.HH
+index 78cccf09..c936c612 100644
+--- a/Kernel/I386/PublicFiles.HH
++++ b/Kernel/I386/PublicFiles.HH
+@@ -29,2 +29,3 @@ public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(
+ public _extern _FILE_READ U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0);
++public _extern _CD Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE);
+ #endif
+diff --git a/Kernel/I386/PublicHash.HH b/Kernel/I386/PublicHash.HH
+index 47c3da20..bfae0480 100644
+--- a/Kernel/I386/PublicHash.HH
++++ b/Kernel/I386/PublicHash.HH
+@@ -21,2 +21,3 @@ public _extern _DEFINE_COUNT I64 DefineCnt(U8 *name);
+ public _extern _DEFINE_MATCH I64 DefineMatch(U8 *needle,U8 *name,I64 flags=0);
++public _extern _HASH_REM_DEL Bool HashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
+ #endif
+diff --git a/Kernel/I386/PublicKernel.HH b/Kernel/I386/PublicKernel.HH
+index f38c858c..ccd7d406 100644
+--- a/Kernel/I386/PublicKernel.HH
++++ b/Kernel/I386/PublicKernel.HH
+@@ -15,2 +15,3 @@
+ public extern CCntsGlbls cnts;
++public _extern _ADAM_TASK CTask *adam_task;
+ public _intern 0x15 CTask *Fs();
+diff --git a/Kernel/I386/RedSea.HC b/Kernel/I386/RedSea.HC
+index 02e3d1ed..4df37048 100644
+--- a/Kernel/I386/RedSea.HC
++++ b/Kernel/I386/RedSea.HC
+@@ -32,3 +32,3 @@ Bool I386RedSeaDecode(CI386RedSea *v,U8 *raw,CI386RedSeaEntry *entry)
+   U16 attr=raw[0]|(raw[1]<<8);
+-  if (!(attr&0x800) || (attr&0x300) || !raw[2] ||
++  if (!(attr&0x800) || (attr&0x100) || !raw[2] ||
+       !I386RedSeaExtent(v,block,size)) return FALSE;
+@@ -103,3 +103,3 @@ public I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset
+   if (!I386RedSeaValid(volume) || !entry || !buffer || offset<0 || count<0 ||
+-      (entry->attr&0x310) || !(entry->attr&0x800) ||
++      (entry->attr&0x110) || !(entry->attr&0x800) ||
+       !I386RedSeaExtent(volume,entry->block,entry->size) || offset>entry->size) return -1;
+diff --git a/Kernel/I386/RedSea.HH b/Kernel/I386/RedSea.HH
+index 0d0aa2d6..c54609e9 100644
+--- a/Kernel/I386/RedSea.HH
++++ b/Kernel/I386/RedSea.HH
+@@ -49,3 +49,3 @@ public extern Bool I386RedSeaMoveIntentSet(CI386RedSea *volume,I64 source_parent
+   U8 *source_name,I64 destination_parent,Bool destination_root,U8 *destination_name,
+-  CI386RedSeaEntry *source);
++  CI386RedSeaEntry *source,Bool transfer=FALSE);
+ public extern Bool I386RedSeaMoveIntentClear(CI386RedSea *volume);
+diff --git a/Kernel/I386/RedSeaCreate.HC b/Kernel/I386/RedSeaCreate.HC
+index 8a7668ce..b9bfb218 100644
+--- a/Kernel/I386/RedSeaCreate.HC
++++ b/Kernel/I386/RedSeaCreate.HC
+@@ -210 +210,77 @@ io_fail:
+ }
++
++I64 I386RedSeaExtentSlot(CI386RedSea *volume,I64 *parent,U8 *name,I64 *result)
++{//Prepare all directory growth before publishing a move intent.
++  U8 sector[512],*raw;
++  CI386RedSeaEntry collision;
++  I64 directory=*parent,status,dir_size,index,slot=-1,grown;
++  Bool append=FALSE;
++  if(!I386RedSeaValid(volume) || !volume->disk->flush ||
++      !I386RedSeaNewName(name)) return -1;
++  status=I386RedSeaFind(volume,directory,name,&collision);
++  if (status<0) return -1;
++  if (status) return 0;
++  if (!I386RedSeaDirectory(volume,directory,sector,&dir_size) || (sector[0]&1)) return -1;
++  for (index=0;index<dir_size/64;index++) {
++    if (!(index&7) && index && !I386RedSeaSectorRead(volume,directory+index/8,sector)) return -1;
++    raw=sector+(index&7)*64;
++    if (!raw[2]) {
++      if (slot<0) { slot=index; append=TRUE; }
++      break;
++    }
++    if ((raw[1]&1) && slot<0) slot=index;
++  }
++  //The last slot must remain zero so directory walkers have a terminator.
++  if (slot<0 || append && slot+1>=dir_size/64) {
++    grown=I386RedSeaGrowDirectory(volume,directory,dir_size);
++    if(grown<=0) return grown;
++    directory=grown;
++    if(slot<0) slot=dir_size/64;
++    dir_size+=512; append=TRUE;
++  }
++  *parent=directory; *result=slot; return 1;
++}
++I64 I386RedSeaPublishExtent(CI386RedSea *v,I64 parent,I64 slot,U8 *name,
++  CI386RedSeaEntry *source)
++{//Prepared slot receives a second name for the journal-protected live extent.
++  U8 sector[512],*raw;
++  I64 i,size;
++  if(!source || !I386RedSeaNewName(name) || slot<2 ||
++      !I386RedSeaDirectory(v,parent,sector,&size) || slot>=size/64-1 ||
++      !I386RedSeaSectorRead(v,parent+slot/8,sector)) return -1;
++  raw=sector+(slot&7)*64;
++  if(raw[2] && !(raw[1]&1)) return 0;
++  for(i=0;i<64;i++) raw[i]=0;
++  raw[0]=source->attr; raw[1]=source->attr>>8;
++  for(i=0;name[i];i++) raw[2+i]=name[i];
++  I386RedSeaPutWord(raw+40,source->block);
++  I386RedSeaPutWord(raw+48,source->size);
++  I386RedSeaPutWord(raw+56,source->datetime);
++  if(!I386RedSeaSectorWrite(v,parent+slot/8,sector) || !I386RedSeaFlush(v)) {
++    v->signature=0; return -1;
++  }
++  return 1;
++}
++I64 I386RedSeaUnlinkExtent(CI386RedSea *v,I64 parent,U8 *name)
++{//Tombstone a name without releasing its extent; durable move intent owns it.
++  U8 sector[512],*raw;
++  I64 size,index,i;
++  if(!I386RedSeaNewName(name) || !I386RedSeaDirectory(v,parent,sector,&size)) return -1;
++  for(index=2;index<size/64;index++) {
++    if(index==2 || !(index&7))
++      if(!I386RedSeaSectorRead(v,parent+index/8,sector)) return -1;
++    raw=sector+(index&7)*64;
++    if(!raw[2]) return 0;
++    if(!(raw[1]&1)) {
++      i=0; while(i<38 && raw[2+i]==name[i]) { if(!name[i]) break; i++; }
++      if(i<38 && !name[i] && !raw[2+i]) {
++        raw[1]|=1;
++        if(!I386RedSeaSectorWrite(v,parent+index/8,sector) || !I386RedSeaFlush(v)) {
++          v->signature=0; return -1;
++        }
++        return 1;
++      }
++    }
++  }
++  return 0;
++}
+diff --git a/Kernel/I386/RedSeaMoveIntent.HC b/Kernel/I386/RedSeaMoveIntent.HC
+index 0885132b..9dd7aa0c 100644
+--- a/Kernel/I386/RedSeaMoveIntent.HC
++++ b/Kernel/I386/RedSeaMoveIntent.HC
+@@ -3,2 +3,3 @@
+ #define I386_REDSEA_MOVE_MAGIC 0x3145564F4D323349
++#define I386_REDSEA_TRANSFER_MAGIC 0x3245564F4D323349
+ #define I386_REDSEA_MOVE_OFFSET 48
+@@ -22,3 +23,3 @@ public Bool I386RedSeaMoveIntentSet(CI386RedSea *v,I64 source_parent,Bool source
+   U8 *source_name,I64 destination_parent,Bool destination_root,U8 *destination_name,
+-  CI386RedSeaEntry *source)
++  CI386RedSeaEntry *source,Bool transfer=FALSE)
+ {//One volume-wide cross-directory move may be in flight.
+@@ -43,3 +44,4 @@ public Bool I386RedSeaMoveIntentSet(CI386RedSea *v,I64 source_parent,Bool source
+   I386RedSeaPutWord(raw+184,I386RedSeaMoveChecksum(raw));
+-  I386RedSeaPutWord(raw+48,I386_REDSEA_MOVE_MAGIC);
++  if(transfer) I386RedSeaPutWord(raw+48,I386_REDSEA_TRANSFER_MAGIC);
++  else I386RedSeaPutWord(raw+48,I386_REDSEA_MOVE_MAGIC);
+   if(!I386RedSeaSectorWrite(v,v->start,raw) || !I386RedSeaFlush(v)) {
+@@ -54,3 +56,4 @@ public Bool I386RedSeaMoveIntentClear(CI386RedSea *v)
+   I64 i;
+-  if(!I386RedSeaMoveHeader(v,raw) || I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC ||
++  if(!I386RedSeaMoveHeader(v,raw) || (I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC &&
++      I386RedSeaWord(raw+48)!=I386_REDSEA_TRANSFER_MAGIC) ||
+      I386RedSeaWord(raw+184)!=I386RedSeaMoveChecksum(raw)) return FALSE;
+@@ -63,3 +66,3 @@ public Bool I386RedSeaMoveIntentClear(CI386RedSea *v)
+ 
+-Bool I386RedSeaMoveRecoveryDelete(CI386RedSea *v,I64 directory,U8 *name)
++Bool I386RedSeaMoveRecoveryDelete(CI386RedSea *v,I64 directory,U8 *name,Bool release=TRUE)
+ {
+@@ -80,3 +83,3 @@ Bool I386RedSeaMoveRecoveryDelete(CI386RedSea *v,I64 directory,U8 *name)
+         blocks=(found.size+511)/512;
+-        if(blocks && (!I386RedSeaFree(v,found.block,blocks) || !I386RedSeaFlush(v))) return FALSE;
++        if(release && blocks && (!I386RedSeaFree(v,found.block,blocks) || !I386RedSeaFlush(v))) return FALSE;
+         return TRUE;
+@@ -98,3 +101,4 @@ Bool I386RedSeaMoveRecover(CI386RedSea *v)
+   }
+-  if(I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC ||
++  if((I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC &&
++      I386RedSeaWord(raw+48)!=I386_REDSEA_TRANSFER_MAGIC) ||
+      I386RedSeaWord(raw+184)!=I386RedSeaMoveChecksum(raw)) return FALSE;
+@@ -112,5 +116,8 @@ Bool I386RedSeaMoveRecover(CI386RedSea *v)
+      destination.datetime!=I386RedSeaWord(raw+88) ||
+-     destination.attr!=I386RedSeaWord(raw+96))) return FALSE;
++     destination.attr!=I386RedSeaWord(raw+96) ||
++     I386RedSeaWord(raw+48)==I386_REDSEA_TRANSFER_MAGIC &&
++     destination.block!=I386RedSeaWord(raw+72))) return FALSE;
+   if(source_status && destination_status &&
+-     !I386RedSeaMoveRecoveryDelete(v,destination_parent,destination_name)) return FALSE;
++     !I386RedSeaMoveRecoveryDelete(v,destination_parent,destination_name,
++       I386RedSeaWord(raw+48)==I386_REDSEA_MOVE_MAGIC)) return FALSE;
+   return I386RedSeaMoveIntentClear(v);
+diff --git a/Kernel/I386/RedSeaRepair.HC b/Kernel/I386/RedSeaRepair.HC
+index 7430957a..b02d991f 100644
+--- a/Kernel/I386/RedSeaRepair.HC
++++ b/Kernel/I386/RedSeaRepair.HC
+@@ -7,3 +7,3 @@ Bool I386RedSeaRepairDecode(CI386RedSea *v,U8 *raw,CI386RedSeaEntry *entry)
+   for(i=0;i<8;i++) { block|=(raw[40+i]+0)(U64)<<(8*i); size|=(raw[48+i]+0)(U64)<<(8*i); }
+-  if(!(attr&0x800) || (attr&0x300) || !raw[2] ||
++  if(!(attr&0x800) || (attr&0x100) || !raw[2] ||
+      (size<0 || size>(v->start+v->sectors-v->first)*512) ||
+@@ -54,3 +54,3 @@ Bool I386RedSeaRepairDirectory(CI386RedSea *v,U8 *bits,I64 bytes,I64 block,I64 p
+       attr=raw[0]|(raw[1]<<8);
+-      if(!(attr&0x800) || (attr&0x300) || raw[2]=='.') return FALSE;
++      if(!(attr&0x800) || (attr&0x100) || raw[2]=='.') return FALSE;
+       i=0; while(i<38 && raw[2+i]) i++;
+diff --git a/Kernel/I386/RedSeaWrite.HC b/Kernel/I386/RedSeaWrite.HC
+index eafa38c4..1aad1d33 100644
+--- a/Kernel/I386/RedSeaWrite.HC
++++ b/Kernel/I386/RedSeaWrite.HC
+@@ -8,3 +8,3 @@ public I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offse
+   if (!I386RedSeaValid(volume) || !entry || !buffer || offset<0 || count<0 ||
+-      (entry->attr&0x311) || !(entry->attr&0x800) ||
++      (entry->attr&0x111) || !(entry->attr&0x800) ||
+       !I386RedSeaExtent(volume,entry->block,entry->size) || offset>entry->size ||
+diff --git a/Kernel/I386/Scheduler.HH b/Kernel/I386/Scheduler.HH
+index faf5e602..601c6978 100644
+--- a/Kernel/I386/Scheduler.HH
++++ b/Kernel/I386/Scheduler.HH
+@@ -44,2 +44,10 @@ class CI386Task:CTask
+   U32 debug_cpu_active;
++  U8 *debug_stack;
++  U32 debug_stack_size;
++  CI386Heap *debug_stack_heap;
++  U0 (*debug_stack_cleanup)(CI386Task *task);
++  U32 debug_session_active,debug_go;
++  U8 *debug_backup;
++  U0 (*debug_cleanup)(CI386Task *task);
++  U0 (*debug_bpt_cleanup)(CI386Task *task);
+   U32 inherited_refs; //Subset of lifetime_refs: child heaps/symbols and entry code.
+diff --git a/Kernel/I386/SchedulerCore.HC b/Kernel/I386/SchedulerCore.HC
+index 3c4b60a1..d4f47462 100644
+--- a/Kernel/I386/SchedulerCore.HC
++++ b/Kernel/I386/SchedulerCore.HC
+@@ -325,2 +325,12 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
+   }
++  //The finished task may have exited from its debugger execution stack.
++  //The guard above proves reclamation runs from another task's stack.
++  if(task->debug_stack) {
++    if(!task->debug_stack_heap || !task->debug_stack_size ||
++        I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size ||
++        !I386HeapFree(task->debug_stack_heap,task->debug_stack)) {
++      I386IrqRestore(flags); return FALSE;
++    }
++    task->debug_stack=0;task->debug_stack_size=0;task->debug_stack_heap=0;
++  }
+   if(task->file_state || task->file_clone || task->file_destroy) {
+diff --git a/Kernel/I386/TaskFileRead.HC b/Kernel/I386/TaskFileRead.HC
+index 5fdc97ee..d38cf173 100644
+--- a/Kernel/I386/TaskFileRead.HC
++++ b/Kernel/I386/TaskFileRead.HC
+@@ -2,3 +2,6 @@
+ #include "/Kernel/I386/Cpu.HH"
+-U8 *I386TaskFileReadMode(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name,Bool raw)
++U8 *(*task_public_read)(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr)=0;
++U0 I386TaskFilePublicReader(U8 *callback)
++{ task_public_read=callback; }
++U8 *I386TaskFileReadMode(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name,Bool raw,Bool stored=FALSE)
+ {
+@@ -14,3 +17,3 @@ U8 *I386TaskFileReadMode(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **n
+     if(task->owner) result=I386FileReadAt(heap,&paths,volumes,filename,&bytes,&attributes,&absolute,
+-      task!=task->owner->root,raw);
++      task!=task->owner->root,raw,stored);
+     if(!I386TaskFilesRelease(state)) {
+@@ -30,3 +33,15 @@ U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **n
+ {
+-  return I386TaskFileReadMode(heap,filename,size,attr,name,FALSE);
++  U8 *result,*absolute=0;U32 flags;
++  if(!task_public_read)return I386TaskFileReadMode(heap,filename,size,attr,name,FALSE);
++  flags=I386IrqSave;
++  if(name)absolute=I386TaskFileNameAbs(heap,filename,0);
++  if(name && !absolute) {I386IrqRestore(flags);return 0;}
++  try {result=task_public_read(heap,filename,size,attr);}
++  catch {
++    if(absolute)I386HeapFree(heap,absolute);
++    I386IrqRestore(flags);I386TaskSelf->catch_except=FALSE;
++  }
++  if(result) {if(name)*name=absolute;}
++  else if(absolute)I386HeapFree(heap,absolute);
++  I386IrqRestore(flags);return result;
+ }
+@@ -44,5 +59,25 @@ Bool I386LexTaskFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filenam
+   Bool result=FALSE;
++  U8 *extended=0,*name=0,*source=0;
+   state=I386TaskFilesBorrow(task,&paths,&volumes);
+   if(state) {
+-    if(task->owner) result=I386LexIncludeFile(heap,cc,&paths,volumes,filename,task!=task->owner->root);
++    if(task->owner && task_public_read) {
++      if(cc && cc->lex_include_stk && !(cc->flags&CCF_PMT) && !(cc->opts&OPTF_ECHO)) {
++        extended=I386ExtDft(heap,filename,"HC.Z");
++        if(extended)name=I386FileNameAbs(heap,&paths,extended);
++        if(name) {
++          try {source=task_public_read(heap,name,0,0);}
++          catch {
++            I386HeapFree(heap,name);
++            if(extended)I386HeapFree(heap,extended);
++            I386TaskFilesRelease(state);I386IrqRestore(flags);I386TaskSelf->catch_except=FALSE;
++          }
++        }
++        if(source) {
++          result=I386LexIncludeTake(heap,cc,name,source,FALSE);
++          if(!result)I386HeapFree(heap,source);
++        }
++        if(name)I386HeapFree(heap,name);
++        if(extended)I386HeapFree(heap,extended);
++      }
++    } else if(task->owner)result=I386LexIncludeFile(heap,cc,&paths,volumes,filename,task!=task->owner->root);
+     if(!I386TaskFilesRelease(state)) result=FALSE;
+@@ -61,3 +96,4 @@ U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
+   if(state) {
+-    extended=I386ExtDft(heap,name,extension);
++    if(extension)extended=I386ExtDft(heap,name,extension);
++    else absolute=I386FileNameAbs(heap,&paths,name);
+     if(extended) {
+@@ -73 +109,4 @@ U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
+ }
++
++U8 *I386TaskFileReadStored(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0)
++{ return I386TaskFileReadMode(heap,filename,size,attr,name,FALSE,TRUE); }
+diff --git a/Kernel/I386/TaskFileRead.HH b/Kernel/I386/TaskFileRead.HH
+index ec24e2d0..22073a09 100644
+--- a/Kernel/I386/TaskFileRead.HH
++++ b/Kernel/I386/TaskFileRead.HH
+@@ -4,2 +4,3 @@
+ #include "/Compiler/I386/LexFileRead.HH"
++public extern U0 I386TaskFilePublicReader(U8 *callback);
+ //Current-task bootstrap services, preserving IF. Borrowed configuration stays live
+@@ -7,2 +8,3 @@
+ public extern U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0);
++public extern U8 *I386TaskFileReadStored(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0);
+ public extern U8 *I386TaskFileReadRaw(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0);
+diff --git a/Kernel/I386/TaskFileWrite.HC b/Kernel/I386/TaskFileWrite.HC
+index c768d870..d3101f6f 100644
+--- a/Kernel/I386/TaskFileWrite.HC
++++ b/Kernel/I386/TaskFileWrite.HC
+@@ -2,3 +2,22 @@
+ #include "/Kernel/I386/Cpu.HH"
+-I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,Bool public_mode)
++//Original public FileWrite establishes missing parents before attempting the file.
++Bool I386TaskWriteParents(CI386RedSea *volume,U8 *absolute,U8 *leaf)
++{
++  U8 *cursor=absolute+3;CI386RedSeaEntry entry;I64 status;
++  while(cursor<=leaf-1) {
++    if(*cursor=='/') {
++      *cursor=0;
++      if(!I386RedSeaBegin(volume)){*cursor='/';return FALSE;}
++      status=I386RedSeaResolve(volume,volume->root,absolute+2,&entry);
++      if(!I386RedSeaEnd(volume)){*cursor='/';return FALSE;}
++      if(!status) {
++        if(!I386TaskDirMk(absolute)){*cursor='/';return FALSE;}
++      } else if(status!=1 || !(entry.attr&0x10)){*cursor='/';return FALSE;}
++      *cursor='/';
++    }
++    cursor++;
++  }
++  return TRUE;
++}
++I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,Bool public_mode,CI386WriteCache *cache=0)
+ {
+@@ -14,5 +33,6 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
+   CArcCompress *archive=0;
+-  I64 result=0;
++  I64 result=0,name_size,i;Bool cache_eligible=FALSE;
++  if(cache){cache->name=0;cache->data=0;cache->eligible=FALSE;}
+   if(size<0) size=0;
+-  if(attr&~0xC00) {I386IrqRestore(flags);return 0;}
++  if(attr&~0xE00) {I386IrqRestore(flags);return 0;}
+   state=I386TaskFilesBorrow(task,&paths,&volumes);
+@@ -33,2 +53,4 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
+         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
++        if(public_mode && volume && volume->io && *leaf &&
++            !I386TaskWriteParents(volume,absolute,leaf))goto file_write_release;
+         if(volume && volume->io && *leaf && I386RedSeaBegin(volume)) {
+@@ -49,2 +71,3 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
+           if(parent.block) {
++            cache_eligible=TRUE;
+             status=I386RedSeaFind(volume,parent.block,leaf,&existing);
+@@ -60,2 +83,3 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
+           }
++          file_write_cache_done:
+           if(!I386RedSeaEnd(volume)) {
+@@ -66,2 +90,12 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
+ file_write_release:
++      if(cache && cache_eligible) {
++        cache->eligible=TRUE;cache->size=size;cache->attr=attr;
++        name_size=0;while(absolute[name_size])name_size++;
++        cache->name=I386HeapAlloc(cache->heap,name_size+1,FALSE);
++        if(cache->name)for(i=0;i<=name_size;i++)cache->name[i]=absolute[i];
++        if(attr&0x200) {
++          cache->data=I386HeapAlloc(cache->heap,size+1,FALSE);
++          if(cache->data){for(i=0;i<size;i++)cache->data[i]=buffer[i];cache->data[size]=0;}
++        }
++      }
+       if(archive) I386HeapFree(state->heap,archive);
+@@ -76,4 +110,4 @@ file_write_release:
+ 
+-I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr)
+-{ return I386TaskFileWriteCore(filename,buffer,size,datetime,attr,TRUE); }
++I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,CI386WriteCache *cache=0)
++{ return I386TaskFileWriteCore(filename,buffer,size,datetime,attr,TRUE,cache); }
+ Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
+@@ -230,3 +264,3 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
+   U8 *path,*new_path,*leaf,*new_leaf,*cursor;
+-  I64 drive,new_drive,status,size=0,rollback;
++  I64 drive,new_drive,status,size=0,rollback,slot;
+   Bool result=FALSE,source_root=FALSE,destination_root=FALSE;
+@@ -269,22 +303,18 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
+                  I386RedSeaFind(volume,new_parent.block,new_leaf,&collision)==0) {
+-                size=source.size;
+-                if(fail_stage!=1 &&
+-                   (!size || (buffer=I386RedSeaReadAll(volume,state->heap,&source,&size)))) {
+-                  if(fail_stage==2) status=0;
+-                  else if(I386RedSeaMoveIntentSet(volume,parent.block,source_root,leaf,
+-                    new_parent.block,destination_root,new_leaf,&source)) {
+-                    status=I386RedSeaCreate(volume,new_parent.block,new_leaf,buffer,size,
+-                      source.datetime,source.attr);
++                if(fail_stage!=1 && fail_stage!=2 &&
++                    I386RedSeaExtentSlot(volume,&new_parent.block,new_leaf,&slot)==1) {
++                  if(source_root) parent.block=volume->root;
++                  if(destination_root) new_parent.block=volume->root;
++                  if(I386RedSeaMoveIntentSet(volume,parent.block,source_root,leaf,
++                    new_parent.block,destination_root,new_leaf,&source,TRUE)) {
++                    status=I386RedSeaPublishExtent(volume,new_parent.block,slot,new_leaf,&source);
+                     if(status==1) {
+-                      if(source_root) parent.block=volume->root;
+-                      if(destination_root) new_parent.block=volume->root;
+                       if(fail_stage==3) status=0;
+                       else if(fail_stage==4) status=-1;
+-                      else status=I386RedSeaDelete(volume,parent.block,leaf);
++                      else status=I386RedSeaUnlinkExtent(volume,parent.block,leaf);
+                       if(status==1) {
+                         if(I386RedSeaMoveIntentClear(volume)) result=TRUE;
+-                      } else {
+-                        rollback=I386RedSeaDelete(volume,new_parent.block,new_leaf);
+-                        if(rollback==1 && I386RedSeaValid(volume))
+-                          I386RedSeaMoveIntentClear(volume);
++                      } else if(I386RedSeaValid(volume)) {
++                        rollback=I386RedSeaUnlinkExtent(volume,new_parent.block,new_leaf);
++                        if(rollback==1) I386RedSeaMoveIntentClear(volume);
+                       }
+diff --git a/Kernel/I386/TaskFiles.HC b/Kernel/I386/TaskFiles.HC
+index ccf4a3ff..a0102e8e 100644
+--- a/Kernel/I386/TaskFiles.HC
++++ b/Kernel/I386/TaskFiles.HC
+@@ -50,2 +50,3 @@ Bool I386TaskFilesInit(CI386Task *task,CI386Heap *heap,CFilePathContext *environ
+   if(!state) goto files_init_done;
++  if(!volumes->resident_heap) volumes->resident_heap=heap;
+   task->file_state=state; task->file_clone=&I386TaskFilesClone; task->file_destroy=&I386TaskFilesDestroy;
+diff --git a/Kernel/I386/TextRender.HC b/Kernel/I386/TextRender.HC
+index 31eac248..f6afba08 100644
+--- a/Kernel/I386/TextRender.HC
++++ b/Kernel/I386/TextRender.HC
+@@ -2,2 +2,6 @@
+ #include "/Kernel/GraphicsFrameCore.HC"
++extern Bool NativeGraphicsReady();
++extern U8 *NativeGraphicsPlanes();
++extern Bool NativeGraphicsTextLock();
++extern U0 NativeGraphicsTextUnlock();
+ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
+@@ -6,5 +10,15 @@ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
+   U8 *pixels=0,*planes=0;
+-  Bool result=FALSE;
++  Bool result=FALSE,borrowed=FALSE;
++  if(NativeGraphicsReady) {
++    if(!gr.dc2 ||
++        gr.dc2->dc_signature!=DCS_SIGNATURE_VAL ||
++        gr.dc2->width_internal!=640 || gr.dc2->height!=480 ||
++        !gr.dc2->body) return FALSE;
++    pixels=gr.dc2->body; planes=NativeGraphicsPlanes;
++    if(!planes) return FALSE;
++    if(!NativeGraphicsTextLock) return FALSE;
++    borrowed=TRUE;
++  }
+   try {
+-    pixels=CAlloc(307200); planes=CAlloc(153600);
++    if(!borrowed) { pixels=CAlloc(307200); planes=CAlloc(153600); }
+     TextRenderCore(pixels,i386_text_base,text.font,80,60,blink,pan_x,pan_y,hide_col,hide_row);
+@@ -12,4 +26,6 @@ Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,
+     result=I386VgaRows(planes,0,480);
+-  } catch { Free(planes); Free(pixels); }
+-  Free(planes); Free(pixels); return result;
++  } catch { }
++  if(borrowed) NativeGraphicsTextUnlock;
++  else { Free(planes); Free(pixels); }
++  return result;
+ }
+diff --git a/tests/guest/i386-memory/Target.HC b/tests/guest/i386-memory/Target.HC
+index 56504e32..521095ce 100644
+--- a/tests/guest/i386-memory/Target.HC
++++ b/tests/guest/i386-memory/Target.HC
+@@ -12,2 +12,3 @@ I64 Main(I64 a,I64 b)
+   CI386MemRange r[3],out;
++  CI386BootImageInfo image;
+   I64 i;
+@@ -88,2 +89,28 @@ I64 Main(I64 a,I64 b)
+   if (!I386BootArena(&info,0,0,&out,TRUE) || out.base!=0x20000 || out.size!=0x80000) return 34;
++  Reset(&info); info.stage_end=0x11000;
++  info.flags=3; info.extended_kib=7168;
++  image.magic=I386_BOOT_IMAGE_MAGIC; image.version=1;
++  image.base=0x100000; image.bytes=655361;
++  if(!I386BootImageReserve(&info,&image,&r[1]) ||
++      r[1].base!=0x100000 || r[1].size!=655872) return 35;
++  r[0].base=0x88000; r[0].size=32768;
++  if(!I386BootArena(&info,r,2,&out,TRUE) || out.base!=0x1A0200 ||
++      out.base+out.size!=0x800000) return 36;
++  for(i=0;i<9;i++) {
++    image.magic=I386_BOOT_IMAGE_MAGIC; image.version=1;
++    image.base=0x100000; image.bytes=655361;
++    info.stage_end=0x11000; info.flags=3; info.extended_kib=7168;
++    if(i==0) image.magic=0;
++    if(i==1) image.version=2;
++    if(i==2) image.base=0x110000;
++    if(i==3) image.bytes=7;
++    if(i==4) image.bytes=2039*512+1;
++    if(i==5) info.stage_end=0x11200;
++    if(i==6) info.flags=1;
++    if(i==7) info.extended_kib=640;
++    if(i==8) info.extended_kib=65536;
++    out.base=0x12345678; out.size=0x87654321;
++    if(I386BootImageReserve(&info,&image,&out) ||
++        out.base!=0x12345678 || out.size!=0x87654321) return 37+i;
++  }
+   return 0;
+diff --git a/tools/audit-i386-boot.py b/tools/audit-i386-boot.py
+index 716d308f..58c7a845 100644
+--- a/tools/audit-i386-boot.py
++++ b/tools/audit-i386-boot.py
+@@ -10,4 +10,4 @@ import subprocess
+ 
+-ALLOWED = set('''add and call cld cli cmp dec div hlt in inc int ja jb jc jmp jnz jz
+-    lgdt lidt loop mov movzx or out pop push shl shr stc sti sub test xor'''.split())
++ALLOWED = set('''add and call cld cli cmp dec div hlt in inc int int3 ja jb jc jmp jnz jz
++    lgdt lidt loop mov movzx imul jne jae jnc rep ret clc je or out pop push shl shr stc sti sub test xor'''.split())
+ 
+@@ -33,2 +33,6 @@ def audit_code(code, bits):
+         parts=line.split()
++        if len(parts)>=3 and int(parts[0],16)<offset:continue
++        if bits==32 and code[offset:offset+2]==b'\xff\xd0' and parts[2:]==['db','0xff']:
++            # NASM 3.01 disassembler splits this valid 386 CALL EAX encoding.
++            offset+=2; count+=1; continue
+         if len(parts)<3 or int(parts[0],16)!=offset or not re.fullmatch(r'[0-9A-Fa-f]+',parts[1]):
+@@ -38,2 +42,4 @@ def audit_code(code, bits):
+             raise ValueError(f'Non-386 boot instruction: {line}')
++        if mnemonic=='rep' and parts[3:]!=['movsd']:
++            raise ValueError(f'Unexpected repeated boot instruction: {line}')
+         offset+=len(parts[1])//2; count+=1
+@@ -45,2 +51,24 @@ def audit(image, listing):
+     boot_end=label_offset(listing,'drive')
++    if 'image_magic:' in listing:
++        if len(image)<4608 or image[510:512]!=b'\x55\xaa':
++            raise ValueError('Incomplete extended boot image')
++        names=['stage_entry','start32','pm16','copy32','stage_code_end']
++        positions={name:label_offset(listing,name) for name in names}
++        ranges=[('entry32',positions['stage_entry'],16,32),
++                ('load32',positions['start32'],positions['pm16'],32),
++                ('bios16',positions['pm16'],positions['copy32'],16),
++                ('copy32',positions['copy32'],positions['stage_code_end'],32)]
++        result={'result':'pass','boot16':{'instructions':audit_code(image[:boot_end],16)},
++                'stage32':{'instructions':0},'ranges':{},
++                'scope':'Extended loader executable ranges; metadata/GDT/padding excluded'}
++        for name,begin,end,bits in ranges:
++            if not 0<=begin<end<=4096:raise ValueError('Invalid extended code range')
++            # Entry jump is followed by alignment zeros, not executable code.
++            if name=='entry32':end=begin+5
++            code=image[512+begin:512+end]
++            count=audit_code(code,bits)
++            result['ranges'][name]={'offset':512+begin,'bytes':len(code),'bits':bits,
++                                   'instructions':count,'sha256':hashlib.sha256(code).hexdigest()}
++            result['stage32']['instructions']+=count
++        return result
+     stage_end=label_offset(listing,'early_idt')
+diff --git a/tools/build-i386-kernel.py b/tools/build-i386-kernel.py
+index 75ae27fe..50022e47 100644
+--- a/tools/build-i386-kernel.py
++++ b/tools/build-i386-kernel.py
+@@ -45,2 +45,13 @@ def kernel_flag_disk_offset(exports, symbol):
+ 
++def refresh_extended_checksum(image):
++    if struct.unpack_from('<I',image,528)[0]!=0x42323345:return
++    magic,version,length,base=struct.unpack_from('<4I',image,528)
++    if version!=1 or base!=0x100000 or not 8<=length<=2039*512:
++        raise ValueError('Invalid extended image metadata')
++    checksum=2166136261
++    for byte in image[4608:4608+length]:
++        checksum=((checksum^byte)*16777619)&0xFFFFFFFF
++    struct.pack_into('<I',image,544,checksum)
++
++
+ def diagnostic_disk(disk, exports):
+@@ -55,2 +66,3 @@ def diagnostic_disk(disk, exports):
+         raise ValueError('Diagnostic disk changed more than its boot flag')
++    refresh_extended_checksum(changed)
+     path=disk.with_name('kernel-diagnostics.img'); path.write_bytes(changed)
+@@ -68,2 +80,3 @@ def mutation_probe_disk(disk, exports):
+     for offset in offsets: struct.pack_into('<I',changed,offset,1)
++    refresh_extended_checksum(changed)
+     path=disk.with_name('kernel-file-mutation.img'); path.write_bytes(changed)
+@@ -201,5 +214,5 @@ def console_runtime_layout(module):
+             else: imports[symbol] = name
+-    if set(imports) != {'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'char_bmp_hex_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew'}:
++    if set(imports) != {'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'char_bmp_hex_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew', 'I386TaskFrameParent', 'I386TaskFrameReturn'}:
+         raise ValueError('Unexpected console import contract')
+-    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug'):
++    for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders'):
+         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
+@@ -223,6 +236,7 @@ def console_runtime_layout(module):
+     version_offset = 32+exports['console_version'][1]
+-    if struct.unpack_from('<I', module, version_offset)[0] != 37:
++    if struct.unpack_from('<I', module, version_offset)[0] != 39:
+         raise ValueError('Unexpected console version')
++    entry_names=('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders')
+     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
+-                entries=[8+exports[name][1] for name in ('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq')])
++                entry_names=entry_names, entries=[8+exports[name][1] for name in entry_names])
+ 
+@@ -312,5 +326,5 @@ def file_runtime_layout(module):
+     if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
+-            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog'}:
++            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog', 'SysTry', 'SysUntry'}:
+         raise ValueError('Unexpected file-runtime import contract')
+-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet'):
++    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind'):
+         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
+@@ -319,3 +333,3 @@ def file_runtime_layout(module):
+     version_offset = 32+exports['file_runtime_version'][1]
+-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 40:
++    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 47:
+         raise ValueError('Unexpected file-runtime version')
+@@ -335,2 +349,8 @@ def file_runtime_layout(module):
+         install_image_offset=8+exports['I386TaskInstallBootImage'][1],
++        write_public_offset=8+exports['I386TaskFileWritePublic'][1],
++        read_stored_offset=8+exports['I386TaskFileReadStored'][1],
++        expand_offset=8+exports['I386ExpandBuf'][1],
++        public_reader_offset=8+exports['I386TaskFilePublicReader'][1],
++        cd_offset=8+exports['I386TaskCd'][1],
++        find_public_offset=8+exports['I386TaskFileFind'][1],
+         export_at_offset=8+exports['I386FileRuntimeExportAt'][1],
+@@ -546,3 +566,3 @@ def audit(exports, out, guest_compiler_template=False):
+                         raise ValueError(f'Invalid {name} stored pointer')
+-                    if resident and struct.unpack_from('<I',code,offset)[0]!=0x11000+base+name_offset:
++                    if resident and struct.unpack_from('<I',code,offset)[0]!=0x100000+base+name_offset:
+                         raise ValueError('Flat kernel pointer uses the wrong load address')
+@@ -854,5 +874,5 @@ def verify_mutated_volume(disk):
+             if attr&0x100: continue
+-            if (date and attr not in (0x800,0xC00)) or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
++            if (date and attr not in (0x800,0xA00,0xC00,0xE00)) or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
+             if attr==0x810: directory(child,block)
+-            elif attr in (0x800,0xC00):
++            elif attr in (0x800,0xA00,0xC00,0xE00):
+                 if length: claim(child,length)
+@@ -894,3 +914,3 @@ def mutated_file_contents(disk, wanted):
+             if attr==0x810: directory(child,child_path)
+-            elif attr in (0x800,0xC00) and child_path in wanted:
++            elif attr in (0x800,0xA00,0xC00,0xE00) and child_path in wanted:
+                 found[child_path]=image[child*512:child*512+length] if length else b''
+@@ -1459,3 +1479,3 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
+     if (total!=len(module) or size<1024 or size&7 or
+-            count!=(81 if source_built else 65) or
++            count!=(109 if source_built else 87) or
+             records!=32+size or strings!=records+16*count or strings>total):
+@@ -1466,3 +1486,3 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
+         'I386RedSeaGrowDirectory','I386RedSeaGrowRoot','I386RedSeaNewName',
+-        'I386RedSeaReparentRootChildren'))
++        'I386RedSeaReparentRootChildren','I386RedSeaExtentSlot','I386RedSeaPublishExtent','I386RedSeaUnlinkExtent'))
+     calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
+@@ -1476,4 +1496,4 @@ def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
+     if source_built: expected_imports.add(b'I386ExecutionBreakPoll')
+-    if exported!=expected or len(calls)!=(75 if source_built else 59) or \
+-            len(polls)!=(16 if source_built else 0) or \
++    if exported!=expected or len(calls)!=(100 if source_built else 78) or \
++            len(polls)!=(22 if source_built else 0) or \
+             any(offset<1 or offset>size-4 or module[32+offset-1]!=0xE8 or
+@@ -1792,2 +1812,3 @@ def verify_native_target_format(disk, exports, out):
+     for offset in offsets: struct.pack_into('<I',changed,offset,1)
++    refresh_extended_checksum(changed)
+     boot=out/'kernel-target-format.img'; boot.write_bytes(changed)
+@@ -1841,2 +1862,3 @@ def verify_native_target_mount(disk, exports, out, console):
+     struct.pack_into('<I',original,offset,1)
++    refresh_extended_checksum(original)
+     work=out/'target-mount'; work.mkdir(parents=True,exist_ok=True)
+@@ -1872,2 +1894,3 @@ def verify_native_tree_copy(disk, exports, out, console, volume):
+     struct.pack_into('<I',source,offset,1)
++    refresh_extended_checksum(source)
+     work=out/'target-tree-copy'; work.mkdir(parents=True,exist_ok=True)
+@@ -2126,3 +2149,4 @@ def verify_native_linked_boot_area(disk,exports,out,console):
+     source=candidate.read_bytes();installed=target.read_bytes()
+-    expected=source[:4608]+flat+bytes(960*512-4096-len(flat))+source[512+960*512:2048*512]
++    from i386_boot_area import expected_boot_area
++    expected=expected_boot_area(source,flat)
+     if installed[:2048*512]!=expected or installed[2048*512:]!=initial[2048*512:]:
+@@ -2148,3 +2172,3 @@ def verify_file_io_failure_matrix(disk, exports, out):
+     source='/Probe/MoveIoSource.HC'; destination='/Modules/MoveIoDestination.HC'
+-    for operation,limit in ((2,7),(3,6)):
++    for operation,limit in ((2,4),(3,4)):
+         for fail_after in range(1,limit+1):
+@@ -2154,2 +2178,3 @@ def verify_file_io_failure_matrix(disk, exports, out):
+             struct.pack_into('<I',changed,flag,(operation<<8)|fail_after)
++            refresh_extended_checksum(changed)
+             candidate.write_bytes(changed)
+@@ -2164,2 +2189,3 @@ def verify_file_io_failure_matrix(disk, exports, out):
+             changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,1)
++            refresh_extended_checksum(changed)
+             candidate.write_bytes(changed)
+@@ -2173,2 +2199,3 @@ def verify_file_io_failure_matrix(disk, exports, out):
+             changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,0)
++            refresh_extended_checksum(changed)
+             candidate.write_bytes(changed)
+@@ -2186,3 +2213,3 @@ def verify_file_io_failure_matrix(disk, exports, out):
+                           'filesystem_integrity':audit})
+-    return {'cases':cases,'writes':7,'flushes':6,'result':'pass'}
++    return {'cases':cases,'writes':4,'flushes':4,'scope':'Prepared destination directory extent transfer; directory growth is separate','result':'pass'}
+ 
+@@ -2199,2 +2226,3 @@ def verify_file_replace_failure_matrix(disk, exports, out):
+             struct.pack_into('<I',changed,flag,(operation<<8)|fail_after)
++            refresh_extended_checksum(changed)
+             candidate.write_bytes(changed)
+@@ -2209,2 +2237,3 @@ def verify_file_replace_failure_matrix(disk, exports, out):
+             changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,1)
++            refresh_extended_checksum(changed)
+             candidate.write_bytes(changed)
+@@ -2218,2 +2247,3 @@ def verify_file_replace_failure_matrix(disk, exports, out):
+             changed=bytearray(candidate.read_bytes()); struct.pack_into('<I',changed,flag,0)
++            refresh_extended_checksum(changed)
+             candidate.write_bytes(changed)
+@@ -2265,5 +2295,7 @@ def main():
+     stage_listing=out/'kernel-stage.lst'
+-    run('nasm','-f','bin','-l',str(stage_listing),
++    checksum=2166136261
++    for byte in image:checksum=((checksum^byte)*16777619)&0xFFFFFFFF
++    run('nasm','-f','bin',f'-DPAYLOAD_FNV={checksum}','-l',str(stage_listing),
+         f'-DKERNEL_FILE="{exports / "Kernel32.BIN"}"',
+-        'tools/i386-kernel-stage.asm','-o',str(disk))
++        'tools/i386-extended-stage.asm','-o',str(disk))
+     if disk.stat().st_size!=512+4096+len(image) or disk.read_bytes()[512+4096:]!=image:
+@@ -2274,3 +2306,3 @@ def main():
+     boot_audit=json.loads(boot_audit_path.read_text())
+-    if disk.stat().st_size>(960+1)*512:
++    if disk.stat().st_size>2048*512:
+         raise ValueError('Kernel stage exceeds its reserved 480 KiB load area')
+@@ -2286,3 +2318,3 @@ def main():
+             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
+-                'tools/build-i386-kernel.py','tools/audit-i386-boot.py','tools/audit-i386-keyword-table.py','tools/i386-bios.inc','tools/i386-kernel-stage.asm',
++                'tools/build-i386-kernel.py','tools/audit-i386-boot.py','tools/audit-i386-keyword-table.py','tools/i386-bios.inc','tools/i386-extended-stage.asm',
+                 'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+@@ -2295,3 +2327,3 @@ def main():
+                      'nasm':subprocess.check_output(['nasm','-v'],text=True).strip()},
+-            'kernel_bytes':len(image),'kernel_load_address':0x11000,'early_stage_bytes':4096,
++            'kernel_bytes':len(image),'kernel_load_address':0x100000,'early_stage_bytes':4096,
+             'kernel_sha256':hashlib.sha256(image).hexdigest(),
+@@ -2403,4 +2435,4 @@ def main():
+         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
+-        if len(file_rows)!=1 or len(file_rows[0])!=25: raise ValueError('Missing file-runtime ownership evidence')
+-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot, file_install_image = (int(x,16) for x in file_rows[0][1:])
++        if len(file_rows)!=1 or len(file_rows[0])!=31: raise ValueError('Missing file-runtime ownership evidence')
++        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot, file_install_image, file_write_public, file_read_stored, file_expand, file_public_reader, file_cd, file_find_public = (int(x,16) for x in file_rows[0][1:])
+         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
+@@ -2427,3 +2459,9 @@ def main():
+                 file_install_boot!=file_address+files_layout['install_boot_offset'] or
+-                file_install_image!=file_address+files_layout['install_image_offset']):
++                file_install_image!=file_address+files_layout['install_image_offset'] or
++                file_write_public!=file_address+files_layout['write_public_offset'] or
++                file_read_stored!=file_address+files_layout['read_stored_offset'] or
++                file_expand!=file_address+files_layout['expand_offset'] or
++                file_public_reader!=file_address+files_layout['public_reader_offset'] or
++                file_cd!=file_address+files_layout['cd_offset'] or
++                file_find_public!=file_address+files_layout['find_public_offset']):
+             raise ValueError('File-runtime placement or service mismatch')
+@@ -2444,4 +2482,10 @@ def main():
+             raise ValueError('Retained disk include execution/rejection failed')
+-        result['file_runtime'] = dict(version=40, image_address=file_address, image_bytes=file_size,
++        result['file_runtime'] = dict(version=47, image_address=file_address, image_bytes=file_size,
+             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
++            write_public_address=file_write_public,
++            read_stored_address=file_read_stored,
++            expand_address=file_expand,
++            public_reader_address=file_public_reader,
++            cd_address=file_cd,
++            find_public_address=file_find_public,
+             move_failure_stages=4,
+@@ -3006,3 +3050,3 @@ def main():
+         rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
+-        if len(rows)!=1 or len(rows[0])!=10: raise ValueError('Missing retained console')
++        if len(rows)!=1 or len(rows[0])!=4+len(console_layout['entries']): raise ValueError('Missing retained console')
+         cbase,csize,cspan,*entries=[int(x,16) for x in rows[0][1:]]
+@@ -3012,4 +3056,14 @@ def main():
+             raise ValueError('Missing retained keyboard cancellation callback probe')
+-        result['console_runtime']=dict(version=37,image_bytes=csize,retained_heap_bytes=cspan,
++        result['console_runtime']=dict(version=39,image_bytes=csize,retained_heap_bytes=cspan,
++            service_addresses=dict(zip(console_layout['entry_names'],entries)),
+             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
++        # Both header attempts complete exactly these unused forward classes.
++        for section in log.split('PUBLIC HEADER PROBE START ')[1:]:
++            header = section.split('PUBLIC HEADER PUBLISHED ', 1)[0]
++            warnings = [line.removeprefix('FRONTEND SYMBOL WARNING unused extern ')
++                        for line in header.splitlines()
++                        if line.startswith('FRONTEND SYMBOL WARNING ')]
++            expected_warnings = [] if int(section.split()[0], 16) else ['CCPU', 'CBpt', 'CCPU', 'CBpt']
++            if warnings != expected_warnings:
++                raise ValueError('Unexpected public-header warning identities')
+         for marker in ('PROGRAM PARENT REJECT ', 'PUBLIC HEADER ROLLBACK ', 'PUBLIC HEADER CASE '):
+@@ -3259,2 +3313,3 @@ def main():
+         for offset in mutation_flags: struct.pack_into('<I',mutation_bytes,offset,0)
++        refresh_extended_checksum(mutation_bytes)
+         mutation_disk.write_bytes(mutation_bytes)
+diff --git a/tools/guest/i386-kernel/Once.HC b/tools/guest/i386-kernel/Once.HC
+index 90a04676..11bcf295 100644
+--- a/tools/guest/i386-kernel/Once.HC
++++ b/tools/guest/i386-kernel/Once.HC
+@@ -206,3 +206,3 @@ U0 BuildKernel()
+   }
+-  image=I386Link(modules,sizes,6,&size,"Main",0x11000);
++  image=I386Link(modules,sizes,6,&size,"Main",0x100000);
+   if(!image) { Report("FAIL kernel link\n"); return; }
+diff --git a/tools/i386-extended-stage.asm b/tools/i386-extended-stage.asm
+index 20543497..0b93a239 100644
+--- a/tools/i386-extended-stage.asm
++++ b/tools/i386-extended-stage.asm
+@@ -7,3 +7,4 @@ section stage vstart=0x10000 align=1
+ bits 32
+-    jmp start32
++stage_entry: db 0xE9
++    dd start32-($+4)
+     times 16-($-$$) db 0
+@@ -30,4 +31,3 @@ extended_gdtr:
+     dd extended_gdt
+-start32:
+-    mov ax,16
++start32: mov ax,16
+     mov ds,ax
+@@ -37,2 +37,17 @@ start32:
+     cld
++    mov edi,early_idt
++    mov ecx,256
++.fill_idt:
++    mov eax,early_fault
++    mov [edi],ax
++    shr eax,16
++    mov [edi+6],ax
++    mov word [edi+2],8
++    mov word [edi+4],0x8E00
++    add edi,8
++    loop .fill_idt
++    lidt [early_idtr]
++%ifdef EARLY_IDT_TEST
++    int3
++%endif
+     cmp dword [image_magic],0x42323345
+@@ -106,4 +121,3 @@ a20_ready:
+ bits 16
+-pm16:
+-    mov ax,32
++pm16: mov ax,32
+     mov ds,ax
+@@ -122,2 +136,3 @@ real16:
+     mov ds,ax
++    lidt [real_idtr-$$]
+     sti
+@@ -165,4 +180,3 @@ fail16_stage:
+ bits 32
+-copy32:
+-    mov ax,16
++copy32: mov ax,16
+     mov ds,ax
+@@ -170,2 +184,3 @@ copy32:
+     mov ss,ax
++    lidt [early_idtr]
+     mov esp,0x90000
+@@ -262,2 +277,15 @@ a20_kbc_ok:
+     ret
++early_fault:
++    cli
++    mov al,'F'
++    out 0xE9,al
++    hlt
++    jmp early_fault
++stage_code_end: db 0
++align 8
++early_idt: times 256 dq 0
++early_idtr: dw 256*8-1
++    dd early_idt
++real_idtr: dw 0x3FF
++    dd 0
+ times 4096-($-$$) db 0
+diff --git a/tools/i386-kernel-input.py b/tools/i386-kernel-input.py
+index 04899889..ab6dfab2 100644
+--- a/tools/i386-kernel-input.py
++++ b/tools/i386-kernel-input.py
+@@ -1948,3 +1948,3 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
+             active_group='document-editing'
+-            submit('DocAllocationCheck;', ['12'], 'doc-allocation-check')
++            submit('DocAllocationCheck;', ['13'], 'doc-allocation-check')
+             active_group='documents'
+@@ -1981,3 +1981,3 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
+                     'submitted_lines':sum(1 for line in log.read_text().splitlines() if line.startswith('INPUT LINE ')),
+-                    'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':12, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
++                    'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':13, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
+             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+diff --git a/tools/test-i386-guest-install-recovery.py b/tools/test-i386-guest-install-recovery.py
+index 6ffecab0..58858222 100644
+--- a/tools/test-i386-guest-install-recovery.py
++++ b/tools/test-i386-guest-install-recovery.py
+@@ -122,3 +122,3 @@ def run_committed_case(input_tool,build_tool,source,reference,out,boot_file,acce
+             'status':'ok','answers':[],'command_timeout':120,
+-            'commands':[('6*7;',['42']),('DocAllocationCheck;',['12'])]})
++            'commands':[('6*7;',['42']),('DocAllocationCheck;',['13'])]})
+     return {'cut_lba':0,'interrupted_process':state['pid'],
+diff --git a/tools/test-i386-retained-build.py b/tools/test-i386-retained-build.py
+index 51b8f766..cf27ed07 100644
+--- a/tools/test-i386-retained-build.py
++++ b/tools/test-i386-retained-build.py
+@@ -58,3 +58,6 @@ def check_console_alloc_wrappers(module):
+              if kind == 2 and start <= offset < end]
+-    if calls.count('NativeDocCAlloc') != 4 or calls.count('NativeDocMAlloc') != 1:
++    # Four structured-record allocations, two tags, and one canonical text base.
++    if (calls.count('NativeDocCAlloc') != 4 or
++            calls.count('NativeDocMAlloc') != 2 or
++            calls.count('DocEntryNewBase') != 1):
+         raise ValueError('Guest-built document loader bypasses allocation wrappers')
+diff --git a/tools/test-i386-retained-install.py b/tools/test-i386-retained-install.py
+index b0d844c5..a2fdc36b 100644
+--- a/tools/test-i386-retained-install.py
++++ b/tools/test-i386-retained-install.py
+@@ -81,3 +81,3 @@ def main():
+                   'commands': [('6*7;', ['42']),
+-                               ('DocAllocationCheck;', ['12'])]})
++                               ('DocAllocationCheck;', ['13'])]})
+     if sha(candidate) != candidate_hash or sha(args.source) != source_hash:
+diff --git a/tools/test-i386-selfhost-install.py b/tools/test-i386-selfhost-install.py
+index a48ae868..9427cb89 100644
+--- a/tools/test-i386-selfhost-install.py
++++ b/tools/test-i386-selfhost-install.py
+@@ -128,6 +128,6 @@ def main():
+     flat = files(target, {'/Probe/GuestBoot.bin'}).get('/Probe/GuestBoot.bin')
+-    if not flat or len(flat) > 960 * 512 - 4096:
++    if not flat:
+         raise ValueError('Guest-linked boot image is missing or oversized')
+-    expected = (original[:4608] + flat + bytes(960 * 512 - 4096 - len(flat)) +
+-                original[512 + 960 * 512:BOOT_AREA])
++    from i386_boot_area import expected_boot_area
++    expected = expected_boot_area(original, flat)
+     if target.read_bytes()[:BOOT_AREA] != expected:
+@@ -144,3 +144,3 @@ def main():
+                              'commands': [('6*7;', ['42']),
+-                                          ('DocAllocationCheck;', ['12'])]})
++                                          ('DocAllocationCheck;', ['13'])]})
+     if args.qmp_stdio and target.read_bytes() != installed_bytes:
+diff --git a/Kernel/I386/PublicDebugTypes.HH b/Kernel/I386/PublicDebugTypes.HH
+new file mode 100644
+index 00000000..93b398ea
+--- /dev/null
++++ b/Kernel/I386/PublicDebugTypes.HH
+@@ -0,0 +1,5 @@
++#ifndef I386_PUBLIC_DEBUG_TYPES_INCLUDED
++#define I386_PUBLIC_DEBUG_TYPES_INCLUDED
++//Canonical CBpt shape from Kernel/KernelA.HH.
++class CBpt { CBpt *next; U8 *addr,val,pad[7]; };
++#endif
+diff --git a/Kernel/I386/PublicResident.HC b/Kernel/I386/PublicResident.HC
+new file mode 100644
+index 00000000..8d694170
+--- /dev/null
++++ b/Kernel/I386/PublicResident.HC
+@@ -0,0 +1,52 @@
++Bool NativeResidentZ(U8 *name)
++{ I64 n=StrLen(name);return n>=2 && name[n-2]=='.' && name[n-1]=='Z'; }
++U8 *NativeResidentAlt(U8 *name)
++{
++  I64 n=StrLen(name),size=n+3;U8 *alt=I386HeapAlloc(console_config->heap,size,TRUE);
++  if(!alt)return 0;MemCpy(alt,name,n);
++  if(NativeResidentZ(name))alt[n-2]=0;else {alt[n]='.';alt[n+1]='Z';}
++  return alt;
++}
++CHashGeneric *NativeResidentLookup(U8 *name)
++{ return HashFind(name,Fs->gs->seth_task->hash_table,HTT_FILE); }
++U0 NativeResidentRemove(CHashGeneric *entry)
++{
++  CHashTable *table=Fs->gs->seth_task->hash_table;CHash **link;I64 i;
++  while(table) {
++    for(i=0;i<=table->mask;i++) {
++      link=table->body+i;
++      while(*link) {
++        if(*link==entry) {*link=entry->next;Free(entry->str);Free(entry->user_data0);Free(entry);return;}
++        link=&(*link)->next;
++      }
++    }
++    table=table->next;
++  }
++}
++U0 NativeResidentPut(U8 *name,U8 *stored,I64 bytes)
++{
++  CTask *owner=Fs->gs->seth_task;CHashGeneric *entry=NativeResidentLookup(name),*created=0;
++  U8 *data=0,*copy=0;I64 n=StrLen(name);
++  try {
++    data=MAlloc(bytes+1,owner);MemCpy(data,stored,bytes);data[bytes]=0;
++    if(!entry) {
++      created=CAlloc(sizeof(CHashGeneric),owner);copy=MAlloc(n+1,owner);MemCpy(copy,name,n+1);
++      created->str=copy;created->type=HTT_FILE;entry=created;
++    }
++  } catch {Free(data);Free(copy);Free(created);Fs->catch_except=FALSE;}
++  if(!created)Free(entry->user_data0);
++  entry->user_data0=data;entry->user_data1=bytes;
++  if(created)HashAdd(entry,owner->hash_table);
++}
++U8 *NativeResidentCopy(U8 *raw,I64 bytes,I64 attr,I64 *size)
++{
++  U8 *expanded=0,*result;I64 count=bytes;
++  if(attr&0x400) {
++    expanded=console_config->files->expand(console_config->heap,raw,bytes,&count);
++    if(!expanded)return 0;raw=expanded;
++  }
++  try {result=MAlloc(count+1);MemCpy(result,raw,count);result[count]=0;}
++  catch {if(expanded)I386HeapFree(console_config->heap,expanded);Fs->catch_except=FALSE;}
++  if(expanded)I386HeapFree(console_config->heap,expanded);
++  *size=count;return result;
++}
+diff --git a/Kernel/I386/ResidentFiles.HC b/Kernel/I386/ResidentFiles.HC
+new file mode 100644
+index 00000000..52bd9cca
+--- /dev/null
++++ b/Kernel/I386/ResidentFiles.HC
+@@ -0,0 +1,48 @@
++//Mounted-service cache. Callers hold IF clear; entries own stored bytes.
++CI386ResidentFile *I386ResidentFind(CI386FileVolumes *volumes,U8 *name)
++{
++  CI386ResidentFile *entry=volumes->resident;
++  I64 i;
++  while(entry) {
++    i=0; while(name[i] && name[i]==entry->name[i]) i++;
++    if(name[i]==entry->name[i]) return entry;
++    entry=entry->next;
++  }
++  return 0;
++}
++Bool I386ResidentStore(CI386FileVolumes *volumes,CI386Heap *heap,U8 *name,U8 *data,I64 size,Bool resident)
++{
++  CI386ResidentFile *entry=0,*old,*previous=0,*cursor;
++  I64 length=0,i;
++  if(resident) {
++    heap=volumes->resident_heap; if(!heap) return FALSE;
++    while(name[length]) length++;
++    if(size<0 || size>0x7FFFFFFF-length-sizeof(CI386ResidentFile)-2) return FALSE;
++    entry=I386HeapAlloc(heap,sizeof(CI386ResidentFile)+length+size+2,TRUE);
++    if(!entry) return FALSE;
++    entry->heap=heap; entry->size=size; entry->name=(entry+1)(U8 *);
++    entry->data=entry->name+length+1;
++    for(i=0;i<=length;i++) entry->name[i]=name[i];
++    for(i=0;i<size;i++) entry->data[i]=data[i];
++  }
++  old=I386ResidentFind(volumes,name); cursor=volumes->resident;
++  while(cursor && cursor!=old) {previous=cursor;cursor=cursor->next;}
++  if(old) {
++    if(previous) previous->next=old->next; else volumes->resident=old->next;
++    I386HeapFree(old->heap,old);
++  }
++  if(entry) {entry->next=volumes->resident;volumes->resident=entry;}
++  return TRUE;
++}
++U8 *I386ResidentRead(CI386ResidentFile *entry,CI386Heap *heap,I64 *size,I64 *attr,Bool raw)
++{
++  U8 *result;
++  I64 i,bytes=entry->size,attributes=FileAttr(entry->name,0);
++  if(!raw && attributes&0x400) result=I386ExpandBuf(heap,entry->data,bytes,&bytes);
++  else {
++    result=I386HeapAlloc(heap,bytes+1,TRUE);
++    if(result) for(i=0;i<bytes;i++) result[i]=entry->data[i];
++  }
++  if(result) {if(size)*size=bytes;if(attr)*attr=attributes;}
++  return result;
++}
+diff --git a/Kernel/I386/TaskCd.HC b/Kernel/I386/TaskCd.HC
+new file mode 100644
+index 00000000..33c03117
+--- /dev/null
++++ b/Kernel/I386/TaskCd.HC
+@@ -0,0 +1,86 @@
++Bool I386TaskCdExists(CI386RedSea *volume,U8 *absolute)
++{
++  CI386RedSeaEntry entry;
++  Bool result=FALSE;
++  if(!volume || !volume->io || !I386RedSeaBegin(volume)) return FALSE;
++  if(I386RedSeaResolve(volume,volume->root,absolute+2,&entry)==1 && entry.attr&0x10) result=TRUE;
++  if(!I386RedSeaEnd(volume)) result=FALSE;
++  return result;
++}
++Bool I386TaskCd(U8 *dirname,Bool make_dirs)
++{
++  U32 flags=I386IrqSave;
++  CI386Task *task=I386TaskSelf;
++  CI386TaskFiles *state;
++  CI386Heap *heap;
++  CFilePathContext paths;
++  CI386FileVolumes *volumes;
++  CI386RedSea *volume;
++  U8 *buffer=0,*mapped=0,*cursor,*component,*clean=0;
++  I64 capacity=8,length=3,i,count,old,drive,ch;
++  Bool result=FALSE,root=FALSE;
++  if(dirname && !*dirname) {I386IrqRestore(flags);return TRUE;}
++  state=I386TaskFilesBorrow(task,&paths,&volumes);
++  if(!state) goto task_cd_done;
++  heap=state->heap;
++  if(!dirname) dirname=paths.home_dir;
++  if(!dirname) goto task_cd_release;
++  for(i=0;dirname[i];i++) capacity++;
++  for(i=0;paths.cur_dir[i];i++) capacity++;
++  for(i=0;paths.home_dir && paths.home_dir[i];i++)capacity++;
++  if(capacity>0x7FFFFFFF) goto task_cd_release;
++  buffer=I386HeapAlloc(heap,capacity,TRUE);
++  mapped=I386FileNameAbs(heap,&paths,dirname);
++  if(!buffer || !mapped) goto task_cd_release;
++  drive=mapped[0]; volume=volumes->letter[drive-'A'];
++  if(!volume || !volume->io) goto task_cd_release;
++  cursor=dirname;
++  if(cursor[0] && cursor[1]==':') {cursor+=2; if(drive!=paths.cur_drv) root=TRUE;}
++  if(*cursor=='/' || !*cursor) {root=TRUE;if(*cursor=='/')cursor++;}
++  buffer[0]=drive;buffer[1]=':';buffer[2]='/';
++  if(!root) {for(i=1;paths.cur_dir[i];i++)buffer[length++]=paths.cur_dir[i];}
++  buffer[length]=0;
++  clean=I386HeapAlloc(heap,capacity,TRUE);if(!clean)goto task_cd_release;
++  while(*cursor && (paths.white_space[*cursor>>5]>>(*cursor&31))&1)cursor++;
++  count=0;while(ch=*cursor++) {
++    if((paths.white_space[ch>>5]>>(ch&31))&1 || ch>=31)clean[count++]=ch;
++  }
++  while(count && (paths.white_space[clean[count-1]>>5]>>(clean[count-1]&31))&1)count--;
++  clean[count]=0;cursor=clean;result=TRUE;
++  while(*cursor && result) {
++    component=cursor;count=0;while(*cursor && *cursor!='/'){cursor++;count++;}
++    if(*cursor=='/')cursor++;
++    if(!count) {length=3;buffer[length]=0;}
++    else if(count==1 && component[0]=='~') {
++      if(!paths.home_dir) {result=FALSE;break;}
++      length=0;while(paths.home_dir[length]) {buffer[length]=paths.home_dir[length];length++;}
++      buffer[length]=0;drive=buffer[0];volume=volumes->letter[drive-'A'];
++      if(!volume || !I386TaskCdExists(volume,buffer))result=FALSE;
++    }
++    else if(count==1 && component[0]=='.') {}
++    else if(count==2 && component[0]=='.' && component[1]=='.') {
++      while(length>3 && buffer[length-1]!='/')length--;
++      if(length>3)length--;buffer[length]=0;
++    } else {
++      old=length;if(length>3)buffer[length++]='/';
++      for(i=0;i<count;i++)buffer[length++]=component[i];buffer[length]=0;
++      if(!I386TaskCdExists(volume,buffer)) {
++        if(!make_dirs || !I386TaskDirMk(buffer,0) || !I386TaskCdExists(volume,buffer)) {
++          length=old;buffer[length]=0;result=FALSE;
++        }
++      }
++    }
++  }
++  if(!I386TaskFilesRelease(state)) {state=0;result=FALSE;goto task_cd_free;}
++  state=0;
++  if(!I386TaskFilesSet(task,buffer+2,drive))result=FALSE;
++  goto task_cd_free;
++task_cd_release:
++  I386TaskFilesRelease(state);
++task_cd_free:
++  if(clean)I386HeapFree(heap,clean);
++  if(mapped)I386HeapFree(heap,mapped);
++  if(buffer)I386HeapFree(heap,buffer);
++task_cd_done:
++  I386IrqRestore(flags);return result;
++}

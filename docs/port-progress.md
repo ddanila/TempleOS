@@ -12258,3 +12258,20 @@ syntax checks PASS. Fresh original1,270-source two-generation bootstrap PASS;
 `build/text-run-failure-kernel` cross build running. Neither new failure case
 claimed runtime-qualified yet. Existing text-run full suite/native build and
 Caller full-chain no-FPU run remain separate frozen source epochs.
+
+
+### Complete text-run candidate archived and building natively (2026-10-05)
+
+Failure-coverage candidate cross-build `build/text-run-failure-kernel` PASS:
+495,992-byte kernel and 386 boot audit96BIOS/209protected-modeinstructions.
+`build/text-run-failure-focused` now runs DocAllocationCheck13, three exact
+large-source round trips, DocAllocationCheck13 again, and existing binary
+persistence8 on486withoutFPU/8MiB. Native six-provider rebuild separately starts
+in `build/text-run-failure-native-build`. No runtime/native PASS claimed yet.
+
+`docs/patches/i386-text-run-integrated-candidate.patch` is a single cumulative
+snapshot against root main, including the latest Caller integration, text-run
+loader, both allocation-failure cases and matching host contracts. Root apply
+check PASS. Incremental patches and original failure captures remain retained.
+This archive is a candidate, not source promotion or completed release; running
+text-run-only and Caller no-FPU qualifications stay pinned to their own epochs.
