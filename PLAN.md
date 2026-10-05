@@ -12359,3 +12359,21 @@ not a renderer failure. New build/text-base-extended-restored-probe.py restores
 the display within a wrapper before returning its Bool and is live session
 95025. Original full TextFrameDemo COMMAND ERROR remains independently valid
 and unresolved. No completed graphics, installer or release pass claimed.
+
+Fresh renderer probe passes; isolate full-suite failure (2026-10-05):
+build/text-base-extended-restored-probe/result.json PASS at 8 MiB/486, four
+commands, startup 22.28694190410897 seconds. Wrapper invokes real renderer,
+restores console before returning Bool, verifies success and arithmetic42.
+This corrects first probe's invalid post-graphics text expectation and proves
+fresh-console renderer functionality, not full text-pattern/frame coverage.
+Existing four-mode text-frames group now runs separately with hardware pixel
+and hotkey checks, session 49616, out build/extended-text-frames-focused. Compare
+with full-suite TextFrameDemo failure; do not assume memory pressure is proven.
+
+Immediate-MOV plus consistent-capacity assembler and renderer-cleanup candidate
+fresh original bootstrap passes both generations. Full kernel build/test live
+session 28543, build/extended-assembler-immediate-prototype/build/
+extended-assembler-immediate-kernel.log. Earlier capacity full test and rejected
+native tests retain their handles/evidence; no repeated unchanged restart.
+Next actual native exception check must use the new resident compiler image.
+Full installation, two native generations and release remain incomplete.
