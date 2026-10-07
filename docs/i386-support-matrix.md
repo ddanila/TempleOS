@@ -5,8 +5,9 @@ The `i386-parser-record-prefix-cross` candidate passes normal 8 MiB startup,
 nine runtime/VGA commands, and 16 integer/F64 commands at 16 MiB on `486,-fpu`.
 Complete 16 MiB diagnostics pass, including the new allocation-budget and public
 optimizer probes in both phases. Floating-point and saved assembly tests also
-pass at 8 MiB. Full native rebuilding is still running; successive generations
-and installation remain unqualified. The entries below describe older snapshots.
+pass at 8 MiB. Full native rebuilding fails with OutMem in DocRecalcCore at 16 MiB. The
+flat kernel builds, but installation rejects 32 MiB disks due to a 16 MiB-only
+guard. All runs are terminal; successive generations remain unqualified. The entries below describe older snapshots.
 
 Current worktree candidate (2026-10-07): frontend-only optimizer scratch
 release, with the direct optimizer stack-inspection contract preserved. Bootstrap,

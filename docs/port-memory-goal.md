@@ -1,5 +1,10 @@
 # Bounded-memory self-hosting goal
 
+Latest outcome: 8 MiB boot and focused regressions pass, but the accelerated
+full retained build fails with OutMem and flat-kernel installation rejects
+32 MiB disks. All runs below are now terminal; earlier running descriptions
+are historical. See the final section for precise remaining failures.
+
 Deliver reliable 386/VGA boot and native rebuilding while preserving HolyC,
 DolDoc, existing stack limits, public APIs, and ownership/unwind behavior.
 
@@ -129,3 +134,27 @@ does not replace the 386 executable audit or the already passed TCG no-FPU
 regressions. Neither accelerated run is yet recorded as passing. The complete
 generation runner supports `--accel kvm` for the long compiler runs too; use the
 qualified retained-build directory for whichever run actually passes.
+
+## Terminal results and next fixes
+
+- `build/i386-parser-record-prefix-retained-kvm-16m/result.json`: FAIL in
+  `DocRecalcCore.HC`, source line `0x480` (1152), request `0x1014` (4116),
+  heap used `0xD75698` / size `0xD7C200`, largest block `0xD18` (3352).
+  The earlier failure was at line `0x43A`; smaller parser records help but do
+  not yet make the whole module fit. The explicit rejection detector worked.
+- `build/i386-parser-record-prefix-flat-development-kvm/result.json`: all six
+  flat modules and boot linking completed, producing a 544,288-byte kernel,
+  but `I386InstallBootImage` returned 0. Both disks have 65,536 sectors; the
+  installer in `InstallBootArea.HC` requires exactly 32,768. The target's full
+  reserved boot area remains blank. A captured VGA frame records the zero.
+- Both redundant TCG development/build runs were stopped after preserving their
+  partial evidence. They are not passes. No native generations were launched.
+
+Next: regression-test and fix the installer's 16 MiB-only disk guard while
+preserving blank-target validation and boot-sector-last publication; make the
+harness reject explicit zero answers promptly. For compiler memory, inspect
+private frontend IR storage/lifetimes: i386 emits machine code outside the
+original 131-byte IC body union, while optimizer tree links occupy much less.
+Any compact private representation must preserve full public IC allocations,
+node/tree pointers, retirement, unwind and inline-assembly behavior. This is an
+investigation direction, not an implemented or qualified compact-IR change.
