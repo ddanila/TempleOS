@@ -12,7 +12,9 @@
 #include "/Compiler/I386/Lex.HH"
 #include "/Kernel/I386/Cpu.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import U8 *I386HeapAllocHigh(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import U0 KernelLog(U8 *text);
+#define I386_PARSER_FAILURE_TRACE 1
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
 import U0 SysTry(U8 *catch_start,U8 *untry_start);
@@ -30,6 +32,11 @@ import U32 char_bmp_hex_numeric[16];
 import U32 char_bmp_dec_numeric[16];
 import U32 char_bmp_non_eol[16];
 import U32 char_bmp_non_eol_white_space[16];
+#include "/Compiler/I386/LexState.HH"
+import Bool I386LexFileOwned(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
+import Bool I386LexFileReleaseDetached(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
+import Bool I386LexSnapshotValid(CI386Heap *heap,CCmpCtrl *cc,CI386LexSnapshot *snapshot);
+import Bool I386LexSnapshotsPin(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file,Bool *pinned);
 import CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
 import Bool I386LexAttachDocRoot(CI386Heap *heap,CCmpCtrl *cc,CDoc *doc);
 import CLexFile *LexFileReleaseTop(CCmpCtrl *cc,CLexFileRelease *owner);

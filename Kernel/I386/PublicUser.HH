@@ -17,4 +17,10 @@
 #include "/Kernel/I386/PublicFormat.HH"
 #include "/Kernel/I386/PublicSound.HH"
 #include "/Kernel/I386/PublicMouse.HH"
+#include "/Kernel/I386/PublicMacro.HH"
+#include "/Kernel/I386/PublicMenu.HH"
+#include "/Kernel/I386/PublicExecution.HH"
+#ifdef I386_GRAPHICS_STARTED
+#include "/Kernel/I386/PublicRaster.HH"
+#endif
 #endif

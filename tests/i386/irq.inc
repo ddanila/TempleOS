@@ -277,6 +277,10 @@ i386_exception_callback:
     cli
     hlt
     jmp .unhandled
+; The isolated input/IRQ corpus does not provide a production debugger.
+; Unexpected redirection into either debugger hook is a visible test failure.
+i386_unexpected_debug_entry:
+    jmp failed
 i386_exception_stubs_end:
 align 4
 i386_exception_entries:

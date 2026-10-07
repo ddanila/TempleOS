@@ -1,5 +1,14 @@
 #ifndef I386_PUBLIC_KERNEL_INCLUDED
 #define I386_PUBLIC_KERNEL_INCLUDED
+#ifndef NULL
+#define NULL 0
+#endif
+#ifndef ON
+#define ON 1
+#endif
+#ifndef OFF
+#define OFF 0
+#endif
 //Load with I386_INPUT_ATOMIC_DEFINES so failed headers remain retryable.
 #include "/Kernel/I386/PublicTaskTypes.HH"
 #include "/Kernel/CharCodes.HH"
@@ -13,6 +22,7 @@
 #include "/Kernel/DocTypes.HH"
 #include "/Kernel/TimeTypes.HH"
 public extern CCntsGlbls cnts;
+public _extern _ADAM_TASK CTask *adam_task;
 public _intern 0x15 CTask *Fs();
 public _intern 0x17 CCPU *Gs();
 #endif

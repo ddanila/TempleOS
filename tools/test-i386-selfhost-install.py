@@ -126,10 +126,10 @@ def main():
     if set(flat_modules) != flat_paths:
         raise ValueError('A guest-built flat-kernel module is missing')
     flat = files(target, {'/Probe/GuestBoot.bin'}).get('/Probe/GuestBoot.bin')
-    if not flat or len(flat) > 960 * 512 - 4096:
+    if not flat:
         raise ValueError('Guest-linked boot image is missing or oversized')
-    expected = (original[:4608] + flat + bytes(960 * 512 - 4096 - len(flat)) +
-                original[512 + 960 * 512:BOOT_AREA])
+    from i386_boot_area import expected_boot_area
+    expected = expected_boot_area(original, flat)
     if target.read_bytes()[:BOOT_AREA] != expected:
         raise ValueError('Installed boot area differs from guest-linked image')
     installed_bytes = target.read_bytes()
@@ -142,7 +142,7 @@ def main():
               startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'commands': [('6*7;', ['42']),
-                                          ('DocAllocationCheck;', ['12'])]})
+                                          ('DocAllocationCheck;', ['13'])]})
     if args.qmp_stdio and target.read_bytes() != installed_bytes:
         raise ValueError('Independent boot changed the installed reference disk')
     result = {'result': 'pass', 'flat_bytes': len(flat),

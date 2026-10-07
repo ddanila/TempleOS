@@ -19,7 +19,7 @@ I64 NativeControlTest()
   U8 *source,*prompt;
   CLexHashTableContext *hash;
   CCodeMisc *misc;
-  I64 size,i,successes=0,failures=0,used;
+  I64 size,i,successes=0,failures=0,used,lines=0;
   U32 flags=GetRFlags;
   for(size=24;size<=1024;size+=8) {
     if(!I386HeapInit(&small,0x61000,size)) return 70;
@@ -61,6 +61,16 @@ I64 NativeControlTest()
   if(!cc->ps || !cc->cur_str || !cc->cur_help_idx || !cc->dollar_buf ||
       !I386HeapInit(&foreign,0x62000,512) || I386CmpCtrlDel(&foreign,cc) ||
       !I386CmpCtrlDel(&state_heap,cc) || state_heap.used || state_heap.allocations) return 78;
+  //Control teardown also releases sources detached by raw EOF under snapshots.
+  cc=I386CmpCtrlNew(&state_heap,"Z",CCF_DONT_FREE_BUF,"Retained",0,char_bmp_alpha_numeric);
+  if(!cc || !I386LexIncludeCopy(&state_heap,cc,"Outer","a",TRUE) ||
+      !I386LexIncludeCopy(&state_heap,cc,"Inner","x",TRUE) ||
+      !I386LexPush(&state_heap,cc) || !I386LexPush(&state_heap,cc) ||
+      I386LexRawChar(&state_heap,cc,&lines)!='x' ||
+      I386LexRawChar(&state_heap,cc,&lines)!='a' ||
+      I386LexRawChar(&state_heap,cc,&lines)!='Z' ||
+      !I386CmpCtrlDel(&state_heap,cc) || state_heap.used || state_heap.allocations ||
+      !I386HeapValid(&state_heap)) return 103;
   //A missing document service rejects before changing the control or its graph.
   cc=I386CmpCtrlNew(&state_heap,0,0,"Document",0,char_bmp_alpha_numeric);
   if(!cc) return 79;

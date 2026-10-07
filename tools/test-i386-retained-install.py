@@ -79,7 +79,7 @@ def main():
               accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, startup_timeout=180, startup_check={
                   'status': 'ok', 'answers': [],
                   'commands': [('6*7;', ['42']),
-                               ('DocAllocationCheck;', ['12'])]})
+                               ('DocAllocationCheck;', ['13'])]})
     if sha(candidate) != candidate_hash or sha(args.source) != source_hash:
         raise ValueError('Installation test changed a preserved source/candidate image')
     result = {'result': 'pass', 'installed': list(modules),

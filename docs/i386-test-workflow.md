@@ -31,6 +31,31 @@ The input harness tests the supplied image; it does not rebuild it. Keep the
 source checkout and image together, especially the font and frame expectations.
 Do not replace the image during a run.
 
+For the current startup-memory regression, use a fresh output directory:
+
+```sh
+python3 tools/test-i386-startup-memory.py build/i386-kernel/kernel.img --out build/startup-memory-current
+```
+
+The supplied image must match its adjacent cross-build manifest and current
+Kernel/Compiler sources. The test copies the disk, boots 486 without an FPU at
+8 MiB, checks persistent static state and a compiled string-returning function,
+then arithmetic and exact VGA/text restoration. Startup over 60 seconds fails.
+`--ram-mib 16` is a diagnostic probe and does not satisfy the 8 MiB gate. This
+focused test does not establish complete OS, self-hosting or release acceptance.
+
+Parent-symbol ownership profiles can be selected without changing the OS default:
+
+```sh
+python3 tools/test-i386-parent-symbol-delete.py build/i386-kernel/kernel.img --stack-size 65536 --out build/parent-64k-current
+python3 tools/test-i386-parent-symbol-delete.py build/i386-kernel/kernel.img --ram-mib 16 --out build/parent-default-16m-current
+```
+
+The first explicitly requests a 64 KiB child stack. The second uses Spawn's
+unchanged default with 16 MiB diagnostic RAM. Their reports pin the actual
+transferred fixture and record the selected stack/RAM profile; neither proves
+that default-stack Spawn fits the 8 MiB interactive budget.
+
 The current fully guest-built candidate is
 `build/i386-kernel/selfhost-install-capacity-lexfix-kvm/target.img`. Its two
 guest-built generations, current-source QEMU profiles and local package are
@@ -5782,3 +5807,134 @@ qualified six-provider build, stage-listing and fresh output arguments.
 These CPU/QMP options apply to every build/install stage and are recorded in
 its report. Native development stages currently use16MiB; installed workflow
 qualification remains a separate8MiB gate.
+
+## Public backing accounting regression
+
+A live task heap may retain small-allocation pages after temporary payloads are
+freed. Diagnostic recovery therefore checks live public bytes and exact physical
+payload accounting separately from verified owned backing. The dedicated fixture
+requires retained cache to pass while public/private payload leaks and malformed
+backing totals, spans and ownership counts fail. It also checks permanent bytes,
+IRQ preservation and complete provider teardown. Run both heap validators:
+
+```sh
+python3 tools/test-i386.py --heap --heap-backing-accounting --qmp-stdio
+python3 tools/test-i386.py --heap --heap-backing-accounting --heap-source --qmp-stdio
+```
+
+## Source-pinned diagnostic startup
+
+Run the diagnostic image through the same provenance checks and nine retained
+code/data/VGA commands used by normal startup:
+
+```sh
+python3 tools/test-i386-startup-memory.py build/i386-kernel/kernel-diagnostics.img --diagnostics --ram-mib 16 --out build/i386-diagnostic-startup-check
+```
+
+Use a fresh output directory. This requires the diagnostic disk hash from the
+adjacent cross-build result, current Kernel/Compiler source hashes, and the input
+harness hash. Diagnostic startup has its existing 1200-second observation bound;
+the normal 8 MiB startup budget remains 60 seconds. An ordinary `--ram-mib 16`
+run is a resource probe and does not claim diagnostic coverage. The memory probe
+uses a separate backing pool so permanent root graphics remain live, while the
+real public APIs and exact provider teardown remain tested.
+
+## Loader direct-call stack budget
+
+The diagnostic worker has a 16 KiB stack. Audit emitted loader frames and resolved
+direct CALL instructions, including a 6 KiB caller/parser allowance:
+
+```sh
+python3 tools/test-i386-loader-stack-budget.py build/i386-kernel/exports/Kernel.t32m --out build/i386-loader-stack-budget
+```
+
+Use a fresh output directory. The checker excludes declared data ranges and
+reports the deepest direct-call path and module hash. It rejects unknown frames
+or recursive direct-call paths. Indirect callbacks still require the actual
+diagnostic runtime; this static check does not claim whole-OS stack safety.
+
+For a complete current-source retained rebuild, create the source image with
+`python3 tools/build-i386-kernel.py --compiler-qmp-stdio --disk-mib 32 --out build/<fresh-cross>`.
+The default 16 MiB disk remains available for focused checks, but its current
+free space cannot retain all six rebuilt providers. Disk capacity is independent
+of the 8 MiB interactive and 16 MiB rebuild RAM profiles. The image includes
+the entire Adam source tree and checks literal include dependencies before
+packaging completes.
+
+### Lexer snapshot and control regression gates
+
+Run all three native suites after changes to snapshot or source ownership:
+
+```sh
+python3 tools/test-i386.py --lex-state --qmp-stdio
+python3 tools/test-i386.py --lex-state --lex-control --qmp-stdio
+python3 tools/test-i386.py --lex-state --lex-snapshot-boundary --qmp-stdio
+```
+
+The original suite retains borrowed-state compatibility, file ownership, raw
+input, bit-instruction coverage and include-transfer checks. Compiler-control
+cleanup now runs separately with the real hash-table implementation. The boundary
+suite checks macro EOF, parent-position restoration, nested restore/discard,
+malformed snapshot rejection and allocation failure recovery. Separate output
+directories preserve each result. This split keeps the boot transfer and native
+arena limits unchanged. Passing these suites does not prove that the full guest
+compiler can rebuild the scanner or all retained providers; those are subsequent
+integration gates.
+
+After the fresh cross image passes, run the aggregate initializer integration
+regression before the full six-provider rebuild:
+
+```sh
+python3 tools/test-i386-macro-initializer.py build/doc-layout-runtime-cross-v69/kernel.img --out build/i386-macro-initializer-v69
+```
+
+This checks a direct initializer, its single-line macro equivalent, and the
+original displayable bitmap macro. It requires successful AOT compilation,
+exact saved source bytes, valid persisted module layouts and function exports,
+and the expected HolyC results when the sources are included interactively.
+The final arithmetic check verifies that the command loop remains usable.
+
+### Bare HolyC assembly regression
+
+Use a fresh output directory and a cross-build whose Kernel/Compiler source
+hashes still match the worktree:
+
+```sh
+python3 tools/test-i386-bare-assembly.py build/i386-bare-assembly-cross-b-v69/kernel.img --out build/i386-bare-assembly-check
+python3 tools/test-i386.py --keywords --qmp-stdio
+```
+
+The first test uses 486,-fpu and 16 MiB. It compiles and saves modules, checks
+persisted source bytes and function exports, then includes and executes source
+to verify interrupt disabling/restoration and the following HolyC statement.
+It also reads and directly executes the two saved relocation-free, single-export
+module payloads, then frees their FileRead buffers. It covers bare instructions
+and mixed assembly blocks/bare instructions. This direct payload check does
+not qualify general module linking/loading or the whole OS. The second test
+checks native keyword/opcode lookup, owned storage, and failure cleanup at
+8 MiB. Its isolated pass does not imply the full OS boots at 8 MiB.
+
+For this candidate, 16 MiB diagnostic startup passes, while normal 8 MiB
+startup fails from compiler heap exhaustion. Keep that resource gate open.
+
+For the execution-answer contract on a candidate that is still being qualified
+at 8 MiB, use the explicit diagnostic RAM level:
+
+```sh
+python3 tools/test-i386-exe-puts-answer.py build/i386-kernel/kernel.img --ram-mib 16 --out build/i386-execution-answer-16m
+```
+
+This checks integer/F64 answer state and JUST_LOAD behavior; it does not qualify
+8 MiB startup. Omitting `--ram-mib` retains the existing 8 MiB check.
+
+Conditional frontend floating-helper allocation must retain software floating
+behavior with runtime operands (rather than only folded constants):
+
+```sh
+python3 tools/test-i386-frontend-float-context.py build/i386-kernel/kernel.img --ram-mib 16 --out build/i386-frontend-float-context-16m
+```
+
+The checker pins the image and input harness to the cross-build manifest and
+checks conversions, arithmetic, comparisons, sqrt/abs and retained F64 static
+state on `486,-fpu`. This is focused behavior coverage; use the separate startup
+checker for the 8 MiB boot budget and existing numeric oracles for IEEE coverage.

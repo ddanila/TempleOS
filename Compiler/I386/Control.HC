@@ -1,4 +1,5 @@
 #include "/Compiler/I386/Control.HH"
+#include "/Compiler/I386/LexState.HH"
 #include "/Compiler/ControlRelease.HC"
 #include "/Compiler/CodeCtrl.HC"
 #include "/Kernel/I386/Cpu.HH"
@@ -27,6 +28,7 @@ class CI386CmpCtrl {
   U32 code_headers,code_busy;
   CI386ParserAllocation *parser_next,*parser_last;
   CHashTable *private_defines;
+  U8 *frontend; //Borrowed registered parser state, valid while control lives.
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {
@@ -223,12 +225,16 @@ Bool I386CmpCtrlDelete(CI386Heap *heap,CCmpCtrl *cc,
   CLexFileRelease owner;
   CI386CmpRelease state;
   U32 irq=I386IrqSave;
+  Bool pinned;
   if(!I386CmpControlValid(heap,cc) || owned->code_busy) goto control_delete_failed;
   task=owned->task;
   if(task && (!task->lifetime_refs || !I386CmpTaskOwnerValid(task,heap,task->hash_table) ||
       task->compiler_busy && !draining)) goto control_delete_failed;
   if(owned->active && !I386CmpActiveValid(owned)) goto control_delete_failed;
   if(!I386CmpReleaseReady(cc,document)) goto control_delete_failed;
+  if(!I386LexSnapshotsPin(heap,cc,cc->lex_include_stk,&pinned)) goto control_delete_failed;
+  while(cc->lex_prs_stk)
+    if(!I386LexPop(heap,cc,FALSE)) goto control_delete_failed;
   if(owned->active) I386CmpUnlink(owned);
   owned->signature=0;
   if(task) task->compiler_busy=1;

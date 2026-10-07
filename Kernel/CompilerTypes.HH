@@ -579,17 +579,7 @@ class CAOTCtrl
 #define TK_INS_BIN_SIZE 0x126
 #define TK_TKS_NUM	0x127
 
-class CLexHashTableContext
-{
-  CLexHashTableContext *next;
-  I64	old_flags,hash_mask;
-  CHashFun *local_var_lst,
-	*fun;
-  CHashTable *hash_table_lst,
-	*define_hash_table,
-	*local_hash_table,
-	*glbl_hash_table;
-};
+#include "/Kernel/LexHashContextTypes.HH"
 
 //CmpCtrl flags
 #define CCF_CMD_LINE		0x001

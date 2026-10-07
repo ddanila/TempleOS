@@ -1,9 +1,3309 @@
 # i386 port progress
 
+Current status: [2026-10-07 saved checkpoint](port-checkpoint-2026-10-07.md). The latest 8 MiB
+startup test failed; no tests remain running. Earlier entries describe historical
+snapshots, not current release qualification.
+
 The full objective and acceptance gates remain in `PLAN.md`. A standalone
 32-bit TempleOS environment now boots, edits and executes HolyC, persists DolDoc
 documents, and rebuilds itself. The complete OS and release gates remain open;
 the dated entries below record the scope of each verified checkpoint.
+
+## Allocation observer footprint: phase logging candidate (2026-10-07)
+
+The kernel-only caller trace adds 800 flat-kernel bytes and shifts 8 MiB startup
+back to the earlier 4,116-byte expression-stack failure (heap 0x65AFD0 / 0x65C000,
+largest 0xF80), so it does not prove the normal image's later 4,096-byte caller.
+Evidence: `build/i386-optimizer-caller-trace-boot-v69-8m/result.json`. Disable the
+temporary kernel trace after preserving this result; no recovery was achieved.
+
+For the next attribution candidate, output-phase KernelLog messages already
+present in the runtime are temporarily emitted for normal expression output as
+well as module output. Their strings and calls remain resident, while their
+module-only conditions are removed. This avoids adding another frame formatter
+and can distinguish failure before output entry from backend folding. It changes
+debug-port logging only; flags, IR, parsing and publication behavior are unchanged.
+This is diagnostic worktree state, not a release qualification. Restore selective
+logging after recording the attribution. The two-generation bootstrap passes with every pinned source and generated
+binary hash verified in `build/i386-output-phase-bootstrap-v69-runner.log`.
+Native cross-build passes in `build/i386-output-phase-cross-v69`, including
+the 386 instruction audit. The fresh 8 MiB startup reproduction failed in
+`build/i386-output-phase-boot-v69-8m`: a 4,096-byte request exceeded the largest
+free block (0xE18), with heap usage 0x65B0A0 / 0x65C200. Completed output
+markers precede the rejection; the exact allocation caller remains unproven. Any apparent boot recovery must be scoped
+to this logging candidate, and final selective logging requires qualification.
+
+## Compact output context: unchanged failing allocation (2026-10-07)
+
+The fresh output-context image builds and passes the 386 instruction audit, but
+normal 8 MiB startup fails with the same 4,096-byte request and identical heap
+accounting (0x65B2D0 / 0x65C200, largest 0xE18). Evidence:
+`build/i386-output-bound-compact-boot-v69-8m/result.json`. Runtime payload size
+is unchanged at 1,723,992 bytes. The dead-field cleanup does not address this
+failure point; remaining attribution is not inferred as a proven backend phase.
+
+A temporary kernel-only `I386_ARENA_CALLER_TRACE` now prints the allocator caller
+and its parent with two unrolled frame reads. Runtime caller formatting stays
+disabled. The trace must identify whether the remaining stack request originates
+in frontend optimization or backend folding before choosing another lifetime
+change. This worktree is a diagnostic candidate, not a release image; disable
+the temporary kernel trace after preserving the attribution evidence. The trace
+snapshot passes two-generation bootstrap with source/generated-binary hashes
+verified and the native cross-build/386 instruction audit in
+`build/i386-optimizer-caller-trace-cross-v69`. Its fresh 8 MiB reproduction is
+running in `build/i386-optimizer-caller-trace-boot-v69-8m`; caller attribution
+remains pending.
+The compact-output snapshot passes all 50 publication diagnostic cases plus
+nine final runtime/VGA commands at 16 MiB in
+`build/i386-output-bound-compact-diag-v69-16m`, and the runtime floating-context
+regression passes in `build/i386-output-bound-compact-float-v69-16m`. These
+immutable snapshot results do not qualify the later kernel-only trace source.
+
+## Output-context dead storage removed candidate (2026-10-07)
+
+The normal scratch image passes the runtime floating regression at 16 MiB but
+still fails 8 MiB startup (`build/i386-frontend-scratch-normal-boot-v69-8m`).
+Its request is now 4,096 bytes (rather than the 4,116-byte expression stack),
+with heap used 0x65B2D0 / 0x65C200 and largest free block 0xE18. The original
+expression allocation hurdle was passed, but boot recovery is not proven.
+The exact new caller is untraced in this normal build; its size matches the
+optimizer scratch stack, so attribution remains an inference until verified.
+
+CI386FrontendBound output storage still contained a dummy CHashFun and a
+CI386Backend type resolver left from when the same structure was used for
+expression/command parsing. All active fun/typer references now use the separate
+CI386FrontendParseBound. Removed these unused fields only from the output bound;
+the parse context and complete floating helper registry retain their fields.
+This changes private scratch layout, not compiler service ABI or capabilities.
+Fresh bootstrap passes with source/generated-binary hash agreement, and the
+native cross-build passes the 386 instruction audit in
+`build/i386-output-bound-compact-cross-v69`. Normal 8 MiB startup, full 16 MiB
+diagnostics and runtime F64 checks are running in matching
+`build/i386-output-bound-compact-*` directories. Runtime recovery and full
+self-hosting compilation remain unqualified. The preceding normal scratch image
+passed all 50 publication cases and both optimizer/branch/emitter/backend phases
+in `build/i386-frontend-scratch-normal-diag-v69-16m`, preserving the direct
+optimizer inspection and unwind contracts before this private layout change.
+
+## Diagnostic caller tracing gated from normal builds (2026-10-07)
+
+Frontend-only scratch release still fails 8 MiB startup at the 4,116-byte
+expression-stack allocation (`build/i386-frontend-scratch-boot-v69-8m`). Heap
+used is now 0x65B510 / 0x65C000, largest free block 0xA40. Its runtime F64
+regression passes at 16 MiB. Complete diagnostics also pass, including all 50
+publication cases, both optimizer/branch/emitter/backend phases and nine final
+runtime/VGA commands in `build/i386-frontend-scratch-diag-v69-16m`. Direct
+optimizer inspection and failure cleanup remain verified; see its
+`scratch-contract-check.json`. These results predate the trace gate. Module sizes
+are recorded in `module-memory-deltas.json` beside the failed boot: the scratch
+lifetime fix adds 1,728 runtime payload bytes, offsetting part of the 4 KiB
+scratch saving. The helper trace export spans 1,856 bytes in that runtime.
+
+Temporary caller-frame formatting and arena caller-chain traversal are now
+compiled only with `I386_FAILURE_CALLER_TRACE` defined before their source
+includes. Normal builds retain the existing allocation failure marker, filename
+and heap capacity reports. Archived traced images and allocation-origin/callsite
+evidence remain available. This separates resident diagnostic code from the
+normal boot without removing compiler capabilities or changing acceptance gates.
+The normal-build source passes fresh bootstrap in
+`build/i386-frontend-scratch-normal-bootstrap-v69-runner.log`, with every pinned
+source and both generated binary hashes verified. Native cross-build passes
+in `build/i386-frontend-scratch-normal-cross-v69`, including the 386 instruction
+audit. Compared with the traced image, kernel payload shrinks by 696 bytes and
+runtime payload by 1,344 bytes; exact evidence is in `trace-memory-saving.json`.
+Normal 8 MiB startup, full 16 MiB diagnostics and runtime F64 checks are running
+in the matching `build/i386-frontend-scratch-normal-*` directories. Runtime
+qualification and 8 MiB recovery remain unproven.
+
+## Optimizer scratch lifetime candidate (2026-10-07)
+
+The arena trace resolves the 4,116-byte request to I386ParseExpression, through
+I386FrontendExpression -> I386FrontendCompile -> PrsVarLstCore. The source
+allocates sizeof(CPrsStk) (4,096 bytes) plus its 20-byte ownership record.
+Module hashes, bases and return addresses are preserved in
+`build/i386-arena-caller-trace-boot-v69-8m/allocation-origin.json` alongside the
+failed startup report. This identifies expression parsing, not backend output
+or emitter buffer growth.
+
+Native OptPass012 retains a separate 4,096-byte cc->ps scratch stack until
+compiler-control teardown. The direct service's diagnostics inspect that stack,
+so its existing contract is preserved. A frontend-only optimizer wrapper now
+frees scratch it created after a successful pass. Frontend output also frees
+scratch newly created by backend folding once linking finishes. Existing borrowed
+stacks remain untouched, and exceptions retain control ownership for the existing
+unwind path. Parser stack limits and nested expression semantics are unchanged.
+This reduces overlapping idle scratch storage without reducing expression depth
+or moving a large allocation onto the task stack.
+
+The first scratch-lifetime edit would have broken the direct optimizer probe's
+inspection invariant; that was identified by reading the existing diagnostic
+before native qualification. The corrected frontend-only source passes
+bootstrap in `build/i386-frontend-scratch-bootstrap-v69-runner.log`, with every
+pinned source and both generated binary hashes verified. Its native cross-build
+passes in `build/i386-frontend-scratch-cross-v69`, including 96 BIOS and 209
+protected-mode instruction checks. Normal 8 MiB startup, full 16 MiB diagnostics
+and the runtime floating-context regression are running in the matching
+`build/i386-frontend-scratch-*` directories. Their results remain pending.
+The earlier generic optimizer bootstrap does not qualify this correction.
+
+This is an unqualified candidate. Fresh bootstrap, native build, normal 8 MiB
+startup, optimizer/exception diagnostics, all publication cases and runtime F64
+and saved assembly execution remain required. The complete native self-hosting
+build must also be retried on the qualified current image; the historical
+16 MiB DocRecalcCore failure is not proven fixed by this edit.
+
+## Arena failure trace and native full-build rejection (2026-10-07)
+
+The output-tracing image builds and passes the 386 instruction audit. Its
+8 MiB run (`build/i386-output-allocation-trace-boot-v69-8m`) reproduces the
+4,116-byte allocation failure, without backend workspace or emitter growth
+markers. The caller is still unproven. Added five bounded native caller frames
+to the guarded arena failure logger, with no heap allocation or success-path
+behavior change. The new bootstrap passes in
+`build/i386-arena-caller-trace-bootstrap-v69-runner.log`, with every source hash
+and both generated binary hashes verified. The native cross-build passes
+in `build/i386-arena-caller-trace-cross-v69`, including the 386 boot instruction
+audit. It produces a 540,552-byte flat kernel. The fresh 8 MiB reproduction is
+running in `build/i386-arena-caller-trace-boot-v69-8m`; its guest caller trace
+remains unproven until that result completes.
+
+The earlier bare-assembly six-provider native build definitively rejects
+DocRecalcCore.HC at source line 0x43A with OutMem, after its previous assembly
+syntax failure was passed. At 16 MiB it requests the same 4,116 bytes with a
+largest free block of 0xF18 (heap used 0xD762B0 / 0xD7C200). Evidence, complete
+log and source/working-disk hashes are preserved in
+`build/i386-bare-assembly-full-build-oom-v69/result.json`. The harness was stopped
+only after this terminal guest rejection; it is no longer a live rebuild.
+This is historical evidence from the earlier bare-assembly snapshot, not a
+current-source native-generation qualification. Both the 8 MiB startup and
+complete 16 MiB self-hosting compilation memory requirements remain open.
+
+## Output workspace failure attribution (2026-10-07)
+
+The conditional-helper image still fails normal 8 MiB startup:
+`build/i386-conditional-helpers-boot-v69-8m/result.json`. Its request is now
+4,116 bytes, with heap used 0x65BCE0 / 0x65C200 and largest free block 0x470.
+The old 3,789-byte context failure is passed, but the new allocation has no
+parser failure marker. Its exact caller remains unproven; do not attribute it
+to an emitter growth buffer or backend workspace based only on its size.
+
+Added guarded allocation-failure caller traces to native backend workspace and
+emitter buffer growth, using the existing bounded no-heap trace helper. Successful
+allocation behavior is unchanged. These traces are enabled only in the runtime
+module; standalone fixtures leave the guard unset. The fresh bootstrap passes
+in `build/i386-output-allocation-trace-bootstrap-v69-runner.log`, with the
+manifest, every pinned source and both generated binary hashes verified.
+Native cross-build is running in `build/i386-output-allocation-trace-cross-v69`.
+The traced native image must reproduce the failure before selecting the next
+memory fix.
+The conditional-helper floating regression passes at 16 MiB in
+`build/i386-conditional-helpers-float-v69-16m`: 16 commands covering runtime
+conversion, arithmetic helpers, sqrt/abs, comparisons and retained F64 static
+state. Saved bare/block assembly execution also passes in
+`build/i386-conditional-helpers-bare-v69-16m`. These immutable snapshot results
+do not qualify the subsequent trace-source changes. Full diagnostics also pass
+in `build/i386-conditional-helpers-diag-v69-16m`: 22 class and 28 program cases,
+plus nine final runtime/VGA commands. The conditional-helper loader stack audit
+passes at 16,300 / 16,384 bytes. Normal 8 MiB startup remains failed.
+
+## Conditional floating helper context candidate (2026-10-07)
+
+The selection-map journal image still fails normal 8 MiB startup, before journal
+allocation: I386FrontendOutput requests 3,789 bytes, with heap used 0x65B298 of
+0x65C200 and a largest free block of 0xE18. Evidence:
+`build/i386-publication-bitmap-boot-b-v69-8m/result.json` and its parser caller
+trace. Runtime code growth re-exposed the preceding full-context allocation.
+No journal runtime success or 8 MiB recovery is established by that failure.
+
+Frontend output now conservatively checks the optimized IR's result and operand
+types, floating literals/conversions and result-conversion flags. Integer-only
+output allocates the prefix through its helper-presence flag; floating output
+retains the complete original helper table and all ten runtime helpers. Linking
+visits helper imports only when that complete helper context exists. This keeps
+floating capability rather than imposing an integer-only programming model.
+
+This change is unqualified. A fresh two-generation bootstrap is running in
+`build/i386-conditional-helpers-bootstrap-v69-runner.log`; fresh native build,
+8 MiB startup, all 50 publication cases, F64 execution/conversions and persisted
+assembly remain required. The selection-map execution-answer check now passes at 16 MiB in
+`build/i386-publication-bitmap-answers-b-v69-16m`: integer/F64 result and type,
+new-answer flag, nonnegative time and JUST_LOAD preservation, with the persisted
+fixture verified byte for byte. Its snapshot predates conditional helper storage.
+The selection-map snapshot also passes all 22 class and 28 program publication
+cases plus the nine final runtime/VGA commands at 16 MiB in
+`build/i386-publication-bitmap-diag-b-v69-16m`. This validates selection-map
+ownership and cleanup at that resource level; it does not qualify conditional
+helper storage or 8 MiB startup. The older full native build still evaluates
+its earlier immutable disk snapshot.
+
+The conditional-helper bootstrap now passes with manifest/source/binary hashes
+verified. `build/i386-conditional-helpers-cross-v69` passes the 386 instruction
+audit (96 BIOS / 209 protected-mode instructions) and builds a 539,856-byte flat
+kernel. Normal 8 MiB startup, full 16 MiB publication diagnostics and the new
+floating-context check are running in `build/i386-conditional-helpers-*`.
+A maintained
+regression `tools/test-i386-frontend-float-context.py` checks runtime operands for
+conversion, all arithmetic helpers, sqrt/abs, comparisons and retained F64 static
+state, followed by another integer call. It is running, not yet passed.
+
+## Compact publication selection journal candidate (2026-10-07)
+
+The prior compact-parser image reached publication but failed its 16,560-byte
+pointer journal allocation at 8 MiB. Frontend publication now selects ownership
+records with a zeroed two-bit map over the stable parser queue: one selection
+bit and one retained-storage bit per record. The existing count/validation pass
+and duplicate rejection remain; no payload marking or pointer narrowing is used.
+Storage entries are prepared from the retained-storage map before commit, and
+selected ownership records are moved only after every fallible preparation
+succeeds. Class-only publication retains its existing exact-size pointer journal.
+
+Original TempleOS two-generation bootstrap passes for this candidate
+(`build/i386-publication-bitmap-bootstrap-v69-runner.log`). The authoritative
+manifest, all 1,392 pinned source hashes and both generated binary hashes agree.
+Native cross-build `build/i386-publication-bitmap-cross-v69` rejected the new
+commit loop because HolyC does not support `continue`; its exported compiler log
+pinpoints FrontendPublish.HC. The loop now uses a conditional block. A fresh
+bootstrap passes in `build/i386-publication-bitmap-bootstrap-b-v69-runner.log`
+for this corrected source, with manifest/source/generated-binary hash agreement.
+The corrected native cross-build passes in
+`build/i386-publication-bitmap-cross-b-v69`, with 96 BIOS and 209 protected-mode
+instructions audited. Normal 8 MiB startup, full 16 MiB diagnostics and
+integer/F64 execution-answer checks are running in the matching
+`build/i386-publication-bitmap-*` directories. Native behavior remains unqualified
+until their reports complete.
+The execution-answer contract checker now accepts `--ram-mib 16` (default 8),
+so integer/F64 answer types, flags and nested ExePutS behavior can be checked
+at the diagnostic resource level without claiming 8 MiB startup. Required next checks are all 22 class and
+28 program publication
+cases, normal 8 MiB startup, and retained code/static/literal and saved assembly
+execution. The older native full rebuild continues on its earlier disk snapshot.
+
+## Compact command/expression parse context candidate (2026-10-07)
+
+The native failure frames map to I386ParserAlloc -> I386FrontendAlloc ->
+I386FrontendOutput, at its CI386FrontendBound scratch allocation. Evidence:
+`build/i386-parser-allocation-stack-trace-boot-v69-8m/allocation-origin.json`,
+paired with the corresponding CompilerRuntime module hash and guest RUNTIME base.
+Outer command/expression parsing also allocated the same full bound structure,
+although it uses only function/AOT/type-resolution fields.
+
+Added CI386FrontendParseBound for the outer command/expression contexts. The
+output context retains its original helper function/argument arrays and software
+floating-point support. This reduces duplicated scratch allocation without
+removing programming capabilities. Initial bootstrap qualification was invalid:
+the authoritative manifest reported that Frontend.HC and FrontendStatements.HC
+changed during the rebuild. The native cross-build correctly rejected that
+manifest before compiling. Evidence is preserved in
+`build/i386-parse-bound-bootstrap-invalid-v69/result.json`; a fresh bootstrap
+has now passed for the current sources. Its manifest, every pinned source hash,
+and both generated bootstrap binary hashes were independently checked. The
+native cross-build `build/i386-parse-bound-cross-b-v69` passes the 386 boot
+instruction audit (96 BIOS and 209 protected-mode instructions), producing a
+539,856-byte flat kernel. Normal 8 MiB startup fails in
+`build/i386-parse-bound-boot-b-v69-8m`: the parser output scratch failure is passed,
+but publication requests 16,560 bytes with a largest free block of 7,552 bytes
+and only 9,328 bytes unused in the heap. The following explicit publication
+scratch marker identifies the failed journal allocation; this is not boot
+recovery. See `publication-memory-failure.json` beside the failed result.
+Full 16 MiB diagnostics pass in
+`build/i386-parse-bound-diag-b-v69-16m`: all 22 class and 28 program publication
+cases plus nine retained-code/static/literal and VGA commands. This qualifies
+the compact-parser snapshot, before the selection-map journal change. The loader stack audit passes at
+16,300 / 16,384 bytes in `build/i386-parse-bound-loader-stack-b-v69`.
+Saved bare/block assembly execution also passes at 16 MiB in
+`build/i386-parse-bound-bare-assembly-b-v69`: persisted source and AOT modules,
+direct relocation-free payload execution, included source execution and
+interrupt-state restoration. This does not establish 8 MiB boot or full OS
+acceptance.
+
+Next resource work must reduce journal storage while preserving complete
+preflight validation, duplicate/foreign ownership rejection and atomic commit.
+Splitting the same pointer array into chunks cannot solve this snapshot's total
+free-space deficit. A compact selection journal over the existing parser-record
+list can represent selected records and retained-storage records separately,
+without mutating owned payloads during validation. Any implementation must keep
+parent transfers, completion rebinds, macros, storage ownership and cleanup
+semantics, and pass all 22 class and 28 program publication diagnostic cases
+before a new 8 MiB qualification. The older full rebuild remains live in session 31501 and evaluates
+its earlier disk snapshot.
+
+## Parser caller-tracing image built (2026-10-07)
+
+The bounded caller-tracing snapshot passes original TempleOS bootstrap and a
+complete native cross-build/386 boot audit. Image:
+`build/i386-parser-allocation-stack-trace-cross-v69/kernel.img`.
+The 8 MiB reproduction is running in session 38943. Map its failure return
+addresses using the logged RUNTIME image base and that snapshot's exported
+function offsets before attributing the payload allocation's purpose.
+No resource fix or 8 MiB boot recovery is proven by this build. The older
+six-provider run remains live in session 31501.
+
+## 8 MiB request located in parser payload allocation (2026-10-07)
+
+The parser-traced image cross-builds and passes the 386 boot audit, then rejects
+8 MiB startup with request 0xECD and
+`PARSER PAYLOAD ALLOCATION REJECT C:/Kernel/I386/PublicExecution.HH`.
+Evidence: `build/i386-parser-allocation-trace-boot-v69-8m/result.json` and debug.log.
+The request is in parser payload allocation, not final code allocation or the
+frontend publication journal. The active filename alone does not identify the
+payload's purpose, especially while completing a declaration/command.
+
+Extended failure-only tracing with three bounded native return addresses, formatted
+on stack without heap allocation or new imports. These can be mapped against the
+cross-built CompilerRuntime exports to identify the allocation origin. Bootstrap
+runs in session 39477; traced reproduction and any resulting resource fix remain
+pending. The older six-provider build remains live in session 31501.
+
+## Frontend journal refactor passes complete publication diagnostics (2026-10-07)
+
+`build/i386-frontend-journal-diag-b-v69-16m/result.json` records PASS on
+486,-fpu / 16 MiB: startup 198.926 seconds, 28 program-publication cases and
+22 class-publication cases across both phases, nine interactive commands,
+and exact VGA checkpoints. Existing program tests validate retained function/data
+behavior and failure rollback for invalid aliases, foreign storage, scratch OOM,
+active code, errors and bad generated-data boundaries. The two-pass frontend
+refactor passes these gates, but 8 MiB startup remains failed.
+
+The subsequent parser allocation tracing snapshot passes original TempleOS
+bootstrap. Its fresh cross-build runs in session 48499:
+`build/i386-parser-allocation-trace-cross-v69`. It needs a separate 8 MiB
+reproduction to attribute request 0xECD; the prior diagnostic pass is evidence
+for the earlier disk/source only. The old six-provider build is live in session
+31501 on its independently preserved disk.
+
+## Frontend journal candidate still fails 8 MiB startup (2026-10-07)
+
+`build/i386-frontend-journal-boot-b-v69-8m/result.json` records a new OutMem
+failure: request 0xECD (3789), heap used 0x65A6D0 of 0x65C200, largest free block
+0xE18 (3608). The old publication-scratch marker is absent, but this does not
+prove the journal was reached or fixed: OutMem may occur earlier as the module
+image has grown. The changed request is evidence to locate, not boot recovery.
+The fresh static loader budget still passes at 16300 / 16384 bytes.
+
+Publication diagnostics for that disk are running in session 94221. Added
+failure-only parser payload/code allocation markers, enabled only in the retained
+CompilerRuntime module, using its existing logging import and current source
+name. Standalone parser builds retain their previous dependencies. Bootstrap of
+this tracing snapshot runs in session 62048; a fresh cross/8 MiB reproduction
+must identify the new request's caller before another resource change.
+The older full rebuild remains live in session 31501.
+
+## Frontend journal candidate cross-build passes (2026-10-07)
+
+The corrected frontend journal source passes original TempleOS two-generation
+bootstrap and a complete native cross-build/386 boot audit.
+Artifact: `build/i386-frontend-journal-cross-b-v69`. Its 8 MiB normal no-FPU
+startup check is running in session 33944; no recovery result is proven yet.
+
+The diagnostic checker now additionally requires all 14 existing PROGRAM CASE
+markers in both phases (28), covering the changed frontend publication path's
+valid retention and rejection cases. The 22 class-publication markers remain
+required. These explicit gates will validate ownership/alias/OOM and retained
+code/data behavior after the two-pass refactor; their new run is pending.
+The older full rebuild in session 31501 remains scoped to its earlier disk image.
+
+## Frontend journal refactor cross-build correction (2026-10-07)
+
+The refactor passes original TempleOS bootstrap but the native cross-build rejects
+an undeclared binding local in the publisher's resident-symbol preflight. Restored
+that retained local; the extracted graph helper has its own binding local.
+Evidence: `build/i386-frontend-journal-cross-v69/exports/compiler-log.DD`.
+No runtime image qualified from this failed build. Corrected bootstrap is running;
+fresh cross-build, 8 MiB startup and comprehensive publication diagnostics remain
+required. The older disk rebuild is unaffected.
+
+## 8 MiB shortage attributed to frontend publication (2026-10-07)
+
+The traced boot reproduces heap request 0x44F8 immediately followed by
+`FRONTEND PUBLICATION SCRATCH REJECT`, then rejects startup. Evidence:
+`build/i386-publication-scratch-trace-boot-b-v69-8m/result.json` and debug.log.
+This proves the failing caller is the full frontend transfer journal, not the
+separate class-only publisher. Its old capacity is all parser allocations.
+
+Applied an exact-size frontend journal candidate. A shared graph visitor first
+validates/counts the actual transferred symbol/code/storage graph without a
+journal, then validates duplicate ownership into an exact-size journal before
+transfer. The storage visitor handles counting without dereferencing journal
+storage. Completion exclusions, retained code ordering, parent ownership,
+macro preparation and final publication remain in their existing move path.
+Bootstrap is running in session 85242; runtime behavior, alias/OOM atomicity,
+parent/completion behavior, 8 MiB startup and fresh full-build gates are unproven.
+The older full rebuild remains live in session 31501 on its previous disk.
+
+## Traced frontend publication image ready (2026-10-07)
+
+The corrected failure-only logging candidate passes original TempleOS bootstrap
+and a complete cross-build with the 386 boot instruction audit.
+`build/i386-publication-scratch-trace-cross-b-v69` contains the new image.
+Its 8 MiB startup reproduction runs in session 8460. The caller marker and
+adjacent heap request will determine whether full frontend publication causes
+the shortage. No traced runtime result or 8 MiB recovery is proven yet.
+The previous candidate's complete class diagnostics remain scoped to that disk;
+the older six-provider build remains running in session 31501.
+
+## Exact-size class journal passes complete diagnostics (2026-10-07)
+
+The class-journal candidate passes 16 MiB no-FPU diagnostics in 204.643 seconds:
+22 required publication markers (cases 0..10 in both phases), nine retained
+HolyC/presentation commands, and exact VGA pixels at every checkpoint.
+Evidence: `build/i386-class-journal-diag-b-v69-16m/result.json`.
+
+Case 10 proves publication of the small class succeeds with 512 unrelated parser
+allocations and only a released 1024-byte scratch block, survives control teardown,
+and restores heap/accounting/task/IRQ state after removal. Existing rejection
+cases also pass, including duplicate owned storage and scratch exhaustion.
+This verifies the class-journal optimization under those conditions, not the
+separate full frontend publication journal. The 8 MiB startup failure persists.
+The tracing-only follow-up bootstrap is live in session 78756; its changed source
+needs fresh qualification. The older six-provider run remains live in session 31501.
+
+## Publication tracing cross-build correction (2026-10-07)
+
+The first tracing cross-build rejects the diagnostic KernelHex call: CompilerRuntime
+imports KernelLog but not KernelHex. Removed the unsupported formatter call and
+kept a failure-only caller marker through the existing KernelLog binding. The
+allocator's adjacent heap trace already reports requested bytes. Evidence:
+`build/i386-publication-scratch-trace-cross-v69/exports/compiler-log.DD`.
+No traced runtime reproduction exists yet. Bootstrap of the corrected tracing
+source is running; prior class diagnostics and the older full build are unchanged.
+
+## Publication tracing image build and partial class diagnostics (2026-10-07)
+
+The failure-only tracing source passes original TempleOS two-generation
+bootstrap. Its native cross-build is running in session 34091:
+`build/i386-publication-scratch-trace-cross-v69`. Follow with 8 MiB reproduction
+to identify the journal request's caller; no caller attribution is proven yet.
+
+Separately, the prior class-journal image completed publication cases 0..10 in
+diagnostic phase 0, including constrained-memory success after 512 unrelated
+parser allocations. Phase 1/full diagnostic qualification remain live in session
+60929. This partial observation is not a diagnostic PASS and does not close
+8 MiB startup. The older full rebuild continues in session 31501.
+
+## Class journal change does not close 8 MiB startup (2026-10-07)
+
+The new 8 MiB startup run rejects on the same 0x44F8 allocation. Its trace shows
+heap used 0x658D78 of 0x65C200, largest free block 0x2D98. Evidence:
+`build/i386-class-journal-boot-b-v69-8m/result.json`. The class-journal change is
+not a proven fix for this shortage. Diagnostics of that disk snapshot, including
+new publication case 10, are running independently in session 60929.
+
+The full frontend publisher has a separate journal sized from all parser
+allocations (`FrontendPublish.HC`), consistent with the observed request but
+not yet proven as its caller. Added a nonallocating failure-only log there,
+reporting record capacity and requested bytes. Bootstrap of this instrumentation
+runs in session 46565. A fresh traced image must reproduce the failure before
+changing that publisher. The older six-provider build remains live in session
+31501; each run qualifies its own immutable disk/source snapshot only.
+
+## Exact-size journal candidate cross-build passes (2026-10-07)
+
+The corrected source passes original TempleOS two-generation bootstrap and a
+fresh 32 MiB cross-build. The emitted native image passes the 386 boot audit:
+96 BIOS and 209 protected-mode instructions. Artifact:
+`build/i386-class-journal-cross-b-v69`. Normal 8 MiB no-FPU startup is running
+in session 58437; its result is not yet known.
+
+The startup-memory checker now requires all publication cases 0..10 in both
+diagnostic phases (22 explicit log markers). This prevents a diagnostic startup
+pass from silently omitting the new resource case. Diagnostics and the 8 MiB
+resource fix remain unproven. The older image's six-provider rebuild continues
+independently in session 31501 and cannot qualify this changed candidate.
+
+## Class journal diagnostic cross-build integration correction (2026-10-07)
+
+The updated original TempleOS two-generation bootstrap passed. The first fresh
+cross-build emitted CompilerRuntime, but rejected CompilerProbe because the new
+case used an unbound HashFind function. Evidence:
+`build/i386-class-journal-cross-v69/exports/compiler-log.DD`.
+No complete image or runtime qualification resulted from that build.
+
+Replaced that call with the probe's existing nonallocating ProbeSymbolFind helper,
+using a null unused context after control teardown. Private module bindings are
+unchanged. Bootstrap of the corrected source runs in session 99931; a fresh
+cross-build and runtime checks are still required. Session 31501 continues the
+older bare-assembly disk rebuild independently.
+
+## Class journal resource regression added to diagnostics (2026-10-07)
+
+The initial exact-size journal candidate passed original TempleOS two-generation
+bootstrap. Extended the existing native publication diagnostic with case 10:
+512 unrelated parser allocations, exhaust remaining arena blocks, then release
+one 1024-byte scratch block. Publishing the small Durable class must succeed,
+its graph must survive control teardown, and removal must restore heap usage,
+allocation counts, task ownership/references and IRQ state exactly. Existing
+cases 0..9 cover valid publication and rejection of duplicate/foreign/lexer-owned
+storage, collisions, errors, active code and scratch exhaustion.
+
+This new case is unverified. Bootstrap of the updated source snapshot runs in
+session 38473 (`build/i386-class-journal-probe-bootstrap-v69-runner.log`), followed
+by a fresh cross-build and diagnostic/8 MiB gates. The earlier six-provider run
+in session 31501 still evaluates the preceding disk snapshot.
+
+## Exact-size class journal candidate applied (2026-10-07)
+
+Inspection of the retained-build harness confirms its guest compiles a private
+copy of the input disk, without reading host source during compilation. Host
+source edits therefore do not alter that running experiment. Session 31501
+continues to test the preceding bare-assembly image, not the new worktree.
+Earlier source-freeze notes described our working convention, not a harness
+requirement. Keep its results attributed to its original source/image snapshot.
+
+Applied the staged class-publication journal change after verifying the original
+source hash. It first counts class-owned storage without mutation, then allocates
+an exact-size journal and rejects duplicate owned payloads before any transfer.
+Unrelated parser allocations no longer determine journal size. The existing
+8 MiB startup failure is the resource regression to close; this candidate has
+not yet passed validation. Original TempleOS bootstrap is running in session
+82570 (`build/i386-class-journal-bootstrap-v69-runner.log`). Follow with fresh
+cross-build, class ownership/alias/OOM checks, 8 MiB startup, diagnostics and full
+provider/generation qualification. Old candidate gates do not qualify this edit.
+
+## Saved assembly payload execution passes (2026-10-07)
+
+The corrected focused regression passes all 13 commands on 486,-fpu with
+16 MiB. Both persisted modules are read back, their single-export/no-relocation
+layout is checked, their payloads are called, and their FileRead buffers freed.
+BlockCheck and BareCheck return the expected interrupt-state restoration
+result; source inclusion/execution and subsequent 6*7 also pass. Persisted source
+bytes and export contracts match. Evidence:
+`build/i386-bare-assembly-saved-execution-c-v69/result.json`.
+
+This closes the focused saved assembly payload execution gap. It does not
+qualify general native module linking/loading, exact heap recovery, complete
+DolDoc or the OS release. The 8 MiB startup failure remains open. The current
+six-provider rebuild remains running in session 31501; production inputs have
+not been changed.
+
+## Saved-module execution regression in progress (2026-10-07)
+
+The focused assembly checker now tests direct execution of saved relocation-free,
+single-export T32M payloads read from disk, followed by buffer release and source
+inclusion/execution. This is narrower than general module linking/loading.
+The first extension run used incorrect header array indices in its helper and
+returned before payload execution; it was stopped as an invalid test fixture.
+Indices now match the authoritative 32-byte module header (record_count U32[5],
+records_offset U32[6]). Corrected run is live in session 83410:
+`build/i386-bare-assembly-saved-execution-c-v69`. Prior saved-module execution
+coverage remains unproven until this run completes. Production source remains
+unchanged and the six-provider build remains running in session 31501.
+
+## Saved bare assembly instruction evidence (2026-10-07)
+
+Independent objdump decoding of the persisted regression modules confirms
+32-bit PUSHFD/CLI/POPFD encodings, plus NOP in the mixed block/bare case.
+Evidence: `build/i386-bare-and-block-assembly-b-v69/instruction-audit.json`
+and the adjacent disassembly files. This is saved-code instruction evidence;
+execution of those saved modules remains untested. Current production source
+still matches the cross-build snapshot; the live full rebuild remains running
+in session 31501.
+
+## Bare assembly candidate: diagnostic startup passes at 16 MiB (2026-10-07)
+
+`build/i386-bare-assembly-diag-b-v69-16m/result.json` records PASS on
+486,-fpu, 16 MiB: diagnostic startup 203.718 seconds, nine retained
+HolyC/static/literal/presentation commands, and exact VGA pixels at every
+checkpoint. The 8 MiB normal startup failure remains open; this larger-memory
+result does not close that gate. The source-pinned six-provider rebuild remains
+running in session 31501. The focused mixed block/bare assembly regression also
+passes nine commands, including flags restoration after `asm {POPFD}` and the
+next bare NOP statement. Its persisted BlockCheck/BareCheck modules contain
+379/378 bytes, with source byte identity and exports checked. Evidence:
+`build/i386-bare-and-block-assembly-b-v69/result.json`. Saved modules are
+validated but not executed by this regression.
+
+## Startup memory investigation and staged class journal (2026-10-07)
+
+Guest logs measure opcode registration adding 3200 heap bytes (registry 6208
+-> 9408), while the boot arena loses 1024 bytes to the enlarged kernel image.
+CompilerRuntime also grows 2020 module bytes. Evidence is in
+`build/i386-bare-assembly-resource-checkpoint-v69/allocation-deltas.json`.
+These are measured contributors; they do not yet identify every byte of the
+failing allocation.
+
+`I386PublishClasses` currently sizes its temporary ownership journal from all
+parser allocation records. A staged, unapplied patch counts visited class
+storage first, then allocates that exact journal and validates duplicate owned
+payloads before transferring anything. Artifact:
+`build/i386-class-journal-exact-size-prototype-v69/integration.patch`.
+The 0x44F8 request is consistent with a 2207-pointer journal, but its caller is
+not proven by the current heap trace. The patch is uncompiled and unverified;
+require alias/OOM atomicity tests, unrelated-parser-allocation sizing checks,
+8 MiB startup and diagnostic/full rebuild qualification before accepting it.
+Production source remains frozen for the live full rebuild.
+
+## Bare assembly candidate: 8 MiB boot regression (2026-10-07)
+
+The candidate's focused bare assembly test and keyword registry test pass, but
+normal startup at 8 MiB fails during root PublicUser header compilation.
+`build/i386-bare-assembly-boot-b-v69-8m/result.json` records failure. The heap
+trace reports request 0x44F8, used 0x6587E0 of 0x65C200, and largest free block
+0x3330. This is a startup resource regression, not a qualified 8 MiB image.
+The previously passing v69 image remains historical evidence only.
+
+The fresh static loader audit passes at 16300 / 16384 bytes:
+`build/i386-bare-assembly-loader-stack-b-v69/result.json`. Module size comparison
+shows Kernel +996 bytes and CompilerRuntime +2020 bytes, with other module
+sizes unchanged (`build/i386-bare-assembly-resource-checkpoint-v69`). Native
+opcode registry allocations also consume startup heap; their measured tests
+pass, but their contribution to this shortage needs analysis. Preserve the
+8 MiB gate while addressing resource use. Diagnostic 16 MiB startup is running
+in session 75129; the source-pinned six-provider rebuild remains running in
+session 31501. Do not edit production source while that rebuild is in flight.
+
+## Bare assembly regression and candidate fix (2026-10-07)
+
+The focused test `tools/test-i386-bare-assembly.py` reproduced AOT rejection
+before execution (`build/i386-bare-assembly-red-v69/rejection.json`). The native
+keyword registry lacked opcode entries, so the shared parser interpreted
+`PUSHFD` as a potential label and reported the following token `CLI`. Native
+inline assembly also rejected `CMPF_ONE_ASM_INS`.
+
+The candidate registers supported opcode names and accepts one instruction at a
+time through the shared statement parser, with PUSHFD/POPFD and PUSHAD/POPAD
+encodings. Original DolDoc source remains intact. The corrected original TempleOS two-generation bootstrap passed. A fresh
+32 MiB cross-build (`build/i386-bare-assembly-cross-b-v69`) passed the boot
+instruction audit. The focused regression passed on 486,-fpu with 16 MiB:
+persisted source bytes match, the 378-byte AOT module exports BareCheck, and
+source inclusion/execution disables interrupts and restores the prior flag.
+This test does not execute the persisted AOT module.
+Evidence: `build/i386-bare-assembly-green-b-v69/result.json`.
+
+The native keyword ownership/allocation-failure test passed on 486 with 8 MiB
+(`build/i386-keywords-test/result.json`, runner
+`build/i386-bare-opcode-keywords-c-runner.log`). It checks owned keyword/opcode
+names, unique lookup, exact allocation sizes and accounting, locked-table
+rejection, reuse, and cleanup across arena sizes 32..16384 in steps of 8.
+The earlier fixture omitted the CHashOpcode defining header; the compile-error
+screenshot identified the omission and the corrected fixture passed.
+A fresh full six-provider rebuild is running in session 31501 with a 14400-second
+command limit (`build/i386-retained-bare-assembly-b-v69`). Full provider,
+diagnostic boot, native generation and release gates remain open; previous v69
+results do not qualify this changed candidate.
+
+## Full v69 rebuild exposes bare CLI parsing failure (2026-10-07)
+
+The longer six-provider run passed the previous one-hour timeout point and
+compiled graphics through sprite rendering. It then reported `Undefined
+identifier` for bare `CLI` immediately after `PUSHFD` in
+`Adam/DolDoc/DocRecalcCore.HC` (reported line 323). The rejected run was stopped;
+evidence is preserved in `build/i386-v69-docrecalc-cli-failure`. Full
+ConsoleRuntime and six-provider qualification have not passed. Next work is a
+focused regression for original HolyC bare assembly statements and their parser
+handling, followed by a fresh qualified image and full rebuild.
+
+## Full v69 rebuild reached graphics before harness timeout (2026-10-07)
+
+The first six-provider run ended at the harness's 3600-second command limit,
+while ConsoleRuntime was compiling `GrPlot3`. Its debug log contains no
+`BUILD MODULE REJECT`; this is an incomplete build, not a compiler pass or a
+compiler rejection. The terminal runner traceback is preserved in
+`build/i386-retained-full-v69-runner.log`. The unchanged v69 image is now being
+checked in `build/i386-retained-full-v69-long` with a 14400-second per-command
+limit. All 1392 cross-build source hashes were checked and still match.
+Normal-boot timing requirements are unchanged; this limit applies to guest
+compilation only. Full six-provider, generation, installation and release
+qualification remain open.
+
+## Full ConsoleRuntime compilation passes the scanner macro boundary (2026-10-07)
+
+The live v69 six-provider rebuild has passed the `CHAR_BMP_DISPLAYABLE_DATA`
+initializer in `ScannerRuntime.HC` and started subsequent `NativeScanStrNCmp`,
+`StrOcc`, `Spaces2Tabs` and `StrUtil` compilation. This crosses the actual large
+source-context rejection point from v66, beyond the focused macro regression.
+Evidence: `build/i386-v69-scanner-integration-checkpoint/result.json` and its
+captured log. All 1392 cross-build source hashes still match.
+
+ConsoleRuntime has not yet finished, and no complete six-provider, generation,
+install or release pass is claimed. Continue the same live rebuild; the resource
+prototype remains separate until its input snapshot is released.
+
+## Bible allocation failure recovers without losing the command loop (2026-10-07)
+
+The isolated 16 MiB no-FPU resource regression passes seven commands. A HolyC
+helper catches two Bible expansion failures and requires `OutMem` plus restored
+interrupt flags. Arithmetic returns 42 after the failures; a subsequent small
+file read returns the exact 150-byte size and its buffer is freed. Exact VGA
+checks pass. Evidence:
+`build/i386-bible-package-prototype-v69/native-read-oom-c-result.json`.
+
+This qualifies the tested failure/recovery path, not full Bible access or exact
+heap recovery. The original compressor/packaging prototype remains outside the
+frozen worktree; bounded-memory resource and God application work remains open.
+The six-provider rebuild is still running, now producing ConsoleRuntime text
+rendering functions. All pinned sources remain unchanged.
+
+## Isolated Bible resource prototype exposes a memory gate (2026-10-07)
+
+Original x64 TempleOS compresses the full 4345143-byte Bible to a 1738883-byte
+7-bit archive and expands it back byte-for-byte. Evidence:
+`build/i386-bible-resource-oracle-v69-b/result.json`. An isolated packaging
+prototype delivers that exact archive as `/Misc/Bible.TXT.Z`, passes the RedSea
+filesystem walker, and rejects an expanded-text mismatch. Evidence:
+`build/i386-bible-package-prototype-v69/packing-result.json`.
+
+Native `FileRead` on this copy reaches the expanded-text allocation but rejects
+with OutMem at 16 MiB / `486,-fpu`. The 4345144-byte terminated output request
+produces a reported backing request of `0x800633`. Evidence:
+`build/i386-bible-package-prototype-v69/native-read-result.json` and the raw log.
+This is a failed capacity gate, not successful Bible access. A repeat-failure,
+arithmetic-recovery and small-file-read regression is running separately;
+exact heap recovery remains unqualified. Do not raise the old-PC RAM profile
+or treat packaging alone as completion. Plan bounded-memory Bible/application
+access and validate original output/ownership and clean allocation failure.
+
+The reviewable prototype patch is
+`build/i386-bible-package-prototype-v69/integration.patch`; it is deliberately
+not applied to the worktree while the six-provider rebuild runs. All 1392 pinned
+v69 source hashes remain unchanged. Current cross-v69 still omits the resource;
+complete God, raster/music, native generations and release gates remain open.
+
+## Complete OS includes content and original application workflows (2026-10-07)
+
+A read-only audit of cross-v69 finds `/Adam/God/MakeGod.HC`, vocabulary and
+music sources delivered, but neither `/Misc/Bible.TXT` nor
+`/Misc/Bible.TXT.Z`. The original Bible source is 4345143 bytes; the native
+packager currently includes only Kernel/Compiler/Adam/Doc and only HC/HH/DD/PRJ
+files. Source-include closure for the twelve modules therefore does not prove
+runtime resource closure. Evidence: `build/i386-v69-content-gap-audit/result.json`.
+
+Before complete OS/release acceptance, declare and audit original application
+assets as well as source dependencies. Deliver the Bible under the expected
+path, with byte-exact plaintext or independently verified decompression, and
+pin it in the installed/release manifest. Test public Bible/God word/passage,
+doodle and song workflows using deterministic input/entropy, saved bytes,
+exact VGA and speaker oracles. Keep the original source behavior and returned
+allocation ownership; investigate bounded-memory Bible access rather than
+assuming the 4.3 MB text and its document graph fit the old-PC profile.
+
+The default public surface still exposes only Snd/SndRst for sound and GrRect
+for raster. Broader original API/workflow coverage remains open. Flood-fill's
+fixed 29360128-byte scratch allocation and unchecked failure require original
+output/depth-buffer/state oracles plus low-memory failure tests before changing
+its storage strategy. Full Play/CurSongTask lifecycle/timing and restoration
+must be qualified beyond the shared music-state helper. These are part of the
+complete TempleOS objective; a successful provider rebuild alone cannot close
+them. Human checks and physical hardware remain deferred.
+
+The full v69 provider rebuild remains live and is producing ConsoleRuntime
+function output. This audit changes documentation only; its pinned sources
+remain unchanged while the build runs.
+
+## Cross-v69 diagnostic startup passes (2026-10-07)
+
+The 16 MiB no-FPU diagnostic image passes in 193.835
+seconds, including both native file-loader phases, parser/backend probes,
+resource cleanup and all nine final interactive/presentation checks.
+Evidence: `build/doc-layout-runtime-diagnostics-v69-16m/result.json`; the
+current checkpoint also captures this result. The diagnostic boot duration
+is separate from the 60-second normal interactive startup target.
+
+The six-provider guest rebuild remains active in `build/i386-retained-full-v69`,
+compiling ConsoleRuntime first. Its complete result, full scanner integration,
+current-source generations, install/release and full OS parity remain open.
+Sources stay frozen while the rebuild runs.
+
+## Cross-v69 boots and compiles the rejected bitmap macro (2026-10-07)
+
+The fresh 32 MiB cross image passes packaging and the 386 instruction audit
+(538912 flat kernel bytes). Normal startup passes at 8 MiB on `486,-fpu` in
+54.917 seconds, within the unchanged 60-second target, with all nine retained
+storage/presentation checks and exact VGA restoration. The emitted loader
+stack audit remains 16300 / 16384 bytes, including the 6144-byte caller reserve;
+indirect callbacks still require runtime diagnostics.
+
+The new macro integration regression passes all 13 interactive commands:
+direct `{1,2}`, its single-line macro equivalent, and the original displayable
+bitmap macro all compile to persisted modules and return their expected HolyC
+results. Exact saved source bytes and module layouts/exports pass. A separate
+persisted-data audit confirms both two-word initializers and every one of the
+16 original bitmap words. Evidence:
+`build/i386-macro-initializer-v69/result.json` and `data-audit.json`.
+
+Current checkpoint: `build/i386-current-v69-checkpoint/result.json`, with
+unchanged cross-build source hashes and captured cross/normal/macro/stack
+results. Diagnostic startup is running in
+`build/doc-layout-runtime-diagnostics-v69-16m`; the full six-provider guest
+rebuild is running in `build/i386-retained-full-v69`. Their results, full scanner
+integration, native generations, installation and release remain unqualified.
+
+## Retained-module contracts updated exactly (2026-10-07)
+
+Cross-v68 successfully linked and exported the kernel and retained modules,
+then rejected packaging against the old expected compiler import set. The
+build's exact compiler/probe import contracts now include the four lifetime
+helpers and require versions 69 / 17. Generated v68 modules pass both updated
+layout checks; mutations to the old versions or a renamed lifetime import
+still reject. Evidence: `build/i386-lex-module-contract-checkpoint/result.json`.
+The report's stale probe and memory version labels now match the compiled
+values (probe 17, memory 22); compiler is 69.
+
+Fresh cross-v69 is running in `build/doc-layout-runtime-cross-v69`, with source
+files frozen for verification. Neither failed packaging attempt produced a
+qualified image. Normal 8 MiB startup, the new macro-initializer integration
+regression, full guest rebuild, native generations and release remain open
+for this snapshot. See `docs/i386-test-workflow.md` for the new regression command.
+
+## Snapshot helpers cross the kernel/compiler boundary (2026-10-07)
+
+Cross-v67 rejected its flat kernel link because file ownership now calls
+snapshot helpers that were defined only in the retained compiler. Shared
+snapshot validation and pinning now live with kernel file ownership. The
+compiler runtime and diagnostic compiler probe explicitly import the four
+required helpers, which have boot loader bindings. Compiler services advance
+to version 69 and the probe to version 17 for the changed shared snapshot layout.
+
+Both original bootstrap generations and all three native lexer suites pass
+after this module-boundary correction. Evidence:
+`build/i386-lex-snapshot-module-checkpoint/result.json`. Fresh cross-v68 is
+building in `build/doc-layout-runtime-cross-v68`; it remains unqualified.
+The new `tools/test-i386-macro-initializer.py` provides the subsequent direct,
+single-line macro and original bitmap AOT/persistence/HolyC execution gate.
+It has passed Python syntax checks but has not yet run against the new image.
+Full provider rebuild, native generations and release remain open.
+
+## Native snapshot lifetime fix passes focused gates (2026-10-07)
+
+Native snapshots now retain parent input positions. Raw macro/include EOF may
+advance past pinned raw children without freeing them; restore reattaches the
+saved input and restores its parents, while final discard releases detached
+sources exactly once. Direct file destruction still rejects pinned records.
+Control teardown drains native snapshots before the shared release path, and
+include transfer rejects buffers held by detached snapshots. Invalid document
+sources reject before consuming input or advancing into the parent.
+
+The two-generation original bootstrap and all three native lexer suites pass:
+ordinary `--lex-state`, `--lex-state --lex-control`, and
+`--lex-state --lex-snapshot-boundary` (each with `--qmp-stdio`). Coverage includes
+borrowed snapshot compatibility, nested macro restore/discard, exact heap
+recovery, allocation failure atomicity, malformed deeper snapshot rejection,
+retained-buffer alias rejection and control teardown of detached sources.
+The control corpus now links the real hash-table implementation in a separate
+fixture; boot transfer and arena limits remain unchanged. Evidence:
+`build/i386-lex-snapshot-fix-checkpoint/result.json` and its captured suite results.
+
+A fresh 32 MiB cross image is building in `build/doc-layout-runtime-cross-v67`.
+These focused passes do not yet qualify the previously rejected scanner module,
+the six-module guest rebuild, native generations, installation or release.
+
+## Native snapshot boundary regression reaches QEMU (2026-10-07)
+
+`python3 tools/test-i386.py --lex-state --lex-snapshot-boundary --qmp-stdio`
+now compiles and runs a small native regression that saves a macro input,
+reads through its end into the parent, and requires restoring both positions
+without losing either allocation. It rejects at the crossing (return 703,
+reported low byte `BF`). Evidence:
+`build/i386-lex-snapshot-boundary-red-checkpoint/result.json` and retained
+runner/disassembly logs. This is failing regression evidence, not qualification.
+The broader lexer-state fixture also needed the actual hash-table implementation
+for control cleanup; linking it exposes a separate boot-loader transfer-size
+limit. The isolated mode keeps that limit unchanged and excludes unrelated
+bit-instruction coverage checks; the broad suite still needs repair.
+
+## Macro initializer boundary isolated (2026-10-07)
+
+The corrected direct-vs-macro fixture includes an exported function in both
+variants. The direct `{1,2}` initializer compiles and persists a module; the
+same initializer through a single-line `PAIR` macro rejects at stage 3, leaving
+no macro output. Evidence: `build/i386-macro-snapshot-red-v66-b/qualification.json`.
+The prior direct-only fixture had no function and reached pack rejection at
+stage 5; it was not a valid successful control. Line continuation is not the
+cause. Native file-pop currently rejects an exhausted file pinned by any lexer
+snapshot. Address saved include-stack lifetime and restoration, with nested
+snapshots, exact cleanup, failure atomicity and existing borrowed-state tests;
+do not bypass this by rewriting the shared bitmap or dropping lifetime checks.
+
+## Scanner initializer rejection reproduced independently (2026-10-07)
+
+A small source containing only `DisplayableBitmap.HH` and
+`U32 bmp_repro[16]=CHAR_BMP_DISPLAYABLE_DATA;` reproduces the stage-3 Compiler
+rejection in a `Frontend` macro expansion. Evidence:
+`build/i386-bitmap-macro-red-v66/qualification.json` and its raw debug log.
+The test command explicitly expects rejection; its harness pass is red evidence,
+not successful compilation. Inspect macro expansion and initializer lexer
+snapshots before changing the shared declaration. The full native build remains
+failed/open; the source packaging regression is separately fixed.
+
+## Guest rebuild advances; scanner macro rejection open (2026-10-07)
+
+The corrected v66 image passes the missing distance include and proceeds
+through formatting, music reset/state and window refresh helpers. ConsoleRuntime
+then rejects at stage 3 with a Compiler exception and one lexical/compiler
+error in a `Frontend` macro expansion, after DefinePrint. Its next scanner
+declaration initializes the displayable bitmap from a multiline macro.
+That is the next focused reproduction, not yet a proven cause. Preserve the
+failed disk/logs in `build/i386-retained-full-v66`; the harness was interrupted
+only after definitive guest rejection. No full module/build pass is claimed.
+
+## Full guest build passes the missing-include regression (2026-10-07)
+
+The live v66 ConsoleRuntime rebuild has passed the v64 rejection point:
+`RandU16`, `DistSqrI64` and `GrRasterTablesInit` finish compilation, followed
+by `GrRect`. This full-context trace confirms the omitted Adam source fix;
+it does not yet qualify a persisted ConsoleRuntime output or all six modules.
+Evidence: `build/i386-retained-full-v66/qemu/debug.log`. Keep the current
+source identity frozen while the same full build continues.
+
+## Corrected source image boots; full native rebuild running (2026-10-07)
+
+Cross-v66 passes with a 32 MiB disk and all required Adam sources. All twelve
+native module hashes match v64 exactly. Normal 8 MiB no-FPU startup passes in
+46.188 seconds with nine interactive commands and exact VGA checks.
+Evidence: `build/doc-layout-runtime-cross-v66/result.json` and
+`build/doc-layout-runtime-boot-v66-8m/result.json`.
+
+The full six-module guest rebuild is running at 16 MiB in
+`build/i386-retained-full-v66`; source/input hashes are recorded in
+`build/i386-current-selfhost-v66-checkpoint/result.json`. Installed-image audit
+and release packaging capacity checks now accept the same 16/32/64 MiB sizes;
+their full native-install/release qualification remains pending. No native
+rebuild, generation or complete OS pass is claimed yet.
+
+## Rebuild source-image capacity (2026-10-07)
+
+Cross-v65 passes with all 1070 packaged files, unchanged 527264-byte kernel
+and 386 audit. Its 16 MiB disk has 4779008 bytes free, while the six host-built
+retained outputs require 5789184 sector-rounded bytes even before guest
+code-generation differences. A full build cannot retain all outputs there.
+Add `--disk-mib {16,32,64}` (default 16) to the cross builder and use 32 MiB
+for current native rebuild qualification. Volume size derives from the image;
+independent walkers require exact image/header geometry rather than a fixed
+16 MiB capacity. RAM requirements remain 8 MiB interactive / 16 MiB rebuild.
+
+Fresh 16/32 MiB packaging, source-byte and bitmap checks pass; deliberately
+mismatched geometry is rejected by both independent readers. The larger image
+has 21552128 free bytes. Evidence:
+`build/i386-source-image-capacity-v66/result.json`. Cross-v66 (32 MiB disk) is
+building; its boot and full guest rebuild remain pending.
+
+## Native rebuild source packaging gap fixed (2026-10-07)
+
+The ConsoleRuntime rejection is explained by a missing on-disk include:
+`/Adam/DistSqrCore.HC` follows RandU16 in RasterRuntime but was omitted by the
+selected-subdirectory Adam packaging list. A transitive literal-include audit
+finds eight omitted existing sources: distance, polar, menu parsing/services,
+window refresh/order and music reset/state helpers. Package the entire Adam
+source tree and reject any missing/unpackaged literal dependency reachable
+from the twelve installed module sources before writing the volume.
+
+The focused original RandU16 AOT include passes. The packaging regression
+rejects the old file selection (`/Adam/WinOrderCore.HC`) and validates the new
+1070-file fresh RedSea volume; evidence:
+`build/i386-source-package-closure-v65/result.json`. Cross-v65 is building.
+No full guest rebuild pass is claimed; native compilation/install/generations
+must still be exercised on the corrected source image. Executable provider
+sources are unchanged by this packaging correction.
+
+## Current-source ConsoleRuntime rebuild rejection (2026-10-07)
+
+The v64 full six-module guest build rejects ConsoleRuntime during source
+compilation (stage 3, `Compiler` exception). Its final function marker is
+`RandU16`; the catch reports `C:/Kernel/I386/RasterRuntime.HC`, line 16,
+with one compiler error. No module pack/write or full-build pass is claimed.
+The harness was interrupted after this definitive rejection while waiting for
+the expected success screen. Preserve the disk and debug log in
+`build/i386-retained-full-v64`; the identity checkpoint now records failure.
+A focused random-function reproduction is next to isolate the unsupported
+expression before changing production sources. Installation and both current
+native generations remain open.
+
+Focused diagnosis: the arithmetic/task-field functions pass interactively,
+and a small boot-mode AOT module passes. The original `RandU16Core.HC` include
+also compiles, packs and writes successfully with its constants/clock alias and
+a deterministic clock stub (`build/i386-rand-original-v64-d/qemu/result.json`).
+Therefore neither original-body syntax nor basic AOT support explains the full
+ConsoleRuntime rejection. Next isolate its larger-context state/resource failure;
+no production workaround or full rebuild pass is claimed.
+
+## Current-source native rebuild qualification in progress (2026-10-07)
+
+The full six-module guest build is running on the qualified v64 normal image
+at 16 MiB with `486,-fpu` under TCG. Output is
+`build/i386-retained-full-v64`; the source/input identity checkpoint is
+`build/i386-current-selfhost-v64-checkpoint/result.json` (1317 source hashes).
+Module backend/link progress is observed; no build pass is claimed yet.
+After all six modules pass their persisted-output/export checks, install those
+outputs and use `tools/test-i386-native-generations.py` with the v64
+`kernel-stage.lst` for two native kernel/compiler generations. This remains
+separate from complete feature integration and release acceptance.
+
+## Loader scratch separation: static/functional qualification (2026-10-07)
+
+Both bootstrap generations, cross-v64 and the 386 instruction audit pass.
+The RedSea module-loading corpus passes both cases after scratch separation.
+Native kernel size is 527264 bytes. The compiled-code stack checker now measures
+argument footprints from emitted RET cleanup, with 20 bytes of frame/register
+linkage and 32 bytes of transient allowance per call. The unchanged 6144-byte
+caller/parser allowance and 16384-byte worker limit remain explicit.
+
+The same checker fails v63 at 25556 bytes and passes v64 at 16300 bytes. Splitting
+preflight from compaction removes 9256 bytes of overlapping frames without
+changing index capacity/buckets or validation and relocation behavior. The prior
+uniform 128-byte per-call envelope conservatively put v64 104 bytes over budget;
+it is superseded by measured argument footprints, not a larger stack or smaller
+caller allowance. Evidence: `build/i386-loader-stack-checkpoint/result.json`
+(source-pinned red/green reports), `build/i386-redsea-load-test/result.json` and
+`build/doc-layout-runtime-cross-v64/result.json`.
+
+Normal v64 startup passes at 8 MiB in 45.780 seconds. Full diagnostic startup
+passes at 16 MiB in 177.620 seconds, including both native file-loader phases,
+probe/module/task release and nine retained interactive commands with exact VGA
+pixel comparisons. Evidence: `build/doc-layout-runtime-boot-v64-8m/result.json`
+and `build/parser-placement-diagnostic-v64-16m/result.json`. Diagnostic startup
+is outside the normal-boot 60-second budget; its report therefore records
+`interactive_budget_pass: false` without failing diagnostic qualification.
+Static budget coverage alone is not proof of complete stack safety. A full
+current-source six-module guest rebuild is next; complete native generations,
+OS feature integration and release gates remain open.
+
+## Native file-loader stack budget regression (2026-10-07)
+
+The v63 trace locates the worker stop after successful module packing, linking
+and guest loading, before loaded-image comparison. Phase 0 completes the same
+fixture. Emitted kernel code exposes a stack-budget defect: compaction reserves
+9288 bytes and calls validation with a 9328-byte frame. Those frames alone
+exceed the diagnostic worker's unchanged 16384-byte stack.
+
+The new compiled-code checker decodes resolved intra-module CALL instructions,
+excludes declared data ranges, and follows loader direct-call paths. Red v63
+requires 19600 bytes of loader frames/call envelopes, or 25744 bytes including
+the explicit 6144-byte caller/parser allowance. Evidence:
+`build/i386-loader-stack-red-v2/result.json` and
+`build/parser-placement-diagnostic-v63-16m/result.json`. An initial record-only
+call graph missed already-resolved internal calls and is explicitly marked
+invalid in its old artifact; it is not qualification evidence.
+
+The candidate separates complete preflight validation from payload compaction,
+so their 512-slot symbol-index scratch frames have separate lifetimes. Symbol
+capacity, buckets, validation/overlap checks, relocation semantics and ownership
+remain unchanged. The worker stack remains 16 KiB. Both static-budget and full
+runtime qualification are pending; bootstrap rebuild is running. Normal v62
+startup remains qualified: v63 kernel and all five normal retained modules are
+byte-identical to v62. Full self-hosting/API/release gates remain open.
+
+## Dual-heap runtime gate passes; native file-loader probe pending (2026-10-07)
+
+Diagnostic v62 passes both isolated memory phases and the worker disk-include
+setup/IRQ-preservation checks that failed in v61. Worker compiler diagnostics
+advance through native module loading and allocation (NATIVE LOADER/NATIVE ALLOC
+phase 1), then stop inside the native file-loader probe. No new heap-exhaustion
+or compiler-error marker accompanies the final stop, so its cause is not yet
+identified. Evidence: `build/parser-placement-diagnostic-v62-16m/result.json`
+and debug.log. The full diagnostic boot remains red.
+
+The next candidate adds phase/size markers around packing, linking, guest loading,
+comparison and cleanup in ProbeProgramNativeFile and its runner. Existing checks
+remain intact. Candidate qualification is pending. Normal v62 8 MiB startup
+remains green at 46.177 seconds; full current-source self-hosting generations,
+API integration, default-stack parent allocation at 8 MiB and release gates
+remain open.
+
+## Dual-heap accounting: native build and normal startup qualified (2026-10-07)
+
+Cross-v62 and both bootstrap generations pass with the source-pinned dual-heap
+accounting fix (526808 native kernel bytes; 386 instruction audit passes).
+Normal 8 MiB 486,-fpu startup passes in 46.177 seconds, with all nine retained
+static/function/literal, arithmetic and exact VGA checkpoints. Evidence:
+`build/doc-layout-runtime-cross-v62/result.json` and
+`build/doc-layout-runtime-boot-v62-8m/result.json`.
+
+Full diagnostic startup, including the same post-startup command/VGA checks,
+is running in `build/parser-placement-diagnostic-v62-16m`. It is not yet
+qualified. Both isolated memory phases already pass in v61; the new dual-heap
+fixture passes both validators, with red case 496 retained alongside source
+hashes and green reports. Full current-source self-hosting generations,
+default-stack parent allocation at 8 MiB, original API integration and release
+gates remain open.
+
+## Isolated memory phases pass; separate compiler arena regression (2026-10-07)
+
+Both isolated memory probes pass in v61 (root phase 0 and worker phase 1),
+including provider teardown, original-control restoration and byte-for-byte
+root-pool preservation. Normal 8 MiB 486,-fpu startup passes in 45.986 seconds.
+Full diagnostics then stop at worker disk-include setup: the worker's 1 MiB
+private compiler arena differs from the public pool's physical backing heap,
+but the accounting helper incorrectly required these heaps to be identical.
+Evidence: `build/parser-placement-diagnostic-v61-16m/result.json` and debug.log.
+
+The expanded allocator fixture reproduces this as case 496 (runner low byte
+00:F0); source-pinned red evidence is preserved in
+`build/i386-backing-accounting-distinct-red/result.json`. The candidate records
+both physical heaps. It requires exact private-arena recovery, exact live public
+recovery, and exact backing-allocator recovery after verified owned-cache
+accounting. Added cases reject leaks in either physical heap and in public
+payloads, retain bytes in both heaps, and require complete teardown. Candidate
+bootstrap/green/native qualification is pending. Full self-hosting generations
+and release readiness remain open.
+
+Both bootstrap generations and both allocator validators now pass the separate
+heap regression. The extended fixture rejects leaks in the private arena, the
+public backing allocator and public payloads, preserves live bytes in both
+heaps, and recovers both arenas completely. Source-pinned red/green evidence,
+runner logs and validator reports are retained in
+`build/i386-backing-accounting-distinct-checkpoint/result.json`. This proves the
+accounting fixture, not full OS qualification. Fresh native/diagnostic and 8 MiB
+startup qualification for the dual-heap candidate remain pending.
+
+## Compiler phase 0 qualified; worker memory probe isolated next (2026-10-07)
+
+Full v60 diagnostics pass header cleanup, enclosing disk-include recovery,
+code/control lifetime checks and the kernel compiler-probe wrapper in phase 0.
+The guest loads root headers, reaches READY, and emits both timer ticks. It then
+stops in the worker MemoryProbe, whose old setup requires the shared root backing
+pool to be empty despite persistent root graphics allocations. Evidence:
+`build/parser-placement-diagnostic-v60-16m/debug.log` and `result.json`.
+
+The next candidate runs the existing public memory/hash/string/alignment API
+checks against a separate diagnostic backing pool. It temporarily reinitializes
+the current empty task control at the same address with IRQs masked, retains the
+real public selectors/callbacks, and restores the original control bytes after
+exact provider teardown. The original root pool must remain byte-for-byte
+unchanged, and physical bytes/allocation counts must recover exactly. Production
+startup reservations and graphics allocations stay owned; no global-empty
+assertion is relaxed. Candidate bootstrap/native/runtime qualification is pending.
+Normal v60 8 MiB startup remains verified; full diagnostics, full self-hosting
+generations and release qualification remain open.
+
+Both bootstrap generations and cross-v61 pass with the isolated-provider
+candidate, including the 386 instruction audit. MemoryRuntime is 317561 bytes
+(0x4D879); native kernel is 525200 bytes. The reusable startup checker now accepts
+`--diagnostics`, verifies the diagnostic image hash against its cross-build
+manifest, pins current source/harness hashes, and runs the retained-code and
+exact-VGA command checks after diagnostic startup. A plain 16 MiB run is now
+labeled a resource probe, distinct from diagnostic startup. Runtime qualification
+for the new isolated provider is pending; normal 8 MiB startup is running first.
+
+Normal v61 8 MiB startup passes in 45.986 seconds on 486,-fpu, with all nine
+retained code/data, arithmetic and exact VGA checkpoints. Evidence:
+`build/doc-layout-runtime-boot-v61-8m/result.json`. The new diagnostic mode also
+rejects an ordinary kernel image before copying or booting it. Full v61
+diagnostic startup and the same post-startup command/VGA checks are running in
+`build/parser-placement-diagnostic-v61-16m`; no passing result is claimed yet.
+
+## Compiler diagnostic backing accounting: shared gates (2026-10-07)
+
+Diagnostic v59 passes standalone public-header cleanup and reaches COMPILER
+RECOVERY phase 0. It then fails the enclosing disk-include physical-total gate,
+which uses the same stale assumption that live public heaps cannot retain cache.
+Evidence: `build/parser-placement-diagnostic-v59-16m/debug.log` and `result.json`.
+
+The candidate centralizes verified backing ownership and live-byte recovery in
+`Kernel/I386/BackingCheck.HC`, used by header cleanup, the enclosing disk-include
+probe and the kernel compiler-probe wrapper. It preserves exact physical module
+reclamation after the complete payload accounting check. Both bootstrap
+generations and cross-v60 pass (525200 native kernel bytes; 386 audit unchanged).
+
+A dedicated allocator fixture keeps a 40000-byte permanent payload alive,
+creates and frees small allocations that retain cache, then verifies that public
+and physical payload leaks are rejected. Corrupted backing totals, region span,
+and region count are rejected; failed baseline capture preserves the baseline;
+all permanent bytes and IRQ state survive, and teardown recovers the whole
+physical arena. Both assembly and portable-source heap validators pass. Evidence:
+`build/i386-backing-accounting-test/result.json` and
+`build/i386-backing-accounting-source-test/result.json`.
+
+The larger combined fixture exceeded its boot-loader transfer size, so this
+coverage uses the dedicated `--heap --heap-backing-accounting` mode. Normal
+8 MiB startup and full diagnostics for v60 are not yet qualified. MemoryProbe
+compatibility with persistent root graphics remains unqualified; full OS,
+self-hosting generations and release gates remain open.
+
+Current-source normal startup is now qualified: v60 passes all nine retained
+static/function/literal, arithmetic and exact VGA restoration checkpoints at
+8 MiB on 486,-fpu in 46.080 seconds, under the 60-second budget. Evidence:
+`build/doc-layout-runtime-boot-v60-8m/result.json`. Full diagnostic startup is
+running in `build/parser-placement-diagnostic-v60-16m`; no passing result is
+claimed yet.
+
+## Header cleanup: backing cache identified (2026-10-07)
+
+The v58 tracing run proves that live public bytes return exactly to 0x12B370.
+Cached pages grow from 0x12F000 to 0x131000 (8192 bytes); owned backing regions
+increase from five to six and retained physical backing grows by exactly 8776
+bytes. That accounts for the entire physical baseline difference and one extra
+allocation. This is owned cache in a live heap, not evidence of a payload leak.
+Both bootstrap generations and cross-v58 pass; diagnostic startup remains red
+at the old global physical-baseline assertion. Evidence:
+`build/parser-placement-diagnostic-v58-16m/debug.log` and `result.json`.
+
+The next candidate requires exact recovery of live public bytes and of physical
+payload bytes/allocation count after subtracting verified owned backing. It
+walks backing records, checks physical allocation sizes/spans and ownership,
+and preserves task, IRQ and heap-validity assertions. It does not trim or discard
+live graphics storage, nor change production allocation policy. Candidate
+qualification is pending; full diagnostics and release gates remain open.
+
+Both bootstrap generations and cross-v59 now pass with the accounting candidate,
+including the 96-BIOS/209-protected-instruction 386 audit. The full diagnostic
+startup is running in `build/parser-placement-diagnostic-v59-16m`; its outcome
+is not yet qualified. The preceding cache observation is machine-recorded in
+`build/i386-header-backing-cache-checkpoint/result.json`.
+
+## Standalone public headers: cleanup qualification pending (2026-10-07)
+
+Cross-v56 and both bootstrap generations pass with the guarded standalone NULL
+macro. The 16 MiB 486,-fpu diagnostic startup now passes header rollback,
+publication and retry, all 271 document-layout assertions, and DocRecordCheck
+(result 4). It then stops during ProbePublicHeaders cleanup, before the final
+heap/task baseline gate. This is not a passing diagnostic boot. Evidence:
+`build/parser-placement-diagnostic-v56-16m/result.json` and `debug.log`.
+
+The next candidate adds separate cleanup markers for symbol deletion, retained
+storage release, and exact heap/task recovery. All original assertions remain;
+no ownership or allocator invariant is relaxed. Current-source normal startup,
+full diagnostics, complete self-hosting generations and release qualification
+remain open. The most recent normal 8 MiB startup pass is v55 (46.185 seconds),
+before the standalone NULL change.
+
+The v57 instrumented run locates the failure at the final baseline check:
+symbol deletion and retained-storage release succeed; task state, IRQ state and
+heap validity match, but physical usage is 8776 bytes higher and allocation count
+is one higher. Evidence: `build/parser-placement-diagnostic-v57-16m/debug.log`.
+Both bootstrap generations and cross-v57 pass. A follow-up candidate records
+public-heap usage and backing retention before/after the probe to distinguish
+unreclaimed backing from leaked payloads; that candidate is not yet qualified.
+
+## Diagnostic flag contract regression (2026-10-07)
+
+The current 16 MiB 486,-fpu diagnostic boot fails in ProbeInputs phase 0 case 8:
+CCF_AOT_COMPILE returns success and one answer (42), where synchronous command
+input must reject this mode before creating a control. Cases 0 through 7 pass.
+This is a real mismatch with the documented invalid-flag contract, not a green
+diagnostic run. Inspect the caller flag check and restore explicit AOT rejection
+without restricting the other execution/context flags. Module construction uses
+its dedicated build API and internally selected AOT controls.
+
+Evidence: `build/parser-placement-diagnostic-v54-16m/result.json` and debug.log.
+The later memory-probe compatibility with early persistent graphics is still
+unqualified because this earlier failure stopped the run. A separate no-FPU
+16 MiB guest build of Startup and MemoryRuntime passes: 407 and 330172-byte
+modules with matching export contracts. This covers these two modules, not full
+self-hosting. The candidate restores the caller AOT flag guard and adds exact
+heap/counter recovery assertions to case 8. Both bootstrap generations pass;
+cross-v55 passes, normal 8 MiB startup passes in 46.185 seconds, and diagnostic
+phase 0 passes all 27 input cases including case 8 with no allocation or answer.
+The diagnostic run then fails standalone PublicKernel.HH loading because
+PublicDebug.HH uses NULL defaults without a supplied definition. The guarded
+NULL definition and failed-header macro rollback check are the next candidate.
+Evidence: `build/parser-placement-diagnostic-v55-16m/result.json`. The M7 audit
+now explicitly separates this current source epoch from historical ABI 47
+packaging/generation evidence. Full self-hosting and release
+gates remain open.
+
+## Temporary allocation placement: allocator verified (2026-10-07)
+
+Added a separate high-end physical allocator for short-lived bookkeeping. The
+normal allocator keeps its existing placement and ABI. A dedicated workload
+mixes 1024 durable 80-byte objects with 1024 temporary 64-byte records in a
+192 KiB arena. After freeing records, normal placement cannot provide 64 KiB;
+high-end placement can, with every durable byte intact. Both heap validators
+pass, as does the main heap corpus. Invalid/exhausted requests and late metadata
+corruption preserve bytes and counters; tiny-prefix absorption, zero-byte
+requests, alignment, zeroing and full recovery are checked. The missing-function
+red and source-pinned green are retained in
+`build/i386-heap-high-checkpoint/result.json`.
+
+Parser allocation records, pending token records and macro ownership records
+now use this allocator through a new private compiler loader binding. Persistent
+payloads still use the existing allocator, and live addresses never move. This
+integration passes both bootstrap generations and cross-v54 with the 386
+instruction audit. Full 8 MiB 486,-fpu normal startup now passes in 46.331
+seconds, under the 60-second target. All nine retained static/function/literal,
+arithmetic and graphics/text restoration checkpoints match exact VGA pixels.
+The 64 KiB console stack and 8 MiB RAM gate are unchanged.
+
+Cross-v53 exposed a stale export-index guard before compiler loading; v54
+derives that bound from the actual export array. The reusable
+`tools/test-i386-startup-memory.py` checks disk/source/harness provenance and
+enforces the startup budget; it rejects the stale v53 source. Mixed-symbol
+deletion passes at 8 MiB. The parent-symbol test fails at 8 MiB when Spawn
+requests its unchanged default 256 KiB stack (0x40508-byte physical request,
+largest block 0x176E0). Explicit 64 KiB ownership passes at 8 MiB, and
+default-stack ownership passes at 16 MiB. The bounded-stack fixture also passes
+on original x64 TempleOS, with the same fixture source hash and all six checks.
+Neither profile changes the OS Spawn default; its 8 MiB allocation failure
+remains open. Evidence: `build/i386-parser-placement-integration-checkpoint/result.json`. Diagnostic MemoryProbe retention,
+full original graphics/API coverage, self-hosting generations and release gates
+still require current-source qualification. This startup pass is not a complete
+OS claim.
+
+## Publication storage peak: current 8 MiB failure (2026-10-07)
+
+Cross-v51 and both bootstrap generations pass with the retained 256-page
+startup reserve. Full 8 MiB 486,-fpu boot still fails in root header publication:
+request 0x89F8 (35320 bytes), largest physical free payload 0x8678 (34424 bytes),
+usage 0x659778 of 0x662400. No prompt or presentation commands ran.
+
+The failed request is the frontend publication storage array. It was allocated
+for every parser allocation before validation, although only retained code and
+static buffers need entries, then copied into an exact-size second array. The
+candidate fix partitions those storage records at the front of the existing
+transfer journal and allocates one exact-size storage array after full validation.
+Header-only and parent-context publication need no independent storage array.
+Duplicate ownership, collision checks and the no-fallible-work commit boundary
+remain in place. Both bootstrap generations and cross-v52 pass. Full 8 MiB
+boot now publishes root headers, but console task construction fails: request
+0x10508 (66824 bytes), largest free block 0xCC70 (52336 bytes), physical usage
+0x6245B8 of 0x662400. Roughly 247 KiB total free is fragmented; the console
+stack requirement remains unchanged. No interactive command ran at 8 MiB.
+
+A separate 16 MiB diagnostic run passes startup, persistent static state
+(41 then 42 across commands), a compiled string-returning function, arithmetic
+and graphics/text restoration, with exact VGA pixels at all nine command
+checkpoints. That probe does not satisfy the 8 MiB gate, and parent-context
+ownership/reclamation still needs full regression qualification. Next test
+allocating temporary parser bookkeeping from the high end of the arena while
+long-lived payloads use the existing allocator: releasing bookkeeping should
+leave a contiguous task-sized block without moving live objects or reducing
+the stack. Evidence: `build/i386-publication-storage-checkpoint/result.json`.
+
+The unmodified red is preserved in
+`build/doc-layout-runtime-boot-v51-8m/result.json`, together with matching
+cross-v51 source hashes and debug output. All complete OS and release gates
+remain open. The 16 MiB v50 probe is diagnostic evidence only.
+
+## Shared backing reservation: tested rollback, startup still open (2026-10-07)
+
+Added explicit early public-pool reservation with the existing region ownership,
+validation and IRQ rules. A new dedicated fixture exhausts the physical arena,
+then allocates and checks data through two fresh public heaps from reserved pages.
+Invalid and failed reservations preserve arena and pool metadata; freeing both
+heaps, trimming and destroying the pool recovers the arena. Both heap validators
+and the existing heap corpus pass. The missing-function red is retained.
+
+Cross-v47 passes the 386 instruction audit, but full 8 MiB 486,-fpu startup still
+fails on the console's first 760-byte public allocation. The 128 KiB reservation
+did not survive root startup: public used/reserved both reach 0x131400, and the
+largest physical free payload is only 0x600. No arithmetic or presentation command
+ran. This is evidence against the small-reserve policy, not a startup pass.
+
+Cross-v48 also passes but still contains the 256-page policy: an attempted
+text replacement had missed the constant, so it is not larger-reserve evidence.
+The corrected v49 candidate explicitly reserves 2560 pages (1.25 MiB), and
+its source hash, bootstrap and cross-build pass. Full 8 MiB boot still fails on
+the first console allocation; the reported pool capacity is less than the early
+reservation. A focused immediate-trim regression fails case 478: automatic
+reclamation releases an unused reservation. The retained-region candidate now
+adds explicit hold/release, skips held regions during automatic trim, and makes
+provider destruction release unused held regions. Diagnostics release the hold
+for isolated recovery assertions and restore the policy afterward. This fix
+passes its immediate-trim regression, two fresh heaps with exhausted physical
+backing, live-destroy rollback and direct held-reservation shutdown under both
+heap validators. The main heap corpus and both bootstrap generations also pass.
+Cross-v50 passes with the 386 instruction audit. Full 8 MiB boot fails during
+root headers: a 0x44F8 physical request cannot fit the largest 0x30E8 free block
+(usage 0x65ED08 of 0x662400). A separate 16 MiB diagnostic boot passes normal
+startup in 39.552 seconds, arithmetic and four presentation/restoration commands
+with exact VGA pixels. That higher-RAM probe does not satisfy the 8 MiB gate.
+Next test the original 256-page reservation with retention enabled, since the
+first small-reserve candidate lacked retention. Diagnostic MemoryProbe restore
+behavior still needs integrated qualification. Evidence:
+`build/i386-backing-reserve-retention-checkpoint/result.json`. RAM remains 8 MiB. Compiler scratch fragmentation, full graphics failure injection and full
+OS/release gates remain open. Evidence:
+`build/i386-backing-reserve-checkpoint/result.json` and the v47 boot debug log.
+
+## Early graphics reservation and new-task heap batch (2026-10-07)
+
+Fixed graphics storage is now reserved before root source parsing: the full
+text plane, two 640x480 drawing contexts, four VGA planes and complete window
+buffers. Public drawing/window storage belongs to the immortal root; activation
+later associates the contexts with the live console. No graphics owner or gr
+context is published early. The shared window-pair reservation passes injected
+first/second allocation failures, zeroed retry, refusal to overwrite a live pair
+and full reclamation under both heap validators. Both bootstrap generations,
+the existing heap suite and cross-v46 pass with the 386 instruction audit.
+
+Full 8 MiB 486,-fpu boot remains failed. Window-only reservation in v45 moved
+failure back to a plane; v46 reserves all graphics storage and loads root
+headers, then the new console task fails its first public allocation (760
+bytes). Its roughly 9 KiB page-batch request cannot fit the largest 1896-byte
+physical free payload, and the public pool has no unassigned pages. Next reserve
+shared public-pool startup capacity before parsing, with rollback/ownership
+checks, then rerun normal boot and text/frame restoration. Full storage-group
+failure injection and end-to-end sprite/mouse tests remain open. RAM budget
+and full OS/release acceptance remain unchanged.
+
+Evidence: `build/i386-early-graphics-reserve-checkpoint/result.json` pins the
+implementation and collects window reservation, heap, bootstrap, cross-build
+and failed full boot results. The initial missing-function red is preserved in
+`build/i386-window-reserve-red/result.json`. The new --heap-window-reserve mode
+uses a dedicated fixture because combining the test with the large heap corpus
+exceeded its fixed transfer boundary; public-suite statistics are explicitly
+zero for the dedicated mode. The main heap corpus remains independently green.
+
+V46 reaches ROOT USER HEADERS ok and the normal display before console headers
+fail. It reports HEAP EXHAUSTED 0x242F, physical usage 0x632B28 of 0x662400 and
+largest free payload 0x768. PUBLIC ALLOC EXHAUSTED is 0x2F8 with both current
+heap usage/reservation zero, while pool usage and reservation are both
+0x131400. This identifies an initial public heap batch with no free pool pages;
+it does not prove startup or planned presentation commands passed.
+
+Window-pair failures are tested through the actual shared reservation core;
+full context/plane-group rollback remains unqualified. The window pair stays a
+separately owned reservation if later drawing-storage reservation fails.
+Commit/push remain unavailable with read-only `.git` permissions.
+
+## Native backing quantum TDD and remaining fixed buffer reservation (2026-10-07)
+
+Native backing growth now uses an explicit 8192-byte quantum, matching the
+public small-allocation batch and avoiding excess reserve beneath it. Public
+page rounding, sizes and free contracts remain unchanged; the generic backing
+provider still defaults to 65536. A native TDD regression fails on the fourth
+38400-byte plane under the old policy, then passes under both heap validators:
+four live planes fit in 192 KiB, preserve their bytes/capacities, and fully
+reclaim. Existing public-memory/backing suites and both bootstrap generations
+pass. Cross-v44 emits both images and passes the 386 instruction audit.
+
+The complete 8 MiB 486,-fpu boot remains failed. A 32 KiB intermediate quantum
+still failed on plane four; 8 KiB gets past all four planes and the z-buffer,
+then fails on the 8192-byte window-visibility bitmap. Its minimum backing
+request is 9263 bytes, while the largest free payload is 4304 bytes. Further
+quantum reduction will not shrink that request. Next reserve the fixed VGA
+window buffers before startup parsing fragments the physical heap, preserving
+full sizes, public-heap ownership and rollback. Then rerun normal boot and
+text/frame restoration. No release RAM budget increase or full-OS qualification.
+
+Evidence: `build/i386-native-backing-quantum-checkpoint/result.json` pins the
+policy/fixture and records native heap, bootstrap, cross-build and boot results.
+`build/i386-backing-plane-budget-red/result.json` records runner 00:C3, decoded
+as fixture case 451 (plane allocation failure). The intermediate 32 KiB green
+heap suites are preserved under `build/i386-heap-quantum-32k-green` and
+`build/i386-heap-source-quantum-32k-green`; their passing constrained test did
+not prove full startup. Cross-v43/full boot confirms that distinction.
+
+V44's failure report is HEAP EXHAUSTED 0x242F, with usage 0x631B08 of 0x662400,
+largest free payload 0x10D0, and PUBLIC ALLOC EXHAUSTED 0x2000. Source order in
+NativeGraphicsStart identifies the uncovered bitmap after four plane
+allocations and the z-buffer. The public pool has 0x12D800 used of 0x12EE00
+reserved. Planned arithmetic/presentation commands did not execute because
+startup failed first. The fixed-buffer reservation and injected rollback tests
+remain unimplemented; this checkpoint does not assert a passing 8 MiB boot.
+
+Commit/push remain unavailable under read-only `.git` permissions.
+
+## Separate-plane runtime and backing quantum pressure (2026-10-07)
+
+The graphics runtime now owns four separately allocated VGA planes. Text
+presentation and sprite/document mouse overlays use the plane table; contiguous
+console callers retain adapters. NativeGraphicsStart publishes globals only
+after initialization and frees partial planes on exceptions. Eight clipped/
+unaligned mouse positions pass shape and double-XOR restore checks (2457600
+byte comparisons), alongside conversion, real VGA readback and the full pixel
+screenshot. Two bootstrap generations and cross-v42 pass with the 386 audit.
+The first mouse fixture used unsupported local array initializers; corrected
+global tables reached the intended missing-function red, then passed green.
+
+Full 8 MiB 486,-fpu startup remains failed: the fourth 38400-byte plane cannot
+obtain backing. The preceding planes increase pool reservation by two 64 KiB
+regions; remaining free capacity is fragmented across pool remainders and tiny
+physical spans. Next test and improve backing-growth quantum use for requests
+larger than half a quantum, preserving public rounding/size/free contracts.
+Injected runtime allocation rollback and text/sprite mouse integration checks
+remain open. Do not increase the release RAM budget or qualify full boot yet.
+
+Evidence: `build/i386-vga-runtime-split-checkpoint/result.json` pins the runtime
+and fixture sources. Cross-v42 emits both images and passes the 386 audit with
+514584 kernel bytes. The boot log reports failed physical requests 0x1022F
+(quantum) and 0x9A2F (minimum), then PUBLIC ALLOC EXHAUSTED 0x9600. Physical
+usage is 0x6329B0 of 0x662400 with largest free payload 0xCD8. Public pool usage
+is 0x121A00 of 0x130800. The request and allocation progression identify plane
+initialization as the current failure; no arithmetic or graphics-start command
+passed because startup failed first.
+
+The parser panic and intended missing-function red are preserved separately in
+`build/i386-vga-mouse-local-init-red` and `build/i386-vga-mouse-split-red`.
+Runtime cleanup is implemented but injected partial-allocation failure remains
+to be tested; the byte tests do not prove all end-to-end editor workflows.
+Commit/push remain unavailable with read-only `.git` permissions.
+
+## Separate-plane conversion and real VGA readback (2026-10-07)
+
+Separate-plane conversion/presentation prerequisites now pass natively.
+GraphicsPlanarSplitCore accepts four independent 38400-byte planes;
+I386VgaSplitRows validates every pointer/range before hardware writes. Existing
+contiguous APIs delegate to these implementations. Four patterns spanning all
+pixel byte values pass 614400 independent byte comparisons, guards/heap recovery,
+153600 bytes of actual VGA plane readback, and no VGA change on rejected input.
+The existing screenshot still matches all 307200 pixels. The missing converter
+was recorded red before implementation. Two bootstrap generations and cross-v41
+pass with the 386 audit; full runtime adoption is not yet implemented.
+
+Next allocate graphics planes separately and adapt text presentation and
+sprite/document mouse overlays, with rollback/overlay-restore tests. Then rerun
+the unchanged 8 MiB normal boot gate. This prerequisite alone does not fix the
+startup OutMem failure, and does not qualify full OS or release behavior.
+
+Evidence: `build/i386-vga-split-checkpoint/result.json` pins the changed
+sources and records bootstrap, VGA and cross-build results. The initial compiler
+failure is preserved in `build/i386-vga-split-red/result.json` and its exported
+compiler log identifies GraphicsPlanarSplitCore as missing. Hardware readback
+and rejection checks were added after that initial converter red test.
+
+The VGA driver previously ignored --qmp-stdio in its display stage, causing a
+terminal QMP Unix-socket bind failure under the session sandbox. Forwarding the
+requested transport resolves that harness failure; the subsequent complete
+VGA run passes. All four plane pointers are validated before register writes;
+poisoning the first plane while invalidating the fourth demonstrates rejected
+input leaves the previously uploaded hardware bytes unchanged.
+
+NativeGraphicsStart still allocates its contiguous public buffer, and mouse/
+text consumers still require runtime integration. Cross-v41 therefore proves
+compilation/audit, not a passing full boot. Commit/push remain unavailable with
+read-only `.git` permissions.
+
+## Public VGA conversion allocation identified (2026-10-07)
+
+The paired public/backing failure trace identifies a 153600-byte public
+allocation, matching the VGA conversion buffer in NativeGraphicsStart. It
+requires a rounded 263727-byte physical backing allocation; v40 still reaches
+Console/public headers and then fails startup on 8 MiB 486,-fpu. Both bootstrap
+generations and cross-v40 pass, including the 386 instruction audit.
+
+Next replace this port-specific contiguous conversion buffer with four owned
+38400-byte VGA planes, while retaining the complete 640x480 framebuffer and
+existing public allocator behavior. Write tests first for byte-identical
+conversion/presentation, plane ownership, allocation rollback and mouse XOR
+restore; adapt text and document/mouse consumers before rerunning the unchanged
+8 MiB normal boot gate. This is a storage-layout change, not a reduced renderer
+or a larger memory budget. Full startup and release remain unqualified.
+
+Evidence: `build/doc-layout-runtime-boot-v40-8m/public-allocation-failure.json`
+records the paired physical/public allocation reports and source pins. The
+public heap has 0x1046F8 used and 0x105200 reserved bytes; its shared pool has
+0x105200 used and 0x110800 reserved bytes at failure. Source inspection connects
+the unique startup request to NativeGraphicsStart's conversion buffer; the
+other 153600-byte public allocation is a fallback presentation path not called
+by source startup. The new public trace runs only on failure, allocates no
+scratch, and preserves the original OutMem exception.
+
+Four-plane storage has not yet been implemented or proven to fix boot. Its
+consumers include GraphicsPlanarCore, NativeTextBasePresent, NativeGraphicsPresent
+and document/mouse overlay paths; all must retain full-frame semantics. Existing
+allocator rounding and graphics context buffers stay within the intended scope.
+Commit/push remain unavailable under read-only `.git` permissions.
+
+## Measured 8 MiB startup fragmentation (2026-10-07)
+
+Failure-only native heap telemetry identifies the next startup blocker as
+fragmentation: a 263727-byte request fails with 334992 bytes of free physical
+spans, but the largest free payload is 74320 bytes (8081 live allocations).
+The shared allocator reports request, usage, capacity, largest free payload
+and allocation count only after validated allocation exhaustion; it allocates
+no diagnostic scratch and changes no heap state. Both bootstrap generations
+and cross-v39 pass, including the 386 instruction audit (514584 kernel bytes).
+The 8 MiB 486,-fpu boot reproduces source-startup OutMem after Console and
+headers load. Next identify the public allocation responsible for this backing
+request and address retention/layout pressure, preserving runtime behavior and
+the unchanged RAM budget. Full startup and release gates remain failed/open.
+
+Evidence: `build/doc-layout-runtime-boot-v39-8m/allocation-failure.json` pins
+the telemetry sources and parses the single HEAP EXHAUSTED report. The boot
+result remains failed, and its debug log records the subsequent OutMem
+exception. Total free spans include their headers; this figure does not assert
+that all free bytes could become one payload. The actual failing allocator
+request is measured; its public caller and retention causes are not yet proven.
+
+No allocator acceptance checks or memory budgets were relaxed. Normal success
+paths emit no new trace. Commit/push remain unavailable because `.git` is
+read-only; all changes remain on the user's fork worktree on `main`.
+
+## Single-module compaction and next 8 MiB bottleneck (2026-10-07)
+
+Single-module loading now reuses its exclusively owned file buffer, after
+complete shared module and symbol validation. Payload relocations retain the
+original metadata until compaction; heap shrinking returns the exact loaded
+size and reclaims metadata. The constrained-loader regression is green, as are
+normal RedSea loading, resident bindings and multi-module loading. Generic
+caller-buffer overlap protection remains unchanged. Two bootstrap generations
+and cross-v38 pass, including the 386 instruction audit (512840 kernel bytes).
+
+The full v38 image now loads Console within 8 MiB on 486,-fpu, replacing v37's
+load rejection. It reaches root/public headers and source startup, but startup
+compilation throws OutMem; the normal boot/arithmetic gate remains failed.
+Next diagnose source-startup allocation pressure, preserve full behavior, and
+rerun the unchanged 8 MiB gate. Do not increase the release RAM budget.
+
+Evidence: `build/i386-owned-loader-checkpoint/result.json` pins current loader
+sources and collects the native contracts, bootstrap, cross-build and failed
+full boot. The prior native low-memory red result is preserved in
+`build/i386-redsea-load-low-memory-red/result.json`. The first compacting fixture
+compiled but exceeded its 128 KiB test transport; the loader corpora now use
+160 KiB, within the existing boot-stage limit and below their heap arena. This
+changes test transport capacity, not guest RAM or release acceptance budgets.
+
+The normal fixture now leaves less than one raw-file allocation for exhaustion,
+and checks nonoverlapping live code and poisoned allocation reuse rather than
+assuming the former two-buffer allocation order. Failed input validation and
+heap recovery remain tested. Source startup reports exception 0x6D654D74754F
+(OutMem); this is a separate remaining failure, not a passing full boot.
+
+Commit and push remain unavailable under this session's read-only `.git`
+permissions; the verified fork is `ddanila/TempleOS` and branch is `main`.
+
+## Owned module heap-shrink prerequisite (2026-10-07)
+
+The low-peak loader prerequisite now passes: I386HeapShrink retains the
+allocation address and exact requested size, reclaims usable tails, and merges
+free neighbors without changing allocation count or historical peak. Native
+tests cover retained bytes, tail reuse, zero-size shrinking, invalid/freed
+pointers, growth rejection and later-block corruption without mutation. Both
+386 assembly and portable-source heap validators pass, along with two bootstrap
+generations. This does not yet fix the loader: next relocate a fully validated,
+exclusively owned module in its existing buffer, shrink it, preserve all binding
+and relocation checks, then rerun loader regressions and the unchanged 8 MiB
+boot gate. No release memory budget changes.
+
+Evidence: `build/i386-heap-shrink-checkpoint/result.json` pins the changed
+sources and records both native heap runs and bootstrap results. The initial
+red compile (missing I386HeapShrink) is preserved in
+`build/i386-heap-shrink-red/result.json`; its compiler log confirms the missing
+function. The green fixtures include the existing heap, public-memory and
+corruption suites as well as the new shrinking cases.
+
+The fork remains `ddanila/TempleOS` on `main`. Commit and push remain unavailable
+because this session grants read-only access to `.git`; documentation and
+implementation changes remain in the worktree.
+
+## Constrained-loader TDD red and diagnostic RAM comparison (2026-10-07)
+
+The unchanged v37 image loads Console, reaches the shell and evaluates 6*7
+on a 16 MiB diagnostic run (44.578s); 8 MiB still fails at Console loading.
+This supports investigating transient double-buffer allocation, not increasing
+the release RAM budget. A new native constrained-loader regression is red at
+case 3: I386RedSeaLoad returns zero when one module plus metadata can fit but
+both raw-file and relocated-image allocations cannot. Next implement bounded
+single-module loading, preserve validation/relocations/cleanup, and rerun the
+loader contracts and unchanged 8 MiB boot gate.
+
+Evidence: `build/doc-layout-runtime-boot-v37-16m-diagnostic/result.json` and
+`build/i386-redsea-load-low-memory-test/result.json`. The same image hash is
+used for the 8/16 MiB comparison. The loader regression executes and frees
+the existing reference payload twice, checks exact image allocation size and
+full heap recovery, and fails before those execution checks on the current
+loader. Reproduce with `python3 tools/test-i386.py --redsea-load
+--loader-low-memory --qmp-stdio`. Full validation/binding failure and relocation
+contracts from existing loader tests remain required; do not relax them.
+
+## Complete native modules and failed 8 MiB startup (2026-10-07)
+
+Cross-v37 emits all complete current modules and both native boot images,
+passing the 386 boot/instruction audit. Full Console, Sprite3, recalculation and
+document search compile. Cross-v36's packaging mismatch is resolved by adding
+actual I386F64Abs/Sub imports already supplied by the loader. The first no-FPU
+8 MiB boot of v37 fails before the shell with CONSOLE REJECT load reclaimed.
+Current startup/runtime qualification therefore remains failed. Investigate the
+loader rejection and transient module memory use within unchanged RAM budgets;
+then publish and test the actual complete layout/navigation providers.
+
+Evidence: `build/doc-layout-runtime-cross-v37/kernel.img`, its build audit,
+and `build/doc-layout-runtime-boot-v37-copy/result.json` with debug.log.
+ConsoleRuntime.t32m is 0x205688 bytes; the kernel payload is 502656 bytes.
+The previous v36 guest compilation succeeds, but packaging rejects two newly
+used math imports; exact import validation now passes with both retained.
+
+Snapshot mode initially fails before boot because QEMU tries to create a
+temporary file on read-only /var/tmp. The actual boot test uses a workspace
+writable copy, QMP stdio, 486,-fpu, 8 MiB, and the unchanged 60-second limit.
+It fails during Console loading before the planned 6*7 shell command. Memory
+pressure is a hypothesis to investigate, not a proven rejection cause.
+
+## Portable original case-insensitive match (2026-10-07)
+
+Portable StrIMatch is now selected before the complete document search core.
+Original/portable references pass six groups (mask 63), including null/empty
+input, ASCII-only case folding, first/overlapping matches, incomplete tails,
+and all 65536 single-byte pairs. It preserves the original returned match
+pointer and leaves high bytes unchanged. The first fixture fails on a ternary
+expression; corrected HolyC uses an ordinary conditional. Native execution,
+public _STRIMATCH publication and document search qualification remain open.
+Both original bootstrap generations pass; next native cross-build pending.
+
+Evidence: `build/str-imatch-original-v2/result.json`. The fixture compiles
+a separately named portable function and compares both providers against
+explicit offsets; the byte matrix checks the independent ASCII fold rule.
+Original _STRIMATCH remains unchanged in the x86-64 kernel.
+
+## Complete recalculation parse path and document search (2026-10-07)
+
+Cross-v35 clears the song allocation call and complete selected DocRecalcCore,
+then fails at StrIMatch in DocFindCore.HC:40. Both original bootstrap generations
+pass after the AStrNew visibility fix. Complete Console emission and current
+native layout/render execution remain open; this is parser evidence. Next port
+the original case-insensitive match provider and continue document search,
+then publish and qualify the complete layout/navigation interfaces.
+
+Evidence: `build/doc-layout-runtime-cross-v35/exports/compiler-log.DD`.
+The earlier v34 failure is resolved by exposing the existing root-owned
+NativeAStrNew declaration/alias before layout, without changing its body.
+No complete Console module or runtime acceptance claim is made from this
+partial cross-build.
+
+## Music compile path and song allocation visibility (2026-10-07)
+
+Cross-v34 clears music state and settings reset, then fails at AStrNew in
+DocRecalcCore.HC:1041. Its existing real NativeAStrNew provider allocates on the
+scheduler root; the declaration and alias are now made visible before layout.
+The provider body is unchanged. No complete Console/native image exists yet.
+Refresh bootstrap and cross-build, then verify song-string ownership/lifetime
+and the full layout engine in the current native image.
+
+Evidence: `build/doc-layout-runtime-cross-v34/exports/compiler-log.DD`.
+Kernel/I386/InputFilterRuntime.HC already implements NativeAStrNew with
+StrNew(text,I386TaskSelf->owner->root); the ordering correction retains the
+root lifetime required for songs selected by another window task. Current
+parser progress does not qualify song playback or public music execution.
+
+## Shared original music state and timing (2026-10-07)
+
+Original music state, tM/Beat and settings reset are now shared and selected
+by Console. Reset uses the existing actual PIT speaker provider; clock and
+locking adapt to native jiffies and single-CPU IRQ save/restore. Original/shared
+six-group references pass (mask 63): defaults, preserved song/task/map/mute/
+correction fields, zero/positive tempo, corrected clock, speaker off and IRQ
+restoration. Native public state, playback/task lifecycle and full runtime
+qualification remain open. Both original bootstrap generations pass;
+the next native cross-build remains pending.
+
+Evidence: `build/music-state-original-v1/result.json` and
+`build/music-state-shared-original-v2/result.json`. The first shared attempt
+fails while parsing the interrupt-lock adapter; corrected code preserves flags
+with SetRFlags and keeps the original busy-wait PAUSE loop on separate lines.
+The native branch uses real I386IrqSave/I386IrqRestore. It is not a stub reset.
+Console initializes settings after its configuration is installed. Full Play
+and song-task ownership still require integration and verification.
+
+## Complete Sprite3 parse path and song dependency (2026-10-06)
+
+Cross-v33 clears the complete selected Sprite3 renderer, including mesh,
+then fails in DocRecalcCore.HC:1038 at music.cur_song. Kernel/compiler/file
+modules are emitted; no complete Console module/current native image exists.
+The next dependency is the original song-state/settings-reset path used by
+DOCT_SONG layout. Reuse the actual native PIT speaker provider, share original
+music state/defaults, and adapt clock/locking to the single-CPU runtime; retain
+the document song branch. Full playback, state ownership and cleanup need
+focused tests. This is parser progress, not native Sprite3/layout execution.
+
+Evidence: `build/doc-layout-runtime-cross-v33/exports/compiler-log.DD`.
+The next branch frees/replaces music.cur_song and invokes MusicSettingsRst.
+The existing Kernel/I386/SoundRuntime.HC supplies actual PIT-channel speaker
+control; music timing/state needs integration rather than a second reduced
+renderer or discarded DOCT_SONG branch.
+
+## Shared original mesh renderer (2026-10-06)
+
+Cross-v32 clears all selected spline routines and next fails at Gr3Mesh in
+SpriteRenderCore.HC:187. The complete original mesh routine is now shared and
+selected by Console, retaining transformed copies, mirrored winding reversal,
+lighting callbacks and mirror-only branches. Original/shared six-group references
+pass (mask 63): empty mesh, exact quad, translation/input preservation,
+mirror-only/dual output, clipping, winding/color state and successful heap
+restoration. Native mesh/Sprite3 execution, default lighting accuracy and
+exceptional cleanup remain open. Both original bootstrap generations pass;
+the next cross-build remains pending.
+
+Evidence: `build/doc-layout-runtime-cross-v32/exports/compiler-log.DD`,
+`build/mesh-original-v1/result.json` and
+`build/mesh-shared-original-v1/result.json`. The fixture installs a controlled
+lighting callback and checks invocation counts and positive winding; it does
+not independently validate the default lighting calculation.
+
+## Shared original spline renderer (2026-10-06)
+
+Cross-v31 clears packed bit extraction and next fails at Gr2BSpline3 in
+SpriteRenderCore.HC:165. Complete original quadratic/cubic Bezier and B-spline
+3D routines are now shared and selected by Console. Original/shared references
+pass six groups (mask 63): exact collinear paths for all four routines,
+translated cubic spline, insufficient controls, context/input preservation
+and successful heap restoration. Closed, curved, mirrored and exceptional
+allocation paths and native execution remain unqualified. Both original
+bootstrap generations pass; the next cross-build remains open.
+
+Evidence: `build/doc-layout-runtime-cross-v31/exports/compiler-log.DD`,
+`build/splines-original-v1/result.json` and
+`build/splines-shared-original-v1/result.json`. All original transformation,
+symmetry, mirror-only and closed-spline branches remain selected; passing
+collinear fixtures does not prove those untested branches.
+
+## Portable packed bit extraction (2026-10-06)
+
+A portable BFieldExtU32 core is selected before Sprite3's packed-point path.
+It reads only the bytes needed by the U32 result, replacing architecture-bound
+unaligned eight-byte extraction. Reference v5 passes 99072 combinations:
+six byte patterns, 128 starts and widths 0..128 against a bit-by-bit oracle.
+The original is called with normalized widths no greater than 32; raw wider
+assembly returns can retain upper bits despite the declared U32 return type,
+so no ABI parity claim is made for those noncanonical upper bits. Native
+execution, public symbol publication and next cross-build remain open.
+
+Evidence: `build/bit-field-original-v5/result.json`, mask 63. Initial
+fixture v1 uses unsupported #undef; it is replaced by a configurable function
+name. Wider-field direct comparisons expose noncanonical original upper bits;
+the final reference explicitly normalizes the original call width. Bootstrap
+refresh passes both original generations after selecting the core in Console.
+
+## Polar math runtime integration (2026-10-06)
+
+The tested software Arg provider is now selected by FloatMath, published as
+_ARG in the compiler math namespace, and bound into Console's imports. Console
+includes the complete original shared R2P before transformed curve rendering.
+Both original bootstrap generations pass. Cross-v30 clears R2P and the full
+curve paths, then fails at BFieldExtU32 in SpriteRenderCore.HC:150. No complete
+Console image is emitted; public runtime execution and NaN payload parity remain open. Namespace counts,
+loader counts and strict expected imports are updated together.
+
+The compiler math table now has 26 entries and Console has 56 resident
+bindings. Existing entries retain their order; Arg is appended. This integration
+uses the implementation qualified by the preceding 1024-vector standalone
+no-FPU fixture, but still needs public-provider runtime tests in a complete
+current native image. Compile evidence: `build/doc-layout-runtime-cross-v30/exports/compiler-log.DD`.
+
+## Independent no-FPU polar math qualification (2026-10-06)
+
+Software Arg passes 1024 independent Decimal vectors on 486,-fpu with 8 MiB,
+CR0.EM set and the instruction audit. The oracle uses half-angle reduction and
+Taylor series, with every rounded expectation stable at 400/480 digits; coverage
+includes axes, signed zeros, infinities, subnormal/extreme finite ratios,
+polynomial reduction boundaries and deterministic full-range finite pairs.
+Finite angle results permit at most one ULP, signed zero is exact. NaN payload
+parity and public runtime binding remain open. Next bind Arg and shared R2P,
+then resume full renderer/native Console integration.
+
+Evidence: `build/i386-soft-f64-polar-test/result.json`. Its single native
+Main case loops over all 1024 pinned vectors and returns the first failing
+index; zero proves the complete loop passed. The six original special-case
+reference groups also pass in the preceding software-host checkpoint.
+
+The first native attempt timed out because the fixture lacked Once.HC and
+booted into the installer. That harness error is fixed; failure artifacts are
+retained in `build/i386-soft-f64-polar-missing-once-v1/`.
+
+Reproduce with `python3 tools/gen-i386-polar.py --check` and
+`python3 tools/test-i386.py --soft-f64-polar --qmp-stdio`. The generator runs
+before compilation, rejecting stale expected vectors.
+
+## Software polar reference compilation fix (2026-10-06)
+
+Software polar reference v2 passes all six exact original special-case groups
+on the original host after renaming local pi to polar_pi. The v1 compiler panic
+was a collision with KernelA.HH's pi macro expanding in a variable declaration,
+not a demonstrated atan algorithm failure. Software Arg/shared R2P remain
+unbound until independent high-precision accuracy and no-FPU execution pass.
+NaN policy, full finite range and runtime provider binding remain open.
+
+Evidence: `build/polar-reference-software-original-v2/result.json`, mask 63.
+The software reference explicitly selects I386PolarArg and a renamed shared
+R2P wrapper, so the original x87 Arg provider cannot satisfy these calls.
+Both original bootstrap generations pass after the PolarCore extraction.
+
+## Software polar math implementation in progress (2026-10-06)
+
+A first software atan/Arg implementation is written in FloatPolar.HC, adapting
+fdlibm reduction/polynomials with explicit special cases and TempleOS Arg(x,y)
+ordering. The original R2P wrapper is extracted into PolarCore.HC. Neither is
+bound into the native runtime yet. The software-on-original reference v1 fails
+with a guest compiler panic while compiling I386PolarATan, before observations;
+no accuracy or compatibility pass is claimed. Resolve this compilation failure,
+then add independent high-precision and no-FPU tests before native binding.
+
+Failure artifacts: `build/polar-reference-software-original-v1/behavior/`,
+including captured screen and logs. NaN payload selection remains an explicit
+unqualified policy, pending original parity tests. Bootstrap must be refreshed
+after the new original PolarCore extraction before any further native build.
+
+## Polar math reference and native dependency (2026-10-06)
+
+Cross-v29 confirms the next native dependency is R2P at GrCurves3Core.HC:37.
+No complete Console image is produced. A new original polar reference passes
+six groups (mask 63): signed zero, negative x axis, vertical axes, diagonal
+quadrants, selected infinity cases, and optional R2P magnitude/angle outputs.
+This fixture establishes exact special-case compatibility, not general atan2
+accuracy, NaN propagation or no-FPU execution. Next implement and independently
+qualify software Arg, then share the complete original R2P wrapper.
+
+Evidence: `build/doc-layout-runtime-cross-v29/exports/compiler-log.DD`
+and `build/polar-reference-original-v1/result.json`. The original _ARG routine
+in Kernel/KMathA.HC loads y then x and executes FPATAN; its public ordering
+is Arg(x,y), unlike the common atan2(y,x) ordering.
+
+Implementation references reviewed: https://netlib.org/fdlibm/s_atan.c and
+https://netlib.org/fdlibm/e_atan2.c. Preserve their permissive copyright notice
+if adapting the reduction/polynomial. Validate with an independent high-precision
+oracle, original edge cases, CR0.EM and the existing instruction audit.
+
+## Shared original curve rendering (2026-10-06)
+
+Complete original 3D circle, ellipse and regular-polygon paths are now shared
+and selected by Console. Original/shared six-group reference tests pass
+(mask 63): degenerate dimensions, zero step, exact zero-arc circle/ellipse
+points, and translated ellipse/polygon pixel equivalence with state restoration.
+These transformation paths depend on R2P and its Arg polar-angle operation;
+the native math provider must be implemented and qualified, preserving all
+quadrants and edge behavior. No reduced untransformed-only renderer is used.
+Arbitrary rotation/scaling, arc sweeps, thick/depth modes and native execution
+remain open. Both original bootstrap generations pass after extraction;
+native cross-build is pending.
+
+Evidence: `build/curves-original-v2/result.json` and
+`build/curves-shared-original-v1/result.json`. The translation checks compare
+every pixel against a shifted original image; they do not independently prove
+the trigonometric sampling of a full arc.
+
+## Shared filled polygon and rectangle paths (2026-10-06)
+
+Complete original triangle, convex polygon and 3D rectangle paths are now
+shared and selected by Console. The triangle's six pointer swaps use a typed
+CD3I32 pointer helper rather than eight-byte integer writes, preserving correct
+slot width on 32-bit targets. Original/shared reference fixtures pass six groups
+(mask 63), comparing every canvas pixel for rectangle bounds, clipping,
+translation, mirror-only rendering, empty small polygon and convex quad.
+Arbitrary triangles, depth interpolation, raster modes, screen windows and
+native execution remain unqualified. Both original bootstrap generations pass.
+Cross-v28 clears arrow, triangle, polygon and rectangle parsing, then fails
+at GrCircle3 in SpriteRenderCore.HC:122; no complete Console image is emitted.
+
+Evidence: `build/filled-poly-original-v1/result.json` and
+`build/filled-poly-shared-original-v1/result.json`. The full original triangle
+scan conversion branches remain intact; the pointer-width fix only changes
+vertex-pointer swapping. Native compile evidence is retained in
+`build/doc-layout-runtime-cross-v28/exports/compiler-log.DD`; this partial
+build does not qualify target execution.
+
+## Shared original arrow rendering (2026-10-06)
+
+Complete original GrArrow3 rendering is now shared and selected by Console.
+Original and shared references pass six groups (mask 63), scanning every pixel
+for shafts, two-pixel arrowheads, degenerate points, translation, left clipping
+and mirror-only output while checking context state. Native execution, stepped,
+thick, arbitrary-angle and combined symmetry paths remain unqualified.
+Rectangle integration requires the complete original polygon/triangle raster
+path, including adapting pointer swaps to the target pointer width.
+
+Evidence: `build/arrow-original-v2/result.json` and
+`build/arrow-shared-original-v1/result.json`. Both original bootstrap
+generations pass after extraction;
+no current native image is claimed.
+
+## Flood-fill native compile frontier (2026-10-06)
+
+Cross-v27 clears the complete shared flood-fill paths and next fails at
+GrArrow3 in SpriteRenderCore.HC:78. Kernel, compiler and file modules are emitted,
+but the complete Console module and native image remain unavailable. This is
+parser integration evidence, not native flood-fill execution or an 8 MiB pass.
+Continue with original arrow/rectangle and remaining sprite dependencies; retain
+workspace sizing/exception cleanup as a separate flood-fill acceptance task.
+
+Evidence: `build/doc-layout-runtime-cross-v27/exports/compiler-log.DD`.
+The cross-build exits with failure at the original GrArrow3 call, after
+parsing all selected flood-fill functions. No current native runtime claim
+is made from this partial build.
+
+## Shared original flood fill (2026-10-06)
+
+Complete original flood-fill ray scanning, iterative work stack, 2D entry and
+3D transformation/symmetry wrapper are now shared and selected by Console.
+Original and shared reference fixtures pass six groups (mask 63): full canvas,
+unchanged/clipped seed, enclosed region, not-color boundary, translation,
+and dont-draw state plus successful heap restoration. Native execution, depth,
+symmetry and exceptional cleanup are not yet qualified. The original fixed
+0x80000-frame work stack uses 28 MiB: portable workspace sizing and failure
+cleanup are required before the 8 MiB native acceptance gate can pass.
+
+Reference evidence: `build/flood-fill-original-v1/result.json` and
+`build/flood-fill-shared-original-v2/result.json`. Both original bootstrap
+generations pass after extraction; cross-v27 subsequently clears flood fill
+and stops at GrArrow3. The algorithm and all raster branches remain
+intact; no reduced flood-fill substitute is used.
+
+## Shared text composites (2026-10-06)
+
+Complete original text-box and diamond rendering now lives in a shared core,
+selected by Console before Sprite3. The actual compiler Ceil provider is bound
+for diamond sizing. Original and shared references pass six groups: null input,
+exact empty/multiline/tab box outlines, translated box state, and empty-diamond
+corners with heap restoration. Nonempty diamond geometry and native runtime
+qualification remain open. Both bootstrap generations pass. Cross-v26 clears
+text composites and next fails at GrFloodFill3 in SpriteRenderCore.HC:61;
+no complete Console module or current native image is produced.
+
+Reference evidence: `build/text-composites-original-v1/result.json` and
+`build/text-composites-shared-original-v1/result.json`, both mask 63.
+The full original adaptive diamond branches are retained; the current fixture
+only checks the empty diamond's corners, not every edge or nonempty sizing.
+
+## Complete line paths and text build frontier (2026-10-06)
+
+Graphics text passes both original bootstrap generations. Cross-v25 clears
+GrPrint3 and next fails at GrTextBox3 in SpriteRenderCore.HC:55. It emits
+kernel/compiler/file modules, but no complete Console image.
+
+GrLineCore.HC and GrLine3Core.HC now share complete original 2D callbacks,
+line clipping, thick-line stepping and public 3D line branches. Console includes
+them after actual point/circle dependencies. The first reference fixture
+expects final z values on thin non-depth lines; original mask 53 exposes the
+intentional optimized z=0 path. Correcting those expectations to the documented
+source behavior, without changing rendering, yields six-group success.
+`build/line-render-original-v2` and `build/line-render-shared-original-v1` pass
+63: reversed horizontal, diagonal, clipped line, translation, exact interpolated
+depth rejection and full thick-line footprint with restored state.
+
+Stepped/start offsets, arbitrary slopes, line symmetry, screen coverage and
+native code execution remain unqualified. Refresh bootstrap then integrate
+complete text box/diamond, arrow, polygon/mesh and remaining Sprite3 primitives.
+Pen startup ownership/cleanup and memory budgets stay open. Cross-v25 is the
+latest terminal build result; M7/release remains open.
+
+## Full graphics text and left-clipping fix (2026-10-06)
+
+The full pen-table extraction passes both original bootstrap generations.
+A controlled-font graphics-text fixture exposes a real original GrPutChar bug:
+negative left clipping reads the preceding font row. Reference-v1/v2 pass only
+61/63; the diagnostic identifies pixel (0,0), expected RED but BLACK. Both
+screen and ordinary bitmap leading-word paths now read the preceding byte
+only when the destination word actually begins before the glyph. This is an
+intentional correctness fix, not changed expected pixels to fit the failure.
+
+The corrected reference passes all seven groups (127), including 345 left/right/
+top alignment cases against independent glyph pixels. GrTextCore.HC now shares
+complete 2D character/string/formatted/vertical operations; GrText3Core.HC
+shares all original 3D text entry points. Both keep the default-context adapter,
+formatting, tab/newline and state behavior. Shared-original-v1 also passes 127
+with unchanged pins. Native Console includes both actual cores and binds the
+existing CeilU64 provider for tabs (54 loader bindings and strict imports).
+
+Native text raster-mode/window coverage, runtime formatted-varargs behavior,
+heap ownership and complete Console integration remain unqualified. Refresh
+bootstrap and cross-build next; cross-v24 remains the latest terminal full-build
+result at GrPrint3. No complete current image or M7/release claim is made.
+
+## Full pen-table construction and graphics build frontier (2026-10-06)
+
+The circle extraction passes both original bootstrap generations. Full
+cross-v24 clears the complete point/pixel/bitmap/span/circle parser path and
+next fails at GrPrint3 in SpriteRenderCore.HC:52. No Console module emits;
+parser progress is not native rendering qualification.
+
+GrPenTablesCore.HC now shares the complete original loop constructing all
+64 diameters of normal/collision/even/odd pen contexts and circle bounds.
+GrSetUpTables calls it at the original location. Console includes the builder,
+but native graphics startup does not yet call it: lifecycle, allocation failure
+cleanup and memory-budget qualification are required before that integration.
+
+The first pen fixture times out at a captured parse error because HolyC has
+no `continue` statement. Replacing it with an explicit failure return fixes
+the fixture. `build/pen-tables-original-v2` and
+`build/pen-tables-shared-original-v1` pass all six groups (63), checking every
+pixel of four brush arrays at all 64 diameters and every circle bound against
+an independent integer shape oracle. Native initialization and runtime behavior
+remain open. Refresh bootstrap before compiling the new source; integrate
+full original graphics text next. M7/release remains open.
+
+## Complete filled-circle and semicircle paths (2026-10-06)
+
+The raster-span extraction passes both original bootstrap generations.
+GrFillCircleCore.HC now shares complete GrFillCircle and all eight
+GrFillSemiCircle branches at their original position; Console selects the
+shared source after actual spans. Small pen tables and large sqrt fallback
+are both retained, not replaced by a different disk rasterizer.
+
+The first oracle assumes symmetric integer-radius large-circle pixels, but
+original mask 31 exposes translated float-to-integer truncation: the positive
+translated left coordinate is truncated after subtracting the root, yielding
+an extra left pixel for noninteger roots. The corrected independent integer
+root oracle models that conversion order. `build/fill-circle-original-v2`
+and `build/fill-circle-shared-original-v1` pass six groups (63): zero/one,
+small table, clipping, depth rejection, all eight semicircle selectors and
+large diameter 64 pixels/count. No renderer behavior was changed for the oracle.
+Native brush/circle table initialization, native sqrt/span behavior and full
+sprite/layout qualification remain open. Refresh bootstrap and cross-build
+next. Cross-v23 remains the latest terminal full-build result; M7 is open.
+
+## Complete raster spans shared (2026-10-06)
+
+The complete 3D bitmap extraction passes both original bootstrap generations.
+GrRasterSpanCore.HC now shares the complete original GrHLine and GrVLine
+bodies at their original position in GrBitMap.HC. Console includes them after
+bitmap cores. NativeRasterSwapI64 supplies ordinary full-width loads/stores
+for the original SwapI64 intrinsic used by spans; this native adapter still
+requires AOT/runtime qualification. Every raster/depth/visibility branch remains.
+
+`build/raster-span-original-v1` and `build/raster-span-shared-original-v1` pass
+all six groups (63): reversed horizontal/vertical endpoints, clipping, exact
+interpolated depth and rejected points, parity dither and probability-zero
+color. Expected pixel/depth/count values are independent. Screen span branches,
+all raster modes and native swaps/spans remain unqualified. Refresh bootstrap
+then cross-build; the complete filled-circle/brush-table path remains open.
+Cross-v23 is the latest terminal full-build failure and no current complete
+Console image exists. M7/release remains open.
+
+## Complete original 3D bitmap blit (2026-10-06)
+
+The point-clipping extraction passes both original bootstrap generations.
+GrBlot3Core.HC now shares the complete original GrBlot3 body, preserving
+transformed sampling, depth, symmetry/mirror, mono/transparent pixels and
+brush/color restoration. Console includes the actual implementation after
+the mutually dependent point core; its forward declaration is now backed by
+this source, not an unresolved substitute provider.
+
+`build/blot3-original-v1` and `build/blot3-shared-original-v1` both pass six
+groups (63): ordinary copy, translation, depth ordering, mirrored and
+mirror-only images, mono zero/nonzero pixels and brush/color/flag preservation.
+These use independent expected pixel/state values, not a reduced renderer.
+Arbitrary rotations/scales, degeneracy, exceptional cleanup and native AOT
+behavior remain unqualified. Refresh bootstrap and cross-build next, then
+integrate the complete large-circle, line and brush-table dependencies.
+Cross-v23 is the latest terminal full-build result. No current complete native
+Console image or M7/release qualification is claimed.
+
+## Complete point and line clipping helpers (2026-10-06)
+
+GrPointClipCore.HC now shares complete original GrClamp, DCClipLine, GrPlot,
+GrPlot1 and GrPeek bodies at their original GrPrimatives position. Console
+includes them before the 3D point core, with the native default-context adapter.
+Its GrBlot3 forward declaration is a pending real implementation dependency;
+it supplies no substitute behavior and is not a successful runtime binding.
+
+`build/point-clip-original-v1` and `build/point-clip-shared-original-v1` pass
+all six groups (63): offscreen rejection, depth bypass with pointer preserved,
+depth-aware points, clamp/line bounds, screen scroll/pixel offsets and covered
+pixels, plus on-top/window-manager bypass. A private task and isolated z-buffer
+exercise actual screen branches under saved/restored IRQ flags. Original and
+shared runs match independent expected pixels and state. Brush/depth-blit
+paths and full native compilation/execution remain open. Refresh bootstrap,
+then integrate complete GrBlot3 and circle/brush dependencies. Cross-v23 is
+the latest terminal full-build result; no complete native Console image exists.
+
+## Blit alignment coverage and native frontier (2026-10-06)
+
+The complete GrBlot extraction passes both original bootstrap generations.
+The reference fixture now checks 2,880 transparent/opaque copies: widths 1..24,
+x offsets -3..11 and y offsets -1..2, comparing every pixel of a 32x8 canvas
+against independent expected source/color/clipping arithmetic (737,280 pixel
+comparisons). `build/blot-alignment-original-v1` passes all seven groups (127),
+including the previous raster/state cases. The native-driver expected mask is
+updated to 127; no native runtime pass is claimed.
+
+Full cross-v23 parses the accumulated pixel, visibility and bitmap sources,
+then fails at GrPlot1 in GrPlot3Core.HC:18. Kernel/compiler/file modules emit,
+but Console does not. Next integrate the complete original point clipping
+helpers and their brush/GrBlot3 dependencies, then native-qualify the full
+renderer. Parsing alone does not qualify native drawing or public exports.
+M7 remains open; no current complete Console image is produced.
+
+## Complete original bitmap blit shared (2026-10-06)
+
+The pixel visibility provider passes the original two-generation rebuild.
+GrBlotCore.HC now shares the complete original 2D GrBlot body, with every
+raster, clipping, screen visibility, transparent/opaque, mono, XOR, collision
+and extent branch retained. Original GrBitMap includes it at its previous
+position; Console includes it before the 3D point core with native defaults.
+
+The first reference fixture incorrectly expected collisions for COLOR_MONO
+source bytes, which equal TRANSPARENT (0xFF). Original mask 47 reveals this
+oracle mistake. The corrected fixture checks that those bytes do not collide,
+then uses opaque source pixels for the six-collision expectation.
+`build/blot-original-v2` and `build/blot-shared-original-v1` pass all six groups
+(63): transparent copy, clipped/offscreen copy, XOR, opaque mono, collision
+and dont-draw extents with depth/color preserved. Screen visibility and all
+alignment/width/depth combinations still need native/expanded qualification.
+Refresh bootstrap and cross-build next; complete GrPlot1/GrBlot3/GrFillCircle
+and brush-table dependencies remain open. Cross-v22 remains the latest
+terminal full-build result, with no current complete Console image.
+
+## Portable pixel visibility comparison (2026-10-06)
+
+The GrPlot3 extraction passes the original two-generation rebuild.
+GrPixelCoverageCore.HC now translates the complete original
+_IS_PIX_COVERED0 assembly operation: unsigned 16-bit task window number
+compared against the z-buffer cell at (y>>3)*TEXT_COLS+(x>>3). Like the
+original it requires already-clipped coordinates. Native Window.HC selects
+the portable implementation as IsPixCovered0 against the real gr.win_z_buf.
+
+`build/pixel-coverage-original-v1` passes six groups (63). It checks lower,
+equal and high-bit window numbers, then all 307,200 in-bounds 640x480 pixels
+against both original assembly and an independent division-based cell oracle.
+The fixture swaps the real z-buffer under saved/restored IRQ flags and restores
+it before releasing memory. This is complete in-bounds coordinate reference
+evidence for the comparison, not native AOT/window scheduling qualification.
+GrPlot1/bitmap/brush integration and full native Sprite3 remain open. Refresh
+bootstrap and cross-build next; cross-v22 is still the latest terminal result.
+
+## Complete 3D point renderer shared (2026-10-06)
+
+The low-level pixel extraction passes the original two-generation rebuild.
+GrPlot3Core.HC now shares complete GrPlot3B and GrPlot3 at their original
+position in GrPrimatives.HC, with the original/native default-context adapter.
+Console selects the shared source. Transformation, symmetry/mirror, depth,
+brush/dither/collision, screen extents and large-circle fallback branches
+are retained; their dependencies are not replaced by stubs.
+
+`build/plot3-original-v1` and `build/plot3-shared-original-v1` both pass mask
+63: offscreen clipping and point; translated thick/thin entry; depth ordering;
+mirrored and mirror-only points; a nine-pixel thick brush; flags/color/thick
+restoration. The fixture uses independent expected pixels and state, and pins
+the shared core. This does not prove every brush/window/large-circle branch.
+Native GrPlot1, GrBlot/GrBlot3, GrFillCircle, screen coverage and brush-table
+integration remain required before native 3D rendering can be qualified.
+Refresh bootstrap and cross-build next; cross-v22 remains the latest terminal
+full-build result. No current complete Console image or M7 claim is made.
+
+## Complete low-level pixel renderer (2026-10-06)
+
+Full cross-v22 clears mixed pi defaults and parses the complete graphics math
+source; it then fails at GrPlot3 in SpriteRenderCore.HC:49. This is parser
+progress, not complete native math/graphics execution qualification.
+
+GrPixelCore.HC now shares the complete original GrPlot0 and GrPeek0 bodies,
+including depth, collision, XOR, deterministic/probability dither, extents,
+nearest-distance and dont-draw branches. GrBitMap includes the shared core at
+the original position; Console includes it with the native default-context
+adapter. No branch is replaced by a simplified pixel setter.
+
+`build/plot-pixel-original-v1` and `build/plot-pixel-shared-original-v1` both
+pass six independent groups (63): exact color/pixels, XOR, collision count,
+accept/reject depth ordering, locate/extents without drawing, parity dither
+and probability-zero behavior. The shared driver pins the core and adapter.
+Probability distribution and exhaustive raster-op inputs are not covered.
+Native AOT pixel behavior and complete GrPlot3 remain unqualified; refresh
+bootstrap before the next native build. Cross-v22 is the latest terminal
+full-build failure, and no current complete Console image exists.
+
+## Mixed constant bitcast folding: green (2026-10-06)
+
+OptPass012Core now allows immediate, full-width scalar HolyC bitcasts to fold
+only during CCF_TARGET_HOST_CONST evaluation. Ordinary target IR still retains
+conversion boundaries; pointer, narrow and runtime casts are not admitted by
+this exception. This lets the pi bitcast fold before mixed multiplication
+without evaluating target code or embedding a host pointer.
+
+The original two-generation rebuild passes. The expanded focused fixture in
+`build/host-constants-mixed-green-v1` passes all ten groups (1023): prior six
+scalar checks, exact mixed pi product, nested division, pointer rejection
+and runtime-expression rejection. Both positive pi expressions also match
+the original backend's exact binary64 bits. The driver pins the modified
+optimizer source. Cross-v21 remains the latest terminal full-build result;
+run the complete native cross-build next. No complete Console image or native
+sprite/layout qualification is claimed by the focused compiler test.
+
+## Mixed pi constant expression: focused red test (2026-10-06)
+
+Both fresh original sprite-adapter and matrix reference runs pass mask 63
+with MathConstants.HH pinned (sprite-render-pi-original-v1 and
+matrix-rotation-pi-original-v1). The refreshed bootstrap also passes.
+Full cross-v21 recognizes pi, but fails at GrMath.HC:216 because the host
+constant evaluator rejects the two-value expression `2*pi` rather than
+folding mixed integer/F64 arithmetic.
+
+The host-constants fixture now has a seventh group checking exact type and
+bits for `2*(0x400921FB54442D18(F64))` against both original and target
+backends. `build/host-constants-mixed-red-v1` is intentionally red: original
+backend agrees with the expected binary64 value, target compilation returns
+no code, and only the prior six groups pass (63 instead of 127). Next extend
+constant evaluation while preserving rejection of pointer/nonconstant inputs,
+then rerun the focused test, bootstrap and complete cross-build. No current
+complete Console image is produced; M7 remains open.
+
+## Pi header regression and console include (2026-10-06)
+
+The original two-generation compiler/kernel rebuild passes after moving the
+exact original pi macro into MathConstants.HH. Float.HH includes it for
+software math. Inspection shows ConsoleRuntime is a separate translation
+unit without that float header, so it now explicitly includes MathConstants.HH
+as well. Its bootstrap refresh is running; no fresh full cross-build result
+is claimed for this additional include. Cross-v20 remains the latest terminal
+full-build failure. The constant is preserved bit-for-bit; no decimal
+approximation or changed renderer branch is introduced.
+
+## Shared pi constant after native default fix (2026-10-06)
+
+The two-generation bootstrap with the graphics context adapter passes.
+Full cross-v20 clears the DCThickScale default failure, then fails at the
+original pi identifier in GrMath.HC:215. Kernel/MathConstants.HH now shares
+the exact original `0x400921FB54442D18(F64)` pi definition: KernelA includes
+it at its original position and native Float.HH includes the same header.
+No runtime or fresh cross-build success is yet claimed for this change.
+Refresh bootstrap and cross-build next, then continue actual primitive
+integration. Cross-v20 is the latest terminal result; M7 remains open.
+
+## Graphics default-context adapter (2026-10-06)
+
+GrDefaultContext.HH keeps original `gr.dc` default arguments and an empty
+resolver. ConsoleRuntime selects NULL defaults and resolves them to its actual
+gr.dc at function entry, before initializer dereferences. DCThickScale,
+DCSymmetrySet, DCSymmetry3Set and Sprite3 share this adapter. Native explicit
+NULL consequently selects the default context too, following existing native
+DCClear/DCFill conventions; original explicit-NULL behavior is unchanged.
+
+The basic renderer fixture now also calls DCThickScale and Sprite3 with their
+context omitted, restoring global flags/thickness. Original defaults pass in
+`build/sprite-render-default-original-v2`; native NULL defaults and resolver
+pass on the original runtime in
+`build/sprite-render-native-defaults-original-v1`. Both pass mask 63 with
+unchanged source pins. This is adapter reference evidence, not native AOT
+qualification or comprehensive symmetry/default-context testing. Next rebuild
+bootstrap, cross-compile and continue actual primitive integration. Cross-v19
+is still the latest terminal full-build result.
+
+## Graphics default argument build frontier (2026-10-06)
+
+The bootstrap two-generation rebuild passes with the complete original
+GrMath.HC and SpriteRenderCore.HC selected by ConsoleRuntime.
+`build/doc-layout-runtime-cross-v19` emits kernel/compiler/file modules, then
+fails in GrMath.HC:91 at DCThickScale's `dc=gr.dc` default argument:
+`i386 host evaluation requires a folded scalar constant`. This is a native
+cross-compiler/default-provider integration issue, preceding the renderer's
+primitive dependencies. Next preserve original default-context behavior with
+an explicit native adapter or compiler support, then continue the complete
+graphics pipeline. No native Sprite3 or full layout behavior is qualified.
+The dependency map now records implementation definitions only.
+
+## Original sprite math integration started (2026-10-06)
+
+The Sprite3 extraction passes the original two-generation rebuild.
+ConsoleRuntime now includes complete original GrMath.HC and SpriteRenderCore.HC
+before DolDoc layout. This is pending integration, with actual primitive
+dependencies still unresolved and no native rendering qualification.
+`docs/i386-sprite-render-integration.md` maps required operations to their
+original implementations. A fresh bootstrap rebuild is running before the
+next full cross-build; cross-v18 remains the latest terminal full-build result.
+
+## Complete Sprite3 source extraction (2026-10-06)
+
+The complete original Sprite3 body is now shared in
+`Adam/Gr/SpriteRenderCore.HC`, included at its original position in
+GrSpritePlot.HC. All drawing branches remain, including transformations,
+bitmap, spline and mesh paths. This is source preparation, not native
+renderer qualification; Console does not yet include the renderer because
+its complete primitive dependencies are still absent.
+
+`tools/test-i386-sprite-render.py` adds six independent basic pixel/state
+checks: empty input, point, shifted point, color/restoration, just-one mode
+and flags/thickness restoration. Both `build/sprite-render-original-v1`
+and `build/sprite-render-shared-original-v1` pass mask 63 with unchanged
+input pins. The latter pins the new shared source. These checks do not cover
+all Sprite3 branches or complex primitive rasterization. Add those contracts
+and integrate the real original graphics dependencies next. Cross-v18 remains
+the latest full OS failure at Sprite3; M7 stays open.
+
+## Public software trig bindings and layout build (2026-10-06)
+
+Sin/Cos now have canonical public `_SIN`/`_COS` declarations and retained
+providers in the compiler math symbol table (25 entries). The console loader
+maps those providers to its Sin/Cos imports, with 53 explicit bindings; the
+builder validates both imports. Legacy source bytes are preserved.
+The original two-generation rebuild passes with these changes.
+
+`build/doc-layout-runtime-cross-v18` emits Kernel, CompilerRuntime,
+CompilerProbe and FileRuntime modules. Console compilation clears the previous
+missing Cos failure and accepts the original matrix rotation source, then
+fails at the complete DolDoc layout call to Sprite3 in DocRecalcCore.HC:1024.
+No complete Console module or runnable current image is produced. Public
+runtime trig, matrix behavior and layout qualification remain open. Next
+integrate the original complete Sprite3 implementation and its dependencies;
+do not replace the original layout branches with a reduced drawing path.
+
+## Native no-FPU Sin/Cos kernels (2026-10-06)
+
+`Kernel/I386/FloatTrig.HC` implements software sine and cosine using the
+verified integer-limb reducer and fdlibm polynomial kernels. Signed zero,
+quieted NaN payloads and the explicit infinity-to-negative-quiet-NaN policy
+are covered by exact expectations. Finite outputs must match the independent
+400/480-digit Decimal oracle within one ULP.
+
+`python3 tools/test-i386.py --soft-f64-trig --qmp-stdio` passes all 1,024
+inputs on 486,-fpu, 8 MiB, with CR0.EM enabled. The executable instruction
+audit passes. `build/i386-soft-f64-trig-test/result.json` records the result;
+cases=1 denotes one Main executing the full corpus. The fixture generator
+checks the complete independently regenerated target before compilation.
+The original two-generation rebuild also passes with this source present;
+it is not yet included in normal kernel math bindings.
+
+This proves standalone native kernels, not current OS integration or exact
+original TempleOS infinity semantics. Next bind the public Sin/Cos providers,
+rebuild the complete OS, then qualify original rotations and sprite/layout
+behavior. The latest full cross-build remains cross-v17, failing at Cos.
+
+## Native no-FPU trig reduction corpus (2026-10-06)
+
+`python3 tools/test-i386.py --soft-f64-trig-reduce --qmp-stdio` now builds and
+runs the actual HolyC reducer as a standalone native module. Its fixture
+contains 1,018 independently computed Decimal input/quadrant/head/tail tuples,
+requiring the same combined relative-error bound as the original reference.
+The initial standalone fixtures omit the software runtime declarations, use
+a pointer/string initializer unsupported by host constant evaluation, and
+then omit the runtime implementation. Adding the standard SoftF64.HH and
+SoftF64.HC includes and using explicit U64 data resolves those fixture errors.
+`build/i386-soft-f64-trig-reduce-test/result.json` passes: 486,-fpu, 8 MiB,
+CR0.EM set by SOFT_F64_TEST, all 1,018 vectors and instruction audit. The runner
+executes one Main case containing the complete corpus, hence cases=1.
+`tools/gen-i386-trig-reduction.py --check` regenerates expectations from the
+independent Decimal reference and compares the complete target source before
+building. The final rerun with this guard passes. It does not silently derive
+expected values from the reducer body.
+This qualifies native range reduction only. Sin/Cos kernels, exceptional
+values, public providers, full original rotations, Sprite3 and DolDoc layout
+remain open; the full OS cross-v17 still fails at Cos. No new complete OS or
+self-host/release qualification is claimed by the standalone test.
+
+## HolyC full-range trig reducer (2026-10-06)
+
+FloatTrigReduction.HC implements the 52-limb reciprocal, 64-bit accumulated
+multiplication, modular quadrant/fraction extraction, two-part remainder and
+compensated pi/2 product in HolyC. Scaling handles subnormal powers without
+an FPU-specific instruction. Small inputs preserve their exact raw bits;
+special values return -1 and are left for the public trig provider.
+`tools/test-i386-trig-reduction.py` independently computes 480-digit Decimal
+quadrants and head/tail reference values for all 1,018 finite corpus inputs,
+then executes the actual HolyC source in original TempleOS.
+Reference-v1 fails at the largest finite input. Diagnostic-v2 captures wrong
+integer product words before floating conversion. The explicit U32 array
+memory cast to U64 is replaced by numeric widening through a typed local.
+Reference-v2 then returns the correct quadrant and head but an inaccurate
+tail. Explicit I386TrigRound ABI boundaries preserve binary64 rounding in the
+compensated product even under original x87 extended arithmetic.
+`build/trig-reduction-holyc-original-v3` passes every input with unchanged pins,
+correct quadrants and relative remainder error <=2e-31. The largest finite
+head matches exactly; the correction tail differs by two tail ULPs while
+remaining within the uncompromised combined-error bound. The original
+two-generation rebuild passes after both corrections.
+This qualifies the HolyC reducer on the original x64 path only. Native AOT
+execution on no-FPU CPUs, Sin/Cos kernels, special-value policy, public provider
+bindings and full matrix/sprite/layout regressions remain open. Cross-v17 is
+still the latest full native build, failing at Cos; no new native image exists.
+
+## Full-range integer trig reduction model (2026-10-06)
+
+The production reduction design is executable in
+`tools/i386_trig_reduction.py`. A 1,664-bit 2/pi constant is independently
+stabilized at 600 and 680 decimal digits. A two-word significand is multiplied
+through 52 32-bit limbs using checked 64-bit accumulators. Bit extraction
+returns the quadrant; modular complement centers the remaining fraction.
+Two 53-bit fraction chunks, a split pi/2 constant and compensated product
+produce a head/tail remainder. Small inputs preserve their exact original
+value. Special values are handled outside this reducer.
+`build/trig-reduction-v1` passes every finite oracle input (1,018), including
+maximum finite values and quadrant neighbors. Independent 480-digit Decimal
+reduction verifies exact quadrant, bounded centered remainder and relative
+remainder error below 2e-31; observed maximum is below 5.6e-32. This is an
+integer-limb host model, not a callable native provider. HolyC translation,
+software kernels, special-value contract and no-FPU runtime qualification
+remain required. No new native image is produced; Cross-v17 is still red at Cos.
+The full-range reduction reference is https://www.netlib.org/fdlibm/k_rem_pio2.c;
+this model uses its own integer multiplication rather than copying that source.
+
+## Independent trigonometry oracle before implementation (2026-10-06)
+
+`tools/i386_trig_oracle.py` generates 1,024 little-endian triples of input,
+sine and cosine bits. Independent Decimal Machin pi and direct Taylor sums
+replace production range-reduction tables/minimax polynomials as the oracle.
+Every finite result is recomputed at 400 and 480 decimal digits and must round
+identically. The corpus includes signed zero, subnormal boundaries, largest
+finite values, infinities, signaling/quiet payload NaNs, adjacent binary64
+values around 64 quadrant multiples, broad signed exponents and seeded inputs.
+`build/trig-oracle-v1` passes; `tools/test-i386-trig-oracle.py` separately audits
+its exact corpus, signed-zero contract, NaN payload quieting, odd/even symmetry
+and all 2,036 finite results against host libm within one ULP. Audit-v1 passes
+with maximum difference one ULP. Infinite arguments use an explicit negative
+quiet-NaN contract; this remains to be checked against original/native behavior.
+These artifacts qualify independent expected values only. No native Sin/Cos
+provider or current console image is produced by this work. Cross-v17 still
+fails at Cos. Implement and test full-range software trig on no-FPU targets,
+then run the original fixed-point rotation and full sprite/layout regressions.
+
+## Shared original fixed-point matrix rotations (2026-10-06)
+
+MatrixRotationCore.HC retains original Mat4x4MulMat4x4Equ/New, Mat4x4Equ/New,
+and Mat4x4RotX/Y/Z bodies, preserving fixed-point conventions and legacy
+parameter bytes. Original GrMath includes them at their original position;
+the native console includes them before full layout.
+Reference-v1 reaches mask 59 because the Y-quarter-turn golden uses reversed
+signs. Original Mat4x4RotY puts positive sine at index 2 and negative sine at
+index 8; correcting the independent golden yields mask 63 in original-v2 and
+`build/matrix-rotation-shared-original-v1`, with unchanged pins. Six groups
+cover exact zero and return-pointer behavior, all three quarter turns within
+two fixed-point units, inverse composition within 12 units, and two quarter
+turns within four units. Allocating helpers/other matrix APIs are not qualified
+by this fixture.
+The original two-generation rebuild passes. Cross-v17 fails at Cos in
+MatrixRotationCore.HC line 36. Native rotation requires genuine software
+Sin/Cos with range reduction/special-value tests and no-FPU runtime checks;
+full original Sprite3 drawing also remains open. No current Console module or
+native matrix/runtime/layout qualification is claimed.
+
+## Shared complete sprite record traversal (2026-10-06)
+
+SpriteRecordsCore.HC retains the original 30-entry base-size table,
+SpriteElemQuedBaseSize, SpriteElemSize, SpriteSize and SpriteTypeMask, including
+all variable payload branches. Original SpriteNew includes it at its original
+position. Original Gr.HH now has an include guard and supplies its complete
+record definitions to the native console.
+Reference-v1 times out; captured frame identifies a fixture parse error in a
+local initialized size table. Moving the golden table to a global declaration
+fixes that fixture. `build/sprite-records-original-v2` and
+`build/sprite-records-shared-original-v1` pass mask 63 with unchanged pins:
+empty terminator, every type's golden size, all-type combined traversal,
+selection bits, invalid type, and variable polyline/polypt/bitmap/spline/mesh
+payloads. Tests exercise stack buffers and do not claim malformed payload safety.
+The original two-generation rebuild passes. Cross-v16 gets through type-mask
+use and fails at Mat4x4RotZ in DocRecalcCore.HC line 1015. Full original rotation
+and Sprite3 drawing are still needed. No native Console module/image is
+produced; record layout/traversal, public exports and drawing remain unqualified.
+
+## Shared syntax highlighting state machine (2026-10-06)
+
+DocHighlightCore.HC retains the complete original palette and state machine;
+only its Adam root read has a platform macro retaining the original default.
+HashTypeNumCore.HC retains the original type-bit selection body. Native console
+initialization validates the existing `_ADAM_TASK` data provider and keeps its
+real root pointer; highlighting imports the actual kernel alphanumeric bitmap.
+KernelConsoleLoad appends that binding at slot 50, with storage/service count
+51, and the builder's explicit console import contract includes it.
+Reference-v1 reaches mask 31: the I64 golden wrongly assumed keyword color.
+Diagnostic-v1 confirms first glyph 0x1234F949 (light-blue class color); the
+corrected original-v2 and shared-original-v1 pass mask 63 with unchanged pins.
+The fixture compares every glyph/attribute word and terminator, verifies input
+restoration, nested parentheses/braces, character literals, continued strings,
+nested block and continued line comments, root I64 color, and exact data-heap
+recovery. Escaped-literal and broader symbol-class corpora remain future gates.
+The original two-generation rebuild passes. Cross-v15 gets through highlighting
+and fails at SpriteTypeMask in DocRecalcCore.HC line 975. No native console
+module/image is produced; new highlighting call sites, root-provider binding,
+public exports and full layout remain runtime-unqualified.
+
+## Shared displayable character bitmap (2026-10-06)
+
+DisplayableBitmap.HH stores the exact original 16-word char_bmp_displayable
+initializer. Original CharBitmaps.HC and the native scanner use the same data;
+no ASCII-only substitute changes control/high-byte behavior. The original
+two-generation rebuild passes. `build/displayable-bitmap-shared-original-v1`
+passes mask 63 with unchanged pins, checking all 512 positions: control bytes
+0..30 clear, byte 31 set, bytes 32..126 set, DEL clear, 128..255 set, and the
+unused 256..511 half clear. A full-table rule check covers every position.
+Cross-v14 advances past the table and fails at DocHighlight in DocRecalcCore.HC
+line 599. Complete original highlighting is next. The native table is compiled
+into console source, but no Console module/image is produced; public bitmap
+export unification and native rendering/layout qualification remain pending.
+
+## Shared filename and wildcard matching (2026-10-06)
+
+FilesFindMatchCore.HC and WildMatchCore.HC retain the complete original bodies,
+including every exclusion and recursive type-filter branch. FileMaskTypes.HH
+shares original mask strings, bit indices and flag values, at their original
+KernelA include position. Original DskStrA/StrA include their shared bodies;
+the native console includes the same bodies after real string helpers.
+`build/files-find-match-original-v1` and
+`build/files-find-match-shared-original-v1` pass mask 63 with unchanged pins.
+The fixture checks case sensitivity, compressed source basenames, explicit
+full paths, exclusion order, empty/question/star masks, all six positive and
+negative type filters, and exact data-heap recovery for each call.
+The original two-generation rebuild passes. Cross-v13 compiles through the
+matcher dependency and reaches char_bmp_displayable at DocRecalcCore.HC line
+562, where host parsing reports Feature not implemented. Native public
+matcher exports and runtime qualification remain pending. No current Console
+module or complete layout behavior is qualified by these reference tests.
+
+## Native presentation refresh observations (2026-10-06)
+
+WindowManagerTypes.HH shares the complete original CWinMgrGlbls record and
+original FPS/period constants. MaxCore.HC shares the original F64 Max body.
+Native console startup seeds the original FPS and actual current clock;
+ConsolePresentText records changed-row presentations and NativeGraphicsPresent
+records successful I386VgaRows output. NativeWinRefreshCommit computes the
+original measured FPS and increments updates under saved interrupts. The
+layout adapts its FPS read to NativeWinRefreshFPS, also interrupt-protected.
+These are actual presentation observations; periodic WinMgr scheduling and
+idle timing/public refresh API integration remain open.
+The first rebuild times out before its start marker. Captured screen shows
+that an unconditional timing-record forward declaration shadows the complete
+original type, breaking last_calc_idle_time in Adam/Win.HC. The declaration
+is now guarded by a marker set after the complete original timing definition.
+The corrected original two-generation rebuild passes;
+`build/refresh-time-shared-original-v2` passes mask 63 with unchanged pins.
+Cross-v12 gets past refresh state and fails at FilesFindMatch in
+DocRecalcCore.HC line 343. No Console module/image is produced, so native
+presentation behavior and all new call sites remain unqualified.
+
+## Shared measured refresh policy (2026-10-06)
+
+WinMgrRefreshCore.HC contains the original interval/FPS calculation with an
+explicit CWinMgrGlbls state pointer and refresh timestamp. Original WinMgrSleep
+calls it immediately after TimeCal, supplying t=tS as before. The policy keeps
+99 FPS at or below 10 ms, otherwise Max(1/interval,1), and updates the refresh
+timestamp. No other window-manager field changes. The original two-generation
+rebuild passes. `build/refresh-time-shared-original-v1` passes mask 63 with
+unchanged pinned inputs: zero interval, exact 10 ms boundary, 20 ms, two seconds,
+backward time, repeated time. Tests use a local record and preserve global state.
+Native text uses ConsolePresentText, while graphics uses NativeGraphicsPresent;
+real state/timing integration must account for both paths. This reference
+qualifies the extracted policy, not native scheduling, full layout or UI parity.
+
+## Layout managed scheduler connection (2026-10-06)
+
+The console now declares Yield before the full layout include and defines a
+wrapper using `native_input_yield`. Console initialization already requires
+a valid callable `_YIELD` provider; the wrapper calls MemoryRuntime's public
+Yield, including task validation, cleanup/reaping and exit checks around the
+scheduler. This keeps layout waiting on the managed scheduler path.
+The original two-generation rebuild passes. Cross-v11 gets past Yield and
+fails at `winmgr.fps` in DocRecalcCore.HC line 309. Original WinMgrSleep measures
+the refresh interval, reports at least 1 FPS when the interval exceeds 10 ms,
+and otherwise reports 99 FPS. Actual native presentation and scheduling must
+own that state. Full layout, contention behavior and cancellation through
+this new call site remain unqualified; this attempt produces no Console module.
+
+## Cross-compiler floating host constants (2026-10-06)
+
+I386HostConstant now accepts IC_IMM_F64 alongside folded integers, retaining
+raw value bits in the original host Call return convention and reporting
+RT_F64. Pointer/multiple-value/nonconstant rejection remains intact.
+The original two-generation rebuild passes. The regression first fails mask
+1, then reaches 47: positive, negative, zero and division pass, while the
+addition golden assumed a mathematical result. Diagnostic comparison-v2
+shows the original backend and target host path both return
+0x4004000000000001 for `1.25+1.25`. The final fixture requires those exact
+bits from both paths. `build/host-constants-original-green-v2` passes mask 63
+with unchanged pins. Comparison-v1 timed out because a diagnostic fixture
+used unsupported ternary syntax; its captured frame identifies that fixture
+parse error, corrected with an ordinary conditional in comparison-v2.
+Cross-v10 compiles File 49 and passes the original Blink default argument,
+then rejects the missing Yield name at DocRecalcCore.HC line 289. Real
+scheduler integration is next; complete native layout remains unqualified.
+No current native image or release qualification is claimed by these checks.
+
+## Layout clock integration (2026-10-06)
+
+Cross-v8 compiles File 49 but fails at the first `cnts.jiffies` layout read.
+The complete shared layout engine now adapts both clock reads to
+`NativeJiffies`, which reads the actual kernel counter with interrupts saved
+and restored. `tS` uses the same protected getter. The original `Blink` body
+is shared through BlinkCore.HC; its original default counter remains in KMisc,
+and the native console supplies its real clock. No synthetic counter or fixed
+blink phase is introduced. The Blink extraction alone passes the original
+two-generation rebuild. All clock edits pass the original two-generation rebuild.
+`build/blink-shared-original-v1` passes all six deterministic groups (mask 63)
+with unchanged pins: zero frequency, default/1/0.5/5/500Hz phases, including
+a counter above 32 bits. The counter is restored before interrupts.
+Cross-v9 compiles File 49 but fails at BlinkCore.HC line 5: the original
+F64 default `Hz=2.5` reaches I386HostConstant, which only accepts folded
+integer constants. This is a cross-compiler integration failure; fix floating
+default-argument handling without changing the original Blink signature.
+Native clock/layout behavior remains unqualified.
+
+## Drive helper and alias integration (2026-10-06)
+
+Cross-v6 rejects DriveTypes.HH line 33 while compiling FileRuntime: CTask was
+not declared before the owning_task field. The shared header now supplies its
+own guarded forward declaration. Complete original DrvChk/Drv2Let/Let2Let
+bodies are shared in DriveLetterCore.HC; only boot/home global reads use adapter
+macros, retaining original defaults in DskDrv. Native normalization reads actual
+borrowed file-state aliases through File 49, with the borrow released before
+return and a Drv exception on failed acquisition/release. Native current-drive
+lookup keeps original DrvChk validation of the supplied/default CDrv pointer.
+The console includes complete classification and palette bodies, using shared
+original block-device type constants. Console 66 now declares and exports all five original drive helpers, and public
+file headers expose the complete drive record. The alias fixture now compares
+against independently normalized current/boot/home paths through FileNameAbs,
+so it can test both runtimes without requiring a synthetic blkdev global.
+Fresh original two-generation rebuild passes. Updated alias reference passes mask 63 with unchanged pins; native cross-v7
+fails while resolving FileRuntime: throw lacks an import. The module now
+imports the real kernel throw provider; loader bindings and the explicit import
+contract include it. The checker caught stale 31-entry loader counts; the
+actual loader now uses 32 throughout and passes its binding check. Fresh original
+two-generation rebuild passes; cross-v8 is running; native compilation/runtime remain unqualified.
+No full block-device locking, FAT or disk API closure is claimed.
+
+## Mounted public drive identity integration (2026-10-06)
+
+Extracted the complete original CDrv record into DriveTypes.HH, preserving all
+fields and its original kernel include position. Native mounted-volume tables
+now own stable CDrv identities. Task file initialization, cloning and directory
+replacement publish the corresponding Fs.cur_dv; teardown clears it. Letter,
+RedSea type, partition offset, sector count and root come from the actual
+mounted CI386RedSea record. Unmapped letters yield no identity. Record lifetime
+follows the borrowed volume table rather than a replaceable task-directory
+allocation. This changes internal volume storage and requires fresh native
+build and lifecycle/resource tests. Public block-device bindings/locking and
+FAT fields are not yet qualified; this does not claim a complete disk API.
+Initial original two-generation rebuild passes. The constructor now validates
+the actual RedSea volume and clears newly published records; the fresh original
+two-generation rebuild passes for that correction. Native cross-v6 is running.
+Palette normalization and
+DrvChk/Drv2Let native provider integration remain pending; full layout is still
+unqualified.
+
+## Drive text attribute prerequisite reference (2026-10-06)
+
+Layout cross-v5 compiles past shared task display constants, then fails at
+DocRecalcLib.HC line 153: DrvTextAttrGet is undeclared. The new original drive
+reference covers all 26 uppercase/lowercase letters, current/boot/home aliases,
+invalid letters and every drive-class boundary. V1 times out in the original
+compiler; its saved screen reports a missing comma at the internal palette
+array indexing. V2 uses the public interfaces and passes mask 63 in
+`build/drive-text-attr-original-v2`. It does not qualify mutation of internal
+palette tables. Complete original classification and palette-selection bodies
+are now shared in DriveClassCore.HC and DriveTextAttrCore.HC at their existing
+positions, retaining the actual mutable palette arrays. Fresh original two-generation rebuild
+passes; extracted-source reference passes mask 63 with unchanged pins in
+`build/drive-text-attr-shared-original-v1`. Native integration remains pending.
+Native normalization must read actual current/boot/home file state. Drv2Let and
+Fs.cur_dv need real mounted-drive records and validation; do not ignore the
+supplied drive pointer or substitute a constant C drive. Full layout remains
+unqualified.
+
+## Shared task display flags prerequisite (2026-10-06)
+
+Layout cross-v4 compiles past EndianI64 and OFF, then fails at DocRecalcLib.HC
+line 152: BDS_CUR_DRV is undeclared. The complete original BDS and TTS constants
+now live in Kernel/TaskDisplayFlags.HH, included by KernelA at its original
+position and the canonical shared TaskTypes header. Removed the native local
+TTS_LOCKED_CONST duplicate. Legacy wrapper bytes are preserved. Fresh original
+two-generation rebuild passes; native cross-v5 is running. This exposes the real title and
+border policies to the original layout library; it does not fake drive identity
+or colors. Current native layout remains unqualified.
+
+## Byte-order prerequisite reference (2026-10-06)
+
+Added six original EndianU16/U32/I64 checks covering mixed bytes, zero, all bits,
+high-bit inputs and double reversal. Original reference passes mask 63 in
+`build/endian-original-v1`. These helpers use original byte assignments and
+require no newer CPU instructions. Kernel/KMisc.HC contains legacy non-UTF-8
+bytes outside this block; extraction must preserve the file bytes. The first
+text-based extraction stopped before changing source. The baseline rebuild passes. The complete byte-order block is now extracted
+byte-for-byte into Kernel/EndianCore.HC, included at the original kernel
+position and before the native layout library. The reference driver pins it.
+Fresh original two-generation rebuild passes. Shared reference
+`build/endian-shared-original-v1` passes mask 63 with unchanged pins.
+Dependency-discovery cross-build `build/doc-layout-runtime-cross-v2` compiles
+the shared endian helpers, then fails at DocRecalcLib.HC line 91: OFF is
+undeclared. The module now defines canonical ON=1/OFF=0, matching the existing
+PublicKernel.HH declarations. Cross-v3 rejects changed ConsoleRuntime.HC before compilation because the
+bootstrap manifest pins native sources too. Fresh original two-generation rebuild passes; cross-v4 is running;
+native qualification remains
+pending.
+Full-layout integration remains red at missing EndianI64 as recorded below.
+
+## Full layout native compilation attempt (2026-10-06)
+
+The native console now includes the complete original DocRecalcLib,
+DocRecalcCore and DocFindCore after its existing document/graphics providers,
+with a forward declaration for the mutual layout/navigation calls. This is an
+integration attempt, not a qualified provider: no navigation export is added
+yet, and the last passing Console 65 image predates these includes. Fresh
+original two-generation rebuild passes; dependency-discovery cross-build
+`build/doc-layout-runtime-cross-v1` fails at DocRecalcLib.HC line 61: EndianI64
+is undeclared. The original byte-assignment helper in Kernel/KMisc.HC is the
+next shared-source prerequisite; no layout branches are removed.
+Current source compilation/runtime remain unqualified. Missing original
+services must be implemented or bound to real platform state; do not remove
+layout, drawing or highlighting branches to force this build green.
+
+## Complete navigation/layout shared-source preparation (2026-10-06)
+
+Extracted the three original navigation helpers to DocFindCore.HC, original
+DocTop/DocCenter/DocBottom to DocNavigationCore.HC, and the complete 1,324-line
+layout/drawing engine to DocRecalcCore.HC. Original wrappers include them at the
+same positions; no navigation or rendering branch was removed. The navigation
+driver now pins all shared sources and wrappers. Fresh original two-generation
+rebuild passes; extracted-source reference passes mask 63 with unchanged pins in
+`build/doc-navigation-shared-original-v1`.
+No native layout or navigation provider is exported yet. Native integration
+must provide real timing/refresh configuration, document/window state, word-wrap
+mutation, cursor selection, highlighting, text and sprite drawing, rather than
+using the private editor's narrower cursor walk as DocRecalc.
+Console 65 filename and nineteen-group conversion gates both pass with exact
+VGA, saved fixture bytes and unchanged pins. Full editor dispatch and release
+remain open.
+
+## Document navigation reference preparation (2026-10-06)
+
+The native Ed entry point remains a filename-only subset; complete link editing
+requires the original DocGoToLine, DocFind and DocAnchorFind helpers. Added a
+six-group reference fixture for null arguments, exact line selection,
+case-insensitive second occurrence, named anchor, missing targets and exact
+caller heap recovery after deleting the document. Original v1 fails only anchor selection (mask 55): the fixture
+used an anchor tag instead of its named A attribute. Canonical Doc/KeyAlloc.DD
+confirms the anchor-name syntax. The fixture now uses AN,"",A="Target" and v2
+passes mask 63 with unchanged pins. Native missing-provider gate fails in
+`build/doc-navigation-native-red-v1`; independent exact VGA confirms lookup 0; no native navigation provider has been
+added. This prepares full editor dispatch without replacing it with a narrower
+filename path.
+
+## Link filename selection native integration (2026-10-06)
+
+Console 65 includes and exports the complete original DocLinkFile body, now
+shared in DocLinkFileCore.HC at the original DocLink position. File/plain links
+retain the original absolute-path and parent-scan flags, Bible links retain the
+original literal filename and mem_task allocation, and ignored types and cleanup
+remain unchanged. The eight-check original reference and independently confirmed
+native missing-provider red gate precede this implementation. Fresh original
+two-generation rebuild passes. Shared filename reference
+`build/doc-link-file-shared-original-v1` and updated conversion reference
+`build/ed-link-cleanup-original-v1` pass masks 255/524287 with unchanged pins.
+Cross-build `build/doc-link-file-runtime-cross-v1` passes construction and the
+386 audit (96 BIOS/209 protected-mode instructions). Native filename gate
+`build/doc-link-file-native-v1` and conversion regression
+`build/doc-link-file-conversion-regression-v1` has filename PASS255 (exact
+VGA, saved fixture bytes and unchanged pins); conversion passes mask 524287 with exact VGA, saved fixture bytes and
+unchanged pins.
+The nineteen-group conversion fixture also moves expected-Bible allocation out
+of a short-circuit condition so a preceding failed check cannot leave a stale
+pointer for cleanup. Both changed source and fixture pass their fresh original references; native
+qualification remains pending.
+Cross-task output ownership, actual editor dispatch, current self-host builds
+and release remain open.
+
+## Link filename selection reference (2026-10-06)
+
+Added an eight-group original DocLinkFile contract as the next terminal-link
+prerequisite: exact caller-owned outputs for file/line/plain/Bible and bare
+paths, ignored document/definition/help links, null/invalid inputs and exact
+caller heap recovery. It passes mask 255 in `build/doc-link-file-original-v1`
+with unchanged pins. The native gate fails at its initial provider check in
+`build/doc-link-file-native-red-v1` on cross-v2; the captured VGA frame shows
+HashFind("DocLinkFile",Fs->hash_table,~0)!=NULL returning 0. No native DocLinkFile provider
+has been added yet. Cross-task allocation and complete terminal dispatch remain
+unqualified.
+
+## Editor-link branch and ownership qualification (2026-10-06)
+
+The existing conversion fixture now checks nineteen groups (mask 524287): all
+plain-text and in-memory variants, missing optional delimiters, an invalid Bible
+book with a returned needle, default address span, bare filename and omitted
+outputs join the previous twelve checks. Ten omitted-output cycles check exact
+caller heap recovery, including failed Bible conversion with an allocated
+needle. Original reference passes mask 524287 in
+`build/ed-link-branches-original-v1`. The matching native gate passes mask 524287 in
+`build/ed-link-branches-native-v1` against Console 64/File 48 cross-v2 (486
+without FPU, 8 MiB, exact VGA, saved fixture bytes and unchanged pins). No OS
+source was changed. This still does not qualify editor/terminal dispatch,
+allocation faults or the full release.
+
+## Complete editor-link native integration (2026-10-06)
+
+Console 64 now includes the full shared EdLinkCvt body and exports the public
+function. All original branches remain intact. Its scratch-name adapter calls a
+new File 48 service that borrows the actual file compiler configuration name;
+it does not allocate an extra compiler control or substitute a synthetic path.
+Original DocLink uses the original blkdev default through the shared macro.
+Original two-generation rebuild passes. Cross-v1 fails at EdLinkCvtCore.HC line 18: LK_FILE is undeclared. The
+original link constants now live in shared EdLinkTypes.HH, included by DocLink,
+the converter and native public declarations. The fresh original two-generation rebuild passes. Original reference v3 passes mask 4095 with unchanged pins. Cross-v2 passes
+construction and the 386 audit (96 BIOS/209 protected-mode instructions).
+Native twelve-check conversion and Bible regression gates are running in
+`build/ed-link-complete-native-v1` and `build/ed-link-bible-regression-v1`.
+The Bible regression passes mask 127 with exact VGA, saved fixture bytes and
+unchanged pins. Native link conversion passes mask 4095 with exact VGA, independently saved
+fixture bytes and unchanged pins. Both gates use 486 without FPU and 8 MiB RAM.
+This qualifies the twelve stated conversion checks on Console 64/File 48, not
+full editor dispatch, complete branch coverage, self-host generations or release. The extended twelve-check fixture adds Bible
+range truncation, recursive symbol source links, address evaluation with source
+metadata, absent symbols/addresses, configured default path and EDF_BAIL to the
+existing eight checks. Original v1 returns 3839 because the fixture incorrectly
+expects Bible type 11 (address); the canonical Bible type is 8. That oracle is
+corrected and original v2 passes mask 4095 with unchanged pins. That pass
+precedes the shared constants extraction; original v3 now requalifies it. Full editor dispatch and allocation faults
+remain open.
+
+## Bible initialization native prerequisite (2026-10-06)
+
+Console 63 includes the complete original DefineLoad and DefinePrint shared
+bodies, plus BibleInit, and exports those three functions. Native startup calls
+BibleInit after document dictionaries initialize, providing canonical book names,
+book lines and total line definition. Original KDefine includes the shared bodies
+at their previous positions. The original extracted editor-link reference passes
+mask 255 in `build/ed-link-shared-extraction-original-v1`. Original two-generation rebuild for
+these changes passes; cross-v1 fails at BibleInitCore.HC line 139 because Str2I64 is not declared yet.
+BibleInit now follows ScannerRuntime. The new original Bible contract returns
+mask 125: counts, lookup, ownership, metadata, formatting and heap pass, while
+the local checksum comparison fails. Diagnostic result
+`build/bible-init-original-v2` reports the exact expected checksum 2197347177 despite the failed mixed-width
+comparison. The explicitly U32 local comparison also fails in v3, while the stored checksum
+remains 2197347177. V4 now compares all four stored checksum bytes against the
+fixed golden bytes, preserving the complete-table oracle independently of local
+numeric widening. V4 passes mask 127 and exact checksum 2197347177 with matching pins. Table data
+is unchanged and the numeric comparison discrepancy remains unresolved. The
+corrected Console 63 include-order original rebuild passes; cross-v2 compiles all modules, then its builder rejects the new Caller import
+used by full DefineLoad source metadata. Inspection confirms Caller is the sole
+import delta, with no missing prior imports. The explicit contract now includes
+it; cross-v3 passes in `build/bible-init-runtime-cross-v3`, including the 386
+instruction audit (96 BIOS/209 protected-mode instructions). Native complete
+Bible/definition and repeated-unwind gates both fail before startup in
+`build/bible-init-{bible-init,parent-repeat-unwind}-native-v3`: CONSOLE REJECT load
+reclaimed. Caller was imported as a kernel symbol, but its existing public
+provider lives in this console as NativeCaller. Shared DefineLoad now binds to
+that real implementation; the unresolved import and builder allowance are removed.
+Corrected original two-generation rebuild passes; cross-v4 passes in
+`build/bible-init-runtime-cross-v4`, including the 386 audit (96 BIOS/209
+protected-mode instructions). Native Bible/definition and repeated-unwind
+gates fail in `build/bible-init-{bible-init,parent-repeat-unwind}-native-v4`
+while compiling root user headers (one compiler error). An independent RedSea
+walk of cross-v4 finds PublicHash.HH but no /Adam/God/BibleTypes.HH. The
+packager omitted Adam/God, despite the new public header including that file.
+The package directory list now includes Adam/God; cross-v5 passes construction and the 386 audit
+(96 BIOS/209 protected-mode instructions). An independent RedSea walk verifies
+BibleTypes.HH, BibleInitCore.HC and PublicHash.HH exactly match the worktree.
+Both gates pass startup on the fresh image. Repeated-unwind passes mask 15
+with exact VGA, independently saved fixture bytes and unchanged pins in
+`build/bible-init-parent-repeat-unwind-native-v5`. The Bible contract passes mask 127 with exact VGA, saved fixture bytes and
+unchanged pins in `build/bible-init-bible-init-native-v5`.
+Native startup and the stated definition/Bible contracts now pass on Console 63,
+Compiler 68, Memory 22 and File 47 (486 without FPU, 8 MiB). Full EdLinkCvt
+native export and branch qualification remain required, as do current self-host
+generations and release qualification.
+
+## Complete editor-link source extraction (2026-10-06)
+
+Extracted complete original EdLinkCvt into `Adam/DolDoc/EdLinkCvtCore.HC` and
+complete BibleInit into `Adam/God/BibleInitCore.HC`, preserving the original
+BibleInit startup call. The canonical Bible filename now lives in BibleTypes.HH.
+Original files include those sources at their existing positions. This prepares
+shared native integration of every branch, including source/address/Bible links;
+no native provider is exported yet. Original two-generation rebuild passes. The eight-case original regression passes mask 255 in `build/ed-link-shared-extraction-original-v1`; its driver now pins the
+shared EdLinkCvt body and Bible sources in addition to the original wrapper.
+Existing eight-case link tests do not qualify the complete branch set.
+
+## Repeated parent-exception heap reference (2026-10-06)
+
+ParentRepeatUnwind.HC executes an empty child context, then throws from the
+outer parent ten times. Each cycle checks the custom exception, caller compiler
+boundary, exact caller data heap and exact caller code heap. The original
+reference passes mask 15 in `build/exe-puts-parent-repeat-unwind-original-v1`.
+The Compiler 67 native gate fails in
+`build/parent-macro-parent-repeat-unwind-native-v1`, with observed VGA mask 3:
+exception and parent control pass, both exact heap checks fail. Interrupted
+expression code remained registered when the parent published completed child
+state. Compiler 68 now tracks the pending code separately, clears the borrow
+after normal completion, and frees nonpersistent interrupted code before that
+publication. Corrected original two-generation rebuild passes; fresh cross-build passes
+in `build/parent-unwind-runtime-cross-v1`, including the 386 instruction audit
+(96 BIOS/209 protected-mode instructions). Native repeated-unwind, declaration
+persistence, macro and class regressions are running in
+`build/parent-unwind-*-native-v1`; all four pass with matching pins and saved
+fixture bytes on 486 without FPU and 8 MiB, with exact VGA checks. Repeated unwind
+passes mask 15, proving both caller heaps recover each cycle. Declaration
+persistence remains mask 63; macro/class gates retain mask 127 and post-parent
+use. The temporary-code repair therefore preserves the qualified persistent
+symbol behavior while closing the observed leak.
+This adds code-heap recovery coverage to earlier data-heap exception contracts;
+there are no persistent declarations in these measured cycles.
+
+## Direct-parent macro reference (2026-10-06)
+
+ParentMacros.HC explicitly points define_hash_table to the supplied parent
+compiler table, creates and reads a macro, compiles a function using it, checks
+borrowed context and repeated-read caller heap, then tests both macro and function
+after the parent returns. Original passes mask 127 and both post-parent checks in
+`build/exe-puts-parent-macros-original-v1`, with matching input pins. Native gate
+fails in `build/parent-publication-parent-macros-native-v1`: outer ExePutS is
+rejected with exception/error/warning counts all zero. The lexer directly adds
+arena macro metadata to the parent table without parser records; publication
+requires those records. Compiler 67 now prepares missing ownership nodes before
+adopting them into the parent queue. Independent post-failure saved-fixture verification passes. Corrected original
+two-generation rebuild passes; fresh cross-build passes in
+`build/parent-macro-runtime-cross-v1`, including the 386 instruction audit
+(96 BIOS/209 protected-mode instructions). Native parent-macros, context,
+parent-publish, parent-classes and parent-unwind gates are running in
+`build/parent-macro-*-native-v1`; all five pass with matching input pins and saved fixture bytes on 486 without
+FPU and 8 MiB, with exact VGA checkpoints. The macro test passes mask 127 and
+post-parent function/macro use, closing the observed direct-lexer ownership gap
+for this contract. Other macro and allocator-failure paths remain open. This covers the
+direct lexer publication path, distinct from managed private macro-table transfer.
+
+## Parent publication implementation candidate (2026-10-06)
+
+Compiler 66 admits only validated active parent overlays alongside managed root
+and public tables. Publication validates the existing complete symbol graph,
+adds executable descriptors/relocations and resident binding records to the
+transfer, then splices selected allocation records into the parent queue rather
+than detaching ownership into task storage. Retained code and resident lists
+move with those records. Managed private macros receive prepared parser nodes
+before the move; failure frees the nodes without freeing live macro payloads.
+Class completion uses the previously repaired metadata release path.
+
+The parent records completed child publication. A later custom runtime exception
+attempts publication before ordinary control unwind, preserving original
+exception propagation. Compiler/OutMem/Break and malformed partial declarations
+still require separate behavior evidence. The four parent-context gates below qualify selected behavior; complete
+context/release closure remains unproven. Original two-generation rebuild passes; fresh cross-build passes in
+`build/parent-publication-runtime-cross-v1`, including the 386 instruction audit. Four native gates are running in `build/parent-publication-context-native-v1`,
+`build/parent-publication-parent-publish-native-v1`,
+`build/parent-publication-parent-classes-native-v1` and
+`build/parent-publication-parent-unwind-native-v1`. All four pass on 486 without FPU and 8 MiB, with exact VGA checkpoints,
+independent fixture byte verification and matching input pins. Context passes
+mask 63; publication/classes pass mask 127 and post-parent function result 43;
+unwind passes mask 63. Six prior execution regressions all pass on the same image in
+`build/parent-publication-{puts,private-context,answer-timing,exceptions,print,
+print-failure}-regression-v1`: all recorded input pins and saved fixture hashes
+match. They qualify normal/private scope, answer timing, exception semantics,
+normal formatting and exact caller heap/control recovery after ExePrint failure. Macro transfer, allocator faults, exact unwind heap recovery and complete
+source-epoch/release acceptance remain open.
+
+## Registered parent frontend ownership (2026-10-06)
+
+Compiler 65 adds a borrowed frontend pointer to its owning compiler control and
+binds it after frontend construction succeeds. Duplicate frontend construction
+on that control is rejected. I386FrontendTableOwner walks validated active
+controls and requires the exact parser records for the frontend, overlay table
+and 32-entry bucket array, with matching task/control/context and unlocked table.
+It does not make arbitrary arena tables valid and is not yet used to admit
+parent publication. This establishes the owner lookup required by that transfer.
+Original two-generation rebuild passes. The first cross-build,
+`build/parent-owner-runtime-cross-v1`, fails on unsupported `continue` in the new
+helper (Frontend.HC line 1016). The helper now uses nested conditionals and
+bounds traversal by active_controls. The corrected original two-generation rebuild passes; cross-v2 passes in
+`build/parent-owner-runtime-cross-v2`, including the 386 audit (96 BIOS/209
+protected-mode instructions). Fresh forward-inheritance and ExePrint exception
+cleanup checks both pass on that Compiler 65 image. The builder source has
+since advanced to Compiler 66, so these are historical image results; parent
+publication is now implemented as an unqualified candidate above.
+
+## Parent class-completion reference (2026-10-06)
+
+The new `ParentClasses.HC` fixture passes its original mask 127 and the
+post-parent function call in `build/exe-puts-parent-classes-original-v1`.
+It completes a forward class, derives another class, verifies 16-byte layout,
+reads/writes inherited and derived fields, and calls a function using the object
+across nested executions and after the parent returns. This extends the
+parent-context acceptance target beyond scalar globals/functions. Native
+parent-overlay support remains unimplemented.
+
+## Parent metadata release prerequisite (2026-10-06)
+
+Compiler 64 changes class-completion source-link/index release to search the
+current and active parent compiler controls for a registered parser allocation.
+Tracked metadata is released through ParserFree, which removes its record;
+already published metadata retains ordinary arena release. Directly freeing a
+parent allocation would leave a stale record for later unwind. This is a
+prerequisite for full parent-context publication, not its implementation.
+Original two-generation rebuild passes in `build/rebuild-test`. Fresh cross-build
+passes in `build/parent-metadata-runtime-cross-v1`, including the 386 audit
+(96 BIOS/209 protected-mode instructions). Native forward-class
+completion/inheritance passes in `build/parent-metadata-forward-inheritance-native-v1`.
+ExePrint custom exception/control/heap recovery passes in
+`build/parent-metadata-exe-print-failure-native-v1`. Both use 486 without FPU,
+8 MiB and exact VGA checks, and both reports' input pins match. These establish
+existing behavior on the fresh image; the new parent-owned release branch is
+not exercised until parent overlays are admitted. Current runtime references
+continue to qualify Compiler 63 cross-v4 only.
+
+## Parent lifetime and exception persistence references (2026-10-06)
+
+The stronger parent-publication v2 reference passes all seven nested checks and
+a post-parent function call returning 43. A new parent-unwind reference passes
+mask 63: successfully nested-published global/function declarations survive a
+later custom outer execution exception and remain callable/readable after the
+compiler boundary restores. Both original result reports have unchanged pins.
+This corrects the architecture requirement: free unfinished state on unwind,
+but preserve completed child publication with its original scope and ownership.
+The native cross-v4 unwind baseline fails with observed mask 2 (parent boundary
+restores). All input pins match, and independent post-failure saved-fixture
+verification passes. Native fixes and unwind heap recovery remain unqualified.
+See the updated
+`docs/i386-parent-context-contract.md` for evidence paths and required changes.
+
+## Active parent publication TDD baseline (2026-10-06)
+
+Added `tools/test-i386-exe-puts-parent-publish.py` and its seven-check guest
+fixture. The original reference passes mask 127; cross-v4 compiles the fixture
+but rejects execution with OutMem and zero compiler errors/warnings. Both
+terminal result reports have unchanged input pins. The original report now
+includes KTask source explicitly. The red run did not reach independent saved
+fixture verification. See `docs/i386-parent-context-contract.md` for the full
+ownership design and remaining publication/unwind tests. No native fix or
+release qualification is claimed.
+
+## Execution exception cleanup qualification (2026-10-06)
+
+The three native cross-v4 gates pass: `build/exe-puts-exceptions-native-v4`
+(explicit Break/Compiler return zero and custom exception propagation),
+`build/exe-print-failure-native-v4` (custom propagation, parent control
+restoration and exact caller heap recovery including the formatted buffer),
+and `build/exe-print-native-v4` (normal formatting/execution and repeated heap
+recovery). Each result records a 486 without FPU, 8 MiB, exact VGA checkpoints
+and the transferred fixture hash. All recorded input pins still match.
+
+The original cleanup repair also passes the failure and normal references in
+`build/exe-print-failure-original-fixed-v1` and
+`build/exe-print-original-cleanup-regression-v1`; their recorded pins match.
+These original reports pin the rebuilt kernel binary but do not independently
+pin `Kernel/KTask.HC`, so the next reference run should include that source.
+The native cross-v4 image predates the later original-only cleanup edits and
+does not qualify the entire current source epoch or a release.
+
+The supplied active-parent compiler context remains red. Inspection confirms
+that frontend table validation accepts managed root/public tables but rejects
+parser-owned parent overlays. Publication currently transfers retained code to
+task storage, so simply accepting those overlays is insufficient: nested
+symbols, parser metadata and executable ownership must move into the parent
+compilation and survive its eventual publication or unwind. Malformed-source
+debugger behavior, allocation-fault recovery and full release gates remain open.
+
+## Filename link prerequisite (2026-10-06)
+
+Console 59 passes absolute normalization, parent search, alternate .Z name
+lookup, combined flags, missing-file fallback, relative/rooted/home/boot
+paths and per-call caller heap recovery. Both original and native references
+pass, with explicit configured home prefixes (T:/Home/ versus C:/). Native
+runs use 486 without FPU and 8 MiB with exact fixture transfer and VGA
+checkpoints. Allocation failures and complete editor link resolution remain
+open. The next EdLinkCvt reference passes; its native provider is missing.
+
+## Terminal link prerequisites (2026-10-06)
+
+Console 58 passes Raw ON/OFF transitions and previous-state returns, three
+full-screen VGA flush requests, original DocEntryLink precedence/rejection
+and owned copies, and allocation in a different document task with exact
+heap recovery. All native gates use 486 without FPU and 8 MiB. Full terminal
+startup, right-click actions and popup/forms remain open; path/link
+resolution is the next dependency. These passes do not qualify raw pixel
+appearance or a complete release.
+
+## Native raster compiler repair (2026-10-06)
+
+The Console 56 repair image passes the original four pointer-assignment
+cases and full normal/pressed scroll pixel maps on 486 without FPU, 8 MiB,
+with exact guest fixture transfer. The fix defers the pointer update in a
+dereferenced post-increment/decrement assignment until after the RHS and
+store, preserving the original GrRect source. Two original bootstrap
+rebuild generations, native cross-build and 386 boot audit pass.
+
+The corrected complete rectangle driver passes all seven bits (127), its
+omitted default-context call, restored flags, final console command and
+exact fixture transfer. The extended pointer reference and native checks
+pass decrement, I64 assignment return, narrow stores, independent RHS
+increment and heap recovery. Random/dither and child-owned scroll exit
+regressions also pass on this image. The paired screen-context scroll and
+upper-clipping fixture passes; z-buffer and full window-manager integration remain
+unqualified. These results do not qualify the complete OS release.
+
+## Latest DolDoc dependencies (2026-10-06)
+
+Latest DolDoc dependency work (2026-10-06): console version 45 adds the
+original scanner and converters. Eight format checks pass natively on
+TCG/486,-fpu with 8 MiB. A shared cleanup fix now passes a direct original
+oracle (ten Scan exceptions, zero heap delta) and all eight original conversion
+checks. The fresh native image also passes all eight conversions and ten
+missing-argument exceptions with exact task heap/control recovery. Bound form
+support and the
+interactive macro utility remain open. Version-44 broad qualification below
+is a separate frozen source epoch and does not qualify these changes.
+
+## Executable input-filter candidate (2026-10-06)
+
+`tools/test-i386-input-filter.py` defines acceptance for actual executable text
+in self and child recipients: quoted source must become two key messages,
+filter links and flags must return to their original state, ten self cycles
+must recover the task heap exactly, the child must retire, and a final console
+command must work. On the unchanged version-42 image the first prerequisite
+fails, with inspected VGA mask 1 (Print only) rather than 7. Evidence is
+`build/input-filter-execution-red-v1/result.json`; subsequent behavior is
+unreached, so this red result proves missing APIs only.
+
+Console version 43 adds an unqualified InputFilterRuntime candidate and public
+TaskText/InStr/XTalkStrWait declarations. Source copies and job/context records
+use root-owned allocations; workers execute NativeJobSource while marked as
+input-filter tasks. Registration occurs with interrupts masked before spawned
+workers can run. Active jobs and filter state have end-callback cleanup and a
+scheduler fallback; normal completion makes cleanup idempotent. Highest-priority
+self input waits for an existing filter; other input uses the existing filter
+when available. InStr within a filter executes source directly. Raw XTalk
+remains its separate terminal character service.
+
+Fresh two-generation bootstrap passes for this source. The native cross-build
+fails at `build/input-filter-native-v1` on an undeclared LBEqu at
+InputFilterRuntime.HC line 52 (compiler-log.DD line 435). The assignment now
+uses LBts/LBtr with the same desired bit value. The pre-fix bootstrap is
+preserved at `build/input-filter-lbequ-bootstrap-v1`; a fresh bootstrap is
+passes for the corrected source; cross-build `build/input-filter-native-v2`
+also passes, with a 497560-byte flat kernel and the 96/209-instruction 386 audit.
+The 16-command behavioral run at `build/input-filter-execution-v1` on
+486,-fpu / 8 MiB fails at IFSelf. Its API mask passes, but the inspected VGA
+screen shows return 0 followed by AB typed at the subsequent prompt. This
+indicates completion/routing timing is not yet correct; the child and repeated
+heap checks are unreached. The result pins image SHA-256
+`0598d16922e5bf22b81550865eecc430a344b5d8442ec5e40bb70608342b00b6`.
+A separate `tools/test-i386-input-filter-wait.py` diagnostic is running at
+`build/input-filter-wait-diagnostic-v1`, checking pre-entry links/flags and
+post-wait links/messages against mask 115. The original acceptance fixture is
+unchanged; no passing behavior is claimed.
+Further behavioral acceptance,
+priority/nested routing, cancellation, recipient retirement and allocation fault
+coverage are still required. This candidate does not establish macro playback
+or release readiness. The qualified output bootstrap is preserved separately
+at `build/console-output-qualified-bootstrap-v1`.
+
+## Executable output prototype (2026-10-06)
+
+The input-filter prerequisite test on the unchanged console-version-41 cleanup
+image fails at IFPrereq: the captured VGA screen reports mask 0 rather than
+expected 7 (Print=1, InStr=2, XTalkStrWait=4). Its terminal failure and pinned
+inputs are preserved at `build/input-filter-prerequisites-red-v1/result.json`.
+The function definition succeeds before the failed assertion.
+
+A console-version-42 prototype adds native Print, PutS and PutChars exports and
+public declarations. Print shares StrPrintJoin and frees its buffer on propagated
+output exceptions. PutS suppresses silent output and converts filter-task text
+to public key messages; ordinary output targets the caller's terminal. PutChars
+preserves higher packed bytes across zero bytes. This is an implementation
+candidate, not proof of complete output-device/DolDoc rendering compatibility.
+Actual filter tasks, InStr, XTalkStrWait and macro playback remain required.
+
+The first console-print red fixture overescaped newlines; its evidence is
+preserved and is not behavioral qualification. The corrected unchanged-image
+run at `build/console-print-red-v2` fails on its first quoted statement; the
+inspected VGA screen reports Missing header for Print() and PutChars(). The
+corrected packed-character implementation passes a fresh two-generation bootstrap. The earlier bootstrap is
+preserved at `build/console-output-pre-fix-bootstrap-v1`; it does not qualify
+the final ConsoleOutput source. The version-42 cross-build at `build/console-output-native-v1` fails on assignment
+to the forward-declared native_output_msg variable (compiler-log.DD lines
+395–397). Its definition is moved before ConsoleInit, following the existing
+provider initialization pattern. A fresh two-generation bootstrap passes for that fix;
+the earlier source/bootstrap remains preserved at
+`build/console-output-extern-bootstrap-v1`. The corrected cross-build at `build/console-output-native-v2/result.json`
+passes, including 96 BIOS and 209 protected-mode instructions in the 386 audit
+and a 497560-byte flat kernel. Native runs pass at
+`build/console-print-green-v1` (unchanged corrected five-command fixture) and
+`build/console-output-routing-v1` (packed zero byte, silent display, synthetic
+self-linked filter output and exact task heap recovery). Concurrent runs
+qualify semantics only. Real filter-task lifetime and playback remain open;
+both runs terminate successfully with unchanged pinned inputs and exact VGA
+checks (5 and 10 commands). They pin image SHA-256
+`6429d21493f2d11c61e43d69fc230d59bc406ffafb53e7568741e5d5b9bebbd2`.
+The corrected console-print fixture has the same hash in red-v2 and green-v1,
+establishing a direct red-to-green output regression. This proves the selected
+output behaviors, not complete keyboard-device/DolDoc output compatibility or
+actual macro playback.
+
+## Macro serializer fault-site checkpoint (2026-10-06)
+
+The console-version-41 cleanup image passes three additional independent
+allocation-failure runs at `486,-fpu` / 8 MiB. Each run uses 13 commands with
+exact VGA checkpoints and requires the selected OutMem exception and call count,
+exact heap recovery, restored five-byte allocator entry, and continued execution.
+
+- `build/macro-cleanup-fault-first-temporary-v1/result.json`: CAlloc call 1.
+- `build/macro-cleanup-fault-quote-format-v1/result.json`: MAlloc call 2.
+- `build/macro-cleanup-fault-output-buffer-v1/result.json`: MAlloc call 5.
+
+All three pin the cleanup image SHA-256
+`efe310ca4b3786e1539de39fa9116001c11ab29698e737fb526da3c8a6deb641`.
+These are selected fault sites, not exhaustive allocator or playback coverage.
+Concurrent runs qualify semantics; their startup timings are not performance
+budget evidence. The unchanged second-temporary red-to-green test and exact
+853-byte original serialization parity remain separate recorded checks.
+Next work is the original executable input-filter path needed by PlaySysMacro;
+raw character queuing does not satisfy that contract. The full release goal
+remains open, and committing/pushing still requires writable Git metadata.
+
+## Current investigation (2026-10-05)
+
+The scope-v1 candidate passes canonical header compilation with ancestor
+preservation, direct-scope forward inheritance, and timed/public message
+contracts on486,-fpu /8MiB. It also passes fresh original bootstrap and cross-
+build/386 boot audit. The complete input/editor/workstation suite is running.
+Current scope-v1 also passes serialized undo and three large-source round trips.
+The earlier arrival-v3 batched undo result remains a separate source epoch. Native rebuild,
+full regression and release acceptance remain open. Root changes remain
+uncommitted because .git is read-only; last remote checkpoint fd1ab363.
 
 ## Progress checkpoint (2026-09-25)
 
@@ -12134,7 +15434,7 @@ its compiler log identifies an undefined identifier at the candidate's
 The corrected candidate uses the common loop increment and backs up the run
 index once, with identical boundary progress. The corrected-source original
 bootstrap produced both generation ISOs; a fresh `document-run-kernel-v2`
-cross-build is running. Prior failed build retained.
+cross-build passed the 386 boot audit; the diagnostic header guest is running. Prior failed build retained.
 
 The archived candidate delta also updates the native loader relocation audit:
 require four direct NativeDocCAlloc calls, two NativeDocMAlloc calls, and one
@@ -12482,3 +15782,3422 @@ PASS all20jobs in `build/text-run-failure-debugger-regression/result.json`, with
 five-cycle repeat jobs and corrected step-stack fixture. This is cross-image
 7d1a168ebed992d747ba268b96f2cfc9678c8bad91cc1773289feeadabe548da,
 not arrival-time or redraw-combined source qualification. Release remains open.
+
+
+### Null-pointer correction and socket-free qualification (2026-10-05)
+
+Arrival cross-buildv2 terminal FAIL: memory module does not define NULL. Both
+new null-pointer uses changed to0, matching its existing convention. Archive
+refreshed; previous failures retained. Timestamp code remains unpromoted.
+
+Environment changed to restricted filesystem/network access; Unix QMP denied
+before guest startup. New `tools/test-rebuild.py --qmp-stdio` forwards the
+existing guest-run option through both original generations and records it.
+`tools/build-i386-kernel.py --compiler-qmp-stdio` controls only the original
+cross-compiler guest, not the full runtime suite. Syntax/CLI checks PASS.
+Corrected original bootstrap passes both actual generations using stdio.
+Cross-buildv3 completed its compiler guest; final host verdict inspected next.
+Old external jobs cannot be inferred stopped from this process namespace.
+
+Commit attempt denied: root `.git/index.lock` is read-only under the current
+policy. Working-tree changes are prepared but not committed/pushed; last remote
+checkpoint remains fd1ab363. No permission override or alternate git-directory
+workaround attempted. Runtime undo/message acceptance remains pending.
+
+
+Arrival cross-buildv3 host verdict PASS:497,560-byte kernel and386 boot audit
+96BIOS/209protectedinstructions. `build/key-arrival-messages-v3` and
+`build/key-arrival-undo-serialized-v3` now run the message contract and unchanged
+serialized continuous/separated undo using QMP stdio. No runtime PASS yet.
+
+
+Bothv3 focused guests terminated before boot: QEMU snapshot creation used
+read-only/var/tmp. Logs identify the environmental failure, not an OS assertion.
+Freshv4 runs setTMPDIR=/tmp (the permitted writable temporary directory), keep
+snapshot and QMP stdio, and retainv3 failures. Runtime results pending.
+
+
+### Writable-copy runtime qualification (2026-10-05)
+
+The v4 focused attempts also terminated before guest boot: QEMU ignored TMPDIR
+for snapshot storage and attempted a temporary file in read-only /var/tmp.
+Both focused fixtures now accept --writable-copy, creating a fresh output-local
+disk and disabling QEMU snapshots while retaining source-image and harness hash
+checks. The v5 message and serialized undo runs use this option and stdio QMP.
+Their runtime verdicts remain pending; no timestamp acceptance is claimed.
+Root git metadata remains read-only, so these changes are uncommitted.
+
+The v5 serialized undo fixture completed PASS on the arrival-time candidate
+(kernel SHA256 01f0bc762316ee09390173453fac959d4fa6aaacc892533479faa0ec42bde38e):
+486 without FPU, 8 MiB RAM, interactive startup 28.073 seconds, all exact VGA
+checkpoints matched. Continuous abc undid together; two-second-separated input
+undid in distinct steps. Source image and harness hashes remained unchanged.
+Evidence: build/key-arrival-undo-serialized-v5/result.json. This is focused
+behavior evidence, not full port or release qualification. Message v5 remains
+live with no terminal verdict at the latest handle poll.
+
+Message v5 terminal FAIL at its function-pointer declaration: VGA shows
+"Invalid member at" because HashFind returns a base hash pointer with no val
+member. The fixture now first assigns typed CHashExport pointers before reading
+val. This is a fixture correction; the message transport is still unqualified.
+Fresh v6 rerun uses the corrected fixture and writable disk copy.
+
+
+### Arrival candidate: both undo modes and large source (2026-10-05)
+
+The same arrival-time kernel (SHA256
+01f0bc762316ee09390173453fac959d4fa6aaacc892533479faa0ec42bde38e) now
+passes the unchanged batched undo fixture as well as serialized injection.
+Batched startup was 28.828 seconds on 486,-fpu with 8 MiB; all VGA checkpoints
+matched. Evidence: build/key-arrival-undo-batched-v1/result.json.
+The large-source fixture now supports --writable-copy with the same original
+image/harness hash protection; three 11210-byte real-source load/save cycles
+completed PASS at build/key-arrival-large-source-v1/result.json.
+Message v6 failed at declaration because CHashExport was not defined in the
+console environment. The fixture now includes /Kernel/SymbolTypes.HH, following
+the existing message-registration fixture, before using typed export pointers.
+Message v7 is running; no message contract PASS or complete qualification is
+claimed. The candidate is still unpromoted; full regression, native rebuilding
+and release gates remain open. Changes remain uncommitted with root .git
+read-only; origin is still the user's ddanila/TempleOS fork.
+
+Message v7 terminal FAIL before transport assertions: including the canonical
+/Kernel/SymbolTypes.HH produced "Native frontend service unavailable" after
+the unused extern CHashClass warning (VGA and debug.log agree). This is an
+actual compiler/header-path limitation on this candidate, not evidence that
+message timestamps passed or failed. Preserve v5/v6 fixture errors separately
+from this new header compilation failure. Next investigation must locate the
+unsupported declaration or frontend resource failure and verify the canonical
+header path; do not replace the test with assumed field offsets.
+
+
+### Symbol-header failure localized (2026-10-05)
+
+A separate writable-copy probe passed nine commands: canonical HashTypes.HH,
+four forward class declarations (including CHashClass and CHashFun), help_index,
+HashFlags.HH, DefineTypes.HH, and arithmetic. Result:
+build/key-arrival-header-probe-v1/result.json (486,-fpu, 8 MiB, 27.618-second
+startup, source image unchanged). This rules out failure of those declarations
+when submitted separately; it does not prove that their combined inclusion or
+later class completion works. The original full-header failure remains open.
+Added tools/test-i386-symbol-header.py as a durable regression gate for the
+canonical include, CHashExport inheritance/layout access and console recovery,
+with immutable source/harness checks and optional writable-copy storage. This
+new gate is not claimed passing; the existing v7 failure is the reproduction
+that motivates it. Next work is later class completion/publication localization.
+
+
+### Canonical header regression reproduced (2026-10-05)
+
+tools/test-i386-symbol-header.py completed terminal FAIL against the frozen
+arrival v3 image. build/key-arrival-symbol-header-v1/behavior/debug.log shows
+the same unused extern CHashClass warning and frontend-unavailable error.
+The fixture never reached its type-layout or console-recovery assertions.
+
+The candidate frontend error path now logs the active source filename and
+identifier before its existing report/exception. This diagnostic addition is
+archived separately in
+docs/patches/i386-frontend-unavailable-location-prototype.patch; it is not a
+compiler fix or a new passing source epoch. Diagnostic cross-build
+build/key-arrival-candidate/build/key-arrival-kernel-location-v2 is running
+with compiler QMP stdio. A first v1 build accidentally launched without the
+edit after a relative-path failure and was explicitly interrupted (exit130);
+it supplies no qualification. The existing arrival runtime PASS evidence
+continues to apply only to the earlier frozen v3 image.
+
+Diagnostic cross-build location-v2 terminated before compiling: the source-hash
+guard correctly rejected the changed Compiler/I386/Frontend.HC and requested
+a fresh original bootstrap. Started tools/test-rebuild.py --qmp-stdio in the
+candidate to refresh both actual bootstrap generations; the cross-build must
+wait for that result. No guard or stale-hash bypass was used.
+
+
+### Diagnostic-source bootstrap completed (2026-10-05)
+
+The fresh original bootstrap completed both actual build/boot/rebuild generations
+PASS using QMP stdio. Diagnostic cross-build location-v3 is now running against
+those refreshed source hashes; location-v2 remains the preserved guard rejection.
+A separate frozen-v3 runtime probe is writing canonical header fragments to a
+fresh working disk and compiling them in two stages, split immediately before
+CHashClass completion. This distinguishes declaration parsing from combined
+publication behavior; it is investigative evidence, not a replacement for the
+full-header acceptance gate. Results pending at this update.
+
+Diagnostic cross-build location-v3 terminal PASS: 497560-byte flat kernel and
+386 boot audit (96 BIOS / 209 protected instructions). This proves build/audit
+only, not runtime behavior. The canonical header fixture is now running on
+that image at build/key-arrival-symbol-header-location-v1. The staged canonical
+header probe remains live on frozen arrival v3 at its latest handle poll.
+
+The diagnostic full-header guest reached an error with explicit location:
+FRONTEND UNAVAILABLE source C:/Kernel/SymbolTypes.HH token CHashFun.
+This narrows the investigation to the CHashFun declaration/completion path;
+it does not yet identify the failing invariant. Its runner is still awaiting
+its terminal timeout verdict.
+Staged-header v1 terminal FAIL at FileWrite because the fixture expected no
+value, while the public function returned its allocated disk block. It never
+reached either include. Corrected v2 checks FileWrite(...)!=0 (expected1), with
+the same canonical fragments and immutable source image, and is running.
+
+
+### Staged CHashClass completion passed (2026-10-05)
+
+The corrected canonical fragment probe completed PASS at
+build/key-arrival-header-stages-v2/result.json: prefix through CExternUsage
+compiled first, then the unchanged canonical CHashClass definition compiled
+in a later input; console arithmetic recovered and original source hash stayed
+unchanged. Thus those stages work separately; whole-header atomic compilation
+still fails with CHashFun active. A new probe copies that terminal working disk
+and compiles the canonical function flags and CHashFun definition next, at
+build/key-arrival-header-fun-stage-v1. It records the derived disk as its input;
+its evidence cannot substitute for a clean full-header acceptance pass.
+The diagnostic full-header fixture terminated FAIL, confirming its logged
+CHashFun location (build/key-arrival-symbol-header-location-v1/result.json).
+
+Function-stage v1 was explicitly interrupted (exit130) after noticing that
+class symbols live in guest RAM and do not survive rebooting the copied disk.
+Corrected v2 first includes the two saved canonical fragment files to recreate
+both published stages in the new guest, then writes/includes CHashFun under a
+distinct filename. This correction supplies a valid staged comparison; v1
+has no semantic verdict. v2 is running at the latest confirmed live poll.
+
+
+### CHashFun fails after separate publication too (2026-10-05)
+
+The corrected function-stage probe completed terminal FAIL at the canonical
+CHashFun include, after recreating both earlier published stages successfully.
+Evidence: build/key-arrival-header-fun-stage-v2/result.json and behavior/debug.log.
+Thus separating the entire header into publication stages does not avoid this
+failure. No transport assertion was reached. Added a smaller durable regression
+fixture tools/test-i386-forward-inheritance.py for published forward base/child
+completion, expected 16-byte layout and inherited member arithmetic. It is now
+running against diagnostic location-v3, with writable copy and input hash pins.
+This tests whether the inheritance-completion mechanism explains the canonical
+header failure; it is not yet a verdict or an implemented compiler correction.
+
+The smaller forward-inheritance v1 guest successfully compiled both classes,
+reported the expected 16-byte layout and printed6,7,42 for inherited-member
+assignments/arithmetic. Its aggregate verdict was FAIL because the fixture
+expected only42, omitting normal assignment results. Preserved that failure;
+corrected v2 expects all three values and is running. This evidence argues
+against a blanket failure of forward completion plus inheritance.
+Added separate unpromoted diagnostics for invalid completion targets, rejected
+prior value members, and allocation-release rejection, preserving each original
+error/exception. Archive:
+docs/patches/i386-class-completion-diagnostic-prototype.patch (incremental after
+the location diagnostic). Fresh original two-generation bootstrap is running
+for this changed source epoch before its next diagnostic cross-build. No compiler
+fix, full-header PASS, message-transport PASS or release completion is claimed.
+
+
+### Forward-inheritance acceptance passed (2026-10-05)
+
+Corrected tools/test-i386-forward-inheritance.py completed PASS at
+build/key-arrival-forward-inheritance-v2/result.json: six commands, exact VGA,
+16-byte derived layout and inherited arithmetic, 486,-fpu / 8 MiB, 28.024-second
+startup. The fixture includes both assignment outputs (6,7) and result42.
+Both fresh bootstrap generations passed for the additional completion/free
+diagnostics, and diagnostic cross-build completion-diag-v1 is running. Updated
+the opening PLAN/progress status to replace the obsolete "unimplemented timing
+transport" statement with the implemented prototype and its actual focused
+PASS evidence plus outstanding header/message/full-release gates.
+
+Diagnostic completion-diag-v1 cross-build terminal PASS, 497560-byte kernel and
+96 BIOS / 209 protected instructions. Header regression is now running at
+build/key-arrival-header-completion-diag-v1 with the specific diagnostics.
+
+
+### Inherited forward-scope prototype correction (2026-10-05)
+
+Diagnostic header fixture terminal FAIL, with explicit reason:
+CLASS COMPLETION invalid target CHashFun. Evidence:
+build/key-arrival-header-completion-diag-v1/behavior/debug.log and result.json.
+Code inspection shows interactive class lookup searched ancestors with HashFind,
+whereas completion validation deliberately requires a direct-scope published
+forward. This can reuse an inherited forward on an extern declaration and then
+reject its later definition. The diagnosis is a source-based inference pending
+runtime confirmation.
+
+Prototype I386FrontendClass now uses direct-scope SingleFind for interactive
+published forwards. Inherited declarations consequently follow the shared
+PrsClassCore behavior of creating a local shadow; direct-scope completion still
+stages atomically. Module sources retain their inherited private-clone lookup,
+and completion ownership/scope guards are unchanged. Incremental archive:
+docs/patches/i386-inherited-forward-scope-prototype.patch.
+Fresh two-generation original bootstrap is running for the corrected candidate.
+Required follow-up: cross-build, full canonical header and timed-message tests,
+existing forward/inheritance and completion rejection regressions, then broader
+current-source qualification. No corrected-source runtime PASS yet.
+
+
+### Scope-fix build completed; runtime gates started (2026-10-05)
+
+Inherited-forward scope correction passed both fresh original bootstrap
+generations, cross-build and 386 boot audit: 497560-byte flat kernel,
+96 BIOS / 209 protected instructions. Evidence source epoch:
+build/key-arrival-candidate/build/key-arrival-forward-scope-v1.
+Three independent writable-copy 486,-fpu / 8 MiB guests are running:
+- build/key-arrival-header-scope-v1: canonical header, local CHashFun definition,
+  stable ancestor identity and still-zero ancestor forward size;
+- build/key-arrival-messages-scope-v1: timed/public message consumption and heap
+  cleanup;
+- build/key-arrival-inheritance-scope-v1: existing base/derived completion.
+The header fixture now verifies the actual scope preservation contract rather
+than compilation alone. None has a terminal runtime verdict at this checkpoint.
+The canonical header's pre-fix failures are preserved; broader native/module
+completion and full release qualification remain necessary.
+
+
+### Scope fix and message transport accepted in focused runtime (2026-10-05)
+
+Frozen scope-v1 kernel SHA256
+4e3cc55fc053f052061c8597f472a55c00cd42ef392641122d55713462533c7c
+passes three current-source fixtures on486,-fpu /8MiB:
+- header-scope-v1: seven commands, canonical SymbolTypes compilation, distinct
+  local CHashFun definition, stable ancestor identity and zero ancestor size;
+- inheritance-scope-v1: six commands, direct-scope forward base/child completion,
+  exact16-byte layout and inherited arithmetic;
+- messages-scope-v1:14commands, retained timestamp after1500ms, untimed public
+  PostMsg fallback, public ScanMsg argument parity, exact root heap recovery
+  twice and restored IF. All exact VGA checkpoints and immutable input pins pass.
+Startup times were29.127/29.129/29.028seconds respectively. These establish
+the specific compiler scope correction and message contracts; they do not cover
+all queue overflow/filter/macro/cancellation or broader module completion.
+Full input/workstation regression started at
+build/key-arrival-scope-full-input-v1 using the same source image, stdio QMP and
+a fresh writable copy. Native rebuilding and release gates remain open.
+
+
+### Current-source native six and document requalification started (2026-10-05)
+
+The complete input regression remains live and has reached window checks.
+Started six-provider native build from frozen scope-v1 image using candidate
+checker (which audits the new text-run allocation wrapper counts):
+build/key-arrival-candidate/build/key-arrival-scope-native-six-v1, TCG486,-fpu,
+16MiB, QMPstdio, fresh writable image. No native PASS claimed yet.
+Current-source serialized undo and three large-source round-trip fixtures also
+started at build/key-arrival-scope-undo-v1 and
+build/key-arrival-scope-large-source-v1, each486,-fpu /8MiB. This avoids
+transferring older arrival-v3 evidence to the changed compiler source.
+Candidate source identities recorded in build/key-arrival-scope-source-identity.json;
+keep that source frozen until the live qualification completes. Full native
+two-generation identity and release gates remain open.
+
+
+### Current-source document regressions passed (2026-10-05)
+
+Scope-v1 serialized undo completed PASS (fourcommands,32.263-second startup),
+and three large-source load/save/free cycles completed PASS (11commands).
+Evidence: build/key-arrival-scope-undo-v1/result.json and
+build/key-arrival-scope-large-source-v1/result.json. Both use486,-fpu /8MiB,
+exact VGA and unchanged image/harness hashes. These now qualify the scope-fix
+source itself rather than borrowing document evidence from arrival-v3.
+
+Full input suite remains live in compiler checks. Native six-provider build
+remains live compiling CompilerRuntime. Added --writable-copy to the existing
+public-message fixture so it can run without read-only /var/tmp snapshots;
+its test cases and default behavior are unchanged. Started the19-case
+public-message contract at build/key-arrival-scope-public-messages-v1 to
+qualify filtering, task/popup routing and job lifecycle on the enlarged private
+message allocation. No result claimed yet. Candidate source stays frozen.
+
+
+### Archived source chain reproduced exactly (2026-10-05)
+
+Applied the integrated redraw, arrival transport, frontend location diagnostic,
+completion diagnostic and inherited-forward scope patches in order to ordinary
+source copies in /tmp (no git metadata). All patches applied with fuzz0; all
+affected HC/HH/ASM/INC files exactly match the frozen candidate bytes.
+Evidence: build/key-arrival-scope-patch-chain.json (74affected paths total).
+This establishes reproducibility of the archived OS source changes from the
+current root worktree, not a clean committed release revision or host-tool byte
+identity. Shared host CLI changes remain separate uncommitted root edits.
+Added --writable-copy to both existing macro fault fixtures; their assertions
+and default snapshot behavior stay unchanged. The macro-copy allocation fault
+fixture is running at build/key-arrival-scope-macro-allocation-v1. Handler
+registration fault fixture is prepared for the next slot. Public-message, full
+input and native-six runners remain live at the latest confirmed handle polls.
+
+
+### Message fault cleanup and delivered source verified (2026-10-05)
+
+Macro-copy allocation fixture terminal PASS at
+build/key-arrival-scope-macro-allocation-v1/result.json:16commands, confirmed
+MACRO COPY fault injection, exact heap recovery, empty/unlocked recording and
+destination rings, restored patched code and console arithmetic. Frozen source
+disk unchanged;486,-fpu /8MiB startup35.293seconds. Started handler-registration
+fault counterpart at build/key-arrival-scope-macro-registration-v1.
+
+Delivered-source audit PASS: all851packaged source/doc paths and bytes match
+the frozen candidate, including the compiler scope fix. Evidence:
+build/key-arrival-scope-delivered-source.json. The report identifies a dirty
+candidate; this proves delivered source identity, not a clean release revision,
+native provenance or full reproducible build. Full regression remains live in
+document checks; native-six and public-message qualification remain live.
+
+
+### Public-message regression passed (2026-10-05)
+
+Current scope-v1 image passes the existing19-case /82-command public-message
+regression at build/key-arrival-scope-public-messages-v1/result.json. Exact
+VGA and source image hash checks pass on486,-fpu /8MiB; startup30.088seconds.
+Coverage includes40-event FIFO, masks, negative down/up pairs, forward/backward
+filters and bypass, child delivery, popup behavior, CALL and exception cleanup,
+queued spawn/source jobs and key-description inhibition. This exercises the
+public routes on the enlarged private message allocation. It does not prove
+timed metadata under filters/macros or all allocation sites.
+Started current-source batched undo at build/key-arrival-scope-undo-batched-v1;
+serialized undo is already current-source PASS. Full input, native six and
+handler-registration fault runners remain live at the latest handle polls.
+
+Handler-registration fault counterpart also completed PASS at
+build/key-arrival-scope-macro-registration-v1/result.json:17commands, confirmed
+MACRO REGISTER fault, exact heap recovery, empty/unlocked rings, restored code,
+console arithmetic and unchanged source image.486,-fpu /8MiB startup34.232seconds.
+Both fault paths therefore remain covered on the current enlarged-message source.
+Full input remains in document-editing checks; native-six remains active in
+CompilerRuntime compilation. No complete-suite or native-build verdict yet.
+
+
+### Batched undo passed; timed filter routing test started (2026-10-05)
+
+Current-source batched undo completed PASS at
+build/key-arrival-scope-undo-batched-v1/result.json:486,-fpu /8MiB,
+30.539-second startup, exact continuous/separated undo VGA checkpoints.
+Together with serialized undo, both injection modes now qualify scope-v1.
+
+Extended the timed-message fixture with optional --routing, reusing the existing
+public-message worker/filter setup and pinning that source helper too. It posts
+known timestamps through forward filtering, DONT_FILTER bypass and backward
+posting, then verifies code, both arguments, timestamp and empty destination
+queue. Worker retirement is checked. Default14-command behavior is unchanged.
+Started build/key-arrival-scope-timed-routing-v1; no result claimed yet.
+Full input remains in document-editing checks and native-six is compiling
+CompilerRuntime; candidate source remains frozen.
+
+
+### Timed input-filter routes passed (2026-10-05)
+
+The optional timed routing fixture completed PASS at
+build/key-arrival-scope-timed-routing-v1/result.json:30commands on
+486,-fpu /8MiB, exact VGA and immutable source/harness pins. Known timestamps
+777/888/999 survived forward filtering, DONT_FILTER bypass and backward
+posting respectively, with matching message code/arguments, drained destination
+queues and successful worker retirement. Its14baseline contracts also passed.
+This strengthens the actual private transport coverage; macro timestamp-copy
+semantics, raw queue overflow/cancellation and broad resource qualification
+remain separate open checks. Full input and native-six remain confirmed live;
+latest full-suite checkpoint is styled document editing.
+
+
+### Original document compatibility requalification started (2026-10-05)
+
+Started the existing binary DolDoc oracle at
+build/key-arrival-scope-original-doc-compat-v1 against frozen scope-v1.
+Added --cpu to tools/test-i386-doc-compat.py (default486 unchanged), selecting
+486,-fpu for this native run. Native leg uses a fresh writable copy; both guest
+controls use QMPstdio. It must persist the37-byte canonical sprite/binary
+document, then original x64 TempleOS must read/save exact bytes. No current
+compatibility result claimed yet. Full input and native-six handles remain
+confirmed live; candidate source remains frozen.
+
+Original binary document compatibility completed PASS: the37-byte document
+written by scope-v1 was reproduced byte-exactly by original x64 TempleOS.
+The native leg ran486,-fpu; the source image stayed unchanged. Evidence:
+build/key-arrival-scope-original-doc-compat-v1/result.json, original export and
+native behavior report. This qualifies that canonical binary/sprite fixture,
+not all document formats or styled-document interoperability.
+
+
+### Full-suite fixture selection corrected (2026-10-05)
+
+Inspection found root i386-kernel-input.py still expects12allocation cases
+for root ABI40 source. Frozen candidate runner expects13 for its added
+text-run allocation failure coverage; the only two runner differences are
+that assertion and its report count. Root-runner full input v1 was explicitly
+interrupted (exit130) in mouse/document checks before its predictable final
+count mismatch. Prefix observations remain available but do not qualify a
+complete suite. This is a fixture selection error, not an OS failure.
+Started current-source full input v2 using the candidate's already-frozen
+matching runner, stdio QMP,486,-fpu and writable copy. No source or assertion
+was weakened. Candidate native-six remains live and unchanged.
+Current three-boot DolDoc session also started at
+build/key-arrival-scope-doldoc-session-v1 to qualify persistence across reboot
+before styled-document compatibility. No session result claimed yet.
+
+
+### Debugger qualification enabled without QEMU snapshot temporary files (2026-10-05)
+
+Added an explicit --writable-copies mode to the debugger aggregate. It freezes
+the harness as before, selects copy-backed snapshots through an explicit child
+environment setting, and verifies each job's source disk hash/storage policy.
+The shared root input helper honors this mode only for snapshot=True single-disk
+fixtures, verifies the fresh copy hash, records snapshot-provenance.json and
+runs without QEMU -snapshot. Existing explicit writable runs and default
+snapshot behavior are unchanged; multi-disk use is rejected. Source image
+immutability checks and all debugger assertions stay intact.
+
+Started all20debugger jobs,5cycles where supported, one worker, at
+build/key-arrival-scope-debugger-v1. First job has actual copy provenance and
+a live child; no debugger PASS yet. This is a host-harness change, not candidate
+OS source mutation. Native-six and corrected full suite use their frozen
+candidate helpers; the already-running document session loaded its earlier
+root helper before this edit. All three remain confirmed live.
+
+
+### Styled compatibility and debugger progression (2026-10-05)
+
+The current three-boot document session completed its first saved checkpoint
+and is live in reopen checks. Started styled compatibility against the immutable
+after-create.img at build/key-arrival-scope-style-compat-v1: original x64 reader
+already exported the78-byte exact round-trip and79-byte original-authored edit;
+native import/re-save is still pending, so overall style PASS is unproven.
+
+Debugger aggregate completed its register-eax job PASS, including copied-disk
+provenance verification and its five repeated cycles. Remaining19jobs are
+still pending/running; no aggregate debugger acceptance claim. Candidate full
+input and native-six remain confirmed live with frozen source.
+
+
+### Styled interoperability completed; acceptance summaries refreshed (2026-10-05)
+
+Styled compatibility terminal PASS at
+build/key-arrival-scope-style-compat-v1/result.json:78-byte native document
+round-trips exactly through original TempleOS,79-byte original-authored edit
+imports/re-saves exactly in native486,-fpu /8MiB (fivecommands,34.651-second
+startup). Immutable after-create snapshot hash is recorded and unchanged.
+The three-boot session itself remains live; this PASS applies only to the
+specific styled interchange fixture.
+Refreshed the M7 acceptance, support matrix and coverage-audit openings to
+identify scope-v1 evidence and the still-running matching full/native/session/
+debugger qualifications. Older source results remain historical. No main
+promotion, completed native generations, clean release or remote push claimed.
+
+
+Three-boot DolDoc session terminal PASS at
+build/key-arrival-scope-doldoc-session-v1/result.json. All178commands
+(107/56/15) and exact VGA checks passed on486,-fpu /8MiB. Startup times
+30.153/33.472/31.397seconds; interrupt recovery0.282seconds. Program/style
+persistence, reopen/revision, project-relative files and rename/move/delete
+cycles passed. Filesystem audit found18directories/889files with bitmap
+matching17844owned sectors; original scope-v1 source image stayed unchanged.
+Full matching input, native-six and debugger aggregate remain live.
+
+
+### Current-source resource measurement started (2026-10-05)
+
+Added explicit --qmp-stdio and --writable-copy options to the existing resource
+profile. It hashes the fresh copy before boot, records copy policy/path in
+input provenance and checks the actual QEMU disk/snapshot command against that
+policy. Default snapshot behavior and old default parse identities remain
+unchanged. CPU/RAM/arena accounting,20cycles and resource assertions are unchanged.
+Started build/key-arrival-scope-resources-v1 against frozen scope-v1, TCG486,-fpu
+/8MiB. No resource PASS yet. This cross-built image result will not substitute
+for the eventual native packaged-image resource gate.
+Debugger aggregate currently has three completed register jobs; matching full
+input and native-six remain confirmed live. Candidate source remains frozen.
+
+
+### Current-source 8MiB resource profile passed (2026-10-05)
+
+Resource profile terminal PASS at
+build/key-arrival-scope-resources-v1/resource-result.json:20document-development
+cycles, exact shared-heap recovery to1352496live bytes,1356112peaklive bytes
+(3616temporary growth),1365504reservedpeak. Heap arena stays within actual
+8MiB RAM;486,-fpu /TCG, source image unchanged. Actual copied-disk QEMU profile
+passed command validation. A separate copied-report mutant with an inconsistent
+-snapshot flag was rejected by the storage-profile guard; evidence
+build/key-arrival-scope-resource-storage-mutant.json. Original reports were
+untouched. This is cross-built scope-v1 resource evidence, not the eventual
+packaged native-image qualification. Full input, native-six and debugger remain
+confirmed live at this checkpoint.
+
+
+### Frozen source revalidated; speaker output qualification started (2026-10-05)
+
+All1023candidate source identities still exactly match the qualification pin,
+including the candidate host tools. Native-six and matching full input remain
+live; debugger aggregate has five completed register jobs PASS.
+Started existing emitted PC-speaker waveform qualification at
+build/key-arrival-scope-speaker-v1, selecting explicit copy-backed snapshots
+through the documented harness environment option. Tone440/880Hz and settled
+off/reset silence assertions are unchanged; source disk must stay immutable.
+This cross-built-image audio evidence cannot replace the later packaged-native
+workflow gate. No speaker or aggregate qualification verdict yet.
+
+
+### Paused environment probe blocked by trace permissions (2026-10-05)
+
+Added --writable-copies to the environment recorder: drive snapshot flags are
+removed only in this explicit mode, fresh byte-identical copies stay hash-pinned
+and CPUs remain paused under-S. Default snapshot behavior is unchanged.
+The current-profile probe at build/key-arrival-scope-qemu-environment-v1
+terminated before QEMU: sandbox denied strace PTRACE_TRACEME/PTRACE_SEIZE.
+Failure manifest records this external restriction; no fresh firmware-open or
+machine qualification is claimed. Existing historical environment records remain
+separate evidence. No permission override attempted. Functional runtime and
+native-build qualifications can continue.
+
+Speaker output terminal PASS at build/key-arrival-scope-speaker-v1/result.json:
+emitted440/880Hz sequences, settled off/reset silence with no emission errors,
+source image unchanged and copy provenance retained. Captured PCM7.302seconds
+on486,-fpu /8MiB. This is current cross-built-image audio evidence; the eventual
+packaged native-image audio gate and physical hardware remain separate.
+
+### Current qualification checkpoint — 2026-10-05
+
+The frozen scope-corrected key-arrival image remains SHA-256 `4e3cc55fc053f052061c8597f472a55c00cd42ef392641122d55713462533c7c`. All three qualification process handles were polled and confirmed live. The corrected full input suite has reached `document-compatibility / doc-original-cross-binary-check`; the six-provider native rebuild is still processing CompilerRuntime output. Neither has a terminal verdict.
+
+The current debugger aggregate records 10 passing jobs out of 20: `register-eax`, `register-ecx`, `register-edx`, `register-ebx`, `register-esi`, `register-edi`, `public-flags`, `step-flags`, `step-ip`, `public-stack`. Its aggregate verdict remains running. These are current-image results, not transferred evidence from an earlier prototype. Authoritative artifacts are `build/key-arrival-scope-debugger-v1/result.json`, `build/key-arrival-candidate/build/key-arrival-scope-full-input-v2/checkpoint.json`, and `build/key-arrival-candidate/build/key-arrival-scope-native-six-v1/qemu/debug.log`. No complete native-generation, installed-release, or full-suite acceptance is claimed by this checkpoint.
+
+### Current full runtime gate passed — 2026-10-05
+
+The corrected candidate-owned runner finished with exit 0 and `result: pass` in `build/key-arrival-candidate/build/key-arrival-scope-full-input-v2/result.json`. It executed 513 native commands (576 submitted lines), all 13 document allocation checks and 20 development cycles with exact shared task data/code heap recovery. Every VGA checkpoint matched. Configuration: 486,-fpu, 8 MiB, writable disk copy; interactive startup 32.756 seconds and long-document up-to-VGA latency 0.383 seconds. This qualifies the current cross-built scope-v1 runtime; native generation, installation, reproducibility and release publication remain separate open gates.
+
+The current full-suite measurement also passes `tools/check-i386-startup-budget.py`: 32.756 seconds against the 60-second normal boot limit, recorded in `build/key-arrival-scope-startup-budget.json`. This is a timing gate only. The new normal macro fixture v1 is retained as a failed fixture run: it returned to the interactive editor with an unconsumed synthetic key. V2 consumes timed delivery within the posting command and is running; no macro acceptance is claimed yet. Native-generation preflight in `build/key-arrival-scope-native-generation-preflight.json` verifies all 1,023 frozen source files and pins the stage listing, but requires the live six-provider build to finish successfully before launching.
+
+Normal macro fixture v2 also ended with a console mismatch. Inspection of `build/key-arrival-scope-macro-normal-v2/behavior/startup-command-16.ppm` shows return values `0`, `1`, `1`: the semaphore bit operations printed their old bit values at top level, followed by the successful timed-delivery assertion. V3 wraps semaphore operations and posting in a U0 helper and retains the same timed-delivery assertion. It is running in `build/key-arrival-scope-macro-normal-v3`; neither failed fixture run qualifies complete recording/replay behavior. Candidate OS source remains frozen.
+
+### Normal macro recording contract passed — 2026-10-05
+
+`build/key-arrival-scope-macro-normal-v3/result.json` reports pass, exit 0, all 23 commands and exact VGA at 486,-fpu / 8 MiB, startup 27.865 seconds. The immutable scope-v1 input hash and fixture hashes are pinned. The test checks one recorded key-down copy with correct payload and ring links, original delivery retaining jiffy 777, public PostMsg replay returning timestamp -1, removal/free of the recording copy, empty recording ring and restored IF. It also retains the existing delayed-delivery, public fallback and exact heap checks. This does not qualify macro playback scheduling or the private copied timing tail. Failed v1/v2 fixture artifacts remain separate. All 1,023 frozen candidate source files were rechecked unchanged after this run.
+
+### Current hardware queue overflow recovery passed — 2026-10-05
+
+`build/key-arrival-scope-keyboard-loss-v1/result.json` passes all 10 commands and exact VGA at 486,-fpu / 8 MiB, startup 28.569 seconds. Suspending the decoder and overflowing the hardware raw queue causes exactly one input reset; a discarded Shift release does not leave input stuck, a queued CALL runs exactly once, and ordinary typing recovers. The source image is unchanged, and `behavior/snapshot-provenance.json` binds the writable copy to the current scope-v1 hash. This qualifies recovery behavior, not exact timestamps across raw ring wrap or pending-reader cancellation.
+
+### Current focused-child interruption passed — 2026-10-05
+
+`build/key-arrival-scope-keyboard-break-focus-v1/result.json` reports pass, exit 0, all six commands and exact VGA on 486,-fpu / 8 MiB. Ctrl-Alt-C reaches a focused spawned HolyC loop, which catches Break, restores console focus and allows arithmetic afterward. Startup is 28.521 seconds; the source disk remains unchanged and writable-copy provenance pins the scope-v1 input. This does not establish all cancellation/wait paths. The native six-provider process and 20-job debugger aggregate remain live; the latter records 16 completed passing jobs, with four still pending.
+
+### Current debugger aggregate passed — 2026-10-05
+
+`build/key-arrival-scope-debugger-v1/result.json` now reports pass and the aggregate exited 0. All 20 expected jobs are present and pass, including public Caller debugger-stack checks, concurrent repeat/kill, same-address breakpoint ownership, register banks, flags/IP and stack edits. The immutable candidate disk hash was independently rechecked. The aggregate freezes its harness and validates per-job writable-copy provenance. This closes the current cross-built debugger regression gate; native rebuilding, two-generation identity, installed qualification and release publication remain open. The six-provider native build remains live.
+
+### Native build observation limit reached — 2026-10-06
+
+The scope-v1 six-provider run exited 1 at the existing 3,600-second per-command timeout while compiling CompilerRuntime. The retained screen shows an active build command without an exception or result; the log had progressed through frontend publication to I386LoadScalarTypes. There is no completed module/native acceptance verdict. The terminal v1 artifacts remain preserved. A fresh v2 run uses the same frozen image, exports and sources, TCG / 486,-fpu / 16 MiB, with the explicit `--command-timeout 10800` option. Assertions are unchanged; only the time allowed for this slow native compiler build increases. The two-generation preflight must use v2 if and only if all six modules eventually pass.
+
+`tools/test-i386-native-generations.py` now accepts `--build-command-timeout` (positive seconds, default 3600), records the value in its report and forwards it to the second-generation retained-module rebuild. The prepared scope-v1 generation command selects 10800 and the v2 retained-build directory. The driver is outside the frozen candidate; all 1,023 candidate source files still match their pinned identities. CLI help, Python parsing and diff whitespace checks pass. This is timeout configuration, not native-generation acceptance.
+
+The frozen key-arrival scope candidate completed the native six-module rebuild in `build/key-arrival-candidate/build/key-arrival-scope-native-six-v2/result.json`: all six modules passed, and the harness exited successfully. The source disk SHA-256 is `220b238e8a93a74bf7cfa8f1c7f3ab772504c5a55471a036dd11d2e2334d4ac1`. The two-generation self-hosting check has started in `build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1`, using the same frozen candidate and a 10,800-second build command timeout. Its result remains pending; this native rebuild pass does not establish generation identity or release readiness.
+
+### Generation 1 self-hosted kernel and boot passed — 2026-10-06
+
+The frozen candidate's `build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1/gen1-selfhost/result.json` reports pass. The installed native compiler built Kernel and all five flat-kernel support modules, then assembled a 501,912-byte boot payload with SHA-256 `899e2368cfeb9e15c6d79852f9b14c58496a137be9922e75906fff5e97592fb8`. This stage used the six previously guest-built retained modules as supplied inputs; it is not a second-generation retained-module rebuild. The resulting image independently booted on TCG / 486,-fpu / 8 MiB in 39.392 seconds, passed arithmetic and DocAllocationCheck commands, and matched VGA pixels at each checkpoint. The live driver has advanced to generation 1 audits. Generation 2 rebuilding, comparison, installation and self-hosting remain pending; release readiness is unproven.
+
+Generation 1 image audits also passed in `key-arrival-scope-native-generations-v1/gen1-audit/result.json`: installed payload matches the guest-built flat image, boot metadata and padding are independently verified, linked executable ranges pass the 386 instruction allowlist, and the RedSea bitmap matches reachable extents (16 directories, 873 files, 19,326 owned sectors). The driver has started `gen2-retained-build` from the installed generation 1 image. This is a live rebuild, not a completed second-generation or reproducibility verdict.
+
+### Generation 2 retained modules reproduce — 2026-10-06
+
+The frozen candidate's generation 2 native rebuild passed for all six retained
+modules: CompilerRuntime, CompilerProbe, ConsoleRuntime, FileRuntime,
+MemoryRuntime and Startup. Each output SHA-256 equals its reference extracted
+from the generation 1 installed self-hosted image. Evidence is
+`build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1/gen2-retained-build/result.json`;
+the installed reference disk has SHA-256
+`0746513aa2e20522299d3135342c9ca5af93144f2b6cd9300e0834873e2c45cc`.
+
+This proves retained-module byte identity for this candidate under QEMU TCG
+with `486,-fpu`. Generation 2 installation has started; its self-hosted kernel,
+boot checks, installed-image audits and final kernel identity remain pending.
+The complete release gate has not passed.
+
+### Two-generation native qualification passed — 2026-10-06
+
+The frozen candidate completed the two-generation native driver with exit code
+0 and `result: pass`. Generation 2 installation, self-hosted kernel build,
+independent boot and installed-image audits all passed. Both guest-built flat
+kernels are 501912 bytes with SHA-256
+`899e2368cfeb9e15c6d79852f9b14c58496a137be9922e75906fff5e97592fb8`.
+The generation identity audit passed for all 12 modules and the boot area.
+Generation 2 booted under QEMU TCG at `486,-fpu` with 8 MiB in 39.192 seconds,
+passing arithmetic and document-allocation commands with VGA checks.
+
+Both filesystem audits report 16 directories, 873 files and 19326 owned
+sectors, with allocation bitmaps matching reachable extents. Whole-disk hashes
+differ; this result proves the audited module, kernel and boot-area identity,
+not byte identity of the entire disk image. Evidence:
+`build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1/result.json`.
+
+This closes this candidate's two-generation native qualification gate. Main
+source integration, remaining input/macro coverage, release packaging and
+publication remain unfinished. Commit and push remain unavailable because
+this session permits only read access to `.git`.
+
+### Qualified candidate integrated into working tree — 2026-10-06
+
+Applied the five archived candidate patches to the main working tree with
+zero fuzz and no rejected hunks, preserving the existing harness changes.
+All Kernel, Compiler and Adam HC/HH/ASM/INC files were compared byte for byte
+with the qualified frozen candidate and matched. Python tools parse and
+`git diff --check` passes. This is working-tree integration, not a committed
+or published checkpoint. A fresh integrated build and packaged installed
+qualification remain required; candidate evidence is retained separately.
+
+### Fresh integrated bootstrap and cross-build passed — 2026-10-06
+
+The working tree passed its own two-generation original TempleOS bootstrap
+(`build/rebuild-test/result.json`), then a fresh 32-bit cross-build in
+`build/key-arrival-integrated-main-v1`. The build exited 0, exported all
+modules, produced a 497560-byte native kernel, and passed the 386 boot-stage
+audit (96 BIOS and 209 protected-mode instructions). The normal disk image
+SHA-256 is `4e3cc55fc053f052061c8597f472a55c00cd42ef392641122d55713462533c7c`. This build did not run the native boot/runtime suite;
+those checks remain to be run against the integrated artifacts.
+
+### Integrated full runtime suite passed — 2026-10-06
+
+The fresh main working-tree image passed the full runtime suite with exit code
+0: 513 native commands, 576 submitted lines, 13 document allocation cases,
+and 20 development cycles with exact shared task data/code heap recovery.
+QEMU TCG used `486,-fpu`, 8 MiB and a fresh writable disk copy; all VGA pixels
+matched at each checkpoint. Startup took 27.003 seconds and the measured
+long-document key-to-VGA latency was 0.255 seconds. Evidence is
+`build/key-arrival-integrated-main-full-v1/result.json`. This qualifies the
+integrated cross-built runtime; packaged installed release workflows and
+remaining timing/macro coverage still require their own evidence.
+
+### Packaged native workstation gate passed — 2026-10-06
+
+Deterministic packaging of the qualified generation 2 native image passed:
+`build/key-arrival-integrated-native-package-v1.json` records image SHA-256
+`de8114d5437b341d0b7c8cc0f62c79d134ed39e95e11602c78638796a155d0c0`,
+unchanged source and preserved file bytes/attributes/dates/native boot area.
+The independently audited package passes the 386 executable and installed
+payload checks in `build/key-arrival-integrated-native-package-audit-v1`.
+
+The five-job installed workflow driver independently reproduced the package
+from the qualified original. Its workstation job passes all 513 commands,
+13 allocation cases and 20 exact-heap cycles at `486,-fpu` / 8 MiB, with all
+VGA checkpoints matching. Startup is 39.292 seconds; measured long-document
+key-to-VGA latency is 0.434 seconds. The remaining four jobs are pending, so
+`build/key-arrival-integrated-packaged-workflows-v1/result.json` is still
+running and no aggregate release-workflow pass is claimed.
+
+### Packaged three-boot DolDoc session passed — 2026-10-06
+
+The packaged installed-image DolDoc gate passed all three boots and 178
+commands (107 create/edit/save, 56 reopen, 15 revised verification), with
+exact VGA checkpoints at `486,-fpu` / 8 MiB. It verifies saved source execution,
+reopening and revising work after reboot, and project rename/move/delete
+workflows. Filesystem integrity reports 18 directories, 890 files, 19346
+owned sectors and a bitmap matching reachable extents. The packaged source
+image remains unchanged. Evidence is
+`build/key-arrival-integrated-packaged-workflows-v1/doldoc-session/result.json`.
+Two of five installed workflow jobs now pass; the aggregate remains running.
+
+### Packaged workflow resource transport fix — 2026-10-06
+
+The first five-job packaged workflow run terminated with an aggregate failure:
+workstation, three-boot DolDoc, large-source and speaker jobs passed; resource
+testing failed with `No QMP` because its workflow invocation omitted the
+resource harness's stdio option. The environment does not permit Unix QMP
+sockets. This is a harness transport failure, not a passing resource result.
+The original failure remains in
+`build/key-arrival-integrated-packaged-workflows-v1/result.json`.
+
+The driver now passes `--qmp-stdio --writable-copy` to the resource job. A fresh
+focused resource run in `build/key-arrival-integrated-packaged-resource-v2`
+is live and has reached its first guest command. A corrected complete
+five-job aggregate still needs its own successful run.
+
+### Packaged resource rerun passed; corrected aggregate started — 2026-10-06
+
+The focused resource rerun passed with QMP stdio and a writable copy:
+`build/key-arrival-integrated-packaged-resource-v2/resource-result.json`.
+It qualifies the exact packaged image at QEMU TCG `486,-fpu` / 8 MiB over
+20 development cycles, with 3616 bytes of temporary live heap growth,
+1352496-byte recovered live baseline and 1365504-byte reserved peak. The
+source image is unchanged.
+
+All five workflows now have individual passing evidence, but the first
+aggregate remains failed. A fresh corrected sequential aggregate is running
+in `build/key-arrival-integrated-packaged-workflows-v2`; its verdict is pending.
+
+### Acceptance summaries reconciled with current evidence — 2026-10-06
+
+Updated the M7 acceptance, coverage and support summaries to distinguish the
+integrated ABI 47 working tree from the ABI 40 remote checkpoint. They now
+record both completed native generations, module/kernel/boot-area identity,
+the audited deterministic package and the first aggregate's resource transport
+failure. The focused resource rerun passes; the corrected aggregate remains
+live and unqualified until its final verdict. No whole-disk identity, clean
+revision, release or push is claimed.
+
+### Recorded macro timestamp-copy regression added — 2026-10-06
+
+Added `tools/test-i386-macro-arrival-copy.py`, a focused 26-command fixture
+that checks the recorded copy's allocation size, private timing signature and
+arrival value of -1, alongside original timed delivery, public replay fallback
+and ring cleanup. This covers a previously unobserved private field rather
+than inferring it from payload equality. Python parsing and the interactive
+line-length check pass (maximum 184 bytes). Guest execution is pending until
+the live packaged workflow aggregate finishes; no runtime pass or complete
+macro playback qualification is claimed. The aggregate has now also passed
+large-source testing, leaving speaker and resource jobs pending.
+
+### Corrected packaged five-workflow aggregate passed — 2026-10-06
+
+`build/key-arrival-integrated-packaged-workflows-v2/result.json` terminated
+with PASS (runner exit 0). Workstation, three-boot DolDoc, large-source,
+speaker and resource jobs all pass on the deterministically packaged native
+image under QEMU TCG `486,-fpu` / 8 MiB. The source image remains unchanged;
+after termination all 197 pinned inputs independently match their recorded
+SHA-256 values. Resource testing passes 20 development cycles with 3616-byte
+temporary live growth and exact recovery to 1352496 bytes. The failed v1
+aggregate remains preserved. This closes the five-job packaged workflow gate,
+not the remaining input timing coverage, final release or publication gates.
+
+Started the focused recorded-macro private timestamp-copy fixture against the
+same package at `build/key-arrival-integrated-macro-copy-v1`. Guest verdict is
+pending. Its implementation reuses the existing recording commands and adds
+private allocation-size/signature/arrival assertions.
+
+### Packaged macro copy, performance budgets and source audit passed — 2026-10-06
+
+The recorded-macro fixture terminated PASS (exit 0) at
+`build/key-arrival-integrated-macro-copy-v1/result.json`: 26 commands, exact
+VGA, TCG `486,-fpu` / 8 MiB. It directly checks allocation size, private
+timing signature and recorded arrival -1, while original timed delivery
+retains 777. Public replay falls back to -1 and recorded-ring cleanup passes.
+This closes private macro-copy metadata coverage, not actual playback scheduling.
+
+`build/key-arrival-integrated-packaged-budgets-v1.json` passes the formal
+installed startup/response budgets: all five measured boots are below 60
+seconds (39.192–39.496), long-document response is 0.377 seconds and interrupt
+recovery is 0.157 seconds, both below the one-second limit. Speaker and
+resource jobs do not supply additional startup/latency measurements.
+
+`build/key-arrival-integrated-packaged-source-v1.json` independently passes
+the complete source/doc audit against the root working tree: all 851 packaged
+files match, the live source path set matches and volume integrity passes.
+The report explicitly identifies the dirty candidate; this is source identity
+evidence, not a clean committed revision. Commit and publication remain
+unavailable under the session's read-only `.git` permissions.
+
+### Native raw-queue timestamp regression started — 2026-10-06
+
+Added `tests/guest/i386-input/ArrivalInput.HC` to the native input fixture.
+Its independent controlled 64-bit clock checks three 64-byte batches starting
+at ring head 37, delayed consumption, drop-newest overflow retaining every
+original timestamp, exact byte/status pairing and fresh zero timestamps when
+no clock is installed. It also checks interrupt-flag preservation. Native
+compilation/execution is running through `tools/test-i386.py --input
+--qmp-stdio` in `build/i386-input-test`; no guest pass is claimed yet.
+
+Added opt-in QMP stdio transport to that driver and its keyboard runner so
+the existing live-key corpus can execute without Unix sockets. Python parsing
+and `git diff --check` pass. These changes affect test code, not the packaged
+OS source or previously qualified image. Timestamp preservation through
+pending-reader cancellation and actual macro playback remain open.
+
+### Native input compile passed; runner binding mismatch found — 2026-10-06
+
+The native input run terminated before boot with an ExceptionEntry module
+layout rejection in `native_assembly_args`. Original guest compilation
+completed and exported the input corpus (204544 bytes), including the new
+arrival fixture. ExceptionEntry now exports `i386_debug_cpu_entry` and imports
+`KernelDebugCpu`/`KernelDebugStack` in addition to the dispatcher; the standalone
+runner still expects 17 vector exports and one import. This is a concrete
+test-runner integration gap, not a passing timestamp check. Native execution
+remains pending while the runner's explicit bindings are brought up to date.
+
+### Native input timestamp and live-key suite passed — 2026-10-06
+
+The standalone runner now binds the current ExceptionEntry's 18 exports and
+three explicit imports. Debugger hooks route to a visible failure in this
+isolated corpus, which has no debugger runtime. Its instruction audit includes
+the new entry and its 386 DEC instruction; the production debugger remains
+qualified separately. Increased the input transfer to 448 sectors and moved
+the fixture scratch heap to 0x48000, with an assembly bound guarding overlap.
+
+`tools/test-i386.py --input --qmp-stdio` terminated PASS (exit 0).
+`build/i386-input-test/result.json` and the exact nine-event runner log pass.
+The new controlled-clock fixture verifies three complete ring wraps, overflow
+retaining all 192 timestamp/byte/status pairs, delayed reads, no-clock reset and
+IF preservation. Evidence/source hashes are captured in
+`build/key-arrival-native-input-timestamps-v1.json`. This uses the isolated
+TCG 486 / 8 MiB runner, not the packaged workstation; pending-reader
+cancellation timestamps and actual macro playback scheduling remain open.
+
+### Native cancellation timestamp preservation passed — 2026-10-06
+
+Extended the existing six-scenario cancellation corpus with a controlled
+64-bit clock. Distinct queued timestamps 0x100000011/0x100000022 survive
+pending-reader cancellation and delayed root reads. Replacement-reader
+handoff checks 0x100000044, and completion of a cancelled extended-prefix
+reader checks decoded-event timestamp 0x100000055. Existing borrowed wait,
+freed/reused stream, task flags, IF, decoder-state and exact heap cleanup
+checks remain in place.
+
+`tools/test-i386.py --input --qmp-stdio` terminated PASS (exit 0), including
+the wrap/overflow fixture and nine hardware-driven keys. Copied runner, exports
+and result evidence into the immutable-by-convention directory
+`build/key-arrival-native-input-timestamps-v2`; `qualification.json` records
+source/evidence hashes. This supersedes the v1 manifest, whose original
+`build/i386-input-test` output paths were reused by the rerun. The isolated
+TCG 486 / 8 MiB corpus establishes these cancellation timestamp cases, not
+all installed-console timing behavior. Actual macro playback scheduling and
+final release qualification remain open.
+
+### Macro playback service gap identified — 2026-10-06
+
+Inspection of the integrated ConsoleRuntime export table, PublicTerminal
+header and compiler/runtime sources finds no retained `SysMacro2Str` or
+`PlaySysMacro` implementation/binding. Original `Adam/DolDoc/DocMacro.HC`
+contains both, but the port does not include it. Existing green macro tests
+cover recording copies and public message replay, not original macro
+serialization/playback. This changes the next task from additional timing
+coverage to restoring missing original functionality and then testing it.
+
+Added an installed-guest prerequisite fixture at
+`tools/test-i386-macro-playback.py`; its first run is live in
+`build/key-arrival-integrated-macro-playback-prerequisite-v1`. The first fixture
+uses an export-only lookup and must be widened to ordinary public function
+symbols before its failure can establish API absence. No passing playback
+qualification or runtime absence verdict is claimed yet.
+
+### Macro prerequisite lookup corrected; original execution contract recorded — 2026-10-06
+
+The export-only prerequisite v1 terminated with a console mismatch timeout
+(exit 1); it is insufficient to establish ordinary API absence. Corrected
+lookup to `HashFind(...,~0)` and started v2 at
+`build/key-arrival-integrated-macro-playback-prerequisite-v2` (verdict pending).
+
+Added `docs/i386-macro-playback-contract.md` from the original DocMacro and
+Job implementations. Playback executes generated InFile code via InStr or
+XTalkStrWait; the port's raw-character NativeXTalk is not an equivalent path.
+The contract records serialization parity, executable self/child playback,
+repeat/focus/retirement behavior, undo timing and exact cleanup requirements.
+This identifies implementation dependencies; no restored playback is claimed.
+
+### Macro prerequisite red; original serializer shared — 2026-10-06
+
+The corrected v2 prerequisite terminated FAIL (exit 1) on its first API
+lookup. The retained final VGA screenshot directly shows
+`HashFind("SysMacro2Str",Fs->hash_table,~0)!=0` returning 0; the fixture
+expected 1. This verifies the missing ordinary symbol, not a failing playback
+execution. PlaySysMacro was not reached by that failing run.
+
+Extracted the existing 2002-byte stripping/serialization implementation from
+`Adam/DolDoc/DocMacro.HC` into `DocMacroCore.HC`. The original includes it;
+replacing the include with the core reproduces the prior file exactly. Added
+an original-x64 oracle for empty, character and mixed-message rings, checking
+recording disable, exact generated code and ring preservation. Its fresh
+ISO/guest run is live at `build/macro-core-original-v1` (no verdict yet).
+Native inclusion and executable playback remain to implement. This changes
+OS source, so previous package/source-audit greens remain tied to the earlier
+851-file candidate and do not qualify the new working tree.
+
+### Original macro oracle fixture setup corrected — 2026-10-06
+
+The original serializer oracle v1 terminated with no debugcon completion
+(exit 1). Its captured VGA screen shows an incomplete `CJob` class error
+in the fixture's local ring declaration. This does not qualify serializer
+behavior. Added an explicit shared `Kernel/JobTypes.HH` include in the oracle
+and started a fresh ISO/run at `build/macro-core-original-v2`. The shared
+serializer itself is unchanged; v2 verdict remains pending.
+
+### Shared serializer wired into native console prototype — 2026-10-06
+
+Added `Kernel/I386/MacroRuntime.HC` to retain the shared original stripping
+and serialization implementation with the original character bitmap. It
+uses the retained memory provider's semaphore storage and public job layout.
+Console initialization validates that storage before publishing serialization
+and key-stripping exports; `PublicMacro.HH` declares their original signatures.
+Console version is now 41 to distinguish this source from the qualified
+version-40 package. The original serialization algorithm itself is unchanged.
+
+A fresh integrated cross-build is running at `build/macro-serializer-integrated-v1`
+with QMP stdio. Native behavior, original-x64 parity and failure cleanup remain
+unqualified; executable InFile playback is still missing. No transfer of the
+earlier native-generation/package evidence to this source epoch is claimed.
+
+### Serializer build requires fresh bootstrap; oracle setup still fails — 2026-10-06
+
+The native cross-build terminated before compilation because its bootstrap
+source pins detect changed ConsoleRuntime.HC. Preserved the previous 87 MiB
+bootstrap in `build/macro-prechange-rebuild-checkpoint-v1`, then started
+`tools/test-rebuild.py --qmp-stdio` for the current serializer source. The
+fresh two-generation bootstrap is live; no cross-build pass is claimed.
+
+Original oracle v2 also terminated before debugcon completion; its screenshot
+still shows an incomplete-class error in the fixture's CJob declaration.
+Adding JobTypes alone did not fix the oracle context. Native serializer
+behavior, original parity and executable playback remain unqualified.
+
+### Serializer bootstrap passed; native include dependency corrected — 2026-10-06
+
+The first fresh two-generation original bootstrap terminated PASS (exit 0);
+both rebuilt compiler/kernel pairs execute and rebuild themselves. The native
+cross-build then terminated during console compilation: its saved compiler
+log identifies an undefined MSG_KEY_DOWN in shared DocMacroCore.HC. Added
+MessageCodes.HH to MacroRuntime's explicit dependencies. Also updated the
+host's exact console-version validator from 40 to 41; it still rejects any
+other version. A new pinned bootstrap for the corrected source is running.
+
+The original oracle v3 uses a uniquely named record with the exact shared
+CJob fields to avoid conflicting inherited incomplete class names. Its guest
+is still live; original parity remains unqualified. No native serializer or
+complete playback pass is claimed.
+
+### Corrected serializer bootstrap passed; cross-build and explicit oracle live — 2026-10-06
+
+The bootstrap for the MessageCodes include correction terminated PASS (exit
+0), executing both freshly rebuilt compiler/kernel generations. Started the
+fresh serializer cross-build at `build/macro-serializer-integrated-v3`.
+
+Original oracle v3 terminated before its report: captured VGA shows undefined
+CMacroOracleJob, so the preprocessor rename did not supply a complete record
+to that task. Replaced that fixture setup with the explicit shared CJob field
+layout under the unique CMacroOracleJob name, retaining the original serializer
+call. The fresh oracle v4 is live at `build/macro-core-original-v4`. No original
+parity/native runtime result is claimed before their terminal verdicts.
+
+### Native shared-core alias dependency removed — 2026-10-06
+
+Serializer cross-build v3 terminated in console parsing; its saved compiler
+log reports undefined NativeMacroJobDel at the alias cleanup boundary. Removed
+the surrounding define/undef aliases and declared the adapter's local storage
+and deletion helper using the original names sys_semas, char_bmp_macro and
+JobDel. Semaphore storage still binds to the retained memory provider after
+validation. The shared original serializer code remains unchanged. A fresh
+pinned two-generation bootstrap is live for this correction. No console
+compile/runtime pass is claimed. Original oracle v4 remains live.
+
+### Original oracle class visibility still unresolved — 2026-10-06
+
+Original oracle v4 terminated before reporting (exit 1). Its VGA screenshot
+shows invalid class CMacroOracleJob inside the fixture function even with an
+explicit record declaration. Made that fixture record public so the function
+can resolve it through inherited scopes. This is a setup correction; no
+serializer parity is claimed, and the correction still needs guest execution.
+
+### Native serializer cross-build passed; behavior regression started — 2026-10-06
+
+The direct-name adapter cross-build v4 terminated PASS (exit 0) and exported
+ConsoleRuntime and all other native providers. Its normal/diagnostic images
+are built in `build/macro-serializer-integrated-v4`; the 386 instruction audit
+passes 96 BIOS and 209 protected-mode instructions. The console-version-41
+layout validator passes. This is compilation/boot-area audit evidence, not
+native serializer behavior or native-generation qualification.
+
+Added `tools/test-i386-macro-serialization.py` with 13 installed-guest commands
+checking empty/character/mixed outputs, recording disable, ring preservation
+and stripping by character/scan. Its fresh writable-copy no-FPU runtime run
+is live at `build/macro-serializer-native-v1`. The original-x64 oracle v5
+is also live; byte-parity remains unqualified until both return evidence.
+
+### Native empty serialization observed; fixture output setup needs correction — 2026-10-06
+
+The native v1 guest reached the empty serializer check. Its exact captured
+VGA shows recording-bit return 0, the assigned output pointer, and final
+boolean 1. The expected frame included only the final answer, so the fixture
+needs void setup helpers rather than expecting assignment values to be silent.
+This is direct empty-result/recording-disable evidence, not a full fixture pass.
+Original oracle v5 terminated before reporting with the same invalid local
+record declaration; making the record public did not resolve that context.
+No serialization parity or executable playback pass is claimed.
+
+### Serializer fixture uses void setup helpers; fresh rerun live — 2026-10-06
+
+Native serialization v1 terminated on the expected-frame mismatch (exit 1),
+with its observed 0/pointer/1 output preserved. Added void setup/conversion
+helpers to isolate the intended boolean answers without weakening them. The
+17-command rerun is live in `build/macro-serializer-native-v2` on the same
+console-version-41 image. Static line-length checks pass (maximum 137 bytes).
+No complete native serializer verdict is claimed yet.
+
+### Native serializer behavior passed; original raw-record oracle live — 2026-10-06
+
+`build/macro-serializer-native-v2/result.json` terminated PASS (exit 0): all
+17 commands and exact VGA checkpoints pass at TCG `486,-fpu` / 8 MiB; startup
+is 28.357 seconds. Fixture/source-image/helper hashes still match. The shared
+serializer produces the expected empty, character and mixed-message code,
+clears recording, preserves recorded nodes, and strips by character/scan.
+Allocation failures, extended quoting/control cases and executable playback
+remain unqualified.
+
+Original oracle v6 uses raw 112-byte records matching original x64 CJob's
+fourteen eight-byte slots, avoiding the repeated private-class redeclaration
+failures. It calls the original serializer directly and compares exact bytes;
+the fresh run at `build/macro-core-original-v6` is live. Original/native parity
+is still pending. Earlier failing fixture artifacts remain preserved.
+
+### Basic original/native serializer parity passed — 2026-10-06
+
+Original oracle v6 terminated PASS (exit 0) after empty, character and mixed
+checks, exporting `MacroMixed.HC`. Its 22 bytes exactly match
+`"A";Msg(0x2,0x0,0xC8);`, the same literal checked in the native regression.
+Captured source/evidence hashes in `build/macro-basic-serialization-parity-v1.json`.
+This closes basic original/native serialization parity, not quoting/control
+format coverage, allocation recovery or actual macro playback.
+
+### Extended original macro byte oracle passed; native comparison started — 2026-10-06
+
+Original x64 oracle v7 terminated PASS (exit 0), repeating the basic cases
+and exporting `build/macro-core-original-v7/MacroExtended.HC`: 853 bytes from
+all 256 byte-valued key-down characters plus a key-up event. This covers
+character eligibility, grouping and escaping across the original bitmap.
+Preserved the previous basic fixture as `macro-core-original-v6/OracleOnce.HC`
+before extending it.
+
+Added `tools/test-i386-macro-format-parity.py` to serialize the same 257-event
+ring in the native guest, persist it and compare extracted bytes directly
+with the pinned original oracle. Its eight commands pass static line-length
+checks (maximum 144 bytes). The fresh TCG no-FPU/8 MiB run is live at
+`build/macro-format-native-parity-v1`; native byte-parity verdict remains
+pending. No OS-source change or playback qualification is claimed here.
+
+### Extended original/native macro format parity passed — 2026-10-06
+
+`build/macro-format-native-parity-v1/result.json` terminated PASS (exit 0).
+Native serialization of 257 events exactly matches the original oracle's
+853 bytes: every byte-valued key-down character and one key-up. This covers
+the tested character bitmap, grouping, quote/backslash/dollar/control and
+extended-byte serialization behavior. It does not establish playback or
+arbitrary message/ring parity.
+
+Added `tools/test-i386-macro-serialization-allocation.py`, targeting an OutMem
+exception on the second temporary CAlloc. It restores the patched allocator
+and requires exact task heap recovery under masked IRQs; all 13 commands
+fit the interactive limit (maximum 196 bytes). The initial regression is
+live at `build/macro-serializer-allocation-red-v1`; no fault-recovery pass
+or implementation fix is claimed yet.
+
+### Serializer allocation fixture forward setup corrected — 2026-10-06
+
+The initial fault fixture v1 terminated before injection: its debug log
+records COMMAND ERROR for an interactive extern MFAHook declaration. It
+cannot establish a serializer allocation defect. Removed the forward
+declaration, stored the hook address during setup after its definition,
+and started a fresh 12-command rerun at
+`build/macro-serializer-allocation-red-v2`. The exact heap-recovery assertion
+and second-allocation fault remain unchanged. The shared serializer code
+has not been altered before obtaining an actual injection result.
+
+### Serializer cleanup candidate prepared while fault baseline runs — 2026-10-06
+
+The corrected allocation fixture is live and has reached MFABuild/MFARun,
+past all setup definitions. Prepared
+`docs/patches/i386-macro-serialization-cleanup-candidate.patch`: formatting
+exceptions release the unlinked temporary node; outer exceptions release
+the partial temporary ring and output buffer; successful iteration unlinks
+nodes before freeing so the catch ring remains coherent. Exception propagation
+is retained. A zero-fuzz dry-run applies cleanly. The patch is not applied
+and has no runtime qualification; actual baseline injection verdict is pending.
+
+### Serializer allocation recovery baseline red; cleanup applied — 2026-10-06
+
+Allocation fixture v2 terminated FAIL (exit 1) at MFABuild/MFARun. Its captured
+VGA shows boolean 0 where exact exception/count/heap recovery required 1;
+all setup commands completed and the test reached injected execution. This
+proves the joint recovery invariant fails, without individually measuring
+each conjunct. Static source inspection identifies the unfreed partial ring.
+
+Applied the prepared shared-core cleanup with zero fuzz. Started a fresh
+two-generation bootstrap for that source. The failing image and fixture are
+preserved for comparison; the same assertions must pass on the corrected
+build. The fix, original format parity and native allocation recovery remain
+unqualified until their new runtime results.
+
+### Cleanup review found grouping dependency — 2026-10-06
+
+Review of the applied cleanup catches a success-path grouping dependency:
+unlinking each temporary before the next output iteration changes the previous
+node used to decide quote grouping. Corrected cleanup must keep the temporary
+ring intact during output and release it after successful formatting; catch
+cleanup still releases the partial ring. The current bootstrap is live and
+its inputs remain unchanged. This review prevents transferring the previous
+853-byte parity result to the new cleanup source before retesting.
+
+### Serializer cleanup preserves the output ring until completion — 2026-10-06
+
+The initial cleanup bootstrap terminated PASS (exit 0), but that source is
+not accepted because review found quote-grouping risk. Changed success cleanup
+to retain all temporary nodes through the complete output loop, then unlink
+and free them. Catch cleanup still frees the partial list and output, and
+Cmd2MT still frees an unlinked node on formatting exceptions. Regenerated
+the archived cleanup patch against the unchanged pre-cleanup shared source.
+
+A fresh pinned bootstrap is running for this corrected implementation. The
+existing pre-cleanup original 853-byte oracle remains the independent parity
+reference; it must not be replaced with output from the modified serializer.
+Fault recovery and corrected format parity remain unqualified.
+
+### Grouping-preserving cleanup bootstrap passed; fault-site fixture prepared — 2026-10-06
+
+The corrected cleanup two-generation bootstrap terminated PASS (exit 0).
+Started the fresh native cross-build at `build/macro-serializer-cleanup-v1`.
+The original failing second-CAlloc regression is unchanged for its eventual
+red-to-green comparison.
+
+Added `tools/test-i386-macro-serialization-fault-site.py` as a separate
+parameterized fixture for selected CAlloc/MAlloc call failures, with exact
+restored allocator entry-byte checks and task heap recovery. Static Python
+and line-length checks pass for the first five selected calls under either
+allocator. It has no runtime verdict yet; each selected site must execute
+and throw as expected before it can qualify cleanup. Output-buffer and
+formatting failures remain open alongside executable macro playback.
+
+### Cleanup cross-build passed; unchanged fault and original-byte regressions live — 2026-10-06
+
+The grouping-preserving cleanup native cross-build terminated PASS (exit 0):
+`build/macro-serializer-cleanup-v1` contains fresh normal/diagnostic images,
+console version 41 and the passing 386 instruction audit (96 BIOS / 209
+protected-mode instructions). This does not establish runtime cleanup.
+
+Started the unchanged second-CAlloc fault test against that image at
+`build/macro-serializer-allocation-green-v1` and the exact comparison against
+the unchanged original 853-byte oracle at `build/macro-cleanup-format-parity-v1`.
+Both run on separate writable copies under TCG `486,-fpu` / 8 MiB. These are
+semantic checks; concurrent boot timings will not qualify performance budgets.
+Their final fault-recovery and byte-parity verdicts remain pending.
+
+### Serializer second-allocation recovery and original bytes passed — 2026-10-06
+
+The unchanged fault fixture now terminates PASS (exit 0) at
+`build/macro-serializer-allocation-green-v1/result.json`, after the baseline
+returned 0 on the same invariant. All 12 commands and exact VGA checks pass: the
+injected OutMem is caught on call 2, the allocator is restored and task heap
+use recovers exactly, followed by successful arithmetic. The cleanup also
+passes `build/macro-cleanup-format-parity-v1/result.json`: all 853 original
+bytes match across 257 events. This closes the tested second-temporary leak
+without changing successful serialization bytes.
+
+Started three selected-site runs using the separate entry-byte-verifying
+fixture: first CAlloc (first temporary), second MAlloc (quote formatter) and
+fifth MAlloc (final output buffer for the two-character ring), at
+`build/macro-cleanup-fault-first-temporary-v1`, `...-quote-format-v1` and
+`...-output-buffer-v1`. Call roles follow the inspected allocator/formatter
+path; each run still must confirm its count, exception and recovery. These
+are semantic tests; concurrent timings do not qualify performance budgets.
+Executable macro playback remains unimplemented.
+
+## Input-filter wait investigation (2026-10-06)
+
+The first wait-state diagnostic terminates with inspected mask 3 instead of
+115 (`build/input-filter-wait-diagnostic-v1`). It proves a distinct valid filter
+is linked immediately after InStr, while neither link restoration nor the two
+messages is observed after TaskWait. The screen again shows AB arriving after
+the caller's prompt. It does not identify which return condition triggered.
+
+Compared with original Kernel/Job.HC::TaskWait, NativeTaskWait omitted the
+empty-job-ring condition before accepting idle and used raw scheduler yield
+rather than public managed Yield. The candidate restores the empty-ring guard,
+uses a validated _YIELD provider, and preserves the caller's interrupt flags
+on normal and exceptional returns. InputFilterEntry also adopts the original
+WIG_USER_TASK_DFT inhibit value (self key-description bit 12).
+
+A fresh bootstrap is running for those source edits. A separate old-image
+diagnostic at `build/input-filter-wait-explicit-v1` uses explicit TaskWait
+arguments and records root validity and returned-filter idle/queue state. Its
+expected complete-state mask is 2163 (115 plus root validity 2048); passing
+would qualify only that diagnostic. The original 16-command acceptance fixture
+remains unchanged and must pass on a fresh image before behavior is claimed.
+The pre-change bootstrap is retained at
+`build/input-filter-pre-wait-fix-bootstrap-v1`.
+
+The explicit-argument diagnostic terminates with inspected mask 2131 instead of
+2163: queued filter and root validate, both links restore after waiting, but
+the two-message condition is false. Its display again shows AB at the later
+prompt. This distinguishes explicit wait completion from the original default
+call diagnostic; it does not prove an allocator, compiler or queue root cause.
+The diagnostic's inherited report scope mentions the old expected 115; the
+actual pinned fixture expects 2163, as documented above.
+
+Fresh bootstrap and `build/input-filter-native-v3` cross-build pass for the
+restored wait/window-inhibit source, including the 96/209-instruction audit.
+The unchanged original acceptance fixture is running at
+`build/input-filter-execution-v2`; a separate function-metadata check is running
+at `build/task-wait-defaults-v1` (two parameters, each default zero). These are
+semantic runs in parallel and do not qualify performance budgets. No behavioral
+pass is claimed until terminal results and their full scope are inspected.
+
+The v3 unchanged acceptance run terminates with the same IFSelf failure
+(`build/input-filter-execution-v2`). The five-command ordinary TaskWait metadata
+check passes (`build/task-wait-defaults-v1`): two arguments, both defaults zero,
+with exact VGA checkpoints. This does not prove that implicit call emission
+passes the same values. A separate patched-entry call-ABI check is running at
+`build/task-wait-call-v1`, observing implicit and explicit zero-argument calls.
+Its inherited scope says allocator entry, but the patched entry is TaskWait;
+restoration code is exercised, not independently byte-compared by this fixture.
+
+A separate explicit-wait self test is running at
+`build/input-filter-clean-self-v1`. It flushes prior messages and scans only
+key-down messages, so host key-up noise cannot falsely count as replay input.
+It still requires actual quoted-source execution, both replayed characters,
+restored links/filter flag, ten cycles with exact task heap recovery, and a
+subsequent interactive command. This diagnostic does not replace the full
+self/child acceptance fixture or qualify implicit wait behavior.
+
+The TaskWait patched-call check passes all 10 commands with exact VGA frames:
+implicit and explicit default invocation each reaches the hook exactly once
+with null recipient and false prompt. Thus missing default metadata or call
+omission is not supported by this evidence. The six-command clean self run also
+passes (`build/input-filter-clean-self-v1`): actual quoted-source replay through
+an explicitly awaited filter, key-down-only message consumption, restored
+links/filter bit and ten exact-task-heap cycles. Neither result qualifies child
+routing or macro playback. A separate unchanged clean-self fixture with only
+implicit TaskWait substituted is running at
+`build/input-filter-clean-default-v1`, to isolate that remaining difference.
+
+## Input-filter self qualification and fixture correction (2026-10-06)
+
+`build/input-filter-clean-default-v1/result.json` passes all six commands on
+486,-fpu / 8 MiB. This establishes actual self replay with implicit TaskWait,
+restored filter links/bit and ten cycles with exact task heap recovery. Together
+with the explicit-wait and call-ABI results, it rules out the suspected missing
+implicit call/default-argument issue for these cases on the v3 image.
+
+The combined acceptance fixture is corrected to flush prior self messages and
+scan only key-down messages from the recipient, so hardware key-up noise cannot
+fail the replay character check. Its final scan already used the recipient;
+there was no root-versus-child queue bug. Original fixture snapshots are saved
+as fixture.py beside red-v1, execution-v1 and execution-v2 results, preserving
+their original pinned content. This correction retains actual source execution,
+self/child routing, ten self heap cycles, restored filter links/flags and child
+retirement requirements. It is running at `build/input-filter-execution-v3`.
+A separate 12-command child test is running at `build/input-filter-child-v1`,
+adding ten child replay cycles with exact caller heap recovery, both restored
+links, explicit Kill and failed validity after retirement. Concurrent semantic
+runs do not qualify performance budgets. Playback remains open.
+
+## Child recipient contract correction (2026-10-06)
+
+The initial child run (`build/input-filter-child-v1`) and combined execution-v3
+terminate at the child call with no returned result. The recipient loop only
+slept; it never consumed messages or set TASKf_IDLE. Original TaskWait requires
+an empty waiting-job ring and idle before returning to the sender, so the test
+created a circular dependency: caller waited before consuming child messages.
+This failure does not establish an OS wait bug. Original fixture snapshots are
+retained beside both results.
+
+Corrected recipients consume key-down messages in their own loop, independently
+record the alternating AB sequence and scan arguments, and report idle only
+when no message remains. XTalkStrWait must then return with two newly recorded
+characters and restored filter state. The independent child-v2 run still checks
+ten caller heap cycles and explicit child retirement. The combined execution-v4
+run has 19 commands, retains the self ten-cycle heap test, checks both child
+filter links and filter bit, and checks failed validity after Kill. These runs
+are active on the unchanged v3 image; macro playback is not yet qualified.
+
+The child-v2 and combined execution-v4 runs stop while defining the revised
+recipient: its ternary expression produces Missing ')' in HolyC. No child
+behavior is exercised by those runs. The sequence check now uses an explicit
+if statement; failed fixtures are preserved beside their reports. Runs at
+`build/input-filter-child-v3` and `build/input-filter-execution-v5` are active
+on the same unchanged OS image. These are fixture corrections, not OS fixes or
+passing child qualification.
+
+## Executable input-filter behavioral checkpoint (2026-10-06)
+
+The corrected child-v3 run passes all 12 commands, including recorded AB receipt
+before idle, ten exact-caller-heap cycles, Kill, failed child validity and final
+6*7. It checks the child's last filter link and filter bit; the combined run
+additionally checks both links. The corrected combined execution-v5 run passes
+all 19 commands: ordinary API prerequisites, actual self and child quoted-source
+routing, ten exact self heap cycles, both filter links and filter bit, child
+retirement and continued console use. Both require exact VGA checkpoints at
+486,-fpu / 8 MiB and unchanged pinned inputs. Both pin image SHA-256
+`9b15c804fa24ffe7ef48d814ccb29886e7b5809d0b7e292b712af2ba82a2cdfd`.
+Concurrent startup timings are not performance budget evidence.
+
+The first executable-input CAlloc fault fixture is running at
+`build/input-filter-allocation-v1`, but inspection reveals its call precedes
+the MFARun definition. It cannot qualify allocation cleanup; its setup failure
+must remain distinct from an injected OutMem result. Corrected allocation
+coverage, queued/active cancellation, priority/nested routing, root heap
+recovery, actual macro playback and fresh whole-image qualification remain open.
+
+## Executable-input allocation and playback candidate (2026-10-06)
+
+The corrected allocation fixture passes selected CAlloc calls 1 and 2, each
+with 12 commands, exact VGA, caught OutMem and exact call count, task heap
+recovery, unchanged filter links/bit, restored five allocator entry bytes and
+continued console execution. Evidence is
+`build/input-filter-allocation-first-v2/result.json` and
+`build/input-filter-allocation-context-v2/result.json`, on the qualified v3
+input image. The first malformed fixture remains a setup failure; these greens
+do not cover Spawn failure, cancellation or all allocator sites.
+
+The unchanged v43 image fails the original macro playback API prerequisite at
+PlaySysMacro (`build/macro-playback-api-red-v3`); serialization lookup succeeds.
+Console version 44 now has an unqualified PlaySysMacro candidate. Original and
+native wrappers use shared `Adam/DolDoc/DocMacroPlaybackCore.HC`, retaining
+captured focus, recipient validation, recording disable, original n-- count
+semantics and executable self/other input routes. The shared loop frees its
+serialized source on propagated exceptions. The native head is bound to the
+retained _SYS_MACRO_HEAD, rather than copied into a separate ring. Native input
+functions adopt the original InStr and XTalkStrWait names internally.
+
+Fresh two-generation bootstrap passes for this source. Cross-build is running
+at `build/macro-playback-native-v1` and now passes, including the 497560-byte
+flat kernel and 96/209-instruction 386 audit. Runs are active at
+`build/macro-playback-api-green-v1` (API-only) and
+`build/macro-playback-self-v1` (17-command actual macro-ring self playback for
+counts 0/1/3, ten extra cycles, exact task heap recovery, ring preservation and
+recording disabled). Neither is qualified before terminal success. Full playback repeats/focus,
+recipient retirement, cancellation, allocation cleanup, replay timestamps,
+editor undo and refreshed integrated/native-generation/package qualification
+remain required. Negative repetition retains original n-- behavior; no claim
+that all nonpositive counts are no-ops is made. The qualified input bootstrap
+is preserved at `build/input-filter-qualified-bootstrap-v1`.
+
+## First actual macro playback checkpoint (2026-10-06)
+
+`build/macro-playback-api-green-v1/result.json` passes four API commands.
+`build/macro-playback-self-v1/result.json` passes 17 commands of actual playback
+from the retained ring through PlaySysMacro and executable input filtering.
+Counts zero, one and three and ten additional one-repeat cycles preserve the
+ring, disable recording and recover the task heap exactly. Both use exact VGA
+checks at 486,-fpu / 8 MiB and unchanged pinned inputs. The ring contains two
+constructed public key jobs; actual recording capture is not qualified by this
+fixture. Both pin image SHA-256
+`eed525a8c9ccaf96ba34610ecaea630d39d20a5072762ae34d7ea690bf38154d`.
+
+A focused-child playback run is active at `build/macro-playback-child-v1`,
+requiring independently consumed AB receipt for zero/one/three counts and ten
+extra cycles, exact caller heap recovery, both filter links, preserved ring,
+recording disabled and child retirement. This is separate from mid-playback
+focus changes, interruption, replay timing and editor undo gates. Concurrent
+runs are semantic evidence, not performance budget qualification.
+
+## Focused-child macro playback checkpoint (2026-10-06)
+
+`build/macro-playback-child-v1/result.json` passes all 23 commands on the v44
+image, with exact VGA checks and unchanged inputs. Zero/one/three repeats and
+ten additional cycles deliver AB to an independently consuming focused child,
+recover the caller heap exactly, preserve the macro ring, disable recording,
+restore both filter links and filter bit, and retire the child. This uses a
+constructed public-job ring, not newly captured recording or editor undo.
+
+Selected CAlloc calls 3 and 4 during actual PlaySysMacro are being qualified at
+`build/macro-playback-allocation-job-v1` and
+`build/macro-playback-allocation-context-v1`. Each fixture requires caught
+OutMem at the selected count, exact task heap recovery, preserved ring,
+recording disabled, unchanged filter state and independently matched allocator
+entry bytes. No allocation green is claimed before terminal results.
+
+A 25-command captured-focus run is active at `build/macro-playback-focus-v1`.
+The recipient changes global focus to the caller after its first received
+character; later repeats must continue reaching the original captured child.
+It retains the repeat/heap/ring/filter/retirement assertions. These parallel
+runs qualify semantics only; cancellation, timing, editor undo and fresh full
+qualification remain open.
+
+Both selected macro allocation runs terminate successfully: job-v1 at CAlloc
+call 3 and context-v1 at call 4. Each passes all 18 commands with exact VGA,
+OutMem/count checks, exact task heap recovery, preserved ring, recording
+disabled, unchanged filter state and matched restored entry bytes. Both pin
+the v44 image and unchanged fixture inputs. They qualify these selected
+pre-Spawn failures only; Spawn allocation, active/queued cancellation and root
+heap recovery remain separate open gates.
+
+## Captured-focus macro checkpoint (2026-10-06)
+
+`build/macro-playback-focus-v1/result.json` passes all 25 commands with exact
+VGA at 486,-fpu / 8 MiB and unchanged inputs. After the first received character,
+the child moves global focus to the caller; later repeat iterations still reach
+the captured child. Counts 0/1/3, ten extra cycles, exact caller heap recovery,
+ring/recording/filter invariants and child retirement also pass. This establishes
+the captured-focus behavior for these constructed AB macro jobs.
+
+Two further runs are active: `build/macro-playback-retired-v1` checks null and
+already-retired focus without changing the original validation-before-recording-
+disable semantics; `build/macro-playback-recipient-exit-v1` has the recipient
+exit after AB during requested three-repeat and negative-count playback, then
+requires stopped later iterations, ring preservation, recording disabled and
+exact caller heap recovery. Negative counts retain the original n-- semantics,
+with recipient retirement bounding this test. Neither run is qualified before
+terminal success. External interruption, timing and editor undo remain open.
+
+The null/already-retired focus run terminates successfully with all 18 commands
+and exact VGA. It checks the original behavior: invalid focus returns before
+clearing recording, leaves the constructed ring and caller heap unchanged, and
+adds no last-filter link. The fixture then restores recording and focus and
+confirms continued console use. This qualifies invalid focus before playback;
+recipient retirement during playback remains in the separately running test.
+
+## Recipient exit during macro playback (2026-10-06)
+
+`build/macro-playback-recipient-exit-v1/result.json` passes all 21 commands with
+exact VGA on the v44 image. A recipient exits after its first AB during requested
+three-repeat playback; later iterations stop, the ring remains intact, recording
+is disabled and the caller heap recovers exactly. A fresh recipient also bounds
+original negative-count playback by exiting after AB, with the same invariants.
+This verifies recipient retirement during playback, not external cancellation.
+
+A 15-command editor run is active at `build/macro-playback-editor-v1`. Its stored
+AB jobs contain valid private timestamp signatures and deliberately separated
+high 64-bit arrival values. A worker waits for the active editor and baseline
+host x, waits two seconds to separate that baseline group, then calls actual
+PlaySysMacro. Exact VGA must show xAB, one undo returning x, and a second undo
+returning empty; the stored timestamps must remain unchanged, worker must retire
+and a subsequent console command must work. This exercises replay-time grouping
+rather than copying old recording time. No editor green is claimed before its
+terminal result; interruption and full refreshed qualification remain open.
+
+## Actual macro replay editor qualification (2026-10-06)
+
+`build/macro-playback-editor-v3/result.json` passes 17 commands with exact VGA
+on the unchanged console-v44 image (SHA256
+`eed525a8c9ccaf96ba34610ecaea630d39d20a5072762ae34d7ea690bf38154d`).
+Actual PlaySysMacro inserts AB after earlier host x. One undo removes AB as
+a group; a second removes x. The deliberately separated private 64-bit stored
+arrival times remain unchanged, the worker retires, text is empty, and 6*7
+returns 42 after cleanup. This proves the selected replay-time undo behavior,
+not full resource or release qualification.
+
+Editor v1 passed insertion/undo VGA then failed because its fixture treated
+DocSize as text length; DocSize measures allocated memory. Editor v2's traversal
+compared the full color-bearing type field and timed out waiting for replay.
+Both failed fixtures are preserved as fixture.py in their evidence directories.
+The corrected fixture compares type_u8 as original DolDoc does. No OS source
+was changed for these fixture corrections.
+
+`build/macro-playback-cancel-queued-v1/result.json` passes 13 commands with
+exact VGA at 486,-fpu / 8 MiB. Actual playback is queued with interrupts
+disabled, then its filter is killed before entry. Retirement, exact caller heap,
+ring preservation, recording disabled, restored filter links/flags and continued
+console use all pass. Active execution cancellation and full root heap recovery
+remain distinct open requirements.
+
+## Active macro filter cancellation: resource gate red (2026-10-06)
+
+The new `tools/test-i386-macro-playback-cancel-active.py` pauses actual
+PlaySysMacro inside a temporarily patched public Msg service, then kills that
+executing filter. The hook independently signals entry and sleeps; this exercises
+active source execution rather than only queued retirement.
+
+`build/macro-playback-cancel-active-v1` passed retirement and restored
+filter/ring/recording/message-entry checks, then failed a caller heap comparison
+made across different console command compilation scopes. Its fixture is
+preserved. The separate diagnostic-v1 also failed at that point because an
+empty expected-answer list requires no output rather than accepting arbitrary
+numeric output; its fixture is retained with its report, not kept as an
+acceptance test.
+
+`build/macro-playback-cancel-active-v2` captures both heap deltas before and
+after cancellation within the same MCRun call. Caller delta is exactly zero;
+the parent/root delta fails. Retirement and restored filter links/flags, macro
+ring, recording disabled and message entry bytes all pass. This is a resource
+red, not a qualified active-cancellation green. No OS change has been made.
+Version v3 retains the exact-zero root requirement but prints the delta itself
+so a failure identifies its size; the v2 fixture is retained.
+
+## Active cancellation: exact resource recovery with keyboard queue drained
+
+`build/macro-playback-cancel-active-v3` prints a nonzero root heap delta of
+112 bytes. Native CJob is 80 bytes, the private timed-message tail adds 16,
+and the heap block header adds 16: this is consistent with one queued keyboard
+message. Caller keyboard messages were not drained in v2/v3.
+
+`build/macro-playback-cancel-active-v4/result.json` passes all 21 commands
+with exact VGA on the unchanged v44 image at 486,-fpu / 8 MiB. The fixture
+settles and drains caller keyboard messages before its baseline and drains
+them after cancellation. Both caller and parent/root heap deltas, captured
+within the same MCRun execution, are exactly zero. The filter independently
+enters the Msg hook and sleeps before being killed. Retirement, restored
+message entry bytes, filter links/flags, preserved ring, recording disabled
+and continued console use all pass. No OS fix was necessary. This qualifies
+one active-cancellation checkpoint with caller keyboard messages consumed,
+not arbitrary cancellation sites or a complete macro resource qualification.
+
+A v5 run adds ten repeated cycles, requiring all these invariants on each.
+It is not qualified until its terminal report passes. Earlier failed fixtures
+are retained with their reports.
+
+`build/macro-playback-cancel-active-v5/result.json` passes all 23 commands
+with exact VGA at 486,-fpu / 8 MiB. It adds ten active-cancellation cycles
+to the initial cycle; each requires independent hook entry, retired filter,
+restored links/flags and Msg entry bytes, preserved macro ring, recording
+disabled, and exact zero caller/root heap deltas after keyboard queue drainage.
+Final cleanup and 6*7=42 pass. The OS image remains unchanged. This is selected
+active-cancellation qualification, not evidence for every interruption site,
+original x64 playback parity, or refreshed complete native/release workflows.
+Python compilation and git diff --check also pass. Main and the user's fork
+remain the working destinations; this session's read-only .git permission
+continues to prevent commit/push.
+
+## Playback interrupted between repeats (2026-10-06)
+
+`build/macro-playback-interrupt-v1/result.json` passes 23 commands with
+exact VGA on the unchanged v44 image, 486,-fpu / 8 MiB. Actual PlaySysMacro(2)
+queues its first self filter; the second highest-priority InStr waits for that
+filter and its public Yield callback throws Break. The fixture observes the
+propagated exception and exactly one Yield-hook call, then restores the entry
+and verifies IRQ state. It explicitly drains the still-valid first repeat via
+TaskWait and independently consumes exactly A,B key-downs with scan zero and
+no additional key-down. Both filter links/flags restore, the recorded ring
+remains intact, recording is disabled, and caller/root heap deltas are exactly
+zero after keyboard message drainage within the same compiled call. Subsequent
+6*7 returns 42.
+
+This qualifies cleanup of serialization/formatter temporaries during an
+interrupted repeat wait, with the already queued first repeat subsequently
+completed. It does not claim atomic cancellation of all jobs or coverage of
+every interruption site. It complements queued-filter and active-filter Kill
+tests. Complete refreshed native generations and package workflows remain
+open, along with remaining original behavior and release coverage.
+
+## Fresh macro playback source qualification started (2026-10-06)
+
+`build/macro-playback-candidate-v1` freezes 1,955 source/document/tool files
+without copying Git metadata. Its `snapshot.json` pins each file, the cross
+disk and the scope. Before the copy, all 1,276 source hashes in the current
+cross-build report matched the worktree; an independent RedSea traversal
+read 758 installed HolyC/header files and matched each byte hash to the
+worktree. Cross disk SHA256 is
+`eed525a8c9ccaf96ba34610ecaea630d39d20a5072762ae34d7ea690bf38154d`.
+
+Two independent live jobs use that frozen image and frozen tools:
+
+- `build/native-six-v1` rebuilds all six retained modules in the guest at
+  TCG / 486,-fpu / 16 MiB, with a 10,800-second per-command timeout and QMP
+  stdio. Export contracts are pinned to the copied current cross-built modules.
+  It will provide the initial input for a fresh two-generation self-hosting run.
+- `build/console-full-v1` runs the full existing console/workstation suite at
+  486,-fpu / 8 MiB on an independently writable disk copy.
+
+Both directories are below the frozen candidate's build directory. These are
+live qualification jobs, not passing reports. They do not inherit the older
+key-arrival candidate's native-generation or release evidence. The snapshot
+was rechecked after launch and all 1,955 pinned files still matched.
+
+## Macro qualification driver prepared (2026-10-06)
+
+`tools/qualify-i386-macro-playback.py` combines 15 selected macro checks
+against one immutable disk with independently writable copies per child. It
+pins fixtures/helpers/original export/image, requires passing child reports
+for the same disk and 486,-fpu / 8 MiB, and records report hashes. CLI help
+and Python compilation pass. Synthetic host orchestration checks in
+`build/macro-qualification-driver-gates-v1/result.json` pass successful execution,
+wrong-CPU rejection and image-mutation rejection. This is host driver validation
+only; the real aggregate is reserved for the freshly audited native/package
+image. The driver and usage are documented in the macro playback contract.
+
+The frozen native-six rebuild and full console suite were polled through their
+existing live handles; both remain running. No frozen source or tool was changed.
+
+## Partial firmware verification without tracing (2026-10-06)
+
+A paused probe of the recorded full-console QEMU profile uses byte-identical
+writable disk copies and QMP pmemsave, without executing guest CPUs.
+`build/macro-playback-paused-system-rom-v1/result.json` passes: the 262,144 bytes
+mapped at 0xfffc0000 exactly equal `/usr/share/seabios/bios-256k.bin`, SHA256
+`e26615f9ad430328f49ca105e570b2dc4490a08a34ea73d27cae8b809a30ee06`.
+The recorded QMP ROM map identifies bios-256k.bin, and the original disk hash
+remains unchanged. Commands, QMP replies, dump and report are retained.
+
+This is direct loaded-system-ROM identity evidence, not actual file-open
+tracing, VGA ROM identity, guest execution qualification or a closed firmware
+release gate. QEMU's pre-execution ROM map does not expose a comparable VGA
+ROM mapping. That alternative requires further investigation; the existing
+strace-based recorder remains blocked by tracing permissions.
+
+Both frozen qualification jobs remain live: native-six is compiling
+CompilerRuntime; the full console suite has advanced through its compiler
+checks. Neither is promoted without a terminal passing report.
+
+## VGA firmware identity investigation (2026-10-06)
+
+`build/macro-playback-runtime-rom-v1` boots an independent copy of the current
+image to the console, pauses QEMU and dumps system and VGA shadow ROM memory.
+The system ROM still matches all 262,144 reference bytes. The VGA shadow ROM
+at 0xc0000 differs at 778 of the 39,424 reference bytes after initialization,
+so the report is correctly failing. Differences are not whitelisted as proof
+of identity. The device tree names vgabios-stdvga.bin with a 65,536-byte PCI ROM.
+
+`build/macro-playback-pci-vga-rom-v1` temporarily maps the VGA device's PCI
+expansion ROM at 0xf0000000 in a disposable guest, saves 65,536 bytes to its
+disk and restores the prior PCI ROM/address registers. The fixture failed
+because it expected FileWrite to return a byte count; FileWrite returns a disk
+block. An independent RedSea extraction of the persisted file nevertheless
+finds an exact match for every reference byte, recorded in extraction.json.
+The 39,424-byte firmware reference SHA256 is
+`c944f5fd404a6553a32e1e0527081d40e6040d3ce1740d39766bff01871e4fde`.
+
+Version v2 corrects the return assertion to positive-block success, requires
+the extracted file to contain exactly 65,536 bytes, independently rereads the
+PCI configuration/address registers to check restoration, and confirms console
+use after the probe. Its terminal qualification is pending. Both failed
+versions and their raw evidence remain preserved. None modifies the OS source
+or frozen native qualification snapshot.
+
+`build/macro-playback-pci-vga-rom-v2/result.json` now passes all eight guest
+commands with exact VGA at 486,-fpu / 8 MiB. Independent disk extraction finds
+65,536 bytes, with zero differences across all 39,424 installed firmware file
+bytes. Both original PCI ROM BAR and configuration-address register values
+are independently verified restored, and 6*7=42 confirms continued console use.
+The reference/disk/helper/probe inputs remain unchanged. This establishes raw
+loaded VGA firmware identity on this explicit disposable profile, complementing
+the complete system ROM comparison. It is not actual file-open tracing and
+changes the probe device map temporarily; neither the ordinary image nor the
+frozen qualification snapshot is modified. Reusable recorder and release
+verification integration remain open before this can close the firmware gate.
+
+## Reusable loaded-firmware recorder passes (2026-10-06)
+
+`tools/record-i386-loaded-firmware.py` implements the direct ROM comparison
+without requiring strace. It accepts the explicit ordinary pc/TCG/486,-fpu/8 MiB
+profile, rejects unsupported profiles, pins executable/command/disk/references/
+helpers/driver and uses independent copies for system and VGA probing.
+`build/macro-playback-loaded-firmware-v1/result.json` passes: full 256 KiB system
+ROM match, all 39,424 reference VGA bytes match the persisted 64 KiB PCI ROM
+dump, the standard VGA device is validated, both PCI registers restore, all
+ten guest commands match VGA, and all inputs/source disk remain unchanged.
+CLI/source compilation and diff whitespace checks pass.
+
+This records loaded-byte identity instead of actual opens and supports only
+the stated profile. Exact native/package image qualification and standalone
+release-artifact verification integration remain open. The older tracing
+recorder is retained. Both frozen native and full-console jobs remain live;
+the latter has advanced to mouse/document workflows.
+
+## Standalone loaded-firmware verification passes (2026-10-06)
+
+The recorder now emits format-1 explicit reference/disk identities and artifact
+hashes, and validates its disk copies before launching probes. Its earlier
+source is preserved in the v1 evidence directory. A fresh v2 run passes all
+ten guest checks and complete firmware comparison on the unchanged source
+image. `tools/verify-i386-loaded-firmware.py` independently verifies the saved
+evidence without requiring source or installed firmware files, optionally
+binding it to an exact image. The positive current-image verification passes.
+
+`build/loaded-firmware-verifier-gates-v1/result.json` passes three negative
+checks against copies of actual evidence: modified VGA reference bytes with
+updated dump hashes; a failed guest result with its updated artifact hash; and
+a different image. Each is rejected for the corresponding semantic reason.
+Python compilation and diff whitespace checks pass. Final release manifest
+integration and regeneration on the qualified native/package image remain
+open. Both frozen native-six and full-console jobs remain live; the console
+suite has advanced to file-navigation workflows.
+
+## Current full console suite passes (2026-10-06)
+
+`build/macro-playback-candidate-v1/build/console-full-v1/result.json` passes
+on the frozen v44 cross image at 486,-fpu / 8 MiB: 513 native commands, 576
+submitted lines, all VGA pixels matched and 20 document development cycles
+with exact shared task heap recovery. Startup is 29.1169 seconds. Source-disk
+provenance confirms the original image stayed unchanged and matches the frozen
+cross disk hash. All 1,955 snapshot files still match. This refreshes broad
+console behavior for this source, but is not native-generation or package
+qualification. The native-six job remains live compiling CompilerRuntime.
+
+## Release firmware bridge integrated (2026-10-06)
+
+The release packager now requires --loaded-firmware for the exact image,
+verifies it before packaging, copies its manifest/artifacts and standalone
+checker, and rechecks the copied evidence. New bundles use format 2, which
+requires the loaded-firmware evidence field. The release verifier independently
+checks saved ROM bytes and guest reports and binds them to the decompressed
+release image. Archived format-1 bundles remain supported.
+
+Minimal synthetic bundle checks using actual current image/firmware evidence
+pass valid binding and reject changed VGA reference bytes and another-image
+binding in `build/release-firmware-bridge-gates-v1`. A separate format-2 check
+rejects absent firmware evidence in `build/release-firmware-format2-gate-v1`.
+These validate the verifier branches, not complete release packaging. Legacy
+packager candidate paths/counts and fresh native/package qualification remain
+open. Python compilation and whitespace checks pass.
+
+## Mixed-message macro playback passes (2026-10-06)
+
+`tools/test-i386-macro-playback-mixed.py` restores an uncovered behavioral
+case: quoted character playback interleaved with non-character key-down and
+key-up Msg statements. `build/macro-playback-mixed-v1/result.json` passes
+23 commands at 486,-fpu / 8 MiB with exact VGA. An all-message child consumer
+checks ordered A/scan0, arrow character0/scan0xC8, then A key-up/scan0x1E.
+Counts 0/1/3 and ten additional cycles pass, with preserved ring payloads,
+recording disabled, both child filter links restored, exact caller heap and
+retirement/continued console use after cleanup. The fixture settles caller
+keyboard input before changing focus to distinguish host input from playback.
+
+The aggregate adds mixed-events as its sixteenth case and pins Kernel/FontStd.HC
+alongside existing helpers/fixtures. Its documented repository points to the
+current fixture set; the frozen native candidate is not modified. Python
+compilation and whitespace checks pass. The retained native build remains
+live; fresh native generation and package qualification are still open.
+
+## Interactive macro utility prerequisite is red (2026-10-06)
+
+Inspection confirms original DocPutKey handles F2/Shift-F2 through the macro
+utility, while native DocPutKey delegates to DocBasicEditCore and its session
+implements F1/F5 but no macro shortcut path.
+`build/macro-ui-prerequisites-red-v1/result.json` is terminal fail at MUPrereq.
+The saved VGA frame independently shows result 0 rather than expected 7,
+confirming absent ordinary EdMacroUtil, PopUpMacroMenu and EdInsCapturedMacro
+symbols. This is a concrete missing-service red, not a successful UI test.
+
+The macro contract and PLAN now explicitly require original fields/actions,
+recording exclusion, shortcut stripping, captured-focus playback, DolDoc macro
+insertion/original exchange, automated visual flows and exact resource cleanup.
+No replacement command menu or human-only acceptance is proposed. No OS or
+frozen native source is changed. The still-live native rebuild remains useful
+for its v44 source epoch but cannot close this additional programming-model
+gap. Python compilation and diff whitespace checks pass.
+
+## Original macro form oracle captured (2026-10-06)
+
+A new original-x64 probe runs actual PopUpMacroMenu and interposes DocMenu to
+capture construction instead of waiting for interaction. v1/v2 failed a fixture
+assumption that an uninitialized global call counter starts at zero; diagnostics
+showed res=2, correct form/ownership mask31, cleared task pointers and count126.
+Explicit initialization fixes the fixture. v3 passes, and v4 additionally
+requires/captures both bound data fields before DocSave.
+
+`build/original-macro-menu-v4/result.json` and observation.json pass: one
+menu call returning PLAY, original form/size flags, popup ownership, restored
+patched entry and cleared popup/task references. The exported action document
+is 254 bytes; Name:Test_ and Repeat N:1_ plus format/type/flags/length are
+recorded separately because original DocSave omits data widgets. The six action
+buttons and Shift-F2 hint remain in the exported document. This is independent
+original construction evidence, not GUI interaction or native acceptance.
+
+Inspection also identifies missing native DocPrint/DocDataFmt/DocMenu form
+services as dependencies. No OS source or frozen native input was changed.
+The retained native build remains live; its backend/link log continues advancing.
+
+## Functional form-construction TDD fixture validated (2026-10-06)
+
+The native form-construction test is terminal red at DocPrint/DocDataFmt/DocMenu
+availability, with mask0 independently read from its VGA frame. Its future
+behavioral assertions cover bound name/repeat fields, field type/length, action
+button type/tag/expression, refreshed underlying values and cleanup. Original
+x64 validation v5 passes all those behavior assertions. Earlier fixture failures
+are retained: invalid condition generation (v1), buffer initialization diagnostics
+(v2/v3), and an invalid intermediate v4 launch after a failed generator. The
+current fixture uses explicit StrCpy and separates setup statements from checks.
+
+This provides original-validated tests before the form port. Inspection locates
+the original PrsDollarCmd/lexer/expression dependency; the current native
+structured loader is not a substitute. No OS source or frozen native input was
+changed. The retained build stays active while this independent fixture work
+proceeds. Chooser/UI and allocator/lifetime acceptance remain open.
+
+## Original dollar parser shared for the form port (2026-10-06)
+
+`Adam/DolDoc/DocDollarFlagsCore.HC` contains the original PrsDocFlagSingle
+and PrsDocFlags bodies. `DocDollarParseCore.HC` contains original PrsDollarCmd.
+DocPlain.HC includes them at their previous declaration positions. Exact-body
+checks pass; no parser behavior is changed or replaced by a limited loader.
+
+Fresh original x64 form-construction and macro-popup probes pass after
+extraction. `build/doc-dollar-core-extraction-v1/runtime-result.json` records
+all three source hashes, the form verdict and byte-identical 254-byte original
+macro action document. The macro probe retains bound field metadata and
+ownership/cleanup acceptance. These are original-system checks, not native
+form/lexer adapter qualification.
+
+Native wiring still needs the existing task-owned compiler control, lexer and
+expression evaluator adapters, original data-field formatting/scanning and
+DocPrint/DocMenu services. Native form/menu tests remain red. The frozen v44
+native build is unchanged and still live; its source epoch predates this
+shared-source preparation and cannot qualify a later native form implementation.
+
+### DolDoc parser adapter work (2026-10-06)
+
+The original macro-menu oracle now pins DocPlain, both extracted dollar parser
+cores, LexLib and PrsExp as well as the form/macro sources and runner.
+`build/original-macro-menu-parser-pins-v1/result.json` passes: the two bound
+fields retain their original flags, lengths and formats; PLAY returns 2; popup
+and macro task ownership clear after return. The chooser remains interposed,
+so this evidence does not qualify input interaction or native form support.
+
+The native compiler already exposes the needed expression callbacks through
+`CPrsSymbolServices.declarations`: `evaluate` returns the raw expression value;
+`types.integer_expression` performs integer conversion, including F64. Use
+these distinct callbacks for LexExpression and LexExpressionI64 rather than
+introducing an integer-only DolDoc grammar. No service ABI expansion is needed
+merely to reach these existing callbacks.
+
+Before wiring the shared parser, add native tests for nested document parsing
+from an executing HolyC command, task symbol lookup (including STR_LEN),
+floating-point-to-integer conversion, adjacent string literals, and cleanup
+following malformed expressions or allocation failure. Compiler control creation
+and entry reject a task marked compiler_busy; confirm the actual executing
+command state and preserve the control stack, cleanup callback and task lifetime
+references. Do not bypass ownership by creating an untracked control.
+
+Implement adapters for control creation/deletion, token advancement, extended
+strings and both expression modes, then bind the shared dollar parser. Follow
+with original DocPutS/DocPrint and bound field formatting before the existing
+form-construction test can become green. DocMenu interaction and macro utility
+entry/exit remain subsequent required work. The frozen v44 retained build does
+not contain these parser changes and cannot qualify them.
+
+### DolDoc expression contract before native adapters (2026-10-06)
+
+`tests/guest/i386-doc-dollar/Contract.HC` is one shared behavioral fixture for
+original TempleOS and the native port. `tools/test-i386-doc-dollar-parser.py`
+runs it inside an executing HolyC function, checking six independent bits:
+operator precedence; DA length using STR_LEN; FG integer conversion from 3.75;
+adjacent string literals with a task global; raw F64 bits for LE=1.5; and a
+HolyC function call in the action expression. Unlinked parser entries get their
+own initialized queues before deletion; the temporary document is deleted.
+
+`build/doc-dollar-parser-original-v1/result.json` passes all six (mask 63).
+This validates the original semantics independently rather than guessing what
+the native implementation ought to return. The native runner first requires
+PrsDollarCmd, then submits the same fixture and requires mask 63 plus continued
+console arithmetic. This is the next parser gate, followed by malformed-input,
+allocation failure and control-stack/heap restoration tests. The six-bit test
+alone does not prove cleanup on exceptions, form interaction or full DolDoc.
+
+The native baseline `build/doc-dollar-parser-native-red-v1/result.json` fails
+at the PrsDollarCmd prerequisite. Its saved VGA frame was inspected: symbol
+lookup returns 0 instead of expected 1 and the console prompt is present.
+Behavioral parser assertions have not run in the native guest; they remain
+required, not inherited from the original x64 pass.
+
+### Native DolDoc compiler adapter candidate (2026-10-06)
+
+`Kernel/I386/DocParserCompiler.HC` now provides an explicit caller-owned context
+for nested control creation/entry, task-scoped frontend lookup, lexing, raw and
+integer expression callbacks, adjacent-string joining and control-stack cleanup.
+It is included by DocumentRuntime for compilation, but is not yet wired to
+PrsDollarCmd; the native parser contract remains red. Parser strings remain
+control-owned until copied to public task storage, preserving embedded bytes
+and the terminator length. No global map of borrowed parser controls is used.
+
+The initial cross-build attempt rejected a stale x64 bootstrap as expected.
+Bootstrap refresh is in progress; compiler acceptance, runtime adapter behavior
+and failure/cancellation cleanup are still unproven. A cleanup edit landed
+during the first bootstrap run, making its manifest unsuitable for this
+candidate; a fresh rebuild was started after the edit. The rebuild runner now
+checks source hashes again before accepting its result, and the cross-build
+rejects an explicitly failed bootstrap report.
+
+The refreshed bootstrap now passes with unchanged source hashes:
+`build/rebuild-test/result.json` has result pass and two completed original
+compiler/kernel rebuild generations. Independent comparison of its recorded
+Kernel/Compiler hashes against the current tree passes. Cross-build
+`build/doc-parser-adapter-cross-v2` is running against that bootstrap; no
+adapter runtime pass is claimed yet. The older frozen v44 native rebuild is
+separate and remains on the CompilerProbe command.
+
+The adapter cross-build completed successfully at
+`build/doc-parser-adapter-cross-v2/result.json`, including the 386 instruction
+and module audit. Its recorded adapter hash matches the current file. Image
+SHA256 is `dc3d2de914268d49a6a59bec63f91824a4c81c1756ccf85fad81f8874b74e2d9`.
+This proves compilation and static audits, not execution of the new callbacks.
+A normal boot/arithmetic smoke test is running separately; PrsDollarCmd remains
+unimplemented until the shared grammar accepts an explicit service context.
+
+`build/doc-parser-adapter-smoke-v1/result.json` passes normal boot and HolyC
+6*7=42 using TCG/486,-fpu and a writable image copy. This confirms startup and
+console use after inclusion of the adapter; none of the adapter functions are
+exercised yet, and it does not close the red DolDoc parser contract.
+
+### Shared dollar grammar with explicit compiler services (2026-10-06)
+
+`DocDollarServices.HH` defines lex, raw expression, integer expression and
+extended-string callbacks with an explicit context. The shared flag and command
+cores now call these services. Original DocPlain keeps its existing public
+PrsDollarCmd/PrsDocFlags/PrsDocFlagSingle entry points through original compiler
+adapters. Compiler-control lifetime belongs to the wrapper, including when the
+core catches an expression error and returns DOCT_ERROR; it no longer depends
+on the success-only close previously inside the core.
+
+`build/doc-dollar-services-original-v1/result.json` passes the shared six-bit
+parser contract after this change. `build/original-macro-menu-dollar-services-v1`
+also passes actual original macro form construction and ownership, retaining
+both field formats/flags/lengths and PLAY result 2. These are original x64
+checks; no native PrsDollarCmd or form support is claimed.
+
+The native adapter now provides matching context callbacks, still without
+wiring the core. The preceding adapter cross-build/smoke covers the earlier
+adapter version, not these additional callbacks. Fresh bootstrap validation is
+running before recompiling this source epoch. Native form formatting/scanning,
+malformed-input cleanup, allocation/cancellation coverage and parser integration
+remain required.
+
+### Bound form scanning dependency (2026-10-06)
+
+`tests/guest/i386-str-scan/Contract.HC` and
+`tools/test-i386-str-scan.py` establish the original string scanner behavior
+needed by bound forms: decimal and string prefixes, hexadecimal, binary, F64,
+and dynamic width with the returned remainder. Original
+`build/str-scan-original-v1/result.json` passes all six checks. Native
+`build/str-scan-native-red-v1/result.json` fails its prerequisite; the inspected
+VGA frame shows StrScan absent (0 rather than 1). Native behavior has not run.
+
+The whole original scanner is now shared via Kernel/StrScanCore.HC, included
+by StrScan.HC. DocDataFmt and DocDataScan are shared via DocFormDataCore.HC,
+included at their original DocForm position. Exact byte extraction passes at
+`build/form-scan-core-extraction-v1/result.json`. These include changes are
+under original rebuild/runtime verification; no native scanner/form support is
+claimed. Port dependencies for every retained scan format, including dates and
+numeric/string conversion, before exposing StrScan and binding the form core.
+The six-bit fixture is selected coverage; failure cleanup still needs tests.
+
+The preceding explicit dollar-service adapter cross-build completed at
+`build/doc-dollar-services-cross-v1/result.json` with a passing 386 boot audit.
+It predates the scanner/form extraction and does not qualify their integration.
+
+`build/original-macro-menu-form-data-core-v1/result.json` passes actual original
+macro form construction/ownership after extraction of DocDataFmt/DocDataScan.
+Name/repeat formats, flags and lengths remain unchanged; PLAY returns 2 and
+popup/task ownership clears. Chooser interaction remains interposed.
+
+The updated original bootstrap passes two rebuild generations with recorded
+StrScan/StrScanCore hashes matching the current files. After that rebuild,
+`build/str-scan-shared-core-original-v1/result.json` passes all six scanner
+checks against the generated kernel. This verifies the shared scanner include
+path and selected original behavior; the native scanner remains absent.
+
+### Original scanner retained in the native candidate (2026-10-06)
+
+ScannerRuntime.HC now includes the complete shared original scanner, including
+Str2I64, Str2F64, Str2Date and every StrScan format. Its string manipulation
+helpers are shared exact original bodies in StringUtilCore/StringAllocUtilCore,
+with common StringUtilFlags. Date conversion uses the existing native clock;
+the scanner's limited string comparison primitive is implemented for flat
+memory. Original whitespace/safe-dollar bitmaps and the boot decimal bitmap
+retain the character classes. Console ABI advances to version 45 with 160
+exports; public formatting declares all four conversion/scanning entry points.
+This candidate has not yet passed native runtime qualification.
+
+`build/scanner-dependency-extraction-v1/result.json` records exact helper
+extraction. The refreshed original bootstrap passes two rebuild generations.
+The scanner fixture now has eight checks, adding list matching and an explicit
+whitespace-containing date to the previous six. Independent original
+`build/str-scan-eight-original-v1/result.json` passes mask 255. Cross-build
+`build/scanner-runtime-cross-v1` is running; native scanner, exception cleanup
+and bound forms remain to be qualified.
+
+The first native scanner cross-build fails while compiling the macro cleanup
+directives in ScannerRuntime; its compiler-log.DD is preserved under
+`build/scanner-runtime-cross-v1/exports`. This is not native qualification.
+The Now/StrNCmp aliases now remain in the retained module's private compilation
+scope, matching the existing formatter adapter pattern. A fresh bootstrap is
+running before retrying. This adjustment remains to be verified by compilation.
+
+### Scanner exception lifetime test before cleanup fix (2026-10-06)
+
+`tools/test-i386-str-scan.py --cleanup` runs the shared Cleanup.HC fixture:
+ten missing-argument calls must throw Scan, restore the exact task data heap,
+and leave compiler-control links unchanged. Independent original baseline
+`build/str-scan-cleanup-original-red-v1/result.json` fails with mask 5 instead
+of 7: exceptions and control links pass, heap restoration fails. The original
+StrScan allocates its temporary conversion buffer before checking arguments;
+the throw path bypasses its success-only Free. This is a real existing resource
+bug rather than a difference to preserve in the port.
+
+A candidate wraps conversion/argument checks in cleanup that frees the buffer
+before propagating an exception. It is prepared outside OS sources while the
+native scanner cross-build retry runs, so that build's source epoch stays
+unchanged. Apply after the retry ends, then require the cleanup contract and
+the eight successful conversion checks against freshly rebuilt originals and
+native images. Selected missing-argument coverage does not prove all converter
+allocation failures or cancellation cleanup.
+
+The scanner retry `build/scanner-runtime-cross-v2` compiled all retained modules
+successfully, then failed the static console import audit: the only new import
+is char_bmp_dec_numeric, already exported by the boot kernel and required by
+the original converter. The exact import contract now includes that symbol;
+the audit also requires all four scanner/converter function exports. Running
+the updated console layout audit on the preserved module passes. Full
+`build/scanner-runtime-cross-v3` is running to assemble and audit the image.
+The missing-argument heap fix remains unapplied so a native red baseline can
+be captured independently before changing the shared implementation.
+
+`build/scanner-runtime-cross-v3/result.json` now passes assembly and 386 audits
+for the pre-cleanup-fix scanner image. Native eight-format and missing-argument
+cleanup tests are running on independent writable copies of that fixed image.
+The prepared shared cleanup fix is now applied: conversion buffers are freed
+before propagating an exception, with normal scanning unchanged. A fresh
+original bootstrap rebuild is running to qualify the changed implementation;
+no green cleanup result is claimed yet.
+
+Both native scanner tests on the pre-fix image fail during boot with CONSOLE
+REJECT load reclaimed; neither reaches its scanner assertions. In particular,
+`str-scan-cleanup-native-red-v1` is a boot failure, not evidence of the heap
+bug in the native scanner. The cause is the boot console binding list, which
+still supplied 49 bindings and omitted the newly imported decimal bitmap.
+KernelConsoleLoad now supplies that exact import as binding 49 with count 50.
+Fresh bootstrap/cross-build verification is required for this source change.
+
+The shared buffer cleanup fix has rebuilt successfully in original TempleOS;
+original cleanup and eight-format regression tests are now running against its
+generated kernel. Native behavior remains unqualified until the corrected boot
+binding image is built and tested.
+
+The corrected binding image `build/scanner-runtime-cross-v4/result.json` passes
+assembly and 386 audits. Native tests now boot and pass the StrScan presence
+check. Their first retry stopped because the harness cannot submit a fixture
+larger than 255 characters. The driver now transfers source in bounded chunks,
+writes a guest HolyC file and includes it; an initial chunk-transfer retry
+exposed MemCpy's printed return value, so a U0 transfer helper now avoids that
+extra answer. Fresh eight-format and cleanup tests are running on the same
+unchanged v4 image. None of these fixture failures qualify scanner behavior.
+
+Original post-fix conversion checks pass mask 255, but the boot-bound cleanup
+check still fails mask 5 with heap delta 240. A direct-source oracle is being
+developed to remove uncertainty about that binding; its first macro-renaming
+attempt entered the debugger with Bad Free while compiling and is invalid as
+scanner behavior evidence. The shared cleanup fix remains unproven pending a
+working direct oracle and actual native cleanup observations.
+
+`build/str-scan-eight-native-v4/result.json` passes all eight scan formats,
+normal boot, console arithmetic and exact VGA checkpoints on TCG/486,-fpu,
+8 MiB (19 commands). This is selected scanner qualification only.
+
+Native cleanup `build/str-scan-cleanup-native-v4` reaches the actual scanner
+then fails: THROW Scan followed by THROW 0 and BAD PUBLIC MEMORY. The candidate
+cleanup catcher incorrectly called throw explicitly; this recursively dispatches
+the still-active catcher and can free the same buffer twice. Original and
+native dispatchers automatically propagate when a catcher returns without
+marking catch_except true. The scanner catch now only frees its buffer. The
+new DocParserCompiler cleanup catches and original dollar-wrapper catch now
+use that same existing HolyC propagation behavior; these adapter changes still
+need their own runtime fault tests.
+
+A direct original oracle now copies the shared scanner with function identifiers
+renamed in its source bytes, avoiding macro aliases in function declarations.
+The native fixture transfer writes bounded chunks through a U0 helper and
+includes the resulting guest file. Earlier tests are preserved and labeled by
+their actual failure; the native boot/harness failures do not prove heap cleanup.
+Fresh original cleanup and bootstrap checks are running for the revised code.
+
+The direct original oracle now passes:
+`build/str-scan-auto-propagation-original-v1/result.json` returns cleanup mask 7
+and reports heap delta 0 across ten Scan exceptions. It compiles the current
+shared scanner under separate function names and therefore exercises the
+revised catch directly. Native cleanup remains pending a fresh cross-build;
+the previous native eight-format pass is on the earlier source epoch.
+
+`build/str-scan-auto-propagation-eight-original-v1/result.json` also passes
+all eight conversion checks against the direct current scanner source.
+Fresh bootstrap and `build/scanner-runtime-cross-v5/result.json` pass after
+the automatic-propagation fix and boot binding change. Native eight-format and
+cleanup tests are running on independent writable copies of that v5 image;
+the selected original heap result is not substituted for native evidence.
+
+Both native scanner gates now pass on the same v5 image: eight conversions
+(mask 255, 19 commands) and ten missing-argument exceptions with exact task
+heap/control recovery (mask 7, 14 commands), with console arithmetic afterward.
+`build/str-scan-eight-native-v5/result.json` and
+`build/str-scan-cleanup-native-v5/result.json` record TCG/486,-fpu, 8 MiB and exact
+VGA checks. Image SHA256 is `9ef9d772e456928c665d33f7a5b538a8de3c8a8db09ffe524684215f234a3d21`. Current Kernel/Compiler source
+hashes match the cross-build report. This closes the selected scanner and
+missing-argument cleanup gates, not all allocator failures, cancellation,
+converter-internal failures, DolDoc forms or release qualification.
+
+### Native shared dollar parser candidate (2026-10-06)
+
+DocDollarRuntime.HC now binds the shared flags/command grammar to the existing
+explicit native compiler context, closes nested controls on completion or
+propagated exceptions, and includes original DocDataFmt/DocDataScan. Original
+DocBinPtrRst is shared through DocBinPtrCore with its existing document read/
+copy/link behavior; original string tail helpers are shared through StringTailCore.
+The candidate preserves these grammar paths rather than rejecting binary links
+or reducing expressions to integer literals. BEqu and substring search have
+flat-memory adapters scoped to the retained console compilation.
+
+Console version 46 has 163 exports, including PrsDollarCmd, DocDataFmt and
+DocDataScan, with public declarations and audit requirements. The parser test
+now transfers its HolyC fixture in bounded console commands, writes a guest
+file and includes it, avoiding the known 255-character input limit. Refreshed
+original bootstrap passes; cross-build and original parser regression are
+running. Native parser behavior, field formatting/scanning, error/resource
+cleanup and actual forms remain unqualified. DocPrint/DocMenu and the macro
+utility are still missing; adding these callbacks does not close that gate.
+
+The original six-check parser regression passes at
+`build/doc-dollar-runtime-original-v1/result.json`. Native candidate
+`build/doc-dollar-runtime-cross-v1/result.json` compiles and passes its 386
+boot/module audit. Its native parser contract is now running on a writable copy.
+No native expression or field-formatting result is claimed until that test
+completes; original and static results are separate evidence.
+
+Native parser run `build/doc-dollar-runtime-native-v1` passes the API check and
+compiles its fixture, then DollarParserContract reports Out of memory. The
+saved VGA frame confirms this; no behavioral mask is produced. Inspection
+finds I386FrontendServices requires CCF_AOT_COMPILE even for the native JIT
+expression frontend. The adapter omitted that flag, so frontend initialization
+returned NULL; this was an interface precondition failure, not evidence of
+exhausted guest RAM. The factory now supplies the same flag used by ordinary
+native command input, and frontend/files rejection is classified Compiler
+instead of incorrectly reporting OutMem. Fresh bootstrap/build/tests remain
+required for this fix.
+
+The new --fields fixture independently passes in original TempleOS at
+`build/doc-dollar-fields-original-v1/result.json`: name/repeat bindings,
+formatting and refresh, string/integer scan-back with terminator restoration,
+delete and exact task heap recovery. It will exercise the shared native form
+data functions after the parser adapter is green; chooser and DocPrint/DocMenu
+remain separate required work.
+
+Native bound fields now pass at `build/doc-dollar-fields-native-v1/result.json`:
+name/repeat binding, formatting and refresh; scan-back into string and negative
+I64 storage with terminator restoration; document/entry deletion and exact
+caller task heap. The expression contract remains red at
+`build/doc-dollar-runtime-native-v2`: global lookup fails before a mask result.
+
+The failure is not a proved borrowed-name lifetime corruption. The synthetic
+expression function has a NULL diagnostic name; logging it printed bytes from
+address zero and broke UTF-8 log decoding. The actual rejection is a missing
+symbol reference: leaving CCF_AOT_COMPILE enabled emits module-relative global
+addresses instead of live task addresses. As ordinary native command execution
+does, the adapter now initializes the frontend in its required AOT mode then
+clears that mode for executed expressions. The diagnostic also keeps <none>
+for an unnamed function instead of dereferencing NULL. Fresh qualification is
+running; no task-global/function-expression pass is claimed yet.
+
+
+### Console 46 native parser and bound-field qualification (2026-10-06)
+
+`build/doc-dollar-runtime-native-v3/result.json` passes 22 commands and
+`build/doc-dollar-fields-native-v2/result.json` passes 21 commands, both on
+TCG/486,-fpu with 8 MiB and exact VGA comparisons at every checkpoint. Both
+use `build/doc-dollar-runtime-cross-v3/kernel.img`, SHA-256
+`c646578fb2e88895b5bd9804dd654ac9a90f2526522d5a582e78c3517131a1ef`.
+Recorded driver, fixture, helper and disk hashes still match; the cross-build's
+recorded Kernel/Compiler source hashes match the current worktree.
+
+The expression contract covers precedence, STR_LEN, F64-to-integer conversion,
+adjacent strings, task globals, raw F64 bits and function calls. The field
+contract covers original DA name/repeat grammar, bindings, format/refresh,
+string and negative-integer scan-back, terminator restoration, deletion and
+exact caller task data-heap recovery. These passes qualify the runtime-mode
+fix and do not qualify malformed input, allocation faults, binary links,
+shared compiler-heap recovery or chooser interaction. DocPrint, DocMenu and
+the original F2/Shift-F2 macro utility remain required.
+
+The separate frozen console-44 six-module native build is still live at its
+existing process handle; its evidence does not qualify console 46.
+
+
+Shared DocPutS/DocPrint preparation (2026-10-06): the original function
+bodies are extracted byte-for-byte into `Adam/DolDoc/DocPutSCore.HC`
+(SHA-256 5879ff8d23cf2c395cb9e3ba8aaa5838d9ba626aa9c55eef26c80016b2a95cbd).
+Original DocPutS.HC includes this core; native inclusion/export is not yet
+implemented. The original macro-form oracle now pins both files and is
+running at `build/original-macro-menu-put-core-v1`. Native integration must
+provide the three original character bitmaps, preserve default DocPut lookup,
+locking, cursor/plain-text flags, dollar escaping and last-dollar-entry return
+semantics. The construction-only native run has reached DFPrereq; it remains
+live and no final result is claimed.
+
+
+Console 47 DocPrint prototype (2026-10-06): original macro-form regression
+after DocPutSCore extraction passes at `build/original-macro-menu-put-core-v1`.
+Construction-only native red run terminates at DFPrereq (console 46 lacks
+DocPrint); behavior is not reached. Console 47 now includes the unchanged
+DocPutS/DocPrint core with the three original bitmap contents and exports
+_DOC_PUT_S/_DOC_PRINT (165 console exports). Audit requires both functions.
+Fresh two-generation bootstrap has started; native compilation and behavior
+remain unqualified. DocMenu is still absent.
+
+Console 47 fresh two-generation bootstrap and native cross-build pass at build/doc-print-runtime-cross-v1, including the 386 boot audit. Native construction acceptance is running at build/doc-print-construction-native-v1; a new --original mode runs the same construction assertions at build/doc-print-construction-original-v1. Neither behavioral result is claimed yet.
+
+Native construction v1 ends in a harness screen mismatch at the first DocPrint assignment. Inspection of saved VGA startup-command-04.ppm shows a non-NULL pointer printed by the assignment, with COMMAND OK; no native exception is observed. Empty expected output was incorrect. The three pointer assignments now cast to U0, preserving field assertions. Native v2 is running against the same console47 image; no field-behavior pass is claimed yet.
+
+
+Printed-fields original resource contract passes mask 63 at
+`build/doc-print-fields-original-v1`: ten compiled-function cycles, linked
+DocPrint entries and exact caller task data-heap recovery. Native resource
+run remains live. Construction native v2 rejects the fixture's C-style
+(U0) cast with "Use TempleOS postfix typecasting"; this is a fixture error,
+not DocPrint execution evidence. v3 uses postfix (U0) and is running.
+
+The original DocMenuEndTaskCB/DocMenu body is extracted byte-for-byte into
+Adam/DolDoc/DocMenuCore.HC, SHA-256
+3ab9a0cf2120063dbe071b3004f0522048e62c521ed4a084831a7d140ffdc5b4.
+Original DocForm.HC includes it; native inclusion is not yet implemented.
+The original interposed macro form oracle pins the new core and is running
+at build/original-macro-menu-menu-core-v1. This regression intentionally
+bypasses the chooser; it cannot qualify native menu selection or restoration.
+
+
+Original entry-action contract passes mask 63 at
+`build/doc-entry-actions-original-v1`: left/right values, MSG_CMD payloads,
+unlocked callbacks and no-action cancellation. Native entry-action API is
+still absent; this oracle is an implementation target, not native proof.
+
+Native construction v3 raises Compiler while executing the postfix U0 cast;
+now void helper functions suppress assignment output without a void cast.
+Native printed-fields v1 rejects fixture compilation with Invalid member.
+The button local declaration is moved to the initial declarations for a
+focused retry; root cause is not yet proved. Both failures remain preserved.
+Runs construction v4 and printed-fields v2 are live on unchanged console47
+image. Neither field/resource success nor compiler-error resolution is claimed.
+
+Native DocEntryRun red prerequisite is terminal at build/doc-entry-actions-native-red-v1: API lookup returns0 (COMMAND OK), so action assertions are not reached. Added OutputModes.HC / test-i386-doc-output-modes.py to check six original DocPutS modes: ordinary text, escaped dollars, CRLF/tab entries, plain dollar text, literal tabs and hidden cursor, including writable-source restoration. Original oracle is live at build/doc-output-modes-original-v1; no output-mode pass is claimed yet.
+
+Native DocPrint construction passes at build/doc-print-construction-native-v5/result.json: 28 commands, 486,-fpu, 8 MiB, exact VGA comparisons. This covers bound name/repeat fields, refresh, PLAY button, plain return and last-dollar return; chooser, resource faults and broader mode coverage remain open.
+
+
+Original output-mode oracle passes mask63 at
+`build/doc-output-modes-original-v1`. Native output-mode acceptance is live
+on console47 cross-v1 at build/doc-output-modes-native-v1. Printed-fields
+native v3 fails compilation with Missing ')' at, so no explicit resource
+check executes. The prior include-time63 output remains indirect evidence.
+
+To locate the compiler failure rather than continue speculative fixture
+changes, I386FrontendReport now logs the current token string, include file
+and line for errors. The new DocPutS/DocPrint public declarations are also
+moved inside PublicDocument.HH's include guard. Fresh two-generation
+bootstrap is live; the cross-v1 image does not contain these changes, and
+its construction pass is historical evidence for that source epoch.
+
+
+Fixture transport root cause (2026-10-06): independent RedSea extraction of
+/DollarContract.HC from printed-fields v3 and output-modes v1 shows doubled
+dollars collapsed by the outer HolyC string literal. DPTransfer nevertheless
+copied the original chunk byte count, writing terminators and stray bytes.
+This explains malformed native test input; these compiler errors do not prove
+a parser defect, and the incidental include-time63 is invalid resource proof.
+
+Parser, entry-action and output-mode drivers now double every dollar before
+encoding the transfer literal, use 60-character chunks and require independent
+byte-for-byte extraction of the saved fixture before reporting pass. They pin
+the independent reader tool too. Native printed-fields v4 and output-modes v2
+are live on the same console47 cross-v1 image. Diagnostics/header-guard cross
+v2 remains a separate live build; no new native success is claimed yet.
+
+Diagnostic cross-v2 is terminal: compiler-log.DD identifies undeclared KernelHex at Frontend.HC line170. CompilerRuntime imports only KernelLog; the diagnostic now formats the decimal line number locally and uses that existing service, preserving its import contract. Fresh bootstrap is live. Corrected field/mode runs use cross-v1 and remain separate evidence.
+
+
+### Console 47 DocPrint selected native gates pass (2026-10-06)
+
+`build/doc-print-fields-native-v4/result.json` passes 36 commands, including
+ten explicit calls that each require mask63 and exact caller task data-heap
+recovery. `build/doc-output-modes-native-v2/result.json` passes 32 commands
+covering ordinary text, escaped dollars, CRLF/tab entries, plain dollar text,
+literal tabs and hidden cursor with writable-source restoration. Both use
+TCG/486,-fpu / 8 MiB and exact VGA at every checkpoint. Source transfer is
+independently validated by RedSea extraction; guest fixture hashes equal the
+pinned host fixture hashes. All recorded driver/helper/image hashes still
+match. Image cross-v1 SHA-256:
+50bbe972962b594a707d7a5d307745e9333c1f22106de5a89386bbed4fb93007.
+
+Together with 28-command construction v5, these qualify selected original
+DocPutS/DocPrint behavior on that image. They do not qualify allocator faults,
+shared compiler-heap recovery, chooser behavior or the full macro utility.
+The new diagnostic/header-guard source epoch has not inherited these results.
+The revised single-function original ten-cycle oracle is live at
+build/doc-print-fields-original-v2; earlier original resource evidence used
+the two-function fixture.
+
+
+Revised original printed-fields oracle passes mask63 at
+`build/doc-print-fields-original-v2`, aggregating ten explicit single-function
+calls. Added `tools/test-i386-doc-print-allocation.py`: a selected public
+MAlloc/CAlloc call is patched to throw OutMem only around DocPrint("plain");
+checks exception/count, original allocator bytes restored, unlocked document,
+valid signature and exact caller heap after deletion. Interrupts are restored
+and the hook removed before reporting. First MAlloc-call2 red run is live at
+build/doc-print-allocation-malloc2-red-v1 on cross-v1. No fault-site recovery
+is claimed yet; one site does not qualify all output/parser allocations.
+
+
+DocPrint MAlloc2 red run is terminal: saved VGA shows mask39, OutMem and
+COMMAND OK. Hook bytes, exception/count and signature pass; unlocked-document
+and exact caller heap checks fail. This is actual native failure recovery
+evidence, not a screen-output fixture error.
+
+Shared cleanup prototype now tracks pending entry ownership, temporary cursor
+filter/dollar buffers and dollar separator restoration, unlocks on propagated
+exceptions, and frees DocPrint's formatted buffer on exception. Original and
+native use the same core. Ordinary text separator restoration still needs a
+follow-up before full source-restoration qualification. No cleanup pass is
+claimed. Original MAlloc2 cleanup oracle and fresh bootstrap are live.
+
+The first original hook run returned mask59 / delta0 / calls555601: original
+exception handling allocates after the injected throw, so leaving the hook
+armed invalidated its exact call-count assertion. The hook now restores its
+entry before throwing, isolating the selected allocation in both systems.
+Each fault case still needs original/native qualification; their allocation
+orders may differ.
+
+
+Original MAlloc2 cleanup oracle passes mask63, delta0, calls2 at
+`build/doc-print-allocation-original-malloc2-cleanup-v1`. This proves the
+selected original-site exception/count, lock and heap checks with the
+pre-throw hook disarmed. Native cleanup qualification remains required.
+Diagnostic cross-v3 image independently passes resource (36 commands) and
+output-mode (32 commands) regressions at build/doc-print-fields-diagnostic-v1
+and build/doc-output-modes-diagnostic-v1, including exact source extraction.
+These runs predate the cleanup prototype and do not qualify it.
+
+
+Complete cleanup prototype bootstrap passes both generations. Original
+output-mode regression passes mask63 at build/doc-output-modes-cleanup-original-v1.
+Original MAlloc3 fault is red at build/doc-print-allocation-original-malloc3-cleanup-v1:
+mask47, delta160, calls3. Exception/count, restored hook, lock and signature
+pass; exact heap recovery fails. This later site remains a real gap; selected
+MAlloc2 green does not close it. The hook now records bounded allocation sizes
+and the original trace retry is live at build/doc-print-allocation-original-malloc3-trace-v1.
+Native cleanup cross-build is live at build/doc-print-cleanup-cross-v1; no
+native cleanup or later-site success is claimed yet.
+
+
+Protected-region original MAlloc3 oracle passes mask63, delta0, calls3 at
+`build/doc-print-allocation-original-malloc3-protected-v1`; sizes120/120/144
+confirm formatting allocation now occurs after its owner handler is installed.
+The original fault index changed with the new handler placement, so this is
+a selected-site result, not the old allocation-order proof. Original indices4
+and6 plus output-mode regression are live on the same source. Bootstrap is
+still live; no revised native fault/ordinary behavior qualification yet.
+
+
+Original protected-region fault indices4 and6 pass mask63 / delta0 / exact
+selected call counts at build/doc-print-allocation-original-malloc4-protected-v1
+and build/doc-print-allocation-original-malloc6-protected-v1. Original normal
+output modes pass at build/doc-output-modes-protected-original-v1. These
+selected sites do not prove all parser/formatter failures.
+
+Added direct DocPutS source-restoration drivers. They allocate writable
+"a\nb" before arming the allocator hook, require original source bytes after
+the exception, restored hook/count, unlocked/signature-valid document and
+exact caller heap after deleting the document/source (mask127). Original
+fault index4 is live at build/doc-put-s-source-fault-original-v1; native sites
+will be selected independently because handler allocation differs.
+
+
+Direct original DocPutS fault oracle passes mask127 / delta0 / calls4 at
+`build/doc-put-s-source-fault-original-v1`, with sizes120/120/88 before the
+injected tag allocation failure. This proves newline source-byte restoration,
+unlinked base-entry cleanup, document unlock/signature and exact caller heap
+for that selected original site. Native DocPrint MAlloc2 and direct DocPutS
+MAlloc2 fault tests are live on cleanup cross-v2. Ten-cycle field and six-mode
+native normal regressions also started on that same image; all results are
+pending. Keep current core unchanged while these pinned tests finish.
+
+Native selected fault recovery now passes on cleanup cross-v2: build/doc-print-allocation-native-cleanup-v1 and build/doc-put-s-source-fault-native-v1 pass 12 and 14 commands respectively at 486,-fpu / 8 MiB with exact VGA and unchanged pinned inputs. DocPrint MAlloc2 recovers exception/count, hook bytes, lock/signature and exact caller heap; direct DocPutS MAlloc2 also restores the writable newline source exactly (mask127). These selected fault sites do not qualify all grammar/formatter allocations. Normal native field/mode regressions remain live.
+
+
+Current console47 cleanup image completes all selected gates: native
+fields36, modes32, DocPrint fault12 and direct DocPutS fault14 commands at
+486,-fpu / 8 MiB. Exact VGA, source extraction and provenance checks pass.
+Disk SHA-256 11f827b7970842c8d74d98de90c5ab0616f45f9bbab0b96468965f5e11a5e6f1. Relevant Kernel/Compiler/DolDoc source hashes
+still match the cross-build. This does not close remaining full grammar,
+allocator, compiler-heap, chooser or release gates.
+
+Frozen console44 native-six-v1 is terminal PASS: six modules rebuilt inside
+486,-fpu with 16 MiB. Two-generation installation/selfhost/audit qualification
+started against that frozen repository and retained build at
+build/macro-playback-candidate-v1/build/native-generations-v1. It cannot
+qualify current console47 output/parser changes.
+
+
+Next entry-action dependency: original In formats text, allocates its lasting
+copy in Adam's heap and passes a generated print/free expression to InStr.
+Added i386-in-text/Contract.HC and test-i386-in-text-wrapper.py: intercept
+InStr and check its format, duplicate pointer arguments, quotes/backslash/
+percent plus empty text, twenty cycles, restored bytes and root/caller heap
+recovery. Actual input delivery, different-task ownership and faults remain
+separate required gates. Original oracle and native In API red run are live
+at build/in-text-wrapper-original-v1 / build/in-text-wrapper-native-red-v1.
+No In provider has been added yet; no wrapper pass is claimed.
+
+
+Original In wrapper contract passes mask63 at build/in-text-wrapper-original-v1:
+twenty nonempty/empty cycles, format/duplicate-pointer/text checks, restored
+InStr hook and exact measured root/caller heaps. InStr is interposed; actual
+delivery and different-task ownership remain unproved.
+
+Original In is extracted byte-for-byte into Kernel/JobInCore.HC (SHA-256
+82c1e2b9343b0b1dd4a13db1f91641ea4c8fd1b58e061f28e33a2e6fd69f266c).
+Original Job.HC includes it. Console48 now includes the same body with private
+AStrNew adapter allocating in the native scheduler root, and exports _IN
+(166 providers). Static audit requires In. Fresh bootstrap is live. No native
+wrapper/delivery/failure pass is claimed; the original unchanged body still
+needs exception/allocation qualification.
+
+
+Console48 cross-v2 passes the 386 boot audit. Native wrapper, actual delivery
+and rejection red runs are live against that image. Original rejection red
+at build/in-text-rejection-original-red-v1 returns mask15: caught Break,
+restored hook and pointer/format pass, caller/root heap recovery fail.
+
+Shared In now initializes buffer pointers before its handler, formats and
+copies inside the protected region, clears the root-string pointer after
+successful InStr submission, and frees both pointers on propagated exceptions.
+The generated print/free expression and normal semantics stay unchanged.
+Original cleanup oracle is live at build/in-text-rejection-original-cleanup-v1.
+The new cleanup source does not inherit cross-v2's qualification. No recovery
+pass or all-failure ownership guarantee is claimed yet.
+
+
+Original In cleanup-v1 still reports mask15 because the earlier wrapper
+driver calls the boot-bound Kernel In. Editing JobInCore.HC without rebuilding
+that kernel does not change the executed function. It is invalid evidence
+about the new cleanup body, though valid evidence about the old boot binding.
+Added test-i386-original-in-core.py: reads/pins the exact current shared body,
+renames only its function to ITOracleIn and invokes it from the selected
+fixture. Direct-current rejection and normal wrapper oracles are live at
+build/in-core-rejection-original-v1 / build/in-core-wrapper-original-v1.
+Fresh two-generation bootstrap also started for the actual new kernel body.
+No revised cleanup pass is claimed yet.
+
+
+Current shared In direct-source oracles pass mask63 for both rejection and
+normal wrapper at build/in-core-rejection-original-v1 / in-core-wrapper-original-v1.
+Native cross-v2 passes wrapper33 and actual-delivery9 commands at 486,-fpu /
+8 MiB with exact VGA; twenty captured cycles and ten actual nonempty/empty
+cycles recover the measured caller heap. Native rejection red-v1 saved VGA
+shows mask15, matching the old leak. These results qualify cross-v2's normal
+path, not the edited rejection cleanup. Separate submitting-task lifetime,
+root heap after actual delivery and allocator faults remain required.
+
+
+Added test-i386-in-text-submitter-exit.py: a child queues In("ORPHAN") and
+exits immediately; after one warmup, ten further children must retire and
+the root heap must recover after draining. Red run is live at
+build/in-text-submitter-exit-red-v1 on pre-cleanup cross-v2. This targets
+queued ownership, which the intercepted rejection test does not prove.
+The current root string is encoded into generated source and released by its
+Free expression; queued job retirement before execution must also account
+for that string. Do not infer lifetime safety from ordinary delivery/rejection
+passes. Native cleanup cross-build remains live and separate.
+
+
+Console48 cleanup bootstrap/cross-build completed successfully at
+build/in-text-cleanup-cross-v1. Native wrapper, delivery and rejection checks
+are running in fresh *-cleanup-native-v1 directories. The pre-cleanup
+submitter-exit red result is terminal and its saved startup-command-05 VGA
+shows IERun returning 0; pinned inputs stayed unchanged. This establishes a
+failed combined lifetime assertion, not yet the cause or size of retention.
+The driver now prints child-start count/root delta before its strict assertion;
+a fresh cleanup-image run is started at in-text-submitter-exit-cleanup-v1.
+Frozen Console44 two-generation qualification remains live (session29657).
+
+
+Console48 cleanup native wrapper/delivery/rejection checks all PASS on image
+SHA256 7ac73be2ba76e8f2ab6acfa31868e1720c8869ac1969fd2df206096d536730f4:
+33 / 9 / 26 commands respectively, TCG 486,-fpu, 8 MiB, exact VGA.
+Authoritative reports: build/in-text-{wrapper,delivery,rejection}-cleanup-native-v1/result.json.
+Wrapper and rejection also verify exact guest fixture bytes independently.
+These prove selected synchronous rejection cleanup and normal input behavior;
+they do not prove queued payload cleanup when its recipient exits.
+
+
+The cleanup-image lifetime diagnostic is terminal: saved VGA at
+build/in-text-submitter-exit-cleanup-v1/behavior/startup-command-06.ppm
+shows `Input exit started:11 root delta:240`. Thus all eleven children ran,
+and ten measured retirements retain 240 root-heap bytes. The diagnostic
+command expected no output and itself timed out; this is not a valid complete
+strict-contract run, but its saved guest output establishes the measured
+retention. Revised driver expects the zero-delta diagnostic explicitly and
+uses a void helper for assignment. JobDel currently frees only aux_str/job;
+In's separately root-allocated string appears only in generated print/free
+source, so retirement can skip its Free. The fix must give queued payloads
+explicit ownership through job retirement, including rejection and execution
+failure; successful wrapper checks alone cannot cover this.
+
+
+No-In retirement control PASS at build/in-text-submitter-exit-control-v1,
+with the same cleanup image and pinned driver/helper: ten measured child
+retirements recover the root heap. The strict In red remains live separately.
+Implemented an unqualified ownership prototype: shared In calls InTextSubmit;
+original backend preserves the old generated print/free expression, while the
+native backend gives accepted JOBT_TEXT_INPUT jobs ownership through fun_arg.
+Console JobDel and memory-ring retirement both release that payload only for
+text jobs. Payload transfer occurs after successful queue publication while
+IRQs remain masked; rejection leaves caller cleanup responsible. Input-filter
+synchronous execution releases the payload after success, with exceptions
+propagating to In cleanup. Native generated source prints without its own
+Free, preventing double release. A fresh two-generation bootstrap is running
+(session53304); no compile or lifetime success is claimed for this prototype.
+Old native InStr-interception contracts target the old internal mechanism and
+must be replaced by appropriate adapter contracts plus actual delivery,
+retirement and fault tests, rather than counted as current-source passes.
+
+
+Ownership prototype two-generation bootstrap PASS (session53304); new cross
+build live at build/in-text-owned-cross-v1 (session88630). Original wrapper
+check live at in-text-owned-wrapper-original-v1 (session15114). Actual native
+delivery driver now requires caller and root heap recovery after eight yields
+and message draining. Added test-i386-in-text-allocation.py: selected public
+MAlloc/CAlloc site throws OutMem after restoring its hook; mask63 requires
+exception/count, original entry bytes, input rings and both heaps. Host syntax
+and 255-character command bounds pass; no guest fault success claimed yet.
+Strict pre-fix retirement run is terminal fail with unchanged pins; paired
+no-In control passes. The old InStr interception fixture does not test the new
+native adapter and will not be used to claim its cleanup coverage.
+
+
+Original boot-bound In wrapper check PASS mask63 after ownership adapter
+extraction at build/in-text-owned-wrapper-original-v1: twenty captured
+nonempty/empty cycles, unchanged pinned source/tool inputs. This confirms the
+original backend retains its generated print/free contract; native actual
+ownership still awaits fresh-image runtime tests.
+
+
+Ownership cross-build PASS: build/in-text-owned-cross-v1/kernel.img,
+497720 native kernel bytes, 386 audit96 BIOS/209 protected instructions.
+Fresh runtime tests started: in-text-owned-submitter-exit-v1,
+in-text-owned-delivery-v1 and in-text-owned-allocation-malloc2-v1. No native
+runtime pass is yet claimed for this source epoch.
+
+
+Ownership cross-v1 runtime is RED: delivery and submitter-exit terminate
+BAD PUBLIC MEMORY on the first actual In. Static review found the adapter
+called StrPrint as though it were MStrPrint; StrPrint requires dst before fmt.
+Corrected the allocated-source call to MStrPrint. This invalidates any runtime
+qualification claim for cross-v1; no ownership recovery pass was observed.
+Queued-cancel and MAlloc2 tests on that image remain separately live. A fresh
+bootstrap is required for the corrected source before cross-v2 testing.
+
+
+Cross-v1 queued cancellation also terminates BAD PUBLIC MEMORY on ICOne;
+selected MAlloc2 allocation contract PASS mask63 (11 commands), before the
+incorrect formatter call. These are terminal unchanged-pin reports at
+in-text-owned-cancel-queued-v1 / in-text-owned-allocation-malloc2-v1; do not
+interpret the early fault pass as full ownership validation. Corrected-source
+bootstrap live session27462. Added test-i386-in-text-filter.py for In invoked
+by an actual InStr filter source: exact key-down sequence, restored filter
+state and both heaps across ten drained cycles. Host syntax and command
+bounds pass; runtime execution remains pending on corrected cross-v2.
+
+
+Corrected MStrPrint-source adapter bootstrap PASS two generations
+(session27462). Fresh corrected 386 cross-build started at
+build/in-text-owned-cross-v2. No native runtime success for this correction
+is claimed until actual delivery/lifetime/cancellation gates run on its image.
+
+
+Corrected ownership cross-v2 PASS, 497720 native kernel bytes and 386
+instruction audit96/209. Started fresh submitter-exit, delivery, queued-cancel
+and synchronous-filter tests in build/in-text-owned-{submitter-exit,delivery,
+cancel-queued,filter}-v2. Added active cancellation driver (Msg hook blocks
+executing print, Kill, exact both heaps and hook/filter restoration across ten
+cycles); host syntax/command bounds pass, runtime not yet started. Frozen
+Console44 qualification has gen1-install/selfhost/audit PASS and is live in
+gen2-retained-build; these are separate-source results, not Console48 proof.
+
+
+Corrected ownership runtime GREEN for the two central gates:
+- build/in-text-owned-submitter-exit-v2/result.json PASS, ten measured retired
+  submitters plus warmup, started11/root delta0 and continued console.
+- build/in-text-owned-delivery-v2/result.json PASS, ten nonempty/empty cycles,
+  exact keys/restored filters and exact caller plus root heap after draining.
+Both use cross-v2, TCG486,-fpu /8MiB, 10 commands with exact VGA and unchanged
+pinned inputs. This replaces the original 240-byte retention at these selected
+paths; cancellation, synchronous In and later fault coverage are still pending.
+Active cancellation and MAlloc4 tests were started on the same image at
+in-text-owned-cancel-active-v2 / in-text-owned-allocation-malloc4-v2.
+
+
+Active cancellation PASS at in-text-owned-cancel-active-v2: Msg hook pauses
+executing input print, Kill retires the filter, initial plus ten cycles recover
+both heaps after draining and restore Msg/filter state. Queued-cancel-v2
+returns0 at its first cycle (no fatal kernel failure); immediate heap assertion
+preceded deferred reclamation. Driver now checks both heaps after eight yields
+and FlushMsgs, maintaining the same zero-delta requirement; v3 rerun live.
+Synchronous-filter-v2 returns0 with log THROW StrPrint: its InStr source was
+incorrectly passed as the format and contained an inner %s without arguments.
+Corrected driver to InStr("%s",source), v3 rerun live. MAlloc4 fault test returns
+mask47 (saved VGA), so caller recovery bit16 is missing while root recovery
+bit32 and all other selected checks pass; deeper formatter-failure cleanup remains RED and unqualified.
+
+
+Corrected queued cancellation v3 and synchronous-filter v3 both PASS on
+cross-v2 with unchanged pins, TCG486,-fpu/8MiB and exact VGA. Queued cancellation
+checks initial plus ten IRQ-masked submissions/Kills and both heaps after
+deferred reclamation. Synchronous gate executes In via InStr("%s",source),
+checks exact input keys and both heaps across ten cycles. Formatter patch
+attempt stopped at UTF-8 decoding: StrPrintCore contains original CP437 bytes,
+so no source was changed. A mistakenly launched unchanged-source bootstrap
+(session88806) must finish before applying a byte-preserving replacement.
+
+
+Unchanged-source bootstrap session88806 completed PASS. Applied the prepared
+byte-preserving shared MStrPrint cleanup after it ended, retaining all original
+CP437 bytes outside the selected function. New bootstrap started for this
+actual formatter-fix epoch. Its compile/runtime fault result remains pending.
+
+
+Shared MStrPrint protected-buffer cleanup bootstrap PASS two generations
+(session89670), Kernel.BIN size2F440. Fresh cross-build running at
+build/in-text-format-cleanup-cross-v1. Allocation driver now supports a
+separate --operation MStrPrint with Free on normal return; selected hook,
+exception, count and both-heap contract remains mask63. Started a pre-fix
+cross-v2 isolated MStrPrint/MAlloc2 red at mstrprint-allocation-malloc2-red-v1.
+This separates formatter temporary-buffer ownership from In's root payload.
+Host syntax and guest command bounds pass; native formatter fix not yet
+qualified. The caller fault leak remains open until red/fixed reports prove it.
+
+
+Isolated pre-fix MStrPrint/MAlloc2 test is terminal RED with unchanged pins:
+saved VGA mstrprint-allocation-malloc2-red-v1/behavior/startup-command-09.ppm
+shows mask47 (caller heap bit16 missing, root bit32 present). This reproduces
+the formatter defect independently of In. Formatter cleanup cross-v1 PASS:
+497720 native kernel bytes, 386 audit96/209. Fresh tests live on that image:
+mstrprint-allocation-malloc2-cleanup-v1, in-text-allocation-malloc4-cleanup-v1,
+in-text-allocation-calloc1-cleanup-v1, and in-text-format-cleanup-delivery-v1.
+The CAlloc fault targets job/state allocation cleanup; MAlloc indices remain
+selected observed sites, not exhaustive fault coverage. No fixed runtime
+success is yet claimed.
+
+
+Prepared next popup-service TDD prerequisite: tests/guest/i386-job-results/
+Contract.HC and test-i386-original-job-results.py. Original JobResScan oracle
+checks empty/pending results, master/self and separate-control completed rings,
+any-result selection, exact caller heap and unlocked queues. These are
+synthetic completion queues, explicitly not TaskExe servant execution or
+popup UI proof. Original baseline run live at build/job-results-original-v1;
+no native implementation or pass claimed. This prepares the required full
+TaskExe/JobResScan/SrvCmdLine path for original DocEntryRun/DocMenu, avoiding a
+reduced entry-action substitute while formatter qualification proceeds.
+
+
+Formatter cleanup native gates PASS with unchanged pins and exact VGA on
+TCG486,-fpu/8MiB: mstrprint-allocation-malloc2-cleanup-v1,
+in-text-allocation-malloc4-cleanup-v1 and in-text-allocation-calloc1-cleanup-v1
+(all11 commands/mask63), plus in-text-format-cleanup-delivery-v1 (10 commands,
+ten cycles exact caller/root heap). Isolated formatter MAlloc2 and In MAlloc4
+therefore transition from saved mask47 red to mask63 on the protected-buffer
+image. CAlloc1 additionally qualifies selected queue allocation rejection.
+These are selected fault sites, not exhaustive formatter/parser failure proof.
+
+
+Job-result TDD driver prepared for both original and native synthetic queue
+contracts at tools/test-i386-job-results.py, with independent guest source
+extraction for the native fixture. Pre-port native red started on the latest
+formatter image at build/job-results-native-red-v1: first gate requires a
+public JobResScan symbol. Original baseline session67412 remains live without
+final observations; no baseline pass or native implementation is claimed.
+
+
+Job-result native pre-port red is terminal with unchanged pins: saved VGA
+startup-command-00 shows HashFind(JobResScan) returns0. Original baseline
+terminal timeout screenshot shows a compile error at JobCtrlInit(&ctrl), before
+any behavioral observation. The fixture now initializes its own synthetic
+queue links/flags directly; original v2 rerun started. This is a fixture setup
+correction, not an original JobResScan failure. No native port has been claimed.
+
+
+Original JobResScan baseline v2 PASS mask63 with unchanged pinned inputs.
+Implemented Console49 prototype: original full result-scanning algorithm
+moved to Kernel/JobResScanCore.HC, included by original Job.HC and console.
+PUSHFD/CLI/POPFD replaced with GetRFlags/SetRFlags preserving original flags;
+PAUSE replaced with an empty spin body for the 386 baseline. Queue choice,
+semaphore locking, targeted/any completion scan, result transfer and JobDel
+are retained. Console49 exports _JOB_RES_SCAN (167 providers); public terminal
+header and cross-build audit updated. New two-generation bootstrap live at
+session49557; no new shared/native pass claimed. TaskExe, servant execution
+and popup/form UI remain required subsequent work, not covered by this gate.
+
+
+Console49 bootstrap PASS two generations (session49557), Kernel.BIN2F460.
+Fresh cross-build running at build/job-results-cross-v1. Original result driver
+now supports --shared-core: compiles current complete body under JRScanOracle
+and rewrites only fixture calls, separating source-body validation from boot
+binding. Pins also include shared core and actual overlay compiler/kernel
+binaries. Shared original oracle live at build/job-results-shared-original-v1.
+No native result-queue pass claimed; pre-port symbol red remains preserved.
+
+
+Direct shared original JobResScan PASS mask63 at job-results-shared-original-v1,
+including unchanged core/fixture/tools and compiled bootstrap binary pins.
+Report shared_core=true identifies the direct oracle; its inherited scope
+string incorrectly said boot-bound. Driver reporting scope corrected after
+that run ended. This confirms selected queue semantics after portable IRQ
+conversion, not actual task execution or UI. Native cross-build remains live.
+
+
+Console49 cross-build PASS at build/job-results-cross-v1, 386 audit96/209;
+fresh native result gate live at job-results-native-v1. Prepared subsequent
+actual execution TDD fixture Execution.HC: original TaskExe self-queue across
+ten cycles checks metadata, copied writable source, pending scan, JobsHndlr
+completion, result42 and empty rings. No heap/cross-task/servant/UI claim.
+Original execution oracle live at job-execution-original-v1; driver pins
+fixture/core/bootstrap binaries and supports --execution. This complements
+synthetic result queues instead of treating them as execution proof.
+
+
+Native JobResScan v1 fixture include logs Undefined identifier at line12:
+JobDel. The service symbol itself passes lookup, but guest-visible job API
+lacks the existing destructor. Added _JOB_DEL/public declaration, Console50
+(168 providers), retaining its payload-aware cleanup. Driver/fixture/image and
+independent reader are held unchanged until the live red test terminates;
+audit update will follow before building Console50. Original TaskExe oracle
+remains live without final observations. No native contract pass claimed.
+
+
+Job-results native v1 and original execution v1 are terminal failures with
+unchanged pins. Native include error is missing JobDel (not queue behavior).
+Original execution saved screenshot reports Missing ';' in Tmp.DD, so no
+execution baseline pass is inferred. Replaced its stack string-array setup
+with an explicit StrNew writable source, modified/freed after TaskExe copies
+it. A fresh original run must wait until current bootstrap stops rewriting
+overlay binaries. Console50 build audit now requires JobResScan and JobDel,
+version50 metadata; Console50 bootstrap session32490 remains live.
+
+
+Console50 bootstrap PASS two generations (session32490). Fresh cross-build
+live at build/job-results-cross-v2; corrected original actual execution oracle
+live at job-execution-original-v2. Original v1 failure remains archived rather
+than counted as a behavior regression. No new native queue/execution pass.
+
+
+Original actual TaskExe self-queue execution v2 PASS mask63, unchanged pins:
+ten copied-source/pending/completed/result42/empty-ring cycles. This qualifies
+selected original execution behavior, not heap/cross-task/servant/UI lifetime.
+Native TaskExe pre-port red started at job-execution-native-red-v1 on the
+Console49 image; first lookup specifically requires TaskExe. Console50
+cross-build continues; native result-queue test will use its new JobDel API.
+The existing MemoryJobRunOne already handles JOBT_EXE_STR through the source
+provider; TaskExe must add root-owned source jobs, original acceptance/popup
+rules, queued wakeup and wake-master suspension semantics. These requirements
+must survive actual execution tests, not merely adding the public symbol.
+
+
+Console50 cross-build PASS, 386 audit96/209, 497720 native kernel bytes;
+new result-queue test started at build/job-results-native-v2 with public JobDel.
+No native queue/TaskExe runtime success is yet claimed.
+
+
+Native Console50 result queues PASS at job-results-native-v2: 29 commands,
+mask63, exact VGA, 486,-fpu/8MiB, unchanged inputs and independent guest fixture
+byte match. Native TaskExe symbol red terminal fail precedes source transfer.
+Added Console51 NativeTaskExe prototype in JobRequests.HC: root job/source,
+original validity/popup acceptance, waiting-ring lock/append, idle/awaiting
+reset, scheduler wake, wake-master Suspend/Yield. Catch deletes only unpublished
+requests; accepted jobs stay queue-owned. _TASK_EXE adds169th provider; existing
+Suspend callback is dynamically bound. Bootstrap live session85682. Cross
+reader/audit updated to51 only after pinned native result run ended. No actual
+native execution, wake-master, cancellation or allocator pass claimed yet.
+
+
+Console51 execution-request bootstrap PASS two generations (session85682).
+Fresh native cross-build started at build/job-execution-cross-v1. Native
+TaskExe red report has unchanged driver/fixture/image/helper/reader pins.
+Prototype execution/fault/wake-master results remain unqualified until fresh
+image tests. Original actual execution baseline and Console50 queue pass stay
+separate authoritative evidence.
+
+
+Console51 cross-build PASS at job-execution-cross-v1, 386 audit96/209 and
+497720 native kernel bytes. Actual native self-queue execution gate started
+at job-execution-native-v1. Driver expects ten visible42 answers from compiled
+job source plus finalmask63 (native ConsoleAnswer prints expression values);
+this is preserved visible execution behavior rather than suppressing output.
+Added Worker.HC original baseline: Spawn actual JobsHndlr worker, ten TaskExe
+wake-master submissions, dispatched/done flags, resumed master, value42 and
+empty rings, then Kill. No exact heap/fault/popup coverage. Original worker
+baseline live at job-worker-original-v1. This targets wake-master semantics
+beyond the self-queue contract; no worker pass claimed yet.
+
+
+Original spawned-worker wake-master contract PASS mask63 at
+job-worker-original-v1, with unchanged fixture/source/tools/bootstrap pins.
+Ten actual completions resume master and yield42; worker retires afterward.
+Fresh native worker gate started at job-worker-native-v1 using a separately
+pinned driver (self-queue driver remains live unchanged). No native worker,
+exact heap or cancellation claim yet.
+
+
+Native TaskExe self-queue execution PASS at job-execution-native-v1:
+21 commands, ten actual copied-source/pending/completed/value42/empty-ring
+cycles plus exact VGA, independent byte-exact fixture and unchanged pins on
+TCG486,-fpu/8MiB. No heap/cross-task/cancellation claim from this test.
+Allocation driver now supports TaskExe and specifically requires empty waiting
+and done rings plus unlocked queue at its selected fault. Started CAlloc1
+(request) and MAlloc1 (source copy) native faults at task-exe-allocation-
+{calloc1,malloc1}-v1, requiring exact caller/root heap and exception/count/hook
+restoration. Native worker remains live; no fault or worker pass yet.
+
+
+Added TaskExe acceptance contract Acceptance.HC and separate original/native
+drivers: null source/server rejection, simulated popup rejection unless filter
+bit permits it, empty source/null master acceptance, manual queued-job release,
+exact caller/root heap and unlocked empty queue. This deliberately does not
+claim real popup UI or servant execution. Fresh acceptance runs live at
+task-exe-acceptance-{original,native}-v1; existing worker and allocation gates
+remain separately pinned. No acceptance/fault/worker pass is inferred yet.
+
+
+Native spawned-worker wake-master gate PASS at job-worker-native-v1 (24
+commands), exact VGA and independently byte-exact fixture, unchanged pins.
+Ten actual requests set dispatched/done, resume master, return42 and empty
+rings. TaskExe CAlloc1 and MAlloc1 fault gates both PASS mask63 (12 commands
+apiece): exact exception/count, restored entry bytes, empty unlocked queues
+and exact caller/root heap. All use Console51 image on TCG486,-fpu/8MiB.
+Worker normal execution does not yet prove its exact heap or active-job
+retirement, master exit, popup ownership or full servant/form behavior.
+
+
+Added actual active-worker retirement gate test-i386-task-exe-cancel-active.py:
+job source marks entry then sleeps, caller Kills the executing worker; after
+warmup ten measured retirements must recover exact caller/root heaps. Null
+master/free-on-complete specifically tests the unlinked running job, rather
+than only queued rings. Red run live at task-exe-cancel-active-red-v1. Static
+review: MemoryJobRunOne removes executable job from its queue before execution;
+Exit drains waiting/done rings but currently has no active-job ownership field.
+No actual retention is claimed before observing this run. Waiting-master
+cancellation semantics and master retirement remain separate required cases.
+
+
+Acceptance original/native v1 both hang in JRContract, with no contract
+result. Static fixture review found it assigned Fs->popup_task=Fs, a cyclic
+popup chain; TaskRstAwaitingMsg faithfully traverses that chain when filter bit
+permits acceptance. This was invalid setup, not an observed acceptance
+regression. Fixture now creates an actual child task with a terminating popup
+chain, restores parent popup/filter state, and kills the child after checks.
+New v2 original/native runs are started; exact heap checks exclude the live
+setup child and still require all request allocations to recover.
+
+
+Active worker retirement red-v1 is terminal; saved VGA shows eleven printed
+entry markers then final0. The numeric assignment in job source emitted extra
+answers, so that run cannot be counted as a clean strict screen contract, but
+its final heap predicate is false. Driver now calls a void JCBody (same entry/
+sleep checkpoint), prints exact retired count/caller/root deltas before strict
+predicate, and checks all workers invalid. Fresh strict red and paired no-job
+retirement control live at task-exe-cancel-active-{strict-red,control}-v1.
+No byte-count attribution or ownership fix is claimed until these observations.
+
+
+Paired no-job worker retirement control PASS with unchanged pins. Strict
+active-execution red saved VGA shows retired11/caller0/root1200 after ten
+measured cancellations, unchanged pins. Implemented Memory19 running-job
+ownership prototype: stack-backed linked records track actual executor and
+permit nested dispatch without allocating; normal completion detaches record,
+Exit detaches every running job before its stack disappears. Null/dead-master
+or free-on-complete jobs release source/request; surviving masters receive
+cancelled result0/done and wake if requested. Selected root leak fix and
+waiting-master semantics are not yet qualified. Bootstrap live session55174.
+Acceptance handles are no longer present; authoritative reports show original
+and native v2 both terminal PASS with unchanged pins. Native28 commands and
+exact guest source/VGA pass. Their final pin checks completed before the later
+audit change, so these are valid historical Console51 acceptance results,
+not an invalidated run or Memory19 qualification.
+
+
+Memory19 running-job prototype bootstrap PASS two generations (session55174).
+Fresh cross-build started at task-exe-running-cleanup-cross-v1. Active-job
+cleanup, normal completion and waiting-master cancellation must qualify this
+new memory source epoch; prior Console51 normal execution remains historical.
+
+
+Running-job cleanup cross-v1 terminal RED before MemoryRuntime export:
+compiler-log.DD reports Invalid lval at NULL in TaskRuntimePublic.HC line23.
+The memory module defines TRUE/FALSE but consistently uses0 for null; new
+ownership helpers were corrected to that convention. No runtime cleanup pass.
+Added waiting-master cancellation driver: separate killer retires a worker
+sleeping in source, suspended master must resume and scan done result0; helper
+retirement and both heaps across ten measured cycles. Host syntax/command
+bounds pass, runtime awaits corrected image. Fresh bootstrap is required.
+
+
+Corrected null convention bootstrap PASS (session26866). Fresh Memory19
+cross-v2 started at task-exe-running-cleanup-cross-v2. Waiting-master
+cancellation test is prepared and will require result0/done, master resumed,
+all helpers retired and exact both heaps after ten measured cycles. Normal
+completion and nested dispatch must also be exercised with the running-job
+stack records; JOBT_SPAWN exception unwinding requires separate qualification,
+since its existing dispatch branch does not catch allocation failures.
+
+
+Cleanup cross-v2 terminal compile RED: MemoryTaskValidate is defined only by
+the later MessagePosting include; retirement helper precedes it. Added the
+matching forward declaration to MemoryRuntime.HC, leaving validation behavior
+unchanged. No cleanup runtime result yet. Prepared Nested.HC plus original/
+native driver: outer executable void function submits/executes/scans an inner
+value42 request; both result paths and empty rings across ten cycles. Original
+baseline live at job-nested-original-v1; no nested heap/cancellation claim.
+Fresh bootstrap follows declaration fix before cross-v3.
+
+
+Original nested executable-job contract PASS mask63 at job-nested-original-v1,
+unchanged pinned inputs. Outer and inner completions/empty rings are therefore
+an established original behavior for the new stack ownership regression gate.
+Exact heap and nested cancellation remain separate. Declaration-fix bootstrap
+session44001 remains live; no fixed-image cleanup or master cancellation pass.
+
+
+Declaration-fix bootstrap PASS (session44001); fresh cross-v3 started at
+task-exe-running-cleanup-cross-v3. No native cleanup pass claimed until actual
+retirement, waiting-master cancellation and normal/nested completion run.
+
+
+Memory19 cleanup cross-v3 PASS: MemoryRuntime export4A546, native kernel
+497720 bytes, 386 audit96/209. Started five fresh fixed-image gates:
+task-exe-cancel-active-cleanup-v1, task-exe-cancel-master-cleanup-v1,
+task-exe-cancel-nested-cleanup-v1, job-nested-cleanup-native-v1 and
+job-worker-cleanup-native-v1. Nested cancellation driver holds outer and inner
+requests active while inner sleeps, then retires worker and requires both
+heaps recovered after ten cycles. Host syntax/bounds pass, no runtime success
+claimed yet. Normal nested/worker checks guard completion alongside cleanup.
+
+
+Added retired-master completion gate: a master submits to a sibling worker
+then exits; worker pauses in source until caller confirms master invalid,
+completes afterward and retires. Ten measured cycles require both heaps and
+continued console. Started task-exe-retired-master-red-v1 on cleanup cross-v3.
+This tests normal completion's borrowed master pointer, separate from active
+worker cancellation; no lifetime success or master-pointer safety claimed.
+
+
+Memory19 cleanup gates GREEN on cleanup cross-v3 with unchanged pins and
+exact VGA, TCG486,-fpu/8MiB: active cancellation (12 commands), waiting-master
+cancellation (13), nested cancellation (13), normal nested completion (22) and
+normal worker completion (24). Active/nested gates require eleven retired
+workers (warmup plus ten measured), caller0/root0; waiting master resumes,
+scans cancelled done result0 and both heaps recover across ten measured cycles.
+Normal nested/worker fixtures independently match source bytes. This resolves
+the observed1200-byte selected active-job leak and validates nested records,
+not all jobs or master lifetime. Retired-master red remains live separately.
+
+
+Console 60 source-link cross-v1 is terminal FAIL: the host compiler reports
+undefined NativeSourceClampI64 at the trailing #undef ClampI64. The native
+adapter now retains its alias, matching the existing raster/formatter/raw
+adapters. A fresh two-generation bootstrap is running before cross-v2; no
+native source-helper pass is claimed. The original source-link driver now
+pins the extracted shared body and labels its five-check evidence correctly.
+
+
+Corrected source-link adapter bootstrap is terminal PASS for both generations.
+Fresh native cross-v2 runs at build/source-link-runtime-cross-v2. Added a
+separate sparse-debug-map contract using a real compiled function and controlled
+U32 line addresses: first line, interior interpolation, filename/link, empty
+map and exact caller heap recovery. Original reference runs at
+build/source-debug-map-original-v1. These are pending runs, not passes;
+compiler-generated debug maps and cross-task ownership remain separate gates.
+
+Original sparse-debug-map reference v1 is terminal PASS with mask 63 and
+unchanged pinned inputs. This establishes the expected interpolation and
+interior matching behavior for the native no-FPU gate; native qualification
+remains pending cross-v2.
+
+
+Source-link cross-v2 compiled all modules but is terminal FAIL at packaging:
+the builder accidentally expected compiler version 60 and console version 59.
+Checks now match Compiler 59 / Console 60; cross-v3 is running. Original
+source-link ownership v1 is terminal PASS mask 63: both helpers return exact
+strings allocated in another real task, preserve the caller heap, recover the
+owner heap on Free and recover the caller after task retirement. Native gates
+remain pending the packaged image.
+
+
+Console 60 cross-v3 is terminal PASS: all retained modules package, native
+kernel 497720 bytes, and 386 instruction audit passes 96 BIOS / 209 protected
+instructions. Three independent native gates are running on writable copies
+of build/source-link-runtime-cross-v3/kernel.img: source-links-native-v2,
+source-debug-map-native-v1 and source-link-ownership-native-v1. All use
+486,-fpu / 8 MiB, byte-exact fixture checks and pinned inputs. Build success
+does not yet establish those runtime contracts or current release generations.
+
+
+Added ExePrint TDD prerequisite for full address-link conversion. Six checks
+exercise numeric/string format execution, live-task symbol reads/assignment
+and ten repeated expressions with exact caller heap. Original reference
+build/exe-print-original-v1 and native expected-red build/exe-print-native-red-v1
+are running. No formatted-execution provider or exception/nested-state
+qualification is claimed. Source-link native gates have reached actual fixture
+compilation and remain live; they are not yet passing evidence.
+
+
+All three native source-helper v1/v2 runs are terminal FAIL during fixture
+compilation: public CHashFun does not expose dbg_info. Fixtures now access
+that original metadata through canonical CHashSrcSym, its actual base class;
+no helper implementation is changed. Paired references and native gates must
+be rerun with these corrected pinned fixtures. ExePrint original v1 is terminal
+PASS mask 63 including ten exact-heap execution cycles; native red remains live.
+
+Corrected CHashSrcSym fixture runs started: original source-links-v3,
+source-debug-map-v2 and source-link-ownership-v2; native source-links-v3,
+source-debug-map-v2 and source-link-ownership-v2. Output directories carry
+those names under build/. Earlier passes use the prior fixture type and
+do not substitute for these current paired checks.
+
+Corrected original metadata fallback v3 PASS mask31 and sparse debug-map
+v2 PASS mask63. Original ownership v2 FAIL mask31: exact strings and
+caller/owner allocation/free checks pass, but final post-Kill caller recovery
+does not. This contradicts the earlier ownership pass and requires retirement
+investigation; do not claim broad ownership success. Native ExePrint red is
+terminal FAIL at the absent provider lookup, establishing the missing API.
+
+
+Console 60 cross-v3 native source-links-v3 PASS31, sparse-debug-map-v2
+PASS63 and ownership-v2 PASS63, terminal with exact transferred fixtures and
+unchanged pins, 486,-fpu / 8 MiB. Original ownership observation v1 PASS63
+with caller delta0. Original TaskEnd invalidates then queues TaskDel for
+delayed reclamation (DYING_JIFFIES=200); immediate post-Kill heap comparison
+is timing-sensitive. Ownership fixture now waits up to 2000 Sleep(1) cycles
+for exact caller recovery, preserving strict caller/owner checks around helper
+allocation/free. Fresh paired ownership reruns follow. Compiler-generated
+maps and helper allocation exceptions remain unqualified.
+
+Bounded ownership original-v3/native-v3 are live. Current-image absolute
+filename and Raw regression runs are also live at
+build/file-name-abs-source-links-regression-v1 and
+build/raw-source-links-regression-v1. Full terminal link actions and current
+self-hosted release generations remain open despite helper passes.
+
+Bounded-retirement original ownership v3 is terminal PASS mask63. Native
+v3 and current filename/Raw regressions remain live; their eventual results
+must be recorded before claiming this refined gate or those regressions.
+
+Bounded native source ownership v3 and Raw source-link regression v1 are
+terminal PASS. Absolute filename regression remains live. Added ExePutS
+prerequisite reference at build/exe-puts-original-v1: borrowed source and
+filename, final expression result, CCF_JUST_LOAD status/no execution, compiler
+control/title restoration and ten exact-heap cycles. Original JUST_LOAD returns
+TRUE on successful compilation; current ConsoleSourceResult last_value alone
+does not preserve that contract. Supplied hash context/options and exceptions
+need further gates before claiming a complete original execution API.
+
+Current Console 60 absolute filename regression is terminal PASS mask63
+with unchanged pinned inputs and byte-exact fixture transfer. Together with
+Raw regression PASS and all three source-helper contracts, this qualifies
+those recorded behaviors on cross-v3; it does not close terminal startup,
+ExePutS/ExePrint, full link dispatch or release self-hosting.
+
+ExePutS original v1 is terminal PASS mask63 with unchanged pins: borrowed
+input, final result, successful JUST_LOAD/no assignment, compiler boundary,
+title restoration and ten exact-heap execution cycles are established.
+Native implementation and broader context/exception gates remain next work.
+
+
+ExePutS context TDD reference started at build/exe-puts-context-original-v1.
+It inspects the actual live CCmpCtrl during executed functions: inherited
+options, supplied hash mask and ASM-expression flag, restored parent boundary,
+unchanged borrowed context and caller heap recovery. The native command-input
+interface currently lacks those context inputs; a default-only ExePrint
+adapter would not close the original execution API. Native ExePutS baseline
+runs at build/exe-puts-native-red-v1 before implementation. No context pass
+or native execution provider is claimed yet.
+
+ExePutS context original v1 is terminal PASS mask63 with unchanged pinned
+inputs. Next architecture work must add explicitly borrowed synchronous hash
+context and option inheritance to CI386CommandInput, seed the new control
+before parser/service creation, preserve parent control lifetime on every
+exit, and retain original JUST_LOAD result and task-title restoration. Version
+checks must change only for interfaces actually changed. Build/normal/nested/
+exception and exact-heap gates must qualify that implementation before exposing
+ExePutS/ExePrint for complete address-link conversion.
+
+
+Compiler 60 candidate adds synchronous borrowed hash-context and option
+inheritance fields to CI386CommandInput. When requested with a live parent
+control, it copies parent opts and the supplied complete CLexHashTableContext,
+including old ASM-expression flag, before entering/lexing the new control.
+Existing callers zero the full input record and retain their prior behavior.
+Only Compiler service version/audit/result changes from59 to60; Console stays60.
+Fresh two-generation bootstrap is running. No native context or execution API
+pass is claimed; full ExePutS/ExePrint wiring, flags/title/result/exception gates
+and fresh image regressions remain required. Native ExePutS red-v1 is terminal
+FAIL at the missing provider with unchanged pinned inputs.
+
+Compiler 60 context candidate bootstrap is terminal PASS for both generations;
+fresh native cross-build runs at build/execution-context-runtime-cross-v1.
+Inspection identifies a remaining context integration constraint: current
+I386FrontendServices requires glbl_hash_table==task.hash_table and FrontendNew
+replaces local/global/lookup tables with its publication overlay. Supplied
+contexts may reference a parent compilation overlay, so copying the input
+record alone does not complete original hash-context semantics. Retained
+lookup/publication ownership must be reconciled and tested before APIs are
+qualified. No full context support claim follows from bootstrap success.
+
+
+Compiler60 / Console60 context cross-v1 is terminal PASS, native kernel
+497720 bytes and 386 audit96/209. Source-link regression is running against
+that image. Added original private-context reference at
+build/exe-puts-private-context-original-v1: private macro lookup, declaration
+publication/read in a separate borrowed table, absence from task globals,
+parent/context restoration and full caller recovery after table deletion.
+FrontendPublish currently assumes destination=task scope and parent=destination;
+those assumptions must accommodate the original supplied-table destination
+without losing retained-symbol ownership. This fresh build alone does not
+qualify new context behavior, and execution APIs remain missing.
+
+Original private-context v1 is terminal PASS mask63 with unchanged pins.
+A supplied private context resolves its private macro, receives a newly
+compiled global, reads that global and leaves task globals untouched; deleting
+the table recovers the caller data heap exactly. The native port must preserve
+publication destination as well as lookup, not flatten supplied tables into
+the root task scope. Nested-job regression runs at
+build/job-nested-compiler-context-regression-v1 alongside source-link regression.
+
+
+Compiler60 source-link and nested-job regression v1 are terminal PASS with
+unchanged pins. Added public deletion TDD prerequisite: HashRemDel on an
+actual JIT-compiled global, verify disappearance and continued console. Native
+red runs at build/compiled-symbol-delete-native-red-v1. Original v1 failed
+before guest execution due to a mistaken pinned KHashA filename; separate
+reference driver fixes the path while leaving the live native driver unchanged,
+and original v2 runs at build/compiled-symbol-delete-original-v2. Inspection
+shows public symbol destruction uses MemoryFree whereas compiler metadata
+is arena-owned; the deletion gate must establish actual interoperability
+before private-context publication is qualified.
+
+
+Compiled-symbol deletion original v2 is terminal PASS mask7. Native red-v1
+compiles/transfers the real fixture then halts BAD PUBLIC MEMORY in JRContract,
+confirming arena metadata cannot pass directly through public MemoryFree.
+Memory22 candidate routes SymbolHashDel release callbacks through a validated
+exact arena allocation in the current/ancestor symbol-scope chain, using
+I386HeapFree for that owner; other allocations retain MemoryFree. Existing
+full shared symbol traversal is unchanged, including global data and members.
+Only Memory service version/audit changes21->22. Bootstrap is running; native
+delete, normal public hash and parent-scope cleanup still require qualification.
+The original pinned KHashA path is corrected in the main deletion driver now
+that its prior native run is terminal.
+
+
+Memory22 symbol-delete bootstrap is terminal PASS for both generations.
+Fresh cross-v1 runs at build/compiled-symbol-delete-runtime-cross-v1. Added
+a mixed allocator/reference contract: remove actual JIT global, function and
+class plus a public-heap macro and table; require exact caller public heap
+recovery and continued console. Original reference runs at
+build/mixed-symbol-delete-original-v1. Retained executable storage reclamation
+and different-task deletion remain separate requirements.
+
+
+Memory22 deletion cross-v1 is terminal PASS, 497720 native kernel bytes,
+386 audit96/209. Mixed original v1 FAIL31: every deletion succeeds but a
+pre-deletion heap baseline incorrectly counts released compiled metadata as
+retention. The fixture now measures public macro/table allocation recovery
+after compiled deletions, preserving exact accounting for that cycle. Original
+mixed-v2, native mixed-v1 and native compiled-delete-v1 are running on fresh
+output/copies. No native deletion success is claimed until those terminate.
+
+Corrected mixed-symbol original v2 is terminal PASS mask63 with unchanged
+pins: actual compiled global/function/class removal and independent public
+macro/table cycle recover exactly. Native deletion gates remain live.
+
+
+Memory22 native compiled-symbol deletion v1 is terminal PASS mask7: actual
+compiled global removed through public HashRemDel and final console42, exact
+fixture transfer and unchanged pins. Mixed native v1 remains live. Added
+parent-scope paired test: child finds an inherited actual compiled global,
+deletes it from the supplied parent table, both scopes see absence and child
+retires. Original/native v1 run at build/parent-symbol-delete-*-v1. Its
+post-retirement heap baseline also includes deleted metadata and needs the
+original reference before making a heap-safety claim.
+
+Native mixed-symbol deletion v1 is terminal PASS mask63 with exact fixture
+transfer and unchanged pins: compiled global/function/class and public macro
+removal coexist, and the independent public macro/table cycle recovers exactly.
+Original parent deletion v1 FAIL31: inherited deletion succeeds, but equality
+against a baseline before deleting parent metadata is invalid. No parent
+retirement heap claim follows from that run.
+
+Parent deletion native-v1 also terminates PASS63, but the corresponding
+original31 invalidates that cross-platform pre-deletion heap assertion. Both
+corrected v2 gates now check exact child heap preservation while deleting
+parent-owned metadata, plus inherited lookup/removal/absence and Kill success.
+They do not claim parent heap equality against freed metadata. The separate
+strict source-link ownership/retirement gate runs on Memory22 at
+build/source-link-ownership-memory22-regression-v1. Corrected paired parent
+runs are build/parent-symbol-delete-original-v2 and native-v2.
+
+Corrected parent-scope original v2 is terminal PASS mask63 with unchanged
+pins, including exact child heap preservation. Corrected native v2 and
+Memory22 ownership/retirement regression remain live.
+
+
+Memory22 corrected parent deletion native-v2 PASS63 and source-link ownership
+regression-v1 PASS63, terminal with exact fixture transfer and unchanged pins.
+Parent deletion preserves the child heap; independent task/string ownership
+and bounded retirement recover caller and owner heaps exactly.
+
+Compiler61 candidate validates original public hash tables through retained
+task-heap capacity callbacks, while preserving arena table validation. Frontend
+services accept that validated supplied global table and publication now moves
+symbols into frontend.parent (the requested table) instead of forcing the
+task-global scope. Executable storage retains its existing task lifetime policy,
+matching shared SymbolHashVisit's borrowed-code behavior. Bootstrap is running.
+APIs/context runtime gates remain unqualified; parent-control parser overlays
+and distinct local/lookup contexts still require integration and ownership
+tests before claiming full original context semantics.
+
+Compiler61 private-publication candidate bootstrap is terminal PASS for both
+generations. Cross-build runs at build/private-context-publication-cross-v1.
+Original private-context behavior is established, but native runtime context
+and execution-provider qualification remain required.
+
+
+Compiler61 private-publication cross-v1 is terminal PASS (497720 kernel bytes,
+386 audit96/209). Original execution-exception v1 is terminal timeout, not a
+pass: the retained screenshot shows malformed syntax entered the original
+interactive compiler debugger at Compiler.HC. The revised reference explicitly
+throws Compiler with no_log=TRUE alongside Break/custom exceptions, separating
+return/propagation semantics from interactive malformed-source diagnostics.
+Malformed-source debugger automation, exception cleanup and native execution
+provider wiring remain open.
+
+Revised exception reference v2 and current-image nested-job publication
+regression v1 are live. Public execution-provider wiring is pending these
+reference semantics; candidate publication is not yet a native private-context
+API pass. Native supplied-table/local-context gates and release generations
+remain required.
+
+Original explicit-exception v2 is terminal PASS mask7 with unchanged pins:
+ExePutS returns0 for explicitly thrown Break/Compiler and propagates EUUser.
+This does not qualify malformed-source debugger handling or exception
+control/heap recovery. Current publication nested-job regression remains live.
+
+
+Compiler61 publication nested-job regression v1 is terminal PASS. New
+Console61 / Compiler62 candidate exposes ExePutS and ExePrint (198 providers).
+Complete original ExePrint body is shared via Compiler/ExePrintCore.HC at its
+original CMain position. ExePutS borrows source and optional filename/context,
+uses configured temporary filename when absent, restores original title policy,
+returns load-only acceptance or final expression result, and propagates custom
+exceptions/OutMem while returning0 for Compiler/Break. Command input passes
+original compiler flags into control creation and context inheritance precedes
+lexing. Nested execution leaves exception inspection to the caller boundary.
+Fresh bootstrap is running; no native execution contract is qualified yet.
+Parent parser overlays, distinct local contexts, answer metadata, wider flags,
+malformed-source debugger behavior and exception/fault ownership remain gates,
+alongside the established paired normal/context/private/exception tests.
+
+Execution API candidate passes fresh two-generation bootstrap. Native
+cross-build runs at build/execution-api-runtime-cross-v1. This does not yet
+qualify public headers, native providers, context ownership or exception
+recovery; those paired gates must run on the resulting image.
+
+
+Console61 / Compiler62 execution-api cross-v1 is terminal PASS, kernel497720
+bytes and 386 audit96/209. Six native gates are live on independent writable
+copies: exe-puts-native-v1, exe-print-native-v1, exe-puts-context-native-v1,
+exe-puts-private-context-native-v1, exe-puts-exceptions-native-v1 and
+exe-puts-answer-native-v1. The new original answer reference runs at
+exe-puts-answer-original-v1, requiring actual task answer value/type, new-answer
+flag, updated nonnegative timing and untouched state under JUST_LOAD. Native
+answer metadata is not yet implemented/qualified by returning a value alone.
+All API runtime, contextual publication and exception success remain pending.
+
+Original task-answer reference v1 is terminal PASS mask63 with unchanged
+pins: actual I64/F64 values/types, new-answer flag, updated nonnegative
+execution timing and complete JUST_LOAD answer-state preservation. Native
+answer-state v1 is an expected-red gate until the corresponding task fields
+are updated; timing must measure real execution rather than use a constant.
+Six native API gates remain live on the fixed cross-v1 image.
+
+All six execution native-v1 runs are terminal FAIL before fixture execution:
+ROOT USER HEADERS begin, warnings while publishing canonical CompilerTypes,
+then FAIL native kernel. Cross-build/386 audit success is therefore insufficient
+to qualify boot/public headers. Full compiler-type publication or its memory/
+ownership requirements must be diagnosed and fixed without dropping public
+context semantics. No native execution, context or answer pass is claimed.
+
+
+Execution startup repair candidate extracts the complete original
+CLexHashTableContext definition byte-for-byte into Kernel/LexHashContextTypes.HH,
+which CompilerTypes includes at its original position. PublicExecution now
+includes that record directly rather than eagerly loading all compiler classes.
+Full CompilerTypes remains available unchanged to callers needing those records;
+context fixtures still include it explicitly. Rejected command input now logs
+exception/errors/warnings to debugcon before startup failure, without requiring
+an already rendered VGA screen. Root cause is not yet established as OOM.
+Fresh two-generation bootstrap is running before cross-v2 and native gates.
+
+Context-header startup repair bootstrap is terminal PASS for both
+generations. Cross-v2 runs at build/execution-api-runtime-cross-v2; native
+boot/publication and execution gates remain unqualified until tested.
+
+
+Execution API header-repair cross-v2 is terminal PASS, kernel497720 bytes,
+386 audit96/209. Native normal ExePutS/ExePrint v2 are running before broader
+context gates. Timing original v1 FAIL63 showed timing is per expression: a
+following42 expression overwrote Sleep time. Revised v2 executes EUWait()
+which sleeps20ms and returns42 in one expression, requiring answer_time>=10ms.
+The reference is running; no native boot/runtime pass yet. This preserves real
+per-expression timing rather than measuring whole source or substituting0.
+
+Per-expression timing original v2 is terminal PASS mask127 with unchanged
+pins: all prior answer-state checks plus an actual20ms function call recording
+at least10ms elapsed. Native v2 normal/format tests remain live during header
+publication; answer updates must later pass this timed gate with no FPU.
+
+
+Header-repaired cross-v2 reaches ROOT USER HEADERS ok and actual native API
+execution. Normal ExePutS/ExePrint v2 are terminal FAIL at screen validation:
+retained screens show final mask63, but extra nested result lines differ from
+the original API. This is not a native contract PASS. Console62 / Compiler63
+candidate uses a capture-only callback for nested execution and retains output
+for interactive commands. An optional clock callback surrounds each actual
+executed expression and records task answer/type/new flag/elapsed seconds,
+using the real retained PIT jiffy clock at millisecond resolution. JUST_LOAD
+skips execution and answer updates. Fresh bootstrap is running; silent output,
+answer metadata and measured delayed-expression tests require fresh native
+qualification. Private/local contexts and exception recovery remain open.
+
+
+Console62 / Compiler63 silent-output and answer-state candidate bootstrap
+is terminal PASS for both generations. Native cross-v3 runs at
+build/execution-api-runtime-cross-v3. Normal/context/private/exception/timing
+contracts must qualify this new image; previous mask63 screenshots are not
+passing screen/output evidence and do not qualify the updated clock path.
+
+
+Execution API silent-output/answer cross-v3 is terminal PASS, kernel497720
+bytes and 386 audit96/209. Six native-v3 gates started: normal ExePutS,
+ExePrint, inherited context, private context, explicit exceptions and actual
+per-expression answer timing. Exact screens, byte-exact transferred fixtures
+and unchanged pins remain required; these are pending runs.
+
+Original ExePrint failure red-v1 is terminal FAIL mask1: custom exception
+propagation succeeds, but parent compiler control restoration and caller heap
+recovery fail. This is an original cleanup defect, not a passing oracle to
+imitate. Native red-v1 remains live on cross-v2. Shared formatting/source cleanup
+and retained original control/title/code ownership need fault-path repair,
+while preserving exception classes and the full execution model.
+
+Native ExePrint failure red-v1 is terminal FAIL on cross-v2: JRContract
+logs UNHANDLED EPFail then halts, despite the caller try/catch. Explicit manual
+rethrows in ConsoleSourceResult/ExePutS need inspection against native automatic
+catch propagation before buffer/control recovery can be qualified. Original
+red-v1 propagated EPFail but failed cleanup (mask1); neither path meets the
+required exception contract. Six cross-v3 native gates remain live.
+
+
+Cross-v3 native normal ExePutS, ExePrint and private-table contracts PASS63;
+per-expression answer/timing PASS127, terminal with exact fixture transfer,
+exact screens and unchanged pins. Inherited-context v3 FAIL during fixture
+compilation: Fs.last_cc retains the root opaque CCmpCtrl pointer type even after
+full CompilerTypes is loaded locally. Helpers now assign it to the complete
+local CCmpCtrl view (as the already passing private-context fixture does),
+retaining all field/options/mask checks. Fresh paired reference/native runs
+must qualify this fixture. Direct opaque-member completion remains a public
+record integration gap, not hidden by this typed-view test.
+
+Exception repair candidate lets unhandled catches return to the dispatcher
+rather than manually throw while selected, and shared ExePrint frees formatted
+source on propagation. Explicit handled Compiler/Break remains silent. Clock
+reads the64-bit jiffy counter under IRQ exclusion before conversion. Bootstrap
+is running; exception/failure/normal gates need a fresh image. Original ExePutS
+control/title cleanup defect remains separate and unresolved.
+
+Exception-repair bootstrap is terminal PASS for both generations. Fresh
+cross-v4 runs at build/execution-api-runtime-cross-v4. Typed-view context
+original-v2/native-v4 runs are live; native-v4 here uses the frozen cross-v3
+image to isolate existing context behavior, not the new exception repair.
+
+
+Typed-view context original-v2 is terminal PASS63. Exception-repair cross-v4
+is terminal PASS, kernel497720 bytes and 386 audit96/209. Fresh native-v4
+explicit-exception, formatted-failure and normal-format gates run on that image.
+The inherited-context native-v4 still uses cross-v3 and remains live separately.
+
+Original cleanup repair candidate preserves the full ExeCmdLine loop but tracks
+its pending machine-code buffer, releases nonpersistent temporary code, restores
+unlocked title and frees its saved title on propagated exceptions. ExePutS removes
+and deletes a successfully compiled control on unhandled runtime exceptions;
+existing handled Compiler/Break behavior and its separate parser-cleanup policy
+remain unchanged. Shared ExePrint already frees formatted source on propagation.
+Fresh original bootstrap is running before rerunning the original failure gate.
+These changes are unqualified until reference cleanup and normal regressions pass.
+
+Typed-view inherited-context native-v4 is terminal FAIL on cross-v3:
+fixture compiles, then a context call logs UNHANDLED OutMem. The native
+FrontendServices returns NULL for unsupported parent parser-overlay tables and
+CommandInput reports NULL as OutMem, so this is not evidence of actual RAM
+exhaustion. Supplied active-parent overlay lookup/publication ownership must
+be implemented; direct private public-table PASS does not close that gate.
+
+Original control/title/code cleanup bootstrap is terminal PASS for both
+generations. Fresh original formatted-failure fixed-v1 and normal-format
+cleanup-regression-v1 references are running. Native cross-v4 exception gates
+remain live; cross-v4 does not include the later original-only cleanup source
+epoch, so current full release qualification still requires a fresh epoch.

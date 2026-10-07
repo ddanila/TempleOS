@@ -889,8 +889,12 @@ U8 *CatPrint(U8 *_dst,U8 *fmt,...)
 
 U8 *MStrPrint(U8 *fmt,...)
 {//MAlloc StrPrint.  See $LK,"StrPrintJoin",A="MN:StrPrintJoin"$().
-  U8 *res,*buf=StrPrintJoin(NULL,fmt,argc,argv);
-  res=StrNew(buf);
+  U8 *res=NULL,*buf=NULL;
+  try {
+    buf=StrPrintJoin(NULL,fmt,argc,argv);
+    res=StrNew(buf);
+  }
+  catch { Free(buf); }
   Free(buf);
   return res;
 }

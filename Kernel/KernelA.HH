@@ -33,7 +33,7 @@ extern class CTask;
 #define inf	(0x7FF0000000000000(F64))
 #define ì	(0x7FF0000000000000(F64))
 #define pi	(0x400921FB54442D18(F64))
-#define ã	(0x400921FB54442D18(F64))
+#include "/Kernel/MathConstants.HH"
 #define exp_1	(0x4005BF0A8B145769(F64)) //The number "e"
 #define log2_10 (0x400A934F0979A371(F64))
 #define log2_e	(0x3FF71547652B82FE(F64))
@@ -521,20 +521,8 @@ class CWinMgrTimingGlbls
   I64	calc_idle_cnt;
 };
 
-#define WINMGR_FPS	(30000.0/1001)
-#define WINMGR_PERIOD	(1001/30000.0)
-
-public class CWinMgrGlbls
-{
-  I64	updates;
-  F64	ode_time,
-	last_ode_time,
-	fps,		//You can read but not write this. You have no control.
-	ideal_refresh_tS,
-	last_refresh_tS;
-  CWinMgrTimingGlbls *t;
-  Bool	show_menu,grab_scroll,grab_scroll_closed;
-};
+#define WINDOW_MANAGER_TIMING_DEFINED
+#include "/Kernel/WindowManagerTypes.HH"
 
 #help_index "AutoComplete"
 #define ACf_INIT_IN_PROGRESS	0
@@ -646,12 +634,7 @@ public class CATARep
 #define ATAR1_CTRL	2
 
 #help_index "File/FileNames"
-#define FILEMASK_JIT	"*.HC*;*.HH*"
-#define FILEMASK_AOT	"*.HC*;*.HH*;*.PRJ*"
-#define FILEMASK_SRC	"*.HC*;*.HH*;*.IN*;*.PRJ*"
-#define FILEMASK_DD	FILEMASK_SRC ";*.DD*"
-#define FILEMASK_TXT	FILEMASK_DD ";*.TXT*"
-#define FILEMASK_GR	"*.GR*"
+#include "/Kernel/FileMaskTypes.HH"
 
 #help_index "File/Low Level"
 #define BLK_SIZE_BITS	9
@@ -872,12 +855,6 @@ class CISOPriDesc
 #define FUf_SINGLE		9
 #define FUf_JUST_DIRS		10
 #define FUf_JUST_FILES		11
-#define FUf_JUST_TXT		12
-#define FUf_JUST_DD		13
-#define FUf_JUST_SRC		14
-#define FUf_JUST_AOT		15
-#define FUf_JUST_JIT		16
-#define FUf_JUST_GR		17
 #define FUf_Z_OR_NOT_Z		18
 #define FUf_CLUS_ORDER	19
 #define FUf_SCAN_PARENTS	20
@@ -898,12 +875,6 @@ class CISOPriDesc
 #define FUF_MAP			0x0000080 //m
 #define FUF_EXPAND		0x0000100 //x
 #define FUF_SINGLE		0x0000200 //s
-#define FUF_JUST_TXT		0x0001000 //T
-#define FUF_JUST_DD		0x0002000 //$$
-#define FUF_JUST_SRC		0x0004000 //S
-#define FUF_JUST_AOT		0x0008000 //A
-#define FUF_JUST_JIT		0x0010000 //J
-#define FUF_JUST_GR		0x0020000 //G
 #define FUF_CLUS_ORDER	0x0080000 //O Move disk head one direction
 #define FUF_FLATTEN_TREE	0x0200000 //f
 #define FUF_WHOLE_LABELS	0x0400000 //l
@@ -916,13 +887,7 @@ class CISOPriDesc
 
 #help_index "File/Low Level"
 //See $LK,"ST_BLKDEV_TYPES",A="MN:ST_BLKDEV_TYPES"$
-#define BDT_NULL		0
-#define BDT_RAM			1
-#define BDT_ATA			2
-#define BDT_ISO_FILE_READ	3
-#define BDT_ISO_FILE_WRITE	4
-#define BDT_ATAPI		5
-#define BDT_TYPES_NUM		6
+#include "/Kernel/BlkDev/BlockDevTypes.HH"
 
 #define BDF_REMOVABLE		0x001
 #define BDF_INITIALIZED		0x002
@@ -1000,35 +965,7 @@ class CFreeLst
   I64	start,size;
 };
 
-#define DRVS_NUM		26
-
-#define DRV_SIGNATURE_VAL	'DVSV'
-public class CDrv
-{
-//Don't access ->drv_let directly in case a drive has been remapped.
-  //Use $LK,"Drv2Let",A="MN:Drv2Let"$().
-  I64	locked_flags;
-  U32	dv_signature;
-  U8	drv_let,pad;
-  U16	fs_type;
-  I64	drv_offset,
-	size,
-	prt_num,
-	file_system_info_sect,
-	fat1,fat2,
-	root_clus,
-	data_area,
-	spc; //sectors per clus
-  CDate fat32_local_time_offset;
-  CTask *owning_task;
-  CBlkDev *bd;
-
-  CFAT32FileInfoSect *fis;
-  I64	fat_blk_dirty,
-	cur_fat_blk_num;
-  U32	*cur_fat_blk;
-  CFreeLst *next_free,*last_free;
-};
+#include "/Kernel/BlkDev/DriveTypes.HH"
 
 #define DSK_CACHE_HASH_SIZE	0x2000
 
@@ -1206,23 +1143,7 @@ public class CViewAngles
 };
 
 #help_index "Menus"
-public class CMenuEntry
-{
-  CMenuEntry *next;
-  CMenuEntry *sub;
-  U8	name[32];
-  I64	msg_code,arg1,arg2;
-  Bool	checked,dir,pad[6];
-};
-
-public class CMenu
-{
-  CMenu *next;
-  CMenuEntry *sub;
-  CTask *task;
-  I64	flags;
-  U8	attr,pad[7];
-};
+#include "/Kernel/MenuTypes.HH"
 
 #help_index "Task"
 class CBpt
@@ -1272,17 +1193,7 @@ public class CTaskSettings
 };
 
 #help_index "Task"
-//CTask.border_src
-#define BDS_CONST		0
-#define BDS_CUR_DRV		1
-#define BDS_ED_FILENAME_DRV	2
-
-//CTask.title_src
-#define TTS_CONST		0
-#define TTS_LOCKED_CONST	1 //This is not strictly enforced
-#define TTS_TASK_NAME		2
-#define TTS_ED_FILENAME		3
-#define TTS_CUR_LEX		4
+#include "/Kernel/TaskDisplayFlags.HH"
 
 #include "/Kernel/TaskFlags.HH"
 
@@ -1419,17 +1330,7 @@ public class CSysFixedArea
 
 #define "Char/Operations"
 //Flags for StrUtil and MStrUtil
-#define SUF_REM_CTRL_CHARS	0x001
-#define SUF_REM_LEADING		0x002
-#define SUF_REM_TRAILING	0x004
-#define SUF_REM_SPACES		0x008
-#define SUF_SINGLE_SPACE	0x010
-#define SUF_TO_UPPER		0x020
-#define SUF_TO_LOWER		0x040
-#define SUF_S2T			0x080
-#define SUF_T2S			0x100 // Only works with MStrUtil
-#define SUF_SCALE_INDENT	0x200
-#define SUF_SAFE_DOLLAR		0x400
+#include "/Kernel/StringUtilFlags.HH"
 
 //Flags for StrFind
 #define SFF_IGNORE_CASE		1

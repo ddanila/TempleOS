@@ -10,9 +10,11 @@ U0 MemoryMessageWake(CTask *task)
     task=task->popup_task;
   }
 }
+class CI386TimedMessageJob:CJob { I64 arrival_jiffy; U64 timing_signature; };
 CJob *MemoryMessageNew(CTask *master,I64 msg_code,I64 arg1,I64 arg2,I64 flags)
 {
-  CJob *job=MemoryCAlloc(sizeof(CJob),memory_root);
+  CI386TimedMessageJob *job=MemoryCAlloc(sizeof(CI386TimedMessageJob),memory_root);
+  job->arrival_jiffy=-1; job->timing_signature=0x54494D454B455931;
   job->master_task=master; job->job_code=JOBT_MSG;
   job->msg_code=msg_code;
   if(msg_code<0) job->msg_code=-msg_code;
@@ -67,14 +69,27 @@ CJob *MemoryTaskMsg(CTask *target,CTask *master,
   if(msg_code<0) MemoryTaskMsg(target,master,-msg_code+1,arg1,arg2,flags);
   return job;
 }
+CJob *MemoryPostMsgCore(CTask *task,I64 msg_code,I64 arg1,I64 arg2,I64 flags)
+{
+  if(!MemoryTaskValidate(task)) return 0;
+  if(task->task_flags&(1<<TASKf_INPUT_FILTER_TASK))
+    return MemoryTaskMsg(task->last_input_filter_task,0,msg_code,arg1,arg2,
+      flags|1<<JOBf_DONT_FILTER);
+  return MemoryTaskMsg(task,0,msg_code,arg1,arg2,flags);
+}
 U0 MemoryPostMsg(CTask *task,I64 msg_code,I64 arg1,I64 arg2,I64 flags=0)
 {
-  if(MemoryTaskValidate(task)) {
-    if(task->task_flags&(1<<TASKf_INPUT_FILTER_TASK))
-      MemoryTaskMsg(task->last_input_filter_task,0,msg_code,arg1,arg2,
-        flags|1<<JOBf_DONT_FILTER);
-    else MemoryTaskMsg(task,0,msg_code,arg1,arg2,flags);
-  }
+  MemoryPostMsgCore(task,msg_code,arg1,arg2,flags);
+}
+U0 MemoryPostKeyTimed(CTask *task,I64 code,I64 a,I64 b,I64 flags,I64 arrival)
+{//Use the same public filtering path; attach time before a consumer can run.
+  U32 irq=I386IrqSave;
+  CI386TimedMessageJob *job;
+  try {
+    job=MemoryPostMsgCore(task,code,a,b,flags);
+    if(job) job->arrival_jiffy=arrival;
+  } catch { I386IrqRestore(irq); }
+  I386IrqRestore(irq);
 }
 U0 MemoryMsg(I64 msg_code,I64 arg1,I64 arg2,I64 flags=0)
 {

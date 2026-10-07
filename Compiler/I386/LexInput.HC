@@ -17,6 +17,9 @@ I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
   }
   while(TRUE) {
 lex_step:
+    file=cc->lex_include_stk;
+    if(file->flags&LFSF_DOC && (!file->doc ||
+        file->doc->doc_signature!=DOC_SIGNATURE_VAL || !file->cur_entry)) return -1;
     if(LexBufferStep(cc,compiled_lines,&end)) {
       LexNormalizeChar(cc); return cc->last_U16;
     }
@@ -168,7 +171,7 @@ lex_step:
       cc->last_U16=TK_EOF; return TK_EOF;
     }
     if(file->next) {
-      if(!I386LexFilePop(heap,cc)) {
+      if(!I386LexFileAdvance(heap,cc)) {
         if(end) cc->cur_buf_ptr=end-1;
         return -1;
       }

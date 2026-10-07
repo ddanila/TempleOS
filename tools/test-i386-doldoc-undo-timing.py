@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,6 +36,7 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--serialized',action='store_true',help='Use separate QMP calls for each key')
+    parser.add_argument('--writable-copy',action='store_true',help='Run on a fresh disk copy without QEMU snapshot temporary files')
     args=parser.parse_args()
     if args.out.exists():parser.error('Use a fresh output directory')
     args.out.mkdir(parents=True)
@@ -44,9 +46,15 @@ def main():
     report=dict(result='running',input_sha256=inputs,
                 injection='serialized' if args.serialized else 'single QMP batch',
                 scope='Continuous typing undo and two-second-separated runs, exact VGA; not all undo behavior or resource qualification')
+    disk=args.disk
+    if args.writable_copy:
+        disk=args.out/'working.img'
+        shutil.copyfile(args.disk,disk)
+    report['disk_policy']='writable copy' if args.writable_copy else 'QEMU snapshot'
     try:
         report['behavior']=runpy.run_path(str(helper))['run_input'](
-            args.disk,args.out/'behavior',cpu='486,-fpu',qmp_stdio=True,
+            disk,args.out/'behavior',cpu='486,-fpu',qmp_stdio=True,
+            snapshot=not args.writable_copy,
             startup_check={'status':'ok','answers':[],'commands':commands(not args.serialized)})
         report['result']='pass'
     except Exception as error:

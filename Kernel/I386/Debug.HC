@@ -8,8 +8,8 @@ U8 *Caller(I64 num=1)
   CI386Frame *frame=GetRBP;
   if(!task || !task->stk || num<0 || num>task->stk->stk_size/sizeof(CI386Frame)) return 0;
   while(num--) {
-    frame=I386FrameParent(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
+    frame=I386TaskFrameParent(task,frame);
     if(!frame) return 0;
   }
-  return I386FrameReturn(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
+  return I386TaskFrameReturn(task,frame);
 }

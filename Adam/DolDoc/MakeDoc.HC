@@ -16,7 +16,7 @@ See $LK,"::/Doc/DolDocOverview.DD"$
 #include "/Adam/DolDoc/DocGlobals.HC"
 
 #help_index "God"
-#define BIBLE_FILENAME	"::/Misc/Bible.TXT.Z"
+#include "/Adam/God/BibleTypes.HH"
 
 #include "DocExt"
 #include "DocLock"

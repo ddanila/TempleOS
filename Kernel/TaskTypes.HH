@@ -1,6 +1,7 @@
 //Shared public records; callers provide their declared dependencies.
 #include "/Kernel/StringLimits.HH"
 #include "/Kernel/TaskFlags.HH"
+#include "/Kernel/TaskDisplayFlags.HH"
 #define TASK_SIGNATURE_VAL		'TskS'
 #define TASK_NAME_LEN			32
 #define TASK_EXCEPT_CALLERS		8

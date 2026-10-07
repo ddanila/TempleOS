@@ -31,7 +31,11 @@ def main():
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='CPU model for all native build/install boots')
     parser.add_argument('--qmp-stdio', action='store_true')
+    parser.add_argument('--build-command-timeout', type=int, default=3600,
+                        help='Per-module native rebuild limit in seconds')
     args = parser.parse_args()
+    if args.build_command_timeout <= 0:
+        parser.error('Build command timeout must be positive')
     runtime = ['--accel', args.accel, '--cpu', args.cpu]
     if args.qmp_stdio:
         runtime.append('--qmp-stdio')
@@ -52,6 +56,7 @@ def main():
     out.mkdir(parents=True)
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
               'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio,
+              'build_command_timeout': args.build_command_timeout,
               'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
 
@@ -105,7 +110,7 @@ def main():
         built = out / 'gen2-retained-build'
         run(built.name, 'test-i386-retained-build.py', '--disk', first / 'target.img',
             '--reference-exports', audited / 'exports', '--compare-installed', first / 'target.img',
-            '--out', built, *runtime)
+            '--out', built, '--command-timeout', args.build_command_timeout, *runtime)
         second, _ = generation(2, built)
         run('generation-identity', 'audit-i386-generations.py', '--first', first / 'target.img',
             '--second', second / 'target.img', '--out', out / 'generation-identity')

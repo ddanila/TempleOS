@@ -21,8 +21,9 @@ I64 NativeInputTest()
   LexFileSeed(child,StateAlloc(8)); cc->cur_buf_ptr=child->buf;
   if(!I386LexPush(&state_heap,cc)) return 72;
   saved=cc->cur_buf_ptr;
-  if(InputRead(cc,&lines)!=-1 || cc->cur_buf_ptr!=saved || cc->lex_include_stk!=child) return 73;
-  if(!I386LexPop(&state_heap,cc,FALSE)) return 74;
+  if(InputRead(cc,&lines)!='x' || cc->lex_include_stk!=root) return 73;
+  if(!I386LexPop(&state_heap,cc) || cc->lex_include_stk!=child ||
+      cc->cur_buf_ptr!=saved) return 74;
   root->flags=LFSF_DOC;
   if(InputRead(cc,&lines)!=-1 || cc->lex_include_stk!=child || cc->cur_buf_ptr!=saved) return 75;
   root->flags=0;

@@ -120,7 +120,7 @@ def run_committed_case(input_tool,build_tool,source,reference,out,boot_file,acce
     independent=input_tool.run_input(boot_disk,work/'independent',snapshot=not qmp_stdio,
         ram_mib=8,accel=accel,cpu=cpu,qmp_stdio=qmp_stdio,startup_timeout=180,startup_check={
             'status':'ok','answers':[],'command_timeout':120,
-            'commands':[('6*7;',['42']),('DocAllocationCheck;',['12'])]})
+            'commands':[('6*7;',['42']),('DocAllocationCheck;',['13'])]})
     return {'cut_lba':0,'interrupted_process':state['pid'],
             'interrupted_error':interrupted_error,'disk':'matches complete reference',
             'filesystem':integrity,'independent_boot':independent,'result':'pass'}

@@ -15,13 +15,7 @@ F64 Min(F64 n1,F64 n2)
     return n2;
 }
 
-F64 Max(F64 n1,F64 n2)
-{//Max of two F64s.
-  if (n1>=n2)
-    return n1;
-  else
-    return n2;
-}
+#include "/Kernel/MaxCore.HC"
 
 F64 Pow10I64(I64 i)
 {//F64 int powers of ten.
@@ -49,15 +43,7 @@ I16 RandI16()
   return res.i16[0];
 }
 
-U16 RandU16()
-{//Random U16.
-  I64 res=Fs->rand_seed;
-  res=LIN_CONGRUE_A*res^(res&0xFFFFFFFF0000)>>16+LIN_CONGRUE_C;
-  if (!Bt(&Fs->task_flags,TASKf_NONTIMER_RAND))
-    res^=GetTSC;
-  Fs->rand_seed=res;
-  return res.u16[0];
-}
+#include "/Kernel/RandU16Core.HC"
 
 I32 RandI32()
 {//Random I32.

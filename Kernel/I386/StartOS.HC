@@ -23,6 +23,7 @@ extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 
 //Initialize task-owned dictionaries through retained original document code.
 ConsoleDocumentStart;
+BibleInit;
 
 #include "/Kernel/I386/PublicTextBase.HH"
 
@@ -40,3 +41,6 @@ ConsoleDocumentStart;
 #include "/Kernel/I386/PublicMouse.HH"
 
 if(!NativeGraphicsStart) throw('Graphics',TRUE);
+
+#define I386_GRAPHICS_STARTED 1
+#include "/Kernel/I386/PublicRaster.HH"

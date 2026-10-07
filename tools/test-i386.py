@@ -127,6 +127,8 @@ def main():
     modes.add_argument('--lex-number', action='store_true', help='Test numeric/dot tokens against the original x64 lexer')
     modes.add_argument('--lex-string', action='store_true', help='Test shared string/character decoding and native reader failures')
     modes.add_argument('--lex-state', action='store_true', help='Test lexer snapshot state and native ownership against x64')
+    parser.add_argument('--lex-snapshot-boundary', action='store_true', help='With --lex-state, isolate snapshot restoration across an exhausted macro')
+    parser.add_argument('--lex-control', action='store_true', help='With --lex-state, isolate compiler-control ownership and cleanup')
     modes.add_argument('--symbols', action='store_true', help='Test shared compiler symbol layouts and HashVal against the legacy x64 kernel')
     modes.add_argument('--hash', action='store_true', help='Test native hash primitives against x64 hashing and table semantics')
     modes.add_argument('--arc-expand', action='store_true', help='Test native archive stream expansion against original compressed vectors')
@@ -156,32 +158,55 @@ def main():
     modes.add_argument('--soft-f64-convert', action='store_true', help='Test I64/U64 to binary64 conversion and rounding')
     modes.add_argument('--soft-f64-compare', action='store_true', help='Test binary64 ordering, NaNs and signed zeros')
     modes.add_argument('--soft-f64-to-int', action='store_true', help='Test binary64 to I64/Bool conversion against x64 HolyC')
+    modes.add_argument('--soft-f64-polar', action='store_true', help='Test software Arg against independent Decimal on no-FPU i386')
+    modes.add_argument('--soft-f64-trig', action='store_true', help='Test full-range software Sin/Cos against Decimal on no-FPU i386')
+    modes.add_argument('--soft-f64-trig-reduce', action='store_true', help='Test full-range HolyC trig reduction against Decimal on no-FPU i386')
     modes.add_argument('--soft-f64-log', action='store_true', help='Test software Ln, Log10 and Log2 against high-precision and x64 oracles')
     modes.add_argument('--soft-f64-unary', action='store_true', help='Test software F64 Abs/Sqr/Sqrt and integral rounding against x64 and a host oracle')
     modes.add_argument('--integer-math', action='store_true', help='Test integer math intrinsics against x64 and Python')
     modes.add_argument('--float', action='store_true', help='Test compiled native HolyC F64 expressions and calls')
+    parser.add_argument('--loader-low-memory', action='store_true', help='With --redsea-load, require loading with less than two module buffers')
     parser.add_argument('--task-runtime-core', action='store_true',
                         help='With --tasks, test retained lifecycle/core scheduler interoperability')
+    parser.add_argument('--heap-backing-accounting', action='store_true', help='With --heap, distinguish live payload leaks from verified retained backing cache')
+    parser.add_argument('--heap-high', action='store_true', help='With --heap, test transient allocation placement and contiguous recovery')
+    parser.add_argument('--heap-backing-reserve', action='store_true', help='With --heap, test reserved shared pages, fresh heaps and failed-reserve rollback')
+    parser.add_argument('--heap-window-reserve', action='store_true', help='With --heap, test fixed window-buffer reservation and failed-allocation rollback')
     parser.add_argument("--heap-source", action="store_true",
                         help="With --heap, test the portable guest-source heap validator")
+    parser.add_argument('--qmp-stdio', action='store_true', help='Control compiler and keyboard QEMU over stdio')
     args = parser.parse_args()
+    if args.loader_low_memory and not args.redsea_load:
+        parser.error('--loader-low-memory requires --redsea-load')
+    if args.heap_backing_accounting and (not args.heap or args.heap_high or args.heap_window_reserve or args.heap_backing_reserve):
+        parser.error('--heap-backing-accounting requires --heap and excludes other dedicated heap modes')
+    if args.heap_high and (not args.heap or args.heap_window_reserve or args.heap_backing_reserve):
+        parser.error('--heap-high requires --heap and excludes other dedicated heap modes')
+    if args.heap_backing_reserve and (not args.heap or args.heap_window_reserve):
+        parser.error('--heap-backing-reserve requires --heap and excludes --heap-window-reserve')
+    if args.heap_window_reserve and not args.heap:
+        parser.error('--heap-window-reserve requires --heap')
     if args.heap_source and not args.heap:
         parser.error("--heap-source requires --heap")
     if args.task_runtime_core and not args.tasks:
         parser.error('--task-runtime-core requires --tasks')
+    if args.lex_snapshot_boundary and not args.lex_state:
+        parser.error('--lex-snapshot-boundary requires --lex-state')
+    if args.lex_control and (not args.lex_state or args.lex_snapshot_boundary):
+        parser.error('--lex-control requires --lex-state and excludes --lex-snapshot-boundary')
     except_runner = args.except_context or args.except_runtime
     task_runner = args.task_heaps or args.task_symbols or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks
-    large_runner = args.redsea_alloc or args.redsea_write or args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
+    large_runner = args.redsea_alloc or args.redsea_write or args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_polar or args.soft_f64_trig or args.soft_f64_trig_reduce or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
     #The scheduler/wait corpus loads 320 KiB below its heap at 0x60000; segment records use 0x70000.
     #Exception tasks use 256 KiB below 0x50000, with segment records at 0x70000.
     #Message tasks use 256 KiB below 0x50000, with their arena moved to 0x60000.
     #Other core corpora retain their 192 KiB transfer and first arena at 0x40000.
-    boot_sectors = 832 if args.task_symbols else 640 if args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
+    boot_sectors = 832 if args.task_symbols else 640 if args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps or args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
     kind = 'expressions'
-    for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float'):
+    for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-trig-reduce', 'soft-f64-trig', 'soft-f64-polar', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
-    data_mode = kind in ('inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-unary', 'integer-math', 'float')
+    data_mode = kind in ('inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-trig-reduce', 'soft-f64-trig', 'soft-f64-polar', 'soft-f64-unary', 'integer-math', 'float')
     if args.keywords:
         run(sys.executable, 'tools/gen-compiler-keywords.py', '--check')
     if args.lex_number:
@@ -193,13 +218,33 @@ def main():
         expected = '//Captured from the original x64 Lex before number extraction. See tests/i386/lex-number-values.json.\nU64 number_oracle['+str(len(oracle['rows'])*6)+']={'+','.join('0x'+x for row in oracle['rows'] for x in row)+'};\n'
         if (cases.parent/'Oracle.HC').read_text() != expected:
             raise ValueError('Numeric fixture no longer matches the original x64 oracle')
+    if args.soft_f64_polar:
+        run(sys.executable, "tools/gen-i386-polar.py", "--check")
+    if args.soft_f64_trig:
+        run(sys.executable, "tools/gen-i386-trig.py", "--check")
+    if args.soft_f64_trig_reduce:
+        run(sys.executable, "tools/gen-i386-trig-reduction.py", "--check")
     if args.soft_f64_unary:
         run(sys.executable, 'tools/gen-i386-pow10.py', '--check')
     functions = kind != 'expressions'
     if functions:
         OUT = ROOT/f'build/i386-{kind}-test'
+        if args.lex_snapshot_boundary:
+            OUT = ROOT/'build/i386-lex-snapshot-boundary-test'
+        if args.lex_control:
+            OUT = ROOT/'build/i386-lex-control-test'
+        if args.loader_low_memory:
+            OUT = ROOT/'build/i386-redsea-load-low-memory-test'
         if args.heap_source:
             OUT = ROOT/'build/i386-heap-source-test'
+        if args.heap_backing_accounting:
+            OUT = ROOT/('build/i386-backing-accounting-source-test' if args.heap_source else 'build/i386-backing-accounting-test')
+        if args.heap_high:
+            OUT = ROOT/('build/i386-heap-high-source-test' if args.heap_source else 'build/i386-heap-high-test')
+        if args.heap_backing_reserve:
+            OUT = ROOT/('build/i386-backing-reserve-source-test' if args.heap_source else 'build/i386-backing-reserve-test')
+        if args.heap_window_reserve:
+            OUT = ROOT/('build/i386-window-reserve-source-test' if args.heap_source else 'build/i386-window-reserve-test')
         if args.task_runtime_core:
             OUT = ROOT/'build/i386-task-runtime-core-test'
         manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
@@ -227,16 +272,26 @@ def main():
         build += ['--overlay', 'build/rebuild-test/overlay']
     build += ['--overlay', 'tests/guest/i386-task-runtime-core' if args.task_runtime_core else f'tests/guest/i386-{kind}' if functions else 'tests/guest/i386',
               '--output', str(iso)]
-    if args.heap_source:
+    if args.heap_source or args.heap_window_reserve or args.heap_backing_reserve or args.heap_high or args.heap_backing_accounting:
         source_overlay = OUT/'source-overlay'
         source_overlay.mkdir(parents=True, exist_ok=True)
         (source_overlay/'Target.HC').write_bytes(
-            b'#define I386_HEAP_SOURCE_BUILD 1\n' +
-            (ROOT/'tests/guest/i386-heap/Target.HC').read_bytes())
+            (b'#define I386_HEAP_SOURCE_BUILD 1\n' if args.heap_source else b'') +
+            (ROOT/('tests/guest/i386-heap/AccountingTarget.HC' if args.heap_backing_accounting else 'tests/guest/i386-heap/HighTarget.HC' if args.heap_high else 'tests/guest/i386-heap/WindowTarget.HC' if args.heap_window_reserve else 'tests/guest/i386-heap/ReserveTarget.HC' if args.heap_backing_reserve else 'tests/guest/i386-heap/Target.HC')).read_bytes())
+        build += ['--overlay', str(source_overlay)]
+    if args.loader_low_memory:
+        source_overlay = OUT/'source-overlay'
+        source_overlay.mkdir(parents=True, exist_ok=True)
+        (source_overlay/'Target.HC').write_bytes((ROOT/'tests/guest/i386-redsea-load/LowMemory.HC').read_bytes())
+        build += ['--overlay', str(source_overlay)]
+    if args.lex_snapshot_boundary or args.lex_control:
+        source_overlay = OUT/'source-overlay'
+        source_overlay.mkdir(parents=True, exist_ok=True)
+        (source_overlay/'Target.HC').write_bytes((ROOT/('tests/guest/i386-lex-state/ControlTarget.HC' if args.lex_control else 'tests/guest/i386-lex-state/BoundaryTarget.HC')).read_bytes())
         build += ['--overlay', str(source_overlay)]
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
-        '--timeout', '90')
+        '--timeout', '90', *(['--qmp-stdio'] if args.qmp_stdio else []))
     if args.data and 'PASS host global fill\n' not in (exports/'debug.log').read_text():
         raise ValueError('Missing host global fill regression')
     ranges = {}
@@ -464,7 +519,7 @@ def main():
     if interrupt_ranges:
         raise ValueError('Unmatched interrupt code range')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
-    if args.lex_state:
+    if args.lex_state and not args.lex_snapshot_boundary and not args.lex_control:
         #Single-CPU value tests cannot prove that the locked prefix was emitted.
         instructions = [line.split()[2:] for block in listing for line in block.splitlines()
                         if line and not line.startswith(';')]
@@ -490,11 +545,19 @@ def main():
         for module, stem, vectors, dispatch in (
                 ('IrqEntry', 'irq', 16, 'I386IrqDispatch'),
                 ('ExceptionEntry', 'exception', 17, 'I386ExceptionDispatch')):
+            names = tuple(f'i386_{stem}_{i}' for i in range(vectors))
+            imports = {dispatch: f'i386_{stem}_callback'}
+            if module == 'ExceptionEntry':
+                names += ('i386_debug_cpu_entry',)
+                # This isolated corpus has no debugger runtime. Entering it fails
+                # explicitly; ordinary trap dispatch keeps the existing adapter.
+                imports.update(KernelDebugCpu='i386_unexpected_debug_entry',
+                               KernelDebugStack='i386_unexpected_debug_entry')
             context_args += native_assembly_args(exports, OUT, module,
-                f'i386_{stem}_module', tuple(f'i386_{stem}_{i}' for i in range(vectors)),
-                None, f'{stem.upper()}_ENTRY_FILE', {dispatch: f'i386_{stem}_callback'})
+                f'i386_{stem}_module', names,
+                None, f'{stem.upper()}_ENTRY_FILE', imports)
     disk = OUT/'runner.img'
-    run('nasm', *(['-DTASK_HEAP_TEST=1'] if args.task_heaps else []), *(['-DLEX_MACRO_TEST=1'] if args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else []), *(['-DCOMPILER_GRAPH_TEST=1'] if args.task_symbols else []), *(['-DLARGE_CORE_TEST=1'] if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else []), *(['-DLEX_LARGE_TEST=1'] if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else []), *(['-DEXCEPT_TASK_TEST=1', '-DSEGMENT_RECORD_BASE=0x70000'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.lex_cond or args.lex_define or args.lex_tokens or args.lex_number or args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DINPUT_TEST=1'] if args.input else []), *(['-DTASK_HEAP_TEST=1'] if args.task_heaps else []), *(['-DLEX_MACRO_TEST=1'] if args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else []), *(['-DCOMPILER_GRAPH_TEST=1'] if args.task_symbols else []), *(['-DLARGE_CORE_TEST=1'] if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else []), *(['-DLEX_LARGE_TEST=1'] if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else []), *(['-DEXCEPT_TASK_TEST=1', '-DSEGMENT_RECORD_BASE=0x70000'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.lex_cond or args.lex_define or args.lex_tokens or args.lex_number or args.soft_f64_polar or args.soft_f64_trig or args.soft_f64_trig_reduce or args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         *context_args, f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if args.irq or task_runner or except_runner:
@@ -505,7 +568,7 @@ def main():
         ranges = struct.unpack('<16I' if args.except_tasks else '<6I' if except_runner else '<14I' if task_runner else '<6I', raw[-trailer_size+4:])
         irq_allowed = {'push','pop','pusha','popa','pushf','popf','mov','add','xor',
                        'shr','cmp','test','jmp','jz','jnz','jc','jnc','ja','call','ret',
-                       'and','lea','cld','std','cli','sti','hlt','int','int3','div','iret','lidt','lgdt','sgdt','sub','loop','lodsd'}
+                       'and','lea','dec','cld','std','cli','sti','hlt','int','int3','div','iret','lidt','lgdt','sgdt','sub','loop','lodsd'}
         assembly = []
         for start, length in zip(ranges[::2], ranges[1::2]):
             if start<512 or length<=0 or start+length>len(raw)-trailer_size:
@@ -754,7 +817,7 @@ def main():
         redsea_before = disk.read_bytes()
     if args.vga:
         run(sys.executable, 'tools/guest-run.py', str(disk), '--i386-disk',
-            '--out', str(OUT/'display'), '--timeout', '90')
+            '--out', str(OUT/'display'), '--timeout', '90', *(['--qmp-stdio'] if args.qmp_stdio else []))
         from PIL import Image
         screen = Image.open(OUT/'display/screen.ppm').convert('RGB')
         palette = [(0,0,0),(0,0,42),(0,42,0),(0,42,42),
@@ -780,7 +843,7 @@ def main():
         ata_before = disk.read_bytes()
     log = OUT/'runner.log'
     log.write_text('')
-    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486',
+    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486,-fpu' if args.soft_f64_trig_reduce or args.soft_f64_polar or args.soft_f64_trig else '486',
            '-m', '8', '-nic', 'none', '-drive', f'file={disk},format=raw,if=ide',
            '-display', 'none', '-debugcon', f'file:{log}',
            '-device', 'isa-debug-exit,iobase=0xf4,iosize=4', '-no-reboot']
@@ -791,7 +854,7 @@ def main():
         ata_trace.write_text('')
         cmd += ['-trace', f'enable=ide_bus_exec_cmd,file={ata_trace}']
     if args.input or args.messages:
-        run(sys.executable, 'tools/i386-input-run.py', str(disk), '--out', str(OUT))
+        run(sys.executable, 'tools/i386-input-run.py', str(disk), '--out', str(OUT), *(['--qmp-stdio'] if args.qmp_stdio else []))
     else:
         result = subprocess.run(cmd, timeout=20)
     runner_kind = 'functions' if functions else 'expressions'
@@ -947,10 +1010,12 @@ def main():
         fault_result = subprocess.run(fault_cmd, timeout=20)
         if fault_result.returncode != 33 or fault_log.read_text() != 'PASS i386 functions\n':
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
-    (OUT/'result.json').write_text(json.dumps({'cases': count, 'retained_task_core_cycles': 20 if args.task_runtime_core else 0, 'retained_task_discard_cycles': 20 if args.task_runtime_core else 0, 'retained_creator_discard_cases': 1 if args.task_runtime_core else 0, 'retained_cleanup_retry_cases': 1 if args.task_runtime_core else 0, 'cpu': '486',
+    (OUT/'result.json').write_text(json.dumps({'cases': count, 'retained_task_core_cycles': 20 if args.task_runtime_core else 0, 'retained_task_discard_cycles': 20 if args.task_runtime_core else 0, 'retained_creator_discard_cases': 1 if args.task_runtime_core else 0, 'retained_cleanup_retry_cases': 1 if args.task_runtime_core else 0, 'cpu': '486,-fpu' if args.soft_f64_trig_reduce or args.soft_f64_polar or args.soft_f64_trig else '486',
         'boot_variants': 2 if args.memory else 1,
+        'lex_snapshot_boundary': args.lex_snapshot_boundary,
+        'lex_control': args.lex_control,
         'heap_validator': ('portable-source' if args.heap_source else '386-assembly') if args.heap else None,
-        'ram_mib': 8, 'fault_cases': 5 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'hash_vectors': 512 if args.hash else 0, 'public_task_heap_cycles': 4 if args.task_heaps else 0, 'public_task_heap_reclaims': 14 if args.task_heaps else 0, 'creator_lifetime_cases': 1 if args.task_heaps else 0, 'selected_parent_heap_cases': 1 if args.task_heaps else 0, 'public_heap_layout_checks': 49 if args.heap else 0, 'public_heap_churn_rounds': 1024 if args.heap else 0, 'public_heap_lifetime_cycles': 3 if args.heap else 0, 'public_pool_region_cycles': 3 if args.heap else 0, 'public_backing_cycles': 3 if args.heap else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_log or args.soft_f64_unary or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'file_context_volumes': 2 if args.redsea_read else 0, 'file_include_heap_arenas': 86 if args.redsea_read else 0, 'path_compatibility_cases': 44 if args.redsea else 0, 'path_heap_arenas': 105 if args.redsea else 0, 'arc_dictionary_updates': 40000 if args.arc else 0, 'arc_expansion_cases': 18 if args.arc_expand else 0, 'arc_owned_cases': 6 if args.arc_expand else 0, 'arc_mutation_cases': 32 if args.arc_expand else 0, 'scope': 'Public task heaps, cleanup ordering, parent lifetime, failed-spawn rollback and automatic backing reclamation' if args.task_heaps else 'Task-owned symbol scopes and parent lifetime' if args.task_symbols else 'Cooperative ATA ownership, IRQ windows and poisoned queue rejection' if args.ata_tasks else 'Decoded RedSea reads, drive contexts and owned compiler file input' if args.redsea_read else 'Original compressed vectors, stream and checked owned expansion' if args.arc_expand else 'Compression dictionary transitions against original x64 assembly' if args.arc else 'Software Ln/Log10/Log2 with high-precision oracle and CR0.EM set' if args.soft_f64_log else 'Software F64 Abs/Sqr/Sqrt and integral rounding with x64 oracle and CR0.EM set' if args.soft_f64_unary else 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount/raw reads, shared absolute path rules and native path ownership' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'Public exceptions across native task switches' if args.except_tasks else 'FS-bound public native exception runtime' if args.except_runtime else 'native exception capture and context transfer primitives' if args.except_context else 'native exception record ownership (no context transfer)' if args.except_records else 'Owned native language/assembler keyword registry and failure cleanup' if args.keywords else 'Native conditional directives, nested raw skips and reader failures' if args.lex_cond else 'Native definition reading, ownership, metadata and macro expansion' if args.lex_define else 'Mixed native token streams, macros and explicit directive boundary' if args.lex_tokens else 'Shared identifier scanning and symbol precedence' if args.lex_ident else 'Shared operator/comment parsing and reader failures' if args.lex_punct else 'Original numeric/dot state and independent native F64 oracle with CR0.EM set' if args.lex_number else 'String/character decoding through shared and native readers' if args.lex_string else 'Lexer snapshot compatibility and native ownership' if args.lex_state else 'Shared compiler symbol layouts and legacy HashVal compatibility' if args.symbols else 'Native public hash primitives and shared record layouts' if args.hash else 'Native arena and public-record page/heap allocation cores' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
+        'ram_mib': 8, 'polar_vectors': 1024 if args.soft_f64_polar else 0, 'trig_vectors': 1024 if args.soft_f64_trig else 0, 'trig_reduction_vectors': 1018 if args.soft_f64_trig_reduce else 0, 'fault_cases': 5 if functions and not data_mode else 0, 'result': 'pass', 'recovered_exceptions': 3 if args.irq else 0, 'hash_vectors': 512 if args.hash else 0, 'public_task_heap_cycles': 4 if args.task_heaps else 0, 'public_task_heap_reclaims': 14 if args.task_heaps else 0, 'creator_lifetime_cases': 1 if args.task_heaps else 0, 'selected_parent_heap_cases': 1 if args.task_heaps else 0, 'public_heap_layout_checks': 49 if args.heap and not args.heap_window_reserve and not args.heap_backing_reserve and not args.heap_high else 0, 'public_heap_churn_rounds': 1024 if args.heap and not args.heap_window_reserve and not args.heap_backing_reserve and not args.heap_high else 0, 'public_heap_lifetime_cycles': 3 if args.heap and not args.heap_window_reserve and not args.heap_backing_reserve and not args.heap_high else 0, 'public_pool_region_cycles': 3 if args.heap and not args.heap_window_reserve and not args.heap_backing_reserve and not args.heap_high else 0, 'public_backing_cycles': 3 if args.heap and not args.heap_window_reserve and not args.heap_backing_reserve and not args.heap_high else 0, 'soft_f64_vectors': 2048 if args.soft_f64 else 1024 if args.soft_f64_log or args.soft_f64_unary or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int else 0, 'file_context_volumes': 2 if args.redsea_read else 0, 'file_include_heap_arenas': 86 if args.redsea_read else 0, 'path_compatibility_cases': 44 if args.redsea else 0, 'path_heap_arenas': 105 if args.redsea else 0, 'arc_dictionary_updates': 40000 if args.arc else 0, 'arc_expansion_cases': 18 if args.arc_expand else 0, 'arc_owned_cases': 6 if args.arc_expand else 0, 'arc_mutation_cases': 32 if args.arc_expand else 0, 'window_reservation_fault_stages': 2 if args.heap_window_reserve else 0, 'backing_reserve_fresh_heaps': 2 if args.heap_backing_reserve else 0, 'high_transient_records': 1024 if args.heap_high else 0, 'scope': 'Live permanent payload plus retained small cache: reject public/private payload leaks and malformed backing accounting; exact final recovery and IRQ state' if args.heap_backing_accounting else 'Fragmented persistent/transient workload: unchanged normal allocator fails 64KiB, high allocation preserves data and recovers contiguous storage' if args.heap_high else 'Shared public backing reservation: fresh heaps with exhausted physical arena, invalid/failed-reserve rollback, ownership and IRQ restoration' if args.heap_backing_reserve else 'Fixed VGA window reservation: failed first/second allocation, zeroed retry, atomic pair publication and heap recovery' if args.heap_window_reserve else '1024 independent Decimal Sin/Cos vectors, exact special values, <=1 ULP finite results, CR0.EM and 486,-fpu; instruction audit' if args.soft_f64_polar or args.soft_f64_trig else '1018 independent Decimal trig reduction vectors, CR0.EM and 486,-fpu; instruction audit' if args.soft_f64_trig_reduce else 'Public task heaps, cleanup ordering, parent lifetime, failed-spawn rollback and automatic backing reclamation' if args.task_heaps else 'Task-owned symbol scopes and parent lifetime' if args.task_symbols else 'Cooperative ATA ownership, IRQ windows and poisoned queue rejection' if args.ata_tasks else 'Decoded RedSea reads, drive contexts and owned compiler file input' if args.redsea_read else 'Original compressed vectors, stream and checked owned expansion' if args.arc_expand else 'Compression dictionary transitions against original x64 assembly' if args.arc else 'Software Ln/Log10/Log2 with high-precision oracle and CR0.EM set' if args.soft_f64_log else 'Software F64 Abs/Sqr/Sqrt and integral rounding with x64 oracle and CR0.EM set' if args.soft_f64_unary else 'Integer math intrinsics against x64 and Python' if args.integer_math else 'Native HolyC F64 expressions with CR0.EM set' if args.float else 'Binary64 to I64/Bool and raw-bit truth testing with x64 compatibility and CR0.EM set' if args.soft_f64_to_int else 'Binary64 ordering with CR0.EM set' if args.soft_f64_compare else 'I64/U64 to binary64 with CR0.EM set' if args.soft_f64_convert else 'Binary64 add/subtract/multiply/divide bit patterns with CR0.EM set' if args.soft_f64 else 'Resident function/data binding for disk-loaded modules' if args.redsea_bind else 'RedSea linked module sets and dependency resolution' if args.redsea_load_set else 'RedSea module loading, execution and heap reclamation' if args.redsea_load else 'RedSea replacement and ordered old-extent reclamation' if args.redsea_replace else 'RedSea deletion, reclamation and reuse' if args.redsea_delete else 'RedSea file creation and publication ordering' if args.redsea_create else 'RedSea bitmap allocation, fragmentation and reclamation' if args.redsea_alloc else 'RedSea fixed-extent writes and partial failure reporting' if args.redsea_write else 'RedSea mount/raw reads, shared absolute path rules and native path ownership' if args.redsea else 'ATA identify, LBA28/CHS PIO reads/writes and cache flush' if args.ata else 'keyboard broker and task message delivery' if args.messages else 'blocking keyboard input and IRQ-driven task wakeups' if args.input else 'cooperative task contexts' if args.tasks else 'PIC/PIT/RTC/keyboard interrupts, input queue, exceptions and frame restoration' if args.irq else 'A20 methods and extended-memory allocation' if args.a20 else 'BIOS memory handoff and arena selection' if args.memory else 'Public exceptions across native task switches' if args.except_tasks else 'FS-bound public native exception runtime' if args.except_runtime else 'native exception capture and context transfer primitives' if args.except_context else 'native exception record ownership (no context transfer)' if args.except_records else 'Owned native language/assembler keyword registry and failure cleanup' if args.keywords else 'Native conditional directives, nested raw skips and reader failures' if args.lex_cond else 'Native definition reading, ownership, metadata and macro expansion' if args.lex_define else 'Mixed native token streams, macros and explicit directive boundary' if args.lex_tokens else 'Shared identifier scanning and symbol precedence' if args.lex_ident else 'Shared operator/comment parsing and reader failures' if args.lex_punct else 'Original numeric/dot state and independent native F64 oracle with CR0.EM set' if args.lex_number else 'String/character decoding through shared and native readers' if args.lex_string else 'Owned macro EOF, parent positions, nested restore/discard and cleanup' if args.lex_snapshot_boundary else 'Compiler-control ownership, IR cleanup and native snapshot release' if args.lex_control else 'Lexer snapshot compatibility and native ownership' if args.lex_state else 'Shared compiler symbol layouts and legacy HashVal compatibility' if args.symbols else 'Native public hash primitives and shared record layouts' if args.hash else 'Native arena and public-record page/heap allocation cores' if args.heap else f'integer {kind} backend'}, indent=2)+'\n')
     print(f'PASS: {count} i386 {kind} cases generated by HolyC; instruction audit.')
 
 

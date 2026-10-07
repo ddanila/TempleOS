@@ -19,4 +19,9 @@ public _extern _DEFINE U8 *Define(U8 *name);
 public _extern _DEFINE_SUB U8 *DefineSub(I64 sub,U8 *name);
 public _extern _DEFINE_COUNT I64 DefineCnt(U8 *name);
 public _extern _DEFINE_MATCH I64 DefineMatch(U8 *needle,U8 *name,I64 flags=0);
+public _extern _HASH_REM_DEL Bool HashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
+public _extern _DEFINE_LOAD CHashDefineStr *DefineLoad(U8 *name,U8 *text);
+public _extern _DEFINE_PRINT U0 DefinePrint(U8 *name,U8 *fmt,...);
+public _extern _BIBLE_INIT U0 BibleInit();
+#include "/Adam/God/BibleTypes.HH"
 #endif

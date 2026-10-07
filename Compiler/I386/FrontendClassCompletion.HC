@@ -54,7 +54,7 @@ U0 I386CompletionCheckValues(CI386Frontend *state,CHashSrcSym *entry,CHashClass 
         entry->type&HTT_FUN && I386CompletionValueType(entry(CHashFun *)->return_class,target))
       I386FrontendUnavailable(state);
     for(member=type->member_lst_and_root;member;member=member->next) {
-      if(I386CompletionValueType(member->member_class,target)) I386FrontendUnavailable(state);
+      if(I386CompletionValueType(member->member_class,target)) { KernelLog("CLASS COMPLETION prior value "); KernelLog(entry->str); KernelLog("."); KernelLog(member->str); KernelLog("\n"); I386FrontendUnavailable(state); }
       if(member->flags&MLF_FUN)
         I386CompletionCheckValues(state,member->fun_ptr-member->fun_ptr->ptr_stars_cnt,target);
     }
@@ -78,7 +78,7 @@ U0 I386FrontendStageClass(CI386Frontend *state,CHashClass *published)
 {
   CI386FrontendCompletion *completion;
   CHashClass *staged;
-  if(!I386CompletionTargetValid(state,published)) I386FrontendUnavailable(state);
+  if(!I386CompletionTargetValid(state,published)) { KernelLog("CLASS COMPLETION invalid target "); if(published && published->str) KernelLog(published->str); KernelLog("\n"); I386FrontendUnavailable(state); }
   I386CompletionCheckPriorValues(state,published);
   completion=I386FrontendAlloc(state,sizeof(CI386FrontendCompletion),TRUE,FALSE);
   staged=I386FrontendClassNew(state);
@@ -173,6 +173,22 @@ U0 I386CompletionRebind(CI386Frontend *state,CHashSrcSym *entry)
     if(global->fun_ptr) I386CompletionRebind(state,global->fun_ptr-global->fun_ptr->ptr_stars_cnt);
   }
 }
+Bool I386CompletionReleaseMetadata(CI386Frontend *state,U8 *allocation)
+{//An active parent's metadata still has a parser ownership record.
+  CI386CmpCtrl *owned=state->cc;
+  CI386Task *task=owned->task;
+  CCmpCtrl *cc=state->cc;
+  if(!allocation)return TRUE;
+  while(cc) {
+    if(!I386CmpControlValid(state->heap,cc))return FALSE;
+    if(I386ParserRecord(cc,allocation))
+      return I386ParserFree(state->heap,cc,allocation);
+    if(!task || cc->last==&task->next_cc)break;
+    if(!I386CmpActiveValid(cc))break;
+    cc=cc->last;
+  }
+  return I386HeapFree(state->heap,allocation);
+}
 U0 I386CompletionCommit(CI386Frontend *state,CI386FrontendCompletion *completion)
 {
   CHashClass *published=completion->published,*staged=completion->staged;
@@ -180,8 +196,8 @@ U0 I386CompletionCommit(CI386Frontend *state,CI386FrontendCompletion *completion
   I64 i;
   //The target's hash link, name and use count remain live. New source metadata
   //and members have already passed the ownership transfer validation.
-  if(published->src_link) I386HeapFree(state->heap,published->src_link);
-  if(published->idx) I386HeapFree(state->heap,published->idx);
+  if(!I386CompletionReleaseMetadata(state,published->src_link) ||
+      !I386CompletionReleaseMetadata(state,published->idx)) I386FrontendUnavailable(state);
   published->src_link=staged->src_link; published->idx=staged->idx;
   published->type=staged->type;
   for(i=offset(CHashClass.size);i<sizeof(CHashClass)*(PTR_STARS_NUM+1);i++)

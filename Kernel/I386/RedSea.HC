@@ -30,7 +30,7 @@ Bool I386RedSeaDecode(CI386RedSea *v,U8 *raw,CI386RedSeaEntry *entry)
 {
   I64 i,block=I386RedSeaWord(raw+40),size=I386RedSeaWord(raw+48);
   U16 attr=raw[0]|(raw[1]<<8);
-  if (!(attr&0x800) || (attr&0x300) || !raw[2] ||
+  if (!(attr&0x800) || (attr&0x100) || !raw[2] ||
       !I386RedSeaExtent(v,block,size)) return FALSE;
   i=0;
   while (i<38 && raw[2+i]) i++;
@@ -101,7 +101,7 @@ public I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset
   U8 sector[512];
   I64 copied=0,n,i;
   if (!I386RedSeaValid(volume) || !entry || !buffer || offset<0 || count<0 ||
-      (entry->attr&0x310) || !(entry->attr&0x800) ||
+      (entry->attr&0x110) || !(entry->attr&0x800) ||
       !I386RedSeaExtent(volume,entry->block,entry->size) || offset>entry->size) return -1;
   if (count>entry->size-offset) count=entry->size-offset;
   if (count>0xFFFFFFFF || (buffer+0)(U64)>0x100000000-count) return -1;

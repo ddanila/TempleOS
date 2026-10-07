@@ -32,30 +32,43 @@ Bool I386CommandInput(CI386CommandInput *input)
   CI386Task *task=I386TaskSelf;
   CI386Heap *heap;
   CCmpCtrl *boundary,*cc=0;
-  CI386Frontend *state;
+  CI386Frontend *state=0;
   CPrsSymbolServices *symbols;
   CI386FrontendCode *output;
-  U8 *code;
+  U8 *code=0;
+  U8 *context_source,*context_dest;
   I64 raw_type,value,i,saved_rbp;
   U8 *saved_callers[TASK_EXCEPT_CALLERS];
   Bool accepted=FALSE,raised=FALSE,interrupted=FALSE,unwound;
   U32 irq;
+  F64 started;
   if(!input) return FALSE;
   input->commands=0; input->answers=0; input->errors=0;
   input->warnings=0; input->exception=0;
   heap=input->heap;
   if(!task || !I386CmpTaskOwnerValid(task,heap,task->hash_table) || !input->source ||
-      !input->filename || !input->types || !input->files ||
+      !input->filename && !input->inherit_context || !input->types || !input->files ||
       input->files->version!=I386_FILE_SERVICES_VERSION ||
       input->files->bytes!=sizeof(CI386FileServices) || !input->files->control_new ||
-      input->flags&~(CCF_JUST_LOAD|I386_INPUT_ATOMIC_DEFINES) ||
+      input->flags&CCF_AOT_COMPILE ||
       input->document && *input->source) return FALSE;
   boundary=task->last_cc;
   try {
     I386CommandInputCheckpoint(task,&interrupted);
-    cc=input->files->control_new(input->source,CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,input->filename);
+    cc=input->files->control_new(input->source,(input->flags&~I386_INPUT_ATOMIC_DEFINES)|CCF_DONT_FREE_BUF|CCF_AOT_COMPILE,input->filename);
     if(!cc) I386CommandInputCheckpoint(task,&interrupted);
     if(cc) {
+      //Match original ExePutS before entering the new control or lexing.
+      if(input->inherit_context && boundary!=&task->next_cc) {
+        cc->opts=boundary->opts;
+        if(input->hash_context) {
+          cc->flags=cc->flags&~CCF_ASM_EXPRESSIONS |
+            input->hash_context->old_flags&CCF_ASM_EXPRESSIONS;
+          context_source=input->hash_context;context_dest=&cc->htc;
+          for(i=0;i<sizeof(CLexHashTableContext);i++)
+            context_dest[i]=context_source[i];
+        }
+      }
       if(input->document && !I386LexAttachDocRoot(heap,cc,input->document) ||
           !I386CmpCtrlEnter(heap,cc)) {
         I386CmpCtrlDel(heap,cc); cc=0;
@@ -76,7 +89,13 @@ Bool I386CommandInput(CI386CommandInput *input)
           input->commands++;
           if(code) {
             if(!(input->flags&CCF_JUST_LOAD)) {
+              if(input->execution_time)started=(*input->execution_time)(input->context);
               value=state->declarations.execute(state,code);
+              if(input->execution_time) {
+                task->answer=value;task->answer_type=raw_type;
+                task->answer_time=(*input->execution_time)(input->context)-started;
+                task->new_answer=TRUE;
+              }
               I386CommandInputCheckpoint(task,&interrupted);
               for(output=state->codes;output && output->code!=code;output=output->next);
               if(!output || !output->value_class) throw('Compiler',TRUE);
@@ -86,6 +105,7 @@ Bool I386CommandInput(CI386CommandInput *input)
               }
             }
             if(!(cc->flags&CCF_HAS_MISC_DATA)) I386FrontendFree(state,code);
+            code=0; //The completed expression is freed or belongs to retained storage.
           }
         }
         //Saved command views are gone; collect retired optimizer nodes as well.
@@ -113,6 +133,21 @@ Bool I386CommandInput(CI386CommandInput *input)
     }
     task->except_ch=input->exception; task->except_rbp=saved_rbp;
     for(i=0;i<TASK_EXCEPT_CALLERS;i++) task->except_callers[i]=saved_callers[i];
+  }
+  //Original ExePutS preserves completed child publication on a later runtime
+  //exception. Unfinished declarations and parser/allocation errors are separate.
+  if(raised && input->inherit_context && state && state->published_children &&
+      input->exception!='Compiler' && input->exception!='OutMem' && input->exception!='Break') {
+    try {
+      if(code && !(cc->flags&CCF_HAS_MISC_DATA)) {
+        I386FrontendFree(state,code);code=0;
+      }
+      if(I386COCDiscard(heap,cc) && !I386FrontendPublish(heap,cc,&state->symbols))
+        KernelLog("PARENT EXCEPTION publication rejected\n");
+    } catch {
+      task->catch_except=TRUE;
+      KernelLog("PARENT EXCEPTION publication failed\n");
+    }
   }
   if(cc) { input->errors=cc->error_cnt; input->warnings=cc->warning_cnt; }
   unwound=I386CmpCtrlUnwind(task,boundary);

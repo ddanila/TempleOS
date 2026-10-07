@@ -12,6 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--qmp-stdio', action='store_true')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -25,20 +26,28 @@ def main():
            '-m', '8', '-nic', 'none', '-drive', f'file={args.disk.resolve()},format=raw,if=ide',
            '-display', 'none', '-debugcon', f'file:{log}',
            '-device', 'isa-debug-exit,iobase=0xf4,iosize=4', '-no-reboot',
-           '-qmp', f'unix:{qmp},server=on,wait=off']
+           '-qmp', 'stdio' if args.qmp_stdio else f'unix:{qmp},server=on,wait=off']
     (out/'input-command.json').write_text(json.dumps(cmd, indent=2)+'\n')
-    sock = socket.socket(socket.AF_UNIX)
+    sock = None if args.qmp_stdio else socket.socket(socket.AF_UNIX)
     with (out/'input-qemu.log').open('w') as stderr:
-        proc = subprocess.Popen(cmd, stderr=stderr)
+        proc = subprocess.Popen(cmd, stderr=stderr, stdin=subprocess.PIPE if args.qmp_stdio else None, stdout=subprocess.PIPE if args.qmp_stdio else None)
         try:
             deadline = time.monotonic()+30
-            while not qmp.exists():
-                if proc.poll() is not None or time.monotonic()>deadline:
-                    raise RuntimeError('Input guest failed to open QMP')
-                time.sleep(.05)
-            sock.connect(str(qmp))
-            sock.settimeout(5)
-            stream = sock.makefile('rwb', buffering=0)
+            if args.qmp_stdio:
+                class PipeStream:
+                    def readline(self): return proc.stdout.readline()
+                    def write(self, data):
+                        proc.stdin.write(data)
+                        proc.stdin.flush()
+                stream = PipeStream()
+            else:
+                while not qmp.exists():
+                    if proc.poll() is not None or time.monotonic()>deadline:
+                        raise RuntimeError('Input guest failed to open QMP')
+                    time.sleep(.05)
+                sock.connect(str(qmp))
+                sock.settimeout(5)
+                stream = sock.makefile('rwb', buffering=0)
             json.loads(stream.readline())
 
             def command(name, **arguments):
@@ -77,7 +86,7 @@ def main():
             except subprocess.TimeoutExpired:
                 proc.kill()
                 proc.wait()
-            sock.close()
+            if sock is not None: sock.close()
             qmp.unlink(missing_ok=True)
 
 

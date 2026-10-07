@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-doc-compat')
     parser.add_argument('--qmp-stdio',action='store_true',
                         help='Control both QEMU guests over stdio')
+    parser.add_argument('--cpu',default='486',help='QEMU CPU model for the native compatibility guest')
     args=parser.parse_args()
     source=args.source.resolve()
     source_hash=sha256(source)
@@ -36,7 +37,7 @@ def main():
     (out/'result.json').unlink(missing_ok=True)
     disk=out/'native.img'
     shutil.copyfile(source,disk)
-    native_run=INPUT(disk,out/'native',qmp_stdio=args.qmp_stdio,startup_check={
+    native_run=INPUT(disk,out/'native',cpu=args.cpu,qmp_stdio=args.qmp_stdio,startup_check={
         'status':'ok','answers':[],
         'commands':[
             ('#include "/Kernel/I386/DocBinaryPersistenceCheck.HC"',[]),

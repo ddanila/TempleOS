@@ -4,10 +4,15 @@
 #include "/Kernel/FunSegTypes.HH"
 #include "/Kernel/I386/TaskHeaps.HH"
 import I64 MSize(U8 *allocation);
+import F64 Sin(F64 value);
+import F64 Cos(F64 value);
+import F64 Arg(F64 x,F64 y);
 import F64 Round(F64 value);
 import F64 Floor(F64 value);
 import F64 Log10(F64 value);
 import F64 Pow10I64(I64 exponent);
+import F64 Ceil(F64 d);
+import U64 CeilU64(U64 num,U64 to);
 import I64 FloorI64(I64 num,I64 to);
 import U32 char_bmp_hex_numeric[16];
 import U0 i386_idle();
@@ -20,13 +25,17 @@ class CI386FunSegDebug {
   I64 fun_seg_cache_index;
 };
 CI386FunSegDebug dbg;
-F64 tS()
+I64 NativeJiffies()
 {
   U32 flags=I386IrqSave;
   I64 ticks=0;
   if(console_config && console_config->jiffies) ticks=*console_config->jiffies;
   I386IrqRestore(flags);
-  return ToF64(ticks)/JIFFY_FREQ;
+  return ticks;
+}
+F64 tS()
+{
+  return ToF64(NativeJiffies)/JIFFY_FREQ;
 }
 Bool ChkCodePtr(U8 *ptr)
 {//Native memory is flat; these are the mapped boot/provider/pool regions.
@@ -80,26 +89,8 @@ done:
 #include "/Kernel/FunSegCacheCore.HC"
 #include "/Kernel/StrPrintFunSegCore.HC"
 U8 *NativeFormatterFileRead(U8 *filename,I64 *_size=NULL,I64 *_attr=NULL)
-{//The file service lends bootstrap-heap bytes; formatter buffers use Free.
-  U8 *buffer,*result=NULL;
-  I64 size=0,attr=0,exception=0;
-  Bool failed=FALSE;
-  if(_size) *_size=0;
-  if(_attr) *_attr=0;
-  if(!console_config || !console_config->files || !console_config->files->read)
-    return NULL;
-  buffer=(*console_config->files->read)(console_config->heap,filename,&size,&attr,NULL);
-  if(!buffer) return NULL;
-  try {
-    result=MAlloc(size+1); MemCpy(result,buffer,size); result[size]=0;
-  } catch {
-    failed=TRUE; exception=Fs->except_ch; Fs->catch_except=TRUE;
-  }
-  I386HeapFree(console_config->heap,buffer);
-  if(failed) throw(exception,TRUE);
-  if(_size) *_size=size;
-  if(_attr) *_attr=attr;
-  return result;
+{//Formatter reads share the public cache and caller-owned buffer contract.
+  return NativePublicFileRead(filename,_size,_attr);
 }
 #define FileRead NativeFormatterFileRead
 #define ì (0x7FF0000000000000(F64))

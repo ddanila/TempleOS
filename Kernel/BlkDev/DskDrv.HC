@@ -139,51 +139,9 @@ U0 DrvFATBlkSet(CDrv *dv,I64 c,I64 fat_sel=3)
   }
 }
 
-CDrv *DrvChk(CDrv *dv,Bool except=TRUE)
-{//Check for valid drv. Throw exception.
-  if (!dv || dv->dv_signature!=DRV_SIGNATURE_VAL) {
-    if (except)
-      throw('Drv');
-    else
-      return NULL;
-  } else
-    return dv;
-}
+#include "/Kernel/BlkDev/DriveLetterCore.HC"
 
-U8 Drv2Let(CDrv *dv=NULL)
-{//Drv ptr to Drv letter.
-  if (!dv)
-    dv=Fs->cur_dv;
-  DrvChk(dv);
-  return dv->drv_let;
-}
-
-U8 Let2Let(U8 drv_let=0)
-{//Drv letter to Drv letter.
-  if (!drv_let)
-    drv_let=Drv2Let(Fs->cur_dv);
-  else if (drv_let==':')
-    drv_let=blkdev.boot_drv_let;
-  else if (drv_let=='~')
-    drv_let=*blkdev.home_dir;
-  return ToUpper(drv_let);
-}
-
-I64 Let2BlkDevType(U8 drv_let)
-{//Drv letter to BlkDev Type. drv_let=0 not allowed. See $LK,"BDT_NULL",A="MN:BDT_NULL"$.
-  drv_let=Let2Let(drv_let);
-  if ('A'<=drv_let<='B')
-    return BDT_RAM;
-  if ('C'<=drv_let<='L')
-    return BDT_ATA;
-  if ('M'<=drv_let<='P')
-    return BDT_ISO_FILE_READ;
-  if ('Q'<=drv_let<='S')
-    return BDT_ISO_FILE_WRITE;
-  if ('T'<=drv_let<='Z')
-    return BDT_ATAPI;
-  return BDT_NULL;
-}
+#include "/Kernel/BlkDev/DriveClassCore.HC"
 
 CDrv *Let2Drv(U8 drv_let=0,Bool except=TRUE)
 {//Drv letter to Drv ptr.
@@ -315,18 +273,7 @@ U8 *DrvModelNum(U8 drv_let=0)
   return res;
 }
 
-U8 blkdev_text_attr[BDT_TYPES_NUM]={BLACK,LTCYAN,WHITE,LTGREEN,LTRED,LTBLUE};
-U8 drv_text_attr[3]={BLACK,BLUE,RED};
-
-U8 DrvTextAttrGet(U8 drv_let=0)
-{//Get color of drive.
-  drv_let=Let2Let(drv_let);
-  if ('A'<=drv_let<='Z')
-    return blkdev_text_attr[Let2BlkDevType(drv_let)]<<4|
-	  drv_text_attr[drv_let%sizeof(drv_text_attr)];
-  else
-    return BLACK<<4|WHITE;
-}
+#include "/Kernel/BlkDev/DriveTextAttrCore.HC"
 
 U0 DrvRep()
 {//Drive report.

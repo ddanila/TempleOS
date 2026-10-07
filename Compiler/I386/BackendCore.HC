@@ -265,11 +265,29 @@ U0 I386BackendBreakPoll(CI386Backend *backend,CI386Out *out)
     I386Bytes(out,"\xFF\xD0\x61\x9D",4); //CALL EAX; POPAD; POPFD
   }
 }
+//Original HolyC combines a dereferenced post-increment assignment into a
+//store followed by a pointer update. Keep RHS reads on the old pointer.
+CIntermediateCode *I386AssignmentPostPointer(CIntermediateCode *assignment)
+{
+  CIntermediateCode *left;
+  if(assignment->ic_code!=IC_ASSIGN) return 0;
+  left=assignment->t.arg1_tree;
+  if(left && (left->ic_code==IC__PP || left->ic_code==IC__MM) &&
+      left->ic_class && left->ic_class->ptr_stars_cnt) return left;
+  return 0;
+}
+Bool I386DeferredAssignmentPointer(CCmpCtrl *cc,CIntermediateCode *pointer)
+{
+  CIntermediateCode *assignment;
+  for(assignment=pointer->next;assignment!=&cc->coc.coc_head;assignment=assignment->next)
+    if(I386AssignmentPostPointer(assignment)==pointer) return TRUE;
+  return FALSE;
+}
 U0 I386BackendCore(CI386Backend *backend)
 {
   CCmpCtrl *cc=backend->cc;
   CI386Out *out=backend->out;
-  CIntermediateCode *ic;
+  CIntermediateCode *ic,*post_pointer;
   CCodeMisc *label,*switch_table,*asm_label;
   CI386Call *call;
   CI386Logic *logic;
@@ -895,6 +913,9 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_PP_:
           case IC_MM_:
             if (depth<1) throw('Compiler');
+            if((ic->ic_code==IC__PP || ic->ic_code==IC__MM) &&
+                c->ptr_stars_cnt && I386DeferredAssignmentPointer(cc,ic))
+              break; //Leave the pointer-variable address for the combined store.
             I386Bytes(out,"\x58\x5A\x89\xC1",4);
             I386Load(out,c);
             I386Bytes(out,"\x89\xC6\x89\xD7",4);
@@ -1026,7 +1047,19 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_ASSIGN:
             if (depth<2) throw('Compiler');
             I386Bytes(out,"\x58\x5A\x59\x5B",4);
-            I386Store(out,c);
+            if(post_pointer=I386AssignmentPostPointer(ic)) {
+              //EAX:EDX = RHS, ECX = pointer-variable address.
+              //Save the normalized assignment result and address across the store.
+              I386Normalize(out,c);
+              I386Bytes(out,"\x51\x52\x50\x8B\x31\x89\xF1",7);
+              I386Store(out,c);
+              I386Bytes(out,"\x58\x5A\x59",3);
+              if(post_pointer->ic_code==IC__PP)
+                I386Bytes(out,"\x81\xC6",2);
+              else I386Bytes(out,"\x81\xEE",2);
+              I386Dword(out,I386Size(post_pointer->ic_class-1));
+              I386Bytes(out,"\x89\x31",2);
+            } else I386Store(out,c);
             I386Bytes(out,"\x52\x50",2);
             depth--;
             break;

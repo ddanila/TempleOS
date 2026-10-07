@@ -8,7 +8,7 @@ U0 I386FrontendTopName(CI386Frontend *state,U8 *dst,U8 *src)
 }
 class CI386FrontendTopBundle {
   I64 bytes,export_count,call_count;
-  U8 code[256];
+  U8 code[1024];
   CI386AsmLabel exports[32];
   CI386AsmFix calls[16];
 };
@@ -18,7 +18,7 @@ I64 I386FrontendTopPack(CI386Frontend *state,U8 *output,I64 capacity)
   CI386ModuleRecord records[48];
   U8 strings[2048],*name;
   I64 i,j,length,string_bytes=0,record_count;
-  if(!bundle || bundle->bytes<1 || bundle->bytes>256 ||
+  if(!bundle || bundle->bytes<1 || bundle->bytes>1024 ||
       bundle->export_count<1 || bundle->export_count>32 ||
       bundle->call_count<0 || bundle->call_count>16) return 0;
   record_count=bundle->export_count+bundle->call_count;
@@ -48,7 +48,7 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
   CI386AsmLabel labels[32],imports[8],exports[32];
   CI386AsmFix branches[64],calls[16];
   CI386FrontendTopBundle *bundle;
-  U8 bytes[256],name[32];
+  U8 bytes[1024],name[32];
   I64 count=0,label_count=0,import_count=0,branch_count=0,call_count=0;
   I64 i,j,k,delta,opcode,export_count=0;
   if(flags || !(cc->flags&CCF_MODULE_SOURCE) || cc->htc.fun ||
@@ -150,12 +150,15 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
             } else I386FrontendUnavailable(state);
           }
         } else if(!StrCmp(name,"MOV") || !StrCmp(name,"LEA") ||
-            !StrCmp(name,"TEST") || !StrCmp(name,"XOR") || !StrCmp(name,"ADD")) {
+            !StrCmp(name,"TEST") || !StrCmp(name,"XOR") || !StrCmp(name,"ADD") ||
+            !StrCmp(name,"CMP") || !StrCmp(name,"SUB")) {
           opcode=0;
           if(!StrCmp(name,"LEA")) opcode=1;
           if(!StrCmp(name,"TEST")) opcode=2;
           if(!StrCmp(name,"XOR")) opcode=3;
           if(!StrCmp(name,"ADD")) opcode=4;
+          if(!StrCmp(name,"CMP")) opcode=5;
+          if(!StrCmp(name,"SUB")) opcode=6;
           if(opcode==0 && cc->token==TK_IDENT && cc->cur_str &&
               (!StrCmp(cc->cur_str,"DS") || !StrCmp(cc->cur_str,"ES") ||
                !StrCmp(cc->cur_str,"FS") || !StrCmp(cc->cur_str,"GS"))) {
@@ -189,6 +192,10 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
                 (src.kind==1 || src.kind==2 && src.size==4)) {
               I386FrontendAsmByte(state,bytes,&count,0x8B);
               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+            } else if(opcode==0 && dst.kind==1 && dst.size==4 &&
+                src.kind==3 && src.value>=I32_MIN && src.value<=U32_MAX) {
+              I386FrontendAsmByte(state,bytes,&count,0xB8+dst.register_code);
+              I386FrontendAsmDword(state,bytes,&count,src.value);
             } else if(opcode==0 && dst.kind==2 && dst.size==4 &&
                 src.kind==1 && src.size==4) {
               I386FrontendAsmByte(state,bytes,&count,0x89);
@@ -205,13 +212,22 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
                 (src.kind==1 || src.kind==2 && src.size==4)) {
               I386FrontendAsmByte(state,bytes,&count,0x33);
               I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
-            } else if(opcode==4 && dst.kind==1 && dst.size==4 &&
+            } else if(opcode==5 && dst.kind==1 && src.kind==1 &&
+                dst.size==4 && src.size==4) {
+              I386FrontendAsmByte(state,bytes,&count,0x3B);
+              I386FrontendAsmModRM(state,bytes,&count,dst.register_code,&src);
+            } else if((opcode==4 || opcode==6) && dst.kind==1 && dst.size==4 &&
                 src.kind==3 && src.value>=-128 && src.value<=127) {
               I386FrontendAsmByte(state,bytes,&count,0x83);
-              I386FrontendAsmModRM(state,bytes,&count,0,&dst);
+              if(opcode==4) I386FrontendAsmModRM(state,bytes,&count,0,&dst);
+              else I386FrontendAsmModRM(state,bytes,&count,5,&dst);
               I386FrontendAsmByte(state,bytes,&count,src.value);
             } else I386FrontendUnavailable(state);
           }
+        } else if(!StrCmp(name,"DEC")) {
+          I386FrontendAsmOperand(state,cc,&dst);
+          if(dst.kind!=1 || dst.size!=4) I386FrontendUnavailable(state);
+          I386FrontendAsmByte(state,bytes,&count,0x48+dst.register_code);
         } else if(!StrCmp(name,"CALL")) {
           if(cc->token==TK_IDENT && cc->cur_str && !StrCmp(cc->cur_str,"U32")) {
             I386FrontendAsmOperand(state,cc,&dst);
@@ -229,7 +245,8 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
             calls[call_count].offset=count; call_count++;
             I386FrontendAsmDword(state,bytes,&count,0);
           }
-        } else if(!StrCmp(name,"JMP") || !StrCmp(name,"JNZ")) {
+        } else if(!StrCmp(name,"JMP") || !StrCmp(name,"JNZ") ||
+            !StrCmp(name,"JZ") || !StrCmp(name,"JC")) {
           if(!StrCmp(name,"JMP") && cc->token==TK_IDENT && cc->cur_str &&
               I386FrontendAsmReg(cc->cur_str)>=0) {
             I386FrontendAsmOperand(state,cc,&dst);
@@ -240,9 +257,12 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
             if(cc->token!=TK_IDENT || branch_count>=64) I386FrontendUnavailable(state);
             I386FrontendTopName(state,branches[branch_count].name,cc->cur_str);
             I386FrontendLex(state,cc);
-            if(!StrCmp(name,"JNZ")) {
+            if(StrCmp(name,"JMP")) {
               I386FrontendAsmByte(state,bytes,&count,0x0F);
-              I386FrontendAsmByte(state,bytes,&count,0x85);
+              if(!StrCmp(name,"JNZ")) opcode=0x85;
+              else if(!StrCmp(name,"JZ")) opcode=0x84;
+              else opcode=0x82;
+              I386FrontendAsmByte(state,bytes,&count,opcode);
             } else I386FrontendAsmByte(state,bytes,&count,0xE9);
             branches[branch_count].offset=count; branch_count++;
             I386FrontendAsmDword(state,bytes,&count,0);

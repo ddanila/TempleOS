@@ -4,7 +4,9 @@ class CI386ClassTransfer {
   CI386CmpCtrl *owned;
   CHashTable *source;
   CI386ParserAllocation **records;
-  I64 count,capacity;
+  U8 *selected,*stored;
+  I64 slots,last_slot;
+  I64 count,capacity,storage_count;
   Bool ok;
 };
 CI386ParserAllocation *I386ParserRecord(CI386CmpCtrl *owned,U8 *allocation)
@@ -30,6 +32,18 @@ U0 I386ClassTransferVisit(U8 *context,U8 *allocation)
   }
   for(file=cc->lex_include_stk;file;file=file->next)
     if(allocation==file || allocation==file->buf || allocation==file->full_name) { state->ok=FALSE; return; }
+  if(state->selected) {
+    //The parser queue stays unchanged until the entire graph is validated.
+    i=0;
+    for(record=state->owned->parser_next;record!=&state->owned->parser_next;record=record->next) {
+      if(record->allocation==allocation) break;
+      i++;
+    }
+    if(i>=state->slots || state->selected[i>>3]&(1<<(i&7))) { state->ok=FALSE; return; }
+    state->selected[i>>3]|=1<<(i&7);
+    state->last_slot=i; state->count++; return;
+  }
+  if(!state->records) { state->count++; return; }
   for(i=0;i<state->count;i++) if(state->records[i]==record) { state->ok=FALSE; return; }
   state->records[state->count++]=record;
 }
@@ -54,7 +68,7 @@ Bool I386PublishClasses(CI386Heap *heap,CCmpCtrl *cc,CHashTable *source)
   I64 i,j,capacity=0;
   U32 irq=I386IrqSave;
   Bool result=FALSE;
-  state.records=0;
+  state.records=0; state.selected=0; state.stored=0;
   if(!I386CmpCodeOwner(heap,cc) || !(task=owned->task) || cc->error_cnt || cc->lex_prs_stk || cc->htc.next ||
       owned->code_next!=&owned->code_next || !source || source==task->hash_table ||
       cc->htc.glbl_hash_table!=source || cc->htc.hash_table_lst!=source ||
@@ -66,9 +80,7 @@ Bool I386PublishClasses(CI386Heap *heap,CCmpCtrl *cc,CHashTable *source)
       I386HeapSize(heap,source->body)!=(source->mask+1)*sizeof(CHash *)) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) capacity++;
   if(capacity<1 || capacity>0x1FFFFFFF) goto done;
-  state.records=I386HeapAlloc(heap,capacity*sizeof(CI386ParserAllocation *),FALSE);
-  if(!state.records) goto done;
-  state.owned=owned; state.source=source; state.count=0; state.capacity=capacity; state.ok=TRUE;
+  state.owned=owned; state.source=source; state.count=0; state.capacity=capacity; state.storage_count=0; state.ok=TRUE;
   visitor.context=&state; visitor.release=&I386ClassTransferVisit;
   for(i=0;i<=source->mask;i++)
     for(entry=source->body[i];entry;entry=entry->next) {
@@ -87,6 +99,20 @@ Bool I386PublishClasses(CI386Heap *heap,CCmpCtrl *cc,CHashTable *source)
       SymbolHashVisit(&visitor,entry);
       if(!state.ok) goto done;
     }
+  //Size the journal for visited class storage, excluding transient parser nodes.
+  //The first pass is nonmutating; the second also rejects shared owned payloads.
+  capacity=state.count;
+  if(capacity) {
+    state.records=I386HeapAlloc(heap,capacity*sizeof(CI386ParserAllocation *),FALSE);
+    if(!state.records) goto done;
+    state.count=0; state.capacity=capacity;
+    for(i=0;i<=source->mask;i++)
+      for(entry=source->body[i];entry;entry=entry->next) {
+        SymbolHashVisit(&visitor,entry);
+        if(!state.ok) goto done;
+      }
+    if(state.count!=capacity) goto done;
+  }
   //No allocation or fallible lookup remains. Move payload ownership, then roots.
   for(i=0;i<state.count;i++) {
     record=state.records[i];

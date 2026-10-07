@@ -47,8 +47,10 @@ I64 NativeTakeTest()
       lines!=1 || child->line_num!=2) return 91;
   if(!I386LexPush(&state_heap,&cc)) return 92;
   saved=cc.cur_buf_ptr;
-  if(InputRead(&cc,&lines)!=-1 || cc.lex_include_stk!=child || cc.cur_buf_ptr!=saved) return 93;
-  if(!I386LexPop(&state_heap,&cc,FALSE) || InputRead(&cc,&lines)!='A' ||
+  if(InputRead(&cc,&lines)!='A' || cc.lex_include_stk!=root ||
+      I386HeapSize(&state_heap,source)!=4 || I386HeapSize(&state_heap,name)!=6) return 93;
+  if(!I386LexPop(&state_heap,&cc) || cc.cur_buf_ptr!=saved ||
+      InputRead(&cc,&lines)!='A' ||
       cc.lex_include_stk!=root || I386HeapSize(&state_heap,source)!=-1 ||
       I386HeapSize(&state_heap,name)!=-1 || state_heap.allocations!=count-1 ||
       InputRead(&cc,&lines)!='z' || InputRead(&cc,&lines) || !(GetRFlags&0x200)) return 94;

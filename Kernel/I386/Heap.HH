@@ -16,6 +16,9 @@ class CI386HeapBlock
 public extern Bool I386HeapInit(CI386Heap *hc,U8 *base,I64 size);
 public extern Bool I386HeapValid(CI386Heap *hc);
 public extern U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE);
+//Separate short-lived bookkeeping from durable allocations without moving bytes.
+public extern U8 *I386HeapAllocHigh(CI386Heap *hc,I64 size,Bool zero=FALSE);
 public extern Bool I386HeapFree(CI386Heap *hc,U8 *ptr);
+public extern Bool I386HeapShrink(CI386Heap *hc,U8 *ptr,I64 size);
 public extern I64 I386HeapSize(CI386Heap *hc,U8 *ptr);
 #endif

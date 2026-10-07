@@ -1662,6 +1662,7 @@ I64 ProbeProgramNativeFileRun(CI386CompilerProbe *probe,CI386Heap *heap,
       "I386RedSeaLoadBound",imports,2)) KernelStop;
   image_bytes=I386LoadBoundInto(&module,&module_bytes,1,0,0,
     "I386RedSeaLoadBound",imports,3);
+  KernelLog("NATIVE FILE LINK SIZE "); KernelHex(image_bytes); KernelLog("\n");
   image=I386HeapAlloc(heap,image_bytes);
   owned_heap=I386HeapAlloc(heap,sizeof(CI386Heap),TRUE);
   arena=I386HeapAlloc(heap,16384,TRUE);
@@ -1682,12 +1683,15 @@ I64 ProbeProgramNativeFileRun(CI386CompilerProbe *probe,CI386Heap *heap,
   if(!(*guest_init)(owned_heap,arena,16384) || !I386RedSeaBegin(probe->volume) ||
       I386RedSeaResolve(probe->volume,probe->volume->root,
         "/Modules/I386/Startup.t32m",&entry)!=1) KernelStop;
+  KernelLog("NATIVE FILE LOAD START\n");
   loaded=(*guest_load)(probe->volume,&entry,owned_heap,"Main",startup,3);
+  KernelLog("NATIVE FILE LOAD RESULT "); KernelHex((loaded+0)(U64)); KernelLog("\n");
   if(!I386RedSeaEnd(probe->volume)) KernelStop;
   loaded_bytes=I386HeapSize(owned_heap,loaded);
   raw=probe->files->read(heap,"C:/Modules/I386/Startup.t32m",&raw_bytes,0,0);
   if(!loaded || loaded_bytes<8 || !raw || !I386ModuleValid(raw,raw_bytes) ||
       I386LoadBoundAt(&raw,&raw_bytes,1,0,0,"Main",startup,3,(loaded+0)(U64))!=loaded_bytes) KernelStop;
+  KernelLog("NATIVE FILE COMPARE "); KernelHex(loaded_bytes); KernelLog(" "); KernelHex(raw_bytes); KernelLog("\n");
   expected=I386HeapAlloc(heap,loaded_bytes);
   if(!expected || I386LoadBoundAt(&raw,&raw_bytes,1,expected,loaded_bytes,
       "Main",startup,3,(loaded+0)(U64))!=loaded_bytes) KernelStop;
@@ -1737,13 +1741,18 @@ U0 ProbeProgramNativeFile(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
         probe->disk_include)) ||
       !probe->compiler->frontend_private_defines(symbols)) KernelStop;
   ProbeProgramRead(probe,heap,cc,symbols);
+  KernelLog("NATIVE FILE PACK START "); KernelHex(probe->phase); KernelLog(" ");
+  KernelHex(heap->used); KernelLog(" "); KernelHex(heap->allocations); KernelLog("\n");
   module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  KernelLog("NATIVE FILE PACK SIZE "); KernelHex(module_bytes); KernelLog("\n");
   module=I386HeapAlloc(heap,module_bytes);
   if(module_bytes<1 || !module ||
       probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
       !I386ModuleValid(module,module_bytes) ||
       !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  KernelLog("NATIVE FILE RUN START "); KernelHex(probe->phase); KernelLog("\n");
   image_bytes=ProbeProgramNativeFileRun(probe,heap,module,module_bytes);
+  KernelLog("NATIVE FILE RUN DONE "); KernelHex(probe->phase); KernelLog("\n");
   if(probe->persist_modules) {
     disk=probe->files->read(heap,"C:/Probe/NativeFile.t32m",&disk_bytes,0,0);
     if(disk) {
@@ -1765,7 +1774,11 @@ U0 ProbeProgramNativeFile(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(heap->used!=used || heap->allocations!=allocations) {
+    KernelLog("NATIVE FILE CLEANUP FAILURE "); KernelHex(heap->used); KernelLog(" "); KernelHex(used);
+    KernelLog(" "); KernelHex(heap->allocations); KernelLog(" "); KernelHex(allocations);
+    KernelLog("\n"); KernelStop;
+  }
   KernelLog("NATIVE FILE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }

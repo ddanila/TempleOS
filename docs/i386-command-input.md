@@ -20,7 +20,9 @@ the shared parser's declaration and static initialization behavior. ABI 38 also
 accepts `I386_INPUT_ATOMIC_DEFINES`, independently or combined with `CCF_JUST_LOAD`,
 to commit macros and declarations together for header loading. The entry supplies
 its own input-buffer ownership flags.
-Invalid arguments or flags return false before creating a control.
+Invalid arguments or flags return false before creating a control. Caller-supplied
+`CCF_AOT_COMPILE` is rejected; module building uses the dedicated build API.
+The native frontend selects its internal AOT control flag independently.
 
 Frontend diagnostics are forwarded synchronously with their control, severity and
 message, before error/warning accounting. Parenthesis-warning requests obey the

@@ -5,7 +5,8 @@
 %include "tools/i386-bios.inc"
 section stage vstart=0x10000 align=1
 bits 32
-    jmp start32
+stage_entry: db 0xE9
+    dd start32-($+4)
     times 16-($-$$) db 0
 image_magic: dd 0x42323345
 image_version: dd 1
@@ -28,13 +29,27 @@ extended_gdt:
 extended_gdtr:
     dw $-extended_gdt-1
     dd extended_gdt
-start32:
-    mov ax,16
+start32: mov ax,16
     mov ds,ax
     mov es,ax
     mov ss,ax
     mov esp,0x90000
     cld
+    mov edi,early_idt
+    mov ecx,256
+.fill_idt:
+    mov eax,early_fault
+    mov [edi],ax
+    shr eax,16
+    mov [edi+6],ax
+    mov word [edi+2],8
+    mov word [edi+4],0x8E00
+    add edi,8
+    loop .fill_idt
+    lidt [early_idtr]
+%ifdef EARLY_IDT_TEST
+    int3
+%endif
     cmp dword [image_magic],0x42323345
     jne fail32
     cmp dword [image_version],1
@@ -104,8 +119,7 @@ a20_ready:
     lgdt [extended_gdtr]
     jmp word 24:pm16-$$
 bits 16
-pm16:
-    mov ax,32
+pm16: mov ax,32
     mov ds,ax
     mov es,ax
     mov ss,ax
@@ -120,6 +134,7 @@ real16:
     mov es,ax
     mov ax,0x1000
     mov ds,ax
+    lidt [real_idtr-$$]
     sti
     cmp word [stage_spt-$$],0
     jne read_sector
@@ -163,11 +178,11 @@ fail16_stage:
     hlt
     jmp fail16_stage
 bits 32
-copy32:
-    mov ax,16
+copy32: mov ax,16
     mov ds,ax
     mov es,ax
     mov ss,ax
+    lidt [early_idtr]
     mov esp,0x90000
     cld
     mov esi,0x6000
@@ -260,6 +275,19 @@ a20_kbc_next:
 a20_kbc_ok:
     clc
     ret
+early_fault:
+    cli
+    mov al,'F'
+    out 0xE9,al
+    hlt
+    jmp early_fault
+stage_code_end: db 0
+align 8
+early_idt: times 256 dq 0
+early_idtr: dw 256*8-1
+    dd early_idt
+real_idtr: dw 0x3FF
+    dd 0
 times 4096-($-$$) db 0
 kernel_image: incbin KERNEL_FILE
 kernel_end:

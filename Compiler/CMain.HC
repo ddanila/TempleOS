@@ -603,6 +603,9 @@ I64 ExePutS(U8 *buf,U8 *filename=NULL,
       Fs->catch_except=TRUE;
       okay=FALSE;
       res=0;
+    } else {
+      QueRem(cc);
+      CmpCtrlDel(cc); //Successful compilation still owns its control on runtime failure.
     }
   }
   QueRem(cc);
@@ -611,14 +614,7 @@ I64 ExePutS(U8 *buf,U8 *filename=NULL,
   return res;
 }
 
-I64 ExePrint(U8 *fmt,...)
-{//JIT Compile and execute text from a printf().
-  I64 res;
-  U8 *buf=StrPrintJoin(NULL,fmt,argc,argv);
-  res=ExePutS(buf);
-  Free(buf);
-  return res;
-}
+#include "/Compiler/ExePrintCore.HC"
 
 I64 ExeFile(U8 *name,I64 ccf_flags=0)
 {//JIT Compile and execute a file.

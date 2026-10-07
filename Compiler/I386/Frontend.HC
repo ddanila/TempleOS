@@ -63,6 +63,7 @@ class CI386Frontend {
   CI386FileServices *files;
   CI386LexIncludeService lex_services;
   CHashTable *table,*parent,*defines;
+  Bool published_children;
   CPrsExpressionServices expression;
   CPrsTypeServices types;
   CPrsDeclarationServices declarations;
@@ -90,15 +91,20 @@ class CI386FrontendCall {
   CHashFun *original;
   Bool recursive,unresolved;
 };
-class CI386FrontendBound {
-  CI386FrontendCall *calls;
-  CI386FrontendAddress *address_refs;
+class CI386FrontendParseBound {
   CHashFun fun;
   CAOT aot;
   CAOTCtrl aotc;
-  CI386BackendStatus status;
   CI386Backend typer;
+};
+class CI386FrontendBound {
+  CI386FrontendCall *calls;
+  CI386FrontendAddress *address_refs;
+  CAOT aot;
+  CAOTCtrl aotc;
+  CI386BackendStatus status;
   CI386NativeBackend release_owner;
+  Bool has_helpers;
   CHashTable helpers;
   CHash *buckets[16];
   CHashFun functions[10];
@@ -160,7 +166,21 @@ U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
   CI386Frontend *state=context;
-  if(!kind) { KernelLog("FRONTEND ERROR "); KernelLog(message); KernelLog("\n"); }
+  U8 line_text[32];
+  I64 line,index;
+  if(!kind) {
+    KernelLog("FRONTEND ERROR "); KernelLog(message);
+    if(cc->cur_str) { KernelLog(" token "); KernelLog(cc->cur_str); }
+    if(cc->lex_include_stk) {
+      if(cc->lex_include_stk->full_name) {
+        KernelLog(" file "); KernelLog(cc->lex_include_stk->full_name);
+      }
+      line=cc->lex_include_stk->line_num; index=31; line_text[index]=0;
+      do { line_text[--index]='0'+line%10; line/=10; } while(line>0);
+      KernelLog(" line "); KernelLog(line_text+index);
+    }
+    KernelLog("\n");
+  }
   if(kind==2) {
     if(!(cc->opts&1<<OPTf_WARN_PAREN) || cc->lex_include_stk->flags&LFSF_DEFINE) return;
     message="Unnecessary parenthesis ";
@@ -170,7 +190,15 @@ U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   cc->warning_cnt++;
 }
 U0 I386FrontendUnavailable(CI386Frontend *state)
-{ I386FrontendReport(state,state->cc,0,"Native frontend service unavailable"); }
+{
+  KernelLog("FRONTEND UNAVAILABLE source ");
+  if(state->cc->lex_include_stk && state->cc->lex_include_stk->full_name)
+    KernelLog(state->cc->lex_include_stk->full_name);
+  KernelLog(" token ");
+  if(state->cc->cur_str) KernelLog(state->cc->cur_str);
+  KernelLog("\n");
+  I386FrontendReport(state,state->cc,0,"Native frontend service unavailable");
+}
 U8 *I386FrontendAlloc(U8 *context,I64 bytes,Bool zeroed,Bool code_heap)
 {
   CI386Frontend *state=context;
@@ -206,7 +234,7 @@ U0 I386FrontendFree(U8 *context,U8 *allocation)
     }
     link=&record->next;
   }
-  if(!I386ParserFree(state->heap,state->cc,allocation)) I386FrontendUnavailable(state);
+  if(!I386ParserFree(state->heap,state->cc,allocation)) { KernelLog("FRONTEND FREE rejected allocation\n"); I386FrontendUnavailable(state); }
 }
 U8 *I386FrontendDuplicate(U8 *context,U8 *source)
 {
@@ -276,7 +304,7 @@ U0 I386FrontendAppend(U8 *context,CCmpCtrl *cc,CCodeCtrl *saved)
 CIntermediateCode *I386FrontendOptimize(U8 *context,CCmpCtrl *cc)
 {
   CI386Frontend *state=context;
-  return I386OptPass012(state->heap,cc,state->expression.types);
+  return I386FrontendOptPass012(state->heap,cc,state->expression.types);
 }
 Bool I386FrontendExpression(U8 *context,CCmpCtrl *cc,I64 *precedence,Bool end_exp,CPrsStk *stack)
 {
@@ -347,6 +375,26 @@ U0 I386FrontendMemberAdd(U8 *context,CCmpCtrl *cc,CMemberLst *member,CHashClass 
 {
   if(!MemberInsert(member,type,mode==PRS1B_LOCAL_VAR,FALSE,&I386FrontendMemberDiagnostic,context))
     I386FrontendUnavailable(context);
+}
+Bool I386FrontendNeedsHelpers(CCmpCtrl *cc,CHashClass *type,CHashClass **types)
+{//Conservatively mirror the backend's floating operand/type checks.
+  CI386Backend typer;
+  CIntermediateCode *node;
+  I64 count;
+  typer.types=types;
+  if(I386IsF64(type)) return TRUE;
+  for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
+    if(node->ic_code==IC_IMM_F64 || node->ic_code==IC_TO_F64 ||
+        node->ic_code==IC_TO_I64 || node->ic_flags&ICF_RES_TO_F64 ||
+        I386IsF64(I386ValueClass(&typer,node))) return TRUE;
+    count=intermediate_code_table[node->ic_code].arg_cnt;
+    if(count==IS_1_ARG || count==IS_2_ARG) {
+      if(node->t.arg1_tree && I386IsF64(I386ValueClass(&typer,node->t.arg1_tree))) return TRUE;
+      if(count==IS_2_ARG && node->t.arg2_tree &&
+          I386IsF64(I386ValueClass(&typer,node->t.arg2_tree))) return TRUE;
+    }
+  }
+  return FALSE;
 }
 U0 I386FrontendHelpers(CI386FrontendBound *bound,CHashClass **types)
 {
@@ -437,7 +485,7 @@ U0 I386FrontendStaticsPrepare(CI386Frontend *state,CHashFun *owner)
 U0 I386FrontendCallsReject(CI386Frontend *state,I64 reason,CIntermediateCode *node)
 {
   U8 *name="<none>";
-  if(state->cc->htc.fun) name=state->cc->htc.fun->str;
+  if(state->cc->htc.fun && state->cc->htc.fun->str) name=state->cc->htc.fun->str;
   KernelLog("MODULE CALLS REJECT ");
   switch(reason) {
     case 1: KernelLog("internal "); break;
@@ -558,7 +606,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
   I64 i,j,offset,bytes=output->bytes;
   U8 *code=output->code;
   bound->release_owner.heap=state->heap; bound->release_owner.backend.cc=state->cc;
-  for(i=0;i<10;i++) {
+  for(i=0;bound->has_helpers && i<10;i++) {
     record=bound->functions[i].ie_lst; bound->functions[i].ie_lst=0;
     while(record) {
       next=record->next; offset=record->rip;
@@ -629,9 +677,15 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
 }
 CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashClass *type,I64 prior_misc)
 {
-  CI386FrontendBound *bound=I386FrontendAlloc(state,sizeof(CI386FrontendBound),TRUE,FALSE);
+  Bool has_helpers=I386FrontendNeedsHelpers(cc,type,state->expression.types);
+  I64 bound_bytes=offset(CI386FrontendBound.helpers);
+  CI386FrontendBound *bound;
+  if(has_helpers) bound_bytes=sizeof(CI386FrontendBound);
+  bound=I386FrontendAlloc(state,bound_bytes,TRUE,FALSE);
+  bound->has_helpers=has_helpers;
   CI386FrontendCode *result;
   CI386Out *out;
+  CPrsStk *old_ps=cc->ps;
   CAOT *old_aot=cc->aot;
   CAOTCtrl *old_aotc=cc->aotc;
   CHashTable *old_hash=cc->htc.hash_table_lst;
@@ -641,18 +695,20 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
   cc->aot=&bound->aot; cc->aotc=&bound->aotc;
   cc->flags=cc->flags&~mask|CCF_AOT_COMPILE; cc->pass=0;
-  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS START\n");
+  KernelLog("MODULE OUTPUT CALLS START\n");
   I386FrontendCalls(state,bound,cc);
-  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS DONE\n");
+  KernelLog("MODULE OUTPUT CALLS DONE\n");
   out=I386OutNew(state->heap,cc);
   if(!out) throw('OutMem',TRUE);
-  I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
-  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND START\n");
+  if(bound->has_helpers) {
+    I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
+  }
+  KernelLog("MODULE OUTPUT BACKEND START\n");
   if(cc->flags&CCF_BOOT_MODULE) {
     if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0)) I386FrontendUnavailable(state);
   } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll))
     I386FrontendUnavailable(state);
-  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
+  KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
     if(metadata->type!=IET_I386_DATA && metadata->type!=IET_I386_BREAK_POLL)
       I386FrontendUnavailable(state);
@@ -669,19 +725,25 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
     }
   }
   for(i=0;i<out->count;i++) result->code[i]=out->data[i];
-  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK START\n");
+  KernelLog("MODULE OUTPUT LINK START\n");
   I386FrontendLink(state,bound,result);
-  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK DONE\n");
+  KernelLog("MODULE OUTPUT LINK DONE\n");
   result->next=state->codes; state->codes=result;
   if(!I386OutDel(state->heap,cc,out) || !I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
   cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;
   cc->flags=cc->flags&~mask|old_flags&mask; cc->pass=old_pass;
+  //Backend folding may create a stack. Its IR/result no longer borrows it.
+  //Preserve a caller's existing stack and the exception unwind contract.
+  if(!old_ps && cc->ps) {
+    if(!I386HeapFree(state->heap,cc->ps)) I386FrontendUnavailable(state);
+    cc->ps=0;
+  }
   I386FrontendFree(state,bound); return result;
 }
 U8 *I386FrontendCompile(U8 *context,CCmpCtrl *cc,I64 *raw_type)
 {
   CI386Frontend *state=context;
-  CI386FrontendBound *bound;
+  CI386FrontendParseBound *bound;
   CI386FrontendCode *result=0;
   CIntermediateCode *ret,*node;
   CHashClass *type;
@@ -694,7 +756,7 @@ U8 *I386FrontendCompile(U8 *context,CCmpCtrl *cc,I64 *raw_type)
   I64 old_flags=cc->flags,old_pass=cc->pass,i;
   I64 mask=CCF_DONT_MAKE_RES|CCF_AOT_COMPILE|CCF_EXE_BLK|CCF_TARGET_HOST_CONST|1<<CCf_PASS_TRACE_PRESENT;
   if(cc!=state->cc || !I386CmpCodeOwner(state->heap,cc)) I386FrontendUnavailable(state);
-  bound=I386FrontendAlloc(context,sizeof(CI386FrontendBound),TRUE,FALSE);
+  bound=I386FrontendAlloc(context,sizeof(CI386FrontendParseBound),TRUE,FALSE);
   I386FrontendPush(state,cc); I386FrontendInit(state,cc);
   bound->fun.return_class=state->expression.types[RT_I64];
   bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
@@ -880,7 +942,12 @@ CHashClass *I386FrontendClass(U8 *context,CCmpCtrl *cc,I64 keyword,I64 flags,Boo
   CI386Frontend *state=context;
   CHashClass *result;
   //Published descriptors remain unchanged until the whole input commits.
-  result=HashFind(cc->cur_str,state->parent,HTT_CLASS);
+  //Interactive class declarations shadow inherited forwards, like PrsClassCore.
+  //Only a direct-scope published forward may be completed in place. Modules
+  //retain their private inherited-clone completion policy.
+  if(cc->flags&CCF_MODULE_SOURCE)
+    result=HashFind(cc->cur_str,state->parent,HTT_CLASS);
+  else result=I386FrontendSingleFind(state,cc->cur_str,state->parent,HTT_CLASS);
   if(result && Bt(&result->flags,Cf_EXTERN) &&
       !I386FrontendSingleFind(state,cc->cur_str,state->table,HTT_CLASS)) {
     if(is_extern) { I386FrontendLex(state,cc); return result; }
@@ -936,7 +1003,15 @@ Bool I386FrontendOption(U8 *context,I64 index)
   return Bt(&state->cc->opts,index);
 }
 U0 I386FrontendWarning(U8 *context,CCmpCtrl *cc,I64 kind,CHashSrcSym *symbol)
-{ cc->warning_cnt++; }
+{
+  cc->warning_cnt++;
+  KernelLog("FRONTEND SYMBOL WARNING ");
+  if(!kind) KernelLog("unused extern ");
+  else if(kind==1) KernelLog("return mismatch ");
+  else KernelLog("argument mismatch ");
+  if(symbol && symbol->str) KernelLog(symbol->str);
+  KernelLog("\n");
+}
 I64 I386FrontendDefine(U8 *context,U8 *name,U8 *list)
 {
   if(StrCmp(list,"ST_U64_REGS")) I386FrontendUnavailable(context);
@@ -966,14 +1041,62 @@ U0 I386FrontendStoreAt(U8 *context,CCmpCtrl *cc,I64 address,U8 value)
 { I386FrontendUnavailable(context); }
 U0 I386FrontendRange(U8 *context,CCmpCtrl *cc,I64 address,I64 bytes)
 { if(cc->flags&CCF_AOT_COMPILE) I386FrontendUnavailable(context); }
+CI386Frontend *I386FrontendTableOwner(CI386Heap *heap,CI386Task *task,CHashTable *table)
+{//Only an active control's exact registered overlay can own parser declarations.
+  CCmpCtrl *cc;
+  CI386CmpCtrl *owned;
+  CI386Frontend *state;
+  I64 remaining;
+  if(!task || !table)return 0;
+  remaining=task->active_controls;
+  for(cc=task->last_cc;cc!=&task->next_cc;cc=cc->last) {
+    if(remaining--<1 || !I386CmpControlValid(heap,cc) || !I386CmpActiveValid(cc))return 0;
+    owned=cc;
+    if(owned->task!=task)return 0;
+    state=owned->frontend;
+    if(state) {
+      if(!I386ParserRecord(owned,state) || I386HeapSize(heap,state)!=sizeof(CI386Frontend) ||
+          state->heap!=heap || state->cc!=cc)return 0;
+      if(state->table==table) {
+        if(cc->htc.glbl_hash_table!=table || cc->htc.hash_table_lst!=table ||
+            !I386ParserRecord(owned,table) || I386HeapSize(heap,table)!=sizeof(CHashTable) ||
+            table->mask!=31 || table->locked_flags || !I386ParserRecord(owned,table->body) ||
+            I386HeapSize(heap,table->body)!=32*sizeof(CHash *))return 0;
+        return state;
+      }
+    }
+  }
+  return 0;
+}
+Bool I386FrontendTableValid(CI386Heap *heap,CI386Task *task,CHashTable *table)
+{//Root arena tables and original public tables have distinct allocation headers.
+  CI386TaskHeaps *owner;
+  I64 bytes;
+  if(!table)return FALSE;
+  if(I386HeapSize(heap,table)>=0)
+    return I386HashTableValid(heap,table) || I386FrontendTableOwner(heap,task,table)!=0;
+  owner=task->heap_state;
+  while(owner && owner->signature==I386_TASK_HEAPS_MAGIC) {
+    if(owner->code_capacity &&
+        (*owner->code_capacity)(owner,table)>=sizeof(CHashTable)) {
+      if(table->mask<0 || table->mask>=0x1FFFFFFF || !table->body)return FALSE;
+      bytes=(table->mask+1)*sizeof(CHash *);
+      return (*owner->code_capacity)(owner,table->body)>=bytes;
+    }
+    owner=owner->parent;
+  }
+  return FALSE;
+}
 CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386LexIncludeService *includes)
 {
   CI386Frontend *state;
+  CI386CmpCtrl *owned=cc;
   CPrsExpressionServices *e;
   CPrsTypeServices *t;
   CPrsDeclarationServices *d;
   CPrsSymbolServices *s;
   if(!I386CmpCodeOwner(heap,cc) || !types || !types[RT_I64] || !types[RT_U64] || !types[RT_F64]) return 0;
+  if(owned->frontend)return 0;
   state=I386ParserAlloc(heap,cc,sizeof(CI386Frontend),TRUE);
   if(!state) return 0;
   state->heap=heap; state->cc=cc; state->parent=cc->htc.glbl_hash_table;
@@ -1014,6 +1137,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   s->source=&I386FrontendSource; s->option=&I386FrontendOption; s->warning=&I386FrontendWarning;
   I386FrontendStatementsInit(state);
   cc->aotc=I386FrontendAlloc(state,sizeof(CAOTCtrl),TRUE,FALSE);
+  owned->frontend=state;
   return state;
 }
 Bool I386ScalarSchema(CHashClass *type,I64 raw,I64 size,I64 count)
@@ -1110,7 +1234,7 @@ CPrsSymbolServices *I386FrontendServices(CI386Heap *heap,CCmpCtrl *cc,CHashClass
 {
   CI386CmpCtrl *owned=cc;
   CI386Frontend *state;
-  if(!I386CmpCodeOwner(heap,cc) || !owned->task || cc->htc.glbl_hash_table!=owned->task->hash_table ||
+  if(!I386CmpCodeOwner(heap,cc) || !owned->task || !I386FrontendTableValid(heap,owned->task,cc->htc.glbl_hash_table) ||
       !(cc->flags&CCF_AOT_COMPILE) || cc->error_cnt || owned->code_next!=&owned->code_next) return 0;
   state=I386FrontendNew(heap,cc,types,includes);
   if(!state) return 0;

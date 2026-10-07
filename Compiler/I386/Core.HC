@@ -26,9 +26,9 @@ U0 I386HostBackendReport(U8 *context,I64 reason,CIntermediateCode *ic,U8 *name)
 }
 U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
 {//Array bounds/defaults are evaluated by the running x86-64 compiler.
- //Accept only an integer constant after target-aware folding, never target code.
+ //Return folded scalar bits in the host Call ABI, never execute target code.
   CIntermediateCode *ic;
-  I64 count=0,value=0;
+  I64 count=0,value=0,result_type=RT_I64;
   U8 *res;
   if (cc->flags&CCF_EXE_BLK) throw('Compiler');
   cc->pass=0;
@@ -44,15 +44,17 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
       case IC_RETURN_VAL2:
       case IC_RET: break;
       case IC_IMM_I64:
+      case IC_IMM_F64:
         if (++count!=1 || ic->ic_class->ptr_stars_cnt) {
-          PrintErr("i386 host constant has non-integer or multiple values: count %d, pointer depth %d, value %X\n",
+          PrintErr("i386 host constant has pointer or multiple values: count %d, pointer depth %d, value %X\n",
             count,ic->ic_class->ptr_stars_cnt,ic->ic_data);
           throw('Compiler');
         }
         value=ic->ic_data;
+        if(ic->ic_code==IC_IMM_F64) result_type=RT_F64;
         break;
       default:
-        PrintErr("i386 host evaluation requires a folded integer constant\n");
+        PrintErr("i386 host evaluation requires a folded scalar constant\n");
         throw('Compiler');
     }
   }
@@ -61,7 +63,7 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
   res[0]=0x48; res[1]=0xB8; //Host MOV RAX,imm64; RET.
   MemCpy(res+2,&value,8); res[10]=0xC3;
   if (_size) *_size=11;
-  if (_type) *_type=RT_I64;
+  if (_type) *_type=result_type;
   COCDel(cc,&cc->coc);
   return res;
 }

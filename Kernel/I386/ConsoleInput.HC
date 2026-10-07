@@ -1,6 +1,21 @@
 class CConsoleExecutionResult {
   I64 diagnostics,last_value;
 };
+U0 NativeExecutionAnswer(U8 *context,I64 value,CHashClass *type)
+{
+  CConsoleExecutionResult *result=context;
+  no_warn type;
+  result->last_value=value;
+}
+#include "/Kernel/TimeTypes.HH"
+F64 NativeExecutionTime(U8 *context)
+{//The retained PIT scheduler clock measures elapsed seconds at millisecond resolution.
+  U32 flags=I386IrqSave;
+  I64 ticks=*console_config->jiffies;
+  I386IrqRestore(flags);
+  no_warn context;
+  return ToF64(ticks)/JIFFY_FREQ;
+}
 U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 {
   CConsoleExecutionResult *result=context;
@@ -36,7 +51,7 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   I386TextPut(&console_text,10);
 }
 Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
-  CDoc *document=NULL)
+  CDoc *document=NULL,Bool execute_api=FALSE,CLexHashTableContext *hash_context=NULL)
 {
   CI386CommandInput input;
   CI386Task *task=I386TaskSelf;
@@ -54,9 +69,13 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   input.files=console_config->files; input.includes=console_config->includes;
   execution.diagnostics=0; execution.last_value=0;
   input.flags=flags; input.source=source; input.filename=filename; input.context=&execution;
-  input.document=document;
-  input.answer=&ConsoleAnswer; input.diagnostic=&ConsoleDiagnostic;
-  input.inspect_exception=&ConsoleDebugException;
+  input.document=document;input.inherit_context=execute_api;
+  input.hash_context=hash_context;
+  if(execute_api)input.answer=&NativeExecutionAnswer;
+  else input.answer=&ConsoleAnswer;
+  input.execution_time=&NativeExecutionTime;
+  input.diagnostic=&ConsoleDiagnostic;
+  if(!execute_api)input.inspect_exception=&ConsoleDebugException;
   //Required public-header publication must finish before an interactive target exists.
   irq=I386IrqSave;
   previous_break=console_break_task;
@@ -65,15 +84,25 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   if(!(flags&CCF_JUST_LOAD)) KernelLog("COMPILER BREAK ready\n");
   try {
     accepted=console_config->compiler->input(&input);
+    if(execute_api && input.exception=='OutMem')throw(input.exception,TRUE);
     irq=I386IrqSave; console_break_task=previous_break; I386IrqRestore(irq);
     //A request arriving after the compiler's last checkpoint belongs here.
     I386TaskBreakPoll;
   } catch {
     irq=I386IrqSave; console_break_task=previous_break; I386IrqRestore(irq);
-    task->catch_except=TRUE; accepted=FALSE;
-    I386TextWrite(&console_text,"Exception\n"); execution.diagnostics++;
+    //Unhandled catches return to the dispatcher, which advances to the caller.
+    if(!execute_api || task->except_ch=='Compiler' || task->except_ch=='Break') {
+      task->catch_except=TRUE; accepted=FALSE;
+      if(!execute_api)I386TextWrite(&console_text,"Exception\n");
+      execution.diagnostics++;
+    }
   }
-  if(!accepted && !execution.diagnostics) {
+  if(!accepted) {
+    KernelLog("INPUT REJECT exception ");KernelHex(input.exception);
+    KernelLog(" errors ");KernelHex(input.errors);
+    KernelLog(" warnings ");KernelHex(input.warnings);KernelLog("\n");
+  }
+  if(!accepted && !execution.diagnostics && !execute_api) {
     if(input.exception=='OutMem') I386TextWrite(&console_text,"Out of memory\n");
     else I386TextWrite(&console_text,"Compilation failed\n");
   }
@@ -137,3 +166,26 @@ I64 NativeJobSource(U8 *text)
   ConsoleSourceResult(text,"Job.HC",0,&value);
   return value;
 }
+
+//Original title policy: a task may lock its title during execution.
+U0 NativeExecutionTitleRestore(U8 *title,I64 title_src)
+{
+  if(Fs->title_src!=TTS_LOCKED_CONST) {
+    Fs->title_src=title_src;StrCpy(Fs->task_title,title);
+  }
+  Free(title);
+}
+I64 ExePutS(U8 *buf,U8 *filename=NULL,I64 flags=0,
+  CLexHashTableContext *htc=NULL)
+{
+  I64 value=0,title_src=Fs->title_src;
+  U8 *title=StrNew(Fs->task_title);
+  Bool accepted=FALSE;
+  try {accepted=ConsoleSourceResult(buf,filename,flags,&value,NULL,TRUE,htc);}
+  catch {NativeExecutionTitleRestore(title,title_src);}
+  NativeExecutionTitleRestore(title,title_src);
+  if(flags&CCF_JUST_LOAD)return accepted;
+  if(!accepted)return 0;
+  return value;
+}
+#include "/Compiler/ExePrintCore.HC"

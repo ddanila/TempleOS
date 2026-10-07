@@ -14,7 +14,7 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def profile(argv):
+def profile(argv, writable_copies=False):
     selected = []
     values = {'-machine', '-accel', '-cpu', '-m', '-nic', '-drive', '-bios', '-L', '-vga'}
     ignored = {'-display', '-debugcon', '-qmp', '-monitor'}
@@ -39,7 +39,9 @@ def profile(argv):
                     disks.append(Path(options['file']).resolve())
                     # Probe only immutable copies, with disposable snapshot writes.
                     options.pop('readonly', None)
-                    options['snapshot'] = 'on'
+                    if writable_copies:
+                        options.pop('snapshot',None)
+                    else:options['snapshot'] = 'on'
                     value = ','.join(key + '=' + val for key, val in options.items())
                 selected += [flag, value]
             index += 2
@@ -59,6 +61,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--writable-copies',action='store_true',help='Probe paused disk copies without QEMU snapshot temporary files')
     args = parser.parse_args()
     if args.out.exists():
         parser.error('Use a fresh output directory')
@@ -71,7 +74,7 @@ def main():
     if not executable or not tracer:
         parser.error('QEMU executable and strace are required')
     executable = Path(executable).resolve()
-    selected, disks = profile(argv)
+    selected, disks = profile(argv,args.writable_copies)
     pins = {str(path): sha(path) for path in [executable, *disks]}
     args.out.mkdir(parents=True)
     for index, flag in enumerate(selected):
@@ -85,7 +88,7 @@ def main():
             options['file'] = str(copy)
             selected[index + 1] = ','.join(key + '=' + val for key, val in options.items())
             pins[str(copy)] = sha(copy)
-    probe = [str(executable), *selected, '-snapshot', '-S', '-display', 'none',
+    probe = [str(executable), *selected, *([] if args.writable_copies else ['-snapshot']), '-S', '-display', 'none',
              '-monitor', 'none', '-qmp', 'stdio']
     requests = [('capabilities', 'qmp_capabilities', {}),
                 ('machines', 'query-machines', {}),
@@ -135,6 +138,7 @@ def main():
                   rom_mappings=replies['roms'], pci=replies['pci'],
                   qmp_version=replies['version'], host=platform.uname()._asdict(),
                   source_disks_unchanged=True,
+                  disk_policy='paused writable copies' if args.writable_copies else 'snapshots on copies',
                   scope='Paused ordinary boot-profile environment on byte-identical disk copies; actual firmware opens, no guest execution, timing measurement or complete device qualification')
     (args.out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({k: report[k] for k in ('result', 'qemu_version', 'machine', 'firmware')}))

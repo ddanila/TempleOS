@@ -7,6 +7,9 @@
 #include "/Kernel/I386/A20.HH"
 #include "/Kernel/I386/Vga.HH"
 #include "/Kernel/I386/TextVga.HH"
+extern U0 MousePlaneSplitXor(U8 **planes,I64 x,I64 y);
+extern U0 GraphicsPlanarSplitCore(U8 **planes,U8 *pixels);
+extern I64 SplitPlaneContract(CI386Heap *heap);
 extern U0 I386VgaPalette(U8 *rgb6);
 U8 palette[]={
   0,0,0, 0,0,42, 0,42,0, 0,42,42,
@@ -28,6 +31,7 @@ I64 Main(I64 a,I64 b)
   if (!I386BootArena(boot,&reserved,1,&arena,extended) ||
       !I386HeapInit(&heap,arena.base,arena.size)) return 1;
   if (!extended || arena.base<0x110000) return 4; //This 8 MiB QEMU fixture requires high RAM.
+  i=SplitPlaneContract(&heap); if(i) return i;
   planes=I386HeapAlloc(&heap,153600);
   if (!planes) return 2;
   for (i=0;i<153600;i++) planes[i]=255;
@@ -67,3 +71,7 @@ I64 Main(I64 a,I64 b)
 #include "/Kernel/I386/BootMemory.HC"
 
 #include "/Kernel/I386/A20.HC"
+
+#include "/Kernel/GraphicsPlanarCore.HC"
+#include "/Kernel/MousePlaneCore.HC"
+#include "SplitPlanes.HC"

@@ -1,13 +1,19 @@
 //Retained task-owned VGA consoles and native command input.
 #include "/Kernel/Types.HH"
 #include "/Kernel/NumericLimits.HH"
+#include "/Kernel/MathConstants.HH"
 #define TRUE 1
 #define FALSE 0
+#define ON 1
+#define OFF 0
 #include "/Kernel/I386/ConsoleRuntime.HH"
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/TextVga.HH"
 #include "/Kernel/I386/Vga.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Frame.HH"
+import CI386Frame *I386TaskFrameParent(CI386Task *task,CI386Frame *frame);
+import U8 *I386TaskFrameReturn(CI386Task *task,CI386Frame *frame);
 #include "/Kernel/I386/ExceptRuntime.HH"
 #include "/Kernel/I386/TaskBreak.HH"
 #include "/Kernel/I386/DocLock.HH"
@@ -38,6 +44,9 @@ extern Bool NativeTerminalVisible();
 extern U0 NativeTerminalAdoptRoot();
 extern U0 NativeTerminalConsoleHeading();
 extern U0 NativeUserTaskCont();
+extern U0 NativeSrvTaskCont();
+extern U0 NativeSrvCmdLine(I64 dummy=0);
+I64 (*native_servant_flush)(CTask *task);
 extern U0 NativeUserCmdLine(I64 dummy=0);
 extern CTask *NativeWinFocus(CTask *task=0);
 extern I64 *NativeTerminalLossSeen();
@@ -53,6 +62,7 @@ class CI386UserProviders {
   CTask *(*spawn)(U0 (*entry)(U8 *data),U8 *data,U8 *name,I64 cpu,
     CTask *parent,I64 stack_size,I64 flags);
   Bool (*kill)(CTask *task,Bool wait,Bool just_break);
+  Bool (*suspend)(CTask *task,Bool state);
 };
 CI386UserProviders native_user_providers;
 
@@ -62,7 +72,8 @@ extern U0 ConsolePresent();
 extern Bool NativeKeyboardStart();
 extern I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE);
 extern I64 NativeJobSource(U8 *text);
-CTask *sys_focus_task;
+CTask *sys_focus_task,*sys_winmgr_task;
+extern I64 NativeWinToTop(CTask *task=0,Bool update_z_buf=TRUE);
 extern Bool DocExe(CDoc *doc,I64 flags=0);
 extern I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
 public Bool MouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0)
@@ -85,22 +96,167 @@ U8 console_diagnostic_filename[256];
 #include "/Kernel/I386/SoundRuntime.HC"
 #include "/Kernel/I386/TextBase.HC"
 #include "/Kernel/I386/Window.HC"
+#include "/Kernel/I386/RasterRuntime.HC"
 #include "/Kernel/IsRawCore.HC"
 extern Bool NativeIsDebugMode();
+extern U0 NativeBreakpointInstall();
 extern Bool ConsoleCpuCapture(CI386ExceptionFrame *frame);
 extern U0 ConsoleCpuDebug(CI386ExceptionFrame *frame);
 #include "/Kernel/I386/FormatterRuntime.HC"
+#define MUSIC_JIFFIES NativeJiffies()
+#define MUSIC_NATIVE_SINGLE_CPU 1
+#include "/Adam/MusicStateCore.HC"
+#include "/Adam/MusicResetCore.HC"
+#include "/Kernel/WindowManagerTypes.HH"
+#include "/Kernel/MaxCore.HC"
+#include "/Adam/WinMgrRefreshCore.HC"
+CWinMgrGlbls winmgr;
+U0 NativeWinRefreshCommit()
+{//Only completed physical presentation advances refresh observations.
+  U32 flags=I386IrqSave;
+  WinMgrRefreshTime(&winmgr,tS);
+  winmgr.updates++;
+  I386IrqRestore(flags);
+}
+F64 NativeWinRefreshFPS()
+{
+  U32 flags=I386IrqSave;
+  F64 fps=winmgr.fps;
+  I386IrqRestore(flags);
+  return fps;
+}
+extern U8 *NativeCaller(I64 num=1);
+#define Caller NativeCaller
+#include "/Kernel/DefineLoadCore.HC"
+#include "/Kernel/DefinePrintCore.HC"
+#include "/Adam/God/BibleTypes.HH"
+#include "/Kernel/I386/ScannerRuntime.HC"
+#include "/Adam/God/BibleInitCore.HC"
+#include "/Kernel/I386/SourceLinkRuntime.HC"
+extern I64 ExePrint(U8 *fmt,...);
+U8 *NativeEdLinkTmpFilename()
+{
+  return console_config->files->tmp_filename();
+}
+#define ED_LINK_TMP_FILENAME NativeEdLinkTmpFilename()
+#include "/Adam/DolDoc/EdLinkCvtCore.HC"
+#include "/Adam/DolDoc/DocLinkFileCore.HC"
+#include "/Kernel/I386/DocDollarRuntime.HC"
+#include "/Adam/DolDoc/DocBorderCallbacksCore.HC"
+#include "/Adam/DolDoc/DocBorderNewCore.HC"
+#include "/Adam/DolDoc/DocEntryLinkCore.HC"
+#include "/Kernel/I386/MenuRuntime.HC"
+#include "/Kernel/I386/MacroRuntime.HC"
+Bool (*native_raw_bit_equ)(U8 *bit_field,I64 bit,Bool val);
+Bool NativeRawBitEqu(U8 *bit_field,I64 bit,Bool val)
+{ return (*native_raw_bit_equ)(bit_field,bit,val); }
+#define LBEqu NativeRawBitEqu
+#include "/Kernel/VGAFlushCore.HC"
+#include "/Kernel/RawCore.HC"
+extern U0 Yield();
+extern Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL);
+#include "/Kernel/EndianCore.HC"
+#include "/Kernel/BlkDev/BlockDevTypes.HH"
+U8 NativeDriveAlias(U8 alias)
+{
+  return console_config->files->drive_alias(alias);
+}
+#define DRIVE_BOOT_LET NativeDriveAlias(':')
+#define DRIVE_HOME_LET NativeDriveAlias('~')
+#include "/Kernel/BlkDev/DriveLetterCore.HC"
+#include "/Kernel/BlkDev/DriveClassCore.HC"
+#include "/Kernel/BlkDev/DriveTextAttrCore.HC"
+#include "/Kernel/FileMaskTypes.HH"
+#include "/Kernel/WildMatchCore.HC"
+#include "/Kernel/BlkDev/FilesFindMatchCore.HC"
+#include "/Adam/DolDoc/DocRecalcLib.HC"
+#define BLINK_JIFFIES NativeJiffies()
+#include "/Kernel/BlinkCore.HC"
+#define DOC_RECALC_JIFFIES NativeJiffies()
+#define DOC_RECALC_FPS NativeWinRefreshFPS()
+import U32 char_bmp_alpha_numeric[16];
+CTask **native_highlight_root;
+#define DOC_HIGHLIGHT_ROOT (*native_highlight_root)
+#include "/Kernel/HashTypeNumCore.HC"
+#include "/Adam/DolDoc/DocHighlightCore.HC"
+#include "/Adam/Gr/Gr.HH"
+#include "/Adam/Gr/SpriteRecordsCore.HC"
+#define GRAPHICS_DEFAULT_DC NULL
+#define GRAPHICS_RESOLVE_DEFAULT_DC if (!dc) dc=gr.dc;
+#include "/Adam/Gr/GrMath.HC"
+#include "/Adam/Gr/GrPixelCore.HC"
+#include "/Adam/Gr/GrPenTablesCore.HC"
+#include "/Adam/Gr/GrBlotCore.HC"
+//Mutually dependent point and bitmap cores share the actual implementation below.
+extern I64 GrBlot3(CDC *dc,I64 x1,I64 y1,I64 z1,CDC *img);
+#include "/Adam/Gr/GrPointClipCore.HC"
+#include "/Adam/Gr/GrBlot3Core.HC"
+#include "/Adam/Gr/GrRasterSpanCore.HC"
+#include "/Adam/Gr/GrFillCircleCore.HC"
+#include "/Adam/Gr/GrPlot3Core.HC"
+#include "/Adam/Gr/GrLineCore.HC"
+#include "/Adam/Gr/GrLine3Core.HC"
+#include "/Adam/Gr/GrTextCore.HC"
+#include "/Adam/Gr/GrText3Core.HC"
+#include "/Adam/Gr/GrTextCompositesCore.HC"
+#include "/Adam/Gr/GrFloodRayCore.HC"
+#include "/Adam/Gr/GrFloodFillCore.HC"
+#include "/Adam/Gr/GrFloodFill3Core.HC"
+#include "/Adam/Gr/GrArrowCore.HC"
+#include "/Adam/Gr/GrFillTriangleCore.HC"
+#include "/Adam/Gr/GrFillPolyCore.HC"
+#include "/Adam/Gr/GrRect3Core.HC"
+#include "/Adam/PolarCore.HC"
+#include "/Adam/Gr/GrCurves3Core.HC"
+#include "/Adam/Gr/GrSplines3Core.HC"
+#include "/Adam/Gr/GrMeshCore.HC"
+#include "/Kernel/BitFieldExtractCore.HC"
+#include "/Adam/Gr/SpriteRenderCore.HC"
+//Song strings use the existing scheduler-root-owned provider defined below.
+extern U8 *NativeAStrNew(U8 *text);
+#define AStrNew NativeAStrNew
+#include "/Adam/DolDoc/DocRecalcCore.HC"
+#include "/Kernel/StrIMatchCore.HC"
+#include "/Adam/DolDoc/DocFindCore.HC"
+
+#include "/Kernel/JobResScanCore.HC"
+extern U0 NativePrint(U8 *fmt,...);
+extern U0 NativePutS(U8 *text);
+extern U0 NativePutChars(U64 chars);
+U0 (*native_output_msg)(I64 msg_code,I64 arg1,I64 arg2,I64 flags);
+#include "/Kernel/I386/InputFilterRuntime.HC"
+U0 Yield()
+{//Use the managed public scheduler provider resolved during console init.
+  (*native_input_yield)();
+}
+CJob *native_sys_macro_head;
+#include "/Adam/DolDoc/DocMacroPlaybackCore.HC"
+U0 PlaySysMacro(I64 n=1)
+{
+  PlaySysMacroCore(n,sys_focus_task,native_sys_macro_head);
+}
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[137];
+CI386KernelSymbol console_doc_exports[208];
+extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
 extern Bool NativeIsDebugMode();
 extern U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception);
+#include "/Kernel/I386/PublicDebugTypes.HH"
+extern CBpt *BptFind(U8 *addr,CTask *task=0,Bool rem=FALSE);
+extern Bool BptS(U8 *addr,CTask *task=0,Bool live=TRUE);
+extern Bool BptR(U8 *addr,CTask *task=0,Bool live=TRUE,Bool rem=TRUE);
+extern Bool B(U8 *addr,CTask *task=0,Bool live=TRUE);
+extern I64 B2(CTask *task=0,Bool live=TRUE);
+extern I64 *TaskRegAddr(CTask *task,I64 reg_num);
+extern U0 NativeDebugGoClear(U8 *ip=U32_MAX,CTask *task=NULL);
+extern U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL);
 extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
 U32 console_version=I386_CONSOLE_VERSION;
 extern Bool NativeGraphicsStart();
+extern Bool NativeGraphicsStorageReserve();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
 extern Bool NativeTextBasePresent(Bool blink=FALSE,I64 pan_x=0,I64 pan_y=0,Bool hide_col=FALSE,Bool hide_row=FALSE);
 extern U0 NativeTextBaseRestore();
@@ -108,8 +264,12 @@ extern Bool ConsoleDisplay();
 extern U0 ConsoleKeys(I64 unused);
 extern U0 ConsoleSubmit(U8 *line);
 extern Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0);
+extern I64 ExePutS(U8 *buf,U8 *filename=NULL,I64 flags=0,CLexHashTableContext *htc=NULL);
+extern I64 ExePrint(U8 *fmt,...);
+extern Bool ConsoleRootHeaders();
 Bool ConsoleInit(CI386ConsoleConfig *config)
 {
+  U8 *display_planes;
   CI386Task *task=I386TaskSelf;
   I64 i;
   CI386KernelSymbol *provider;
@@ -117,12 +277,40 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
       config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+  provider=HashFind("_ADAM_TASK",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=3 || !provider->val) return FALSE;
+  native_highlight_root=provider->val;
+  if(!*native_highlight_root) return FALSE;
   provider=HashFind("_SPAWN",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_user_providers.spawn=provider->val;
   provider=HashFind("_KILL",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_user_providers.kill=provider->val;
+  provider=HashFind("_SUSPEND",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_user_providers.suspend=provider->val;
+  provider=HashFind("_LBEQU",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_raw_bit_equ=provider->val;
+  provider=HashFind("_SYS_SEMAS",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=3 || !provider->val) return FALSE;
+  sys_semas=provider->val;
+  provider=HashFind("_SYS_MACRO_HEAD",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=3 || !provider->val) return FALSE;
+  native_sys_macro_head=provider->val;
+  provider=HashFind("_MSG",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_output_msg=provider->val;
+  provider=HashFind("_JOBS_HNDLR",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_input_jobs=provider->val;
+  provider=HashFind("_YIELD",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_input_yield=provider->val;
+  provider=HashFind("_FLUSH_MSGS",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_servant_flush=provider->val;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   I386KeyboardReset(&console_hotkeys);
   console_doc_exports[0].str="_DOC_LOCK";
@@ -397,16 +585,177 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   console_doc_exports[134].str="_FILE_WRITE";
   console_doc_exports[134].val=(&FileWrite+0)(U64);
   console_doc_exports[135].str="_FILE_READ";
-  console_doc_exports[135].val=(&FileRead+0)(U64);
+  console_doc_exports[135].val=(&NativePublicFileRead+0)(U64);
   console_doc_exports[136].str="_FILE_FIND";
   console_doc_exports[136].val=(&FileFind+0)(U64);
-  for(i=0;i<137;i++) {
+  console_doc_exports[137].str="_CD";
+  console_doc_exports[137].val=(&Cd+0)(U64);
+  console_doc_exports[138].str="_DEBUG_STEP";
+  console_doc_exports[138].val=(&NativeDebugStep+0)(U64);
+  console_doc_exports[139].str="_TASK_REG_ADDR";
+  console_doc_exports[139].val=(&TaskRegAddr+0)(U64);
+  console_doc_exports[140].str="_BPT_FIND";
+  console_doc_exports[140].val=(&BptFind+0)(U64);
+  console_doc_exports[141].str="_BPT_SET";
+  console_doc_exports[141].val=(&BptS+0)(U64);
+  console_doc_exports[142].str="_BPT_REMOVE";
+  console_doc_exports[142].val=(&BptR+0)(U64);
+  console_doc_exports[143].str="_BPT_TOGGLE";
+  console_doc_exports[143].val=(&B+0)(U64);
+  console_doc_exports[144].str="_BPT_CLEAR";
+  console_doc_exports[144].val=(&B2+0)(U64);
+  console_doc_exports[145].str="_DEBUG_GO_CLEAR";
+  console_doc_exports[145].val=(&NativeDebugGoClear+0)(U64);
+  console_doc_exports[146].str="_CALLER";
+  console_doc_exports[146].val=(&NativeCaller+0)(U64);
+  console_doc_exports[147].str="_SYS_MACRO_2_STR";
+  console_doc_exports[147].val=(&SysMacro2Str+0)(U64);
+  console_doc_exports[148].str="_SYS_MACRO_STRIP_KEY";
+  console_doc_exports[148].val=(&SysMacroStripKey+0)(U64);
+  console_doc_exports[149].str="_PRINT";
+  console_doc_exports[149].val=(&NativePrint+0)(U64);
+  console_doc_exports[150].str="_PUT_S";
+  console_doc_exports[150].val=(&NativePutS+0)(U64);
+  console_doc_exports[151].str="_PUT_CHARS";
+  console_doc_exports[151].val=(&NativePutChars+0)(U64);
+  console_doc_exports[152].str="_TASK_TEXT";
+  console_doc_exports[152].val=(&NativeTaskText+0)(U64);
+  console_doc_exports[153].str="_IN_STR";
+  console_doc_exports[153].val=(&InStr+0)(U64);
+  console_doc_exports[154].str="_XTALK_STR_WAIT";
+  console_doc_exports[154].val=(&XTalkStrWait+0)(U64);
+  console_doc_exports[155].str="_PLAY_SYS_MACRO";
+  console_doc_exports[155].val=(&PlaySysMacro+0)(U64);
+  console_doc_exports[156].str="_STR_SCAN";
+  console_doc_exports[156].val=(&StrScan+0)(U64);
+  console_doc_exports[157].str="_STR_TO_I64";
+  console_doc_exports[157].val=(&Str2I64+0)(U64);
+  console_doc_exports[158].str="_STR_TO_F64";
+  console_doc_exports[158].val=(&Str2F64+0)(U64);
+  console_doc_exports[159].str="_STR_TO_DATE";
+  console_doc_exports[159].val=(&Str2Date+0)(U64);
+  console_doc_exports[160].str="_DOC_DOLLAR";
+  console_doc_exports[160].val=(&PrsDollarCmd+0)(U64);
+  console_doc_exports[161].str="_DOC_DATA_FMT";
+  console_doc_exports[161].val=(&DocDataFmt+0)(U64);
+  console_doc_exports[162].str="_DOC_DATA_SCAN";
+  console_doc_exports[162].val=(&DocDataScan+0)(U64);
+  console_doc_exports[163].str="_DOC_PUT_S";
+  console_doc_exports[163].val=(&DocPutS+0)(U64);
+  console_doc_exports[164].str="_DOC_PRINT";
+  console_doc_exports[164].val=(&DocPrint+0)(U64);
+  console_doc_exports[165].str="_IN";
+  console_doc_exports[165].val=(&In+0)(U64);
+  console_doc_exports[166].str="_JOB_RES_SCAN";
+  console_doc_exports[166].val=(&JobResScan+0)(U64);
+  console_doc_exports[167].str="_JOB_DEL";
+  console_doc_exports[167].val=(&JobDel+0)(U64);
+  console_doc_exports[168].str="_TASK_EXE";
+  console_doc_exports[168].val=(&NativeTaskExe+0)(U64);
+  console_doc_exports[169].str="_SRV_TASK_CONT";
+  console_doc_exports[169].val=(&NativeSrvTaskCont+0)(U64);
+  console_doc_exports[170].str="_SRV_CMD_LINE";
+  console_doc_exports[170].val=(&NativeSrvCmdLine+0)(U64);
+  sys_winmgr_task=task;
+  console_doc_exports[171].str="_WIN_TO_TOP";
+  console_doc_exports[171].val=(&NativeWinToTop+0)(U64);
+  console_doc_exports[172].str="_SYS_WINMGR_TASK";
+  console_doc_exports[172].val=(&sys_winmgr_task+0)(U64);
+  console_doc_exports[173].str="_DOC_BORDER_NEW";
+  console_doc_exports[173].val=(&DocBorderNew+0)(U64);
+  console_doc_exports[174].str="_ED_OVERSTRIKE_CB";
+  console_doc_exports[174].val=(&EdOverStrikeCB+0)(U64);
+  console_doc_exports[175].str="_ED_AUTO_SAVE_CB";
+  console_doc_exports[175].val=(&EdAutoSaveCB+0)(U64);
+  console_doc_exports[176].str="_ED_FILTER_CB";
+  console_doc_exports[176].val=(&EdFilterCB+0)(U64);
+  console_doc_exports[177].str="_ED_DOLLAR_CB";
+  console_doc_exports[177].val=(&EdDollarCB+0)(U64);
+  console_doc_exports[178].str="_ED_MORE_CB";
+  console_doc_exports[178].val=(&EdMoreCB+0)(U64);
+  console_doc_exports[179].str="_ED_DOLLAR_TYPE_CB";
+  console_doc_exports[179].val=(&EdDollarTypeCB+0)(U64);
+  console_doc_exports[180].str="_MENU_NEW";
+  console_doc_exports[180].val=(&NativeMenuNew+0)(U64);
+  console_doc_exports[181].str="_MENU_FILE";
+  console_doc_exports[181].val=(&MenuFile+0)(U64);
+  console_doc_exports[182].str="_MENU_ENTRY_FIND";
+  console_doc_exports[182].val=(&MenuEntryFind+0)(U64);
+  console_doc_exports[183].str="_MENU_SUB_ENTRY_FIND";
+  console_doc_exports[183].val=(&MenuSubEntryFind+0)(U64);
+  console_doc_exports[184].str="_MENU_DEL";
+  console_doc_exports[184].val=(&MenuDel+0)(U64);
+  console_doc_exports[185].str="_GR_RECT";
+  console_doc_exports[185].val=(&GrRect+0)(U64);
+  console_doc_exports[186].str="_RAND_U16";
+  console_doc_exports[186].val=(&RandU16+0)(U64);
+  console_doc_exports[187].str="_DIST_SQR_I64";
+  console_doc_exports[187].val=(&DistSqrI64+0)(U64);
+  console_doc_exports[188].str="_WIN_SCROLLS_INIT";
+  console_doc_exports[188].val=(&WinScrollsInit+0)(U64);
+  console_doc_exports[189].str="_RAW";
+  console_doc_exports[189].val=(&Raw+0)(U64);
+  console_doc_exports[190].str="_VGA_FLUSH";
+  console_doc_exports[190].val=(&VGAFlush+0)(U64);
+  console_doc_exports[191].str="_DOC_ENTRY_LINK";
+  console_doc_exports[191].val=(&DocEntryLink+0)(U64);
+  console_doc_exports[192].str="_FILE_NAME_ABS";
+  console_doc_exports[192].val=(&FileNameAbs+0)(U64);
+  console_doc_exports[193].str="_SRC_LINE_NUM";
+  console_doc_exports[193].val=(&SrcLineNum+0)(U64);
+  console_doc_exports[194].str="_SRC_FILE_NAME";
+  console_doc_exports[194].val=(&SrcFileName+0)(U64);
+  console_doc_exports[195].str="_SRC_ED_LINK";
+  console_doc_exports[195].val=(&SrcEdLink+0)(U64);
+  console_doc_exports[196].str="_EXE_PUTS";
+  console_doc_exports[196].val=(&ExePutS+0)(U64);
+  console_doc_exports[197].str="_EXE_PRINT";
+  console_doc_exports[197].val=(&ExePrint+0)(U64);
+  console_doc_exports[198].str="_DEFINE_LOAD";
+  console_doc_exports[198].val=(&DefineLoad+0)(U64);
+  console_doc_exports[199].str="_DEFINE_PRINT";
+  console_doc_exports[199].val=(&DefinePrint+0)(U64);
+  console_doc_exports[200].str="_BIBLE_INIT";
+  console_doc_exports[200].val=(&BibleInit+0)(U64);
+  console_doc_exports[201].str="_ED_LINK_CVT";
+  console_doc_exports[201].val=(&EdLinkCvt+0)(U64);
+  console_doc_exports[202].str="_DOC_LINK_FILE";
+  console_doc_exports[202].val=(&DocLinkFile+0)(U64);
+  console_doc_exports[203].str="_DRV_CHECK";
+  console_doc_exports[203].val=(&DrvChk+0)(U64);
+  console_doc_exports[204].str="_DRV_TO_LET";
+  console_doc_exports[204].val=(&Drv2Let+0)(U64);
+  console_doc_exports[205].str="_LET_TO_LET";
+  console_doc_exports[205].val=(&Let2Let+0)(U64);
+  console_doc_exports[206].str="_LET_TO_BLOCK_DEV_TYPE";
+  console_doc_exports[206].val=(&Let2BlkDevType+0)(U64);
+  console_doc_exports[207].str="_DRV_TEXT_ATTR_GET";
+  console_doc_exports[207].val=(&DrvTextAttrGet+0)(U64);
+  for(i=0;i<208;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
+    if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
+  display_planes=I386HeapAlloc(config->heap,153600,TRUE);
+  if(!display_planes)return FALSE;
+  if(!NativeGraphicsStorageReserve) {
+    I386HeapFree(config->heap,display_planes);return FALSE;
+  }
+  console_planes=display_planes;
   console_config=config; dbg.fun_seg_cache=native_fun_seg_cache;
+  MusicSettingsRst;
+  winmgr.fps=WINMGR_FPS;
+  winmgr.ideal_refresh_tS=tS;
+  winmgr.last_refresh_tS=winmgr.ideal_refresh_tS;
+  NativeBreakpointInstall;
+  if(config->defer_root_headers) return TRUE;
+  return ConsoleRootHeaders;
+}
+Bool ConsoleRootHeaders()
+{
+  //Publish the resident reader with root declarations, after early diagnostics.
+  console_config->files->public_reader(&NativeResidentReadBridge);
   //The immortal CPU root owns shared declarations; children inherit its scope.
   KernelLog("ROOT USER HEADERS begin\n");
   if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
@@ -435,16 +784,18 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
   services->init=&ConsoleInit; services->display=&ConsoleDisplay; services->keys=&ConsoleKeys;
   services->cancel_read=&ConsoleCancelRead;
   services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
+  services->root_headers=&ConsoleRootHeaders;
   services->cpu_capture=&ConsoleCpuCapture; services->cpu_debug=&ConsoleCpuDebug;
   return 1;
 }
+Bool console_display_initialized;
 Bool ConsoleDisplay()
 {
   U8 palette[48];
   I64 color;
-  if(!console_config || console_planes) return FALSE;
-  console_planes=I386HeapAlloc(console_config->heap,153600,TRUE);
-  if(!console_planes) KernelStop;
+  if(!console_config || console_display_initialized)return FALSE;
+  if(!console_planes)console_planes=I386HeapAlloc(console_config->heap,153600,TRUE);
+  if(!console_planes)KernelStop;
   for(color=0;color<16;color++) {
     palette[color*3]=0; palette[color*3+1]=0; palette[color*3+2]=0;
     if(color&4) palette[color*3]=42;
@@ -458,6 +809,7 @@ Bool ConsoleDisplay()
   I386VgaPalette(palette);
   if(!I386TextInit(&console_text,console_planes,sys_font_std)) KernelStop;
   I386TextWrite(&console_text,console_title);
+  console_display_initialized=TRUE;
   ConsolePresent;
   return TRUE;
 }
@@ -555,6 +907,7 @@ U0 NativeTerminalInput()
 #include "/Kernel/I386/Vga.HC"
 #include "/Kernel/I386/Text.HC"
 #include "/Kernel/I386/TextVga.HC"
+#include "/Kernel/I386/ConsoleOutput.HC"
 #include "/Kernel/I386/ConsoleNumbers.HC"
 #include "/Kernel/I386/ConsoleInput.HC"
 #include "/Kernel/I386/Debugger.HC"
@@ -565,6 +918,7 @@ U0 ConsolePresentText(CI386Text *surface)
   U8 message[13],*prefix="VGA ROWS ";
   if(rows<0) KernelStop;
   if(rows) {
+    NativeWinRefreshCommit;
     for(i=0;i<9;i++) message[i]=prefix[i];
     message[9]='0'+rows/10; message[10]='0'+rows%10;
     message[11]=10; message[12]=0; KernelLog(message);
@@ -573,7 +927,13 @@ U0 ConsolePresentText(CI386Text *surface)
 
 U0 ConsolePresent()
 {
-  if(NativeTerminalVisible) ConsolePresentText(&console_text);
+  if(NativeTerminalVisible) {
+    //Consume only when a visible surface can honor the full-screen refresh.
+    if(LBtr(&sys_semas[SEMA_FLUSH_VGA_IMAGE],0)) {
+      NativeTerminalText()->dirty_first=0;NativeTerminalText()->dirty_last=60;
+    }
+    ConsolePresentText(&console_text);
+  }
 }
 
 #include "/Kernel/I386/KbcInputCancel.HC"
@@ -606,3 +966,7 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/KeyboardMessages.HC"
 
 #include "/Kernel/I386/Terminals.HC"
+
+#include "/Kernel/I386/ServantRuntime.HC"
+
+#include "/Kernel/I386/WindowOrderRuntime.HC"

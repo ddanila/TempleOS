@@ -41,3 +41,9 @@ U0 WinZBufUpdate()
   WindowVisibilityCore(graphics_owner);
   native_window_dirty=FALSE;
 }
+
+#include "/Adam/Gr/GrPixelCoverageCore.HC"
+Bool IsPixCovered0(CTask *task,I64 x,I64 y)
+{//Original unsigned window-cell visibility comparison, without clipping.
+  return GrPixelCoveredCore(task,x,y);
+}

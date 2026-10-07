@@ -277,14 +277,21 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
   CI386AsmFix *fixes;
   U8 bytes[1024],opcode;
   I64 count=0,op,label_count=0,fix_count=0,i,j,delta;
-  if(flags!=CMPF_ASM_BLK || !cc->htc.fun || cc->token!=TK_IDENT ||
+  Bool single=flags==(CMPF_ASM_BLK|CMPF_ONE_ASM_INS);
+  if(!cc->htc.fun) I386FrontendUnavailable(state);
+  if(single) {
+    if(cc->token!=TK_IDENT || !cc->hash_entry ||
+        !(cc->hash_entry->type&HTT_OPCODE)) I386FrontendUnavailable(state);
+  } else if(flags!=CMPF_ASM_BLK || !cc->htc.fun || cc->token!=TK_IDENT ||
       !cc->hash_entry || !(cc->hash_entry->type&HTT_KEYWORD) ||
       cc->hash_entry(CHashGeneric *)->user_data0!=KW_ASM) I386FrontendUnavailable(state);
   labels=I386FrontendAlloc(state,32*sizeof(CI386AsmLabel),TRUE,FALSE);
   fixes=I386FrontendAlloc(state,64*sizeof(CI386AsmFix),TRUE,FALSE);
-  if(I386FrontendLex(state,cc)!='{') I386FrontendUnavailable(state);
-  I386FrontendLex(state,cc);
-  while(cc->token!='}') {
+  if(!single) {
+    if(I386FrontendLex(state,cc)!='{') I386FrontendUnavailable(state);
+    I386FrontendLex(state,cc);
+  }
+  while(single || cc->token!='}') {
     if(cc->token==';') I386FrontendLex(state,cc);
     else {
       if(cc->token!=TK_IDENT || !cc->cur_str || count>=sizeof(bytes))
@@ -307,6 +314,10 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else if(!StrCmp(cc->cur_str,"INT3") || !StrCmp(cc->cur_str,"BPT")) opcode=0xCC;
       else if(!StrCmp(cc->cur_str,"CLC")) opcode=0xF8;
       else if(!StrCmp(cc->cur_str,"STC")) opcode=0xF9;
+      else if(!StrCmp(cc->cur_str,"PUSHFD")) opcode=0x9C;
+      else if(!StrCmp(cc->cur_str,"POPFD")) opcode=0x9D;
+      else if(!StrCmp(cc->cur_str,"PUSHAD")) opcode=0x60;
+      else if(!StrCmp(cc->cur_str,"POPAD")) opcode=0x61;
       else if(!StrCmp(cc->cur_str,"MOV")) opcode=0;
       else if(!StrCmp(cc->cur_str,"XOR")) opcode=1;
       else if(!StrCmp(cc->cur_str,"OR")) opcode=16;
@@ -468,6 +479,7 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
         I386FrontendLex(state,cc);
       }
     }
+    if(single) break;
   }
   for(i=0;i<fix_count;i++) {
     for(j=0;j<label_count;j++) if(!StrCmp(fixes[i].name,labels[j].name)) break;
@@ -526,7 +538,7 @@ Bool I386FrontendStatement(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symb
 U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,I64 *raw_type)
 {//Native LexStmt2Bin staging: parse globally, then give generated code a frame.
   CI386Frontend *state;
-  CI386FrontendBound *bound;
+  CI386FrontendParseBound *bound;
   CI386FrontendCode *result=0;
   CIntermediateCode *node,*enter;
   CHashClass *type;
@@ -543,7 +555,7 @@ U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols
       !(cc->flags&CCF_MODULE_SOURCE)) I386FrontendUnavailable(state);
   if(cc->coc.coc_head.next!=&cc->coc.coc_head) {
     cc->coc.coc_head.last->ic_flags&=~ICF_RES_NOT_USED;
-    bound=I386FrontendAlloc(state,sizeof(CI386FrontendBound),TRUE,FALSE);
+    bound=I386FrontendAlloc(state,sizeof(CI386FrontendParseBound),TRUE,FALSE);
     bound->typer.types=state->expression.types;
     cc->pass=0; I386FrontendOptimize(state,cc); I386FrontendOptimize(state,cc);
     type=state->expression.types[RT_I64];

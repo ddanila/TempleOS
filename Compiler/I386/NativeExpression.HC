@@ -30,6 +30,13 @@ Bool I386ParserStackCheck(CCmpCtrl *cc)
   if(!task->stk || task->stk->stk_size<4096 || task->stk->stk_size>0xFFFFFFFF)
     throw('Compiler',TRUE);
   base=(&task->stk->stk_base)(U64); end=base+task->stk->stk_size;
+  //Debugger input runs on a separate exact live allocation owned by this task.
+  if((frame+0)(U64)<base || (frame+0)(U64)>end-8) {
+    if(!task->debug_stack || task->debug_stack_size<4096 ||
+        I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size)
+      throw('Compiler',TRUE);
+    base=(task->debug_stack+0)(U64);end=base+task->debug_stack_size;
+  }
   if(end>0x100000000 || (frame+0)(U64)<base || (frame+0)(U64)>end-8 ||
       (frame+0)(U64)-base<4096) throw('Compiler',TRUE);
   return TRUE;

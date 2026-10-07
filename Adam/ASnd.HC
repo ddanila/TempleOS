@@ -85,48 +85,7 @@ public F64 FullTri(F64 t,F64 period)
 
 #help_index "Snd/Music"
 
-public class CMusicGlbls
-{
-  U8	*cur_song;
-  CTask	*cur_song_task;
-  I64	octave;
-  F64	note_len;
-  U8	note_map[7];
-  Bool	mute;
-  I64	meter_top,meter_bottom;
-  F64	tempo,stacatto_factor;
-
-  //If you wish to sync with a
-  //note in a Play() string.  0 is the start
-  I64	play_note_num;
-
-  F64	tM_correction,last_Beat,last_tM;
-} music={NULL,NULL,4,1.0,{0,2,3,5,7,8,10},FALSE,4,4,2.5,0.9,0,0,0,0};
-
-#help_index "Snd/Music;Time/Seconds"
-public F64 tM()
-{//Time in seconds synced to music subsystem.
-  return (cnts.jiffies+music.tM_correction)/JIFFY_FREQ;
-}
-
-public F64 Beat()
-{//Time in music beats.
-  F64 res,cur_tM;
-  PUSHFD
-  CLI
-  if (mp_cnt>1)
-    while (LBts(&sys_semas[SEMA_TMBEAT],0))
-      PAUSE
-  cur_tM=tM;
-  res=music.last_Beat;
-  if (music.tempo)
-    res+=(cur_tM-music.last_tM)*music.tempo;
-  music.last_tM=cur_tM;
-  music.last_Beat=res;
-  LBtr(&sys_semas[SEMA_TMBEAT],0);
-  POPFD
-  return res;
-}
+#include "/Adam/MusicStateCore.HC"
 
 #help_index "Snd/Music"
 U8 *MusicSetOctave(U8 *st)
@@ -297,26 +256,7 @@ per second.  It defaults to
   }
 }
 
-U0 MusicSettingsRst()
-{
-  music.play_note_num=0;
-  music.stacatto_factor=0.9;
-  music.tempo=2.5;
-  music.octave=4;
-  music.note_len=1.0;
-  music.meter_top=4;
-  music.meter_bottom=4;
-  SndRst;
-  PUSHFD
-  CLI
-  if (mp_cnt>1)
-    while (LBts(&sys_semas[SEMA_TMBEAT],0))
-      PAUSE
-  music.last_tM=tM;
-  music.last_Beat=0.0;
-  LBtr(&sys_semas[SEMA_TMBEAT],0);
-  POPFD
-}
+#include "/Adam/MusicResetCore.HC"
 
 MusicSettingsRst;
 

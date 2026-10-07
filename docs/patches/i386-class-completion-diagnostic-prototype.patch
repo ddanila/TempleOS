@@ -1,0 +1,31 @@
+--- a/Compiler/I386/Frontend.HC
++++ b/Compiler/I386/Frontend.HC
+@@ -214,7 +214,7 @@
+     }
+     link=&record->next;
+   }
+-  if(!I386ParserFree(state->heap,state->cc,allocation)) I386FrontendUnavailable(state);
++  if(!I386ParserFree(state->heap,state->cc,allocation)) { KernelLog("FRONTEND FREE rejected allocation\n"); I386FrontendUnavailable(state); }
+ }
+ U8 *I386FrontendDuplicate(U8 *context,U8 *source)
+ {
+--- a/Compiler/I386/FrontendClassCompletion.HC
++++ b/Compiler/I386/FrontendClassCompletion.HC
+@@ -54,7 +54,7 @@
+         entry->type&HTT_FUN && I386CompletionValueType(entry(CHashFun *)->return_class,target))
+       I386FrontendUnavailable(state);
+     for(member=type->member_lst_and_root;member;member=member->next) {
+-      if(I386CompletionValueType(member->member_class,target)) I386FrontendUnavailable(state);
++      if(I386CompletionValueType(member->member_class,target)) { KernelLog("CLASS COMPLETION prior value "); KernelLog(entry->str); KernelLog("."); KernelLog(member->str); KernelLog("\n"); I386FrontendUnavailable(state); }
+       if(member->flags&MLF_FUN)
+         I386CompletionCheckValues(state,member->fun_ptr-member->fun_ptr->ptr_stars_cnt,target);
+     }
+@@ -78,7 +78,7 @@
+ {
+   CI386FrontendCompletion *completion;
+   CHashClass *staged;
+-  if(!I386CompletionTargetValid(state,published)) I386FrontendUnavailable(state);
++  if(!I386CompletionTargetValid(state,published)) { KernelLog("CLASS COMPLETION invalid target "); if(published && published->str) KernelLog(published->str); KernelLog("\n"); I386FrontendUnavailable(state); }
+   I386CompletionCheckPriorValues(state,published);
+   completion=I386FrontendAlloc(state,sizeof(CI386FrontendCompletion),TRUE,FALSE);
+   staged=I386FrontendClassNew(state);

@@ -26,8 +26,10 @@ Bool I386InstallBootArea(CI386Ata *source,CI386Ata *target)
 Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 bytes)
 {
   U8 sector[512];
-  I64 lba,i,offset,entry;
-  if(!source || !target || !image || bytes<8 || bytes>960*512-4096 ||
+  I64 lba,i,offset,entry,capacity=960*512-4096,last_sector=960;
+  U32 checksum=2166136261;
+  Bool extended=FALSE;
+  if(!source || !target || !image || bytes<8 || bytes>2039*512 ||
       image[0]!=0xE9 || image[5] || image[6] || image[7] ||
       (entry=5+(image+1)(I32 *)[0])<8 || entry>=bytes ||
       source->signature!=0x41543332 || target->signature!=0x41543332 ||
@@ -35,14 +37,26 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
       (source->io==target->io && source->drive==target->drive) ||
       !I386AtaTransfer(target,0,sector,100000,FALSE,0)) return FALSE;
   for(i=0;i<512;i++) if(sector[i]) return FALSE;
+  if(!I386AtaTransfer(source,1,sector,100000,FALSE,0)) return FALSE;
+  if((sector+16)(U32 *)[0]==0x42323345) {
+    if((sector+20)(U32 *)[0]!=1 || (sector+28)(U32 *)[0]!=0x100000)
+      return FALSE;
+    extended=TRUE; capacity=2039*512; last_sector=2047;
+    for(i=0;i<bytes;i++) checksum=(checksum^image[i])*16777619;
+  }
+  if(bytes>capacity) return FALSE;
   for(lba=1;lba<2048;lba++) {
-    if(lba>=9 && lba<=960) {
+    if(lba>=9 && lba<=last_sector) {
       offset=(lba-9)*512;
       for(i=0;i<512;i++) {
         if(offset+i<bytes) sector[i]=image[offset+i];
         else sector[i]=0;
       }
     } else if(!I386AtaTransfer(source,lba,sector,100000,FALSE,0)) return FALSE;
+    if(lba==1 && extended) {
+      (sector+24)(U32 *)[0]=bytes;
+      (sector+32)(U32 *)[0]=checksum;
+    }
     if(!I386AtaTransfer(target,lba,sector,100000,TRUE,0)) return FALSE;
   }
   if(!I386AtaFlushPolled(target,100000,0) ||

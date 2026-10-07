@@ -1,6 +1,7 @@
 #include "/Kernel/I386/RedSea.HH"
 
 #define I386_REDSEA_MOVE_MAGIC 0x3145564F4D323349
+#define I386_REDSEA_TRANSFER_MAGIC 0x3245564F4D323349
 #define I386_REDSEA_MOVE_OFFSET 48
 #define I386_REDSEA_MOVE_END 192
 
@@ -20,7 +21,7 @@ Bool I386RedSeaMoveHeader(CI386RedSea *v,U8 *raw)
 
 public Bool I386RedSeaMoveIntentSet(CI386RedSea *v,I64 source_parent,Bool source_root,
   U8 *source_name,I64 destination_parent,Bool destination_root,U8 *destination_name,
-  CI386RedSeaEntry *source)
+  CI386RedSeaEntry *source,Bool transfer=FALSE)
 {//One volume-wide cross-directory move may be in flight.
   U8 raw[512];
   I64 i;
@@ -41,7 +42,8 @@ public Bool I386RedSeaMoveIntentSet(CI386RedSea *v,I64 source_parent,Bool source
   i=0; while(source_name[i]) { raw[104+i]=source_name[i]; i++; }
   i=0; while(destination_name[i]) { raw[142+i]=destination_name[i]; i++; }
   I386RedSeaPutWord(raw+184,I386RedSeaMoveChecksum(raw));
-  I386RedSeaPutWord(raw+48,I386_REDSEA_MOVE_MAGIC);
+  if(transfer) I386RedSeaPutWord(raw+48,I386_REDSEA_TRANSFER_MAGIC);
+  else I386RedSeaPutWord(raw+48,I386_REDSEA_MOVE_MAGIC);
   if(!I386RedSeaSectorWrite(v,v->start,raw) || !I386RedSeaFlush(v)) {
     v->signature=0; return FALSE;
   }
@@ -52,7 +54,8 @@ public Bool I386RedSeaMoveIntentClear(CI386RedSea *v)
 {
   U8 raw[512];
   I64 i;
-  if(!I386RedSeaMoveHeader(v,raw) || I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC ||
+  if(!I386RedSeaMoveHeader(v,raw) || (I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC &&
+      I386RedSeaWord(raw+48)!=I386_REDSEA_TRANSFER_MAGIC) ||
      I386RedSeaWord(raw+184)!=I386RedSeaMoveChecksum(raw)) return FALSE;
   for(i=I386_REDSEA_MOVE_OFFSET;i<I386_REDSEA_MOVE_END;i++) raw[i]=0;
   if(!I386RedSeaSectorWrite(v,v->start,raw) || !I386RedSeaFlush(v)) {
@@ -61,7 +64,7 @@ public Bool I386RedSeaMoveIntentClear(CI386RedSea *v)
   return TRUE;
 }
 
-Bool I386RedSeaMoveRecoveryDelete(CI386RedSea *v,I64 directory,U8 *name)
+Bool I386RedSeaMoveRecoveryDelete(CI386RedSea *v,I64 directory,U8 *name,Bool release=TRUE)
 {
   U8 sector[512],*entry;
   CI386RedSeaEntry found;
@@ -78,7 +81,7 @@ Bool I386RedSeaMoveRecoveryDelete(CI386RedSea *v,I64 directory,U8 *name)
         entry[1]|=1;
         if(!I386RedSeaSectorWrite(v,directory+index/8,sector) || !I386RedSeaFlush(v)) return FALSE;
         blocks=(found.size+511)/512;
-        if(blocks && (!I386RedSeaFree(v,found.block,blocks) || !I386RedSeaFlush(v))) return FALSE;
+        if(release && blocks && (!I386RedSeaFree(v,found.block,blocks) || !I386RedSeaFlush(v))) return FALSE;
         return TRUE;
       }
     }
@@ -96,7 +99,8 @@ Bool I386RedSeaMoveRecover(CI386RedSea *v)
     for(i=I386_REDSEA_MOVE_OFFSET;i<I386_REDSEA_MOVE_END;i++) if(raw[i]) return FALSE;
     return TRUE;
   }
-  if(I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC ||
+  if((I386RedSeaWord(raw+48)!=I386_REDSEA_MOVE_MAGIC &&
+      I386RedSeaWord(raw+48)!=I386_REDSEA_TRANSFER_MAGIC) ||
      I386RedSeaWord(raw+184)!=I386RedSeaMoveChecksum(raw)) return FALSE;
   source_parent=I386RedSeaWord(raw+56); if(!source_parent) source_parent=v->root;
   destination_parent=I386RedSeaWord(raw+64); if(!destination_parent) destination_parent=v->root;
@@ -110,8 +114,11 @@ Bool I386RedSeaMoveRecover(CI386RedSea *v)
      source.attr!=I386RedSeaWord(raw+96))) return FALSE;
   if(destination_status && (destination.size!=I386RedSeaWord(raw+80) ||
      destination.datetime!=I386RedSeaWord(raw+88) ||
-     destination.attr!=I386RedSeaWord(raw+96))) return FALSE;
+     destination.attr!=I386RedSeaWord(raw+96) ||
+     I386RedSeaWord(raw+48)==I386_REDSEA_TRANSFER_MAGIC &&
+     destination.block!=I386RedSeaWord(raw+72))) return FALSE;
   if(source_status && destination_status &&
-     !I386RedSeaMoveRecoveryDelete(v,destination_parent,destination_name)) return FALSE;
+     !I386RedSeaMoveRecoveryDelete(v,destination_parent,destination_name,
+       I386RedSeaWord(raw+48)==I386_REDSEA_MOVE_MAGIC)) return FALSE;
   return I386RedSeaMoveIntentClear(v);
 }

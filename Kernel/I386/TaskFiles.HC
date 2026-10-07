@@ -19,6 +19,24 @@ CI386TaskFiles *I386TaskFilesValid(CI386Task *task)
   if(*directory!='/' || directory[state->bytes-sizeof(CI386TaskFiles)-1]) return 0;
   return state;
 }
+CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
+{
+  CI386RedSea *volume;
+  CDrv *identity;
+  U8 *bytes;
+  I64 i;
+  if(!volumes || drive<'A' || drive>'Z' || !(volume=volumes->letter[drive-'A'])) return 0;
+  identity=&volumes->drives[drive-'A'];
+  if(!I386RedSeaValid(volume)) {identity->dv_signature=0;return 0;}
+  if(identity->dv_signature!=DRV_SIGNATURE_VAL) {
+    bytes=identity;for(i=0;i<sizeof(CDrv);i++)bytes[i]=0;
+  }
+  identity->drv_let=drive; identity->fs_type=1; //Canonical FSt_REDSEA.
+  identity->drv_offset=volume->start; identity->size=volume->sectors;
+  identity->root_clus=volume->root;
+  identity->dv_signature=DRV_SIGNATURE_VAL;
+  return identity;
+}
 CI386TaskFiles *I386TaskFilesNew(CI386Task *task,CI386Heap *heap,CFilePathContext *environment,
   CI386FileVolumes *volumes,U8 *directory,U8 drive)
 {
@@ -48,8 +66,10 @@ Bool I386TaskFilesInit(CI386Task *task,CI386Heap *heap,CFilePathContext *environ
       task->file_clone || task->file_destroy || !environment) goto files_init_done;
   state=I386TaskFilesNew(task,heap,environment,volumes,environment->cur_dir,environment->cur_drv);
   if(!state) goto files_init_done;
+  if(!volumes->resident_heap) volumes->resident_heap=heap;
   task->file_state=state; task->file_clone=&I386TaskFilesClone; task->file_destroy=&I386TaskFilesDestroy;
   task->cur_dir=(state+1)(U8 *);
+  task->cur_dv=I386TaskFilesDrive(state->volumes,state->drive);
   result=TRUE;
 files_init_done:
   I386IrqRestore(flags); return result;
@@ -65,6 +85,7 @@ Bool I386TaskFilesClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
   if(!copy) goto files_clone_done;
   target->file_state=copy; target->file_clone=&I386TaskFilesClone; target->file_destroy=&I386TaskFilesDestroy;
   target->cur_dir=(copy+1)(U8 *);
+  target->cur_dv=I386TaskFilesDrive(copy->volumes,copy->drive);
   result=TRUE;
 files_clone_done:
   I386IrqRestore(flags); return result;
@@ -79,7 +100,8 @@ Bool I386TaskFilesSet(CI386Task *task,U8 *directory,U8 drive)
   copy=I386TaskFilesNew(task,state->heap,state->environment,state->volumes,directory,drive);
   if(!copy) goto files_set_done;
   if(!I386HeapFree(state->heap,state)) { I386HeapFree(copy->heap,copy); goto files_set_done; }
-  task->file_state=copy; task->cur_dir=(copy+1)(U8 *); result=TRUE;
+  task->file_state=copy; task->cur_dir=(copy+1)(U8 *);
+  task->cur_dv=I386TaskFilesDrive(copy->volumes,copy->drive); result=TRUE;
 files_set_done:
   I386IrqRestore(flags); return result;
 }
@@ -92,7 +114,7 @@ Bool I386TaskFilesDestroy(CI386Task *task)
   if(!state || !I386TaskFilesAccess(task) || state->busy) goto files_destroy_done;
   if(!I386HeapFree(state->heap,state)) goto files_destroy_done;
   task->file_state=0; task->file_clone=0; task->file_destroy=0;
-  task->cur_dir=0; result=TRUE;
+  task->cur_dir=0; task->cur_dv=0; result=TRUE;
 files_destroy_done:
   I386IrqRestore(flags); return result;
 }

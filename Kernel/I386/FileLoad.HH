@@ -7,5 +7,5 @@
 //Optional parent search: all exact-name ancestors precede all alternate-name ancestors.
 //Owned raw/expanded bytes plus NUL. Failure preserves optional size/attributes.
 public extern U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
-  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE);
+  U8 *path,I64 *size=0,I64 *attr=0,Bool scan_parents=FALSE,Bool raw_bytes=FALSE,Bool stored_bytes=FALSE);
 #endif

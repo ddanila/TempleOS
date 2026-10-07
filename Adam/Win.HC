@@ -256,74 +256,7 @@ public CTask *WinRefocus(CTask *task=NULL)
   return sys_focus_task;
 }
 
-I64 WinOnTopWindows()
-{
-  CTask *task,*task1,*first_moved_fwd=NULL;
-  I64 res=0;
-  PUSHFD
-  CLI //TODO Multiprocessor safe
-  task=sys_winmgr_task->next_task;
-  while (task!=sys_winmgr_task && task!=first_moved_fwd) {
-    task1=task->next_task;
-    if (!TaskValidate(task)) {
-      POPFD
-      return res;
-    }
-    if (Bt(&task->display_flags,DISPLAYf_WIN_ON_TOP) &&
-	  task!=sys_winmgr_task->last_task) {
-      TaskQueRem(task);
-      TaskQueIns(task,sys_winmgr_task);
-      res++;
-      if (!first_moved_fwd)
-	first_moved_fwd=task;
-    }
-    task=task1;
-  }
-  POPFD
-  return res;
-}
-
-public I64 WinToTop(CTask *task=NULL,Bool update_z_buf=TRUE)
-{//Put task's win on top of window stack.
-  CTask *task1;
-  I64 res=0;
-  if (!task) task=Fs;
-  if (!TaskValidate(task) || task->gs->num)
-    return 0;
-  TaskDerivedValsUpdate(task,FALSE);
-  if (!sys_winmgr_task || task==sys_winmgr_task)
-    return 0;
-  PUSHFD
-  CLI
-  if (!TaskValidate(task)) {
-    POPFD
-    return 0;
-  }
-  if (task!=sys_winmgr_task->last_task) {
-    TaskQueRem(task);
-    TaskQueIns(task,sys_winmgr_task);
-    res++;
-  }
-  if (!Bt(&task->win_inhibit,WIf_SELF_FOCUS))
-    sys_focus_task=task;
-  if (res && !Bt(&task->display_flags,DISPLAYf_CHILDREN_NOT_ON_TOP)) {
-    task1=task->next_child_task;
-    while (task1!=&task->next_child_task) {
-      if (!TaskValidate(task1))
-	break;
-      res+=WinToTop(task1,FALSE);
-      task1=task1->next_sibling_task;
-    }
-    if (task->popup_task &&
-	  task->popup_task->parent_task==task)
-      res+=WinToTop(task->popup_task,FALSE);
-  }
-  POPFD
-  res+=WinOnTopWindows;
-  if (res && update_z_buf)
-    WinZBufUpdate;
-  return res;
-}
+#include "/Adam/WinOrderCore.HC"
 ext[EXT_WIN_TO_TOP]=&WinToTop;
 
 public CTask *WinFocus(CTask *task=NULL)

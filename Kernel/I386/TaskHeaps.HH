@@ -19,6 +19,7 @@ class CI386TaskHeaps {
 //Pool and callback code are borrowed. Descendants pin the parent's state;
 //the root's provider must retain its pool/arena until the root is detached.
 //Storage uses the bootstrap allocator until its callers migrate to public heaps.
+extern CI386TaskHeaps *I386TaskHeapsValid(CI386Task *task);
 extern Bool I386TaskHeapsInit(CI386Task *root,CI386Heap *storage,CI386PublicPool *pool);
 extern Bool I386TaskHeapsClone(CI386Task *source,CI386Task *target,CI386Heap *storage);
 extern Bool I386TaskHeapsDestroy(CI386Task *task);

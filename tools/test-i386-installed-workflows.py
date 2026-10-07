@@ -106,7 +106,7 @@ def main():
         ('large-source', 'test-i386-doldoc-large-source.py', [disk], 'result.json'),
         ('speaker', 'test-i386-speaker-output.py', [disk], 'result.json'),
         ('resource', 'test-i386-resource-profile.py',
-         ['--disk', disk, '--accel', 'tcg'], 'resource-result.json'),
+         ['--disk', disk, '--accel', 'tcg', '--qmp-stdio', '--writable-copy'], 'resource-result.json'),
     ]
     report = {'result': 'running', 'qualification_version': 2, 'cpu': '486,-fpu', 'ram_mib': 8,
               'accel': 'tcg', 'workers': args.workers, 'input_sha256': inputs,

@@ -66,7 +66,15 @@ U8 *MemoryAlloc(I64 size,CTask *selector=0)
   ptr=I386MemAlloc(hc,size);
   if(ptr) MemoryMeasureUpdate(hc);
   I386IrqRestore(flags);
-  if(!ptr) throw('OutMem',TRUE);
+  if(!ptr) {
+#ifdef I386_MEMORY_FAILURE_TRACE
+    KernelLog("PUBLIC ALLOC EXHAUSTED "); KernelHex(size); KernelLog(" ");
+    KernelHex(hc->used_u8s); KernelLog(" "); KernelHex(hc->alloced_u8s);
+    KernelLog(" "); KernelHex(hc->bp->used_u8s); KernelLog(" ");
+    KernelHex(hc->bp->alloced_u8s); KernelLog("\n");
+#endif
+    throw('OutMem',TRUE);
+  }
   return ptr;
 }
 U0 MemoryFree(U8 *ptr)

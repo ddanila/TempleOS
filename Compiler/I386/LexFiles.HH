@@ -8,6 +8,9 @@ public extern Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *
 //Name is borrowed and copied. Failure leaves source ownership and input state unchanged.
 public extern Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
 public extern CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
+public extern Bool I386LexFileOwned(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
+public extern Bool I386LexFileAdvance(CI386Heap *heap,CCmpCtrl *cc);
+public extern Bool I386LexFileReleaseDetached(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
 //Borrow the caller-locked document as the root source; no ownership transfer.
 public extern Bool I386LexAttachDocRoot(CI386Heap *heap,CCmpCtrl *cc,CDoc *doc);
 //File/name and owned raw buffers belong to heap; document lifetime uses the callback.

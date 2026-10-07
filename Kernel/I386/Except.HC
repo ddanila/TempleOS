@@ -1,4 +1,15 @@
 #include "/Kernel/I386/Except.HH"
+Bool I386ExceptCaptureValid(CI386Task *task,CI386ExceptCapture *capture)
+{//Original stack or exact live debugger allocation owned by this task.
+  U8 *base;
+  I64 size;
+  if(!task || !task->stk || !capture || capture->esp&3 || capture->esp>capture->ebp) return FALSE;
+  base=(&task->stk->stk_base)(U8 *);size=task->stk->stk_size;
+  if(I386FrameValid(capture->ebp,base,size) && capture->esp>=(base+0)(U64)) return TRUE;
+  base=task->debug_stack;size=task->debug_stack_size;
+  if(!base || !size || I386HeapSize(task->debug_stack_heap,base)!=size) return FALSE;
+  return I386FrameValid(capture->ebp,base,size) && capture->esp>=(base+0)(U64);
+}
 //Single CPU. Requires live task, heap and capture objects; no NMI callers.
 CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,CI386ExceptCapture *capture)
 {
@@ -7,9 +18,7 @@ CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,CI386ExceptCapture *
   I64 i;
   if(!task || !task->stk || !task->owner || task->owner->current!=task || task->finished ||
       !capture || !capture->catch_start || !capture->untry_start ||
-      !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
-      capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
-      capture->esp>capture->ebp) {
+      !I386ExceptCaptureValid(task,capture)) {
     I386IrqRestore(flags); return 0;
   }
   record=I386HeapAlloc(heap,sizeof(CI386Except),TRUE);
@@ -64,9 +73,7 @@ I64 I386ExceptDispatch(CI386Task *task,I64 ch,
       return I386_EXCEPT_INVALID;
     capture=&record->capture;
     if(!capture->catch_start || !capture->untry_start ||
-        !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
-        capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
-        capture->esp>capture->ebp) return I386_EXCEPT_INVALID;
+        !I386ExceptCaptureValid(task,capture)) return I386_EXCEPT_INVALID;
     (*invoke)(capture);
     //A catch may run balanced nested try blocks and yield. It must return
     //with the same live task and selected record, unless it exits nonlocally.

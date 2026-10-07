@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import runpy
+import shutil
 
 ROOT = Path(__file__).resolve().parent.parent
 FIELDS = ('doc_session_data_used', 'doc_session_code_used',
@@ -23,11 +24,18 @@ def main():
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--parse-only', action='store_true',
                         help='Parse a completed run without starting QEMU again')
+    parser.add_argument('--qmp-stdio',action='store_true')
+    parser.add_argument('--writable-copy',action='store_true',help='Use a fresh disk copy without QEMU snapshot temporary files')
     args = parser.parse_args()
     out = args.out.resolve()
     identity = {'disk': str(args.disk.resolve()),
                 'disk_sha256': hashlib.sha256(args.disk.read_bytes()).hexdigest(),
                 'cpu': '486,-fpu', 'accel': args.accel, 'ram_mib': 8}
+    disk=args.disk.resolve()
+    if args.writable_copy:
+        disk=out/'working.img'
+        identity.update(working_disk=str(disk),storage_policy='writable copy')
+    if args.qmp_stdio:identity['qmp_stdio']=True
     provenance = out / 'resource-input.json'
     if args.parse_only:
         if not provenance.exists() or json.loads(provenance.read_text()) != identity:
@@ -44,7 +52,13 @@ def main():
         commands.append((f'ResourceLine("RESOURCE {field} ",{field});', []))
     if not args.parse_only:
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        run_input(args.disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=8,
+        if args.writable_copy:
+            if disk.exists():raise ValueError('Use a fresh writable-copy resource output')
+            shutil.copyfile(args.disk,disk)
+            if hashlib.sha256(disk.read_bytes()).hexdigest()!=identity['disk_sha256']:
+                raise ValueError('Resource disk copy differs from source')
+        run_input(disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=8,
+                  qmp_stdio=args.qmp_stdio,snapshot=not args.writable_copy,
                   startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [], 'command_timeout': 180,
                       'commands': commands})
@@ -58,7 +72,8 @@ def main():
         if command.count(flag) != 1 or command[command.index(flag)+1] != expected:
             raise ValueError('Resource QEMU profile differs: ' + flag)
     drives = [command[i+1] for i, value in enumerate(command) if value == '-drive']
-    if drives != ['file=' + identity['disk'] + ',format=raw,if=ide'] or '-snapshot' not in command:
+    expected_disk=identity.get('working_disk',identity['disk'])
+    if drives != ['file=' + expected_disk + ',format=raw,if=ide'] or ('-snapshot' in command)==args.writable_copy:
         raise ValueError('Resource QEMU disk or snapshot profile differs')
     log = (out / 'debug.log').read_text()
     arena = re.findall(r'^ARENA ([0-9A-Fa-f]{16}) ([0-9A-Fa-f]{16})$', log, re.M)
@@ -81,6 +96,7 @@ def main():
     result = {'result': 'pass', 'cpu': '486,-fpu', 'ram_mib': 8,
               'disk_sha256': identity['disk_sha256'], 'accel': args.accel,
               'source_disk_unchanged': True,
+              'disk_policy':'writable copy' if args.writable_copy else 'QEMU snapshot',
               'arena_start': arena_start, 'arena_bytes': arena_bytes,
               'document_development_cycles': 20, 'bytes': values,
               'temporary_live_growth': values['doc_session_heap_peak'] -

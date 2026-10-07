@@ -1,15 +1,5 @@
 #include "/Kernel/ColorNames.HH"
-CHashDefineStr *DefineLoad(U8 *dname,U8 *st)
-{//Create DEFINE hash entry with string.
-  CHashDefineStr *tmph=CAlloc(sizeof(CHashDefineStr));
-  tmph->type=HTT_DEFINE_STR;
-  tmph->str=StrNew(dname);
-  tmph->data=StrNew(st);
-  tmph->cnt=-1;
-  tmph->src_link=MStrPrint("AD:0x%X",Caller);
-  HashAdd(tmph,Fs->hash_table);
-  return tmph;
-}
+#include "/Kernel/DefineLoadCore.HC"
 
 #include "/Kernel/DefineListCore.HC"
 U8 *DefineListSourceLink(U8 *caller) { return MStrPrint("AD:0x%X",caller); }
@@ -27,12 +17,7 @@ U0 UndefinedDefine(U8 *dname)
 
 #include "/Kernel/DefineLookupCore.HC"
 
-U0 DefinePrint(U8 *dname,U8 *src,...)
-{//Create DEFINE entry with $LK,"Print",A="FI:::/Doc/Print.DD"$()ed string.
-  U8 *buf=StrPrintJoin(NULL,src,argc,argv);
-  DefineLoad(dname,buf);
-  Free(buf);
-}
+#include "/Kernel/DefinePrintCore.HC"
 
 U0 SysDefinesLoad()
 {

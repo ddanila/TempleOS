@@ -1,3 +1,6 @@
+#ifdef I386_PARSER_FAILURE_TRACE
+extern U0 I386ParserFailure(U8 *label,CCmpCtrl *cc);
+#endif
 //Included after native control, optimizer and output-buffer implementations.
 #include "/Compiler/I386/NativeBackend.HH"
 #ifdef I386_DIV_SOURCE_BUILD
@@ -25,7 +28,12 @@ U8 *I386NativeBackendAlloc(U8 *context,I64 bytes)
   }
   aligned=(bytes+7)&~7;
   result=I386HeapAlloc(state->heap,aligned+sizeof(CI386CodeAllocation),TRUE);
-  if(!result) { I386IrqRestore(irq); throw('OutMem',TRUE); }
+  if(!result) {
+#ifdef I386_PARSER_FAILURE_TRACE
+    I386ParserFailure("BACKEND WORKSPACE ALLOCATION REJECT ",state->backend.cc);
+#endif
+    I386IrqRestore(irq); throw('OutMem',TRUE);
+  }
   record=result+aligned;
   I386CodeAttach(state->backend.cc,record,result,6);
   I386IrqRestore(irq); return result;

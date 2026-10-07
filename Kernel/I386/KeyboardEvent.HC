@@ -11,6 +11,7 @@ public I64 I386KeyboardFeed(CI386KeyboardState *state,U8 data,U8 status,CI386Key
   U32 raw;
   I64 result,scan;
   if (!state || !event) return -1;
+  event->arrival_jiffy=-1;
   result=I386ScanSet1Feed(&state->packet,data,status,&raw);
   if (result<0) { I386KeyboardReset(state); return -1; }
   if (!result) return 0;

@@ -296,17 +296,25 @@ I64 NativeTerminalInputKey(CI386KeyEvent *event)
   return NativeReadKey(console_config->reader,event,FALSE);
 }
 U0 NativeTaskWait(CTask *task=NULL,Bool cmd_line_pmt=FALSE)
-{
+{//Original wait requires an empty job queue before accepting idle.
   CTask *target;
+  CJob *head;
+  U32 irq;
   if(!task) task=Fs;
-  while(TaskValidate(task)) {
-    target=task->last_input_filter_task;
-    if(!TaskValidate(target) || target==Fs) return;
-    if(Bt(&target->task_flags,TASKf_IDLE) &&
-        (!cmd_line_pmt || Bt(&target->task_flags,TASKf_CMD_LINE_PMT))) return;
-    I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll;
-  }
+  irq=I386IrqSave;
+  try {
+    while(TaskValidate(task)) {
+      target=task->last_input_filter_task;
+      if(!TaskValidate(target) || target==Fs) break;
+      head=&target->srv_ctrl.next_waiting;
+      if(head->next==head && Bt(&target->task_flags,TASKf_IDLE) &&
+          (!cmd_line_pmt || Bt(&target->task_flags,TASKf_CMD_LINE_PMT))) break;
+      (*native_input_yield)(); I386TaskBreakPoll;
+    }
+  } catch { I386IrqRestore(irq); }
+  I386IrqRestore(irq);
 }
+
 U0 NativeXTalk(CTask *task,U8 *fmt,...)
 {//Format in the sender; the queued copy belongs to the destination task.
   CNativeTerminal *terminal;

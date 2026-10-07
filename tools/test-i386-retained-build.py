@@ -56,7 +56,10 @@ def check_console_alloc_wrappers(module):
     calls = [module[name:name + length].decode('ascii')
              for kind, offset, name, length in rows
              if kind == 2 and start <= offset < end]
-    if calls.count('NativeDocCAlloc') != 4 or calls.count('NativeDocMAlloc') != 1:
+    # Four structured-record allocations, two tags, and one canonical text base.
+    if (calls.count('NativeDocCAlloc') != 4 or
+            calls.count('NativeDocMAlloc') != 2 or
+            calls.count('DocEntryNewBase') != 1):
         raise ValueError('Guest-built document loader bypasses allocation wrappers')
 
 

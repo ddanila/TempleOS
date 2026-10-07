@@ -18,6 +18,7 @@ class CI386Except
 };
 #assert sizeof(CI386ExceptCapture)==32
 #assert sizeof(CI386Except)==48
+public extern Bool I386ExceptCaptureValid(CI386Task *task,CI386ExceptCapture *capture);
 public extern CI386Except *I386ExceptPush(CI386Task *task,CI386Heap *heap,
   CI386ExceptCapture *capture);
 public extern Bool I386ExceptPop(CI386Task *task);

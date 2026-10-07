@@ -1,21 +1,152 @@
 # M7 requirement-to-test audit
 
-Current qualification (2026-10-05): main OS services remain ABI40. The complete
-unpromoted ABI47 text-run candidate is preserved in
-[the cumulative patch](patches/i386-text-run-integrated-candidate.patch).
-Its fresh original bootstrap, cross-build/386 boot audit and 15-command
-no-FPU/8MiB document session pass, including both text-run allocation failures,
-heap recovery, three exact large-source round trips and binary persistence.
-Full suite, six native providers, 20 debugger jobs and three-boot DolDoc session
-are running. Candidate promotion, its two native generations, its own packaged
-five-job qualification and release publication remain open.
+The two-pass frontend publication candidate passes 16 MiB no-FPU diagnostics:
+28 program and 22 class publication cases, nine interactive commands, exact VGA.
+Evidence: `build/i386-frontend-journal-diag-b-v69-16m/result.json`.
+Its 8 MiB boot still fails with request 0xECD; subsequent parser tracing is not
+qualified by that result. Current-source full builds, generations and release
+remain open.
 
-The preceding Caller epoch has two matching native generations, deterministic
-packaging, native/source audits and four installed workflows with passing
-budgets. It still fails the newly added large-source gate; those passes do not
-qualify the complete text-run candidate. The full no-FPU native generation chain
-is separately running on that Caller epoch. Physical hardware verification is
-deferred; human observation is optional. See [PLAN.md](../PLAN.md) for the goal.
+The exact-size class-journal candidate passes 16 MiB no-FPU diagnostics:
+22 publication cases across both phases, including constrained scratch with
+512 unrelated parser allocations; nine interactive commands and exact VGA.
+Evidence: `build/i386-class-journal-diag-b-v69-16m/result.json`.
+Its 8 MiB startup still fails. The subsequent tracing source is a separate,
+unqualified snapshot; this diagnostic pass does not qualify that edit.
+
+Saved bare/mixed assembly payload execution now passes 13 commands on
+486,-fpu / 16 MiB. Both persisted, single-export, relocation-free modules execute
+and restore interrupt state; source bytes and exports are validated. Evidence:
+`build/i386-bare-assembly-saved-execution-c-v69/result.json`. This direct payload
+check does not prove general native module loading or close the 8 MiB boot gate.
+
+Current bare assembly candidate: focused assembly and opcode ownership tests
+pass, but 8 MiB normal startup fails with compiler heap exhaustion. The fresh
+static loader audit passes at 16300 / 16384 bytes. Six-provider rebuild is running. The 16 MiB no-FPU diagnostic startup passes
+in 203.718 seconds with nine commands and exact VGA checkpoints; see
+`build/i386-bare-assembly-diag-b-v69-16m/result.json`. Evidence:
+`build/i386-bare-assembly-boot-b-v69-8m/result.json`,
+`build/i386-bare-assembly-green-b-v69/result.json`, and
+`build/i386-bare-assembly-loader-stack-b-v69/result.json`.
+This candidate is not qualified for the 8 MiB startup gate.
+
+Additional isolated resource evidence: original Bible compression and source-volume
+packaging pass; native full-text expansion rejects with OutMem at 16 MiB.
+Two caught failures with restored IRQ flags, subsequent arithmetic and a small
+file read pass seven commands with exact VGA. Evidence:
+`build/i386-bible-package-prototype-v69/native-read-oom-c-result.json`.
+The resource patch is not applied to the current candidate. Full Bible/God
+workflows and exact resource heap recovery remain open.
+
+Previous v69 evidence (2026-10-07; predates the bare assembly candidate): fresh cross image and 386 instruction audit
+pass; normal 8 MiB no-FPU startup passes in 54.917 seconds. Direct, single-line
+macro and original bitmap aggregate compilation/persistence/HolyC behavior
+pass, with exact audits of all initializer words. Static loader usage remains
+16300 / 16384 bytes. Evidence: `build/i386-current-v69-checkpoint/result.json`.
+Diagnostic startup passes at 16 MiB in 193.835 seconds, including
+both native file-loader phases. The full six-provider guest rebuild is running;
+current-source generations, install/release and complete OS parity remain open.
+
+Current compiler source checkpoint (2026-10-07): the exhausted-macro snapshot
+regression is fixed and all three native lexer suites plus both original
+bootstrap generations pass. Evidence:
+`build/i386-lex-snapshot-fix-checkpoint/result.json`. Cross-v67 rejected a kernel/compiler helper boundary; that placement is corrected
+and the focused gates pass at compiler version 69 / probe 17. Cross-v68 linked the retained modules but rejected the old packaging import
+contract. Exact contracts and version labels are corrected; old-version and
+renamed-import mutations still reject. Cross-v69 is building;
+scanner integration and full current-source native generations remain open.
+
+Current packaging checkpoint v66 (2026-10-07): all twelve native modules are
+byte-identical to v64; the image now includes the full Adam source tree and
+uses a 32 MiB disk for rebuild space. Normal 8 MiB no-FPU startup passes in
+46.188 seconds with all nine interactive/VGA checks. The full six-module guest
+rebuild rejected at stage 3 in a macro-expanded scanner bitmap initializer
+in `build/i386-retained-full-v66`; it is not qualified. The isolated native
+snapshot-boundary regression reproduces the exhausted macro transition failure
+(`build/i386-lex-snapshot-boundary-red-checkpoint/result.json`).
+The earlier v64 rebuild rejection exposed eight omitted Adam dependencies;
+source closure is now checked before packaging. Evidence:
+`build/doc-layout-runtime-cross-v66/result.json`,
+`build/doc-layout-runtime-boot-v66-8m/result.json`,
+`build/i386-source-package-closure-v65/result.json` and
+`build/i386-source-image-capacity-v66/result.json`. Disk capacity does not
+change the 8 MiB interactive / 16 MiB rebuild RAM requirements.
+
+Latest qualified v64 normal and diagnostic startup source (2026-10-07): compiler ABI 68, console ABI 66 and
+memory ABI 22. Cross-v64 and both bootstrap generations pass. Its 8 MiB
+486,-fpu startup passes nine retained static/function/literal and exact VGA
+checks in 45.780 seconds. Mixed symbol deletion and explicit 64 KiB parent
+ownership pass at 8 MiB in the earlier v54 integration; default-stack parent
+ownership passes at 16 MiB. The default-stack 8 MiB allocation failure remains
+open. The v54 guest rebuild covers Startup and MemoryRuntime only; full current
+source generations and release qualification are not established.
+
+Diagnostic v64 passes in 177.620 seconds at 16 MiB, including the isolated
+memory phases, dual-heap backing accounting, worker disk-include/IRQ tests,
+both native file-loader phases, probe/task release and all nine interactive
+commands with exact VGA restoration. The v63 worker failure exposed overlapping
+loader scratch frames exceeding its unchanged 16 KiB stack. Separating loader
+preflight and compaction removes 9256 overlapping bytes. The same compiled-code
+checker rejects v63 at 25556 bytes and accepts v64 at 16300 bytes, including a
+6144-byte caller/parser allowance. This static direct-call check and the runtime
+pass qualify this regression; neither proves whole-OS stack safety. Evidence:
+`build/doc-layout-runtime-boot-v64-8m/result.json`,
+`build/parser-placement-diagnostic-v64-16m/result.json` and
+`build/i386-loader-stack-checkpoint/result.json`.
+
+Current-source feature gaps remain independent of rebuild qualification.
+`Kernel/I386/PublicSound.HH` exposes `Snd` and `SndRst`, and
+`Kernel/I386/SoundRuntime.HC` implements note output/reset; the original
+`Adam/ASnd.HC` music-string `Play` and `CurSongTask` workflow is not integrated
+by these providers. Speaker waveform passes cannot establish that workflow.
+`ConsoleRuntime.HC` includes `Adam/Gr/GrFloodFillCore.HC`, whose
+`GrFloodFillRay` allocates `sizeof(CFFRay)*0x80000`: seven I64 fields give
+29360128 bytes (28 MiB), exceeding the entire 8 MiB interactive profile.
+The routine immediately writes `f->x` after allocation without a failure
+check, so the regression must also cover allocation failure before any pixel
+change and verify restoration of the DC flags, brush and secondary color.
+Its bounded-memory integration and allocation-failure recovery need focused
+original-behavior tests before claiming complete graphics usability. Compiling
+these functions into a retained module does not establish runtime coverage.
+
+The packaged and generation evidence below belongs to the older source epoch;
+it does not qualify the changed graphics, compiler and memory sources above.
+
+Historical qualification (2026-10-06): the ABI 47 scope-v1 candidate is integrated
+into the main working tree. The remote checkpoint remains ABI 40 because this
+session cannot write to `.git`. All 825 Kernel/Compiler/Adam source files match
+the frozen candidate. A fresh original bootstrap, cross-build and 386 boot
+audit pass; the cross-built normal image matches the candidate byte for byte.
+The integrated runtime suite passes 513 commands, 13 allocation cases and
+20 exact-heap development cycles at QEMU TCG `486,-fpu` / 8 MiB.
+
+Both native generations pass installation, guest-built kernel construction,
+independent boot and installed-image audits in
+`build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1`.
+All 12 modules, the 501912-byte flat kernel and the boot area match across
+generations; whole-disk hashes differ. The flat kernel SHA-256 is
+`899e2368cfeb9e15c6d79852f9b14c58496a137be9922e75906fff5e97592fb8`.
+
+Deterministic packaging and the independent packaged-image audit pass. The
+package is `build/key-arrival-integrated-native-package-v1`, SHA-256
+`de8114d5437b341d0b7c8cc0f62c79d134ed39e95e11602c78638796a155d0c0`.
+Its workstation, three-boot DolDoc, large-source and speaker workflows pass
+in `build/key-arrival-integrated-packaged-workflows-v1`. That aggregate failed
+because the resource invocation omitted QMP stdio. The corrected focused
+resource test passes 20 cycles with exact heap recovery in
+`build/key-arrival-integrated-packaged-resource-v2`. The corrected complete
+aggregate in `build/key-arrival-integrated-packaged-workflows-v2` passes all
+five jobs. The source image is unchanged and all 197 pinned inputs still match.
+
+Focused frozen-candidate evidence also covers both undo injection modes,
+large-source round trips, inherited-forward compiler scope, timed-message
+filter routes, public messages, macro allocation/registration recovery,
+20 debugger jobs and byte-exact binary/styled DolDoc exchange with original
+TempleOS. Playback scheduling, raw queue wrap/overflow/cancellation timing,
+final release qualification, commit and publication remain open. Physical
+hardware verification is deferred; manual observation is optional exploratory
+feedback. Historical results below belong to their named source epochs.
+See [PLAN.md](../PLAN.md).
 
 ## Historical coverage checkpoints
 

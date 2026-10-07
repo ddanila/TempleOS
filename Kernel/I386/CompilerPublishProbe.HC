@@ -21,13 +21,13 @@ U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHashClass *roots[6],*collision;
   CHashTable *table=task->hash_table;
   CCmpCtrl *cc;
-  U8 *source,*name,*old_index,*fill,*block,*next;
+  U8 *source,*name,*old_index,*fill,*block,*next,*spare;
   I64 kind,count,i,size,attr,before_used,before_allocations;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 irq,flags=GetRFlags;
   Bool result;
-  for(kind=0;kind<10;kind++) {
-    source="Durable { U8 bytes[2+3]; }"; count=1; collision=0; fill=0;
+  for(kind=0;kind<11;kind++) {
+    source="Durable { U8 bytes[2+3]; }"; count=1; collision=0; fill=0; spare=0;
     if(!kind) {
       name=0;
       source=probe->files->read(heap,"C:/Kernel/Types.HH",&size,&attr,&name);
@@ -60,9 +60,16 @@ U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         break;
       case 2: roots[0]->idx="Foreign"; break;
       case 3: roots[0]->idx=roots[0]->str; break;
+      case 10:
+        //Transient parser nodes must not determine the class journal size.
+        for(i=0;i<512;i++)
+          if(!probe->compiler->parser_alloc(heap,cc,8,TRUE)) KernelStop;
+        spare=I386HeapAlloc(heap,1024,FALSE);
+        if(!spare) KernelStop;
       case 4:
         for(size=65536;size>=8;size=size/2)
           while(block=I386HeapAlloc(heap,size,FALSE)) { block(U8 **)[0]=fill; fill=block; }
+        if(kind==10 && !I386HeapFree(heap,spare)) KernelStop;
         break;
       case 6:
         if(!probe->compiler->code_add(heap,cc,IC_IMM_I64,1,probe->i64_type,0)) KernelStop;
@@ -87,8 +94,8 @@ U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     before_used=heap->used; before_allocations=heap->allocations;
     if(kind==5) result=probe->compiler->publish_classes(heap,cc,table);
     else result=probe->compiler->publish_classes(heap,cc,state->table);
-    if((GetRFlags&0x200)!=(flags&0x200) || result!=(kind==0)) KernelStop;
-    if(kind) {
+    if((GetRFlags&0x200)!=(flags&0x200) || result!=(kind==0 || kind==10)) KernelStop;
+    if(kind && kind!=10) {
       if(heap->used!=before_used || heap->allocations!=before_allocations ||
           ProbeSymbolFind(state,"Durable",state->table,HTT_CLASS)!=roots[0] ||
           roots[0]->size!=5 || roots[0]->member_cnt!=1) KernelStop;
@@ -104,6 +111,8 @@ U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       for(i=0;i<count;i++)
         if(ProbeSymbolFind(state,roots[i]->str,table,HTT_CLASS)!=roots[i]) KernelStop;
     }
+    if(kind==10)
+      while(fill) { next=fill(U8 **)[0]; if(!I386HeapFree(heap,fill)) KernelStop; fill=next; }
     if(!probe->compiler->control_unwind(task,outer)) KernelStop;
     if(!kind) {
       //A fresh owner must see the published graph after all old parser state died.
@@ -117,6 +126,14 @@ U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       irq=I386IrqSave;
       for(i=0;i<count;i++) if(!ProbePublishedRemove(table,roots[i])) KernelStop;
       while(count) if(!I386HashDel(heap,roots[--count])) KernelStop;
+      I386IrqRestore(irq);
+    }
+    if(kind==10) {
+      //The graph remains valid after transient parser records have been freed.
+      if(ProbeSymbolFind(0,"Durable",table,HTT_CLASS)!=roots[0] ||
+          roots[0]->size!=5 || roots[0]->member_cnt!=1) KernelStop;
+      irq=I386IrqSave;
+      if(!ProbePublishedRemove(table,roots[0]) || !I386HashDel(heap,roots[0])) KernelStop;
       I386IrqRestore(irq);
     }
     if(task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||

@@ -158,7 +158,9 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(kind==6 && input.exception!='InputCb') KernelStop;
     if(kind==7 && (ProbeSymbolFind(0,"InputTemp",task->hash_table,HTT_GLBL_VAR) ||
         !answer.diagnostics || input.exception!='Compiler')) KernelStop;
-    if(kind==8 && (input.commands || input.answers || input.exception)) KernelStop;
+    if(kind==8 && (input.commands || input.answers || input.exception ||
+        heap->used!=case_used || heap->allocations!=case_allocations ||
+        !I386HeapValid(heap))) KernelStop;
     if(kind==11) {
       if(answer.count || input.answers || input.commands!=3) KernelStop;
       input.flags=0; input.source="InputLater(1);";

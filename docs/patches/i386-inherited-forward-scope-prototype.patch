@@ -1,0 +1,16 @@
+--- a/Compiler/I386/Frontend.HC
++++ b/Compiler/I386/Frontend.HC
+@@ -888,7 +888,12 @@
+   CI386Frontend *state=context;
+   CHashClass *result;
+   //Published descriptors remain unchanged until the whole input commits.
+-  result=HashFind(cc->cur_str,state->parent,HTT_CLASS);
++  //Interactive class declarations shadow inherited forwards, like PrsClassCore.
++  //Only a direct-scope published forward may be completed in place. Modules
++  //retain their private inherited-clone completion policy.
++  if(cc->flags&CCF_MODULE_SOURCE)
++    result=HashFind(cc->cur_str,state->parent,HTT_CLASS);
++  else result=I386FrontendSingleFind(state,cc->cur_str,state->parent,HTT_CLASS);
+   if(result && Bt(&result->flags,Cf_EXTERN) &&
+       !I386FrontendSingleFind(state,cc->cur_str,state->table,HTT_CLASS)) {
+     if(is_extern) { I386FrontendLex(state,cc); return result; }

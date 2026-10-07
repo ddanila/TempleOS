@@ -1,6 +1,7 @@
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
+#include "/Kernel/CompilerTypes.HH"
 #include "/Compiler/I386/Keywords.HH"
 #include "/Compiler/I386/SymbolDelete.HH"
 #include "/Kernel/I386/Cpu.HH"
@@ -38,7 +39,18 @@ I64 KeywordTest()
     if(entry->str==compiler_keywords[i].name || I386HeapSize(&keyword_heap,entry)!=40 ||
         I386HeapSize(&keyword_heap,entry->str)!=length+1 || entry->user_data1 || entry->user_data2) return 4;
   }
-  if(keyword_heap.used!=expected || keyword_heap.allocations!=2+COMPILER_KEYWORDS_NUM*2 ||
+  for(i=0;i<I386_INLINE_OPCODES_NUM;i++) {
+    length=0; while(i386_inline_opcodes[i][length]) length++;
+    expected+=16+((sizeof(CHashOpcode)+7)&~7)+16+((length+1+7)&~7);
+    entry=HashFind(i386_inline_opcodes[i],registry.table,HTT_OPCODE);
+    if(!entry || entry->type!=HTT_OPCODE ||
+        HashFind(i386_inline_opcodes[i],registry.table,HTT_OPCODE,2) ||
+        entry->str==i386_inline_opcodes[i] ||
+        I386HeapSize(&keyword_heap,entry)!=sizeof(CHashOpcode) ||
+        I386HeapSize(&keyword_heap,entry->str)!=length+1) return 13;
+  }
+  if(HashFind("cli",registry.table,HTT_OPCODE)) return 14;
+  if(keyword_heap.used!=expected || keyword_heap.allocations!=2+(COMPILER_KEYWORDS_NUM+I386_INLINE_OPCODES_NUM)*2 ||
       I386KeywordsInit(&registry,&keyword_heap) || keyword_heap.used!=expected) return 5;
   bytes=&local; for(i=0;i<sizeof(CHashTable);i++) bytes[i]=0;
   bytes=&shadow; for(i=0;i<sizeof(CHashGeneric);i++) bytes[i]=0;
@@ -60,7 +72,7 @@ I64 KeywordFailureTest()
   CI386Heap scratch; CI386Keywords registry;
   I64 size,failed=0,passed=0,result;
   registry.heap=0; registry.table=0;
-  for(size=32;size<=8192;size+=8) {
+  for(size=32;size<=16384;size+=8) {
     if(!I386HeapInit(&scratch,0x50000,size)) return 9;
     if(I386KeywordsInit(&registry,&scratch)) {
       passed++; result=KeywordMapTest(registry.table); if(result) return result;

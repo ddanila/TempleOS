@@ -1,7 +1,11 @@
 #ifndef I386_PUBLIC_DOCUMENT_INCLUDED
 #define I386_PUBLIC_DOCUMENT_INCLUDED
 #include "/Kernel/DocGlobals.HH"
+#include "/Adam/DolDoc/EdLinkTypes.HH"
 #help_index "DolDoc"
+public _extern _DOC_LINK_FILE U8 *DocLinkFile(U8 *link_st,CTask *mem_task=NULL);
+public _extern _ED_LINK_CVT I64 EdLinkCvt(U8 *link_st,
+  U8 **_filename=NULL,U8 **_needle_str=NULL,I64 *_num=NULL,I64 edf_dof_flags=0);
 public _extern _DOC_LOCK Bool DocLock(CDoc *doc);
 public _extern _DOC_UNLOCK Bool DocUnlock(CDoc *doc);
 public _extern _DOC_PUT CDoc *DocPut(CTask *task=0);
@@ -45,4 +49,19 @@ public _extern _DOC_ALLOCATION_CHECK I64 DocAllocationCheck();
 public _extern _DOC_EXE Bool DocExe(CDoc *doc,I64 flags=0);
 public _extern _EXE_DOC I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
 public _extern _HELP Bool Help(U8 *name=0);
+public _extern _DOC_DOLLAR CDocEntry *PrsDollarCmd(CDoc *doc,U8 *source);
+public _extern _DOC_DATA_FMT U0 DocDataFmt(CDoc *doc,CDocEntry *entry,I64 value=DOCM_CANCEL);
+public _extern _DOC_DATA_SCAN U0 DocDataScan(CDoc *doc,CDocEntry *entry);
+
+public _extern _DOC_PUT_S CDocEntry *DocPutS(CDoc *doc,U8 *source);
+public _extern _DOC_PRINT CDocEntry *DocPrint(CDoc *doc=NULL,U8 *fmt,...);
+
+public _extern _DOC_BORDER_NEW CDoc *DocBorderNew(CDoc *pdoc);
+public _extern _DOC_ENTRY_LINK U8 *DocEntryLink(CDoc *doc,CDocEntry *doc_e);
+public _extern _ED_OVERSTRIKE_CB U8 *EdOverStrikeCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
+public _extern _ED_AUTO_SAVE_CB U8 *EdAutoSaveCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
+public _extern _ED_FILTER_CB U8 *EdFilterCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
+public _extern _ED_DOLLAR_CB U8 *EdDollarCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
+public _extern _ED_MORE_CB U8 *EdMoreCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
+public _extern _ED_DOLLAR_TYPE_CB U8 *EdDollarTypeCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
 #endif

@@ -86,7 +86,14 @@ args.
       case IC_HOLYC_TYPECAST:
         //i386 pointers/narrow values differ from the I64 evaluation width.
         //Keep the conversion boundary instead of retagging its producer.
-        if (cc->flags&CCF_TARGET_I386) break;
+        //Host defaults may fold bitcasts of immediate full-width scalars.
+        //Keep every pointer/narrow/runtime conversion boundary in target IR.
+        if (cc->flags&CCF_TARGET_I386 &&
+            !(cc->flags&CCF_TARGET_HOST_CONST &&
+              (tmpi1->ic_code==IC_IMM_I64 || tmpi1->ic_code==IC_IMM_F64) &&
+              !tmpi1->ic_class->ptr_stars_cnt && !tmpi->ic_class->ptr_stars_cnt &&
+              (tmpi->ic_class->raw_type==RT_F64 ||
+               tmpi->ic_class->raw_type==RT_I64 || tmpi->ic_class->raw_type==RT_U64))) break;
 	if (tmpi1->ic_code==IC_IMM_I64 || tmpi1->ic_code==IC_IMM_F64) {
 	  if (tmpi->ic_class->raw_type==RT_F64)
 	    tmpi1->ic_code=IC_IMM_F64;

@@ -42,6 +42,14 @@ class CI386Task:CTask
   CI386TaskWait *wait; //Borrowed until the waiting call resumes and returns.
   CI386ExceptionFrame debug_cpu_frame;
   U32 debug_cpu_active;
+  U8 *debug_stack;
+  U32 debug_stack_size;
+  CI386Heap *debug_stack_heap;
+  U0 (*debug_stack_cleanup)(CI386Task *task);
+  U32 debug_session_active,debug_go;
+  U8 *debug_backup;
+  U0 (*debug_cleanup)(CI386Task *task);
+  U0 (*debug_bpt_cleanup)(CI386Task *task);
   U32 inherited_refs; //Subset of lifetime_refs: child heaps/symbols and entry code.
 };
 #define I386_WAIT_SLEEP 1

@@ -156,40 +156,7 @@ CJob *TaskMsg(CTask *_srv,CTask *master,
   return tmpc;
 }
 
-Bool JobResScan(CJob *rqst=NULL,I64 *_res=NULL)
-{//Check rqst complete, return with or without.
-  CJobCtrl *ctrl;
-  CJob *tmpc,*tmpc1;
-  if (!rqst || Bt(&rqst->flags,JOBf_DONE)) {
-    if (!rqst || rqst->master_task)
-      ctrl=&Fs->srv_ctrl;
-    else
-      ctrl=rqst->ctrl;
-    PUSHFD
-    CLI
-    while (LBts(&ctrl->flags,JOBCf_LOCKED))
-      PAUSE
-    tmpc1=&ctrl->next_done;
-    tmpc=tmpc1->next;
-    while (tmpc!=tmpc1) {
-      if (!rqst || rqst==tmpc) {
-	QueRem(tmpc);
-	LBtr(&ctrl->flags,JOBCf_LOCKED);
-	POPFD
-	if (_res)
-	  *_res=tmpc->res;
-	JobDel(tmpc);
-	return TRUE;
-      }
-      tmpc=tmpc->next;
-    }
-    LBtr(&ctrl->flags,JOBCf_LOCKED);
-    POPFD
-  }
-  if (_res)
-    *_res=0;
-  return FALSE;
-}
+#include "/Kernel/JobResScanCore.HC"
 
 I64 JobResGet(CJob *rqst=NULL)
 {//See $LK,"::/Demo/MultiCore/Lock.HC"$
@@ -474,12 +441,7 @@ U0 InFile(U8 *filename)
   Free(name);
 }
 
-U0 In(U8 *fmt,...)
-{//Send text to own input buffer. See $LK,"::/Demo/AcctExample/TOS/TOSDistro.HC"$.
-  U8 *buf=StrPrintJoin(NULL,fmt,argc,argv),*st=AStrNew(buf);
-  InStr("\"%%s\",%d;Free(%d);",st,st);
-  Free(buf);
-}
+#include "/Kernel/JobInCore.HC"
 
 U0 XTalkStr(CTask *task,U8 *fmt,...)
 {//Send InFile code to other task.

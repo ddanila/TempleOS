@@ -1,12 +1,5 @@
 #help_index "Math"
-public U0 R2P(F64 *_mag=NULL,F64 *_arg=NULL,F64 x,F64 y)
-{//Rect to polar
-//Returns angle in range (-ã,ã]
-  if (_arg)
-    *_arg=Arg(x,y);
-  if (_mag)
-    *_mag=Sqrt(x*x+y*y);
-}
+#include "/Adam/PolarCore.HC"
 
 public U0 P2R(F64 *_x=NULL,F64 *_y=NULL,F64 mag,F64 arg)
 {//Polar to Rect
@@ -26,11 +19,7 @@ public F64 Wrap(F64 é,F64 base=-ã)
   return res;
 }
 
-public I64 DistSqrI64(I64 x1,I64 y1,I64 x2,I64 y2)
-{//Distance-squared between 2 points.
-  I64 dx=x1-x2,dy=y1-y2;
-  return dx*dx+dy*dy;
-}
+#include "/Adam/DistSqrCore.HC"
 
 public F64 ASin(F64 s)
 {//Arc Sin (Inverse Sin).

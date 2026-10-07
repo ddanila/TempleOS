@@ -1,5 +1,26 @@
 //Included after native control ownership and release helpers.
 #include "/Compiler/I386/ParserMemory.HH"
+#ifdef I386_PARSER_FAILURE_TRACE
+U0 I386ParserFailure(U8 *label,CCmpCtrl *cc)
+{//Allocation failure only; bounded native frame chain and no scratch heap.
+#ifdef I386_FAILURE_CALLER_TRACE
+  U32 *frame=GetRBP,address;
+  U8 text[9],*digits="0123456789ABCDEF";
+  I64 i,depth;
+#endif
+  KernelLog(label);
+  if(cc->lex_include_stk && cc->lex_include_stk->full_name) KernelLog(cc->lex_include_stk->full_name);
+#ifdef I386_FAILURE_CALLER_TRACE
+  for(depth=0;depth<3 && frame;depth++) {
+    address=frame[1];
+    for(i=0;i<8;i++) text[7-i]=digits[(address>>(i*4))&15];
+    text[8]=0; KernelLog(" "); KernelLog(text);
+    frame=frame[0](U32 *);
+  }
+#endif
+  KernelLog("\n");
+}
+#endif
 U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
 {
   CI386CmpCtrl *owned=cc;
@@ -10,8 +31,13 @@ U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
     I386IrqRestore(irq); return 0;
   }
   allocation=I386HeapAlloc(heap,bytes,zeroed);
-  if(!allocation) { I386IrqRestore(irq); throw('OutMem',TRUE); }
-  record=I386HeapAlloc(heap,sizeof(CI386ParserAllocation),TRUE);
+  if(!allocation) {
+#ifdef I386_PARSER_FAILURE_TRACE
+    I386ParserFailure("PARSER PAYLOAD ALLOCATION REJECT ",cc);
+#endif
+    I386IrqRestore(irq); throw('OutMem',TRUE);
+  }
+  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
   if(!record) {
     I386HeapFree(heap,allocation);
     I386IrqRestore(irq); throw('OutMem',TRUE);
@@ -52,7 +78,7 @@ U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes)
   if(owner->task!=owned->task || owner->signature!=I386_TASK_HEAPS_MAGIC ||
       owned->task->code_heap!=&owner->control || !owner->code_allocate ||
       !owner->code_release || !owner->code_capacity) goto done;
-  record=I386HeapAlloc(heap,sizeof(CI386ParserAllocation),TRUE);
+  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
   if(!record) goto exhausted;
   allocation=(*owner->code_allocate)(owner,bytes);
   if(!allocation) { I386HeapFree(heap,record); goto exhausted; }
@@ -62,6 +88,9 @@ U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes)
 done:
   I386IrqRestore(irq); return allocation;
 exhausted:
+#ifdef I386_PARSER_FAILURE_TRACE
+  I386ParserFailure("PARSER CODE ALLOCATION REJECT ",cc);
+#endif
   I386IrqRestore(irq); throw('OutMem',TRUE); return 0;
 }
 I64 I386ParserSize(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
@@ -92,7 +121,7 @@ Bool I386ParserTake(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   if(!I386CmpCodeOwner(heap,cc) || !allocation || I386HeapSize(heap,allocation)<1) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
     if(record->allocation==allocation) goto done;
-  record=I386HeapAlloc(heap,sizeof(CI386ParserAllocation),TRUE);
+  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
   if(!record) goto done;
   record->allocation=allocation; record->next=&owned->parser_next;
   record->last=owned->parser_last; record->last->next=record; owned->parser_last=record;

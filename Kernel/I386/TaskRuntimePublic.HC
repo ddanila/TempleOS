@@ -7,6 +7,80 @@ class CMemoryTaskRecord {
   U0 (*end_callback)();
   Bool child_linked,exiting,reap_reported;
 };
+class CMemoryRunningJob {
+  CMemoryRunningJob *next;
+  CI386Task *task;
+  CJob *job;
+};
+CMemoryRunningJob *memory_running_jobs;
+U0 MemoryRunningJobBegin(CMemoryRunningJob *state,CJob *job)
+{//Stack-owned records permit nested dispatch without another allocation.
+  state->task=I386TaskSelf; state->job=job;
+  state->next=memory_running_jobs; memory_running_jobs=state;
+}
+U0 MemoryRunningJobEnd(CMemoryRunningJob *state)
+{
+  CMemoryRunningJob *entry=memory_running_jobs,*previous=0;
+  while(entry && entry!=state){previous=entry;entry=entry->next;}
+  if(!entry) KernelStop;
+  if(previous) previous->next=entry->next;
+  else memory_running_jobs=entry->next;
+}
+U0 MemoryJobDetachMaster(CJob *job,CTask *master)
+{//A retired submitter cannot receive a result, focus or wake notification.
+  if(job->master_task==master &&
+      (job->job_code==JOBT_SPAWN_TASK || job->job_code==JOBT_CALL ||
+       job->job_code==JOBT_EXE_STR)) {
+    job->master_task=0;
+    job->flags|=1<<JOBf_FREE_ON_COMPLETE;
+    job->flags&=~(1<<JOBf_WAKE_MASTER|1<<JOBf_FOCUS_MASTER);
+  }
+}
+U0 MemoryJobMasterRetire(CTask *master)
+{//Caller has disabled interrupts; detach before task addresses can be reused.
+  CMemoryRunningJob *running;
+  CTask *task=memory_root;
+  CJob *job,*head;
+  for(running=memory_running_jobs;running;running=running->next)
+    MemoryJobDetachMaster(running->job,master);
+  do {
+    head=&task->srv_ctrl.next_waiting;
+    for(job=head->next;job!=head;job=job->next)
+      MemoryJobDetachMaster(job,master);
+    task=task->next_task;
+  } while(task!=memory_root);
+}
+U0 MemoryJobAbort(CJob *job,CI386Task *executor)
+{//An interrupted request returns zero to a surviving master, or is disposed.
+  CTask *master=job->master_task;
+  if(master && master!=executor && MemoryTaskValidate(master)) {
+    if(!(job->flags&(1<<JOBf_FREE_ON_COMPLETE))) {
+      while(master->srv_ctrl.flags&(1<<JOBCf_LOCKED)) {}
+      master->srv_ctrl.flags|=1<<JOBCf_LOCKED;
+      job->res=0; job->flags|=1<<JOBf_DONE;
+      job->next=&master->srv_ctrl.next_done;
+      job->last=master->srv_ctrl.last_done;
+      job->last->next=job; master->srv_ctrl.last_done=job;
+      master->srv_ctrl.flags&=~(1<<JOBCf_LOCKED);
+    }
+    if(job->flags&(1<<JOBf_WAKE_MASTER)) MemorySuspend(master,FALSE);
+  } else master=0;
+  if(!master || job->flags&(1<<JOBf_FREE_ON_COMPLETE)) {
+    MemoryFree(job->aux_str); MemoryFree(job);
+  }
+}
+U0 MemoryRunningJobRetire(CI386Task *task)
+{//Detach before freeing: task exit will discard every lexical dispatch frame.
+  CMemoryRunningJob *entry=memory_running_jobs,*previous=0,*next;
+  while(entry) {
+    next=entry->next;
+    if(entry->task==task) {
+      if(previous) previous->next=next; else memory_running_jobs=next;
+      MemoryJobAbort(entry->job,task);
+    } else previous=entry;
+    entry=next;
+  }
+}
 U0 MemoryJobQueDel(CJob *head)
 {//Task retirement owns both job rings, including cross-task auxiliary storage.
   CJob *job;
@@ -14,6 +88,7 @@ U0 MemoryJobQueDel(CJob *head)
     job=head->next;
     job->last->next=job->next;
     job->next->last=job->last;
+    if(job->job_code==JOBT_TEXT_INPUT) MemoryFree(job->fun_arg);
     MemoryFree(job->aux_str);
     MemoryFree(job);
   }
@@ -181,6 +256,8 @@ U0 Exit()
     Yield;
     irq=I386IrqSave;
   }
+  MemoryJobMasterRetire(task);
+  MemoryRunningJobRetire(task);
   MemoryJobQueDel(&task->srv_ctrl.next_waiting);
   MemoryJobQueDel(&task->srv_ctrl.next_done);
   task->last_input_filter_task->next_input_filter_task=task->next_input_filter_task;

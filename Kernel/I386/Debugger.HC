@@ -1,19 +1,212 @@
+#include "/Kernel/I386/Frame.HH"
+U8 *NativeCaller(I64 num=1)
+{//Same public depth convention, with owned original/debug stack bounds.
+  CI386Task *task=I386TaskSelf;
+  CI386Frame *frame=GetRBP;
+  if(!task || !task->stk || num<0 || num>task->stk->stk_size/sizeof(CI386Frame)) return 0;
+  while(num--) {
+    frame=I386TaskFrameParent(task,frame);
+    if(!frame) return 0;
+  }
+  return I386TaskFrameReturn(task,frame);
+}
+#include "/Kernel/I386/PublicDebugTypes.HH"
+extern U0 NativeBptOwnTask(CTask *task);
+CBpt *BptFind(U8 *needle_addr,CTask *haystack_task=NULL,Bool rem=FALSE)
+{
+  CBpt *res=NULL,*tmpb,*tmpb1,*tmpb2;
+  if (!haystack_task) haystack_task=I386TaskSelf;
+  U32 irq=I386IrqSave;
+  tmpb1=&haystack_task->bpt_lst;
+  tmpb=haystack_task->bpt_lst;
+  while (tmpb) {
+    tmpb2=tmpb->next;
+    if (tmpb->addr==needle_addr) {
+      res=tmpb;
+      if (rem)
+	tmpb1->next=tmpb2;
+      else
+	tmpb1=&tmpb->next;
+    } else
+      tmpb1=&tmpb->next;
+    tmpb=tmpb2;
+  }
+  I386IrqRestore(irq);
+  return res;
+}
+
+Bool BptS(U8 *addr,CTask *task=NULL,Bool live=TRUE)
+{//Set breakpoint.
+  CBpt *tmpb;
+  Bool res=TRUE;
+  if (!task) task=I386TaskSelf;
+  U32 irq=I386IrqSave;
+  if (!(tmpb=BptFind(addr,task,FALSE))) {
+    tmpb=CAlloc(sizeof(CBpt),task);
+    tmpb->addr=addr;
+    tmpb->val=*addr;
+    res=FALSE;
+    tmpb->next=task->bpt_lst;
+    task->bpt_lst=tmpb;
+    NativeBptOwnTask(task);
+    if (task==I386TaskSelf && live)
+      *addr=0xCC;
+  }
+  I386IrqRestore(irq);
+  return res;
+}
+
+Bool BptR(U8 *addr,CTask *task=NULL,Bool live=TRUE,Bool rem=TRUE)
+{//Rem breakpoint.
+  CBpt *tmpb;
+  Bool res=FALSE;
+  if (!task) task=I386TaskSelf;
+  U32 irq=I386IrqSave;
+  if (tmpb=BptFind(addr,task,rem)) {
+    if (task==I386TaskSelf && live)
+      *tmpb->addr=tmpb->val;
+    res=TRUE;
+    if (rem)
+      Free(tmpb);
+  }
+  I386IrqRestore(irq);
+  return res;
+}
+
+Bool B(U8 *addr,CTask *task=NULL,Bool live=TRUE)
+{//Toggle breakpoint.
+//Return: TRUE if removed.
+  Bool res=FALSE;
+  U32 irq=I386IrqSave;
+  if (BptFind(addr,task,FALSE)) {
+    BptR(addr,task,live,TRUE);
+    res=TRUE;
+  } else
+    BptS(addr,task,live);
+  I386IrqRestore(irq);
+  return res;
+}
+
+I64 B2(CTask *task=NULL,Bool live=TRUE)
+{//Rem all breakpoints.
+//Return: cnt of removed.
+  I64 res=0;
+  CBpt *tmpb,*tmpb1;
+  if (!task) task=I386TaskSelf;
+  U32 irq=I386IrqSave;
+  tmpb=task->bpt_lst;
+  task->bpt_lst=NULL;
+  while (tmpb) {
+    tmpb1=tmpb->next;
+    if (task==I386TaskSelf && live)
+      *tmpb->addr=tmpb->val;
+    Free(tmpb);
+    tmpb=tmpb1;
+    res++;
+  }
+  I386IrqRestore(irq);
+  return res;
+}
+
+I64 *TaskRegAddr(CTask *task,I64 reg_num)
+{
+  switch (reg_num) {
+    case REG_RAX: return &task->rax;
+    case REG_RCX: return &task->rcx;
+    case REG_RDX: return &task->rdx;
+    case REG_RBX: return &task->rbx;
+    case REG_RSP: return &task->rsp;
+    case REG_RBP: return &task->rbp;
+    case REG_RSI: return &task->rsi;
+    case REG_RDI: return &task->rdi;
+    case 8 : return &task->r8;
+    case 9 : return &task->r9;
+    case 10: return &task->r10;
+    case 11: return &task->r11;
+    case 12: return &task->r12;
+    case 13: return &task->r13;
+    case 14: return &task->r14;
+    case 15: return &task->r15;
+  }
+  return NULL;
+}
+
 #include "/Kernel/I386/TaskHeaps.HH"
 #include "/Kernel/I386/Frame.HH"
 #include "/Kernel/SemaTypes.HH"
-CI386Task *console_debug_task;
-Bool console_debug_go;
+U32 console_debug_sessions;
 Bool console_debug_previous_mode;
-U8 *console_debug_backup;
-U0 (*console_debug_cleanup)(CI386Task *task);
+U0 NativeDebugSessionEnter()
+{
+  U32 irq=I386IrqSave;
+  if(!console_debug_sessions) console_debug_previous_mode=NativeDebugMode(TRUE);
+  console_debug_sessions++;
+  I386IrqRestore(irq);
+}
+U0 NativeDebugSessionLeave()
+{
+  U32 irq=I386IrqSave;
+  if(!console_debug_sessions) KernelStop;
+  console_debug_sessions--;
+  if(!console_debug_sessions) NativeDebugMode(console_debug_previous_mode);
+  I386IrqRestore(irq);
+}
+U0 (*native_bpt_platform_bind)(CI386Task *task);
+U0 NativeBptApply(CTask *task,Bool active)
+{//IRQ-masked, no allocation or scheduling.
+  CBpt *record=task->bpt_lst;
+  while(record) {
+    if(active) *record->addr=0xCC;
+    else *record->addr=record->val;
+    record=record->next;
+  }
+}
+U0 NativeBptTaskCleanup(CI386Task *task)
+{//Restore code before public heaps or executable allocations disappear.
+  CBpt *record,*next;
+  U0 (*previous)(CI386Task *task);
+  previous=task->debug_bpt_cleanup;
+  NativeBptApply(task,FALSE);
+  record=task->bpt_lst;task->bpt_lst=NULL;
+  while(record) { next=record->next;Free(record);record=next; }
+  task->debug_bpt_cleanup=NULL;task->cleanup=previous;
+  if(previous) (*previous)(task);
+}
+U0 NativeBptOwnTask(CTask *task)
+{
+  CI386Task *native=task;
+  if(native->debug_session_active) {
+    if(native->debug_cleanup==&NativeBptTaskCleanup) return;
+    native->debug_bpt_cleanup=native->debug_cleanup;
+    native->debug_cleanup=&NativeBptTaskCleanup;
+  } else {
+    if(native->cleanup==&NativeBptTaskCleanup) return;
+    native->debug_bpt_cleanup=native->cleanup;
+    native->cleanup=&NativeBptTaskCleanup;
+  }
+}
+U0 NativeBreakpointBind(CI386Task *next)
+{//FS still names outgoing task; chain the original segment binder last.
+  NativeBptApply(I386TaskSelf,FALSE);
+  NativeBptApply(next,!Bt(&next->task_flags,TASKf_DISABLE_BPTS));
+  (*native_bpt_platform_bind)(next);
+}
+U0 NativeBreakpointInstall()
+{
+  U32 irq=I386IrqSave;
+  if(native_bpt_platform_bind || !I386TaskSelf->owner->bind) KernelStop;
+  native_bpt_platform_bind=I386TaskSelf->owner->bind;
+  I386TaskSelf->owner->bind=&NativeBreakpointBind;
+  I386IrqRestore(irq);
+}
 U0 ConsoleDebugTaskCleanup(CI386Task *task)
 {//Forced task exit bypasses the debugger's stack-local return path.
-  U8 *backup=console_debug_backup;
-  if(console_debug_task!=task) return;
-  NativeDebugMode(console_debug_previous_mode);
-  task->cleanup=console_debug_cleanup;
-  console_debug_task=NULL; console_debug_go=FALSE;
-  console_debug_backup=NULL; console_debug_cleanup=NULL;
+  U8 *backup=task->debug_backup;
+  if(!task->debug_session_active) return;
+  NativeDebugSessionLeave();
+  task->cleanup=task->debug_cleanup;
+  task->debug_session_active=FALSE; task->debug_go=FALSE;
+  task->debug_backup=NULL; task->debug_cleanup=NULL;
   if(backup) I386HeapFree(console_config->heap,backup);
   if(task->cleanup) (*task->cleanup)(task);
 }
@@ -46,9 +239,50 @@ CHashFun *ConsoleDebugFunction(U8 *address)
 }
 U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL)
 {
-  if(console_debug_task!=I386TaskSelf) throw('DbgState');
-  if(ip!=U32_MAX || task && task!=I386TaskSelf) throw('DbgArg');
-  console_debug_go=TRUE;
+  if(!I386TaskSelf->debug_session_active) throw('DbgState');
+  if(task && task!=I386TaskSelf) throw('DbgArg');
+  if(ip!=U32_MAX) {
+    if(!I386TaskSelf->debug_cpu_active) throw('DbgState');
+    I386TaskSelf->debug_cpu_frame.eip=(ip+0)(U64);
+    I386TaskSelf->rip=(ip+0)(U64);
+  }
+  //Public RIP edits and explicit G(ip) select the same physical return IP.
+  if(I386TaskSelf->debug_cpu_active) I386TaskSelf->debug_cpu_frame.eip=(I386TaskSelf->rip+0)(U64);
+  if(I386TaskSelf->debug_cpu_active) {
+    if(BptFind(I386TaskSelf->debug_cpu_frame.eip(U8 *))) {
+      I386TextWrite(&console_text,"Use S, B2 or G2 before resuming a breakpoint.\n");
+      return;
+    }
+    //Resume public flags; G owns TF exactly as in the original debugger.
+    I386TaskSelf->rflags&=~0x100;
+    I386TaskSelf->debug_cpu_frame.eflags=I386TaskSelf->rflags;
+    LBtr(&I386TaskSelf->task_flags,TASKf_DISABLE_BPTS);
+    NativeBptApply(I386TaskSelf,TRUE);
+  }
+  I386TaskSelf->debug_go=TRUE;
+}
+U0 NativeDebugGoClear(U8 *ip=U32_MAX,CTask *task=NULL)
+{//Original G2: remove all managed records, then resume.
+  if(!I386TaskSelf->debug_session_active) throw('DbgState');
+  if(task && task!=I386TaskSelf) throw('DbgArg');
+  B2(task);
+  NativeDebugGo(ip,task);
+}
+U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL)
+{
+  if(!I386TaskSelf->debug_session_active || !I386TaskSelf->debug_cpu_active) throw('DbgState');
+  if(task && task!=I386TaskSelf) throw('DbgArg');
+  if(ip!=U32_MAX) {
+    if(!I386TaskSelf->debug_cpu_active) throw('DbgState');
+    I386TaskSelf->debug_cpu_frame.eip=(ip+0)(U64);
+    I386TaskSelf->rip=(ip+0)(U64);
+  }
+  I386TaskSelf->debug_cpu_frame.eip=(I386TaskSelf->rip+0)(U64);
+  LBts(&I386TaskSelf->task_flags,TASKf_DISABLE_BPTS);
+  NativeBptApply(I386TaskSelf,FALSE);
+  I386TaskSelf->rflags|=0x100;
+  I386TaskSelf->debug_cpu_frame.eflags=I386TaskSelf->rflags;
+  I386TaskSelf->debug_go=TRUE;
 }
 U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
   Bool is_exception=FALSE)
@@ -60,7 +294,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
   U8 *backup,*p=&saved,*q=&console_text,line[256];
   I64 i,length=0,decoded,ch,failure=0;
   Bool raised=FALSE;
-  if(console_debug_task) throw('DbgBusy');
+  if(task->debug_session_active) throw('DbgBusy');
   //Register cleanup before acquiring the display buffer.
   backup=NULL;
   try {
@@ -68,10 +302,10 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
     if(!backup) throw('OutMem');
     for(i=0;i<153600;i++) backup[i]=console_planes[i];
     for(i=0;i<sizeof(CI386Text);i++) p[i]=q[i];
-    console_debug_previous_mode=NativeDebugMode(TRUE);
-    console_debug_backup=backup; console_debug_cleanup=task->cleanup;
+    NativeDebugSessionEnter();
+    task->debug_backup=backup; task->debug_cleanup=task->cleanup;
     task->cleanup=&ConsoleDebugTaskCleanup;
-    console_debug_task=task; console_debug_go=FALSE; sys_focus_task=task;
+    task->debug_session_active=TRUE; task->debug_go=FALSE; sys_focus_task=task;
     I386TextInit(&console_text,console_planes,sys_font_std);
     I386TextWrite(&console_text,"TempleOS i386\nHolyC debugger\n\n");
     if(is_exception) {
@@ -96,7 +330,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
       else I386TextWrite(&console_text,"unknown");
     }
     I386TextWrite(&console_text,"\ndbg> "); ConsolePresent;
-    while(!console_debug_go) {
+    while(!I386TaskSelf->debug_go) {
       decoded=NativeReadKey(console_config->reader,&event,TRUE);
       if(decoded<0) {length=0;I386TextWrite(&console_text,"\nInput reset\ndbg> ");}
       else if(decoded && event.type==2) {
@@ -106,7 +340,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
         else if(ch==10) {
           line[length]=0; I386TextPut(&console_text,10);
           ConsoleSource(line,"Debugger.HC"); length=0;
-          if(!console_debug_go) I386TextWrite(&console_text,"dbg> ");
+          if(!I386TaskSelf->debug_go) I386TextWrite(&console_text,"dbg> ");
         } else if(ch>=32 && ch<=255 && length<255) {
           line[length++]=ch; I386TextPut(&console_text,ch);
         }
@@ -122,11 +356,11 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
     NativeTerminalText()->dirty_first=0; NativeTerminalText()->dirty_last=60;
     I386HeapFree(console_config->heap,backup); ConsolePresent;
   }
-  if(console_debug_task==task) {
-    NativeDebugMode(console_debug_previous_mode);
-    task->cleanup=console_debug_cleanup;
-    console_debug_backup=NULL; console_debug_cleanup=NULL;
-    console_debug_task=NULL; console_debug_go=FALSE;
+  if(task->debug_session_active) {
+    NativeDebugSessionLeave();
+    task->cleanup=task->debug_cleanup;
+    task->debug_backup=NULL; task->debug_cleanup=NULL;
+    task->debug_session_active=FALSE; task->debug_go=FALSE;
   }
   sys_focus_task=focus;
   if(raised) throw(failure,TRUE);
@@ -166,7 +400,7 @@ U0 ConsoleDebugException(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception)
 {
   CHashFun *fun=NULL;
   I64 i;
-  if(console_debug_task || !NativeIsDebugMode || exception=='Break' ||
+  if(task->debug_session_active || !NativeIsDebugMode || exception=='Break' ||
       exception=='Compiler' || exception=='OutMem') return;
   for(i=0;i<TASK_EXCEPT_CALLERS && !fun;i++)
     fun=ConsoleDebugFunction(task->except_callers[i]);
@@ -178,10 +412,23 @@ Bool ConsoleCpuCapture(CI386ExceptionFrame *frame)
   CI386Task *task=I386TaskSelf;
   U8 *src=frame,*dst;
   I64 i;
-  if(!task || task->debug_cpu_active || console_debug_task ||
-      frame->vector!=3 || frame->cs!=8 || !(frame->eflags&0x200)) return FALSE;
+  CBpt *managed=NULL;
+  if(!task || task->debug_cpu_active || task->debug_session_active ||
+      (frame->vector!=3 && frame->vector!=1) || frame->cs!=8 || !(frame->eflags&0x200)) return FALSE;
   dst=&task->debug_cpu_frame;
   for(i=0;i<sizeof(CI386ExceptionFrame);i++) dst[i]=src[i];
+  if(frame->vector==3) managed=BptFind((frame->eip-1)(U8 *),task);
+  if(managed) {
+    dst=&task->debug_cpu_frame;
+    task->debug_cpu_frame.eip--;
+    LBts(&task->task_flags,TASKf_DISABLE_BPTS);
+    NativeBptApply(task,FALSE);
+  }
+  //Public I64 debugger shadows; scheduling uses private CI386Context.
+  task->rax=frame->eax;task->rcx=frame->ecx;task->rdx=frame->edx;
+  task->rbx=frame->ebx;task->rbp=frame->ebp;task->rsi=frame->esi;task->rdi=frame->edi;
+  task->rip=task->debug_cpu_frame.eip;task->rflags=frame->eflags;
+  task->rsp=frame->saved_esp+20; //Past vector/error/eip/cs/eflags.
   task->debug_cpu_active=TRUE; return TRUE;
 }
 U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
@@ -190,9 +437,14 @@ U0 ConsoleCpuDebug(CI386ExceptionFrame *frame)
   U8 *src=&task->debug_cpu_frame,*dst=frame;
   I64 i;
   if(!task->debug_cpu_active || !(GetRFlags&0x200)) KernelStop;
+  task->debug_cpu_frame.eflags&=~0x100;
   ConsoleDebugSession(NULL,0,
     ConsoleDebugFunction(task->debug_cpu_frame.eip(U8 *)),'BreakPt',TRUE);
-  task->debug_cpu_frame.eflags&=~0x100;
+  //G/S commit IP/flags; exception-entry assembly relocates to public RSP.
+  task->debug_cpu_frame.eax=task->rax;task->debug_cpu_frame.ecx=task->rcx;
+  task->debug_cpu_frame.edx=task->rdx;task->debug_cpu_frame.ebx=task->rbx;
+  task->debug_cpu_frame.ebp=task->rbp;task->debug_cpu_frame.esi=task->rsi;
+  task->debug_cpu_frame.edi=task->rdi;
   for(i=0;i<sizeof(CI386ExceptionFrame);i++) dst[i]=src[i];
   task->debug_cpu_active=FALSE;
 }

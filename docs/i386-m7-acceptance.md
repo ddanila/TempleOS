@@ -4,22 +4,70 @@ Manual observation is optional exploratory feedback; functional acceptance uses
 automated QEMU evidence. Historical manual-gate notes below are superseded by
 the 2026-10-03 acceptance revision in PLAN.md.
 
-Current qualification (2026-10-05): main OS services remain ABI40. The complete
-unpromoted ABI47 text-run candidate is preserved in
-[the cumulative patch](patches/i386-text-run-integrated-candidate.patch).
-Its fresh original bootstrap, cross-build/386 boot audit and 15-command
-no-FPU/8MiB document session pass, including both text-run allocation failures,
-heap recovery, three exact large-source round trips and binary persistence.
-Full suite, six native providers, 20 debugger jobs and three-boot DolDoc session
-are running. Candidate promotion, its two native generations, its own packaged
-five-job qualification and release publication remain open.
+Current source qualification (2026-10-06): console version 44 restores original
+macro serialization and executable playback through shared cores and native
+input filters. The current cross image is
+`build/macro-playback-candidate-v1/build/cross/kernel.img`, SHA256
+`eed525a8c9ccaf96ba34610ecaea630d39d20a5072762ae34d7ea690bf38154d`.
+Fresh bootstrap/cross-build and 386 instruction audit pass. The frozen full
+console suite passes 513 commands, exact VGA and 20 exact-heap document cycles
+at TCG / 486,-fpu / 8 MiB, with 29.1169-second startup.
 
-The preceding Caller epoch has two matching native generations, deterministic
-packaging, native/source audits and four installed workflows with passing
-budgets. It still fails the newly added large-source gate; those passes do not
-qualify the complete text-run candidate. The full no-FPU native generation chain
-is separately running on that Caller epoch. Physical hardware verification is
-deferred; human observation is optional. See [PLAN.md](../PLAN.md) for the goal.
+Selected actual macro tests pass self/child repeats, captured focus, invalid
+and retiring recipients, editor undo with stale stored timestamps, mixed
+character/arrow/key-up delivery, selected allocation failures, queued/active
+filter cancellation and interruption between repeats. These are individual
+source-image results, not a completed combined native/package qualification.
+The sixteen-case macro aggregate is prepared; see the
+[macro playback contract](i386-macro-playback-contract.md).
+
+A fresh six-module guest rebuild is live in the frozen
+`build/macro-playback-candidate-v1/build/native-six-v1`; CompilerRuntime is
+actively producing backend/link output. New native generations, packaged-image
+workflows and release promotion remain unqualified. Loaded system/VGA firmware
+comparison and standalone verification pass on the cross image; new release
+manifest integration is tested but still needs the final exact native/package
+image. Commit/push remains unavailable because this session's .git is read-only.
+Physical hardware remains deferred and human observation is optional.
+
+The following ABI 47 native/package evidence predates these source changes and
+must not be used to qualify the current source.
+
+Earlier ABI 47 qualification (2026-10-06): the scope-v1 candidate was integrated
+into the main working tree. The remote checkpoint remains ABI 40 because this
+session cannot write to `.git`. At that checkpoint, all 825 Kernel/Compiler/Adam source files matched
+the frozen candidate. A fresh original bootstrap, cross-build and 386 boot
+audit pass; the cross-built normal image matches the candidate byte for byte.
+The integrated runtime suite passes 513 commands, 13 allocation cases and
+20 exact-heap development cycles at QEMU TCG `486,-fpu` / 8 MiB.
+
+Both native generations pass installation, guest-built kernel construction,
+independent boot and installed-image audits in
+`build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1`.
+All 12 modules, the 501912-byte flat kernel and the boot area match across
+generations; whole-disk hashes differ. The flat kernel SHA-256 is
+`899e2368cfeb9e15c6d79852f9b14c58496a137be9922e75906fff5e97592fb8`.
+
+Deterministic packaging and the independent packaged-image audit pass. The
+package is `build/key-arrival-integrated-native-package-v1`, SHA-256
+`de8114d5437b341d0b7c8cc0f62c79d134ed39e95e11602c78638796a155d0c0`.
+Its workstation, three-boot DolDoc, large-source and speaker workflows pass
+in `build/key-arrival-integrated-packaged-workflows-v1`. That aggregate failed
+because the resource invocation omitted QMP stdio. The corrected focused
+resource test passes 20 cycles with exact heap recovery in
+`build/key-arrival-integrated-packaged-resource-v2`. The corrected complete
+aggregate in `build/key-arrival-integrated-packaged-workflows-v2` passes all
+five jobs. The source image is unchanged and all 197 pinned inputs still match.
+
+Focused frozen-candidate evidence also covers both undo injection modes,
+large-source round trips, inherited-forward compiler scope, timed-message
+filter routes, public messages, macro allocation/registration recovery,
+20 debugger jobs and byte-exact binary/styled DolDoc exchange with original
+TempleOS. Playback scheduling, raw queue wrap/overflow/cancellation timing,
+final release qualification, commit and publication remain open. Physical
+hardware verification is deferred; manual observation is optional exploratory
+feedback. Historical results below belong to their named source epochs.
+See [PLAN.md](../PLAN.md).
 
 ## Historical workstation evidence
 

@@ -6,7 +6,7 @@ public I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offse
   U8 sector[512];
   I64 written=0,n,i,block;
   if (!I386RedSeaValid(volume) || !entry || !buffer || offset<0 || count<0 ||
-      (entry->attr&0x311) || !(entry->attr&0x800) ||
+      (entry->attr&0x111) || !(entry->attr&0x800) ||
       !I386RedSeaExtent(volume,entry->block,entry->size) || offset>entry->size ||
       count>entry->size-offset || count>0xFFFFFFFF ||
       (buffer+0)(U64)>0x100000000-count) return -1;

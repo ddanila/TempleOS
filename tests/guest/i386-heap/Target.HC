@@ -1,9 +1,12 @@
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
+#define NULL 0
 #include "/Kernel/I386/Heap.HH"
 extern U64 Hash(U8 *base,I64 size);
 extern I64 PublicHeapTest();
+extern Bool I386HeapShrink(CI386Heap *hc,U8 *ptr,I64 size);
+extern I64 HeapShrinkTest();
 extern I64 HeapValidationTest(CI386Heap *hc,U8 *arena);
 I64 Main(I64 a,I64 b)
 {
@@ -98,6 +101,8 @@ I64 Main(I64 a,I64 b)
   for (i=8200;i<8216;i++) if (guard[i]!=0xA5) return 26;
   i=HeapValidationTest(&hc,arena);
   if(i) return i;
+  i=HeapShrinkTest;
+  if(i) return i;
   return PublicHeapTest;
 }
 U64 Hash(U8 *base,I64 size)
@@ -112,3 +117,5 @@ U64 Hash(U8 *base,I64 size)
 #include "Public.HC"
 
 #include "Validation.HC"
+
+#include "Shrink.HC"

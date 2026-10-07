@@ -30,9 +30,7 @@ Bool I386ExceptEnter(CI386ExceptCapture *capture)
   if(!i386_except_ready || !task || !task->stk || !task->owner ||
       task->owner->current!=task || task->finished || !task->memory ||
       !capture || !capture->catch_start || !capture->untry_start ||
-      !I386FrameValid(capture->ebp,(&task->stk->stk_base)(U8 *),task->stk->stk_size) ||
-      capture->esp&3 || capture->esp<((&task->stk->stk_base)(U8 *)+0)(U64) ||
-      capture->esp>capture->ebp) I386ExceptAbort(task,I386_EXCEPT_INVALID,0);
+      !I386ExceptCaptureValid(task,capture)) I386ExceptAbort(task,I386_EXCEPT_INVALID,0);
   return I386ExceptPush(task,task->memory,capture)!=0;
 }
 U0 SysUntry()
@@ -52,8 +50,8 @@ U0 throw(I64 ch=0,Bool no_log=FALSE)
   task->except_ch=ch; task->catch_except=FALSE;
   task->except_rbp=(frame+0)(U64);
   for(i=0;i<I386_EXCEPT_CALLERS;i++) {
-    task->except_callers[i]=I386FrameReturn(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
-    frame=I386FrameParent(frame,(&task->stk->stk_base)(U8 *),task->stk->stk_size);
+    task->except_callers[i]=I386TaskFrameReturn(task,frame);
+    frame=I386TaskFrameParent(task,frame);
   }
   if(!no_log) (*i386_except_services.report)(task,ch);
   status=I386ExceptDispatch(task,ch,i386_except_services.invoke,

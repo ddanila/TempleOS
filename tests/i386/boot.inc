@@ -23,6 +23,11 @@
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 512
 %error Large lexer test stage must fit below physical 0x50000
 %endif
+%elifdef INPUT_TEST
+; Input corpus scratch heap begins at 0x48000; loaded code must stay below it.
+%if BOOT_SECTORS > 448
+%error Input test stage must fit below physical 0x48000
+%endif
 %elifdef LARGE_CORE_TEST
 ;Task/control fixtures retain their arena at 0x40000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 384

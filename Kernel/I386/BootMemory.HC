@@ -55,3 +55,19 @@ public Bool I386BootArena(CI386BootInfo *info,CI386MemRange *reserved,
   result->base=best_base; result->size=best_size;
   return TRUE;
 }
+
+Bool I386BootImageReserve(CI386BootInfo *info,CI386BootImageInfo *image,
+  CI386MemRange *result)
+{//Validate before publishing the sector-rounded live high-memory reservation.
+  U32 size;
+  if(!info || !image || !result || info->magic!=I386_BOOT_INFO_MAGIC ||
+      info->version!=1 || info->stage_begin!=0x10000 ||
+      info->stage_end!=0x11000 || !(info->flags&2) ||
+      info->extended_kib>65535 || image->magic!=I386_BOOT_IMAGE_MAGIC ||
+      image->version!=1 || image->base!=0x100000 ||
+      image->bytes<8 || image->bytes>2039*512) return FALSE;
+  size=(image->bytes+511)&~511;
+  if(size>info->extended_kib*1024) return FALSE;
+  result->base=image->base; result->size=size;
+  return TRUE;
+}

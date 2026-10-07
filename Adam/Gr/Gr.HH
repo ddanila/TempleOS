@@ -1,3 +1,5 @@
+#ifndef SPRITE_RECORD_TYPES_INCLUDED
+#define SPRITE_RECORD_TYPES_INCLUDED
 #help_index "Sprites/Binary"
 
 class CMeshTri
@@ -178,3 +180,5 @@ public class CSprite
     CSpritePtStr	ps;
   }
 };
+
+#endif

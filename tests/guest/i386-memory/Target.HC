@@ -10,6 +10,7 @@ I64 Main(I64 a,I64 b)
   CI386BootInfo info,*actual=I386_BOOT_INFO_ADDRESS;
   CI386BootDiskInfo *disk_info=I386_BOOT_DISK_INFO_ADDRESS;
   CI386MemRange r[3],out;
+  CI386BootImageInfo image;
   I64 i;
   if(disk_info->magic!=I386_BOOT_DISK_INFO_MAGIC || disk_info->version!=1 ||
       disk_info->bios_drive!=0x80 || disk_info->volume_start) return 30;
@@ -86,6 +87,32 @@ I64 Main(I64 a,I64 b)
   if (!I386BootArena(&info,0,0,&out,TRUE) || out.base!=0x20000 || out.size!=0x80000) return 33;
   info.flags=3; info.extended_kib=64;
   if (!I386BootArena(&info,0,0,&out,TRUE) || out.base!=0x20000 || out.size!=0x80000) return 34;
+  Reset(&info); info.stage_end=0x11000;
+  info.flags=3; info.extended_kib=7168;
+  image.magic=I386_BOOT_IMAGE_MAGIC; image.version=1;
+  image.base=0x100000; image.bytes=655361;
+  if(!I386BootImageReserve(&info,&image,&r[1]) ||
+      r[1].base!=0x100000 || r[1].size!=655872) return 35;
+  r[0].base=0x88000; r[0].size=32768;
+  if(!I386BootArena(&info,r,2,&out,TRUE) || out.base!=0x1A0200 ||
+      out.base+out.size!=0x800000) return 36;
+  for(i=0;i<9;i++) {
+    image.magic=I386_BOOT_IMAGE_MAGIC; image.version=1;
+    image.base=0x100000; image.bytes=655361;
+    info.stage_end=0x11000; info.flags=3; info.extended_kib=7168;
+    if(i==0) image.magic=0;
+    if(i==1) image.version=2;
+    if(i==2) image.base=0x110000;
+    if(i==3) image.bytes=7;
+    if(i==4) image.bytes=2039*512+1;
+    if(i==5) info.stage_end=0x11200;
+    if(i==6) info.flags=1;
+    if(i==7) info.extended_kib=640;
+    if(i==8) info.extended_kib=65536;
+    out.base=0x12345678; out.size=0x87654321;
+    if(I386BootImageReserve(&info,&image,&out) ||
+        out.base!=0x12345678 || out.size!=0x87654321) return 37+i;
+  }
   return 0;
 }
 U0 Reset(CI386BootInfo *info)

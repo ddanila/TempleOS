@@ -1,6 +1,25 @@
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
-I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,Bool public_mode)
+//Original public FileWrite establishes missing parents before attempting the file.
+Bool I386TaskWriteParents(CI386RedSea *volume,U8 *absolute,U8 *leaf)
+{
+  U8 *cursor=absolute+3;CI386RedSeaEntry entry;I64 status;
+  while(cursor<=leaf-1) {
+    if(*cursor=='/') {
+      *cursor=0;
+      if(!I386RedSeaBegin(volume)){*cursor='/';return FALSE;}
+      status=I386RedSeaResolve(volume,volume->root,absolute+2,&entry);
+      if(!I386RedSeaEnd(volume)){*cursor='/';return FALSE;}
+      if(!status) {
+        if(!I386TaskDirMk(absolute)){*cursor='/';return FALSE;}
+      } else if(status!=1 || !(entry.attr&0x10)){*cursor='/';return FALSE;}
+      *cursor='/';
+    }
+    cursor++;
+  }
+  return TRUE;
+}
+I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,Bool public_mode,CI386WriteCache *cache=0)
 {
   U32 flags=I386IrqSave;
   CI386Task *task=I386TaskSelf;
@@ -12,9 +31,10 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
   U8 *absolute=0,*path,*leaf,*cursor;
   I64 drive,status;
   CArcCompress *archive=0;
-  I64 result=0;
+  I64 result=0,name_size,i;Bool cache_eligible=FALSE;
+  if(cache){cache->name=0;cache->data=0;cache->eligible=FALSE;}
   if(size<0) size=0;
-  if(attr&~0xC00) {I386IrqRestore(flags);return 0;}
+  if(attr&~0xE00) {I386IrqRestore(flags);return 0;}
   state=I386TaskFilesBorrow(task,&paths,&volumes);
   if(state && task->owner && size>=0 && (!size || buffer)) {
     absolute=I386FileNameAbs(state->heap,&paths,filename);
@@ -31,6 +51,8 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
         volume=volumes->letter[drive-'A']; path=absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
+        if(public_mode && volume && volume->io && *leaf &&
+            !I386TaskWriteParents(volume,absolute,leaf))goto file_write_release;
         if(volume && volume->io && *leaf && I386RedSeaBegin(volume)) {
           if(leaf==path+1) parent.block=volume->root;
           else {
@@ -47,6 +69,7 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
             }
           }
           if(parent.block) {
+            cache_eligible=TRUE;
             status=I386RedSeaFind(volume,parent.block,leaf,&existing);
             if(status==1)
               status=I386RedSeaReplace(volume,parent.block,leaf,buffer,size,datetime,attr);
@@ -58,12 +81,23 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
               else result=-1;
             }
           }
+          file_write_cache_done:
           if(!I386RedSeaEnd(volume)) {
             KernelLog("FILE WRITE end error\n"); result=FALSE;
           }
         }
       }
 file_write_release:
+      if(cache && cache_eligible) {
+        cache->eligible=TRUE;cache->size=size;cache->attr=attr;
+        name_size=0;while(absolute[name_size])name_size++;
+        cache->name=I386HeapAlloc(cache->heap,name_size+1,FALSE);
+        if(cache->name)for(i=0;i<=name_size;i++)cache->name[i]=absolute[i];
+        if(attr&0x200) {
+          cache->data=I386HeapAlloc(cache->heap,size+1,FALSE);
+          if(cache->data){for(i=0;i<size;i++)cache->data[i]=buffer[i];cache->data[size]=0;}
+        }
+      }
       if(archive) I386HeapFree(state->heap,archive);
       I386HeapFree(state->heap,absolute);
     }
@@ -74,8 +108,8 @@ file_write_release:
   I386IrqRestore(flags); return result;
 }
 
-I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr)
-{ return I386TaskFileWriteCore(filename,buffer,size,datetime,attr,TRUE); }
+I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,CI386WriteCache *cache=0)
+{ return I386TaskFileWriteCore(filename,buffer,size,datetime,attr,TRUE,cache); }
 Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0)
 {
   if(size<0) return FALSE;
@@ -228,7 +262,7 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
   CI386RedSeaEntry parent,new_parent,source,collision;
   U8 *old_absolute=0,*new_absolute=0,*buffer=0;
   U8 *path,*new_path,*leaf,*new_leaf,*cursor;
-  I64 drive,new_drive,status,size=0,rollback;
+  I64 drive,new_drive,status,size=0,rollback,slot;
   Bool result=FALSE,source_root=FALSE,destination_root=FALSE;
   state=I386TaskFilesBorrow(task,&paths,&volumes);
   if(state && task->owner && old_filename && new_filename) {
@@ -267,26 +301,22 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
               status=I386RedSeaFind(volume,parent.block,leaf,&source);
               if(status==1 && !(source.attr&0x11) &&
                  I386RedSeaFind(volume,new_parent.block,new_leaf,&collision)==0) {
-                size=source.size;
-                if(fail_stage!=1 &&
-                   (!size || (buffer=I386RedSeaReadAll(volume,state->heap,&source,&size)))) {
-                  if(fail_stage==2) status=0;
-                  else if(I386RedSeaMoveIntentSet(volume,parent.block,source_root,leaf,
-                    new_parent.block,destination_root,new_leaf,&source)) {
-                    status=I386RedSeaCreate(volume,new_parent.block,new_leaf,buffer,size,
-                      source.datetime,source.attr);
+                if(fail_stage!=1 && fail_stage!=2 &&
+                    I386RedSeaExtentSlot(volume,&new_parent.block,new_leaf,&slot)==1) {
+                  if(source_root) parent.block=volume->root;
+                  if(destination_root) new_parent.block=volume->root;
+                  if(I386RedSeaMoveIntentSet(volume,parent.block,source_root,leaf,
+                    new_parent.block,destination_root,new_leaf,&source,TRUE)) {
+                    status=I386RedSeaPublishExtent(volume,new_parent.block,slot,new_leaf,&source);
                     if(status==1) {
-                      if(source_root) parent.block=volume->root;
-                      if(destination_root) new_parent.block=volume->root;
                       if(fail_stage==3) status=0;
                       else if(fail_stage==4) status=-1;
-                      else status=I386RedSeaDelete(volume,parent.block,leaf);
+                      else status=I386RedSeaUnlinkExtent(volume,parent.block,leaf);
                       if(status==1) {
                         if(I386RedSeaMoveIntentClear(volume)) result=TRUE;
-                      } else {
-                        rollback=I386RedSeaDelete(volume,new_parent.block,new_leaf);
-                        if(rollback==1 && I386RedSeaValid(volume))
-                          I386RedSeaMoveIntentClear(volume);
+                      } else if(I386RedSeaValid(volume)) {
+                        rollback=I386RedSeaUnlinkExtent(volume,new_parent.block,new_leaf);
+                        if(rollback==1) I386RedSeaMoveIntentClear(volume);
                       }
                     } else if(!status && I386RedSeaValid(volume))
                       I386RedSeaMoveIntentClear(volume);

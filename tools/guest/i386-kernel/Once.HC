@@ -204,7 +204,7 @@ U0 BuildKernel()
     }
     line=MStrPrint("EXPORT %s.t32m %X %X\n",name,modules[i],sizes[i]); Report(line);
   }
-  image=I386Link(modules,sizes,6,&size,"Main",0x11000);
+  image=I386Link(modules,sizes,6,&size,"Main",0x100000);
   if(!image) { Report("FAIL kernel link\n"); return; }
   line=MStrPrint("EXPORT Kernel32.BIN %X %X\n",image,size); Report(line);
   source=FileRead("T:/IncludeInner.HC",&size);

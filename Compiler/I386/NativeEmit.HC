@@ -1,3 +1,6 @@
+#ifdef I386_PARSER_FAILURE_TRACE
+extern U0 I386ParserFailure(U8 *label,CCmpCtrl *cc);
+#endif
 //Included after native Control.HC; the containing module supplies throw.
 #include "/Compiler/I386/NativeEmit.HH"
 #include "/Compiler/I386/EmitCore.HC"
@@ -26,7 +29,12 @@ U0 I386NativeOutReserve(CI386Out *out,I64 minimum)
   }
   if(capacity<=out->capacity) { I386IrqRestore(irq); return; }
   next=I386HeapAlloc(owned->heap,capacity,FALSE);
-  if(!next) { I386IrqRestore(irq); throw('OutMem',TRUE); }
+  if(!next) {
+#ifdef I386_PARSER_FAILURE_TRACE
+    I386ParserFailure("EMITTER BUFFER ALLOCATION REJECT ",owned->cc);
+#endif
+    I386IrqRestore(irq); throw('OutMem',TRUE);
+  }
   for(i=0;i<out->count;i++) next[i]=out->data[i];
   if(out->data && !I386HeapFree(owned->heap,out->data)) {
     I386HeapFree(owned->heap,next); I386IrqRestore(irq); throw('Compiler',TRUE);

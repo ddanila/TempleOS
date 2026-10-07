@@ -8,8 +8,8 @@ import re
 import subprocess
 
 
-ALLOWED = set('''add and call cld cli cmp dec div hlt in inc int ja jb jc jmp jnz jz
-    lgdt lidt loop mov movzx or out pop push shl shr stc sti sub test xor'''.split())
+ALLOWED = set('''add and call cld cli cmp dec div hlt in inc int int3 ja jb jc jmp jnz jz
+    lgdt lidt loop mov movzx imul jne jae jnc rep ret clc je or out pop push shl shr stc sti sub test xor'''.split())
 
 
 def label_offset(listing, label):
@@ -31,11 +31,17 @@ def audit_code(code, bits):
             offset+=len(continuation.group(1))//2
             continue
         parts=line.split()
+        if len(parts)>=3 and int(parts[0],16)<offset:continue
+        if bits==32 and code[offset:offset+2]==b'\xff\xd0' and parts[2:]==['db','0xff']:
+            # NASM 3.01 disassembler splits this valid 386 CALL EAX encoding.
+            offset+=2; count+=1; continue
         if len(parts)<3 or int(parts[0],16)!=offset or not re.fullmatch(r'[0-9A-Fa-f]+',parts[1]):
             raise ValueError(f'Unclassified {bits}-bit boot bytes: {line}')
         mnemonic=parts[2].lower()
         if mnemonic not in ALLOWED:
             raise ValueError(f'Non-386 boot instruction: {line}')
+        if mnemonic=='rep' and parts[3:]!=['movsd']:
+            raise ValueError(f'Unexpected repeated boot instruction: {line}')
         offset+=len(parts[1])//2; count+=1
     if offset!=len(code): raise ValueError('Boot disassembly did not cover its code range')
     return count
@@ -43,6 +49,28 @@ def audit_code(code, bits):
 
 def audit(image, listing):
     boot_end=label_offset(listing,'drive')
+    if 'image_magic:' in listing:
+        if len(image)<4608 or image[510:512]!=b'\x55\xaa':
+            raise ValueError('Incomplete extended boot image')
+        names=['stage_entry','start32','pm16','copy32','stage_code_end']
+        positions={name:label_offset(listing,name) for name in names}
+        ranges=[('entry32',positions['stage_entry'],16,32),
+                ('load32',positions['start32'],positions['pm16'],32),
+                ('bios16',positions['pm16'],positions['copy32'],16),
+                ('copy32',positions['copy32'],positions['stage_code_end'],32)]
+        result={'result':'pass','boot16':{'instructions':audit_code(image[:boot_end],16)},
+                'stage32':{'instructions':0},'ranges':{},
+                'scope':'Extended loader executable ranges; metadata/GDT/padding excluded'}
+        for name,begin,end,bits in ranges:
+            if not 0<=begin<end<=4096:raise ValueError('Invalid extended code range')
+            # Entry jump is followed by alignment zeros, not executable code.
+            if name=='entry32':end=begin+5
+            code=image[512+begin:512+end]
+            count=audit_code(code,bits)
+            result['ranges'][name]={'offset':512+begin,'bytes':len(code),'bits':bits,
+                                   'instructions':count,'sha256':hashlib.sha256(code).hexdigest()}
+            result['stage32']['instructions']+=count
+        return result
     stage_end=label_offset(listing,'early_idt')
     if not (0<boot_end<510 and 0<stage_end<4096):
         raise ValueError('Boot code boundaries exceed reserved regions')

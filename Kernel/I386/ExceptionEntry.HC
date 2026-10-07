@@ -5,6 +5,7 @@ asm {
 USE32
 IMPORT I386ExceptionDispatch;
 IMPORT KernelDebugCpu;
+IMPORT KernelDebugStack;
 i386_exception_0::
   PUSH 0
   PUSH 0
@@ -95,7 +96,41 @@ i386_debug_cpu_entry::
   MOV EAX,ESP
   PUSH 0
   PUSH EAX
+  CALL KernelDebugStack
+  MOV ESP,EAX
+  MOV EAX,ESP
+  PUSH 0
+  PUSH EAX
   CALL KernelDebugCpu
+  //C has returned: relocate the frame without overwriting a live C call.
+  //IF stays clear until IRET restores the selected public flags.
+  CLI
+  MOV EBX,ESP
+  CMP EAX,EBX
+  JZ i386_debug_cpu_restore
+  MOV EDX,EAX
+  MOV ECX,17
+  JC i386_debug_cpu_copy_forward
+  ADD EBX,64
+  ADD EAX,64
+i386_debug_cpu_copy_backward:
+  MOV ESI,U32 [EBX]
+  MOV U32 [EAX],ESI
+  SUB EBX,4
+  SUB EAX,4
+  DEC ECX
+  JNZ i386_debug_cpu_copy_backward
+  JMP i386_debug_cpu_copy_done
+i386_debug_cpu_copy_forward:
+  MOV ESI,U32 [EBX]
+  MOV U32 [EAX],ESI
+  ADD EBX,4
+  ADD EAX,4
+  DEC ECX
+  JNZ i386_debug_cpu_copy_forward
+i386_debug_cpu_copy_done:
+  MOV ESP,EDX
+i386_debug_cpu_restore:
   POP GS
   POP FS
   POP ES

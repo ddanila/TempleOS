@@ -18,6 +18,12 @@ class CI386CommandInput {
   CDoc *document;
   //Inspect the caught runtime exception while its compiler control is still live.
   U0 (*inspect_exception)(U8 *context,CI386Task *task,CCmpCtrl *cc,I64 exception);
+  //ExePutS borrows its parent's options and optional hash context synchronously.
+  //The input neither owns nor releases the context or its referenced tables.
+  Bool inherit_context;
+  CLexHashTableContext *hash_context;
+  //Optional retained clock service, in seconds, for original task answer timing.
+  F64 (*execution_time)(U8 *context);
 };
 extern Bool I386CommandInput(CI386CommandInput *input);
 #endif

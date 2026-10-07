@@ -5,7 +5,7 @@
 #define I386_BACKING_SIGNATURE 'B32S'
 class CI386BackingRegion:CI386PoolRegion {
   CI386BackingRegion *next_owned;
-  U32 request,span;
+  U32 request,span,reserve_hold;
 };
 class CI386BackingPool:CI386PublicPool {
   CI386Heap *heap;
@@ -15,7 +15,11 @@ class CI386BackingPool:CI386PublicPool {
 };
 //The caller retains this record and the bootstrap heap. Page allocation grows
 //lazily; trim runs after heap/free operations finish using returned block headers.
+extern Bool I386MemBackingValid(CI386BackingPool *pool);
 extern Bool I386MemBackingInit(CI386BackingPool *pool,CI386Heap *heap,I64 quantum=65536);
+//Retain an unassigned region across automatic trims until explicit release.
+extern Bool I386MemBackingReserve(CI386BackingPool *pool,I64 pages);
+extern Bool I386MemBackingReleaseReserve(CI386BackingPool *pool);
 extern I64 I386MemBackingTrim(CI386BackingPool *pool);
 extern Bool I386MemBackingDestroy(CI386BackingPool *pool);
 #endif

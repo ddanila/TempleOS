@@ -1,3 +1,5 @@
+#include "/Adam/Gr/GrRasterTablesCore.HC"
+#include "/Adam/Gr/GrPenTablesCore.HC"
 #help_index "Graphics/Scrn"
 
 U0 GrSetUpTables()
@@ -6,67 +8,9 @@ U0 GrSetUpTables()
   I64 i,j,k,l,m,x,y,rr;
   U8 *dst;
 
-  k=0;
-  for (i=0;i<256;i++)
-    for (j=0;j<8;j++)
-      if (Bt(&i,j))
-	gr.to_8_bits(U8 *)[k++]=0xFF;
-      else
-	gr.to_8_bits(U8 *)[k++]=0x00;
-  k=0;
-  for (i=0;i<256;i++)
-    for (j=0;j<8;j++)
-      gr.to_8_colors(U8 *)[k++]=i;
+  GrRasterTablesInit;
 
-  for (i=0;i<GR_PEN_BRUSHES_NUM;i++) {
-    k=i+1;
-
-    rr=k*k;
-    for (y=1;y<k;y++)
-      for (x=1;x<k;x++)
-	if (SqrI64(y*2-k)+SqrI64(x*2-k)<rr) {
-	  if (x-1-i>>1<gr.circle_lo[i][i-y])
-	    gr.circle_lo[i][i-y]=x-1-i>>1;
-	  if (x-1-i>>1>gr.circle_hi[i][i-y])
-	    gr.circle_hi[i][i-y]=x-1-i>>1;
-	}
-
-    dc=DCNew(i,i);
-    gr.pen_brushes[i]=dc;
-    dc->color=COLOR_MONO;
-    rr=k*k;
-    for (y=1;y<k;y++)
-      for (x=1;x<k;x++)
-	if (SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
-	  GrPlot0(dc,x-1,y-1);
-
-    dc=DCNew(i,i);
-    gr.collision_pen_brushes[i]=dc;
-    dc->color=COLOR_INVALID;//Want color that never occurs.
-    rr=k*k;
-    for (y=1;y<k;y++)
-      for (x=1;x<k;x++)
-	if (SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
-	  GrPlot0(dc,x-1,y-1);
-
-    dc=DCNew(i,i);
-    gr.even_pen_brushes[i]=dc;
-    dc->color=COLOR_MONO;
-    rr=k*k;
-    for (y=1;y<k;y++)
-      for (x=1;x<k;x++)
-	if (!(((x-1)^(y-1))&1) && SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
-	  GrPlot0(dc,x-1,y-1);
-
-    dc=DCNew(i,i);
-    gr.odd_pen_brushes[i]=dc;
-    dc->color=COLOR_MONO;
-    rr=k*k;
-    for (y=1;y<k;y++)
-      for (x=1;x<k;x++)
-	if (((x-1)^(y-1))&1 && SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
-	  GrPlot0(dc,x-1,y-1);
-  }
+  GrPenTablesInit;
   if (!Bt(&sys_run_level,RLf_VGA)) { //if text mode
     MemSet(text.vga_text_alias,0,TEXT_ROWS*TEXT_COLS*sizeof(U16));
     MemSet(gr.vga_text_cache,0,TEXT_ROWS*TEXT_COLS*sizeof(U16));

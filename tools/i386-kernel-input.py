@@ -145,6 +145,23 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     mouse_host_x=320
     mouse_host_y=240
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
+    #Aggregate fixtures can select copy-backed snapshots without modifying each
+    #test's assertions. Explicit writable runs retain their original disk path.
+    if snapshot and os.environ.get('TEMPLEOS_QEMU_WRITABLE_SNAPSHOTS')=='1':
+        if target_disk is not None:
+            raise ValueError('Copy-backed snapshots support single-disk fixtures only')
+        source=disk.resolve()
+        working=out/'snapshot-copy.img'
+        if working.exists() or working==source:
+            raise ValueError('Use a fresh copy-backed snapshot output directory')
+        digest=hashlib.sha256(source.read_bytes()).hexdigest()
+        shutil.copyfile(source,working)
+        if hashlib.sha256(working.read_bytes()).hexdigest()!=digest:
+            raise ValueError('Snapshot disk copy differs from source')
+        (out/'snapshot-provenance.json').write_text(json.dumps({
+            'source_disk':str(source),'source_disk_sha256':digest,
+            'working_disk':str(working),'policy':'writable disk copy'},indent=2)+'\n')
+        disk=working; snapshot=False
     if not snapshot:
         require_unlocked_image(disk)
         if target_disk is not None:
@@ -271,10 +288,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 raise ValueError('Source startup ran outside the console startup boundary')
             rows=heading+([] if startup_check is None else startup_check['answers'])+['> ']
             screen(rows,'initial')
-            plain={'\\':'backslash','|':'backslash','~':'grave_accent','%':'5','#':'3','$':'4','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
+            plain={'\\':'backslash','|':'backslash','~':'grave_accent','^':'6','%':'5','#':'3','$':'4','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal',
                    '/':'slash','?':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right',
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
-            shifted=set('(){}*+&_"<>#!%$|~:?')
+            shifted=set('(){}*+&_"<>#!%$|~:?^')
             plain[':']='semicolon'
             def typed_rows(source):
                 text='> '+source
@@ -1946,7 +1963,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
               'events':[],'final_rows':sprite_rows,'final_pixels':sprite_pixels})
             submit('DocDel(sprite_render_doc);sprite_render_doc=0;', ['0x0'], 'doc-sprite-render-delete')
             active_group='document-editing'
-            submit('DocAllocationCheck;', ['12'], 'doc-allocation-check')
+            submit('DocAllocationCheck;', ['13'], 'doc-allocation-check')
             active_group='documents'
             submit('#include "/Kernel/I386/DocReportCheck.HC"', [], 'doc-report-definition')
             submit('DocReportStateCheck;', ['Doc report', 'IRQ-off report', '1'], 'doc-report-check')
@@ -1979,7 +1996,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers','20 bounded document development cycles with exact task data/code heap recovery'],
                     'vga':'all pixels matched at each checkpoint',
                     'submitted_lines':sum(1 for line in log.read_text().splitlines() if line.startswith('INPUT LINE ')),
-                    'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':12, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
+                    'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':13, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:

@@ -1,10 +1,12 @@
 //Public job-backed message consumption. Include after JobDispatch.HC.
 #include "/Kernel/MessageCodes.HH"
-I64 MemoryScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0)
+I64 MemoryScanTimed(I64 *arg1,I64 *arg2,I64 mask,CTask *task,I64 *arrival)
 {
   U32 old_flags=I386IrqSave;
   CJob *job,*head;
-  I64 code,a,b;
+  I64 code,a,b,jiffy;
+  CI386TimedMessageJob *timed;
+  if(arrival) *arrival=-1;
   if(!task) task=I386TaskSelf;
   head=&task->srv_ctrl.next_waiting;
   while(TRUE) {
@@ -16,6 +18,12 @@ I64 MemoryScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0)
       MemoryJobRemove(job);
       I386IrqRestore(old_flags);
       code=job->msg_code; a=job->aux1; b=job->aux2;
+      jiffy=-1;
+      if(MemorySize(job)>=sizeof(CI386TimedMessageJob)) {
+        timed=job;
+        if(timed->timing_signature==0x54494D454B455931)
+          jiffy=timed->arrival_jiffy;
+      }
       if(arg1) *arg1=a;
       if(arg2) *arg2=b;
       //Capture both arguments before freeing; original uses aux2 after JobDel.
@@ -24,6 +32,7 @@ I64 MemoryScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0)
       if((code!=MSG_KEY_DOWN || !(b&(1<<31)) ||
           !(task->win_inhibit&(1<<12))) && ((mask>>code)&1)) {
         I386IrqRestore(old_flags);
+        if(arrival) *arrival=jiffy;
         return code;
       }
     }
@@ -33,8 +42,12 @@ I64 MemoryScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0)
   if(arg2) *arg2=0;
   I386IrqRestore(old_flags);
   if(task->parent_task && task->parent_task->popup_task==task)
-    return MemoryScanMsg(arg1,arg2,mask,task->parent_task);
+    return MemoryScanTimed(arg1,arg2,mask,task->parent_task,arrival);
   return MSG_NULL;
+}
+I64 MemoryScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0)
+{
+  return MemoryScanTimed(arg1,arg2,mask,task,0);
 }
 I64 MemoryFlushMsgs(CTask *task=0)
 {

@@ -3,8 +3,8 @@
 class CNativeKeyboardHooks {
   CTask *(*spawn)(U0 (*entry)(U8 *data),U8 *data,U8 *name,I64 cpu,
     CTask *parent,I64 stack_size,I64 flags);
-  U0 (*post)(CTask *task,I64 code,I64 a,I64 b,I64 flags);
-  I64 (*scan)(I64 *a,I64 *b,I64 mask,CTask *task);
+  U0 (*post)(CTask *task,I64 code,I64 a,I64 b,I64 flags,I64 arrival);
+  I64 (*scan)(I64 *a,I64 *b,I64 mask,CTask *task,I64 *arrival);
   U0 (*free)(U8 *address);
 };
 CNativeKeyboardHooks native_keyboard_hooks;
@@ -56,7 +56,7 @@ U0 NativeKeyboardWorker(U8 *data)
         KernelHex(target->task_signature); KernelLog("\n");
       }
       try {
-        (*native_keyboard_hooks.post)(target,event.type,event.ch,event.scan,0);
+        (*native_keyboard_hooks.post)(target,event.type,event.ch,event.scan,0,event.arrival_jiffy);
       } catch {
         I386TaskSelf->catch_except=TRUE;
         native_keyboard_losses++;
@@ -77,10 +77,10 @@ Bool NativeKeyboardStart()
   symbol=HashFind("_SPAWN",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!symbol) return FALSE;
   native_keyboard_hooks.spawn=symbol->val;
-  symbol=HashFind("_POST_MSG",task->hash_table,HTT_EXPORT_SYS_SYM);
+  symbol=HashFind("I386PostKeyTimed",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!symbol) return FALSE;
   native_keyboard_hooks.post=symbol->val;
-  symbol=HashFind("_SCAN_MSG",task->hash_table,HTT_EXPORT_SYS_SYM);
+  symbol=HashFind("I386ScanKeyTimed",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!symbol) return FALSE;
   native_keyboard_hooks.scan=symbol->val;
   symbol=HashFind("_FREE",task->hash_table,HTT_EXPORT_SYS_SYM);
@@ -103,7 +103,7 @@ I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRU
       return -1;
     }
     code=(*native_keyboard_hooks.scan)(&event->ch,&event->scan,
-      1<<MSG_KEY_DOWN|1<<MSG_KEY_UP,I386TaskSelf);
+      1<<MSG_KEY_DOWN|1<<MSG_KEY_UP,I386TaskSelf,&event->arrival_jiffy);
     if(code) { event->type=code; return 1; }
     if(!wait) return 0;
     I386SchedYield(I386TaskSelf->owner);

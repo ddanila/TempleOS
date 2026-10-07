@@ -1,3 +1,4 @@
+#include "/Kernel/DisplayableBitmap.HH"
 //These bitmaps go to 0-511 so that $LK,"Lex",A="MN:Lex"$() can use them with $LK,"Token Codes",A="MN:TK_EOF"$.
 U32
   char_bmp_alpha[16]=
@@ -57,9 +58,7 @@ U32
   0,0,0,0,0,0,0,0},
 
   char_bmp_displayable[16]=
-  {0x80000000,0xFFFFFFFF,0xFFFFFFFF,0x7FFFFFFF,
-  0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,
-  0,0,0,0,0,0,0,0},
+  CHAR_BMP_DISPLAYABLE_DATA,
 
   char_bmp_safe_dollar[16]=
   {0x80000000,0xFFFFFFEF,0xFFFFFFFF,0x7FFFFFFF,

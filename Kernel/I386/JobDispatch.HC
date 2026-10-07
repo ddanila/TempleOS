@@ -19,22 +19,33 @@ I64 MemoryJobRunOne(U32 run_flags,CJobCtrl *ctrl)
   CTask *master;
   CHashExport *symbol;
   CMemoryJobHooks hooks;
+  CMemoryRunningJob running;
   I64 flags=job->flags,result=1;
   U32 old_flags=I386IrqSave;
   if(flags&(1<<JOBf_EXIT_ON_COMPLETE)) result=2;
   switch(job->job_code) {
     case JOBT_SPAWN_TASK:
       MemoryJobRemove(job); job->flags|=1<<JOBf_DISPATCHED;
+      MemoryRunningJobBegin(&running,job);
       ctrl->flags&=~(1<<JOBCf_LOCKED);
-      if(job->aux_str)
-        job->spawned_task=Spawn(job->addr,job->fun_arg,job->aux_str,-1,
+      try {
+        if(job->aux_str)
+          job->spawned_task=Spawn(job->addr,job->fun_arg,job->aux_str,-1,
+            job->aux1,job->aux2,job->flags);
+        else job->spawned_task=Spawn(job->addr,job->fun_arg,"Unnamed",-1,
           job->aux1,job->aux2,job->flags);
-      else job->spawned_task=Spawn(job->addr,job->fun_arg,"Unnamed",-1,
-        job->aux1,job->aux2,job->flags);
+      } catch {
+        //Remove only this frame: an outer dispatch may catch and continue.
+        MemoryRunningJobEnd(&running);
+        MemoryJobAbort(job,I386TaskSelf);
+        I386IrqRestore(old_flags);
+        //Leaving catch_except clear propagates the original Spawn exception.
+      }
       break;
     case JOBT_CALL:
     case JOBT_EXE_STR:
       MemoryJobRemove(job); job->flags|=1<<JOBf_DISPATCHED;
+      MemoryRunningJobBegin(&running,job);
       ctrl->flags&=~(1<<JOBCf_LOCKED);
       I386IrqRestore(run_flags);
       I386TaskSelf->task_flags&=~(1<<TASKf_IDLE);
@@ -51,6 +62,9 @@ I64 MemoryJobRunOne(U32 run_flags,CJobCtrl *ctrl)
       break;
     default: return 0;
   }
+  MemoryRunningJobEnd(&running);
+  //A master may retire while this job yields. Retirement updates ownership.
+  flags=job->flags;
   master=job->master_task;
   if(master) {
     if(!(flags&(1<<JOBf_FREE_ON_COMPLETE))) {

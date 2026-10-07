@@ -5,6 +5,7 @@
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
 #define I386_LOADER_NATIVE_BUILD 1
+#define I386_HEAP_FAILURE_TRACE 1
 #define I386_TASK_NATIVE_BUILD 1
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/BootMemory.HH"
@@ -36,6 +37,7 @@
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/MemoryRuntime.HH"
 #include "/Kernel/I386/KernelSymbols.HH"
+#include "/Kernel/I386/BackingCheck.HC"
 import U0 i386_idle();
 import U0 i386_debug_cpu_entry();
 U8 *kernel_ready_message="READY native kernel foundation\n";
@@ -78,10 +80,10 @@ CHashClass *kernel_scalars[6];
 CI386InternalTypes kernel_types;
 CI386Keywords kernel_keywords;
 CCntsGlbls cnts;
-CI386KernelSymbol kernel_exports[61];
+CI386KernelSymbol kernel_exports[68];
 CI386KernelSymbol kernel_resident_exports[64];
 I64 kernel_resident_export_count;
-U8 kernel_export_kinds[61]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+U8 kernel_export_kinds[68]={1,1,3,1,1,3,3,3,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 CI386CompilerServices kernel_compiler;
 CI386FileServices kernel_files;
 CI386MemoryServices kernel_memory;
@@ -117,27 +119,32 @@ extern U8 *KernelServiceLoad(U8 *path,U8 *label,CI386ModuleBinding *bindings,I64
 extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 version);
 extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes);
 extern U0 KernelCompilerProbe(I64 phase);
+extern U0 KernelCompilerProbeLoad();
 extern U0 KernelConsoleLoad();
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
 U8 kernel_console_bindings[14]={0,19,10,40,41,18,13,14,33,32,46,42,34,16};
-U8 kernel_compiler_bindings[25]={0,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41,60};
-U8 kernel_probe_bindings[25]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27,23};
-U8 kernel_files_bindings[29]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56};
+U8 kernel_compiler_bindings[30]={0,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41,60,63,64,65,66,67};
+U8 kernel_probe_bindings[29]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27,23,64,65,66,67};
+U8 kernel_files_bindings[32]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56,40,41,42};
 U8 kernel_memory_bindings[16]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)
 {
-  CI386MemRange reserved,arena;
+  CI386MemRange reserved[2],arena;
   CI386InterruptServices services;
-  I64 pulse_used;
+  I64 pulse_used,reserved_count=1;
   Bool mouse_ready;
   KernelLog("START native kernel\n");
-  reserved.base=0x88000; reserved.size=32768;
-  if(!I386BootArena(info,&reserved,1,&arena) || !(info->flags&2) ||
+  reserved[0].base=0x88000; reserved[0].size=32768;
+  if(info && info->stage_end==0x11000) {
+    if(!I386BootImageReserve(info,I386_BOOT_IMAGE_ADDRESS,&reserved[1])) KernelStop;
+    reserved_count=2;
+  }
+  if(!I386BootArena(info,reserved,reserved_count,&arena) || !(info->flags&2) ||
       info->extended_kib<128 || !I386A20Enable(FALSE) ||
-      !I386BootArena(info,&reserved,1,&arena,TRUE) ||
+      !I386BootArena(info,reserved,reserved_count,&arena,TRUE) ||
       !I386HeapInit(&kernel_heap,arena.base,arena.size)) KernelStop;
   KernelLog("ARENA "); KernelHex(arena.base); KernelLog(" ");
   KernelHex(arena.size); KernelLog("\n");
@@ -155,10 +162,19 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelCompilerLoad;
   KernelFileLoad;
   KernelMemoryLoad;
-  if(kernel_diagnostics) KernelCompilerProbe(0);
+  //Load the large temporary provider before console allocation fragments RAM.
+  if(kernel_diagnostics) KernelCompilerProbeLoad;
+  if(!kernel_diagnostics) {
   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
+  }
   if(!I386KbcInputInit(&kernel_input,&kernel_scheduler)) KernelStop;
   KernelConsoleLoad;
+  //Public-header probes require the real console/debugger exports.
+  if(kernel_diagnostics) {
+    KernelCompilerProbe(0);
+  if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
+    if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
+  }
   KernelStartup;
   if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
   KernelLog("STORAGE TASK BOUND\n");
@@ -259,10 +275,32 @@ U0 KernelIrq(CI386IrqFrame *frame)
   }
   I386PicEoi(frame->irq);
 }
-public U0 KernelDebugCpu(CI386ExceptionFrame *frame)
+U0 KernelDebugStackCleanup(CI386Task *task)
+{
+  U0 (*previous)(CI386Task *task);
+  previous=task->debug_stack_cleanup;
+  //Reap reclaims the execution stack only after switching to another task.
+  task->debug_stack_cleanup=0;task->cleanup=previous;
+  if(previous) (*previous)(task);
+}
+public U8 *KernelDebugStack(CI386ExceptionFrame *frame)
+{//Before debugger try/catch; allocation is outside the IRQ capture path.
+  CI386Task *task=I386TaskSelf;
+  if(!task->debug_cpu_active) KernelStop;
+  if(!task->debug_stack) {
+    task->debug_stack=I386HeapAlloc(task->memory,65536,FALSE);
+    if(!task->debug_stack) KernelStop;
+    task->debug_stack_size=65536;task->debug_stack_heap=task->memory;
+    task->debug_stack_cleanup=task->cleanup;task->cleanup=&KernelDebugStackCleanup;
+  }
+  if(I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size) KernelStop;
+  return task->debug_stack+task->debug_stack_size-sizeof(CI386ExceptionFrame);
+}
+public U8 *KernelDebugCpu(CI386ExceptionFrame *frame)
 {
   if(!kernel_console.cpu_debug) KernelStop;
   kernel_console.cpu_debug(frame);
+  return (I386TaskSelf->rsp-sizeof(CI386ExceptionFrame))(U8 *);
 }
 U0 KernelFault(CI386ExceptionFrame *frame)
 {
@@ -348,12 +386,17 @@ U0 KernelDisplay()
 U0 KernelStorage(CI386BootInfo *info)
 {//Initial profile: BIOS drive 0x80 is primary IDE master; boot I/O owns the channel.
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
-  U8 *bitmap;
+  U8 *bitmap,move_header[512];
   I64 bitmap_bytes;
   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
       !I386AtaIdentify(&kernel_disk,0,0) ||
       !I386RedSeaMount(&kernel_volume,&kernel_disk,boot->volume_start)) KernelStop;
+  //Transfer intents can temporarily expose two names for the same extent.
+  //Resolve only that validated journal mode before namespace ownership repair.
+  if(!I386RedSeaSectorRead(&kernel_volume,kernel_volume.start,move_header)) KernelStop;
+  if((move_header+48)(U64 *)[0]==0x3245564F4D323349 &&
+      !I386RedSeaMoveRecover(&kernel_volume)) KernelStop;
   bitmap_bytes=(kernel_volume.first-kernel_volume.start-1)*512;
   bitmap=I386HeapAlloc(&kernel_heap,bitmap_bytes,TRUE);
   if(!bitmap || !I386RedSeaRepairBitmap(&kernel_volume,bitmap,bitmap_bytes) ||
@@ -414,7 +457,7 @@ U0 KernelSymbols()
 {//Boot-only private export index, using the shared public hash-record prefix.
 //These records describe loader bindings; they are not compiler CHashFun objects.
   I64 i,used;
-  U8 *addresses[61],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0I386RedSeaMoveIntentSet\0I386RedSeaMoveIntentClear\0I386RedSeaExtent\0I386RedSeaRead\0I386RedSeaMount\0I386LexAttachDocRoot\0";
+  U8 *addresses[68],*names="KernelLog\0KernelDisplay\0kernel_startup_count\0I386LexRawChar\0I386LexSourceRead\0char_bmp_hex_numeric\0char_bmp_dec_numeric\0char_bmp_non_eol\0HashFind\0StrCmp\0I386HeapAlloc\0I386HeapFree\0I386HeapSize\0I386IrqSave\0I386IrqRestore\0I386LexIncludeCopy\0HashAdd\0char_bmp_non_eol_white_space\0KernelHex\0KernelStop\0I386HeapValid\0char_bmp_alpha_numeric\0I386RedSeaFind\0I386RedSeaResolve\0I386RedSeaReadAll\0I386LexIncludeTake\0I386RedSeaBegin\0I386RedSeaEnd\0I386RedSeaValid\0I386AtaIdentifyPolled\0I386AtaTransfer\0I386AtaFlushPolled\0I386SchedBlock\0I386SchedWake\0I386SchedYield\0I386LexFilePush\0LexFileReleaseTop\0I386HashTableNew\0I386HashTableValid\0I386HashTableDelete\0SysTry\0SysUntry\0throw\0I386TaskSpawn\0I386TaskDestroy\0cnts\0I386KbcQueueGet\0I386RedSeaSectorRead\0I386RedSeaSectorWrite\0I386RedSeaFlush\0I386RedSeaAlloc\0I386RedSeaFree\0I386RedSeaWrite\0I386RedSeaDirectory\0I386RedSeaPutWord\0I386RedSeaMoveIntentSet\0I386RedSeaMoveIntentClear\0I386RedSeaExtent\0I386RedSeaRead\0I386RedSeaMount\0I386LexAttachDocRoot\0I386TaskFrameParent\0I386TaskFrameReturn\0I386HeapAllocHigh\0I386LexFileOwned\0I386LexFileReleaseDetached\0I386LexSnapshotValid\0I386LexSnapshotsPin\0";
   CHashClass *record;
   kernel_symbols=I386HashTableNew(&kernel_heap,8);
   if(!kernel_symbols) KernelStop;
@@ -481,7 +524,11 @@ U0 KernelSymbols()
   addresses[57]=&I386RedSeaExtent; addresses[58]=&I386RedSeaRead;
   addresses[59]=&I386RedSeaMount;
   addresses[60]=&I386LexAttachDocRoot;
-  for(i=0;i<61;i++) {
+  addresses[61]=&I386TaskFrameParent; addresses[62]=&I386TaskFrameReturn;
+  addresses[63]=&I386HeapAllocHigh;
+  addresses[64]=&I386LexFileOwned; addresses[65]=&I386LexFileReleaseDetached;
+  addresses[66]=&I386LexSnapshotValid; addresses[67]=&I386LexSnapshotsPin;
+  for(i=0;i<sizeof(kernel_exports)/sizeof(CI386KernelSymbol);i++) {
     kernel_exports[i].str=names; kernel_exports[i].kind=kernel_export_kinds[i];
     kernel_exports[i].val=(addresses[i]+0)(U64); kernel_exports[i].type=HTT_EXPORT_SYS_SYM;
     HashAdd(&kernel_exports[i],kernel_symbols);
@@ -502,9 +549,9 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity)
 {
   I64 i;
-  if(!bindings || !indices || count!=capacity || count<1 || count>61) KernelStop;
+  if(!bindings || !indices || count!=capacity || count<1 || count>64) KernelStop;
   for(i=0;i<count;i++) {
-    if(indices[i]>=61) KernelStop;
+    if(indices[i]>=sizeof(kernel_exports)/sizeof(CI386KernelSymbol)) KernelStop;
     KernelBinding(&bindings[i],kernel_exports[indices[i]].str);
   }
 }
@@ -534,23 +581,28 @@ U0 KernelCompilerLoad()
     KernelLog("PUBLIC MATH REBIND CHECK\n");
   }
 }
+U0 KernelCompilerProbeLoad()
+{//Keep load-time temporary buffers ahead of resident console allocations.
+  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)];
+  I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
+  if(kernel_probe_image) KernelStop;
+  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+  kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
+  if(!kernel_probe_image) {
+    KernelHeapCheck(used,allocations);
+    KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
+  }
+  kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
+  kernel_probe_span=kernel_heap.used-used;
+  if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
+}
 U0 KernelCompilerProbe(I64 phase)
-{//Load once with boot disk ownership; the task call performs no disk I/O.
-  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)]; CI386CompilerProbe probe;
+{//Run both phases with real public exports; provider was loaded before console.
+  CI386CompilerProbe probe;
+  CI386BackingCheck backing_check;
   I64 (*entry)(CI386CompilerProbe *probe,I64 bytes);
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
-  if(phase==0) {
-    if(kernel_probe_image) KernelStop;
-    KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
-    kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
-    if(!kernel_probe_image) {
-      KernelHeapCheck(used,allocations);
-      KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
-    }
-    kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
-    kernel_probe_span=kernel_heap.used-used;
-    if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
-  } else if(phase!=1 || !kernel_probe_image) KernelStop;
+  if((phase!=0 && phase!=1) || !kernel_probe_image) KernelStop;
   if(I386HeapSize(&kernel_heap,kernel_probe_image)!=kernel_probe_size) KernelStop;
   used=kernel_heap.used; allocations=kernel_heap.allocations;
   probe.version=I386_COMPILER_PROBE_VERSION; probe.bytes=sizeof(CI386CompilerProbe);
@@ -564,17 +616,18 @@ U0 KernelCompilerProbe(I64 phase)
   probe.cancel_wait=kernel_console.cancel_wait;
   probe.persist_modules=phase && kernel_file_mutation_probe;
   probe.format_target=phase && kernel_target_format_probe;
+  if(!I386BackingCheckSave(&backing_check,&kernel_heap,I386TaskSelf->code_heap)) KernelStop;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
     KernelModuleRelease(&kernel_probe_image,used-kernel_probe_span,allocations-1);
     KernelLog("PROBE REJECT api reclaimed\n"); KernelStop;
   }
-  KernelHeapCheck(used,allocations);
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   if(!phase) {
     KernelLog("PROBE MODULE "); KernelHex((kernel_probe_image+0)(U64)); KernelLog(" ");
     KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
   } else {
-    KernelModuleRelease(&kernel_probe_image,used-kernel_probe_span,allocations-1);
+    KernelModuleRelease(&kernel_probe_image,kernel_heap.used-kernel_probe_span,kernel_heap.allocations-1);
     if(I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
         I386HeapSize(&kernel_heap,kernel_file_image)!=kernel_file_size) KernelStop;
     KernelLog("PROBE RELEASE "); KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
@@ -624,11 +677,11 @@ I64 KernelResidentPublish(U8 *image,I64 size,
 }
 U0 KernelFileLoad()
 {
-  CI386ModuleBinding bindings[29];
+  CI386ModuleBinding bindings[32];
   if(kernel_file_image || kernel_files.version) KernelStop;
-  KernelBindings(bindings,kernel_files_bindings,29,sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_files_bindings,32,sizeof(bindings)/sizeof(CI386ModuleBinding));
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
-    bindings,29,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
+    bindings,32,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
   if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=1 ||
       !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
@@ -702,7 +755,7 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[47];
+  CI386ModuleBinding bindings[56];
   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
   U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
   U8 *local_names="MAlloc\0CAlloc\0Free\0MSize2\0MAllocIdent\0StrNew\0MemCpy\0MemSet\0HashTableNew\0HashDefineLstAdd\0DefineLstLoad\0";
@@ -730,13 +783,23 @@ U0 KernelConsoleLoad()
   }
   bindings[46].name="i386_idle"; bindings[46].kind=1;
   bindings[46].address=(&i386_idle+0)(U64);
+  KernelBinding(&bindings[47],"I386TaskFrameParent");
+  KernelBinding(&bindings[48],"I386TaskFrameReturn");
+  KernelBinding(&bindings[49],"char_bmp_dec_numeric");
+  KernelBinding(&bindings[50],"char_bmp_alpha_numeric");
+  KernelBinding(&bindings[51],"_SIN"); bindings[51].name="Sin";
+  KernelBinding(&bindings[52],"_COS"); bindings[52].name="Cos";
+  KernelBinding(&bindings[53],"_CEIL_U64"); bindings[53].name="CeilU64";
+  KernelBinding(&bindings[54],"_CEIL"); bindings[54].name="Ceil";
+  KernelBinding(&bindings[55],"_ARG"); bindings[55].name="Arg";
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,47,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,56,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
   kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
   kernel_console_config.mouse=&kernel_mouse;
   kernel_console_config.pit_divisor=kernel_timer.divisor;
+  kernel_console_config.defer_root_headers=kernel_diagnostics;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }

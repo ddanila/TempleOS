@@ -331,6 +331,7 @@ U0 FixSet(U8 *filename,I64 line)
     Yield;
   Free(dbg.fix_file_line);
   dbg.fix_file_line=AStrNew(st);
+  Free(st);
   LBtr(&sys_semas[SEMA_FIX],0);
 }
 

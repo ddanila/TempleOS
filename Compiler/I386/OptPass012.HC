@@ -37,3 +37,16 @@ CIntermediateCode *I386OptPass012(CI386Heap *heap,CCmpCtrl *cc,CHashClass **type
   reporter.report=diagnostic;
   return OptPass012Core(cc,&services);
 }
+CIntermediateCode *I386FrontendOptPass012(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types)
+{//Frontend-only scratch lifetime; the public optimizer keeps its stack view.
+  CPrsStk *borrowed=cc->ps;
+  CIntermediateCode *result=I386OptPass012(heap,cc,types);
+  U32 irq;
+  if(!borrowed && cc->ps) {
+    irq=I386IrqSave;
+    if(!I386HeapFree(heap,cc->ps)) { I386IrqRestore(irq); throw('Compiler',TRUE); }
+    cc->ps=0;
+    I386IrqRestore(irq);
+  }
+  return result;
+}

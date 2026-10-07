@@ -17,6 +17,7 @@ import U0 StrCpy(U8 *dst,U8 *src);
 import U8 *MemCpy(U8 *dst,U8 *src,I64 count);
 import U8 *MemSet(U8 *dst,I64 value,I64 count);
 import CHashTable *HashTableNew(I64 size,CTask *task=0);
+#include "/Kernel/I386/DocParserCompiler.HC"
 import I64 HashDefineLstAdd(U8 *name,I64 type,CHashTable *table);
 import CHashDefineStr *DefineLstLoad(U8 *name,U8 *list);
 I64 native_doc_alloc_fail_after,native_doc_alloc_count;
@@ -46,6 +47,7 @@ U8 *NativeDocCAlloc(I64 size,CTask *task=0)
 #include "/Adam/DolDoc/DocEntryAlloc.HC"
 #include "/Adam/DolDoc/DocFormNav.HC"
 extern U0 DocReportLiteral(I64 mS,U8 *message);
+import U0 HashAdd(CHash *entry,CHashTable *table);
 import CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
 extern U0 UndefinedDefine(U8 *name);
 #include "/Kernel/ListFlags.HH"
@@ -772,7 +774,7 @@ U0 NativeDocEditTextAttr(CI386Text *text,I64 foreground,I64 background,
 }
 extern U0 I386TextCell(CI386Text *text,U8 ch);
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
-extern U8 *NativeGraphicsPlanes();
+extern U8 **NativeGraphicsPlanes();
 #define NATIVE_SPT_END   0
 #define NATIVE_SPT_COLOR 1
 #define NATIVE_SPT_PT    8
@@ -1148,73 +1150,47 @@ Bool NativeDocHasSprite(CDoc *doc)
     if(entry->type_u8==DOCT_SPRITE && entry->bin_data) return TRUE;
   return FALSE;
 }
-U8 NativeDocMouseMask(I64 row)
-{//Solid eight-pixel-wide arrow in the native low-bit-left plane layout.
-  switch(row) {
-    case 0: return 0x01;
-    case 1: return 0x03;
-    case 2: return 0x07;
-    case 3: return 0x0F;
-    case 4: return 0x1F;
-    case 5: return 0x3F;
-    case 6: return 0x0F;
-    case 7: return 0x1B;
-    case 8: return 0x31;
-    case 9: return 0x20;
-  }
-  return 0;
-}
-U0 NativeDocMouseXor(U8 *planes,I64 x,I64 y)
-{
-  I64 i,j,k,n;
-  U8 m;
-  if(!planes) return;
-  for(i=0;i<10;i++) {
-    m=NativeDocMouseMask(i); j=y+i;
-    if(0<=j<480) {
-      k=x;
-      while(m) {
-        if(m&1 && 0<=k<640) {
-          n=j*80+(k>>3);
-          planes[n]^=1<<(k&7);
-          planes[38400+n]^=1<<(k&7);
-          planes[76800+n]^=1<<(k&7);
-          planes[115200+n]^=1<<(k&7);
-        }
-        m>>=1; k++;
-      }
-    }
-  }
-}
-U0 NativeDocMouseShow(U8 *planes,I64 x,I64 y)
-{//Upload a transient XOR overlay, retaining a clean canonical backing surface.
+#include "/Kernel/MousePlaneCore.HC"
+U0 NativeDocMouseShowSplit(U8 **planes,I64 x,I64 y)
+{//Upload transient XOR pixels, then restore all four clean backing planes.
   I64 first=y,count=10;
   if(!planes || y>=480 || y+10<=0) return;
   if(first<0) { count+=first; first=0; }
   if(first+count>480) count=480-first;
-  NativeDocMouseXor(planes,x,y);
-  if(!I386VgaRows(planes,first,count)) KernelStop;
-  NativeDocMouseXor(planes,x,y);
+  MousePlaneSplitXor(planes,x,y);
+  if(!I386VgaSplitRows(planes,first,count)) KernelStop;
+  MousePlaneSplitXor(planes,x,y);
 }
-U8 *NativeDocEditPlanes(CDoc *doc)
+U0 NativeDocMouseShow(U8 *planes,I64 x,I64 y)
 {
-  U8 *planes;
-  if(NativeDocHasSprite(doc) && (planes=NativeGraphicsPlanes)) return planes;
-  return console_planes;
+  U8 *split[4];I64 p;
+  if(!planes) return;
+  for(p=0;p<4;p++) split[p]=planes+p*38400;
+  NativeDocMouseShowSplit(split,x,y);
 }
-U0 NativeDocMouseMove(CDoc *doc,I64 old_x,I64 old_y,I64 x,I64 y)
-{
-  NativeMousePlaneMove(NativeDocEditPlanes(doc),old_x,old_y,x,y);
-}
-U0 NativeMousePlaneMove(U8 *planes,I64 old_x,I64 old_y,I64 x,I64 y)
+U0 NativeMousePlaneMoveSplit(U8 **planes,I64 old_x,I64 old_y,I64 x,I64 y)
 {
   I64 first=old_y,count=10;
   if(first<0) { count+=first; first=0; }
   if(first<480 && count>0) {
     if(first+count>480) count=480-first;
-    if(!I386VgaRows(planes,first,count)) KernelStop;
+    if(!I386VgaSplitRows(planes,first,count)) KernelStop;
   }
-  NativeDocMouseShow(planes,x,y);
+  NativeDocMouseShowSplit(planes,x,y);
+}
+U0 NativeMousePlaneMove(U8 *planes,I64 old_x,I64 old_y,I64 x,I64 y)
+{
+  U8 *split[4];I64 p;
+  if(!planes) return;
+  for(p=0;p<4;p++) split[p]=planes+p*38400;
+  NativeMousePlaneMoveSplit(split,old_x,old_y,x,y);
+}
+U0 NativeDocMouseMove(CDoc *doc,I64 old_x,I64 old_y,I64 x,I64 y)
+{
+  U8 **planes=NativeGraphicsPlanes;
+  if(NativeDocHasSprite(doc) && planes)
+    NativeMousePlaneMoveSplit(planes,old_x,old_y,x,y);
+  else NativeMousePlaneMove(console_planes,old_x,old_y,x,y);
 }
 U0 NativeMousePlaneHide(U8 *planes,I64 x,I64 y)
 {//Restore the clean backing rows underneath a transient pointer overlay.
@@ -1241,8 +1217,11 @@ U0 NativeDocEditDraw(CDoc *doc,Bool blink_phase=FALSE,I64 save_status=0)
     if(!NativeGraphicsPresent(&NativeDocEditDrawSprites,blink_phase)) KernelStop;
     native_doc_sprite_doc=NULL;
   } else ConsolePresent;
-  if(native_doc_mouse_visible && MouseGet(&mouse_x,&mouse_y))
-    NativeDocMouseShow(NativeDocEditPlanes(doc),mouse_x,mouse_y);
+  if(native_doc_mouse_visible && MouseGet(&mouse_x,&mouse_y)) {
+    if(NativeDocHasSprite(doc) && NativeGraphicsPlanes)
+      NativeDocMouseShowSplit(NativeGraphicsPlanes,mouse_x,mouse_y);
+    else NativeDocMouseShow(console_planes,mouse_x,mouse_y);
+  }
 }
 Bool NativeDocTextAt(U8 *text,I64 at,U8 *needle)
 {
@@ -1405,13 +1384,13 @@ Bool NativeDocEditUndoRestore(CDoc *doc,U8 **undo_bodies,I64 *undo_sizes,
 }
 Bool NativeDocEditUndoBegin(CDoc *doc,U8 **undo_bodies,I64 *undo_sizes,
                             I64 *undo_count,I64 kind,I64 *group_kind,
-                            I64 *group_jiffy)
+                            I64 *group_jiffy,I64 arrival=-1)
 {//Keep one pre-edit snapshot for a continuous run of the same edit operation.
   I64 now;
   Bool capture;
   if(!group_kind || !group_jiffy || !console_config || !console_config->jiffies)
     return FALSE;
-  now=*console_config->jiffies;
+  if(arrival>=0) now=arrival; else now=*console_config->jiffies;
   capture=*group_kind!=kind || now>*group_jiffy+JIFFY_FREQ;
   if(capture && !NativeDocEditUndoCapture(doc,undo_bodies,undo_sizes,undo_count))
     return FALSE;
@@ -1531,7 +1510,7 @@ public I64 DocAllocationCheck()
 {
   CDoc *doc,*read_doc=NULL;
   U8 *saved;
-  I64 before,caught=0,result=NativeDocRecordSaveCheck,size;
+  I64 before,caught=0,result=NativeDocRecordSaveCheck,size,fail;
   if(result!=4) return result;
   result=NativeDocBinarySaveCheck;
   if(result!=5) return result;
@@ -1543,14 +1522,18 @@ public I64 DocAllocationCheck()
   DocPutKey(doc,'r',0); DocPutKey(doc,'e',0); DocPutKey(doc,'a',0); DocPutKey(doc,'d',0);
   if(!DocWrite(doc)) { DocDel(doc); return -11; }
   DocDel(doc); before=Fs->data_heap->used_u8s;
-  NativeDocAllocArm(4);
-  try { read_doc=DocRead("C:/AllocRead.DD"); }
-  catch {
-    if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
+  //Three DocNew allocations precede the text base and its tag.
+  for(fail=4;fail<=5;fail++) {
+    caught=0;
+    NativeDocAllocArm(fail);
+    try { read_doc=DocRead("C:/AllocRead.DD"); }
+    catch {
+      if(Fs->except_ch=='OutMem') { Fs->catch_except=TRUE; caught=1; }
+    }
+    NativeDocAllocArm(0);
+    if(read_doc) { DocDel(read_doc); read_doc=NULL; }
+    if(!caught || Fs->data_heap->used_u8s!=before) return -100-fail;
   }
-  NativeDocAllocArm(0);
-  if(read_doc) { DocDel(read_doc); read_doc=NULL; }
-  if(!caught || Fs->data_heap->used_u8s!=before) return -12;
   read_doc=DocRead("C:/AllocRead.DD");
   if(read_doc) saved=DocSave(read_doc,&size); else saved=NULL;
   if(!saved || size!=5 || saved[0]!='r' || saved[1]!='e' ||
@@ -1561,7 +1544,7 @@ public I64 DocAllocationCheck()
   Free(saved);
   DocDel(read_doc);
   if(Fs->data_heap->used_u8s!=before) return -14;
-  return 12;
+  return 13;
 }
 U0 NativeDocGotoDraw(CDoc *doc,U8 *digits)
 {
@@ -1672,19 +1655,19 @@ U0 NativeDocEditConsoleRestore()
 extern Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor);
 public Bool DocEd(CDoc *doc,I64 flags=0)
 {//Native keyboard/VGA session over the canonical document model. Escape exits.
-  CI386KeyEvent event;
+  CI386KeyEvent event,queued_key;
   CDoc *old_put,*old_display;
   U8 *browse_path,*picked_path=NULL;
   U8 *undo_bodies[16];
   I64 undo_sizes[16];
   U8 find[128],replace[128];
-  I64 decoded,blink_phase,next_blink_phase,find_length=0,replace_length=0,
+  I64 decoded,pending_key=0,queued_events=0,blink_phase,next_blink_phase,find_length=0,replace_length=0,
       goto_line,undo_count=0,undo_index,undo_group_kind=0,undo_group_jiffy=0,
       undo_kind,mouse_x,mouse_y,mouse_buttons=0,mouse_packets=0,
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets,
       mouse_anchor=0,mouse_endpoint,mouse_scroll_rows,mouse_scroll_columns,
       mouse_hit_y,mouse_hold_due=0,mouse_now,mouse_old_endpoint;
-  Bool done=FALSE,changed,redraw,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
+  Bool done=FALSE,changed,redraw,dirty=FALSE,yield_frame,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
   I64 save_status=0;
   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL || flags) return FALSE;
   find[0]=0; replace[0]=0;
@@ -1698,7 +1681,12 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
     native_doc_mouse_visible=FALSE;
     KernelLog("DOC EDIT begin\n"); NativeDocEditDraw(doc,blink_phase);
     while(!done) {
-      decoded=NativeReadKey(console_config->reader,&event,FALSE);
+      if(pending_key) {
+        decoded=pending_key; pending_key=0;
+        event.type=queued_key.type; event.ch=queued_key.ch; event.scan=queued_key.scan; event.arrival_jiffy=queued_key.arrival_jiffy;
+      } else decoded=NativeReadKey(console_config->reader,&event,FALSE);
+      if(decoded>0) queued_events++;
+      yield_frame=queued_events>=8;
       changed=FALSE; redraw=FALSE;
       if(decoded>0) {
         if(event.type==2 && (event.ch==CH_ESC || event.ch==CH_SHIFT_ESC)) {
@@ -1808,7 +1796,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
           if(event.ch==8) undo_kind=2;
           else undo_kind=1;
           NativeDocEditUndoBegin(doc,undo_bodies,undo_sizes,&undo_count,
-            undo_kind,&undo_group_kind,&undo_group_jiffy);
+            undo_kind,&undo_group_kind,&undo_group_jiffy,event.arrival_jiffy);
           DocPutKey(doc,event.ch,0); changed=TRUE;
         } else if(event.type==3 && (event.scan.u8[0]==SC_CURSOR_LEFT ||
             event.scan.u8[0]==SC_CURSOR_RIGHT || event.scan.u8[0]==SC_CURSOR_UP ||
@@ -1817,7 +1805,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
             event.scan.u8[0]==SC_PAGE_DOWN || event.scan.u8[0]==SC_DELETE)) {
           if(event.scan.u8[0]==SC_DELETE)
             NativeDocEditUndoBegin(doc,undo_bodies,undo_sizes,&undo_count,3,
-              &undo_group_kind,&undo_group_jiffy);
+              &undo_group_kind,&undo_group_jiffy,event.arrival_jiffy);
           else undo_group_kind=0;
           DocPutKey(doc,0,event.scan); changed=TRUE;
         }
@@ -1886,10 +1874,15 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
       }
       if(changed) save_status=0;
       next_blink_phase=NativeDocEditBlinkPhase;
-      if(changed || redraw || next_blink_phase!=blink_phase) {
+      if(changed || redraw || next_blink_phase!=blink_phase) dirty=TRUE;
+      //Retain one decoded key; never fetch past an accepted editor exit.
+      if(!done) pending_key=NativeReadKey(console_config->reader,&queued_key,FALSE);
+      if(dirty && (pending_key<=0 || yield_frame || done)) {
         blink_phase=next_blink_phase; NativeDocEditDraw(doc,blink_phase,save_status);
+        dirty=FALSE; queued_events=0;
       }
-      if(!decoded) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
+      //Bound rendering delay and preserve cooperative progress during bursts.
+      if(!decoded || yield_frame) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
     }
   } catch {
     Free(picked_path); picked_path=NULL;
@@ -2385,37 +2378,73 @@ U0 ConsoleDocumentStart()
 
 #include "/Kernel/I386/GraphicsContext.HC"
 
+#include "/Kernel/I386/PublicResident.HC"
 public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
 {
-  if(!console_config || !console_config->files ||
-      !console_config->files->write_public) return 0;
-  if(!cdt) cdt=NativeNow;
-  return console_config->files->write_public(filename,buffer,size,cdt,attr);
+  I64 result;CI386WriteCache cache;CHashGeneric *entry;
+  if(!console_config || !console_config->files || !console_config->files->write_public)return 0;
+  MemSet(&cache,0,sizeof(cache));cache.heap=console_config->heap;
+  if(!cdt)cdt=NativeNow;
+  try {
+    result=console_config->files->write_public(filename,buffer,size,cdt,attr,&cache);
+    if(cache.eligible) {
+      if(!cache.name || ((cache.attr&0x200) && !cache.data))throw('OutMem',TRUE);
+      if(cache.attr&0x200)NativeResidentPut(cache.name,cache.data,cache.size);
+      else {entry=NativeResidentLookup(cache.name);if(entry)NativeResidentRemove(entry);}
+    }
+  } catch {
+    if(cache.data)I386HeapFree(cache.heap,cache.data);
+    if(cache.name)I386HeapFree(cache.heap,cache.name);Fs->catch_except=FALSE;
+  }
+  if(cache.data)I386HeapFree(cache.heap,cache.data);
+  if(cache.name)I386HeapFree(cache.heap,cache.name);
+  return result;
+}
+public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+{
+  U8 *name=0,*alternate=0,*stored=0,*result=0,*chosen;
+  CHashGeneric *entry;I64 bytes=0,attr=0,size=0;
+  if(_size)*_size=0;if(_attr)*_attr=0;
+  if(!console_config || !console_config->files)return 0;
+  try {
+    name=console_config->files->name_abs(console_config->heap,filename,0);
+    if(name) {
+      alternate=NativeResidentAlt(name);entry=NativeResidentLookup(name);
+      if(!entry && alternate)entry=NativeResidentLookup(alternate);
+      if(entry) {
+        if(NativeResidentZ(entry->str))attr=0x400;
+        result=NativeResidentCopy(entry->user_data0,entry->user_data1,attr,&size);
+      } else {
+        stored=console_config->files->read_stored(console_config->heap,filename,&bytes,&attr,0);
+        if(stored) {
+          chosen=name;
+          if(((attr&0x400)!=0)!=NativeResidentZ(name) && alternate)chosen=alternate;
+          if(attr&0x200)NativeResidentPut(chosen,stored,bytes);
+          result=NativeResidentCopy(stored,bytes,attr,&size);
+        }
+      }
+    }
+  } catch {
+    if(stored)I386HeapFree(console_config->heap,stored);
+    if(alternate)I386HeapFree(console_config->heap,alternate);
+    if(name)I386HeapFree(console_config->heap,name);Fs->catch_except=FALSE;
+  }
+  if(stored)I386HeapFree(console_config->heap,stored);
+  if(alternate)I386HeapFree(console_config->heap,alternate);
+  if(name)I386HeapFree(console_config->heap,name);
+  if(result) {if(_size)*_size=size;if(_attr)*_attr=attr;}
+  return result;
 }
 
-public U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
-{//The service owns its private buffer; public callers own an ordinary allocation.
-  U8 *buffer,*result=0;
-  I64 size=0,attr=0;
-  if(_size) *_size=0;
-  if(_attr) *_attr=0;
-  if(!console_config || !console_config->files || !console_config->files->read) return 0;
-  buffer=console_config->files->read(console_config->heap,filename,&size,&attr,0);
-  if(!buffer) return 0;
-  try {
-    result=MAlloc(size+1);
-    MemCpy(result,buffer,size);
-    result[size]=0;
-  } catch {
-    I386HeapFree(console_config->heap,buffer);
-    throw;
-  }
-  if(!I386HeapFree(console_config->heap,buffer)) {
-    Free(result); throw('FileRead');
-  }
-  if(_size) *_size=size;
-  if(_attr) *_attr=attr;
-  return result;
+//Copy canonical public bytes into the private caller heap; raw disk reads bypass this bridge.
+U8 *NativeResidentReadBridge(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr)
+{
+  I64 count=0,attributes=0;U8 *public_bytes,*result=0;
+  public_bytes=NativePublicFileRead(filename,&count,&attributes);
+  if(!public_bytes)return 0;
+  result=I386HeapAlloc(heap,count+1,FALSE);
+  if(result) {MemCpy(result,public_bytes,count+1);if(size)*size=count;if(attr)*attr=attributes;}
+  Free(public_bytes);return result;
 }
 
 public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
@@ -2446,3 +2475,25 @@ public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
   if(!I386HeapFree(console_config->heap,entry.full_name)) {Free(name);throw('FileFind');}
   entry.full_name=name;MemCpy(_de,&entry,sizeof(CDirEntry));return TRUE;
 }
+
+//The file provider uses the same FilePathFileWrite normalizer as the original.
+//Transfer its temporary kernel allocation into the caller's public heap.
+U8 *NativeFileNameAbsConstruct(U8 *filename)
+{
+  U8 *temporary,*result;
+  temporary=console_config->files->name_abs(console_config->heap,filename,0);
+  if(!temporary) throw('OutMem',TRUE);
+  try { result=StrNew(temporary); }
+  catch { I386HeapFree(console_config->heap,temporary);throw; }
+  if(!I386HeapFree(console_config->heap,temporary)) {
+    Free(result);throw('FileName',TRUE);
+  }
+  return result;
+}
+#include "/Kernel/FileFindFlags.HH"
+#include "/Kernel/BlkDev/FileNameAbsCore.HC"
+public U8 *FileNameAbs(U8 *filename,I64 flags=0)
+{ return FileNameAbsCore(filename,flags,&NativeFileNameAbsConstruct); }
+
+public Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE)
+{ return console_config->files->cd(dirname,make_dirs); }

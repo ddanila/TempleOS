@@ -15,4 +15,10 @@ public _extern _WIN_Z_BUF_UPDATE U0 WinZBufUpdate();
 public _extern _WIN_INSIDE Bool WinInside(I64 x,I64 y,CTask *task=NULL,I64 border=0);
 public _extern _SYS_FOCUS_TASK CTask *sys_focus_task;
 public _extern _IS_RAW Bool IsRaw();
+public _extern _RAW Bool Raw(Bool val);
+public _extern _VGA_FLUSH U0 VGAFlush();
+public _extern _WIN_TO_TOP I64 WinToTop(CTask *task=NULL,Bool update_z_buf=TRUE);
+public _extern _SYS_WINMGR_TASK CTask *sys_winmgr_task;
+#define WIf_SELF_FOCUS 0
+public _extern _WIN_SCROLLS_INIT U0 WinScrollsInit(CTask *task);
 #endif

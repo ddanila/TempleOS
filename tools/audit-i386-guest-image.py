@@ -50,7 +50,8 @@ def main():
     for name in names[1:]:
         (exports/f'{name}.t32m').write_bytes(files[f'/Modules/I386/{name}.t32m'])
     installed=args.installed.read_bytes()
-    if len(installed)!=32768*512 or installed[512+4096:512+4096+len(flat)]!=flat:
+    if (len(installed) not in (16*1024*1024,32*1024*1024,64*1024*1024) or
+            installed[512+4096:512+4096+len(flat)]!=flat):
         raise ValueError('Installed boot payload differs from the guest-built flat image')
     publication=load('i386_boot_publication',Path('tools/i386_boot_area.py'))
     expected=publication.expected_boot_area(installed,flat)

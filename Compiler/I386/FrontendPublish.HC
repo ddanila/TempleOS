@@ -486,80 +486,63 @@ done:
   }
   return result;
 }
-U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,CI386TaskStorage *storage,U8 *allocation)
-{
+U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,U8 *allocation)
+{//Record retained storage independently from the payload selection journal.
+  CI386ParserAllocation *record;
+  I64 i;
   if(!allocation) { transfer->ok=FALSE; return; }
   I386ClassTransferVisit(transfer,allocation);
   if(transfer->ok) {
-    storage->allocations[storage->count].allocation=allocation;
-    storage->allocations[storage->count++].owner=I386ParserRecord(transfer->owned,allocation)->owner;
+    if(transfer->selected) {
+      transfer->stored[transfer->last_slot>>3]|=1<<(transfer->last_slot&7);
+      transfer->storage_count++; return;
+    }
+    if(!transfer->records) { transfer->storage_count++; return; }
+    record=transfer->records[transfer->count-1];
+    for(i=transfer->count-1;i>transfer->storage_count;i--)
+      transfer->records[i]=transfer->records[i-1];
+    transfer->records[transfer->storage_count++]=record;
   }
 }
-Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols)
-{
-  CI386CmpCtrl *owned=cc;
-  CI386Frontend *frontend;
-  CI386ClassTransfer transfer;
-  CI386TaskSymbols *scope;
-  CI386TaskStorage *storage=0,*retained;
+Bool I386ParentMacroPrepare(CI386Heap *heap,CI386CmpCtrl *owned,
+  CI386ParserAllocation **records,U8 *allocation)
+{//Prepare ownership nodes without changing either live compiler queue.
   CI386ParserAllocation *record;
-  CI386FrontendCode *code;
+  if(!allocation)return TRUE;
+  if(I386HeapSize(heap,allocation)<1 || I386ParserRecord(owned,allocation))return FALSE;
+  for(record=*records;record;record=record->next)
+    if(record->allocation==allocation)return FALSE;
+  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
+  if(!record)return FALSE;
+  record->allocation=allocation;record->next=*records;*records=record;
+  return TRUE;
+}
+Bool I386SourceMacroPrepare(CI386Heap *heap,CI386CmpCtrl *owned,
+  CI386ParserAllocation **records,U8 *allocation)
+{//Lexer publication transfers arena payloads directly into its selected table.
+  if(!allocation || I386ParserRecord(owned,allocation))return TRUE;
+  return I386ParentMacroPrepare(heap,owned,records,allocation);
+}
+Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
+  CI386ClassTransfer *transfer)
+{//Validate and visit the same graph for counting and the ownership journal.
+  CI386Heap *heap=frontend->heap;
+  CCmpCtrl *cc=frontend->cc;
+  CI386CmpCtrl *owned=cc;
+  CHashTable *source=frontend->table,*destination=frontend->parent;
   CI386FrontendResident *binding;
   CI386FrontendCompletion *completion;
   CI386CompletionTransfer visit;
-  CHashTable *source,*destination;
+  CI386FrontendCode *code;
+  CI386FrontendReloc *reloc;
   CHashSrcSym *entry,*prior;
   CHashFun *fun;
   CHashGlblVar *global;
   CMemberLst *member;
   CSymbolRelease visitor;
-  I64 capacity=0,i,j;
-  Bool result=FALSE,found;
-  U32 irq=I386IrqSave;
-  transfer.records=0;
-  if(!I386CmpCodeOwner(heap,cc) || !symbols || !(frontend=symbols->context) ||
-      frontend->heap!=heap || frontend->cc!=cc || symbols!=&frontend->symbols ||
-      !owned->task || !(scope=I386TaskSymbolsValid(owned->task)) || scope->heap!=heap ||
-      frontend->fixups || cc->error_cnt || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
-      owned->code_next!=&owned->code_next) goto done;
-  source=frontend->table; destination=scope->table;
-  if(cc->htc.glbl_hash_table!=source || cc->htc.hash_table_lst!=source ||
-      source==destination || frontend->parent!=destination ||
-      source->next!=destination && (!frontend->defines || source->next!=frontend->defines) ||
-      !I386ParserRecord(owned,source) || I386HeapSize(heap,source)!=sizeof(CHashTable) ||
-      !I386HashTableValid(heap,destination) || destination->locked_flags || source->locked_flags ||
-      source->mask<0 || source->mask>=0x1FFFFFFF || (source->mask+1)&source->mask ||
-      !I386ParserRecord(owned,source->body) ||
-      I386HeapSize(heap,source->body)!=(source->mask+1)*sizeof(CHash *)) goto done;
-  if(frontend->defines) {
-    if(frontend->defines!=owned->private_defines || !I386HashTableValid(heap,frontend->defines) ||
-        source->next!=frontend->defines || frontend->defines->next!=destination ||
-        frontend->defines->mask!=31 || frontend->defines->locked_flags ||
-        cc->htc.define_hash_table!=frontend->defines) goto done;
-    for(i=0;i<=frontend->defines->mask;i++)
-      for(entry=frontend->defines->body[i];entry;entry=entry->next) {
-        if(!(entry->type&HTT_DEFINE_STR) || !entry->str ||
-            I386HeapSize(heap,entry)!=sizeof(CHashDefineStr) ||
-            I386ClassNamePresent(source,entry->str)) goto done;
-        //Macro redefinition keeps ordinary lookup order, but a header must not
-        //hide an existing class, function or other non-macro declaration.
-        for(j=0;j<=destination->mask;j++)
-          for(prior=destination->body[j];prior;prior=prior->next)
-            if(!StrCmp(prior->str,entry->str) && !(prior->type&HTT_DEFINE_STR)) goto done;
-      }
-  }
-  for(completion=frontend->completions;completion;completion=completion->next)
-    if(!I386CompletionValid(frontend,completion)) goto done;
-  for(binding=frontend->residents;binding;binding=binding->next)
-    if(!I386FrontendResidentValid(frontend,binding)) goto done;
-  for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) capacity++;
-  if(capacity<1 || capacity>0xFFFFFFD) goto done;
-  transfer.records=I386HeapAlloc(heap,capacity*sizeof(CI386ParserAllocation *),FALSE);
-  storage=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+(capacity-1)*sizeof(CI386StoredAllocation),TRUE);
-  if(!transfer.records || !storage) goto done;
-  transfer.owned=owned; transfer.source=source; transfer.count=0;
-  transfer.capacity=capacity; transfer.ok=TRUE;
-  visit.transfer=&transfer; visit.completion=0;
+  I64 i,j;
+  Bool found;
+  visit.transfer=transfer; visit.completion=0;
   visitor.context=&visit; visitor.release=&I386CompletionVisit;
   for(i=0;i<=source->mask;i++)
     for(entry=source->body[i];entry;entry=entry->next) {
@@ -598,13 +581,13 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
             entry->type&(HTF_IMPORT|HTF_UNRESOLVED) || !entry->src_link) goto done;
       } else if(!(entry->type&HTT_DEFINE_STR)) goto done;
       SymbolHashVisit(&visitor,entry);
-      if(!transfer.ok) goto done;
+      if(!transfer->ok) goto done;
       if(entry->type&(HTT_CLASS|HTT_FUN))
         for(member=entry(CHashClass *)->member_lst_and_root;member;member=member->next) {
           if(!I386ProgramTypeReady(member->member_class)) goto done;
           if(member->flags&MLF_STATIC) {
-            I386ProgramStorageVisit(&transfer,storage,member->static_data);
-            if(!transfer.ok) goto done;
+            I386ProgramStorageVisit(transfer,member->static_data);
+            if(!transfer->ok) goto done;
           }
         }
     }
@@ -614,29 +597,178 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
     if(!I386ParserRecord(owned,code) || I386HeapSize(heap,code)!=sizeof(CI386FrontendCode) ||
         code->bytes<1 || code->data_start<1 || code->data_start>code->bytes ||
         I386ParserSize(heap,cc,code->code)!=code->bytes) goto done;
-    I386ProgramStorageVisit(&transfer,storage,code->code);
-    if(!transfer.ok) goto done;
+    I386ProgramStorageVisit(transfer,code->code);
+    if(!transfer->ok) goto done;
   }
-  if(storage->count) {
-    retained=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+(storage->count-1)*sizeof(CI386StoredAllocation),FALSE);
-    if(!retained) goto done;
-    retained->next=0; retained->count=storage->count;
-    for(i=0;i<storage->count;i++) {
-      retained->allocations[i].allocation=storage->allocations[i].allocation;
-      retained->allocations[i].owner=storage->allocations[i].owner;
+  if(parent) {
+    for(code=frontend->codes;code;code=code->next) {
+      I386ClassTransferVisit(transfer,code);
+      for(reloc=code->relocs;reloc;reloc=reloc->next) {
+        if(I386HeapSize(heap,reloc)<sizeof(CI386FrontendReloc))goto done;
+        I386ClassTransferVisit(transfer,reloc);
+      }
     }
-    I386HeapFree(heap,storage); storage=retained;
+    for(binding=frontend->residents;binding;binding=binding->next)
+      I386ClassTransferVisit(transfer,binding);
+    if(!transfer->ok)goto done;
+  }
+  return transfer->ok;
+done:
+  return FALSE;
+}
+Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols)
+{
+  CI386CmpCtrl *owned=cc;
+  CI386Frontend *frontend,*parent=0;
+  CI386CmpCtrl *parent_owned=0;
+  CI386ClassTransfer transfer;
+  CI386TaskSymbols *scope;
+  CI386TaskStorage *storage=0;
+  CI386ParserAllocation *record,*next_record,*macro_records=0,*source_macro_records=0;
+  CI386FrontendCode *code,*code_last;
+  CI386FrontendResident *binding,*binding_last;
+  CI386FrontendCompletion *completion;
+  CHashTable *source,*destination;
+  CHashSrcSym *entry,*prior;
+  I64 capacity=0,i,j,slots,map_bytes;
+  Bool result=FALSE;
+  U32 irq=I386IrqSave;
+  transfer.records=0; transfer.selected=0; transfer.stored=0;
+  if(!I386CmpCodeOwner(heap,cc) || !symbols || !(frontend=symbols->context) ||
+      frontend->heap!=heap || frontend->cc!=cc || symbols!=&frontend->symbols ||
+      !owned->task || !(scope=I386TaskSymbolsValid(owned->task)) || scope->heap!=heap ||
+      frontend->fixups || cc->error_cnt || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
+      owned->code_next!=&owned->code_next) goto done;
+  source=frontend->table; destination=frontend->parent;
+  parent=I386FrontendTableOwner(heap,owned->task,destination);
+  if(parent) {
+    parent_owned=parent->cc;
+    if(parent==frontend || parent_owned==owned)goto done;
+  }
+  if(cc->htc.glbl_hash_table!=source || cc->htc.hash_table_lst!=source ||
+      source==destination || frontend->parent!=destination ||
+      source->next!=destination && (!frontend->defines || source->next!=frontend->defines) ||
+      !I386ParserRecord(owned,source) || I386HeapSize(heap,source)!=sizeof(CHashTable) ||
+      !I386FrontendTableValid(heap,owned->task,destination) || destination->locked_flags || source->locked_flags ||
+      source->mask<0 || source->mask>=0x1FFFFFFF || (source->mask+1)&source->mask ||
+      !I386ParserRecord(owned,source->body) ||
+      I386HeapSize(heap,source->body)!=(source->mask+1)*sizeof(CHash *)) goto done;
+  if(frontend->defines) {
+    if(frontend->defines!=owned->private_defines || !I386HashTableValid(heap,frontend->defines) ||
+        source->next!=frontend->defines || frontend->defines->next!=destination ||
+        frontend->defines->mask!=31 || frontend->defines->locked_flags ||
+        cc->htc.define_hash_table!=frontend->defines) goto done;
+    for(i=0;i<=frontend->defines->mask;i++)
+      for(entry=frontend->defines->body[i];entry;entry=entry->next) {
+        if(!(entry->type&HTT_DEFINE_STR) || !entry->str ||
+            I386HeapSize(heap,entry)!=sizeof(CHashDefineStr) ||
+            I386ClassNamePresent(source,entry->str)) goto done;
+        //Macro redefinition keeps ordinary lookup order, but a header must not
+        //hide an existing class, function or other non-macro declaration.
+        for(j=0;j<=destination->mask;j++)
+          for(prior=destination->body[j];prior;prior=prior->next)
+            if(!StrCmp(prior->str,entry->str) && !(prior->type&HTT_DEFINE_STR)) goto done;
+      }
+  }
+  for(completion=frontend->completions;completion;completion=completion->next)
+    if(!I386CompletionValid(frontend,completion)) goto done;
+  for(binding=frontend->residents;binding;binding=binding->next)
+    if(!I386FrontendResidentValid(frontend,binding)) goto done;
+  //Direct parent-context #define publication precedes this control's commit.
+  //Prepare every missing ownership node before installing any of them.
+  for(i=0;i<=source->mask;i++)
+    for(entry=source->body[i];entry;entry=entry->next)
+      if(entry->type&HTT_DEFINE_STR) {
+        if(I386HeapSize(heap,entry)!=sizeof(CHashDefineStr) || !entry->str ||
+            !entry(CHashDefineStr *)->data ||
+            !I386SourceMacroPrepare(heap,owned,&source_macro_records,entry) ||
+            !I386SourceMacroPrepare(heap,owned,&source_macro_records,entry->str) ||
+            !I386SourceMacroPrepare(heap,owned,&source_macro_records,entry(CHashDefineStr *)->data) ||
+            !I386SourceMacroPrepare(heap,owned,&source_macro_records,entry->src_link) ||
+            !I386SourceMacroPrepare(heap,owned,&source_macro_records,entry->idx))goto done;
+      }
+  while(record=source_macro_records) {
+    source_macro_records=record->next;
+    record->next=&owned->parser_next;record->last=owned->parser_last;
+    record->last->next=record;owned->parser_last=record;
+  }
+  for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) capacity++;
+  if(capacity<1 || capacity>0xFFFFFFD) goto done;
+  transfer.owned=owned; transfer.source=source; transfer.count=0;
+  transfer.capacity=capacity; transfer.storage_count=0; transfer.ok=TRUE;
+  if(!I386FrontendTransferGraph(frontend,parent,&transfer)) goto done;
+  slots=capacity; capacity=transfer.count;
+  if(capacity) {
+    //Two bits per parser record: selected payload and retained storage.
+    //No pointer narrowing, payload marking, or queue mutation is needed.
+    map_bytes=(slots+7)>>3;
+    transfer.selected=I386HeapAlloc(heap,map_bytes*2,TRUE);
+    if(!transfer.selected) {
+      KernelLog("FRONTEND PUBLICATION SCRATCH REJECT\n"); goto done;
+    }
+    transfer.stored=transfer.selected+map_bytes; transfer.slots=slots;
+    transfer.count=0; transfer.capacity=capacity; transfer.storage_count=0;
+    if(!I386FrontendTransferGraph(frontend,parent,&transfer) || transfer.count!=capacity) goto done;
+  }
+  if(parent) {
+    if(frontend->defines)
+      for(i=0;i<=frontend->defines->mask;i++)
+        for(entry=frontend->defines->body[i];entry;entry=entry->next)
+          if(!I386ParentMacroPrepare(heap,owned,&macro_records,entry) ||
+              !I386ParentMacroPrepare(heap,owned,&macro_records,entry->str) ||
+              !I386ParentMacroPrepare(heap,owned,&macro_records,entry(CHashDefineStr *)->data) ||
+              !I386ParentMacroPrepare(heap,owned,&macro_records,entry->src_link) ||
+              !I386ParentMacroPrepare(heap,owned,&macro_records,entry->idx))goto done;
+  }
+  //Allocate only actual retained storage, after validating the complete graph.
+  //Header-only publication needs no storage array. Parent publication transfers
+  //its ownership records directly and also needs no independent storage array.
+  if(!parent && transfer.storage_count) {
+    storage=I386HeapAlloc(heap,sizeof(CI386TaskStorage)+
+      (transfer.storage_count-1)*sizeof(CI386StoredAllocation),FALSE);
+    if(!storage)goto done;
+    storage->next=0;storage->count=transfer.storage_count;
+    i=0; j=0;
+    for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) {
+      if(transfer.stored[i>>3]&(1<<(i&7))) {
+        storage->allocations[j].allocation=record->allocation;
+        storage->allocations[j++].owner=record->owner;
+      }
+      i++;
+    }
   }
   //Validation and allocation are finished. No fallible work remains in the move.
   if(frontend->completions)
     for(i=0;i<=source->mask;i++)
       for(entry=source->body[i];entry;entry=entry->next) I386CompletionRebind(frontend,entry);
-  for(i=0;i<transfer.count;i++) {
-    record=transfer.records[i];
-    record->last->next=record->next; record->next->last=record->last;
-    I386HeapFree(heap,record);
+  i=0;
+  for(record=owned->parser_next;record!=&owned->parser_next;record=next_record) {
+    next_record=record->next;
+    j=i++;
+    if(transfer.selected && transfer.selected[j>>3]&(1<<(j&7))) {
+      record->last->next=record->next; record->next->last=record->last;
+      if(parent) {
+        record->next=&parent_owned->parser_next;record->last=parent_owned->parser_last;
+        record->last->next=record;parent_owned->parser_last=record;
+      } else I386HeapFree(heap,record);
+    }
   }
-  if(storage->count) {
+  if(parent) {
+    while(record=macro_records) {
+      macro_records=record->next;
+      record->next=&parent_owned->parser_next;record->last=parent_owned->parser_last;
+      record->last->next=record;parent_owned->parser_last=record;
+    }
+    if(code_last=frontend->codes) {
+      while(code_last->next)code_last=code_last->next;
+      code_last->next=parent->codes;parent->codes=frontend->codes;
+    }
+    if(binding_last=frontend->residents) {
+      while(binding_last->next)binding_last=binding_last->next;
+      binding_last->next=parent->residents;parent->residents=frontend->residents;
+    }
+    parent->published_children=TRUE;
+  } else if(storage) {
     storage->next=scope->storage; scope->storage=storage; storage=0;
   }
   frontend->codes=0; frontend->residents=0;
@@ -669,7 +801,14 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
     }
   result=TRUE;
 done:
+  while(record=source_macro_records) {
+    source_macro_records=record->next;I386HeapFree(heap,record);
+  }
+  while(record=macro_records) {
+    macro_records=record->next;I386HeapFree(heap,record);
+  }
   if(storage) I386HeapFree(heap,storage);
+  if(transfer.selected) I386HeapFree(heap,transfer.selected);
   if(transfer.records) I386HeapFree(heap,transfer.records);
   I386IrqRestore(irq); return result;
 }

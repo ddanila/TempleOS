@@ -36,6 +36,9 @@ public I64 I386KeyboardRead(CI386KeyboardReader *reader,CI386KeyEvent *event,Boo
     //The raw read may have blocked while the IRQ producer filled its queue.
     if (I386KeyboardReadLost(reader)) { I386IrqRestore(flags); return -1; }
     result=I386KeyboardFeed(&reader->state,data,status,event);
-    if (result) { I386IrqRestore(flags); return result; }
+    if (result) {
+      event->arrival_jiffy=reader->input->last_arrival_jiffy;
+      I386IrqRestore(flags); return result;
+    }
   }
 }

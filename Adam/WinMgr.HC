@@ -1,3 +1,5 @@
+#include "/Adam/WinMgrRefreshCore.HC"
+
 #help_index "Windows;Task/Delay"
 
 public U0 Refresh(I64 cnt=1,Bool force=FALSE)
@@ -228,11 +230,7 @@ I64 WinMgrSleep(Bool flush_msgs=FALSE)
   CDate cdt;
 
   TimeCal;
-  if ((t_delta=(t=tS)-winmgr.last_refresh_tS)>0.01)
-    winmgr.fps=Max(1.0/t_delta,1);
-  else
-    winmgr.fps=99;
-  winmgr.last_refresh_tS=t;
+  WinMgrRefreshTime(&winmgr,t=tS);
   WinCalcIdles;
 
   if (flush_msgs)

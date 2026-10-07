@@ -16,7 +16,11 @@ public Bool I386KbcInputRead(CI386KbcInput *input,U8 *data,U8 *status,Bool wait=
   registration.kind=I386_WAIT_KEYBOARD; registration.object=input;
   registration.cancel=&I386KbcInputCancel;
   registration.cancelled=FALSE; registration.cancelling=FALSE;
-  while (!I386KbcQueueGet(&input->queue,data,status)) {
+  while (TRUE) {
+    if(input->queue.count) {
+      input->last_arrival_jiffy=input->arrival_jiffies[input->queue.head];
+      if(I386KbcQueueGet(&input->queue,data,status)) break;
+    }
     if (!wait || self==s->root) { I386IrqRestore(flags); return FALSE; }
     self->wait=&registration;
     input->waiter=self; input->read_cancelled=&registration.cancelled;

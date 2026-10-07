@@ -3,6 +3,9 @@
 Bool NativeDocRecordLoadCore(CDoc *doc,U8 *source,I64 size)
 {
   CDocEntry *entry,*cursor_entry=0;
+  CDocEntry *text_entry=NULL;
+  U8 *text_tag=NULL;
+  I64 run_start,run_size;
   CDocBin *bin;
   U8 *tag;
   Bool found_cursor=FALSE;
@@ -75,8 +78,24 @@ Bool NativeDocRecordLoadCore(CDoc *doc,U8 *source,I64 size)
         found_cursor=TRUE; cursor_entry=doc->head.last;
         if(cursor_entry==doc) cursor_col=0;
         else cursor_col=cursor_entry->max_col;
-      } else if(source[index]=='\n' || source[index]=='\t' ||
-          0x20<=source[index]<0x100)
+      } else if(0x20<=source[index]<0x100 && source[index]!=36) {
+        //Allocate canonical text runs; preserve dollar and cursor boundaries.
+        run_start=index;
+        while(index<text_size && 0x20<=source[index]<0x100 &&
+            source[index]!=36) index++;
+        run_size=index-run_start;
+        text_entry=NULL; text_tag=NULL;
+        try {
+          text_entry=DocEntryNewBase(doc,
+            DOCT_TEXT|doc->settings_head.dft_text_attr<<8);
+          text_tag=MAlloc(run_size+1,doc->mem_task);
+          MemCpy(text_tag,source+run_start,run_size); text_tag[run_size]=0;
+          text_entry->tag=text_tag; text_entry->max_col=run_size;
+          DocInsEntry(doc,text_entry);
+          text_entry=NULL; text_tag=NULL;
+        } catch { Free(text_tag); Free(text_entry); }
+        index--; //The common increment below reaches the next boundary.
+      } else if(source[index]=='\n' || source[index]=='\t' || source[index]==36)
         DocPutKey(doc,source[index],0);
       else return FALSE;
       index++;

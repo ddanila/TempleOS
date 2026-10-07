@@ -208,3 +208,79 @@ io_fail:
   volume->signature=0;
   return -1;
 }
+
+I64 I386RedSeaExtentSlot(CI386RedSea *volume,I64 *parent,U8 *name,I64 *result)
+{//Prepare all directory growth before publishing a move intent.
+  U8 sector[512],*raw;
+  CI386RedSeaEntry collision;
+  I64 directory=*parent,status,dir_size,index,slot=-1,grown;
+  Bool append=FALSE;
+  if(!I386RedSeaValid(volume) || !volume->disk->flush ||
+      !I386RedSeaNewName(name)) return -1;
+  status=I386RedSeaFind(volume,directory,name,&collision);
+  if (status<0) return -1;
+  if (status) return 0;
+  if (!I386RedSeaDirectory(volume,directory,sector,&dir_size) || (sector[0]&1)) return -1;
+  for (index=0;index<dir_size/64;index++) {
+    if (!(index&7) && index && !I386RedSeaSectorRead(volume,directory+index/8,sector)) return -1;
+    raw=sector+(index&7)*64;
+    if (!raw[2]) {
+      if (slot<0) { slot=index; append=TRUE; }
+      break;
+    }
+    if ((raw[1]&1) && slot<0) slot=index;
+  }
+  //The last slot must remain zero so directory walkers have a terminator.
+  if (slot<0 || append && slot+1>=dir_size/64) {
+    grown=I386RedSeaGrowDirectory(volume,directory,dir_size);
+    if(grown<=0) return grown;
+    directory=grown;
+    if(slot<0) slot=dir_size/64;
+    dir_size+=512; append=TRUE;
+  }
+  *parent=directory; *result=slot; return 1;
+}
+I64 I386RedSeaPublishExtent(CI386RedSea *v,I64 parent,I64 slot,U8 *name,
+  CI386RedSeaEntry *source)
+{//Prepared slot receives a second name for the journal-protected live extent.
+  U8 sector[512],*raw;
+  I64 i,size;
+  if(!source || !I386RedSeaNewName(name) || slot<2 ||
+      !I386RedSeaDirectory(v,parent,sector,&size) || slot>=size/64-1 ||
+      !I386RedSeaSectorRead(v,parent+slot/8,sector)) return -1;
+  raw=sector+(slot&7)*64;
+  if(raw[2] && !(raw[1]&1)) return 0;
+  for(i=0;i<64;i++) raw[i]=0;
+  raw[0]=source->attr; raw[1]=source->attr>>8;
+  for(i=0;name[i];i++) raw[2+i]=name[i];
+  I386RedSeaPutWord(raw+40,source->block);
+  I386RedSeaPutWord(raw+48,source->size);
+  I386RedSeaPutWord(raw+56,source->datetime);
+  if(!I386RedSeaSectorWrite(v,parent+slot/8,sector) || !I386RedSeaFlush(v)) {
+    v->signature=0; return -1;
+  }
+  return 1;
+}
+I64 I386RedSeaUnlinkExtent(CI386RedSea *v,I64 parent,U8 *name)
+{//Tombstone a name without releasing its extent; durable move intent owns it.
+  U8 sector[512],*raw;
+  I64 size,index,i;
+  if(!I386RedSeaNewName(name) || !I386RedSeaDirectory(v,parent,sector,&size)) return -1;
+  for(index=2;index<size/64;index++) {
+    if(index==2 || !(index&7))
+      if(!I386RedSeaSectorRead(v,parent+index/8,sector)) return -1;
+    raw=sector+(index&7)*64;
+    if(!raw[2]) return 0;
+    if(!(raw[1]&1)) {
+      i=0; while(i<38 && raw[2+i]==name[i]) { if(!name[i]) break; i++; }
+      if(i<38 && !name[i] && !raw[2+i]) {
+        raw[1]|=1;
+        if(!I386RedSeaSectorWrite(v,parent+index/8,sector) || !I386RedSeaFlush(v)) {
+          v->signature=0; return -1;
+        }
+        return 1;
+      }
+    }
+  }
+  return 0;
+}

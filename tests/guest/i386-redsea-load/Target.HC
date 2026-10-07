@@ -3,6 +3,7 @@
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
 #include "/Kernel/I386/ModuleFile.HH"
+extern Bool I386BuffersOverlap(U8 *a,I64 an,U8 *b,I64 bn);
 I64 Main(I64 a,I64 b)
 {
   CI386Ata disk;
@@ -28,8 +29,8 @@ I64 Main(I64 a,I64 b)
   reserve=I386HeapAlloc(&heap,65520);
   if (!reserve || I386RedSeaLoad(&v,&entry,&heap,"Main") || heap.allocations!=1 ||
       !I386HeapFree(&heap,reserve)) return 5;
-  //Leave room for the complete file buffer but none for the resulting image.
-  reserve=I386HeapAlloc(&heap,65504-((entry.size+7)&~7));
+  //Leave less than the complete file allocation requires.
+  reserve=I386HeapAlloc(&heap,65512-((entry.size+7)&~7));
   if (!reserve || I386RedSeaLoad(&v,&entry,&heap,"Main") || heap.allocations!=1 ||
       !I386HeapFree(&heap,reserve) || heap.used) return 6;
   disk.sectors=32769; v.sectors=32769-v.start;
@@ -42,7 +43,7 @@ I64 Main(I64 a,I64 b)
     entry_point=image;
     if ((*entry_point)(17,25)!=0x10000002A) return 9;
     reuse=I386HeapAlloc(&heap,entry.size);
-    if (reuse!=(0x40010)(U8 *)) return 10; //The released first file allocation.
+    if (!reuse || I386BuffersOverlap(image,I386HeapSize(&heap,image),reuse,entry.size)) return 10;
     for (i=0;i<entry.size;i++) reuse[i]=0xA5;
     if ((*entry_point)(1,2)!=0x100000014 || !I386HeapFree(&heap,reuse) ||
         !I386HeapFree(&heap,image) || heap.used || heap.allocations || !I386HeapValid(&heap))

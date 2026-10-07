@@ -13,7 +13,7 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
   for(region=pool->owned;region;region=region->next_owned) {
     if(count++>=pool->owned_count || region->pool && region->pool!=pool ||
         I386HeapSize(pool->heap,region)!=region->request ||
-        region->request<sizeof(CI386BackingRegion)+511+512 ||
+        region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+511+512 ||
         (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) return FALSE;
     address=(region+0)(U64); base=(region->base+0)(U64);
     if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) return FALSE;
@@ -65,6 +65,30 @@ Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
   pool->owned_count++; pool->retained+=region->span;
   return TRUE;
 }
+Bool I386MemBackingReserve(CI386BackingPool *pool,I64 pages)
+{//Explicit early reservation, with the same ownership and IRQ rules as lazy growth.
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
+  if(!I386MemBackingValid(pool) || pool->locked_flags || pool->growing ||
+      pages<1 || pages>(0xFFFFFFFF-sizeof(CI386BackingRegion)-511)/512)goto done;
+  pool->growing=1;
+  result=I386MemBackingGrow(pool,pages);
+  if(result)pool->owned->reserve_hold=1;
+  pool->growing=0;
+done:
+  I386IrqRestore(flags);return result;
+}
+Bool I386MemBackingReleaseReserve(CI386BackingPool *pool)
+{//Release retention only; existing allocations and page lists remain unchanged.
+  U32 flags=I386IrqSave;
+  CI386BackingRegion *region;
+  Bool result=FALSE;
+  if(!I386MemBackingValid(pool) || pool->locked_flags || pool->growing)goto done;
+  for(region=pool->owned;region;region=region->next_owned)region->reserve_hold=0;
+  result=TRUE;
+done:
+  I386IrqRestore(flags);return result;
+}
 I64 I386MemBackingTrim(CI386BackingPool *pool)
 {//Never call from PageFree: its caller may still need the returned block header.
   U32 flags=I386IrqSave;
@@ -75,7 +99,7 @@ I64 I386MemBackingTrim(CI386BackingPool *pool)
   }
   link=&pool->owned;
   while(region=*link) {
-    if(region->used) link=&region->next_owned;
+    if(region->used || region->reserve_hold) link=&region->next_owned;
     else {
       next=region->next_owned; span=region->span;
       if(region->pool && !I386MemPoolRemove(pool,region) || !I386HeapFree(pool->heap,region)) {
@@ -91,7 +115,8 @@ Bool I386MemBackingDestroy(CI386BackingPool *pool)
   U32 flags=I386IrqSave;
   Bool result=FALSE;
   //The owner must detach its reclamation callback before provider shutdown.
-  if(!pool || pool->reclaim || I386MemBackingTrim(pool)<0 || pool->owned || pool->regions || pool->used_u8s) goto done;
+  if(!pool || pool->reclaim || !I386MemBackingValid(pool) || pool->used_u8s ||
+      !I386MemBackingReleaseReserve(pool) || I386MemBackingTrim(pool)<0 || pool->owned || pool->regions) goto done;
   pool->grow=0;
   if(!I386MemPoolEmpty(pool)) goto done;
   pool->signature=0; pool->backing_signature=0; pool->heap=0; pool->quantum=0;

@@ -1,7 +1,25 @@
 #include "/Kernel/I386/HashPublic.HH"
 #include "/Kernel/HashTablePublicCore.HC"
 #include "/Kernel/SymbolDelete.HC"
-U0 MemorySymbolFree(U8 *context,U8 *allocation) { MemoryFree(allocation); }
+U0 MemorySymbolFree(U8 *context,U8 *allocation)
+{//Published compiler metadata has arena ownership, not a CMemUsed header.
+  CI386TaskSymbols *scope;
+  U32 flags;
+  if(!allocation)return;
+  flags=I386IrqSave;
+  scope=I386TaskSelf->symbol_state;
+  while(scope && scope->signature==I386_TASK_SYMBOLS_MAGIC) {
+    if(I386HeapSize(scope->heap,allocation)>=0) {
+      if(!I386HeapFree(scope->heap,allocation)) {
+        KernelLog("BAD SYMBOL FREE\n");KernelStop;
+      }
+      I386IrqRestore(flags);return;
+    }
+    scope=scope->parent;
+  }
+  I386IrqRestore(flags);
+  MemoryFree(allocation);
+}
 U0 MemoryHashDel(CHashSrcSym *symbol)
 {
   CSymbolRelease owner;
@@ -47,4 +65,20 @@ I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table)
   CHashDefineStr *entry=HashFind(name,task->hash_table,HTT_DEFINE_STR);
   if(entry) return MemoryHashLstAdd(entry->data,type,table);
   return 0;
+}
+
+Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1)
+{//A stack view limits the existing lookup to the original single-table scope.
+  CHashTable single;CHash *found;CHash **link;U32 flags;I64 i;
+  if(!entry || !table)return FALSE;
+  flags=I386IrqSave;
+  MemoryCopy(&single,table,sizeof(CHashTable));single.next=0;
+  found=HashFind(entry->str,&single,entry->type&~HTG_FLAGS_MASK,instance);
+  if(found!=entry){I386IrqRestore(flags);return FALSE;}
+  for(i=0;i<=table->mask;i++) {
+    link=table->body+i;
+    while(*link && *link!=entry)link=&(*link)->next;
+    if(*link==entry){*link=entry->next;I386IrqRestore(flags);MemoryHashDel(entry);return TRUE;}
+  }
+  I386IrqRestore(flags);return FALSE;
 }

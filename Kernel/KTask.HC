@@ -289,10 +289,11 @@ U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE)
 I64 ExeCmdLine(CCmpCtrl *cc)
 {//Terminal JIT-compile-and-execute loop for CCmpCtrl.
   I64 res=0,type,old_title_src=Fs->title_src;
-  U8 *ptr,*ptr2,*ptr3,*machine_code,*old_task_title=StrNew(Fs->task_title);
+  U8 *ptr,*ptr2,*ptr3,*machine_code=NULL,*old_task_title=StrNew(Fs->task_title);
   F64 t0;
   CDocEntry *doc_e;
   CDoc *doc;
+  try {
   if (Fs->title_src!=TTS_LOCKED_CONST)
     Fs->title_src=TTS_CUR_LEX;
   while (cc->token &&
@@ -336,7 +337,17 @@ I64 ExeCmdLine(CCmpCtrl *cc)
       }
       if (!(cc->flags&CCF_HAS_MISC_DATA))
 	Free(machine_code);
+      machine_code=NULL;
     }
+  }
+  } catch {
+    if (machine_code && machine_code!=INVALID_PTR && !(cc->flags&CCF_HAS_MISC_DATA))
+      Free(machine_code);
+    if (Fs->title_src!=TTS_LOCKED_CONST) {
+      Fs->title_src=old_title_src;
+      StrCpy(Fs->task_title,old_task_title);
+    }
+    Free(old_task_title); //Leave the exception unhandled for the caller.
   }
   if (Fs->title_src!=TTS_LOCKED_CONST) {
     Fs->title_src=old_title_src;
@@ -352,21 +363,7 @@ I64 ExeCmdLine(CCmpCtrl *cc)
     return res;
 }
 
-U0 SrvTaskCont()
-{//Act as server task in a loop handling commands.
-  I64 old_flags=GetRFlags;
-  FlushMsgs;
-  while (TRUE) {
-    CLI
-    if (JobsHndlr(old_flags) && Fs->title_src==TTS_TASK_NAME)
-      MemCpy(Fs->task_title,Fs->task_name,TASK_NAME_LEN);
-    FlushMsgs;
-    LBts(&Fs->task_flags,TASKf_IDLE);
-    LBts(&Fs->task_flags,TASKf_AWAITING_MSG);
-    Yield;
-    SetRFlags(old_flags);
-  }
-}
+#include "/Kernel/SrvTaskContCore.HC"
 
 U0 UserTaskCont()
 {//Terminal key-input-execute loop.

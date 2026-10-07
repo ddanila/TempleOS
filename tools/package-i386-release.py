@@ -70,14 +70,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--image', type=Path, default=DEFAULT_IMAGE)
     parser.add_argument('--out', type=Path, default=DEFAULT_OUT)
+    parser.add_argument('--loaded-firmware', type=Path, required=True,
+                        help='Loaded-ROM evidence recorded against this exact image')
     args = parser.parse_args()
     image = args.image.resolve()
     out = args.out.resolve()
     if out.exists():
         parser.error(f'output already exists: {out}')
-    if not image.is_file() or image.stat().st_size != 16 * 1024 * 1024:
-        parser.error('expected the 16 MiB Generation 2 raw disk image')
+    if not image.is_file() or image.stat().st_size not in (16*1024*1024,32*1024*1024,64*1024*1024):
+        parser.error('expected a supported 16, 32 or 64 MiB Generation 2 raw disk image')
     image_hash = sha256(image)
+    firmware_dir = args.loaded_firmware.resolve()
+    verify_firmware = runpy.run_path(
+        str(ROOT / 'tools/verify-i386-loaded-firmware.py'))['verify']
+    firmware_identity = verify_firmware(firmware_dir, image)
+    firmware_report = json.loads((firmware_dir / 'result.json').read_text())
 
     base = ROOT / 'build/i386-kernel'
     gen2 = base / 'selfhost-install-gen2-fixed'
@@ -332,6 +339,14 @@ def main():
         package = Path(tmp) / out.name
         package.mkdir()
         shutil.copyfile(ROOT / 'tools/verify-i386-release.py', package / 'verify.py')
+        firmware_target = package / 'evidence/loaded-firmware'
+        for name in ('result.json', *firmware_report['artifact_sha256']):
+            copy_evidence(firmware_dir / name, firmware_target / name)
+        copy_evidence(ROOT / 'tools/verify-i386-loaded-firmware.py',
+                      package / 'evidence/loaded-firmware-checker.py')
+        # Recheck the copied artifacts and input image before packaging succeeds.
+        if verify_firmware(firmware_target, image) != firmware_identity:
+            raise ValueError('Copied firmware evidence differs')
         disk_gz = package / 'TempleOS-i386-gen2.img.gz'
         with image.open('rb') as src, disk_gz.open('wb') as raw:
             with gzip.GzipFile(filename='', mode='wb', fileobj=raw, mtime=0, compresslevel=9) as zipped:
@@ -425,7 +440,7 @@ def main():
             'workstation session. Human manual acceptance is still open; '
             'this directory is a release candidate, not a published release.\n')
         manifest = {
-            'format': 1,
+            'format': 2,
             'image': 'TempleOS-i386-gen2.img',
             'image_bytes': image.stat().st_size,
             'image_sha256': image_hash,
@@ -436,6 +451,7 @@ def main():
             'disk_source_file_count': len(disk_files),
             'packaging_revision': revision,
             'guest_built_modules': 12,
+            'loaded_firmware_evidence': 'evidence/loaded-firmware',
             'flat_image_sha256': generation['flat_sha256'],
             'boot_area_sha256': generation['boot_area_sha256'],
             'recovery_artifact_sha256': recovery_artifact_hashes,

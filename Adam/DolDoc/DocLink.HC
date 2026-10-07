@@ -26,34 +26,9 @@ To edit a doc structure already in memory. See $LK,"SpriteEdText",A="MN:SpriteEd
 "AL:doc_address,linenum"
 */
 
-#define LK_FILE 	0
-#define LK_FILE_ANCHOR	1
-#define LK_FILE_FIND	2
-#define LK_FILE_LINE	3
-#define LK_MAN_PAGE	4
-#define LK_PLAIN	5
-#define LK_PLAIN_FIND	6
-#define LK_PLAIN_LINE	7
-#define LK_BIBLE_FIND	8
-#define LK_DEF		9
-#define LK_HELP_INDEX	10
-#define LK_ADDR		11
-#define LK_DOC		12 //See $LK,"SpriteEdText",A="MN:SpriteEdText"$()
-#define LK_DOC_ANCHOR	13
-#define LK_DOC_FIND	14
-#define LK_DOC_LINE	15
-#define LK_PLACE_ANCHOR	16
+#include "/Adam/DolDoc/EdLinkTypes.HH"
 
-public U8 *DocEntryLink(CDoc *doc,CDocEntry *doc_e)
-{//MAlloc new str, either tag or aux_str if link.
-  if (doc_e->de_flags&DOCEF_LINK) {
-    if (doc_e->de_flags & DOCEF_AUX_STR)
-      return StrNew(doc_e->aux_str,doc->mem_task);
-    else if (doc_e->de_flags & DOCEF_TAG)
-      return StrNew(doc_e->tag,doc->mem_task);
-  }
-  return NULL;
-}
+#include "/Adam/DolDoc/DocEntryLinkCore.HC"
 
 Bool DocFileEd(I64 _type,U8 *filename,
 	U8 *needle_str,I64 *_num,I64 edf_dof_flags)
@@ -175,125 +150,7 @@ Bool DocFileEd(I64 _type,U8 *filename,
   return res;
 }
 
-#define DFT_ADDR_LINK_BIN_SIZE	64
-
-public I64 EdLinkCvt(U8 *link_st,U8 **_filename=NULL,U8 **_needle_str=NULL,
-	I64 *_num=NULL,I64 edf_dof_flags=0)
-{//$LK,"Editor Link",A="MN:LK_FILE"$--> filename, needle_str and line number.
-  U8 *st,*ptr,*src,*filename=NULL,*needle_str=NULL,*filename2;
-  I64 res,i,num=1;
-  CHashSrcSym *tmph;
-  if (!link_st||!*link_st) {
-    if (edf_dof_flags&EDF_BAIL)
-      return -1;
-    link_st=blkdev.tmp_filename;
-  }
-  st=StrNew(link_st);
-  res=LK_FILE;
-  if (StrLen(st)>3 && st[2]==':') {
-    st[2]=0;
-    filename2=st+3;
-    switch (res=DefineMatch(st,"ST_LINK_TYPES",LMF_IGNORE_CASE)) {
-      case LK_MAN_PAGE:
-	if (tmph=HashFind(filename2,Fs->hash_table,HTG_SRC_SYM))
-	  res=EdLinkCvt(tmph->src_link,&filename,
-		&needle_str,&num,edf_dof_flags);
-	else
-	  res=-1;
-	goto lc_done;
-      case LK_ADDR:
-	if (ptr=StrLastOcc(filename2,",")) {
-	  *ptr=0;
-	  i=Str2I64(ptr+1);
-	} else
-	  i=DFT_ADDR_LINK_BIN_SIZE;
-	if (ptr=SrcEdLink(ExePrint("%s;",filename2),i)) {
-	  res=EdLinkCvt(ptr,&filename,&needle_str,&num,edf_dof_flags);
-	  Free(ptr);
-	} else
-	  res=-1;
-	goto lc_done;
-      case LK_DEF:
-	if (ptr=StrLastOcc(filename2,",")) {
-	  *ptr=0;
-	  i=Str2I64(ptr+1);
-	} else
-	  i=-1;
-	filename=StrNew(filename2);
-	num=i;
-	goto lc_done;
-      case LK_HELP_INDEX:
-	filename=StrNew(filename2);
-	goto lc_done;
-      case LK_BIBLE_FIND:
-	if (ptr=StrLastOcc(filename2,",")) {
-	  *ptr=0;
-	  src=ptr+1;
-	  while (*src) { //We do not allow ending verse
-	    if (*src=='-')
-	      *src=0;
-	    src++;
-	  }
-	  needle_str=StrNew(ptr+1);
-	}
-	i=DefineMatch(filename2,"ST_BIBLE_BOOKS",LMF_IGNORE_CASE);
-	if (i<0)
-	  res=-1;
-	else {
-	  num=Str2I64(DefineSub(i,"ST_BIBLE_BOOK_LINES"));
-	  filename2=BIBLE_FILENAME;
-	}
-	break;
-      case LK_FILE_LINE:
-      case LK_PLAIN_LINE:
-      case LK_DOC_LINE:
-	if (ptr=StrLastOcc(filename2,",")) {
-	  *ptr=0;
-	  num=Str2I64(ptr+1);
-	}
-	break;
-      case LK_FILE_ANCHOR:
-      case LK_DOC_ANCHOR:
-	if (ptr=StrLastOcc(filename2,",")) {
-	  *ptr=0;
-	  needle_str=StrNew(ptr+1);
-	}
-	break;
-      case LK_FILE_FIND:
-      case LK_PLAIN_FIND:
-      case LK_DOC_FIND:
-	if (ptr=StrLastOcc(filename2,",")) {
-	  *ptr=0;
-	  needle_str=StrNew(ptr+1);
-	  if (ptr=StrLastOcc(needle_str,":")) {
-	    *ptr=0;
-	    num=Str2I64(ptr+1);
-	  }
-	}
-	break;
-    }
-  } else
-    filename2=st;
-  if (res>=0) {
-    if (LK_DOC<=res<=LK_DOC_LINE)
-      filename=StrNew(filename2); //Holds document address as number.
-    else
-      filename=FileNameAbs(filename2,FUF_Z_OR_NOT_Z);
-  }
-lc_done:
-  Free(st);
-  if (_filename)
-    *_filename=filename;
-  else
-    Free(filename);
-  if (_needle_str)
-    *_needle_str=needle_str;
-  else
-    Free(needle_str);
-  if (_num)
-    *_num=num;
-  return res;
-}
+#include "/Adam/DolDoc/EdLinkCvtCore.HC"
 
 public Bool DocLinkChk(CDoc *doc,U8 *link_st)
 {//Check for bad $LK,"Editor Link",A="MN:LK_FILE"$.
@@ -332,27 +189,4 @@ public Bool DocLinkChk(CDoc *doc,U8 *link_st)
   return res;
 }
 
-public U8 *DocLinkFile(U8 *link_st,CTask *mem_task=NULL)
-{//Return the file for an $LK,"Editor Link Types",A="MN:LK_FILE"$.
-  U8 *filename=NULL,*st,*res=NULL;
-  if (link_st) {
-    switch (EdLinkCvt(link_st,&filename)) {
-      case LK_FILE:
-      case LK_FILE_ANCHOR:
-      case LK_FILE_FIND:
-      case LK_FILE_LINE:
-      case LK_PLAIN:
-      case LK_PLAIN_FIND:
-      case LK_PLAIN_LINE:
-	st=FileNameAbs(filename,FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS);
-	res=StrNew(st);
-	Free(st);
-	break;
-      case LK_BIBLE_FIND:
-	res=StrNew(BIBLE_FILENAME,mem_task);
-	break;
-    }
-    Free(filename);
-  }
-  return res;
-}
+#include "/Adam/DolDoc/DocLinkFileCore.HC"

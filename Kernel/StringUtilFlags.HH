@@ -1,0 +1,14 @@
+#ifndef STRING_UTIL_FLAGS_INCLUDED
+#define STRING_UTIL_FLAGS_INCLUDED
+#define SUF_REM_CTRL_CHARS	0x001
+#define SUF_REM_LEADING		0x002
+#define SUF_REM_TRAILING	0x004
+#define SUF_REM_SPACES		0x008
+#define SUF_SINGLE_SPACE	0x010
+#define SUF_TO_UPPER		0x020
+#define SUF_TO_LOWER		0x040
+#define SUF_S2T			0x080
+#define SUF_T2S			0x100 // Only works with MStrUtil
+#define SUF_SCALE_INDENT	0x200
+#define SUF_SAFE_DOLLAR		0x400
+#endif

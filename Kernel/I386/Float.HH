@@ -1,5 +1,6 @@
 #ifndef I386_FLOAT_INCLUDED
 #define I386_FLOAT_INCLUDED
+#include "/Kernel/MathConstants.HH"
 //Standalone intrinsic declarations; IDs match Compiler/CompilerA.HH.
 //Numeric conversion is distinct from a HolyC bitwise typecast.
 public _intern 0xB2 F64 Sqr(F64 value);

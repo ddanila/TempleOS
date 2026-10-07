@@ -1,21 +1,140 @@
 # i386 QEMU support matrix
 
-Current qualification (2026-10-05): main OS services remain ABI40. The complete
-unpromoted ABI47 text-run candidate is preserved in
-[the cumulative patch](patches/i386-text-run-integrated-candidate.patch).
-Its fresh original bootstrap, cross-build/386 boot audit and 15-command
-no-FPU/8MiB document session pass, including both text-run allocation failures,
-heap recovery, three exact large-source round trips and binary persistence.
-Full suite, six native providers, 20 debugger jobs and three-boot DolDoc session
-are running. Candidate promotion, its two native generations, its own packaged
-five-job qualification and release publication remain open.
+Authoritative current status: [saved checkpoint](port-checkpoint-2026-10-07.md).
+The latest diagnostic source cross-builds, but 8 MiB startup fails. The preceding
+compact-output snapshot passes 50 publication cases, nine runtime/VGA commands,
+and 16 integer/F64 commands at 16 MiB. No tests remain running. Entries below
+are historical snapshot records; their pending tests do not describe current work.
 
-The preceding Caller epoch has two matching native generations, deterministic
-packaging, native/source audits and four installed workflows with passing
-budgets. It still fails the newly added large-source gate; those passes do not
-qualify the complete text-run candidate. The full no-FPU native generation chain
-is separately running on that Caller epoch. Physical hardware verification is
-deferred; human observation is optional. See [PLAN.md](../PLAN.md) for the goal.
+Current worktree candidate (2026-10-07): frontend-only optimizer scratch
+release, with the direct optimizer stack-inspection contract preserved. Bootstrap,
+source/binary hash qualification and native cross-build pass. Image:
+`build/i386-frontend-scratch-cross-v69/kernel.img`, SHA256
+`e567b45566ebb9dfdf2545365fb0c0e94071ba52616e67a67dc73a964e1f02db`.
+The 386 instruction audit passes (96 BIOS / 209 protected-mode instructions).
+Normal 8 MiB startup, full 16 MiB diagnostics and runtime floating-context checks
+are running; no startup recovery is yet proven for this candidate. The preceding
+conditional-helper snapshot passed all 50 publication cases, runtime F64 and
+saved assembly execution at 16 MiB, but failed 8 MiB at a 4,116-byte expression
+stack allocation. Caller and allocator-callsite evidence is recorded in
+`build/i386-arena-caller-trace-boot-v69-8m/allocation-origin.json`.
+
+Selection-map checkpoint (2026-10-07): bare assembly, exact publication journals,
+compact command/expression contexts and a two-bit frontend publication selection
+map. The fresh two-generation bootstrap and native cross-build pass, including
+96 BIOS and 209 protected-mode instructions. Image:
+`build/i386-publication-bitmap-cross-b-v69/kernel.img`, SHA256
+`91e2eb959b205f2bc93b80f57ee4e05332f3162df5c28806c52dad0821ffb79d`.
+Normal 8 MiB startup fails at a 3,789-byte output-context allocation before
+publication. Full 16 MiB diagnostics and integer/F64 execution-answer checks
+remain running in the matching `build/i386-publication-bitmap-*` directories.
+The worktree has subsequently added conditional floating-helper context storage;
+that new source requires a fresh build and runtime qualification. No runtime
+pass is yet established for the conditional-helper candidate. The previous
+compact-parser snapshot passed 50 publication cases and saved bare/block assembly
+execution at 16 MiB, but failed 8 MiB startup at its 16,560-byte publication
+journal. Those results explain this resource change; they do not qualify it.
+
+Historical checkpoint before the assembly/publication resource changes (2026-10-07): compiler 69, console 66, memory 22 and probe 17.
+The 32 MiB source image is `build/doc-layout-runtime-cross-v69/kernel.img`,
+SHA256 `ac9c5af79ce3bac660f9a6f37200af982070d0a36b5000e39c2d82165206eb77`.
+Cross build and the 386 instruction audit pass. QEMU TCG `486,-fpu` passes
+normal 8 MiB startup (54.917 seconds, nine commands) and 16 MiB diagnostic
+startup (193.835 seconds, both native file phases and nine final commands).
+Aggregate initializer AOT/persistence/HolyC checks pass all 13 commands.
+Evidence: `build/i386-current-v69-checkpoint/result.json`.
+
+The bare-assembly snapshot six-provider run in
+`build/i386-retained-bare-assembly-b-v69` ended in a definitive 16 MiB OutMem
+rejection in DocRecalcCore.HC. Preserved evidence:
+`build/i386-bare-assembly-full-build-oom-v69/result.json`. It did not complete
+native self-hosting qualification.
+Current-source full workstation coverage, native generations, installation,
+packaging/publication and complete original API/application parity remain open.
+The Bible resource is absent from this image; God source/vocabulary delivery
+alone does not qualify the original God application workflows. See
+`build/i386-v69-content-gap-audit/result.json` and `PLAN.md`. Physical hardware
+is deferred and human observation remains optional. Older results below are
+historical evidence for their named source epochs.
+
+Historical macro source qualification (2026-10-06): console version 44 restores original
+macro serialization and executable playback through shared cores and native
+input filters. The current cross image is
+`build/macro-playback-candidate-v1/build/cross/kernel.img`, SHA256
+`eed525a8c9ccaf96ba34610ecaea630d39d20a5072762ae34d7ea690bf38154d`.
+Fresh bootstrap/cross-build and 386 instruction audit pass. The frozen full
+console suite passes 513 commands, exact VGA and 20 exact-heap document cycles
+at TCG / 486,-fpu / 8 MiB, with 29.1169-second startup.
+
+Selected actual macro tests pass self/child repeats, captured focus, invalid
+and retiring recipients, editor undo with stale stored timestamps, mixed
+character/arrow/key-up delivery, selected allocation failures, queued/active
+filter cancellation and interruption between repeats. These are individual
+source-image results, not a completed combined native/package qualification.
+The sixteen-case macro aggregate is prepared; see the
+[macro playback contract](i386-macro-playback-contract.md).
+
+A six-module guest rebuild was started for that frozen epoch in
+`build/macro-playback-candidate-v1/build/native-six-v1`. Its older source and
+results do not qualify the current v69 candidate. New native generations, packaged-image
+workflows and release promotion remain unqualified. Loaded system/VGA firmware
+comparison and standalone verification pass on the cross image; new release
+manifest integration is tested but still needs the final exact native/package
+image. Commit/push remains unavailable because this session's .git is read-only.
+Physical hardware remains deferred and human observation is optional.
+
+The following ABI 47 native/package evidence predates these source changes and
+must not be used to qualify the current source.
+
+Earlier ABI 47 qualification (2026-10-06): the scope-v1 candidate was integrated
+into the main working tree. The remote checkpoint remains ABI 40 because this
+session cannot write to `.git`. At that checkpoint, all 825 Kernel/Compiler/Adam source files matched
+the frozen candidate. A fresh original bootstrap, cross-build and 386 boot
+audit pass; the cross-built normal image matches the candidate byte for byte.
+The integrated runtime suite passes 513 commands, 13 allocation cases and
+20 exact-heap development cycles at QEMU TCG `486,-fpu` / 8 MiB.
+
+Both native generations pass installation, guest-built kernel construction,
+independent boot and installed-image audits in
+`build/key-arrival-candidate/build/key-arrival-scope-native-generations-v1`.
+All 12 modules, the 501912-byte flat kernel and the boot area match across
+generations; whole-disk hashes differ. The flat kernel SHA-256 is
+`899e2368cfeb9e15c6d79852f9b14c58496a137be9922e75906fff5e97592fb8`.
+
+Deterministic packaging and the independent packaged-image audit pass. The
+package is `build/key-arrival-integrated-native-package-v1`, SHA-256
+`de8114d5437b341d0b7c8cc0f62c79d134ed39e95e11602c78638796a155d0c0`.
+Its workstation, three-boot DolDoc, large-source and speaker workflows pass
+in `build/key-arrival-integrated-packaged-workflows-v1`. That aggregate failed
+because the resource invocation omitted QMP stdio. The corrected focused
+resource test passes 20 cycles with exact heap recovery in
+`build/key-arrival-integrated-packaged-resource-v2`. The corrected complete
+aggregate in `build/key-arrival-integrated-packaged-workflows-v2` passes all
+five jobs. The source image is unchanged and all 197 pinned inputs still match.
+
+Focused frozen-candidate evidence also covers both undo injection modes,
+large-source round trips, inherited-forward compiler scope, timed-message
+filter routes, public messages, macro allocation/registration recovery,
+20 debugger jobs and byte-exact binary/styled DolDoc exchange with original
+TempleOS. Playback scheduling, raw queue wrap/overflow/cancellation timing,
+final release qualification, commit and publication remain open. Physical
+hardware verification is deferred; manual observation is optional exploratory
+feedback. Historical results below belong to their named source epochs.
+See [PLAN.md](../PLAN.md).
+
+## Historical scope candidate runtime profile
+
+The scope-v1 cross-built image (`4e3cc55fc053f052061c8597f472a55c00cd42ef392641122d55713462533c7c`)
+passes the full workstation suite under TCG, `486,-fpu`, 8 MiB, standard VGA
+and a writable IDE copy, with QMP over stdio. The result is
+`build/key-arrival-candidate/build/key-arrival-scope-full-input-v2/result.json`.
+The 386 boot instruction audit is separate from this 486 runtime evidence;
+these tests do not establish physical 386 machine compatibility.
+
+A fresh firmware-open probe for this candidate did not execute QEMU:
+`build/key-arrival-scope-qemu-environment-v1/result.json` records that the
+sandbox denied strace ptrace access. The historical ROM hashes below remain
+historical evidence; fresh final-release firmware qualification is open.
 
 ## Firmware and machine record
 

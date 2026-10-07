@@ -2,6 +2,7 @@
 CI386BackingPool backing_pool;
 CI386Heap backing_heap;
 CHeapCtrl backing_heaps[2];
+extern I64 BackingPlaneBudgetTest();
 I64 PublicBackingTest()
 {
   CI386BackingPool *pool=&backing_pool;
@@ -67,5 +68,7 @@ I64 PublicBackingTest()
         backing_heap.allocations || !I386HeapValid(&backing_heap)) return 412;
   }
   if((GetRFlags^flags)&0x200) return 413;
-  return 0;
+  return BackingPlaneBudgetTest;
 }
+
+#include "BackingPlaneBudget.HC"

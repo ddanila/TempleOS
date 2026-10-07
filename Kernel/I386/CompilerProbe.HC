@@ -36,7 +36,13 @@ import U0 HashAdd(CHash *entry,CHashTable *table);
 import I64 StrCmp(U8 *left,U8 *right);
 import U32 char_bmp_alpha_numeric[16];
 import Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
+#include "/Compiler/I386/LexState.HH"
+import Bool I386LexFileOwned(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
+import Bool I386LexFileReleaseDetached(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
+import Bool I386LexSnapshotValid(CI386Heap *heap,CCmpCtrl *cc,CI386LexSnapshot *snapshot);
+import Bool I386LexSnapshotsPin(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file,Bool *pinned);
 import CLexFile *I386LexFilePush(CI386Heap *heap,CCmpCtrl *cc);
+#include "/Kernel/I386/BackingCheck.HC"
 extern U0 ProbeStorage(CI386CompilerProbe *probe);
 extern U0 ProbeTokens(CI386CompilerProbe *probe);
 extern U0 ProbeIdent(CI386CompilerProbe *probe);
@@ -311,9 +317,11 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
 {
   CI386Heap *heap=I386TaskSelf->memory;
   CCmpCtrl *cc; CLexFile *file; U8 *bytes,*name; U32 flags,saved_flags=GetRFlags;
+  CI386BackingCheck backing_check;
   I64 size,attr;
   I64 i,lines=0,used,allocations,refs=I386TaskSelf->lifetime_refs;
   if(!heap) heap=probe->heap;
+  if(!I386BackingCheckSave(&backing_check,heap,I386TaskSelf->code_heap)) KernelStop;
   used=heap->used; allocations=heap->allocations;
   if(!probe->disk_include || !probe->disk_include->push || !probe->files || !probe->files->read) KernelStop;
   if(probe->phase) SetRFlags(saved_flags|0x200);
@@ -370,7 +378,7 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
   if(!probe->compiler->control_leave(heap,cc) || I386TaskSelf->active_controls ||
       I386TaskSelf->last_cc!=&I386TaskSelf->next_cc) KernelStop;
   if(!probe->compiler->control_del(heap,cc,0,0) || I386TaskSelf->lifetime_refs!=refs) KernelStop;
-  if(heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap)) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check) || !I386HeapValid(heap)) KernelStop;
   KernelLog("DISK INCLUDE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(lines); KernelLog("\n");
 }
 

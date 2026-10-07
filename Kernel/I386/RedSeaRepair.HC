@@ -5,7 +5,7 @@ Bool I386RedSeaRepairDecode(CI386RedSea *v,U8 *raw,CI386RedSeaEntry *entry)
   I64 i,block=0,size=0;
   U16 attr=raw[0]|(raw[1]<<8);
   for(i=0;i<8;i++) { block|=(raw[40+i]+0)(U64)<<(8*i); size|=(raw[48+i]+0)(U64)<<(8*i); }
-  if(!(attr&0x800) || (attr&0x300) || !raw[2] ||
+  if(!(attr&0x800) || (attr&0x100) || !raw[2] ||
      (size<0 || size>(v->start+v->sectors-v->first)*512) ||
      (size && (block<v->first || block>=v->start+v->sectors ||
       (size+511)/512>v->start+v->sectors-block)) ||
@@ -52,7 +52,7 @@ Bool I386RedSeaRepairDirectory(CI386RedSea *v,U8 *bits,I64 bytes,I64 block,I64 p
     if(!raw[2]) return TRUE;
     if(!(raw[1]&1)) {
       attr=raw[0]|(raw[1]<<8);
-      if(!(attr&0x800) || (attr&0x300) || raw[2]=='.') return FALSE;
+      if(!(attr&0x800) || (attr&0x100) || raw[2]=='.') return FALSE;
       i=0; while(i<38 && raw[2+i]) i++;
       if(!i || i==38) return FALSE;
       entry.attr=attr; entry.block=0; entry.size=0;

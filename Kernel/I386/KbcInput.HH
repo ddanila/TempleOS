@@ -4,6 +4,7 @@
 #include "/Kernel/I386/Scheduler.HH"
 class CI386KbcInput {
   CI386KbcQueue queue;
+  I64 arrival_jiffies[64],last_arrival_jiffy; //Private, aligned with raw ring slots.
   CI386Scheduler *scheduler;
   CI386Task *waiter;
   Bool *read_cancelled; //Borrowed stack flag while a reader is registered.

@@ -8,4 +8,5 @@ extern I64 MemoryHashLstAdd(U8 *list,I64 type,CHashTable *table);
 extern U0 MemoryHashProbe();
 extern CHashDefineStr *MemoryDefineLstLoad(U8 *name,U8 *list);
 extern I64 MemoryHashDefineLstAdd(U8 *name,I64 type,CHashTable *table);
+extern Bool MemoryHashRemDel(CHash *entry,CHashTable *table,I64 instance=1);
 #endif

@@ -114,6 +114,37 @@ public Bool I386HeapValid(CI386Heap *hc)
   return I386HeapScan(hc,0)>=0;
 }
 
+#ifdef I386_HEAP_FAILURE_TRACE
+U0 I386HeapExhausted(CI386Heap *hc,I64 request)
+{//Allocation failure only: report physical capacity without allocating scratch.
+  CI386HeapBlock *block;
+  U32 offset=0,largest=0;
+#ifdef I386_ARENA_CALLER_TRACE
+  U32 *frame=GetRBP;
+#endif
+  while(offset<hc->size) {
+    block=hc->base+offset;
+    if(block->tag==I386_HEAP_FREE && block->span-16>largest)
+      largest=block->span-16;
+    offset+=block->span;
+  }
+  KernelLog("HEAP EXHAUSTED "); KernelHex(request); KernelLog(" ");
+  KernelHex(hc->used); KernelLog(" "); KernelHex(hc->size); KernelLog(" ");
+  KernelHex(largest); KernelLog(" "); KernelHex(hc->allocations); KernelLog("\n");
+#ifdef I386_ARENA_CALLER_TRACE
+  //Skip this logger and show the allocator's caller and its parent.
+  if(frame) frame=frame[0](U32 *);
+  KernelLog("HEAP FAILURE CALLERS");
+  if(frame) {
+    KernelLog(" "); KernelHex(frame[1]);
+    frame=frame[0](U32 *);
+    if(frame) { KernelLog(" "); KernelHex(frame[1]); }
+  }
+  KernelLog("\n");
+#endif
+}
+#endif
+
 public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Validate all metadata before locating a first-fit block and mutating the arena.
   CI386HeapBlock *block=0,*rest;
@@ -129,7 +160,12 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
     if(block->tag==I386_HEAP_FREE && block->span>=need) break;
     offset+=block->span;
   }
-  if(offset>=hc->size) return 0;
+  if(offset>=hc->size) {
+#ifdef I386_HEAP_FAILURE_TRACE
+    I386HeapExhausted(hc,size);
+#endif
+    return 0;
+  }
 #else
   asm {
     MOV EBX,U32 &hc[EBP]
@@ -152,7 +188,12 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
     JNZ @@10
 @@90:
   }
-  if(!block) return 0;
+  if(!block) {
+#ifdef I386_HEAP_FAILURE_TRACE
+    I386HeapExhausted(hc,size);
+#endif
+    return 0;
+  }
 #endif
   if(block->span-need>=24) {
     rest=hc->base+offset+need;
@@ -165,6 +206,40 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
   if(hc->used>hc->peak) hc->peak=hc->used;
   result=hc->base+offset+16;
   if(zero) for(i=0;i<requested;i++) result[i]=0;
+  return result;
+}
+
+public U8 *I386HeapAllocHigh(CI386Heap *hc,I64 size,Bool zero=FALSE)
+{//Validate the complete arena; use the high end of the last fitting free block.
+  CI386HeapBlock *block=0,*candidate;
+  U8 *result;
+  U32 offset=0,need,prefix,i,requested;
+  if(size<0 || size>0xFFFFFFFF-23 || !I386HeapValid(hc))return 0;
+  requested=size;need=(size+7)&~7;
+  if(!need)need=8;
+  need+=16;
+  while(offset<hc->size) {
+    candidate=hc->base+offset;
+    if(candidate->tag==I386_HEAP_FREE && candidate->span>=need)block=candidate;
+    offset+=candidate->span;
+  }
+  if(!block) {
+#ifdef I386_HEAP_FAILURE_TRACE
+    I386HeapExhausted(hc,size);
+#endif
+    return 0;
+  }
+  prefix=block->span-need;
+  if(prefix>=24) {
+    block->span=prefix;
+    block=block(U8 *)+prefix;
+    block->span=need;block->reserved=0;
+  }
+  block->requested=size;block->tag=I386_HEAP_USED;
+  hc->used+=block->span;hc->allocations++;
+  if(hc->used>hc->peak)hc->peak=hc->used;
+  result=block(U8 *)+16;
+  if(zero)for(i=0;i<requested;i++)result[i]=0;
   return result;
 }
 
@@ -222,5 +297,30 @@ public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
     if(next->tag==I386_HEAP_FREE) block->span+=next->span;
   }
   if(previous && previous->tag==I386_HEAP_FREE) previous->span+=block->span;
+  return TRUE;
+}
+
+public Bool I386HeapShrink(CI386Heap *hc,U8 *ptr,I64 size)
+{//Shrink an owned allocation in place; validate the entire arena before writes.
+  CI386HeapBlock *block,*rest,*next;
+  U32 need,tail,span;
+  I64 old_size=I386HeapSize(hc,ptr);
+  if(old_size<0 || size<0 || size>old_size) return FALSE;
+  block=ptr-16; span=block->span;
+  need=(size+7)&~7;
+  if(!need) need=8;
+  need+=16; tail=span-need;
+  if(tail>=24) {
+    rest=(ptr-16)+need;
+    //Read the old successor before writing the new free-block header.
+    if((ptr-16)+span<hc->base+hc->size) {
+      next=(ptr-16)+span;
+      if(next->tag==I386_HEAP_FREE) tail+=next->span;
+    }
+    rest->span=tail; rest->requested=0;
+    rest->tag=I386_HEAP_FREE; rest->reserved=0;
+    block->span=need; hc->used-=span-need;
+  }
+  block->requested=size;
   return TRUE;
 }

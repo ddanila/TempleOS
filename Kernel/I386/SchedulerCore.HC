@@ -323,6 +323,16 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
       task->next_cc!=&task->next_cc || task->last_cc!=&task->next_cc || s->focus==task) {
     I386IrqRestore(flags); return FALSE;
   }
+  //The finished task may have exited from its debugger execution stack.
+  //The guard above proves reclamation runs from another task's stack.
+  if(task->debug_stack) {
+    if(!task->debug_stack_heap || !task->debug_stack_size ||
+        I386HeapSize(task->debug_stack_heap,task->debug_stack)!=task->debug_stack_size ||
+        !I386HeapFree(task->debug_stack_heap,task->debug_stack)) {
+      I386IrqRestore(flags); return FALSE;
+    }
+    task->debug_stack=0;task->debug_stack_size=0;task->debug_stack_heap=0;
+  }
   if(task->file_state || task->file_clone || task->file_destroy) {
     if(!task->file_state || !task->file_clone || !task->file_destroy ||
         !(*task->file_destroy)(task) || task->file_state || task->file_clone || task->file_destroy) {

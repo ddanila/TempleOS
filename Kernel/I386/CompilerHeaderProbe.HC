@@ -1,4 +1,5 @@
 #include "/Kernel/I386/HelpFileCheck.HH"
+#include "/Kernel/I386/BackingCheck.HC"
 Bool ProbePublicMemoryInput(CI386CompilerProbe *probe,CI386CommandInput *input,CProbeInputAnswer *answer,I64 index)
 {
   Bool accepted=probe->compiler->input(input);
@@ -49,6 +50,16 @@ I64 ProbeDocumentLayout(CI386CompilerProbe *probe,CI386CommandInput *input)
   if(!I386HeapFree(heap,batch) || !I386HeapFree(heap,source) || !I386HeapFree(heap,name)) KernelStop;
   return checks;
 }
+CHash *ProbeHeaderFind(U8 *name,CHashTable *table,I64 mask)
+{//Worker diagnostics inherit the CPU root's published public declarations.
+  CHash *entry;
+  while(table) {
+    entry=ProbeSymbolFind(0,name,table,mask);
+    if(entry) return entry;
+    table=table->next;
+  }
+  return 0;
+}
 //Load the actual public headers, retry failure, and compare every public offset.
 U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
@@ -57,7 +68,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CI386TaskStorage *old_storage=scope->storage,*storage;
   CHashTable *table=task->hash_table;
   CHash **heads;
-  CHash *entry;
+  CHash *entry,*initial_null;
   CHashClass *forward;
   CHashSrcSym *help;
   CHashClass *document_type;
@@ -65,11 +76,18 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CI386CommandInput input;
   CProbeInputAnswer answer;
   U8 *bytes,*source,*name;
-  I64 i,j,start,end,length,size,attr,checks=0;
+  I64 i,j,start,end,length,size,attr,checks=0,symbol_type;
+  CHeapCtrl *public_heap=task->code_heap;
+  CI386BackingPool *backing=public_heap->bp;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs,before_used,before_allocations;
+  CI386BackingCheck backing_check;
   U32 flags=GetRFlags;
   Bool skip,accepted,break_caught;
+  if(!I386BackingCheckSave(&backing_check,heap,public_heap)) KernelStop;
   KernelLog("PUBLIC HEADER PROBE START "); KernelHex(probe->phase); KernelLog("\n");
+  KernelLog("PUBLIC HEADER BACKING BEFORE "); KernelHex(public_heap->used_u8s);
+  KernelLog(" "); KernelHex(public_heap->alloced_u8s); KernelLog(" "); KernelHex(backing->used_u8s);
+  KernelLog(" "); KernelHex(backing->owned_count); KernelLog(" "); KernelHex(backing->retained); KernelLog("\n");
   heads=I386HeapAlloc(heap,(table->mask+1)*sizeof(CHash *),FALSE);
   if(!heads) KernelStop;
   for(i=0;i<=table->mask;i++) heads[i]=table->body[i];
@@ -79,33 +97,43 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   input.heap=heap; input.types=probe->internal_types; input.files=probe->files;
   input.includes=probe->disk_include; input.filename="Probe/PublicHeaders.HC";
   input.context=&answer; input.answer=&ProbeInputAnswer; input.diagnostic=&ProbeInputDiagnostic;
-  input.source="extern class CTask;";
-  if(!probe->compiler->input(&input)) KernelStop;
-  forward=ProbeSymbolFind(0,"CTask",table,HTT_CLASS);
-  if(!forward || !Bt(&forward->flags,Cf_EXTERN)) KernelStop;
+  if(probe->phase) {
+    forward=ProbeHeaderFind("CTask",table,HTT_CLASS);
+    if(!forward || Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
+  } else {
+    input.source="extern class CTask;";
+    if(!probe->compiler->input(&input)) KernelStop;
+    forward=ProbeSymbolFind(0,"CTask",table,HTT_CLASS);
+    if(!forward || !Bt(&forward->flags,Cf_EXTERN)) KernelStop;
+  }
+  initial_null=ProbeHeaderFind("NULL",table,HTT_DEFINE_STR);
   before_used=heap->used; before_allocations=heap->allocations;
   input.flags=I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD;
   input.source="#include \"/Kernel/I386/PublicKernel.HH\"\nUnknown bad;";
   if(probe->compiler->input(&input) || input.exception!='Compiler' ||
-      !Bt(&forward->flags,Cf_EXTERN) || forward->size ||
+      heap->used!=before_used || heap->allocations!=before_allocations ||
+      ProbeHeaderFind("NULL",table,HTT_DEFINE_STR)!=initial_null) KernelStop;
+  if(probe->phase) {
+    if(ProbeHeaderFind("CTask",table,HTT_CLASS)!=forward ||
+        Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
+  } else if(!Bt(&forward->flags,Cf_EXTERN) || forward->size ||
       ProbeSymbolFind(0,"I386_PUBLIC_KERNEL_INCLUDED",table,HTT_DEFINE_STR) ||
-      ProbeSymbolFind(0,"CCPU",table,HTT_CLASS) ||
-      heap->used!=before_used || heap->allocations!=before_allocations) KernelStop;
+      ProbeSymbolFind(0,"CCPU",table,HTT_CLASS)) KernelStop;
   KernelLog("PUBLIC HEADER ROLLBACK "); KernelHex(probe->phase); KernelLog("\n");
   input.source="#include \"/Kernel/I386/PublicKernel.HH\"\n";
   answer.diagnostics=0;
   accepted=probe->compiler->input(&input);
   KernelLog("PUBLIC HEADER PUBLISHED "); KernelHex(accepted); KernelLog(" ");
   KernelHex(input.warnings); KernelLog(" "); KernelHex(forward->size); KernelLog("\n");
-  //CCPU retains the existing count-only unused-forward warning. Assertions
+  //CCPU and the completed CBpt retain count-only unused-forward warnings. Assertions
   //must produce no diagnostic, and no additional warning is accepted.
-  if(!accepted || input.warnings!=1 || answer.diagnostics ||
-      ProbeSymbolFind(0,"CTask",table,HTT_CLASS)!=forward ||
+  if(!accepted || input.warnings!=2*(1-probe->phase) || answer.diagnostics ||
+      ProbeHeaderFind("CTask",table,HTT_CLASS)!=forward ||
       Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
   before_used=heap->used; before_allocations=heap->allocations;
   if(!probe->compiler->input(&input) || input.warnings || heap->used!=before_used ||
       heap->allocations!=before_allocations) KernelStop;
-  help=ProbeSymbolFind(0,"C:/Doc/Que.DD.Z",table,HTT_HELP_FILE);
+  help=ProbeHeaderFind("C:/Doc/Que.DD.Z",table,HTT_HELP_FILE);
   if(!help || !(help->type&HTF_PUBLIC) || !help->src_link || !help->idx ||
       StrCmp(help->idx,"Data Types/Circular Queue")) KernelStop;
   input.source=I386_HELP_FILE_CHECK_SOURCE;
@@ -256,7 +284,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("PUBLIC HEADER LAYOUT "); KernelHex(probe->phase); KernelLog(" "); KernelHex(checks); KernelLog("\n");
   checks=ProbeDocumentLayout(probe,&input);
   if(checks!=271) KernelStop;
-  document_type=ProbeSymbolFind(0,"CEdFindText",table,HTT_CLASS);
+  document_type=ProbeHeaderFind("CEdFindText",table,HTT_CLASS);
   if(!document_type || !(document_member=document_type->member_lst_and_root) ||
       StrCmp(document_member->str,"find_text") || !document_member->meta ||
       StrCmp(document_member->meta->str,"format") || !(document_member->meta->flags&MLMF_IS_STR) ||
@@ -269,17 +297,36 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("PUBLIC DOC CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(checks); KernelLog("\n");
   for(i=0;i<=table->mask;i++)
     while((entry=table->body[i])!=heads[i]) {
-      if(!entry) KernelStop;
+      if(!entry) {
+        KernelLog("PUBLIC HEADER CLEANUP CHAIN "); KernelHex(i); KernelLog("\n"); KernelStop;
+      }
       table->body[i]=entry->next;
-      if(!I386HashDel(heap,entry)) KernelStop;
+      symbol_type=entry->type;
+      if(!I386HashDel(heap,entry)) {
+        KernelLog("PUBLIC HEADER CLEANUP SYMBOL "); KernelHex(i);
+        KernelLog(" "); KernelHex(symbol_type); KernelLog("\n"); KernelStop;
+      }
     }
   while(scope->storage!=old_storage) {
     storage=scope->storage; scope->storage=storage->next;
-    if(!I386TaskStorageRelease(heap,storage)) KernelStop;
+    if(!I386TaskStorageRelease(heap,storage)) {
+      KernelLog("PUBLIC HEADER CLEANUP STORAGE "); KernelHex(storage->count);
+      KernelLog("\n"); KernelStop;
+    }
   }
-  if(!I386HeapFree(heap,heads) || task->last_cc!=outer || task->active_controls!=1 ||
-      task->lifetime_refs!=refs || task->except_top || heap->used!=used ||
-      heap->allocations!=allocations || !I386HeapValid(heap) ||
+  if(!I386HeapFree(heap,heads)) KernelStop;
+  KernelLog("PUBLIC HEADER CLEANUP BASELINE "); KernelHex(heap->used); KernelLog(" "); KernelHex(used);
+  KernelLog(" "); KernelHex(heap->allocations); KernelLog(" "); KernelHex(allocations);
+  KernelLog(" "); KernelHex(task->lifetime_refs); KernelLog(" "); KernelHex(refs);
+  KernelLog(" "); KernelHex(task->active_controls); KernelLog(" "); KernelHex(I386HeapValid(heap));
+  KernelLog(" "); KernelHex(task->last_cc==outer); KernelLog(" "); KernelHex(task->except_top);
+  KernelLog(" "); KernelHex((GetRFlags&0x200)==(flags&0x200)); KernelLog("\n");
+  KernelLog("PUBLIC HEADER BACKING AFTER "); KernelHex(public_heap->used_u8s);
+  KernelLog(" "); KernelHex(public_heap->alloced_u8s); KernelLog(" "); KernelHex(backing->used_u8s);
+  KernelLog(" "); KernelHex(backing->owned_count); KernelLog(" "); KernelHex(backing->retained); KernelLog("\n");
+  if(task->last_cc!=outer || task->active_controls!=1 ||
+      task->lifetime_refs!=refs || task->except_top ||
+      !I386BackingCheckRestored(&backing_check) || !I386HeapValid(heap) ||
       (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
   KernelLog("PUBLIC HEADER CASE "); KernelHex(probe->phase); KernelLog("\n");
 }

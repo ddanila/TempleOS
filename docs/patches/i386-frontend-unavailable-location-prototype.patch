@@ -1,0 +1,19 @@
+--- a/Compiler/I386/Frontend.HC
++++ b/Compiler/I386/Frontend.HC
+@@ -170,7 +170,15 @@
+   cc->warning_cnt++;
+ }
+ U0 I386FrontendUnavailable(CI386Frontend *state)
+-{ I386FrontendReport(state,state->cc,0,"Native frontend service unavailable"); }
++{
++  KernelLog("FRONTEND UNAVAILABLE source ");
++  if(state->cc->lex_include_stk && state->cc->lex_include_stk->full_name)
++    KernelLog(state->cc->lex_include_stk->full_name);
++  KernelLog(" token ");
++  if(state->cc->cur_str) KernelLog(state->cc->cur_str);
++  KernelLog("\n");
++  I386FrontendReport(state,state->cc,0,"Native frontend service unavailable");
++}
+ U8 *I386FrontendAlloc(U8 *context,I64 bytes,Bool zeroed,Bool code_heap)
+ {
+   CI386Frontend *state=context;

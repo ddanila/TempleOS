@@ -4,37 +4,7 @@ U0 PortNop()
   InU8(0x21);
 }
 
-U16 EndianU16(U16 d)
-{//Swap big<-->little endian.
-  I64 res=0;
-  res.u8[1]=d.u8[0];
-  res.u8[0]=d.u8[1];
-  return res;
-}
-
-U32 EndianU32(U32 d)
-{//Swap big<-->little endian.
-  I64 res=0;
-  res.u8[3]=d.u8[0];
-  res.u8[2]=d.u8[1];
-  res.u8[1]=d.u8[2];
-  res.u8[0]=d.u8[3];
-  return res;
-}
-
-I64 EndianI64(I64 d)
-{//Swap big<-->little endian.
-  U64 res;
-  res.u8[7]=d.u8[0];
-  res.u8[6]=d.u8[1];
-  res.u8[5]=d.u8[2];
-  res.u8[4]=d.u8[3];
-  res.u8[3]=d.u8[4];
-  res.u8[2]=d.u8[5];
-  res.u8[1]=d.u8[6];
-  res.u8[0]=d.u8[7];
-  return res;
-}
+#include "/Kernel/EndianCore.HC"
 
 I64 BCnt(I64 d)
 {//Count set bits in I64.
@@ -127,11 +97,7 @@ F64 tS()
     return SysTimerRead/ToF64(SYS_TIMER_FREQ);
 }
 
-Bool Blink(F64 Hz=2.5)
-{//Return TRUE, then FALSE, then TRUE at given frequency.
-  if (!Hz) return 0;
-  return ToI64(cnts.jiffies*2*Hz/JIFFY_FREQ)&1;
-}
+#include "/Kernel/BlinkCore.HC"
 
 U0 Busy(I64 æS)
 {//Loosely timed.
@@ -273,12 +239,7 @@ Bool IsSysDbg()
   return Bt(&sys_semas[SEMA_DEBUG],0);
 }
 
-Bool Raw(Bool val)
-{//Set to direct scrn, BLACK & WHITE, non-windowed output mode.
-  if (!val)
-    VGAFlush;
-  return !LBEqu(&Fs->display_flags,DISPLAYf_NOT_RAW,!val);
-}
+#include "/Kernel/RawCore.HC"
 
 #include "/Kernel/IsRawCore.HC"
 

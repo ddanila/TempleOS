@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import shutil
 import subprocess
 import sys
 
@@ -85,6 +86,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path, nargs='?')
     parser.add_argument('--original', action='store_true')
+    parser.add_argument('--writable-copy', action='store_true', help='Use a fresh native disk copy without QEMU snapshot files')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     if args.original == (args.disk is not None):
@@ -129,13 +131,21 @@ Report("DONE original public messages\\n");
     else:
         disk_hash = sha(args.disk)
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
+        disk=args.disk
+        if args.writable_copy:
+            disk=out/'working.img'
+            if disk.exists():
+                raise ValueError('Use a fresh writable-copy output directory')
+            shutil.copyfile(args.disk,disk)
+        behavior = runner(disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
+                          snapshot=not args.writable_copy,
                           startup_check={'status': 'ok', 'answers': [], 'commands': [('HashFind("MAlloc",Fs->hash_table,HTT_FUN)!=0;', ['1']),
                                                                        ('HashFind("Msg",Fs->hash_table,HTT_FUN)!=0;', ['1'])] + commands})
         if sha(args.disk) != disk_hash:
             raise ValueError('Public message test changed the input disk')
         report = {'result': 'pass', 'behavior': behavior,
-                  'disk_sha256': disk_hash, 'source_disk_unchanged': True}
+                  'disk_sha256': disk_hash, 'source_disk_unchanged': True,
+                  'disk_policy': 'writable copy' if args.writable_copy else 'QEMU snapshot'}
     if sha(Path(__file__)) != checker:
         raise ValueError('Public message checker changed during execution')
     report.update(checker_sha256=checker, cases=19,

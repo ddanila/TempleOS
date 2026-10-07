@@ -13,6 +13,7 @@
 #include "/Kernel/I386/KeyboardEvent.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
 extern I64 ReadTest();
+extern I64 ArrivalInputTest();
 extern I64 CancelInputTest();
 extern I64 BreakKeyTest();
 extern I64 EventTest();
@@ -61,6 +62,8 @@ I64 Main(I64 a,I64 b)
   if (!I386SchedInit(&scheduler,&tasks[0],swap) ||
       I386KbcInputInit(0,&scheduler) || I386KbcInputInit(&input,0) ||
       !I386KbcInputInit(&input,&scheduler) || I386KbcInputInit(&input,&scheduler)) return 1;
+  result=ArrivalInputTest;
+  if (result) return result;
   result=ReadTest;
   if (result) return result;
   result=BreakKeyTest;
@@ -390,3 +393,5 @@ I64 ScanTest()
 
 #include "/Kernel/I386/KeyboardBreak.HC"
 #include "T:/BreakKey.HC"
+
+#include "T:/ArrivalInput.HC"

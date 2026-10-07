@@ -17,6 +17,80 @@ class CI386LexFileRelease
   CI386Heap *heap;
   Bool ok;
 };
+Bool I386LexFileOwned(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file)
+{
+  CI386LexFile *owned=file;
+  return I386HeapSize(heap,file)==sizeof(CI386LexFile) &&
+    owned->signature==I386_LEX_FILE_MAGIC && owned->heap==heap && owned->control==cc;
+}
+Bool I386LexSnapshotValid(CI386Heap *heap,CCmpCtrl *cc,CI386LexSnapshot *snapshot)
+{
+  CI386LexSavedFile *saved;
+  CLexFile *parent;
+  if(I386HeapSize(heap,snapshot)!=sizeof(CI386LexSnapshot) ||
+      snapshot->signature!=I386_LEX_SNAPSHOT_MAGIC || snapshot->heap!=heap ||
+      snapshot->control!=cc) return FALSE;
+  parent=snapshot->active;
+  for(saved=snapshot->parents;saved;saved=saved->next) {
+    if(I386HeapSize(heap,saved)!=sizeof(CI386LexSavedFile) ||
+        !I386LexFileOwned(heap,cc,parent) || parent->next!=saved->active ||
+        !I386LexFileOwned(heap,cc,saved->active)) return FALSE;
+    parent=saved->active;
+  }
+  return TRUE;
+}
+Bool I386LexSnapshotsPin(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file,Bool *pinned)
+{
+  CI386LexSnapshot *snapshot;
+  CI386LexSavedFile *saved;
+  *pinned=FALSE;
+  for(snapshot=cc->lex_prs_stk;snapshot;snapshot=snapshot->file.next) {
+    if(!I386LexSnapshotValid(heap,cc,snapshot)) return FALSE;
+    if(snapshot->active==file) *pinned=TRUE;
+    for(saved=snapshot->parents;saved;saved=saved->next)
+      if(saved->active==file) *pinned=TRUE;
+  }
+  return TRUE;
+}
+Bool I386LexSnapshotsSourceFree(CI386Heap *heap,CCmpCtrl *cc,U8 *source)
+{
+  CI386LexSnapshot *snapshot;
+  CI386LexSavedFile *saved;
+  for(snapshot=cc->lex_prs_stk;snapshot;snapshot=snapshot->file.next) {
+    if(!I386LexSnapshotValid(heap,cc,snapshot) ||
+        source==snapshot->file.buf || source==snapshot->file.full_name ||
+        source==(snapshot->active+0)(U8 *)) return FALSE;
+    for(saved=snapshot->parents;saved;saved=saved->next)
+      if(source==saved->file.buf || source==saved->file.full_name ||
+          source==(saved->active+0)(U8 *)) return FALSE;
+  }
+  return TRUE;
+}
+Bool I386LexFileReleaseDetached(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file)
+{//Only exhausted raw children detach. Roots and documents retain their release rules.
+  CI386LexFile *owned=file;
+  if(!I386LexFileOwned(heap,cc,file) || !file->next || file->flags&LFSF_DOC ||
+      file->buf && !I386HeapSize(heap,file->buf) ||
+      file->full_name && !I386HeapSize(heap,file->full_name)) return FALSE;
+  if(file->buf && !I386HeapFree(heap,file->buf)) return FALSE;
+  if(file->full_name && !I386HeapFree(heap,file->full_name)) return FALSE;
+  owned->signature=0; return I386HeapFree(heap,file);
+}
+Bool I386LexFileAdvance(CI386Heap *heap,CCmpCtrl *cc)
+{
+  CLexFile *file;
+  U32 flags=I386IrqSave;
+  Bool pinned,result=FALSE;
+  if(!cc || !(file=cc->lex_include_stk) || !file->next ||
+      !I386LexFileOwned(heap,cc,file) || file->flags&LFSF_DOC ||
+      !I386LexSnapshotsPin(heap,cc,file,&pinned)) goto done;
+  if(file->next->flags&LFSF_DOC && (!file->next->doc ||
+      file->next->doc->doc_signature!=DOC_SIGNATURE_VAL || !file->next->cur_entry)) goto done;
+  if(pinned) { cc->lex_include_stk=file->next; result=TRUE; }
+  else result=I386LexFilePop(heap,cc);
+done:
+  I386IrqRestore(flags); return result;
+}
 U0 I386LexFileFree(U8 *context,U8 *allocation)
 {
   CI386LexFileRelease *state=context;
@@ -74,21 +148,14 @@ Bool I386LexFilePop(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*document)(U8 *context,CDoc *document)=0,U8 *context=0)
 {
   CI386LexFile *file;
-  CI386LexSnapshot *snapshot;
   CLexFileRelease owner;
   CI386LexFileDispatch dispatch;
   U32 flags=I386IrqSave;
-  Bool valid=FALSE;
+  Bool valid=FALSE,pinned;
   if(!cc || !(file=cc->lex_include_stk) ||
       I386HeapSize(heap,file)!=sizeof(CI386LexFile)) goto checked;
   if(file->signature!=I386_LEX_FILE_MAGIC || file->heap!=heap || file->control!=cc) goto checked;
-  //Parent save points do not own an exhausted macro/include child. Keep the
-  //actual saved file live, including when a deeper save point refers to it.
-  for(snapshot=cc->lex_prs_stk;snapshot;snapshot=snapshot->file.next) {
-    if(I386HeapSize(heap,snapshot)!=sizeof(CI386LexSnapshot) ||
-        snapshot->signature!=I386_LEX_SNAPSHOT_MAGIC || snapshot->heap!=heap ||
-        snapshot->control!=cc || snapshot->active==&file->file) goto checked;
-  }
+  if(!I386LexSnapshotsPin(heap,cc,&file->file,&pinned) || pinned) goto checked;
   if((file->file.next || !(cc->flags&CCF_DONT_FREE_BUF)) &&
       file->file.flags&LFSF_DOC && file->file.doc && !document) goto checked;
   valid=TRUE;
@@ -129,12 +196,16 @@ Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is
   U32 flags;
   if(!cc || !cc->lex_include_stk || !name || !source || cc->flags&CCF_PMT ||
       cc->opts&OPTF_ECHO) return FALSE;
+  parent=cc->lex_include_stk;
+  if(parent->flags&LFSF_DOC && (!parent->doc ||
+      parent->doc->doc_signature!=DOC_SIGNATURE_VAL || !parent->cur_entry)) return FALSE;
   flags=I386IrqSave;
   source_size=I386HeapSize(heap,source);
   I386IrqRestore(flags);
   if(source_size<1 || source[source_size-1]) return FALSE;
   //The source must have one owner; reject buffers already owned by this control.
   if(source==cc->cur_str || source==(cc+0)(U8 *)) return FALSE;
+  if(!I386LexSnapshotsSourceFree(heap,cc,source)) return FALSE;
   for(parent=cc->lex_include_stk;parent;parent=parent->next)
     if(source==parent->buf || source==parent->full_name || source==(parent+0)(U8 *)) return FALSE;
   while(name[name_size-1]) name_size++;

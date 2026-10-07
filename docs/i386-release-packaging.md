@@ -156,3 +156,65 @@ trip, speaker, and resource profile. The large-source job runs three repeated
 load/save/free cycles on 486 without an FPU and 8 MiB RAM, compares saved bytes
 to the original file, and uses the normal startup budget. Earlier four-job
 reports remain historical version1 evidence; they do not cover this new gate.
+
+## Loaded firmware evidence without tracing
+
+`tools/record-i386-loaded-firmware.py` verifies ROM bytes for the ordinary
+`pc` / TCG / `486,-fpu` / 8 MiB profile with one raw IDE disk and no NIC.
+It rejects other profiles rather than silently probing a different device setup.
+It requires a recorded QEMU argument list and explicit system/VGA references:
+
+```sh
+python3 tools/record-i386-loaded-firmware.py COMMAND.json \
+  --repository build/macro-playback-candidate-v1 \
+  --system-rom /usr/share/seabios/bios-256k.bin \
+  --vga-rom /usr/share/seabios/vgabios-stdvga.bin \
+  --out build/loaded-firmware-evidence
+```
+
+The recorder pins executable, command, source disk, reference files, helpers
+and its own source. One disk copy provides a paused system-ROM dump. Another
+boots the guest, validates the standard VGA PCI device, temporarily maps its
+raw expansion ROM, persists a 64 KiB dump, and independently verifies both
+PCI registers restored. Independent RedSea extraction compares every reference
+VGA byte. The initialized VGA shadow at 0xc0000 is not used as an exact raw
+firmware match because it changes during startup.
+
+`build/macro-playback-loaded-firmware-v1/result.json` passes against the current
+cross image, including ten guest checks and unchanged inputs/disk. This is
+loaded-byte identity evidence, not file-open tracing, performance evidence, or
+qualification of an eventual native/package image. Rerun on that exact image
+and integrate artifact verification into the final release bundle before
+closing its firmware provenance gate.
+
+The format-1 recorder report also records explicit firmware reference hashes
+and lengths, source image identity, and hashes for the ROM dumps, QMP log,
+guest command and guest result. The standalone verifier needs only the saved
+evidence directory; optionally supply the final image to bind its identity:
+
+```sh
+python3 tools/verify-i386-loaded-firmware.py EVIDENCE_DIR --disk IMAGE.img
+```
+
+It recomputes the system ROM hash and the complete reference-length VGA prefix,
+checks those against pinned reference identities, validates artifact hashes,
+and requires the ten-command passing guest restoration result with the actual
+recorded CPU/machine/memory profile. It does not rerun QEMU or authenticate
+the provenance of an independently supplied reference report.
+
+`build/macro-playback-loaded-firmware-v2` passes this verification against the
+current exact cross image. Negative checks in
+`build/loaded-firmware-verifier-gates-v1/result.json` reject changed VGA reference
+bytes even when dump hashes are updated, a failed guest result even when its
+artifact hash is updated, and evidence bound to a different image. A final
+release package still needs these artifacts generated for its own exact image
+and incorporated into its package manifest/verification entry point.
+
+New release packaging requires `--loaded-firmware EVIDENCE_DIR` against its
+exact image. Format-2 manifests include the firmware evidence and standalone
+checker; verification independently compares loaded ROM/reference identities
+and binds the source hash to the decompressed release image. Format-2 bundles
+without this evidence are rejected. Archived format-1 bundles remain readable.
+The integration has positive/negative verifier tests, but the legacy packager's
+candidate paths and workstation counts still require migration before it can
+package the current frozen candidate. No complete new release bundle is claimed.

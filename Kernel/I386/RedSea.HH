@@ -47,7 +47,7 @@ public extern I64 I386RedSeaReplace(CI386RedSea *volume,I64 directory,U8 *name,U
 public extern Bool I386RedSeaRepairBitmap(CI386RedSea *volume,U8 *scratch,I64 bytes);
 public extern Bool I386RedSeaMoveIntentSet(CI386RedSea *volume,I64 source_parent,Bool source_root,
   U8 *source_name,I64 destination_parent,Bool destination_root,U8 *destination_name,
-  CI386RedSeaEntry *source);
+  CI386RedSeaEntry *source,Bool transfer=FALSE);
 public extern Bool I386RedSeaMoveIntentClear(CI386RedSea *volume);
 extern Bool I386RedSeaMoveRecover(CI386RedSea *volume);
 //1 found, 0 absent, -1 invalid/I/O failure. Resolve absolute or directory-relative slash paths.

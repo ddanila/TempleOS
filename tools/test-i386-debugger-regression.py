@@ -4,6 +4,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -47,6 +48,7 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--cycles', type=int, default=5)
     parser.add_argument('--workers', type=int, default=2)
+    parser.add_argument('--writable-copies',action='store_true',help='Use isolated disk copies where QEMU snapshot temporary files are unavailable')
     args = parser.parse_args()
     if not 1 <= args.cycles <= 20 or not 1 <= args.workers <= 4:
         parser.error('Use 1..20 cycles and 1..4 workers')
@@ -70,6 +72,7 @@ def main():
     selected = jobs(args.cycles)
     report = dict(result='running', disk_sha256=digest, input_sha256=inputs,
                   cpu='486,-fpu', ram_mib=8, cycles=args.cycles,
+                  disk_policy='writable copies' if args.writable_copies else 'QEMU snapshots',
                   expected_jobs=[name for name, _, _ in selected], jobs={},
                   scope='Existing debugger register/step/stack/breakpoint/concurrency/Caller contracts on one image; not complete API parity, native rebuilding or release acceptance')
 
@@ -83,10 +86,15 @@ def main():
     def run(job):
         name, tool, options = job
         unchanged()
+        environment=os.environ.copy()
+        if args.writable_copies:
+            environment['TEMPLEOS_QEMU_WRITABLE_SNAPSHOTS']='1'
+        else:
+            environment.pop('TEMPLEOS_QEMU_WRITABLE_SNAPSHOTS',None)
         with (out / (name + '.log')).open('w') as log:
             subprocess.run([sys.executable, str(snapshot / 'tools' / tool),
                             str(disk), '--out', str(out / name), *options],
-                           cwd=snapshot, stdout=log, stderr=subprocess.STDOUT, check=True)
+                           cwd=snapshot, env=environment, stdout=log, stderr=subprocess.STDOUT, check=True)
         path = out / name / 'result.json'
         result = json.loads(path.read_text())
         if (result.get('result') != 'pass' or result.get('disk_sha256') != digest
@@ -97,6 +105,11 @@ def main():
                 behavior.get('vga')) != ('pass', '486,-fpu', 8,
                                           'all pixels matched at each checkpoint'):
             raise ValueError('Wrong debugger execution profile: ' + name)
+        if args.writable_copies:
+            provenance=out/name/'behavior/snapshot-provenance.json'
+            storage=json.loads(provenance.read_text())
+            if storage.get('source_disk_sha256')!=digest or storage.get('policy')!='writable disk copy':
+                raise ValueError('Wrong copied debugger disk provenance: '+name)
         unchanged()
         return dict(result=result, result_sha256=sha(path))
 
