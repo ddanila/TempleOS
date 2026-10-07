@@ -33,13 +33,13 @@ def main():
     core_target.write_bytes(core.read_bytes())
     (overlay / 'Once.HC').write_bytes(fixture.read_bytes())
     report = {'result': 'running', 'input_sha256': pins,
-              'scope': 'Actual HolyC bounded writer vs contiguous byte oracle, 6 scratch sizes, 30 short/error sinks and 11 invalid requests; host-compiled core only, not native frontend/staging integration'}
+              'scope': 'Actual HolyC bounded writer vs contiguous byte oracle, 6 scratch sizes, 30 short/error sinks, 11 invalid requests and 10 borrowed-span checks; host-compiled core only, not native frontend/staging integration'}
     try:
         subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay', str(ROOT / 'build/rebuild-test/overlay'),
                         '--overlay', str(overlay), '--output', str(out / 'test.iso')], cwd=ROOT, check=True)
         subprocess.run([sys.executable, 'tools/guest-run.py', str(out / 'test.iso'), '--out', str(out / 'guest'),
                         '--qmp-stdio', '--timeout', '120'], cwd=ROOT, check=True)
-        if 'DONE module-writer 6 identical 30 write-failures 11 invalid\n' not in (out / 'guest/debug.log').read_text():
+        if 'DONE module-writer 6 identical 30 write-failures 11 invalid 10 span-checks\n' not in (out / 'guest/debug.log').read_text():
             raise ValueError('Missing writer contract result')
         if any(hashlib.sha256(Path(p).read_bytes()).hexdigest() != h for p, h in pins.items()):
             raise ValueError('Test inputs changed')

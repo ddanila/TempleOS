@@ -5976,7 +5976,8 @@ python3 tools/test-i386-module-check.py
 
 The first executes the actual HolyC writer against the contiguous packer:
 six scratch sizes, cross-boundary fixups, immutable inputs, 30 short/error
-sinks and 11 invalid requests rejected before writes. It pins its inputs and
+sinks and 11 invalid requests rejected before writes, plus ten borrowed-span
+checks for bounds, overlap and alignment holes. It pins its inputs and
 accepts `--writer-core <path>` for controlled mutation tests. It exercises the
 host-compiled core; native frontend memory limits and disk publication require
 separate integration qualification. The second runs 46 shared validator cases

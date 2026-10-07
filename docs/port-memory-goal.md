@@ -520,3 +520,18 @@ task-owned disk staging and cleanup, then qualify native writer execution and
 real short-write/unwind/publication behavior. Keep the existing contiguous
 packing API. Only then run all six native providers at 16 MiB and two installed
 self-hosted generations, followed by the current-source 8 MiB/no-FPU gates.
+
+### Borrowed payload spans
+
+The writer core now provides a validated, sorted span view and a binary-search
+byte reader. Code, globals and literal storage can remain in their original
+allocations; alignment holes return zero. Validation rejects overlapping spans,
+missing storage, empty spans and out-of-range lengths without U32 wraparound.
+The reader requires a validated view whose borrowed storage remains alive.
+
+`build/i386-module-writer-borrowed-spans/result.json` passes the existing 47
+writer cases using three borrowed spans, plus ten span checks covering invalid
+views and an interior alignment hole. Source and binary inputs are pinned.
+This remains host HolyC core evidence. Frontend metadata construction and
+task-owned disk staging are still pending; the native 16 MiB blocker is not
+yet resolved. The previous 47-case runs remain historical foundation evidence.

@@ -1,5 +1,42 @@
 //Bounded T32M serializer; metadata uses final absolute string offsets.
 #include "/Kernel/I386/ModuleCheck.HH"
+//Sorted borrowed spans cover live code/data; alignment holes read as zero.
+class CI386ModuleWriteSpan {
+  U32 offset,bytes;
+  U8 *data;
+};
+class CI386ModuleWriteSpans {
+  CI386ModuleWriteSpan *spans;
+  U32 count,bytes;
+};
+Bool I386ModuleWriteSpansValid(CI386ModuleWriteSpans *view)
+{
+  U32 i,end=0;
+  CI386ModuleWriteSpan *span;
+  if(!view || !view->bytes || !view->count || !view->spans) return FALSE;
+  for(i=0;i<view->count;i++) {
+    span=view->spans+i;
+    if(!span->data || !span->bytes || span->offset<end ||
+        span->offset>view->bytes || span->bytes>view->bytes-span->offset)
+      return FALSE;
+    end=span->offset+span->bytes;
+  }
+  return TRUE;
+}
+U8 I386ModuleWriteSpanByte(U8 *context,U32 offset)
+{//Use only after validating the view; no allocation or payload copy.
+  CI386ModuleWriteSpans *view=context;
+  CI386ModuleWriteSpan *span;
+  U32 lo=0,hi=view->count,mid;
+  if(offset>=view->bytes)return 0;
+  while(lo<hi) {
+    mid=lo+(hi-lo)/2;span=view->spans+mid;
+    if(offset<span->offset)hi=mid;
+    else if(offset-span->offset>=span->bytes)lo=mid+1;
+    else return span->data[offset-span->offset];
+  }
+  return 0;
+}
 class CI386ModuleWriteView {
   CI386ModuleHeader *header;
   CI386ModuleRecord *records;

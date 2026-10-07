@@ -9,12 +9,13 @@ U8 *mw_strings="First\0Second\0Ext\0State\0";
 I64 mw_total,mw_calls,mw_fail,mw_mode,mw_limit;
 I64 mw_limits[6]={1,3,17,31,512,4096};
 Bool mw_bad;
+CI386ModuleWriteSpan mw_spans[3];
+CI386ModuleWriteSpans mw_view;
 U8 MWCode(U8 *context,U32 offset)
 {
   no_warn context;
   if(offset>=64) {mw_bad=TRUE;return 0;}
-  if(offset==63)return 0;
-  return mw_code[offset];
+  return I386ModuleWriteSpanByte(&mw_view,offset);
 }
 I64 MWSink(U8 *context,U32 offset,U8 *buffer,U32 bytes)
 {
@@ -53,6 +54,13 @@ I64 MWContract()
   mw_raw[5].kind=3;mw_raw[5].offset=32;mw_raw[5].name_offset=17;mw_raw[5].name_length=5;
   mw_raw[6].kind=6;mw_raw[6].offset=35;mw_raw[6].name_offset=48;
   mw_raw[7].kind=7;mw_raw[7].offset=43;mw_raw[7].name_offset=13;mw_raw[7].name_length=3;
+  mw_view.spans=mw_spans;mw_view.count=3;mw_view.bytes=64;
+  mw_spans[0].offset=0;mw_spans[0].bytes=16;mw_spans[0].data=mw_code;
+  mw_spans[1].offset=16;mw_spans[1].bytes=16;mw_spans[1].data=mw_code+16;
+  mw_spans[2].offset=32;mw_spans[2].bytes=31;mw_spans[2].data=mw_code+32;
+  if(!I386ModuleWriteSpansValid(&mw_view))return 2;
+  for(i=0;i<63;i++)if(MWCode(0,i)!=mw_code[i])return 3;
+  if(MWCode(0,63))return 4;
   MWStage("WRITER oracle start\n");
   mw_total=I386ModulePackRaw(mw_reference,512,reference_code,63,mw_raw,8,mw_strings,23);
   MWStage("WRITER oracle done\n");
@@ -89,9 +97,24 @@ I64 MWContract()
   MWReset(4097);if(MWWrite || mw_calls)return 71;
   MWReset(17);
   if(I386ModuleWriteParts(&mw_header,mw_records,mw_strings,&MWCode,0,0,0,mw_scratch+1,17) || mw_calls)return 72;
+  //Rejected span views must never be handed to the payload reader.
+  mw_view.count=0;if(I386ModuleWriteSpansValid(&mw_view))return 80;mw_view.count=3;
+  mw_view.spans=0;if(I386ModuleWriteSpansValid(&mw_view))return 81;mw_view.spans=mw_spans;
+  mw_spans[1].offset=15;if(I386ModuleWriteSpansValid(&mw_view))return 82;mw_spans[1].offset=16;
+  mw_spans[1].bytes=0;if(I386ModuleWriteSpansValid(&mw_view))return 83;mw_spans[1].bytes=16;
+  mw_spans[2].bytes=33;if(I386ModuleWriteSpansValid(&mw_view))return 84;mw_spans[2].bytes=31;
+  mw_spans[2].offset=0xFFFFFFFF;if(I386ModuleWriteSpansValid(&mw_view))return 85;mw_spans[2].offset=32;
+  mw_spans[2].data=0;if(I386ModuleWriteSpansValid(&mw_view))return 86;mw_spans[2].data=mw_code+32;
+  mw_view.bytes=0;if(I386ModuleWriteSpansValid(&mw_view))return 87;mw_view.bytes=64;
+  if(I386ModuleWriteSpansValid(0))return 88;
+  //An interior alignment hole, with bytes immediately on either side.
+  mw_spans[1].offset=17;mw_spans[1].bytes=15;mw_spans[1].data=mw_code+17;
+  if(!I386ModuleWriteSpansValid(&mw_view) || MWCode(0,16) ||
+      MWCode(0,15)!=mw_code[15] || MWCode(0,17)!=mw_code[17])return 89;
+  mw_spans[1].offset=16;mw_spans[1].bytes=16;mw_spans[1].data=mw_code+16;
   return 0;
 }
 U0 MWReport(U8 *text){while(*text)OutU8(0xE9,*text++);}
 I64 mw_result=MWContract;
 if(mw_result){U8 *line=MStrPrint("FAIL module-writer %d\n",mw_result);MWReport(line);Free(line);}
-else MWReport("DONE module-writer 6 identical 30 write-failures 11 invalid\n");
+else MWReport("DONE module-writer 6 identical 30 write-failures 11 invalid 10 span-checks\n");
