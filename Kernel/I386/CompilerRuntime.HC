@@ -50,6 +50,9 @@ extern I64 I386RuntimeLexNext(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I6
 extern I64 I386RuntimeLexIncludes(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,I64 *compiled_lines,CI386LexIncludeService *includes);
 extern U0 ICInfoInit();
 extern U0 I386ExecutionBreakPoll();
+extern I64 I386FrontendModuleWriteUnit(CPrsSymbolServices *symbols,
+  I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
+  U8 *scratch,I64 scratch_bytes);
 extern Bool I386FrontendBindFiles(CPrsSymbolServices *symbols,CI386FileServices *files);
 extern I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
@@ -57,8 +60,11 @@ U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
 Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(index<0 || index>1 || !binding) return FALSE;
-  if(index) {
+  if(index<0 || index>2 || !binding) return FALSE;
+  if(index==2) {
+    binding->name="I386FrontendModuleWriteUnit";
+    binding->address=(&I386FrontendModuleWriteUnit+0)(U64);
+  } else if(index) {
     binding->name="I386ModuleValid";
     binding->address=(&I386ModuleValid+0)(U64);
   } else {
@@ -124,6 +130,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
 #include "/Compiler/I386/LexString.HC"
 #include "/Kernel/I386/ModuleCheck.HC"
 #include "/Kernel/I386/ModulePackCore.HC"
+#include "/Kernel/I386/ModuleWriteCore.HC"
 #include "/Kernel/I386/SoftF64.HC"
 #include "/Kernel/I386/FloatMath.HC"
 #include "/Kernel/I386/MathPublic.HC"

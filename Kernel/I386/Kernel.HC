@@ -568,7 +568,7 @@ U0 KernelCompilerLoad()
   kernel_compiler_size=I386HeapSize(&kernel_heap,kernel_compiler_image);
   kernel_compiler_span=kernel_heap.used-used;
   if(!kernel_compiler.symbols_init(&kernel_root,&kernel_heap,kernel_symbols,1024)) KernelStop;
-  if(KernelResidentPublish(kernel_compiler_image,kernel_compiler_size,kernel_compiler.export_at)!=2) KernelStop;
+  if(KernelResidentPublish(kernel_compiler_image,kernel_compiler_size,kernel_compiler.export_at)!=3) KernelStop;
   packer=HashFind("I386ModulePackRaw",kernel_symbols,HTT_EXPORT_SYS_SYM);
   validator=HashFind("I386ModuleValid",kernel_symbols,HTT_EXPORT_SYS_SYM);
   if(!packer || !validator ||

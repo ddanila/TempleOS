@@ -535,3 +535,171 @@ views and an interior alignment hole. Source and binary inputs are pinned.
 This remains host HolyC core evidence. Frontend metadata construction and
 task-owned disk staging are still pending; the native 16 MiB blocker is not
 yet resolved. The previous 47-case runs remain historical foundation evidence.
+
+### Frontend bounded metadata path — integration candidate
+
+The frontend now shares its existing function/global selection and layout checks
+between contiguous packing and an internal bounded-output entry point. The
+new path allocates records, strings and borrowed-span metadata, rather than a
+second complete payload. Metadata allocations are released after normal sink
+completion or failure. Existing service entry points keep their signatures.
+Top-level assembly bundles currently reject bounded output; disk staging,
+exception cleanup and public runtime binding remain to be integrated.
+
+`build/i386-frontend-bounded-bootstrap.log` passes the two-generation bootstrap.
+`build/i386-frontend-bounded-cross.log` passes cross-compilation and the 386 boot
+instruction audit (96 BIOS / 209 protected-mode instructions). This establishes
+compilation, not native bounded-writer execution or memory-budget acceptance.
+The 16 MiB diagnostic run `build/i386-frontend-bounded-diag-16m` is terminal
+FAIL: phase-zero native formatter checks stop with `FAIL native kernel`, after
+the preceding native file check passed. This candidate is not qualified.
+Native byte identity,
+allocation/failure cleanup, then staged file publication are the next gates.
+
+Formatter localization adds phase markers around packing, loading and negative
+execution checks without changing their assertions. The trace bootstrap passes
+(`build/i386-frontend-bounded-format-trace-bootstrap.log`). The trace cross-build passes;
+`i386-frontend-bounded-format-trace-diag-16m` is terminal FAIL. Its last
+markers show packing, loading and negative-input execution completed. The
+failure is afterward, at optional target formatting or heap restoration. The frontend integration remains
+uncommitted until this regression is understood.
+
+A follow-up logs the target-format flag and heap counters after image release,
+keeping the original restoration assertion. Its sequential bootstrap/cross/
+diagnostic job uses the `i386-frontend-bounded-format-memory` prefix. Inspect
+the live job before restarting; no native bounded-path pass is claimed.
+
+The memory trace diagnostics are terminal FAIL. `NATIVE FORMAT NEGATIVE DONE`
+reports a false target-format flag; `NATIVE FORMAT MEMORY` reports exact heap
+restoration (`0x6C5BA8` bytes and `0x17E` allocations both before/after). The
+failure is later in the enclosing probe, not these checks. A cleanup trace
+now distinguishes module release, each scalar-root removal and final heap
+restoration. Its pipeline uses `i386-frontend-bounded-format-cleanup`.
+
+Cleanup trace diagnostics are terminal FAIL: module release and all six scalar
+root removals succeed, but final counters are `0x6C1C28` / `0x11D`, versus
+`0x6BF9E0` / `0x11C` before the probe. One allocation spanning `0x2248`
+(8776) bytes remains. A bounded stack-only heap snapshot now identifies new
+blocks at this failure boundary; it leaves the original assertion intact.
+The next pipeline uses `i386-frontend-bounded-format-block`.
+
+The block-identification run is terminal FAIL. It identifies a new payload at
+`0x857D18`, requested `0x2233` (8755) bytes, spanning `0x2248` (8776) bytes.
+This request equals an 8192-byte public backing region plus
+`sizeof(CI386BackingRegion)` and 511 bytes of alignment in
+`I386MemBackingGrow`. This is strong evidence of cached backing storage, but
+the owner must still be confirmed from the backing pool's owned list.
+`I386TaskCodeRelease` trims cached pages only when total live heap bytes reach
+zero; additional empty page blocks can remain while unrelated code is live.
+Next confirm owned-region/page counters and add a regression for releasing a
+fully free page block while preserving live allocations in other blocks. Any
+fix must retain public heap layout, live pointer identity and allocator safety;
+do not relax the existing exact-restoration assertions.
+
+The existing `tests/guest/i386-heap/BackingAccounting.HC` explicitly tests the
+observed case: temporary small allocations grow a backing region while another
+allocation stays live, and the cache remains after release. It accepts only
+verified owned backing cache; physical and public payload leaks, damaged
+accounting and private compiler-arena leaks are rejected. Thus the raw heap
+assertion in the formatter subprobe conflicts with the established accounting
+contract already used by the enclosing compiler probe. The earlier description
+of a confirmed leak was premature: the extra block is not yet proven leaked.
+
+The formatter now uses the existing `I386BackingCheckSave/Restored` contract.
+This confirms backing ownership and unchanged live public bytes, subtracts only
+validated owned backing allocations, and still requires exact physical totals
+for a separate private compiler arena. No allocator policy or target memory
+limit changes. The `i386-frontend-bounded-format-accounting` pipeline must
+verify this correction before claiming the candidate passes.
+
+Focused accounting qualification passes on the current candidate:
+`build/i386-backing-accounting-test/result.json` and
+`build/i386-backing-accounting-source-test/result.json` both report PASS.
+The actual `BackingAccountingTest` executes as i386 code at 8 MiB with both
+assembly and portable heap validators. It covers retained page cache, live
+payload preservation, deliberate physical/public/private leaks and damaged
+backing accounting. Logs are `build/i386-frontend-bounded-backing-accounting*`.
+The accounting-corrected bootstrap and cross-build also pass; the full native
+diagnostic run remains pending until its process reaches a terminal result.
+
+The accounting-corrected candidate passes the full 16 MiB diagnostics:
+`build/i386-frontend-bounded-format-accounting-diag-16m/result.json`. Both
+formatter phases emit `NATIVE FORMAT BACKING RESTORED`; publication/program
+and nine runtime/VGA checks complete. The previously suspected allocation
+leak is verified backing cache. This does not yet exercise bounded output.
+
+The next candidate exposes bounded unit writing through the internal export
+enumerator, preserving the public compiler-services layout. Its native unit
+probe compares three scratch sizes byte-for-byte against contiguous output
+and tests short/error writes at beginning, middle and end with exact temporary
+heap restoration. The fixture retains functions, globals, static storage and
+mutable string-literal pointers. Qualification is pending.
+
+The native-unit candidate bootstrap and cross-build pass. Its live diagnostics
+emit `NATIVE BOUNDED UNIT 0000000000000000 0000000000000333`: phase zero
+completed byte identity at three scratch sizes and six injected short/error
+sinks, including exact temporary physical-heap recovery. Full phase-one and
+runtime/VGA qualification is pending; inspect the
+`i386-frontend-bounded-native-unit` pipeline before editing its source inputs.
+
+Before disk integration, extend this to thrown sink exceptions and control
+unwind. Current metadata/selection allocations use direct heap allocation;
+a thrown sink can bypass their normal release path, so exception ownership
+is not yet qualified. Disk staging also needs task-owned cleanup across
+cancellation/kill; anonymous sector allocation alone is insufficient. The
+target file must remain unpublished until staged validation and clean compiler
+unwind complete. These remain required integration work, not waived gates.
+
+Native bounded-unit qualification is terminal PASS at 16 MiB:
+`build/i386-frontend-bounded-native-unit-diag-16m/result.json`. Both root and
+worker phases emit `NATIVE BOUNDED UNIT`, completing three byte-identical
+outputs and six short/error write failures with exact temporary-heap recovery.
+All existing publication/program/runtime/VGA checks complete.
+
+A tests-first follow-up injects `Write` exceptions at the first, middle and
+last sink calls, requiring the original exception, no additional sink calls,
+and exact temporary-heap recovery while the compilation control stays alive.
+The expected-red pipeline uses `i386-frontend-bounded-exception-red`; the
+production cleanup fix has not been applied yet.
+
+The exception red run is terminal behavior FAIL after successful bootstrap
+and cross-build. `FAIL bounded sink cleanup 2 0` shows the first injected
+`Write` exception was caught, but 752 bytes / six allocations remain
+(`0x6C4ED0` versus `0x6C4BE0`, `0x17C` versus `0x176`). This is a genuine
+temporary allocation leak, unlike the separately verified backing cache.
+
+The fix catches sink exceptions in the metadata writer, releases records,
+strings and spans, then rethrows the original exception. The unit wrapper
+also releases function/global selection arrays and literal descriptors before
+rethrowing. The unchanged tests now qualify the fix under the
+`i386-frontend-bounded-exception-green` prefix. Task-kill ownership and disk
+staging remain separate required work.
+
+The exception-green bootstrap and cross-build pass. The live diagnostic run
+emits `NATIVE BOUNDED UNIT` in phase zero after all three byte-identity, six
+short/error and three thrown-sink checks. Each injected `Write` exception
+propagates and temporary heap totals recover exactly while the control stays
+alive. Full worker/runtime qualification is still pending. Preserve this
+run's source inputs until its process is terminal.
+
+## Native bounded frontend — exception cleanup qualified
+
+`build/i386-frontend-bounded-exception-green-diag-16m/result.json` is terminal
+PASS. Root and worker phases both emit `NATIVE BOUNDED UNIT`, proving three
+byte-identical buffer sizes, six short/error sink cases and three thrown-sink
+cases per phase. The original exceptions propagate, no extra sink calls occur,
+and temporary heap bytes/allocation counts recover exactly with the compiler
+control still alive. All 22 publication, 28 program and nine runtime/VGA checks
+complete. Bootstrap and i386 cross-build/boot instruction audit pass as well.
+
+The internal export enumerator adds `I386FrontendModuleWriteUnit`; existing
+compiler-service structure size and contiguous packing signatures stay intact.
+The implementation is integrated into the compiler runtime, but BuildModule
+still uses the original whole-buffer file path. Native bounded output alone
+does not resolve the full six-provider 16 MiB rebuild blocker.
+
+Next qualify the current source at 8 MiB (startup timing, F64 and assembly),
+then implement task-owned staged output and cancellation/kill cleanup before
+switching BuildModule. Top-level assembly bundles currently reject bounded
+output. Complete six-provider native rebuilding and two installed generations
+remain required; earlier full-image 8 MiB results are historical.

@@ -231,13 +231,20 @@ I64 I386FrontendPackReject(CI386Frontend *frontend,U8 *reason,U8 *name)
   }
   return 0;
 }
-I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
-  I64 count,CHashGlblVar **globals,I64 global_count,U8 *output,I64 capacity)
+I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functions,
+  I64 count,CHashGlblVar **globals,I64 global_count,U8 *output,I64 capacity,
+  I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
+  U8 *scratch,I64 scratch_bytes)
 {
   CI386Frontend *frontend;
   CI386FrontendCode *code;
   CI386FrontendReloc *reloc;
   CI386ModuleRecord *records,*record;
+  CI386ModuleHeader header;
+  CI386ModuleWriteSpans view;
+  CI386ModuleWriteSpan *spans=0;
+  U8 *owned_records=0,*owned_strings=0;
+  I64 span_index=0,result=0,exception=0;
   CHashFun *fun;
   CHashGlblVar *global;
   CMemberLst *member;
@@ -322,20 +329,32 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
   strings_offset=records_offset+record_count*16;
   if(string_bytes>0xFFFFFFFF-strings_offset) return I386FrontendPackReject(frontend,"string-size",pack_name);
   total=strings_offset+string_bytes;
-  if(!output) {
+  if(!output && !sink) {
     if(capacity) return I386FrontendPackReject(frontend,"query-capacity",pack_name);
     return total;
   }
-  if(capacity<total) return I386FrontendPackReject(frontend,"output-capacity",pack_name);
-  body=output+32; records=output+records_offset; strings=output+strings_offset;
-  for(i=0;i<payload;i++) body[i]=0;
+  if(sink) {
+    if(output || capacity || !scratch || scratch_bytes<1 || scratch_bytes>4096) return 0;
+    owned_records=I386HeapAlloc(frontend->heap,record_count*16,TRUE);
+    owned_strings=I386HeapAlloc(frontend->heap,string_bytes);
+    spans=I386HeapAlloc(frontend->heap,(count+global_count)*sizeof(CI386ModuleWriteSpan));
+    if(!owned_records || !owned_strings || !spans)goto pack_done;
+    records=owned_records;strings=owned_strings;body=0;
+  } else {
+    if(capacity<total) return I386FrontendPackReject(frontend,"output-capacity",pack_name);
+    body=output+32; records=output+records_offset; strings=output+strings_offset;
+    for(i=0;i<payload;i++) body[i]=0;
+  }
   string_bytes=0;
   for(i=0;i<count;i++) {
     fun=functions[i];
     pack_name="<function>"; if(fun && fun->str) pack_name=fun->str; code=frontend->codes;
     while(code && code->code!=fun->exe_addr) code=code->next;
     base=(pos+7)&~7; pos=base+code->bytes;
-    for(k=0;k<code->bytes;k++) body[base+k]=code->code[k];
+    if(sink) {
+      spans[span_index].offset=base;spans[span_index].bytes=code->bytes;
+      spans[span_index++].data=code->code;
+    } else for(k=0;k<code->bytes;k++) body[base+k]=code->code[k];
     record=records+index++; record->kind=I386_MODULE_EXPORT; record->offset=base;
     record->name_offset=string_bytes; length=StrLen(fun->str); record->name_length=length;
     for(k=0;k<=length;k++) strings[string_bytes+k]=fun->str[k];
@@ -346,7 +365,7 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
       length=StrLen(reloc->name); record->name_length=length;
       for(k=0;k<=length;k++) strings[string_bytes+k]=reloc->name[k];
       string_bytes+=length+1;
-      (body+record->offset)(U32 *)[0]=0;
+      if(!sink)(body+record->offset)(U32 *)[0]=0;
     }
     if(code->data_start<code->bytes) {
       record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
@@ -358,7 +377,10 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
   for(i=0;i<global_count;i++) {
     global=globals[i];
     pack_name="<global>"; if(global && global->str) pack_name=global->str; base=(pos+7)&~7; pos=base+global->size;
-    for(k=0;k<global->size;k++) body[base+k]=global->data_addr[k];
+    if(sink) {
+      spans[span_index].offset=base;spans[span_index].bytes=global->size;
+      spans[span_index++].data=global->data_addr;
+    } else for(k=0;k<global->size;k++) body[base+k]=global->data_addr[k];
     record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
     record->offset=base; record->name_offset=global->size; record->name_length=0;
     if(!(global->flags&I386_GVF_MODULE_PRIVATE)) {
@@ -370,12 +392,47 @@ I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
     }
     pointers=I386FrontendGlobalPointers(global,globals,global_count,
       function_payload,base,records+index,frontend,&string_bytes,strings);
-    if(pointers<0) return I386FrontendPackReject(frontend,"write-pointers",pack_name);
+    if(pointers<0) {I386FrontendPackReject(frontend,"write-pointers",pack_name);goto pack_done;}
     index+=pointers;
   }
-  if(index!=record_count || string_bytes!=total-strings_offset) return I386FrontendPackReject(frontend,"write-counts",pack_name);
-  return I386ModulePackRaw(output,total,body,payload,records,record_count,
+  if(index!=record_count || string_bytes!=total-strings_offset) {
+    I386FrontendPackReject(frontend,"write-counts",pack_name);goto pack_done;
+  }
+  if(sink) {
+    header.magic=I386_MODULE_MAGIC;header.version=I386_MODULE_VERSION;
+    header.cpu=3;header.pointer_size=4;header.abi=I386_MODULE_ABI;
+    header.total_size=total;header.code_size=payload;header.record_count=record_count;
+    header.records_offset=records_offset;header.strings_offset=strings_offset;
+    for(i=0;i<record_count;i++) {
+      record=records+i;
+      if(record->kind==I386_MODULE_POINTER && header.version!=I386_MODULE_NAMED_POINTER_VERSION)
+        header.version=I386_MODULE_POINTER_VERSION;
+      if(record->kind==I386_MODULE_NAMED_POINTER)header.version=I386_MODULE_NAMED_POINTER_VERSION;
+      if(record->kind!=I386_MODULE_POINTER && record->kind!=I386_MODULE_DATA_RANGE)
+        record->name_offset+=strings_offset;
+    }
+    view.spans=spans;view.count=span_index;view.bytes=payload;
+    if(!I386ModuleWriteSpansValid(&view))goto pack_done;
+    try {
+      result=I386ModuleWriteParts(&header,records,strings,&I386ModuleWriteSpanByte,
+        &view,sink,sink_context,scratch,scratch_bytes);
+    } catch {
+      exception=I386TaskSelf->except_ch;I386TaskSelf->catch_except=TRUE;
+    }
+  } else result=I386ModulePackRaw(output,total,body,payload,records,record_count,
     strings,string_bytes);
+pack_done:
+  if(spans && !I386HeapFree(frontend->heap,spans))result=0;
+  if(owned_strings && !I386HeapFree(frontend->heap,owned_strings))result=0;
+  if(owned_records && !I386HeapFree(frontend->heap,owned_records))result=0;
+  if(exception)throw(exception,TRUE);
+  return result;
+}
+I64 I386FrontendModulePackData(CPrsSymbolServices *symbols,CHashFun **functions,
+  I64 count,CHashGlblVar **globals,I64 global_count,U8 *output,I64 capacity)
+{
+  return I386FrontendModulePackDataCore(symbols,functions,count,globals,global_count,
+    output,capacity,0,0,0,0);
 }
 I64 I386FrontendModulePack(CPrsSymbolServices *symbols,CHashFun **functions,
   I64 count,U8 *output,I64 capacity)
@@ -415,7 +472,9 @@ U0 I386FrontendPackMemory(CI386Frontend *frontend)
   KernelLog(" "); I386FrontendPackNumber(retired); KernelLog(" "); I386FrontendPackNumber(live);
   KernelLog(" "); I386FrontendPackNumber(owned->code_headers); KernelLog("\n");
 }
-I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capacity)
+I64 I386FrontendModulePackUnitCore(CPrsSymbolServices *symbols,U8 *output,I64 capacity,
+  I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
+  U8 *scratch,I64 scratch_bytes)
 {//Package every owned function/global definition in this private source unit.
   CI386Frontend *frontend;
   CHashTable *table;
@@ -427,13 +486,14 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
   CHashGlblVar **globals=0,*global,*swap_global;
   U8 *hex="0123456789ABCDEF",*prefix="@literal/";
   I64 i,j,k,functions_count=0,globals_count=0,literal_slots=0;
-  I64 fi=0,gi=0,original_globals,ordinal=0,bytes,start,result=0;
+  I64 fi=0,gi=0,original_globals,ordinal=0,bytes,start,result=0,exception=0;
   if(!symbols || !(frontend=symbols->context) ||
       symbols!=&frontend->symbols || !(table=frontend->table) || capacity<0) return 0;
   if(!output && frontend->cc->flags&CCF_MODULE_SOURCE)
     I386FrontendPackMemory(frontend);
   if(frontend->top_bundle) {
     if(frontend->codes || frontend->saved_vars) return 0;
+    if(sink)return 0;
     return I386FrontendTopPack(frontend,output,capacity);
   }
   for(i=0;i<=table->mask;i++)
@@ -512,8 +572,12 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
     }
     globals[j]=swap_global;
   }
-  result=I386FrontendModulePackData(symbols,functions,functions_count,
-    globals,globals_count,output,capacity);
+  try {
+    result=I386FrontendModulePackDataCore(symbols,functions,functions_count,
+      globals,globals_count,output,capacity,sink,sink_context,scratch,scratch_bytes);
+  } catch {
+    exception=I386TaskSelf->except_ch;I386TaskSelf->catch_except=TRUE;
+  }
 done:
   if(globals && !I386HeapFree(frontend->heap,globals)) return 0;
   if(functions && !I386HeapFree(frontend->heap,functions)) return 0;
@@ -521,7 +585,19 @@ done:
     next_literal=literal->next;
     if(!I386HeapFree(frontend->heap,literal)) return 0;
   }
+  if(exception)throw(exception,TRUE);
   return result;
+}
+I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capacity)
+{
+  return I386FrontendModulePackUnitCore(symbols,output,capacity,0,0,0,0);
+}
+I64 I386FrontendModuleWriteUnit(CPrsSymbolServices *symbols,
+  I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
+  U8 *scratch,I64 scratch_bytes)
+{
+  if(!sink)return 0;
+  return I386FrontendModulePackUnitCore(symbols,0,0,sink,sink_context,scratch,scratch_bytes);
 }
 U0 I386ProgramStorageVisit(CI386ClassTransfer *transfer,U8 *allocation)
 {//Record retained storage independently from the payload selection journal.

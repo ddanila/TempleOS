@@ -789,6 +789,74 @@ I64 ProbeProgramUnitRun(CI386Heap *heap,U8 *module,I64 module_bytes)
   if((*entry)()!=43 || !I386HeapFree(heap,image)) KernelStop;
   return image_bytes;
 }
+class CI386BoundedPackProbe {
+  U8 *output;
+  I64 bytes,position,calls,fail,limit,mode;
+};
+I64 ProbeProgramBoundedSink(U8 *context,U32 offset,U8 *buffer,U32 bytes)
+{
+  CI386BoundedPackProbe *state=context;
+  I64 i;
+  if(offset!=state->position || !bytes || bytes>state->limit ||
+      bytes>state->bytes-state->position)KernelStop;
+  state->calls++;
+  if(state->calls==state->fail) {
+    if(state->mode==2)throw('Write',TRUE);
+    if(state->mode)return -1;
+    return bytes-1;
+  }
+  for(i=0;i<bytes;i++)state->output[offset+i]=buffer[i];
+  state->position+=bytes;return bytes;
+}
+Bool ProbeProgramBoundedUnit(CI386CompilerProbe *probe,CI386Heap *heap,
+  CPrsSymbolServices *symbols,U8 *reference,I64 bytes)
+{
+  CI386ModuleBinding binding;
+  CI386BoundedPackProbe state;
+  U8 scratch[33],*output;
+  I64 i,j,k,used,allocations,result;
+  Bool caught;
+  I64 (*writer)(CPrsSymbolServices *symbols,
+    I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
+    U8 *scratch,I64 scratch_bytes);
+  if(!probe->compiler->export_at(2,&binding) ||
+      StrCmp(binding.name,"I386FrontendModuleWriteUnit") ||
+      binding.kind!=I386_MODULE_EXPORT)return FALSE;
+  writer=binding.address;output=I386HeapAlloc(heap,bytes);
+  if(!output)return FALSE;
+  state.output=output;state.bytes=bytes;
+  used=heap->used;allocations=heap->allocations;
+  for(j=0;j<3;j++) {
+    state.limit=1;if(j==1)state.limit=17;if(j==2)state.limit=31;
+    state.position=state.calls=state.fail=state.mode=0;
+    result=(*writer)(symbols,&ProbeProgramBoundedSink,&state,scratch,state.limit);
+    if(result!=bytes || state.position!=bytes || heap->used!=used ||
+        heap->allocations!=allocations)KernelStop;
+    for(i=0;i<bytes;i++)if(output[i]!=reference[i])KernelStop;
+  }
+  state.limit=17;
+  for(j=0;j<3;j++)for(k=0;k<3;k++) {
+    state.position=state.calls=0;state.mode=j;
+    state.fail=1;if(k==1)state.fail=(bytes+16)/34;if(k==2)state.fail=(bytes+16)/17;
+    result=0;caught=FALSE;
+    try {result=(*writer)(symbols,&ProbeProgramBoundedSink,&state,scratch,state.limit);}
+    catch {
+      if(j==2 && I386TaskSelf->except_ch=='Write') {
+        I386TaskSelf->catch_except=TRUE;caught=TRUE;
+      }
+    }
+    if((j==2)!=caught || result || state.calls!=state.fail || heap->used!=used ||
+        heap->allocations!=allocations) {
+      KernelLog("FAIL bounded sink cleanup ");KernelHex(j);KernelLog(" ");KernelHex(k);
+      KernelLog(" ");KernelHex(heap->used);KernelLog(" ");KernelHex(used);
+      KernelLog(" ");KernelHex(heap->allocations);KernelLog(" ");KernelHex(allocations);KernelLog("\n");
+      KernelStop;
+    }
+  }
+  if(!I386HeapFree(heap,output))KernelStop;
+  KernelLog("NATIVE BOUNDED UNIT ");KernelHex(probe->phase);KernelLog(" ");
+  KernelHex(bytes);KernelLog("\n");return TRUE;
+}
 U0 ProbeProgramUnit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CCmpCtrl *cc;
@@ -816,6 +884,7 @@ U0 ProbeProgramUnit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(module_bytes<1 || !module ||
       probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
       !I386ModuleValid(module,module_bytes) ||
+      !ProbeProgramBoundedUnit(probe,heap,symbols,module,module_bytes) ||
       !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
   image_bytes=ProbeProgramUnitRun(heap,module,module_bytes);
   if(probe->persist_modules) {
@@ -1133,7 +1202,7 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
       compiler_binding.kind!=I386_MODULE_EXPORT ||
       StrCmp(compiler_binding.name,"I386ModuleValid") ||
       compiler_binding.address!=validator_resident->val ||
-      probe->compiler->export_at(2,&compiler_binding) ||
+      probe->compiler->export_at(3,&compiler_binding) ||
       !I386ModuleValid(module,module_bytes) || !resident ||
       !probe->files->export_at(0,&binding) ||
       binding.kind!=I386_MODULE_EXPORT || StrCmp(binding.name,"I386ArcEntryGet") ||
@@ -1990,6 +2059,7 @@ I64 ProbeProgramNativeFormatRun(CI386CompilerProbe *probe,CI386Heap *heap,
   Bool (*guest_format)(CI386Ata *disk,I64 start,I64 sectors);
   Bool (*identify)(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll);
   Bool (*transfer)(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool write,CI386AtaPoll *poll);
+  KernelLog("NATIVE FORMAT RUN START\n");
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   imports[0].name="I386AtaTransfer";
   imports[1].name="I386AtaFlushPolled";
@@ -2017,9 +2087,11 @@ I64 ProbeProgramNativeFormatRun(CI386CompilerProbe *probe,CI386Heap *heap,
   image=I386HeapAlloc(heap,image_bytes);
   if(image_bytes<1 || !image || I386LoadBoundInto(&module,&module_bytes,1,
       image,image_bytes,"I386RedSeaFormat",imports,2)!=image_bytes) KernelStop;
+  KernelLog("NATIVE FORMAT LOADED\n");
   guest_format=image+8+offset;
   if((*guest_format)(0,2048,30720) ||
       (*guest_format)(probe->volume->disk,0,30720)) KernelStop;
+  KernelLog("NATIVE FORMAT NEGATIVE DONE ");KernelHex(probe->format_target);KernelLog("\n");
   if(probe->format_target) {
     irq=I386IrqSave;
     if(!(*identify)(&target,1,0,100000,0) || target.sectors!=32768 ||
@@ -2037,8 +2109,10 @@ I64 ProbeProgramNativeFormatRun(CI386CompilerProbe *probe,CI386Heap *heap,
         sector[3]!=0x88 || sector[510]!=0x55 || sector[511]!=0xAA) KernelStop;
     I386IrqRestore(irq);
   }
-  if(!I386HeapFree(heap,image) || heap->used!=used ||
-      heap->allocations!=allocations) KernelStop;
+  if(!I386HeapFree(heap,image))KernelStop;
+  KernelLog("NATIVE FORMAT MEMORY ");KernelHex(heap->used);KernelLog(" ");KernelHex(used);
+  KernelLog(" ");KernelHex(heap->allocations);KernelLog(" ");KernelHex(allocations);KernelLog("\n");
+  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
   return image_bytes;
 }
 U0 ProbeProgramNativeFormat(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
@@ -2051,6 +2125,8 @@ U0 ProbeProgramNativeFormat(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   I64 module_bytes,disk_bytes,image_bytes,i;
   I64 used=heap->used,allocations=heap->allocations;
   U32 irq;
+  CI386BackingCheck backing_check;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/RedSeaFormat.HC\";",
@@ -2060,12 +2136,15 @@ U0 ProbeProgramNativeFormat(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
         probe->disk_include)) ||
       !probe->compiler->frontend_private_defines(symbols)) KernelStop;
   ProbeProgramRead(probe,heap,cc,symbols);
+  KernelLog("NATIVE FORMAT PACK START\n");
   module_bytes=probe->compiler->program_pack_unit(symbols,0,0);
+  KernelLog("NATIVE FORMAT PACK SIZE ");KernelHex(module_bytes);KernelLog("\n");
   module=I386HeapAlloc(heap,module_bytes);
   if(module_bytes<1 || !module ||
       probe->compiler->program_pack_unit(symbols,module,module_bytes)!=module_bytes ||
       !I386ModuleValid(module,module_bytes) ||
       !probe->compiler->control_unwind(I386TaskSelf,outer)) KernelStop;
+  KernelLog("NATIVE FORMAT PACK DONE\n");
   image_bytes=ProbeProgramNativeFormatRun(probe,heap,module,module_bytes);
   if(probe->persist_modules) {
     disk=probe->files->read(heap,"C:/Probe/NativeFormat.t32m",&disk_bytes,0,0);
@@ -2082,13 +2161,21 @@ U0 ProbeProgramNativeFormat(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
         !I386HeapFree(heap,disk)) KernelStop;
     KernelLog("NATIVE FORMAT MODULE DISK\n");
   }
+  KernelLog("NATIVE FORMAT MODULE RELEASE\n");
   if(!I386HeapFree(heap,module)) KernelStop;
   irq=I386IrqSave;
-  for(i=0;i<6;i++)
+  for(i=0;i<6;i++) {
+    KernelLog("NATIVE FORMAT ROOT RELEASE ");KernelHex(i);KernelLog("\n");
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
+  }
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE FORMAT FINAL MEMORY ");KernelHex(heap->used);KernelLog(" ");KernelHex(used);
+  KernelLog(" ");KernelHex(heap->allocations);KernelLog(" ");KernelHex(allocations);KernelLog("\n");
+  //Public backing caches are verified separately from live payloads. A
+  //worker's private compiler heap must still recover its exact physical totals.
+  if(!I386BackingCheckRestored(&backing_check))KernelStop;
+  KernelLog("NATIVE FORMAT BACKING RESTORED ");KernelHex(probe->phase);KernelLog("\n");
   KernelLog("NATIVE FORMAT "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }

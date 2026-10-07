@@ -5982,3 +5982,10 @@ accepts `--writer-core <path>` for controlled mutation tests. It exercises the
 host-compiled core; native frontend memory limits and disk publication require
 separate integration qualification. The second runs 46 shared validator cases
 as audited i386 code.
+
+The native compiler diagnostic suite also exercises the internal bounded unit
+writer. Require `NATIVE BOUNDED UNIT` in both phases on the current source:
+three scratch sizes compared against contiguous output, six short/error sinks
+and three thrown sinks, with exact temporary-heap restoration. The fixture
+includes function/global/static state and mutable literal pointers. This is
+separate from disk staging and full-provider memory-budget acceptance.
