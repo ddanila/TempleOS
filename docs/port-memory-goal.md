@@ -1,13 +1,13 @@
 # Bounded-memory self-hosting goal
 
-Latest qualified full-image candidate: `i386-retired-boundary-atomic-cross`. Bootstrap,
-cross-build, 386 audit and 964-file source audit pass. Normal 8 MiB startup
-passes in 59.52 seconds with all nine runtime/VGA checks; the timing margin is
-small. Fresh diagnostics/F64/assembly checks pass. The previous
-collection snapshot passes 16 MiB publication/ownership diagnostics but its
-native build still cannot allocate the 2275963-byte packed-module buffer.
-Retired collection is effective, but saves only 146632 bytes. The next work is
-bounded serialization without changing the 16 MiB rebuild profile.
+Latest qualified full-image candidate: `i386-frontend-root-header-phases-cross`.
+Bootstrap, cross-build, 386 boot instruction audit and the 965-file delivered
+source audit pass. Normal 8 MiB startup passes in 47.55 seconds with all nine
+retained-state/VGA checks. Focused 8 MiB F64/assembly regressions and full
+16 MiB diagnostics pass. Native bounded serialization now passes byte identity,
+short/error writes and thrown-exception cleanup in root and worker phases.
+The six-provider rebuild still uses the whole-buffer file path: task-owned
+staged output and two installed native generations remain unproven.
 
 Previous snapshot outcome: 8 MiB boot and focused regressions pass, but the accelerated
 full retained build fails with OutMem and flat-kernel installation rejects
@@ -703,3 +703,99 @@ then implement task-owned staged output and cancellation/kill cleanup before
 switching BuildModule. Top-level assembly bundles currently reject bounded
 output. Complete six-provider native rebuilding and two installed generations
 remain required; earlier full-image 8 MiB results are historical.
+
+## Current 8 MiB regression — bounded runtime footprint
+
+`build/i386-frontend-bounded-exception-green-boot-8m/result.json` is terminal
+FAIL before interactive acceptance. Startup requests 4096 bytes; heap used
+`0x659ED0`, size `0x65BA00`, largest free span `0xE40`. The sequential F64
+and assembly checks were not launched after this failure. The 16 MiB bounded
+frontend pass does not qualify 8 MiB startup.
+
+The next candidate narrows serializer and frontend loop indices to U32, whose
+ranges are bounded by existing layout validation. Payload totals and overflow
+checks stay wide; no stack limits, features or memory profiles are relaxed.
+The bounded writer's offsets and intersections are within validated U32 module
+size, and scratch is capped at 4096 bytes. Qualification uses the
+`i386-frontend-bounded-u32` prefix.
+
+The U32-index candidate passes bootstrap and all 57 host writer cases, but
+8 MiB startup still fails (4096-byte request, largest span `0xE48`). The
+compiler runtime shrinks only eight bytes; function-level measurements show
+most operations still promote through wide bounds/intermediates. This is not
+a memory-budget pass. The next candidate narrows validated emission offsets
+and name lengths, and casts already-checked function/global/code span bounds
+to U32 at loop comparisons. Wide payload sizing and overflow checks remain.
+Qualification uses `i386-frontend-bounded-offsets`.
+
+The narrowed-offset candidate also fails 8 MiB startup and emits the same
+1798691-byte compiler module as the prior exception-green candidate. These
+ineffective counter refinements are removed. The next structural candidate
+uses the bounded serializer for contiguous frontend output via a memory sink,
+removing the separate payload-copy/fixup path. Public signatures, format, wide
+layout checks and the independent raw-packer oracle remain intact. Contiguous
+output now borrows spans as well; this adds a small temporary span array and
+512-byte stack buffer, whose cleanup is covered by native diagnostics.
+Qualification uses `i386-frontend-shared-writer`.
+
+The shared-writer candidate passes bootstrap, 57 writer contracts and cross
+compilation; it saves about 1.6 KiB but still fails 8 MiB startup later, with
+a 4116-byte request and largest free span `0x5A0`. The runtime's net growth
+since the last passing snapshot is roughly 24 KiB. No 8 MiB pass is claimed.
+
+The next candidate first compiles PublicKernel.HH atomically, then compiles
+the unchanged complete PublicUser.HH atomically. The first control releases
+its temporary parser metadata before the remaining headers are parsed. The
+PublicUser guard is still committed only by the complete second transaction;
+all declarations remain available and user-terminal header loading is unchanged.
+No parser stack limits or required declarations are reduced. Qualification
+uses `i386-frontend-root-header-phases`.
+
+## Phased root headers — 8 MiB recovery
+
+`build/i386-frontend-root-header-phases-boot-8m/result.json` is terminal PASS:
+startup completes in 47.55 seconds, and all nine retained function/static/
+literal and exact VGA-restoration commands pass on `486,-fpu`. Both
+`ROOT KERNEL HEADERS ok` and `ROOT USER HEADERS ok` appear. The current
+bootstrap and cross-build/386 boot audit pass, and the delivered-source audit
+verifies all 965 files. This is a material timing margin versus the earlier
+59.52-second snapshot; no memory profile or parser stack limit is changed.
+
+The current source still needs unified-serializer native diagnostics and the
+focused F64/assembly gates. Their sequential job uses
+`i386-frontend-root-header-phases-float-8m`, `-bare-8m` and `-diag-16m`.
+Preserve Kernel/Compiler inputs until the job is terminal. Do not substitute
+the preceding exception-green 16 MiB pass for this refactored snapshot.
+Disk staging and complete native self-hosted rebuilding remain pending.
+
+The phased-header candidate's focused 8 MiB regressions are terminal PASS:
+`build/i386-frontend-root-header-phases-float-8m/result.json` and
+`build/i386-frontend-root-header-phases-bare-8m/result.json`. Runtime software
+F64 behavior and retained static state, saved bare/block assembly persistence
+and IRQ-state restoration pass on the source-pinned snapshot. Full 16 MiB
+diagnostics are running under the same prefix; their result remains pending.
+
+## Shared writer and phased startup — qualified checkpoint
+
+`build/i386-frontend-root-header-phases-diag-16m/result.json` is terminal PASS:
+22 class-publication cases, 28 program-publication cases, both native bounded
+unit phases and nine runtime/VGA commands complete on `486,-fpu`. The
+current-source 8 MiB boot, F64 and assembly results above are also terminal
+PASS. The shared serializer's contiguous path is exercised by the native
+packer/loader/file/compiler probes, not merely the host core fixture.
+
+Root startup first publishes core kernel headers, releases their temporary
+compiler control, then atomically publishes the complete remaining user
+headers. This retains the declaration set and public layouts while lowering
+peak transient memory. The complete user-header guard remains the completion
+marker. Contiguous packing shares the borrowed-span writer through an in-memory
+sink; the original raw serializer remains the independent contract oracle.
+
+Next implement a task-owned disk staging record and bounded write/read/abort
+operations, with tests for short I/O, flush failure, cancellation, kill and
+cleanup retry. BuildModule must validate staged bytes after clean compiler
+unwind before publishing its target. Preserve small assembly-bundle support
+through the existing contiguous path where appropriate. Then qualify all six
+providers at 16 MiB and two installed native generations with source/binary/
+boot-area identity and current-source 8 MiB/no-FPU gates. No such native
+rebuild/generation acceptance is claimed by this checkpoint.

@@ -231,6 +231,12 @@ I64 I386FrontendPackReject(CI386Frontend *frontend,U8 *reason,U8 *name)
   }
   return 0;
 }
+I64 I386FrontendModuleBufferSink(U8 *context,U32 offset,U8 *buffer,U32 bytes)
+{
+  U32 i;
+  for(i=0;i<bytes;i++)context[offset+i]=buffer[i];
+  return bytes;
+}
 I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functions,
   I64 count,CHashGlblVar **globals,I64 global_count,U8 *output,I64 capacity,
   I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
@@ -249,7 +255,7 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
   CHashGlblVar *global;
   CMemberLst *member;
   CI386FrontendStatic *static_ref;
-  U8 *strings,*body,*pack_name="<unit>";
+  U8 *strings,*pack_name="<unit>",buffer[512];
   I64 i,j,k,m,base,payload=0,record_count=0,string_bytes=0,function_payload,pointers;
   I64 records_offset,strings_offset,total,pos=0,index=0,length;
   if(!symbols || !(frontend=symbols->context) || symbols!=&frontend->symbols ||
@@ -337,24 +343,24 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
     if(output || capacity || !scratch || scratch_bytes<1 || scratch_bytes>4096) return 0;
     owned_records=I386HeapAlloc(frontend->heap,record_count*16,TRUE);
     owned_strings=I386HeapAlloc(frontend->heap,string_bytes);
-    spans=I386HeapAlloc(frontend->heap,(count+global_count)*sizeof(CI386ModuleWriteSpan));
-    if(!owned_records || !owned_strings || !spans)goto pack_done;
-    records=owned_records;strings=owned_strings;body=0;
+    if(!owned_records || !owned_strings)goto pack_done;
+    records=owned_records;strings=owned_strings;
   } else {
     if(capacity<total) return I386FrontendPackReject(frontend,"output-capacity",pack_name);
-    body=output+32; records=output+records_offset; strings=output+strings_offset;
-    for(i=0;i<payload;i++) body[i]=0;
+    records=output+records_offset; strings=output+strings_offset;
+    sink=&I386FrontendModuleBufferSink;sink_context=output;
+    scratch=buffer;scratch_bytes=sizeof(buffer);
   }
+  spans=I386HeapAlloc(frontend->heap,(count+global_count)*sizeof(CI386ModuleWriteSpan));
+  if(!spans)goto pack_done;
   string_bytes=0;
   for(i=0;i<count;i++) {
     fun=functions[i];
     pack_name="<function>"; if(fun && fun->str) pack_name=fun->str; code=frontend->codes;
     while(code && code->code!=fun->exe_addr) code=code->next;
     base=(pos+7)&~7; pos=base+code->bytes;
-    if(sink) {
-      spans[span_index].offset=base;spans[span_index].bytes=code->bytes;
-      spans[span_index++].data=code->code;
-    } else for(k=0;k<code->bytes;k++) body[base+k]=code->code[k];
+    spans[span_index].offset=base;spans[span_index].bytes=code->bytes;
+    spans[span_index++].data=code->code;
     record=records+index++; record->kind=I386_MODULE_EXPORT; record->offset=base;
     record->name_offset=string_bytes; length=StrLen(fun->str); record->name_length=length;
     for(k=0;k<=length;k++) strings[string_bytes+k]=fun->str[k];
@@ -365,7 +371,6 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
       length=StrLen(reloc->name); record->name_length=length;
       for(k=0;k<=length;k++) strings[string_bytes+k]=reloc->name[k];
       string_bytes+=length+1;
-      if(!sink)(body+record->offset)(U32 *)[0]=0;
     }
     if(code->data_start<code->bytes) {
       record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
@@ -377,10 +382,8 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
   for(i=0;i<global_count;i++) {
     global=globals[i];
     pack_name="<global>"; if(global && global->str) pack_name=global->str; base=(pos+7)&~7; pos=base+global->size;
-    if(sink) {
-      spans[span_index].offset=base;spans[span_index].bytes=global->size;
-      spans[span_index++].data=global->data_addr;
-    } else for(k=0;k<global->size;k++) body[base+k]=global->data_addr[k];
+    spans[span_index].offset=base;spans[span_index].bytes=global->size;
+    spans[span_index++].data=global->data_addr;
     record=records+index++; record->kind=I386_MODULE_DATA_RANGE;
     record->offset=base; record->name_offset=global->size; record->name_length=0;
     if(!(global->flags&I386_GVF_MODULE_PRIVATE)) {
@@ -398,7 +401,7 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
   if(index!=record_count || string_bytes!=total-strings_offset) {
     I386FrontendPackReject(frontend,"write-counts",pack_name);goto pack_done;
   }
-  if(sink) {
+  {
     header.magic=I386_MODULE_MAGIC;header.version=I386_MODULE_VERSION;
     header.cpu=3;header.pointer_size=4;header.abi=I386_MODULE_ABI;
     header.total_size=total;header.code_size=payload;header.record_count=record_count;
@@ -419,8 +422,7 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
     } catch {
       exception=I386TaskSelf->except_ch;I386TaskSelf->catch_except=TRUE;
     }
-  } else result=I386ModulePackRaw(output,total,body,payload,records,record_count,
-    strings,string_bytes);
+  }
 pack_done:
   if(spans && !I386HeapFree(frontend->heap,spans))result=0;
   if(owned_strings && !I386HeapFree(frontend->heap,owned_strings))result=0;

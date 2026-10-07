@@ -5989,3 +5989,9 @@ three scratch sizes compared against contiguous output, six short/error sinks
 and three thrown sinks, with exact temporary-heap restoration. The fixture
 includes function/global/static state and mutable literal pointers. This is
 separate from disk staging and full-provider memory-budget acceptance.
+
+Root startup now compiles core kernel declarations and the complete user
+header set in separate atomic transactions. Both `ROOT KERNEL HEADERS ok`
+and `ROOT USER HEADERS ok` must appear; all declarations and stack limits
+remain intact. Use the usual source-pinned 8 MiB startup checker, plus F64,
+assembly and full 16 MiB diagnostics, when changing these boundaries.

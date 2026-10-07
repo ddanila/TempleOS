@@ -756,6 +756,13 @@ Bool ConsoleRootHeaders()
 {
   //Publish the resident reader with root declarations, after early diagnostics.
   console_config->files->public_reader(&NativeResidentReadBridge);
+  //Publish the core first so its temporary parser arena is gone before the
+  //remaining declarations. Each header transaction keeps atomic defines;
+  //the complete user guard is committed only by the second compilation.
+  KernelLog("ROOT KERNEL HEADERS begin\n");
+  if(!ConsoleSource("#define NULL 0\n#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/PublicKernel.HH\"\n",
+      "RootKernelHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
+  KernelLog("ROOT KERNEL HEADERS ok\n");
   //The immortal CPU root owns shared declarations; children inherit its scope.
   KernelLog("ROOT USER HEADERS begin\n");
   if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
