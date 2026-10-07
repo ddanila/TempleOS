@@ -58,9 +58,14 @@ U0 ProbeOptimize(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     size=IC_IMM_I64; if(right_type->raw_type==RT_F64) size=IC_IMM_F64;
     right=probe->compiler->code_add(heap,cc,size,b,right_type,0);
     result=probe->compiler->code_add(heap,cc,opcode,0,left_type,0);
+    //Public nodes retain the complete original machine-code body, even though
+    //private frontend nodes use a smaller native-only allocation.
+    if(!left || I386HeapSize(heap,left)<sizeof(CIntermediateCode)) KernelStop;
+    left->ic_body[IC_BODY_SIZE-1]=0xA7;
     if(!left || !right || !result ||
         probe->compiler->code_optimize(heap,cc,probe->internal_types,&ProbeOptReport)!=result ||
         result->ic_code!=expected_code || result->ic_data!=expected ||
+        left->ic_body[IC_BODY_SIZE-1]!=0xA7 ||
         result->t.arg1_tree!=left || result->t.arg2_tree!=right ||
         left->ic_code!=IC_NOP1 || right->ic_code!=IC_NOP1 || cc->ps->ptr!=2 ||
         cc->error_cnt || cc->warning_cnt || !(cc->flags&CCF_TARGET_I386) ||

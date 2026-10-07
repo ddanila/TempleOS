@@ -116,7 +116,7 @@ def main():
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': args.command_timeout,
                              'commands': commands,
-                             'rejection_prefixes': ('BUILD MODULE REJECT ',)})
+                             'rejection_prefixes': ('BUILD MODULE REJECT ',), 'rejected_answers': ['0']})
     if source.read_bytes() != original:
         raise ValueError('Self-hosting source disk changed')
     installed = files(target, retained_paths)

@@ -1,13 +1,14 @@
 //Publish only the BIOS/stage/kernel reservation after files have been installed
 //through RedSea. Caller owns both ATA channels with interrupts disabled.
-//Leave every target filesystem sector unchanged.
+//Leave every target filesystem sector unchanged. Only the 2048-sector boot
+//reservation is required; filesystem/disk capacity need not be 16 MiB.
 Bool I386InstallBootArea(CI386Ata *source,CI386Ata *target)
 {
   U8 sector[512];
   I64 lba,i;
   if(!source || !target || source->signature!=0x41543332 ||
       target->signature!=0x41543332 || !target->flush ||
-      source->sectors!=32768 || target->sectors!=32768 ||
+      source->sectors<2048 || target->sectors<2048 ||
       (source->io==target->io && source->drive==target->drive) ||
       !I386AtaTransfer(target,0,sector,100000,FALSE,0)) return FALSE;
   for(i=0;i<512;i++) if(sector[i]) return FALSE;
@@ -33,7 +34,7 @@ Bool I386InstallBootImageArea(CI386Ata *source,CI386Ata *target,U8 *image,I64 by
       image[0]!=0xE9 || image[5] || image[6] || image[7] ||
       (entry=5+(image+1)(I32 *)[0])<8 || entry>=bytes ||
       source->signature!=0x41543332 || target->signature!=0x41543332 ||
-      !target->flush || source->sectors!=32768 || target->sectors!=32768 ||
+      !target->flush || source->sectors<2048 || target->sectors<2048 ||
       (source->io==target->io && source->drive==target->drive) ||
       !I386AtaTransfer(target,0,sector,100000,FALSE,0)) return FALSE;
   for(i=0;i<512;i++) if(sector[i]) return FALSE;

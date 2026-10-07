@@ -260,7 +260,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                      'after_bytes':audio_wav.stat().st_size,
                                      'observation_seconds':time.monotonic()-started}
 
-            def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None):
+            def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None):
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer)
                 rejected=console_pixels(rejected_rows) if rejected_rows is not None else None
                 path=out/f'{name}.ppm'
@@ -270,6 +270,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         pixels=image.convert('RGB').tobytes()
                         if image.size==(640,480) and rejected is not None and pixels==rejected:
                             image.save(out/f'{name}-detected.png')
+                            if rejection_message:
+                                raise RuntimeError(f'{name}: {rejection_message}')
                             raise MutationDetected(f'{name}: observed injected faulty answer')
                         return image.size==(640,480) and pixels==expected
                 wait_for(matches,timeout=timeout)
@@ -460,13 +462,18 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         with Image.open(path) as image: image.save(out/f'{name}-frame.png')
                     key('ctrl',True); key('alt',True); press('c'); key('alt',False); key('ctrl',False)
                 rejected_rows=None
+                rejection_message=None
+                if startup_check is not None and startup_check.get('rejected_answers') is not None:
+                    rejected_rows=(rows[:-1]+typed_rows(source)+startup_check['rejected_answers']+['> '])[-60:]
+                    rejection_message='Guest command returned a rejected answer on VGA'
                 if mutation is not None and name==mutation['checkpoint']:
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
                 if interaction is not None and not interaction.get('preserve_history',False):
                     rows=(heading+answers+['> '])[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
-                screen(rows,name,timeout=timeout,rejected_rows=rejected_rows)
+                screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,
+                       rejection_message=rejection_message)
             if startup_check is not None:
                 for index,command_spec in enumerate(startup_check['commands']):
                     source,answers=command_spec[:2]

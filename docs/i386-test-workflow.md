@@ -5950,3 +5950,17 @@ The retained-build checker opts into immediate failure on complete guest
 in other suites are unaffected. Running and terminal QEMU failures are recorded
 in its `result.json`; failed checks do not establish export or rebuild acceptance.
 Run `python3 tools/test-i386-command-rejection.py` for log-boundary regression tests.
+
+## Boot publication bounds and completed-command rejection
+
+`python3 tools/test-i386-install-area.py --out build/<fresh-directory>` runs the
+actual HolyC boot-publication core against fake ATA. It checks 16/32/64 MiB
+capacities, source/target minimum bounds, alias and nonblank-target rejection,
+interrupted writes/flush, boot-sector-last ordering and filesystem preservation.
+This is complemented by the real self-host-install build/boot test.
+
+`python3 tools/test-i386-command-zero-rejection.py <image> --out build/<fresh-directory> --accel kvm`
+checks that an explicitly rejected zero answer is recognized from VGA, while
+normal zero and one answers remain valid. The build harnesses set
+`rejected_answers: ['0']`; other checks retain their existing behavior. This
+prevents an installer that has returned false from waiting for a success timeout.

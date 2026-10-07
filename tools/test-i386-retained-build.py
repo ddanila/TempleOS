@@ -118,7 +118,7 @@ def main():
                       startup_timeout=180, startup_check={
                           'status': 'ok', 'answers': [],
                           'command_timeout': args.command_timeout, 'commands': commands,
-                          'rejection_prefixes': ('BUILD MODULE REJECT ',)})
+                          'rejection_prefixes': ('BUILD MODULE REJECT ',), 'rejected_answers': ['0']})
         except Exception as error:
             pending.update(result='fail', error=str(error),
                            source_disk_sha256=sha256(source))

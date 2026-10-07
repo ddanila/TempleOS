@@ -264,7 +264,7 @@ I64 I386FrontendLex(U8 *context,CCmpCtrl *cc)
 CIntermediateCode *I386FrontendAdd(U8 *context,CCmpCtrl *cc,I64 op,I64 value,CHashClass *type,I64 flags)
 {
   CI386Frontend *state=context;
-  CIntermediateCode *node=I386ICAdd(state->heap,cc,op,value,I386FrontendClassView(state,type),flags);
+  CIntermediateCode *node=I386ICAddBytes(state->heap,cc,op,value,I386FrontendClassView(state,type),flags,I386_FRONTEND_IC_BYTES);
   if(!node) throw('OutMem',TRUE);
   return node;
 }

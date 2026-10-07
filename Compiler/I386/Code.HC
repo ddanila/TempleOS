@@ -3,6 +3,21 @@
 class CI386OwnedIC { CIntermediateCode node; CI386CodeAllocation lifetime; };
 class CI386OwnedMisc { CCodeMisc node; CI386CodeAllocation lifetime; };
 class CI386OwnedCode { CCodeCtrl header; CI386CodeAllocation lifetime; };
+//The native emitter stores machine bytes in CI386Out, not the original ic_body.
+//Private frontend nodes need all tree links, but no unused machine-byte tail.
+//Keep public I386ICAdd allocations complete and preserve every field offset.
+#define I386_FRONTEND_IC_BYTES ((offset(CIntermediateCode.t)+sizeof(CICTreeLinks)+7)&~7)
+CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CIntermediateCode *node)
+{
+  I64 bytes;
+  if(!node) return 0;
+  bytes=I386HeapSize(heap,node);
+  if(bytes==sizeof(CI386OwnedIC)) return &node(CI386OwnedIC *)->lifetime;
+  if(bytes==I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation))
+    return node(U8 *)+I386_FRONTEND_IC_BYTES;
+  return 0;
+}
+
 Bool I386CmpCodeOwner(CI386Heap *heap,CCmpCtrl *cc)
 {
   CI386CmpCtrl *owned=cc;
@@ -40,8 +55,17 @@ U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record)
 }
 U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
 {
-  CI386OwnedIC *owned=node;
-  I386CodeFree(context,&owned->lifetime);
+  CI386CmpRelease *state=context;
+  CI386CmpCtrl *owned=state->control;
+  CI386CodeAllocation *record;
+  //Discard already owns the graph. Locate its registered lifetime instead of
+  //adding a whole-arena size scan for each node; release still validates the
+  //record links/control and the heap allocation before freeing it.
+  for(record=owned->code_next;record!=&owned->code_next;record=record->next)
+    if(record->allocation==node && (record->kind==1 || record->kind==4)) {
+      I386CodeFree(context,record); return;
+    }
+  state->ok=FALSE;
 }
 U0 I386CodeFreeMisc(U8 *context,CCodeMisc *node)
 {
@@ -53,19 +77,26 @@ U0 I386CodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
   CI386CmpRelease *state=context;
   if(state->label) (*state->label)(state->context,cc,name,undefined);
 }
+CIntermediateCode *I386ICAddBytes(CI386Heap *heap,CCmpCtrl *cc,
+  I64 opcode,I64 arg,CHashClass *type,I64 flags,I64 node_bytes)
+{
+  U32 irq=I386IrqSave;
+  CIntermediateCode *node=0;
+  CI386CodeAllocation *record;
+  if(I386CmpCodeOwner(heap,cc)) {
+    node=I386HeapAlloc(heap,node_bytes+sizeof(CI386CodeAllocation),FALSE);
+    if(node) {
+      record=node(U8 *)+node_bytes;
+      I386CodeAttach(cc,record,node,1);
+      ICSeed(cc,node,opcode,arg,type,flags);
+    }
+  }
+  I386IrqRestore(irq); return node;
+}
 CIntermediateCode *I386ICAdd(CI386Heap *heap,CCmpCtrl *cc,
   I64 opcode,I64 arg,CHashClass *type,I64 flags=0)
 {
-  U32 irq=I386IrqSave;
-  CI386OwnedIC *owned=0;
-  if(I386CmpCodeOwner(heap,cc)) {
-    owned=I386HeapAlloc(heap,sizeof(CI386OwnedIC),FALSE);
-    if(owned) {
-      I386CodeAttach(cc,&owned->lifetime,owned,1);
-      ICSeed(cc,&owned->node,opcode,arg,type,flags);
-    }
-  }
-  I386IrqRestore(irq); return owned;
+  return I386ICAddBytes(heap,cc,opcode,arg,type,flags,sizeof(CIntermediateCode));
 }
 CCodeMisc *I386COCMiscNew(CI386Heap *heap,CCmpCtrl *cc,I64 type)
 {
@@ -83,14 +114,14 @@ CCodeMisc *I386COCMiscNew(CI386Heap *heap,CCmpCtrl *cc,I64 type)
 Bool I386ICRetire(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
 {
   U32 irq=I386IrqSave;
-  CI386OwnedIC *owned=node;
-  if(!I386CmpCodeOwner(heap,cc) || !node || I386HeapSize(heap,node)!=sizeof(CI386OwnedIC) ||
-      owned->lifetime.control!=cc || owned->lifetime.allocation!=node || owned->lifetime.kind!=1 ||
+  CI386CodeAllocation *record;
+  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,node)) ||
+      record->control!=cc || record->allocation!=node || record->kind!=1 ||
       !node->next || !node->last || node->next==node || node->last==node ||
       node->next->last!=node || node->last->next!=node) {
     I386IrqRestore(irq); return FALSE;
   }
-  ICDetach(node); owned->lifetime.kind=4;
+  ICDetach(node); record->kind=4;
   I386IrqRestore(irq); return TRUE;
 }
 U0 I386CodeRetiredCollect(CI386CmpRelease *state)

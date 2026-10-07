@@ -19,9 +19,9 @@ CCodeMisc *COCMiscNew(CCmpCtrl *cc,I64 type)
 #include "/Compiler/OptBranch.HC"
 CIntermediateCode *I386OptBranch(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
 {
-  CI386OwnedIC *owned=node;
-  if(!I386CmpCodeOwner(heap,cc) || !node || I386HeapSize(heap,node)!=sizeof(CI386OwnedIC) ||
-      owned->lifetime.control!=cc || owned->lifetime.kind!=1 || owned->lifetime.allocation!=node ||
+  CI386CodeAllocation *record;
+  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,node)) ||
+      record->control!=cc || record->kind!=1 || record->allocation!=node ||
       (node->ic_code!=IC_BR_ZERO && node->ic_code!=IC_BR_NOT_ZERO)) return 0;
   if(node->ic_code==IC_BR_ZERO) return OptBrZero(cc,node);
   return OptBrNotZero(cc,node);

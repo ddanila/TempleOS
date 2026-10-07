@@ -1,9 +1,15 @@
 # Bounded-memory self-hosting goal
 
-Latest outcome: 8 MiB boot and focused regressions pass, but the accelerated
+Current candidate: `i386-compact-ir-owner-cross`. Normal 8 MiB startup passes
+in 57.84 seconds; 16 MiB diagnostics, 8 MiB F64 and saved assembly pass. The
+32 MiB installer fix passes fake-ATA and real QEMU build/install/boot tests.
+Full native rebuilding remains open: the first compact-IR snapshot completed
+DocRecalc but its module pack-size query returned zero. The refined snapshot's
+six-provider rebuild is still running. Detailed evidence is below.
+
+Previous snapshot outcome: 8 MiB boot and focused regressions pass, but the accelerated
 full retained build fails with OutMem and flat-kernel installation rejects
-32 MiB disks. All runs below are now terminal; earlier running descriptions
-are historical. See the final section for precise remaining failures.
+32 MiB disks. Those earlier runs are terminal; their running descriptions are historical. See the final section for precise remaining failures.
 
 Deliver reliable 386/VGA boot and native rebuilding while preserving HolyC,
 DolDoc, existing stack limits, public APIs, and ownership/unwind behavior.
@@ -158,3 +164,76 @@ original 131-byte IC body union, while optimizer tree links occupy much less.
 Any compact private representation must preserve full public IC allocations,
 node/tree pointers, retirement, unwind and inline-assembly behavior. This is an
 investigation direction, not an implemented or qualified compact-IR change.
+
+## Compact IR and installer candidate
+
+`I386InstallBootArea` and `I386InstallBootImageArea` now require enough sectors
+for the 2048-sector boot reservation, rather than exactly a 16 MiB disk.
+The blank-target check, filesystem boundary and flush/boot-sector-last order
+remain intact. `test-i386-install-area.py` runs the actual HolyC transport core
+with fake ATA: the old code fails at the 32 MiB case (`i386-install-area-red`),
+and the changed code passes 20 cases (`i386-install-area-green`) covering
+16/32/64 MiB, source/target bounds, alias/blank guards and interrupted writes/flush.
+Real ATA installation remains to be requalified.
+
+`test-i386-command-zero-rejection.py` passes on QEMU/KVM with a known old image:
+zero is rejected when explicitly configured as an error answer, while ordinary
+zero and one answers still pass. Both retained and flat-build harnesses opt in;
+this prevents a completed failed install from consuming the full timeout.
+
+Private frontend IR now allocates through the optimizer tree-link union member,
+aligned for its ownership trailer. The unused original machine-code buffer tail
+is omitted only for this private path; native machine bytes live in `CI386Out`.
+Public `I386ICAdd` allocations remain full-sized. Size-aware lifetime lookup is
+used by discard, retirement and branch optimization; linked node addresses and
+all used field offsets stay unchanged. The public optimizer probe now writes
+and verifies a canary in the final byte of the public IC body.
+
+The fresh bootstrap uses `build/i386-compact-ir-bootstrap.log`. No compact-IR
+native pass or full-build recovery has yet been established.
+
+## Compact-IR first qualification and cleanup refinement
+
+The first compact-IR image (`build/i386-compact-ir-cross`) passes cross-build
+and the 386 audit. Its 16 MiB diagnostic test passes, including the public IC
+body canary, optimizer/branch/ownership probes, 50 publication cases and nine
+runtime/VGA checks. At 8 MiB all nine behavior checks pass, but startup took
+60.642 seconds against the 60-second gate, so that report correctly remains FAIL.
+
+`build/i386-compact-ir-flat-development-kvm/result.json` PASSES: six flat
+components built at 16 MiB, a 544,288-byte boot image installed on a 32 MiB disk,
+and the result booted at 8 MiB. This uses cross-built retained modules and
+therefore remains development evidence, not complete self-hosting.
+
+The first compact-IR six-provider KVM rebuild remains live under
+`build/i386-compact-ir-retained-kvm-16m`; its eventual evidence is scoped to
+that snapshot. The worktree now refines discard: it finds a node's existing
+ownership record instead of adding a full arena size scan for each free.
+Record ownership/link checks and heap-free validation remain. Fresh qualification
+for this refinement starts with `build/i386-compact-ir-owner-bootstrap.log`;
+it is not covered by the preceding image's results.
+
+## Refined candidate checkpoint
+
+- `build/i386-compact-ir-owner-cross`: bootstrap, cross-build, 386 audit and
+  963-file delivered-source audit pass.
+- `build/i386-compact-ir-owner-boot-8m/result.json`: PASS, 57.84-second startup,
+  all nine runtime/static/VGA checks, within the unchanged 60-second budget.
+- `build/i386-compact-ir-owner-diag-16m/result.json`: PASS, 50 publication cases
+  and nine commands; `memory-contract-check.json` verifies both-phase public
+  IC body, optimizer, parser memory, emitter and backend markers.
+- `build/i386-compact-ir-owner-float-8m/result.json`: PASS, 16 commands.
+- `build/i386-compact-ir-owner-bare-8m/result.json`: PASS, 13 commands.
+- `build/i386-install-area-green-pinned/result.json`: PASS, 20 fake-ATA cases,
+  with the core/header, fixture, tools and original bootstrap binaries pinned.
+- `build/i386-command-zero-rejection/result.json`: PASS, negative VGA assertion
+  detected and ordinary zero/one results accepted.
+
+The earlier compact-IR full rebuild is terminal: stage 5, module size 0,
+`Compiler` exception. Stage 5 follows the pack-size query; the final source-line
+context is not proof of a syntax error. DocRecalc body/output completion is
+preserved in `build/i386-compact-ir-retained-kvm-16m/doc-recalc-completed.json`.
+There is no module-pack or full-build pass yet. Next isolate the failed packing
+validation; do not relax relocation/type/ownership checks merely to accept it.
+The current refined rebuild is live in
+`build/i386-compact-ir-owner-retained-kvm-16m` and must be polled before restarting.
