@@ -315,8 +315,24 @@ this correction.
   all 964 packaged source/doc files match, including the new console helper.
 - `build/i386-console-pit-name-retained-kvm-16m`: native six-provider rebuild
   is live, KVM CPU `486,-fpu`, 16 MiB, 14400-second command timeout.
-- `build/i386-console-pit-name-boot-8m`: normal boot qualification is live.
+- `build/i386-console-pit-name-boot-8m/result.json`: PASS, 59.13-second
+  normal startup within the unchanged 60-second gate, all nine runtime/static
+  commands and exact VGA restoration. The timing margin remains small.
+- `build/i386-console-pit-name-diag-16m/result.json`: PASS, 22 class and
+  28 program publication cases plus nine runtime/VGA commands. Its
+  `memory-contract-check.json` pins both-phase optimizer/public-body canary,
+  parser-memory, emitter and backend completion markers.
+- `build/i386-console-pit-name-float-8m/result.json`: PASS, 16 commands.
+- `build/i386-console-pit-name-bare-8m/result.json`: PASS, 13 commands,
+  interrupt restoration and persisted block/bare assembly modules.
 
 Poll these existing runs before restarting. The duplicate source definition
 has been removed; full native module packing/rebuild and two installed native
 self-hosted generations remain unproven.
+
+
+The failed attributed build has 647 function-start and 647 function-done
+markers. Only `NativeRandPitRead` repeats (twice), confirming the demonstrated
+duplicate is the only repeated compiled function in that source snapshot. This
+log inspection does not establish that every remaining pack validation passes;
+the corrected native provider run must still reach and pass packing.
