@@ -8,8 +8,11 @@
 %ifndef BOOT_SECTORS_LIMIT
 %define BOOT_SECTORS_LIMIT 768
 %endif
-; Explicit test reservations may extend to 0x8C000; kernel default is unchanged.
-%if BOOT_SECTORS_LIMIT > 992 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
+%ifndef BOOT_STACK_TOP
+%define BOOT_STACK_TOP 0x90000
+%endif
+; Explicit test reservations may extend to 0x90000; kernel default is unchanged.
+%if BOOT_SECTORS_LIMIT > 1024 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
 %error Boot stage exceeds its declared low-memory reservation
 %endif
 bits 16
@@ -37,7 +40,7 @@ org 0x7c00
     push ds
     int 0x12
     pop ds
-    cmp ax,576 ; Native entry stacks currently end at 0x90000.
+    cmp ax,(BOOT_STACK_TOP+1023)/1024 ; Keep the declared stack below conventional RAM.
     jb fail16
     cmp ax,640
     ja fail16
@@ -48,7 +51,7 @@ org 0x7c00
     mov [0x5010],eax
     test eax,eax
     jz .ebda_ok
-    cmp eax,0x90000
+    cmp eax,BOOT_STACK_TOP
     jb fail16
     cmp eax,0xA0000
     ja fail16

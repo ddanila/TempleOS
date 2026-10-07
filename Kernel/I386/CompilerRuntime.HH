@@ -20,7 +20,7 @@
 #include "/Kernel/I386/Module.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Snapshot layout and kernel lifetime helpers must match the retained compiler.
-#define I386_COMPILER_SERVICES_VERSION 69
+#define I386_COMPILER_SERVICES_VERSION 70
 //Versioned caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {

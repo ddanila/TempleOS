@@ -204,7 +204,7 @@ def main():
     #Exception tasks use 256 KiB below 0x50000, with segment records at 0x70000.
     #Message tasks use 256 KiB below 0x50000, with their arena moved to 0x60000.
     #Other core corpora retain their 192 KiB transfer and first arena at 0x40000.
-    boot_sectors = 832 if args.task_symbols else 992 if args.ata_tasks else 640 if args.ata_tasks or args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps or args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
+    boot_sectors = 832 if args.task_symbols else 1024 if args.ata_tasks else 640 if args.ata_tasks or args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps or args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
     kind = 'expressions'
     for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-trig-reduce', 'soft-f64-trig', 'soft-f64-polar', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
@@ -635,7 +635,7 @@ def main():
             # Seed beyond the bootstrap, including geometry-dependent CHS boundaries.
             patterns = [bytes(((i*37)^(i>>1)^seed)&255 for i in range(512))
                         for seed in range(256)]
-            seed_start = 1024 if args.ata_tasks else 512
+            seed_start = 1056 if args.ata_tasks else 512
             stream.seek(seed_start*512)
             for lba in range(seed_start, 32768):
                 stream.write(patterns[(lba^(lba>>8))&255])
@@ -941,7 +941,7 @@ def main():
         publication_growth_commands = (
             [0x20]*4+[0x30,0xE7]+
             [0x20]*3+[0x30,0xE7]+[0x30]*2+[0x20,0x30,0xE7]+
-            [0x20]*3+[0x20]*3+[0x30]+[0x20,0x30,0x30,0xE7]+
+            [0x20]*2+[0x20]*3+[0x20]*3+[0x30]+[0x20,0x30,0x30,0xE7]+
             [0x20,0x30,0xE7]+[0x20,0x20,0x30,0x20,0x30,0xE7]+
             [0x20]*3+[0x30,0xE7]+[0x20]*3+[0x30,0xE7,0x20]+
             [0xE7,0x20,0x30,0xE7]+[0x20]*4+
@@ -987,6 +987,7 @@ def main():
             'publication_invalid_prepare_cases':8,
             'publication_root_growth_cases':1,'publication_child_parent_repairs':2,
             'publication_growth_native_commands':len(publication_growth_commands),
+            'publication_path_parent_rejections':2,'publication_path_input_rejections':3,
             'publication_fault_retry_cases':5,
             'publication_task_cleanup_deferrals':4,
             'publication_task_cleanup_recoveries':4,

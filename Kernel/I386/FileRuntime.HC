@@ -8,6 +8,7 @@
 #include "/Kernel/I386/RedSeaTask.HH"
 #include "/Kernel/I386/Arc.HH"
 #include "/Kernel/I386/TaskModuleStage.HH"
+#include "/Kernel/I386/TaskModulePublication.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
@@ -21,6 +22,7 @@ import Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,
 import Bool I386RedSeaBegin(CI386RedSea *volume);
 import Bool I386RedSeaEnd(CI386RedSea *volume);
 import Bool I386RedSeaValid(CI386RedSea *volume);
+import Bool I386RedSeaDecode(CI386RedSea *volume,U8 *raw,CI386RedSeaEntry *entry);
 import Bool I386AtaIdentifyPolled(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll);
 import Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool write,CI386AtaPoll *poll);
 import Bool I386AtaFlushPolled(CI386Ata *disk,I64 polls,CI386AtaPoll *poll);
@@ -114,11 +116,12 @@ U8 I386FileRuntimeDriveAlias(U8 alias)
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
 Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(!binding || index<0 || index>2) return FALSE;
+  if(!binding || index<0 || index>3) return FALSE;
   binding->kind=I386_MODULE_EXPORT;
   if(!index){binding->name="I386ArcEntryGet";binding->address=(&I386ArcEntryGet+0)(U64);}
   else if(index==1){binding->name="I386TaskModuleStageNew";binding->address=(&I386TaskModuleStageNew+0)(U64);}
-  else {binding->name="I386TaskModuleStageCleanup";binding->address=(&I386TaskModuleStageCleanup+0)(U64);}
+  else if(index==2){binding->name="I386TaskModuleStageCleanup";binding->address=(&I386TaskModuleStageCleanup+0)(U64);}
+  else {binding->name="I386TaskModulePublish";binding->address=(&I386TaskModulePublish+0)(U64);}
   return TRUE;
 }
 #assert sizeof(CI386FileServices)==120
@@ -178,3 +181,5 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/TaskCd.HC"
 
 #include "/Kernel/I386/TaskModuleStage.HC"
+
+#include "/Kernel/I386/TaskModulePublication.HC"

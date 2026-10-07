@@ -10,6 +10,13 @@
 section stage vstart=0x10000 align=1
 bits 32
     cld
+%ifdef ATA_STAGE_TEST
+    ;Enable A20 for the fixture heap at 1 MiB, preserving other fast-gate bits.
+    in al,0x92
+    and al,0xFE
+    or al,2
+    out 0x92,al
+%endif
 %ifdef SOFT_F64_TEST
     mov eax,cr0
     or eax,4 ; CR0.EM: x87 instructions must fault even on the QEMU 486.
@@ -22,12 +29,12 @@ bits 32
     mov fs,ax
     mov gs,ax
 %ifdef INTERRUPT_SETUP
-    mov esp,0x90000
+    mov esp,BOOT_STACK_TOP
     call irq_test_setup
 %else
     lidt [idt_ptr]
 %endif
-    mov esp,0x90000
+    mov esp,BOOT_STACK_TOP
     mov esi,cases
     xor ebp,ebp
 case_next:

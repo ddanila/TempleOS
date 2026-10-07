@@ -208,12 +208,20 @@ I64 PublicationGrowthTest(U8 *source,U8 *bitmap)
       !I386RedSeaEnd(&volumes[0]))return 101;
   unit=I386TaskModuleStageNew("C:/Grown.BIN",1025);stage=unit;
   if(!unit || (*unit->emit)(unit,0,source,1025)!=1025 || !(*unit->seal)(unit) ||
-      !(*unit->unwound)(unit,TRUE) || !(p=I386TaskModulePublicationNew(unit)))return 102;
+      !(*unit->unwound)(unit,TRUE))return 102;
   fresh=stage->block;
-  if(!I386RedSeaBegin(&volumes[0]) ||
-      I386RedSeaPublicationPrepare(p,&volumes[0],volumes[0].root,"Grown.BIN",&stage->block,1025)!=1 ||
-      volumes[0].root!=2062 || p->sector!=2062 || p->slot!=7 ||
-      !I386RedSeaPublicationCommit(p) || stage->block)return 103;
+  if(I386TaskModulePublish(unit,"C:/Missing/Grown.BIN") || !stage->publication ||
+      !(*stage->publication->cleanup)(stage->publication->context) || stage->publication ||
+      I386TaskModulePublish(unit,"C:/Data.BIN/Grown.BIN") || !stage->publication ||
+      !(*stage->publication->cleanup)(stage->publication->context) || stage->publication ||
+      unit->phase!=I386_STAGE_READY || stage->block!=fresh)return 108;
+  if(I386TaskModulePublish(unit,"D:/Grown.BIN") ||
+      I386TaskModulePublish(unit,"Grown.BIN") ||
+      I386TaskModulePublish(unit,0) || stage->publication || stage->block!=fresh ||
+      !I386TaskModulePublish(unit,"C:/Grown.BIN"))return 103;
+  p=&((stage->publication->context)(CI386TaskModulePublication *))->publication;
+  if(volumes[0].root!=2062 || p->sector!=2062 || p->slot!=7 || stage->block ||
+      !I386RedSeaBegin(&volumes[0]))return 103;
   if(I386RedSeaFind(&volumes[0],volumes[0].root,"Grown.BIN",&found)!=1 ||
       found.block!=fresh || found.size!=1025 ||
       !I386RedSeaSectorRead(&volumes[0],2049,sector))return 104;

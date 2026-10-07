@@ -60,8 +60,11 @@ U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
 Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(index<0 || index>2 || !binding) return FALSE;
-  if(index==2) {
+  if(index<0 || index>3 || !binding) return FALSE;
+  if(index==3) {
+    binding->name="I386ModuleValidParts";
+    binding->address=(&I386ModuleValidParts+0)(U64);
+  } else if(index==2) {
     binding->name="I386FrontendModuleWriteUnit";
     binding->address=(&I386FrontendModuleWriteUnit+0)(U64);
   } else if(index) {

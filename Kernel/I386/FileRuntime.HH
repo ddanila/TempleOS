@@ -5,7 +5,7 @@
 #include "/Kernel/I386/TaskCompiler.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_FILE_SERVICES_VERSION 50
+#define I386_FILE_SERVICES_VERSION 51
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 #include "/Kernel/DirEntryTypes.HH"
 class CI386WriteCache {

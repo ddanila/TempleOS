@@ -62,7 +62,7 @@ I64 DiskTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x90000,32768) ||
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x100000,32768) ||
       !I386AtaChannelInit(&channel,&scheduler,0) || !I386AtaChannelInit(&other,&scheduler,1)) return 1;
   if(!I386AtaTaskIdentify(&channel,&disks[0],0) || !I386AtaTaskIdentify(&channel,&disks[1],1) ||
       disks[0].sectors!=32768 || disks[1].sectors!=32768 || channel.owner || channel.poisoned ||
@@ -133,7 +133,7 @@ U0 Reader(I64 id)
   if(id) { SetRFlags(GetRFlags|0x200); wanted=0x200; }
   buffer[0]=0xA5; buffer[513]=0x5A;
   for(round=0;round<32;round++) {
-    lba=1024+round*127;
+    lba=1056+round*127;
     if(!I386AtaTaskRead(&channel,&disks[id],lba,buffer+1) ||
         (GetRFlags&0x200)!=wanted || I386TaskSelf->io_locks) { errors++; break; }
     for(i=0;i<512;i++) {

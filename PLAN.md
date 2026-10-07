@@ -8,13 +8,69 @@ staging contracts pass; the six-provider 16 MiB rebuild fails at fragmented
 post-unwind readback. The early-resource allocation candidate also fails there;
 the next structural fix must avoid whole-module readback. The candidate
 now has native-tested bounded validation, publication and task cleanup
-foundations; BuildModule still needs their integration. The current image
+foundations. Their BuildModule integration is implemented in an unqualified
+candidate; fresh native rebuild evidence remains required. The current image
 fails a 4-KiB allocation during 8-MiB startup. The previously qualified phased
 header image remains the startup baseline. Full native rebuild and installed
 generation qualification remain open. The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
 and dated entries below are historical snapshots.
 
 ## Objective and status
+
+## Task-owned publication path candidate (2026-10-07)
+
+`I386TaskModulePublish` now copies an absolute target into its registered
+publication allocation, verifies the target volume matches the reserved stage,
+resolves an existing parent under the disk lease, prepares the named slot and
+commits the extent. The path copy shares the publication record lifetime, so
+worker cleanup owns it rather than borrowing a caller stack or leaking a
+separate temporary allocation. Missing parents remain a rejection, matching the
+internal file-write path used by BuildModule.
+
+Fresh two-generation bootstrap passes in
+`build/i386-publication-path-bootstrap.log`. The native growth fixture now calls
+this wrapper and rejects null, relative and different-volume targets before
+publication. Its native run passes in `build/i386-publication-path-native-v1.log`, with
+unchanged ATA ordering, exact heap recovery and full backing-image comparison.
+
+A further integration candidate exports `I386TaskModulePublish` through file
+service version 51 and `I386ModuleValidParts` through compiler service version
+70. BuildModule now allocates only staged metadata, validates through bounded
+code reads, and publishes the already reserved extent after compiler unwind.
+The small contiguous assembly fallback retains its existing validation/write
+path. This removes the whole staged-module readback allocation by construction;
+full-image and 16 MiB native rebuild verification are still required. The export
+probe now verifies the added validator against its resident export address and
+rejects out-of-range index 4. Bootstrap v3 passes. The first integrated cross-build rejects FileRuntime
+because the publication transport needs `I386RedSeaDecode`. The candidate now
+imports the existing kernel decoder, adds static export 70 (71 total), and
+updates all 37 FileRuntime binding/loader counts and the exact import audit.
+The explicit binding checker and bootstrap v4 pass. Cross-build v2 passes
+with 543,656 flat-kernel bytes, the 386 instruction audit and all 977 delivered
+source files matching. Its normal and diagnostic guests stop after compiler
+loading: the kernel's resident-export count still expected three after the
+compiler/file export lists increased to four. Both counts are now corrected;
+bootstrap v5 passes in `build/i386-bounded-publication-bootstrap-v5.log`.
+The corrected image `build/i386-bounded-publication-cross-v3` passes the
+543,656-byte cross-build, 386 instruction audit and 977-file delivered-source
+audit (`build/i386-bounded-publication-source-audit-v3`). Its fresh guests get
+past compiler resident publication and load FileRuntime/MemoryRuntime. The full
+six-provider rebuild is running in `build/i386-bounded-publication-retained-v3-16m`
+on KVM with 486,-fpu and 16 MiB; diagnostics are running
+in `build/i386-bounded-publication-diag-v3-16m`. Normal 8 MiB startup fails in
+`build/i386-bounded-publication-boot-v3-8m`: request 4,096 bytes, heap used
+`0x659740` of `0x65B400`, largest block `0xFD0` (4,048 bytes). The native
+rebuild and diagnostics are pending qualification gates;
+the earlier v2 failures do not establish whether bounded publication fixes rebuilding.
+
+The expanded native publication-path fixture passes in
+`build/i386-publication-path-native-v3.log`: missing and regular-file parents are
+rejected while retaining the staged extent, along with three input/volume
+rejections, root growth and previous faults. It checks all 637 ATA commands and
+the complete backing images. Its test-only layout now has code below 0x90000,
+a 32 KiB root stack ending at 0x98000, descriptor scratch at 0x9C000, and a 32 KiB
+heap at 1 MiB with A20 enabled. Pattern data starts beyond the boot reservation.
+These fixture reservations do not raise the OS's 8/16 MiB acceptance profiles.
 
 ## Named staged publication and root growth (2026-10-07)
 
@@ -37,8 +93,9 @@ Fresh bootstrap passes in `build/i386-publication-slots-current-bootstrap.log`.
 The full-image cross-build `build/i386-publication-slots-cross` passes with
 543,504 flat-kernel bytes and the 96 BIOS / 209 protected-mode instruction audit.
 `build/i386-publication-slots-source-audit` passes all 977 delivered files.
-The 16 MiB diagnostic run is pending in
-`build/i386-publication-slots-diag-16m`; runtime qualification remains required. Canonical target-path preparation and provider/BuildModule integration
+The 16 MiB diagnostic run passes in
+`build/i386-publication-slots-diag-16m`, including publication and runtime/VGA
+checks. This does not establish 8 MiB boot or full native self-hosting. Canonical target-path preparation and provider/BuildModule integration
 remain the next steps; the full-buffer readback failure and current 8 MiB normal
 startup regression are still open.
 

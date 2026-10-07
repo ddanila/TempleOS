@@ -1,4 +1,4 @@
-#include "/Kernel/I386/ModuleStage.HH"
+#include "/Kernel/I386/ModuleStageCheck.HC"
 Bool I386BuildModuleBinding(CI386ModuleBinding *binding,U8 *name)
 {
   I64 i=0;
@@ -20,6 +20,12 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
   CI386ModuleStage *(*stage_new)(U8 *target,I64 bytes);
   Bool (*stage_cleanup)(U8 *context);
   Bool (*module_valid)(U8 *module,I64 bytes);
+  Bool (*module_publish)(CI386ModuleStage *unit,U8 *target);
+  Bool (*valid_parts)(CI386ModuleHeader *h,CI386ModuleRecord *records,
+    U8 *strings,I64 size,U8 (*code)(U8 *context,U32 offset),U8 *context);
+  CI386ModuleHeader staged_header;
+  U8 *metadata=0;
+  I64 metadata_bytes;
   I64 (*unit_write)(CPrsSymbolServices *symbols,
     I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *context,
     U8 *scratch,I64 scratch_bytes);
@@ -41,11 +47,17 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
   if(!console_config->files->export_at(2,&binding) ||
       !I386BuildModuleBinding(&binding,"I386TaskModuleStageCleanup"))return -1;
   stage_cleanup=binding.address;
+  if(!console_config->files->export_at(3,&binding) ||
+      !I386BuildModuleBinding(&binding,"I386TaskModulePublish"))return -1;
+  module_publish=binding.address;
   if(!compiler->export_at(1,&binding) || !I386BuildModuleBinding(&binding,"I386ModuleValid"))return -1;
   module_valid=binding.address;
   if(!compiler->export_at(2,&binding) ||
       !I386BuildModuleBinding(&binding,"I386FrontendModuleWriteUnit"))return -1;
   unit_write=binding.address;
+  if(!compiler->export_at(3,&binding) ||
+      !I386BuildModuleBinding(&binding,"I386ModuleValidParts"))return -1;
+  valid_parts=binding.address;
   target_absolute=(*console_config->files->name_abs)(heap,target_path,0);
   if(!target_absolute)return -1;
   source=(*console_config->files->read)(heap,source_path,&source_bytes,0,0);
@@ -132,21 +144,30 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
       else source=0;
     }
     if(staged && clean) {
-      if(!(*output_stage->unwound)(output_stage,TRUE) ||
-          !(module=I386HeapAlloc(heap,module_bytes)) ||
-          !(*output_stage->readback)(output_stage,module,module_bytes))compiled=FALSE;
+      if(!(*output_stage->unwound)(output_stage,TRUE))compiled=FALSE;
+      if(compiled) {
+        metadata_bytes=I386ModuleStageMetadataSize(output_stage,&staged_header);
+        if(metadata_bytes<0 || !(metadata=I386HeapAlloc(heap,metadata_bytes+!metadata_bytes)) ||
+            !I386ModuleStageValid(output_stage,metadata,metadata_bytes,valid_parts))compiled=FALSE;
+        if(metadata) {
+          if(!I386HeapFree(heap,metadata))clean=FALSE;
+          else metadata=0;
+        }
+      }
+      if(compiled && clean && !(*module_publish)(output_stage,target_absolute))compiled=FALSE;
     }
-    if(compiled && clean && !(*module_valid)(module,module_bytes))compiled=FALSE;
+    if(!staged && compiled && clean && !(*module_valid)(module,module_bytes))compiled=FALSE;
   }
   if(output_stage) {
     if(!(*stage_cleanup)(output_stage))clean=FALSE;
     output_stage=0;
   }
-  if(compiled && clean &&
+  if(!staged && compiled && clean &&
       !(*console_config->files->write)(target_absolute,module,module_bytes,0))
     compiled=FALSE;
   if(compiled) stage=9;
 build_module_done:
+  if(metadata && !I386HeapFree(heap,metadata))clean=FALSE;
   if(target_absolute && !I386HeapFree(heap,target_absolute))clean=FALSE;
   if(module && !I386HeapFree(heap,module)) clean=FALSE;
   if(source && !I386HeapFree(heap,source)) clean=FALSE;
