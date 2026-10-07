@@ -6014,3 +6014,22 @@ The runner rejects failure markers and pins the copied core/header and inputs.
 This fixture does not qualify mounted disk reservation, task cancellation/kill,
 native frontend staging or the 16 MiB provider build. Those require integration
 runs, followed by the installed-generation acceptance pipeline.
+
+
+## Owned RedSea reservation faults
+
+Run `python3 tools/test-i386.py --redsea-alloc --qmp-stdio` after the current
+bootstrap. Require its instruction audit, native runner success and
+`result.json`: two reservation-write faults, two partial-release retry cases,
+8 MiB and CPU 486. The fixture verifies ownership before every bitmap write
+and compares the complete restored bitmap sectors. A mutation recording the
+selected extent only after bitmap mutation must fail at fixture assertion 22.
+Use `--redsea-alloc-core <path>` to compile that alternate core without editing
+production files; it also supports create/delete/replace compatibility probes.
+Keep the failed runner log and command exit status; absence of a success
+manifest alone does not identify which check rejected the mutation.
+
+Owned release is restricted to unreferenced ranges whose task ownership is
+already registered. Clearing and flushing must complete before ownership is
+dropped. A remount after I/O failure must remain quarantined until cleanup;
+this isolated fixture does not prove task cancellation or kill behavior.

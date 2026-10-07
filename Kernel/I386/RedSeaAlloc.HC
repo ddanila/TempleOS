@@ -6,7 +6,7 @@ Bool I386RedSeaBitmapValid(CI386RedSea *v)
   return I386RedSeaValid(v) && v->first>=v->start+2 &&
     (v->first-v->start-1)*4096>=v->start+v->sectors-v->first+1;
 }
-Bool I386RedSeaBitmapChange(CI386RedSea *v,I64 block,I64 count,Bool set)
+Bool I386RedSeaBitmapChange(CI386RedSea *v,I64 block,I64 count,Bool set,Bool strict=TRUE)
 {//Preflight all bits before writes. I/O failure invalidates this mounted view.
   U8 sector[512],mask;
   I64 pass,index,end=block+count-(v->first-1),limit,i,lba;
@@ -20,7 +20,7 @@ Bool I386RedSeaBitmapChange(CI386RedSea *v,I64 block,I64 count,Bool set)
       while (index<limit) {
         i=(index&4095)/8; mask=1<<(index&7);
         if (!pass) {
-          if (((sector[i]&mask)!=0)==set) return FALSE;
+          if (strict && ((sector[i]&mask)!=0)==set) return FALSE;
         } else {
           if (set) sector[i]|=mask;
           else sector[i]&=~mask;
@@ -35,7 +35,7 @@ io_fail:
   v->signature=0;
   return FALSE;
 }
-public I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count)
+I64 I386RedSeaAllocCore(CI386RedSea *volume,I64 count,I64 *owned_block)
 {//First contiguous free run; 0 exhausted, -1 invalid/I/O, otherwise disk sector.
   U8 sector[512];
   I64 block,index,cached=-1,run=0;
@@ -53,13 +53,21 @@ public I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count)
     else run++;
     if (run==count) {
       block=block+1-count;
+      if(owned_block)*owned_block=block;
       if (!I386RedSeaBitmapChange(volume,block,count,TRUE)) return -1;
       return block;
     }
   }
   return 0;
 }
-public Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count)
+public I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count)
+{return I386RedSeaAllocCore(volume,count,0);}
+public I64 I386RedSeaAllocOwned(CI386RedSea *volume,I64 count,I64 *owned_block)
+{
+  if(!owned_block || *owned_block)return -1;
+  return I386RedSeaAllocCore(volume,count,owned_block);
+}
+Bool I386RedSeaFreeCore(CI386RedSea *volume,I64 block,I64 count,Bool strict)
 {//Caller must own an unreferenced extent. No directory removal or cache flush.
   U8 sector[512];
   I64 root_size;
@@ -67,5 +75,11 @@ public Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count)
       block>=volume->start+volume->sectors || count>volume->start+volume->sectors-block ||
       !I386RedSeaDirectory(volume,volume->root,sector,&root_size)) return FALSE;
   if (block<volume->root+root_size/512 && block+count>volume->root) return FALSE;
-  return I386RedSeaBitmapChange(volume,block,count,FALSE);
+  return I386RedSeaBitmapChange(volume,block,count,FALSE,strict);
+}
+public Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count)
+{return I386RedSeaFreeCore(volume,block,count,TRUE);}
+public Bool I386RedSeaReleaseOwned(CI386RedSea *volume,I64 block,I64 count)
+{//Already-clear bits are valid after an interrupted owned reservation/release.
+  return I386RedSeaFreeCore(volume,block,count,FALSE);
 }

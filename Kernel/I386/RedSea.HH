@@ -37,6 +37,13 @@ public extern I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64
 public extern I64 I386RedSeaWrite(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
 public extern I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count);
 public extern Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count);
+//Caller registers a fresh zero ownership field before entering this operation.
+//The selected block is stored before bitmap mutation and retained on failure.
+//Keep the complete I/O session exclusive until reservation finishes.
+public extern I64 I386RedSeaAllocOwned(CI386RedSea *volume,I64 count,I64 *owned_block);
+//Only an unreferenced, exclusively owned reservation may use retryable clearing.
+//Retain its ownership until clearing AND the caller's cache flush succeed.
+public extern Bool I386RedSeaReleaseOwned(CI386RedSea *volume,I64 block,I64 count);
 public extern I64 I386RedSeaCreate(CI386RedSea *volume,I64 directory,U8 *name,U8 *buffer,I64 size,I64 datetime=0,I64 attr=0x800);
 public extern I64 I386RedSeaDelete(CI386RedSea *volume,I64 directory,U8 *name);
 public extern I64 I386RedSeaRename(CI386RedSea *volume,I64 directory,U8 *old_name,U8 *new_name);

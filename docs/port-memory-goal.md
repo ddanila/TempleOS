@@ -832,3 +832,45 @@ This is a transport-independent contract only. Task-owned RedSea reservation,
 partial bitmap mutation recovery, cancellation/kill cleanup and BuildModule
 integration remain required. Then run the six-provider 16 MiB rebuild and two
 installed native generations; their acceptance has not been established.
+
+
+## Owned RedSea reservation and partial cleanup
+
+`I386RedSeaAllocOwned` uses the same allocation scan as the existing allocator,
+but requires a registered zero ownership field and stores the chosen starting
+sector before the first bitmap mutation. The field survives failed writes and
+cannot be overwritten by a second reservation. `I386RedSeaReleaseOwned` permits
+already-clear bits when releasing an exclusively owned, unreferenced range;
+ordinary `I386RedSeaFree` retains its strict double-free rejection. Neither
+owned API clears the caller's ownership record or performs its final flush.
+The caller must retain ownership until clearing and flushing both succeed.
+
+The caller must hold the complete metadata I/O session exclusively. A failed
+bitmap operation still invalidates the mounted view. Any remount for cleanup
+must remain private/quarantined until all owned reservations are resolved;
+these APIs do not authorize exposing the remounted volume to other allocators.
+They provide the disk primitive, not task ownership registration or recovery.
+
+The current-source original two-generation bootstrap passes in
+`build/rebuild-test/result.json`. The focused native 486/8 MiB allocation run
+passes in `build/i386-owned-reservation-green/result.json`, including failures
+at both bitmap-write positions, retained ownership, failed partial clearing,
+retry and byte-exact restoration of both bitmap sectors. Its manifest pins the
+HolyC fixture, allocator, volume, I/O and ATA sources. A controlled alternate
+core that records ownership only after bitmap mutation is rejected with case
+0 result 0x16 (the fixture's assertion 22) in
+`build/i386-redsea-alloc-test/runner.log`; the runner exits nonzero.
+`--redsea-alloc-core` allows this mutation without changing production sources.
+
+Native delete and replace regressions pass in their `build/i386-redsea-*-test`
+results. The create regression fails with case 0 result 2. A run using the
+previous committed allocator also fails with the same result, recorded in
+`build/i386-owned-reservation-create-baseline.log`; no create-regression pass
+is claimed. Its full-directory validation expectation needs investigation.
+The initial pre-implementation run timed out without a compiled module and
+is not the authoritative mutation-test evidence.
+
+TaskFiles ownership registration, private remount/retry policy, task kill and
+cancel cleanup, chunk transport and BuildModule integration remain next.
+The standalone allocation run and x64 bootstrap do not qualify a new full
+8 MiB startup image, the six native provider builds or installed generations.

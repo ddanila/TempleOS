@@ -148,6 +148,7 @@ def main():
     modes.add_argument('--redsea', action='store_true', help='Test native RedSea mount, lookup and raw file reads')
     modes.add_argument('--redsea-write', action='store_true', help='Test native fixed-extent RedSea file updates')
     modes.add_argument('--redsea-alloc', action='store_true', help='Test native RedSea bitmap allocation and release')
+    parser.add_argument('--redsea-alloc-core', type=Path, help='With RedSea alloc/create/delete/replace, alternate allocation core for mutation tests')
     modes.add_argument('--redsea-create', action='store_true', help='Test native RedSea file creation and publication ordering')
     modes.add_argument('--redsea-delete', action='store_true', help='Test native RedSea deletion, reclamation and reuse')
     modes.add_argument('--redsea-replace', action='store_true', help='Test native RedSea replacement without early reclamation')
@@ -194,6 +195,8 @@ def main():
         parser.error('--lex-snapshot-boundary requires --lex-state')
     if args.lex_control and (not args.lex_state or args.lex_snapshot_boundary):
         parser.error('--lex-control requires --lex-state and excludes --lex-snapshot-boundary')
+    if args.redsea_alloc_core and not (args.redsea_alloc or args.redsea_create or args.redsea_delete or args.redsea_replace):
+        parser.error('--redsea-alloc-core requires a RedSea allocation or mutation test')
     except_runner = args.except_context or args.except_runtime
     task_runner = args.task_heaps or args.task_symbols or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks
     large_runner = args.redsea_alloc or args.redsea_write or args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_polar or args.soft_f64_trig or args.soft_f64_trig_reduce or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
@@ -257,6 +260,17 @@ def main():
             binary = ROOT/'build/rebuild-test/overlay'/path
             if hashlib.sha256(binary.read_bytes()).hexdigest() != manifest['generations'][-1][name]:
                 raise ValueError(f'Rerun tools/test-rebuild.py: stale {name}')
+    redsea_owned_inputs = {}
+    if args.redsea_alloc:
+        for name in ('tests/guest/i386-redsea-alloc/Target.HC',
+                     'tests/guest/i386-redsea-alloc/Once.HC',
+                     'Kernel/I386/RedSeaAlloc.HC', 'Kernel/I386/RedSea.HH',
+                     'Kernel/I386/RedSea.HC', 'Kernel/I386/RedSeaIo.HC',
+                     'Kernel/I386/Ata.HC', 'Kernel/I386/Ata.HH'):
+            redsea_owned_inputs[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+    if args.redsea_alloc_core:
+        core_path = args.redsea_alloc_core.resolve()
+        redsea_owned_inputs[str(core_path)] = hashlib.sha256(core_path.read_bytes()).hexdigest()
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT/'result.json').unlink(missing_ok=True)
     overlay = OUT / 'overlay/Compiler/I386'
@@ -289,6 +303,12 @@ def main():
         source_overlay.mkdir(parents=True, exist_ok=True)
         (source_overlay/'Target.HC').write_bytes((ROOT/('tests/guest/i386-lex-state/ControlTarget.HC' if args.lex_control else 'tests/guest/i386-lex-state/BoundaryTarget.HC')).read_bytes())
         build += ['--overlay', str(source_overlay)]
+    if args.redsea_alloc_core:
+        core_overlay = OUT/'owned-core-overlay'
+        core_target = core_overlay/'Kernel/I386/RedSeaAlloc.HC'
+        core_target.parent.mkdir(parents=True, exist_ok=True)
+        core_target.write_bytes(args.redsea_alloc_core.resolve().read_bytes())
+        build += ['--overlay', str(core_overlay)]
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
         '--timeout', '90', *(['--qmp-stdio'] if args.qmp_stdio else []))
@@ -1010,7 +1030,12 @@ def main():
         fault_result = subprocess.run(fault_cmd, timeout=20)
         if fault_result.returncode != 33 or fault_log.read_text() != 'PASS i386 functions\n':
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
-    (OUT/'result.json').write_text(json.dumps({'cases': count, 'retained_task_core_cycles': 20 if args.task_runtime_core else 0, 'retained_task_discard_cycles': 20 if args.task_runtime_core else 0, 'retained_creator_discard_cases': 1 if args.task_runtime_core else 0, 'retained_cleanup_retry_cases': 1 if args.task_runtime_core else 0, 'cpu': '486,-fpu' if args.soft_f64_trig_reduce or args.soft_f64_polar or args.soft_f64_trig else '486',
+    if any(hashlib.sha256((ROOT/name).read_bytes()).hexdigest() != digest
+           for name, digest in redsea_owned_inputs.items()):
+        raise ValueError('RedSea allocation test sources changed during the run')
+    (OUT/'result.json').write_text(json.dumps({'redsea_owned_source_sha256': redsea_owned_inputs,
+        'owned_reservation_write_faults': 2 if args.redsea_alloc else 0,
+        'owned_release_retry_cases': 2 if args.redsea_alloc else 0, 'cases': count, 'retained_task_core_cycles': 20 if args.task_runtime_core else 0, 'retained_task_discard_cycles': 20 if args.task_runtime_core else 0, 'retained_creator_discard_cases': 1 if args.task_runtime_core else 0, 'retained_cleanup_retry_cases': 1 if args.task_runtime_core else 0, 'cpu': '486,-fpu' if args.soft_f64_trig_reduce or args.soft_f64_polar or args.soft_f64_trig else '486',
         'boot_variants': 2 if args.memory else 1,
         'lex_snapshot_boundary': args.lex_snapshot_boundary,
         'lex_control': args.lex_control,
