@@ -5,7 +5,7 @@ in 57.84 seconds; 16 MiB diagnostics, 8 MiB F64 and saved assembly pass. The
 32 MiB installer fix passes fake-ATA and real QEMU build/install/boot tests.
 Full native rebuilding remains open: the first compact-IR snapshot completed
 DocRecalc but its module pack-size query returned zero. The refined snapshot's
-six-provider rebuild is still running. Detailed evidence is below.
+six-provider rebuild also rejected the pack-size query. Detailed evidence is below.
 
 Previous snapshot outcome: 8 MiB boot and focused regressions pass, but the accelerated
 full retained build fails with OutMem and flat-kernel installation rejects
@@ -235,5 +235,26 @@ context is not proof of a syntax error. DocRecalc body/output completion is
 preserved in `build/i386-compact-ir-retained-kvm-16m/doc-recalc-completed.json`.
 There is no module-pack or full-build pass yet. Next isolate the failed packing
 validation; do not relax relocation/type/ownership checks merely to accept it.
-The current refined rebuild is live in
-`build/i386-compact-ir-owner-retained-kvm-16m` and must be polled before restarting.
+The refined rebuild in `build/i386-compact-ir-owner-retained-kvm-16m` is now
+terminal too: its `result.json` records the same stage-5, zero-size rejection.
+The input disk SHA-256 remains unchanged, so no provider was persisted.
+
+## Pack rejection attribution in progress
+
+`Compiler/I386/FrontendPublish.HC` now reports the failing validation and the
+function/global name for module-source builds. Relocation, ownership, type,
+dimension, pointer-resolution and serialization checks remain enforced; the
+failure path allocates no memory. Initial invalid-context requests still return
+zero without dereferencing their context.
+
+The fresh two-generation bootstrap passes; its log is
+`build/i386-pack-attribution-bootstrap.log`. The fresh cross-build also passes,
+including the 386 audit (96 BIOS and 209 protected-mode instructions); see
+`build/i386-pack-attribution-cross.log`.
+
+The six-provider native rebuild is running at 16 MiB under KVM, CPU
+`486,-fpu`, in `build/i386-pack-attribution-retained-kvm-16m`. It uses the
+fresh cross-built image and a 14400-second per-command timeout. There is no
+full native build pass yet; poll this run to obtain attributed packing evidence
+before changing packing behavior. The earlier 8 MiB runtime/diagnostic passes
+apply to the previous candidate, not this instrumentation snapshot.
