@@ -1,6 +1,6 @@
 # Bounded-memory self-hosting goal
 
-Current source candidate: `i386-retired-boundary-atomic-cross`. Bootstrap,
+Latest qualified full-image candidate: `i386-retired-boundary-atomic-cross`. Bootstrap,
 cross-build, 386 audit and 964-file source audit pass. Normal 8 MiB startup
 passes in 59.52 seconds with all nine runtime/VGA checks; the timing margin is
 small. Fresh diagnostics/F64/assembly checks pass. The previous
@@ -487,3 +487,36 @@ All test processes at this checkpoint are terminal. No full native six-provider
 or installed native-generation pass exists. The measured non-atomic provider
 failure remains the bounded-writer baseline; the final atomic frontend is
 qualified for focused checks only, with a small startup timing margin.
+
+## Bounded serializer foundation — contract verified
+
+`ModuleWriteCore.HC` now emits the existing T32M layout using caller-owned
+scratch of 1–4096 bytes and borrowed payload bytes. It validates metadata
+before invoking the sink, normalizes relocation and pointer slots even across
+chunk boundaries, and stops immediately on short or failed writes. It allocates
+no heap and does not mutate its inputs. `ModuleCheck.HC` shares its existing
+validation rules between contiguous buffers and borrowed payload access.
+
+Evidence on the current foundation sources:
+
+- `build/i386-module-check/result.json`: PASS, 46 validator cases executed as
+  audited i386 code.
+- `build/i386-module-writer-green-zeroed/result.json`: PASS, actual HolyC writer
+  compared with the existing contiguous packer at six scratch sizes, 30
+  injected short/error writes and 11 invalid requests. Input hashes are pinned.
+- `build/i386-module-writer-red-zeroed/guest/debug.log`: controlled stub fails
+  at `FAIL module-writer 10`, the first output check after successful oracle
+  construction. This is a behavior failure, rather than a compile timeout.
+
+The writer fixture explicitly initializes every raw record; earlier runs that
+relied on uninitialized fields are superseded. Writer execution here uses the
+original host HolyC environment, not the native i386 compiler. It does not prove
+native bounded-memory rebuilding, disk staging, or atomic file publication.
+The full-image results above apply to the preceding qualified snapshot.
+
+Next retain the frontend's name/type/ownership/layout checks while constructing
+compact metadata and borrowed payload spans, integrate bounded output with
+task-owned disk staging and cleanup, then qualify native writer execution and
+real short-write/unwind/publication behavior. Keep the existing contiguous
+packing API. Only then run all six native providers at 16 MiB and two installed
+self-hosted generations, followed by the current-source 8 MiB/no-FPU gates.

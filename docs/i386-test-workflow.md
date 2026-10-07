@@ -5964,3 +5964,20 @@ checks that an explicitly rejected zero answer is recognized from VGA, while
 normal zero and one answers remain valid. The build harnesses set
 `rejected_answers: ['0']`; other checks retain their existing behavior. This
 prevents an installer that has returned false from waiting for a success timeout.
+
+## Bounded module writer contract
+
+After a current `tools/test-rebuild.py` bootstrap, run:
+
+```sh
+python3 tools/test-i386-module-writer.py --out build/<fresh-writer-directory>
+python3 tools/test-i386-module-check.py
+```
+
+The first executes the actual HolyC writer against the contiguous packer:
+six scratch sizes, cross-boundary fixups, immutable inputs, 30 short/error
+sinks and 11 invalid requests rejected before writes. It pins its inputs and
+accepts `--writer-core <path>` for controlled mutation tests. It exercises the
+host-compiled core; native frontend memory limits and disk publication require
+separate integration qualification. The second runs 46 shared validator cases
+as audited i386 code.

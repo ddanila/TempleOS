@@ -2,16 +2,21 @@
 #include "/Kernel/I386/ModuleCheck.HH"
 #include "/Kernel/NumericLimits.HH"
 
-public Bool I386ModuleValid(U8 *data,I64 size)
+U32 I386ModuleCodeWord(U8 (*code)(U8 *context,U32 offset),U8 *context,U32 offset)
 {
-  CI386ModuleHeader *h=data;
+  return (*code)(context,offset)|(*code)(context,offset+1)<<8|
+    (*code)(context,offset+2)<<16|(*code)(context,offset+3)(U32)<<24;
+}
+public Bool I386ModuleValidParts(CI386ModuleHeader *h,CI386ModuleRecord *records,
+  U8 *strings,I64 size,U8 (*code)(U8 *context,U32 offset),U8 *context)
+{
   CI386ModuleRecord *r,*q;
   //Header validation bounds record counts and name lengths to U32. Keep wide
   //range calculations below, but avoid software I64 work on every scan step.
   U32 i,j;
   I64 end,lo,hi;
   Bool in_data,target_data,pointers=FALSE,named_pointers=FALSE;
-  if (!data || size<32 || size>U32_MAX) return FALSE;
+  if (!h || !records || !strings || !code || size<32 || size>U32_MAX) return FALSE;
   if (h->magic!=I386_MODULE_MAGIC || (h->version!=I386_MODULE_VERSION &&
       h->version!=I386_MODULE_POINTER_VERSION &&
       h->version!=I386_MODULE_NAMED_POINTER_VERSION) ||
@@ -22,20 +27,20 @@ public Bool I386ModuleValid(U8 *data,I64 size)
   if (h->record_count>(size-h->records_offset)/16) return FALSE;
   end=h->records_offset+h->record_count*16;
   if (end!=h->strings_offset || end>size) return FALSE;
-  r=data+h->records_offset;
+  r=records;
   //Range records use name_offset as byte length and have no name.
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_RANGE) {
       if (r->name_length || !r->name_offset || r->name_offset>h->code_size ||
           r->offset>h->code_size-r->name_offset) return FALSE;
-      q=data+h->records_offset;
+      q=records;
       for (j=0;j<i;j++,q++)
         if (q->kind==I386_MODULE_DATA_RANGE &&
             r->offset<q->offset+q->name_offset &&
             q->offset<r->offset+r->name_offset) return FALSE;
     }
   }
-  r=data+h->records_offset;
+  r=records;
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_RANGE) goto next_record;
     if (r->kind==I386_MODULE_POINTER) {
@@ -43,8 +48,8 @@ public Bool I386ModuleValid(U8 *data,I64 size)
       if ((h->version!=I386_MODULE_POINTER_VERSION &&
           h->version!=I386_MODULE_NAMED_POINTER_VERSION) || r->name_length ||
           r->offset>h->code_size-4 || r->name_offset>=h->code_size ||
-          (data+32+r->offset)(U32 *)[0]) return FALSE;
-      in_data=FALSE; target_data=FALSE; q=data+h->records_offset;
+          I386ModuleCodeWord(code,context,r->offset)) return FALSE;
+      in_data=FALSE; target_data=FALSE; q=records;
       for (j=0;j<h->record_count;j++,q++) {
         if (q->kind==I386_MODULE_DATA_RANGE) {
           if (r->offset>=q->offset && r->offset+4<=q->offset+q->name_offset) in_data=TRUE;
@@ -59,15 +64,15 @@ public Bool I386ModuleValid(U8 *data,I64 size)
     }
     if (!r->name_length || r->name_length>255 || r->name_offset<end ||
         r->name_offset>size-r->name_length-1) return FALSE;
-    if (data[r->name_offset+r->name_length]) return FALSE;
+    if (strings[r->name_offset+r->name_length-h->strings_offset]) return FALSE;
     for (j=0;j<r->name_length;j++)
-      if (!data[r->name_offset+j]) return FALSE;
+      if (!strings[r->name_offset+j-h->strings_offset]) return FALSE;
     lo=r->offset; hi=lo+1;
     if (r->kind==I386_MODULE_NAMED_POINTER) {
       named_pointers=TRUE;
       if (h->version!=I386_MODULE_NAMED_POINTER_VERSION ||
-          lo>h->code_size-4 || (data+32+lo)(U32 *)[0]) return FALSE;
-      q=data+h->records_offset;
+          lo>h->code_size-4 || I386ModuleCodeWord(code,context,lo)) return FALSE;
+      q=records;
       for (j=0;j<i;j++,q++)
         if ((q->kind==I386_MODULE_POINTER ||
             q->kind==I386_MODULE_NAMED_POINTER) &&
@@ -78,17 +83,17 @@ public Bool I386ModuleValid(U8 *data,I64 size)
     } else if (r->kind==I386_MODULE_REL32 || r->kind==I386_MODULE_ADDRESS) {
       if (lo<1 || lo>h->code_size-4) return FALSE;
       if (r->kind==I386_MODULE_REL32) {
-        if (data[32+lo-1]!=0xE8) return FALSE;
-      } else if (data[32+lo-1]!=0x05) return FALSE;
-      if ((data+32+lo)(U32 *)[0]) return FALSE;
-      q=data+h->records_offset;
+        if ((*code)(context,lo-1)!=0xE8) return FALSE;
+      } else if ((*code)(context,lo-1)!=0x05) return FALSE;
+      if (I386ModuleCodeWord(code,context,lo)) return FALSE;
+      q=records;
       for (j=0;j<i;j++,q++)
         if ((q->kind==I386_MODULE_REL32 || q->kind==I386_MODULE_ADDRESS) &&
             q->offset<lo+4 && lo<q->offset+4) return FALSE;
       lo--; hi=r->offset+4;
     } else return FALSE;
     in_data=FALSE;
-    q=data+h->records_offset;
+    q=records;
     for (j=0;j<h->record_count;j++,q++) {
       if (q->kind==I386_MODULE_DATA_RANGE) {
         if (r->kind==I386_MODULE_NAMED_POINTER) {
@@ -105,4 +110,14 @@ next_record:
   if (h->version==I386_MODULE_POINTER_VERSION) return pointers;
   if (h->version==I386_MODULE_NAMED_POINTER_VERSION) return named_pointers;
   return TRUE;
+}
+
+U8 I386ModuleBufferByte(U8 *context,U32 offset)
+{ return context[32+offset]; }
+public Bool I386ModuleValid(U8 *data,I64 size)
+{
+  CI386ModuleHeader *h=data;
+  if(!data || size<32 || size>U32_MAX) return FALSE;
+  return I386ModuleValidParts(h,data+h->records_offset,data+h->strings_offset,
+    size,&I386ModuleBufferByte,data);
 }

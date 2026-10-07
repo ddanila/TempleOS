@@ -36,7 +36,7 @@ def main():
     code = (exports/'validator.bin').read_bytes()
     starts = sorted(int(line.split()[2],16) for line in (exports/'debug.log').read_text().splitlines()
                     if line.startswith('RANGE '))
-    if len(starts)!=2 or starts[0]!=0:
+    if len(starts)!=5 or starts[0]!=0:
         raise ValueError('Unexpected validator function boundaries')
     allowed = {'push','pop','mov','lea','movzx','movsx','add','adc','sub','sbb','and','or','xor',
                'neg','not','mul','imul','div','dec','rcl','shl','shr','sar','shld','shrd',
