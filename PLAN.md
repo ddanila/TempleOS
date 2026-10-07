@@ -3,8 +3,10 @@
 Active medium goal: [bounded-memory self-hosting](docs/port-memory-goal.md).
 
 Current work: [bounded-memory results](docs/port-memory-goal.md). Normal 8 MiB
-startup now passes on the compact-IR-owner candidate; full native rebuild
-qualification remains open. The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
+startup passes in 47.55 seconds on the shared-writer/phased-header candidate.
+An allocation-free staging lifecycle now has a host HolyC fault fixture;
+task-owned disk transport and full native rebuild qualification remain open.
+The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
 and dated entries below are historical snapshots.
 
 ## Objective and status

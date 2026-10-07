@@ -5995,3 +5995,22 @@ header set in separate atomic transactions. Both `ROOT KERNEL HEADERS ok`
 and `ROOT USER HEADERS ok` must appear; all declarations and stack limits
 remain intact. Use the usual source-pinned 8 MiB startup checker, plus F64,
 assembly and full 16 MiB diagnostics, when changing these boundaries.
+
+
+## Module staging lifecycle contract
+
+After the current bootstrap, run:
+
+```sh
+python3 tools/test-i386-module-stage.py --out build/<fresh-stage-directory>
+```
+
+Require a passing `result.json` and exactly `DONE module-stage 253 checks`.
+The actual host-compiled HolyC core covers sequential chunk writes, short/error/
+thrown transport writes, flush failure, dirty unwind, exact readback, read
+failure and retained ownership with release retry. `--stage-core <path>` permits
+controlled mutation tests; a writer returning zero must fail at assertion 2.
+The runner rejects failure markers and pins the copied core/header and inputs.
+This fixture does not qualify mounted disk reservation, task cancellation/kill,
+native frontend staging or the 16 MiB provider build. Those require integration
+runs, followed by the installed-generation acceptance pipeline.

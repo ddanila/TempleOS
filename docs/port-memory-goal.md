@@ -799,3 +799,36 @@ through the existing contiguous path where appropriate. Then qualify all six
 providers at 16 MiB and two installed native generations with source/binary/
 boot-area identity and current-source 8 MiB/no-FPU gates. No such native
 rebuild/generation acceptance is claimed by this checkpoint.
+
+
+## Allocation-free staging lifecycle contract
+
+`ModuleStageCore.HC` now separates sequential bounded writes, flush/seal,
+clean compiler unwind, exact readback and release. It retains ownership on
+short/error writes, failed flush/read and failed release; release can retry
+and successful release is idempotent. Writes are limited to 4,096 bytes and
+readback requires the exact declared module size after a clean unwind.
+Thrown transport exceptions propagate to the caller without dropping ownership.
+The transport must register ownership before initialization and before its
+first disk mutation. This core performs no disk allocation or target publication.
+
+`build/i386-module-stage-pinned/result.json` proves 253 host HolyC assertions:
+six chunk sizes, short/error/thrown writes at four positions, invalid requests,
+flush failure, dirty unwind, read failure and release retry. The alternate core
+that returns zero on every write is rejected at assertion 2 in
+`build/i386-module-stage-pinned-red/guest/debug.log`; its runner exits nonzero.
+Both runs use the actual core source in a bootstrap TempleOS guest, not a Python
+implementation. The runner pins the core, header, fixture and bootstrap inputs,
+requires exactly one 253-check completion marker and rejects failure markers.
+
+Earlier `i386-module-stage-lifecycle` output reported an invalid large counter
+and was erroneously accepted by the initial minimum-count checker. That result
+is superseded and must not be used as acceptance evidence. Explicit counter
+initialization alone did not fix reporting. Executing and reporting from a
+function, with an in-guest exact-count condition, produces 253 for the real core
+and 2 for the broken writer; the checker now requires the exact count.
+
+This is a transport-independent contract only. Task-owned RedSea reservation,
+partial bitmap mutation recovery, cancellation/kill cleanup and BuildModule
+integration remain required. Then run the six-provider 16 MiB rebuild and two
+installed native generations; their acceptance has not been established.
