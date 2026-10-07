@@ -190,6 +190,7 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Scheduler.HC"
+#include "/Kernel/I386/WaitCancel.HC"
 #include "/Kernel/I386/Task.HC"
 #include "/Kernel/I386/Segments.HC"
 #include "/Kernel/I386/PicPit.HC"

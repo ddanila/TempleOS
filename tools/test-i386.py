@@ -276,7 +276,8 @@ def main():
                      'Kernel/I386/TaskModuleStage.HC', 'Kernel/I386/TaskModuleStage.HH',
                      'Kernel/I386/ModuleStageCore.HC', 'Kernel/I386/ModuleStage.HH',
                      'Kernel/I386/TaskFiles.HC', 'Kernel/I386/TaskFiles.HH',
-                     'Kernel/I386/RedSeaAlloc.HC', 'Kernel/I386/RedSeaTask.HC'):
+                     'Kernel/I386/RedSeaAlloc.HC', 'Kernel/I386/RedSeaTask.HC',
+                     'Kernel/I386/WaitCancel.HC'):
             task_stage_inputs[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
     if args.redsea_alloc_core:
         core_path = args.redsea_alloc_core.resolve()
@@ -927,6 +928,7 @@ def main():
             'inherited_task_directories':2,'relative_file_reads':2,'borrowed_reap_rejected':True,
             'stage_readback_bytes':1025,'stage_chunk_bytes':17,
             'stage_worker_exit_cleanup':True,'stage_flush_failure_retry':True,
+            'stage_queued_wait_cancellation_cleanup':True,
             'stage_bitmap_restored':True,'stage_native_commands':len(stage_commands),
             'source_sha256':task_stage_inputs,
             'bytes_compared':32*1024*1024},indent=2)+'\n')

@@ -17,6 +17,18 @@ U0 StageWorker(U8 *unused)
   if(!unit || (*unit->emit)(unit,0,bytes,17)!=17)errors++;
   //Task exit deliberately leaves the unsealed reservation for the reaper.
 }
+U32 stage_cancel_started,stage_cancel_done;
+U0 StageCancelWorker(U8 *unused)
+{
+  CI386ModuleStage *unit;
+  no_warn unused;
+  unit=I386TaskModuleStageNew("C:/Cancelled.t32m",0);
+  if(!unit){errors++;return;}
+  stage_cancel_started=1;
+  if((*unit->reserve)(unit,65) || unit->phase!=I386_STAGE_FAILED ||
+      !unit->owned || I386TaskSelf->io_locks)errors++;
+  stage_cancel_done=1;
+}
 I64 StageTest()
 {
   CI386TaskFiles *state=root.file_state;
@@ -57,6 +69,18 @@ I64 StageTest()
   if(!worker->task.finished || !worker->task.file_state ||
       !((worker->task.file_state(CI386TaskFiles *))->stage) ||
       !I386TaskDestroy(worker) || heap.used!=used || heap.allocations!=allocations)return 51;
+  if(!I386RedSeaBegin(&volumes[0]))return 56;
+  worker=I386TaskSpawn(&scheduler,&heap,8192,&StageCancelWorker,0,0x18,0x20,512);
+  if(!worker)return 57;
+  for(i=0;i<100 && !worker->task.wait;i++)I386SchedYield(&scheduler);
+  if(!stage_cancel_started || !worker->task.wait || !worker->task.blocked ||
+      !channel.head || I386TaskFilesDestroy(&worker->task) ||
+      !I386TaskCancelWait(&worker->task))return 58;
+  for(i=0;i<100 && !worker->task.finished;i++)I386SchedYield(&scheduler);
+  if(!worker->task.finished || !stage_cancel_done || worker->task.wait ||
+      channel.head || channel.tail || channel.owner!=&root || root.io_locks!=1 ||
+      !I386TaskDestroy(worker) || heap.used!=used || heap.allocations!=allocations ||
+      !I386RedSeaEnd(&volumes[0]))return 59;
   if(!I386RedSeaBegin(&volumes[0]) || !I386RedSeaSectorRead(&volumes[0],2049,after) ||
       !I386RedSeaEnd(&volumes[0]))return 52;
   for(i=0;i<512;i++)if(bitmap[i]!=after[i])return 53;

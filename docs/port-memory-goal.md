@@ -954,3 +954,17 @@ The early-resource corpus now exceeds the previous 320-KiB transfer. Its
 explicit test-only reservation is 352 KiB, heap at 0x68000 and segment scratch
 at 0x74000, still before seeded ATA data at sector 768. Native prepared-state
 checks reject writes before reservation and reject a second reservation.
+
+### Queued staging cancellation verified
+
+The native ATA/task fixture now holds the disk lease in the root task while a
+worker prepares a staging resource and blocks attempting its reservation.
+Live destruction rejects the active resource. Cancelling the queued wait lets
+the worker return with failed, still-owned staging state; reaping then restores
+the exact heap counters without disturbing the root lease or leaving a waiter.
+The complete ATA command trace and both full backing disks remain checked.
+`build/i386-ata-tasks-test/result.json` and `ata-task-check.json` are terminal
+PASS on 486 with 8 MiB. The fixture includes and pins WaitCancel.HC; its initial
+missing-implementation compilation failure is superseded. This covers queued
+wait cancellation, not public Kill or cancellation during a transfer. The
+six-provider early-resource build remains live; no memory recovery is claimed.
