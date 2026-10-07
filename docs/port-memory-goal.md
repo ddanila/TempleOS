@@ -1031,3 +1031,30 @@ rejected by the stale-bootstrap source guard, not an executed red contract.
 BuildModule has not switched to bounded validation/publication yet. The
 current full-image 8-MiB gate, cancellation during a range read, publication
 faults, six native providers and installed generations remain required.
+
+### Staged validation core — host contract verified
+
+`Kernel/I386/ModuleStageCheck.HC` validates header arithmetic before reading
+metadata, reads metadata in chunks no larger than 4096, and passes the existing
+`I386ModuleValidParts` rules a 512-byte cached code reader. The caller supplies
+only metadata storage; the validator never allocates or reads a whole code
+image. Transport failure is independently latched so zero returned after a
+failed read cannot be accepted as a zero relocation. Successful validation
+retains READY and ownership for the forthcoming publication step.
+
+`tools/test-i386-module-stage.py --validation --out <fresh-directory>` executes
+the actual shared core with pinned sources. The final host contract passes all
+46 assertions under `build/i386-stage-validation-contract-v5/result.json`:
+12 malformed header variants, insufficient metadata capacity, invalid state,
+bad relocation/name bytes, four read failure positions, cached relocation
+reads crossing a sector, and metadata spanning two chunks. Removing the
+explicit cache failure check is rejected at assertion 11 under
+`build/i386-stage-validation-mutant-v2`. Earlier attempts with an uninitialized
+counter and a conditional expression in the fixture are superseded; the final
+fixture initializes counters and uses ordinary if/else branches.
+
+This core is not yet linked into a resident provider or BuildModule. Next
+qualify it as native i386 code, then implement fault-tested bounded publication
+and switch BuildModule to metadata-only validation. No native rebuild,
+publication, installed-generation or full-image memory pass follows from this
+host contract.
