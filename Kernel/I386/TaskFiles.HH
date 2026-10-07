@@ -2,11 +2,16 @@
 #define I386_TASK_FILES_INCLUDED
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/FileContext.HH"
+class CI386TaskFileStage {
+  U8 *context;
+  Bool (*cleanup)(U8 *context);
+};
 class CI386TaskFiles {
   CI386Heap *heap;
   CI386Task *task;
   CFilePathContext *environment;
   CI386FileVolumes *volumes;
+  CI386TaskFileStage *stage;
   U32 signature,bytes,busy;
   U8 drive;
 };

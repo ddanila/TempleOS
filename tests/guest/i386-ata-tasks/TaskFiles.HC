@@ -1,8 +1,68 @@
 #include "/Kernel/I386/TaskFiles.HH"
+#include "/Kernel/I386/TaskModuleStage.HH"
 CI386FileVolumes task_volumes;
 CFilePathContext task_environment;
 U32 task_white_space[8],task_files_done,task_files_busy;
 extern U0 DirectoryReader(I64 id);
+extern I64 I386ModuleStageWrite(U8 *context,U32 offset,U8 *buffer,U32 bytes);
+extern Bool I386ModuleStageSeal(CI386ModuleStage *stage);
+extern Bool I386ModuleStageUnwound(CI386ModuleStage *stage,Bool clean);
+extern Bool I386ModuleStageRead(CI386ModuleStage *stage,U8 *buffer,I64 bytes);
+U0 StageWorker(U8 *unused)
+{
+  CI386ModuleStage *unit;U8 bytes[65];I64 i;
+  no_warn unused;
+  for(i=0;i<65;i++)bytes[i]=i+1;
+  unit=I386TaskModuleStageNew("C:/Exit.t32m",65);
+  if(!unit || (*unit->emit)(unit,0,bytes,17)!=17)errors++;
+  //Task exit deliberately leaves the unsealed reservation for the reaper.
+}
+I64 StageTest()
+{
+  CI386TaskFiles *state=root.file_state;
+  CI386ModuleStage *unit;
+  CI386OwnedTask *worker;
+  U8 source[1025],output[1025],bitmap[512],after[512];
+  I64 i,n,used=heap.used,allocations=heap.allocations;
+  if(!I386RedSeaBegin(&volumes[0]))return 41;
+  //Reserve directory/data sectors; the fixture previously needed no allocator.
+  for(i=0;i<512;i++)bitmap[i]=255;
+  bitmap[0]=0x6F;bitmap[1]=0x98;
+  if(!I386RedSeaSectorWrite(&volumes[0],2049,bitmap) ||
+      !I386RedSeaFlush(&volumes[0]) || !I386RedSeaEnd(&volumes[0]))return 42;
+  for(i=0;i<1025;i++)source[i]=(i*13+7)&255;
+  unit=I386TaskModuleStageNew("C:/Check.t32m",0);
+  if(!unit || !state->stage || state->busy || root.io_locks ||
+      I386TaskFilesSet(&root,"/",'C') || I386TaskModuleStageNew("C:/Two",65))return 43;
+  if(unit->owned || unit->phase || (*unit->emit)(unit,0,source,17) ||
+      !(*unit->reserve)(unit,1025) || (*unit->reserve)(unit,1025))return 55;
+  for(i=0;i<1025;i+=17) {
+    n=1025-i;if(n>17)n=17;
+    if((*unit->emit)(unit,i,source+i,n)!=n)return 44;
+  }
+  if(!(*unit->seal)(unit) || (*unit->readback)(unit,output,1025) ||
+      !(*unit->unwound)(unit,TRUE) || !(*unit->readback)(unit,output,1025))return 45;
+  for(i=0;i<1025;i++)if(source[i]!=output[i])return 46;
+  I386RedSeaTaskFailArm(3,1);
+  if(I386TaskFilesDestroy(&root) || !state->stage || !unit->owned ||
+      volumes[0].signature || root.io_locks || channel.owner)return 47;
+  I386RedSeaTaskFailArm(0,0);
+  if(!(*state->stage->cleanup)(state->stage->context) || state->stage ||
+      volumes[0].signature || heap.used!=used || heap.allocations!=allocations)return 48;
+  if(!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
+      !I386RedSeaTaskBind(&volumes[0],&volume_io))return 49;
+  worker=I386TaskSpawn(&scheduler,&heap,8192,&StageWorker,0,0x18,0x20,512);
+  if(!worker)return 50;
+  for(i=0;i<100 && !worker->task.finished;i++)I386SchedYield(&scheduler);
+  if(!worker->task.finished || !worker->task.file_state ||
+      !((worker->task.file_state(CI386TaskFiles *))->stage) ||
+      !I386TaskDestroy(worker) || heap.used!=used || heap.allocations!=allocations)return 51;
+  if(!I386RedSeaBegin(&volumes[0]) || !I386RedSeaSectorRead(&volumes[0],2049,after) ||
+      !I386RedSeaEnd(&volumes[0]))return 52;
+  for(i=0;i<512;i++)if(bitmap[i]!=after[i])return 53;
+  if(state->stage || state->busy || root.io_locks || channel.owner || channel.poisoned)return 54;
+  return 0;
+}
 I64 TaskFilesTest()
 {
   CI386TaskFiles *state;
@@ -16,6 +76,7 @@ I64 TaskFilesTest()
   if(!I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes) ||
       I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes)) return 30;
   used=heap.used; allocations=heap.allocations;
+  i=StageTest;if(i)return i;
   if(I386TaskSpawn(&scheduler,&heap,8192,&DirectoryReader,0,0x18,0x20,24) ||
       heap.used!=used || heap.allocations!=allocations || root.next!=&root) return 31;
   if(I386TaskFilesSet(&root,"relative",'C') || I386TaskFilesSet(&root,"/",'c')) return 32;
@@ -80,3 +141,6 @@ U0 DirectoryReader(I64 id)
 #include "/Kernel/I386/TaskFiles.HC"
 #include "/Kernel/BlkDev/FileNames.HC"
 #include "/Kernel/I386/FilePaths.HC"
+
+#include "/Kernel/I386/RedSeaAlloc.HC"
+#include "/Kernel/I386/TaskModuleStage.HC"

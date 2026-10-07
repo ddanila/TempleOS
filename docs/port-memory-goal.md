@@ -874,3 +874,83 @@ TaskFiles ownership registration, private remount/retry policy, task kill and
 cancel cleanup, chunk transport and BuildModule integration remain next.
 The standalone allocation run and x64 bootstrap do not qualify a new full
 8 MiB startup image, the six native provider builds or installed generations.
+
+
+## Task-owned staging and BuildModule integration candidate
+
+The working candidate now registers a staging cleanup resource in TaskFiles.
+Directory replacement is rejected while that resource owns the state; clones
+start without inheriting it. Destruction calls its cleanup and retains the
+state if clearing or flushing fails. Disk access acquires/releases one complete
+operation lease per chunk. Cleanup may remount a private view after bitmap
+failure, but never republishes that view to other allocators. Active operations
+prevent live-state cleanup; finished-task resources remain available to reaping.
+No file-state borrow spans the disk acquisition.
+
+BuildModule resolves its canonical target before compiling. It queries the
+unit size, writes through a 512-byte scratch buffer, seals the extent, unwinds
+the compiler, then reads and validates the module before releasing the extent
+and publishing the target. A zero-write, still-open result on a unit no larger
+than 64 KiB permits the existing contiguous top-level assembly path. I/O failures
+cannot use that fallback. The lifecycle resides in the file provider; the unit
+borrows its emit/seal/unwind/readback methods. Counters are U32 after the public
+I64 size has passed the existing 32-byte/4-MiB bounds.
+
+Evidence for `i386-task-stage-compact-cross`:
+
+- Original two-generation bootstrap and cross-build pass; the 386 boot audit
+  still covers 96 BIOS and 209 protected-mode instructions.
+- `build/i386-task-stage-compact-contract/result.json` passes all 253 host HolyC
+  assertions. The native ATA/task test and its `ata-task-check.json` pass:
+  1,025-byte readback in 17-byte chunks, dirty/unsealed worker-exit cleanup,
+  failed cleanup flush with retained ownership, private retry, restored bitmap,
+  exact full-disk comparison and the complete command sequence.
+- The expanded native corpus required a 320-KiB transfer, heap at 0x60000 and
+  segment scratch at 0x70000. Seeded ATA test data starts at sector 768 to keep
+  it clear of the image. Its bitmap now accounts for existing local files as
+  well as directories/data. Earlier fixture failures are superseded.
+- The first integrated image passes full 16-MiB diagnostics, but its 8-MiB boot
+  fails a 9,480-byte allocation. Sharing the lifecycle restores boot, but the
+  retained-function check fails a 4,116-byte allocation. The compact image also
+  boots but rejects the retained static function's 537-byte payload allocation.
+  Its focused 8-MiB F64 and assembly runs fail too. No new 8-MiB qualification
+  is claimed; the previously qualified phased-header image remains the baseline.
+- The six-provider 16-MiB native rebuild is terminal FAIL under
+  `build/i386-task-stage-compact-retained-kvm-16m`. ConsoleRuntime reaches
+  stage 8 after serialization and compiler unwind, but its 2,286,999-byte
+  readback allocation is rejected: heap used 6,845,832 of 14,136,320 bytes,
+  largest free block 1,894,424 bytes. The harness rejects the explicit failure
+  promptly. All provider and installed-generation gates remain unproven.
+
+The measured resident cost is material: FileRuntime grows from 373,926 to
+398,793 bytes and ConsoleRuntime from 2,134,031 to 2,141,928 bytes. Counter
+narrowing and moving target normalization to the caller recover only 336 bytes
+in FileRuntime. Do not keep tuning those as if they removed the startup cost.
+Next inspect the native packing outcome and restore the complete 8-MiB gate.
+A structural candidate is loading staging support only for a rebuild, with
+explicit kernel-lifetime ownership while tasks may reference its cleanup code;
+that would need source/install/generation coverage for the additional module.
+Cancellation/kill injection is still required in addition to the verified
+ordinary worker-exit cleanup. Two installed native generations remain required.
+
+
+### Early staging resource candidate
+
+The next candidate prepares the task resource before entering the compiler and
+reserves its on-disk extent only after the unit size is known. Zero-byte creation
+prepares an unowned, unwritten resource; its reserve method enforces the existing
+size bounds before initialization/allocation. Cleanup can release a prepared
+resource without touching the disk. This tests whether a late small allocation
+was pinning the fragmented region needed for post-unwind readback. It is not a
+measured recovery yet. Bootstrap, cross-build, 386 instruction audit, the 969-file delivered-source
+audit and both host/native staging contracts pass under
+`i386-task-stage-early-resource`. The fresh six-provider 16-MiB rebuild is
+running under `i386-task-stage-early-resource-retained-kvm-16m`; inspect its
+live handle and terminal result before restarting. The source and installed-generation
+acceptance gates remain open, including the independent 8-MiB regression.
+
+
+The early-resource corpus now exceeds the previous 320-KiB transfer. Its
+explicit test-only reservation is 352 KiB, heap at 0x68000 and segment scratch
+at 0x74000, still before seeded ATA data at sector 768. Native prepared-state
+checks reject writes before reservation and reject a second reservation.

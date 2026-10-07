@@ -6033,3 +6033,28 @@ Owned release is restricted to unreferenced ranges whose task ownership is
 already registered. Clearing and flushing must complete before ownership is
 dropped. A remount after I/O failure must remain quarantined until cleanup;
 this isolated fixture does not prove task cancellation or kill behavior.
+
+
+## Task-owned staged module transport
+
+`python3 tools/test-i386.py --ata-tasks --qmp-stdio` also verifies staging through
+the actual native file/task lifecycle: 1,025-byte readback using 17-byte chunks,
+cleanup flush failure that blocks state destruction, private retry, quarantine
+of the failed mounted view, and reclamation when an unsealed worker exits.
+Require both `result.json` and `ata-task-check.json`, including exact bitmap,
+full backing-image and complete ATA command-stream checks. These extend the
+existing two-drive serialization, inherited-directory and poison checks.
+
+This fixture uses a 352-KiB code transfer, heap at 0x68000, segment scratch at
+0x74000 and seeded test data beginning at sector 768; inspect these reservations
+when growing the corpus. Normal worker exit is covered; cancellation/kill,
+full-provider native packing and installed generations are separate gates.
+The current staging-integrated candidate fails the 8-MiB retained function
+check. Boot alone and the isolated native fixture must not qualify that image.
+
+The staging constructor's internal zero-byte mode prepares a task resource
+before compiler allocation. Its reserve method later applies the existing
+32-byte/4-MiB limits and acquires the extent. The native fixture also rejects
+writes in prepared state and a second reservation; prepared cleanup needs no
+disk mutation. This allocation-order candidate still needs native provider
+readback and the complete startup/generation gates.

@@ -204,7 +204,7 @@ def main():
     #Exception tasks use 256 KiB below 0x50000, with segment records at 0x70000.
     #Message tasks use 256 KiB below 0x50000, with their arena moved to 0x60000.
     #Other core corpora retain their 192 KiB transfer and first arena at 0x40000.
-    boot_sectors = 832 if args.task_symbols else 640 if args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps or args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
+    boot_sectors = 832 if args.task_symbols else 704 if args.ata_tasks else 640 if args.ata_tasks or args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps or args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
     kind = 'expressions'
     for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-trig-reduce', 'soft-f64-trig', 'soft-f64-polar', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
@@ -268,6 +268,16 @@ def main():
                      'Kernel/I386/RedSea.HC', 'Kernel/I386/RedSeaIo.HC',
                      'Kernel/I386/Ata.HC', 'Kernel/I386/Ata.HH'):
             redsea_owned_inputs[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+    task_stage_inputs = {}
+    if args.ata_tasks:
+        for name in ('tests/guest/i386-ata-tasks/Target.HC',
+                     'tests/guest/i386-ata-tasks/TaskFiles.HC',
+                     'tests/guest/i386-ata-tasks/RedSea.HC',
+                     'Kernel/I386/TaskModuleStage.HC', 'Kernel/I386/TaskModuleStage.HH',
+                     'Kernel/I386/ModuleStageCore.HC', 'Kernel/I386/ModuleStage.HH',
+                     'Kernel/I386/TaskFiles.HC', 'Kernel/I386/TaskFiles.HH',
+                     'Kernel/I386/RedSeaAlloc.HC', 'Kernel/I386/RedSeaTask.HC'):
+            task_stage_inputs[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
     if args.redsea_alloc_core:
         core_path = args.redsea_alloc_core.resolve()
         redsea_owned_inputs[str(core_path)] = hashlib.sha256(core_path.read_bytes()).hexdigest()
@@ -577,7 +587,7 @@ def main():
                 f'i386_{stem}_module', names,
                 None, f'{stem.upper()}_ENTRY_FILE', imports)
     disk = OUT/'runner.img'
-    run('nasm', *(['-DINPUT_TEST=1'] if args.input else []), *(['-DTASK_HEAP_TEST=1'] if args.task_heaps else []), *(['-DLEX_MACRO_TEST=1'] if args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else []), *(['-DCOMPILER_GRAPH_TEST=1'] if args.task_symbols else []), *(['-DLARGE_CORE_TEST=1'] if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else []), *(['-DLEX_LARGE_TEST=1'] if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else []), *(['-DEXCEPT_TASK_TEST=1', '-DSEGMENT_RECORD_BASE=0x70000'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.lex_cond or args.lex_define or args.lex_tokens or args.lex_number or args.soft_f64_polar or args.soft_f64_trig or args.soft_f64_trig_reduce or args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
+    run('nasm', *(['-DATA_STAGE_TEST=1'] if args.ata_tasks else []), *(['-DINPUT_TEST=1'] if args.input else []), *(['-DTASK_HEAP_TEST=1'] if args.task_heaps else []), *(['-DLEX_MACRO_TEST=1'] if args.ata_tasks or args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else []), *(['-DCOMPILER_GRAPH_TEST=1'] if args.task_symbols else []), *(['-DLARGE_CORE_TEST=1'] if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else []), *(['-DLEX_LARGE_TEST=1'] if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else []), *(['-DSEGMENT_RECORD_BASE=0x74000'] if args.ata_tasks else []), *(['-DEXCEPT_TASK_TEST=1', '-DSEGMENT_RECORD_BASE=0x70000'] if args.except_tasks else []), *(['-DEXCEPT_CONTEXT_TEST=1'] if except_runner else []), *(['-DSOFT_F64_TEST=1'] if args.lex_cond or args.lex_define or args.lex_tokens or args.lex_number or args.soft_f64_polar or args.soft_f64_trig or args.soft_f64_trig_reduce or args.soft_f64_log or args.soft_f64_unary or args.soft_f64 or args.soft_f64_convert or args.soft_f64_compare or args.soft_f64_to_int or args.float else []), f'-DBOOT_SECTORS={boot_sectors}', *(['-DTASK_TEST=1'] if task_runner else []), *(['-DIRQ_TEST=1'] if args.irq else []), *(['-DVGA_TEST=1'] if args.vga else []), *(['-DFUNCTIONS=1'] if functions else []),
         *context_args, f'-DEXPECTED_FAULTS={5 if functions and not data_mode else 0}', '-f', 'bin', f'-DCASES_FILE="{exports / "expressions.bin"}"',
         'tests/i386/runner.asm', '-o', str(disk))
     if args.irq or task_runner or except_runner:
@@ -612,8 +622,9 @@ def main():
             # Seed beyond the bootstrap, including geometry-dependent CHS boundaries.
             patterns = [bytes(((i*37)^(i>>1)^seed)&255 for i in range(512))
                         for seed in range(256)]
-            stream.seek(512*512)
-            for lba in range(512, 32768):
+            seed_start = 768 if args.ata_tasks else 512
+            stream.seek(seed_start*512)
+            for lba in range(seed_start, 32768):
                 stream.write(patterns[(lba^(lba>>8))&255])
     if args.ata_tasks:
         def task_entry(name, attr, block, size):
@@ -632,7 +643,8 @@ def main():
         task_dirs = [(block, b''.join((task_entry('.',0x810,block,512),
                      task_entry('..',0x810,2050,0),task_entry('Local.BIN',0x800,data,512))).ljust(512,b'\0'))
                      for block,data in ((2051,2054),(2052,2055))]
-        for block, content in [(2048,task_boot),(2049,bytes([255])*512),(2050,task_root),
+        task_bitmap = bytes([0x6F, 0x98])+bytes([255])*510
+        for block, content in [(2048,task_boot),(2049,task_bitmap),(2050,task_root),
                                *task_dirs,(2054,bytes([0x51])*512),(2055,bytes([0x52])*512)]:
             with disk.open('r+b') as stream:
                 stream.seek(block*512); stream.write(content)
@@ -886,15 +898,26 @@ def main():
                     if 'ide_bus_exec_cmd' in line and 'cmd 0x' in line]
         # BIOS command prefixes are excluded; the last native request is the
         # deliberate failure. The poisoned queued slave must issue no command.
+        # Stage transport: initialization, reservation, 63 partial-sector writes,
+        # seal/readback, failed flush after clearing, private retry, explicit
+        # remount, unsealed worker reservation/write/reap and bitmap verification.
+        stage_commands = ([0x30,0xE7]+[0x20]*3+[0x30,0xE7]+
+                          [0x20,0x30]*63+[0xE7]+[0x20]*6+[0x30]+
+                          [0x20]*5+[0x30,0xE7]+[0x20]*5+[0x30,0xE7]+
+                          [0x20,0x30]+[0x20]*3+[0x30,0xE7,0x20])
         expected_commands = ([0xEC]*2+[0x20]*64+[0x30]*2+[0xE7]*2+[0x20]*2+
-                             [0x20]*6+[0x30]*2+[0xE7]+[0x20]*14)
+                             [0x20]*6+[0x30]*2+[0xE7]+[0x20]*6+
+                             stage_commands+[0x20]*8)
         if commands[-len(expected_commands):] != expected_commands:
             raise RuntimeError('Cooperative ATA command stream or poison suppression differs')
         for drive_id, target, before in ((0,disk,ata_task_before),(1,slave,slave_bytes)):
             expected = bytearray(before)
             lba=5000+drive_id
             expected[lba*512:(lba+1)*512] = bytes(((i*19)^drive_id^0xA6)&255 for i in range(512))
-            if drive_id==0: expected[2060*512:2062*512]=bytes([0x6C])*1024
+            if drive_id==0:
+                expected[2060*512:2062*512]=bytes([0x6C])*1024
+                expected[2056*512:2056*512+1025]=bytes((i*13+7)&255 for i in range(1025))
+                expected[2053*512:2053*512+17]=bytes(range(1,18))
             if target.read_bytes()!=expected:
                 raise RuntimeError(f'Cooperative ATA drive {drive_id} backing image differs')
         (OUT/'ata-task-check.json').write_text(json.dumps({
@@ -902,6 +925,10 @@ def main():
             'failed_commands':1,'poisoned_requests_issued':0,
             'redsea_volumes':2,'serialized_file_bytes':1024,'file_sector_writes':2,
             'inherited_task_directories':2,'relative_file_reads':2,'borrowed_reap_rejected':True,
+            'stage_readback_bytes':1025,'stage_chunk_bytes':17,
+            'stage_worker_exit_cleanup':True,'stage_flush_failure_retry':True,
+            'stage_bitmap_restored':True,'stage_native_commands':len(stage_commands),
+            'source_sha256':task_stage_inputs,
             'bytes_compared':32*1024*1024},indent=2)+'\n')
     if args.ata:
         # Observe the actual command stream as well as the guest return values.
@@ -1030,6 +1057,9 @@ def main():
         fault_result = subprocess.run(fault_cmd, timeout=20)
         if fault_result.returncode != 33 or fault_log.read_text() != 'PASS i386 functions\n':
             raise RuntimeError(f'Legacy-memory query failure test failed: {fault_log.read_text()}')
+    if any(hashlib.sha256((ROOT/name).read_bytes()).hexdigest() != digest
+           for name, digest in task_stage_inputs.items()):
+        raise ValueError('Task staging test sources changed during the run')
     if any(hashlib.sha256((ROOT/name).read_bytes()).hexdigest() != digest
            for name, digest in redsea_owned_inputs.items()):
         raise ValueError('RedSea allocation test sources changed during the run')

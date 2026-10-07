@@ -96,7 +96,7 @@ Bool I386TaskFilesSet(CI386Task *task,U8 *directory,U8 drive)
   CI386TaskFiles *state,*copy;
   Bool result=FALSE;
   state=I386TaskFilesValid(task);
-  if(!state || !I386TaskFilesAccess(task) || task->finished || task->finishing || state->busy) goto files_set_done;
+  if(!state || !I386TaskFilesAccess(task) || task->finished || task->finishing || state->busy || state->stage) goto files_set_done;
   copy=I386TaskFilesNew(task,state->heap,state->environment,state->volumes,directory,drive);
   if(!copy) goto files_set_done;
   if(!I386HeapFree(state->heap,state)) { I386HeapFree(copy->heap,copy); goto files_set_done; }
@@ -112,6 +112,8 @@ Bool I386TaskFilesDestroy(CI386Task *task)
   Bool result=FALSE;
   state=I386TaskFilesValid(task);
   if(!state || !I386TaskFilesAccess(task) || state->busy) goto files_destroy_done;
+  if(state->stage && (!state->stage->cleanup ||
+      !(*state->stage->cleanup)(state->stage->context) || state->stage)) goto files_destroy_done;
   if(!I386HeapFree(state->heap,state)) goto files_destroy_done;
   task->file_state=0; task->file_clone=0; task->file_destroy=0;
   task->cur_dir=0; task->cur_dv=0; result=TRUE;

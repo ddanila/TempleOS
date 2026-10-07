@@ -7,6 +7,7 @@
 #include "/Kernel/I386/ExceptRuntime.HH"
 #include "/Kernel/I386/RedSeaTask.HH"
 #include "/Kernel/I386/Arc.HH"
+#include "/Kernel/I386/TaskModuleStage.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
@@ -46,6 +47,10 @@ import Bool I386RedSeaSectorWrite(CI386RedSea *volume,I64 block,U8 *buffer);
 import Bool I386RedSeaFlush(CI386RedSea *volume);
 import I64 I386RedSeaAlloc(CI386RedSea *volume,I64 count);
 import Bool I386RedSeaFree(CI386RedSea *volume,I64 block,I64 count);
+import I64 I386RedSeaAllocOwned(CI386RedSea *volume,I64 count,I64 *owned_block);
+import Bool I386RedSeaReleaseOwned(CI386RedSea *volume,I64 block,I64 count);
+import I64 I386RedSeaRead(CI386RedSea *volume,CI386RedSeaEntry *entry,I64 offset,U8 *buffer,I64 count);
+import Bool I386RedSeaMount(CI386RedSea *volume,CI386Ata *disk,I64 start);
 import Bool I386RedSeaMoveIntentSet(CI386RedSea *volume,I64 source_parent,Bool source_root,
   U8 *source_name,I64 destination_parent,Bool destination_root,U8 *destination_name,
   CI386RedSeaEntry *source,Bool transfer=FALSE);
@@ -109,10 +114,11 @@ U8 I386FileRuntimeDriveAlias(U8 alias)
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
 Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(index || !binding) return FALSE;
-  binding->name="I386ArcEntryGet";
+  if(!binding || index<0 || index>2) return FALSE;
   binding->kind=I386_MODULE_EXPORT;
-  binding->address=(&I386ArcEntryGet+0)(U64);
+  if(!index){binding->name="I386ArcEntryGet";binding->address=(&I386ArcEntryGet+0)(U64);}
+  else if(index==1){binding->name="I386TaskModuleStageNew";binding->address=(&I386TaskModuleStageNew+0)(U64);}
+  else {binding->name="I386TaskModuleStageCleanup";binding->address=(&I386TaskModuleStageCleanup+0)(U64);}
   return TRUE;
 }
 #assert sizeof(CI386FileServices)==120
@@ -170,3 +176,5 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/TaskCompiler.HC"
 
 #include "/Kernel/I386/TaskCd.HC"
+
+#include "/Kernel/I386/TaskModuleStage.HC"
