@@ -1,11 +1,13 @@
 # Bounded-memory self-hosting goal
 
-Current candidate: `i386-compact-ir-owner-cross`. Normal 8 MiB startup passes
-in 57.84 seconds; 16 MiB diagnostics, 8 MiB F64 and saved assembly pass. The
-32 MiB installer fix passes fake-ATA and real QEMU build/install/boot tests.
-Full native rebuilding remains open: the first compact-IR snapshot completed
-DocRecalc but its module pack-size query returned zero. The refined snapshot's
-six-provider rebuild also rejected the pack-size query. Detailed evidence is below.
+Current source candidate: `i386-retired-boundary-atomic-cross`. Bootstrap,
+cross-build, 386 audit and 964-file source audit pass. Normal 8 MiB startup
+passes in 59.52 seconds with all nine runtime/VGA checks; the timing margin is
+small. Fresh diagnostics/F64/assembly checks pass. The previous
+collection snapshot passes 16 MiB publication/ownership diagnostics but its
+native build still cannot allocate the 2275963-byte packed-module buffer.
+Retired collection is effective, but saves only 146632 bytes. The next work is
+bounded serialization without changing the 16 MiB rebuild profile.
 
 Previous snapshot outcome: 8 MiB boot and focused regressions pass, but the accelerated
 full retained build fails with OutMem and flat-kernel installation rejects
@@ -313,8 +315,9 @@ this correction.
   (96 BIOS / 209 protected-mode instructions), 539856-byte flat kernel.
 - `build/i386-console-pit-name-cross/delivered-source-audit.json`: PASS,
   all 964 packaged source/doc files match, including the new console helper.
-- `build/i386-console-pit-name-retained-kvm-16m`: native six-provider rebuild
-  is live, KVM CPU `486,-fpu`, 16 MiB, 14400-second command timeout.
+- `build/i386-console-pit-name-retained-kvm-16m/result.json`: terminal FAIL;
+  packing validation succeeds, but the output buffer allocation fails at
+  16 MiB. See the memory trace and candidate below.
 - `build/i386-console-pit-name-boot-8m/result.json`: PASS, 59.13-second
   normal startup within the unchanged 60-second gate, all nine runtime/static
   commands and exact VGA restoration. The timing margin remains small.
@@ -326,9 +329,9 @@ this correction.
 - `build/i386-console-pit-name-bare-8m/result.json`: PASS, 13 commands,
   interrupt restoration and persisted block/bare assembly modules.
 
-Poll these existing runs before restarting. The duplicate source definition
-has been removed; full native module packing/rebuild and two installed native
-self-hosted generations remain unproven.
+The duplicate source definition has been removed. Full native module
+serialization/rebuild and two installed native self-hosted generations remain
+unproven.
 
 
 The failed attributed build has 647 function-start and 647 function-done
@@ -336,3 +339,151 @@ markers. Only `NativeRandPitRead` repeats (twice), confirming the demonstrated
 duplicate is the only repeated compiled function in that source snapshot. This
 log inspection does not establish that every remaining pack validation passes;
 the corrected native provider run must still reach and pass packing.
+
+
+## Post-pop retired-node collection candidate
+
+The corrected PIT provider run completes 646 functions and obtains a valid
+pack-size query of 2275963 bytes (`0x22BA7B`). It then fails allocating that
+contiguous output buffer, at stage 5. The trace reports heap usage 12563360
+of 14139904 bytes, largest free span 430792 bytes, and 67378 allocations.
+The source disk remains unchanged (SHA-256
+`b9d90630149525996ba2800f1ef62ee675c77e1f03b298d229982eba4239c2a0`).
+This proves the duplicate rejection is resolved, not that serialization passes.
+
+Inspection identifies a missed private collection boundary: output discard
+runs while a saved code header still defers retired optimizer aliases, and
+frontend pop removes that header without retrying collection. The candidate
+now retries the existing conservative collector after the private pop/header
+release. It frees only when every remaining ownership record is retired;
+active IR, miscellaneous records and saved headers still defer collection.
+Public code-header freeing semantics, node layouts and services are unchanged.
+A module-source pack-query marker reports heap usage/allocation count plus
+retired/live/header counts without allocating diagnostic scratch. The size of
+the resulting memory improvement is not measured yet.
+
+Fresh bootstrap is running in `build/i386-retired-boundary-bootstrap.log`.
+After bootstrap/cross-build, run existing ownership/public-body diagnostics,
+8 MiB startup, the native provider build and then installed generations. Do not
+raise the memory profile or remove packing checks to accept the output buffer.
+
+Additional actual-consumer evidence on the previous PIT-helper snapshot:
+
+- `build/i386-console-pit-consumer-check/result.json`: FAIL at 8 MiB while
+  compiling the full DocReportCheck fixture, before calling the PIT consumer;
+  allocation request 4096 bytes. This is an extra compilation-memory limit,
+  not proof of a timer/report failure. The fixture's full IRQ-off/task/display/
+  heap assertions are not qualified at 8 MiB by this run.
+- `build/i386-console-pit-consumer-direct-8m/result.json`: PASS, five commands
+  exercising the existing 25-ms timed report and timer-assisted RandU16 paths,
+  IRQ preservation and console continuation. Disk/manifest, runner, local
+  harness and fixture are pinned. This narrower result does not replace the
+  full fixture qualification or the native rebuild requirement.
+
+
+The first retired-boundary cross-build is terminal FAIL: the pack-memory marker
+referenced KernelHex, which is not imported by CompilerRuntime. The corrected
+marker formats its bounded 32-bit counters on the stack and uses the existing
+KernelLog binding. It adds no runtime import or service-layout change. Fresh
+qualification uses the `i386-retired-boundary-text` prefix.
+
+
+### Atomic private boundary refinement
+
+The first collection image passes all nine 8 MiB runtime/VGA checks but FAILS
+the timing gate: `build/i386-retired-boundary-text-boot-8m/result.json` records
+60.96 seconds against 60 seconds. The six-provider native build remains live
+in `build/i386-retired-boundary-text-retained-kvm-16m`, and the 16 MiB diagnostic
+run is live in `build/i386-retired-boundary-text-diag-16m`. These runs use the
+previous collection snapshot, not the refinement below.
+
+Private pop now keeps pop, validated header release and retired collection in
+one IRQ-preserving atomic boundary. The existing pop/header operations validate
+ownership; this removes the added redundant whole-arena owner scan between
+header release and collection. The collector's all-retired rule and public
+header semantics remain unchanged. This timing refinement is unqualified until
+fresh startup/diagnostic evidence; it does not widen the startup gate.
+Fresh bootstrap/cross-build use the `i386-retired-boundary-atomic` prefix.
+
+
+### Measured collection outcome and next architecture
+
+`build/i386-retired-boundary-text-retained-kvm-16m/result.json` is terminal
+FAIL at the output-buffer allocation. Pack-query telemetry shows heap usage
+12416728 bytes, 66393 allocations, zero retired/live IR records and zero saved
+headers. This saves 146632 bytes and 985 allocations against the PIT-helper
+snapshot. The largest free span grows from 430792 to 538648 bytes, still below
+the unchanged 2275963-byte module requirement. Collection works but does not
+solve the need for a second complete module-sized allocation.
+
+The atomic refinement passes bootstrap, cross-build, 386 audit and the 964-file
+source audit. `build/i386-retired-boundary-atomic-boot-8m/result.json` passes
+at 59.52 seconds with nine runtime/static/VGA commands. The earlier non-atomic
+collection image's 16 MiB diagnostics pass 22 class and 28 program publication
+cases plus nine commands; this is comparative evidence, not qualification of
+the refined compiler. Fresh refined diagnostics, F64 and assembly checks pass under the
+`i386-retired-boundary-atomic` prefix. Full report-fixture compilation still
+exceeds 8 MiB; the corrected combined consumer test passes at 16 MiB, as
+recorded below. Earlier running descriptions above are historical.
+
+Next implement bounded packing with these requirements:
+
+1. Build a validated module layout once, retaining compact metadata and borrowed
+   code/global spans. Preserve all existing function-name, relocation, type,
+   ownership, dimension and pointer-resolution checks. Keep the contiguous
+   `program_pack_unit` API and output format unchanged.
+2. Emit payload, records and strings through a bounded writer, normalizing
+   relocation and stored-pointer sites exactly as the current serializer does.
+   Handle padding and fixups crossing writer-block boundaries. Do not allocate
+   a second whole payload while the compilation control is live.
+3. Separate staging from final publication. A possible transport is a private
+   disk extent: serialize while the control owns source spans, unwind the
+   control, then read/validate the staged module with the freed memory and use
+   the existing file-publication path. Verify disk capacity, staging ownership,
+   task cancellation, interrupted writes/flushes and cleanup before committing
+   to this transport. Keep the old target untouched until validation and
+   compiler cleanup succeed. Internal module exports can supply capabilities
+   without changing existing service-field offsets or HolyC/DolDoc APIs.
+4. Tests first: compare bounded output byte-for-byte with the current serializer
+   for multiple functions, statics, literal pools, local/named pointers and
+   relocations. Exercise short/error writes, block-boundary fixups, invalid
+   layouts, allocation failure, unwind failure and staging cleanup. Record
+   peak scratch memory; a mock transport alone does not qualify mounted ATA.
+5. Qualify the real six-provider build at 16 MiB on the final current-source
+   image, then run the complete installed two-generation pipeline and all
+   source/386/binary identity audits. Preserve the 8 MiB startup gate and
+   no-FPU ownership/public-body/optimizer/backend/F64/assembly regressions.
+
+Do not rerun the same whole-buffer build expecting collection alone to make it
+pass; the allocation requirement exceeds both free total memory and its largest
+span. No atomic-refinement native full-build or native-generation pass exists.
+
+
+### Final atomic-boundary qualification checkpoint
+
+- `build/i386-retired-boundary-atomic-diag-16m/result.json`: PASS, 22 class and
+  28 program publication cases plus nine commands. Its memory-contract manifest
+  pins both-phase optimizer/public-body canary, parser-memory, emitter and
+  backend markers.
+- `build/i386-retired-boundary-atomic-float-8m/result.json`: PASS, 16 commands.
+- `build/i386-retired-boundary-atomic-bare-8m/result.json`: PASS, 13 commands
+  and persisted bare/block assembly payloads with interrupt restoration.
+- `build/i386-retired-boundary-atomic-consumer-check/result.json`: FAIL, the
+  full report fixture cannot compile at 8 MiB (allocation request 2056 bytes,
+  largest free span 1376). The existing 8 MiB startup/retention gate passes,
+  but this more complex fixture is not covered by that pass.
+- `build/i386-retired-boundary-atomic-consumer-check-16m/result.json`: terminal
+  FAIL after the report-state check passed; the subsequent ad-hoc random fixture
+  used unsupported declaration-in-for syntax. This is a harness error and is
+  not reported as a combined consumer pass.
+- `build/i386-retired-boundary-atomic-consumer-corrected-16m/result.json`:
+  PASS, five commands. The unchanged DocReportCheck fixture checks 25-ms
+  reports with IRQ on/off, exact task/display flags and public-heap usage.
+  Corrected random-sampling syntax checks 64 timer-assisted calls and IRQ
+  preservation; console continuation returns 42. The actual image, manifest,
+  runner, local harness and report fixture are pinned.
+
+All test processes at this checkpoint are terminal. No full native six-provider
+or installed native-generation pass exists. The measured non-atomic provider
+failure remains the bounded-writer baseline; the final atomic frontend is
+qualified for focused checks only, with a small startup timing margin.

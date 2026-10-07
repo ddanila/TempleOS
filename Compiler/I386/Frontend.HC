@@ -293,9 +293,20 @@ U0 I386FrontendPush(U8 *context,CCmpCtrl *cc)
 U0 I386FrontendPop(U8 *context,CCmpCtrl *cc)
 {
   CI386Frontend *state=context;
+  CI386CmpRelease release;
+  U32 irq=I386IrqSave;
   CCodeCtrl *saved=I386COCPopNoFree(state->heap,cc);
-  if(!saved || !I386COCHeaderFree(state->heap,cc,saved)) I386FrontendUnavailable(state);
+  Bool ok=saved && I386COCHeaderFree(state->heap,cc,saved);
+  //The pop/header release already validates ownership. Keep this boundary
+  //atomic instead of rescanning the arena; live graphs/headers still defer it.
+  if(ok) {
+    release.heap=state->heap; release.control=cc; release.ok=TRUE;
+    I386CodeRetiredCollect(&release); ok=release.ok;
+  }
+  I386IrqRestore(irq);
+  if(!ok) I386FrontendUnavailable(state);
 }
+
 U0 I386FrontendAppend(U8 *context,CCmpCtrl *cc,CCodeCtrl *saved)
 {
   CI386Frontend *state=context;

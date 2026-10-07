@@ -396,6 +396,25 @@ Bool I386FrontendOwnsFunction(CI386Frontend *frontend,CHashFun *fun)
     if(code->code==fun->exe_addr) return TRUE;
   return FALSE;
 }
+U0 I386FrontendPackNumber(U32 value)
+{//Use the existing text logger without introducing a new runtime binding.
+  U8 text[17],*hex="0123456789ABCDEF";
+  I64 i;
+  for(i=0;i<8;i++) { text[i]='0'; text[8+i]=hex[(value>>(28-4*i))&15]; }
+  text[16]=0; KernelLog(text);
+}
+U0 I386FrontendPackMemory(CI386Frontend *frontend)
+{//Module-source query only; inspect ownership without allocating scratch.
+  CI386CmpCtrl *owned=frontend->cc;
+  CI386CodeAllocation *record;
+  I64 retired=0,live=0;
+  for(record=owned->code_next;record!=&owned->code_next;record=record->next)
+    if(record->kind==4) retired++; else live++;
+  KernelLog("MODULE PACK MEMORY "); I386FrontendPackNumber(frontend->heap->used);
+  KernelLog(" "); I386FrontendPackNumber(frontend->heap->allocations);
+  KernelLog(" "); I386FrontendPackNumber(retired); KernelLog(" "); I386FrontendPackNumber(live);
+  KernelLog(" "); I386FrontendPackNumber(owned->code_headers); KernelLog("\n");
+}
 I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capacity)
 {//Package every owned function/global definition in this private source unit.
   CI386Frontend *frontend;
@@ -411,6 +430,8 @@ I64 I386FrontendModulePackUnit(CPrsSymbolServices *symbols,U8 *output,I64 capaci
   I64 fi=0,gi=0,original_globals,ordinal=0,bytes,start,result=0;
   if(!symbols || !(frontend=symbols->context) ||
       symbols!=&frontend->symbols || !(table=frontend->table) || capacity<0) return 0;
+  if(!output && frontend->cc->flags&CCF_MODULE_SOURCE)
+    I386FrontendPackMemory(frontend);
   if(frontend->top_bundle) {
     if(frontend->codes || frontend->saved_vars) return 0;
     return I386FrontendTopPack(frontend,output,capacity);
