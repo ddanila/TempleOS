@@ -1058,3 +1058,34 @@ qualify it as native i386 code, then implement fault-tested bounded publication
 and switch BuildModule to metadata-only validation. No native rebuild,
 publication, installed-generation or full-image memory pass follows from this
 host contract.
+
+### Staged validation — native contract and disk connection verified
+
+The same Validation.HC contract now runs inside the native ATA/task corpus.
+It uses small fixture copy/set helpers and a native assertion counter rather
+than host exception/reporting calls. All 46 checks pass as i386 code on
+486/8 MiB, including cached relocation reads and injected reader failures.
+The host form also passes all 46 under
+`build/i386-stage-validation-shared-host/result.json`.
+
+The disk fixture additionally writes a valid 1025-byte, zero-record module,
+unwinds its stage and validates it through the real `read_range` transport
+using only nine bytes of metadata storage. That metadata crosses a sector
+boundary. Full backing disks and the complete ATA command sequence are checked.
+Terminal evidence: `build/i386-ata-tasks-test/result.json` and
+`ata-task-check.json`, final runner log
+`build/i386-stage-validation-native-v6.log`. Real-disk relocation validation
+is not claimed by this zero-record connection test; relocation/cache failures
+are covered by the shared native mock-reader contract.
+
+The expanded corpus exceeded its old transfer reservation. The explicit
+test-only limit is now 800 sectors (400 KiB), heap at 0x74000, segment records
+at 0x80000, and patterned test data starting at sector 1024. The test initially
+needed an explicit fixture ISO overlay; a later trace expectation omitted the
+second sector of the metadata tail. These harness failures are superseded by
+the final pass. OS memory acceptance remains 8 MiB boot / 16 MiB rebuild.
+
+Next implement bounded publication with ownership retained across ambiguous
+directory write/flush failures, then integrate the validated staged path into
+BuildModule. The resident footprint and complete native-generation gates still
+need qualification; native validation alone does not recover the memory goal.

@@ -4,20 +4,33 @@ CI386ModuleStage sv_unit;
 U8 sv_disk[7056],sv_metadata[6000];
 I64 sv_checks,sv_reads,sv_fail;
 Bool sv_fail_phase;
-U0 SVAssert(Bool value){sv_checks++;if(!value)throw('Stage',TRUE);}
+I64 sv_errors;
+U0 SVAssert(Bool value)
+{
+  sv_checks++;
+#ifdef I386_STAGE_VALIDATION_NATIVE
+  if(!value)sv_errors++;
+#else
+  if(!value)throw('Stage',TRUE);
+#endif
+}
+U0 SVSet(U8 *buffer,U8 value,I64 bytes)
+{I64 i;for(i=0;i<bytes;i++)buffer[i]=value;}
+U0 SVCopy(U8 *buffer,U8 *source,I64 bytes)
+{I64 i;for(i=0;i<bytes;i++)buffer[i]=source[i];}
 I64 SVRead(CI386ModuleStage *unit,U32 offset,U8 *buffer,U32 bytes)
 {
   if(!unit->owned || unit->phase!=I386_STAGE_READY || !bytes || bytes>4096 ||
       offset>unit->bytes || bytes>unit->bytes-offset)return 0;
   sv_reads++;
   if(sv_reads==sv_fail){if(sv_fail_phase)unit->phase=I386_STAGE_FAILED;return 0;}
-  MemCpy(buffer,sv_disk+offset,bytes);return bytes;
+  SVCopy(buffer,sv_disk+offset,bytes);return bytes;
 }
 U0 SVReset()
 {
   CI386ModuleHeader *h=sv_disk;
   CI386ModuleRecord *r=sv_disk+1056;
-  MemSet(sv_disk,0,7056);MemSet(&sv_unit,0,sizeof(CI386ModuleStage));
+  SVSet(sv_disk,0,7056);SVSet(&sv_unit,0,sizeof(CI386ModuleStage));
   h->magic=I386_MODULE_MAGIC;h->version=2;h->cpu=3;h->pointer_size=4;
   h->abi=1;h->total_size=1100;h->code_size=1024;
   h->records_offset=1056;h->record_count=2;h->strings_offset=1088;
@@ -33,7 +46,7 @@ U0 SVContract()
 {
   CI386ModuleHeader h,*disk=sv_disk;
   I64 i;
-  sv_checks=0;
+  sv_checks=sv_errors=0;
   SVReset;SVAssert(I386ModuleStageMetadataSize(&sv_unit,&h)==44 && sv_reads==1);
   SVReset;SVAssert(I386ModuleValid(sv_disk,1100) && SVValid && sv_reads==4);
   SVAssert(sv_unit.owned && sv_unit.phase==I386_STAGE_READY);
@@ -67,6 +80,9 @@ U0 SVContract()
   SVAssert(I386ModuleStageMetadataSize(&sv_unit,&h)==6000);
   sv_reads=0;SVAssert(SVValid(6000) && sv_reads==5);
 }
+#ifdef I386_STAGE_VALIDATION_NATIVE
+Bool SVNativeRun(){SVContract;return sv_checks==46 && !sv_errors;}
+#else
 U0 SVReport(U8 *line){while(*line)OutU8(0xE9,*line++);}
 U0 SVRun()
 {
@@ -78,3 +94,4 @@ U0 SVRun()
   SVReport(line);Free(line);
 }
 SVRun;
+#endif

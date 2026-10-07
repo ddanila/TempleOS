@@ -41,7 +41,9 @@ I64 StageTest()
   CI386ModuleStage *unit;
   CI386OwnedTask *worker;
   U8 source[1025],output[1025],bitmap[512],after[512];
+  CI386ModuleHeader *header=source;
   I64 i,n,used=heap.used,allocations=heap.allocations;
+  if(!SVNativeRun)return 67;
   if(!I386RedSeaBegin(&volumes[0]))return 41;
   //Reserve directory/data sectors; the fixture previously needed no allocator.
   for(i=0;i<512;i++)bitmap[i]=255;
@@ -49,6 +51,9 @@ I64 StageTest()
   if(!I386RedSeaSectorWrite(&volumes[0],2049,bitmap) ||
       !I386RedSeaFlush(&volumes[0]) || !I386RedSeaEnd(&volumes[0]))return 42;
   for(i=0;i<1025;i++)source[i]=(i*13+7)&255;
+  header->magic=I386_MODULE_MAGIC;header->version=2;header->cpu=3;header->pointer_size=4;
+  header->abi=1;header->total_size=1025;header->code_size=984;
+  header->record_count=0;header->records_offset=header->strings_offset=1016;
   unit=I386TaskModuleStageNew("C:/Check.t32m",0);
   if(!unit || !state->stage || state->busy || root.io_locks ||
       I386TaskFilesSet(&root,"/",'C') || I386TaskModuleStageNew("C:/Two",65))return 43;
@@ -74,6 +79,7 @@ I64 StageTest()
   if(I386TaskModuleStageReadRange(unit,1024,output,1)!=1 ||
       output[0]!=source[1024] || unit->phase!=I386_STAGE_READY ||
       !unit->owned || root.io_locks || channel.owner ||
+      !I386ModuleStageValid(unit,output,9,&I386ModuleValidParts) ||
       !(*unit->readback)(unit,output,1025))return 63;
   for(i=0;i<1025;i++)if(source[i]!=output[i])return 46;
   I386RedSeaTaskFailArm(3,1);
