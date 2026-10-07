@@ -26,7 +26,7 @@ Bool I386TaskModuleStageFlush(U8 *context)
   }
   stage->active=FALSE;I386IrqRestore(flags);return result;
 }
-I64 I386TaskModuleStageRead(U8 *context,U8 *buffer,I64 bytes)
+I64 I386TaskModuleStageReadAt(U8 *context,U32 offset,U8 *buffer,I64 bytes)
 {
   CI386TaskModuleStage *stage=context;
   CI386RedSeaEntry entry;
@@ -35,10 +35,22 @@ I64 I386TaskModuleStageRead(U8 *context,U8 *buffer,I64 bytes)
   stage->active=TRUE;
   entry.attr=0x800;entry.block=stage->block;entry.size=stage->unit.bytes;
   if(I386RedSeaBegin(stage->volume)) {
-    result=I386RedSeaRead(stage->volume,&entry,0,buffer,bytes);
+    result=I386RedSeaRead(stage->volume,&entry,offset,buffer,bytes);
     if(!I386RedSeaEnd(stage->volume)){stage->volume->signature=0;result=-1;}
   }
   stage->active=FALSE;I386IrqRestore(flags);return result;
+}
+I64 I386TaskModuleStageRead(U8 *context,U8 *buffer,I64 bytes)
+{ return I386TaskModuleStageReadAt(context,0,buffer,bytes); }
+I64 I386TaskModuleStageReadRange(CI386ModuleStage *unit,U32 offset,U8 *buffer,U32 bytes)
+{//Random bounded reads retain READY so validation can revisit code/metadata.
+  I64 result;
+  if(!unit || !unit->owned || unit->phase!=I386_STAGE_READY ||
+      !buffer || !bytes || bytes>4096 || offset>unit->bytes ||
+      bytes>unit->bytes-offset)return 0;
+  result=I386TaskModuleStageReadAt(unit,offset,buffer,bytes);
+  if(result!=bytes){unit->phase=I386_STAGE_FAILED;return 0;}
+  return bytes;
 }
 Bool I386TaskModuleStageRelease(U8 *context)
 {
@@ -119,6 +131,7 @@ CI386ModuleStage *I386TaskModuleStageNew(U8 *target,I64 bytes)
   stage->unit.reserve=&I386TaskModuleStageReserve;
   stage->unit.emit=&I386ModuleStageWrite;stage->unit.seal=&I386ModuleStageSeal;
   stage->unit.unwound=&I386ModuleStageUnwound;stage->unit.readback=&I386ModuleStageRead;
+  stage->unit.read_range=&I386TaskModuleStageReadRange;
   stage->resource.context=stage;stage->resource.cleanup=&I386TaskModuleStageCleanup;
   owner->stage=&stage->resource;
   ready=TRUE;

@@ -1006,3 +1006,28 @@ Next architecture work must remove the whole-module readback requirement:
 The existing complete-buffer validation/publication path remains useful for
 small assembly units, but cannot qualify the largest provider within this
 fragmented heap. No native-generation or current-candidate 8-MiB pass is claimed.
+
+### Bounded staged reads — native foundation verified
+
+Task staging now supplies `read_range` through its private borrowed method
+table. It accepts only owned READY units, nonzero buffers/lengths, lengths up
+to 4096, and subtraction-checked ranges within the unit. Successful random
+reads keep READY for repeated validation; short/error reads set FAILED while
+retaining the extent for cleanup. The transport shares the existing lease and
+IRQ restoration path with whole-unit reads and allocates no readback buffer.
+
+Native evidence: `build/i386-ata-tasks-test/result.json` and
+`ata-task-check.json` pass on 486/8 MiB. Eight invalid state/range requests
+issue no extra ATA commands. A 17-byte read at offset 507 crosses a sector,
+and offset 1024 reads the final byte of a 1025-byte unit. Two injected transport
+faults reject both a no-data error and a partial read, preserve ownership,
+release the lease, reject further reads and restore exact heap counters after
+cleanup. Complete command tracing and full backing-disk comparison pass.
+Original two-generation bootstrap and all 253 host lifecycle assertions also
+pass (`build/rebuild-test/result.json`,
+`build/i386-task-stage-range-contract/result.json`). The initial attempt was
+rejected by the stale-bootstrap source guard, not an executed red contract.
+
+BuildModule has not switched to bounded validation/publication yet. The
+current full-image 8-MiB gate, cancellation during a range read, publication
+faults, six native providers and installed generations remain required.

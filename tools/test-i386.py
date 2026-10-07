@@ -903,8 +903,13 @@ def main():
         # seal/readback, failed flush after clearing, private retry, explicit
         # remount, unsealed worker reservation/write/reap and bitmap verification.
         stage_commands = ([0x30,0xE7]+[0x20]*3+[0x30,0xE7]+
-                          [0x20,0x30]*63+[0xE7]+[0x20]*6+[0x30]+
-                          [0x20]*5+[0x30,0xE7]+[0x20]*5+[0x30,0xE7]+
+                          [0x20,0x30]*63+[0xE7]+[0x20]*9+[0x30]+
+                          [0x20]*5+[0x30,0xE7]+[0x20]*2+
+                          [0x20]*3+[0x30,0xE7]+[0x30]*2+[0x20,0x30,0xE7]+
+                          [0x20]*3+[0x30,0xE7]+
+                          [0x20]*3+[0x30,0xE7]+[0x30]*2+[0x20,0x30,0xE7,0x20]+
+                          [0x20]*3+[0x30,0xE7]+
+                          [0x20]*3+[0x30,0xE7]+
                           [0x20,0x30]+[0x20]*3+[0x30,0xE7,0x20])
         expected_commands = ([0xEC]*2+[0x20]*64+[0x30]*2+[0xE7]*2+[0x20]*2+
                              [0x20]*6+[0x30]*2+[0xE7]+[0x20]*6+
@@ -929,6 +934,8 @@ def main():
             'stage_readback_bytes':1025,'stage_chunk_bytes':17,
             'stage_worker_exit_cleanup':True,'stage_flush_failure_retry':True,
             'stage_queued_wait_cancellation_cleanup':True,
+            'stage_random_read_boundary_cases':8,
+            'stage_random_read_fault_cases':2,
             'stage_bitmap_restored':True,'stage_native_commands':len(stage_commands),
             'source_sha256':task_stage_inputs,
             'bytes_compared':32*1024*1024},indent=2)+'\n')

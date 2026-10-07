@@ -12,4 +12,5 @@ class CI386TaskModuleStage {
 };
 extern CI386ModuleStage *I386TaskModuleStageNew(U8 *target,I64 bytes);
 extern Bool I386TaskModuleStageCleanup(U8 *context);
+extern I64 I386TaskModuleStageReadRange(CI386ModuleStage *unit,U32 offset,U8 *buffer,U32 bytes);
 #endif

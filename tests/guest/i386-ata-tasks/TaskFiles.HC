@@ -18,6 +18,12 @@ U0 StageWorker(U8 *unused)
   //Task exit deliberately leaves the unsealed reservation for the reaper.
 }
 U32 stage_cancel_started,stage_cancel_done;
+I64 stage_read_fail_after,stage_read_count;
+Bool StageReadFault(U8 *context,CI386Ata *disk,I64 block,U8 *buffer)
+{
+  if(++stage_read_count==stage_read_fail_after)return FALSE;
+  return I386RedSeaTaskRead(context,disk,block,buffer);
+}
 U0 StageCancelWorker(U8 *unused)
 {
   CI386ModuleStage *unit;
@@ -52,8 +58,23 @@ I64 StageTest()
     n=1025-i;if(n>17)n=17;
     if((*unit->emit)(unit,i,source+i,n)!=n)return 44;
   }
-  if(!(*unit->seal)(unit) || (*unit->readback)(unit,output,1025) ||
-      !(*unit->unwound)(unit,TRUE) || !(*unit->readback)(unit,output,1025))return 45;
+  if(I386TaskModuleStageReadRange(unit,0,output,1) ||
+      !(*unit->seal)(unit) || (*unit->readback)(unit,output,1025) ||
+      I386TaskModuleStageReadRange(unit,0,output,1) ||
+      !(*unit->unwound)(unit,TRUE))return 45;
+  if(I386TaskModuleStageReadRange(unit,1025,output,1) ||
+      I386TaskModuleStageReadRange(unit,1024,output,2) ||
+      I386TaskModuleStageReadRange(unit,0,output,4097) ||
+      I386TaskModuleStageReadRange(unit,0,output,0) ||
+      I386TaskModuleStageReadRange(unit,0,0,1) ||
+      I386TaskModuleStageReadRange(unit,0xFFFFFFFF,output,2) ||
+      unit->phase!=I386_STAGE_READY)return 60;
+  if(I386TaskModuleStageReadRange(unit,507,output,17)!=17)return 61;
+  for(i=0;i<17;i++)if(output[i]!=source[507+i])return 62;
+  if(I386TaskModuleStageReadRange(unit,1024,output,1)!=1 ||
+      output[0]!=source[1024] || unit->phase!=I386_STAGE_READY ||
+      !unit->owned || root.io_locks || channel.owner ||
+      !(*unit->readback)(unit,output,1025))return 63;
   for(i=0;i<1025;i++)if(source[i]!=output[i])return 46;
   I386RedSeaTaskFailArm(3,1);
   if(I386TaskFilesDestroy(&root) || !state->stage || !unit->owned ||
@@ -63,6 +84,19 @@ I64 StageTest()
       volumes[0].signature || heap.used!=used || heap.allocations!=allocations)return 48;
   if(!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
       !I386RedSeaTaskBind(&volumes[0],&volume_io))return 49;
+  for(n=1;n<=2;n++) {
+    unit=I386TaskModuleStageNew("C:/ReadFault.t32m",1025);
+    if(!unit || (*unit->emit)(unit,0,source,1025)!=1025 ||
+        !(*unit->seal)(unit) || !(*unit->unwound)(unit,TRUE))return 64;
+    stage_read_count=0;stage_read_fail_after=n;volume_io.read=&StageReadFault;
+    if((*unit->read_range)(unit,507,output,17) ||
+        unit->phase!=I386_STAGE_FAILED || !unit->owned ||
+        (*unit->read_range)(unit,0,output,1) || stage_read_count!=n ||
+        root.io_locks || channel.owner)return 65;
+    volume_io.read=&I386RedSeaTaskRead;
+    if(!(*state->stage->cleanup)(state->stage->context) || state->stage ||
+        heap.used!=used || heap.allocations!=allocations)return 66;
+  }
   worker=I386TaskSpawn(&scheduler,&heap,8192,&StageWorker,0,0x18,0x20,512);
   if(!worker)return 50;
   for(i=0;i<100 && !worker->task.finished;i++)I386SchedYield(&scheduler);

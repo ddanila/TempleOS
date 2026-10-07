@@ -21,5 +21,6 @@ class CI386ModuleStage {
   Bool (*seal)(CI386ModuleStage *stage);
   Bool (*unwound)(CI386ModuleStage *stage,Bool clean);
   Bool (*readback)(CI386ModuleStage *stage,U8 *buffer,I64 bytes);
+  I64 (*read_range)(CI386ModuleStage *stage,U32 offset,U8 *buffer,U32 bytes);
 };
 #endif
