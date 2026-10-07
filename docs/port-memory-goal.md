@@ -258,3 +258,21 @@ fresh cross-built image and a 14400-second per-command timeout. There is no
 full native build pass yet; poll this run to obtain attributed packing evidence
 before changing packing behavior. The earlier 8 MiB runtime/diagnostic passes
 apply to the previous candidate, not this instrumentation snapshot.
+
+
+### Instrumented snapshot qualification
+
+- `build/i386-pack-attribution-cross/delivered-source-audit.json`: PASS, all
+  963 delivered source/doc files match the candidate.
+- `build/i386-pack-attribution-boot-8m/result.json`: PASS, normal startup in
+  57.29 seconds within the unchanged 60-second budget, all nine commands and
+  exact VGA restoration, CPU `486,-fpu` at 8 MiB.
+- The 16 MiB diagnostics, 8 MiB software-F64 and 8 MiB saved assembly runs
+  are live in `build/i386-pack-attribution-diag-16m`,
+  `build/i386-pack-attribution-float-8m` and
+  `build/i386-pack-attribution-bare-8m`, respectively. These are not passes yet.
+- The native provider build remains live in
+  `build/i386-pack-attribution-retained-kvm-16m`; it has reached editor
+  compilation, with no attributed packing rejection yet. Partial compilation
+  does not establish a provider build pass. Poll the existing processes before
+  launching replacements.
