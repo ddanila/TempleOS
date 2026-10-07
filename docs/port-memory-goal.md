@@ -274,8 +274,49 @@ apply to the previous candidate, not this instrumentation snapshot.
 - `build/i386-pack-attribution-float-8m/result.json`: PASS, 16 commands.
 - `build/i386-pack-attribution-bare-8m/result.json`: PASS, 13 commands,
   interrupt restoration and persisted block/bare assembly payloads.
-- The native provider build remains live in
-  `build/i386-pack-attribution-retained-kvm-16m`; it has reached editor
-  compilation, with no attributed packing rejection yet. Partial compilation
-  does not establish a provider build pass. Poll the existing processes before
-  launching replacements.
+- The native provider build is terminal FAIL; see the attributed duplicate
+  function rejection and source fix below.
+
+
+### Attributed provider failure and source fix
+
+`build/i386-pack-attribution-retained-kvm-16m/result.json` is terminal FAIL.
+All 647 ConsoleRuntime functions completed, then the pack-size query rejected
+`duplicate-function NativeRandPitRead`. The source disk is unchanged (SHA-256
+`9303c43c7a4ae70afbda1e2cbccfc328248538c329fc1b612817b069cffc60d2`); no module
+was persisted. This is neither an OutMem nor a relocation/type failure.
+
+RasterRuntime renamed and included PitRead.HC, then DocumentReport included
+that implementation again while the rename macro was still active. The source
+now shares a guarded `ConsolePitRead.HC` helper, uses an explicit implementation-name macro instead of aliasing I386PitRead,
+and calls the same private reader explicitly from both users. The kernel's
+separate I386PitRead name and port-read behavior remain unchanged. Duplicate export
+validation remains enforced. Fresh bootstrap/cross-build and native rebuilding
+are required to qualify this source fix; the previous green evidence applies
+to the instrumented snapshot before this fix.
+
+
+The first shared-helper cross-build (`build/i386-console-pit-shared-cross`)
+is terminal FAIL: HolyC does not support `#undef`, so that wrapper was rejected.
+The corrected wrapper uses `I386_PIT_READ_FUNCTION`, a name-selection macro
+consumed only by PitRead.HC, and no unsupported directive. Fresh qualification
+uses the `i386-console-pit-name` prefix; no failed image is used as a rebuild
+input. The original two-generation bootstrap passed but must be refreshed for
+this correction.
+
+
+### Corrected PIT helper checkpoint
+
+- `build/i386-console-pit-name-bootstrap.log`: PASS, two-generation original
+  compiler/kernel rebuild.
+- `build/i386-console-pit-name-cross`: PASS, cross-build and 386 audit
+  (96 BIOS / 209 protected-mode instructions), 539856-byte flat kernel.
+- `build/i386-console-pit-name-cross/delivered-source-audit.json`: PASS,
+  all 964 packaged source/doc files match, including the new console helper.
+- `build/i386-console-pit-name-retained-kvm-16m`: native six-provider rebuild
+  is live, KVM CPU `486,-fpu`, 16 MiB, 14400-second command timeout.
+- `build/i386-console-pit-name-boot-8m`: normal boot qualification is live.
+
+Poll these existing runs before restarting. The duplicate source definition
+has been removed; full native module packing/rebuild and two installed native
+self-hosted generations remain unproven.

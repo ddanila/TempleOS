@@ -1,7 +1,6 @@
 //Complete original raster primitive and its architecture-bound dependencies.
 #include "/Kernel/TaskFlags.HH"
-#define I386PitRead NativeRandPitRead
-#include "/Kernel/I386/PitRead.HC"
+#include "/Kernel/I386/ConsolePitRead.HC"
 I64 NativeRandClock()
 {
   U32 flags=I386IrqSave;
