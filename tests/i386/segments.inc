@@ -32,10 +32,10 @@ segment_test_code_end:
 align 8
 segment_test_gdt:
     dq 0,0x00cf9a000000ffff,0x00cf92000000ffff
-    dw 0xFFFF,0
+    dw 0xFFFF,SEGMENT_RECORD_BASE&0xFFFF
     db (SEGMENT_RECORD_BASE>>16)&0xFF,0x92,0x40,0
-    dw 0xFFFF,0x100
-    db (SEGMENT_RECORD_BASE>>16)&0xFF,0x92,0x40,0
+    dw 0xFFFF,(SEGMENT_RECORD_BASE+0x100)&0xFFFF
+    db ((SEGMENT_RECORD_BASE+0x100)>>16)&0xFF,0x92,0x40,0
 segment_test_gdtr:
     dw 5*8-1
     dd segment_test_gdt

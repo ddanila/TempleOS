@@ -15,4 +15,6 @@ extern Bool I386RedSeaPublicationInit(CI386RedSeaPublication *p,CI386RedSea *vol
   I64 sector,U32 slot,U8 *new_entry,I64 *owned_block);
 extern Bool I386RedSeaPublicationCommit(CI386RedSeaPublication *p);
 extern Bool I386RedSeaPublicationRecover(CI386RedSeaPublication *p);
+extern I64 I386RedSeaPublicationPrepare(CI386RedSeaPublication *p,CI386RedSea *volume,
+  I64 directory,U8 *name,I64 *owned_block,I64 size,I64 datetime=0);
 #endif

@@ -1,5 +1,6 @@
 #include "/Kernel/I386/RedSeaPublication.HH"
 #include "/Kernel/I386/ModulePublishCore.HC"
+#include "/Kernel/I386/RedSeaSlot.HC"
 Bool I386RedSeaPublicationEqual(U8 *a,U8 *b)
 {U32 i;for(i=0;i<64;i++)if(a[i]!=b[i])return FALSE;return TRUE;}
 Bool I386RedSeaPublicationFlush(U8 *context)
@@ -70,6 +71,53 @@ Bool I386RedSeaPublicationCommit(CI386RedSeaPublication *p)
   result=I386ModulePublishCommit(&p->transaction);
   if(!result)p->shared->signature=0;
   return result;
+}
+I64 I386RedSeaPublicationPrepare(CI386RedSeaPublication *p,CI386RedSea *volume,
+  I64 directory,U8 *name,I64 *owned_block,I64 size,I64 datetime=0)
+{//Resolve replacement or prepare a free slot, including the existing growth path.
+  U8 sector[512],entry[64],*raw;CI386RedSeaEntry existing,fresh;
+  I64 status,dir_size,index,slot=-1,i;
+  if(!p || p->transaction.phase || !owned_block || *owned_block<=0 || size<32 ||
+      !I386RedSeaValid(volume) || !I386RedSeaNewName(name))return -1;
+  for(i=0;i<64;i++)entry[i]=0;
+  entry[1]=8;
+  for(i=0;name[i];i++)entry[2+i]=name[i];
+  I386RedSeaPutWord(entry+40,*owned_block);I386RedSeaPutWord(entry+48,size);
+  I386RedSeaPutWord(entry+56,datetime);
+  if(!volume->disk->flush || !I386RedSeaDecode(volume,entry,&fresh))return -1;
+  status=I386RedSeaFind(volume,directory,name,&existing);
+  if(status<0)return -1;
+  if(status) {
+    if(existing.attr&0x11 || !I386RedSeaDirectory(volume,directory,sector,&dir_size) ||
+        sector[0]&1)return -1;
+    for(index=2;index<dir_size/64;index++) {
+      if(!(index&7) && !I386RedSeaSectorRead(volume,directory+index/8,sector))return -1;
+      raw=sector+(index&7)*64;
+      if(!raw[2])return -1;
+      if(!(raw[1]&1)) {
+        i=0;while(i<38 && raw[2+i]==name[i]){if(!name[i])break;i++;}
+        if(i<38 && !name[i] && !raw[2+i]){slot=index;break;}
+      }
+    }
+    if(slot<0)return -1;
+  } else {
+    status=I386RedSeaExtentSlot(volume,&directory,name,&slot);
+    if(status!=1)return status;
+    if(!I386RedSeaDirectory(volume,directory,sector,&dir_size) || slot<2 ||
+        slot>=dir_size/64-1)return -1;
+    //Ensure an append terminator is durable before the file can be published.
+    if(!I386RedSeaSectorRead(volume,directory+slot/8,sector))return -1;
+    raw=sector+(slot&7)*64;
+    if(!raw[2]) {
+      index=slot+1;
+      if(!I386RedSeaSectorRead(volume,directory+index/8,sector))return -1;
+      for(i=0;i<64;i++)sector[(index&7)*64+i]=0;
+      if(!I386RedSeaSectorWrite(volume,directory+index/8,sector) ||
+          !I386RedSeaFlush(volume)){volume->signature=0;return -1;}
+    }
+  }
+  if(!I386RedSeaPublicationInit(p,volume,directory+slot/8,slot&7,entry,owned_block))return -1;
+  return 1;
 }
 Bool I386RedSeaPublicationRecover(CI386RedSeaPublication *p)
 {

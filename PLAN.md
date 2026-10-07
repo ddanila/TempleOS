@@ -16,6 +16,32 @@ and dated entries below are historical snapshots.
 
 ## Objective and status
 
+## Named staged publication and root growth (2026-10-07)
+
+The publication candidate now prepares a regular-file slot by name, using the
+existing directory-growth implementation extracted into `RedSeaSlot.HC`.
+It validates the fresh extent before directory mutation, preserves replacement
+checks, and flushes an append terminator before publishing the file.
+
+`build/i386-publication-slots-native-v4.log` and
+`build/i386-ata-tasks-test/ata-task-check.json` are terminal PASS: native creation,
+replacement, eight invalid preparation inputs, root relocation, two child-parent
+repairs, existing publication fault/recovery and worker cleanup cases, exact
+635-command ATA ordering, restored bitmap/heap ownership, and complete 32 MiB
+backing-image comparison. The growth operation accounts for 68 commands.
+This fixture uses a 486 with 8 MiB; it is not a normal OS startup qualification.
+The larger fixture reserves 992 boot sectors, with disjoint code, downward root
+stack, heap and descriptor-test storage; the kernel boot default stays unchanged.
+
+Fresh bootstrap passes in `build/i386-publication-slots-current-bootstrap.log`.
+The full-image cross-build `build/i386-publication-slots-cross` passes with
+543,504 flat-kernel bytes and the 96 BIOS / 209 protected-mode instruction audit.
+`build/i386-publication-slots-source-audit` passes all 977 delivered files.
+The 16 MiB diagnostic run is pending in
+`build/i386-publication-slots-diag-16m`; runtime qualification remains required. Canonical target-path preparation and provider/BuildModule integration
+remain the next steps; the full-buffer readback failure and current 8 MiB normal
+startup regression are still open.
+
 ## Allocation observer footprint: phase logging candidate (2026-10-07)
 
 The kernel-only caller trace adds 800 flat-kernel bytes and shifts 8 MiB startup

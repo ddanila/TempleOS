@@ -62,7 +62,7 @@ I64 DiskTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x80000,32768) ||
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x90000,32768) ||
       !I386AtaChannelInit(&channel,&scheduler,0) || !I386AtaChannelInit(&other,&scheduler,1)) return 1;
   if(!I386AtaTaskIdentify(&channel,&disks[0],0) || !I386AtaTaskIdentify(&channel,&disks[1],1) ||
       disks[0].sectors!=32768 || disks[1].sectors!=32768 || channel.owner || channel.poisoned ||

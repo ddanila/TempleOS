@@ -47,6 +47,15 @@ I64 PublicationTest(U8 *source,U8 *bitmap)
     publication=I386TaskModulePublicationNew(unit);
     if(!publication || !stage->publication || I386TaskModulePublicationNew(unit))return 86;
     fresh=stage->block;
+    if(I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"",&stage->block,1025)!=-1 ||
+        I386RedSeaPublicationPrepare(publication,&volumes[0],2050,".",&stage->block,1025)!=-1 ||
+        I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"..",&stage->block,1025)!=-1 ||
+        I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"bad/name",&stage->block,1025)!=-1 ||
+        I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"Data.BIN",&stage->block,31)!=-1 ||
+        I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"Data.BIN",&stage->block,0x7FFFFFFFFFFFFFFF)!=-1 ||
+        I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"Data.BIN",0,1025)!=-1 ||
+        I386RedSeaPublicationPrepare(0,&volumes[0],2050,"Data.BIN",&stage->block,1025)!=-1 ||
+        publication->transaction.phase || stage->block!=fresh)return 99;
     if(!I386RedSeaBegin(&volumes[0]) ||
         !I386RedSeaSectorRead(&volumes[0],2050,original))return 69;
     for(i=0;i<64;i++)entry[i]=original[128+i];
@@ -56,7 +65,9 @@ I64 PublicationTest(U8 *source,U8 *bitmap)
       for(i=0;i<7;i++)entry[2+i]=new_name[i];
     }
     I386RedSeaPutWord(entry+40,fresh);I386RedSeaPutWord(entry+48,1025);
-    if(!I386RedSeaPublicationInit(publication,&volumes[0],2050,slot,entry,&stage->block))return 70;
+    if(mode==6)result=I386RedSeaPublicationPrepare(publication,&volumes[0],2050,new_name,&stage->block,1025)==1;
+    else result=I386RedSeaPublicationPrepare(publication,&volumes[0],2050,"Data.BIN",&stage->block,1025)==1;
+    if(!result)return 70;
     if(mode==1)I386RedSeaTaskFailArm(2,1);
     if(mode==2){publication_fail_after_write=TRUE;volume_io.write=&PublicationWriteFault;}
     if(mode==3)I386RedSeaTaskFailArm(3,2);
@@ -136,7 +147,7 @@ U0 PublicationWorker(U8 *unused)
   publication_worker_block=stage->block;
   for(i=0;i<64;i++)entry[i]=publication_worker_original[128+i];
   I386RedSeaPutWord(entry+40,stage->block);I386RedSeaPutWord(entry+48,65);
-  if(!I386RedSeaPublicationInit(p,&volumes[0],2050,2,entry,&stage->block)){errors++;return;}
+  if(I386RedSeaPublicationPrepare(p,&volumes[0],2050,"Data.BIN",&stage->block,65)!=1){errors++;return;}
   publication_fail_after_write=TRUE;volume_io.write=&PublicationWriteFault;
   if(I386RedSeaPublicationCommit(p) || p->transaction.phase!=I386_PUBLISH_UNCERTAIN ||
       !stage->block || volumes[0].signature)errors++;
@@ -177,6 +188,53 @@ I64 PublicationWorkerTest(U8 *bitmap)
       !I386RedSeaSectorWrite(&view,2049,bitmap) || !I386RedSeaFlush(&view) ||
       !I386RedSeaEnd(&volumes[0]) || !I386RedSeaMount(&volumes[0],&disks[0],2048) ||
       !I386RedSeaTaskBind(&volumes[0],&volume_io))return 98;
+  return 0;
+}
+I64 PublicationGrowthTest(U8 *source,U8 *bitmap)
+{
+  CI386ModuleStage *unit;CI386TaskModuleStage *stage;
+  CI386TaskFiles *owner=root.file_state;CI386RedSeaPublication *p;
+  CI386RedSeaEntry found;
+  U8 boot[512],original[512],one[512],two[512],sector[512],reserved[512];
+  I64 i,index,fresh,used=heap.used,allocations=heap.allocations;
+  if(!I386RedSeaBegin(&volumes[0]) || !I386RedSeaSectorRead(&volumes[0],2048,boot) ||
+      !I386RedSeaSectorRead(&volumes[0],2050,original) ||
+      !I386RedSeaSectorRead(&volumes[0],2051,one) ||
+      !I386RedSeaSectorRead(&volumes[0],2052,two))return 100;
+  for(i=0;i<512;i++)sector[i]=original[i];
+  sector[5*64+1]=sector[6*64+1]=8;
+  sector[5*64+2]=sector[6*64+2]='F';sector[5*64+3]='0';sector[6*64+3]='1';
+  if(!I386RedSeaSectorWrite(&volumes[0],2050,sector) || !I386RedSeaFlush(&volumes[0]) ||
+      !I386RedSeaEnd(&volumes[0]))return 101;
+  unit=I386TaskModuleStageNew("C:/Grown.BIN",1025);stage=unit;
+  if(!unit || (*unit->emit)(unit,0,source,1025)!=1025 || !(*unit->seal)(unit) ||
+      !(*unit->unwound)(unit,TRUE) || !(p=I386TaskModulePublicationNew(unit)))return 102;
+  fresh=stage->block;
+  if(!I386RedSeaBegin(&volumes[0]) ||
+      I386RedSeaPublicationPrepare(p,&volumes[0],volumes[0].root,"Grown.BIN",&stage->block,1025)!=1 ||
+      volumes[0].root!=2062 || p->sector!=2062 || p->slot!=7 ||
+      !I386RedSeaPublicationCommit(p) || stage->block)return 103;
+  if(I386RedSeaFind(&volumes[0],volumes[0].root,"Grown.BIN",&found)!=1 ||
+      found.block!=fresh || found.size!=1025 ||
+      !I386RedSeaSectorRead(&volumes[0],2049,sector))return 104;
+  for(i=0;i<512;i++) {
+    index=bitmap[i];if(!i)index=0xED;if(i==1)index=0xFB;
+    if(sector[i]!=index)return 105;
+    reserved[i]=bitmap[i]|sector[i];
+  }
+  if(!I386RedSeaSectorRead(&volumes[0],2051,sector) || I386RedSeaCreateGetWord(sector+104)!=2062 ||
+      !I386RedSeaSectorRead(&volumes[0],2052,sector) || I386RedSeaCreateGetWord(sector+104)!=2062)return 106;
+  //Restore referenced extents before restoring directory, parent and boot records.
+  if(!I386RedSeaSectorWrite(&volumes[0],2049,reserved) || !I386RedSeaFlush(&volumes[0]) ||
+      !I386RedSeaSectorWrite(&volumes[0],2050,original) || !I386RedSeaFlush(&volumes[0]) ||
+      !I386RedSeaSectorWrite(&volumes[0],2051,one) || !I386RedSeaSectorWrite(&volumes[0],2052,two) ||
+      !I386RedSeaFlush(&volumes[0]) || !I386RedSeaSectorWrite(&volumes[0],2048,boot) ||
+      !I386RedSeaFlush(&volumes[0]) || !I386RedSeaSectorWrite(&volumes[0],2049,bitmap) ||
+      !I386RedSeaFlush(&volumes[0]) || !I386RedSeaEnd(&volumes[0]) ||
+      !(*owner->stage->cleanup)(owner->stage->context) || owner->stage ||
+      heap.used!=used || heap.allocations!=allocations ||
+      !I386RedSeaMount(&volumes[0],&disks[0],2048) ||
+      !I386RedSeaTaskBind(&volumes[0],&volume_io) || volumes[0].root!=2050)return 107;
   return 0;
 }
 I64 stage_read_fail_after,stage_read_count;
@@ -287,6 +345,7 @@ I64 StageTest()
   for(i=0;i<512;i++)if(bitmap[i]!=after[i])return 53;
   i=PublicationTest(source,bitmap);if(i)return i;
   i=PublicationWorkerTest(bitmap);if(i)return i;
+  i=PublicationGrowthTest(source,bitmap);if(i)return i;
   if(state->stage || state->busy || root.io_locks || channel.owner || channel.poisoned)return 54;
   return 0;
 }

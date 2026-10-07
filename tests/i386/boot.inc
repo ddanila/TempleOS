@@ -9,10 +9,10 @@
 %error Compiler graph test stage must fit below physical 0x78000
 %endif
 %elifdef ATA_STAGE_TEST
-%define BOOT_SECTORS_LIMIT 896
-;Staging/task fixture keeps its first arena at physical 0x80000.
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 896
-%error ATA staging test stage must fit below physical 0x80000
+%define BOOT_SECTORS_LIMIT 992
+;Staging/task fixture keeps its stage below physical 0x8C000; root stack ends at 0x90000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 992
+%error ATA staging test stage must fit below physical 0x8C000
 %endif
 %elifdef LEX_MACRO_TEST
 ;Definition/token/task fixtures use their first arena at physical 0x60000.

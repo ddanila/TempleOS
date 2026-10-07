@@ -8,8 +8,8 @@
 %ifndef BOOT_SECTORS_LIMIT
 %define BOOT_SECTORS_LIMIT 768
 %endif
-; The isolated compiler fixture may extend to 0x74000; kernel default is unchanged.
-%if BOOT_SECTORS_LIMIT > 960 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
+; Explicit test reservations may extend to 0x8C000; kernel default is unchanged.
+%if BOOT_SECTORS_LIMIT > 992 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
 %error Boot stage exceeds its declared low-memory reservation
 %endif
 bits 16
