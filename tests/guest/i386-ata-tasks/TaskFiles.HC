@@ -1,6 +1,6 @@
 #include "/Kernel/I386/TaskFiles.HH"
 #include "/Kernel/I386/TaskModuleStage.HH"
-#include "/Kernel/I386/RedSeaPublication.HC"
+#include "/Kernel/I386/TaskModulePublication.HC"
 CI386FileVolumes task_volumes;
 CFilePathContext task_environment;
 U32 task_white_space[8],task_files_done,task_files_busy;
@@ -30,20 +30,22 @@ Bool PublicationWriteFault(U8 *context,CI386Ata *disk,I64 block,U8 *buffer)
 }
 I64 PublicationTest(U8 *source,U8 *bitmap)
 {
-  CI386RedSeaPublication publication;
+  CI386RedSeaPublication *publication;
   CI386ModuleStage *unit;CI386TaskModuleStage *stage;
   CI386TaskFiles *owner=root.file_state;
-  CI386RedSea *view;
+  CI386RedSea *view,inspection;
   U8 original[512],entry[64],reserved[512],current[512];
   U8 *new_name="New.BIN";
   I64 mode,i,index,fresh,used=heap.used,allocations=heap.allocations;
   U32 slot;
-  Bool result;
+  Bool result,cleaned;
   for(mode=0;mode<7;mode++) {
-    SVSet(&publication,0,sizeof(CI386RedSeaPublication));
+    cleaned=FALSE;
     unit=I386TaskModuleStageNew("C:/Data.BIN",1025);stage=unit;
     if(!unit || (*unit->emit)(unit,0,source,1025)!=1025 ||
         !(*unit->seal)(unit) || !(*unit->unwound)(unit,TRUE))return 68;
+    publication=I386TaskModulePublicationNew(unit);
+    if(!publication || !stage->publication || I386TaskModulePublicationNew(unit))return 86;
     fresh=stage->block;
     if(!I386RedSeaBegin(&volumes[0]) ||
         !I386RedSeaSectorRead(&volumes[0],2050,original))return 69;
@@ -54,31 +56,44 @@ I64 PublicationTest(U8 *source,U8 *bitmap)
       for(i=0;i<7;i++)entry[2+i]=new_name[i];
     }
     I386RedSeaPutWord(entry+40,fresh);I386RedSeaPutWord(entry+48,1025);
-    if(!I386RedSeaPublicationInit(&publication,&volumes[0],2050,slot,entry,&stage->block))return 70;
+    if(!I386RedSeaPublicationInit(publication,&volumes[0],2050,slot,entry,&stage->block))return 70;
     if(mode==1)I386RedSeaTaskFailArm(2,1);
     if(mode==2){publication_fail_after_write=TRUE;volume_io.write=&PublicationWriteFault;}
     if(mode==3)I386RedSeaTaskFailArm(3,2);
     if(mode==4)I386RedSeaTaskFailArm(3,3);
     if(mode==5)I386RedSeaTaskFailArm(3,1);
-    result=I386RedSeaPublicationCommit(&publication);
+    result=I386RedSeaPublicationCommit(publication);
     volume_io.write=&I386RedSeaTaskWrite;I386RedSeaTaskFailArm(0,0);
     if(!mode || mode==6) {if(!result)return 71;}
     else {
       if(result || volumes[0].signature)return 72;
+      if(mode!=5 && (I386TaskFilesDestroy(&root) || !owner->stage ||
+          !stage->publication || root.io_locks!=1))return 87;
       if(mode==4) {
-        if(stage->block || publication.transaction.phase!=I386_PUBLISH_COMMITTED)return 73;
+        if(stage->block || publication->transaction.phase!=I386_PUBLISH_COMMITTED)return 73;
       } else if(stage->block!=fresh)return 74;
       if(mode==5) {
-        if(!I386ModulePublishAbortable(&publication.transaction))return 75;
+        if(!I386ModulePublishAbortable(&publication->transaction))return 75;
       } else {
-        if(mode!=4 && I386ModulePublishAbortable(&publication.transaction))return 76;
-        result=I386RedSeaPublicationRecover(&publication);
-        if(mode==1) {
-          if(result || !I386ModulePublishAbortable(&publication.transaction) || stage->block!=fresh)return 77;
-        } else if(!result || stage->block || publication.transaction.phase!=I386_PUBLISH_DONE)return 78;
+        if(mode!=4 && I386ModulePublishAbortable(&publication->transaction))return 76;
+        if(!I386RedSeaEnd(&volumes[0]) ||
+            !(*owner->stage->cleanup)(owner->stage->context) || owner->stage ||
+            heap.used!=used || heap.allocations!=allocations ||
+            volumes[0].signature || root.io_locks || channel.owner)return 88;
+        cleaned=TRUE;
       }
     }
-    view=publication.volume;
+    if(cleaned) {
+      if(!(*volume_io.begin)(volume_io.context) ||
+          !I386RedSeaMount(&inspection,&disks[0],2048))return 89;
+      inspection.io=&volume_io;view=&inspection;
+    } else view=publication->volume;
+    if(mode==1) {
+      if(!I386RedSeaSectorRead(view,2050,current))return 90;
+      for(i=0;i<512;i++)if(current[i]!=original[i])return 90;
+      if(!I386RedSeaSectorRead(view,2049,current))return 91;
+      for(i=0;i<512;i++)if(current[i]!=bitmap[i])return 91;
+    }
     if(mode!=1 && mode!=5) {
       if(!I386RedSeaSectorRead(view,2050,current) ||
           !I386RedSeaPublicationEqual(current+slot*64,entry))return 79;
@@ -95,13 +110,73 @@ I64 PublicationTest(U8 *source,U8 *bitmap)
           !I386RedSeaSectorWrite(view,2050,original) || !I386RedSeaFlush(view) ||
           !I386RedSeaSectorWrite(view,2049,bitmap) || !I386RedSeaFlush(view))return 80;
     }
-    if(!I386RedSeaEnd(&volumes[0]) ||
-        !(*owner->stage->cleanup)(owner->stage->context) ||
-        heap.used!=used || heap.allocations!=allocations)return 81;
+    if(!I386RedSeaEnd(&volumes[0]))return 81;
+    if(!cleaned && !(*owner->stage->cleanup)(owner->stage->context))return 81;
+    if(owner->stage || heap.used!=used || heap.allocations!=allocations)return 81;
     if(!volumes[0].signature && (!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
         !I386RedSeaTaskBind(&volumes[0],&volume_io)))return 82;
     if(root.io_locks || channel.owner || channel.head || channel.tail)return 83;
   }
+  return 0;
+}
+U8 publication_worker_original[512];
+I64 publication_worker_block;
+Bool publication_worker_done;
+U0 PublicationWorker(U8 *unused)
+{
+  CI386ModuleStage *unit;CI386TaskModuleStage *stage;
+  CI386RedSeaPublication *p;
+  U8 data[65],entry[64];I64 i;
+  no_warn unused;
+  for(i=0;i<65;i++)data[i]=i+1;
+  unit=I386TaskModuleStageNew("C:/Data.BIN",65);stage=unit;
+  if(!unit || (*unit->emit)(unit,0,data,65)!=65 ||
+      !(*unit->seal)(unit) || !(*unit->unwound)(unit,TRUE) ||
+      !(p=I386TaskModulePublicationNew(unit)) || !I386RedSeaBegin(&volumes[0])){errors++;return;}
+  publication_worker_block=stage->block;
+  for(i=0;i<64;i++)entry[i]=publication_worker_original[128+i];
+  I386RedSeaPutWord(entry+40,stage->block);I386RedSeaPutWord(entry+48,65);
+  if(!I386RedSeaPublicationInit(p,&volumes[0],2050,2,entry,&stage->block)){errors++;return;}
+  publication_fail_after_write=TRUE;volume_io.write=&PublicationWriteFault;
+  if(I386RedSeaPublicationCommit(p) || p->transaction.phase!=I386_PUBLISH_UNCERTAIN ||
+      !stage->block || volumes[0].signature)errors++;
+  volume_io.write=&I386RedSeaTaskWrite;
+  if(!I386RedSeaEnd(&volumes[0]) || I386TaskSelf->io_locks)errors++;
+  publication_worker_done=TRUE;
+  //Exit leaves the ambiguous publication for the task reaper, not this stack.
+}
+I64 PublicationWorkerTest(U8 *bitmap)
+{
+  CI386OwnedTask *worker;CI386RedSea view;CI386RedSeaEntry entry;
+  U8 current[512],reserved[512];I64 i,index,used=heap.used,allocations=heap.allocations;
+  publication_worker_done=FALSE;
+  if(!I386RedSeaBegin(&volumes[0]) ||
+      !I386RedSeaSectorRead(&volumes[0],2050,publication_worker_original) ||
+      !I386RedSeaEnd(&volumes[0]))return 92;
+  worker=I386TaskSpawn(&scheduler,&heap,8192,&PublicationWorker,0,0x18,0x20,512);
+  if(!worker)return 93;
+  for(i=0;i<100 && !worker->task.finished;i++)I386SchedYield(&scheduler);
+  if(!worker->task.finished || !publication_worker_done || !worker->task.file_state ||
+      !((worker->task.file_state(CI386TaskFiles *))->stage) ||
+      !I386TaskDestroy(worker) || heap.used!=used || heap.allocations!=allocations ||
+      volumes[0].signature || root.io_locks || channel.owner)return 94;
+  if(!(*volume_io.begin)(volume_io.context) || !I386RedSeaMount(&view,&disks[0],2048))return 95;
+  view.io=&volume_io;
+  if(!I386RedSeaSectorRead(&view,2050,current) ||
+      !I386RedSeaDecode(&view,current+128,&entry) ||
+      entry.block!=publication_worker_block || entry.size!=65 ||
+      !I386RedSeaSectorRead(&view,2049,current))return 96;
+  for(i=0;i<512;i++)reserved[i]=bitmap[i];
+  index=publication_worker_block-(view.first-1);reserved[index/8]|=1<<(index&7);
+  for(i=0;i<512;i++) {
+    index=reserved[i];if(i==1)index&=~0x18;
+    if(current[i]!=index)return 97;
+  }
+  if(!I386RedSeaSectorWrite(&view,2049,reserved) || !I386RedSeaFlush(&view) ||
+      !I386RedSeaSectorWrite(&view,2050,publication_worker_original) || !I386RedSeaFlush(&view) ||
+      !I386RedSeaSectorWrite(&view,2049,bitmap) || !I386RedSeaFlush(&view) ||
+      !I386RedSeaEnd(&volumes[0]) || !I386RedSeaMount(&volumes[0],&disks[0],2048) ||
+      !I386RedSeaTaskBind(&volumes[0],&volume_io))return 98;
   return 0;
 }
 I64 stage_read_fail_after,stage_read_count;
@@ -211,6 +286,7 @@ I64 StageTest()
       !I386RedSeaEnd(&volumes[0]))return 52;
   for(i=0;i<512;i++)if(bitmap[i]!=after[i])return 53;
   i=PublicationTest(source,bitmap);if(i)return i;
+  i=PublicationWorkerTest(bitmap);if(i)return i;
   if(state->stage || state->busy || root.io_locks || channel.owner || channel.poisoned)return 54;
   return 0;
 }

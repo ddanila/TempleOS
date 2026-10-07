@@ -5,6 +5,7 @@
 class CI386TaskModuleStage {
   CI386ModuleStage unit;
   CI386TaskFileStage resource;
+  CI386TaskFileStage *publication;
   CI386TaskFiles *owner;
   CI386RedSea *volume;
   I64 block,blocks;

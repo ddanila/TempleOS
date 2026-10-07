@@ -331,7 +331,7 @@ def file_runtime_layout(module):
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 49:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 50:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -2510,7 +2510,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=49, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=50, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             write_public_address=file_write_public,
             read_stored_address=file_read_stored,

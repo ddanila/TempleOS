@@ -60,6 +60,8 @@ Bool I386TaskModuleStageRelease(U8 *context)
   Bool result=FALSE;
   U32 flags=I386IrqSave;
   stage->active=TRUE;
+  if(stage->publication && (!(*stage->publication->cleanup)(stage->publication->context) ||
+      stage->publication))goto stage_release_done;
   if(!stage->block){result=TRUE;goto stage_release_done;}
   //Acquire the channel directly: an invalid mounted view cannot Begin.
   if(!io || !io->begin || !io->end || !(*io->begin)(io->context))goto stage_release_done;

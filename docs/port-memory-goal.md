@@ -1161,3 +1161,48 @@ and retain pending old reclamation while COMMITTED. Native conflicting-slot,
 partial-reclamation and interrupted-task cases, path/slot preparation including
 directory growth, and BuildModule integration remain required. No complete
 native build or current-source 8-MiB startup recovery is claimed.
+
+### Task-owned publication cleanup — native and full-image checkpoint
+
+Staging now has an optional registered publication cleanup resource. Release
+resolves that resource before inspecting the staging block, including when
+the block is already zero but old-extent reclamation remains unfinished.
+`TaskModulePublication.HC` allocates a heap-owned publication record, registers
+its callback before initialization, and retains it across failed recovery.
+UNCERTAIN and COMMITTED cleanup obtains the complete disk lease directly,
+recovers through the persistent private mount, and frees the record only after
+confirmed old state or completed new-state reclamation. Unpublished preparation
+can abort safely. Publication callback code must have kernel lifetime while a
+record refers to it; the creator/provider is currently compiled into the native
+test corpus, while the release hook is integrated into FileRuntime.
+
+Native terminal evidence is `build/i386-ata-tasks-test/result.json` and
+`ata-task-check.json`, final log
+`build/i386-task-publication-worker-native-v2.log`. Four cleanup attempts defer
+while the root holds the disk lease, then four task-resource cleanups recover
+the publication after that lease is released. Tests inspect the resulting
+directory and exact bitmap before restoring fixture state, proving cleanup
+does not free the published fresh extent. A worker also exits after a directory
+write changes disk state but reports failure. TaskDestroy recovers its
+heap-owned publication after worker completion, restores exact heap counters,
+and leaves the fresh extent referenced and reserved. Whole disks and complete
+ATA command traces pass. The test-only transfer is now 896 sectors (448 KiB),
+heap at 0x80000 and segment records at 0x8C000, with data at sector 1024.
+
+File-service version is now 50, still 120 bytes, to guard the changed private
+staging layout against mixed provider versions. Original two-generation
+bootstrap, `build/i386-task-publication-cross`, 96 BIOS / 209 protected-mode
+instruction audits and the 976-file delivered-source audit pass.
+`build/i386-task-publication-diag-16m/result.json` passes full diagnostic
+startup and storage/presentation/runtime/VGA checks. The fresh 8-MiB image
+is terminal FAIL in `build/i386-task-publication-boot-8m/result.json`: a 4096-byte
+request with heap used `0x657B10`, capacity `0x65B400` and largest span `0x7E0`,
+before the retained-state acceptance commands. No 8-MiB recovery is claimed.
+
+Next provide path/slot preparation including directory growth, wire the
+publication creator into a provider with explicit code lifetime, and replace
+BuildModule's whole-image readback/publication with metadata-only validation
+and staged ownership transfer. Then restore startup footprint and qualify six
+native providers plus two installed generations. Public Kill and cancellation
+during publication, conflicting native slots and partial reclamation still
+need targeted coverage; ordinary finished-worker recovery is now verified.

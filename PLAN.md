@@ -7,7 +7,9 @@ staging and BuildModule integration are implemented in a candidate. Host/native
 staging contracts pass; the six-provider 16 MiB rebuild fails at fragmented
 post-unwind readback. The early-resource allocation candidate also fails there;
 the next structural fix must avoid whole-module readback. The candidate
-regresses the 8 MiB retained-function gate, so the previously qualified phased
+now has native-tested bounded validation, publication and task cleanup
+foundations; BuildModule still needs their integration. The current image
+fails a 4-KiB allocation during 8-MiB startup. The previously qualified phased
 header image remains the startup baseline. Full native rebuild and installed
 generation qualification remain open. The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
 and dated entries below are historical snapshots.
