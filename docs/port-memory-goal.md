@@ -108,3 +108,24 @@ The command timeout now propagates to flat builds as well as retained builds.
 Flat builds opt into explicit module-rejection detection too. Python syntax
 checks and the three rejection-log regression tests pass for these harness changes;
 the ongoing native tests remain the required end-to-end evidence.
+
+## Source identity and accelerated qualification
+
+The immutable cross-built input passes `audit-i386-delivered-source.py`: all
+963 source/doc files covered by that auditor match the current repository.
+Evidence: `build/i386-parser-record-prefix-cross/delivered-source-audit.json`.
+The two-generation runner now runs that auditor on its retained-build input and
+both installed generations, in addition to binary/boot-area comparisons.
+
+KVM access is available after the permissions change (API version 12). Separate
+accelerated runs use the same 16 MiB limit and `486,-fpu` CPU setting:
+
+- `build/i386-parser-record-prefix-retained-kvm-16m`: all six retained providers.
+- `build/i386-parser-record-prefix-flat-development-kvm`: development-only flat
+  kernel build/install with cross-built retained inputs.
+
+Both use fresh disk copies. The existing TCG runs remain active; KVM availability
+does not replace the 386 executable audit or the already passed TCG no-FPU
+regressions. Neither accelerated run is yet recorded as passing. The complete
+generation runner supports `--accel kvm` for the long compiler runs too; use the
+qualified retained-build directory for whichever run actually passes.

@@ -103,10 +103,17 @@ def main():
             '--installed', native / 'target.img', '--kernel-module-path', '/Modules/I386/Kernel.t32m',
             '--flat-path', '/Probe/GuestBoot.bin', '--guest-compiler-template',
             '--stage-listing', listing, '--out', audit)
+        source_audit = out / (prefix + '-source-audit')
+        run(source_audit.name, 'audit-i386-delivered-source.py',
+            '--disk', native / 'target.img', '--repository', repo,
+            '--out', source_audit / 'result.json')
         return native, audit
 
     try:
         save()
+        run('input-source-audit', 'audit-i386-delivered-source.py',
+            '--disk', retained / 'source.img', '--repository', repo,
+            '--out', out / 'input-source-audit' / 'result.json')
         first, audited = generation(1, retained)
         built = out / 'gen2-retained-build'
         run(built.name, 'test-i386-retained-build.py', '--disk', first / 'target.img',
