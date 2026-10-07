@@ -267,10 +267,13 @@ apply to the previous candidate, not this instrumentation snapshot.
 - `build/i386-pack-attribution-boot-8m/result.json`: PASS, normal startup in
   57.29 seconds within the unchanged 60-second budget, all nine commands and
   exact VGA restoration, CPU `486,-fpu` at 8 MiB.
-- The 16 MiB diagnostics, 8 MiB software-F64 and 8 MiB saved assembly runs
-  are live in `build/i386-pack-attribution-diag-16m`,
-  `build/i386-pack-attribution-float-8m` and
-  `build/i386-pack-attribution-bare-8m`, respectively. These are not passes yet.
+- `build/i386-pack-attribution-diag-16m/result.json`: PASS, 22 class and
+  28 program publication cases plus nine runtime/VGA commands.
+  `memory-contract-check.json` pins the log and requires both-phase optimizer
+  (including public IC-body canary), parser-memory, emitter and backend markers.
+- `build/i386-pack-attribution-float-8m/result.json`: PASS, 16 commands.
+- `build/i386-pack-attribution-bare-8m/result.json`: PASS, 13 commands,
+  interrupt restoration and persisted block/bare assembly payloads.
 - The native provider build remains live in
   `build/i386-pack-attribution-retained-kvm-16m`; it has reached editor
   compilation, with no attributed packing rejection yet. Partial compilation
