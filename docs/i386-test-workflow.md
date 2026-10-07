@@ -5938,3 +5938,15 @@ The checker pins the image and input harness to the cross-build manifest and
 checks conversions, arithmetic, comparisons, sqrt/abs and retained F64 static
 state on `486,-fpu`. This is focused behavior coverage; use the separate startup
 checker for the 8 MiB boot budget and existing numeric oracles for IEEE coverage.
+
+## Bounded-memory candidate qualification
+
+See [current goal and results](port-memory-goal.md). The bare-assembly checker
+accepts `--ram-mib 8` or `--ram-mib 16` (default 16), matching the startup and
+floating-context checkers. Use fresh output directories and source-pinned images.
+
+The retained-build checker opts into immediate failure on complete guest
+`BUILD MODULE REJECT` lines for the active command. Expected negative-test logs
+in other suites are unaffected. Running and terminal QEMU failures are recorded
+in its `result.json`; failed checks do not establish export or rebuild acceptance.
+Run `python3 tools/test-i386-command-rejection.py` for log-boundary regression tests.

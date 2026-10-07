@@ -124,6 +124,14 @@ class MutationDetected(AssertionError):
     """The unchanged assertion observed the specified faulty result on VGA."""
 
 
+def command_rejection(text, start, prefixes):
+    """Return a complete rejection line emitted since this command began."""
+    for line in text[start:].splitlines(keepends=True):
+        if line.endswith('\n') and line.startswith(prefixes):
+            return line.rstrip('\r\n')
+    return None
+
+
 def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
@@ -140,6 +148,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
         raise ValueError('Audio capture must not overwrite a disk image')
     active_group=None
     submitted=0
+    command_log_start=0
+    rejection_prefixes=tuple(startup_check.get('rejection_prefixes', ())) if startup_check else ()
     interaction_latencies={}
     audio_emission={}
     mouse_host_x=320
@@ -224,7 +234,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             def wait_for(predicate, timeout=30):
                 stop=time.monotonic()+timeout
                 while time.monotonic()<stop and proc.poll() is None:
-                    if 'FAIL ' in log.read_text(): raise RuntimeError(log.read_text())
+                    evidence=log.read_text()
+                    if 'FAIL ' in evidence: raise RuntimeError(evidence)
+                    rejection=command_rejection(evidence,command_log_start,rejection_prefixes)
+                    if rejection: raise RuntimeError(f'Guest command rejected: {rejection}')
                     if predicate(): return
                     time.sleep(.05)
                 raise TimeoutError(f'Console check timed out; inspect {out}')
@@ -301,10 +314,11 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
                        interaction=None):
-                nonlocal rows,submitted,mouse_host_x,mouse_host_y
+                nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
                 submitted+=1
+                command_log_start=len(log.read_text())
                 (out/'checkpoint.json').write_text(json.dumps({'group':active_group,'name':name,'source':source})+'\n')
                 if len(source)>255: raise ValueError('Source exceeds the native input buffer')
                 for index,ch in enumerate(source):

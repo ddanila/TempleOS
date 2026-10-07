@@ -695,20 +695,20 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
   cc->aot=&bound->aot; cc->aotc=&bound->aotc;
   cc->flags=cc->flags&~mask|CCF_AOT_COMPILE; cc->pass=0;
-  KernelLog("MODULE OUTPUT CALLS START\n");
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS START\n");
   I386FrontendCalls(state,bound,cc);
-  KernelLog("MODULE OUTPUT CALLS DONE\n");
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS DONE\n");
   out=I386OutNew(state->heap,cc);
   if(!out) throw('OutMem',TRUE);
   if(bound->has_helpers) {
     I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
   }
-  KernelLog("MODULE OUTPUT BACKEND START\n");
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND START\n");
   if(cc->flags&CCF_BOOT_MODULE) {
     if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0)) I386FrontendUnavailable(state);
   } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll))
     I386FrontendUnavailable(state);
-  KernelLog("MODULE OUTPUT BACKEND DONE\n");
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
     if(metadata->type!=IET_I386_DATA && metadata->type!=IET_I386_BREAK_POLL)
       I386FrontendUnavailable(state);
@@ -725,9 +725,9 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
     }
   }
   for(i=0;i<out->count;i++) result->code[i]=out->data[i];
-  KernelLog("MODULE OUTPUT LINK START\n");
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK START\n");
   I386FrontendLink(state,bound,result);
-  KernelLog("MODULE OUTPUT LINK DONE\n");
+  if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK DONE\n");
   result->next=state->codes; state->codes=result;
   if(!I386OutDel(state->heap,cc,out) || !I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
   cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;

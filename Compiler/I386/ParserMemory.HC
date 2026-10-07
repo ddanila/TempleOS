@@ -37,7 +37,7 @@ U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
 #endif
     I386IrqRestore(irq); throw('OutMem',TRUE);
   }
-  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
+  record=I386HeapAllocHigh(heap,offset(CI386ParserAllocation.requested),TRUE);
   if(!record) {
     I386HeapFree(heap,allocation);
     I386IrqRestore(irq); throw('OutMem',TRUE);
@@ -121,7 +121,7 @@ Bool I386ParserTake(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   if(!I386CmpCodeOwner(heap,cc) || !allocation || I386HeapSize(heap,allocation)<1) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
     if(record->allocation==allocation) goto done;
-  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
+  record=I386HeapAllocHigh(heap,offset(CI386ParserAllocation.requested),TRUE);
   if(!record) goto done;
   record->allocation=allocation; record->next=&owned->parser_next;
   record->last=owned->parser_last; record->last->next=record; owned->parser_last=record;

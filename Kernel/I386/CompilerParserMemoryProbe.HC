@@ -6,6 +6,8 @@ U0 ProbeParserMemory(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CCodeMisc *misc;
   CArrayDim *first,*second;
   U8 *value,*detached,*fill,*block,*next,*tiny;
+  U8 *batch[64];
+  I64 base_used,base_allocations;
   I64 i,attempt,size,accepted,filled_used,filled_allocations;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
@@ -17,6 +19,20 @@ U0 ProbeParserMemory(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(!value || I386HeapSize(heap,value)!=37 || probe->compiler->parser_free(heap,outer,value)) KernelStop;
   for(i=0;i<37;i++) if(value[i]) KernelStop;
   if(!probe->compiler->parser_free(heap,cc,value) || probe->compiler->parser_free(heap,cc,value)) KernelStop;
+  //Bound metadata overhead for many small declarations, without changing exact
+  //payload sizes. The previous full ownership records consumed 96 bytes each.
+  base_used=heap->used; base_allocations=heap->allocations;
+  for(i=0;i<64;i++) {
+    batch[i]=probe->compiler->parser_alloc(heap,cc,37,TRUE);
+    if(!batch[i] || I386HeapSize(heap,batch[i])!=37) KernelStop;
+    batch[i][0]=i; batch[i][36]=i^0x5A;
+  }
+  if(heap->used-base_used>64*88 || heap->allocations-base_allocations!=128) KernelStop;
+  for(i=63;i>=0;i--) {
+    if(batch[i][0]!=i || batch[i][36]!=(i^0x5A) ||
+        !probe->compiler->parser_free(heap,cc,batch[i])) KernelStop;
+  }
+  if(heap->used!=base_used || heap->allocations!=base_allocations || !I386HeapValid(heap)) KernelStop;
   //Allocation precedes the misc node; graph cleanup must consume its registry entry.
   value=probe->compiler->parser_alloc(heap,cc,8,TRUE);
   misc=probe->compiler->code_misc(heap,cc,CMT_STR_CONST); if(!misc) KernelStop;

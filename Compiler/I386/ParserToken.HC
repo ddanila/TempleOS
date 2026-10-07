@@ -36,7 +36,7 @@ I64 I386ParserToken(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
       pending=current;
     }
     if(!pending) {
-      pending=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
+      pending=I386HeapAllocHigh(heap,offset(CI386ParserAllocation.requested),TRUE);
       if(!pending) { I386IrqRestore(irq); throw('OutMem',TRUE); }
       pending->next=&owned->parser_next; pending->last=owned->parser_last;
       pending->last->next=pending; owned->parser_last=pending;

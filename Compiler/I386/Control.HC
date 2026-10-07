@@ -14,6 +14,7 @@ class CI386ParserAllocation {
   CI386ParserAllocation *next,*last;
   U8 *allocation;
   CI386TaskHeaps *owner;
+  //Present only when owner is non-null; ordinary arena records end here.
   U32 requested;
 };
 class CI386CmpCtrl {

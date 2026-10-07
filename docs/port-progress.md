@@ -1,8 +1,8 @@
 # i386 port progress
 
-Current status: [2026-10-07 saved checkpoint](port-checkpoint-2026-10-07.md). The latest 8 MiB
-startup test failed; no tests remain running. Earlier entries describe historical
-snapshots, not current release qualification.
+Current work: [bounded-memory results](port-memory-goal.md). The new candidate
+passes normal 8 MiB startup and runtime/VGA checks. Full native rebuilding
+remains under test; the saved checkpoint and entries below describe older sources.
 
 The full objective and acceptance gates remain in `PLAN.md`. A standalone
 32-bit TempleOS environment now boots, edits and executes HolyC, persists DolDoc

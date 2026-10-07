@@ -1,10 +1,12 @@
 # i386 QEMU support matrix
 
-Authoritative current status: [saved checkpoint](port-checkpoint-2026-10-07.md).
-The latest diagnostic source cross-builds, but 8 MiB startup fails. The preceding
-compact-output snapshot passes 50 publication cases, nine runtime/VGA commands,
-and 16 integer/F64 commands at 16 MiB. No tests remain running. Entries below
-are historical snapshot records; their pending tests do not describe current work.
+Authoritative current status: [bounded-memory results](port-memory-goal.md).
+The `i386-parser-record-prefix-cross` candidate passes normal 8 MiB startup,
+nine runtime/VGA commands, and 16 integer/F64 commands at 16 MiB on `486,-fpu`.
+Complete 16 MiB diagnostics pass, including the new allocation-budget and public
+optimizer probes in both phases. Floating-point and saved assembly tests also
+pass at 8 MiB. Full native rebuilding is still running; successive generations
+and installation remain unqualified. The entries below describe older snapshots.
 
 Current worktree candidate (2026-10-07): frontend-only optimizer scratch
 release, with the direct optimizer stack-inspection contract preserved. Bootstrap,

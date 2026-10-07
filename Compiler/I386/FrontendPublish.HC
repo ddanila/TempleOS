@@ -512,7 +512,7 @@ Bool I386ParentMacroPrepare(CI386Heap *heap,CI386CmpCtrl *owned,
   if(I386HeapSize(heap,allocation)<1 || I386ParserRecord(owned,allocation))return FALSE;
   for(record=*records;record;record=record->next)
     if(record->allocation==allocation)return FALSE;
-  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
+  record=I386HeapAllocHigh(heap,offset(CI386ParserAllocation.requested),TRUE);
   if(!record)return FALSE;
   record->allocation=allocation;record->next=*records;*records=record;
   return TRUE;

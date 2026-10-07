@@ -1,8 +1,11 @@
 # TempleOS architecture plan: 32-bit 386+ and VGA
 
-Current status: [2026-10-07 saved checkpoint](docs/port-checkpoint-2026-10-07.md). The latest 8 MiB
-startup test failed; no tests remain running. Earlier entries describe historical
-snapshots, not current release qualification.
+Active medium goal: [bounded-memory self-hosting](docs/port-memory-goal.md).
+
+Current work: [bounded-memory results](docs/port-memory-goal.md). Normal 8 MiB
+startup now passes on the parser-record-prefix candidate; full native rebuild
+qualification remains open. The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
+and dated entries below are historical snapshots.
 
 ## Objective and status
 

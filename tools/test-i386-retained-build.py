@@ -108,11 +108,23 @@ def main():
                      f'"C:/Probe/Retained{name}.t32m",TRUE)>0;', ['1'])
                     for name in selected]
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        run_input(source, out / 'qemu', snapshot=False, ram_mib=16, accel=args.accel,
-                  cpu=args.cpu, qmp_stdio=args.qmp_stdio,
-                  startup_timeout=180, startup_check={
-                      'status': 'ok', 'answers': [],
-                      'command_timeout': args.command_timeout, 'commands': commands})
+        pending = {'result': 'running', 'cpu': args.cpu, 'ram_mib': 16,
+                   'module_order': list(selected), 'input_disk_sha256': sha256(source),
+                   'scope': 'Selected retained module native builds and persisted export audit'}
+        (out / 'result.json').write_text(json.dumps(pending, indent=2) + '\n')
+        try:
+            run_input(source, out / 'qemu', snapshot=False, ram_mib=16, accel=args.accel,
+                      cpu=args.cpu, qmp_stdio=args.qmp_stdio,
+                      startup_timeout=180, startup_check={
+                          'status': 'ok', 'answers': [],
+                          'command_timeout': args.command_timeout, 'commands': commands,
+                          'rejection_prefixes': ('BUILD MODULE REJECT ',)})
+        except Exception as error:
+            pending.update(result='fail', error=str(error),
+                           source_disk_sha256=sha256(source))
+            (out / 'result.json').write_text(json.dumps(pending, indent=2) + '\n')
+            raise
+
     wanted = {f'/Probe/Retained{name}.t32m' for name in selected}
     actual = files(source, wanted)
     comparison = None

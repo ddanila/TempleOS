@@ -23,6 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--ram-mib', type=int, choices=(8, 16), default=16)
     args = parser.parse_args()
     disk, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -37,7 +38,7 @@ def main():
     out.mkdir(parents=True)
     working = out/'source.img'
     shutil.copyfile(disk, working)
-    report = {'status':'fail', 'cpu':'486,-fpu', 'ram_mib':16,
+    report = {'status':'fail', 'cpu':'486,-fpu', 'ram_mib':args.ram_mib,
               'scope':'Bare and block PUSHFD/CLI/POPFD AOT compilation, persisted relocation-free module execution and included HolyC interrupt-state check',
               'disk_sha256':sha(disk), 'checker_sha256':sha(Path(__file__)), 'cases':{}}
     try:
@@ -58,7 +59,7 @@ def main():
         if any(len(command)>255 for command, _ in commands):
             raise ValueError('Fixture exceeds interactive line limit')
         report['behavior'] = runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](
-            working, out/'qemu', snapshot=False, ram_mib=16, accel='tcg',
+            working, out/'qemu', snapshot=False, ram_mib=args.ram_mib, accel='tcg',
             cpu='486,-fpu', qmp_stdio=True, startup_timeout=180,
             startup_check={'status':'ok', 'answers':[], 'command_timeout':180, 'commands':commands})
         wanted = {f'/Probe/{label}.{suffix}' for label, *_ in CASES for suffix in ('HC','t32m')}
