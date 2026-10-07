@@ -968,3 +968,41 @@ PASS on 486 with 8 MiB. The fixture includes and pins WaitCancel.HC; its initial
 missing-implementation compilation failure is superseded. This covers queued
 wait cancellation, not public Kill or cancellation during a transfer. The
 six-provider early-resource build remains live; no memory recovery is claimed.
+
+### Early resource result — contiguous readback remains the blocker
+
+The early-resource rebuild is now terminal FAIL in
+`build/i386-task-stage-early-resource-retained-kvm-16m/result.json`.
+ConsoleRuntime completes serialization and compiler unwind, then rejects the
+2,287,183-byte stage-8 readback allocation. Heap use is `0x687B38`, capacity
+`0xD7B400`, and largest free block `0x1D9D40`. Both worker and QEMU processes
+have exited. Preparing the small staging record earlier did not recover the
+required contiguous region; do not repeat this experiment or increase the
+acceptance memory profile.
+
+Next architecture work must remove the whole-module readback requirement:
+
+1. Add bounded random reads of sealed, cleanly unwound staging output. Check
+   offsets and lengths before I/O, retain ownership on failure, and preserve
+   cancellation and complete lease cleanup. Test sector crossings, final bytes,
+   short/error reads and queued cancellation before BuildModule integration.
+2. Reuse `I386ModuleValidParts` with staged code reads and bounded metadata.
+   Header arithmetic must be validated before allocating or reading metadata.
+   Read failures must reject the unit even if the byte callback returns zero;
+   cache sectors to avoid one disk transaction for every relocation byte.
+3. Publish validated staged data without a whole-image heap buffer. Preserve
+   data-before-directory flush ordering and existing replacement semantics.
+   If a directory write or flush can have published an extent, cleanup must
+   never free that potentially referenced extent. Keep ambiguous ownership
+   quarantined until authoritative recovery determines publication state.
+   Test faults before publication, during directory write/flush, and during
+   old-extent reclamation; verify whole disks, bitmap and retry behavior.
+4. Integrate the bounded path into BuildModule, restore the independent 8-MiB
+   startup/retained-state/F64/assembly gates, then rerun all six providers at
+   16 MiB and two installed native generations. Avoid adding permanently
+   resident staging support without measuring its startup cost; lazy loading
+   remains an option with explicit code lifetime and installation coverage.
+
+The existing complete-buffer validation/publication path remains useful for
+small assembly units, but cannot qualify the largest provider within this
+fragmented heap. No native-generation or current-candidate 8-MiB pass is claimed.

@@ -5,7 +5,8 @@ Active medium goal: [bounded-memory self-hosting](docs/port-memory-goal.md).
 Current work: [bounded-memory results](docs/port-memory-goal.md). Task-owned
 staging and BuildModule integration are implemented in a candidate. Host/native
 staging contracts pass; the six-provider 16 MiB rebuild fails at fragmented
-post-unwind readback. An early-resource allocation candidate is under test. The candidate
+post-unwind readback. The early-resource allocation candidate also fails there;
+the next structural fix must avoid whole-module readback. The candidate
 regresses the 8 MiB retained-function gate, so the previously qualified phased
 header image remains the startup baseline. Full native rebuild and installed
 generation qualification remain open. The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
