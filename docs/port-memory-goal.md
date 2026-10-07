@@ -1089,3 +1089,38 @@ Next implement bounded publication with ownership retained across ambiguous
 directory write/flush failures, then integrate the validated staged path into
 BuildModule. The resident footprint and complete native-generation gates still
 need qualification; native validation alone does not recover the memory goal.
+
+### Publication ownership core — host failure contract verified
+
+`ModulePublishCore.HC` is an allocation-free transaction core with PREPARED,
+UNCERTAIN, COMMITTED and DONE states. It flushes staged data before publication,
+sets UNCERTAIN before calling the directory writer, and retains the staging
+extent on ambiguous write/flush failure. Recovery flushes pending writes before
+an exact old/new directory-slot observation. Confirmed old state returns to
+PREPARED, permitting staging abort; conflicting or failed observations retain
+UNCERTAIN. Confirmed new state clears the caller's owned-block field before
+reclaiming the old extent. Failed/thrown reclamation retains COMMITTED for
+idempotent retry; repeated DONE calls perform no I/O.
+
+Caller obligations: hold the complete-operation disk lease; retain the stable
+record and owned-block field; quarantine ambiguous shared volume state; observe
+the exact saved old/new slot (return neither on read failure/conflict); and make
+old-extent reclamation idempotent through its final flush. Task cleanup must
+refuse to release the staged extent while UNCERTAIN and retain the record while
+COMMITTED reclamation remains unfinished. These obligations are not yet wired
+to RedSea or task reaping.
+
+Host evidence: `build/i386-stage-publication-contract-v2/result.json` passes
+33 assertions covering initial flush rejection, directory writes failing
+before/after modification, flush failure before/after persistence, failed
+recovery flush, old/new/conflicting/failed observations, reclamation retry and
+thrown write/reclaim callbacks. The contract exposed a null-pointer guard in
+the first attempt; the explicit guard is now fixed. A mutation that delays
+UNCERTAIN until after the write is rejected at assertion 6 under
+`build/i386-stage-publication-late-mutant`.
+
+Run with `tools/test-i386-module-stage.py --publication --out <fresh-directory>`.
+This proves the shared host lifecycle, not native directory mutation, disk
+fault handling or BuildModule memory recovery. Next add the RedSea slot
+transport and native fault tests, integrate task cleanup, and connect bounded
+validation/publication to BuildModule before full memory qualification.

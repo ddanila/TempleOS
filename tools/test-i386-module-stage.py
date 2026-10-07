@@ -16,15 +16,18 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument("--stage-core", type=Path, help="Alternate core for controlled mutation/red tests")
     parser.add_argument('--validation', action='store_true', help='Exercise staged validation without a whole code buffer')
+    parser.add_argument('--publication', action='store_true', help='Exercise publication ownership and ambiguous I/O recovery')
     args = parser.parse_args()
+    if args.validation and args.publication:
+        parser.error('Choose validation or publication')
     out = args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
     overlay = out / 'overlay'
     overlay.mkdir(parents=True)
-    core_name = 'ModuleStageCheck.HC' if args.validation else 'ModuleStageCore.HC'
+    core_name = 'ModulePublishCore.HC' if args.publication else 'ModuleStageCheck.HC' if args.validation else 'ModuleStageCore.HC'
     core = args.stage_core.resolve() if args.stage_core else ROOT / 'Kernel/I386' / core_name
-    fixture = ROOT / 'tests/guest/i386-module-stage' / ('Validation.HC' if args.validation else 'Contract.HC')
+    fixture = ROOT / 'tests/guest/i386-module-stage' / ('Publication.HC' if args.publication else 'Validation.HC' if args.validation else 'Contract.HC')
     inputs = (core, fixture, Path(__file__), ROOT / 'Kernel/I386/ModuleStage.HH',
               ROOT / 'tools/build-iso.py', ROOT / 'tools/guest-run.py',
               ROOT / 'build/rebuild-test/overlay/Compiler/Compiler.BIN',
@@ -33,11 +36,15 @@ def main():
         inputs += tuple(ROOT / name for name in ('Kernel/I386/ModuleCheck.HC',
                         'Kernel/I386/ModuleCheck.HH', 'Kernel/I386/Module.HH',
                         'Kernel/NumericLimits.HH'))
+    if args.publication:
+        inputs += (ROOT / 'Kernel/I386/ModulePublish.HH',)
     pins = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
     core_target = overlay / 'Kernel/I386' / core_name
     core_target.parent.mkdir(parents=True)
     core_target.write_bytes(core.read_bytes())
     (core_target.parent / 'ModuleStage.HH').write_bytes((ROOT / 'Kernel/I386/ModuleStage.HH').read_bytes())
+    if args.publication:
+        (core_target.parent / 'ModulePublish.HH').write_bytes((ROOT / 'Kernel/I386/ModulePublish.HH').read_bytes())
     if args.validation:
         for name in ('Kernel/I386/ModuleCheck.HC', 'Kernel/I386/ModuleCheck.HH',
                      'Kernel/I386/Module.HH', 'Kernel/NumericLimits.HH'):
@@ -47,9 +54,11 @@ def main():
     (overlay / 'Once.HC').write_bytes(fixture.read_bytes())
     report = {'result': 'running', 'input_sha256': pins,
               'scope': 'Actual HolyC staging state machine with short/error/thrown writes, flush/read failures and release retry; host core only, no RedSea reservation or task-kill integration'}
-    label, expected = ('stage-validation', '46') if args.validation else ('module-stage', '253')
+    label, expected = ('stage-publication', '33') if args.publication else ('stage-validation', '46') if args.validation else ('module-stage', '253')
     if args.validation:
         report['scope'] = 'Actual HolyC staged validator with header bounds, cached relocation reads and read failures; host contract, not publication or native integration'
+    if args.publication:
+        report['scope'] = 'Actual HolyC publication ownership lifecycle with ambiguous write/flush, observation and reclamation faults; host contract, no RedSea directory or task cleanup integration'
     try:
         subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay', str(ROOT / 'build/rebuild-test/overlay'),
                         '--overlay', str(overlay), '--output', str(out / 'test.iso')], cwd=ROOT, check=True)
