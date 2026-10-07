@@ -94,7 +94,8 @@ def main():
         native = out / (prefix + '-selfhost')
         result = run(native.name, 'test-i386-selfhost-install.py', '--disk', install / 'candidate.img',
             '--out', native, '--retained-build-result', built / 'result.json',
-            '--retained-install-result', install / 'result.json', *runtime)
+            '--retained-install-result', install / 'result.json',
+            '--command-timeout', args.build_command_timeout, *runtime)
         if result.get('retained_origin') != 'guest-built supplied inputs':
             raise ValueError('Native generation used unqualified retained providers')
         audit = out / (prefix + '-audit')

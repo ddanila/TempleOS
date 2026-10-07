@@ -115,7 +115,8 @@ def main():
               qmp_stdio=args.qmp_stdio, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': args.command_timeout,
-                             'commands': commands})
+                             'commands': commands,
+                             'rejection_prefixes': ('BUILD MODULE REJECT ',)})
     if source.read_bytes() != original:
         raise ValueError('Self-hosting source disk changed')
     installed = files(target, retained_paths)

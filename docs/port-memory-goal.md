@@ -75,3 +75,36 @@ REJECT` lines since the current command began, avoiding hours of waiting after a
 terminal guest failure. It records running/failure state and disk hashes.
 `python3 tools/test-i386-command-rejection.py` passes three host tests covering
 current rejection, stale/partial output, and opt-in/line-boundary behavior.
+
+## Continuing native qualification
+
+The retained rebuild is still live and compiling ConsoleRuntime/DolDoc. An older
+bare-assembly build process was found still waiting after its already recorded
+OutMem rejection; it was stopped after checking its exact PID, command line,
+and rejection log. Its evidence remains in
+`build/i386-bare-assembly-full-build-oom-v69/stopped-live-process.json`.
+
+A separate development run in `build/i386-parser-record-prefix-flat-development`
+compiles the six flat-kernel components and exercises installation/8 MiB boot
+using the cross-built retained runtime. This can expose kernel/installer defects
+early but **does not count as full self-hosting**. Both runs use `486,-fpu`, TCG,
+and 16 MiB for native compilation. Check live processes before restarting either.
+
+After the six retained providers pass, run the complete qualification:
+
+```sh
+python3 tools/test-i386-native-generations.py \
+  --repository . \
+  --retained-build build/i386-parser-record-prefix-retained-16m \
+  --stage-listing build/i386-parser-record-prefix-cross/kernel-stage.lst \
+  --out build/i386-parser-record-prefix-generations \
+  --accel tcg --cpu 486,-fpu --qmp-stdio --build-command-timeout 14400
+```
+
+This runner requires all six guest-built providers, installs and boots them,
+builds/installs the flat kernel, repeats with the resulting guest runtime,
+and compares all twelve modules, linked kernel and installed boot area.
+The command timeout now propagates to flat builds as well as retained builds.
+Flat builds opt into explicit module-rejection detection too. Python syntax
+checks and the three rejection-log regression tests pass for these harness changes;
+the ongoing native tests remain the required end-to-end evidence.
