@@ -1124,3 +1124,40 @@ This proves the shared host lifecycle, not native directory mutation, disk
 fault handling or BuildModule memory recovery. Next add the RedSea slot
 transport and native fault tests, integrate task cleanup, and connect bounded
 validation/publication to BuildModule before full memory qualification.
+
+### RedSea publication transport — native disk fault contract verified
+
+`RedSeaPublication.HC` connects the ownership core to a resolved directory slot.
+It saves the exact old/new 64-byte entries, verifies the old entry again before
+writing, preserves neighboring entries, and observes exact old/new state during
+recovery. Initialization rejects directories, invalid extents and overlapping
+old/new data. Committed old extents use owned, idempotent bitmap clearing and a
+final flush. Recovery uses a persistent private mounted view; a blocked callback
+never borrows a stack mount, and the shared volume remains quarantined until
+explicit recovery/remount. The caller must hold the complete disk lease and
+resolve a valid regular-file slot; this helper does not yet resolve paths or
+grow directories.
+
+Native terminal evidence: `build/i386-ata-tasks-test/result.json` and
+`ata-task-check.json` pass on 486/8 MiB, final log
+`build/i386-redsea-publication-native-v4.log`. Coverage includes one empty-slot
+creation, one replacement, and five faults: initial data flush, directory write
+before mutation, successful directory mutation reported as failure, directory
+flush failure, and old-extent reclamation flush failure. Tests check quarantine,
+old/new ownership, abort eligibility, recovery and exact bitmap state. They
+verify neighboring entries before safely restoring fixture metadata; complete
+ATA tracing and full backing-disk comparisons pass, alongside existing staged
+read/validation/cancellation checks.
+
+The test-only boot reservation is now 864 sectors (432 KiB), heap at 0x7C000 and
+segment records at 0x88000; patterned data still starts at sector 1024. The
+larger corpus exceeded the previous reservation. The creation fixture's direct
+string indexing entered the bootstrap debugger; using a pointer variable fixed
+that fixture expression. These attempts are superseded by the final pass.
+
+The publication record is currently owned by the test caller, not TaskFiles.
+Task cleanup must be integrated to block staged-extent release while UNCERTAIN
+and retain pending old reclamation while COMMITTED. Native conflicting-slot,
+partial-reclamation and interrupted-task cases, path/slot preparation including
+directory growth, and BuildModule integration remain required. No complete
+native build or current-source 8-MiB startup recovery is claimed.

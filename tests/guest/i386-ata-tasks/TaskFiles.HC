@@ -1,5 +1,6 @@
 #include "/Kernel/I386/TaskFiles.HH"
 #include "/Kernel/I386/TaskModuleStage.HH"
+#include "/Kernel/I386/RedSeaPublication.HC"
 CI386FileVolumes task_volumes;
 CFilePathContext task_environment;
 U32 task_white_space[8],task_files_done,task_files_busy;
@@ -18,6 +19,91 @@ U0 StageWorker(U8 *unused)
   //Task exit deliberately leaves the unsealed reservation for the reaper.
 }
 U32 stage_cancel_started,stage_cancel_done;
+Bool publication_fail_after_write;
+Bool PublicationWriteFault(U8 *context,CI386Ata *disk,I64 block,U8 *buffer)
+{
+  Bool result=I386RedSeaTaskWrite(context,disk,block,buffer);
+  if(result && block==2050 && publication_fail_after_write) {
+    publication_fail_after_write=FALSE;return FALSE;
+  }
+  return result;
+}
+I64 PublicationTest(U8 *source,U8 *bitmap)
+{
+  CI386RedSeaPublication publication;
+  CI386ModuleStage *unit;CI386TaskModuleStage *stage;
+  CI386TaskFiles *owner=root.file_state;
+  CI386RedSea *view;
+  U8 original[512],entry[64],reserved[512],current[512];
+  U8 *new_name="New.BIN";
+  I64 mode,i,index,fresh,used=heap.used,allocations=heap.allocations;
+  U32 slot;
+  Bool result;
+  for(mode=0;mode<7;mode++) {
+    SVSet(&publication,0,sizeof(CI386RedSeaPublication));
+    unit=I386TaskModuleStageNew("C:/Data.BIN",1025);stage=unit;
+    if(!unit || (*unit->emit)(unit,0,source,1025)!=1025 ||
+        !(*unit->seal)(unit) || !(*unit->unwound)(unit,TRUE))return 68;
+    fresh=stage->block;
+    if(!I386RedSeaBegin(&volumes[0]) ||
+        !I386RedSeaSectorRead(&volumes[0],2050,original))return 69;
+    for(i=0;i<64;i++)entry[i]=original[128+i];
+    slot=2;
+    if(mode==6) {
+      slot=5;for(i=0;i<38;i++)entry[2+i]=0;
+      for(i=0;i<7;i++)entry[2+i]=new_name[i];
+    }
+    I386RedSeaPutWord(entry+40,fresh);I386RedSeaPutWord(entry+48,1025);
+    if(!I386RedSeaPublicationInit(&publication,&volumes[0],2050,slot,entry,&stage->block))return 70;
+    if(mode==1)I386RedSeaTaskFailArm(2,1);
+    if(mode==2){publication_fail_after_write=TRUE;volume_io.write=&PublicationWriteFault;}
+    if(mode==3)I386RedSeaTaskFailArm(3,2);
+    if(mode==4)I386RedSeaTaskFailArm(3,3);
+    if(mode==5)I386RedSeaTaskFailArm(3,1);
+    result=I386RedSeaPublicationCommit(&publication);
+    volume_io.write=&I386RedSeaTaskWrite;I386RedSeaTaskFailArm(0,0);
+    if(!mode || mode==6) {if(!result)return 71;}
+    else {
+      if(result || volumes[0].signature)return 72;
+      if(mode==4) {
+        if(stage->block || publication.transaction.phase!=I386_PUBLISH_COMMITTED)return 73;
+      } else if(stage->block!=fresh)return 74;
+      if(mode==5) {
+        if(!I386ModulePublishAbortable(&publication.transaction))return 75;
+      } else {
+        if(mode!=4 && I386ModulePublishAbortable(&publication.transaction))return 76;
+        result=I386RedSeaPublicationRecover(&publication);
+        if(mode==1) {
+          if(result || !I386ModulePublishAbortable(&publication.transaction) || stage->block!=fresh)return 77;
+        } else if(!result || stage->block || publication.transaction.phase!=I386_PUBLISH_DONE)return 78;
+      }
+    }
+    view=publication.volume;
+    if(mode!=1 && mode!=5) {
+      if(!I386RedSeaSectorRead(view,2050,current) ||
+          !I386RedSeaPublicationEqual(current+slot*64,entry))return 79;
+      for(i=0;i<512;i++)if((i<slot*64 || i>=slot*64+64) && current[i]!=original[i])return 85;
+      if(!I386RedSeaSectorRead(view,2049,current))return 79;
+      //Restore fixture safely: reserve old and fresh before restoring its name.
+      for(i=0;i<512;i++)reserved[i]=bitmap[i];
+      for(i=0;i<3;i++) {index=fresh+i-(view->first-1);reserved[index/8]|=1<<(index&7);}
+      for(i=0;i<512;i++) {
+        index=reserved[i];if(i==1 && mode!=6)index&=~0x18;
+        if(current[i]!=index)return 84;
+      }
+      if(!I386RedSeaSectorWrite(view,2049,reserved) || !I386RedSeaFlush(view) ||
+          !I386RedSeaSectorWrite(view,2050,original) || !I386RedSeaFlush(view) ||
+          !I386RedSeaSectorWrite(view,2049,bitmap) || !I386RedSeaFlush(view))return 80;
+    }
+    if(!I386RedSeaEnd(&volumes[0]) ||
+        !(*owner->stage->cleanup)(owner->stage->context) ||
+        heap.used!=used || heap.allocations!=allocations)return 81;
+    if(!volumes[0].signature && (!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
+        !I386RedSeaTaskBind(&volumes[0],&volume_io)))return 82;
+    if(root.io_locks || channel.owner || channel.head || channel.tail)return 83;
+  }
+  return 0;
+}
 I64 stage_read_fail_after,stage_read_count;
 Bool StageReadFault(U8 *context,CI386Ata *disk,I64 block,U8 *buffer)
 {
@@ -124,6 +210,7 @@ I64 StageTest()
   if(!I386RedSeaBegin(&volumes[0]) || !I386RedSeaSectorRead(&volumes[0],2049,after) ||
       !I386RedSeaEnd(&volumes[0]))return 52;
   for(i=0;i<512;i++)if(bitmap[i]!=after[i])return 53;
+  i=PublicationTest(source,bitmap);if(i)return i;
   if(state->stage || state->busy || root.io_locks || channel.owner || channel.poisoned)return 54;
   return 0;
 }
