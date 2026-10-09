@@ -21,7 +21,7 @@ OUT = ROOT / 'build/i386-release-current'
 FLAT = {'Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry',
         'ExceptionEntry'}
 RETAINED = {'Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-            'CompilerProbe', 'CompilerRuntime'}
+            'CompilerProbe', 'CompilerRuntime', 'BuildRuntime'}
 STYLE_DOCUMENT = (b'$FG,4$red$FG$ plain$BG,1$ blue$BG$ end'
                   b'$IV,1$ inv$IV,0$$UL,1$ under$UL,0$ done\x05')
 

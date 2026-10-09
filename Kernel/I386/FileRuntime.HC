@@ -8,7 +8,11 @@
 #include "/Kernel/I386/RedSeaTask.HH"
 #include "/Kernel/I386/Arc.HH"
 #include "/Kernel/I386/TaskModuleStage.HH"
-#include "/Kernel/I386/TaskModulePublication.HH"
+#include "/Kernel/I386/BuildRuntime.HH"
+import CI386BuildServices *I386BuildRuntimeAcquire();
+extern CI386TaskFiles *I386TaskFilesValid(CI386Task *task);
+extern Bool I386TaskFilesAccess(CI386Task *task);
+extern Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target);
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
@@ -116,12 +120,15 @@ U8 I386FileRuntimeDriveAlias(U8 alias)
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
 Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(!binding || index<0 || index>3) return FALSE;
+  if(!binding || index<0 || index>6) return FALSE;
   binding->kind=I386_MODULE_EXPORT;
   if(!index){binding->name="I386ArcEntryGet";binding->address=(&I386ArcEntryGet+0)(U64);}
   else if(index==1){binding->name="I386TaskModuleStageNew";binding->address=(&I386TaskModuleStageNew+0)(U64);}
   else if(index==2){binding->name="I386TaskModuleStageCleanup";binding->address=(&I386TaskModuleStageCleanup+0)(U64);}
-  else {binding->name="I386TaskModulePublish";binding->address=(&I386TaskModulePublish+0)(U64);}
+  else if(index==3){binding->name="I386TaskModulePublish";binding->address=(&I386TaskModulePublish+0)(U64);}
+  else if(index==4){binding->name="I386TaskFilesValid";binding->address=(&I386TaskFilesValid+0)(U64);}
+  else if(index==5){binding->name="I386TaskFilesAccess";binding->address=(&I386TaskFilesAccess+0)(U64);}
+  else {binding->name="I386TaskBuildModule";binding->address=(&I386TaskBuildModule+0)(U64);}
   return TRUE;
 }
 #assert sizeof(CI386FileServices)==120
@@ -180,6 +187,30 @@ I64 Main(CI386FileServices *services,I64 bytes)
 
 #include "/Kernel/I386/TaskCd.HC"
 
-#include "/Kernel/I386/TaskModuleStage.HC"
 
-#include "/Kernel/I386/TaskModulePublication.HC"
+
+
+
+CI386ModuleStage *I386TaskModuleStageNew(U8 *target,I64 bytes)
+{
+  CI386BuildServices *services=I386BuildRuntimeAcquire;
+  if(!services)return 0;
+  return (*services->stage_new)(target,bytes);
+}
+Bool I386TaskModuleStageCleanup(U8 *context)
+{
+  CI386BuildServices *services=I386BuildRuntimeAcquire;
+  return services && (*services->stage_cleanup)(context);
+}
+Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target)
+{
+  CI386BuildServices *services=I386BuildRuntimeAcquire;
+  return services && (*services->publish)(unit,target);
+}
+
+I64 I386TaskBuildModule(CI386BuildContext *config,U8 *source,U8 *target,Bool boot_module)
+{
+  CI386BuildServices *services=I386BuildRuntimeAcquire;
+  if(!services)return -1;
+  return (*services->build)(config,source,target,boot_module);
+}

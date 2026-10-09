@@ -39,7 +39,8 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
 }
 
 //Scratch belongs to this load invocation, not to shared module/global state.
-//Large export sets fall back to the original scan without changing acceptance.
+//Overflow marks only its hash bucket; other buckets remain fully indexed.
+//The high head bit requests the original scan, preserving duplicate counts.
 class CI386SymbolSlot {
   U8 *name;
   U32 target,kind,next;
@@ -95,7 +96,7 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
 @@30:
     MOV EAX,U32 &used[EBP]
     CMP EAX,512
-    JE I32 @@90
+    JE I32 @@80
     MOV EDX,EAX
     SHL EDX,4
     ADD EDX,EBX
@@ -143,6 +144,32 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
     SUB U32 &left[EBP],1
     JNZ I32 @@10
     MOV U8 CI386SymbolIndex.complete[EBX],1
+    JMP I32 @@90
+@@80:
+    MOV ECX,U32 CI386ModuleRecord.name_offset[EDI]
+    ADD ECX,ESI
+    XOR EAX,EAX
+@@81:
+    MOVZX EDX,U8 [ECX]
+    TEST EDX,EDX
+    JZ I32 @@82
+    PUSH EDX
+    MOV EDX,EAX
+    SHL EAX,5
+    SUB EAX,EDX
+    POP EDX
+    ADD EAX,EDX
+    ADD ECX,1
+    JMP I32 @@81
+@@82:
+    AND EAX,255
+    SHL EAX,2
+    ADD EAX,EBX
+    MOV ECX,U32 CI386SymbolIndex.heads[EAX]
+    MOV EDX,0x80000000
+    OR ECX,EDX
+    MOV U32 CI386SymbolIndex.heads[EAX],ECX
+    JMP I32 @@60
 @@90:
   }
 #else
@@ -157,11 +184,14 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
     h=modules[i]; r=modules[i]+h->records_offset;
     for(j=0;j<h->record_count;j++,r++)
       if(r->kind==I386_MODULE_EXPORT || r->kind==I386_MODULE_DATA_EXPORT) {
-        if(used==512) return;
-        slot=&index->slots[used]; slot->name=modules[i]+r->name_offset;
-        slot->target=base+r->offset; slot->kind=r->kind;
-        bucket=I386SymbolBucket(slot->name);
-        slot->next=index->heads[bucket]; index->heads[bucket]=++used;
+        bucket=I386SymbolBucket(modules[i]+r->name_offset);
+        if(used==512) {
+          index->heads[bucket]|=0x80000000;
+        } else {
+          slot=&index->slots[used]; slot->name=modules[i]+r->name_offset;
+          slot->target=base+r->offset; slot->kind=r->kind;
+          slot->next=index->heads[bucket]; index->heads[bucket]=++used;
+        }
       }
     base+=h->code_size;
   }
@@ -176,7 +206,9 @@ I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
   U32 cursor;
   I64 result=0;
   if(!index || !index->complete) return I386FindSymbol(modules,count,name,kind,matches);
-  *matches=0; cursor=index->heads[I386SymbolBucket(name)];
+  cursor=index->heads[I386SymbolBucket(name)];
+  if(cursor&0x80000000) return I386FindSymbol(modules,count,name,kind,matches);
+  *matches=0;
   while(cursor) {
     slot=&index->slots[cursor-1];
     if((!kind || kind==slot->kind) && I386NameEqual(slot->name,name)) {

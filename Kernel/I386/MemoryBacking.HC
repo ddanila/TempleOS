@@ -13,7 +13,7 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
   for(region=pool->owned;region;region=region->next_owned) {
     if(count++>=pool->owned_count || region->pool && region->pool!=pool ||
         I386HeapSize(pool->heap,region)!=region->request ||
-        region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+511+512 ||
+        region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+512 ||
         (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) return FALSE;
     address=(region+0)(U64); base=(region->base+0)(U64);
     if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) return FALSE;
@@ -57,6 +57,12 @@ Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
   if(!region) return FALSE;
   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;
   arena=((region+0)(U64)+sizeof(CI386BackingRegion)+511)&~511;
+  //The page extent is aligned now; return unused worst-case tail padding.
+  //Shrink before publishing the region, keeping rollback wholly arena-owned.
+  request=arena+size-(region+0)(U64);
+  if(!I386HeapShrink(pool->heap,region,request)) {
+    I386HeapFree(pool->heap,region); return FALSE;
+  }
   if(!I386MemPoolAdd(pool,region,arena,size)) {
     I386HeapFree(pool->heap,region); return FALSE;
   }

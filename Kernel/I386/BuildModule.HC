@@ -8,7 +8,7 @@ Bool I386BuildModuleBinding(CI386ModuleBinding *binding,U8 *name)
 }
 //Compile one on-disk HolyC source unit to a relocatable T32M on a mounted drive.
 //The private compilation control is unwound before publishing the file.
-public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALSE)
+I64 I386BuildModuleCore(CI386BuildContext *build_config,U8 *source_path,U8 *target_path,Bool boot_module=FALSE)
 {
   CI386Task *task=I386TaskSelf;
   CI386TaskSymbols *scope;
@@ -37,17 +37,17 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
   I64 source_bytes,module_bytes=0,raw_type,commands=0,exception=0,stage=0;
   Bool entered=FALSE,compiled=FALSE,clean=TRUE,staged=FALSE;
   I64 written;
-  if(!console_config || !task || !source_path || !target_path ||
+  if(!build_config || !task || !source_path || !target_path ||
       !(scope=task->symbol_state) || scope->task!=task ||
       !(heap=scope->heap)) return -1;
-  compiler=console_config->compiler; boundary=task->last_cc;
-  if(!console_config->files->export_at(1,&binding) ||
+  compiler=build_config->compiler; boundary=task->last_cc;
+  if(!build_config->files->export_at(1,&binding) ||
       !I386BuildModuleBinding(&binding,"I386TaskModuleStageNew"))return -1;
   stage_new=binding.address;
-  if(!console_config->files->export_at(2,&binding) ||
+  if(!build_config->files->export_at(2,&binding) ||
       !I386BuildModuleBinding(&binding,"I386TaskModuleStageCleanup"))return -1;
   stage_cleanup=binding.address;
-  if(!console_config->files->export_at(3,&binding) ||
+  if(!build_config->files->export_at(3,&binding) ||
       !I386BuildModuleBinding(&binding,"I386TaskModulePublish"))return -1;
   module_publish=binding.address;
   if(!compiler->export_at(1,&binding) || !I386BuildModuleBinding(&binding,"I386ModuleValid"))return -1;
@@ -58,15 +58,15 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
   if(!compiler->export_at(3,&binding) ||
       !I386BuildModuleBinding(&binding,"I386ModuleValidParts"))return -1;
   valid_parts=binding.address;
-  target_absolute=(*console_config->files->name_abs)(heap,target_path,0);
+  target_absolute=(*build_config->files->name_abs)(heap,target_path,0);
   if(!target_absolute)return -1;
-  source=(*console_config->files->read)(heap,source_path,&source_bytes,0,0);
+  source=(*build_config->files->read)(heap,source_path,&source_bytes,0,0);
   if(!source || source_bytes<1 || source_bytes>1048576) goto build_module_done;
   stage=1;
   output_stage=(*stage_new)(target_absolute,0);
   if(!output_stage)goto build_module_done;
   try {
-    cc=(*console_config->files->control_new)(source,
+    cc=(*build_config->files->control_new)(source,
       CCF_DONT_FREE_BUF|CCF_AOT_COMPILE|CCF_MODULE_SOURCE|
       (boot_module*CCF_BOOT_MODULE),source_path);
     if(!cc) throw('OutMem',TRUE);
@@ -76,12 +76,15 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
     }
     entered=TRUE;
     stage=2;
-    symbols=(*compiler->frontend)(heap,cc,console_config->types,
-      console_config->includes);
+    symbols=(*compiler->frontend)(heap,cc,build_config->types,
+      build_config->includes);
     if(!symbols || !(*compiler->frontend_private_defines)(symbols) ||
-        !(*compiler->frontend_bind_files)(symbols,console_config->files))
+        !(*compiler->frontend_bind_files)(symbols,build_config->files))
       throw('OutMem',TRUE);
     stage=3;
+    //The resident memory provider binds this to managed Yield: pending public
+    //Kill can retire the task and unwind its registered compiler/file owners.
+    if(!I386SchedYield(task->owner))throw('Task',TRUE);
     declarations=symbols->declarations; expression=declarations->expression;
     (*expression->lex)(expression->context,cc);
     while(cc->token!=TK_EOF) {
@@ -105,6 +108,9 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
       }
       if(code && !(cc->flags&CCF_HAS_MISC_DATA))
         (*declarations->release)(declarations->context,code);
+      //Only yield between complete commands, with no borrowed parser frame or
+      //RedSea lease active. Keep the private control live for task cleanup.
+      if(!I386SchedYield(task->owner))throw('Task',TRUE);
     }
     if(cc->error_cnt) throw('Compiler',TRUE);
     stage=4;
@@ -163,7 +169,7 @@ public I64 I386BuildModule(U8 *source_path,U8 *target_path,Bool boot_module=FALS
     output_stage=0;
   }
   if(!staged && compiled && clean &&
-      !(*console_config->files->write)(target_absolute,module,module_bytes,0))
+      !(*build_config->files->write)(target_absolute,module,module_bytes,0))
     compiled=FALSE;
   if(compiled) stage=9;
 build_module_done:

@@ -262,10 +262,40 @@ CMemBlk *I386MemHeapPages(CHeapCtrl *hc,I64 pages)
 //Keep the original record offsets. Place a native used header at 4 mod 8 so
 //its 12-byte prefix ends on an eight-byte-aligned payload, including page blocks.
 #define I386_MEM_BLOCK_OFFSET (((sizeof(CMemBlk)+offset(CMemUsed.start)+7)&~7)-offset(CMemUsed.start))
+//Called with the heap locked. Consolidate cached spans only on exhaustion.
+U0 I386MemFreeSpanInsert(CHeapCtrl *hc,CMemUnused *span)
+{
+  CMemUnused **link=&hc->malloc_free_lst,*previous=0,*next;
+  while((next=*link) && (next+0)(U64)<(span+0)(U64)) {
+    previous=next; link=&next->next;
+  }
+  span->next=next; *link=span;
+  if(next && span(U8 *)+span->size==next(U8 *)) {
+    span->size+=next->size; span->next=next->next;
+  }
+  if(previous && previous(U8 *)+previous->size==span(U8 *)) {
+    previous->size+=span->size; previous->next=span->next;
+  }
+}
+U0 I386MemFreeSpansMerge(CHeapCtrl *hc)
+{
+  CMemUnused *span=hc->malloc_free_lst,*next;
+  I64 bucket;
+  hc->malloc_free_lst=0;
+  while(span) {
+    next=span->next; I386MemFreeSpanInsert(hc,span); span=next;
+  }
+  for(bucket=0;bucket<MEM_HEAP_HASH_SIZE/sizeof(U8 *);bucket++) {
+    span=hc->heap_hash[bucket]; hc->heap_hash[bucket]=0;
+    while(span) {
+      next=span->next; I386MemFreeSpanInsert(hc,span); span=next;
+    }
+  }
+}
 U8 *I386MemAlloc(CHeapCtrl *hc,I64 size)
 {
   U32 flags=I386IrqSave;
-  I64 span;
+  I64 span,bucket;
   CMemBlk *block;
   CMemUnused *unused,**link;
   CMemUsed *used=0;
@@ -285,6 +315,29 @@ U8 *I386MemAlloc(CHeapCtrl *hc,I64 size)
           unused->size-=span; used=unused(U8 *)+unused->size; break;
         }
         link=&unused->next;
+      }
+      //Reuse a larger cached span before reserving another page batch. Keep
+      //the requested rounded span; the remainder retains a free-list header.
+      if(!used) for(bucket=(span+sizeof(CMemUnused)+7)&~7;
+          bucket<MEM_HEAP_HASH_SIZE;bucket+=8) {
+        link=&hc->heap_hash[bucket/sizeof(U8 *)];
+        if(unused=*link) {
+          *link=unused->next;
+          unused->size-=span; used=unused(U8 *)+unused->size;
+          unused->next=hc->malloc_free_lst; hc->malloc_free_lst=unused;
+          break;
+        }
+      }
+      if(!used) {
+        I386MemFreeSpansMerge(hc);
+        link=&hc->malloc_free_lst;
+        while(unused=*link) {
+          if(unused->size==span) { *link=unused->next; used=unused; break; }
+          if(unused->size>=span+sizeof(CMemUnused)) {
+            unused->size-=span; used=unused(U8 *)+unused->size; break;
+          }
+          link=&unused->next;
+        }
       }
       if(!used) {
         block=I386MemHeapPages(hc,(span+16*MEM_PAG_SIZE-1)>>MEM_PAG_BITS);

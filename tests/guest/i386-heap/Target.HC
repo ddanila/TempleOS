@@ -103,7 +103,11 @@ I64 Main(I64 a,I64 b)
   if(i) return i;
   i=HeapShrinkTest;
   if(i) return i;
+#ifdef I386_HEAP_CORE_ONLY
+  return 0;
+#else
   return PublicHeapTest;
+#endif
 }
 U64 Hash(U8 *base,I64 size)
 {
@@ -114,7 +118,9 @@ U64 Hash(U8 *base,I64 size)
 }
 #include "/Kernel/I386/Heap.HC"
 
+#ifndef I386_HEAP_CORE_ONLY
 #include "Public.HC"
+#endif
 
 #include "Validation.HC"
 

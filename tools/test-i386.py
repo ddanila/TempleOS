@@ -175,6 +175,9 @@ def main():
     parser.add_argument('--heap-window-reserve', action='store_true', help='With --heap, test fixed window-buffer reservation and failed-allocation rollback')
     parser.add_argument("--heap-source", action="store_true",
                         help="With --heap, test the portable guest-source heap validator")
+    parser.add_argument('--heap-core', action='store_true', help='With --heap, run arena assertions separately')
+    parser.add_argument('--heap-public', action='store_true', help='With --heap, run all public heap assertions separately')
+    parser.add_argument('--heap-cache', action='store_true', help='With --heap, test larger cached-span reuse without page growth')
     parser.add_argument('--qmp-stdio', action='store_true', help='Control compiler and keyboard QEMU over stdio')
     args = parser.parse_args()
     if args.loader_low_memory and not args.redsea_load:
@@ -187,6 +190,10 @@ def main():
         parser.error('--heap-backing-reserve requires --heap and excludes --heap-window-reserve')
     if args.heap_window_reserve and not args.heap:
         parser.error('--heap-window-reserve requires --heap')
+    if (args.heap_core or args.heap_public) and (not args.heap or args.heap_core and args.heap_public or args.heap_cache or args.heap_high or args.heap_window_reserve or args.heap_backing_reserve or args.heap_backing_accounting):
+        parser.error('--heap-core/--heap-public require --heap and exclude other dedicated modes')
+    if args.heap_cache and (not args.heap or args.heap_high or args.heap_window_reserve or args.heap_backing_reserve or args.heap_backing_accounting):
+        parser.error('--heap-cache requires --heap and excludes other dedicated heap modes')
     if args.heap_source and not args.heap:
         parser.error("--heap-source requires --heap")
     if args.task_runtime_core and not args.tasks:
@@ -197,6 +204,27 @@ def main():
         parser.error('--lex-control requires --lex-state and excludes --lex-snapshot-boundary')
     if args.redsea_alloc_core and not (args.redsea_alloc or args.redsea_create or args.redsea_delete or args.redsea_replace):
         parser.error('--redsea-alloc-core requires a RedSea allocation or mutation test')
+    if args.heap and not any((args.heap_core,args.heap_public,args.heap_cache,
+            args.heap_high,args.heap_window_reserve,args.heap_backing_reserve,
+            args.heap_backing_accounting)):
+        #Keep the complete default coverage while each runner fits the boot transfer.
+        aggregate = ROOT/('build/i386-heap-source-test' if args.heap_source else 'build/i386-heap-test')
+        aggregate.mkdir(parents=True,exist_ok=True)
+        result_path = aggregate/'result.json'
+        result_path.unlink(missing_ok=True)
+        parts = {}
+        for mode in ('core','public','cache'):
+            run(sys.executable,str(Path(__file__).resolve()),'--heap',f'--heap-{mode}',
+                *(['--heap-source'] if args.heap_source else []),
+                *(['--qmp-stdio'] if args.qmp_stdio else []))
+            name = f'i386-heap-{mode}-'+('source-test' if args.heap_source else 'test')
+            part = ROOT/'build'/name/'result.json'
+            parts[mode] = {'path':str(part),'sha256':hashlib.sha256(part.read_bytes()).hexdigest(),
+                           'result':json.loads(part.read_text())}
+        result_path.write_text(json.dumps({'result':'pass','scope':'Complete heap corpus split into bounded core, public and cache runners',
+                                          'parts':parts},indent=2)+'\n')
+        print('PASS: complete heap corpus in three bounded runners')
+        return
     except_runner = args.except_context or args.except_runtime
     task_runner = args.task_heaps or args.task_symbols or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks
     large_runner = args.redsea_alloc or args.redsea_write or args.redsea_read or args.redsea or args.lex_cond or args.keywords or args.lex_define or args.lex_tokens or args.lex_ident or args.lex_punct or args.lex_number or args.lex_string or args.lex_state or args.symbols or args.hash or args.functions or args.soft_f64_polar or args.soft_f64_trig or args.soft_f64_trig_reduce or args.soft_f64_log or args.soft_f64_unary or args.float or args.integer_math or args.soft_f64 or task_runner or args.irq or args.redsea_create or args.redsea_delete or args.redsea_replace or args.redsea_load or args.redsea_load_set or args.redsea_bind
@@ -238,7 +266,12 @@ def main():
             OUT = ROOT/'build/i386-lex-control-test'
         if args.loader_low_memory:
             OUT = ROOT/'build/i386-redsea-load-low-memory-test'
-        if args.heap_source:
+        if args.heap_core or args.heap_public:
+            OUT = ROOT/('build/i386-heap-core-test' if args.heap_core else 'build/i386-heap-public-test')
+            if args.heap_source: OUT = OUT.with_name(OUT.name.replace('-test','-source-test'))
+        if args.heap_cache:
+            OUT = ROOT/('build/i386-heap-cache-source-test' if args.heap_source else 'build/i386-heap-cache-test')
+        if args.heap_source and not (args.heap_cache or args.heap_core or args.heap_public):
             OUT = ROOT/'build/i386-heap-source-test'
         if args.heap_backing_accounting:
             OUT = ROOT/('build/i386-backing-accounting-source-test' if args.heap_source else 'build/i386-backing-accounting-test')
@@ -307,12 +340,13 @@ def main():
         build += ['--overlay', 'build/rebuild-test/overlay']
     build += ['--overlay', 'tests/guest/i386-task-runtime-core' if args.task_runtime_core else f'tests/guest/i386-{kind}' if functions else 'tests/guest/i386',
               '--output', str(iso)]
-    if args.heap_source or args.heap_window_reserve or args.heap_backing_reserve or args.heap_high or args.heap_backing_accounting:
+    if args.heap_core or args.heap_public or args.heap_cache or args.heap_source or args.heap_window_reserve or args.heap_backing_reserve or args.heap_high or args.heap_backing_accounting:
         source_overlay = OUT/'source-overlay'
         source_overlay.mkdir(parents=True, exist_ok=True)
         (source_overlay/'Target.HC').write_bytes(
             (b'#define I386_HEAP_SOURCE_BUILD 1\n' if args.heap_source else b'') +
-            (ROOT/('tests/guest/i386-heap/AccountingTarget.HC' if args.heap_backing_accounting else 'tests/guest/i386-heap/HighTarget.HC' if args.heap_high else 'tests/guest/i386-heap/WindowTarget.HC' if args.heap_window_reserve else 'tests/guest/i386-heap/ReserveTarget.HC' if args.heap_backing_reserve else 'tests/guest/i386-heap/Target.HC')).read_bytes())
+            (b'#define I386_HEAP_CORE_ONLY 1\n' if args.heap_core else b'') +
+            (ROOT/('tests/guest/i386-heap/PublicTarget.HC' if args.heap_public else 'tests/guest/i386-heap/CacheTarget.HC' if args.heap_cache else 'tests/guest/i386-heap/AccountingTarget.HC' if args.heap_backing_accounting else 'tests/guest/i386-heap/HighTarget.HC' if args.heap_high else 'tests/guest/i386-heap/WindowTarget.HC' if args.heap_window_reserve else 'tests/guest/i386-heap/ReserveTarget.HC' if args.heap_backing_reserve else 'tests/guest/i386-heap/Target.HC')).read_bytes())
         build += ['--overlay', str(source_overlay)]
     if args.loader_low_memory:
         source_overlay = OUT/'source-overlay'
@@ -334,7 +368,8 @@ def main():
         build += ['--overlay', 'tests/guest/i386-module-stage']
     run(*build)
     run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
-        '--timeout', '90', *(['--qmp-stdio'] if args.qmp_stdio else []))
+        '--timeout', '240' if args.heap_public else '90',
+        *(['--qmp-stdio'] if args.qmp_stdio else []))
     if args.data and 'PASS host global fill\n' not in (exports/'debug.log').read_text():
         raise ValueError('Missing host global fill regression')
     ranges = {}

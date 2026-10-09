@@ -11,7 +11,7 @@ import struct
 
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-           'CompilerProbe', 'CompilerRuntime')
+           'CompilerProbe', 'CompilerRuntime', 'BuildRuntime')
 
 
 def exports_of(module):
@@ -134,6 +134,12 @@ def main():
     result = {'result': 'pass', 'source_disk_sha256': sha256(source),
               'module_order': list(selected),
               'modules': {}}
+    if not args.audit_only and (args.reference_exports/'BuildRuntime.t32m').is_file():
+        log = (out/'qemu/debug.log').read_text()
+        marker = 'BUILD PROVIDER loaded\n'
+        if log.count(marker) != 1 or log.find(marker) < log.find('READY native kernel'):
+            raise ValueError('Build provider must load once after startup and be reused')
+        result['build_provider_loads'] = 1
     for name in selected:
         path = f'/Probe/Retained{name}.t32m'
         module = actual.get(path)

@@ -13,7 +13,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
-DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime')
+DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime', 'BuildRuntime')
 I386_ALLOWED = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
                     'movsx movzx cdq jmp cmp jz jnz jl jg setz setnz setl setnl setg setng setc setnc '
                     'seta setna test shl shr in out sar shld shrd rcl div call inc dec jns jc jnc ja jna '
@@ -253,7 +253,7 @@ def memory_runtime_layout(module):
     #Native T32Ms retain relocations to their own exports; these are local
     #bindings, not additional external kernel services.
     external_imports = set(imports) - set(exports)
-    if external_imports != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386HeapValid',
+    if external_imports != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapShrink', 'I386HeapSize', 'I386HeapValid',
                        'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts'}:
         raise ValueError('Unexpected memory-runtime import contract')
     for name in ('Main', 'MemoryBind', 'MemoryProbe', 'Yield', 'Sleep', 'SleepUntil', 'Spawn', 'Exit', 'TaskQueIns', 'MemoryManagedYield', 'MemoryTaskMsg', 'MemoryPostMsg', 'MemoryMsg', 'MemorySuspend', 'MemoryIsSuspended', 'MemoryJobsHndlr', 'MemoryScanMsg', 'MemoryGetMsg', 'MemoryFlushMsgs', 'MemoryKill'):
@@ -314,6 +314,37 @@ def verify_memory_rejection(disk, volume, out, layout):
     return results
 
 
+def build_runtime_layout(module):
+    size, count, records = struct.unpack_from('<III', module, 16)
+    exports, imports = {}, set()
+    for index in range(count):
+        kind, offset, name, length = struct.unpack_from('<4I', module, records+16*index)
+        if kind in (1, 2, 3, 5):
+            symbol = module[name:name+length].decode('ascii')
+            if kind in (1, 3): exports[symbol] = (kind, offset)
+            else: imports.add(symbol)
+    expected = {'I386SchedYield', 'KernelLog', 'KernelHex', 'SysTry', 'SysUntry', 'throw', 'I386HeapAlloc', 'I386HeapFree', 'I386IrqSave', 'I386IrqRestore',
+        'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaBegin', 'I386RedSeaEnd',
+        'I386RedSeaValid', 'I386RedSeaDecode', 'I386RedSeaSectorRead',
+        'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc',
+        'I386RedSeaFree', 'I386RedSeaAllocOwned', 'I386RedSeaReleaseOwned',
+        'I386RedSeaRead', 'I386RedSeaMount', 'I386RedSeaWrite',
+        'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386TaskFilesValid',
+        'I386TaskFilesAccess'}
+    if imports != expected:
+        raise ValueError(f'Unexpected build-runtime imports: missing={expected-imports}, extra={imports-expected}')
+    for name in ('Main', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup',
+                 'I386TaskModulePublish', 'I386BuildModuleCore'):
+        if exports.get(name, (0, 0))[0] != 1:
+            raise ValueError(f'Missing build-runtime service {name}')
+    if exports.get('build_runtime_version', (0, 0))[0] != 3:
+        raise ValueError('Missing build-runtime version')
+    offset = 32+exports['build_runtime_version'][1]
+    if offset+4 > 32+size or struct.unpack_from('<I', module, offset)[0] != 2:
+        raise ValueError('Unexpected build-runtime version')
+    return dict(image_bytes=size+8, version_offset=offset)
+
+
 def file_runtime_layout(module):
     size, count, records = struct.unpack_from('<III', module, 16)
     exports, imports = {}, {}
@@ -323,15 +354,15 @@ def file_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
-            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386RedSeaDecode', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaAllocOwned', 'I386RedSeaReleaseOwned', 'I386RedSeaRead', 'I386RedSeaMount', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog', 'SysTry', 'SysUntry', 'throw'}:
+    if set(imports) != {'I386BuildRuntimeAcquire', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
+            'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog', 'SysTry', 'SysUntry', 'throw'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind', 'I386FileRuntimeTmpFilename', 'I386FileRuntimeDriveAlias', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup', 'I386TaskModulePublish'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind', 'I386FileRuntimeTmpFilename', 'I386FileRuntimeDriveAlias', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup', 'I386TaskModulePublish', 'I386TaskFilesValid', 'I386TaskFilesAccess', 'I386TaskBuildModule'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 51:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 53:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -1363,128 +1394,170 @@ def verify_native_packer_module(disk):
             'validator':'I386ModuleValid'}
 
 
+def verify_native_internal_records(module, exports, calls):
+    """Check exact source linkage, including the validator's code callback."""
+    if not module or len(module)<32 or module[:4]!=b'T32M' or struct.unpack_from('<H',module,4)[0]!=2:
+        raise ValueError('Missing guest-built internal-linkage module')
+    if module[6]!=3 or module[7]!=4 or struct.unpack_from('<I',module,8)[0]!=1:
+        raise ValueError('Internal-linkage module CPU/pointer/ABI differs from 386 target')
+    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
+    expected=[(1,name.encode()) for name in exports]
+    expected += [(2,name.encode()) for name,number in calls.items() for _ in range(number)]
+    expected.append((5,b'I386ModuleBufferByte'))
+    if (total!=len(module) or size<1024 or size&7 or count!=len(expected) or
+            records!=32+size or strings!=records+16*count or strings>total):
+        raise ValueError('Invalid internal-linkage module layout')
+    actual=[]
+    occupied=[]
+    for index in range(count):
+        kind,offset,name,length=struct.unpack_from('<4I',module,records+16*index)
+        if (kind not in (1,2,5) or offset>=size or not length or name<strings or
+                name+length>=total or module[name+length]!=0):
+            raise ValueError('Invalid internal-linkage module record')
+        actual.append((kind,module[name:name+length]))
+        if kind in (2,5):
+            if (not offset or offset+4>size or
+                    module[32+offset-1]!=(0xE8 if kind==2 else 0x05) or
+                    module[32+offset:36+offset]!=bytes(4) or
+                    any(offset-1<hi and lo<offset+4 for lo,hi in occupied)):
+                raise ValueError('Invalid internal call/address relocation')
+            occupied.append((offset-1,offset+4))
+    if sorted(actual)!=sorted(expected):
+        raise ValueError('Internal exports/call graph differ from source')
+
+
 def verify_native_bundle_module(disk):
-    """Audit the original validator and serializer packed as one guest unit."""
+    """Audit exact current-source exports and internal callback/call linkage."""
     path='/Probe/NativeBundle.t32m'
     module=mutated_file_contents(disk,{path}).get(path)
-    if not module or len(module)<32 or module[:4]!=b'T32M' or \
-            struct.unpack_from('<H',module,4)[0]!=2:
-        raise ValueError('Missing guest-built original validator/packer unit')
-    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=3 or
-            records!=32+size or strings!=records+16*count or strings>total):
-        raise ValueError('Invalid original validator/packer unit layout')
-    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
-    names=sorted((kind,module[name:name+length]) for kind,offset,name,length in rows)
-    if names!=[(1,b'I386ModulePackRaw'),(1,b'I386ModuleValid'),
-               (2,b'I386ModuleValid')] or \
-            any(offset>=size or not length or name<strings or
-                name+length>=total for kind,offset,name,length in rows):
-        raise ValueError('Original validator/packer internal linkage differs from source')
+    exports=['I386ModuleBufferByte', 'I386ModuleCodeWord', 'I386ModulePackRaw', 'I386ModuleValid',
+     'I386ModuleValidParts']
+    calls={'I386ModuleCodeWord': 3, 'I386ModuleValid': 1, 'I386ModuleValidParts': 1}
+    verify_native_internal_records(module,exports,calls)
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'source_sha256':{
-                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
-                for name in ('Kernel/I386/ModuleCheck.HC','Kernel/I386/ModulePackCore.HC')},
-            'functions':['I386ModulePackRaw','I386ModuleValid'],
-            'internal_call':'I386ModuleValid'}
+            'source_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                             for name in ('Kernel/I386/ModuleCheck.HC', 'Kernel/I386/ModulePackCore.HC')},
+            'functions':exports, 'internal_calls':sum(calls.values()),
+            'internal_call_counts':calls, 'callback_address':'I386ModuleBufferByte'}
 
 
 def verify_native_loader_module(disk):
-    """Audit the guest-built original loader and its internal call graph."""
+    """Audit exact current-source exports and internal callback/call linkage."""
     path='/Probe/NativeLoader.t32m'
     module=mutated_file_contents(disk,{path}).get(path)
-    if not module or len(module)<32 or module[:4]!=b'T32M' or \
-            struct.unpack_from('<H',module,4)[0]!=2:
-        raise ValueError('Missing guest-built original module loader')
-    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=34 or
-            records!=32+size or strings!=records+16*count or strings>total):
-        raise ValueError('Invalid original module loader layout')
-    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
-    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
-    expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
-        'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386LoadBoundAt','I386LoadBoundInto','I386LoadInto',
-        'I386ModuleValid','I386NameEqual'))
-    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
-    if exported!=expected or len(calls)!=23 or any(name not in expected for name in calls) or \
-            any(kind not in (1,2) or offset>=size or not length or name<strings or
-                name+length>=total for kind,offset,name,length in rows):
-        raise ValueError('Original module loader records differ from source')
+    exports=['I386BoundSymbol', 'I386BuffersOverlap', 'I386FindSymbol', 'I386IndexedSymbol',
+     'I386LoadBoundAt', 'I386LoadBoundInto', 'I386LoadInto', 'I386ModuleBufferByte',
+     'I386ModuleCodeWord', 'I386ModuleValid', 'I386ModuleValidParts', 'I386NameEqual',
+     'I386SymbolBucket', 'I386SymbolIndexBuild']
+    calls={'I386BoundSymbol': 4,
+     'I386BuffersOverlap': 6,
+     'I386FindSymbol': 1,
+     'I386IndexedSymbol': 2,
+     'I386LoadBoundAt': 1,
+     'I386LoadBoundInto': 1,
+     'I386ModuleCodeWord': 3,
+     'I386ModuleValid': 1,
+     'I386ModuleValidParts': 1,
+     'I386NameEqual': 4,
+     'I386SymbolBucket': 2,
+     'I386SymbolIndexBuild': 1}
+    verify_native_internal_records(module,exports,calls)
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'source_sha256':{
-                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
-                for name in ('Kernel/I386/ModuleLoad.HC','Kernel/I386/ModuleCheck.HC')},
-            'functions':[name.decode() for name in expected],
-            'internal_calls':23}
+            'source_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                             for name in ('Kernel/I386/ModuleLoad.HC', 'Kernel/I386/ModuleCheck.HC')},
+            'functions':exports, 'internal_calls':sum(calls.values()),
+            'internal_call_counts':calls, 'callback_address':'I386ModuleBufferByte'}
 
 
 def verify_native_alloc_module(disk):
-    """Audit the guest-built heap, validator, loader and allocation unit."""
+    """Audit exact current-source exports and internal callback/call linkage."""
     path='/Probe/NativeAlloc.t32m'
     module=mutated_file_contents(disk,{path}).get(path)
-    if not module or len(module)<32 or module[:4]!=b'T32M' or \
-            struct.unpack_from('<H',module,4)[0]!=2:
-        raise ValueError('Missing guest-built original module allocation unit')
-    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=54 or
-            records!=32+size or strings!=records+16*count or strings>total):
-        raise ValueError('Invalid original module allocation unit layout')
-    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
-    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
-    expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
-        'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386HeapAlloc','I386HeapFree','I386HeapInit',
-        'I386HeapRegionValid','I386HeapScan','I386HeapSize','I386HeapValid','I386LoadAlloc',
-        'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
-        'I386LoadInto','I386ModuleValid','I386NameEqual'))
-    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
-    if exported!=expected or len(calls)!=34 or any(name not in expected for name in calls) or \
-            any(kind not in (1,2) or offset>=size or not length or name<strings or
-                name+length>=total for kind,offset,name,length in rows):
-        raise ValueError('Original module allocation records differ from source')
+    exports=['I386BoundSymbol', 'I386BuffersOverlap', 'I386FindSymbol', 'I386HeapAlloc',
+     'I386HeapAllocHigh', 'I386HeapFree', 'I386HeapInit', 'I386HeapRegionValid',
+     'I386HeapScan', 'I386HeapShrink', 'I386HeapSize', 'I386HeapValid', 'I386IndexedSymbol',
+     'I386LoadAlloc', 'I386LoadBoundAlloc', 'I386LoadBoundAt', 'I386LoadBoundInto',
+     'I386LoadInto', 'I386ModuleBufferByte', 'I386ModuleCodeWord', 'I386ModuleValid',
+     'I386ModuleValidParts', 'I386NameEqual', 'I386SymbolBucket', 'I386SymbolIndexBuild']
+    calls={'I386BoundSymbol': 4,
+     'I386BuffersOverlap': 6,
+     'I386FindSymbol': 1,
+     'I386HeapAlloc': 1,
+     'I386HeapFree': 1,
+     'I386HeapRegionValid': 2,
+     'I386HeapScan': 2,
+     'I386HeapSize': 1,
+     'I386HeapValid': 3,
+     'I386IndexedSymbol': 2,
+     'I386LoadBoundAlloc': 1,
+     'I386LoadBoundAt': 1,
+     'I386LoadBoundInto': 3,
+     'I386ModuleCodeWord': 3,
+     'I386ModuleValid': 1,
+     'I386ModuleValidParts': 1,
+     'I386NameEqual': 4,
+     'I386SymbolBucket': 2,
+     'I386SymbolIndexBuild': 1}
+    verify_native_internal_records(module,exports,calls)
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'source_sha256':{
-                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
-                for name in ('Kernel/I386/ModuleAlloc.HC','Kernel/I386/ModuleLoad.HC',
-                             'Kernel/I386/ModuleCheck.HC','Kernel/I386/Heap.HC')},
-            'functions':[name.decode() for name in expected],
-            'internal_calls':34}
+            'source_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                             for name in ('Kernel/I386/ModuleAlloc.HC', 'Kernel/I386/ModuleLoad.HC', 'Kernel/I386/ModuleCheck.HC', 'Kernel/I386/Heap.HC')},
+            'functions':exports, 'internal_calls':sum(calls.values()),
+            'internal_call_counts':calls, 'callback_address':'I386ModuleBufferByte'}
+
 
 
 def verify_native_file_module(disk):
-    """Audit the guest-built RedSea file-set loader and its kernel imports."""
+    """Audit exact RedSea loader linkage and its six resident call sites."""
     path='/Probe/NativeFile.t32m'
     module=mutated_file_contents(disk,{path}).get(path)
-    if not module or len(module)<32 or module[:4]!=b'T32M' or \
-            struct.unpack_from('<H',module,4)[0]!=2:
-        raise ValueError('Missing guest-built original RedSea module loader')
-    total,size,count,records,strings=struct.unpack_from('<5I',module,12)
-    if (total!=len(module) or size<1024 or size&7 or count!=79 or
-            records!=32+size or strings!=records+16*count or strings>total):
-        raise ValueError('Invalid original RedSea module loader layout')
-    rows=[struct.unpack_from('<4I',module,records+16*i) for i in range(count)]
-    exported=sorted(module[name:name+length] for kind,offset,name,length in rows if kind==1)
-    expected=sorted(x.encode() for x in ('I386BoundSymbol','I386BuffersOverlap',
-        'I386FindSymbol','I386IndexedSymbol','I386SymbolBucket','I386SymbolIndexBuild','I386HeapAlloc','I386HeapFree','I386HeapInit',
-        'I386HeapRegionValid','I386HeapScan','I386HeapSize','I386HeapValid','I386LoadAlloc',
-        'I386LoadBoundAlloc','I386LoadBoundAt','I386LoadBoundInto',
-        'I386LoadInto','I386ModuleValid','I386NameEqual',
-        'I386RedSeaLoad','I386RedSeaLoadBound',
-        'I386RedSeaLoadSet','I386RedSeaLoadSetBound'))
-    calls=[module[name:name+length] for kind,offset,name,length in rows if kind==2]
-    imports=sorted(name for name in calls if name not in exported)
-    if exported!=expected or len(calls)!=55 or \
-            imports!=sorted(2*[b'I386RedSeaExtent',b'I386RedSeaRead',b'I386RedSeaValid']) or \
-            any(kind not in (1,2) or offset>=size or not length or name<strings or
-                name+length>=total for kind,offset,name,length in rows):
-        raise ValueError('Original RedSea loader records differ from source')
+    exports=['I386BoundSymbol', 'I386BuffersOverlap', 'I386FindSymbol', 'I386HeapAlloc',
+     'I386HeapAllocHigh', 'I386HeapFree', 'I386HeapInit', 'I386HeapRegionValid',
+     'I386HeapScan', 'I386HeapShrink', 'I386HeapSize', 'I386HeapValid', 'I386IndexedSymbol',
+     'I386LoadAlloc', 'I386LoadBoundAlloc', 'I386LoadBoundAt', 'I386LoadBoundInto',
+     'I386LoadInto', 'I386ModuleBufferByte', 'I386ModuleCodeWord', 'I386ModuleCompactOwned',
+     'I386ModuleCompactPayload', 'I386ModuleValid', 'I386ModuleValidParts', 'I386NameEqual',
+     'I386RedSeaLoad', 'I386RedSeaLoadBound', 'I386RedSeaLoadSet', 'I386RedSeaLoadSetBound',
+     'I386SymbolBucket', 'I386SymbolIndexBuild']
+    calls={'I386BoundSymbol': 6,
+     'I386BuffersOverlap': 9,
+     'I386FindSymbol': 1,
+     'I386HeapAlloc': 4,
+     'I386HeapFree': 5,
+     'I386HeapRegionValid': 2,
+     'I386HeapScan': 2,
+     'I386HeapShrink': 1,
+     'I386HeapSize': 2,
+     'I386HeapValid': 5,
+     'I386IndexedSymbol': 3,
+     'I386LoadBoundAlloc': 2,
+     'I386LoadBoundAt': 2,
+     'I386LoadBoundInto': 3,
+     'I386ModuleCodeWord': 3,
+     'I386ModuleCompactOwned': 1,
+     'I386ModuleCompactPayload': 1,
+     'I386ModuleValid': 1,
+     'I386ModuleValidParts': 1,
+     'I386NameEqual': 4,
+     'I386RedSeaExtent': 2,
+     'I386RedSeaLoadBound': 2,
+     'I386RedSeaLoadSetBound': 1,
+     'I386RedSeaRead': 2,
+     'I386RedSeaValid': 2,
+     'I386SymbolBucket': 2,
+     'I386SymbolIndexBuild': 2}
+    verify_native_internal_records(module,exports,calls)
+    imports=sorted(name for name,number in calls.items() if name not in exports
+                   for _ in range(number))
+    if imports!=sorted(2*['I386RedSeaExtent','I386RedSeaRead','I386RedSeaValid']):
+        raise ValueError('Original RedSea loader resident imports differ from source')
     return {'sha256':hashlib.sha256(module).hexdigest(),
-            'source_sha256':{
-                name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
-                for name in ('Kernel/I386/ModuleFile.HC','Kernel/I386/ModuleFileSingle.HC','Kernel/I386/ModuleAlloc.HC',
-                             'Kernel/I386/ModuleLoad.HC','Kernel/I386/ModuleCheck.HC',
-                             'Kernel/I386/Heap.HC')},
-            'functions':[name.decode() for name in expected],
-            'resident_imports':[name.decode() for name in imports]}
+            'source_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+                for name in ('Kernel/I386/ModuleFile.HC','Kernel/I386/ModuleFileSingle.HC',
+                             'Kernel/I386/ModuleAlloc.HC','Kernel/I386/ModuleLoad.HC',
+                             'Kernel/I386/ModuleCheck.HC','Kernel/I386/Heap.HC')},
+            'functions':exports, 'resident_imports':imports,
+            'internal_call_counts':calls, 'callback_address':'I386ModuleBufferByte'}
 
 
 def verify_native_create_module(disk,path='/Probe/NativeCreate.t32m',
@@ -2319,6 +2392,7 @@ def main():
     runtime_layout=compiler_runtime_layout((exports/'CompilerRuntime.t32m').read_bytes())
     probe_layout=compiler_probe_layout((exports/'CompilerProbe.t32m').read_bytes())
     files_layout=file_runtime_layout((exports/'FileRuntime.t32m').read_bytes())
+    build_layout=build_runtime_layout((exports/'BuildRuntime.t32m').read_bytes())
     console_layout=console_runtime_layout((exports/'ConsoleRuntime.t32m').read_bytes())
     memory_layout=memory_runtime_layout((exports/'MemoryRuntime.t32m').read_bytes())
     disk=out/'kernel.img'
@@ -2510,7 +2584,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=51, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=53, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             write_public_address=file_write_public,
             read_stored_address=file_read_stored,

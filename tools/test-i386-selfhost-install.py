@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guest-build the current flat kernel beside all six guest-built retained modules."""
+"""Guest-build the current flat kernel beside all seven guest-built retained modules."""
 
 import argparse
 import hashlib
@@ -11,7 +11,7 @@ import shutil
 ROOT = Path(__file__).resolve().parent.parent
 FLAT = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
 RETAINED = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-            'CompilerProbe', 'CompilerRuntime')
+            'CompilerProbe', 'CompilerRuntime', 'BuildRuntime')
 BOOT_AREA = 2048 * 512
 
 
@@ -25,7 +25,7 @@ def verify_retained_provenance(build, installation, disk_hash, retained):
     if not build.get('source_disk_sha256'):
         raise ValueError('Retained build has no disk provenance')
     if set(installation.get('installed', [])) != set(RETAINED):
-        raise ValueError('Full self-hosting requires all six retained providers')
+        raise ValueError('Full self-hosting requires all seven retained providers')
     for name in RETAINED:
         payload = retained[f'/Modules/I386/{name}.t32m']
         digest = hashlib.sha256(payload).hexdigest()

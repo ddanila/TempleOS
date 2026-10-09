@@ -158,7 +158,12 @@ U0 PrsVarInit2Core(CPrsInitializerServices *services,CCmpCtrl *cc,U8 **_dst,CHas
 	(*services->copy)(services->context,*_base,st,i);
 	*_dst=*_base+i;
       } else {
-	(*services->copy)(services->context,*_dst,st,tmpad1->cnt);
+	//A short string owns only i bytes, including its terminator.
+	//Initialize the whole array without reading beyond that buffer.
+	j=i;
+	if(j>tmpad1->cnt) j=tmpad1->cnt;
+	(*services->set)(services->context,*_dst,0,tmpad1->cnt);
+	(*services->copy)(services->context,*_dst,st,j);
 	*_dst+=tmpad1->cnt;
       }
       (*declarations->release)(declarations->context,st);

@@ -10,12 +10,12 @@ U32 I386ModuleCodeWord(U8 (*code)(U8 *context,U32 offset),U8 *context,U32 offset
 public Bool I386ModuleValidParts(CI386ModuleHeader *h,CI386ModuleRecord *records,
   U8 *strings,I64 size,U8 (*code)(U8 *context,U32 offset),U8 *context)
 {
-  CI386ModuleRecord *r,*q;
+  CI386ModuleRecord *r,*q,*range_cursor;
   //Header validation bounds record counts and name lengths to U32. Keep wide
   //range calculations below, but avoid software I64 work on every scan step.
-  U32 i,j;
-  I64 end,lo,hi;
-  Bool in_data,target_data,pointers=FALSE,named_pointers=FALSE;
+  U32 i,j,range_position=0,range_end=0,patch_end=0;
+  I64 end,lo,hi,last_lo=0;
+  Bool in_data,target_data,pointers=FALSE,named_pointers=FALSE,ordered_ranges=TRUE;
   if (!h || !records || !strings || !code || size<32 || size>U32_MAX) return FALSE;
   if (h->magic!=I386_MODULE_MAGIC || (h->version!=I386_MODULE_VERSION &&
       h->version!=I386_MODULE_POINTER_VERSION &&
@@ -33,14 +33,18 @@ public Bool I386ModuleValidParts(CI386ModuleHeader *h,CI386ModuleRecord *records
     if (r->kind==I386_MODULE_DATA_RANGE) {
       if (r->name_length || !r->name_offset || r->name_offset>h->code_size ||
           r->offset>h->code_size-r->name_offset) return FALSE;
-      q=records;
-      for (j=0;j<i;j++,q++)
-        if (q->kind==I386_MODULE_DATA_RANGE &&
-            r->offset<q->offset+q->name_offset &&
-            q->offset<r->offset+r->name_offset) return FALSE;
+      if(r->offset<range_end) {
+        ordered_ranges=FALSE;
+        q=records;
+        for (j=0;j<i;j++,q++)
+          if (q->kind==I386_MODULE_DATA_RANGE &&
+              r->offset<q->offset+q->name_offset &&
+              q->offset<r->offset+r->name_offset) return FALSE;
+      }
+      if(r->offset+r->name_offset>range_end) range_end=r->offset+r->name_offset;
     }
   }
-  r=records;
+  r=records; range_cursor=records;
   for (i=0;i<h->record_count;i++,r++) {
     if (r->kind==I386_MODULE_DATA_RANGE) goto next_record;
     if (r->kind==I386_MODULE_POINTER) {
@@ -86,19 +90,42 @@ public Bool I386ModuleValidParts(CI386ModuleHeader *h,CI386ModuleRecord *records
         if ((*code)(context,lo-1)!=0xE8) return FALSE;
       } else if ((*code)(context,lo-1)!=0x05) return FALSE;
       if (I386ModuleCodeWord(code,context,lo)) return FALSE;
-      q=records;
-      for (j=0;j<i;j++,q++)
-        if ((q->kind==I386_MODULE_REL32 || q->kind==I386_MODULE_ADDRESS) &&
-            q->offset<lo+4 && lo<q->offset+4) return FALSE;
+      //Beyond the maximum previous patch end, overlap is impossible even
+      //when prior records were unordered. Backward patches keep the full check.
+      if(lo<patch_end) {
+        q=records;
+        for (j=0;j<i;j++,q++)
+          if ((q->kind==I386_MODULE_REL32 || q->kind==I386_MODULE_ADDRESS) &&
+              q->offset<lo+4 && lo<q->offset+4) return FALSE;
+      }
+      if(lo+4>patch_end) patch_end=lo+4;
       lo--; hi=r->offset+4;
     } else return FALSE;
     in_data=FALSE;
-    q=records;
-    for (j=0;j<h->record_count;j++,q++) {
-      if (q->kind==I386_MODULE_DATA_RANGE) {
+    if(ordered_ranges) {
+      //The first range ending after lo is the only possible overlap or
+      //containing range. Backward references restart this bounded cursor.
+      if(lo<last_lo) {range_cursor=records; range_position=0;}
+      last_lo=lo;
+      while(range_position<h->record_count) {
+        if(range_cursor->kind==I386_MODULE_DATA_RANGE &&
+            range_cursor->offset+range_cursor->name_offset>lo) break;
+        range_cursor++; range_position++;
+      }
+      if(range_position<h->record_count) {
+        q=range_cursor;
         if (r->kind==I386_MODULE_NAMED_POINTER) {
           if (lo>=q->offset && hi<=q->offset+q->name_offset) in_data=TRUE;
         } else if (lo<q->offset+q->name_offset && q->offset<hi) in_data=TRUE;
+      }
+    } else {
+      q=records;
+      for (j=0;j<h->record_count;j++,q++) {
+        if (q->kind==I386_MODULE_DATA_RANGE) {
+          if (r->kind==I386_MODULE_NAMED_POINTER) {
+            if (lo>=q->offset && hi<=q->offset+q->name_offset) in_data=TRUE;
+          } else if (lo<q->offset+q->name_offset && q->offset<hi) in_data=TRUE;
+        }
       }
     }
     if (r->kind==I386_MODULE_DATA_EXPORT ||

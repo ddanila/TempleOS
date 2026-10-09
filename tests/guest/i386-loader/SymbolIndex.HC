@@ -7,13 +7,13 @@ I64 SymbolIndexStress()
   CI386ModuleHeader *h=symbol_fixture;
   CI386ModuleRecord *r;
   U8 *modules[2],*name,*hex="0123456789ABCDEF",loaded[32];
-  I64 sizes[2],c,i,k,expected,actual,em,am;
-  I64 counts[4];
-  counts[0]=1; counts[1]=128; counts[2]=512; counts[3]=513;
+  I64 sizes[2],c,i,k,expected,actual,em,am,flagged;
+  I64 counts[6];
+  counts[0]=1; counts[1]=128; counts[2]=512; counts[3]=513; counts[4]=742; counts[5]=1025;
   h->magic=I386_MODULE_MAGIC; h->version=I386_MODULE_VERSION;
   h->cpu=3; h->pointer_size=4; h->abi=I386_MODULE_ABI;
   h->code_size=8; h->records_offset=40;
-  for(c=0;c<4;c++) {
+  for(c=0;c<6;c++) {
     h->record_count=counts[c]; h->strings_offset=40+counts[c]*16;
     h->total_size=h->strings_offset+counts[c]*6;
     r=symbol_fixture+40;
@@ -26,7 +26,11 @@ I64 SymbolIndexStress()
     modules[0]=modules[1]=symbol_fixture; sizes[0]=sizes[1]=h->total_size;
     if(!I386ModuleValid(symbol_fixture,h->total_size)) return 601;
     I386SymbolIndexBuild(&index,modules,1);
-    if(index.complete!=(counts[c]<=512)) return 602;
+    if(!index.complete) return 602;
+    flagged=0;
+    for(i=0;i<256;i++) if(index.heads[i]&0x80000000) flagged++;
+    if(counts[c]<=512 && flagged || counts[c]>512 && !flagged ||
+        counts[c]==513 && flagged!=1) return 608;
     r=symbol_fixture+40;
     for(i=0;i<counts[c];i++,r++)
       for(k=0;k<4;k++) {

@@ -62,8 +62,11 @@ def main():
             working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib,
             qmp_stdio=True, diagnostics=args.diagnostics, startup_timeout=90,
             startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS})
+        log = (out/'debug.log').read_text()
+        if 'BUILD PROVIDER loaded\n' in log:
+            raise ValueError('Startup acquired build-only support')
+        result['build_provider_loads'] = 0
         if args.diagnostics:
-            log = (out/'debug.log').read_text()
             markers = [f'PUBLICATION CASE {phase:016X} {case:016X}\n'
                        for phase in (0, 1) for case in range(11)]
             missing = [marker.strip() for marker in markers if marker not in log]

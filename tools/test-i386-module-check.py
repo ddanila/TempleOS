@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compile the shared module validator with HolyC and execute it as i386 code."""
 import hashlib
+import itertools
 import json
 from pathlib import Path
 import struct
@@ -106,7 +107,8 @@ def main():
                 table += struct.pack('<4I', kind, offset, string_base+len(strings), len(encoded))
                 strings += encoded+b'\0'
         header = bytearray(base[:32])
-        struct.pack_into('<H',header,4,3 if any(kind==6 for kind,_,_ in entries) else 2)
+        version=4 if any(kind==7 for kind,_,_ in entries) else 3 if any(kind==6 for kind,_,_ in entries) else 2
+        struct.pack_into('<H',header,4,version)
         struct.pack_into('<5I', header, 12, string_base+len(strings), len(payload),
                          len(entries), 32+len(payload), string_base)
         return bytes(header+payload+table+strings)
@@ -154,6 +156,29 @@ def main():
     cases.append(('address-import',address_module,len(address_module),1,0))
     bad = module(payload,address_entries)
     cases.append(('address-import-opcode',bad,len(bad),0,0))
+    # Record order is not part of the format contract. Exercise cursor resets,
+    # backward fixups and overlap checks after an earlier high offset.
+    ordered_payload=bytes.fromhex('e8000000009090900500000000909090c390909090909090')
+    ordered_entries=[(1,16,'Main'),(2,1,'Call'),(5,9,'Address')]
+    named_entries=[(1,0,'Main'),(4,8,8),(4,16,8),(3,16,'State'),(7,8,'State')]
+    ordered_cases=[
+        ('ordered-fixups',ordered_payload,ordered_entries,1),
+        ('backward-fixups',ordered_payload,list(reversed(ordered_entries)),1),
+        ('backward-duplicate-fixup',ordered_payload,ordered_entries+[(2,1,'Again')],0),
+        ('reverse-pointer-ranges',pointer_payload,list(reversed(pointer_entries)),1),
+        ('reverse-range-overlap',pointer_payload,[(1,0,'Main'),(4,16,8),(4,8,8),(4,12,8)],0),
+        ('unordered-disjoint-ranges',pointer_payload,[(4,16,4),(4,8,4),(4,12,4),(3,12,'Gap'),(1,0,'Main')],1),
+        ('named-pointer-ordered',pointer_payload,named_entries,1),
+        ('named-pointer-reversed',pointer_payload,list(reversed(named_entries)),1),
+        ('named-pointer-cross-range',pointer_payload,named_entries[:-1]+[(7,14,'State')],0),
+        ('range-cursor-backward-export',pointer_payload,[(4,8,8),(4,16,8),(3,20,'High'),(3,8,'Low'),(1,0,'Main')],1),
+    ]
+    for label,body,rows,expected in ordered_cases:
+        fixture=module(body,rows)
+        cases.append((label,fixture,len(fixture),expected,0))
+    for index, permutation in enumerate(itertools.permutations(named_entries)):
+        fixture=module(pointer_payload,permutation)
+        cases.append((f'named-pointer-order-{index}',fixture,len(fixture),1,0))
     legacy = bytearray(base)
     struct.pack_into('<H',legacy,4,1)
     cases.append(('legacy-format',bytes(legacy),len(legacy),0,0))
@@ -170,14 +195,14 @@ def main():
         stream.truncate(16*1024*1024)
     log=OUT/'runner.log'
     log.write_text('')
-    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486','-m','8','-nic','none',
+    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486,-fpu','-m','8','-nic','none',
          '-drive',f'file={disk},format=raw,if=ide','-display','none','-debugcon',f'file:{log}',
          '-device','isa-debug-exit,iobase=0xf4,iosize=4','-no-reboot']
     result=subprocess.run(cmd,timeout=20)
     if result.returncode!=33 or log.read_text()!='PASS i386 module validator\n':
         raise RuntimeError(f'Target validator failed: {log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'result':'pass','cases':[c[0] for c in cases],
-        'cpu':'486','ram_mib':8,'scope':'shared module validator executed as i386 code'},indent=2)+'\n')
+        'cpu':'486,-fpu','ram_mib':8,'scope':'shared module validator executed as i386 code'},indent=2)+'\n')
     print(f'PASS: shared module validator executed {len(cases)} target cases.')
 
 

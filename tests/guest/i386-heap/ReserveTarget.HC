@@ -29,6 +29,10 @@ I64 Main(I64 unused_a,I64 unused_b)
       !I386MemBackingInit(pool,heap,I386_NATIVE_BACKING_QUANTUM) ||
       !I386MemBackingReserve(pool,128) || pool->size!=65536 ||
       pool->used_u8s || pool->owned_count!=1 || !I386MemBackingValid(pool))return 470;
+  //Retain the aligned page extent, returning unused worst-case padding.
+  if(pool->owned->request!=(pool->owned->base+0)(U64)+pool->owned->size-
+      (pool->owned+0)(U64) ||
+      I386HeapSize(heap,pool->owned)!=pool->owned->request)return 481;
   //Automatic reclamation must retain explicit startup reservations.
   if(I386MemBackingTrim(pool)!=0 || pool->size!=65536 || pool->owned_count!=1)return 478;
   used=heap->used;allocations=heap->allocations;

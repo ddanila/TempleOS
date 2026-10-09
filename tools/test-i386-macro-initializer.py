@@ -9,6 +9,9 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = (
+    ('StringExact', 'U8 exact_name[1]="xy";public I64 StringExactCheck(){return exact_name[0];}\n', 'StringExactCheck', '120'),
+    ('StringEmpty', 'U8 empty_name[16]="";public I64 StringEmptyCheck(){I64 i;for(i=0;i<16;i++) if(empty_name[i]) return 1;return 0;}\n', 'StringEmptyCheck', '0'),
+    ('StringPadding', 'U8 padded_name[64]="x";public I64 StringPaddingCheck(){I64 i;for(i=2;i<64;i++) if(padded_name[i]) return i;return 0;}\n', 'StringPaddingCheck', '0'),
     ('Direct', 'U32 bmp_direct[2]={1,2};public I64 DirectSum(){return bmp_direct[0]+bmp_direct[1];}\n', 'DirectSum', '3'),
     ('Macro', '#define PAIR {1,2}\nU32 bmp_pair[2]=PAIR;public I64 MacroSum(){return bmp_pair[0]+bmp_pair[1];}\n', 'MacroSum', '3'),
     ('Bitmap', '#include "/Kernel/DisplayableBitmap.HH"\nU32 bmp_repro[16]=CHAR_BMP_DISPLAYABLE_DATA;public I64 BitmapFirst(){return bmp_repro[0];}\n', 'BitmapFirst', '2147483648'),
@@ -38,7 +41,7 @@ def main():
     working = out/'source.img'
     shutil.copyfile(disk, working)
     report = {'status':'fail', 'cpu':'486,-fpu', 'ram_mib':16,
-              'scope':'Direct, single-line macro and original bitmap aggregate AOT compilation, persisted source/module validation and included HolyC execution',
+              'scope':'Fixed-size string padding/truncation, direct and macro aggregate AOT compilation, persisted source/module validation and included HolyC execution',
               'disk_sha256':sha(disk), 'checker_sha256':sha(Path(__file__)), 'cases':{}}
     try:
         commands = []

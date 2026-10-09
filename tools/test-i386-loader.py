@@ -18,11 +18,16 @@ def run(*args):
 
 
 def main():
+    global OUT
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--portable-index', action='store_true',
+                        help='Compile the shared index builder without its native assembly path')
     parser.add_argument('--native-module', type=Path,
                         help='Also load a guest-built module whose Main returns --native-expected')
     parser.add_argument('--native-expected', type=int)
     args=parser.parse_args()
+    if args.portable_index:
+        OUT = ROOT/'build/i386-loader-portable-test'
     if (args.native_module is None)!=(args.native_expected is None):
         parser.error('--native-module and --native-expected must be used together')
     native_module=None
@@ -114,8 +119,18 @@ def main():
         cases.append(('guest-built-constant-program',[native_module],args.native_expected,0))
     iso = OUT/'loader.iso'
     exports = OUT/'exports'
+    extra_overlay=[]
+    if args.portable_index:
+        overlay=OUT/'portable-overlay'
+        overlay.mkdir(parents=True,exist_ok=True)
+        source=(ROOT/'tests/guest/i386-loader/Target.HC').read_text()
+        define='#define I386_LOADER_NATIVE_BUILD 1'
+        if source.count(define)!=1:
+            raise ValueError('Expected one native index build switch')
+        (overlay/'Target.HC').write_text(source.replace(define,''))
+        extra_overlay=['--overlay',str(overlay)]
     run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
-        '--overlay','tests/guest/i386-loader','--output',str(iso))
+        '--overlay','tests/guest/i386-loader',*extra_overlay,'--output',str(iso))
     run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90')
     code = (exports/'loader.bin').read_bytes()
     log = (exports/'debug.log').read_text().splitlines()
@@ -186,8 +201,9 @@ def main():
         raise RuntimeError(f'Native loader failed: {log.read_text()}')
     (OUT/'result.json').write_text(json.dumps({'result':'pass','cases':[c[0] for c in cases],
         'cpu':'486,-fpu','ram_mib':8,
+        'index_builder':'portable source' if args.portable_index else 'native assembly',
         'native_module':None if native_module is None else {'sha256':hashlib.sha256(native_module).hexdigest(),'expected':args.native_expected},
-        'symbol_index':{'export_counts':[1,128,512,513],'differential':'original linear scan','duplicates':'rejected without writes','over_capacity':'original scan fallback'},
+        'symbol_index':{'export_counts':[1,128,512,513,742,1025],'differential':'original linear scan','duplicates':'rejected without writes','over_capacity':'original scan fallback only for overflowed buckets'},
         'source_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ('Kernel/I386/ModuleLoad.HC','tests/guest/i386-loader/Target.HC','tests/guest/i386-loader/SymbolIndex.HC','tests/guest/i386-loader/Once.HC')},
         'scope':'native module loading, heap allocation, execution, exhaustion, release and reuse'},indent=2)+'\n')
     print(f'PASS: native i386 loader executed {len(cases)} cases.')

@@ -2,20 +2,232 @@
 
 Active medium goal: [bounded-memory self-hosting](docs/port-memory-goal.md).
 
-Current work: [bounded-memory results](docs/port-memory-goal.md). Task-owned
-staging and BuildModule integration are implemented in a candidate. Host/native
-staging contracts pass; the six-provider 16 MiB rebuild fails at fragmented
-post-unwind readback. The early-resource allocation candidate also fails there;
-the next structural fix must avoid whole-module readback. The candidate
-now has native-tested bounded validation, publication and task cleanup
-foundations. Their BuildModule integration is implemented in an unqualified
-candidate; fresh native rebuild evidence remains required. The current image
-fails a 4-KiB allocation during 8-MiB startup. The previously qualified phased
-header image remains the startup baseline. Full native rebuild and installed
-generation qualification remain open. The [saved checkpoint](docs/port-checkpoint-2026-10-07.md)
-and dated entries below are historical snapshots.
+Current validator candidate: avoid overlap scans beyond the maximum prior
+fixup/range end, and reuse a cursor for ordered data ranges while restarting on
+backward references. Unsorted ranges retain the original full scan. This uses
+no heap allocation or scratch array. The expanded pre-change validator baseline
+passes 56 i386 cases, including reversed ranges, backward/duplicate fixups and
+named-pointer boundaries. Original two-generation bootstrap and all 56 optimized
+validator cases pass (486,-fpu). All 40 native loader cases also pass. Both the
+optimized validator and saved pre-change binary pass the same 176-case corpus,
+including all 120 named-pointer record permutations. All 40 portable loader
+cases also pass. The fresh thirteen-module cross-build passes in
+`build/i386-validator-scan-cross` (551,080 flat-kernel bytes; 386 audit). Emitted
+direct-call loader stack usage passes at 16,300/16,384 bytes including the
+6,144-byte caller/guard reserve; indirect callbacks still require runtime checks.
+Normal cross-built 8 MiB startup passes in 44.67 seconds with all nine checks.
+The paired full-native-provider-footprint comparison passes arithmetic/DolDoc
+in `build/i386-validator-scan-paired-footprint`: startup improves from 69.25 to
+59.02 seconds (10.23 seconds saved). This is diagnostic cross-kernel evidence
+with reused native providers and a narrow margin. The 16 MiB diagnostic boot
+is running. All 980 delivered source/documentation files match. The fresh
+all-seven-provider rebuild is queued after diagnostic success in
+`build/i386-validator-scan-all-providers-16m`, at 16 MiB on TCG/486,-fpu with
+14,400-second per-module limits. Its queue freezes Kernel/Compiler/Adam/tool
+source hashes and checks them before and after the run. Two installed native
+generations and their timing still require qualification. Evidence:
+`build/i386-validator-scan-*`; baseline checkpoint:
+`build/checkpoints/2026-10-09-validator-scan/manifest.json`.
+The bucket-overflow results below predate this validator change.
+
+Current startup candidate: bucket-local loader overflow fallback retains the
+512-slot scratch size. Clean full-native-footprint profiling measures 72.45
+seconds: console loading takes about 28.88 seconds, root kernel headers 8.07,
+and root user headers 27.48. The expanded differential regression fails before
+the loader change at return 602. The first bootstrap rejected a `continue`
+statement in the portable branch; an explicit else branch now replaces it.
+The portable-branch correction passes the original two-generation bootstrap.
+Native test compilation rejects memory/immediate OR; register-based marking
+now replaces it, and the fresh original two-generation bootstrap passes.
+All 40 native loader cases pass, including six export counts (1, 128, 512,
+513, 742, 1025), duplicate rejection without writes and differential lookup.
+All 40 portable-index cases also pass. The fresh thirteen-module cross-build
+passes in `build/i386-bucket-overflow-cross` (547,792 flat-kernel bytes; 386
+instruction audit). Normal cross-built 8 MiB startup passes in 45.41 seconds,
+with all nine retained-state/VGA checks. The sequential paired cross-kernel boot
+comparison passes arithmetic/DolDoc with identical seven native provider payloads in
+`build/i386-bucket-overflow-paired-footprint`. Static analysis
+shows 145 console buckets overflow, leaving 1,569 of 5,427 reference records
+indexed (about 29% fewer full scans). Paired startup improves from 75.86 to
+69.48 seconds (6.38 seconds saved), still above the 60-second gate. This is
+diagnostic cross-kernel evidence; native generation timing remains unqualified.
+Evidence: `build/i386-bucket-overflow-*`; pre-change checkpoint:
+`build/checkpoints/2026-10-09-bucket-overflow/manifest.json`.
+The memory-candidate results below predate this loader change.
+
+Current work: the adjacent-span allocator lets both installed self-built
+generations rebuild and boot at 8 MiB, but qualification fails because their
+kernel and flat boot image differ by 64 bytes; the other twelve modules match.
+A fixed-size string initializer overread explains those differences. The fix
+passes the original bootstrap rebuild, thirteen-module i386 cross-build, six
+initializer regressions and exact persisted array-byte audit. Normal cross-built
+8 MiB startup passes in 47.21 seconds with nine runtime/VGA checks and no
+build-provider startup load. The interrupted native rebuild preserved ConsoleRuntime (2,240,021 bytes).
+Recovery also published CompilerRuntime (1,882,552 bytes), then CompilerProbe
+publication failed because the 16 MiB disk had only 645 free sectors for a
+2,511-sector output. Filesystem audits show no orphaned allocations.
+A 32 MiB recovery disk preserves the boot area and all 1,090 files exactly,
+with 33,405 free sectors. All five resumed provider build commands pass at 16 MiB RAM on TCG/486,-fpu.
+The combined audit passes for all seven persisted native providers in
+`build/i386-string-padding-providers-capacity32-16m`. Two-generation
+qualification has started in `build/i386-string-padding-generations-capacity32-16m`.
+Generation-one installation and its 8 MiB functional boot pass; startup takes
+75.065 seconds and fails the separate 60-second budget. Generation-one
+flat-kernel build/link/install commands pass, but the independent 8 MiB
+boot rejects DocAllocationCheck with heap exhaustion (8,755-byte request;
+8,256-byte largest free block). The generation runner is terminal failed;
+generation two did not start.
+
+A backing-padding candidate now returns unused worst-case alignment slack to
+its arena before publishing each page extent. The focused reserve regression
+fails before the change (return 481) and passes afterward in both native and
+portable-source modes. The refreshed original two-generation bootstrap passes.
+The accounting check and complete native/portable heap suites also pass. A fresh
+thirteen-module port cross-build passes, including the 386 instruction audit
+(547,392 flat-kernel bytes). Cross-built 8 MiB startup passes in 46.99 seconds,
+with all nine retained-state/VGA checks and no build-provider startup load.
+The 16 MiB diagnostic boot passes, including 22 publication and 28 program
+publication cases. All 980 delivered source/documentation files match. A native
+MemoryRuntime rebuild passes at 16 MiB on TCG/486,-fpu (341,006 bytes;
+153 function exports), with persisted output/export validation in
+`build/i386-backing-padding-native-memory-16m`. Recovery of the native installed
+8 MiB boot with all native providers remains unqualified. The native MemoryRuntime
+installation passes exact byte preservation and independent 8 MiB arithmetic/
+DocAllocationCheck in `build/i386-backing-padding-native-memory-install`. The queue
+passes the flat-kernel build/link/install and independent 8 MiB arithmetic/DolDoc
+boot using verified cross-built retained inputs. These are development probes,
+not complete seven-provider/two-generation qualification. A dependent diagnostic
+probe has repacked the new native boot/kernel and MemoryRuntime with the six
+prior native providers, preserving the new boot area and all other files. Its
+8 MiB full-footprint arithmetic/DolDoc boot passes in
+`build/i386-backing-padding-full-footprint-probe`. Startup is 72.91 seconds,
+exceeding the unchanged 60-second gate. Profile startup before expensive fresh
+seven-provider/two-generation qualification. This
+checks the full native provider footprint before expensive fresh qualification.
+It remains mixed-generation diagnostic evidence. Queue log:
+`build/i386-backing-padding-install-queue.log`. Evidence is preserved in
+`build/checkpoints/2026-10-09-backing-padding/manifest.json`.
+
+
+The remaining gates are byte-identical installed self-built generations,
+installed 8 MiB startup within 60 seconds (previously about 74 seconds), and
+refreshing the broader regression evidence for the final candidate. Evidence:
+`build/i386-string-padding-*`; checkpoint:
+`build/checkpoints/2026-10-09-string-padding/manifest.json`.
+Earlier dated entries are historical snapshots.
 
 ## Objective and status
+
+## Root document-header transaction candidate (2026-10-07)
+
+The integrated staged-publication image still fails a 4,096-byte allocation
+while loading root user headers at 8 MiB. A new candidate loads Intrinsic and
+PublicDocument in a separate atomic-defines transaction after PublicKernel,
+then loads PublicUser. This retains the original declaration order/set and
+releases the document parser's temporary arena before file/window declarations.
+The complete PublicUser guard remains deferred until the final transaction.
+Bootstrap passes in `build/i386-root-document-phase-bootstrap.log`. The fresh
+cross-build `build/i386-root-document-phase-cross` passes with 543,656
+flat-kernel bytes, the 386 instruction audit and all 977 delivered files matching
+(`build/i386-root-document-phase-source-audit`). Normal 8 MiB startup fails
+in `build/i386-root-document-phase-boot-8m`: request 4,096 bytes, heap used
+`0x659848` of `0x65B400`, largest block `0xEC8` (3,784 bytes). This is an
+unsuccessful memory experiment; the document split is not a boot recovery and
+its ConsoleRuntime edit has been reverted. The diagnostic image retains the
+experiment for comparison.
+Diagnostics run in `build/i386-root-document-phase-diag-16m`; F64/assembly and
+rebuilding remain unqualified for
+this source change. The full retained build on the preceding integrated image
+continues independently with its original source disk.
+
+## Lazy orchestration restores the 8 MiB startup gate (2026-10-07)
+
+`build/i386-lazy-orchestration-cross` passes bootstrap, all thirteen cross-built
+modules, strict import/version audits and the 386 instruction audit. Its flat
+kernel is 549,424 bytes. `build/i386-lazy-orchestration-source-audit` passes all
+980 delivered source files. Normal startup is terminal PASS in
+`build/i386-lazy-orchestration-boot-8m/result.json`: 48.015973 seconds on
+486,-fpu / 8 MiB, all nine retained/static/literal/VGA commands, and no build
+provider acquisition. This closes the current interactive startup resource gate.
+
+The current first-use/reuse run is in
+`build/i386-lazy-orchestration-first-use-tcg-16m`; Startup has succeeded and
+BuildRuntime compilation continues. The KVM attempt failed before boot because
+/dev/kvm is unavailable in the changed execution environment. Current 8 MiB
+floating regression passes (16 commands); assembly and 16 MiB diagnostics are
+still running in
+`build/i386-lazy-orchestration-float-8m`, `-bare-8m`, and `-diag-16m`.
+
+The preceding six-provider KVM session 13616 and its process are no longer
+available. Its result is marked interrupted, preserving the verified ConsoleRuntime
+checkpoint. No full-provider pass or generation acceptance is inferred from it.
+Current all-seven rebuilding and installed-generation gates remain required.
+
+## Lazy provider first use passes; retained 8 MiB command remains failed
+
+`build/i386-lazy-build-cross-v3` passes all thirteen module builds, strict
+file/provider import audits, the 386 instruction audit and 979-file source audit.
+`build/i386-lazy-build-first-use-v3-16m/result.json` passes Startup and BuildRuntime
+native rebuilding/persisted export checks, with exactly one provider load reused
+across both commands. BuildRuntime native output is 99,551 bytes / 202 records /
+39 exports. This is first-use/provider qualification, not all-seven acceptance.
+
+`build/i386-lazy-build-boot-v3-8m` completes root headers and startup but fails
+the first retained-static definition: request 4,116 bytes, heap used `0x657230`
+of `0x659E00`, largest free block `0x840`. Interactive acceptance remains failed.
+
+A further candidate moves BuildModuleCore and bounded validation from ConsoleRuntime
+into BuildRuntime. The public I386BuildModule entry becomes a small dispatcher
+that passes compiler/file/type/include configuration synchronously. No registered
+cleanup callback borrows this stack configuration. Build services advance to
+version 2 / 24 bytes / four callbacks; FileRuntime advances to version 53 with
+seven selected exports. Provider binding adds KernelHex, and all original OS
+modules remain packaged. Bootstrap is running in
+`build/i386-lazy-orchestration-bootstrap.log`; its boot/build behavior is unproven.
+
+## Next structural startup work: load build support on demand
+
+The added stage/publication machinery is build-only but currently resides in
+FileRuntime at every normal boot. Further header splitting has not restored the
+8 MiB profile. The next candidate should move stage transport and publication
+into a retained BuildRuntime module acquired on first BuildModule use. Keep the
+existing file-service entry names as dispatchers and preserve all normal file
+operations. The acquired module must have kernel lifetime because registered
+stage/publication cleanup callbacks can outlive the requesting task.
+
+Require explicit lazy-load state and failure handling: no partial callable
+service table, no duplicate/reentrant load, and no code release while callbacks
+can remain registered. Verify normal boot does not acquire build support, first
+build acquires it once, subsequent builds reuse it, and worker exit/fault cleanup
+still retains ambiguous publication. Include the new provider in disk/source
+packaging, native provider builds and installed generations; preserve all twelve
+existing modules. Keep the actual OS RAM gates at 8 MiB boot / 16 MiB rebuild.
+An unqualified first implementation now adds BuildRuntime, FileRuntime
+version-52 dispatchers, static kernel export 71 (72 total), 38 FileRuntime
+bindings, six published file exports, and a kernel-owned lazy service table.
+The table is published only after initialization/version/size/address validation;
+reentrant acquisition rejects while loading, and failed initialization releases
+the candidate image. Code is retained after success for registered callbacks.
+Cross packaging and the guest build list now include the additional thirteenth
+module; the native retained-provider list includes all seven providers. Bootstrap
+passes in `build/i386-lazy-build-bootstrap.log`; the thirteen-module cross-build
+rejected taking an address of a function-pointer field in the table validator.
+The validator now checks the three function values explicitly; fresh bootstrap
+passes in `build/i386-lazy-build-bootstrap-v2.log`. Cross-build v2 exports the
+smaller FileRuntime but rejects BuildRuntime because the shared slot helper
+redeclares imported RedSea functions as ordinary externs. BuildRuntime now uses
+the existing mutation-import guard, and exposes an auditable service-version
+word with a 20-byte service-table assertion. Fresh bootstrap passes in
+`build/i386-lazy-build-bootstrap-v3.log`. The FileRuntime audit now requires its
+33 actual imports after moving five stage-only dependencies to the provider.
+The provider audit requires all 24 imports, four service exports and its version
+word. Cross-build v3 is running in `build/i386-lazy-build-cross-v3`. Startup acceptance now rejects any
+`BUILD PROVIDER loaded` marker, and retained-build acceptance requires exactly
+one load after readiness when the provider is packaged. Loading/cancellation/failure
+contracts, import audit, first-use/reuse checks, native compilation and 8 MiB
+boot remain unqualified; the code is not a completed startup fix.
+The existing full 16 MiB build remains
+live and evaluates bounded publication independently of startup placement.
 
 ## Task-owned publication path candidate (2026-10-07)
 
@@ -56,8 +268,9 @@ The corrected image `build/i386-bounded-publication-cross-v3` passes the
 audit (`build/i386-bounded-publication-source-audit-v3`). Its fresh guests get
 past compiler resident publication and load FileRuntime/MemoryRuntime. The full
 six-provider rebuild is running in `build/i386-bounded-publication-retained-v3-16m`
-on KVM with 486,-fpu and 16 MiB; diagnostics are running
-in `build/i386-bounded-publication-diag-v3-16m`. Normal 8 MiB startup fails in
+on KVM with 486,-fpu and 16 MiB; diagnostics pass
+in `build/i386-bounded-publication-diag-v3-16m`, including both publication
+phases, storage/presentation checks and retained-state/VGA commands. Normal 8 MiB startup fails in
 `build/i386-bounded-publication-boot-v3-8m`: request 4,096 bytes, heap used
 `0x659740` of `0x65B400`, largest block `0xFD0` (4,048 bytes). The native
 rebuild and diagnostics are pending qualification gates;
@@ -19231,3 +19444,1020 @@ generations. Fresh original formatted-failure fixed-v1 and normal-format
 cleanup-regression-v1 references are running. Native cross-v4 exception gates
 remain live; cross-v4 does not include the later original-only cleanup source
 epoch, so current full release qualification still requires a fresh epoch.
+
+## ConsoleRuntime bounded publication reaches persisted output (2026-10-07)
+
+The committed integration image's 16 MiB retained build has advanced from
+ConsoleRuntime to CompilerRuntime. Independent readback of
+`/Probe/RetainedConsoleRuntime.t32m` validates a 2,299,340-byte module with 6,682
+records and all 653 expected exports, plus document allocation-wrapper calls.
+Evidence: `build/i386-bounded-publication-retained-v3-16m/console-persisted-checkpoint.json`.
+This passes the former fragmented whole-module readback failure for the largest
+provider. It does not qualify all providers, current lazy-support source or
+installed generations; the original full run remains live.
+
+Checkpoint preservation: staging for commit failed because `.git/index.lock`
+cannot be created on the read-only filesystem under the current execution policy.
+No commit or push was made for this candidate. Source archive, tracked binary
+patch and hashes are preserved locally in
+`build/checkpoints/2026-10-07-lazy-build-orchestration/`; earlier committed work
+remains on the fork's main. Work and QEMU verification continue in the workspace.
+
+## Lazy orchestration regression results and build-profile boundary
+
+The current 8 MiB F64 regression passes all sixteen commands in
+`build/i386-lazy-orchestration-float-8m`. Full 16 MiB diagnostics pass in
+`build/i386-lazy-orchestration-diag-16m`, including both publication phases and
+storage/presentation/VGA checks, without loading build-only support.
+The 8 MiB saved-assembly fixture fails when its persistence step calls
+I386BuildModule: loading BuildRuntime requests 132,676 bytes while the largest
+free block is 15,576 bytes. This is a recorded 8 MiB disk-building limit, not
+an assembly pass. The same thirteen-command fixture is running at the goal's
+16 MiB native-build profile in `build/i386-lazy-orchestration-bare-16m`.
+No acceptance test or RAM limit was raised for native provider rebuilding.
+
+## Current first-use and assembly pass; full provider build running
+
+`build/i386-lazy-orchestration-first-use-tcg-16m/result.json` is terminal PASS:
+Startup (407 bytes / six records / one export) and BuildRuntime (135,256 bytes /
+275 records / 44 exports) match cross-built export contracts, with one provider
+load reused across both native builds. The 16 MiB saved-assembly fixture passes
+all thirteen compilation/persistence/interrupt-restoration checks in
+`build/i386-lazy-orchestration-bare-16m`. Full seven-provider rebuilding is live
+in `build/i386-lazy-orchestration-all-providers-16m`, using TCG/486,-fpu and 16 MiB.
+The earlier 8 MiB persistence failure remains recorded.
+
+Both retained installation and self-hosting provenance now require BuildRuntime
+alongside the six original providers, preventing a cross-built seventh provider
+from being silently carried into installed generations. Installer/source-verdict
+host contracts pass all seventeen tests in `build/i386-lazy-install-contracts.log`. Generation
+acceptance still requires all thirteen modules and current source identity.
+
+### 2026-10-07 — lazy provider recovery coverage in progress
+
+Added `tools/test-i386-build-provider-recovery.py` to exercise a malformed
+BuildRuntime service version on a disposable disk. It requires two rejected
+builds, repair through the guest's FileRead/FileWrite APIs, then two successful
+Startup builds without rebooting. The persisted outputs must agree, the rejected
+output must be absent, and the provider must load exactly once after startup.
+The initial TCG / 486,-fpu / 16 MiB run is still live in
+`build/i386-lazy-provider-recovery-16m`; no recovery pass is claimed yet.
+This covers API-version rejection and retry; cancellation, reentrant acquisition,
+and full lifetime/fault coverage remain separate open work.
+The seven-provider TCG rebuild remains live, compiling ConsoleRuntime document
+functions. The two installed thirteen-module generations remain unverified.
+
+The first recovery run was explicitly interrupted after finding a test-oracle
+error: unavailable build-provider dispatch returns `-1`, not `0`. That run's
+result is recorded as interrupted. The corrected regression is live in
+`build/i386-lazy-provider-recovery-v2-16m`; it also checks the recovered Startup
+export set against the installed reference and verifies that the input disk
+remains unchanged. This is a harness correction, not a relaxed OS contract.
+
+The corrected-return recovery run reached both rejection checks but then failed
+in the harness: `rejected_answers=[]` treats an expected empty function-definition
+answer as a rejected answer. Removed that optional setting; each command still
+has its exact expected VGA output. The new run is
+`build/i386-lazy-provider-recovery-v3-16m` and is pending. Both earlier results
+are preserved; neither is an OS recovery pass.
+
+Recovery v3 is now terminal PASS under TCG / 486,-fpu / 16 MiB. Both bad-version
+build attempts return `-1`; the provider is repaired from the running guest;
+two Startup builds then succeed without rebooting. The provider loads once
+and is reused. Persisted provider bytes match the original, both output modules
+are identical and have the installed Startup export contract, no rejected
+output exists, and the input disk is unchanged. Evidence:
+`build/i386-lazy-provider-recovery-v3-16m/result.json`. Reentrant acquisition,
+cancellation, and general allocation reclamation remain unverified. The full
+seven-provider rebuild is still live; no installed-generation pass is claimed.
+
+### 2026-10-07 — provider loader rejection coverage
+
+The recovery runner now selects `--fault service-version`, `wrong-target`, or
+`missing-import`. Each case changes one byte on a disposable disk, requires two
+rejected builds, repairs that byte through guest FileRead/FileWrite, and then
+requires two successful, identical Startup modules with one lazy provider load.
+Wrong-target recovery is terminal PASS in
+`build/i386-lazy-provider-wrong-target-16m/result.json` (TCG/486,-fpu/16 MiB).
+The missing-import case is live in
+`build/i386-lazy-provider-missing-import-v2-16m`; the first host preflight was
+corrected because the serializer stores a separate name per call relocation,
+so the fixture now mutates one selected KernelLog relocation name. That initial
+preflight never booted QEMU. No missing-import pass is claimed yet.
+The full seven-provider rebuild is still live; installed generations remain open.
+
+Missing-import recovery is now terminal PASS in
+`build/i386-lazy-provider-missing-import-v2-16m/result.json`: two rejected
+attempts, guest repair, two successful identical Startup builds, one provider
+load, restored provider bytes, matching output exports, no rejected output, and
+unchanged input disk. Combined with the service-version and wrong-target runs,
+three loader/init rejection classes recover without rebooting. These results
+still do not prove cancellation, reentrant acquisition, or exact global heap
+reclamation. The full seven-provider run remains live.
+
+### 2026-10-07 — provider lifetime across public task exit
+
+Added `tools/test-i386-build-provider-lifetime.py`: first-use of build support
+occurs in a public Spawn child, which builds Startup and returns naturally.
+A second child and the parent then rebuild Startup using the cached provider.
+The fixture requires both children to be retired, three persisted outputs with
+identical bytes and matching installed export contracts, exactly one provider
+load, and restoration of the public task pool's used/reserved counters after
+the second child. It retains the normal public default stack size. Initial
+TCG/486,-fpu/16 MiB qualification is running in
+`build/i386-lazy-provider-lifetime-16m`; no lifetime pass is claimed yet.
+This exercises normal task retirement, not forced cancellation or cleanup after
+a failed transfer/publication. The full seven-provider rebuild remains live.
+
+The public child-task lifetime regression is now terminal PASS under
+TCG/486,-fpu/16 MiB (`build/i386-lazy-provider-lifetime-16m/result.json`).
+The first child loads the provider and builds Startup, both children retire,
+and the second child and parent reuse the same cached provider. All three
+persisted modules are identical and match the installed export contract;
+exactly one provider load occurs. The second child's public task-pool used and
+reserved counters return to their pre-spawn values, and the input disk is
+unchanged. This qualifies normal task retirement, not forced cancellation,
+faulted publication cleanup, reentrant acquisition, or global heap reclamation.
+The seven-provider rebuild remains live; installed generations remain open.
+
+### 2026-10-07 — recursive provider initialization fixture
+
+Added `tools/test-i386-build-provider-reentrant.py`. It uses the guest compiler
+to build a wrapper around the unchanged BuildRuntime source, installs it only
+on a disposable disk, and boots that disk afresh. The wrapper initializer calls
+I386BuildRuntimeAcquire recursively; it only initializes the real services when
+the nested acquisition returns NULL. The fresh boot must log nested rejection
+before the outer provider is published, build Startup twice with one cached
+load, and persist identical modules with the original export contract. The
+fixture build must itself retain the acquisition import and both initializer
+exports. Initial TCG/486,-fpu/16 MiB qualification is live in
+`build/i386-lazy-provider-reentrant-16m`; no pass is claimed yet. Production
+kernel/provider sources remain unchanged by the fixture. The full seven-provider
+rebuild remains live; installed generations remain unverified.
+
+### 2026-10-07 — public Kill during active module compilation
+
+Added `tools/test-i386-build-provider-cancel.py`. A public child builds
+BuildRuntime with normal default stack limits. Before Kill, the fixture requires
+a live child with an active `CCF_MODULE_SOURCE` compiler control; staging is
+registered before that control opens. It requires child retirement without
+returning from the build, no cancelled output, a successful subsequent Startup
+build using the cached provider, and an independent RedSea volume/export audit.
+Initial TCG/486,-fpu/16 MiB qualification is live in
+`build/i386-lazy-provider-cancel-16m`; no cancellation pass is claimed yet.
+This targets compiler-phase staging-resource cleanup, not cancellation during
+owned-extent writes, readback, or publication. Reentrant initialization and the
+full seven-provider rebuild are also still live; installed generations remain open.
+
+The first Kill fixture run was explicitly interrupted on a confirmed harness
+compiler rejection: console CCmpCtrl is opaque, so `last_cc->flags` is not a
+valid public expression. The v2 fixture requires an empty child compiler chain
+on entry, then observes a non-NULL last_cc while the child is inside
+I386BuildModule; the child executes no other compiler entry. This identifies
+the builder's control without reading private fields. Both the start and Kill
+checks must observe that control, and all retirement/output/recovery audits
+remain required. The corrected run is live in
+`build/i386-lazy-provider-cancel-v2-16m`; no pass is claimed yet. The earlier
+interrupted result remains preserved.
+
+The reentrant initializer run is terminal FAIL during fixture compilation,
+before recursive acquisition: the macro-renamed BuildOriginalMain definition
+rejects at compiler stage 3. Its evidence is preserved; the cause of the
+macro-related compilation failure remains unresolved. The v2 fixture makes a
+host-side disposable copy of the real provider text, renames only its unique
+initializer declaration directly, and appends the recursive wrapper. It keeps
+production sources untouched and retains the same runtime reentrancy oracle.
+The new run is live in `build/i386-lazy-provider-reentrant-v2-16m`.
+
+Cancellation v2 is terminal FAIL before Kill because its empty-chain test
+assumed NULL. The actual task/compiler contract initializes last_cc to
+`&task->next_cc`. Cancellation v3 checks that sentinel on entry, then requires
+last_cc to differ from the sentinel both before and at Kill. It is live in
+`build/i386-lazy-provider-cancel-v3-16m`. Neither earlier cancellation run
+qualifies active cleanup. Full seven-provider qualification remains live.
+
+Cancellation v3 is terminal FAIL on a console-typing timeout, before Kill was
+submitted: after the active-control observation, the harness tried to define
+StopCancelBuild while the child kept compiling. It does not qualify cancellation
+or prove a cleanup failure. The v4 fixture defines all helpers before spawning,
+then runs `StartCancelBuild&&StopCancelBuild` as one guest command, preserving
+the active-control observation and issuing Kill without an intervening typing
+phase. It is live in `build/i386-lazy-provider-cancel-v4-16m`; no pass is claimed.
+The reentrant v2 fixture and full seven-provider rebuild remain live.
+
+Reentrant initialization v2 is now terminal PASS under TCG/486,-fpu/16 MiB
+(`build/i386-lazy-provider-reentrant-v2-16m/result.json`). The guest-built wrapper
+is installed on a disposable disk and tested on a fresh boot. Its nested
+acquisition is rejected before the outer provider is published; one cached
+provider load serves two successful Startup builds. Both persisted outputs are
+identical and match the installed export contract, and the input disk is
+unchanged. This qualifies synchronous initializer reentrancy, not concurrent
+scheduler interleavings. The earlier macro-renaming compilation failure remains
+unresolved and preserved. Cancellation v4 and the full seven-provider rebuild
+remain live; installed generations remain unverified.
+
+### 2026-10-07 — reduced macro function-name regression
+
+Added `tools/test-i386-macro-function-name.py` to reduce the unresolved provider
+macro-renaming failure. It builds three small equivalent source units: directly
+named functions, a function name expanded by a same-file macro, and the same
+macro around an included function definition. All must persist the same two
+exports and identical module bytes. The initial TCG/486,-fpu/16 MiB run is live
+in `build/i386-macro-function-name-16m`; no macro pass is claimed. This allows
+compiler diagnosis without repeatedly building the full provider. Cancellation
+v4 and the seven-provider rebuild remain live; reentrant v2 remains qualified.
+
+Cancellation v4 is terminal FAIL on a command-result timeout, with no checkpoint
+markers to distinguish observation from termination waiting. V5 adds debug
+markers for active-control observation, Kill request and Kill return, and is
+live in `build/i386-lazy-provider-cancel-v5-16m`. Its log now confirms
+`CANCEL CONTROL observed` and `CANCEL KILL requested`; no Kill return has yet
+been observed, and the child continues compiler output. This establishes an
+actual active-build termination request; cleanup and retirement are unproven.
+
+The reduced macro regression is terminal FAIL at the same-file MacroSingle
+case (`build/i386-macro-function-name-16m/result.json`). The direct-name control
+compiled first. MacroSingle rejects at compiler stage 3 while starting
+BuildOriginalMain, before the include-based case is reached. This reproduces
+the provider fixture failure without its large includes; no macro pass or
+compiler fix is claimed. The full seven-provider rebuild remains live.
+
+Correction to the macro-failure interpretation: both earlier macro fixtures
+used `#undef`, but the original HolyC lexer in Compiler/Lex.HC has no undef
+handler or keyword. Their rejection therefore does not establish a port
+regression in macro function naming. The v2 reduced fixture instead defines
+Entry as BuildOriginalMain, keeps Main unmodified, and uses no undef directive.
+It tests direct naming, same-file expansion and included-file expansion with
+the same persisted export/byte contract. Qualification is live in
+`build/i386-macro-function-name-v2-16m`; macro correctness is still unproven
+until that run finishes. The historical failures and direct control remain
+preserved. No production compiler change has been made on their basis.
+
+Macro naming v2 is now terminal PASS under TCG/486,-fpu/16 MiB
+(`build/i386-macro-function-name-v2-16m/result.json`). Direct, same-file macro
+and included-file macro cases persist identical module bytes and the same
+Main/BuildOriginalMain exports. The previous failure was caused by the
+unsupported undef directive in the fixtures; no macro function-name port bug
+is demonstrated. Cancellation v5 still records a Kill request without return,
+and the full seven-provider rebuild remains live.
+
+### 2026-10-07 — cooperative build cancellation checkpoint candidate
+
+Cancellation v5 is terminal FAIL after its log confirms active-control
+observation and a real Kill request; the child continued compiling until the
+command-result timeout, without Kill returning. MemoryTaskCheckExit is invoked
+by managed Yield, but BuildModule had no cooperative checkpoints between its
+commands. The candidate now imports I386SchedYield in BuildRuntime and invokes
+it after frontend setup and after each completed compiler command, outside
+RedSea leases and borrowed parser calls. MemoryBind publishes that symbol as
+MemoryManagedYield, and the lazy loader's existing binding set includes it.
+The strict cross import contract now expects all thirty provider imports.
+No stack, module-set, ownership, or memory-budget requirements are reduced.
+
+Two-generation bootstrap qualification is running in
+`build/i386-managed-build-yield-bootstrap.log`; cross-build and runtime
+cancellation/reuse/8 MiB checks are pending. The existing seven-provider run
+continues on its frozen pre-checkpoint disk. Its eventual result qualifies that
+older source snapshot, not the new cancellation candidate. Two installed
+current-source generations are still required.
+
+Managed build Yield candidate two-generation bootstrap is terminal PASS
+(`build/i386-managed-build-yield-bootstrap.log`). The thirteen-module native
+cross-build and instruction/import audits are now running in
+`build/i386-managed-build-yield-cross`. No cancellation or normal-startup pass
+for this new source is claimed yet. The earlier frozen seven-provider run
+continues separately; current-source full rebuilding and installed generations
+remain required.
+
+Managed build Yield native cross-build is terminal PASS: all thirteen modules,
+strict thirty-import BuildRuntime contract, and 386 instruction audit (96 BIOS,
+209 protected-mode instructions). The flat kernel remains 549,424 bytes.
+`build/i386-managed-build-yield-source-audit` verifies all 980 delivered
+source/doc files against the candidate. Runtime cancellation at 16 MiB and
+normal startup at 8 MiB are live in `i386-managed-build-yield-cancel-16m` and
+`i386-managed-build-yield-boot-8m`; no runtime pass is yet claimed. The older
+frozen full seven-provider run continues, while new-source full rebuilding and
+installed successive generations remain unqualified.
+
+Managed-Yield 8 MiB interactive startup is terminal PASS
+(`build/i386-managed-build-yield-boot-8m/result.json`): 49.78 seconds on
+TCG/486,-fpu, all nine retained function/static/literal and exact VGA checks,
+no provider load, and the <=60-second startup budget met. Runtime cancellation
+is still live and not qualified. This startup result does not imply complete
+rebuilding or installed-generation acceptance.
+
+Managed-Yield public cancellation is terminal PASS at 16 MiB
+(`build/i386-managed-build-yield-cancel-16m/result.json`). The fixture observes
+an active compiler control, requests Kill, sees it return, and verifies that
+the child retires without returning from the build. No cancelled output is
+published. Startup builds successfully afterward with the same single cached
+provider load; its export contract matches the reference. The independent
+RedSea audit finds 23 directories, 1089 files, and a bitmap matching all reachable
+extents. The input disk is unchanged. This covers compiler-phase cancellation,
+not transfer/publication interruption. Full current-source seven-provider
+qualification is now live in `build/i386-managed-build-yield-all-providers-16m`
+on TCG/486,-fpu at 16 MiB with 14400-second per-command limits. Installed
+successive generations remain unverified.
+
+Managed-Yield saved-assembly qualification is terminal PASS at 16 MiB
+(`build/i386-managed-build-yield-bare-16m/result.json`) on TCG/486,-fpu.
+All thirteen commands pass, including bare and block PUSHFD/CLI/POPFD,
+persisted relocation-free module execution, included HolyC interrupt-state
+restoration and exact VGA checkpoints. This qualifies the current candidate's
+saved-assembly behavior; it does not prove the full seven-provider rebuild or
+successive installed generations.
+
+Managed-Yield F64 context qualification is terminal PASS at 8 MiB
+(`build/i386-managed-build-yield-float-8m/result.json`) on TCG/486,-fpu.
+All sixteen commands pass: runtime integer/F64 conversion, truncation,
+arithmetic, modulus, sqrt/abs, comparison and retained floating static state.
+Exact VGA checkpoints pass; startup is 49.47 seconds. This is focused software
+floating-point coverage, not exhaustive IEEE conformance. Current-source
+16 MiB startup/publication diagnostics and malformed-provider service-version
+recovery are running; neither is yet qualified. Full rebuilding and installed
+generations remain open.
+
+Managed-Yield provider service-version recovery is terminal PASS at 16 MiB
+(`build/i386-managed-build-yield-recovery-version-16m/result.json`). Two
+malformed-version acquisitions are rejected; in-guest repair restores the
+provider byte identically; two subsequent native Startup builds succeed using
+one cached provider load. Wrong-target and missing-import rejection/repair
+runs are now live for this same source candidate. This result does not qualify
+full rebuilding or successive installed generations.
+
+Managed-Yield 16 MiB diagnostics are terminal PASS
+(`build/i386-managed-build-yield-diag-16m/result.json`): all 22 class-publication
+and 28 program-publication cases, nine retained-state/VGA commands and zero
+build-provider loads. Diagnostic startup takes 223.41 seconds; the 60-second
+gate applies to normal 8 MiB startup, which already passes independently.
+Wrong-target and missing-import provider rejection/repair are also terminal
+PASS in `i386-managed-build-yield-recovery-wrong-target-16m` and
+`i386-managed-build-yield-recovery-missing-import-16m`: each rejects twice,
+restores the provider byte identically, then completes two builds using one
+cached provider load. All three malformed-provider cases now pass on the
+current candidate. Full seven-provider rebuilding and two successive installed
+self-built generations remain unverified.
+
+Managed-Yield provider lifetime is terminal PASS at 16 MiB
+(`build/i386-managed-build-yield-lifetime-16m/result.json`). First acquisition
+occurs in a child; two children exit naturally; another child and the parent
+reuse the same cached provider. All three persisted Startup outputs are byte
+identical and match the installed export contract. The second child's public
+task-pool used/reserved counts return exactly to their pre-spawn values, with
+one provider load and the input disk unchanged. This covers natural exit and
+public task-pool recovery, not all kernel-heap ownership or faulted cleanup.
+Recursive-initialization testing and full current-source native rebuilding
+remain live; two successive installed generations remain unverified.
+
+Managed-Yield recursive provider initialization is terminal PASS at 16 MiB
+(`build/i386-managed-build-yield-reentrant-16m/result.json`). The guest compiles
+and installs a disposable copy of the current BuildRuntime with a recursive
+initializer wrapper, then boots afresh. Nested acquisition is rejected once
+before the outer provider is published; two subsequent Startup builds reuse
+one cached provider and produce identical modules with the reference export
+contract. The input disk remains unchanged. This also demonstrates native
+compilation/persistence of the current BuildRuntime implementation with the
+fixture wrapper; it does not replace the exact seven-provider rebuild gate.
+Full native rebuilding and two installed self-built generations remain open.
+
+The earlier frozen lazy-orchestration seven-provider run has persisted
+ConsoleRuntime at 16 MiB and advanced to CompilerRuntime. The independent
+`build/i386-lazy-orchestration-all-providers-16m/console-persisted-audit.json`
+passes: 2,266,385 bytes, 6,606 records, 649 exports, exact reference export set,
+and required document allocation-wrapper calls. This is evidence for that
+older source snapshot only. The full run remains live; current managed-Yield
+ConsoleRuntime persistence and complete seven-provider rebuilding remain
+unqualified, as do successive installed generations.
+
+The earlier frozen lazy-orchestration run also persists CompilerRuntime at
+16 MiB. `build/i386-lazy-orchestration-all-providers-16m/compiler-persisted-audit.json`
+passes the retained-module record layout and reference export contract:
+1,881,920 bytes, 4,092 records, 453 exports; only the two cross-build division
+boundary markers are absent, as allowed by the existing native-build contract.
+This qualifies that older CompilerRuntime output only. The full run remains
+live, as does current managed-Yield ConsoleRuntime packing; complete current
+seven-provider rebuilding and successive installed generations remain open.
+
+Current managed-Yield ConsoleRuntime persistence is independently qualified at
+16 MiB on TCG/486,-fpu:
+`build/i386-managed-build-yield-all-providers-16m/console-persisted-audit.json`
+passes with 2,266,385 bytes, 6,606 records, 649 exports, exact reference export
+set and required document allocation-wrapper calls. Its module bytes are
+identical to the earlier lazy-orchestration native output. This proves the
+largest provider's bounded build/persistence on the current source, not the
+complete seven-provider run or installed generations; the full run remains live.
+
+The earlier frozen lazy-orchestration candidate also passes independent
+CompilerProbe persistence at 16 MiB on TCG/486,-fpu:
+`build/i386-lazy-orchestration-all-providers-16m/compiler-probe-persisted-audit.json`
+records 1,285,621 bytes, 3,637 records and 197 exports, with the exact reference
+export set. That run has moved on to FileRuntime. This is older-candidate
+partial evidence; current managed-Yield CompilerRuntime rebuilding remains
+live, and complete current seven-provider and installed-generation acceptance
+remain unproven.
+
+The earlier frozen lazy-orchestration candidate passes independent FileRuntime
+persistence at 16 MiB on TCG/486,-fpu.
+`build/i386-lazy-orchestration-all-providers-16m/file-persisted-audit.json`
+records 390,335 bytes, 898 records and 134 exports with the exact reference
+export set. This remains older-source partial evidence; the current candidate's
+complete seven-provider rebuild and installed generations remain unproven.
+
+Current managed-Yield CompilerRuntime persistence passes at 16 MiB on
+TCG/486,-fpu.
+`build/i386-managed-build-yield-all-providers-16m/compiler-persisted-audit.json`
+records 1,881,920 bytes, 4,092 records and 453 exports. The reference export
+contract passes with only the two permitted cross-build division boundary
+markers absent. Its bytes match the earlier lazy-orchestration native compiler
+output. ConsoleRuntime and CompilerRuntime now have current-source persisted
+audits; the complete seven-provider run and installed generations remain open.
+
+The earlier frozen lazy-orchestration seven-provider run is now terminal PASS:
+`build/i386-lazy-orchestration-all-providers-16m/result.json`. All seven native
+modules persist at 16 MiB on TCG/486,-fpu with their reference export contracts,
+ConsoleRuntime allocation-wrapper audit and exactly one reused provider load.
+This qualifies the older source, not the current managed-Yield candidate; its
+seven-provider run remains live. Installed-generation testing remains gated on
+the current-source complete pass.
+
+Current managed-Yield CompilerProbe persistence passes at 16 MiB on
+TCG/486,-fpu.
+`build/i386-managed-build-yield-all-providers-16m/compiler-probe-persisted-audit.json`
+records 1,285,621 bytes, 3,637 records and 197 exports with the exact reference
+export set. Its bytes match the earlier native output. Three current providers
+have persisted audits; four providers and the installed generations remain open.
+
+Current managed-Yield FileRuntime persistence passes at 16 MiB on TCG/486,-fpu.
+`build/i386-managed-build-yield-all-providers-16m/file-persisted-audit.json`
+records 390,335 bytes, 898 records and 134 exports with the exact reference
+export set; its bytes match the earlier native output. Four current providers
+have persisted audits. MemoryRuntime, BuildRuntime, Startup and the installed
+generations remain open.
+
+Current managed-Yield seven-provider qualification is terminal PASS at 16 MiB
+on TCG/486,-fpu: `build/i386-managed-build-yield-all-providers-16m/result.json`.
+All seven persisted module layout/export audits, ConsoleRuntime allocation
+wrappers and exactly one cached provider load pass. BuildRuntime includes the
+managed-yield change (135,746 bytes, 279 records, 44 exports). The two-generation
+runner is active in `build/i386-managed-build-yield-generations-16m`; its
+980-file input-source/volume audit passes and generation-one installation is
+running. Installed-generation completion remains unproven.
+
+The current two-generation run failed generation-one installed boot at 8 MiB:
+`build/i386-managed-build-yield-generations-16m/result.json`. Provider replacement
+completed, but startup exhausted the heap on a 4 KiB allocation after startup
+source initialization, while starting the keyboard worker. Used/capacity were
+0x655C58/0x659C00. The seven-provider 16 MiB pass remains valid; installed native
+providers are larger than the cross-built startup candidate. Reduce installed
+startup memory use before rerunning generations; do not increase the 8 MiB gate.
+
+The shared export-setup candidate factors ConsoleInit's 208 name/value
+assignments through ConsoleDocExportSet without changing bindings. A host
+comparison proves all 208 indices, names and values match the committed table.
+Native ConsoleInit previously exceeded the cross-built code span by 22,678
+bytes; total ConsoleRuntime payload exceeded it by 32,344 bytes. The new
+bootstrap is running (`build/i386-console-export-setup-bootstrap.log`); savings
+and installed boot are not yet verified.
+
+Shared export-setup qualification: bootstrap is terminal PASS
+(`build/rebuild-test/result.json`), and the thirteen-module cross-build passes
+(`build/i386-console-export-setup-cross/result.json`). Normal startup is
+terminal PASS at 8 MiB on 486,-fpu in 47.85 seconds, with nine retained-state
+and exact VGA checks and zero provider loads
+(`build/i386-console-export-setup-boot-8m/result.json`). Cross-built Console
+payload decreases from 2,043,824 to 2,043,552 bytes. This does not establish
+native payload savings or recover the failed installed-startup gate. The
+seven-provider native run is confirmed live, compiling ConsoleRuntime, in
+`build/i386-console-export-setup-all-providers-16m`.
+
+Shared export-setup focused regressions are terminal PASS: public compiler-
+phase cancellation at 16 MiB retires the child, leaves no cancelled output,
+permits a subsequent build and reuses one provider load; the independent
+volume bitmap matches reachable extents. Software F64 passes sixteen commands
+at 8 MiB, and saved assembly passes thirteen commands at 16 MiB, including
+persisted relocation-free execution and interrupt-state restoration. Reports:
+`build/i386-console-export-setup-{cancel-16m,float-8m,bare-16m}/result.json`.
+The full seven-provider rebuild remains live; installed native boot and two
+successive self-built generations remain unverified.
+
+Shared export-setup service-version recovery is terminal PASS at 16 MiB
+(`build/i386-console-export-setup-recovery-version-16m/result.json`): two
+rejections, in-guest repair, two successful builds, one provider load and
+byte-identical restored provider. Wrong-target and missing-import recovery
+are now running against this same candidate. Native rebuild and installed
+generations remain unqualified.
+
+Shared export-setup wrong-target and missing-import recovery are terminal
+PASS at 16 MiB. Together with service-version recovery, all three cases
+verify two rejections, repair, two successful builds, one cached provider load
+and byte-identical restored provider. Reports are under
+`build/i386-console-export-setup-recovery-{wrong-target,missing-import}-16m`.
+Provider lifetime and recursive initialization tests are now running; full
+native rebuilding and installed generations remain unverified.
+
+Shared export-setup diagnostics are terminal PASS at 16 MiB on 486,-fpu
+(`build/i386-console-export-setup-diag-16m/result.json`): twenty-two class
+and twenty-eight program publication cases, nine retained-state/exact VGA
+checks, zero provider loads. Diagnostic startup takes 207.18 seconds; this
+is separate from the passing normal 8 MiB sixty-second gate. The full native
+rebuild remains live; installed native startup and generations remain open.
+
+Shared export-setup provider lifetime is terminal PASS at 16 MiB
+(`build/i386-console-export-setup-lifetime-16m/result.json`): first use in a
+child, two natural child exits, three successful child/parent builds, one
+provider load and exact second-child public task-pool recovery. This does
+not establish arbitrary faulted cleanup or all-heap recovery. Recursive
+initialization and the full seven-provider rebuild remain live; installed
+native 8 MiB boot and successive generations remain unproven.
+
+A separate current-source validator/packer fixture builds and persists at
+16 MiB on 486,-fpu (`build/i386-console-export-setup-native-bundle-audit`).
+Its observed table has eleven records: five exports, five REL32 calls and one
+callback address relocation. The exports are I386ModuleBufferByte,
+I386ModuleCodeWord, I386ModulePackRaw, I386ModuleValid and I386ModuleValidParts.
+The comprehensive host verifier still expects the older three-record table.
+Fixture construction/inventory does not establish execution acceptance; the
+strict audit must be updated using these records and checked for rejection
+of damaged inputs. Separate loader/allocator fixture construction is running.
+
+Shared export-setup recursive initialization is terminal PASS at 16 MiB
+(`build/i386-console-export-setup-reentrant-16m/result.json`). The guest-built
+fixture passes a fresh boot: one nested acquisition rejection, one outer
+provider load and two successful cached builds. Its module SHA256 is
+623b8026435ea59f40d85dbcf7d8ff8ba76cba28b34523c16121bcda25fa2e52.
+The full native seven-provider rebuild remains live; installed native 8 MiB
+boot, payload savings and two successive generations remain unverified.
+
+Separate loader/allocator fixture construction and persistence are terminal
+PASS at 16 MiB on 486,-fpu
+(`build/i386-console-export-setup-native-loader-audit/result.json`). The
+loader has fourteen exports, twenty-seven REL32 calls and one address
+relocation (forty-two records). The allocator has twenty-five exports, forty
+REL32 calls and one address relocation (sixty-six records), including
+I386HeapAllocHigh and I386HeapShrink. Both callback relocations name
+I386ModuleBufferByte. These inventories identify strict host-audit updates;
+fixture execution and integrated comprehensive verification remain open.
+A temporary bundle audit accepts the valid eleven-record fixture and rejects
+six mutations: record kind, export name, call/callback opcode and call/callback
+relocation bytes (`native-bundle-audit/strict-audit-prototype.json` under the
+shared export-setup build prefix). This prototype is not yet integrated.
+
+The three comprehensive host audits now use the measured current-source
+export and call contracts. A shared strict checker validates the callback
+address record, exact call multiplicities, name termination, relocation
+opcodes, zero relocation fields and nonoverlapping relocation sites. All
+three persisted fixture images pass the integrated audits. Twenty-four
+damaged variants (eight per fixture) are rejected, covering kind/name,
+call/callback opcode, call/callback relocation, terminator and count damage.
+Evidence: `build/i386-console-export-setup-native-audit-regression.json`.
+Only host verification changed; guest source and the running native provider
+build are unchanged. Guest execution/full comprehensive qualification,
+installed native 8 MiB boot and two generations remain open.
+
+Additional existing comprehensive assertions pass against the shared
+export-setup diagnostic log: branch recovery, optimizer/emitter/backend
+phase completion, forty-four expression cases, parser ownership and in-memory
+native bundle/loader/allocator execution. Evidence is in
+`build/i386-console-export-setup-diagnostic-core-audit.json`; this is not the
+entire comprehensive suite. A disposable image now runs the original
+persistence-enabled diagnostic probes at 16 MiB across two boots
+(`build/i386-console-export-setup-persisted-probes-16m`). This qualifies module
+write/reload/execution, not the separate installed-generation memory gates.
+
+The strict host-audit mutation check is now reproducible through
+`tools/test-i386-native-audits.py`. Supply --bundle, --loader and --alloc
+with persisted NativeBundle/NativeLoader/NativeAlloc T32M files and --out
+with a report path. The current fixtures pass and all twenty-four damaged
+variants reject. Python compilation and diff whitespace checks pass. The
+original two-boot persistence probes and seven-provider rebuild remain live.
+
+The first original persistence-probe boot is terminal PASS at 16 MiB on
+486,-fpu (`build/i386-console-export-setup-persisted-probes-16m/result.json`,
+stages.fresh). Native bundle/loader/allocator DISK markers each occur once,
+without EXISTING markers on this fresh image. Original guest probes write,
+read, load and execute their modules, and all three updated strict host
+audits accept the persisted modules. The second boot is live to verify
+existing-module execution/replacement. This remains separate from installed
+self-built generation acceptance.
+
+Original two-boot persistence probes are terminal PASS at 16 MiB on
+486,-fpu: bundle/loader/allocator execute existing modules on reboot and
+reproduce identical persisted bytes. The RedSea loader host audit was also
+updated to its measured 103-record contract, including compaction helpers
+and exactly two calls each to the three resident RedSea imports. All twenty
+single-disk persisted-module audits now pass
+(`build/i386-console-export-setup-persisted-probe-host-audits.json`). The
+reusable host audit regression accepts four real modules and rejects thirty-
+two damaged variants. Its optional --file argument covers NativeFile.
+The native seven-provider rebuild remains live; installed native 8 MiB boot
+and two successive installed generations remain unverified.
+
+Strict host-audit TDD caught an accepted wrong-CPU header: the new CPU
+mutation failed before the fix. The shared audit now checks CPU=3, pointer
+size=4 and ABI=1, matching Kernel/I386/Module.HH. Four valid fixtures still
+pass; fifty-two damaged variants now reject, including magic/version/CPU/
+pointer-size/ABI mutations. Evidence remains
+`build/i386-console-export-setup-native-audit-regression.json`. Python and
+whitespace checks pass. Guest source and the live native rebuild are unchanged.
+
+The previously completed managed-Yield native seven-provider set passes
+the existing full module ISA audit, using its matching cross-built flat
+kernel (`build/i386-managed-build-yield-native-isa-audit/result.json`). All
+seven native modules pass instruction/data-range classification, code tails
+and the 386 instruction allowlist, including native compiler division-template
+verification. ConsoleRuntime uses module version 3; the other six use version
+2. This qualifies the earlier frozen native set only. Apply the same audit
+to the shared export-setup outputs once the live rebuild completes.
+
+The shared export-setup input image passes the current packaged-source
+audit (`build/i386-console-export-setup-source-audit/result.json`): all 980
+source/doc files match the working candidate exactly, and the independent
+volume audit finds the allocation bitmap consistent with reachable extents.
+This checks the immutable input image, not the live staged-output image or
+successive installed generations. The seven-provider rebuild remains live.
+
+
+### Shared Console export setup — native persistence measured
+
+The live 16 MiB TCG/486,-fpu rebuild has persisted ConsoleRuntime. Its
+layout, exact 650-export set and document allocation-wrapper calls pass in
+`build/i386-console-export-setup-console-partial-audit/result.json`. Total
+module size is 2,240,021 bytes with a 2,057,184-byte payload: 18,984 payload
+bytes saved against the previous native candidate. The remaining six-provider
+run is still live; this partial result does not qualify installed 8 MiB boot
+or either self-built generation.
+
+The current native Console also passes executable/data classification and the
+386 instruction allowlist in
+`build/i386-console-export-setup-console-isa-audit/result.json`. That audit
+uses cross-built remaining modules and flat kernel; full native seven-module
+ISA qualification is still pending.
+
+Current-source CompilerRuntime native persistence now passes in
+`build/i386-console-export-setup-compiler-partial-audit/result.json`: 1,881,920
+bytes, 4,092 records and 453 exports. Its SHA-256 matches the previous qualified
+native Compiler exactly. The full seven-provider run remains live; installed
+boot and self-built generations are still pending.
+
+### Current bounded-memory qualification (2026-10-08)
+
+The Console export-setup candidate passes all seven persisted native provider
+builds at 16 MiB on TCG/486,-fpu, with export/layout/allocation-wrapper audits
+and one reused build-provider load. The seven native modules also pass the 386
+instruction audit with the cross-built flat kernel. Evidence:
+`build/i386-console-export-setup-all-providers-16m/result.json` and
+`build/i386-console-export-setup-native-isa-audit/result.json`.
+
+Generation-one retained installation passes and boots at 8 MiB, including
+`6*7`, `DocAllocationCheck`, and exact VGA checkpoints. This clears the previous
+keyboard-startup heap exhaustion. Installed startup took 73.94 seconds, so the
+60-second startup target is not qualified for installed native providers.
+Generation-one flat-kernel self-build is running; two complete installed
+self-built generations remain unverified. Evidence:
+`build/i386-console-export-setup-generations-16m/gen1-install/result.json` and
+its `boot/result.json`. Preserve the memory limits and full generation gates.
+
+### Kernel export-setup candidate qualification
+
+Generation one's complete native kernel reaches interactive startup but fails
+`DocAllocationCheck` at 8 MiB: an 8,755-byte request cannot fit despite 15,008 unused arena bytes including headers; the allocation counter is 8,099.
+Its heap capacity is 4 KiB lower than the passing retained-provider installation.
+The generation pipeline is terminal FAIL; two complete generations remain open.
+
+Kernel export-address setup now shares one helper and preserves all 72 ordered
+bindings. Bootstrap and cross-build pass; the cross-built flat kernel shrinks
+by 2,144 bytes to 547,280 bytes. Current-image qualifications pass: normal 8 MiB
+startup in 47.95 seconds (nine checks), 980-file delivered-source audit, 16 MiB
+no-FPU diagnostics (50 publication cases and nine checks), 8 MiB software F64
+(16 commands), 16 MiB saved assembly (13 commands), public compiler Kill and
+all three provider rejection/repair variants. Reports are under
+`build/i386-kernel-export-setup-*`.
+
+Full native provider rebuilding and direct native Kernel measurement remain
+live. Their completion must precede new installed-generation qualification;
+the cross-built saving alone does not prove the failing native boot is fixed.
+Retain the 8 MiB/16 MiB limits and the 60-second startup target.
+
+Current kernel export-setup measurement passes native persistence/export checks:
+552,400 payload bytes, 776 bytes below the previous native Kernel. This does
+not yet prove recovery of the prior 4 KiB heap-capacity loss or installed boot.
+The recursive provider-initialization regression also passes at 16 MiB:
+one nested rejection, two successful builds and one provider load. Evidence:
+`build/i386-kernel-export-setup-native-kernel/result.json` and
+`build/i386-kernel-export-setup-reentrant-16m/result.json`.
+
+Current kernel export-setup installed-boot observation: generation-one native
+kernel compilation and installation commands complete, but 8 MiB
+`DocAllocationCheck` rejects an 8,755-byte allocation with largest free block
+5,504 bytes, 8,099 live allocations, heap capacity `0x658E00`. The 512-byte
+reservation reduction does not close the memory gate. Preserve the failure
+under `build/i386-kernel-export-setup-generations-16m`; no second complete
+generation is qualified. Continue reducing memory without increasing RAM,
+shrinking task stacks, or dropping HolyC/DolDoc contracts.
+
+Cached-span reuse candidate: larger free spans in public exact-size caches
+can satisfy smaller allocations before another page batch is reserved.
+Requested rounding, task ownership and eight-byte alignment remain unchanged.
+Original two-generation bootstrap and thirteen-module cross-build pass.
+Dedicated heap-cache regression passes both normal and portable-source paths;
+the previous allocator fails the same fixture at 135 (0x87), detecting extra
+page growth. Normal 8 MiB startup passes in 47.90 seconds; 16 MiB diagnostic
+startup/runtime/VGA checks pass. Full seven-provider native rebuild is running
+under `build/i386-cache-span-reuse-all-providers-16m`. These results do not
+qualify installed native flat-kernel boot or two self-built generations.
+
+Cached-span allocator follow-up: complete heap regression commands now pass
+both `--heap` and `--heap --heap-source`, each aggregating bounded core,
+public/region/backing and cache-reuse fixtures. The original combined image
+exceeded its fixed transfer limit; assertions now run separately without
+raising that limit. Evidence is `build/i386-heap-test/result.json` and
+`build/i386-heap-source-test/result.json`. The native seven-provider rebuild
+remains live; no installed-generation qualification follows from heap passes.
+
+Cached-span reuse qualification update: all seven native providers pass the
+persisted export audit at 16 MiB without an FPU. The two-generation run fails
+at the first retained-provider installation boot: `DocAllocationCheck` exhausts
+memory at 8 MiB (9,267-byte backing request, largest block 1,440 bytes).
+Installed generations remain unqualified; investigate public-heap backing
+retention before repeating the generation run. See `docs/port-memory-goal.md`.
+
+Adjacent-span coalescing update: a regression first reproduced unnecessary page
+batch growth, then passed with coalescing on small-allocation exhaustion. Full
+native/portable heap suites, bootstrap, cross-build, normal 8 MiB startup
+(47.85 seconds), 16 MiB diagnostics and native MemoryRuntime rebuild pass.
+The focused mixed-provider 8 MiB image now passes the formerly failing DolDoc
+allocation check. Fresh all-provider rebuilding is underway; two complete
+self-built installations remain required. See `docs/port-memory-goal.md`.
+
+Current adjacent-span coalescing candidate also passes saved assembly at 16 MiB
+on TCG/486,-fpu: all thirteen commands, persisted bare/block assembly modules,
+and interrupt-state restoration. Evidence:
+`build/i386-adjacent-span-merge-bare-16m/result.json`.
+This is a focused regression pass; complete provider rebuilding and both
+installed self-built generations remain unqualified.
+
+Current adjacent-span coalescing candidate also passes the sixteen-command
+software F64 and retained-static-state regression at 8 MiB on TCG/486,-fpu.
+Evidence: `build/i386-adjacent-span-merge-float-8m/result.json`.
+This does not qualify installed self-built generations.
+
+Current adjacent-span coalescing candidate passes public compiler cancellation
+and provider lifetime/reuse regressions at 16 MiB on TCG/486,-fpu. Both complete
+with successful follow-up commands and persisted-output audits. Evidence:
+`build/i386-adjacent-span-merge-cancel-16m/result.json` and
+`build/i386-adjacent-span-merge-lifetime-16m/result.json`.
+Checkpoint now preserves these focused results; full native rebuilding and
+two installed self-built generations remain unqualified.
+
+Current adjacent-span coalescing service-version recovery passes at 16 MiB:
+bad provider rejection, in-guest repair and subsequent compilation without
+reboot. Evidence:
+`build/i386-adjacent-span-merge-recovery-version-16m/result.json`.
+Full provider rebuilding and installed self-built generations remain open.
+
+Current adjacent-span coalescing provider recovery also passes wrong-target
+and missing-import rejection, in-guest repair, retry and reuse at 16 MiB.
+Each case observes two rejections, two successful builds, one provider load,
+and byte-identical restoration. Evidence:
+`build/i386-adjacent-span-merge-recovery-{target,import}-16m/result.json`.
+All three recovery cases now pass; full native rebuilding and both installed
+self-built generations remain unqualified.
+
+Current adjacent-span coalescing recursive provider initialization passes at
+16 MiB on TCG/486,-fpu. The guest-built fixture is installed and tested after
+fresh boot: one nested-acquisition rejection, one provider load and two
+successful builds. Evidence:
+`build/i386-adjacent-span-merge-reentrant-16m/result.json`.
+The current all-provider rebuild remains live; two complete installed
+self-built generations and their startup timing remain unqualified.
+
+Current adjacent-span coalescing native ConsoleRuntime has completed at 16 MiB
+on TCG/486,-fpu and passes its persisted layout, reference-export-set and
+allocation-wrapper audit: 2,240,021 bytes, 6,401 records, 650 exports.
+Evidence: `build/i386-adjacent-span-merge-console-partial-audit/result.json`.
+The original all-provider session has advanced to CompilerRuntime; this partial
+pass does not qualify the remaining providers or installed generations.
+
+Current adjacent-span coalescing native CompilerRuntime completes at 16 MiB
+on TCG/486,-fpu and passes persisted layout/reference-export auditing:
+1,881,920 bytes, 4,092 records, 453 exports.
+Evidence: `build/i386-adjacent-span-merge-compiler-partial-audit/result.json`.
+The same all-provider session has advanced to CompilerProbe. Remaining
+providers and both installed self-built generations remain unqualified.
+
+Current adjacent-span coalescing native CompilerProbe completes at 16 MiB
+on TCG/486,-fpu and passes persisted layout/reference-export auditing:
+1,285,621 bytes, 3,637 records, 197 exports.
+Evidence: `build/i386-adjacent-span-merge-probe-partial-audit/result.json`.
+The same all-provider session has advanced to FileRuntime. Remaining
+providers and both installed self-built generations remain unqualified.
+
+Current adjacent-span coalescing native FileRuntime completes at 16 MiB
+on TCG/486,-fpu and passes persisted layout/reference-export auditing:
+390,335 bytes, 898 records, 134 exports.
+Evidence: `build/i386-adjacent-span-merge-file-partial-audit/result.json`.
+The same all-provider session has advanced to MemoryRuntime. Remaining
+providers and both installed self-built generations remain unqualified.
+
+Current adjacent-span coalescing native MemoryRuntime in the complete provider
+sequence passes persisted layout/reference-export auditing at 16 MiB:
+340,346 bytes, 1,047 records, 153 exports, byte-identical to the focused rebuild.
+Evidence: `build/i386-adjacent-span-merge-memory-partial-audit/result.json`.
+Five provider commands have completed; BuildRuntime is running. The full
+provider audit and both installed self-built generations remain unqualified.
+
+Current adjacent-span coalescing complete seven-provider rebuild passes at
+16 MiB on TCG/486,-fpu. All persisted layouts/reference export sets and Console
+allocation wrappers pass; build support loads once and is reused. Evidence:
+`build/i386-adjacent-span-merge-all-providers-16m/result.json`.
+The two-generation build/install/boot runner is active in
+`build/i386-adjacent-span-merge-generations-16m`; installed generations and
+their normal startup timing remain unqualified.
+
+Current adjacent-span coalescing retained-provider installation passes its
+8 MiB functional boot, including arithmetic and DocAllocationCheck. This closes
+the prior DolDoc allocation failure for this image. Startup takes 74.19
+seconds, exceeding the 60-second normal-startup requirement; functional PASS
+does not qualify that timing gate. Evidence:
+`build/i386-adjacent-span-merge-generations-16m/gen1-install/boot/result.json`.
+The runner has advanced to gen1-selfhost; two complete self-built generations
+remain unqualified. Preserve sources while it runs.
+
+Current adjacent-span coalescing generation one passes guest kernel rebuilding
+at 16 MiB, installation, and functional boot at 8 MiB on TCG/486,-fpu.
+The 553,184-byte guest-built flat image matches the installed payload; all
+thirteen modules, boot metadata/padding, 386 executable instruction ranges,
+filesystem allocation, and 980 delivered source files pass their audits.
+Arithmetic, DocAllocationCheck and VGA checks pass. Installed startup takes
+73.74 seconds, so the unchanged 60-second timing gate remains unqualified.
+Evidence: `build/i386-adjacent-span-merge-generations-16m/gen1-selfhost/result.json`,
+its `boot/result.json`, `gen1-audit/result.json`, and `gen1-source-audit/result.json`.
+The same runner has advanced to gen2-retained-build. Preserve source inputs
+until it finishes; generation two and installed startup timing remain open.
+
+The original adjacent-span two-generation process handle disappeared during
+gen2-retained-build without a terminal result. Its running manifests are not
+completion evidence; generation-one audited passes remain valid and preserved.
+All original source and qualification-input hashes were rechecked and match.
+A fresh full qualification uses
+`build/i386-adjacent-span-merge-generations-recovery-16m`, preserving the old
+output directory. No guest or harness source was changed for recovery.
+Both-generation acceptance and the installed 60-second startup gate remain open.
+
+The recovery run repeats generation-one self-build/install/8 MiB functional
+boot and all thirteen-module, boot-image, filesystem, 386 instruction and
+980-file source audits successfully. Its flat image and all module hashes
+match the original generation-one audit. Startup takes 74.14 seconds, still
+above the unchanged 60-second gate. Evidence lives under
+`build/i386-adjacent-span-merge-generations-recovery-16m/gen1-selfhost`,
+`gen1-audit`, and `gen1-source-audit`. The runner is live at
+gen2-retained-build; keep source inputs frozen.
+
+The recovery generation-two retained rebuild passes all seven providers at 16 MiB on TCG/486,-fpu. The persisted outputs are byte-identical to the generation-one installed providers, with one BuildRuntime load. Generation-two installation and flat-kernel self-build remain pending; the 60-second installed startup gate remains open.
+
+The recovery generation-two retained installation and 8 MiB functional boot pass, including arithmetic and DocAllocationCheck. Startup takes 73.88 seconds, exceeding the unchanged 60-second target. The native flat-kernel self-build and final generation audits remain pending.
+
+The recovery two-generation pipeline terminates at generation-identity with FAIL. Generation-two native self-build, 8 MiB functional boot, installed-image audit and 980-file delivered-source audit pass, but Kernel.t32m and GuestBoot.bin differ by 64 bytes across generations; the other twelve modules match. The difference lies after short strings in the fixed-size internal-type name arrays. PrsVarInit2Core copies the destination array length from the shorter string buffer, reading beyond the string. Bound the copy and zero-fill the remainder, add regression coverage, and repeat generation qualification. The 60-second startup gate also remains open.
+
+The fixed-size string initializer now zero-fills the destination and copies at most the available string bytes. The refreshed original compiler/kernel bootstrap rebuild and thirteen-module i386 cross-build pass, including the 386 boot instruction audit (`build/i386-string-padding-bootstrap.log` and `build/i386-string-padding-cross/result.json`). The unfixed guest regression returns 2 instead of 0 for zero padding; fixed-candidate coverage adds empty strings, truncation and padding alongside aggregate initializers. Guest regression and full generation requalification remain pending; the 60-second installed startup gate is unchanged.
+
+The fixed-candidate initializer regression passes all six cases (truncated, empty and padded strings; direct, macro and bitmap aggregate initializers), with persisted source/module/export validation and 25 VGA command checks on TCG/486,-fpu at 16 MiB. Evidence: `build/i386-string-padding-fixed/result.json`. This qualifies the targeted initializer behavior; it does not yet establish two-generation identity or installed startup timing.
+
+The fixed initializer candidate passes normal 8 MiB startup in 47.21 seconds, all nine retained-state/storage/presentation VGA checks, and zero BuildRuntime startup loads (`build/i386-string-padding-boot-8m/result.json`). The fresh seven-provider native rebuild is running at 16 MiB under TCG/486,-fpu. The initializer checkpoint is `build/checkpoints/2026-10-09-string-padding/manifest.json`; installed-generation identity and the installed 60-second boot gate remain open.
+
+An additional binary-data audit confirms the persisted AOT fixtures contain exactly the expected fixed-size arrays: one truncated `x` byte, sixteen zero bytes, and `x` followed by sixty-three zero bytes, each in its unique declared-size data range (`build/i386-string-padding-fixed/persisted-array-audit.json`). This complements included-source runtime checks and persisted module export validation.
+
+The first fixed-initializer seven-provider run terminates at the 3,600-second ConsoleRuntime command limit while still compiling GrPutChar, before publication; no guest rejection is reported. Its result is FAIL due to timeout and is preserved under `build/i386-string-padding-all-providers-16m`. The coordinator stops before generation qualification. A fresh complete retry uses a 14,400-second per-module limit under `build/i386-string-padding-all-providers-long-16m`; memory, CPU, acceptance scope and startup budget remain unchanged.
+
+
+### Recovery output capacity failure (2026-10-09)
+
+The six-provider recovery is terminal FAIL after CompilerRuntime was persisted
+(1,882,552 bytes). CompilerProbe compilation completes, but stage 5 output
+reservation rejects its 1,285,621-byte output: 2,511 sectors are required and
+only 645 sectors remain free, also the largest contiguous run. Both the
+interrupted source and recovery disk pass the reachable-extent bitmap audit;
+no orphaned allocation is inferred. This is disk capacity exhaustion, not a
+16 MiB RAM failure. The generation coordinator stops before qualification.
+Evidence: `build/i386-string-padding-providers-recovery-16m/result.json` and
+`reservation-failure-audit.json`. Next qualify sufficient build-disk capacity
+while preserving the 8 MiB boot and 16 MiB rebuild RAM gates.
+
+## Host audit regression refreshed (2026-10-09)
+
+The current production host audits accept four previously persisted guest-built
+fixtures (bundle, loader, allocator and file) and reject all 52 independently
+damaged variants. This qualifies audit rejection behavior only; these historical
+fixtures do not establish current-candidate guest execution or native generation
+reproducibility. Evidence: `build/i386-string-padding-host-native-audits/result.json`.
+The capacity32 native rebuild remains live, compiling CompilerProbe at 16 MiB.
+
+## Published recovery providers audited (2026-10-09)
+
+ConsoleRuntime (2,240,021 bytes, 650 exports) and CompilerRuntime (1,882,552
+bytes, 453 exports) pass persisted-module and current cross-reference export
+contract audits on an independent copy of the terminal recovery image. Native
+bytes need not match cross-built modules; native generation identity remains a
+separate pending gate. Evidence:
+`build/i386-string-padding-published-provider-audit/result.json`.
+
+## Installed startup profiling leads (2026-10-09)
+
+Static analysis of the preserved native providers counts 6,401 ConsoleRuntime
+records and 742 combined function/data exports, exceeding the 512-slot symbol
+index and selecting full-scan resolution. The unchanged validator performs
+57,154,893 nested record visits for that valid module. CompilerRuntime has
+4,092 records, 464 combined exports (index fits), and 23,726,719 nested validator
+visits. These are static counts, not elapsed-time measurements. Use installed
+startup phase timings to determine which path to optimize; preserve complete
+validation, duplicate/overlap rejection, stack limits and memory ownership.
+Evidence: `build/i386-string-padding-loader-scan-analysis.json`. Current
+qualification sources remain unchanged.
+
+## Sequential final-candidate regression refresh queued (2026-10-09)
+
+After two-generation qualification and the separate four installed 8 MiB
+interactive/60-second startup checks finish, refresh the current cross-built
+candidate's 16 MiB publication diagnostics, 8 MiB software floating point,
+16 MiB saved assembly, cancellation/lifetime/reentrant provider behavior, and
+service-version/wrong-target/missing-import repair cases. The queue uses one
+QEMU instance at a time and preserves independent result files. Queued work
+is not passing evidence. Protocols are checkpointed; logs:
+`build/i386-string-padding-installed-acceptance-capacity32-8m.log` and
+`build/i386-string-padding-regression-refresh.log`.
+
+## CompilerProbe publication passes on the recovery disk (2026-10-09)
+
+The capacity32 recovery run completed the CompilerProbe build command and
+advanced to FileRuntime (`qemu/checkpoint.json`: `startup-command-01`). The
+previous failure at output reservation is no longer reproduced with the larger
+disk; RAM remains 16 MiB on TCG/486,-fpu. This is command-level success only.
+Persisted provider bytes and export contracts remain pending the final audit,
+along with MemoryRuntime, BuildRuntime, Startup and generation qualification.
+
+## FileRuntime recovery build command passes (2026-10-09)
+
+The capacity32 recovery harness completed FileRuntime and advanced to
+MemoryRuntime (`startup-command-02`), following CompilerProbe's successful
+build command. RAM remains 16 MiB, with no build rejection in this run.
+The combined persisted-provider audit and self-built generations remain pending.
+
+## MemoryRuntime recovery build command passes (2026-10-09)
+
+The capacity32 recovery harness completed MemoryRuntime and advanced to
+BuildRuntime (`startup-command-03`), following CompilerProbe and FileRuntime.
+RAM remains 16 MiB on TCG/486,-fpu. BuildRuntime, Startup, the combined
+persisted-output audit and self-built generation qualification remain pending.
+
+## Capacity32 provider build and audit pass (2026-10-09)
+
+All five resumed commands passed, and all seven persisted native providers pass
+the combined layout/function-export contract audit. The 32 MiB disk resolved
+the earlier reservation failure without raising the 16 MiB rebuild RAM limit.
+Generation-one installation is running. The installed generations, byte identity,
+60-second startup budget and broader regression refresh remain unqualified.
+Evidence: `build/i386-string-padding-providers-capacity32-16m/result.json`;
+the original five-command result and QEMU result are preserved separately.
+
+## Generation-one installed boot passes functionality, misses startup budget (2026-10-09)
+
+All seven native providers install with exact persisted bytes, and the 8 MiB
+TCG/486,-fpu boot passes arithmetic, DolDoc allocation and exact VGA checks.
+Official startup is 75.065 seconds, exceeding the 60-second goal. Host marker
+observations estimate 8.672 seconds in root kernel-header processing and
+29.327 seconds in root user-header processing; these phase estimates are not
+authoritative acceptance timings. Profile header parsing alongside module
+validation/resolution before choosing an optimization. Generation-one flat-kernel
+self-host rebuilding is live; generation identity remains pending. Evidence:
+`build/i386-string-padding-generations-capacity32-16m/gen1-install/boot/result.json`
+and `build/i386-string-padding-capacity32-startup-observations.log`.
+
+## Generation-one self-built 8 MiB allocation failure (2026-10-09)
+
+All eight native flat-kernel build/link/install commands pass. The independent
+8 MiB TCG/486,-fpu boot reaches the command loop and passes arithmetic, then
+DocAllocationCheck throws OutMem: request 8,755 bytes, heap used 6,637,216,
+limit 6,655,488, largest free block 8,256 bytes. The generation runner is
+terminal failed; generation two and the dependent acceptance/regression queues
+did not start. Preserve this candidate and compare the self-built heap layout
+with the prior adjacent-span boot before changing allocation behavior. Do not
+raise RAM or weaken the DolDoc check. Evidence:
+`build/i386-string-padding-generations-capacity32-16m/gen1-selfhost/boot/debug.log`
+and the terminal generation result; failure evidence is checkpointed.
+
+## Compiler footprint causality and backing-padding candidate (2026-10-09)
+
+A diagnostic copy with only the previous CompilerRuntime passes 8 MiB DolDoc
+allocation. Adding 632 inert payload bytes to that same old compiler reproduces
+the exact failing request, heap usage and largest block. Thus the loaded-size
+increase is sufficient to trigger the failure independently of initializer
+behavior. These old-compiler probes retain the initializer bug and cannot qualify
+a release. The correct initializer must remain.
+
+The failed backing request is 8,192 page bytes plus a 52-byte region record and
+511 alignment bytes. Current backing allocation retains unused alignment slack.
+Investigate shrinking the owned backing allocation to its actual aligned extent,
+with a regression first. Preserve page/batch rounding, alignment, ownership,
+reserve retention and safe trim order. Evidence: the two
+`build/i386-string-padding-*-compiler*-probe/result.json` files and
+`build/i386-string-padding-selfhost-memory-comparison.json`.
