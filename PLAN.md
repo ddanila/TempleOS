@@ -20,14 +20,19 @@ The paired full-native-provider-footprint comparison passes arithmetic/DolDoc
 in `build/i386-validator-scan-paired-footprint`: startup improves from 69.25 to
 59.02 seconds (10.23 seconds saved). This is diagnostic cross-kernel evidence
 with reused native providers and a narrow margin. The 16 MiB diagnostic boot
-is running. All 980 delivered source/documentation files match. The fresh
-all-seven-provider rebuild is queued after diagnostic success in
+passes, including publication checks. All 980 delivered source/documentation
+files match. The fresh all-seven-provider rebuild is running in
 `build/i386-validator-scan-all-providers-16m`, at 16 MiB on TCG/486,-fpu with
 14,400-second per-module limits. Its queue freezes Kernel/Compiler/Adam/tool
 source hashes and checks them before and after the run. Two installed native
 generations and their timing still require qualification. Evidence:
 `build/i386-validator-scan-*`; baseline checkpoint:
 `build/checkpoints/2026-10-09-validator-scan/manifest.json`.
+The dependent two-generation queue is live. After it passes, a sequential
+queue checks all four installed images at 8 MiB against the 60-second startup
+budget and refreshes floating-point, saved-assembly and provider cancellation,
+lifetime, reentrancy and recovery regressions. Queued checks are not passing
+evidence. Queue log: `build/i386-validator-scan-final-checks-queue.log`.
 The bucket-overflow results below predate this validator change.
 
 Current startup candidate: bucket-local loader overflow fallback retains the
