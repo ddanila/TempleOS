@@ -1417,7 +1417,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-render-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-render-reference-final/result.json",
+          "scope": "Original renderer screen-cell color/reset, tab/newline layout, extents, null document and unlocked return; presentation, sprites and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-render-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-render-current-reference/result.json",
+          "scope": "Same ten-field text-cell renderer oracle on rebuilt original system; presentation, sprites and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-render.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-render-native/result.json",
+          "scope": "Ten native public-API commands match original ten-field cell/layout/color/null/unlock oracle; presentation, sprites, cursor and whole-file unqualified"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocRecalcLib.HC",

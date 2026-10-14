@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original renderer public binding and cell baseline (2026-10-15)
+
+Console interface 79 exposes the existing original DocRecalc implementation.
+The native test first rejects the unavailable API; after binding, ten commands
+match the pinned-original and rebuilt-original ten-field oracle for screen-cell
+foreground/reset, tab/newline geometry, extents, lock release and null input.
+Bootstrap, cross-build and 386 boot audit pass; 8 MiB startup passes in 47.13
+seconds without build-provider loads.
+
+This is text-cell evidence, not VGA presentation, sprite/cursor parity or
+standard-output integration. [Renderer integration](docs/i386-doc-render.md)
+records the next work: independent framebuffer checks, renderer/compositor
+ordering, streaming stdout and document-backed input. DocRecalc fills cells and
+draws sprites while the current compositor renders text before its draw callback;
+integration must preserve both layers without evaluating dynamic entries twice.
+The separate editor drawing helper is not the full desktop renderer. C1–C5
+remain open.
+
 ### Original document key input passes (2026-10-15)
 
 Console interface 78 exposes DocGetKey through the shared original document
