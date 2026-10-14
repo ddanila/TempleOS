@@ -25,5 +25,23 @@ I64 BackingPlaneBudgetTest()
       !I386MemBackingDestroy(pool) || backing_heap.used ||
       backing_heap.allocations || !I386HeapValid(&backing_heap))return 456;
   if((GetRFlags^flags)&0x200)return 457;
+  //Exact fixed-size payloads fit without changing the ordinary MAlloc buckets.
+  if(!I386HeapInit(&backing_heap,0x40000,327680) ||
+      !I386MemBackingInit(pool,&backing_heap,I386_NATIVE_BACKING_QUANTUM) ||
+      !I386MemHeapInit(hc,pool))return 458;
+  for(p=0;p<2;p++) {
+    planes[p]=I386MemAlloc(hc,140000,TRUE);
+    if(!planes[p] || I386MemSize(planes[p])<140000 ||
+        I386MemSize(planes[p])>=140800)return 459;
+    for(i=0;i<140000;i++)planes[p][i]=i+p;
+  }
+  if(backing_heap.used>290000 || pool->owned_count!=2)return 460;
+  for(p=0;p<2;p++) {
+    for(i=0;i<140000;i++)if(planes[p][i]!=(i+p)(U8))return 461;
+    if(!I386MemFree(planes[p]))return 462;
+  }
+  if(!I386MemHeapDestroy(hc) || I386MemBackingTrim(pool)<=0 ||
+      !I386MemBackingDestroy(pool) || backing_heap.used ||
+      backing_heap.allocations || (GetRFlags^flags)&0x200)return 463;
   return 0;
 }

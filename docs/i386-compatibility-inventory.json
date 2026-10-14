@@ -1717,7 +1717,16 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-fixed-graphics",
+          "command": "python3 tools/test-i386-fixed-graphics.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-exact-buffer-checks/fixed-graphics-8m/result.json",
+          "scope": "Native fixed 640x480 buffers, ownership, capacity, zeroing and twenty context checks; original parity and other services remain unqualified",
+          "intentional_difference": "Native DCNew uses exact-page pixel-body growth; MSize/DCSize reflect smaller actual backing capacity, with unchanged pixel dimensions/content"
+        }
+      ]
     },
     {
       "path": "Adam/Gr/GrEnd.HC",

@@ -97,7 +97,7 @@ arithmetic. Its source image and harness hashes remain unchanged. Evidence:
 extraction cases, not GetStr or the remaining DocGet services. Allocation
 failure/unwind and the rest of the input state machine remain separate work.
 
-## Current minimal-profile regression
+## Prior minimal-profile regression (superseded below)
 
 `build/i386-c1-doc-scan-startup/result.json` fails at 8 MiB. Normal boot and
 public headers finish, but the first `SPNext` function definition rejects with
@@ -117,3 +117,13 @@ the declared minimal RAM or weakening the retained-function test. Full desktop
 The fail-fast rerun `build/i386-c1-doc-scan-startup-rejection/result.json`
 reproduces the same allocation rejection and reports `Guest command rejected`
 instead of the earlier framebuffer timeout. The original failed run is retained.
+
+## Minimal-profile recovery checkpoint
+
+The [fixed-buffer allocation work](i386-fixed-buffer-allocation.md) traces the
+failure to graphics page-bucket overhead and preserves both 640x480 contexts.
+The current candidate passes the nine-command 8 MiB retained-state/VGA gate in
+41.95 seconds with zero build-provider loads. Evidence:
+`build/i386-c1-exact-buffer-checks/startup-8m/result.json`. This supersedes the
+startup regression above; GetStr implementation and full release qualification
+remain open.

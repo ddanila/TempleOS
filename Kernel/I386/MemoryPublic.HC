@@ -51,7 +51,7 @@ bad:
   KernelLog("BAD PUBLIC MEMORY\n"); KernelStop;
   return 0;
 }
-U8 *MemoryAlloc(I64 size,CTask *selector=0)
+U8 *MemoryAllocMode(I64 size,CTask *selector,Bool exact_pages)
 {
   U32 flags=I386IrqSave;
   CHeapCtrl *hc;
@@ -63,7 +63,7 @@ U8 *MemoryAlloc(I64 size,CTask *selector=0)
       !I386MemPoolValid(hc->bp)) {
     KernelLog("BAD MALLOC HEAP\n"); KernelStop;
   }
-  ptr=I386MemAlloc(hc,size);
+  ptr=I386MemAlloc(hc,size,exact_pages);
   if(ptr) MemoryMeasureUpdate(hc);
   I386IrqRestore(flags);
   if(!ptr) {
@@ -75,6 +75,16 @@ U8 *MemoryAlloc(I64 size,CTask *selector=0)
 #endif
     throw('OutMem',TRUE);
   }
+  return ptr;
+}
+U8 *MemoryAlloc(I64 size,CTask *selector=0)
+{ return MemoryAllocMode(size,selector,FALSE); }
+//Internal fixed-buffer service. Public MAlloc/CAlloc retain normal buckets.
+U8 *MemoryCAllocExact(I64 size,CTask *selector=0)
+{
+  U8 *ptr=MemoryAllocMode(size,selector,TRUE);
+  I64 i;
+  for(i=0;i<size;i++) ptr[i]=0;
   return ptr;
 }
 U0 MemoryFree(U8 *ptr)

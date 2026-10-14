@@ -186,6 +186,11 @@ public CDC *DCAlias(CDC *dc=NULL,CTask *task=NULL)
   return res;
 }
 
+//Native fixed pixel buffers can select page-exact storage without changing
+//the original constructor, object ownership, dimensions or public allocator.
+#ifndef DC_BODY_CALLOC
+#define DC_BODY_CALLOC CAlloc
+#endif
 public CDC *DCNew(I64 width,I64 height,CTask *task=NULL,Bool null_bitmap=FALSE)
 {//Create new width x height device context.
 //Internally only allows widths which are divisible by 8.
@@ -202,7 +207,7 @@ public CDC *DCNew(I64 width,I64 height,CTask *task=NULL,Bool null_bitmap=FALSE)
     if (null_bitmap)
       res->flags|=DCF_DONT_DRAW;
     else
-      res->body=CAlloc(res->width_internal*res->height,task);
+      res->body=DC_BODY_CALLOC(res->width_internal*res->height,task);
     res->r=MAlloc(16*sizeof(I64),task);
     DCRst(res);
     res->dc_signature=DCS_SIGNATURE_VAL;

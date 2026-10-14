@@ -318,6 +318,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   provider=HashFind("_FLUSH_MSGS",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_servant_flush=provider->val;
+  provider=HashFind("I386CAllocExact",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_graphics_body_calloc=provider->val;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   I386KeyboardReset(&console_hotkeys);
   ConsoleDocExportSet(0,"_DOC_LOCK",(&I386DocLock+0)(U64));

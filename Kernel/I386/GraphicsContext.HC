@@ -20,6 +20,10 @@ U32 *MemSetU32(U32 *dst,I64 value,I64 count)
   for(i=0;i<count;i++) dst[i]=value;
   return dst;
 }
+U8 *(*native_graphics_body_calloc)(I64 size,CTask *task);
+U8 *NativeGraphicsBodyCAlloc(I64 size,CTask *task=NULL)
+{ return (*native_graphics_body_calloc)(size,task); }
+#define DC_BODY_CALLOC NativeGraphicsBodyCAlloc
 #include "/Adam/Gr/GrDCCore.HC"
 
 #include "/Adam/Gr/GrBlotColor8.HC"

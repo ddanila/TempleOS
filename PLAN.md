@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Fixed graphics allocation restores 8 MiB startup (2026-10-14)
+
+The parser-arena regression was traced through a guest RAM snapshot to two
+307,200-byte graphics bodies each occupying 525,312 bytes of bucketed pages;
+there were no wholly free root-heap blocks to reclaim. An internal exact-page
+allocation option now serves native DCNew pixel bodies, preserving dimensions,
+zeroing, ownership and ordinary Free/DCDel. Default public allocation buckets
+remain unchanged. Memory/console interfaces are 23/70.
+
+Both new failing allocator baselines are preserved; exact-page, default public
+heap, portable-validator and backing-accounting checks pass. Bootstrap,
+cross-build and 386 audits pass. The current candidate restores all nine 8 MiB
+startup/VGA commands in 41.95 seconds with no build-provider loads. All nine fixed-buffer commands at 8 MiB, seventeen DocScanLine commands at
+64 MiB and eleven graphics commands including four pixel-checked frames also
+pass on the current image. Evidence is recorded in
+[the allocation checkpoint](docs/i386-fixed-buffer-allocation.md). GetStr and
+full C1–C5 qualification remain open.
+
 ### Shared DolDoc line extraction (2026-10-14)
 
 The original DocScanLine implementation is shared by both targets and publicly

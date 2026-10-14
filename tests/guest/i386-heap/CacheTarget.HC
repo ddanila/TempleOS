@@ -15,6 +15,7 @@ I64 Main(I64 a,I64 b)
   CMemBlk *page_a,*page_b,*joined;
   U8 *slots[64],*q;
   I64 total,old,i;
+  U32 saved_flags=GetRFlags;
   if(!I386MemPoolInit(pool,0x40000,0x40000) ||
       !I386MemHeapInit(hc,pool,0x1234)) return 131;
   //Fill one small-allocation batch, leaving only an exact-size cached span.
@@ -115,5 +116,33 @@ I64 Main(I64 a,I64 b)
   if(q[0]!=71 || q[139999]!=83 || !I386MemFree(q) || hc->used_u8s ||
       !I386MemHeapDestroy(hc) || pool->used_u8s ||
       !I386MemPoolRemove(pool,&pool->initial) || !I386MemPoolEmpty(pool)) return 161;
+  //Opt-in exact pages preserve normal buckets while fitting fixed buffers.
+  if(!I386MemPoolInit(pool,0x40000,600*512)) return 162;
+  page_a=I386MemPageAlloc(pool,280,TRUE);
+  page_b=I386MemPageAlloc(pool,280,TRUE);
+  if(!page_a || !page_b || page_a->pags!=280 || page_b->pags!=280 ||
+      pool->used_u8s!=560*512) return 163;
+  page_a(U8 *)[16]=71; page_a(U8 *)[280*512-1]=83;
+  page_b(U8 *)[16]=97; page_b(U8 *)[280*512-1]=109;
+  if(page_a(U8 *)[16]!=71 || page_a(U8 *)[280*512-1]!=83 ||
+      page_b(U8 *)[16]!=97 || page_b(U8 *)[280*512-1]!=109 ||
+      (GetRFlags^saved_flags)&0x200) return 167;
+  if(!I386MemPageFree(pool,page_a) || !I386MemPageFree(pool,page_b) ||
+      !I386MemPoolRemove(pool,&pool->initial)) return 164;
+  if(!I386MemPoolInit(pool,0x40000,600*512)) return 165;
+  page_a=I386MemPageAlloc(pool,280);
+  if(!page_a || page_a->pags!=514 || !I386MemPageFree(pool,page_a) ||
+      !I386MemPoolRemove(pool,&pool->initial)) return 166;
+  //Exact requests split a larger returned bucket rather than consuming it.
+  if(!I386MemPoolInit(pool,0x40000,600*512)) return 168;
+  page_a=I386MemPageAlloc(pool,280);
+  if(!page_a || page_a->pags!=514 || !I386MemPageFree(pool,page_a)) return 169;
+  page_a=I386MemPageAlloc(pool,280,TRUE);
+  page_b=I386MemPageAlloc(pool,200,TRUE);
+  if(!page_a || !page_b || page_a->pags!=280 || page_b->pags!=200 ||
+      pool->used_u8s!=480*512) return 170;
+  if(!I386MemPageFree(pool,page_a) || !I386MemPageFree(pool,page_b) ||
+      !I386MemPoolRemove(pool,&pool->initial) ||
+      (GetRFlags^saved_flags)&0x200) return 171;
   return 0;
 }

@@ -254,3 +254,11 @@ API commands at 64 MiB, but exposes a current 8 MiB parser-arena regression afte
 boot. The [input compatibility record](i386-getstr-compatibility.md) preserves
 that failure; the older bounded-memory qualification is not a qualification of
 this newer source candidate.
+
+The [fixed graphics allocation checkpoint](i386-fixed-buffer-allocation.md)
+restores that gate in 41.95 seconds and passes the dedicated fixed-buffer and
+DocScanLine workflows. Native pixel bodies use exact-page growth; ordinary
+public allocation buckets and full display dimensions remain unchanged.
+`MSize`/`DCSize` report the smaller actual capacity as an intentional C4 memory
+policy difference. Full desktop/application and native-generation acceptance
+remain open.

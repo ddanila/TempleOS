@@ -178,16 +178,17 @@ Bool I386MemPoolFreeBlocksMerge(CI386PublicPool *pool)
   }
   pool->locked_flags=0; return TRUE;
 }
-CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
+CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages,Bool exact_pages=FALSE)
 {
   U32 flags=I386IrqSave;
   CMemBlk *block=0,**link;
   CI386PoolRegion *region;
   I64 i=0,n,remaining,requested;
-  Bool retried=FALSE,merged=FALSE,exact=FALSE,grown;
+  Bool retried=FALSE,merged=FALSE,exact=exact_pages,grown;
   if(!I386MemPoolValid(pool) || pool->locked_flags || pages<1 || pages>0xFFFFFFFF/512) goto done;
   requested=pages;
-  if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
+  if(exact) link=0;
+  else if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
   else {
     n=pages-MEM_EXTRA_HASH2_PAGS;
     while(n) { i++; n>>=1; }
@@ -219,7 +220,16 @@ retry:
   for(i=0;i<64-MEM_PAG_BITS;i++)
     if(block=pool->free_pag_hash2[i]) {
       if(!I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL)) goto invalid;
-      if(block->pags>=pages) { pool->free_pag_hash2[i]=block->next; goto found; }
+      if(block->pags>=pages) {
+        pool->free_pag_hash2[i]=block->next;
+        if(exact_pages && block->pags>pages) {
+          block->pags-=pages;
+          block->next=pool->mem_free_lst; pool->mem_free_lst=block;
+          block=block(U8 *)+(block->pags+0)(U64)*512;
+          block->pags=pages;
+        }
+        goto found;
+      }
     }
   pool->locked_flags=0;
   if(!merged) {
@@ -311,9 +321,9 @@ Bool I386MemHeapInit(CHeapCtrl *hc,CI386PublicPool *pool,CTask *task=0)
   hc->next_um=hc->last_um=(&hc->next_um)(U8 *)-offset(CMemUsed.next);
   I386IrqRestore(flags); return TRUE;
 }
-CMemBlk *I386MemHeapPages(CHeapCtrl *hc,I64 pages)
+CMemBlk *I386MemHeapPages(CHeapCtrl *hc,I64 pages,Bool exact_pages=FALSE)
 {
-  CMemBlk *block=I386MemPageAlloc(hc->bp,pages);
+  CMemBlk *block=I386MemPageAlloc(hc->bp,pages,exact_pages);
   if(block) {
     block->last=hc->last_mem_blk; block->next=&hc->next_mem_blk;
     block->last->next=block; hc->last_mem_blk=block;
@@ -354,7 +364,7 @@ U0 I386MemFreeSpansMerge(CHeapCtrl *hc)
     }
   }
 }
-U8 *I386MemAlloc(CHeapCtrl *hc,I64 size)
+U8 *I386MemAlloc(CHeapCtrl *hc,I64 size,Bool exact_pages=FALSE)
 {
   U32 flags=I386IrqSave;
   I64 span,bucket;
@@ -417,7 +427,7 @@ U8 *I386MemAlloc(CHeapCtrl *hc,I64 size)
       }
     }
   } else {
-    block=I386MemHeapPages(hc,(span+I386_MEM_BLOCK_OFFSET+MEM_PAG_SIZE-1)>>MEM_PAG_BITS);
+    block=I386MemHeapPages(hc,(span+I386_MEM_BLOCK_OFFSET+MEM_PAG_SIZE-1)>>MEM_PAG_BITS,exact_pages);
     if(!block) goto unlock;
     used=block(U8 *)+I386_MEM_BLOCK_OFFSET;
     span=((block->pags+0)(U64)*512-I386_MEM_BLOCK_OFFSET)&~7;
