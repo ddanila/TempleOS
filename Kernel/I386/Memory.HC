@@ -140,13 +140,51 @@ Bool I386MemPoolRemove(CI386PublicPool *pool,CI386PoolRegion *region)
 done:
   I386IrqRestore(flags); return result;
 }
+U0 I386MemPoolFreeBlockInsert(CI386PublicPool *pool,CMemBlk *block)
+{//Pool is locked; sorted free extents merge only within one borrowed region.
+  CMemBlk **link=&pool->mem_free_lst,*previous=0,*next;
+  while((next=*link) && (next+0)(U64)<(block+0)(U64)) {
+    previous=next; link=&next->next;
+  }
+  block->next=next; *link=block;
+  if(next && block(U8 *)+(block->pags+0)(U64)*512==next(U8 *) &&
+      I386MemBlockRegion(pool,block)==I386MemBlockRegion(pool,next)) {
+    block->pags+=next->pags; block->next=next->next;
+  }
+  if(previous && previous(U8 *)+(previous->pags+0)(U64)*512==block(U8 *) &&
+      I386MemBlockRegion(pool,previous)==I386MemBlockRegion(pool,block)) {
+    previous->pags+=block->pags; previous->next=block->next;
+  }
+}
+Bool I386MemPoolFreeBlocksMerge(CI386PublicPool *pool)
+{//Recover returned adjacent pages on exhaustion, without scratch allocation.
+  CMemBlk *block,*next,*old;
+  I64 i,remaining;
+  if(!I386MemPoolValid(pool) || pool->locked_flags) return FALSE;
+  remaining=pool->size/512;
+  for(i=0;i<1+MEM_FREE_PAG_HASH_SIZE+64-MEM_PAG_BITS;i++)
+    for(block=*I386MemPoolFreeHead(pool,i);block;block=block->next)
+      if(!remaining-- || !I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL)) return FALSE;
+  pool->locked_flags=1;
+  old=pool->mem_free_lst; pool->mem_free_lst=0;
+  for(block=old;block;block=next) {
+    next=block->next; I386MemPoolFreeBlockInsert(pool,block);
+  }
+  for(i=1;i<1+MEM_FREE_PAG_HASH_SIZE+64-MEM_PAG_BITS;i++) {
+    old=*I386MemPoolFreeHead(pool,i); *I386MemPoolFreeHead(pool,i)=0;
+    for(block=old;block;block=next) {
+      next=block->next; I386MemPoolFreeBlockInsert(pool,block);
+    }
+  }
+  pool->locked_flags=0; return TRUE;
+}
 CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
 {
   U32 flags=I386IrqSave;
   CMemBlk *block=0,**link;
   CI386PoolRegion *region;
   I64 i=0,n,remaining;
-  Bool retried=FALSE,grown;
+  Bool retried=FALSE,merged=FALSE,grown;
   if(!I386MemPoolValid(pool) || pool->locked_flags || pages<1 || pages>0xFFFFFFFF/512) goto done;
   if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
   else {
@@ -183,6 +221,17 @@ retry:
       if(block->pags>=pages) { pool->free_pag_hash2[i]=block->next; goto found; }
     }
   pool->locked_flags=0;
+  if(!merged) {
+    merged=TRUE;
+    if(!I386MemPoolFreeBlocksMerge(pool)) goto done;
+    if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
+    else {
+      n=pages-MEM_EXTRA_HASH2_PAGS; i=0;
+      while(n>>=1) i++;
+      link=&pool->free_pag_hash2[i];
+    }
+    goto retry;
+  }
   if(!retried && pool->grow && !pool->growing) {
     retried=TRUE; pool->growing=1;
     grown=(*pool->grow)(pool,pages);
@@ -341,6 +390,11 @@ U8 *I386MemAlloc(CHeapCtrl *hc,I64 size)
       }
       if(!used) {
         block=I386MemHeapPages(hc,(span+16*MEM_PAG_SIZE-1)>>MEM_PAG_BITS);
+        //Keep the normal cached batch when available. Under pressure, a small
+        //request can use fewer pages while preserving its full rounded payload
+        //and page/header alignment instead of failing on speculative reserve.
+        if(!block) block=I386MemHeapPages(hc,
+          (span+I386_MEM_BLOCK_OFFSET+MEM_PAG_SIZE-1)>>MEM_PAG_BITS);
         if(!block) goto unlock;
         hc->last_mergable=block;
         unused=block(U8 *)+I386_MEM_BLOCK_OFFSET;

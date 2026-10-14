@@ -746,7 +746,7 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   //Backend folding may create a stack. Its IR/result no longer borrows it.
   //Preserve a caller's existing stack and the exception unwind contract.
   if(!old_ps && cc->ps) {
-    if(!I386HeapFree(state->heap,cc->ps)) I386FrontendUnavailable(state);
+    if(!I386ParserFree(state->heap,cc,cc->ps)) I386FrontendUnavailable(state);
     cc->ps=0;
   }
   I386FrontendFree(state,bound); return result;

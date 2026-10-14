@@ -54,6 +54,8 @@ def main():
     parser.add_argument('--disk', type=Path,
                         help='Profile an installed disk using its own retained modules')
     parser.add_argument('--cpu', default='486,-fpu')
+    parser.add_argument('--qmp-stdio', action='store_true', help='Use pipes instead of a QMP Unix socket')
+    parser.add_argument('--no-snapshot', action='store_true', help='Use a caller-provided disposable disk without a temporary overlay')
     args = parser.parse_args()
     if args.interval <= 0 or args.timeout <= 0:
         parser.error('interval and timeout must be positive')
@@ -84,26 +86,37 @@ def main():
     qmp.unlink(missing_ok=True)
     log_path.write_text('')
     cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', args.cpu,
-           '-m', '8', '-nic', 'none', '-snapshot',
+           '-m', '8', '-nic', 'none', *([] if args.no_snapshot else ['-snapshot']),
            '-drive', f'file={disk},format=raw,if=ide', '-display', 'none', '-no-reboot',
-           '-debugcon', f'file:{log_path}', '-qmp', f'unix:{qmp},server=on,wait=off']
+           '-debugcon', f'file:{log_path}', '-qmp', 'stdio' if args.qmp_stdio else f'unix:{qmp},server=on,wait=off']
     (out / 'command.json').write_text(json.dumps(cmd, indent=2) + '\n')
-    ranges = {'Kernel': symbols(modules['Kernel'], 0x11008)}
+    ranges = {'Kernel': symbols(modules['Kernel'], 0x100008)}
     samples = []
     rng = random.Random(386)
     start = time.monotonic()
     with (out / 'qemu.log').open('w') as stderr, socket.socket(socket.AF_UNIX) as sock:
-        proc = subprocess.Popen(cmd, stderr=stderr)
+        proc = subprocess.Popen(cmd, stderr=stderr,
+                                stdin=subprocess.PIPE if args.qmp_stdio else None,
+                                stdout=subprocess.PIPE if args.qmp_stdio else None, bufsize=0)
         try:
             deadline = start + args.timeout
-            while not qmp.exists():
-                if proc.poll() is not None or time.monotonic() >= deadline:
-                    raise RuntimeError('Guest failed to start')
-                time.sleep(.05)
-            sock.connect(str(qmp))
-            sock.settimeout(10)
-            stream = sock.makefile('rwb', buffering=0)
-            json.loads(stream.readline())
+            if args.qmp_stdio:
+                class QMPStream:
+                    def readline(self): return proc.stdout.readline()
+                    def write(self, data): return proc.stdin.write(data)
+                stream = QMPStream()
+            else:
+                while not qmp.exists():
+                    if proc.poll() is not None or time.monotonic() >= deadline:
+                        raise RuntimeError('Guest failed to start')
+                    time.sleep(.05)
+                sock.connect(str(qmp))
+                sock.settimeout(10)
+                stream = sock.makefile('rwb', buffering=0)
+            greeting = stream.readline()
+            if not greeting:
+                raise RuntimeError(f'QEMU failed to start; inspect {out / "qemu.log"}')
+            json.loads(greeting)
 
             def command(name, **arguments):
                 stream.write((json.dumps(dict(execute=name, arguments=arguments)) + '\n').encode())

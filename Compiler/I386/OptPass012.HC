@@ -1,5 +1,6 @@
 //Included after Control.HC, OptBranch.HC and the software numerical runtime.
 #include "/Compiler/I386/OptPass012.HH"
+#include "/Compiler/I386/ParserMemory.HH"
 #include "/Kernel/I386/Float.HH"
 #include "/Kernel/I386/Bool.HH"
 #include "/Compiler/ICInfo.HC"
@@ -28,10 +29,15 @@ CIntermediateCode *I386OptPass012Sized(CI386Heap *heap,CCmpCtrl *cc,CHashClass *
       types[RT_I64]->raw_type!=RT_I64 || types[RT_U64]->raw_type!=RT_U64 ||
       types[RT_F64]->raw_type!=RT_F64) return 0;
   irq=I386IrqSave;
-  if(!cc->ps) cc->ps=I386HeapAlloc(heap,stack_bytes,FALSE);
+  //Use the task's public pages for scratch while retaining control ownership.
+  //Taskless controls fall back to arena storage through the same service.
+  if(!cc->ps) cc->ps=I386ParserCodeAlloc(heap,cc,stack_bytes);
   I386IrqRestore(irq);
   if(!cc->ps) throw('OutMem',TRUE);
-  if(I386HeapSize(heap,cc->ps)!=stack_bytes) return 0;
+  //Older callers may supply an arena-owned stack. Tracked public storage uses
+  //the logical request size, preserving the optimizer's exact stack contract.
+  if(I386ParserSize(heap,cc,cc->ps)!=stack_bytes &&
+      I386HeapSize(heap,cc->ps)!=stack_bytes) return 0;
   cc->flags|=CCF_TARGET_I386;
   services.types=types; services.context=&reporter; services.report=&I386OptPass012Report;
   reporter.report=diagnostic;
@@ -54,7 +60,7 @@ CIntermediateCode *I386FrontendOptPass012(CI386Heap *heap,CCmpCtrl *cc,CHashClas
   U32 irq;
   if(!borrowed && cc->ps) {
     irq=I386IrqSave;
-    if(!I386HeapFree(heap,cc->ps)) { I386IrqRestore(irq); throw('Compiler',TRUE); }
+    if(!I386ParserFree(heap,cc,cc->ps)) { I386IrqRestore(irq); throw('Compiler',TRUE); }
     cc->ps=0;
     I386IrqRestore(irq);
   }

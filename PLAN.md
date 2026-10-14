@@ -1,5 +1,334 @@
 # TempleOS architecture plan: 32-bit 386+ and VGA
 
+## Bounded-memory self-hosting goal qualified (2026-10-14)
+
+The current candidate meets the bounded-memory goal in QEMU TCG `486,-fpu`:
+normal startup at 8 MiB and complete native rebuilding at 16 MiB, using a
+32 MiB disk. All four installed images complete nine-command retained-state
+and exact-VGA acceptance in 55.14–55.80 seconds, below the 60-second budget.
+Two successive installed/self-built generations reproduce all thirteen modules,
+the 556,848-byte flat kernel and installed boot area. Delivered-source audits
+pass and the source images remain unchanged by acceptance testing.
+
+The complete final regression queue passes: cancellation, lifetime, reentrancy,
+sixteen software-F64 commands at 8 MiB, saved bare/block assembly at 16 MiB,
+and all three provider recovery faults. Diagnostic boot at 16 MiB completes
+in 221.25 seconds with 22 publication and 28 program-publication cases,
+optimizer/backend completion markers in both phases, nine exact-VGA commands
+and zero startup build-provider loads. Diagnostics remain separate from normal
+boot. Public stack limits and APIs are unchanged; scratch cleanup follows the
+existing owner-aware release/unwind paths. Frozen source identity remains exact.
+
+Evidence: `build/i386-heap-select-final-regressions/completion-audit.json`,
+`build/i386-heap-select-final-regressions/result.json`,
+`build/i386-heap-select-generations-capacity32-16m/generation-identity/result.json`,
+and `build/i386-heap-select-installed-acceptance-capacity32-8m/result.json`.
+Earlier pending/failure checkpoints below are historical and superseded by this
+qualification. This qualifies the bounded-memory goal in QEMU; physical hardware
+and complete OS feature coverage are outside this acceptance claim.
+
+Repository write access was restored for the 2026-10-14 checkpoint. The
+qualified implementation and documentation are recorded on `main`, targeting
+only the `ddanila/TempleOS` fork. Earlier read-only delivery blockers below
+are historical.
+
+## Runtime and recovery regressions pass (2026-10-14)
+
+The current-source final queue passes all sixteen software-F64 commands at
+8 MiB and saved bare/block assembly at 16 MiB, including persisted module
+execution and interrupt-state restoration. All three provider recovery faults
+(service version, wrong target and missing import) pass at 16 MiB: two rejected
+attempts, byte-identical in-guest repair, two successful builds and one provider
+load per case. Cancellation, lifetime and reentrancy also remain passing.
+Evidence: `build/i386-heap-select-final-regressions/result.json` and its stage
+results. The final 16 MiB diagnostic boot is live; publication and both-phase
+optimizer/backend completion markers still require qualification.
+
+## Provider lifecycle regressions pass (2026-10-14)
+
+Current-source cancellation, lifetime and reentrancy checks all pass at 16 MiB
+on QEMU TCG `486,-fpu`. Reentrancy rejects exactly one recursive acquisition,
+publishes the outer provider once, and completes two byte-identical Startup
+builds using that cached provider. The source disk remains unchanged.
+Evidence: `build/i386-heap-select-final-regressions/provider-reentrant/result.json`.
+
+The final queue has advanced to software floating point at 8 MiB. Saved assembly,
+provider recovery faults and diagnostic optimizer/backend/publication checks
+remain pending. The bounded-memory goal is not yet complete.
+
+## Progress checkpoint (2026-10-14)
+
+The bounded-memory candidate now completes two native self-hosting generations
+at 16 MiB, with all thirteen modules and the flat kernel reproduced identically.
+All four installed images pass the full nine-command acceptance at 8 MiB,
+including exact VGA checks, within the unchanged 60-second startup budget.
+The implementation reduces parser scratch pressure, improves backing-memory
+reuse, and selects high heap allocations in one fully validated scan.
+
+Final provider cancellation and lifetime regressions pass. Reentrancy is still
+running; software-F64, saved assembly, recovery-fault and diagnostic regressions
+remain queued. This is a progress checkpoint, not completion of the overall goal.
+Evidence: `build/i386-heap-select-final-regressions/result.json`, plus the
+installed-acceptance and native-generation results linked below.
+
+## All four installed startup acceptance checks pass (2026-10-14)
+
+All four installed images pass the full nine-command interactive acceptance
+at 8 MiB on TCG `486,-fpu`, including retained function/static/literal behavior,
+arithmetic, exact VGA restoration, and zero startup build-provider loads.
+Startup times are 55.80, 55.31, 55.15, 55.14 seconds (gen1-install,
+gen1-selfhost, gen2-install, gen2-selfhost), all below the unchanged 60-second
+limit. Each test used a disposable writable copy and preserved its source image.
+Evidence: `build/i386-heap-select-installed-acceptance-capacity32-8m/result.json`.
+
+The sequential final regression queue has started with provider cancellation,
+lifetime and reentrancy, followed by software-F64, saved assembly, provider
+recovery faults, and diagnostic boot. Final regression results and the full
+completion audit remain pending; the goal is not yet marked complete.
+
+
+## Two native generations pass (2026-10-14)
+
+The single-pass heap candidate passes both native installation/self-hosting
+generations on TCG `486,-fpu`, rebuilding at 16 MiB and booting at 8 MiB.
+All thirteen modules and the 556,848-byte flat kernel pass generation identity;
+generation-two retained outputs are byte-identical to generation one's installed
+providers. Both guest-image audits and delivered-source audits pass.
+Evidence: `build/i386-heap-select-generations-capacity32-16m/result.json`
+and its `generation-identity/result.json`.
+
+The four two-command generation boot checks take 54.64, 54.15, 53.92, and
+53.92 seconds (gen1-install, gen1-selfhost, gen2-install, gen2-selfhost).
+Separate nine-command acceptance is now running on disposable copies in
+`build/i386-heap-select-installed-acceptance-capacity32-8m`; it retains the
+8 MiB RAM and 60-second limit, exact VGA checks, static-storage behavior,
+and zero startup build-provider loads. Full acceptance and final regression
+refresh remain pending; the overall goal is not yet qualified.
+
+
+## Generation-one self-built boot passes (2026-10-13)
+
+Generation one's native flat-kernel build/link/install passes at 16 MiB.
+The resulting 556,848-byte flat kernel independently boots at 8 MiB on TCG
+`486,-fpu` in 54.1511 seconds, passing arithmetic, DolDoc allocation, and
+exact VGA checkpoints. Evidence:
+`build/i386-heap-select-generations-capacity32-16m/gen1-selfhost/result.json`
+and `gen1-selfhost/boot/result.json` in that generation directory.
+
+The live runner has advanced to generation-two retained-provider rebuilding.
+Generation two, byte-identity qualification, the separate four-image
+nine-command startup acceptance, and final regressions remain pending.
+These two-command boot results do not replace full startup acceptance.
+
+## Generation-one installed boot passes below 60 seconds (2026-10-13)
+
+The first installed native-provider image passes its 8 MiB TCG `486,-fpu`
+interactive boot in 54.6389 seconds, including arithmetic, DolDoc allocation,
+and exact VGA checkpoints. Evidence:
+`build/i386-heap-select-generations-capacity32-16m/gen1-install/boot/result.json`.
+This two-command generation check is not the full nine-command acceptance gate.
+
+The live runner has advanced to generation-one flat-kernel self-host rebuilding
+at 16 MiB (`gen1-selfhost/build`, startup-command-00). The self-built boot,
+generation two, all four separate installed startup acceptance checks, and final
+regressions remain pending. No complete bounded-memory goal pass is claimed.
+
+## Capacity32 recovery providers and combined audit pass (2026-10-13)
+
+All five resumed native build commands and their persisted-output audits pass.
+The combined audit also passes all seven providers, including the preserved
+ConsoleRuntime and CompilerRuntime outputs. RAM stayed at 16 MiB on TCG
+`486,-fpu`; the audited 32 MiB disk avoided the earlier output reservation
+failure. All 1,349 pinned source files remain unchanged.
+
+Two successive native installation/self-hosting generations are now being
+qualified in `build/i386-heap-select-generations-capacity32-16m`. Installed
+8-MiB/60-second startup acceptance and final regression qualification remain
+pending. Evidence: `build/i386-heap-select-providers-capacity32-16m/result.json`;
+the original five-provider and QEMU reports are preserved as
+`five-provider-result.json` and `five-provider-qemu-result.json` in that directory.
+
+## BuildRuntime recovery build completes (2026-10-13)
+
+BuildRuntime's native build command completed. The live recovery harness is
+now rebuilding Startup (`startup-command-04`), the last of the five resumed
+providers, at 16 MiB on TCG `486,-fpu`. Startup completion and the combined
+seven-provider persisted-output audit are still required before two native
+generations and all four installed 8-MiB/60-second startup checks. Evidence:
+`build/i386-heap-select-providers-capacity32-16m/qemu/checkpoint.json`
+and its debug log. No completed installed qualification is claimed.
+
+## MemoryRuntime recovery build completes (2026-10-13)
+
+MemoryRuntime's native build command completed, and the live recovery harness
+advanced to BuildRuntime (`startup-command-03`). CompilerProbe, FileRuntime,
+and MemoryRuntime have now completed on the audited 32 MiB disk with RAM
+unchanged at 16 MiB on TCG `486,-fpu`. BuildRuntime, Startup, the combined
+seven-provider persisted-output audit, two native generations, and all four
+installed 8-MiB/60-second startup gates remain pending. Evidence:
+`build/i386-heap-select-providers-capacity32-16m/qemu/checkpoint.json`
+and its debug log.
+
+## FileRuntime recovery build completes (2026-10-13)
+
+FileRuntime's native build command completed on the audited recovery disk.
+The live harness is now rebuilding MemoryRuntime (`startup-command-02`),
+with RAM unchanged at 16 MiB on TCG `486,-fpu`. CompilerProbe and FileRuntime
+commands have both completed; MemoryRuntime, BuildRuntime, Startup, the combined
+seven-provider persisted-output audit, and installed-generation/startup
+qualification remain pending. Evidence:
+`build/i386-heap-select-providers-capacity32-16m/qemu/checkpoint.json`
+and its debug log.
+
+## CompilerProbe recovery build completes (2026-10-13)
+
+CompilerProbe's native build command completed on the audited 32 MiB recovery
+disk, and the live harness advanced to FileRuntime (`startup-command-01`).
+The previous output-reservation failure did not recur for this module. RAM
+remains 16 MiB on TCG `486,-fpu`. FileRuntime, MemoryRuntime, BuildRuntime,
+Startup, the combined seven-provider persisted-output audit, two native
+generations, and all four installed startup gates remain pending.
+Evidence: `build/i386-heap-select-providers-capacity32-16m/qemu/checkpoint.json`
+and its debug log. Command completion alone does not claim final output-audit
+or installed-image qualification.
+
+## Native qualification recovery (2026-10-13)
+
+The single-pass heap candidate completed ConsoleRuntime and CompilerRuntime
+native build commands at 16 MiB on TCG `486,-fpu`. CompilerProbe compilation
+finished, but output reservation rejected at BuildModule stage 5 (requested
+`0x13AD64` bytes). The seven-provider run is terminal FAIL; no installed pass
+is claimed. Its input disk was 16 MiB, whereas the prior successful native
+candidate used a 32 MiB disk.
+
+Recovery preserves the failed image and copies its volume to a separate 32 MiB
+disk. The boot area and all 1,090 file contents compare exactly; reachable
+extents match the allocation bitmap before and after copying. Evidence:
+`build/i386-heap-select-providers-capacity32-16m/capacity-copy-audit.json`.
+The remaining five providers are rebuilding on this copy with RAM unchanged
+at 16 MiB. After they pass, audit all seven persisted outputs before starting
+two native generations and all four installed 8-MiB/60-second startup checks.
+
+
+## Wrap-up checkpoint (2026-10-13)
+
+Current progress includes compiler scratch ownership/cleanup, bounded-memory
+page-allocation recovery, single-pass high-arena allocation, corresponding heap
+regressions, and boot-profiler transport/symbol corrections. Bootstrap, native
+and portable heap tests, the production cross-build, and its strict 8-MiB
+interactive boot pass. The latest cross-built boot takes 42.7246 seconds.
+
+The original changed-source provider run failed during CompilerProbe output
+reservation after ConsoleRuntime and CompilerRuntime completed. Recovery on an
+audited 32 MiB disk is running with the same 16 MiB RAM limit; CompilerProbe has
+reached its module-output link phase. No completed recovery or installed-image
+qualification is claimed. The prior candidate completed two native generations,
+but all four installed images missed the 60-second startup gate. The remaining
+provider rebuilds, combined output audit, fresh native generations, installed
+startup timing, and final regression qualification remain the next work.
+
+
+## Single-pass high-allocation checkpoint (2026-10-12)
+
+`I386HeapAllocHigh` now selects its last fitting free block during the complete
+arena-validation traversal. Selection is exposed only after all physical blocks
+and allocation/used counters validate; the second selection traversal is removed.
+Both assembly and portable-source implementations retain trailing-corruption
+rejection and metadata immutability on failure. Explicit I32 branch displacements
+fix the enlarged assembly loop's short-branch compilation failure.
+
+Both bootstrap generations pass. Native and portable-source high-allocation and
+arena-core regressions pass, with instruction audits. The fresh production
+cross-build in `build/i386-heap-select-cross` passes its 386 boot audit. Strict
+cross-built interactive startup at 8 MiB on `486,-fpu` passes in 42.7246 seconds,
+including all nine behavior/VGA checks and zero startup build-provider loads:
+`build/i386-heap-select-boot-8m/result.json`.
+
+Fresh all-seven-provider native qualification is running at 16 MiB in
+`build/i386-heap-select-all-providers-16m`. No changed-source installed-generation
+or installed-startup pass is claimed. Complete native rebuilding, two successive
+installed generations, all four installed 8-MiB/60-second startup gates and final
+regression/audit coverage remain required.
+
+
+## Qualification result (2026-10-12)
+
+Goal work has resumed. Both native installation/self-hosting generations now
+pass: `build/i386-scratch-page-fallback-generations-16m/result.json` is terminal
+PASS. The qualification process exited after the installed-image acceptance
+stage failed its startup timing gate.
+
+All four installed images pass the nine HolyC/static-storage/VGA behavior
+checks at 8 MiB on TCG `486,-fpu`, with exact VGA checkpoints and zero startup
+build-provider loads. Their measured startup times are 61.08 seconds
+(gen1-install), 60.93 (gen1-selfhost), 60.78 (gen2-install), and 60.83
+(gen2-selfhost). Every image exceeds the unchanged 60-second limit, so overall
+acceptance remains FAIL. Evidence:
+`build/i386-scratch-page-fallback-installed-acceptance-8m/result.json`.
+
+Next: profile installed-image startup, remove the remaining startup overhead,
+and rerun qualification for any changed source. The memory/rebuild goal remains
+incomplete until the installed-image timing gate and full completion audit pass.
+
+
+### Installed-startup profile follow-up (2026-10-12)
+
+The completed 8-MiB installed-image statistical profile identifies arena
+validation as the principal sampled cost: 252 kernel heap-scan samples, 130
+symbol-lookup samples and 70 high-arena-allocation samples among previously
+unmapped PCs. The profiler's kernel symbol base was corrected from `0x11008`
+to `0x100008`; corrected raw-PC evidence is preserved in
+`build/i386-installed-startup-stdio-profile-20261012/corrected-samples.json`
+and `corrected-result.json`. Sampling pauses make this diagnostic unsuitable
+for startup-budget measurements.
+
+Heap-scan callers include compiler-control ownership checks and lexer snapshot
+validation. `I386HeapSize` intentionally validates the entire physical chain and
+counters even after locating the requested pointer. Preserve this corruption
+contract. The next allocator experiment should combine full-chain validation
+with last-fitting-free-block selection for `I386HeapAllocHigh`, removing its
+second physical traversal without accepting early matches or skipping later
+corruption. Cover native and portable-source paths and malformed trailing
+blocks/counters before measuring installed startup again.
+
+## Progress checkpoint (2026-10-10)
+
+The bounded-memory self-hosting goal is incomplete; autonomous goal work is
+paused at the user's request. This checkpoint preserves the current compiler
+scratch and allocator fixes without claiming final qualification.
+
+Parser and optimizer scratch now use owner-tracked public heap storage, with
+arena fallback for taskless controls and matching release on normal cleanup.
+The public page allocator coalesces returned adjacent blocks within the same
+ownership region on exhaustion. Small allocations retry with the minimum page
+reservation when the normal cached batch cannot fit. Regression coverage checks
+same-region coalescing, separation of distinct regions, and one-page allocation;
+the new parser-scratch runner exercises repeated expressions, recursion and
+DolDoc allocation on a writable image copy.
+
+Verified current-candidate evidence:
+
+- All seven providers rebuild natively at 16 MiB on QEMU TCG `486,-fpu`:
+  `build/i386-scratch-page-fallback-all-providers-16m/result.json` (PASS).
+- Generation one installation, kernel self-hosting, thirteen-module ISA audit
+  and delivered-source audit pass. The overall generation report still says
+  `running`, stage `gen2-retained-build`:
+  `build/i386-scratch-page-fallback-generations-16m/result.json`.
+- Provider cancellation/lifetime/reentrancy and the final floating-point,
+  saved-assembly and recovery regression groups pass:
+  `build/i386-scratch-page-fallback-provider-regressions/result.json` and
+  `build/i386-scratch-page-fallback-final-regressions/result.json`.
+
+Remaining: finish generation two, inspect generation-to-generation binary
+identity, and qualify all four installed images at 8 MiB against the unchanged
+60-second startup budget. An in-progress report is not a pass. The existing
+background qualification process was not terminated by this documentation
+checkpoint; its eventual result must be inspected when work resumes.
+
+The entries below are chronological investigation notes. Their references to
+running or queued jobs describe earlier observations, not current status.
+
+
 Active medium goal: [bounded-memory self-hosting](docs/port-memory-goal.md).
 
 Current validator candidate: avoid overlap scans beyond the maximum prior
@@ -33,6 +362,237 @@ queue checks all four installed images at 8 MiB against the 60-second startup
 budget and refreshes floating-point, saved-assembly and provider cancellation,
 lifetime, reentrancy and recovery regressions. Queued checks are not passing
 evidence. Queue log: `build/i386-validator-scan-final-checks-queue.log`.
+The environment transition interrupted the first fresh-provider run before
+ConsoleRuntime persisted. Its original directory is preserved; recovery is
+running in `build/i386-validator-scan-restart-all-providers-16m` with identical
+frozen source, RAM and CPU settings. The recovery follow-up queue runs native
+generations and final checks sequentially after all seven providers qualify.
+Interruption evidence: `build/i386-validator-scan-interruption.json`; queue:
+`build/i386-validator-scan-restart-followup.log`.
+The recovery run completes ConsoleRuntime and its separate persisted layout,
+650-function-export and allocation-wrapper audit passes (2,243,972 bytes;
+6,402 records). CompilerRuntime also completes; its persisted layout and
+453-function-export contract audit passes (1,885,840 bytes; 4,092 records).
+CompilerProbe also completes; its persisted layout and 197-function-export
+contract audit passes (1,289,572 bytes; 3,638 records). MemoryRuntime also completes; its persisted layout and 153-function-export
+contract audit passes (341,006 bytes; 1,049 records), recorded in
+`build/i386-validator-scan-restart-memory-partial-audit/result.json`. The run has
+advanced to BuildRuntime. FileRuntime also completes; its persisted layout and
+134-function-export contract audit passes (390,335 bytes; 898 records), recorded
+in `build/i386-validator-scan-restart-file-partial-audit/result.json`. These
+partial provider results do not qualify all seven providers or installed generations. Evidence:
+`build/i386-validator-scan-restart-console-partial-audit/result.json`,
+`build/i386-validator-scan-restart-compiler-partial-audit/result.json` and
+`build/i386-validator-scan-restart-probe-partial-audit/result.json`.
+
+The recovery all-seven-provider build now passes at 16 MiB on TCG/486,-fpu,
+including the complete persisted layout/export audit. BuildRuntime is 135,746
+bytes (279 records; 44 exports), and Startup is 407 bytes (6 records; 1 export).
+Authoritative result: `build/i386-validator-scan-restart-all-providers-16m/result.json`.
+This supersedes the partial running status above. Two installed native generations,
+their byte identity, all four 8 MiB startup checks and final regressions remain
+unqualified; the sequential follow-up queue is live.
+
+
+Fresh native generation qualification fails at gen1-install: the 8 MiB boot
+reaches the prompt, but `6*7;` raises OutMem. The allocation request is 4,116
+bytes; heap usage is 6,643,816 of 6,657,536 bytes, largest free block 3,720
+bytes (8,092 allocations). The follow-up queue is terminal failed; later
+generations and final checks did not start. Relative to the passing mixed-provider
+footprint probe, fresh ConsoleRuntime and CompilerProbe each add 3,951 bytes,
+and CompilerRuntime adds 3,288 bytes; the other four provider sizes match.
+This 11,190-byte increase is a diagnostic clue, not established causality.
+Preserve the new validator behavior and 8 MiB target; investigate resident
+allocation retention/fragmentation rather than accepting the mixed-provider probe.
+Evidence: `build/i386-validator-scan-generations-16m/result.json` and
+`gen1-install/boot/debug.log` beneath that directory.
+
+
+Parser-stack diagnosis: isolated failure tracing maps the 4,116-byte request
+to I386ParseExpression and I386FrontendExpression. Full-size CPrsStk is 4,096
+bytes plus a 20-byte embedded lifetime record. Public-pool tracing reports
+32,256 unassigned bytes while the bootstrap arena rejects that request. The
+new `tools/test-i386-parser-scratch-memory.py` reproduces the failure on the
+preserved installed image (red baseline). The candidate routes the unchanged
+full-size, zeroed scratch through I386ParserCodeAlloc; embedded code ownership
+still uses the existing owner-aware release/unwind path. Cross-compilation
+passes. An audited diagnostic disk retains six fresh native providers and pads
+the candidate compiler to 512 payload bytes above the failed native compiler.
+Its 8 MiB regression is running in `build/i386-parser-scratch-footprint-green`;
+the directory name is an intended gate, not passing evidence. Fresh bootstrap,
+native compiler rebuild, ownership regressions and installed generations remain
+required. Production source now differs from the previous frozen candidate.
+
+
+The parser-stack-only candidate remains red: it gets past the 4,116-byte
+request but fails on the optimizer stack request of 4,096 bytes. A smaller
+caller-only trace maps that failure to I386OptPass012Sized/I386OptPass012;
+large occupancy instrumentation causes an earlier failure and is diagnostic
+only. Evidence: `build/i386-parser-scratch-footprint-green/result.json` and
+`build/i386-parser-scratch-next-caller-only/caller-analysis.json`. The revised
+candidate also uses I386ParserCodeAlloc for optimizer scratch, validates its
+logical size while accepting existing arena-owned borrowed stacks, and releases
+frontend temporary stacks through I386ParserFree. Public optimizer stack
+capacity and retained inspection/reuse remain unchanged. Cross-compilation is
+running in `build/i386-parser-optimizer-scratch-candidate`; no green claim yet.
+
+
+The combined scratch candidate fails during startup header compilation with
+frontend-service-unavailable. Inspection finds a second optimizer-stack release
+in I386FrontendGenerate that still calls the arena allocator directly. It now
+uses I386ParserFree consistently with the public-page owner. The failed result
+is preserved in `build/i386-parser-optimizer-scratch-footprint-test`; corrected
+cross-build is running in `build/i386-parser-optimizer-owner-candidate`.
+
+
+The corrected owner-aware scratch candidate passes the first seven commands
+of the 8 MiB footprint regression: three arithmetic runs, nested function
+publication/call, and recursive function publication/call. DolDoc allocation
+still fails: a 160-byte public allocation triggers an 8,755-byte backing request,
+with largest arena free block 2,144 bytes. This remains a red full gate; retained
+functions and public-pool fragmentation need investigation before native rebuild.
+Evidence: `build/i386-parser-optimizer-owner-footprint-test/qemu/debug.log`.
+
+
+The corrected scratch candidate passes immediate 8 MiB arithmetic/DolDoc
+with startup at 58.78 seconds (diagnostic mixed-build footprint, not fresh native
+qualification). DolDoc still fails after retained-function compilation. The
+refreshed original two-generation bootstrap passes. A new cache regression
+requires two adjacent returned eight-page blocks within one ownership region
+to satisfy a sixteen-page request without growth. The unchanged allocator
+baseline is running; existing region isolation tests remain required. Evidence:
+`build/i386-parser-optimizer-owner-direct-doc/result.json`,
+`build/rebuild-test/result.json`, and `build/i386-page-cache-coalescing-red-run.log`.
+
+
+The page-cache baseline fails at return 148, the new same-region contiguous
+recovery assertion. Evidence is preserved in
+`build/i386-page-cache-coalescing-red-evidence`. The allocator candidate validates
+free lists then sorts/coalesces returned page blocks within one ownership region
+on exhaustion, before attempting backing growth. No scratch heap is allocated.
+The fixture also rejects merging adjacent distinct borrowed regions, and checks
+subsequent allocations, counters and region removal. The refreshed original
+two-generation bootstrap passes; the expanded cache runner is now running.
+
+
+The expanded native cache runner passes with its instruction audit. The
+same-region sixteen-page request now succeeds, while adjacent distinct-region
+blocks remain separate and removable. Evidence is preserved in
+`build/i386-page-cache-coalescing-green-evidence`. The broader public-heap
+corpus is running; full 8 MiB retained-function/DolDoc behavior still requires
+a candidate image with the revised memory provider.
+
+
+The broader native public-heap corpus passes with its instruction audit after
+page coalescing. Evidence: `build/i386-heap-public-test/result.json` (checkpointed).
+A fresh thirteen-module cross-build of the combined scratch/coalescing candidate
+is running in `build/i386-scratch-page-coalescing-cross`. The whole retained-function
+8 MiB regression, source/stack audits, ownership/cancellation checks and fresh
+native generations remain required.
+
+
+The combined candidate thirteen-module cross-build passes 386 instruction and
+boot audits (551,080 flat kernel bytes). Its complete eleven-command parser
+scratch regression passes at 8 MiB/486,-fpu, startup 48.85 seconds, exact VGA at
+every checkpoint, preserved inputs unchanged. Evidence:
+`build/i386-scratch-page-coalescing-cross-regression/result.json`. A conservative
+diagnostic image retains five fresh native providers, pads the compiler payload
+1,024 bytes above the failed native compiler, and pads the memory provider by
+the measured 6,712-byte cross-payload growth over the old native memory payload.
+Its test is running in `build/i386-scratch-page-coalescing-native-footprint-test`;
+this is diagnostic mixed-build evidence, not native-generation qualification.
+
+
+The native-footprint diagnostic remains red at DolDoc after retained functions:
+a 160-byte small request cannot reserve the normal sixteen-page cached batch.
+The new one-page-pool regression fails at return 154 before the fallback change,
+with evidence preserved in `build/i386-small-batch-fallback-red-evidence`. The
+candidate now retries a failed normal small-allocation batch with the minimum
+page extent containing the complete rounded payload and header. Normal batch
+policy, payload size and alignment remain unchanged when the batch fits. A
+refreshed original two-generation bootstrap is running before cache/public tests.
+
+
+The minimum-page fallback passes the native expanded cache and broader
+public-heap corpora, each with its instruction audit. The refreshed original
+two-generation bootstrap also passes. Results are checkpointed. A fresh complete
+fallback cross-build is running in `build/i386-scratch-page-fallback-cross`,
+alongside the portable-source cache variant. The conservative native-footprint
+regression and fresh native installed generations are still unqualified.
+
+
+The fallback complete cross-build and portable-source cache test pass. The
+conservative native-footprint diagnostic passes all eleven behavioral commands
+at 8 MiB, including retained nested/recursive functions, DolDoc allocation and
+subsequent arithmetic, exact VGA at every checkpoint, and unchanged preserved
+inputs. Startup is 60.14 seconds, exceeding the 60-second budget; behavior pass
+does not qualify timing or native generations. Results are checkpointed.
+Evidence: `build/i386-scratch-page-fallback-native-footprint-test/result.json`.
+Standard nine-command cross-built 8 MiB startup checks are now running before
+ownership/diagnostic/source audits and fresh native qualification.
+
+
+Standard nine-command cross-built startup passes at 8 MiB/486,-fpu in 47.40
+seconds, with zero startup build-provider acquisition. All 980 delivered source/
+documentation files match, and the direct loader stack audit passes at
+16,300/16,384 bytes including caller reserve. Results are checkpointed. The
+16 MiB diagnostic boot is running; direct stack analysis still does not prove
+indirect callbacks, and native installed-generation timing remains unqualified.
+
+Latest minimum-page-fallback diagnostics pass at 16 MiB on `486,-fpu`:
+22 module-publication cases, 28 program-publication cases and nine interactive
+checks, including exact VGA checkpoints. Evidence:
+`build/i386-scratch-page-fallback-diag-16m/result.json`. Diagnostic startup is
+230.04 seconds; this intentionally extended boot is not the normal 60-second
+gate. Current-source provider cancellation also passes. Lifetime and reentrancy
+qualification are still running sequentially; floating-point, saved assembly
+and three provider recovery checks are queued behind them with source hashes
+pinned. Fresh complete native rebuilding and installed-generation qualification
+remain required; these passes do not establish completion of self-hosting.
+
+Current-source provider lifetime qualification also passes. Terminal diagnostic,
+cancellation and lifetime reports are copied into the validator-scan checkpoint
+with SHA256 entries. Reentrancy remains live. A sequential qualification queue
+now waits for all final regressions, then runs a fresh all-seven-provider rebuild,
+two native installation generations and four 8-MiB installed-image boots with
+the unchanged 60-second budget. Queue state:
+`build/i386-scratch-page-fallback-native-qualification-queue.json`.
+These queued gates remain unproven until their terminal reports pass.
+
+Current-source provider reentrancy passes: the guest-built initializer rejects
+one recursive acquisition, publishes the outer provider once, and completes two
+byte-identical Startup builds through first use and cached reuse. Cancellation,
+lifetime and reentrancy are now terminal PASS as a group, with frozen-source
+identity retained in `build/i386-scratch-page-fallback-provider-regressions/result.json`.
+The final floating-point/assembly/recovery queue may now proceed; the full native
+and installed-generation gates remain required.
+
+Current-source runtime floating-point context passes all sixteen commands at
+8 MiB on `486,-fpu`: integer/F64 conversion, truncation, arithmetic, modulus,
+sqrt/abs, comparisons and retained static state. This is scoped software-F64
+coverage, not exhaustive IEEE conformance. Evidence:
+`build/i386-scratch-page-fallback-final-regressions/float-8m/result.json`.
+Saved-assembly qualification has started at 16 MiB; provider fault recovery and
+full native installation generations remain pending.
+
+Current-source saved-assembly qualification passes at 16 MiB on `486,-fpu`:
+bare and block PUSHFD/CLI/POPFD compile, persist and execute as saved modules,
+and the included HolyC checks restore interrupt state. Evidence:
+`build/i386-scratch-page-fallback-final-regressions/saved-assembly-16m/result.json`.
+Provider service-version recovery is running next; wrong-target and missing-import
+recovery follow before full native rebuilding and installed-generation checks.
+
+Current-source final regression refresh is terminal PASS: software F64 at
+8 MiB, saved assembly at 16 MiB, and service-version, wrong-target and
+missing-import provider recovery. Earlier cancellation/lifetime/reentrancy and
+extended startup diagnostics also pass. Terminal reports are preserved with
+checkpoint hashes. Aggregate evidence:
+`build/i386-scratch-page-fallback-final-regressions/result.json`.
+The fresh full seven-provider native rebuild is now running at 16 MiB on
+TCG/486,-fpu in `build/i386-scratch-page-fallback-all-providers-16m`.
+Two native installed generations and four budgeted 8-MiB installed boots remain
+queued, not qualified. Runtime sources remain frozen for this qualification.
+
 The bucket-overflow results below predate this validator change.
 
 Current startup candidate: bucket-local loader overflow fallback retains the

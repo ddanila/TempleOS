@@ -1,5 +1,6 @@
 //Included after native control, optimizer and backend implementations.
 #include "/Compiler/I386/NativeExpression.HH"
+#include "/Compiler/I386/ParserMemory.HH"
 I64 StrLen(U8 *text) { I64 length=0; while(text[length]) length++; return length; }
 #ifndef NULL
 #define NULL 0
@@ -47,7 +48,7 @@ Bool I386ParseExpression(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *se
   CPrsStk *ps=stack;
   CI386CodeAllocation *record;
   CI386CmpRelease release;
-  I64 old_flags;
+  I64 old_flags,i,bytes;
   U32 irq;
   if(!I386CmpCodeOwner(heap,cc) || !I386ExpressionServicesValid(services) ||
       stack && !I386ExpressionStackValid(cc,stack)) return FALSE;
@@ -55,8 +56,15 @@ Bool I386ParseExpression(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *se
   old_flags=cc->flags;
   if(!ps) {
     irq=I386IrqSave;
-    ps=I386HeapAlloc(heap,sizeof(CPrsStk)+sizeof(CI386CodeAllocation),TRUE);
+    //Parser scratch can use the task's reserved public pages instead of needing
+    //another contiguous bootstrap-arena span. The tracked payload retains the
+    //embedded code-lifetime record, so both normal release and unwind use the
+    //existing owner-aware release path. Controls without task heaps fall back
+    //to the arena through the same service.
+    bytes=sizeof(CPrsStk)+sizeof(CI386CodeAllocation);
+    ps=I386ParserCodeAlloc(heap,cc,bytes);
     if(!ps) { I386IrqRestore(irq); throw('OutMem',TRUE); }
+    for(i=0;i<bytes;i++) ps(U8 *)[i]=0;
     record=ps(U8 *)+sizeof(CPrsStk);
     I386CodeAttach(cc,record,ps,7);
     I386IrqRestore(irq);

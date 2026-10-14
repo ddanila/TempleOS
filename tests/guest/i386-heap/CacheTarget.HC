@@ -5,12 +5,14 @@
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Memory.HC"
 CI386PublicPool cache_pool;
+CI386PoolRegion cache_extra_region;
 CHeapCtrl cache_heap;
 I64 Main(I64 a,I64 b)
 {
   CI386PublicPool *pool=&cache_pool;
   CHeapCtrl *hc=&cache_heap;
   CMemUsed *used;
+  CMemBlk *page_a,*page_b,*joined;
   U8 *slots[64],*q;
   I64 total,old,i;
   if(!I386MemPoolInit(pool,0x40000,0x40000) ||
@@ -61,5 +63,41 @@ I64 Main(I64 a,I64 b)
   }
   if(q[0]!=71 || q[499]!=83 || !I386MemFree(q) || hc->used_u8s ||
       !I386MemHeapDestroy(hc) || pool->used_u8s) return 145;
+  //Returned page blocks in the same ownership region must recover a larger
+  //contiguous request without growing the pool. Both exact-size caches are
+  //individually too small, and every page has first been allocated.
+  if(!I386MemPoolRemove(pool,&pool->initial) ||
+      !I386MemPoolInit(pool,0x40000,8192)) return 146;
+  page_a=I386MemPageAlloc(pool,8); page_b=I386MemPageAlloc(pool,8);
+  if(!page_a || !page_b || pool->used_u8s!=8192 ||
+      !I386MemPageFree(pool,page_a) || !I386MemPageFree(pool,page_b)) return 147;
+  joined=I386MemPageAlloc(pool,16);
+  if(joined!=0x40000 || joined->pags!=16 || pool->used_u8s!=8192 ||
+      !I386MemPoolValid(pool)) return 148;
+  if(!I386MemPageFree(pool,joined) || pool->used_u8s ||
+      !I386MemPoolRemove(pool,&pool->initial) || !I386MemPoolEmpty(pool)) return 149;
+  //Adjacent addresses belonging to distinct borrowed regions cannot merge.
+  if(!I386MemPoolInit(pool,0x40000,4096) ||
+      !I386MemPoolAdd(pool,&cache_extra_region,0x41000,4096)) return 150;
+  page_a=I386MemPageAlloc(pool,8); page_b=I386MemPageAlloc(pool,8);
+  if(!page_a || !page_b || !I386MemPageFree(pool,page_a) ||
+      !I386MemPageFree(pool,page_b) || I386MemPageAlloc(pool,16) ||
+      pool->used_u8s || !I386MemPoolValid(pool)) return 151;
+  page_a=I386MemPageAlloc(pool,8); page_b=I386MemPageAlloc(pool,8);
+  if(!page_a || !page_b || page_a==page_b || pool->used_u8s!=8192 ||
+      !I386MemPageFree(pool,page_a) || !I386MemPageFree(pool,page_b) ||
+      !I386MemPoolRemove(pool,&cache_extra_region) ||
+      !I386MemPoolRemove(pool,&pool->initial) || !I386MemPoolEmpty(pool)) return 152;
+  //A small allocation must fit an available page even when the usual cached
+  //batch cannot be reserved. Payload size and alignment stay unchanged.
+  if(!I386MemPoolInit(pool,0x40000,512) ||
+      !I386MemHeapInit(hc,pool,0x1234)) return 153;
+  q=I386MemAlloc(hc,160);
+  if(!q || (q+0)(U64)&7 || I386MemSize(q)<160 ||
+      hc->alloced_u8s!=512 || pool->used_u8s!=512) return 154;
+  q[0]=71; q[159]=83;
+  if(q[0]!=71 || q[159]!=83 || !I386MemFree(q) || hc->used_u8s ||
+      !I386MemHeapDestroy(hc) || pool->used_u8s ||
+      !I386MemPoolRemove(pool,&pool->initial) || !I386MemPoolEmpty(pool)) return 155;
   return 0;
 }
