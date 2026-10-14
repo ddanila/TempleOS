@@ -8,7 +8,28 @@ import runpy
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
-COMMANDS = [('I64 StreamLine(CDoc *d,U8 *wanted){U8 *s=DocScanLine(d,d->head.next);I64 ok=StrCmp(s,wanted)==0;Free(s);return ok;}', []), ('CDoc *StreamDoc=DocNew;', []), ('DocPrintPartial(StreamDoc,"left\\x24R");', []), ('StreamLine(StreamDoc,"left")&&(StreamDoc->flags&DOCF_IN_DOLLAR)&&StreamDoc->dollar_buf_ptr==2;', ['1']), ('DocPrintPartial(StreamDoc,"ED\\x24cash\\x24");', []), ('(StreamDoc->flags&DOCF_IN_DOLLAR)!=0&&StreamDoc->dollar_buf_ptr==1;', ['1']), ('DocPrintPartial(StreamDoc,"\\x24right");', []), ('StreamLine(StreamDoc,"leftcash\\x24right")&&!(StreamDoc->flags&DOCF_IN_DOLLAR)&&StreamDoc->dollar_buf_ptr==0;', ['1']), ('DocRst(StreamDoc,TRUE);StreamDoc->flags|=DOCF_PLAIN_TEXT;', []), ('DocPrintPartial(StreamDoc,"\\x24RED\\x24cash\\x24\\x24");', []), ('StreamLine(StreamDoc,"\\x24RED\\x24cash\\x24\\x24");', ['1']), ('DocRst(StreamDoc,TRUE);StreamDoc->flags&=~DOCF_PLAIN_TEXT;', []), ('DocPrintPartial(StreamDoc,"abcd");', []), ('StreamDoc->cur_entry=StreamDoc->head.next;StreamDoc->cur_col=2;', []), ('DocPrintPartial(StreamDoc,"%s","XY");', []), ('StreamLine(StreamDoc,"abXYcd");', ['1']), ('DocDel(StreamDoc);', []), ('6*7;', ['42'])]
+COMMANDS = [
+    ('U0 StreamMiddle(CDoc *d){d->cur_entry=d->head.next;d->cur_col=2;}', []),
+    ('U0 StreamReset(CDoc *d,Bool plain){DocRst(d,TRUE);if(plain)d->flags|=DOCF_PLAIN_TEXT;else d->flags&=~DOCF_PLAIN_TEXT;}', []),
+    ('I64 StreamLine(CDoc *d,U8 *wanted){U8 *s=DocScanLine(d,d->head.next);I64 ok=StrCmp(s,wanted)==0;Free(s);return ok;}', []),
+    ('CDoc *StreamDoc=DocNew;', []),
+    ('DocPrintPartial(StreamDoc,"left\\x24R");', []),
+    ('StreamLine(StreamDoc,"left")&&(StreamDoc->flags&DOCF_IN_DOLLAR)&&StreamDoc->dollar_buf_ptr==2;', ['1']),
+    ('DocPrintPartial(StreamDoc,"ED\\x24cash\\x24");', []),
+    ('(StreamDoc->flags&DOCF_IN_DOLLAR)!=0&&StreamDoc->dollar_buf_ptr==1;', ['1']),
+    ('DocPrintPartial(StreamDoc,"\\x24right");', []),
+    ('StreamLine(StreamDoc,"leftcash\\x24right")&&!(StreamDoc->flags&DOCF_IN_DOLLAR)&&StreamDoc->dollar_buf_ptr==0;', ['1']),
+    ('StreamReset(StreamDoc,TRUE);', []),
+    ('DocPrintPartial(StreamDoc,"\\x24RED\\x24cash\\x24\\x24");', []),
+    ('StreamLine(StreamDoc,"\\x24RED\\x24cash\\x24\\x24");', ['1']),
+    ('StreamReset(StreamDoc,FALSE);', []),
+    ('DocPrintPartial(StreamDoc,"abcd");', []),
+    ('StreamMiddle(StreamDoc);', []),
+    ('DocPrintPartial(StreamDoc,"%s","XY");', []),
+    ('StreamLine(StreamDoc,"abXYcd");', ['1']),
+    ('DocDel(StreamDoc);', []),
+    ('6*7;', ['42']),
+]
 
 
 def main():

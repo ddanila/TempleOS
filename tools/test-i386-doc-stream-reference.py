@@ -16,6 +16,8 @@ spec.loader.exec_module(reference)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--shared-stream', action='store_true',
+                        help='Override the original streaming implementation with the current shared core')
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists():
@@ -30,6 +32,19 @@ def main():
                   reference_sha256=reference.restore_reference(overlay),
                   input_sha256={str(p):reference.sha(p) for p in inputs},
                   scope='Explicit-document streaming output: partial markup, completion, escaped dollar, plain-text bypass and middle insertion; not default console rendering or complete DocPrintPartial parity')
+    report['mode'] = 'shared-stream' if args.shared_stream else 'pinned-original'
+    report['source_overrides'] = {}
+    if args.shared_stream:
+        path = ROOT/'Adam/DolDoc/DocPrintPartialCore.HC'
+        original = overlay/'Adam/DolDoc/DocPutS.HC'
+        text = original.read_text()
+        start = text.index('public U0 DocPrintPartial')
+        end = text.index('\nBool KDDocPutS',start)
+        original.write_text(text[:start]+'#include "/Adam/DolDoc/DocPrintPartialCore.HC"\n'+text[end:])
+        target = overlay/'Adam/DolDoc/DocPrintPartialCore.HC'
+        target.write_bytes(path.read_bytes())
+        report['source_overrides'][str(target.relative_to(overlay))] = reference.sha(path)
+        report['input_sha256'][str(path)] = reference.sha(path)
     expected = {'stream.bin':b'leftcash$right\0',
                 'plain.bin':b'$RED$cash$$\0',
                 'insert.bin':b'abXYcd\0'}

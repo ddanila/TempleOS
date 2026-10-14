@@ -66,4 +66,5 @@ public _extern _ED_FILTER_CB U8 *EdFilterCB(CDoc *doc,CDocEntry *entry,CTask *me
 public _extern _ED_DOLLAR_CB U8 *EdDollarCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
 public _extern _ED_MORE_CB U8 *EdMoreCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
 public _extern _ED_DOLLAR_TYPE_CB U8 *EdDollarTypeCB(CDoc *doc,CDocEntry *entry,CTask *mem_task);
+public _extern _DOC_PRINT_PARTIAL U0 DocPrintPartial(CDoc *doc=NULL,U8 *fmt,...);
 #endif

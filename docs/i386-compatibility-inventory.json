@@ -1343,6 +1343,18 @@
           "result": "fail",
           "evidence": "build/i386-c4-doc-stream-red/result.json",
           "scope": "Native public DocPrintPartial undefined; later assertions unexecuted"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream-reference.py --shared-stream --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-stream-shared-reference/result.json",
+          "scope": "Extracted original DocPrintPartial explicit-document cases; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-stream-delivered/result.json",
+          "scope": "20 native commands: streaming partial markup, split escape, plain-text bypass and middle insertion; default console rendering, callbacks and exception cleanup open"
         }
       ]
     },

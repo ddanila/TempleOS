@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared streaming document output passes native behavior (2026-10-15)
+
+Console interface 77 exposes DocPrintPartial from an extracted original body
+shared with the original system. The shared-original reference passes, and
+native public-API tests pass all 20 commands for split markup/escape state,
+plain-text bypass and middle insertion. Bootstrap rebuild and cross-build pass;
+the console-77 image passes the 8 MiB startup gate in 44.82 seconds with no
+build-provider loading. Two native fixture corrections put visible assignment
+setup into void helpers; these were test expectations, not OS fixes.
+
+See [streaming output evidence](docs/i386-doc-stream.md). The public declaration
+was placed inside its include guard; the final bootstrap rebuild, cross-build
+and current-source startup pass (`build/i386-c4-doc-stream-final-cross` and
+`build/i386-c4-doc-stream-final-startup`). All 20 streaming commands also pass
+on that final image (`build/i386-c4-doc-stream-delivered`). The original streaming body still needs exception/lock/resource
+cleanup qualification, callback and overstrike/data coverage before default
+console output integration. DocGetKey/GetStr and full C1–C5 remain open.
+
 ### Streaming document output reference and native red gate (2026-10-15)
 
 The pinned-original DocPrintPartial fixture now passes split dollar-command and
