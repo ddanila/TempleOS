@@ -39,8 +39,9 @@ open. Passing an explicit presentation test does not supersede it.
    exact heap recovery, successful retry and normal original-renderer controls.
    The first concrete failure and fix are tracked in
    [renderer callback recovery](i386-doc-recalc-recovery.md). Continue with other
-   callback/allocation sites and forced exit; ordinary catch handling alone does
-   not prove cleanup when a callback calls Exit.
+   callback/allocation sites. Native renderer cleanup now passes plain child,
+   nested and User-terminal callback Exit cases; outer compositor Exit and
+   frame-lease cleanup still need qualification.
 2. **Worker/document lifetime and presentation ownership.** Use the native
    scheduler's established ownership model. Exit waits for linked children and
    inherited task/code/heap references defer retirement; reuse those guarantees

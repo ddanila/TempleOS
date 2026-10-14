@@ -1,3 +1,8 @@
+#ifndef DOC_RECALC_SCOPE_LOCAL
+#define DOC_RECALC_SCOPE_LOCAL
+#define DOC_RECALC_SCOPE_OPEN
+#define DOC_RECALC_SCOPE_CLOSE
+#endif
 #ifndef DOC_RECALC_FPS
 #define DOC_RECALC_FPS winmgr.fps
 #endif
@@ -272,6 +277,7 @@ public Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL)
   Bool del_doc_e,skipped_update,tree_collapsed,same_win,more=FALSE,
 	find_cursor=FALSE,blink_flag,full_refresh=TRUE,unlock=FALSE,clear_holds;
   Bool result=TRUE;
+  DOC_RECALC_SCOPE_LOCAL;
   CTask *win_task,*mem_task;
   CDC *dc=NULL;
   U8 *bptr,*ptr,*new_tag=NULL,buf[STR_LEN],ch;
@@ -294,6 +300,7 @@ public Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL)
   }
 
   try {
+  DOC_RECALC_SCOPE_OPEN;
   unlock=DocLock(doc);
   if (doc->doc_signature!=DOC_SIGNATURE_VAL) {
     result=FALSE;
@@ -1340,11 +1347,15 @@ doc_recalc_done:
   } catch {
     if (dc && dc->depth_buf==depth_buf)
       dc->depth_buf=NULL;
-    DCDel(dc);
-    Free(depth_buf);
-    Free(new_tag);
-    if (unlock)
+    DCDel(dc); dc=NULL;
+    Free(depth_buf); depth_buf=NULL;
+    Free(new_tag); new_tag=NULL;
+    DOC_RECALC_SCOPE_CLOSE;
+    if (unlock) {
+      unlock=FALSE;
       DocUnlock(doc);
+    }
   }
+  DOC_RECALC_SCOPE_CLOSE;
   return result;
 }

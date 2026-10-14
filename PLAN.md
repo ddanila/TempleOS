@@ -10,6 +10,27 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native renderer scopes recover forced callback Exit (2026-10-15)
+
+A child task calling Exit inside a dynamic tag first leaves its parent-owned
+document locked and drawing alias allocated (mask 4 instead of 31). Native
+stack-resident render scopes now join task cleanup: normal return/catch unregisters
+them, while termination drains that task's nested render resources and invokes
+its prior cleanup. Original builds retain no-op lifecycle hooks.
+
+All 20 commands pass, including single and nested render exits and a User
+terminal with existing cleanup. Each returns mask 31 after lock/owner/tag and
+exact parent-heap checks, successful retry and document deletion. Ordinary
+callback exception recovery and independent two-phase full-frame style checks
+remain green. Bootstrap, cross-build and 386 boot audit pass; 8 MiB startup passes
+in 45.59 seconds with no build-provider loading. See
+[renderer lifecycle evidence](docs/i386-doc-recalc-recovery.md).
+
+This qualifies renderer callback termination in those cases. Outer graphics
+presentation/lease cleanup, owner termination during yielding callbacks,
+interleaved render scopes and complete worker lifecycle remain open before
+automatic refresh. C1–C5 remain open.
+
 ### Scheduled document refresh: original acceptance and recovery dependency (2026-10-15)
 
 The original window manager automatically renders a displayed dynamic document
