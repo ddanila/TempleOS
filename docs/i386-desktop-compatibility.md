@@ -92,6 +92,36 @@ validation and ownership accounting. Qualify usable capacity independently of
 the QEMU `-m` argument; 128 MiB native rebuilding cannot be claimed until this
 gap is closed and rebuilding is tested.
 
+## Capacity regression: expected failure (2026-10-14)
+
+`tools/test-i386-desktop-capacity.py` requires a 32 MiB public allocation at
+64 MiB RAM (80 MiB at 128 MiB), touches each 4 KiB and the final byte, verifies
+readback after returning to the prompt, releases it, and checks subsequent
+arithmetic. It runs on a writable copy and records preserved-input hashes.
+
+```sh
+python3 tools/test-i386-desktop-capacity.py IMAGE \
+  --out build/desktop-capacity-64m --ram-mib 64
+```
+
+The first 64 MiB run fails at `MAlloc(33554432)` with OutMem, observed on VGA
+and in the guest exception log. Its boot arena is `0x188000 + 0xD78000`, ending
+at the legacy 15 MiB cap. Inputs remain unchanged. Evidence:
+`build/i386-c1-capacity-64m-red/result.json` and its `qemu/debug.log`.
+The allocation check is a required failing regression, not a passing test or
+an accepted reduction of the larger-memory goal.
+
+The implementation should retain the legacy handoff for existing fixtures,
+add a separately versioned firmware RAM map, and select/own usable RAM only
+after validating map bounds, types, attributes, overflow and reservations.
+The map must not consume live boot buffers or the BIOS transfer buffer. Map
+entries may be unsorted, overlapping or unavailable: test those cases, prefer
+reserved coverage over usable overlaps, and retain a conservative legacy
+fallback. Keep firmware/device holes excluded, verify A20 before high-memory
+use and prove outputs unchanged on invalid input. Only claim 64/128 MiB usable
+profiles after allocation readback, reserved-hole rejection and minimal-profile
+regressions pass on the resulting image.
+
 ## Milestone status
 
 | Milestone | State | Next evidence |

@@ -26,6 +26,16 @@ The baseline exposes a capacity gap: boot allocation is capped below 15 MiB
 regardless of QEMU RAM. Add a failing usable-capacity test and firmware RAM
 discovery before claiming the larger profiles. See the tracking document.
 
+### Capacity test checkpoint (2026-10-14)
+
+The larger-memory capacity regression now fails as intended: a 32 MiB public
+allocation on the 64 MiB second-generation image raises OutMem. Its VGA and
+exception-log evidence agrees with the 15 MiB boot-arena cap; input hashes are
+unchanged. `tools/test-i386-desktop-capacity.py` defines allocation, page and
+endpoint readback, release and subsequent arithmetic checks for the proposed
+64/128 MiB profiles. Firmware-map handoff and reservation-aware RAM selection
+remain implementation work; the tracking document records the required cases.
+
 ### Scope and hardware constraints
 
 Target source and observable behavioral compatibility with the original
