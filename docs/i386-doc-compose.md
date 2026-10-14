@@ -60,13 +60,11 @@ second document evaluation to refresh cells immediately. Keep the original
 text/task/sprite/persistent/final ordering and test dynamic evaluation frequency,
 focus, cancellation, error cleanup and resource use.
 
-A separate existing editor path remains incompatible: NativeDocSpriteDraw in
-Kernel/I386/DocumentRuntime.HC assumes padded point/rectangle records (12/20 bytes),
-and DocSpriteRenderCheck builds a 23-byte color/rectangle/end fixture. Original
-packed color/rectangle/end data is twenty bytes. Its custom subset rendering is
-not qualified by the passing original DocRecalc/compositor tests. Replace that
-path with original sprite behavior and qualify it with packed binary documents;
-do not treat the earlier custom fixture as original sprite-format parity.
+The editor's separate padded-record limitation identified here is superseded by
+[the packed sprite editor fix](i386-packed-sprite-editor.md). It now validates
+original record storage and delegates drawing to Sprite3. The saved/reloaded
+packed rectangle and legacy visible regression pass. Broader editor layout and
+sprite behavior still require qualification.
 
 These tests cover one static rectangle and one dynamic text callback. Arbitrary
 sprites, persistent/final overlays with document output, cursor, scrolling,

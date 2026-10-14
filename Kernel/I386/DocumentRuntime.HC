@@ -598,11 +598,6 @@ U0 NativeDocEditTextAttr(CI386Text *text,I64 foreground,I64 background,
 extern U0 I386TextCell(CI386Text *text,U8 ch);
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
 extern U8 **NativeGraphicsPlanes();
-#define NATIVE_SPT_END   0
-#define NATIVE_SPT_COLOR 1
-#define NATIVE_SPT_PT    8
-#define NATIVE_SPT_LINE 10
-#define NATIVE_SPT_RECT 12
 CDoc *native_doc_sprite_doc;
 I64 native_doc_sprite_top,native_doc_sprite_left;
 Bool native_doc_mouse_visible;
@@ -886,53 +881,15 @@ U0 NativeDocEditDrawBody(CDoc *doc,CI386Text *text,Bool blink_phase=FALSE)
     NativeDocEditVisiblePut(text,&row,&column,top,left,wrap,0xDB);
   if(unlock) DocUnlock(doc);
 }
-U0 NativeDocSpritePixel(CDC *dc,I64 x,I64 y,I64 color)
-{
-  if(0<=x<dc->width && 0<=y<dc->height)
-    dc->body[y*dc->width_internal+x]=color&15;
-}
-U0 NativeDocSpriteLine(CDC *dc,I64 x1,I64 y1,I64 x2,I64 y2,I64 color)
-{
-  I64 dx=x2-x1,dy=y2-y1,sx,sy,error,next;
-  if(dx<0) { dx=-dx; sx=-1; } else sx=1;
-  if(dy<0) { dy=-dy; sy=-1; } else sy=1;
-  dy=-dy; error=dx+dy;
-  while(TRUE) {
-    NativeDocSpritePixel(dc,x1,y1,color);
-    if(x1==x2 && y1==y2) return;
-    next=error*2;
-    if(next>=dy) { error+=dy; x1+=sx; }
-    if(next<=dx) { error+=dx; y1+=sy; }
-  }
-}
+extern Bool SpriteDataValidateCore(U8 *data,I64 size);
+extern U0 Sprite3(CDC *dc,I64 x,I64 y,I64 z,U8 *elems,Bool just_one_elem=FALSE);
 Bool NativeDocSpriteDraw(CDC *dc,U8 *data,I64 size,I64 origin_x,I64 origin_y)
-{//Bounded original sprite subset: color, point, line and filled rectangle.
-  I64 at=0,type,color=0,x1,y1,x2,y2,x,y;
-  while(at<size) {
-    type=data[at]&0x7F;
-    if(type==NATIVE_SPT_END) return at+1==size;
-    if(type==NATIVE_SPT_COLOR) {
-      if(size-at<2) return FALSE;
-      color=data[at+1]&15; at+=2;
-    } else if(type==NATIVE_SPT_PT) {
-      if(size-at<12) return FALSE;
-      x1=(data+at+4)(I32 *)[0]; y1=(data+at+8)(I32 *)[0];
-      NativeDocSpritePixel(dc,origin_x+x1,origin_y+y1,color); at+=12;
-    } else if(type==NATIVE_SPT_LINE || type==NATIVE_SPT_RECT) {
-      if(size-at<20) return FALSE;
-      x1=(data+at+4)(I32 *)[0]; y1=(data+at+8)(I32 *)[0];
-      x2=(data+at+12)(I32 *)[0]; y2=(data+at+16)(I32 *)[0];
-      if(type==NATIVE_SPT_LINE)
-        NativeDocSpriteLine(dc,origin_x+x1,origin_y+y1,
-          origin_x+x2,origin_y+y2,color);
-      else if(x1<x2 && y1<y2)
-        for(y=y1;y<y2;y++) for(x=x1;x<x2;x++)
-          NativeDocSpritePixel(dc,origin_x+x,origin_y+y,color);
-      at+=20;
-    } else return FALSE;
-  }
-  return FALSE;
+{
+  if(!SpriteDataValidateCore(data,size)) return FALSE;
+  Sprite3(dc,origin_x,origin_y,0,data);
+  return TRUE;
 }
+
 U0 NativeDocEditDrawSprites(CDC *dc)
 {
   CDoc *doc=native_doc_sprite_doc;

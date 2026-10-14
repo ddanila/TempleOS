@@ -2225,7 +2225,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-packed-sprite-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-packed-sprite-editor-green/result.json",
+          "scope": "Twelve-command packed color/rectangle/end DolDoc save/reload and editor full-frame test delegates original Sprite3; all other records and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-sprite-data-validate.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-sprite-validate-native/result.json",
+          "scope": "18 structural bounds/count/index cases using original record metadata; not full renderer geometry/resource qualification"
+        }
+      ]
     },
     {
       "path": "Adam/Gr/GrTextBase.HC",
@@ -2424,7 +2437,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-packed-sprite-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-packed-sprite-editor-green/result.json",
+          "scope": "Twelve-command packed color/rectangle/end DolDoc save/reload and editor full-frame test delegates original Sprite3; all other records and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-sprite-data-validate.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-sprite-validate-native/result.json",
+          "scope": "18 structural bounds/count/index cases using original record metadata; not full renderer geometry/resource qualification"
+        }
+      ]
     },
     {
       "path": "Adam/Gr/SpriteSideBar.HC",

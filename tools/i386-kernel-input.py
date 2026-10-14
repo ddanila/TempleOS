@@ -1975,7 +1975,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
               'final_backgrounds':anchor_selected_backgrounds})
             active_group='document-sprites'
             submit('#include "/Kernel/I386/DocSpriteRenderCheck.HC"', [], 'doc-sprite-render-definition')
-            submit('DocSpriteRenderStart;', ['23'], 'doc-sprite-render-start')
+            submit('DocSpriteRenderStart;', ['20'], 'doc-sprite-render-start')
             sprite_rows=['TempleOS i386','DolDoc editor','C:/SpriteRender.DD','']
             sprite_pixels={(x,y):4 for y in range(32,40) for x in range(16)}
             submit('DocEd(sprite_render_doc);', ['1'], 'doc-sprite-render-editor', interaction={

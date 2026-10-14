@@ -10,6 +10,25 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Editor delegates packed sprites to the original renderer (2026-10-15)
+
+The editor's padded subset decoder is removed. It now checks packed record
+storage with the original size table/types and delegates to Sprite3. A test
+first saves/reloads the original 20-byte color/rectangle/end payload but fails
+on the preceding editor's missing blue rectangle. The fixed image passes all
+12 commands and the full 640x480 pixel comparison, including glyph overlap and
+inclusive rectangle edges. The legacy sprite group also passes unchanged visual
+expectations; its binary fixture is now packed and returns size 20 instead of 23.
+
+The shared validator passes 18 boundary cases under original and native layouts,
+including truncation, missing termination, signed/oversized payload counts,
+bitmap dimensions and mesh indices. Bootstrap, cross-build and 386 boot audit
+pass; 8 MiB startup passes in 45.78 seconds with no build-provider loads. See
+[packed sprite editor evidence](docs/i386-packed-sprite-editor.md). Broader sprite
+geometry/resource behavior, editor layout, failure paths and scheduled/stdout
+integration remain open. This closes the identified padded-record gap, not
+full editor/application compatibility or C1–C5.
+
 ### Original text/sprite frame ordering confirmed (2026-10-15)
 
 The original GrUpdateScrn loop renders existing text cells before updating task

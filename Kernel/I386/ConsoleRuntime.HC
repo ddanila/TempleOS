@@ -186,6 +186,7 @@ CTask **native_highlight_root;
 #include "/Adam/DolDoc/DocHighlightCore.HC"
 #include "/Adam/Gr/Gr.HH"
 #include "/Adam/Gr/SpriteRecordsCore.HC"
+#include "/Adam/Gr/SpriteDataValidateCore.HC"
 #define GRAPHICS_DEFAULT_DC NULL
 #define GRAPHICS_RESOLVE_DEFAULT_DC if (!dc) dc=gr.dc;
 #include "/Adam/Gr/GrMath.HC"
