@@ -24,6 +24,7 @@ import CHashDefineStr *DefineLstLoad(U8 *name,U8 *list);
 I64 native_doc_alloc_fail_after,native_doc_alloc_count;
 CTask *native_doc_alloc_owner;
 Bool native_dir_mouse_visible,native_help_mouse_visible;
+extern U0 NativeKeyDevStart();
 extern U0 NativeDocMouseShow(U8 *planes,I64 x,I64 y);
 extern U0 NativeMousePlaneMove(U8 *planes,I64 old_x,I64 old_y,I64 x,I64 y);
 U0 NativeDocAllocArm(I64 fail_after)
@@ -2113,6 +2114,7 @@ U0 ConsoleDocumentStart()
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocInit;
   NativeTerminalTranscriptStart;
+  NativeKeyDevStart;
   console_document_owner=task;
 }
 

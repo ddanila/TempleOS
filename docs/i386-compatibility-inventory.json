@@ -12586,14 +12586,15 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "KeyDevAdd/KeyDevRem and selected ScanKey/GetKey echo through a descriptor-enabled highest-priority callback. Full output dispatch, priority/replacement, raw/filter/doc hooks and lifecycle remain unqualified."
+        "description": "Twelve dispatch traces cover ascending priority, descriptor/silent filters, PutS callback/fallback, packed characters, replacement/removal and NULL/zero inputs. Default devices/document output, scroll waiting, Ctrl-Alt and lifecycle remain unqualified."
       },
       "oracle": {
-        "tool": "tools/test-i386-key-input-reference.py",
+        "tool": "tools/test-i386-keydev-reference.py",
         "checks": [
-          "Exactly one echo callback per selected echo-enabled key",
-          "Character and full scan-code callback arguments",
-          "Registration/removal in the controlled reference fixture"
+          "Explicit twelve I64 dispatch traces",
+          "Ascending numeric ordering and same-priority replacement",
+          "Descriptor/silent rules, callback/fallback and packed characters",
+          "Removal and NULL/zero inputs"
         ]
       },
       "tests": [
@@ -12610,6 +12611,26 @@
           "result": "pass",
           "evidence": "build/i386-c1-key-input-pinned-final/result.json",
           "scope": "Selected echo hook behavior only; not full KeyDev compatibility"
+        },
+        {
+          "target": "original-keydev-dispatch",
+          "command": "python3 tools/test-i386-keydev-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-keydev-reference/result.json"
+        },
+        {
+          "target": "rebuilt-x64-keydev-dispatch",
+          "command": "python3 tools/test-i386-keydev-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-keydev-shared-control/result.json",
+          "scope": "Shared dispatch/types; native-only descriptor fix does not change this shared source"
+        },
+        {
+          "target": "native-public-keydev",
+          "command": "python3 tools/test-i386-keydev.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-keydev-fixed-native/result.json",
+          "scope": "Twelve traces through public APIs; not full default device/document/lifecycle compatibility"
         }
       ]
     },
@@ -12918,6 +12939,20 @@
           "result": "fail",
           "evidence": "build/i386-c4-key-input-public-final-red/result.json",
           "gap": "Missing public ScanKey binding rejects helper definition; later cases not reached"
+        },
+        {
+          "target": "native-public-scan-key",
+          "command": "python3 tools/test-i386-key-scan-core.py IMAGE --public-bindings --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-scan-key-public-final/result.json",
+          "scope": "24 fields through public ScanKey and real KeyDev echo; not GetKey waiting or full file compatibility"
+        },
+        {
+          "target": "native-get-key-gap",
+          "command": "python3 tools/test-i386-key-input.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-keydev-getkey-red/result.json",
+          "gap": "Initial ScanKey helper/check passes; KeyRead rejects missing GetKey and full collection is not reached"
         }
       ]
     },

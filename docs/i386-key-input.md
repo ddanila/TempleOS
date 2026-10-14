@@ -82,3 +82,14 @@ requires the latest rebuild manifest, matching current source hashes and its
 matching generated binaries. Native runs operate on writable image copies;
 their source images remain unchanged. They do not establish native release,
 startup-memory or background-concurrency qualification.
+
+## Public ScanKey binding checkpoint
+
+[Output-hook dispatch](i386-keydev.md) now provides the native public ScanKey,
+PutKey and hook registration/removal path. The 24-field suite's
+`--public-bindings` mode passes in
+`build/i386-c4-scan-key-public-final/result.json`, using real KeyDev dispatch.
+The original alias-mode component test remains available separately. The full
+input suite now passes its initial empty ScanKey check and rejects the missing
+GetKey in its next helper (`build/i386-c4-keydev-getkey-red/result.json`);
+its full 28-field native collection remains unexecuted.

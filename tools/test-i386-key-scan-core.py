@@ -32,9 +32,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--public-bindings',action='store_true',
+                        help='Exercise exported ScanKey and real KeyDev dispatch instead of the test alias')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
+    if args.public_bindings:
+        commands = [(s.replace('SharedScanKey','ScanKey'),answers)
+                    for s,answers in commands if not s.startswith(('#define','#include'))]
+        commands[2:2] = [
+            ('CKeyDevEntry *key_echo_hook;',[]),
+            ('Bool KeyEchoHook(I64 ch,I64 sc){KeyEchoRecord(ch,sc);return TRUE;}',[])]
+        commands = [(s.replace('key_old_desc=LBtr','key_echo_hook=KeyDevAdd(&KeyEchoHook,NULL,10,TRUE);key_old_desc=LBtr')
+                      .replace('U0 KeyRestore(){','U0 KeyRestore(){KeyDevRem(key_echo_hook);'),answers)
+                    for s,answers in commands]
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -47,6 +58,9 @@ def main():
     shutil.copyfile(source, working)
     report = dict(result='running', scope='Shared ScanKey body on real native message queues: empty/filtered/zero-character/null-output cases, echo arguments and descriptor filtering; test-only echo callback, not public bindings, KeyDev dispatch or GetKey waiting',
                   input_sha256=pins, commands=commands)
+    report['mode'] = 'public-bindings' if args.public_bindings else 'shared-core-alias'
+    if args.public_bindings:
+        report['scope'] = 'Public ScanKey and real KeyDev echo dispatch: 24 queue/character/scan-code/descriptor fields; not GetKey waiting, default document echo or raw/debug paths'
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=64,

@@ -224,6 +224,15 @@ extern U8 *NativeAStrNew(U8 *text);
 #include "/Adam/DolDoc/DocFindCore.HC"
 
 #include "/Kernel/JobResScanCore.HC"
+#include "/Kernel/KeyDevTypes.HH"
+extern U0 PutKey(I64 ch=0,I64 sc=0);
+extern U0 PutChars(U64 chars);
+extern U0 PutS(U8 *s);
+extern CKeyDevEntry *KeyDevAdd(Bool (*key)(I64 ch,I64 sc),Bool (*text)(U8 *s),I64 priority,Bool key_descs=FALSE);
+extern U0 KeyDevRem(CKeyDevEntry *entry);
+extern Bool ScanKey(I64 *ch=0,I64 *sc=0,Bool echo=FALSE);
+extern U0 NativeKeyDevStart();
+I64 (*native_public_scan_msg)(I64 *a,I64 *b,I64 mask,CTask *task);
 extern U0 NativePrint(U8 *fmt,...);
 extern U0 NativePutS(U8 *text);
 extern U0 NativePutChars(U64 chars);
@@ -243,7 +252,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[212];
+CI386KernelSymbol console_doc_exports[216];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -325,6 +334,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   provider=HashFind("I386CAllocExact",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_graphics_body_calloc=provider->val;
+  provider=HashFind("_SCAN_MSG",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_public_scan_msg=provider->val;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   I386KeyboardReset(&console_hotkeys);
   ConsoleDocExportSet(0,"_DOC_LOCK",(&I386DocLock+0)(U64));
@@ -541,7 +553,11 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(209,"_STREAM_DIR",(&NativeStreamDir+0)(U64));
   ConsoleDocExportSet(210,"_NOW",(&NativeNow+0)(U64));
   ConsoleDocExportSet(211,"_DOC_SCAN_LINE",(&DocScanLine+0)(U64));
-  for(i=0;i<212;i++) {
+  ConsoleDocExportSet(212,"_PUT_KEY",(&PutKey+0)(U64));
+  ConsoleDocExportSet(213,"_KEY_DEV_ADD",(&KeyDevAdd+0)(U64));
+  ConsoleDocExportSet(214,"_KEY_DEV_REM",(&KeyDevRem+0)(U64));
+  ConsoleDocExportSet(215,"_SCAN_KEY",(&ScanKey+0)(U64));
+  for(i=0;i<216;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -733,6 +749,7 @@ U0 NativeTerminalInput()
 #include "/Kernel/I386/Text.HC"
 #include "/Kernel/I386/TextVga.HC"
 #include "/Kernel/I386/ConsoleOutput.HC"
+#include "/Kernel/I386/KeyDevRuntime.HC"
 #include "/Kernel/I386/ConsoleNumbers.HC"
 #include "/Kernel/I386/ConsoleInput.HC"
 #include "/Kernel/I386/Debugger.HC"

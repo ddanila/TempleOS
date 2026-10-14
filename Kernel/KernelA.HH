@@ -1259,37 +1259,7 @@ public class CSysFixedArea
 #define ST_ERR_ST   "$$LTRED$$$$BK,1$$ERROR:$$FG$$$$BK,0$$ "
 #define ST_WARN_ST  "$$RED$$$$BK,1$$WARNING:$$FG$$$$BK,0$$ "
 
-//Scan code flags
-#define SCf_E0_PREFIX	7
-#define SCf_KEY_UP	8
-#define SCf_SHIFT	9
-#define SCf_CTRL	10
-#define SCf_ALT 	11
-#define SCf_CAPS	12
-#define SCf_NUM 	13
-#define SCf_SCROLL	14
-#define SCf_NEW_KEY	15
-#define SCf_MS_L_DOWN	16
-#define SCf_MS_R_DOWN	17
-#define SCf_DELETE	18
-#define SCf_INS		19
-#define SCf_NO_SHIFT	30
-#define SCf_KEY_DESC	31
-#define SCF_E0_PREFIX	(1<<SCf_E0_PREFIX)
-#define SCF_KEY_UP	(1<<SCf_KEY_UP)
-#define SCF_SHIFT	(1<<SCf_SHIFT)
-#define SCF_CTRL	(1<<SCf_CTRL)
-#define SCF_ALT		(1<<SCf_ALT)
-#define SCF_CAPS	(1<<SCf_CAPS)
-#define SCF_NUM		(1<<SCf_NUM)
-#define SCF_SCROLL	(1<<SCf_SCROLL)
-#define SCF_NEW_KEY	(1<<SCf_NEW_KEY)
-#define SCF_MS_L_DOWN	(1<<SCf_MS_L_DOWN)
-#define SCF_MS_R_DOWN	(1<<SCf_MS_R_DOWN)
-#define SCF_DELETE	(1<<SCf_DELETE)
-#define SCF_INS 	(1<<SCf_INS)
-#define SCF_NO_SHIFT	(1<<SCf_NO_SHIFT)
-#define SCF_KEY_DESC	(1<<SCf_KEY_DESC)
+#include "/Kernel/ScanFlags.HH"
 
 #include "/Kernel/ScanCodes.HH"
 
@@ -1341,25 +1311,7 @@ public class CSysFixedArea
 #include "/Kernel/ListFlags.HH"
 
 #help_index "Keyboard Devices/System"
-#define KDF_HAS_DESCS	1
-class CKeyDevEntry
-{
-  CKeyDevEntry *next,*last;
-  I64	priority,flags;
-  Bool	(*put_key)(I64 ch,I64 sc);
-  Bool	(*put_s)(U8 *st);
-};
-
-class CKeyDevGlbls
-{
-  CKeyDevEntry put_key_head;
-  U0	(**fp_ctrl_alt_cbs)(I64 sc);
-  I64	ctrl_alt_in_irq_flags,
-	**ctrl_alt_ret_addr; //addr of ret addr on stack in kbd irq
-  U8	**ctrl_alt_no_shift_descs,**ctrl_alt_shift_descs,
-	desc[STR_LEN],
-	*hndlr;
-};
+#include "/Kernel/KeyDevTypes.HH"
 
 #help_index "Snd"
 #help_index "ScrnCast;Snd/AU Files"

@@ -10,6 +10,34 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native output dispatch and public ScanKey (2026-10-15)
+
+Console interface 75 now exposes PutKey, KeyDevAdd, KeyDevRem and ScanKey.
+The original output dispatch/registration bodies are shared in
+`Kernel/KeyDevOutputCore.HC`, with canonical key-device types and scan flags.
+Compiled text and packed-character output use the hook chain. Filter output
+posts task key messages; Scroll Lock waiting reads the native decoder state
+and uses managed Yield. Public ScanKey uses the original shared body and real
+message/echo services.
+
+A new original oracle fixes twelve dispatch traces: ascending numeric priority,
+descriptor/silent filtering, string callbacks and character fallback, packed
+characters, zero/NULL inputs, replacement and removal. Pinned-original and
+rebuilt x64 control runs pass. Native public-interface output traces pass, as
+does the 24-field public ScanKey matrix through real KeyDev registration.
+The first native candidate exposed descriptor glyph leakage in the console
+sink; the final sink ignores descriptors and does not draw Ctrl/Alt shortcut
+characters.
+
+Original bootstrap/cross-build/386 audits pass. Final two-terminal and transcript
+regressions pass; nine-command 8 MiB startup passes in 44.63 seconds. Evidence
+and limitations are in [native output hooks](docs/i386-keydev.md). The full input
+suite now passes its initial ScanKey check and stops at missing GetKey
+(`build/i386-c4-keydev-getkey-red/result.json`). GetKey's wait/raw/debug paths,
+DocGetKey/GetStr, DocPrintPartial streaming, full default device/document output,
+descriptor descriptions, Ctrl-Alt callbacks and callback lifetime/recovery remain
+required. C1–C5 and the background-memory gate are not closed by this checkpoint.
+
 ### Key-message contract and portable ScanKey core (2026-10-15)
 
 A new pinned-original oracle captures 28 I64 fields for ScanKey/GetKey: empty
