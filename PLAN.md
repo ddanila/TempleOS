@@ -1,5 +1,77 @@
 # TempleOS architecture plan: 32-bit 386+ and VGA
 
+## Next goal: original desktop and bundled application compatibility (2026-10-14)
+
+**Bring the original TempleOS desktop and bundled applications to the 32-bit
+386+/VGA port, preserving their HolyC and DolDoc behavior, with automated
+compatibility tests and native self-hosting.**
+
+Status: planned; implementation and full compatibility qualification have not
+started. The bounded-memory self-hosting goal below is complete and provides
+the foundation, but does not establish desktop or application parity.
+
+### Scope and hardware constraints
+
+Target source and observable behavioral compatibility with the original
+TempleOS desktop, public HolyC services, DolDoc documents, bundled applications,
+games and demos. Inventory the original tree at a pinned reference revision so
+that “full” has a finite, reviewable meaning. Original x86-64 machine code is
+not binary-compatible with this port; replace architecture-dependent assembly,
+pointer-width assumptions and hardware access with equivalent 32-bit behavior.
+Keep the original programs and interfaces recognizable rather than replacing
+them with reduced substitutes to satisfy tests.
+
+Retain the 386 instruction baseline, VGA 640×480/16-color display and software
+floating point without requiring an FPU. Continue qualification in QEMU;
+physical-hardware verification remains deferred. Preserve HolyC, DolDoc,
+cooperative tasks, direct hardware access and native self-hosting.
+
+### Memory profiles
+
+Use **64 MiB RAM for full desktop/application qualification and 128 MiB for
+native rebuilding** as initial development budgets. These are proposed working
+profiles, not measured minimum requirements or already qualified configurations.
+Measure peak use and document the final requirements; choose disk capacity from
+the installed application/source inventory and rebuild workspace needs.
+
+Keep the existing 8 MiB interactive / 16 MiB rebuilding configuration as the
+minimal profile, with its current workload and regression coverage. Full bundled
+application coverage need not fit that profile. Its 60-second startup gate
+continues to apply to its existing workload; define and measure a separate full
+desktop startup budget during baseline qualification.
+
+### Milestones and acceptance
+
+| Milestone | Work | Completion evidence |
+| --- | --- | --- |
+| C1 — Inventory and reference baseline | Enumerate every bundled application, demo, desktop feature and required public service from the pinned original revision. Record launch paths, dependencies, representative workflows and expected outputs. | A compatibility matrix with explicit per-item status, reference behavior and executable test/oracle; missing or blocked cases remain visible. |
+| C2 — Original desktop workflows | Complete window management, menus, mouse interaction, multiple tasks/terminals, editor, help and document navigation. | Automated end-to-end sessions covering normal use, focus/order, editing, execution, interruption, recovery and persistent save/reboot/reopen behavior. |
+| C3 — Bundled applications and demos | Port the inventory, including graphics, sound, games and supporting services; replace architecture-dependent parts while preserving behavior. | Every inventoried program launches and completes its defined workflows. Check visual output, state, files and sound output where relevant; launching alone is insufficient. |
+| C4 — API and document compatibility | Resolve public HolyC API and DolDoc differences, document interchange, error handling and cleanup. Develop this coverage alongside C2/C3. | Differential tests against the original system, document round trips, error/unwind tests and recorded explanations of intentional architecture differences. |
+| C5 — Native release qualification | Rebuild, install and boot two successive native generations with the complete desktop and application set. | The full compatibility suite passes on both generations, reproducibility passes at the declared manifest scope, and memory/startup/resource profiles are recorded. Existing minimal-profile regressions pass as well. |
+
+### Test-first execution
+
+Begin with C1 and a runnable desktop baseline. For each missing capability,
+record the original behavior and add a failing automated check before porting
+its implementation. Use independent observations: framebuffer comparisons,
+persisted files and document structure, task/resource state and captured audio
+where required. Account explicitly for nondeterministic timing and random
+content instead of weakening the expected behavior.
+
+Automate repeatable keyboard/mouse workflows and recovery checks. Human
+exploration is optional feedback, not a gate for behavior that can be tested
+automatically. Keep normal boot separate from diagnostic suites. Tests may use
+test-only instrumentation, but acceptance must also exercise the delivered
+normal image through its public interfaces.
+
+Full compatibility is complete only when the inventory has no unqualified
+required items and C2–C5 have current-source evidence. A skipped or unsupported
+bundled program remains an open gap; any scope reduction requires an explicit
+plan decision rather than a silent exclusion. Publish the matrix, verified
+configuration, reproducible build/run commands and remaining limitations with
+the final qualification evidence.
+
 ## Bounded-memory self-hosting goal qualified (2026-10-14)
 
 The current candidate meets the bounded-memory goal in QEMU TCG `486,-fpu`:
