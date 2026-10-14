@@ -501,7 +501,7 @@ tries to do something.
 #define WIf_SELF_GRAB_SCROLL	9
 #define WIf_SELF_DOC		10
 #define WIf_SELF_ODE		11
-#define WIf_SELF_KEY_DESC	12
+#include "/Kernel/KeyDescFlag.HH"
 #define WIf_FOCUS_TASK_MENU	17
 #define WIf_FOCUS_TASK_CTRLS	18
 #define WIf_FOCUS_TASK_MS_L	19

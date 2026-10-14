@@ -1098,6 +1098,24 @@
           "result": "fail",
           "evidence": "build/i386-c2-getstr-byte-red/result.json",
           "gap": "Exact-dollar-byte fixtures are prepared; missing GetStr rejects helper definition, so input cases are not reached"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-getkey-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-getkey-reference/result.json",
+          "scope": "Pinned original DocGetKey 14-field descriptor/echo/inhibition/zero/null/filter oracle; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-getkey-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-getkey-shared-reference/result.json",
+          "scope": "Shared original document key input on rebuilt x64 control; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-getkey.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-getkey-native/result.json",
+          "scope": "12 native commands match original 14-field oracle through public DocGetKey; default document echo, physical input, unwind and GetStr unqualified; whole-file unqualified"
         }
       ]
     },

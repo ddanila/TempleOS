@@ -233,6 +233,7 @@ extern CKeyDevEntry *KeyDevAdd(Bool (*key)(I64 ch,I64 sc),Bool (*text)(U8 *s),I6
 extern U0 KeyDevRem(CKeyDevEntry *entry);
 extern Bool ScanKey(I64 *ch=0,I64 *sc=0,Bool echo=FALSE);
 extern I64 GetKey(I64 *sc=0,Bool echo=FALSE,Bool raw_cursor=FALSE);
+extern I64 DocGetKey(I64 *sc=NULL);
 extern U0 NativeKeyDevStart();
 I64 (*native_public_scan_msg)(I64 *a,I64 *b,I64 mask,CTask *task);
 extern U0 NativePrint(U8 *fmt,...);
@@ -254,7 +255,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[218];
+CI386KernelSymbol console_doc_exports[219];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -561,7 +562,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(215,"_SCAN_KEY",(&ScanKey+0)(U64));
   ConsoleDocExportSet(216,"_GET_KEY",(&GetKey+0)(U64));
   ConsoleDocExportSet(217,"_DOC_PRINT_PARTIAL",(&DocPrintPartial+0)(U64));
-  for(i=0;i<218;i++) {
+  ConsoleDocExportSet(218,"_DOC_GET_KEY",(&DocGetKey+0)(U64));
+  for(i=0;i<219;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -754,6 +756,7 @@ U0 NativeTerminalInput()
 #include "/Kernel/I386/TextVga.HC"
 #include "/Kernel/I386/ConsoleOutput.HC"
 #include "/Kernel/I386/KeyDevRuntime.HC"
+#include "/Adam/DolDoc/DocGetKeyCore.HC"
 #include "/Kernel/I386/ConsoleNumbers.HC"
 #include "/Kernel/I386/ConsoleInput.HC"
 #include "/Kernel/I386/Debugger.HC"

@@ -1,0 +1,4 @@
+#ifndef KEY_DESC_FLAG_INCLUDED
+#define KEY_DESC_FLAG_INCLUDED
+#define WIf_SELF_KEY_DESC 12
+#endif

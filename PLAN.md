@@ -10,6 +10,22 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original document key input passes (2026-10-15)
+
+Console interface 78 exposes DocGetKey through the shared original document
+input/filter-exit body. Original and rebuilt-original controls agree with the
+native 14-field oracle across 12 commands: descriptors are echoed then discarded,
+inhibition is cleared for reading and restored afterwards, queued zero-character
+and null-scan cases work, and Esc/Shift-Esc clear filter mode before continuing.
+The filter checks cover all current entries and verify document lock release.
+
+The native test first rejected the unavailable API; after integration the exact
+byte comparison passes at 64 MiB on 486,-fpu. Bootstrap, cross-build and 386 boot
+audit pass; 8 MiB startup passes in 47.08 seconds with zero build-provider loads.
+See [document key input](docs/i386-doc-getkey.md). Default document echo/rendering,
+physical input through this wrapper, exception/inhibition cleanup, GetStr and
+navigation/replay remain open. This advances C2/C4 without closing C1–C5.
+
 ### Streaming callback and failure recovery (2026-10-15)
 
 Original and shared-original references pass formatted callback text/user-data,
