@@ -985,9 +985,40 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Six scripted GetStr cases and canonical DocScanLine empty/text/tab/newline/end/cursor/positioning checks. Other APIs, interactive editing and task exit remain unqualified."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-getstr-reference.py",
+        "checks": [
+          "NUL-terminated result bytes for six GetStr cases",
+          "DocScanLine text and positioning bytes",
+          "line endpoints and cursor columns"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-reference",
+          "command": "python3 tools/test-i386-getstr-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-getstr-scan-shift-reference/result.json"
+        },
+        {
+          "target": "native-getstr",
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-getstr-red-v2/result.json",
+          "gap": "Public GetStr and faithful inline document/input integration remain missing"
+        },
+        {
+          "target": "native-doc-scan",
+          "command": "python3 tools/test-i386-doc-scan.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-scan-native/result.json",
+          "scope": "DocScanLine only; does not qualify the other services in this source file"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocGr.HC",
@@ -12704,9 +12735,33 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Six scripted GetStr cases and canonical DocScanLine empty/text/tab/newline/end/cursor/positioning checks. Other APIs, interactive editing and task exit remain unqualified."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-getstr-reference.py",
+        "checks": [
+          "NUL-terminated result bytes for six GetStr cases",
+          "DocScanLine text and positioning bytes",
+          "line endpoints and cursor columns"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-reference",
+          "command": "python3 tools/test-i386-getstr-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-getstr-scan-shift-reference/result.json"
+        },
+        {
+          "target": "native-getstr",
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-getstr-red-v2/result.json",
+          "gap": "Public GetStr and faithful inline document/input integration remain missing"
+        }
+      ]
     },
     {
       "path": "Kernel/SerialDev/Mouse.HC",

@@ -248,3 +248,9 @@ workflows remain open; the original application sources are unchanged.
 original-system byte oracles and the native test-first input cases. This
 extends C1/C4 reference evidence; native input/document integration and full
 application qualification remain open.
+
+The shared DocScanLine checkpoint passes original reference and seventeen native
+API commands at 64 MiB, but exposes a current 8 MiB parser-arena regression after
+boot. The [input compatibility record](i386-getstr-compatibility.md) preserves
+that failure; the older bounded-memory qualification is not a qualification of
+this newer source candidate.

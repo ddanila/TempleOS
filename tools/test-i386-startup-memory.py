@@ -61,7 +61,8 @@ def main():
         result['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib,
             qmp_stdio=True, diagnostics=args.diagnostics, startup_timeout=90,
-            startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS})
+            startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS,
+                           'rejection_prefixes': ('INPUT REJECT ',)})
         log = (out/'debug.log').read_text()
         if 'BUILD PROVIDER loaded\n' in log:
             raise ValueError('Startup acquired build-only support')

@@ -29,10 +29,12 @@ def main():
                   repair_revision=reference.REPAIRS,
                   reference_sha256=reference.restore_reference(overlay),
                   input_sha256={str(p):reference.sha(p) for p in inputs},
-                  scope='Scripted single-line, empty/default, multiline ESC and SHIFT-ESC cancellation; editing, prompt formatting and task exit remain open')
+                  scope='Scripted GetStr basic cases and DocScanLine empty/text/tab/newline/end/cursor checks; interactive editing, prompt formatting and task exit remain open')
     expected = {'single.bin':b'alpha\0', 'empty.bin':b'\0',
                 'default.bin':b'fallback\0', 'multiline.bin':b'alpha\nbeta\n\0',
-                'cancel.bin':b'\0', 'cancel-default.bin':b'fallback\0'}
+                'cancel.bin':b'\0', 'cancel-default.bin':b'fallback\0',
+                'scan-empty.bin':b'\0', 'scan-first.bin':b'alpha\tbeta\0',
+                'scan-second.bin':b'second\0', 'scan-shift.bin':b'$SX,-3$$SY,2$\0'}
     try:
         iso = out/'original.iso'
         subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay',str(overlay),

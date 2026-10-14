@@ -16,4 +16,33 @@ CaptureStr("default.bin","\n","fallback");
 CaptureStr("multiline.bin","alpha\nbeta\n\x1B",NULL,GSF_WITH_NEW_LINE);
 CaptureStr("cancel.bin","discard\x1C");
 CaptureStr("cancel-default.bin","discard\x1C","fallback");
-Report("DONE original GetStr basic input\n");
+U0 CaptureDocLine()
+{
+  CDoc *doc=DocNew;
+  CDocEntry *end;
+  U8 *st,*line;
+  I64 col;
+  st=DocScanLine(doc,doc,&col,&end);
+  if(*st || col!=0 || end!=doc) {Report("FAIL empty DocScanLine\n");return;}
+  line=MStrPrint("EXPORT scan-empty.bin %X %X\n",st,StrLen(st)+1);
+  Report(line); Free(line);
+  DocPutS(doc,"alpha\tbeta\nsecond");
+  doc->cur_entry=doc->head.next; doc->cur_col=2;
+  st=DocScanLine(doc,doc->head.next,&col,&end);
+  if(col!=2 || end->type_u8!=DOCT_NEW_LINE) {Report("FAIL first DocScanLine\n");return;}
+  line=MStrPrint("EXPORT scan-first.bin %X %X\n",st,StrLen(st)+1);
+  Report(line); Free(line);
+  st=DocScanLine(doc,end->next,NULL,&end);
+  if(end!=doc) {Report("FAIL final DocScanLine\n");return;}
+  line=MStrPrint("EXPORT scan-second.bin %X %X\n",st,StrLen(st)+1);
+  Report(line); Free(line);
+  DocRst(doc,TRUE);
+  DocPutS(doc,"$$SX,-3$$$$SY,2$$");
+  st=DocScanLine(doc,doc->head.next,NULL,&end);
+  if(end!=doc) {Report("FAIL shifted DocScanLine\n");return;}
+  line=MStrPrint("EXPORT scan-shift.bin %X %X\n",st,StrLen(st)+1);
+  Report(line); Free(line);
+  DocDel(doc);
+}
+CaptureDocLine;
+Report("DONE original GetStr and document line extraction\n");

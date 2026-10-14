@@ -159,6 +159,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   DocBasicEditCore(doc,ch,sc);
 }
+#include "/Adam/DolDoc/DocScanLineCore.HC"
 #include "/Adam/DolDoc/DocBasicSaveCore.HC"
 #include "/Kernel/I386/DocRecordSaveCore.HC"
 #include "/Kernel/I386/DocRecordLoadCore.HC"

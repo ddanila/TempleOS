@@ -66,3 +66,54 @@ formatting, Ctrl-Shift-Enter, Esc entry execution, filter exit, cancellation,
 exception cleanup and `GSF_SHIFT_ESC_EXIT`; the six scripted cases alone do not
 qualify those behaviors. Recheck existing terminal, input-filter and document
 workflows after integration. No native GetStr implementation is claimed here.
+
+## Shared line extraction
+
+The original `DocScanLine` body is now shared verbatim through
+`Adam/DolDoc/DocScanLineCore.HC`, included by both the original `DocGet.HC` and
+the native document runtime. Console interface 69 exposes the public API.
+There is no new input-buffer implementation or change to GetStr semantics.
+
+The expanded original reference fixture captures empty, text/tab and second-line
+bytes, checks newline/end-entry pointers and cursor positions, and checks
+signed X/positive Y positioning reconstruction (`$SX,-3$$SY,2$`). All ten
+exported buffers pass exact host expectations in
+`build/i386-c1-getstr-scan-shift-reference/result.json`. The bootstrap rebuilds
+and boots two original generations with the shared include; the cross-build
+and 386 loader audits pass in `build/i386-c1-doc-scan-cross`.
+
+`tools/test-i386-doc-scan.py` independently exercises these public document APIs
+on the native image. The preimplementation baseline rejects the absent API
+(`build/i386-c1-doc-scan-red-v2/result.json`). Assignment and setup operations
+are wrapped in void helpers so pointer-valued results cannot become
+address-dependent framebuffer expectations. The GetStr native fixture uses
+a returning helper for the same reason; its updated failing baseline is
+`build/i386-c1-getstr-red-v2/result.json`. GetStr itself is still missing.
+
+The native run passes all seventeen commands with exact VGA checkpoints at
+64 MiB on `486,-fpu`, including all the extraction cases above and subsequent
+arithmetic. Its source image and harness hashes remain unchanged. Evidence:
+`build/i386-c1-doc-scan-native/result.json`. This qualifies the exercised line
+extraction cases, not GetStr or the remaining DocGet services. Allocation
+failure/unwind and the rest of the input state machine remain separate work.
+
+## Current minimal-profile regression
+
+`build/i386-c1-doc-scan-startup/result.json` fails at 8 MiB. Normal boot and
+public headers finish, but the first `SPNext` function definition rejects with
+OutMem. The raw arena is `0x657200` bytes, with `0x655438` used and a largest
+free payload of only `0xC8` bytes when a `0x219`-byte parser allocation fails.
+The console's loaded image grew from 2,054,560 to 2,060,208 bytes (5,648 bytes).
+This is a current regression; the earlier source candidate's successful 8 MiB
+qualification does not qualify this one.
+
+The startup runner now checks `INPUT REJECT` immediately rather than waiting
+for an expected framebuffer that cannot appear. Restore the existing 8 MiB
+workload before qualifying a replacement image. Review resident code/symbol
+footprint and reclaimable memory ownership; do not hide the failure by raising
+the declared minimal RAM or weakening the retained-function test. Full desktop
+64 MiB and native rebuild 128 MiB budgets remain separate from this gate.
+
+The fail-fast rerun `build/i386-c1-doc-scan-startup-rejection/result.json`
+reproduces the same allocation rejection and reports `Guest command rejected`
+instead of the earlier framebuffer timeout. The original failed run is retained.

@@ -10,6 +10,21 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared DolDoc line extraction (2026-10-14)
+
+The original DocScanLine implementation is shared by both targets and publicly
+exposed through console interface 69. The original reference now checks empty,
+text/tab, newline/end/cursor behavior and signed X/Y positioning reconstruction.
+Bootstrap self-rebuilding, the 32-bit cross-build and 386 loader audits pass.
+All seventeen native public-API commands pass at 64 MiB, but the 8 MiB gate
+regresses: boot succeeds and the first retained-function compilation exhausts
+the raw parser arena. The console image grew by 5,648 bytes. This candidate is
+not minimal-profile qualified; restore that gate before claiming a qualified
+replacement for the earlier image. Evidence and allocation details are in
+[GetStr compatibility](docs/i386-getstr-compatibility.md). This is a prerequisite
+for faithful input/document integration; GetStr and full C1–C5 qualification
+remain open.
+
 ### Original GetStr behavior captured (2026-10-14)
 
 Six original-system input cases now pass byte-exact reference checks: single

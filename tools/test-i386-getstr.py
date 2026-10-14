@@ -9,14 +9,14 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
-    ('U8 *InputResult;', []),
-    ('In("alpha\\n");InputResult=GetStr;StrCmp(InputResult,"alpha")==0;', ['1']),
-    ('Free(InputResult);In("\\n");InputResult=GetStr;StrLen(InputResult);', ['0']),
-    ('Free(InputResult);In("\\n");InputResult=GetStr(NULL,"fallback");StrCmp(InputResult,"fallback")==0;', ['1']),
-    ('Free(InputResult);In("alpha\\nbeta\\n\\x1B");InputResult=GetStr(NULL,NULL,GSF_WITH_NEW_LINE);StrCmp(InputResult,"alpha\\nbeta\\n")==0;', ['1']),
-    ('Free(InputResult);In("discard\\x1C");InputResult=GetStr;StrLen(InputResult);', ['0']),
-    ('Free(InputResult);In("discard\\x1C");InputResult=GetStr(NULL,"fallback");StrCmp(InputResult,"fallback")==0;', ['1']),
-    ('Free(InputResult);6*7;', ['42'])]
+    ('I64 InputCheck(U8 *keys,U8 *expected,U8 *dft=NULL,I64 flags=0){U8 *result;I64 ok;In("%s",keys);result=GetStr(NULL,dft,flags);ok=StrCmp(result,expected)==0;Free(result);return ok;}', []),
+    ('InputCheck("alpha\\n","alpha");', ['1']),
+    ('InputCheck("\\n","");', ['1']),
+    ('InputCheck("\\n","fallback","fallback");', ['1']),
+    ('InputCheck("alpha\\nbeta\\n\\x1B","alpha\\nbeta\\n",NULL,GSF_WITH_NEW_LINE);', ['1']),
+    ('InputCheck("discard\\x1C","");', ['1']),
+    ('InputCheck("discard\\x1C","fallback","fallback");', ['1']),
+    ('6*7;', ['42'])]
 
 
 def main():
