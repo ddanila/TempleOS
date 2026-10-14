@@ -241,3 +241,10 @@ audits pass, and the existing 8 MiB startup gate also passes. See
 remaining RTC-mode/precision coverage. TimeClock source loading now advances
 to GetStr at TimeClk.HC line 127. Native storage/report and interactive/reboot
 workflows remain open; the original application sources are unchanged.
+
+## GetStr reference checkpoint
+
+[GetStr compatibility](i386-getstr-compatibility.md) records six passing
+original-system byte oracles and the native test-first input cases. This
+extends C1/C4 reference evidence; native input/document integration and full
+application qualification remain open.

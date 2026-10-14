@@ -10,6 +10,18 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original GetStr behavior captured (2026-10-14)
+
+Six original-system input cases now pass byte-exact reference checks: single
+line, empty/default input, multiline Esc with its trailing newline, and
+Shift-Esc cancellation with/without a default. The original TimeClock oracle
+still passes after sharing reference restoration. A native test covers the
+same public calls and fails at the missing GetStr binding with unchanged inputs;
+implementation remains open. Console output currently
+bypasses the task's DolDoc, so integration must preserve inline document
+editing rather than introduce a reduced input substitute. See
+[GetStr reference and architectural work](docs/i386-getstr-compatibility.md).
+
 ### Public Now binding passes (2026-10-14)
 
 The existing RTC implementation is exposed as public CDate Now through console

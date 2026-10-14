@@ -17,15 +17,7 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--out', type=Path, required=True)
-    args = parser.parse_args()
-    out = args.out.resolve()
-    if out.exists():
-        parser.error('Use a fresh output directory')
-    overlay = out/'reference-overlay'
-    overlay.mkdir(parents=True)
+def restore_reference(overlay):
     #Restore every original blob, including the original compiler/kernel binaries.
     original_paths = set(subprocess.check_output(['git','ls-tree','-r','-z','--name-only',REFERENCE],cwd=ROOT).split(b'\0'))
     listing = subprocess.check_output(['git', 'ls-tree', '-r', '-z', REPAIRS], cwd=ROOT)
@@ -48,6 +40,19 @@ def main():
         target.parent.mkdir(parents=True,exist_ok=True)
         target.write_bytes(data)
         source_hashes[path] = hashlib.sha256(data).hexdigest()
+    return source_hashes
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--out', type=Path, required=True)
+    args = parser.parse_args()
+    out = args.out.resolve()
+    if out.exists():
+        parser.error('Use a fresh output directory')
+    overlay = out/'reference-overlay'
+    overlay.mkdir(parents=True)
+    source_hashes = restore_reference(overlay)
     fixture = ROOT/'tests/guest/i386-timeclock-reference'
     golden_path = ROOT/'tests/i386/timeclock-reference.json'
     golden = json.loads(golden_path.read_text())
