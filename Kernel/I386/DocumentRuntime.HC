@@ -158,9 +158,21 @@ public I64 DocSize(CDoc *doc)
   return result;
 }
 #include "/Adam/DolDoc/DocBasicEditCore.HC"
+extern CDocEntry *DocPrint(CDoc *doc=NULL,U8 *fmt,...);
+#include "/Kernel/PrintableBitmap.HH"
+U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
+#include "/Adam/DolDoc/DocDollarInputCore.HC"
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
-  DocBasicEditCore(doc,ch,sc);
+  Bool unlock,printable;
+  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
+  unlock=DocLock(doc);
+  try {
+    printable=0<=ch<512 && Bt(native_doc_printable,ch);
+    if(!printable || sc.u32[0]&0x80000C00 ||
+        !DocDollarInputCore(doc,ch,printable)) DocBasicEditCore(doc,ch,sc);
+  } catch { if(unlock) DocUnlock(doc); }
+  if(unlock) DocUnlock(doc);
 }
 #include "/Adam/DolDoc/DocScanLineCore.HC"
 #include "/Adam/DolDoc/DocBasicSaveCore.HC"

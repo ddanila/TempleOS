@@ -87,8 +87,18 @@ U8 *NativeDocParserString(CI386DocParser *parser,I64 *size=0)
 I64 NativeDocDollarLex(U8 *context,CCmpCtrl *cc)
 {
   CI386DocParser *parser=context;
+  I64 result;
+  Bool suppress,old_no_defines;
   if(parser->control!=cc) throw('Compiler',TRUE);
-  return NativeDocParserLex(parser);
+  //The original grammar clears this table while reading command/flag names.
+  //Native Lex has a separate define table, so carry that suppression across.
+  suppress=cc->htc.hash_table_lst==NULL;
+  old_no_defines=(cc->flags&CCF_NO_DEFINES)!=0;
+  if(suppress) cc->flags|=CCF_NO_DEFINES;
+  try { result=NativeDocParserLex(parser); }
+  catch { if(suppress && !old_no_defines) cc->flags&=~CCF_NO_DEFINES; }
+  if(suppress && !old_no_defines) cc->flags&=~CCF_NO_DEFINES;
+  return result;
 }
 I64 NativeDocDollarExpression(U8 *context,CCmpCtrl *cc)
 {

@@ -780,9 +780,41 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-getstr-reference.py",
+        "checks": [
+          "Exact typed-dollar/plain-text result bytes",
+          "Partial state and foreground entry type/color",
+          "Command-name macro suppression versus attribute expansion",
+          "Dollar buffer growth state"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-reference-dollar-input",
+          "command": "python3 tools/test-i386-getstr-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-dollar-qualified-reference/result.json"
+        },
+        {
+          "target": "original-shared-dollar-input",
+          "command": "python3 tools/test-i386-getstr-reference.py --shared-dollar-input --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dollar-qualified-shared-reference/result.json",
+          "scope": "Two current source overrides recorded; not native compatibility"
+        },
+        {
+          "target": "native-dollar-input",
+          "command": "python3 tools/test-i386-doc-dollar-input.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dollar-qualified-native/result.json",
+          "scope": "22 commands for typed-dollar component, not complete DocPutKey or DocChar compatibility"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocClipBoard.HC",
@@ -1045,6 +1077,13 @@
           "result": "fail",
           "evidence": "build/i386-c2-getstr-dollar-red/result.json",
           "gap": "Missing GetStr rejects the helper definition; the thirteen input cases are not reached"
+        },
+        {
+          "target": "native-getstr-byte-precise",
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-getstr-byte-red/result.json",
+          "gap": "Exact-dollar-byte fixtures are prepared; missing GetStr rejects helper definition, so input cases are not reached"
         }
       ]
     },

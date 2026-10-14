@@ -171,3 +171,20 @@ GetStr (`build/i386-c2-getstr-dollar-red/result.json`), with all input hashes
 unchanged. This is a missing-binding red test, not thirteen independent observed
 native failures. GetStr, DocGetKey/GetKey echo, typed dollar state and the other
 input/recovery behaviors listed above remain implementation/qualification work.
+
+## Typed-dollar prerequisite integrated
+
+[Typed-dollar input](i386-dollar-input.md) now shares the original EdCharIns
+state machine with native DocPutKey. Its native suite passes 22 commands,
+including partial state, real foreground entries, command/attribute macro
+lookup, escaped literals, plain mode and buffer growth. The extended reference
+runner now captures nineteen buffers and checks these states on both the
+pinned original and the original using the extracted core. Source overrides
+are explicit in the shared-mode report. Native fixtures encode dollar bytes
+with hex escapes to account for HolyC string literal decoding.
+
+This supplies a document-key prerequisite for GetStr. GetKey/DocGetKey's echo
+and prompt path, entry replay, filters, task exit and recovery still require
+integration. `build/i386-c2-getstr-byte-red/result.json` rejects the missing
+GetStr helper definition on the interface-74 candidate with unchanged input
+hashes. It does not exercise thirteen native input cases.

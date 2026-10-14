@@ -23,6 +23,48 @@ CaptureStr("spaces.bin","  alpha  \n");
 CaptureStr("markup.bin","$$RED$$cash$$$$\n");
 CaptureStr("dollars.bin","$$$$RED$$$$cash$$$$$$$$\n");
 CaptureStr("extended.bin","\x82\xA3\n");
+#define FG 123
+U0 CaptureDollarKeys()
+{
+  CDoc *doc=DocNew;
+  U8 *ptr="$$R",*st,*line;
+  I64 i;
+  while(*ptr) DocPutKey(doc,*ptr++);
+  st=DocScanLine(doc,doc->head.next);
+  if(!(doc->flags&DOCF_IN_DOLLAR) || doc->dollar_buf_ptr!=2 || *st) {
+    Report("FAIL partial typed dollar\n");return;
+  }
+  Free(st);ptr="ED$$cash$$$$";
+  while(*ptr) DocPutKey(doc,*ptr++);
+  if(doc->flags&DOCF_IN_DOLLAR || doc->dollar_buf_ptr ||
+      doc->head.next->type_u8!=DOCT_FOREGROUND || doc->head.next(CDocEntry *)->attr!=RED) {
+    Report("FAIL completed typed dollar\n");return;
+  }
+  st=DocScanLine(doc,doc->head.next);
+  line=MStrPrint("EXPORT dollar-keys.bin %X %X\n",st,StrLen(st)+1);
+  Report(line);Free(line);
+  DocRst(doc,TRUE);ptr="$$FG,RED$$";
+  while(*ptr) DocPutKey(doc,*ptr++);
+  if(doc->head.next->type_u8!=DOCT_FOREGROUND ||
+      doc->head.next(CDocEntry *)->attr!=RED) {
+    Report("FAIL dollar command/attribute macro distinction\n");return;
+  }
+  DocRst(doc,TRUE);doc->flags|=DOCF_PLAIN_TEXT;
+  ptr="$$RED$$cash$$$$";
+  while(*ptr) DocPutKey(doc,*ptr++);
+  st=DocScanLine(doc,doc->head.next);
+  line=MStrPrint("EXPORT dollar-plain.bin %X %X\n",st,StrLen(st)+1);
+  Report(line);Free(line);
+  DocRst(doc,TRUE);
+  DocPutKey(doc,'$$');
+  for(i=0;i<200;i++) DocPutKey(doc,'x');
+  if(doc->dollar_buf_ptr!=201 || doc->dollar_buf_size<203) {
+    Report("FAIL typed dollar growth\n");return;
+  }
+  DocDel(doc);
+  Report("PASS original typed dollar state and growth\n");
+}
+CaptureDollarKeys;
 U0 CaptureDocLine()
 {
   CDoc *doc=DocNew;

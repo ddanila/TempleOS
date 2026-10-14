@@ -10,6 +10,39 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared typed-dollar input and macro handling (2026-10-14)
+
+Console interface 74 integrates the original typed-dollar state machine into
+native DocPutKey through shared `Adam/DolDoc/DocDollarInputCore.HC`. The original
+EdCharIns uses the same core. Partial commands buffer without entering document
+text, doubled dollars insert literals, and completed commands produce typed
+DolDoc entries. Buffer growth publishes capacity only after allocation succeeds.
+The console's existing command-source recording explicitly selects plain text.
+
+Structural tests expose an additional native adapter defect: color command names
+were expanded as HolyC macros and became DOCT_ERROR entries. NativeDocDollarLex
+now honors the original grammar's temporary lookup suppression while allowing
+normal attribute expression expansion. A macro shadowing FG cannot change
+`$FG,RED$` into a different command. Tests inspect foreground entry type/color,
+not just extracted text. Native fixtures use exact dollar bytes via hex escapes
+so HolyC literal decoding cannot accidentally weaken the test.
+
+Pinned original and shared-core original reference runs each pass nineteen
+captured buffers and typed-state/macro/growth assertions. The native typed-input
+suite passes all 22 commands at 64 MiB on `486,-fpu`; existing document (33) and
+transcript (13) command suites pass. Original bootstrap and cross-build/386
+audits pass. The nine-command 8 MiB startup gate passes in 42.26 seconds without
+build-provider loading. Evidence and commands are in
+[typed dollar input](docs/i386-dollar-input.md).
+
+This qualifies the exercised input component, not complete DocPutKey/GetStr,
+C2 desktop parity or C5. The expanded GetStr suite still rejects the missing
+binding (`build/i386-c2-getstr-byte-red/result.json`). Next integrate the original
+GetKey/DocGetKey echo/prompt path, line extraction, entry replay and task cleanup.
+Fault-injected dollar-buffer growth, parse-error recovery and current-source
+native generations remain open. The prior 8 MiB background regression remains
+an open qualification gate; a passing startup does not close it.
+
 ### Expanded original GetStr input contract (2026-10-14)
 
 The pinned original-system oracle now passes thirteen scripted GetStr cases,

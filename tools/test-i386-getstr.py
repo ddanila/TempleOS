@@ -20,8 +20,8 @@ COMMANDS = [
     ('InputCheck("abc\\x08\\x08\\x08\\n","fallback","fallback");', ['1']),
     ('InputCheck("alpha\\tbeta\\n","alpha\\tbeta");', ['1']),
     ('InputCheck("  alpha  \\n","  alpha  ");', ['1']),
-    ('InputCheck("$RED$cash$$\\n","cash$");', ['1']),
-    ('InputCheck("$$RED$$cash$$$$\\n","$RED$cash$$");', ['1']),
+    ('InputCheck("\\x24RED\\x24cash\\x24\\x24\\n","cash\\x24");', ['1']),
+    ('InputCheck("\\x24\\x24RED\\x24\\x24cash\\x24\\x24\\x24\\x24\\n","\\x24RED\\x24cash\\x24\\x24");', ['1']),
     ('InputCheck("\\x82\\xA3\\n","\\x82\\xA3");', ['1']),
     ('6*7;', ['42'])]
 

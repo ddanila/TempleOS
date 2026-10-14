@@ -423,17 +423,7 @@ U0 EdCharDel(CDoc *doc)
     DocUnlock(doc);
 }
 
-U0 ChkDollarBufSize(CDoc *doc)
-{
-  U8 *b;
-  if (doc->dollar_buf_ptr>=doc->dollar_buf_size-2) {
-    doc->dollar_buf_size<<=1;
-    b=MAlloc(doc->dollar_buf_size,doc->mem_task);
-    MemCpy(b,doc->dollar_buf,doc->dollar_buf_ptr);
-    Free(doc->dollar_buf);
-    doc->dollar_buf=b;
-  }
-}
+#include "/Adam/DolDoc/DocDollarInputCore.HC"
 
 U0 EdCharIns(I64 ch,I64 sc,CDoc *doc)
 {
@@ -442,35 +432,9 @@ U0 EdCharIns(I64 ch,I64 sc,CDoc *doc)
   CDocEntry *doc_ce=doc->cur_entry,*doc_ne;
   I64 i,j,m,y=doc_ce->y;
 
-  if (doc->flags & DOCF_IN_DOLLAR) {
-    if (!Bt(char_bmp_printable,ch))
-      goto ic_done;
-    ChkDollarBufSize(doc);
-    doc->dollar_buf[doc->dollar_buf_ptr++]=ch;
-    if (ch=='$$') {
-      if (doc->dollar_buf_ptr==2) {
-	doc->flags&=~DOCF_IN_DOLLAR;
-	doc->dollar_buf_ptr=0;
-	goto ic_cont;
-      } else {
-	doc->dollar_buf[doc->dollar_buf_ptr]=0;
-	doc->flags&=~DOCF_IN_DOLLAR;
-	DocPrint(doc,"%s",doc->dollar_buf);
-	doc->dollar_buf_ptr=0;
-	goto ic_done;
-      }
-    } else
-      goto ic_done;
-  }
-  if (ch=='$$' && !(doc->flags & (DOCF_PLAIN_TEXT|DOCF_PLAIN_TEXT_TABS))) {
-    doc->flags|=DOCF_IN_DOLLAR;
-    doc->dollar_buf_ptr=0;
-    doc->dollar_buf[doc->dollar_buf_ptr++]=ch;
+  if (DocDollarInputCore(doc,ch,Bt(char_bmp_printable,ch)))
     goto ic_done;
-  }
-  if (ch=='\r') goto ic_done;
 
-    ic_cont:
   if ((ch==CH_SPACE || ch=='\n') &&
 	!(sc & (SCF_CTRL|SCF_SHIFT)) &&
 	doc_ce->de_flags &

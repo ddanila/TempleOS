@@ -26,17 +26,21 @@ U0 NativeConsoleWrite(U8 *text)
 U0 NativeConsolePut(I64 ch)
 {
   CDoc *doc=NativeTerminalDocument;
-  Bool unlock,bottom;
+  Bool unlock,bottom,plain;
   if(doc) {
     unlock=DocLock(doc); bottom=doc->cur_entry==doc;
+    plain=(doc->flags&DOCF_PLAIN_TEXT)!=0;
+    doc->flags|=DOCF_PLAIN_TEXT;
     try {
       //Coalesce append typing instead of allocating one entry per key.
       if(bottom && ch>=32 && IsEditableText(doc->head.last)) {
         doc->cur_entry=doc->head.last; doc->cur_col=doc->head.last->max_col;
       }
       DocPutKey(doc,ch,0);
+      if(!plain) doc->flags&=~DOCF_PLAIN_TEXT;
       if(bottom) { doc->cur_entry=doc; doc->cur_col=0; }
     } catch {
+      if(!plain) doc->flags&=~DOCF_PLAIN_TEXT;
       if(bottom) { doc->cur_entry=doc; doc->cur_col=0; }
       if(unlock) DocUnlock(doc);
     }
