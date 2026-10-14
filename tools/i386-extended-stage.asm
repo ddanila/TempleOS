@@ -138,6 +138,7 @@ real16:
     sti
     cmp word [stage_spt-$$],0
     jne read_sector
+    call collect_memory_map
     mov dl,[boot_drive-$$]
     mov ah,8
     int 0x13
@@ -171,6 +172,63 @@ read_sector:
     or eax,1
     mov cr0,eax
     jmp dword 8:copy32
+; Separate versioned E820 handoff, below the disk bounce buffer at 0x6000.
+; Count is bounded even if the BIOS repeats continuation tokens indefinitely.
+collect_memory_map:
+    push ds
+    push es
+    xor ax,ax
+    mov ds,ax
+    mov es,ax
+    mov dword [0x5040],0x50324D49
+    mov dword [0x5044],1
+    mov dword [0x5048],0
+    mov dword [0x504C],0
+%ifdef BOOT_MAP_FAIL
+    jmp .done
+%endif
+    xor ebx,ebx
+    mov di,0x5050
+.next:
+    cmp dword [0x5048],32
+    jae .done
+    mov dword [di+20],1
+    mov eax,0xE820
+    mov ecx,24
+    mov edx,0x534D4150
+    push ds
+    push es
+    push di
+    stc
+    int 0x15
+    pop di
+    pop es
+    pop ds
+    jc .carry_end
+    cmp eax,0x534D4150
+    jne .done
+    cmp ecx,20
+    je .legacy
+    cmp ecx,24
+    jne .done
+    jmp .record
+.legacy:
+    mov dword [di+20],1
+.record:
+    inc dword [0x5048]
+    add di,24
+    test ebx,ebx
+    jnz .next
+.complete:
+    mov dword [0x504C],1
+    jmp .done
+.carry_end:
+    cmp dword [0x5048],0
+    jne .complete
+.done:
+    pop es
+    pop ds
+    ret
 fail16_stage:
     mov al,'B'
     out 0xE9,al

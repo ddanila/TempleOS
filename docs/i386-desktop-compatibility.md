@@ -122,6 +122,17 @@ use and prove outputs unchanged on invalid input. Only claim 64/128 MiB usable
 profiles after allocation readback, reserved-hole rejection and minimal-profile
 regressions pass on the resulting image.
 
+## Firmware-map implementation checkpoint (2026-10-14)
+
+The [versioned RAM-map handoff and selector](i386-boot-map.md) are implemented
+without changing the legacy ABI. The initial native selector suite passes and
+caught a reservation-loop signedness defect during development. Expanded
+alignment/boundary cases and the forced-unavailable transport test also pass.
+The normal BIOS transport test passes using the unchanged prior kernel;
+loader executable ranges pass the 386 instruction audit. This is foundation
+work: the normal kernel still uses the legacy capped arena until integration
+and capacity/minimal-profile regressions are complete.
+
 ## Milestone status
 
 | Milestone | State | Next evidence |

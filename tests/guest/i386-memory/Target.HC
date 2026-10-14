@@ -3,6 +3,8 @@
 #define FALSE 0
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/BootDisk.HH"
+#include "/Kernel/I386/BootMap.HH"
+extern I64 BootMapTests();
 extern U0 Reset(CI386BootInfo *info);
 extern Bool Rejected(CI386BootInfo *info,CI386MemRange *reserved,I64 count);
 I64 Main(I64 a,I64 b)
@@ -113,7 +115,7 @@ I64 Main(I64 a,I64 b)
     if(I386BootImageReserve(&info,&image,&out) ||
         out.base!=0x12345678 || out.size!=0x87654321) return 37+i;
   }
-  return 0;
+  return BootMapTests;
 }
 U0 Reset(CI386BootInfo *info)
 {
@@ -129,3 +131,76 @@ Bool Rejected(CI386BootInfo *info,CI386MemRange *reserved,I64 count)
     out.base==0x12345678 && out.size==0x87654321;
 }
 #include "/Kernel/I386/BootMemory.HC"
+
+I64 BootMapTests()
+{
+  CI386BootInfo info;
+  CI386BootMap map;
+  CI386MemRange out,r[2];
+  I64 i,n;
+  Reset(&info); info.flags=3; info.extended_kib=7168;
+  map.magic=I386_BOOT_MAP_MAGIC; map.version=1; map.count=3; map.complete=1;
+  //Usable coverage is unsorted and overlaps a reserved device hole.
+  map.entries[0].base=0x1000000; map.entries[0].size=0x3000000;
+  map.entries[1].base=0x100000; map.entries[1].size=0x1000000;
+  map.entries[2].base=0xF00000; map.entries[2].size=0x100000;
+  for(i=0;i<3;i++) { map.entries[i].type=1; map.entries[i].attributes=1; }
+  map.entries[2].type=2;
+  if(!I386BootMapArena(&info,&map,0,0,&out) ||
+      out.base!=0x1000000 || out.size!=0x3000000) return 100;
+  r[0].base=0x2000000; r[0].size=0x100000;
+  r[1].base=0x1800000; r[1].size=0x1000000;
+  if(!I386BootMapArena(&info,&map,r,2,&out) ||
+      out.base!=0x2800000 || out.size!=0x1800000) return 101;
+  //Unknown types and disabled/nonvolatile entries cannot supply RAM.
+  map.entries[0].type=99;
+  if(!I386BootMapArena(&info,&map,0,0,&out) ||
+      out.base!=0x110000 || out.base+out.size!=0xF00000) return 102;
+  map.entries[0].type=1; map.entries[0].attributes=0;
+  if(!I386BootMapArena(&info,&map,0,0,&out) || out.base!=0x110000) return 103;
+  //All malformed metadata must reject without changing the output.
+  for(i=0;i<8;i++) {
+    map.magic=I386_BOOT_MAP_MAGIC; map.version=1; map.count=3; map.complete=1;
+    map.entries[0].base=0x1000000; map.entries[0].size=0x3000000;
+    if(i==0)map.magic=0;
+    if(i==1)map.version=2;
+    if(i==2)map.count=0;
+    if(i==3)map.count=33;
+    if(i==4)map.complete=0;
+    if(i==5)map.entries[0].size=0;
+    if(i==6) { map.entries[0].base=0xFFFFFFFFFFFFFFF0; map.entries[0].size=32; }
+    out.base=0x12345678; out.size=0x87654321;
+    n=0; if(i==7)n=129;
+    if(I386BootMapArena(&info,&map,r,n,&out) ||
+        out.base!=0x12345678 || out.size!=0x87654321) return 104+i;
+  }
+  map.magic=I386_BOOT_MAP_MAGIC; map.version=1; map.count=1; map.complete=1;
+  map.entries[0].base=0x1000000; map.entries[0].size=0x100000;
+  map.entries[0].type=1; map.entries[0].attributes=1;
+  //Unaligned caller reservations leave only aligned allocatable gaps.
+  r[0].base=0x1080001; r[0].size=1;
+  if(!I386BootMapArena(&info,&map,r,1,&out) ||
+      out.base!=0x1000000 || out.size!=0x80000) return 112;
+  //A range crossing 4 GiB clips at the 32-bit address boundary.
+  map.entries[0].base=0xFFFFF000; map.entries[0].size=8192;
+  if(!I386BootMapArena(&info,&map,0,0,&out) ||
+      out.base!=0xFFFFF000 || out.size!=4096) return 113;
+  map.entries[0].base=0x100000000; map.entries[0].size=4096;
+  out.base=123; out.size=456;
+  if(I386BootMapArena(&info,&map,0,0,&out) || out.base!=123 || out.size!=456) return 114;
+  //Equal unsorted ranges choose the lower address.
+  map.count=2;
+  map.entries[0].base=0x4000000; map.entries[0].size=0x400000;
+  map.entries[1].base=0x2000000; map.entries[1].size=0x400000;
+  map.entries[1].type=1; map.entries[1].attributes=1;
+  if(!I386BootMapArena(&info,&map,0,0,&out) ||
+      out.base!=0x2000000 || out.size!=0x400000) return 115;
+  //Unavailable/error-log attributes must not turn into ordinary RAM.
+  map.entries[1].attributes=9;
+  if(!I386BootMapArena(&info,&map,0,0,&out) || out.base!=0x4000000) return 116;
+  map.entries[0].attributes=3;
+  out.base=123; out.size=456;
+  if(I386BootMapArena(&info,&map,0,0,&out) || out.base!=123 || out.size!=456) return 117;
+  return 0;
+}
+#include "/Kernel/I386/BootMap.HC"

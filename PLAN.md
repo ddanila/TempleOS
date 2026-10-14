@@ -36,6 +36,14 @@ endpoint readback, release and subsequent arithmetic checks for the proposed
 64/128 MiB profiles. Firmware-map handoff and reservation-aware RAM selection
 remain implementation work; the tracking document records the required cases.
 
+### Firmware RAM-map checkpoint (2026-10-14)
+
+A separately versioned E820 handoff and reservation-aware selector are
+implemented; see [the contract and tests](docs/i386-boot-map.md). The initial
+native memory suite and normal 64 MiB BIOS transport pass, including the 386
+loader audit. Expanded selector and unavailable-map checks also pass. Normal
+kernel arena integration and actual larger-capacity qualification remain open.
+
 ### Scope and hardware constraints
 
 Target source and observable behavioral compatibility with the original
