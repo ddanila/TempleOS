@@ -10,6 +10,31 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Key-message contract and portable ScanKey core (2026-10-15)
+
+A new pinned-original oracle captures 28 I64 fields for ScanKey/GetKey: empty
+output reset, message-mask discard, zero-character keys, NULL output pointers,
+scan-code preservation, real output-hook echo, descriptor inhibition and a
+cooperative delayed producer. The producer waits for the receiver's idle and
+awaiting-message flags rather than depending on a timed sleep. The pinned run
+and the rebuilt x64 control both pass exact byte expectations.
+
+ScanKey's body is extracted verbatim into `Kernel/KeyScanCore.HC` and included
+by the original serial-device message source, preserving its remaining CP437
+bytes. Two-generation bootstrap and cross-build/386 audits pass. A native
+component suite compiles this shared body under a test-only alias, uses real
+message queues and an explicit echo recorder, and passes 24 captured fields
+across 21 commands at 64 MiB on `486,-fpu`.
+
+The full native public-API counterpart remains red at the missing ScanKey
+binding; none of its 28-field cases executes. The test-only alias is not a
+production input API or replacement output-hook chain. Next integrate the
+original KeyDev dispatch, native public ScanKey/GetKey (including wait and
+raw/debug behavior), and the DocGetKey/GetStr echo, prompt and recovery path.
+Default document echo, physical keyboard, raw cursor and debugger polling are
+not qualified by these component tests. Evidence and commands are in
+[key input compatibility](docs/i386-key-input.md). C1–C5 remain open.
+
 ### Dollar-buffer allocation failure and native recovery (2026-10-14)
 
 The optional diagnostic now fills a partial dollar command to its growth

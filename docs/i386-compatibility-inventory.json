@@ -12584,8 +12584,18 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "KeyDevAdd/KeyDevRem and selected ScanKey/GetKey echo through a descriptor-enabled highest-priority callback. Full output dispatch, priority/replacement, raw/filter/doc hooks and lifecycle remain unqualified."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-key-input-reference.py",
+        "checks": [
+          "Exactly one echo callback per selected echo-enabled key",
+          "Character and full scan-code callback arguments",
+          "Registration/removal in the controlled reference fixture"
+        ]
+      },
       "tests": [
         {
           "target": "native-console-transcript-foundation",
@@ -12593,6 +12603,13 @@
           "result": "pass",
           "evidence": "build/i386-c2-transcript-source-literals-v2/result.json",
           "scope": "Owned document, typed command source, ordinary output and prompt entries; original structured output/key-device semantics remain unqualified"
+        },
+        {
+          "target": "original-key-input-echo",
+          "command": "python3 tools/test-i386-key-input-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-key-input-pinned-final/result.json",
+          "scope": "Selected echo hook behavior only; not full KeyDev compatibility"
         }
       ]
     },
@@ -12843,14 +12860,15 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six scripted GetStr cases and canonical DocScanLine empty/text/tab/newline/end/cursor/positioning checks. Other APIs, interactive editing and task exit remain unqualified."
+        "description": "ScanKey/GetKey 28-field queue, echo, descriptor and delayed-delivery oracle. Physical keyboard, raw cursor, debugger polling, default document echo and remaining file APIs are unqualified."
       },
       "oracle": {
-        "tool": "tools/test-i386-getstr-reference.py",
+        "tool": "tools/test-i386-key-input-reference.py",
         "checks": [
-          "NUL-terminated result bytes for six GetStr cases",
-          "DocScanLine text and positioning bytes",
-          "line endpoints and cursor columns"
+          "Empty output reset, mask discard, zero-character keys and NULL outputs",
+          "Character/scan-code preservation and callback echo",
+          "Descriptor allow/inhibit behavior",
+          "Delayed GetKey idle/awaiting-message observation and idle release"
         ]
       },
       "tests": [
@@ -12873,6 +12891,33 @@
           "result": "pass",
           "evidence": "build/i386-c2-getstr-reference-structural/result.json",
           "scope": "Existing byte oracles plus real X/Y entry types; GetStr editing/replay/task exit remain open"
+        },
+        {
+          "target": "original-key-input",
+          "command": "python3 tools/test-i386-key-input-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-key-input-pinned-final/result.json"
+        },
+        {
+          "target": "rebuilt-x64-shared-scan",
+          "command": "python3 tools/test-i386-key-input-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-key-input-shared-control/result.json",
+          "scope": "Current sources and matching rebuilt x64 kernel/compiler; not pinned-original binaries"
+        },
+        {
+          "target": "native-shared-scan-core",
+          "command": "python3 tools/test-i386-key-scan-core.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-key-scan-native-core-final/result.json",
+          "scope": "24 fields, 21 commands; shared source under test-only alias/echo recorder; not public bindings or GetKey waiting"
+        },
+        {
+          "target": "native-public-key-input",
+          "command": "python3 tools/test-i386-key-input.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-key-input-public-final-red/result.json",
+          "gap": "Missing public ScanKey binding rejects helper definition; later cases not reached"
         }
       ]
     },
