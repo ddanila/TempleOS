@@ -117,3 +117,27 @@ unchanged inputs. The nine-command 8 MiB startup suite passes in 41.7076 seconds
 in `build/i386-c2-doc-diagnostic-startup-test`, with exact VGA checkpoint matches.
 These focused results do not qualify the pending lifecycle/native-generation
 work or restore the background concurrency gate by inference.
+
+## Recovery and native component evidence
+
+The two fault variants in `tools/test-i386-doc-diagnostic-recovery.py` pass:
+wrong target (`build/i386-c2-doc-diagnostic-recovery-target`) and missing exception
+import (`build/i386-c2-doc-diagnostic-recovery-import`). Each session rejects two
+calls, accepts an arithmetic command, repairs the persisted module byte-for-byte,
+and completes two thirteen-check invocations with balanced load/unload. The
+input image, checker and supporting tools remain unchanged. These observations
+cover retry after load rejection, not forced cancellation or reentrant loading.
+
+The guest-native build at 16 MiB passes with 28 exports matching the cross-built
+contract (`build/i386-c2-doc-diagnostic-native`). Its 65,753-byte module is installed
+by the guest, then rebooted and exercised at 8 MiB; thirteen checks and unloading
+pass (`build/i386-c2-doc-diagnostic-native-install`). This does not establish full
+two-generation qualification or binary identity with the cross-built artifact.
+
+The background workflow still fails at 8 MiB on the separated candidate
+(`build/i386-c2-doc-diagnostic-background-8m`). Frame checkpoints reach editing,
+save and compiler-progress verification. Heap exhaustion appears around stopping
+the compiler, followed by an OutMem rejection of the terminal cleanup command
+and a timeout. At the first recorded failure, request 0x2233 exceeds largest free
+block 0x1618, with heap usage 0x6523C8 / 0x656000. Source disk preservation passes;
+child completion and parent heap recovery do not. The regression remains enabled.

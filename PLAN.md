@@ -10,6 +10,32 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Diagnostic recovery and native component qualification (2026-10-14)
+
+The delivered optional diagnostic module rejects a wrong target and an unknown
+exception import. In each automated writable-image session, two failed public
+calls leave the console usable; repairing the module inside the guest restores
+it byte-for-byte, and two subsequent invocations return thirteen checks with
+balanced loading/unloading. See `tools/test-i386-doc-diagnostic-recovery.py` and
+`build/i386-c2-doc-diagnostic-recovery-target` / `-recovery-import`.
+
+The 32-bit guest builds DocDiagnosticRuntime at 16 MiB on `486,-fpu` / TCG.
+Its 28 exports match the cross-built contract. Guest installation, reboot and
+execution of that native-built copy at 8 MiB pass; the check returns thirteen
+and unloads. Evidence: `build/i386-c2-doc-diagnostic-native` and `-native-install`.
+This is one component's native qualification, not two complete native generations
+or C5 acceptance. Forced exit, reentrancy and complete module/interface audits
+remain open.
+
+The 8 MiB background compile/edit/save regression still fails on this candidate
+(`build/i386-c2-doc-diagnostic-background-8m`). It reaches editor save and compiler
+progress checks, then reports allocation exhaustion around `BuildStop=1;` and
+rejects `DocDel(d);TermFinish;` with OutMem. The latter requires 0x2233 bytes while
+the largest free block is 0x1618 at the first observed heap failure. The session
+times out awaiting child completion; parent heap recovery is unproven. Preserve
+the failing gate and investigate resident use and parser allocation lifetimes;
+do not infer recovery from the passing startup or diagnostic checks.
+
 ### On-demand document diagnostic checkpoint (2026-10-14)
 
 Console interface 73 moves the allocation/round-trip check bodies into
