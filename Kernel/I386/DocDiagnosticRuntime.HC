@@ -244,6 +244,41 @@ I64 NativeDocAllocationCoreCheck()
   return caught+5;
 }
 
+I64 NativeDocDollarGrowthCheck()
+{
+  CDoc *doc=DocNew("C:/DollarFail.DD",Fs);
+  U8 *buffer;
+  I64 base,size,position,i,result=-501;
+  DocPutKey(doc,36);
+  while(doc->dollar_buf_ptr<doc->dollar_buf_size-2) DocPutKey(doc,'R');
+  buffer=doc->dollar_buf;size=doc->dollar_buf_size;position=doc->dollar_buf_ptr;
+  base=Fs->data_heap->used_u8s;
+  NativeDocAllocArm(1);
+  if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc)) goto dollar_done;
+  result=-502;
+  if(doc->dollar_buf!=buffer || doc->dollar_buf_size!=size ||
+      doc->dollar_buf_ptr!=position || !(doc->flags&DOCF_IN_DOLLAR) ||
+      doc->head.next!=doc || doc->owning_task ||
+      Bt(&doc->locked_flags,DOClf_LOCKED) || Fs->data_heap->used_u8s!=base)
+    goto dollar_done;
+  result=-503;
+  if(buffer[0]!=36) goto dollar_done;
+  for(i=1;i<position;i++) if(buffer[i]!='R') goto dollar_done;
+  DocPutKey(doc,'X');
+  result=-504;
+  if(doc->dollar_buf_ptr!=position+1 || doc->dollar_buf_size<=size ||
+      doc->dollar_buf[position]!='X' || !(doc->flags&DOCF_IN_DOLLAR) ||
+      doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED))
+    goto dollar_done;
+  if(doc->dollar_buf[0]!=36) goto dollar_done;
+  for(i=1;i<position;i++) if(doc->dollar_buf[i]!='R') goto dollar_done;
+  result=1;
+dollar_done:
+  NativeDocAllocArm(0);
+  DocDel(doc);
+  return result;
+}
+
 I64 NativeDocClipPasteAtomicCheck()
 {//Every allocation failure must preserve exact target bytes and heap ownership.
   CDoc *source=NULL,*target=NULL,*old_clip=native_clip_doc;
@@ -299,6 +334,12 @@ public I64 DocAllocationCheck()
   if(result!=5) return result;
   result=NativeDocAllocationCoreCheck;
   if(result!=8) return result;
+  before=Fs->data_heap->used_u8s;
+  result=NativeDocDollarGrowthCheck;
+  if(result!=1) return result;
+  if(Fs->data_heap->used_u8s!=before) return -505;
+  saved="DOC DOLLAR GROWTH recovery\n";
+  while(*saved) OutU8(0xE9,*saved++);
   result=NativeDocClipPasteAtomicCheck;
   if(result<=0) return result;
   doc=DocNew("C:/AllocRead.DD",Fs);

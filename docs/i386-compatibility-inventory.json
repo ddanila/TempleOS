@@ -813,6 +813,20 @@
           "result": "pass",
           "evidence": "build/i386-c2-dollar-qualified-native/result.json",
           "scope": "22 commands for typed-dollar component, not complete DocPutKey or DocChar compatibility"
+        },
+        {
+          "target": "native-dollar-growth-failure",
+          "command": "python3 tools/test-i386-doc-diagnostic-separation.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dollar-growth-check/result.json",
+          "scope": "Injected OutMem preserves dollar buffer/lock/public heap; successful retry and document cleanup; not whole-file qualification"
+        },
+        {
+          "target": "native-built-dollar-growth-failure",
+          "command": "python3 tools/test-i386-retained-install.py --source SOURCE --out OUT --module DocDiagnosticRuntime --cpu 486,-fpu --accel tcg --qmp-stdio",
+          "result": "pass",
+          "evidence": "build/i386-c2-dollar-growth-native-install/result.json",
+          "scope": "Installed native diagnostic runs growth-failure recovery at 8 MiB; not two complete native generations"
         }
       ]
     },

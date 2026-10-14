@@ -10,6 +10,31 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Dollar-buffer allocation failure and native recovery (2026-10-14)
+
+The optional diagnostic now fills a partial dollar command to its growth
+boundary and injects OutMem on the required allocation. It verifies unchanged
+buffer address/capacity/position/content, active input state, lock release and
+public heap usage, then retries growth and checks document cleanup restores the
+caller's heap. The public success value stays 13; host tests additionally require
+`DOC DOLLAR GROWTH recovery` so the new probe cannot be omitted silently.
+
+The preceding module fails the new coverage gate because the probe is absent
+(`build/i386-c2-dollar-growth-red`). Original bootstrap/cross-build/386 audits
+pass for the new candidate (`build/i386-c2-dollar-growth-cross`). Two explicit
+load/run/unload invocations pass at 64 MiB (`build/i386-c2-dollar-growth-check`).
+The guest-native module builds at 16 MiB with all 29 exports matching its
+cross-built contract (`build/i386-c2-dollar-growth-native`); installation,
+reboot, recovery and unloading pass at 8 MiB (`-native-install`). The installation
+checker now requires the recovery marker for the installed diagnostic module.
+
+All thirteen other T32Ms are byte-identical to the preceding candidate, recorded
+in `build/i386-c2-dollar-growth-module-comparison.json`. This advances C4 failure
+coverage and component-level C5 evidence. It does not close GetStr, parse-error
+recovery, forced cancellation, two complete native generations, the background
+memory regression or full C1–C5 qualification. Next work returns to the original
+GetKey/DocGetKey/GetStr input path.
+
 ### Shared typed-dollar input and macro handling (2026-10-14)
 
 Console interface 74 integrates the original typed-dollar state machine into

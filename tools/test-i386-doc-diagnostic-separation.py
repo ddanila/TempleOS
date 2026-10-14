@@ -11,7 +11,7 @@ import struct
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS = {'NativeDocAllocationCaught','NativeDocAllocationPut','NativeDocAllocationNewLine',
           'NativeDocAllocationSave','NativeDocRecordSaveCheck','NativeDocBinarySaveCheck',
-          'NativeDocAllocationCoreCheck','NativeDocClipPasteAtomicCheck'}
+          'NativeDocAllocationCoreCheck','NativeDocClipPasteAtomicCheck','NativeDocDollarGrowthCheck'}
 
 def exports(path):
     data = path.read_bytes()
@@ -50,6 +50,8 @@ def main():
         if 'DOC DIAGNOSTIC loaded\n' in boot:raise ValueError('Normal boot loaded diagnostics')
         if log.count('DOC DIAGNOSTIC loaded\n')!=2 or log.count('DOC DIAGNOSTIC unloaded\n')!=2:
             raise ValueError('Missing balanced repeated diagnostic lifecycle')
+        if log.count('DOC DOLLAR GROWTH recovery\n')!=2:
+            raise ValueError('Missing repeated dollar-growth failure/recovery assertions')
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise

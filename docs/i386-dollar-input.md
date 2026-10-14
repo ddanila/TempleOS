@@ -14,7 +14,8 @@ same core under a lock with exception cleanup before ordinary editing. Both
 use the original printable bitmap, now represented by a shared data macro in
 `Kernel/PrintableBitmap.HH`. Buffer growth allocates and copies before publishing
 the new capacity, so a failed allocation does not publish unallocated space.
-Fault-injected growth and parser-error recovery still need dedicated tests.
+Fault-injected native growth is qualified in the checkpoint below; parser-error
+recovery and original-host fault injection remain open.
 
 The console's command-source recording explicitly selects plain text while
 inserting source characters, restoring that mode on normal and exceptional
@@ -91,3 +92,36 @@ helper definition at the missing GetStr binding on the current image in
 `build/i386-c2-getstr-byte-red/result.json`. None of its thirteen native input
 cases executes yet. No complete GetStr, desktop or native-generation acceptance
 is claimed by this component checkpoint.
+
+## Native allocation-failure recovery
+
+NativeDocDollarGrowthCheck in the on-demand diagnostic module fills the buffer
+to its next growth boundary, arms failure of the next operational document
+allocation and invokes DocPutKey. It requires OutMem, unchanged old buffer
+address/capacity/position/prefix, unchanged public heap usage, no inserted entries,
+an active partial-dollar state and a released document lock. With injection
+disarmed, growth must succeed and preserve the prefix plus the new character.
+The caller then checks that deleting the document restores its public heap.
+
+The public diagnostic success value remains 13. Completion emits a test-only
+marker after the assertions; the host gate requires that marker twice alongside
+balanced repeated load/unload. The previous image fails the new static coverage
+gate in `build/i386-c2-dollar-growth-red/result.json`. The current delivered
+module passes in `build/i386-c2-dollar-growth-check/result.json`. This negative
+baseline proves absence of the new probe; it is not an observed failure of the
+previous allocation implementation.
+
+Original bootstrap and cross-build/386 audits pass in
+`build/i386-c2-dollar-growth-cross`. Guest-native compilation at 16 MiB passes
+with 29 exports matching the cross-built contract in
+`build/i386-c2-dollar-growth-native`. Guest installation and reboot at 8 MiB pass
+in `build/i386-c2-dollar-growth-native-install`, whose report explicitly records
+`diagnostic_growth_recovery: true`. The installed native copy emits the marker
+once and loads/unloads once. Source/candidate images are preserved by the
+installation check.
+
+The thirteen other T32Ms are byte-identical to the preceding operational
+candidate (`build/i386-c2-dollar-growth-module-comparison.json`). No new normal
+resident test code is added. These checks qualify the injected native growth
+case and its retry/cleanup; original-host allocation failure, parser failure,
+forced cancellation and complete two-generation release coverage remain open.

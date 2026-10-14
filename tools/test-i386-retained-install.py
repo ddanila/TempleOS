@@ -82,10 +82,19 @@ def main():
                                ('DocAllocationCheck;', ['13'])]})
     if sha(candidate) != candidate_hash or sha(args.source) != source_hash:
         raise ValueError('Installation test changed a preserved source/candidate image')
+    growth_recovery = None
+    if 'DocDiagnosticRuntime' in modules:
+        log = (out/'boot/debug.log').read_text()
+        if (log.count('DOC DOLLAR GROWTH recovery\n') != 1 or
+                log.count('DOC DIAGNOSTIC loaded\n') != 1 or
+                log.count('DOC DIAGNOSTIC unloaded\n') != 1):
+            raise ValueError('Installed native diagnostic must exercise dollar growth recovery and unload')
+        growth_recovery = True
     result = {'result': 'pass', 'installed': list(modules),
               'source_disk_sha256': source_hash, 'disk_sha256': candidate_hash,
               'module_source_paths': module_paths,
               'cpu': args.cpu, 'accel': args.accel,
+              'diagnostic_growth_recovery': growth_recovery,
               'module_sha256': {name: hashlib.sha256(built[module_paths[name]]).hexdigest() for name in modules},
               'module_bytes': {name: len(built[module_paths[name]])
                                for name in modules}}
