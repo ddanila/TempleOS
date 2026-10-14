@@ -6,9 +6,25 @@
 386+/VGA port, preserving their HolyC and DolDoc behavior, with automated
 compatibility tests and native self-hosting.**
 
-Status: planned; implementation and full compatibility qualification have not
-started. The bounded-memory self-hosting goal below is complete and provides
+Status: C1 discovery and the C2 runnable baseline are in progress; full
+compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
+
+### First implementation checkpoint (2026-10-14)
+
+[Desktop compatibility tracking](docs/i386-desktop-compatibility.md) pins the
+original snapshot and links the exhaustive 686-file inventory. All entries
+remain explicitly unqualified while workflows/oracles are reviewed. Four host
+guard tests pass, including missing-file, changed-hash and open-gap rejection.
+The input harness now accepts the proposed 64/128 MiB profiles after a baseline
+test first demonstrated rejection of 64 MiB. A disposable second-generation
+64 MiB interactive baseline passes all nine commands, exact VGA checks and
+input preservation, with zero build-provider loads. The same baseline also
+passes at 128 MiB. C1–C5 completion remains unproven.
+
+The baseline exposes a capacity gap: boot allocation is capped below 15 MiB
+regardless of QEMU RAM. Add a failing usable-capacity test and firmware RAM
+discovery before claiming the larger profiles. See the tracking document.
 
 ### Scope and hardware constraints
 

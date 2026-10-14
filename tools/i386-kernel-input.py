@@ -138,7 +138,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
         raise ValueError('Select one or more known test groups')
     if startup_check is not None and (groups is not None or mutation is not None):
         raise ValueError('Startup checks cannot be combined with groups or mutations')
-    if ram_mib not in (8,16): raise ValueError('Unsupported i386 RAM profile')
+    if ram_mib not in (8,16,64,128): raise ValueError('Unsupported i386 RAM profile')
     if accel not in ('tcg','kvm'): raise ValueError('Unsupported QEMU accelerator')
     if startup_timeout<1 or startup_timeout>1200: raise ValueError('Unsupported startup timeout')
     if audio_wav is not None and groups!=('sound',):
@@ -2035,6 +2035,8 @@ def main():
     parser.add_argument('--group',action='append',choices=GROUPS,help='Repeat to select groups; omitted runs the full console suite')
     parser.add_argument('--list-groups',action='store_true')
     parser.add_argument('--diagnostics',action='store_true',help='Expect the diagnostic boot image')
+    parser.add_argument('--ram-mib',type=int,choices=(8,16,64,128),default=8,
+                        help='Guest RAM profile (default: 8 MiB)')
     parser.add_argument('--cpu',default='486',help='QEMU CPU model (default: 486)')
     parser.add_argument('--qmp-stdio',action='store_true',
                         help='Control QEMU over stdio when Unix sockets are unavailable')
@@ -2060,7 +2062,7 @@ def main():
             'working_disk':str(disk)},indent=2)+'\n')
     try:
         result=run_input(disk,args.out,diagnostics=args.diagnostics,groups=args.group,
-                         cpu=args.cpu,qmp_stdio=args.qmp_stdio,
+                         cpu=args.cpu,qmp_stdio=args.qmp_stdio,ram_mib=args.ram_mib,
                          snapshot=not args.writable_copy)
     finally:
         if provenance is not None:
