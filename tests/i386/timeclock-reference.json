@@ -1,0 +1,31 @@
+{
+  "reference_revision": "c26482bb6ad3f80106d28504ec5db3c6a360732c",
+  "repair_revision": "ce055f205fc38536443289fb1cfc73632f6624f4",
+  "capture_tool": "tools/test-i386-timeclock-reference.py",
+  "scope": "Original TimeClock Load/Install, typed storage, reopen and closed report; interactive PunchIn/PunchOut and reboot persistence remain unqualified",
+  "inputs": {
+    "entries": [
+      {
+        "type": 1,
+        "date_ticks": 3135326394515456,
+        "description": "start\n"
+      },
+      {
+        "type": 2,
+        "date_ticks": 3135326662950912,
+        "description": "finish\n"
+      }
+    ]
+  },
+  "logical_file_hex": "010000001090230b0073746172740a00020000002090230b0066696e6973680a0000",
+  "logical_file_sha256": "f5ecc13cd3d99a3efe3fc9208e158d5fa0b94a6ec47884de48d176e23ca4e04b",
+  "report_latin1": "$WW+H,1$$FG,4$IN  09/04/98 01:30:00:$FG$\nstart\n\n$FG,4$OUT 09/04/98 03:00:00:$FG$\nfinish\n\n$FG,4$Week Total:01:30:00$FG$\n\u0005",
+  "report_sha256": "faa5155d46e6a394493031341f60052c38e7cabab285b0ce2f73e84d4bf731c9",
+  "expected_total_seconds": 5400,
+  "application_source_sha256": {
+    "Apps/TimeClock/Install.HC": "93a6eaa93c12c52ce8bb378725092355c36c77770029acedfb6f1d05570ea5ec",
+    "Apps/TimeClock/Load.HC": "c075ba921d2fa92f2ebfe4171362d32e3629d73480140af5236d00b020510606",
+    "Apps/TimeClock/TimeClk.HC": "ea0574db2d51cc57b3b5197cb0d3fdf3c4179a65bd142838b2381c5e6764e599"
+  },
+  "capture_fixture_sha256": "1f0c8bc9f8195e485ee82eb97bd7f997eb2d18f76bcd81cb00e3a888b1396138"
+}

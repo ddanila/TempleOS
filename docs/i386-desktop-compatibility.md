@@ -14,7 +14,16 @@ retains boot files, root startup scripts, supporting services, documents and
 assets as well as source files. Nothing in that reference tree is silently
 excluded from review.
 
-Each entry records the original Git blob and SHA-256, literal includes, public
+The effective reference also pins binary-repair commit
+`ce055f205fc38536443289fb1cfc73632f6624f4`, described in
+[binary repair provenance](binary-repairs.md). The raw archive has 44 damaged
+map/asset blobs; restoring it alone reproduces the historical `Bin Not Found`
+startup loop. The inventory retains both archive and recovered blob IDs and
+uses the recovered bytes for reference SHA-256 and source comparison. The
+original 686-file scope is unchanged; repair-commit tooling additions are excluded.
+A guard rejects removal or substitution of this repair revision.
+
+Each entry records archive/recovered Git blobs and the effective SHA-256, literal includes, public
 symbol candidates, initial source comparison, and explicit compatibility,
 workflow, oracle and test fields. Launch and symbol candidates are lexical
 hints; dynamic includes, macros, assembly entry points and runtime dependencies
@@ -161,3 +170,30 @@ native-rebuild qualification follows from these foundation tests.
 Both corrected capacity tests pass (32 MiB at 64 MiB, 80 MiB at 128 MiB).
 The queue has advanced to minimal-profile startup; assembly, fallback and heap
 regressions remain pending. Larger-profile native rebuilding is still open.
+
+The integrated memory foundation regressions now pass. The first queue's old
+public-heap failure is preserved; the revised policy-aware test and remaining
+heap checks pass in `build/i386-c1-map-remaining/result.json`. See the memory-map
+contract for the test correction and exact coverage. TimeClock original storage
+and report reference capture is the next C1 experiment.
+
+## First original application component oracle (2026-10-14)
+
+TimeClock original Load/Install, typed storage, reopen and closed report now
+have an executable reference capture. The fixture restores all original source
+and binaries with the pinned recovered assets, then creates two controlled
+entries on a disposable RAM drive. Host checks independently assemble the
+34-byte logical record stream and calculate the 5,400-second interval, then
+compare the complete report with the reviewed capture in
+`tests/i386/timeclock-reference.json`. The three TimeClock source entries now
+link this original-only evidence in the inventory; compatibility remains
+unqualified. Interactive PunchIn/PunchOut, cancellation, reboot persistence,
+native execution and native/original differential comparison remain open.
+
+```sh
+python3 tools/test-i386-timeclock-reference.py --out build/timeclock-reference
+```
+
+Evidence: `build/i386-c1-timeclock-reference-final/result.json`. The earlier raw
+archive failure is preserved in `build/i386-c1-timeclock-reference`; it exposed
+the reference-provenance issue rather than a native application regression.

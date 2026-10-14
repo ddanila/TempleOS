@@ -111,3 +111,20 @@ The revised candidate now passes both capacity tests: 80 MiB at 128 MiB and
 arithmetic. Evidence is under `build/i386-c1-map-qualification/capacity-128m`
 and `capacity-64m`; source inputs remain unchanged. The queue has advanced to
 the existing 8 MiB startup gate. Remaining qualification stages are still open.
+
+## Integrated foundation regressions pass (2026-10-14)
+
+All planned integration checks now pass. The original queue preserves its
+public-heap failure in `build/i386-c1-map-qualification/result.json`: its old
+fixture required a request to fail when only bucket rounding prevented it from
+fitting. The revised fixture explicitly verifies exact-page success, private
+buffer preservation, full reclamation and ordinary rounding when space returns.
+That public-heap rerun and all remaining heap regressions pass in
+`build/i386-c1-map-remaining/result.json`. No guest allocator change was needed
+for this fixture correction.
+
+Together the two reports cover 32/80 MiB capacity/readback, the unchanged 8 MiB
+startup/VGA gate, native saved assembly at 16 MiB, integrated legacy fallback,
+public/core/portable-cache heaps and backing accounting. Bootstrap and 386
+instruction audits also pass. These establish the memory foundation for desktop
+work; complete application coverage and native rebuilding at 128 MiB remain open.

@@ -54,9 +54,18 @@ I64 PublicBackingTest()
         !I386MemHeapDestroy(first) || I386MemBackingTrim(pool)!=small_span ||
         pool->retained || pool->owned_count || pool->regions || pool->size ||
         !I386MemHeapDestroy(second)) return 411;
-    //Free bytes are split around the private allocation; neither hole fits 258 pages.
-    if(!I386MemHeapInit(first,pool) || I386MemAlloc(first,131000) || pool->retained ||
-        !I386HeapFree(&backing_heap,private_bytes) || backing_heap.used) return 414;
+    //Neither hole fits the 258-page bucket, but the actual 256 pages fit.
+    //Pressure fallback must preserve the private bytes and reclaim every span.
+    before=backing_heap.used;
+    if(!I386MemHeapInit(first,pool) || !(a=I386MemAlloc(first,131000)) ||
+        pool->owned_count!=1 || pool->owned->size!=256*512 ||
+        I386MemSize(a)<131000 || !I386MemBackingValid(pool)) return 414;
+    a[0]=0x39; a[130999]=0x93;
+    if(a[0]!=0x39 || a[130999]!=0x93 || private_bytes[0]!=0xA7 ||
+        private_bytes[65535]!=0x5A || !I386MemFree(a) ||
+        I386MemBackingTrim(pool)<=0 || pool->retained || pool->owned_count ||
+        backing_heap.used!=before || !I386HeapValid(&backing_heap) ||
+        !I386HeapFree(&backing_heap,private_bytes) || backing_heap.used) return 415;
     //An empty provider grows again, rounding a large request only once on retry.
     if(!(a=I386MemAlloc(first,131000)) ||
         pool->owned->size!=258*512 || !I386MemFree(a) || I386MemBackingTrim(pool)<=0 ||

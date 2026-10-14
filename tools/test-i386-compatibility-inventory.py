@@ -35,6 +35,11 @@ class InventoryGuards(unittest.TestCase):
             d['entries'][0]['reference_sha256'] = '0'*64
         self.assertNotEqual(self.check_inventory(corrupt).returncode, 0)
 
+    def test_unrepaired_reference_rejected(self):
+        def corrupt(d):
+            d['repair_revision'] = d['reference_revision']
+        self.assertNotEqual(self.check_inventory(corrupt).returncode, 0)
+
     def test_discovery_does_not_qualify_runtime(self):
         result = self.check_inventory(qualified=True)
         self.assertNotEqual(result.returncode, 0)

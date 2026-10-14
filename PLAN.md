@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Current C1–C5 evidence (2026-10-14)
+
+Memory foundation checks pass: both larger capacity probes, minimal 8 MiB
+startup, 16 MiB native saved assembly, integrated legacy fallback and all queued
+heap/backing checks. The public backing fixture now verifies exact-page success
+and reclamation under the deliberate pressure policy; its original failure is
+preserved. See `build/i386-c1-map-remaining/result.json`.
+
+C1 now has a source-reviewed launch/dependency matrix for all twelve apps and
+its first original TimeClock storage/reopen/report oracle. Reference provenance
+pins both the archived tree and its documented recovered map/asset blobs;
+restoring the raw corrupted assets alone is explicitly rejected. Original
+TimeClock data and its 5,400-second closed report are captured in
+`tests/i386/timeclock-reference.json`. Interactive/full native TimeClock,
+remaining app/demo workflows and API coverage remain open. C2 desktop parity,
+C3 application parity, C4 differential coverage and C5 full native-generation
+qualification remain incomplete.
+
 ### First implementation checkpoint (2026-10-14)
 
 [Desktop compatibility tracking](docs/i386-desktop-compatibility.md) pins the
@@ -58,6 +76,12 @@ observations and executable oracles remain C1 work.
 Both revised capacity tests now pass: 32 MiB at 64 MiB and 80 MiB at 128 MiB.
 The remaining sequential qualification stages are live; no full desktop or
 larger-profile native-rebuild completion is claimed.
+
+The integrated memory foundation regressions now pass, including minimal
+startup, native assembly, legacy fallback and heap/backing ownership checks.
+The original public-heap failure is preserved and its policy-aware rerun passes
+in `build/i386-c1-map-remaining`. Full application and 128 MiB native-rebuild
+qualification remain open. TimeClock reference capture is the next C1 test.
 
 ### Scope and hardware constraints
 

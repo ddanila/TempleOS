@@ -1,6 +1,8 @@
 # Bundled application launch review
 
-Reference: `c26482bb6ad3f80106d28504ec5db3c6a360732c`.
+Reference: archive `c26482bb6ad3f80106d28504ec5db3c6a360732c` with recovered
+map/asset bytes from `ce055f205fc38536443289fb1cfc73632f6624f4` (see
+[binary repair provenance](binary-repairs.md)).
 This source review covers all twelve `Apps/` directories (73 reference files),
 linked to the exhaustive [file inventory](i386-compatibility-inventory.json).
 Entry points and direct includes below come from the pinned Run/Load scripts.
@@ -55,3 +57,10 @@ record random seeds and clock inputs where needed; a launch screenshot is not
 sufficient evidence. Remaining per-program workflows, original observations,
 executable tests and all 224 demo-file classifications are C1 gaps. API service
 review and desktop-feature workflows also remain open.
+
+TimeClock's first storage/report reference capture passes, with reviewed data
+in `tests/i386/timeclock-reference.json` and an executable checker in
+`tools/test-i386-timeclock-reference.py`. It covers Load/Install and the first
+controlled two-entry storage/reopen/report component workflow above. Interactive
+punch commands and reboot are still open; the complete application and native
+port remain unqualified.
