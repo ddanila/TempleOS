@@ -12881,7 +12881,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "ScanKey/GetKey 28-field queue, echo, descriptor and delayed-delivery oracle. Physical keyboard, raw cursor, debugger polling, default document echo and remaining file APIs are unqualified."
+        "description": "28-field ScanKey/GetKey queue, callback echo, descriptor and delayed-delivery oracle; native physical raw cursor/debugger checks. Default document echo, remaining APIs and complete debugger/cleanup behavior remain unqualified."
       },
       "oracle": {
         "tool": "tools/test-i386-key-input-reference.py",
@@ -12953,6 +12953,33 @@
           "result": "fail",
           "evidence": "build/i386-c4-keydev-getkey-red/result.json",
           "gap": "Initial ScanKey helper/check passes; KeyRead rejects missing GetKey and full collection is not reached"
+        },
+        {
+          "target": "original-getkey-early-hook",
+          "command": "python3 tools/test-i386-key-input-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-getkey-early-hook-reference/result.json",
+          "scope": "28 fields with explicit early consuming echo hook"
+        },
+        {
+          "target": "rebuilt-x64-getkey-control",
+          "command": "python3 tools/test-i386-key-input-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-getkey-control-final/result.json"
+        },
+        {
+          "target": "native-full-key-input",
+          "command": "python3 tools/test-i386-key-input.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-getkey-queue-final/result.json",
+          "scope": "28 fields including GetKey delayed wait; not entire message file or full document echo"
+        },
+        {
+          "target": "native-physical-getkey",
+          "command": "python3 tools/test-i386-getkey-physical.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-getkey-physical-rows/result.json",
+          "scope": "Scheduled and IF-masked debugger physical key delivery and raw cursor frames; precise blink timing/all debugger combinations remain open"
         }
       ]
     },

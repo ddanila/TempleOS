@@ -35,7 +35,7 @@ U0 CaptureKeyInput()
   v[7]=ScanKey(NULL,NULL);
   PostMsg(Fs,MSG_KEY_DOWN,0,0x48);
   v[8]=GetKey(&sc);v[9]=sc;
-  hook=KeyDevAdd(&CaptureKey,NULL,I64_MAX,TRUE);
+  hook=KeyDevAdd(&CaptureKey,NULL,10,TRUE);
   PostMsg(Fs,MSG_KEY_DOWN,'b',0x30);
   v[10]=GetKey(&sc,TRUE);v[11]=sc;
   v[12]=key_echo_count;v[13]=key_echo_ch;v[14]=key_echo_sc;

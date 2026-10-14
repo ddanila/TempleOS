@@ -93,3 +93,12 @@ The original alias-mode component test remains available separately. The full
 input suite now passes its initial empty ScanKey check and rejects the missing
 GetKey in its next helper (`build/i386-c4-keydev-getkey-red/result.json`);
 its full 28-field native collection remains unexecuted.
+
+## Public GetKey integration
+
+[Native GetKey](i386-getkey.md) now shares the original wait loop and supplies
+native timing/cursor/controller adapters. The full native 28-field collection
+passes in `build/i386-c4-getkey-queue-final/result.json`, superseding the missing
+binding checkpoint above. Pinned original and rebuilt x64 controls use the same
+early consuming echo hook. Physical raw-cursor and interrupt-masked debugger
+polling checks also pass; full default document echo and GetStr remain open.

@@ -33,15 +33,14 @@ U0 NativeKeyboardDiscard(CTask *task)
   }
   I386IrqRestore(irq);
 }
-U0 NativeKeyboardWorker(U8 *data)
-{
+Bool native_keyboard_reported;
+Bool NativeKeyboardPump()
+{//One shared decoder for the scheduled worker and masked debugger polling.
   CI386KeyEvent event;
   CTask *target;
-  I64 decoded;
-  Bool reported=FALSE;
-  KernelLog("KEYBOARD MESSAGE worker\n");
-  SetRFlags(GetRFlags|512);
-  while(TRUE) {
+  I64 decoded=0;
+  U32 irq=I386IrqSave;
+  try {
     decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
     if(decoded<0) {
       native_keyboard_losses++;
@@ -49,8 +48,8 @@ U0 NativeKeyboardWorker(U8 *data)
     } else if(decoded && !NativeTerminalFocusKey(&event)) {
       target=sys_focus_task;
       if(!TaskValidate(target)) target=native_keyboard_owner;
-      if(!reported) {
-        reported=TRUE;
+      if(!native_keyboard_reported) {
+        native_keyboard_reported=TRUE;
         KernelLog("KEYBOARD MESSAGE first "); KernelHex(event.type); KernelLog(" ");
         KernelHex(event.ch); KernelLog(" "); KernelHex(target); KernelLog(" ");
         KernelHex(target->task_signature); KernelLog("\n");
@@ -63,6 +62,15 @@ U0 NativeKeyboardWorker(U8 *data)
         NativeTerminalDiscardKeyboard;
       }
     }
+  } catch { I386IrqRestore(irq); }
+  I386IrqRestore(irq);return decoded!=0;
+}
+U0 NativeKeyboardWorker(U8 *data)
+{
+  KernelLog("KEYBOARD MESSAGE worker\n");
+  SetRFlags(GetRFlags|512);
+  while(TRUE) {
+    NativeKeyboardPump;
     I386SchedYield(I386TaskSelf->owner);
   }
 }

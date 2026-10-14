@@ -122,45 +122,15 @@ I64 ScanChar()
 
 #include "/Kernel/KeyScanCore.HC"
 
-I64 GetKey(I64 *_scan_code=NULL,Bool echo=FALSE,Bool raw_cursor=FALSE)
-{//Waits for $LK,"MSG_KEY_DOWN",A="MN:MSG_KEY_DOWN"$ message and returns $LK,"ASCII",A="MN:CH_CTRLA"$.
-//Sets $LK,"scan_code",A="FI:::/Doc/CharOverview.DD"$.
-  //$LK,"ScanKey",A="MN:ScanKey"$() throws away other message types.
-  I64 ch,sc;
-  Bool cursor_on=FALSE;
-  while (!ScanKey(&ch,&sc,FALSE)) {
-    if (IsRaw && raw_cursor) {
-      if (!cursor_on && ToI64(GetTSC*5/cnts.time_stamp_freq)&1) {
-	'Û';
-	cursor_on=TRUE;
-      } else if (cursor_on && !(ToI64(GetTSC*5/cnts.time_stamp_freq)&1)) {
-	'' CH_BACKSPACE;
-	cursor_on=FALSE;
-      }
-    }
-    LBts(&Fs->task_flags,TASKf_IDLE);
-    if (IsDbgMode) {
-//We don't want interrupt-driven keyboard when in debugger
-      //because that could have side-effects or crash, so we poll
-      //keyboard when in debugger with interrupts off.
+U0 KeyGetDebugPoll()
+{
       PUSHFD
       CLI
       KbdMsHndlr(TRUE,FALSE);
       KbdMsgsQue;
       POPFD
-    } else {
-      LBts(&Fs->task_flags,TASKf_AWAITING_MSG);
-      Yield;
-    }
-    LBtr(&Fs->task_flags,TASKf_IDLE);
-  }
-  if (IsRaw && raw_cursor && cursor_on)
-    '' CH_BACKSPACE;
-  if (echo)
-    PutKey(ch,sc);
-  if (_scan_code) *_scan_code=sc;
-  return ch;
 }
+#include "/Kernel/KeyGetCore.HC"
 
 I64 GetChar(I64 *_scan_code=NULL,Bool echo=TRUE,Bool raw_cursor=FALSE)
 {//Waits for non-zero $LK,"ASCII",A="MN:CH_CTRLA"$ key.

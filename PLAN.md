@@ -10,6 +10,32 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Public GetKey and physical raw/debug input (2026-10-15)
+
+Console interface 76 exposes GetKey through the shared original message/wait
+loop. Native adapters supply PIT/jiffy cursor timing, direct raw cursor output,
+managed yielding and interrupt-masked polling. IRQ and debugger polling use
+the same controller-byte routing; worker and debugger share one decoder pump.
+Raw cursor waits remain runnable on the native scheduler, while ordinary waits
+retain message parking and the original idle/awaiting transitions.
+
+The 28-field original input oracle now passes fully on native GetKey, with
+matching pinned-original and rebuilt x64 controls. Paired fixtures explicitly
+consume echo at priority 10, avoiding default-console glyphs outside their
+callback-only observation. Actual QEMU key tests pass scheduled and IF-masked
+debugger modes, visible/erased cursor frames, character/scan return and state
+restoration. The first raw test exposed parked cursor waits; the adapter fixes
+that behavior. A corrected fixture models bottom-row console scrolling, with
+explicit post-session framebuffer expectations supported by the harness.
+
+Evidence is in [GetKey adapters and qualification](docs/i386-getkey.md).
+Original bootstrap/cross-build/386 audits pass. Final transcript and two-terminal
+regressions pass; 8 MiB startup passes in 45.02 seconds without build-provider
+loading. The previous missing GetKey gate
+is superseded; GetChar, DocGetKey/GetStr, streaming/default document output,
+entry replay, filters, exit/unwind and complete debugger combinations remain
+required. This is C2/C4 progress, not full C1–C5 acceptance.
+
 ### Native output dispatch and public ScanKey (2026-10-15)
 
 Console interface 75 now exposes PutKey, KeyDevAdd, KeyDevRem and ScanKey.

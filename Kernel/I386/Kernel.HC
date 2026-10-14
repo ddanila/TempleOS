@@ -269,17 +269,21 @@ U0 KernelStop()
   KernelLog("FAIL native kernel\n");
   while(1) { asm { HLT } }
 }
+Bool KernelInputPoll()
+{//Caller owns controller access with interrupts masked; preserve normal routing.
+  U8 data,status;
+  if(!I386KbcRead(&data,&status)) return FALSE;
+  if(status&0x20) I386MouseFeed(&kernel_mouse,data,status);
+  else if(!kernel_console.key_irq(data,status)) I386KbcInputPut(&kernel_input,data,status);
+  return TRUE;
+}
 U0 KernelIrq(CI386IrqFrame *frame)
 {
-  U8 data,status;
   if(!I386PicAccept(frame->irq)) return;
   if(frame->irq==0) {
     if(!I386TimerStep(&kernel_timer) || !I386SleepTick(&kernel_sleep)) KernelStop;
   }
-  if((frame->irq==1 || frame->irq==12) && I386KbcRead(&data,&status)) {
-    if(status&0x20) I386MouseFeed(&kernel_mouse,data,status);
-    else if(!kernel_console.key_irq(data,status)) I386KbcInputPut(&kernel_input,data,status);
-  }
+  if(frame->irq==1 || frame->irq==12) KernelInputPoll;
   I386PicEoi(frame->irq);
 }
 U0 KernelDebugStackCleanup(CI386Task *task)
@@ -860,6 +864,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.mouse=&kernel_mouse;
   kernel_console_config.pit_divisor=kernel_timer.divisor;
   kernel_console_config.defer_root_headers=kernel_diagnostics;
+  kernel_console_config.input_poll=&KernelInputPoll;
   kernel_console_config.doc_diagnostic_load=&KernelDocDiagnosticLoad;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }

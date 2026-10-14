@@ -469,7 +469,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 if mutation is not None and name==mutation['checkpoint']:
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
                 if interaction is not None and not interaction.get('preserve_history',False):
-                    rows=(heading+answers+['> '])[-60:]
+                    rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
                 screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,

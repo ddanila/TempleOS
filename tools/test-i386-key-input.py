@@ -22,7 +22,7 @@ COMMANDS = [
     ('U0 KeyFiltered(){FlushMsgs;PostMsg(Fs,MSG_KEY_UP,117,0x9E);PostMsg(Fs,MSG_MS_MOVE,7,8);PostMsg(Fs,MSG_KEY_DOWN,97,0x1E);KeyScan(3);KI[6]=ScanMsg(NULL,NULL,~1);}', []), ('KeyFiltered;', []),
     ('U0 KeyZero(){PostMsg(Fs,MSG_KEY_DOWN,0,0x4B);KI[7]=ScanKey(NULL,NULL);}', []), ('KeyZero;', []),
     ('PostMsg(Fs,MSG_KEY_DOWN,0,0x48);KeyRead(8);', []),
-    ('U0 KeyHook(){key_hook=KeyDevAdd(&CaptureKey,NULL,0x7FFFFFFFFFFFFFFF,TRUE);}', []), ('KeyHook;', []),
+    ('U0 KeyHook(){key_hook=KeyDevAdd(&CaptureKey,NULL,10,TRUE);}', []), ('KeyHook;', []),
     ('PostMsg(Fs,MSG_KEY_DOWN,98,0x30);KeyRead(10,TRUE);KeyEcho(12);', []),
     ('PostMsg(Fs,MSG_KEY_DOWN,99,0x8000002E);KeyScan(15,TRUE);KeyEcho(18);', []),
     ('U0 KeyFilter(){LBts(&Fs->win_inhibit,12);PostMsg(Fs,MSG_KEY_DOWN,120,0x8000002D);PostMsg(Fs,MSG_KEY_DOWN,100,0x20);KeyScan(21);KI[24]=ScanKey(NULL,NULL);}', []), ('KeyFilter;', []),

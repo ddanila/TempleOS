@@ -13,6 +13,51 @@ I64 ScanMsg(I64 *a=NULL,I64 *b=NULL,I64 mask=~1,CTask *task=NULL)
   return (*native_public_scan_msg)(a,b,mask,task);
 }
 #include "/Kernel/KeyScanCore.HC"
+extern Bool NativeKeyboardPump();
+class CNativeKeyClock { I64 ticks,cycles;U16 count; };
+U0 NativeKeyClockStart(CNativeKeyClock *clock)
+{
+  U32 irq=I386IrqSave;
+  clock->ticks=*console_config->jiffies;clock->count=NativeRandPitRead;
+  clock->cycles=clock->ticks*console_config->pit_divisor;
+  I386IrqRestore(irq);
+}
+Bool NativeKeyClockPhase(CNativeKeyClock *clock)
+{
+  U32 irq=I386IrqSave;
+  I64 ticks=*console_config->jiffies,count=NativeRandPitRead,
+    delta=(ticks-clock->ticks)*console_config->pit_divisor+clock->count-count;
+  if(delta<0) delta+=console_config->pit_divisor;
+  clock->cycles+=delta;clock->ticks=ticks;clock->count=count;
+  I386IrqRestore(irq);
+  return (clock->cycles*5/1193182)&1;
+}
+U0 NativeKeyCursor(I64 ch)
+{
+  I386TextPut(&console_text,ch);ConsolePresent;
+}
+U0 NativeKeyDebugPoll()
+{
+  U32 irq=I386IrqSave;
+  I64 i;
+  try {
+    for(i=0;i<64;i++) if(!(*console_config->input_poll)()) break;
+    while(NativeKeyboardPump) {}
+  } catch { I386IrqRestore(irq); }
+  I386IrqRestore(irq);
+}
+U0 NativeKeyWait(Bool raw_cursor)
+{//Keep cursor waits runnable; ordinary message waits retain the native parking flag.
+  if(raw_cursor && IsRaw) LBtr(&Fs->task_flags,TASKf_AWAITING_MSG);
+  Yield;
+}
+#define KEY_GET_LOCAL CNativeKeyClock clock;NativeKeyClockStart(&clock)
+#define KEY_GET_PHASE NativeKeyClockPhase(&clock)
+#define KEY_GET_CURSOR NativeKeyCursor
+#define KEY_GET_DEBUG NativeIsDebugMode
+#define KEY_GET_DEBUG_POLL NativeKeyDebugPoll
+#define KEY_GET_WAIT NativeKeyWait(raw_cursor)
+#include "/Kernel/KeyGetCore.HC"
 Bool NativeKeyDevFilterKey(I64 ch,I64 sc)
 {
   if(!Bt(&Fs->task_flags,TASKf_INPUT_FILTER_TASK)) return FALSE;
