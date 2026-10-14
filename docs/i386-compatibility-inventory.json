@@ -1331,7 +1331,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-stream-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-stream-reference-fixed/result.json",
+          "scope": "Original explicit-document partial markup, split escape, plain-text bypass and middle insertion; not whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-doc-stream-red/result.json",
+          "scope": "Native public DocPrintPartial undefined; later assertions unexecuted"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocRecalc.HC",

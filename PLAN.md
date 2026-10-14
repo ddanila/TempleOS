@@ -10,6 +10,19 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Streaming document output reference and native red gate (2026-10-15)
+
+The pinned-original DocPrintPartial fixture now passes split dollar-command and
+split escape state checks, exact text exports, plain-text bypass and insertion
+within existing text. The corresponding public native test rejects the first
+DocPrintPartial call as undefined on the current console-76 image, establishing
+the next implementation gap before porting it. Evidence and commands are in
+[streaming document output](docs/i386-doc-stream.md). The first reference run
+had a missing harness DONE marker; its corrected rerun passes. No native
+streaming or default-console compatibility is claimed. Next: share the original
+implementation, expose its binding and qualify cleanup before integrating
+standard output and DocGetKey/GetStr. C1–C5 remain open.
+
 ### Public GetKey and physical raw/debug input (2026-10-15)
 
 Console interface 76 exposes GetKey through the shared original message/wait
