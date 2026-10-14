@@ -1453,6 +1453,24 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-render-frame-8m/result.json",
           "scope": "Same two full-frame checks and console restoration at 8 MiB; sprites, cursor, scrolling, focus and default stdout integration unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-compose-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-compose-reference-final/result.json",
+          "scope": "Original text-before-document frames: previous glyph, current overlapping packed rectangle, one tag callback/frame, record sizes and two independent 24x8 packed pixel regions; full renderer/window-manager and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-compose-frame.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-compose-frame-typed/result.json",
+          "scope": "64 MiB sixteen-command native session: two full VGA frames match original temporal ordering, packed rectangle and single-evaluation contract; console restored; full renderer/window-manager and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-compose-frame.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-compose-frame-8m/result.json",
+          "scope": "8 MiB sixteen-command session: previous text/current packed rectangle, one dynamic callback/frame, two independent full-frame pixel checks and console restoration; whole-file unqualified"
         }
       ]
     },
@@ -2159,7 +2177,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-compose-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-compose-reference-final/result.json",
+          "scope": "Original text-before-document frames: previous glyph, current overlapping packed rectangle, one tag callback/frame, record sizes and two independent 24x8 packed pixel regions; full renderer/window-manager and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-compose-frame.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-compose-frame-typed/result.json",
+          "scope": "64 MiB sixteen-command native session: two full VGA frames match original temporal ordering, packed rectangle and single-evaluation contract; console restored; full renderer/window-manager and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-compose-frame.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-compose-frame-8m/result.json",
+          "scope": "8 MiB sixteen-command session: previous text/current packed rectangle, one dynamic callback/frame, two independent full-frame pixel checks and console restoration; whole-file unqualified"
+        }
+      ]
     },
     {
       "path": "Adam/Gr/GrSpritePlot.HC",

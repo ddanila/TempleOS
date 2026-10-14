@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original text/sprite frame ordering confirmed (2026-10-15)
+
+The original GrUpdateScrn loop renders existing text cells before updating task
+documents/sprites. The native compositor already follows this order; the earlier
+ordering concern does not require reordering or double evaluation. A pinned
+original two-frame oracle confirms previous text (P then A), current overlapping
+blue sprite, tag callback counts 1 then 2, new cell B and packed sprite record
+sizes 2/17. Independent packed-pixel expectations pass on both original frames.
+
+The native sixteen-command session passes two independent 640x480 frame checks
+at both 64 MiB and 8 MiB, preserves one dynamic callback evaluation per frame and
+restores the console. See [document composition](docs/i386-doc-compose.md). Next: scheduled
+refresh and automatic stdout integration using the original temporal contract.
+A separate editor sprite helper still assumes padded 12/20-byte records and its
+23-byte fixture is not original packed-format compatibility; that remains an
+explicit port gap. Broader sprite, cursor, focus, exception and resource coverage
+remain required. C1–C5 remain open.
+
 ### Original document text framebuffer checks pass (2026-10-15)
 
 A pinned-original 18-field style oracle confirms foreground/reset, tab/newline,

@@ -82,12 +82,12 @@ composition, cursor navigation, scrolling, shifted glyphs or terminal focus.
 
 1. Extend framebuffer qualification beyond the style cases above to offsets,
    wrapping, cursor and scrolling, with independent pixel expectations. Preserve each terminal's saved surface and focus behavior.
-2. Resolve the shared renderer/compositor ordering. DocRecalc TO_SCRN both fills
-   gr.text_base and draws sprites into gr.dc2. GraphicsFrameCore currently
-   rasterizes cells before invoking its drawing callback. A bridge must retain
-   both outputs and the original layering. Do not simply draw text over the
-   completed sprite surface, discard sprites, or run document expressions twice
-   to obtain a second pass. Keep temporary memory within the minimal profile.
+2. Preserve the original temporal composition contract described in
+   [document composition](i386-doc-compose.md). GrUpdateScrn renders prior text
+   cells, then updates task documents and draws current sprites. The native
+   compositor already has that ordering. Integrate a scheduled refresh loop and
+   task/document drawing without evaluating dynamic entries twice to force
+   same-frame text. Keep temporary memory within the minimal profile.
 3. Route the default string hook through DocPrintPartial and project the parsed
    document. Test split commands and dollar escapes through public stdout,
    callback consumption, foreground/background reset and error recovery. Keep
