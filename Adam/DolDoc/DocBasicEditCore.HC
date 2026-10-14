@@ -183,7 +183,7 @@ Bool DocBasicEditCore(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   CDocEntry *entry,*fresh=NULL,*scan,*part;
   U8 *old_text,*new_text=NULL,*src,*dst;
-  I64 column,length;
+  I64 column,length,index;
   Bool unlock,selected_deleted=FALSE,shift=(sc.u32[0]&0x200)!=0;
   if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return FALSE;
   if(sc.u32[0]&0x800 ||
@@ -322,14 +322,24 @@ Bool DocBasicEditCore(CDoc *doc,I64 ch=0,I64 sc=0)
       length=StrLen(entry->tag); column=doc->cur_col;
       if(column<entry->min_col) column=entry->min_col;
       if(column>length) column=length;
-      old_text=entry->tag; new_text=MAlloc(length+2,doc->mem_task);
-      src=old_text; dst=new_text;
-      while(column-->0) *dst++=*src++;
-      *dst++=ch;
-      while(*dst++=*src++);
-      entry->tag=new_text; entry->max_col=length+1;
+      old_text=entry->tag;
+      //Aligned pointers have a negative CMemUsed.size marker. MSize reports
+      //their base capacity, so do not infer writable tail space from it.
+      if(old_text(I64 *)[-1]>=0 && MSize(old_text)>=length+2) {
+        //Owned spare capacity includes the terminator. Shift backwards so
+        //middle insertion is safe without allocating or replacing the tag.
+        for(index=length;index>=column;index--) old_text[index+1]=old_text[index];
+        old_text[column]=ch;
+      } else {
+        new_text=MAlloc(length+2,doc->mem_task);
+        src=old_text; dst=new_text;
+        while(column-->0) *dst++=*src++;
+        *dst++=ch;
+        while(*dst++=*src++);
+        entry->tag=new_text; new_text=NULL; Free(old_text);
+      }
+      entry->max_col=length+1;
       doc->cur_col++;
-      new_text=NULL; Free(old_text);
     } else {
       fresh=DocEntryNewBase(doc,DOCT_TEXT|doc->settings_head.dft_text_attr<<8);
       fresh->tag=MAlloc(2,doc->mem_task); fresh->tag[0]=ch; fresh->tag[1]=0;

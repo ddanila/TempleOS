@@ -10,6 +10,25 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Owned text-capacity checks and remaining memory work (2026-10-14)
+
+Document insertion now reuses ordinary owned tag capacity, including safe
+backwards shifting for middle insertion. Aligned tags retain the conservative
+copy path because MSize describes their base object. The growth-failure probe
+fills a tag before testing allocation failure. Console interface is 72;
+bootstrap/cross-build/386 audits and eleven capacity/unwind checks pass.
+The existing 33-command document suite, 13-command transcript and 8 MiB startup
+gate (43.70 seconds) also pass. The concurrency memory regression remains open;
+capacity reuse alone has not restored the 8 MiB background workflow.
+
+A failure snapshot finds no wholly free page blocks in the live task heaps.
+An export-boundary report identifies about 52 KiB of diagnostic-only check
+routines resident in the console. Review explicit diagnostic support loading,
+with dependency, unloading/recovery and native-generation coverage, before
+claiming those bytes can be removed from normal residency. See
+[capacity behavior, safety and architectural follow-up](docs/i386-document-capacity.md).
+GetStr and C1–C5 completion remain open.
+
 ### Canonical console document foundation (2026-10-14)
 
 Managed terminals now own put/display documents, including the main console.

@@ -10,6 +10,7 @@ public _intern 0x15 CTask *Fs();
 import U8 *MAlloc(I64 size,CTask *task=0);
 import U8 *CAlloc(I64 size,CTask *task=0);
 import U0 Free(U8 *allocation);
+import I64 MSize(U8 *allocation);
 import I64 MSize2(U8 *allocation);
 import U8 *MAllocIdent(U8 *allocation,CTask *task=0);
 import U8 *StrNew(U8 *str,CTask *task=0);
@@ -347,11 +348,13 @@ I64 NativeDocAllocationCoreCheck()
       Fs->data_heap->used_u8s!=base || doc->head.next!=doc) return -5;
   DocPutKey(doc,'a',0);
   doc->cur_entry=doc->head.next; doc->cur_col=1;
+  //Fill the owned four-byte tag capacity so the fault probe needs growth.
+  DocPutKey(doc,'b'); DocPutKey(doc,'c');
   base=Fs->data_heap->used_u8s;
   NativeDocAllocArm(1);
   if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc) ||
       doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
-      Fs->data_heap->used_u8s!=base || StrCmp(doc->head.next->tag,"a")) return -6;
+      Fs->data_heap->used_u8s!=base || StrCmp(doc->head.next->tag,"abc")) return -6;
   NativeDocAllocArm(1);
   if(!NativeDocAllocationCaught(&NativeDocAllocationNewLine,doc) ||
       doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
@@ -361,7 +364,8 @@ I64 NativeDocAllocationCoreCheck()
       doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
       Fs->data_heap->used_u8s!=base) return -8;
   DocPutKey(doc,'Z',0); text=DocSave(doc,&size);
-  if(!text || size!=3 || text[0]!='a' || text[1]!='Z' || text[2]!=CH_CURSOR) {
+  if(!text || size!=5 || text[0]!='a' || text[1]!='b' || text[2]!='c' ||
+      text[3]!='Z' || text[4]!=CH_CURSOR) {
     Free(text); DocDel(doc); return -9;
   }
   Free(text); DocDel(doc);

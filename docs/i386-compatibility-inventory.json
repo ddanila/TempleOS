@@ -1232,7 +1232,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-owned-text-capacity",
+          "command": "python3 tools/test-i386-doc-capacity.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-capacity-final-checks/capacity-64m/result.json",
+          "scope": "Ordinary native edit core: owned spare capacity, overlapping insertion, growth/failure and aligned tags; full original key-device behavior remains unqualified"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocPutS.HC",

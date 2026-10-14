@@ -117,3 +117,9 @@ removed or silently switched to a larger default. Inspect retained document/cach
 backing and resident-code pressure before claiming preserved 8 MiB regression
 coverage. Do not truncate history or remove graphics as a test workaround.
 Full C1–C5 qualification remains open.
+
+The [owned-capacity follow-up](i386-document-capacity.md) validates append/middle
+reuse, growth and aligned-pointer safety, but does not close the 8 MiB
+concurrency gap. Inspection identifies diagnostic routines in the resident
+console as the next separation candidates; dependencies and loading/unloading
+must be qualified before changing normal residency.
