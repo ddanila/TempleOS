@@ -45,9 +45,9 @@ def main():
         parser.error('Use a new output directory; existing evidence is preserved')
     ready = json.loads((retained / 'result.json').read_text())
     expected = {'Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-                'CompilerProbe', 'CompilerRuntime', 'BuildRuntime'}
+                'CompilerProbe', 'CompilerRuntime', 'BuildRuntime', 'DocDiagnosticRuntime'}
     if ready.get('result') != 'pass' or set(ready.get('modules', {})) != expected:
-        parser.error('Input must qualify all seven retained modules')
+        parser.error('Input must qualify all retained modules')
     if not listing.is_file() or not (retained / 'source.img').is_file():
         parser.error('Missing stage listing or qualified source image')
     inputs = {str(p): sha(p) for p in

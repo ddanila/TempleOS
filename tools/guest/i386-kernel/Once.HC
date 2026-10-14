@@ -74,8 +74,8 @@ U8 *OriginalDocCompatibilityFixture(I64 *size)
 }
 U0 BuildKernel()
 {
-  U8 *source,*modules[13],*image,*name,*line;
-  I64 sizes[13],size,errors,i;
+  U8 *source,*modules[14],*image,*name,*line;
+  I64 sizes[14],size,errors,i;
   Report("START kernel cross-build\n");
   if(!StrCopyCheck(&StrCpy)) { Report("FAIL original StrCpy\n"); return; }
   Report("PASS original StrCpy\n");
@@ -179,7 +179,7 @@ U0 BuildKernel()
   if(!source || size!=48) { Report("FAIL original document compatibility fixture\n"); return; }
   line=MStrPrint("EXPORT OriginalCompat.DD %X %X\n",source,size); Report(line); Free(line);
   Report("PASS original document compatibility fixture\n");
-  for(i=0;i<13;i++) {
+  for(i=0;i<14;i++) {
     switch(i) {
       case 0: name="Kernel"; break;
       case 1: name="SysTry"; break;
@@ -194,6 +194,7 @@ U0 BuildKernel()
       case 10: name="ConsoleRuntime"; break;
       case 11: name="MemoryRuntime"; break;
       case 12: name="BuildRuntime"; break;
+      case 13: name="DocDiagnosticRuntime"; break;
     }
     line=MStrPrint("/Kernel/I386/%s.HC",name);
     source=FileRead(line); Free(line);

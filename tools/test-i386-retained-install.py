@@ -10,7 +10,7 @@ import shutil
 
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-           'CompilerProbe', 'CompilerRuntime', 'BuildRuntime')
+           'CompilerProbe', 'CompilerRuntime', 'BuildRuntime', 'DocDiagnosticRuntime')
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for install and boot')
     parser.add_argument('--qmp-stdio', action='store_true', help='Use QMP stdio where Unix sockets are blocked')
     parser.add_argument('--module', choices=MODULES, action='append',
-                        help='Install selected guest-built providers; default: all seven')
+                        help='Install selected guest-built providers; default: all retained')
     parser.add_argument('--module-file', action='append', default=[], metavar='MODULE=/PATH',
                         help='Override a selected module guest-build path inside the source disk')
     args = parser.parse_args()

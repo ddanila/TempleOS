@@ -122,6 +122,7 @@ extern Bool KernelServiceCheck(U8 *image,I64 size,U8 *record,I64 bytes,U32 versi
 extern U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes);
 extern U0 KernelCompilerProbe(I64 phase);
 extern U0 KernelCompilerProbeLoad();
+extern Bool KernelDocDiagnosticLoad(CI386DocDiagnosticServices *services,U8 **owned,I64 *image_bytes);
 extern U0 KernelConsoleLoad();
 extern U0 KernelSymbols();
 U8 kernel_startup_bindings[3]={0,1,2};
@@ -769,6 +770,48 @@ U0 KernelServiceLog(U8 *label,U8 *image,I64 size,I64 span,U8 *record,I64 bytes)
   KernelLog("\n");
 }
 
+Bool KernelDocDiagnosticLoad(CI386DocDiagnosticServices *services,U8 **owned,I64 *image_bytes)
+{
+  CI386ModuleBinding bindings[3];
+  CI386RedSeaEntry entry;
+  CI386DocDiagnosticServices candidate;
+  I64 (*initialize)(CI386DocDiagnosticServices *services,I64 bytes);
+  U8 *image=0;
+  I64 size,base,address;
+  Bool valid=FALSE;
+  U32 irq=I386IrqSave;
+  if(!services || !owned || !image_bytes || *owned)goto diagnostic_load_done;
+  KernelBinding(&bindings[0],"SysTry");KernelBinding(&bindings[1],"SysUntry");
+  KernelBinding(&bindings[2],"throw");
+  if(I386RedSeaBegin(&kernel_volume)) {
+    if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,
+        "/Modules/I386/DocDiagnosticRuntime.t32m",&entry)==1)
+      image=I386RedSeaLoadBound(&kernel_volume,&entry,&kernel_heap,"Main",bindings,3);
+    if(!I386RedSeaEnd(&kernel_volume)) {
+      kernel_volume.signature=0;
+      if(image){I386HeapFree(&kernel_heap,image);image=0;}
+    }
+  }
+  if(image) {
+    size=I386HeapSize(&kernel_heap,image);base=(image+0)(U64);
+    *owned=image;*image_bytes=size;
+    candidate.version=0;candidate.bytes=0;candidate.run=0;
+    initialize=image;
+    valid=(*initialize)(&candidate,sizeof(CI386DocDiagnosticServices))==1 &&
+      candidate.version==I386_DOC_DIAGNOSTIC_VERSION && candidate.bytes==sizeof(CI386DocDiagnosticServices);
+    address=(candidate.run+0)(U64);
+    if(address<base+8 || address>=base+size)valid=FALSE;
+    if(valid) {
+      services->version=candidate.version;services->bytes=candidate.bytes;services->run=candidate.run;
+      KernelLog("DOC DIAGNOSTIC loaded\n");
+    } else {
+      *owned=0;*image_bytes=0;I386HeapFree(&kernel_heap,image);
+    }
+  }
+diagnostic_load_done:
+  I386IrqRestore(irq);return valid;
+}
+
 U0 KernelConsoleLoad()
 {
   CI386ModuleBinding bindings[56];
@@ -817,6 +860,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.mouse=&kernel_mouse;
   kernel_console_config.pit_divisor=kernel_timer.divisor;
   kernel_console_config.defer_root_headers=kernel_diagnostics;
+  kernel_console_config.doc_diagnostic_load=&KernelDocDiagnosticLoad;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }
 

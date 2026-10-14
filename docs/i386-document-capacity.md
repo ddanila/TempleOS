@@ -90,3 +90,30 @@ failure solely because its 8 MiB background stage still fails. All five other
 stages pass. The guarded candidate preserves the captured OutMem and timeout
 in `background-8m/result.json`; it is not a restored concurrency qualification.
 Future diagnostic separation remains planned, not an implemented memory fix.
+
+## On-demand diagnostic candidate
+
+The follow-up candidate uses console interface 73 and adds
+`Kernel/I386/DocDiagnosticRuntime.HC`. The public resident dispatcher loads its
+checks only when requested, passes operational callbacks through a versioned
+context, and releases the image after execution. Fault injection is scoped to
+the diagnostic task; clipboard checks use a private clipboard. A resident task
+cleanup callback owns the temporary image. All fourteen disk modules are
+included in the updated build/install/package/generation manifests.
+
+`tools/test-i386-doc-diagnostic-separation.py` rejects the preceding resident
+image in `build/i386-c2-doc-diagnostic-red/result.json`. Its positive gate requires
+check bodies outside ConsoleRuntime, no diagnostic load during boot, thirteen
+checks per invocation and balanced repeated load/unload. Forced cancellation,
+reentrancy, exhaustive module ABI auditing and native-generation qualification
+remain open. This candidate does not yet establish recovery of the 8 MiB
+background workflow.
+
+The candidate passes the original two-generation bootstrap and 386 cross-build
+in `build/i386-c2-doc-diagnostic-verified-cross`. Its focused delivered-module
+test passes in `build/i386-c2-doc-diagnostic-verified-test`: no diagnostic boot
+load, two invocations returning thirteen checks, balanced loading/unloading and
+unchanged inputs. The nine-command 8 MiB startup suite passes in 41.7076 seconds
+in `build/i386-c2-doc-diagnostic-startup-test`, with exact VGA checkpoint matches.
+These focused results do not qualify the pending lifecycle/native-generation
+work or restore the background concurrency gate by inference.

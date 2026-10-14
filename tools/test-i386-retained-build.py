@@ -11,7 +11,7 @@ import struct
 
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-           'CompilerProbe', 'CompilerRuntime', 'BuildRuntime')
+           'CompilerProbe', 'CompilerRuntime', 'BuildRuntime', 'DocDiagnosticRuntime')
 
 
 def exports_of(module):

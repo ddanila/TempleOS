@@ -10,6 +10,30 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### On-demand document diagnostic checkpoint (2026-10-14)
+
+Console interface 73 moves the allocation/round-trip check bodies into
+`DocDiagnosticRuntime`, loaded explicitly by the existing public
+`DocAllocationCheck` dispatcher. Operational document services and task-scoped
+fault hooks remain resident. The dispatcher owns the temporary image and a
+private diagnostic clipboard, with a resident cleanup callback. Normal startup
+must not load this module. Build, installation, packaging and generation
+manifests now include fourteen disk modules.
+
+A new test first rejects the preceding image because check bodies are resident;
+it then checks their placement and repeated load/run/unload through the public
+API. This is an implementation checkpoint: cancellation, reentrancy, complete
+module/interface auditing and two native generations remain qualification work.
+The original two-generation bootstrap and 386 cross-build audit pass. The
+focused diagnostic test passes on a writable 64 MiB QEMU image: no boot load,
+two thirteen-check invocations and balanced unloading. The nine-command 8 MiB
+startup suite passes in 41.71 seconds. Evidence is recorded under
+`build/i386-c2-doc-diagnostic-verified-cross`,
+`build/i386-c2-doc-diagnostic-verified-test` and
+`build/i386-c2-doc-diagnostic-startup-test`.
+The 8 MiB background regression is still open until measured on this candidate.
+C1–C5 remain in progress; no milestone is closed by diagnostic separation alone.
+
 ### Owned text-capacity checks and remaining memory work (2026-10-14)
 
 Document insertion now reuses ordinary owned tag capacity, including safe
