@@ -1,4 +1,5 @@
 #include "/Kernel/TextRenderCore.HC"
+#include "/Kernel/I386/GraphicsScope.HC"
 #include "/Kernel/GraphicsFrameCore.HC"
 extern Bool NativeGraphicsReady();
 extern U8 **NativeGraphicsPlanes();

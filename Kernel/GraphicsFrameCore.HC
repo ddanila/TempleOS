@@ -1,3 +1,8 @@
+#ifndef GRAPHICS_FRAME_SCOPE_LOCAL
+#define GRAPHICS_FRAME_SCOPE_LOCAL
+#define GRAPHICS_FRAME_SCOPE_OPEN
+#define GRAPHICS_FRAME_SCOPE_CLOSE
+#endif
 //Original screen layering over explicitly supplied task drawing.
 //Both contexts are full-size 640x480 packed 8-bit surfaces.
 U0 GraphicsFrameCore(CDC *frame,CDC *persistent,U32 *cells,U8 *font,
@@ -5,7 +10,9 @@ U0 GraphicsFrameCore(CDC *frame,CDC *persistent,U32 *cells,U8 *font,
   U0 (*draw)(CDC *dc),U0 (*final_draw)(CDC *dc))
 {
   CDC *alias=NULL;
+  GRAPHICS_FRAME_SCOPE_LOCAL;
   try {
+    GRAPHICS_FRAME_SCOPE_OPEN;
     TextRenderCore(frame->body,cells,font,80,60,blink,pan_x,pan_y,hide_col,hide_row);
     if(draw) {
       alias=DCAlias(frame,Fs);
@@ -18,6 +25,10 @@ U0 GraphicsFrameCore(CDC *frame,CDC *persistent,U32 *cells,U8 *font,
       (*final_draw)(alias);
       DCDel(alias); alias=NULL;
     }
-  } catch { DCDel(alias); }
+  } catch {
+    DCDel(alias); alias=NULL;
+    GRAPHICS_FRAME_SCOPE_CLOSE;
+  }
+  GRAPHICS_FRAME_SCOPE_CLOSE;
 }
 #include "/Kernel/GraphicsPlanarCore.HC"

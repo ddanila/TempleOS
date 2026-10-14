@@ -55,7 +55,8 @@ callback; the old tag remains intact after the earlier replacement fix, but its
 parent-owned document lock and drawing alias remain live. The parent does not
 try to delete that locked failure-case document.
 
-Kernel/I386/DocRecalcScope.HC registers stack-resident render scopes with the
+Kernel/I386/DocRecalcScope.HC registers stack-resident render scopes through the
+common Kernel/I386/RenderScope.HC cleanup stack with the
 current task's cleanup chain. Scopes reference the renderer's current document,
 lock ownership and pending alias/depth/tag storage. Normal return or exception
 unregisters the scope; forced termination drains that task's nested scopes and
@@ -85,8 +86,8 @@ passes at 8 MiB in 45.59 seconds with no build-provider loads
 local mesh-depth cleanup are supported by the implementation but not separately
 qualified by these tag-callback cases.
 
-This is renderer scope cleanup. It does not yet qualify forced exit from the
-outer NativeGraphicsPresent/GraphicsFrameCore callbacks, framebuffer-lease
-release, owner termination during a yielding callback, or arbitrary cleanup
-wrappers installed and left active by a callback. Those remain refresh-worker
-lifecycle gates before automatic presentation is enabled.
+The outer NativeGraphicsPresent/GraphicsFrameCore and mixed-scope Exit cases
+are now covered by [graphics termination cleanup](i386-graphics-exit.md). Owner
+termination during a yielding callback and arbitrary cleanup wrappers installed
+and left active by a callback remain unqualified. Automatic presentation still
+requires the remaining worker lifetime and arbitration gates.

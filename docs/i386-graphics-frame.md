@@ -25,7 +25,9 @@ interface.
 Text panning is clamped to the original -7 through 7 range. The presenter retains its own 153600-byte plane buffer, preserving the ordinary
 console's pixel storage and avoiding conversion-buffer allocations per frame. Aliases and their matrices are temporary; exception cleanup
 releases them and clears the presentation guard before rethrowing. Recursive
-presentation and calls by another task are rejected. Keyboard/timer interrupts
+presentation is rejected. Managed callers may now use the root-owned contexts
+through the shared guard; [graphics Exit lifecycle](i386-graphics-exit.md) records
+the ownership and termination contract. Keyboard/timer interrupts
 remain enabled during frame composition and upload.
 
 The console task owns both persistent contexts for its lifetime. Repeated

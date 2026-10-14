@@ -221,6 +221,7 @@ extern I64 GrBlot3(CDC *dc,I64 x1,I64 y1,I64 z1,CDC *img);
 //Song strings use the existing scheduler-root-owned provider defined below.
 extern U8 *NativeAStrNew(U8 *text);
 #define AStrNew NativeAStrNew
+#include "/Kernel/I386/RenderScope.HC"
 #include "/Kernel/I386/DocRecalcScope.HC"
 #include "/Adam/DolDoc/DocRecalcCore.HC"
 #include "/Kernel/StrIMatchCore.HC"

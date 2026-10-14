@@ -27,7 +27,7 @@ Bool NativeGraphicsWindowReserve()
 
 Bool NativeGraphicsReady()
 {
-  return graphics_owner==Fs && graphics_persistent && graphics_frame &&
+  return graphics_owner && TaskValidate(graphics_owner) && graphics_persistent && graphics_frame &&
     graphics_planes[0] && graphics_planes[1] && graphics_planes[2] && graphics_planes[3] &&
     gr.dc==graphics_persistent && gr.dc2==graphics_frame && gr.text_base==i386_text_base &&
     gr.win_z_buf==graphics_zbuffer && gr.win_uncovered_bitmap==graphics_uncovered;
@@ -100,8 +100,9 @@ Bool NativeGraphicsStart()
   return TRUE;
 }
 Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
-{//Single console owner; callbacks draw over text before the persistent overlay.
+{//Root-owned storage; managed callers serialize presentation through one lease.
   Bool result=FALSE;
+  CNativeGraphicsScope scope;
   if(!NativeGraphicsReady || graphics_presenting ||
       gr.dc->dc_signature!=DCS_SIGNATURE_VAL || gr.dc2->dc_signature!=DCS_SIGNATURE_VAL ||
       gr.dc->width_internal!=640 || gr.dc->height!=480 ||
@@ -109,8 +110,9 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
       !gr.dc->body || !gr.dc2->body) return FALSE;
   gr.pan_text_x=MinI64(7,MaxI64(-7,gr.pan_text_x));
   gr.pan_text_y=MinI64(7,MaxI64(-7,gr.pan_text_y));
-  graphics_presenting=TRUE;
   try {
+    NativeGraphicsScopeOpen(&scope,NULL,&graphics_presenting);
+    graphics_presenting=TRUE;
     //Refresh from the live ring, including tasks removed since the previous frame.
     WinZBufUpdate;
     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
@@ -118,7 +120,11 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
     GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
     result=I386VgaSplitRows(graphics_planes,0,480);
     if(result) NativeWinRefreshCommit;
-  } catch { graphics_presenting=FALSE; }
+  } catch {
+    graphics_presenting=FALSE;
+    NativeRenderScopeClose(&scope);
+  }
   graphics_presenting=FALSE;
+  NativeRenderScopeClose(&scope);
   return result;
 }

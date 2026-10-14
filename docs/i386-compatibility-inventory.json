@@ -1519,6 +1519,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-recalc-exit-frame/result.json",
           "scope": "Two independent full-frame style phases and console return remain green with native render scopes; outer frame Exit, interleaving, mesh-depth and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-recalc-exit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-graphics-exit-doc-regression/result.json",
+          "scope": "20 renderer termination commands remain green on common document/compositor cleanup stack; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-graphics-exit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-graphics-exit-green/result.json",
+          "scope": "Mixed document/frame/document callback Exit releases parent document resources and presentation guard; yielding/owner termination and whole-file unqualified"
         }
       ]
     },
@@ -2243,6 +2255,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-compose-frame-8m/result.json",
           "scope": "8 MiB sixteen-command session: previous text/current packed rectangle, one dynamic callback/frame, two independent full-frame pixel checks and console restoration; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-graphics-exit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-graphics-exit-green/result.json",
+          "scope": "Native compositor lifecycle adapter: 24 commands, managed draw/final/mixed document-frame exits, exclusive guard reuse and parent resources; not full original GrScrn or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/i386-kernel-input.py IMAGE --out OUT --group graphics --ram-mib 64 --cpu 486,-fpu --qmp-stdio --writable-copy",
+          "result": "pass",
+          "evidence": "build/i386-c4-graphics-exit-regression/result.json",
+          "scope": "11 graphics allocation/context/layering/exception commands and independent frame pixels after shared cleanup stack; worker/whole-file unqualified"
         }
       ]
     },

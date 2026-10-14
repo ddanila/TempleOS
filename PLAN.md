@@ -10,6 +10,27 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Managed graphics presentation and mixed-scope Exit pass (2026-10-15)
+
+Root-owned graphics storage can now be presented by other managed tasks under
+the existing exclusive guard. The prior image rejects the child before callback
+entry (mask 30 instead of 31). Native document and compositor scopes now share
+one task cleanup stack, preserving nesting order across document/frame/document
+callbacks. Termination releases drawing aliases, local renderer resources and
+the presentation guard before invoking prior task cleanup.
+
+All 24 lifecycle commands pass: draw and final callback Exit, frame-to-document,
+document-to-frame and document/frame/document cases each return mask 31 after
+callback/termination, presentation reuse, retained document and exact parent-heap
+checks. Renderer Exit (20 commands), caught callback/retry and the graphics group
+(11 commands with independent frame pixels) remain green. Bootstrap, cross-build
+and 386 boot audit pass; 8 MiB startup passes in 45.88 seconds without provider
+loading. See [graphics lifecycle evidence](docs/i386-graphics-exit.md).
+
+This enables the managed-presenter building block, not scheduled refresh.
+Yielding callback/owner termination, competing raw/editor presenters, focus and
+full worker lifecycle remain open. The automatic A/B gate and C1–C5 remain open.
+
 ### Native renderer scopes recover forced callback Exit (2026-10-15)
 
 A child task calling Exit inside a dynamic tag first leaves its parent-owned

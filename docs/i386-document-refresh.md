@@ -40,8 +40,9 @@ open. Passing an explicit presentation test does not supersede it.
    The first concrete failure and fix are tracked in
    [renderer callback recovery](i386-doc-recalc-recovery.md). Continue with other
    callback/allocation sites. Native renderer cleanup now passes plain child,
-   nested and User-terminal callback Exit cases; outer compositor Exit and
-   frame-lease cleanup still need qualification.
+   nested and User-terminal callback Exit cases. Draw/final and mixed document/
+   frame exits now pass as well; see [graphics lifecycle](i386-graphics-exit.md).
+   Continue with owner termination, yielding callbacks and competing presenters.
 2. **Worker/document lifetime and presentation ownership.** Use the native
    scheduler's established ownership model. Exit waits for linked children and
    inherited task/code/heap references defer retirement; reuse those guarantees
