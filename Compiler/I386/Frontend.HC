@@ -908,6 +908,11 @@ I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword)
   U32 irq;
   if(keyword==KW_IF || keyword==KW_IFAOT || keyword==KW_IFJIT)
     return I386FrontendConditional(state,cc,keyword);
+  if(keyword==KW_EXE) {
+    if(!I386FrontendLex(context,cc)) return TK_EOF;
+    PrsStreamBlkCore(&state->statements,cc);
+    return cc->token;
+  }
   if(keyword==KW_HELP_FILE) {
     if(I386FrontendLex(context,cc)!=TK_STR) return cc->token;
     if(!state->files || !state->files->name_abs) I386FrontendUnavailable(context);

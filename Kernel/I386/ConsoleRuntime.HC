@@ -225,6 +225,7 @@ extern U0 NativePutS(U8 *text);
 extern U0 NativePutChars(U64 chars);
 U0 (*native_output_msg)(I64 msg_code,I64 arg1,I64 arg2,I64 flags);
 #include "/Kernel/I386/InputFilterRuntime.HC"
+#include "/Kernel/I386/StreamRuntime.HC"
 U0 Yield()
 {//Use the managed public scheduler provider resolved during console init.
   (*native_input_yield)();
@@ -238,7 +239,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[208];
+CI386KernelSymbol console_doc_exports[210];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -529,7 +530,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(205,"_LET_TO_LET",(&Let2Let+0)(U64));
   ConsoleDocExportSet(206,"_LET_TO_BLOCK_DEV_TYPE",(&Let2BlkDevType+0)(U64));
   ConsoleDocExportSet(207,"_DRV_TEXT_ATTR_GET",(&DrvTextAttrGet+0)(U64));
-  for(i=0;i<208;i++) {
+  ConsoleDocExportSet(208,"_STREAM_PRINT",(&NativeStreamPrint+0)(U64));
+  ConsoleDocExportSet(209,"_STREAM_DIR",(&NativeStreamDir+0)(U64));
+  for(i=0;i<210;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;

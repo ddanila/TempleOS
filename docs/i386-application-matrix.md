@@ -69,3 +69,8 @@ The native source-availability gate now passes on an additive TimeClock image.
 Executing the unchanged Load script fails at `__DIR__`; the underlying
 compile-time stream gap is tracked in [the compiler stream work](i386-compile-stream.md).
 Storage/report and full interactive native qualification remain open.
+
+The first stream implementation passes its focused commands; TimeClock loading
+now progresses past __DIR__ and fails at the missing public Now binding. The
+original TimeClk source is unchanged. This advances a dependency gate, while
+native storage/report and full application qualification remain open.

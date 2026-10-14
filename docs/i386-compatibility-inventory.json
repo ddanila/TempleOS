@@ -3982,6 +3982,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-timeclock-native-load-red/result.json",
           "gap": "Original __DIR__ macro / compile-time stream execution unavailable"
+        },
+        {
+          "target": "native-load-stream-v2",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-stream-followups/timeclock-load/result.json",
+          "gap": "Load progresses past __DIR__; Now lacks a public date binding at TimeClk.HC line 88"
         }
       ]
     },
@@ -4027,6 +4034,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-timeclock-native-load-red/result.json",
           "gap": "Original __DIR__ macro / compile-time stream execution unavailable"
+        },
+        {
+          "target": "native-load-stream-v2",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-stream-followups/timeclock-load/result.json",
+          "gap": "Load progresses past __DIR__; Now lacks a public date binding at TimeClk.HC line 88"
         }
       ]
     },
@@ -4073,6 +4087,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-timeclock-native-load-red/result.json",
           "gap": "Original __DIR__ macro / compile-time stream execution unavailable"
+        },
+        {
+          "target": "native-load-stream-v2",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-stream-followups/timeclock-load/result.json",
+          "gap": "Load progresses past __DIR__; Now lacks a public date binding at TimeClk.HC line 88"
         }
       ]
     },

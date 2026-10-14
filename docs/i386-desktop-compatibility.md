@@ -220,3 +220,13 @@ python3 tools/test-i386-stream-block.py IMAGE --out build/stream-block
 The final two commands currently fail intentionally, identifying work to port.
 Packaging itself passes (`build/i386-c1-timeclock-package-pinned/result.json`);
 its image is byte-identical to the application load test input.
+
+## Stream execution and next TimeClock dependency
+
+The first native compile-time stream implementation passes its eight-command
+64 MiB test and the existing 8 MiB startup/VGA gate (41.90 seconds). TimeClock's
+unchanged Load script gets past __DIR__ and now rejects Now at TimeClk.HC line
+88. NativeNow exists but lacks public exposure. The expanded directory-context
+fixture passes all seventeen commands, persisted bytes and exact VGA; complete stream cleanup/AOT and native application storage,
+report and interactive workflows remain open. See the stream contract for
+exact source, runtime and test limitations.

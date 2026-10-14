@@ -10,6 +10,18 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### First native stream execution passes (2026-10-14)
+
+The shared #exe parser now has native command execution and control-owned source
+injection, plus public StreamPrint/StreamDir and the original __DIR__ macro.
+Console interface version is 67. Bootstrap/cross-build/386 audits pass; all eight
+initial stream commands pass at 64 MiB, and the nine-command 8 MiB startup/VGA
+gate passes in 41.90 seconds. Expanded directory-context tests pass all seventeen
+commands, persisted bytes and exact VGA; cleanup/cancellation, differential and
+AOT coverage remain open.
+TimeClock loading now advances to an unexposed Now API at TimeClk.HC line 88.
+See [compile-time stream compatibility](docs/i386-compile-stream.md).
+
 ### Native application packaging and first compiler gap (2026-10-14)
 
 Additive packaging now preserves the original native tree/boot area while

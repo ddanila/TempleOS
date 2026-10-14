@@ -501,9 +501,22 @@ U0 I386FrontendFixAssembly(U8 *context,CCmpCtrl *cc,CAOT *aot)
 CHashTable *I386FrontendTaskSymbols(U8 *context)
 { CI386Frontend *state=context; return state->table; }
 U0 I386FrontendExecuteLine(U8 *context,CCmpCtrl *cc)
-{ I386FrontendUnavailable(context); }
+{
+  CI386Frontend *state=context;
+  U8 *code=I386FrontendCommand(state->heap,cc,&state->symbols,0);
+  if(code) { I386FrontendExecute(state,code); I386FrontendFree(state,code); }
+}
 U0 I386FrontendInclude(U8 *context,CCmpCtrl *cc,U8 *name,U8 *source,Bool file)
-{ I386FrontendUnavailable(context); }
+{
+  CI386Frontend *state=context;
+  U8 *filename=name;
+  //Match the host's synthetic stream filename without marking generated
+  //source as a macro definition. Both original and copy keep explicit owners.
+  if(!file && state->files && state->files->tmp_filename)
+    filename=state->files->tmp_filename();
+  if(!I386LexIncludeCopy(state->heap,cc,filename,source,FALSE)) throw('OutMem',TRUE);
+  I386FrontendFree(state,source);
+}
 U0 I386FrontendStatementsInit(CI386Frontend *state)
 {
   CPrsInitializerServices *i=&state->initializers;

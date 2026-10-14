@@ -56,3 +56,36 @@ Complete these boundaries using the existing shared parser:
 
 This is ongoing C1/C4 dependency work. No native stream-block or complete
 TimeClock compatibility pass is claimed.
+
+## First native implementation (2026-10-14)
+
+KW_EXE now dispatches to PrsStreamBlkCore. Native execute_line uses the ordinary
+command compiler/executor, and source injection copies into a lexer-owned
+buffer before releasing the tracked parser temporary. Generated source retains
+the host's synthetic filename policy and is not marked as a macro definition.
+Native StreamPrint appends with control-owned buffers; StreamDir uses the active
+source context and emits through the same service. Public bindings and the
+original __DIR__ macro are exposed through console interface version 67.
+
+Bootstrap, cross-build and 386 instruction audits pass. All eight initial native
+stream commands pass on `486,-fpu` at 64 MiB, covering exactly-once side effects,
+generated definitions and expression-context source injection. The unchanged
+8 MiB nine-command startup/VGA gate also passes in 41.90 seconds.
+Evidence: `build/i386-c1-stream-block-v2/result.json` and
+`build/i386-c1-stream-followups/startup-8m/result.json`.
+
+The unchanged TimeClock Load script now gets beyond __DIR__ and fails in
+TimeClk.HC line 88 at Now. The existing NativeNow implementation is not exposed
+through the public date header/bindings yet. Evidence:
+`build/i386-c1-stream-followups/timeclock-load/result.json`.
+
+The expanded nested-include fixture verifies source-directory literals before,
+inside and after an include that changes the working directory. Its first
+expectation omitted the two visible Cd success results; the guest completed
+that include successfully, but the VGA oracle timed out. The corrected fixture
+expects those two results and passes all seventeen commands, including exact
+VGA and persisted fixture-byte checks. Evidence:
+`build/i386-c1-stream-nested-v2-fixed/result.json`. Nested blocks, error/OutMem,
+cancellation, reclamation, original differential capture and AOT/native-module
+qualification still require explicit tests. Other source-context macros remain
+future public compiler coverage; no complete stream feature claim is made.
