@@ -29,10 +29,14 @@ def main():
                   repair_revision=reference.REPAIRS,
                   reference_sha256=reference.restore_reference(overlay),
                   input_sha256={str(p):reference.sha(p) for p in inputs},
-                  scope='Scripted GetStr basic cases and DocScanLine empty/text/tab/newline/end/cursor checks; interactive editing, prompt formatting and task exit remain open')
+                  scope='Thirteen scripted GetStr cases including backspace, erased default, tabs, spaces, dollar commands/escaping and extended bytes; DocScanLine structure/cursor checks; physical keyboard, navigation/replay, prompt formatting and task exit remain open')
     expected = {'single.bin':b'alpha\0', 'empty.bin':b'\0',
                 'default.bin':b'fallback\0', 'multiline.bin':b'alpha\nbeta\n\0',
                 'cancel.bin':b'\0', 'cancel-default.bin':b'fallback\0',
+                'backspace.bin':b'abZ\0', 'erased-default.bin':b'fallback\0',
+                'tab.bin':b'alpha\tbeta\0', 'spaces.bin':b'  alpha  \0',
+                'markup.bin':b'cash$\0', 'dollars.bin':b'$RED$cash$$\0',
+                'extended.bin':b'\x82\xa3\0',
                 'scan-empty.bin':b'\0', 'scan-first.bin':b'alpha\tbeta\0',
                 'scan-second.bin':b'second\0', 'scan-shift.bin':b'$SX,-3$$SY,2$\0'}
     try:

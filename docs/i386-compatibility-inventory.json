@@ -987,12 +987,12 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six scripted GetStr cases and canonical DocScanLine empty/text/tab/newline/end/cursor/positioning checks. Other APIs, interactive editing and task exit remain unqualified."
+        "description": "Thirteen scripted GetStr cases, including backspace/default erasure, tabs/spaces, dollar command echo/escaping and extended bytes; canonical DocScanLine structure/cursor checks. Other APIs, physical input/navigation, prompt formatting and task exit remain unqualified."
       },
       "oracle": {
         "tool": "tools/test-i386-getstr-reference.py",
         "checks": [
-          "NUL-terminated result bytes for six GetStr cases",
+          "NUL-terminated result bytes for thirteen GetStr cases, including dollar command echo versus escaped literals",
           "DocScanLine text and positioning bytes",
           "line endpoints and cursor columns"
         ]
@@ -1031,6 +1031,20 @@
           "result": "pass",
           "evidence": "build/i386-c2-transcript-checks/doc-scan-64m/result.json",
           "scope": "Eighteen commands including actual X/Y entry types; prior serialized-text-only positioning check was insufficient"
+        },
+        {
+          "target": "original-reference-editing-dollar",
+          "command": "python3 tools/test-i386-getstr-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-getstr-dollar-reference/result.json",
+          "scope": "Thirteen scripted GetStr results and four structural DocScanLine buffers; not physical keyboard/navigation or task exit"
+        },
+        {
+          "target": "native-getstr-expanded",
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-getstr-dollar-red/result.json",
+          "gap": "Missing GetStr rejects the helper definition; the thirteen input cases are not reached"
         }
       ]
     },

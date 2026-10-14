@@ -16,6 +16,13 @@ CaptureStr("default.bin","\n","fallback");
 CaptureStr("multiline.bin","alpha\nbeta\n\x1B",NULL,GSF_WITH_NEW_LINE);
 CaptureStr("cancel.bin","discard\x1C");
 CaptureStr("cancel-default.bin","discard\x1C","fallback");
+CaptureStr("backspace.bin","abc\x08Z\n");
+CaptureStr("erased-default.bin","abc\x08\x08\x08\n","fallback");
+CaptureStr("tab.bin","alpha\tbeta\n");
+CaptureStr("spaces.bin","  alpha  \n");
+CaptureStr("markup.bin","$$RED$$cash$$$$\n");
+CaptureStr("dollars.bin","$$$$RED$$$$cash$$$$$$$$\n");
+CaptureStr("extended.bin","\x82\xA3\n");
 U0 CaptureDocLine()
 {
   CDoc *doc=DocNew;

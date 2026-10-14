@@ -10,6 +10,26 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Expanded original GetStr input contract (2026-10-14)
+
+The pinned original-system oracle now passes thirteen scripted GetStr cases,
+plus four structural DocScanLine buffers. Added cases cover backspace,
+erasing to the default, tabs, preserved leading/trailing spaces, extended bytes,
+and dollar-command echo versus escaped literal dollars. Crucially,
+`$RED$cash$$` returns `cash$`, while doubled-dollar input returns the literal
+`$RED$cash$$`. Original EdCharIns consumes the dollar command during echo;
+a plain byte-buffer input loop would miss this behavior.
+
+Evidence: `build/i386-c1-getstr-dollar-reference/result.json`. The expanded
+native test still rejects its helper definition at missing GetStr
+(`build/i386-c2-getstr-dollar-red/result.json`); none of the thirteen native
+input cases is qualified. This advances C1/C4 reference coverage, not C2 desktop
+completion. Next input implementation must integrate GetKey/DocGetKey echo,
+streaming typed-dollar state, prompt markers and original DocGetStr2 line
+extraction. Physical keyboard/navigation, prompt formatting, Esc entry execution,
+filter exit, Ctrl-Shift-Enter, exceptions and task-exit behavior remain required.
+See [the input contract and reference observations](docs/i386-getstr-compatibility.md).
+
 ### Diagnostic recovery and native component qualification (2026-10-14)
 
 The delivered optional diagnostic module rejects a wrong target and an unknown

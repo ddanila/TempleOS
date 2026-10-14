@@ -16,6 +16,13 @@ COMMANDS = [
     ('InputCheck("alpha\\nbeta\\n\\x1B","alpha\\nbeta\\n",NULL,GSF_WITH_NEW_LINE);', ['1']),
     ('InputCheck("discard\\x1C","");', ['1']),
     ('InputCheck("discard\\x1C","fallback","fallback");', ['1']),
+    ('InputCheck("abc\\x08Z\\n","abZ");', ['1']),
+    ('InputCheck("abc\\x08\\x08\\x08\\n","fallback","fallback");', ['1']),
+    ('InputCheck("alpha\\tbeta\\n","alpha\\tbeta");', ['1']),
+    ('InputCheck("  alpha  \\n","  alpha  ");', ['1']),
+    ('InputCheck("$RED$cash$$\\n","cash$");', ['1']),
+    ('InputCheck("$$RED$$cash$$$$\\n","$RED$cash$$");', ['1']),
+    ('InputCheck("\\x82\\xA3\\n","\\x82\\xA3");', ['1']),
     ('6*7;', ['42'])]
 
 
@@ -34,7 +41,7 @@ def main():
     out.mkdir(parents=True)
     working = out/'working.img'
     shutil.copyfile(source, working)
-    report = dict(result='running', scope='Original GetStr six basic scripted-input cases; physical keyboard, editing, prompt formatting and task exit remain open',
+    report = dict(result='running', scope='Original GetStr thirteen scripted-input cases including backspace, erased default, tabs, spaces, dollar commands/escaping and extended bytes; physical keyboard, navigation/replay, prompt formatting and task exit remain open',
                   input_sha256=pins, commands=commands)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](

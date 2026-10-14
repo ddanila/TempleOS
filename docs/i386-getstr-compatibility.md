@@ -53,8 +53,9 @@ input; multiline input ends on Esc. Shift-Esc cancels or exits the task when
 Esc can execute the current document entry before ending multiline input.
 
 The port already has a DolDoc editing model and public task key queues, but
-`NativePutS` writes normal console output directly to `console_text`, bypassing
-`Fs->put_doc`. `NativeReadKey` consumes task messages; the full-screen `DocEd`
+`NativePutS` now records ordinary output in the task-owned document and
+projects it onto `console_text`, but forces plain-text recording; it does not yet
+provide the original structured output/key-echo chain. `NativeReadKey` consumes task messages; the full-screen `DocEd`
 loop is a separate client. Therefore merely exposing a new string-buffer loop,
 or invoking the full-screen editor for each prompt, would leave the original
 inline document/input semantics missing.
@@ -137,3 +138,36 @@ output are retained. The 8 MiB startup gate still passes. The corrected native
 positioning fixture now requires actual X/Y entry types, and the original
 reference has matching structural assertions. Structured output and original
 DocGetKey/GetStr semantics remain implementation work.
+
+## Expanded input/reference contract
+
+The current pinned-reference runner captures thirteen GetStr results and four
+DocScanLine buffers. All seventeen match explicit host byte expectations in
+`build/i386-c1-getstr-dollar-reference/result.json`. Added observations are:
+
+| Scripted input before Enter | Returned bytes before NUL |
+| --- | --- |
+| `abc`, Backspace, `Z` | `abZ` |
+| `abc`, three Backspaces; default `fallback` | `fallback` |
+| `alpha`, Tab, `beta` | `alpha\tbeta` |
+| Two spaces, `alpha`, two spaces | Spaces preserved on both sides |
+| `$RED$cash$$` | `cash$` |
+| `$$RED$$cash$$$$` | `$RED$cash$$` |
+| Bytes `82 A3` in hex | The same two bytes |
+
+These are scripted key-message observations from the original system, not
+physical-keyboard qualification. The initial expanded oracle expected literal
+single-dollar input and fails in `build/i386-c1-getstr-edit-reference/result.json`.
+Inspection of original EdCharIns in Adam/DolDoc/DocChar.HC explains the result:
+it buffers a typed dollar command, invokes DocPrint when the command closes,
+and treats doubled dollars as one literal dollar. The revised oracle explicitly
+tests both paths; the literal-input case is retained separately rather than
+removed. Escaping in the reference HolyC file is distinct from the native
+runner's interactive command source and is accounted for by each fixture.
+
+`tools/test-i386-getstr.py` contains the matching thirteen native cases. On the
+current interface-73 image its helper definition fails with `Invalid lval` at
+GetStr (`build/i386-c2-getstr-dollar-red/result.json`), with all input hashes
+unchanged. This is a missing-binding red test, not thirteen independent observed
+native failures. GetStr, DocGetKey/GetKey echo, typed dollar state and the other
+input/recovery behaviors listed above remain implementation/qualification work.
