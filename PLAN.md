@@ -10,6 +10,22 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Canonical console document foundation (2026-10-14)
+
+Managed terminals now own put/display documents, including the main console.
+Ordinary output and typed input are recorded with prompt entries; command source
+is extracted from the document rather than a separate line buffer. Existing
+incremental VGA presentation is retained. Console interface is 71. Bootstrap,
+cross-build/386 audits, the 8 MiB startup gate (42.23 seconds) and the keyboard
+suite pass. Thirteen transcript commands and the background compile/edit/save
+workflow pass at 64 MiB. The latter regresses at 8 MiB with parser OutMem, while
+the prior image passes there; this remains an explicit legacy-profile gap and
+the background test retains its 8 MiB default. Structural X/Y entry assertions strengthen the DocScanLine tests;
+both native and original reference checks pass. See
+[the transcript foundation and remaining work](docs/i386-console-transcript.md).
+Structured output, document-driven presentation and GetStr remain open, along
+with C1–C5 qualification.
+
 ### Fixed graphics allocation restores 8 MiB startup (2026-10-14)
 
 The parser-arena regression was traced through a guest RAM snapshot to two

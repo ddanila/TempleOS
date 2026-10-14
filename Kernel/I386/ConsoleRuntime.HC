@@ -53,7 +53,11 @@ extern I64 *NativeTerminalLossSeen();
 extern U0 NativeTerminalDiscardKeyboard();
 extern Bool NativeTerminalFocusKey(CI386KeyEvent *event);
 extern U0 NativeUserHotkey(U8 *data);
-extern U8 *NativeTerminalLine(I64 required);
+extern CDoc *NativeTerminalDocument();
+extern U0 NativeTerminalTranscriptStart();
+extern U0 NativeConsoleWrite(U8 *text);
+extern U0 NativeConsolePut(I64 ch);
+extern CDocEntry *NativeConsolePrompt();
 extern I64 NativeTerminalInputKey(CI386KeyEvent *event);
 extern CTask *NativeUser(U8 *fmt=0,...);
 extern U0 NativeXTalk(CTask *task,U8 *fmt,...);
@@ -543,6 +547,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
     if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
+  DocDefaultsInit(&doldoc);
   display_planes=I386HeapAlloc(config->heap,153600,TRUE);
   if(!display_planes)return FALSE;
   if(!NativeGraphicsStorageReserve) {
@@ -654,12 +659,16 @@ U0 ConsoleKeys(I64 unused)
 U0 NativeTerminalInput()
 {
   CI386KeyEvent event;
-  U8 *line=NativeTerminalLine(256);
+  CDoc *doc=DocPut;
+  CDocEntry *prompt;
+  U8 *line;
   I64 length=0,decoded,ch,spaces,
       mouse_x=0,mouse_y=0,mouse_buttons=0,mouse_packets=0,
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets;
   Bool mouse_visible=FALSE;
-  I386TextWrite(&console_text,"> "); ConsolePresent;
+  NativeTerminalTranscriptStart;
+  if(!doc) throw('DocOwner',TRUE);
+  prompt=NativeConsolePrompt; ConsolePresent;
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   while(1) {
     decoded=NativeTerminalInputKey(&event);
@@ -670,30 +679,33 @@ U0 NativeTerminalInput()
     }
     if(decoded<0) {
       length=0;
-      I386TextWrite(&console_text,"\nInput reset\n> ");
+      NativeConsoleWrite("\nInput reset\n");
+      doc=DocPut; prompt=NativeConsolePrompt;
       ConsolePresent;
       KernelLog("INPUT RESET\n");
     } else if(decoded && event.type==2) {
       ch=event.ch;
       if(ch==3) {
-        length=0; I386TextWrite(&console_text,"^C\n> ");
+        length=0; NativeConsoleWrite("^C\n");
+        doc=DocPut; prompt=NativeConsolePrompt;
         KernelLog("INPUT CANCEL\n");
       } else if(ch==8) {
-        if(length) { length--; I386TextPut(&console_text,8); }
+        if(length) { length--; NativeConsolePut(8); }
       } else if(ch==10) {
-        line[length]=0;
+        line=DocScanLine(doc,prompt->next);
         KernelLog("INPUT LINE "); KernelLog(line); KernelLog("\n");
-        I386TextPut(&console_text,10); ConsoleSubmit(line);
-        length=0; I386TextWrite(&console_text,"> ");
+        NativeConsolePut(10);
+        try { ConsoleSubmit(line); }
+        catch { Free(line); }
+        Free(line);
+        length=0; doc=DocPut; prompt=NativeConsolePrompt;
       } else if(ch==9) {
         spaces=8-length%8;
-        line=NativeTerminalLine(length+spaces+1);
         while(spaces--) {
-          line[length++]=32; I386TextPut(&console_text,32);
+          length++; NativeConsolePut(32);
         }
       } else if(ch>=32 && ch<=255) {
-        line=NativeTerminalLine(length+2);
-        line[length++]=ch; I386TextPut(&console_text,ch);
+        length++; NativeConsolePut(ch);
       }
       ConsolePresent;
     }

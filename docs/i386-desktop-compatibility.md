@@ -262,3 +262,11 @@ public allocation buckets and full display dimensions remain unchanged.
 `MSize`/`DCSize` report the smaller actual capacity as an intentional C4 memory
 policy difference. Full desktop/application and native-generation acceptance
 remain open.
+
+The [canonical transcript foundation](i386-console-transcript.md) records
+ordinary console sessions in owned task documents and uses those entries as
+command source. The 8 MiB startup gate and 64 MiB transcript/keyboard/background
+workflows pass. The existing background workflow regresses at 8 MiB against a
+passing previous-image baseline; this remains open, and its runner keeps the
+8 MiB default. GetStr, structured output and full C1–C5 qualification remain
+incomplete.

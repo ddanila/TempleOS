@@ -22,8 +22,9 @@ COMMANDS = [
     ('U0 ScanCursor(){Free(ScanResult);ScanDoc->cur_entry=ScanDoc->head.next;ScanDoc->cur_col=2;ScanResult=DocScanLine(ScanDoc,ScanDoc->head.next,&ScanColumn,&ScanEnd);}', []),
     ('ScanCursor;', []),
     ('ScanColumn==2;', ['1']),
-    ('U0 ScanShift(){Free(ScanResult);DocRst(ScanDoc,TRUE);DocPutS(ScanDoc,"$$SX,-3$$$$SY,2$$");ScanResult=DocScanLine(ScanDoc,ScanDoc->head.next,NULL,&ScanEnd);}', []),
+    ('U0 ScanShift(){Free(ScanResult);DocRst(ScanDoc,TRUE);DocPutS(ScanDoc,"$SX,-3$$SY,2$");ScanResult=DocScanLine(ScanDoc,ScanDoc->head.next,NULL,&ScanEnd);}', []),
     ('ScanShift;', []),
+    ('ScanDoc->head.next->type_u8==DOCT_SHIFTED_X&&ScanDoc->head.next->next->type_u8==DOCT_SHIFTED_Y;', ['1']),
     ('StrCmp(ScanResult,"$SX,-3$$SY,2$")==0&&ScanEnd==ScanDoc;', ['1']),
     ('Free(ScanResult);DocDel(ScanDoc);6*7;', ['42'])]
 

@@ -65,6 +65,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--ram-mib',type=int,choices=(8,16,64,128),default=8)
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -76,11 +77,11 @@ def main():
     if session == args.disk.resolve():
         raise ValueError('Session image would overwrite source')
     shutil.copyfile(args.disk, session)
-    report = dict(checker_sha256=checker, disk_sha256=disk, helper_sha256=helper_hash,
+    report = dict(checker_sha256=checker, disk_sha256=disk, helper_sha256=helper_hash, ram_mib=args.ram_mib,
                   scope='Repeated background HolyC compilation advances while foreground text DolDoc editing/save remains usable; persisted bytes, retained value and parent public heap recovery; not complete OS rebuild concurrency or all private resources')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        report['behavior'] = runner(session, out / 'behavior', cpu='486,-fpu', snapshot=False,
+        report['behavior'] = runner(session, out / 'behavior', cpu='486,-fpu', snapshot=False,ram_mib=args.ram_mib,
             qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
                                          'commands': commands()})
         files = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents']

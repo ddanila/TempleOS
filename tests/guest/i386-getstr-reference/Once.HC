@@ -38,6 +38,10 @@ U0 CaptureDocLine()
   Report(line); Free(line);
   DocRst(doc,TRUE);
   DocPutS(doc,"$$SX,-3$$$$SY,2$$");
+  if(doc->head.next->type_u8!=DOCT_SHIFTED_X ||
+      doc->head.next->next->type_u8!=DOCT_SHIFTED_Y) {
+    Report("FAIL shifted entry types\n");return;
+  }
   st=DocScanLine(doc,doc->head.next,NULL,&end);
   if(end!=doc) {Report("FAIL shifted DocScanLine\n");return;}
   line=MStrPrint("EXPORT scan-shift.bin %X %X\n",st,StrLen(st)+1);

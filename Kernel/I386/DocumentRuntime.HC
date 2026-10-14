@@ -2372,6 +2372,7 @@ U0 ConsoleDocumentStart()
   DocGlobalsInit;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocInit;
+  NativeTerminalTranscriptStart;
   console_document_owner=task;
 }
 

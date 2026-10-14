@@ -11,10 +11,8 @@ class CNativeTerminal {
   CDoc *document;
   U0 (*cleanup)(CI386Task *task);
   I64 loss_seen;
-  U8 *input_line;
-  I64 input_capacity;
   CNativeTextInput *input_head,*input_tail;
-  Bool owns_planes,running;
+  Bool owns_planes,running,transcript_started;
 };
 CNativeTerminal *native_terminal_head,*native_terminal_root;
 U64 native_terminal_hotkeys_held;
@@ -69,12 +67,12 @@ U0 NativeTerminalRelease(CI386Task *task)
   if(terminal->cleanup) terminal->cleanup(task);
   if(terminal->document) {
     if(task->put_doc==terminal->document) task->put_doc=NULL;
+    if(task->display_doc==terminal->document) task->display_doc=NULL;
     DocDel(terminal->document);
   }
   while(input=terminal->input_head) {
     terminal->input_head=input->next; Free(input->text); Free(input);
   }
-  Free(terminal->input_line);
   irq=I386IrqSave;
   focus=terminal->next;
   if(!focus) focus=terminal->previous;
@@ -117,9 +115,9 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE)
       if(!terminal->planes) throw('OutMem');
       terminal->owns_planes=TRUE;
       if(!I386TextInit(&terminal->surface,terminal->planes,sys_font_std)) throw('TermVga');
-      terminal->document=DocNew(NULL,task);
-      if(!terminal->document) throw('OutMem');
     }
+    terminal->document=DocNew(NULL,task);
+    if(!terminal->document) throw('OutMem');
   } catch {
     if(terminal) {
       if(terminal->document) DocDel(terminal->document);
@@ -135,9 +133,33 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE)
   } else native_terminal_head=terminal;
   task->cleanup=&NativeTerminalRelease;
   if(root) native_terminal_root=terminal;
-  else task->put_doc=terminal->document;
+  task->put_doc=task->display_doc=terminal->document;
   I386IrqRestore(irq);
   return terminal;
+}
+CDoc *NativeTerminalDocument()
+{
+  CNativeTerminal *terminal=NativeTerminalFind(Fs);
+  if(!terminal || !terminal->transcript_started) return NULL;
+  return DocPut;
+}
+U0 NativeTerminalTranscriptStart()
+{
+  CNativeTerminal *terminal=NativeTerminalFind(Fs);
+  CDoc *doc;
+  I64 flags;
+  if(!terminal || terminal->transcript_started) return;
+  doc=terminal->document; flags=doc->flags;
+  try {
+    doc->flags|=DOCF_PLAIN_TEXT;
+    if(terminal==native_terminal_root) DocPutS(doc,console_title);
+    else {
+      DocPutS(doc,"TempleOS i386\nHolyC console\nTask: ");
+      DocPutS(doc,terminal->task->task_title); DocPutS(doc,"\n\n");
+    }
+    doc->flags=flags;
+  } catch { doc->flags=flags; }
+  terminal->transcript_started=TRUE;
 }
 U0 NativeTerminalAdoptRoot() { NativeTerminalCreate(TRUE); }
 CTask *NativeWinFocus(CTask *task=NULL)
@@ -223,6 +245,7 @@ U0 NativeUserTaskCont()
 }
 U0 NativeTerminalConsoleHeading()
 {
+  NativeTerminalTranscriptStart;
   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
   if(terminal && terminal!=native_terminal_root) {
     I386TextWrite(&terminal->surface,"TempleOS i386\nHolyC console\nTask: ");
@@ -253,25 +276,6 @@ U0 NativeUserConsoleStart(Bool focus)
 U0 NativeUserCmdLine(I64 dummy=0) { NativeUserConsoleStart(FALSE); }
 U0 NativeUserHotkey(U8 *data) { NativeUserConsoleStart(TRUE); }
 
-U8 *NativeTerminalLine(I64 required)
-{//Keep input storage in the terminal so break and forced exit cannot leak it.
-  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
-  U8 *line;
-  I64 capacity;
-  if(!terminal || required<1 || required>I32_MAX/2) throw('TermInpt');
-  if(required>terminal->input_capacity) {
-    capacity=terminal->input_capacity;
-    if(capacity<256) capacity=256;
-    while(capacity<required) capacity*=2;
-    line=MAlloc(capacity,terminal->task);
-    if(terminal->input_line) {
-      MemCpy(line,terminal->input_line,terminal->input_capacity);
-      Free(terminal->input_line);
-    }
-    terminal->input_line=line; terminal->input_capacity=capacity;
-  }
-  return terminal->input_line;
-}
 I64 NativeTerminalInputKey(CI386KeyEvent *event)
 {
   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);

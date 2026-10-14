@@ -1017,6 +1017,20 @@
           "result": "pass",
           "evidence": "build/i386-c1-doc-scan-native/result.json",
           "scope": "DocScanLine only; does not qualify the other services in this source file"
+        },
+        {
+          "target": "original-reference-structural",
+          "command": "python3 tools/test-i386-getstr-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-getstr-reference-structural/result.json",
+          "scope": "Existing byte oracles plus real X/Y entry types; GetStr editing/replay/task exit remain open"
+        },
+        {
+          "target": "native-doc-scan-structural",
+          "command": "python3 tools/test-i386-doc-scan.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-transcript-checks/doc-scan-64m/result.json",
+          "scope": "Eighteen commands including actual X/Y entry types; prior serialized-text-only positioning check was insufficient"
         }
       ]
     },
@@ -12497,7 +12511,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-console-transcript-foundation",
+          "command": "python3 tools/test-i386-console-transcript.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-transcript-source-literals-v2/result.json",
+          "scope": "Owned document, typed command source, ordinary output and prompt entries; original structured output/key-device semantics remain unqualified"
+        }
+      ]
     },
     {
       "path": "Kernel/Mem/BlkPool.HC",
@@ -12769,6 +12791,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-getstr-red-v2/result.json",
           "gap": "Public GetStr and faithful inline document/input integration remain missing"
+        },
+        {
+          "target": "original-reference-structural",
+          "command": "python3 tools/test-i386-getstr-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-getstr-reference-structural/result.json",
+          "scope": "Existing byte oracles plus real X/Y entry types; GetStr editing/replay/task exit remain open"
         }
       ]
     },

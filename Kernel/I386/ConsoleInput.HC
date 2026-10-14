@@ -21,12 +21,12 @@ U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
   CConsoleExecutionResult *result=context;
   result->last_value=value;
   if(type->ptr_stars_cnt) {
-    I386TextWrite(&console_text,"0x"); ConsoleUnsigned(value(U32),16);
+    NativeConsoleWrite("0x"); ConsoleUnsigned(value(U32),16);
   } else if(type->raw_type==RT_F64) ConsoleFloat(value);
   else if(type->raw_type==RT_U64 || type->raw_type==RT_U32 ||
       type->raw_type==RT_U16 || type->raw_type==RT_U8) ConsoleUnsigned(value);
   else ConsoleSigned(value);
-  I386TextPut(&console_text,10);
+  NativeConsolePut(10);
 }
 U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {

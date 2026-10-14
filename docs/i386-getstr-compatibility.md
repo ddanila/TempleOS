@@ -127,3 +127,13 @@ The current candidate passes the nine-command 8 MiB retained-state/VGA gate in
 `build/i386-c1-exact-buffer-checks/startup-8m/result.json`. This supersedes the
 startup regression above; GetStr implementation and full release qualification
 remain open.
+
+## Canonical console foundation
+
+[Console transcript integration](i386-console-transcript.md) now gives the main
+terminal a task-owned output/display document and prompt markers. Command
+submission uses DocScanLine over that document; typed source and ordinary
+output are retained. The 8 MiB startup gate still passes. The corrected native
+positioning fixture now requires actual X/Y entry types, and the original
+reference has matching structural assertions. Structured output and original
+DocGetKey/GetStr semantics remain implementation work.
