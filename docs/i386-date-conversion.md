@@ -1,5 +1,30 @@
 # Retained calendar conversion
 
+## Public Now binding (2026-10-14)
+
+Console interface version 68 exposes the existing NativeNow implementation as
+public `CDate Now()`. It reads a stable RTC snapshot and applies the writable
+local_time_offset. Calendar record layouts and conversion routines are unchanged.
+The initial conversion-only limitations below are historical.
+
+The test-first baseline rejects Now on the previous image
+(`build/i386-c1-now-red/result.json`). The revised bootstrap/cross-build and 386
+instruction audit pass, and all nine public clock commands pass in
+`build/i386-c1-now-followups/now/result.json`: date fields in the supported
+range, nondecreasing reads, offset subtraction/restoration and subsequent
+arithmetic, with exact VGA checks and unchanged inputs at 64 MiB on 486,-fpu.
+
+```sh
+python3 tools/test-i386-now.py IMAGE --out build/now-public
+```
+
+This qualifies public exposure and the tested offset behavior. NativeNow still
+reads RTC seconds; precise/subsecond original-Now parity, century handling,
+all RTC register modes and controlled wall-clock verification remain C4 work.
+The same candidate passes the nine-command 8 MiB startup/VGA gate in
+41.75 seconds. TimeClock loading advances past Now and rejects GetStr at
+TimeClk.HC line 127; full application qualification remains separate.
+
 The original `CDate` and `CDateStruct` declarations now live in
 `Kernel/DateTypes.HH`, shared by the original kernel and native public headers.
 Their sizes remain 8 and 12 bytes. `Kernel/DateCore.HC` contains the original

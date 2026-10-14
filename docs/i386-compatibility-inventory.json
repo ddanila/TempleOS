@@ -3989,6 +3989,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-stream-followups/timeclock-load/result.json",
           "gap": "Load progresses past __DIR__; Now lacks a public date binding at TimeClk.HC line 88"
+        },
+        {
+          "target": "native-load-now",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-now-followups/timeclock-load/result.json",
+          "gap": "Now is exposed; original PunchOut compilation reaches missing GetStr at TimeClk.HC line 127"
         }
       ]
     },
@@ -4041,6 +4048,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-stream-followups/timeclock-load/result.json",
           "gap": "Load progresses past __DIR__; Now lacks a public date binding at TimeClk.HC line 88"
+        },
+        {
+          "target": "native-load-now",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-now-followups/timeclock-load/result.json",
+          "gap": "Now is exposed; original PunchOut compilation reaches missing GetStr at TimeClk.HC line 127"
         }
       ]
     },
@@ -4094,6 +4108,13 @@
           "result": "fail",
           "evidence": "build/i386-c1-stream-followups/timeclock-load/result.json",
           "gap": "Load progresses past __DIR__; Now lacks a public date binding at TimeClk.HC line 88"
+        },
+        {
+          "target": "native-load-now",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-now-followups/timeclock-load/result.json",
+          "gap": "Now is exposed; original PunchOut compilation reaches missing GetStr at TimeClk.HC line 127"
         }
       ]
     },

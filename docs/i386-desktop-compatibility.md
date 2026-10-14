@@ -230,3 +230,14 @@ unchanged Load script gets past __DIR__ and now rejects Now at TimeClk.HC line
 fixture passes all seventeen commands, persisted bytes and exact VGA; complete stream cleanup/AOT and native application storage,
 report and interactive workflows remain open. See the stream contract for
 exact source, runtime and test limitations.
+
+## Public clock binding qualified (2026-10-14)
+
+Console interface version 68 now exposes existing NativeNow as public Now.
+The failing public-API baseline is preserved; all nine revised clock commands
+pass at 64 MiB with exact VGA and preserved inputs. Bootstrap/cross-build/386
+audits pass, and the existing 8 MiB startup gate also passes. See
+[calendar and clock qualification](i386-date-conversion.md) for the scope and
+remaining RTC-mode/precision coverage. TimeClock source loading now advances
+to GetStr at TimeClk.HC line 127. Native storage/report and interactive/reboot
+workflows remain open; the original application sources are unchanged.

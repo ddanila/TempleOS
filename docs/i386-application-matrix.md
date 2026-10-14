@@ -74,3 +74,8 @@ The first stream implementation passes its focused commands; TimeClock loading
 now progresses past __DIR__ and fails at the missing public Now binding. The
 original TimeClk source is unchanged. This advances a dependency gate, while
 native storage/report and full application qualification remain open.
+
+The public Now binding now passes its focused native test. Unchanged TimeClock
+source compilation advances to GetStr in PunchOut (TimeClk.HC line 127).
+GetStr and its original input/flag behavior are the next dependency to test and
+port; no full application pass is claimed.

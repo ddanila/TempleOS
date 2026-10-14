@@ -10,6 +10,17 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Public Now binding passes (2026-10-14)
+
+The existing RTC implementation is exposed as public CDate Now through console
+interface version 68. Its nine-command test passes at 64 MiB after a failing
+baseline on the previous image, covering date fields, monotonic reads, offset
+subtraction/restoration and continued execution. Bootstrap/cross-build/386
+audits and the existing 8 MiB startup/VGA gate pass. TimeClock's unchanged
+source now compiles through Now and fails at GetStr (TimeClk.HC line 127).
+GetStr input/flag behavior is the next dependency; native application and
+C1–C5 completion remain open. See the date conversion and application matrix.
+
 ### First native stream execution passes (2026-10-14)
 
 The shared #exe parser now has native command execution and control-owned source

@@ -239,7 +239,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[210];
+CI386KernelSymbol console_doc_exports[211];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -532,7 +532,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(207,"_DRV_TEXT_ATTR_GET",(&DrvTextAttrGet+0)(U64));
   ConsoleDocExportSet(208,"_STREAM_PRINT",(&NativeStreamPrint+0)(U64));
   ConsoleDocExportSet(209,"_STREAM_DIR",(&NativeStreamDir+0)(U64));
-  for(i=0;i<210;i++) {
+  ConsoleDocExportSet(210,"_NOW",(&NativeNow+0)(U64));
+  for(i=0;i<211;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
