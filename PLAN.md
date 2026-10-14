@@ -10,6 +10,25 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Streaming callback and failure recovery (2026-10-15)
+
+Original and shared-original references pass formatted callback text/user-data,
+pre-lock ordering, consume and pass-through checks. Native tests first expose
+the original streaming body's cleanup gaps: the second MAlloc OutMem leaves a
+lock and temporary allocation live (mask 39 instead of 63), and a throwing
+callback leaks its formatted buffer. A shared cleanup wrapper now frees the
+buffer and releases only the lock acquired by this call on exceptional exit.
+
+The fixed image passes the existing 20 streaming commands, 12 allocation-fault
+and 16 callback commands, including
+restored allocator bytes, expected exception/count, unlocked document, exact
+caller heap after deletion and throwing-hook heap recovery. Bootstrap,
+cross-build and 386 boot audit pass; 8 MiB startup passes in 45.18 seconds with
+no build-provider loading. See [streaming output](docs/i386-doc-stream.md).
+Other fault sites, malformed-command cleanup, reentrancy, caller-held locks,
+overstrike/data editing and default output rendering remain unqualified.
+This advances C2/C4; C1–C5 remain open.
+
 ### Shared streaming document output passes native behavior (2026-10-15)
 
 Console interface 77 exposes DocPrintPartial from an extracted original body

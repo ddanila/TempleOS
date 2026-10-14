@@ -31,7 +31,7 @@ def main():
                   repair_revision=reference.REPAIRS,
                   reference_sha256=reference.restore_reference(overlay),
                   input_sha256={str(p):reference.sha(p) for p in inputs},
-                  scope='Explicit-document streaming output: partial markup, completion, escaped dollar, plain-text bypass and middle insertion; not default console rendering or complete DocPrintPartial parity')
+                  scope='Explicit-document streaming output: partial markup, completion, escaped dollar, plain-text bypass, middle insertion and callback consumption/order; not default console rendering or complete DocPrintPartial parity')
     report['mode'] = 'shared-stream' if args.shared_stream else 'pinned-original'
     report['source_overrides'] = {}
     if args.shared_stream:
@@ -61,6 +61,8 @@ def main():
             raise ValueError('Original streaming output differs from explicit byte expectations')
         if 'PASS original document streaming\n' not in (out/'guest/debug.log').read_text():
             raise ValueError('Original streaming state checks did not complete')
+        if 'PASS original streaming callback\n' not in (out/'guest/debug.log').read_text():
+            raise ValueError('Original callback consumption/order checks did not complete')
         report['result'] = 'pass'
     except Exception as exc:
         report.update(result='fail', error=str(exc))

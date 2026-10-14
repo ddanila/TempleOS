@@ -1355,6 +1355,30 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-stream-delivered/result.json",
           "scope": "20 native commands: streaming partial markup, split escape, plain-text bypass and middle insertion; default console rendering, callbacks and exception cleanup open"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-stream-callback-reference-fixed/result.json",
+          "scope": "Pinned original streaming and callback text/user-data, consumption and pre-lock order; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream-reference.py --shared-stream --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-stream-cleanup-reference-fixed/result.json",
+          "scope": "Shared streaming implementation preserves original normal/callback cases; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream-allocation.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-stream-allocation-green/result.json",
+          "scope": "Second MAlloc OutMem: exact restored allocator bytes, exception/count, signature, released lock and exact caller heap after deletion; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-stream-callback.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-stream-callback-green/result.json",
+          "scope": "16 native commands for callback consume/pass-through, text/user-data, pre-lock order and exact heap recovery from a throwing hook; whole-file unqualified"
         }
       ]
     },

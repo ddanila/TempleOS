@@ -67,15 +67,55 @@ the framebuffer showed their numeric results. Void setup helpers correct those
 expectations without changing OS behavior. The first timed out; the second was
 stopped after the same mismatch was identified.
 
-This retains the original implementation's normal-path behavior. Exception
-cleanup is not yet hardened: a callback, allocation or parsing exception may
-leave the formatted buffer or acquired document lock live. This remains an
-explicit C4 gate before default-output integration.
+## Callback and exception cleanup
+
+The original-reference fixture now checks formatted callback text (`abc7`),
+user data, invocation before lock acquisition, consumed output and pass-through
+insertion. Both the pinned-original and shared implementation pass:
+`build/i386-c1-doc-stream-callback-reference-fixed/result.json` and
+`build/i386-c4-doc-stream-cleanup-reference-fixed/result.json`.
+
+Two native tests first reproduced failures on the preceding image:
+
+```
+python3 tools/test-i386-doc-stream-allocation.py IMAGE --out build/FRESH-fault
+python3 tools/test-i386-doc-stream-callback.py IMAGE --out build/FRESH-hook
+```
+
+The second MAlloc call throws OutMem. The observed result is 39 instead of 63:
+exception, exact fault count, restored allocator entry bytes and document
+signature pass, but lock release and heap recovery fail. The fixture explicitly
+unlocks for teardown after observing the failure. Evidence:
+`build/i386-c4-doc-stream-allocation-red/result.json` and its command-10 frame.
+The callback test passes consumption/pass-through checks but reports zero for
+a throwing hook's exact heap-recovery check:
+`build/i386-c4-doc-stream-callback-final-red/result.json`.
+
+The shared body now wraps formatting, callbacks and insertion with cleanup.
+On exceptional exit it frees the formatted buffer and releases only a lock
+acquired by this invocation. Normal unlock clears its cleanup flag before
+calling DocUnlock, which may itself propagate a pending break after release.
+A callback which consumes output retains its original pre-lock behavior.
+
+The existing 20-command streaming suite also passes on the fixed image
+(`build/i386-c4-doc-stream-cleanup-behavior/result.json`).
+
+The fixed image passes all 12 allocation-fault commands and all 16 callback
+commands (`build/i386-c4-doc-stream-allocation-green/result.json` and
+`build/i386-c4-doc-stream-callback-green/result.json`). Original bootstrap,
+native cross-build and the 386 boot audit pass. Its 8 MiB startup gate passes
+in 45.18 seconds with no build-provider loads
+(`build/i386-c4-doc-stream-cleanup-startup/result.json`).
+
+Some preliminary callback fixtures were stopped after a setup issue was found:
+a top-level assignment would print an unwanted scalar, and a ternary expression
+was unsupported by HolyC. Void setup and ordinary if statements fix those
+fixtures; neither observation is attributed to a new OS regression.
 
 ## Remaining work
 
-Qualify callback consumption, overstrike/data-entry
-behavior, lock/resource cleanup and allocation failures. Then integrate default
+Qualify remaining allocation sites, malformed-command exceptions, reentrant callbacks,
+overstrike/data-entry behavior and caller-owned lock preservation. Then integrate default
 console document output with faithful rendering and continue DocGetKey/GetStr.
 These explicit-document cases do not qualify the complete API, standard-output
 rendering, input editing or an entire inventory file.

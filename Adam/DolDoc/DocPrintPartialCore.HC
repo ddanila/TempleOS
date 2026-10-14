@@ -1,18 +1,16 @@
 //Original streaming output; shared by the original and 32-bit consoles.
 public U0 DocPrintPartial(CDoc *doc=NULL,U8 *fmt,...)
 {//Lets you print half a doc cmd, if you like.
-  U8 *buf,*st,*src,*dst,*ptr,*ptr2;
-  Bool unlock;
+  U8 *buf=NULL,*st,*src,*dst,*ptr,*ptr2;
+  Bool unlock=FALSE;
   CDocEntry *doc_ce,*doc_ne;
   I64 ch,i,j;
   if (!doc && !(doc=DocPut))
     return;
+  try {
   buf=StrPrintJoin(NULL,fmt,argc,argv);
   ptr=buf;
-  if (doc->user_put_s && (*doc->user_put_s)(doc,doc->user_put_data,buf)) {
-    Free(buf);
-    return;
-  }
+  if (!(doc->user_put_s && (*doc->user_put_s)(doc,doc->user_put_data,buf))) {
   unlock=DocLock(doc);
   if (doc->cur_entry->type_u8==DOCT_DATA)
     while (ch=*ptr++)
@@ -59,10 +57,18 @@ public U0 DocPrintPartial(CDoc *doc=NULL,U8 *fmt,...)
 	DocRemSoftNewLines(doc,doc->cur_entry);
       }
     }
-  if (unlock)
+  if (unlock) {
+    unlock=FALSE;
     DocUnlock(doc);
+  }
   if (!(doc->flags&DOCF_DONT_SWAP_OUT))
     Yield;
+  }
+  } catch {
+    Free(buf);
+    if (unlock)
+      DocUnlock(doc);
+  }
   Free(buf);
 }
 
