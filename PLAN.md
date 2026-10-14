@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original document text framebuffer checks pass (2026-10-15)
+
+A pinned-original 18-field style oracle confirms foreground/reset, tab/newline,
+underline/inverse/blink flags and blue background. Independent full-screen pixel
+expectations now pass for DocRecalc text cells presented through the existing
+NativeTextBasePresent API, at both 64 MiB and 8 MiB on 486,-fpu. Each nine-command
+session checks all 640x480 pixels in both explicit blink phases, then restores
+the saved console and completes arithmetic. The test pins the original font.
+
+Evidence and fixture corrections are in
+[renderer integration](docs/i386-doc-render.md). The initial blink command typo
+was corrected from BL to BK; a separate report-only JSON serialization error
+was fixed without changing guest behavior or expected pixels. No OS or normal
+boot changes were needed for this checkpoint. Sprites, cursor/scrolling/shifted
+text, focus, compositor ordering and default stdout integration remain open;
+these explicit presentation checks do not establish full desktop or GetStr
+compatibility. C1–C5 remain open.
+
 ### Original renderer public binding and cell baseline (2026-10-15)
 
 Console interface 79 exposes the existing original DocRecalc implementation.

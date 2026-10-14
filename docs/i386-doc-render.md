@@ -40,11 +40,48 @@ audit pass (`build/i386-c4-doc-render-cross`). The new image passes 8 MiB startu
 in 47.13 seconds with zero build-provider loads
 (`build/i386-c4-doc-render-startup/result.json`).
 
+## Framebuffer style oracle
+
+```
+python3 tools/test-i386-doc-render-style-reference.py --out build/FRESH-style-original
+python3 tools/test-i386-doc-render-frame.py IMAGE --out build/FRESH-frame
+python3 tools/test-i386-doc-render-frame.py IMAGE --ram-mib 8 --out build/FRESH-frame-8m
+```
+
+The original-style fixture extends the cell reference to 18 fields, checking
+underline/inverse/blink flags and blue background. It passes at
+`build/i386-c1-doc-render-style-reference-fixed/result.json`. Blink uses the
+original BK command; an initial BL typo correctly failed the expected blink-bit
+assertion and was corrected without changing that expectation.
+
+The native frame fixture renders a new document through DocRecalc TO_SCRN,
+presents its cells with NativeTextBasePresent, and pauses for physical QEMU key
+events between two explicit blink phases. The host compares every pixel in the
+640x480 frame against the checked-in original font and independently constructed
+VGA palette. Expected rows, foreground/background cells and underline locations
+are explicit in the test, independent of guest cell/output bytes. The fixture
+then restores the prior display document, task text attribute and saved console
+surface; arithmetic verifies return to the command loop.
+
+An intermediate run matched both frames and returned to the console but failed
+while serializing tuple-key color maps into JSON. The final harness converts
+only the report representation to JSON-compatible values and pins the font hash;
+guest behavior and pixel expectations are unchanged.
+
+Final results pass at both 64 MiB and 8 MiB on 486,-fpu:
+`build/i386-c4-doc-render-frame-final/result.json` and
+`build/i386-c4-doc-render-frame-8m/result.json`. Each nine-command session checks
+both full frames and console restoration. No OS implementation or normal boot
+path changes were needed for these existing explicit APIs.
+
+These are text presentation checks using an existing explicit presentation API.
+They do not connect the normal stdout hook to this path or qualify sprite
+composition, cursor navigation, scrolling, shifted glyphs or terminal focus.
+
 ## Next output integration work
 
-1. Qualify framebuffer presentation of the original text cells: colors,
-   attributes, offsets, wrapping, cursor and scrolling, with independent pixel
-   expectations. Preserve each terminal's saved surface and focus behavior.
+1. Extend framebuffer qualification beyond the style cases above to offsets,
+   wrapping, cursor and scrolling, with independent pixel expectations. Preserve each terminal's saved surface and focus behavior.
 2. Resolve the shared renderer/compositor ordering. DocRecalc TO_SCRN both fills
    gr.text_base and draws sprites into gr.dc2. GraphicsFrameCore currently
    rasterizes cells before invoking its drawing callback. A bridge must retain

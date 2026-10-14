@@ -1435,6 +1435,24 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-render-native/result.json",
           "scope": "Ten native public-API commands match original ten-field cell/layout/color/null/unlock oracle; presentation, sprites, cursor and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-render-style-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-render-style-reference-fixed/result.json",
+          "scope": "18-field pinned-original style-cell oracle for foreground/reset, geometry, underline/inverse/blink and background; sprites, cursor, scrolling, focus and default stdout integration unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-render-frame.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-render-frame-final/result.json",
+          "scope": "64 MiB nine-command session checks two 640x480 text frames against independent font/palette pixels and restores console; sprites, cursor, scrolling, focus and default stdout integration unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-render-frame.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-render-frame-8m/result.json",
+          "scope": "Same two full-frame checks and console restoration at 8 MiB; sprites, cursor, scrolling, focus and default stdout integration unqualified"
         }
       ]
     },
