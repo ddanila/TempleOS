@@ -1471,6 +1471,36 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-compose-frame-8m/result.json",
           "scope": "8 MiB sixteen-command session: previous text/current packed rectangle, one dynamic callback/frame, two independent full-frame pixel checks and console restoration; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-auto-refresh-reference-flags/result.json",
+          "scope": "Pinned original automatic dynamic document refresh: callback progress, A/B cells and composed glyphs with no explicit rendering; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-auto-refresh-control/result.json",
+          "scope": "Rebuilt original automatic refresh control with renderer recovery changes; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-doc-auto-refresh-red/result.json",
+          "scope": "Native displayed document does not reach first automatic A frame; later assertions unexecuted; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-recalc-callback-fault.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-recalc-callback-green/result.json",
+          "scope": "Ten commands: TO_SCRN tag callback throws, retains old tag and exact heap, releases alias/lock, then retries and deletes with exact heap recovery; all other fault/Exit/worker paths unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-render.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-recalc-recovery-cells/result.json",
+          "scope": "Original ten-field text-cell/layout oracle remains green after renderer exception cleanup; whole-file unqualified"
         }
       ]
     },
@@ -3377,7 +3407,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-doc-auto-refresh-reference-flags/result.json",
+          "scope": "Pinned original automatic dynamic document refresh: callback progress, A/B cells and composed glyphs with no explicit rendering; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-doc-auto-refresh-control/result.json",
+          "scope": "Rebuilt original automatic refresh control with renderer recovery changes; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-doc-auto-refresh-red/result.json",
+          "scope": "Native displayed document does not reach first automatic A frame; later assertions unexecuted; whole-file unqualified"
+        }
+      ]
     },
     {
       "path": "Apps/Budget/Accts.DD",

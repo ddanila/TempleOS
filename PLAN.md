@@ -10,6 +10,32 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Scheduled document refresh: original acceptance and recovery dependency (2026-10-15)
+
+The original window manager automatically renders a displayed dynamic document
+as A, then B after its value changes, without application DocRecalc/presentation
+calls. Pinned-original and rebuilt-original controls pass callback progress,
+cell values and independent glyph pixels. The native automatic-frame test is
+red at its first expected A screen; explicit presentation demos do not close it.
+
+[Automatic refresh architecture](docs/i386-document-refresh.md) records the next
+medium goal and gates: recoverable renderer scopes; worker/document lifetime and
+presentation arbitration; scheduled original document/border/task/control updates;
+then streaming stdout and original document input. Native Exit already waits for
+linked children and inherited references defer retirement, but forced callback
+exit and shared framebuffer ownership still need explicit qualification.
+
+Tracing that dependency exposed a renderer recovery bug: a throwing dynamic tag
+leaves its old pointer dangling, document locked and drawing alias live. The
+first native fault check reports mask 4 instead of 31. The shared renderer now
+obtains the new tag before publishing it and releases rendering resources/locks
+on exceptions. Its native ten-command exception/retry test passes mask 31, and
+the original cell/layout oracle remains green. Bootstrap, cross-build and 386
+boot audit pass; 8 MiB startup passes in 45.88 seconds without build-provider
+loads. [Renderer recovery](docs/i386-doc-recalc-recovery.md) tracks the
+fault and retry gate. Healthy automatic refresh still passes on the rebuilt
+original control. Scheduled native refresh and full C1–C5 remain open.
+
 ### Editor delegates packed sprites to the original renderer (2026-10-15)
 
 The editor's padded subset decoder is removed. It now checks packed record

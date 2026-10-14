@@ -270,10 +270,11 @@ public Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL)
   CDocBin *tmpb;
   CDocSettings *s;
   Bool del_doc_e,skipped_update,tree_collapsed,same_win,more=FALSE,
-	find_cursor=FALSE,blink_flag,full_refresh=TRUE,unlock,clear_holds;
+	find_cursor=FALSE,blink_flag,full_refresh=TRUE,unlock=FALSE,clear_holds;
+  Bool result=TRUE;
   CTask *win_task,*mem_task;
-  CDC *dc;
-  U8 *bptr,*ptr,buf[STR_LEN],ch;
+  CDC *dc=NULL;
+  U8 *bptr,*ptr,*new_tag=NULL,buf[STR_LEN],ch;
   U32 *u32_ptr,*hl;
   I32 *depth_buf=NULL;
   F64 cur_time=tS;
@@ -292,10 +293,11 @@ public Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL)
     }
   }
 
+  try {
   unlock=DocLock(doc);
   if (doc->doc_signature!=DOC_SIGNATURE_VAL) {
-    DocUnlock(doc);
-    return FALSE;
+    result=FALSE;
+    goto doc_recalc_done;
   }
 
   win_task=doc->win_task;
@@ -442,19 +444,21 @@ public Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL)
       s=&doc_e->settings;
       if (doc_e->de_flags & (DOCEF_TAG_CB|DOCEF_DEFINE) &&
 	    !(doc_e->de_flags & DOCEF_LST)) {
-	Free(doc_e->tag);
 	if (doc_e->de_flags & DOCEF_TAG_CB) {
 	  if (doc_e->tag_cb)
-	    doc_e->tag=(*doc_e->tag_cb)(doc,doc_e,mem_task);
+	    new_tag=(*doc_e->tag_cb)(doc,doc_e,mem_task);
 	  else
-	    doc_e->tag=StrNew("",mem_task);
+	    new_tag=StrNew("",mem_task);
 	} else {
 	  if (tmph=HashFind(doc_e->define_str,
 		win_task->hash_table,HTT_DEFINE_STR))
-	    doc_e->tag=StrNew(tmph->data,mem_task);
+	    new_tag=StrNew(tmph->data,mem_task);
 	  else
-	    doc_e->tag=CAlloc(1,mem_task);
+	    new_tag=CAlloc(1,mem_task);
 	}
+	Free(doc_e->tag);
+	doc_e->tag=new_tag;
+	new_tag=NULL;
 	doc_e->max_col=StrLen(doc_e->tag);
 	if (doc->cur_entry==doc_e && doc->cur_col>=doc_e->max_col) {
 	  if (doc_e->max_col)
@@ -1322,9 +1326,25 @@ rc_skip:
       DocRecalc(doc,recalc_flags);
     }
   }
-  DCDel(dc);
-  Free(depth_buf);
-  if (unlock)
+doc_recalc_done:
+  //The local depth buffer can still be attached if sprite drawing threw.
+  if (dc && dc->depth_buf==depth_buf)
+    dc->depth_buf=NULL;
+  DCDel(dc); dc=NULL;
+  Free(depth_buf); depth_buf=NULL;
+  Free(new_tag); new_tag=NULL;
+  if (unlock) {
+    unlock=FALSE;
     DocUnlock(doc);
-  return TRUE;
+  }
+  } catch {
+    if (dc && dc->depth_buf==depth_buf)
+      dc->depth_buf=NULL;
+    DCDel(dc);
+    Free(depth_buf);
+    Free(new_tag);
+    if (unlock)
+      DocUnlock(doc);
+  }
+  return result;
 }
