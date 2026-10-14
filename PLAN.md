@@ -44,6 +44,21 @@ native memory suite and normal 64 MiB BIOS transport pass, including the 386
 loader audit. Expanded selector and unavailable-map checks also pass. Normal
 kernel arena integration and actual larger-capacity qualification remain open.
 
+### Integrated memory qualification (2026-10-14)
+
+Kernel map integration passes bootstrap/cross-build and 32 MiB allocation at
+64 MiB. An 80 MiB request at 128 MiB exposed page-bucket over-reservation;
+the focused failing regression now passes with minimum-page pressure fallback.
+The revised candidate's capacity/minimal-profile/fallback/heap-accounting queue
+is running in `build/i386-c1-map-qualification`. See the memory-map contract.
+The [application launch review](docs/i386-application-matrix.md) now records
+all twelve original app entry points and direct dependencies; per-app reference
+observations and executable oracles remain C1 work.
+
+Both revised capacity tests now pass: 32 MiB at 64 MiB and 80 MiB at 128 MiB.
+The remaining sequential qualification stages are live; no full desktop or
+larger-profile native-rebuild completion is claimed.
+
 ### Scope and hardware constraints
 
 Target source and observable behavioral compatibility with the original

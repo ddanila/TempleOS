@@ -183,9 +183,10 @@ CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
   U32 flags=I386IrqSave;
   CMemBlk *block=0,**link;
   CI386PoolRegion *region;
-  I64 i=0,n,remaining;
-  Bool retried=FALSE,merged=FALSE,grown;
+  I64 i=0,n,remaining,requested;
+  Bool retried=FALSE,merged=FALSE,exact=FALSE,grown;
   if(!I386MemPoolValid(pool) || pool->locked_flags || pages<1 || pages>0xFFFFFFFF/512) goto done;
+  requested=pages;
   if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
   else {
     n=pages-MEM_EXTRA_HASH2_PAGS;
@@ -196,7 +197,7 @@ CMemBlk *I386MemPageAlloc(CI386PublicPool *pool,I64 pages)
 retry:
   if(!I386MemPoolValid(pool) || pool->locked_flags) goto done;
   pool->locked_flags=1;
-  if(block=*link) {
+  if(link && (block=*link)) {
     if(!I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL) || block->pags!=pages) goto invalid;
     *link=block->next; goto found;
   }
@@ -224,7 +225,8 @@ retry:
   if(!merged) {
     merged=TRUE;
     if(!I386MemPoolFreeBlocksMerge(pool)) goto done;
-    if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
+    if(exact) link=0;
+    else if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
     else {
       n=pages-MEM_EXTRA_HASH2_PAGS; i=0;
       while(n>>=1) i++;
@@ -237,7 +239,8 @@ retry:
     grown=(*pool->grow)(pool,pages);
     pool->growing=0;
     if(grown) {
-      if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
+      if(exact) link=0;
+    else if(pages<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[pages];
       else {
         n=pages-MEM_EXTRA_HASH2_PAGS; i=0;
         while(n>>=1) i++;
@@ -245,6 +248,12 @@ retry:
       }
       goto retry;
     }
+  }
+  //Normal buckets are a cache policy, not a minimum payload requirement.
+  //Retry the actual page request only after the rounded request is exhausted.
+  if(!exact && requested<pages) {
+    pages=requested; exact=TRUE; merged=FALSE; retried=FALSE; link=0;
+    goto retry;
   }
 invalid:
   block=0; pool->locked_flags=0; goto done;
@@ -271,9 +280,13 @@ Bool I386MemPageFree(CI386PublicPool *pool,CMemBlk *block)
   if(block->pags<MEM_FREE_PAG_HASH_SIZE) link=&pool->free_pag_hash[block->pags];
   else {
     n=block->pags-MEM_EXTRA_HASH2_PAGS;
-    if(n&(n-1)) goto done;
-    while(n>>=1) i++;
-    link=&pool->free_pag_hash2[i];
+    //Exact pressure allocations need not have a power-of-two bucket shape.
+    //Return them to the general extent list; bucket headers retain their ABI.
+    if(n&(n-1)) link=&pool->mem_free_lst;
+    else {
+      while(n>>=1) i++;
+      link=&pool->free_pag_hash2[i];
+    }
   }
   pool->locked_flags=1;
   region->used-=(block->pags+0)(U64)*512;

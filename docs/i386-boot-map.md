@@ -78,3 +78,36 @@ forced-unavailable handoff also passes in
 Next: connect the selector to kernel arena initialization after A20 verification,
 then rerun the failing 32/80 MiB capacity tests and existing minimal profiles.
 Neither the larger usable-memory profiles nor C1–C5 are yet qualified.
+
+## Kernel integration and allocation policy qualification
+
+The kernel now tries the validated map after A20 verification, preserving its
+live boot-image/stack reservations and reporting either `BOOT MAP selected` or
+`BOOT MAP legacy`. Bootstrap and cross-build/386 audits pass. The first
+integrated image passes 32 MiB allocation/readback at 64 MiB, but its 128 MiB
+profile rejects an 80 MiB request: page bucket rounding requests a 128 MiB
+backing extent, larger than the selected 112 MiB arena. This failure is preserved
+in `build/i386-c1-map-capacity-128m`.
+
+A focused 300-page pool regression reproduces the policy failure with a
+280-page request (failure code 157, `build/i386-c1-large-pages-red.log`). The
+implementation keeps ordinary bucket rounding, then retries the original page
+count only after rounded allocation, merge and growth fail. Non-bucket-sized
+returned blocks use the general free-extent list; bucket shapes remain intact.
+The fixture checks reuse, accounting, aligned payload capacity, endpoint data
+and full teardown. It passes with the revised allocator. This pressure policy
+is an intentional allocation-policy difference to review in C4; public payload
+and ownership contracts remain required.
+
+The updated bootstrap and cross-build pass. Current qualification is running
+sequentially in `build/i386-c1-map-qualification`: 80/32 MiB allocation/readback,
+8 MiB retained-state/VGA startup, 16 MiB saved assembly/native builds, integrated
+legacy fallback, public/core/portable-cache heap tests and backing accounting.
+These checks remain pending until their results are terminal. Full desktop
+compatibility and complete native rebuilding at 128 MiB are separate open gates.
+
+The revised candidate now passes both capacity tests: 80 MiB at 128 MiB and
+32 MiB at 64 MiB, including page/endpoint readback, release and subsequent
+arithmetic. Evidence is under `build/i386-c1-map-qualification/capacity-128m`
+and `capacity-64m`; source inputs remain unchanged. The queue has advanced to
+the existing 8 MiB startup gate. Remaining qualification stages are still open.

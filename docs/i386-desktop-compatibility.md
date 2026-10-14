@@ -50,6 +50,11 @@ hints. Existing focused tests are useful candidates for evidence, but must be
 mapped and requalified at the required scope. No original application is yet
 claimed compatible by this inventory.
 
+The [application launch review](i386-application-matrix.md) records source-verified
+entry points and direct Load dependencies for all twelve application directories,
+plus the first persistent-data reference-capture workflows. Runtime observations
+and executable per-program oracles remain open.
+
 ## Runnable baseline and memory profiles
 
 The input harness now accepts 8, 16, 64 and 128 MiB, through both its Python API
@@ -142,3 +147,17 @@ and capacity/minimal-profile regressions are complete.
 | C3 | Pending | App-by-app failing tests and equivalent port behavior |
 | C4 | Pending | Mapped API and document differential coverage |
 | C5 | Pending | Complete suite on two native generations and measured resource profiles |
+
+## Integrated memory checkpoint under qualification
+
+The map is now connected to kernel initialization. Bootstrap/cross-build pass,
+and 32 MiB allocation/readback succeeds at 64 MiB. The first 80 MiB allocation
+at 128 MiB exposed excessive page-bucket rounding; a focused failing regression
+and pressure fallback fix are recorded in the [memory-map contract](i386-boot-map.md).
+The fixed candidate's capacity, minimal-profile, fallback and heap-accounting
+queue is live in `build/i386-c1-map-qualification`. No full desktop or 128 MiB
+native-rebuild qualification follows from these foundation tests.
+
+Both corrected capacity tests pass (32 MiB at 64 MiB, 80 MiB at 128 MiB).
+The queue has advanced to minimal-profile startup; assembly, fallback and heap
+regressions remain pending. Larger-profile native rebuilding is still open.

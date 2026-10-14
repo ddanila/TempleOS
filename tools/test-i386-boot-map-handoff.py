@@ -16,6 +16,8 @@ def main():
     parser.add_argument('--build', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--force-unavailable', action='store_true')
+    parser.add_argument('--kernel-selection', choices=('selected', 'legacy'),
+                        help='Also require the integrated kernel selection marker')
     args = parser.parse_args()
     build, out = args.build.resolve(), args.out.resolve()
     if out.exists():
@@ -60,6 +62,11 @@ def main():
             working, out/'qemu', snapshot=False, ram_mib=64,
             accel='tcg', cpu='486,-fpu', qmp_stdio=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands})
+        if args.kernel_selection:
+            log = (out/'qemu/debug.log').read_text()
+            if f'BOOT MAP {args.kernel_selection}\n' not in log:
+                raise ValueError('Kernel did not report expected memory selection')
+            report['kernel_selection'] = args.kernel_selection
         report['result'] = 'pass'
     except Exception as exc:
         report.update(result='fail', error=str(exc))

@@ -9,6 +9,7 @@
 #define I386_TASK_NATIVE_BUILD 1
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/BootMemory.HH"
+#include "/Kernel/I386/BootMap.HH"
 #include "/Kernel/I386/BootDisk.HH"
 #include "/Kernel/I386/RedSea.HH"
 #include "/Kernel/I386/FileRead.HH"
@@ -133,7 +134,7 @@ extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)
 {
-  CI386MemRange reserved[2],arena;
+  CI386MemRange reserved[2],arena,map_arena;
   CI386InterruptServices services;
   I64 pulse_used,reserved_count=1;
   Bool mouse_ready;
@@ -145,8 +146,12 @@ I64 Main(CI386BootInfo *info,I64 unused)
   }
   if(!I386BootArena(info,reserved,reserved_count,&arena) || !(info->flags&2) ||
       info->extended_kib<128 || !I386A20Enable(FALSE) ||
-      !I386BootArena(info,reserved,reserved_count,&arena,TRUE) ||
-      !I386HeapInit(&kernel_heap,arena.base,arena.size)) KernelStop;
+      !I386BootArena(info,reserved,reserved_count,&arena,TRUE)) KernelStop;
+  if(I386BootMapArena(info,I386_BOOT_MAP_ADDRESS,reserved,reserved_count,&map_arena)) {
+    arena.base=map_arena.base; arena.size=map_arena.size;
+    KernelLog("BOOT MAP selected\n");
+  } else KernelLog("BOOT MAP legacy\n");
+  if(!I386HeapInit(&kernel_heap,arena.base,arena.size)) KernelStop;
   KernelLog("ARENA "); KernelHex(arena.base); KernelLog(" ");
   KernelHex(arena.size); KernelLog("\n");
   if(!I386TaskPlatformInit(&kernel_scheduler,&kernel_root,&kernel_cpu,
@@ -346,6 +351,7 @@ U0 KernelDisplay()
   kernel_display_ready=TRUE;
 }
 #include "/Kernel/I386/BootMemory.HC"
+#include "/Kernel/I386/BootMap.HC"
 #include "/Kernel/I386/A20.HC"
 #include "/Kernel/I386/ModuleFileSingle.HC"
 #include "/Kernel/I386/Frame.HC"

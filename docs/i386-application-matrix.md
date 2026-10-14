@@ -1,0 +1,57 @@
+# Bundled application launch review
+
+Reference: `c26482bb6ad3f80106d28504ec5db3c6a360732c`.
+This source review covers all twelve `Apps/` directories (73 reference files),
+linked to the exhaustive [file inventory](i386-compatibility-inventory.json).
+Entry points and direct includes below come from the pinned Run/Load scripts.
+They are launch recipes for future reference capture; none is runtime-qualified.
+Relative includes depend on the directory change performed by those scripts.
+
+| Application | Launch script | Entry after loading | Direct Load includes |
+| --- | --- | --- | --- |
+| Budget | Apps/Budget/Run.HC | Budget | BgtStrs, Budget, BgtAccts, BgtEntry, BgtTemplate, BgtFile, BgtMain |
+| GrModels | Apps/GrModels/Run.HC | Models | ManGen, BallGen, Models |
+| KeepAway | Apps/KeepAway/Run.HC | KeepAway | KeepAway |
+| Logic | Apps/Logic/Run.HC | DigitalLogic | Logic |
+| Psalmody | Apps/Psalmody/Run.HC | Psalmody | JukeBox, JukePuppet, Psalmody, PsalmodyCtrls, PsalmodyDraw, PsalmodyFile, PsalmodyMain |
+| Span | Apps/Span/Run.HC | Span | Span.HH, SpanDerive, SpanBridge, SpanNew, SpanMain |
+| Strut | Apps/Strut/Run.HC | Strut | Strut |
+| TimeClock | Apps/TimeClock/Load.HC | PunchIn, PunchOut, TimeRep, invoked separately | TimeClk, Install |
+| Titanium | Apps/Titanium/Run.HC | Titanium | Titanium |
+| ToTheFront | Apps/ToTheFront/Run.HC | ToTheFront | TTFGlbls, TTFLib, TTFInit, TTFVis, TTFFire, TTFMove, TTFDraw, ToTheFront |
+| Vocabulary | Apps/Vocabulary/Run.HC | VocabQuiz | VocabQuiz |
+| X-Caliber | Apps/X-Caliber/Run.HC | XCaliber | XCCtrls, X-Caliber |
+
+Budget's Run script also includes Install, creating `~/Budget` and copying
+`Accts.DD.Z` if the directory is absent. TimeClock's Load script includes
+Install, creating `~/TimeClock` and printing the three public entry commands.
+Other Install scripts present in the inventory must be reviewed independently;
+the presence of an Install file does not mean Run executes it. Resolve includes
+transitively, including compressed-name lookup and shared public services,
+before treating these dependency lists as complete.
+
+## First reference-capture workflows
+
+Start with persistent applications whose results have independent file oracles:
+
+* **TimeClock:** load through its original script, punch in and out with entered
+  descriptions under a controlled guest clock, inspect the report, reboot and
+  inspect it again. Decode `~/TimeClock/TimeFile.DATA.Z` independently: typed
+  entries, dates, descriptions and EOF must match the actions. The original
+  TimeClk source writes these fields explicitly. Test cancellation as well as
+  accepted descriptions. Clock control and observations are still to implement.
+* **Budget:** start from its installed account template, enter a transaction,
+  save, quit and reopen; compare the transaction/account report with persisted
+  data. Source establishes the Strs.DD.Z, Accts.DD.Z and Bgt.DATA.Z files and
+  calls to the corresponding read/write functions. Capture exact interaction
+  and serialization behavior on the original system before writing the oracle.
+* **Psalmody:** capture a short note-edit/play/save/reopen workflow, comparing
+  stored music, visible state and audio. Direct includes identify the drawing,
+  controls and file components; exact UI actions and output oracles remain open.
+
+For every graphics/game program, capture its documented controls and a meaningful
+state transition sequence, including termination and resource cleanup. Set or
+record random seeds and clock inputs where needed; a launch screenshot is not
+sufficient evidence. Remaining per-program workflows, original observations,
+executable tests and all 224 demo-file classifications are C1 gaps. API service
+review and desktop-feature workflows also remain open.

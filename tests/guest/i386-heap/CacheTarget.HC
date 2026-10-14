@@ -99,5 +99,21 @@ I64 Main(I64 a,I64 b)
   if(q[0]!=71 || q[159]!=83 || !I386MemFree(q) || hc->used_u8s ||
       !I386MemHeapDestroy(hc) || pool->used_u8s ||
       !I386MemPoolRemove(pool,&pool->initial) || !I386MemPoolEmpty(pool)) return 155;
+  //A non-power-of-two large request must fit without its speculative bucket.
+  if(!I386MemPoolInit(pool,0x40000,300*512)) return 156;
+  page_a=I386MemPageAlloc(pool,280);
+  if(!page_a || page_a->pags!=280 || pool->used_u8s!=280*512 ||
+      !I386MemPageFree(pool,page_a)) return 157;
+  page_b=I386MemPageAlloc(pool,280);
+  if(page_b!=page_a || page_b->pags!=280 || !I386MemPageFree(pool,page_b) ||
+      pool->used_u8s || !I386MemPoolValid(pool)) return 158;
+  if(!I386MemHeapInit(hc,pool,0x1234)) return 159;
+  q=I386MemAlloc(hc,140000);
+  if(!q || (q+0)(U64)&7 || I386MemSize(q)<140000 ||
+      hc->alloced_u8s>300*512 || !I386MemPoolValid(pool)) return 160;
+  q[0]=71; q[139999]=83;
+  if(q[0]!=71 || q[139999]!=83 || !I386MemFree(q) || hc->used_u8s ||
+      !I386MemHeapDestroy(hc) || pool->used_u8s ||
+      !I386MemPoolRemove(pool,&pool->initial) || !I386MemPoolEmpty(pool)) return 161;
   return 0;
 }
