@@ -64,3 +64,8 @@ in `tests/i386/timeclock-reference.json` and an executable checker in
 controlled two-entry storage/reopen/report component workflow above. Interactive
 punch commands and reboot are still open; the complete application and native
 port remain unqualified.
+
+The native source-availability gate now passes on an additive TimeClock image.
+Executing the unchanged Load script fails at `__DIR__`; the underlying
+compile-time stream gap is tracked in [the compiler stream work](i386-compile-stream.md).
+Storage/report and full interactive native qualification remain open.

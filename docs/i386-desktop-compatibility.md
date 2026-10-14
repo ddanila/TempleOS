@@ -197,3 +197,26 @@ python3 tools/test-i386-timeclock-reference.py --out build/timeclock-reference
 Evidence: `build/i386-c1-timeclock-reference-final/result.json`. The earlier raw
 archive failure is preserved in `build/i386-c1-timeclock-reference`; it exposed
 the reference-provenance issue rather than a native application regression.
+
+## First native application load test (2026-10-14)
+
+The additive application packager places all three unchanged TimeClock files
+on a new native image while preserving the original tree, metadata and boot
+area. Host tests cover binary/empty files, idempotence, source preservation and
+six conflict/path/payload rejection cases. Guest lookup now finds Load.HC;
+the actual original Load script fails at `__DIR__`. A focused stream-block test
+also fails at KW_EXE, before formatting or injection. The shared parser exists,
+but native execution/include hooks and public stream services remain missing.
+See [compile-time stream compatibility](i386-compile-stream.md) for exact tests
+and the implementation/ownership boundaries. TimeClock remains unqualified.
+
+```sh
+python3 tools/package-i386-application.py IMAGE --app TimeClock --out build/timeclock-package
+python3 tools/test-i386-application-package.py IMAGE
+python3 tools/test-i386-timeclock-native.py build/timeclock-package/candidate.img --out build/timeclock-load
+python3 tools/test-i386-stream-block.py IMAGE --out build/stream-block
+```
+
+The final two commands currently fail intentionally, identifying work to port.
+Packaging itself passes (`build/i386-c1-timeclock-package-pinned/result.json`);
+its image is byte-identical to the application load test input.

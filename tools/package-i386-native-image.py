@@ -42,7 +42,7 @@ def snapshot(image):
     return walk(root, ''), files, directories
 
 
-def package(source, output):
+def package(source, output, additions=None):
     if output.exists() or source.resolve() == output.resolve():
         raise ValueError('Use a fresh output image; source images are immutable')
     helper = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))
@@ -58,6 +58,29 @@ def package(source, output):
     if len(original) != (start + sectors) * 512:
         raise ValueError('Unexpected native image size')
     tree, files, directories = snapshot(original)
+    additions = additions or {}
+    for path, payload in sorted(additions.items()):
+        parts = path.split('/')[1:]
+        if not path.startswith('/') or not parts or any(
+                not part or '\0' in part or part in ('.','..') or len(part.encode('ascii'))>=38 for part in parts):
+            raise ValueError('Invalid added path: '+path)
+        if not isinstance(payload, bytes):
+            raise ValueError('Added payload must be bytes')
+        node = tree
+        parent = ''
+        for part in parts[:-1]:
+            parent += '/'+part
+            if part not in node:
+                node[part] = (0x810, 0, {})
+                directories[parent] = (0x810, 0)
+            attr, date, child = node[part]
+            if attr != 0x810 or not isinstance(child, dict):
+                raise ValueError('Added directory conflicts with existing file: '+parent)
+            node = child
+        if parts[-1] in node:
+            raise ValueError('Added file would replace an existing entry: '+path)
+        node[parts[-1]] = (0x800, 0, payload)
+        files[path] = (0x800, 0, payload)
     image = bytearray(len(original))
     image[:START * 512] = original[:START * 512]
     first = start + blocks + 1
@@ -123,7 +146,8 @@ def package(source, output):
                 boot_area_sha256=hashlib.sha256(image[:START * 512]).hexdigest(),
                 source_filesystem=before, packaged_filesystem=after,
                 source_unchanged=True,
-                scope='Sorted live tree placement; preserves all file bytes, attributes, dates and native boot area; not runtime qualification')
+                added_files={name:hashlib.sha256(data).hexdigest() for name,data in sorted(additions.items())},
+                scope='Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification')
 
 
 def main():

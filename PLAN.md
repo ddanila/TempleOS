@@ -10,6 +10,17 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native application packaging and first compiler gap (2026-10-14)
+
+Additive packaging now preserves the original native tree/boot area while
+shipping an app's exact source/asset bytes. Byte/metadata/empty-file and
+rejection tests pass; all three TimeClock files match the reference. Native
+source lookup passes, but the unchanged Load script fails at `__DIR__`.
+The isolated compile-time stream test fails at #exe. The original macro uses
+StreamDir through a compile-time block; native shared-parser execution/include
+hooks and public stream bindings are still missing. See
+[the test-first compiler work](docs/i386-compile-stream.md). C1–C5 remain open.
+
 ### Current C1–C5 evidence (2026-10-14)
 
 Memory foundation checks pass: both larger capacity probes, minimal 8 MiB
