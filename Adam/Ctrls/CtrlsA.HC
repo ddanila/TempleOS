@@ -1,54 +1,7 @@
 #include "/Adam/Ctrls/CtrlsCore.HC"
 fp_update_ctrls=&CtrlsUpdate;
 
-U0 DrawCtrls(CTask *task)
-{
-  CCtrl *c;
-  CDC *dc=DCAlias(gr.dc2,task);
-  c=task->next_ctrl;
-  while (c!=&task->next_ctrl) {
-    if (c->flags&CTRLF_SHOW) {
-      if (c->flags&CTRLF_BORDER) {
-	if (!Bt(&task->display_flags,DISPLAYf_NO_BORDER)) {
-	  PUSHFD
-	  CLI
-	  while (LBts(&task->task_flags,TASKf_TASK_LOCK))
-	    PAUSE
-
-	  task->win_left--; //Allow drawing on border
-	  task->win_right++;
-	  task->win_top--;
-	  task->win_bottom++;
-	  WinDerivedValsUpdate(task);
-
-	  LBtr(&task->task_flags,TASKf_TASK_LOCK);
-	  POPFD
-
-	  if (c->draw_it)
-	    (*c->draw_it)(dc,c);
-
-	  PUSHFD
-	  CLI
-	  while (LBts(&task->task_flags,TASKf_TASK_LOCK))
-	    PAUSE
-
-	  task->win_left++;
-	  task->win_right--;
-	  task->win_top++;
-	  task->win_bottom--;
-	  WinDerivedValsUpdate(task);
-
-	  LBtr(&task->task_flags,TASKf_TASK_LOCK);
-	  POPFD
-	}
-      } else
-	if (c->draw_it)
-	  (*c->draw_it)(dc,c);
-    }
-    c=c->next;
-  }
-  DCDel(dc);
-}
+#include "/Adam/Ctrls/DrawCtrlsCore.HC"
 
 #include "/Adam/Ctrls/WinScrollControlsCore.HC"
 #define VIEWANGLES_SPACING	22

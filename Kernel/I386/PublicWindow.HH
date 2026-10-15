@@ -1,6 +1,7 @@
 #ifndef I386_PUBLIC_WINDOW_INCLUDED
 #define I386_PUBLIC_WINDOW_INCLUDED
 #include "/Kernel/DisplayFlags.HH"
+#include "/Kernel/WindowInhibitFlags.HH"
 #include "/Kernel/ControlTypes.HH"
 #define TEXT_COLS 80
 #define TEXT_ROWS 60
@@ -21,4 +22,7 @@ public _extern _WIN_TO_TOP I64 WinToTop(CTask *task=NULL,Bool update_z_buf=TRUE)
 public _extern _SYS_WINMGR_TASK CTask *sys_winmgr_task;
 #define WIf_SELF_FOCUS 0
 public _extern _WIN_SCROLLS_INIT U0 WinScrollsInit(CTask *task);
+public _extern _DRAW_CTRLS U0 DrawCtrls(CTask *task);
+public _extern _GR_UPDATE_TASK_WIN U0 GrUpdateTaskWin(CTask *task);
+public _extern _SYS_TASK_BEING_SCRN_UPDATED CTask *sys_task_being_scrn_updated;
 #endif

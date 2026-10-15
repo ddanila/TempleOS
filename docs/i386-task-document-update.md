@@ -77,3 +77,8 @@ both glyph pixel checks in
 `build/i386-c4-task-update-original-refresh/result.json`. Its source hashes match
 the current files. The native automatic-refresh gate remains unimplemented;
 these explicit presentation sessions do not satisfy it.
+
+The subsequent [whole-window component](i386-window-update.md) shares the original
+border/document/task/control ordering and adds native scope cleanup around task
+and control callbacks. The document helper above remains its inner stage;
+normal-boot scheduling and full desktop qualification are still open.

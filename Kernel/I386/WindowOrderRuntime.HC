@@ -9,7 +9,6 @@ U0 WinOrderTrace(U8 *phase,CTask *task)
   KernelLog("\n");
 }
 //Reorder public windows without changing private scheduler membership.
-#define WIf_SELF_FOCUS 0
 #define I386_WIN_CHILD_HEAD_DECLARED 1
 CTask *WinOrderChildHead(CTask *task)
 {

@@ -10,6 +10,33 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared whole-window rendering and control recovery (2026-10-15)
+
+The original window body is shared with the native renderer: border/text clearing,
+displayed and border documents, task drawing, then controls with saved scroll.
+Native scopes protect target lifetime, aliases, expanded control geometry and
+sys_task_being_scrn_updated through callback termination. Entry requires the
+renderer's active frame lease. Original window-inhibit flags now come from one
+shared header. Console version 82 publishes the new window/control entry points;
+memory remains version 24 and public layouts are unchanged.
+
+The pinned original control probe returns [31,25]: a throwing border callback
+leaves geometry expanded and an alias allocated. The shared fix returns [31,31]
+on the rebuilt original, which also retains automatic A/B callback and glyph
+behavior. The native whole-window gate covers task/control owner Exit and kill,
+normal document/task/control order, caught failure and forced callback Exit.
+All 48 native commands pass with mask 63 in the eight owner and three
+surviving-owner lifecycle cases; normal callback order is 123.
+See [window-update evidence and boundaries](docs/i386-window-update.md).
+
+Original rebuild, native cross-build and 386 boot audit pass. The 8 MiB startup
+gate passes in 48.65 seconds without build-provider loads. Existing 38-command
+document, 31-command worker-recovery, 44-command replacement and 16-command frame
+sessions remain green. Scheduled ring traversal, original worker error policy,
+cursor/view arbitration, full-window pixel qualification, normal stdout/input
+and the native automatic A/B gate remain open. No refresh worker is enabled at
+boot; C1–C5 remain incomplete.
+
 ### Original task-document updates gain native cleanup (2026-10-15)
 
 The shared original DocUpdateTaskDocs path now runs within a native target-owner

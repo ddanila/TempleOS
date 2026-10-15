@@ -76,7 +76,7 @@ extern U0 ConsolePresent();
 extern Bool NativeKeyboardStart();
 extern I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE);
 extern I64 NativeJobSource(U8 *text);
-CTask *sys_focus_task,*sys_winmgr_task;
+CTask *sys_focus_task,*sys_winmgr_task,*sys_task_being_scrn_updated;
 extern I64 NativeWinToTop(CTask *task=0,Bool update_z_buf=TRUE);
 extern Bool DocExe(CDoc *doc,I64 flags=0);
 extern I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
@@ -260,7 +260,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[221];
+CI386KernelSymbol console_doc_exports[224];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -278,6 +278,8 @@ extern U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL);
 extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
 U32 console_version=I386_CONSOLE_VERSION;
 U8 **native_owner_retire_slot;
+extern U0 DrawCtrls(CTask *task);
+extern U0 GrUpdateTaskWin(CTask *task);
 extern Bool NativeGraphicsStart();
 extern Bool NativeGraphicsStorageReserve();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
@@ -576,10 +578,13 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(218,"_DOC_GET_KEY",(&DocGetKey+0)(U64));
   ConsoleDocExportSet(219,"_DOC_RECALC",(&DocRecalc+0)(U64));
   ConsoleDocExportSet(220,"_DOC_UPDATE_TASK_DOCS",(&DocUpdateTaskDocs+0)(U64));
-  for(i=0;i<221;i++) {
+  ConsoleDocExportSet(221,"_DRAW_CTRLS",(&DrawCtrls+0)(U64));
+  ConsoleDocExportSet(222,"_GR_UPDATE_TASK_WIN",(&GrUpdateTaskWin+0)(U64));
+  ConsoleDocExportSet(223,"_SYS_TASK_BEING_SCRN_UPDATED",(&sys_task_being_scrn_updated+0)(U64));
+  for(i=0;i<224;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
+    if(i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   DocDefaultsInit(&doldoc);
@@ -814,6 +819,7 @@ U0 I386DocBreakPoll()
 
 #include "/Kernel/I386/TextRender.HC"
 #include "/Kernel/I386/GraphicsFrame.HC"
+#include "/Kernel/I386/WindowUpdateScope.HC"
 
 #include "/Kernel/I386/KeyboardMessages.HC"
 

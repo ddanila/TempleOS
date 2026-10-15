@@ -1,3 +1,4 @@
+#include "/Kernel/WindowInhibitFlags.HH"
 #include "/Kernel/WinGeometry.HC"
 #include "/Kernel/WinScroll.HC"
 #include "/Adam/Gr/GrTextRect.HC"

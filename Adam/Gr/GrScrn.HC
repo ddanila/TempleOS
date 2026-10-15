@@ -15,34 +15,13 @@ U0 GrUpdateTaskODEs(CTask *task)
   sys_task_being_scrn_updated=NULL;
 }
 
+#include "/Adam/Gr/GrUpdateTaskWinCore.HC"
+
 U0 GrUpdateTaskWin(CTask *task)
-{ //Draw a win.  Only Core0 tasks have a win.
-  CDC *dc;
-  CD3I64 saved_scroll;
+{ //Original per-window error policy surrounds the shared update body.
   sys_task_being_scrn_updated=task;
   try {
-    if (!Bt(&task->display_flags,DISPLAYf_NO_BORDER))
-      TextBorder(Fs,task->win_left,task->win_right,task->win_top,
-	    task->win_bottom,task->border_attr,task==sys_focus_task);
-    TextRect(task->win_left,task->win_right,
-	  task->win_top,task->win_bottom,task->text_attr<<8);
-    if (task==sys_winmgr_task) {
-      if (gr.fp_wall_paper)
-	(*gr.fp_wall_paper)(task);
-    } else if (!(task->win_inhibit&WIF_SELF_DOC))
-      DocUpdateTaskDocs(task);
-    if (TaskValidate(task)) {
-      if (task->draw_it) {
-	dc=DCAlias(gr.dc2,task);
-	(*task->draw_it)(task,dc);
-	DCDel(dc);
-      }
-      if (TaskValidate(task)) {
-	WinScrollNull(task,&saved_scroll);
-	DrawCtrls(task);
-	WinScrollRestore(task,&saved_scroll);
-      }
-    }
+    GrUpdateTaskWinCore(task);
   } catch {
     if (task!=Fs && TaskValidate(task)) {
       LBtr(&task->display_flags,DISPLAYf_SHOW);

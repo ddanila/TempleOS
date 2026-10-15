@@ -662,7 +662,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-window-update.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-window-update-verified/result.json",
+          "scope": "48-command native shared-window component: task/control owner Exit/kill, original document/draw/control order 123, surviving-owner normal/fault/Exit, geometry/scroll/alias/context cleanup, exact parent heap and presentation reuse; scheduled renderer, full-window pixels and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-control-draw-reference.py --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c1-control-draw-red-verified/result.json",
+          "scope": "Pinned original normal/throwing border control returns [31,25]; throwing path fails geometry and alias cleanup; fallback cleanup follows observations; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-control-draw-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-control-draw-green/result.json",
+          "scope": "Rebuilt original shared control renderer returns [31,31], normal and throwing callbacks restore geometry/task lock and exact alias/parent heap; intentional common cleanup fix, not whole-file qualification"
+        }
+      ]
     },
     {
       "path": "Adam/Ctrls/CtrlsBttn.HC",
@@ -2360,6 +2379,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-mouse-present-wait-final/result.json",
           "scope": "Native fullscreen upload/pointer adapter: 23 commands, real packet/lease contention, killed waiter, stale backing epoch and solid-blue VGA oracle, exact parent recovery and whole-console transitions; not original cursor composition, whole-file or full desktop qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-window-update.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-window-update-verified/result.json",
+          "scope": "48-command native shared-window component: task/control owner Exit/kill, original document/draw/control order 123, surviving-owner normal/fault/Exit, geometry/scroll/alias/context cleanup, exact parent heap and presentation reuse; scheduled renderer, full-window pixels and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-window-update-original-refresh/result.json",
+          "scope": "Rebuilt-original automatic A/B callback, cells and glyph pixels remain green after extracting shared window/control bodies; not native scheduled rendering or whole-file qualification"
         }
       ]
     },

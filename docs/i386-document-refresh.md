@@ -131,3 +131,10 @@ restoration on forced Exit. See [task-document updates](i386-task-document-updat
 for its contract and the persistent managed-worker recovery prototype. This
 scope is the inner document stage; the eventual window scope must also cover
 task drawing, controls and any other owner-compiled callbacks.
+
+The [shared whole-window renderer](i386-window-update.md) now supplies the next
+layer: border/text clearing, the protected document stage, task drawing and
+controls. Native scopes also restore aliases, expanded control geometry, outer
+scroll and the current-update context on forced Exit. Its shared control cleanup
+corrects a pinned-original callback-error defect. Scheduled traversal, original
+per-window error policy and automatic desktop integration remain open.
