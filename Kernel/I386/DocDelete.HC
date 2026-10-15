@@ -24,6 +24,17 @@ U0 NativeDocDeleteRelease(CNativeRenderScope *base)
   }
   NativeDocDeleteOwnerRelease(scope);
 }
+U0 NativeDocDeletePrepareExit(CNativeRenderScope *base)
+{
+  CNativeDocDeleteScope *scope=base;
+  if(!scope->retained_owner)return;
+  //Exit abandons this deletion. Descendants may now destroy the target heap;
+  //late cleanup must not dereference it after dropping the storage reference.
+  NativeDocDeleteRelease(base);
+  *scope->doc=NULL;*scope->unlock=FALSE;*scope->disposed=FALSE;
+  scope->resource=NULL;scope->resource_owner=scope->window_owner=NULL;
+  scope->retiring_resource=FALSE;
+}
 U0 NativeDocDeleteOpen(CNativeDocDeleteScope *scope,CDoc **doc,
   Bool *unlock,Bool *disposed)
 {
@@ -49,6 +60,7 @@ U0 NativeDocDeleteOpen(CNativeDocDeleteScope *scope,CDoc **doc,
     owner->lifetime_refs++;scope->retained_owner=owner;
   }
   NativeRenderScopeOpen(scope,&NativeDocDeleteRelease);
+  scope->prepare_exit=&NativeDocDeletePrepareExit;
   if(owner==I386TaskSelf)scope->resource_owner=owner;
   //The destructor uses document allocations, not the window task. Pinning the
   //window here creates a cycle when resource retirement stops that editor:

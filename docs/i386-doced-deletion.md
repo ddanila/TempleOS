@@ -106,3 +106,44 @@ and allocation failure, late input/scan and remaining border-borrower interactio
 Cyclic parent/descendant retirement remains unqualified. Test precise backing
 memory budgets separately from the allocation/reaping checks above. Complete
 form/action/menu/editor/application parity and C1–C5 remain open.
+
+## Recovered cancellation and committed descendant Exit
+
+The paired `i386-docdel-cancel` runners require mask 255: a throwing task-end
+callback recovers the blocked deleter, preserving its heap and document roles;
+the document can then be deleted again. The owner must be physically reaped
+while the recovered deleter remains alive, so caller exit cannot hide a leaked
+reference. Original and Console 98 controls pass with unchanged inputs.
+
+The paired `i386-docdel-caller-exit` runners require mask 127. Here the document
+owner is the deleter's own child. Original behavior passes; Console 98 produces
+mask 91 because the child storage reference prevents physical reaping while
+its exiting parent waits for the child list to empty.
+
+The Console 99 / Memory 26 implementation introduces selective exit preparation.
+After committing Exit, Memory calls the existing owner-retirement hook before
+and after the child barrier. When children remain, Console invokes only optional
+non-yielding preparation callbacks under IRQ exclusion with break polling
+suppressed. DocDel releases its foreign storage reference and detaches its
+abandoned target and release flags, preventing a later dereference after child
+heap destruction. It does not remove the registered cleanup scope. Other scope
+resources remain live until descendants finish; the existing final drain and
+independent-borrower retirement then run. This does not establish correctness
+for arbitrary cyclic resource dependencies.
+
+`tools/test-i386-parent-frame-retirement.py` separately checks the ordering
+invariant through public task state. A parent is blocked inside a graphics draw
+callback with its alias allocated. Its child's end callback compares the still
+live parent's data-heap allocation count with the draw-time count. The test
+requires that observation, both tasks retiring, no normal frame return, and a
+subsequent successful presentation. It never dereferences the retired alias.
+
+The selective implementation passes the committed Exit mask 127, recovered
+cancellation mask 255, normal caller-owned and editor-owned deletion, 28-command
+descendant and end-callback suites, the 35-command renderer retirement suite,
+and parent-frame mask 7 with presentation reuse. Evidence directories use the
+`build/i386-c2-selective-exit-` prefix. The rejected broad-drain image visibly
+returns mask 6 in `build/i386-c2-broad-drain-parent-frame-red/qemu/startup-command-08.ppm`.
+The two-generation original bootstrap and cross-build pass; all 1480 source/build
+pins match. Normal 8 MiB startup passes nine checks in 50.92 seconds. These are
+bounded contracts, not general qualification of parent/descendant resource cycles.

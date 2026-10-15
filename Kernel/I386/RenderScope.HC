@@ -4,6 +4,7 @@ class CNativeRenderScope {
   CI386Task *task;
   U0 (*previous_cleanup)(CI386Task *task);
   U0 (*release)(CNativeRenderScope *scope);
+  U0 (*prepare_exit)(CNativeRenderScope *scope);
   CI386Task *resource_owner,*window_owner;
   U8 *resource;
   Bool retiring_resource,legacy_view;
@@ -17,6 +18,7 @@ U0 NativeRenderScopeOpen(CNativeRenderScope *scope,
   scope->task=I386TaskSelf;scope->previous_cleanup=scope->task->cleanup;
   scope->resource_owner=scope->window_owner=NULL;
   scope->resource=NULL;scope->retiring_resource=scope->legacy_view=FALSE;
+  scope->prepare_exit=NULL;
   scope->release=release;scope->next=native_render_scopes;
   native_render_scopes=scope;scope->task->cleanup=&NativeRenderCleanup;
   I386IrqRestore(irq);
@@ -127,8 +129,24 @@ U0 NativeRenderRetire(CI386Task *owner,U8 *resource)
     //Never retain a stack scope across yielding; callbacks can recover a kill.
   }
 }
+U0 NativeRenderPrepareExiting(CI386Task *task)
+{//Only non-yielding storage-reference preparation; preserve parent temporaries.
+  CNativeRenderScope *scope;
+  U32 irq=I386IrqSave,finishing=task->finishing;
+  task->finishing=TRUE;
+  scope=native_render_scopes;
+  while(scope) {
+    if(scope->task==task && scope->prepare_exit)(*scope->prepare_exit)(scope);
+    scope=scope->next;
+  }
+  task->finishing=finishing;I386IrqRestore(irq);
+}
 U0 NativeRenderOwnerRetire(CI386Task *task)
 {
+  CTask *head=(&task->next_child_task)(U8 *)-offset(CTask.next_sibling_task);
+  if(task->next_child_task!=head) {
+    NativeRenderPrepareExiting(task);return;
+  }
   NativeRenderDrainExiting(task);
   NativeRenderRetire(task,NULL);
 }

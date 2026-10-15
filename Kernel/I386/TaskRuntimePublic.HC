@@ -249,6 +249,11 @@ U0 Exit()
   record->exiting=TRUE;
   //Publish committed retirement before any callback/child wait can yield.
   task->task_flags|=1<<TASKf_KILL_TASK;
+  //Release abandoned foreign storage holds before the descendant reaping wait.
+  //Other cleanup resources remain live until every child has finished.
+  I386IrqRestore(irq);
+  if(memory_owner_retire)(*memory_owner_retire)(task);
+  irq=I386IrqSave;
   head=MemoryChildHead(task);
   //A descendant's callback can clear KILL and recover to its active catch.
   //Like TaskEnd, renew termination requests until all queued children retire.

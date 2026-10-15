@@ -75,9 +75,13 @@ task. Arbitrary private cleanup wrappers hiding native render scopes are not
 qualified by this work.
 
 Cyclic dependencies between an exiting parent, its descendants and render
-resources are not qualified. Linked-child retirement still precedes the owner
-barrier, preserving the existing lifetime of parent temporaries during child
-cleanup.
+resources are not generally qualified. Console 99 / Memory 26 adds a selective
+preparation pass before linked-child retirement: abandoned DocDel frames drop
+foreign storage references and detach their target. It does not destroy other
+scope resources. Linked-child retirement still precedes the final scope drain
+and independent-owner barrier, preserving parent temporaries during child
+cleanup. The retained-child DocDel contract is recorded separately in
+[i386-doced-deletion.md](i386-doced-deletion.md).
 
 Pointers must be valid when borrowing starts. Unscoped raw pointers, callback
 code owned by an unrelated third task, and arbitrary unregistered document

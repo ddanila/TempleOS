@@ -11,6 +11,35 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Selective Exit preparation fixes retained-child retirement (2026-10-15)
+
+Console 99 / Memory 26 releases an abandoned DocDel foreign-owner storage
+reference before Exit waits for child reaping. The private scope preparation
+callback detaches the deletion target before its owner heap can disappear;
+other scope allocations remain live through descendant cleanup. Public layouts
+and service tables are unchanged. This replaces the rejected broad early drain.
+
+The formerly failing caller-Exit contract now passes mask 127; recovered
+live-caller cancellation still passes mask 255. Normal caller-owned deletion
+passes all three mask-63 cases and editor-owned deletion passes mask 127.
+Task descendant and end-callback suites pass 28 commands each. The new parent
+frame-retirement regression passes mask 7 and presentation reuse on the selective
+implementation; the broad-drain control visibly returns 6, detecting premature
+release of the parent's alias allocation during child cleanup.
+
+Evidence uses `build/i386-c2-selective-exit-final-cross/kernel.img` and
+`build/i386-c2-selective-exit-{caller-exit,cancel,doced-delete,doced-owned-delete,descendants,end-callbacks,parent-frame}`.
+The original two-generation bootstrap and cross-build pass, including the limited
+386 instruction audit (96 BIOS / 255 protected instructions); all 1480 source
+and build pins match. Normal 8 MiB startup passes nine checks in 50.92 seconds.
+The existing 35-command renderer retirement suite also passes. The broad-drain
+negative control returns 6 instead of 7 and is rejected by the same oracle.
+
+This closes the specific retained-child deletion cycle, not arbitrary cyclic
+resource dependencies. Interrupted restoration, constructor/admission and late
+input/scan failures, precise backing-memory budgets, full form/menu/editor and
+application compatibility remain open. C1–C5 remain incomplete.
+
 ### DocDel cancellation qualified; descendant Exit regression recorded (2026-10-15)
 
 The shared live-caller cancellation fixture passes on the original system and
