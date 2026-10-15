@@ -170,6 +170,9 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE)
   } else native_terminal_head=terminal;
   task->cleanup=&NativeTerminalRelease;
   if(root) native_terminal_root=terminal;
+  //Publish one initial palette for retained and original document rendering.
+  //Initialize only after allocation succeeds; later caller changes remain intact.
+  task->text_attr=terminal->surface.background<<4|terminal->surface.foreground;
   task->put_doc=task->display_doc=terminal->document;
   I386IrqRestore(irq);
   return terminal;

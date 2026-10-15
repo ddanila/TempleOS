@@ -78,6 +78,11 @@ def main():
             actual=(out/'guest'/name).read_bytes()
             report.setdefault('frame_hex',{})[name]=actual.hex()
             if actual!=expected:raise ValueError('Automatic original frame differs: '+name)
+        prompt=list(struct.unpack('<7q',(out/'guest/prompt-cells.bin').read_bytes()))
+        report['prompt_cells']=prompt
+        report['expected_prompt_cells']=[0xF200|ord(ch) for ch in '6*7;42>']
+        if prompt!=report['expected_prompt_cells']:
+            raise ValueError('Original prompt input must use green foreground on white')
         report['result'] = 'pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc))

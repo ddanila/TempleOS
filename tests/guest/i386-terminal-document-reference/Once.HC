@@ -29,6 +29,17 @@ U0 CaptureAutomatic()
   CLI
   for(y=0;y<8;y++)for(x=0;x<8;x++)second[y*8+x]=gr.dc2->body[y*640+x];
   POPFD
+  //Original prompt marker styling is independent of native console projection.
+  DocRst(d,TRUE);d->flags|=DOCF_HIDE_CURSOR|DOCF_NO_SCROLL_BARS;
+  DocPrint(d,"> ");e=DocEntryNewBase(d,DOCT_PMT);DocInsEntry(d,e);
+  DocPutKey(d,'6');DocPutKey(d,'*');DocPutKey(d,'7');DocPutKey(d,';');
+  Refresh(3);
+  I64 *prompt=CAlloc(56);
+  for(x=0;x<4;x++)prompt[x]=gr.text_base[x+2]&0xFFFF;
+  DocPutKey(d,10);DocPrint(d,"42\n> ");Refresh(3);
+  prompt[4]=gr.text_base[80]&0xFFFF;prompt[5]=gr.text_base[81]&0xFFFF;
+  prompt[6]=gr.text_base[160]&0xFFFF;
+  ARExport("prompt-cells.bin",prompt,56);
   Fs->display_doc=old_doc;Fs->put_doc=old_put;Fs->text_attr=old_attr;Fs->display_flags=old_display;Fs->win_inhibit=old_inhibit;
   WinHorz(old_l,old_r);WinVert(old_t,old_b);
   ARExport("doc-auto.bin",v,32);ARExport("auto-first.bin",first,64);ARExport("auto-second.bin",second,64);

@@ -63,6 +63,11 @@ def main():
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejection_prefixes':('INPUT REJECT ',),
+                           # Original DOCT_PMT renders command input green.
+                           'command_styles':{8:{
+                               'typing_colors':{(4,x):2 for x in range(2,6)},
+                               'return_colors':{**{(4,x):2 for x in range(2,6)},
+                                                (5,0):2,(5,1):2,(6,0):2}}},
                            'command_timeout':30})
         report['result'] = 'pass'
     except Exception as exc:

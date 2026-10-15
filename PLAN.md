@@ -11,6 +11,30 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Terminal return and original prompt colors repaired (2026-10-15)
+
+The Console-88 candidate now initializes each terminal task's text palette from
+its retained surface when creation succeeds. Previously the task attribute was
+zero: restoring it after rich rendering made the ordinary document black-on-black.
+The fixed existing-terminal gate passes all nine commands, A/B callback/glyph
+checks, restored heading and subsequent `6*7` → `42` input. Exact pixels include
+green prompt/input/output attributes confirmed by a seven-cell pinned-original
+oracle; the harness now accepts explicit per-command color expectations. These
+checks retain unchanged inputs. Full cursor/input/editor parity is not implied.
+
+The fixed image in `build/i386-c2-terminal-palette-cross` passes original
+bootstrap, cross-build and limited 386 boot audit; all 1473 source/build hashes
+match. Normal 8 MiB startup passes in 49.00 seconds with WinMgr enabled and no
+build-provider loading. Key-device (21 commands), output routing (10), automatic
+window-error isolation (14) and held-frame/manager-restart (14) checks pass.
+Both nine-command same-role and partial-stdout visual regressions also pass on
+the fixed image with unchanged inputs.
+The broader unpaused private-view regression is still running on the preceding
+pinned image; full current-image editor/help/navigation qualification remains
+open. See [repair and evidence](docs/i386-document-role-checkpoint.md#terminal-palette-and-prompt-compatibility-repair).
+C1–C5 remain incomplete; next qualify private-view integration and continue the
+ordinary cursor/input/event and persistent-graphics work.
+
 ### Document-role integration checkpoint (2026-10-15)
 
 Console 88 is the next C2/C4 candidate. It replaces put/display pointer

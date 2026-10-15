@@ -316,7 +316,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 return [text[index:index+80] for index in range(0,len(text)+1,80)]
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
-                       interaction=None):
+                       interaction=None, typing_colors=None, return_colors=None):
                 nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
@@ -330,7 +330,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     press(plain.get(ch,ch.lower()))
                     if shift: key('shift',False)
                     if index%4==3:
-                        screen((rows[:-1]+typed_rows(source[:index+1]))[-60:],'command-typing')
+                        screen((rows[:-1]+typed_rows(source[:index+1]))[-60:],'command-typing',colors=typing_colors)
                 marks=log.read_text().count('@')
                 press('ret')
                 if interaction is not None:
@@ -484,7 +484,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
-                screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,
+                screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,colors=return_colors,
                        pointer=interaction.get('return_pointer') if interaction is not None else None,
                        rejection_message=rejection_message)
             pause_window_manager=startup_check is not None and startup_check.get('pause_window_manager',True)
@@ -494,8 +494,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 for index,command_spec in enumerate(startup_check['commands']):
                     source,answers=command_spec[:2]
                     interaction=command_spec[2] if len(command_spec)>2 else None
+                    style=startup_check.get('command_styles',{}).get(index,{})
                     submit(source,answers,f'startup-command-{index:02}',
-                           timeout=startup_check.get('command_timeout',30),interaction=interaction)
+                           timeout=startup_check.get('command_timeout',30),interaction=interaction,
+                           typing_colors=style.get('typing_colors'),return_colors=style.get('return_colors'))
                 result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,'startup_status':status,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),

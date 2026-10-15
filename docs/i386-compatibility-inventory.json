@@ -1600,6 +1600,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-document-replace-verified/result.json",
           "scope": "44-command native lifecycle session: replace displayed document during yielding render, cancel old renderer, fresh renderer evaluates replacement, restore display pointer, exact heap and presentation reuse; not automatic refresh or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-terminal-document-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-terminal-prompt-output-reference/result.json",
+          "scope": "Existing original terminal document A/B callback/cell/glyph oracle and seven green prompt/input/output cells; complete input/cursor/editor and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-terminal-document-refresh.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-terminal-palette-return-final/result.json",
+          "scope": "Console-88 palette repair: same existing terminal document renders A/B, restores heading, accepts continued 6*7 and shows 42/next prompt with original green attributes; nine commands, full framebuffer checks and unchanged inputs; whole-file and complete desktop/input qualification remain open"
         }
       ]
     },
@@ -1646,6 +1658,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-task-update-original-refresh/result.json",
           "scope": "Rebuilt-original control retains automatic A/B callback progress, cells and glyph pixels after shared task-update lifecycle hooks; not native automatic refresh or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-terminal-document-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-terminal-prompt-output-reference/result.json",
+          "scope": "Existing original terminal document A/B callback/cell/glyph oracle and seven green prompt/input/output cells; complete input/cursor/editor and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-terminal-document-refresh.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-terminal-palette-return-final/result.json",
+          "scope": "Console-88 palette repair: same existing terminal document renders A/B, restores heading, accepts continued 6*7 and shows 42/next prompt with original green attributes; nine commands, full framebuffer checks and unchanged inputs; whole-file and complete desktop/input qualification remain open"
         }
       ]
     },
