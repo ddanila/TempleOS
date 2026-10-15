@@ -11,6 +11,46 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Directory-context oracle and native Console fault localization (2026-10-15)
+
+The prior 16 MiB no-FPU Console/Editor component build is terminal, failed at
+NativeMousePresentSplit after 723 functions: vector 13, PC 0x220711. Mapping the
+retained CompilerRuntime image locates an opcode read in I386ValueClass (payload
+0x90DE1, function offset 0x1C9; movzx eax,word [eax]). Editor was not reached and
+no native export audit passed. Root cause remains unproven. Evidence:
+build/i386-c5-console-fault-location.json and
+build/i386-c2-editor-replace-native-build/result.json.
+
+An isolated compile of the exact function body with complete canonical private
+records and real helper import signatures passes in
+build/i386-c5-mouse-compile-isolated. It is not linked/runtime mouse qualification
+and does not reproduce the full declaration/compiler state. A fresh Console-only
+debug replay is running in build/i386-c2-editor-replace-native-debug, with a late
+conditional breakpoint watcher for register/stack/RAM capture. Runtime sources
+remain frozen. No invalid-IR fallback or shortened mouse implementation is used.
+See [fault evidence and pending replay](docs/i386-native-console-fault.md).
+
+Twelve original DirContextNew/DirContextDel contracts pass in
+build/i386-c4-directory-context-partial-reference with masks of 63 and unchanged
+inputs. Cases cover filename/relative/trimmed/semicolon masks, make_mask,
+no_mask, make_dirs, restore FALSE, nested restoration, failed-path rollback
+and null deletion. Failure follows a valid A prefix before Missing/Deep, so
+restoration must undo partial directory progress. Checks include real returned
+old_dir/mask/dv fields, caller active/final directory and drive, document roles
+and exact caller heap recovery. Restore-FALSE state is observed before fixture
+cleanup. Original B: RAM maps explicitly to native C: for this profile; this
+is not cross-drive/media coverage.
+
+The native prerequisite test in
+build/i386-c2-directory-context-partial-prerequisite-red rejects DirContextNew
+(Invalid lval) before loading the fixture or running setup. No native behavior
+pass is claimed. Next share the canonical context type and complete original
+routines with real drive/string/silencing dependencies, then run the same cases.
+Do not change frozen runtime sources before the diagnostic replay terminates.
+Exceptions, allocation failure, cancellation, cross-task/drive ownership and
+complete original DocPutKey remain required. C1–C5 stay incomplete. See
+[directory-context contracts](docs/i386-directory-context.md).
+
 ### Complete replacement and lazy navigation pass paired contracts (Console 113, 2026-10-15)
 
 The complete original PopUpReplaceSkipAllCancel, EdFindReplace, EdReplace and

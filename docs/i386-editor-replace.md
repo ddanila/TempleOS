@@ -118,3 +118,9 @@ are still failures. The current native Console/Editor build job is live in
 build/i386-c2-editor-replace-native-build at 16 MiB on 486 without an FPU. Its
 export audit and installed runtime are pending. Keep runtime sources frozen
 until it terminates; component build intent is not a qualification result.
+
+The component build described as pending above has now terminated with a
+vector-13 fault at 0x220711 while compiling Console. Editor was not reached;
+no native build/export pass is claimed. [Fault localization and the isolated
+counterexample](i386-native-console-fault.md) describe a live debug replay on
+unchanged runtime sources. The cause and debug artifacts remain pending.
