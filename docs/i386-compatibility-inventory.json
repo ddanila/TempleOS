@@ -1036,7 +1036,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-menu-chooser-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-menu-chooser-reference-final/result.json",
+          "scope": "Actual original DocEd/DocMenu message-driven left/right/second selection, cancel, unlocked callback, MSG_CMD and recorded doc/task fields; no interposed chooser; mouse/data/restart/popup UI and whole-file remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-menu-chooser.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-menu-chooser-console91-red/result.json",
+          "scope": "Console91 missing native DocMenu rejects prerequisite helper; fixture transfer and chooser cases unexecuted, unchanged pins; full menu/list/entry-action integration required"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocGet.HC",
@@ -12172,6 +12185,12 @@
           "result": "pass",
           "evidence": "build/i386-c2-popup-execution-green-routing/result.json",
           "scope": "Console90 thirteen-command real servant/result/async/caller-heap contract with exact Root pixels and no null-document scalar leak; unchanged inputs; cancellation, full servant startup, menus and whole-file remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-lifetime.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-popup-live-caller-green/result.json",
+          "scope": "Console91 24 commands: previous owner/retirement, recovered cancellation and committed caller kill, live caller empty queues/heap before exit, task retirement and presentation reuse; unchanged pins; general foreign master/output owner, UI and whole-file remain open"
         }
       ]
     },

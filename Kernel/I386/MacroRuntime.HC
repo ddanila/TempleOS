@@ -7,8 +7,10 @@ U32 char_bmp_macro[16]={
   0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,
   0,0,0,0,0,0,0,0
 };
+extern U0 NativePopupJobReleased(CJob *job);
 U0 JobDel(CJob *job)
 {
+  NativePopupJobReleased(job);
   if(job->job_code==JOBT_TEXT_INPUT) Free(job->fun_arg);
   Free(job->aux_str); Free(job);
 }

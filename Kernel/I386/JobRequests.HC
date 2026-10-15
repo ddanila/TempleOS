@@ -5,7 +5,7 @@ U0 NativeTaskRstAwaitingMsg(CTask *task)
     LBtr(&task->task_flags,TASKf_AWAITING_MSG);
   } while(task=task->popup_task);
 }
-CJob *NativeTaskExe(CTask *srv,CTask *master,U8 *data,I64 flags)
+CJob *NativeTaskExeOwned(CTask *srv,CTask *master,U8 *data,I64 flags,CJob **owned)
 {//Copy executable source into root-owned request storage, as in original TaskExe.
   CJob *job=NULL;
   CTask *root=I386TaskSelf->owner->root;
@@ -27,6 +27,7 @@ CJob *NativeTaskExe(CTask *srv,CTask *master,U8 *data,I64 flags)
     NativeTaskRstAwaitingMsg(srv);
     QueIns(job,srv->srv_ctrl.last_waiting);
     queued=TRUE;
+    if(owned)*owned=job;
     LBtr(&srv->srv_ctrl.flags,JOBCf_LOCKED);
     I386SchedWake(srv(CI386Task *)->owner,srv);
     if(Bt(&flags,JOBf_WAKE_MASTER)) {
@@ -39,3 +40,6 @@ CJob *NativeTaskExe(CTask *srv,CTask *master,U8 *data,I64 flags)
   }
   I386IrqRestore(irq); return job;
 }
+
+CJob *NativeTaskExe(CTask *srv,CTask *master,U8 *data,I64 flags)
+{ return NativeTaskExeOwned(srv,master,data,flags,NULL); }

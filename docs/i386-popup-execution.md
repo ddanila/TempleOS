@@ -147,3 +147,10 @@ worker contract. `build/i386-c2-popup-execution-job-final-8m` now fails immediat
 at the known guest allocation rejection, preserving its 8 MiB default. The
 checker reports the original runner's actual 2048 MiB configuration separately
 from the explicitly selected native RAM profile.
+
+
+The [Console-91 lifetime follow-up](i386-popup-lifetimes.md) qualifies previous-owner
+restoration and two caller termination paths, then repairs a stale completion
+left for a recovered caller that remains alive. The stronger 24-command gate
+passes; general foreign-master/output-owner/fault and complete UI startup still
+remain open. The first 18-command pass alone did not cover this queue leak.

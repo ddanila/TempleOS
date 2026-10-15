@@ -11,6 +11,33 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Recovered popup callers no longer inherit an aborted result (2026-10-15)
+
+Console 91 fixes an ownership gap exposed by keeping a cancelled popup caller
+alive: Console 90 returns mask 191 because the aborted child's completion remains
+in its done queue. Caller exit hid this in the first lifetime check. A private
+owned-submit path now records the request before suspension; JobDel clears the
+association on collection. Cancellation deletes a completed owned request or
+arranges worker cleanup without late result/wake/focus publication. Public TaskExe,
+229 exports, public layouts, Memory 25 and the private service table are unchanged.
+
+The 24-command lifetime gate now passes mask 255, both earlier mask-63 cases,
+previous-owner/retirement behavior, heap/presentation reuse and continued input.
+The pinned and rebuilt original both return [0,1] for previous-owner handling;
+native restoration of a still-live owner is an intentional cleanup repair.
+Ordinary popup execution (13), worker jobs at 64 MiB (24) and self-queue jobs at
+8 MiB (21) pass. Original bootstrap, cross-build and limited 386 boot audit pass;
+all 1475 source/build hashes match. Normal 8 MiB startup passes in 48.70 seconds
+without build providers. The known 8 MiB spawned-worker capacity gap remains.
+
+C1 now has a real DocEd/DocMenu message-driven chooser oracle: [11,12,22,-1,17,1]
+for left/right/second selection, cancellation and unlocked callback, with checked
+MSG_CMD and recorded task/document restoration. The native gate rejects the
+missing DocMenu API before any chooser cases. Mouse/data/restart/popup rendering
+and the complete original menu/list/entry-action/GetStr path remain open; preserve
+those behaviors rather than substituting a reduced picker. See
+[lifetime repair and menu evidence](docs/i386-popup-lifetimes.md). C1–C5 are incomplete.
+
 ### Real popup execution dependency and scalar routing (2026-10-15)
 
 GetStr's full original path depends on selected-entry replay, which in turn

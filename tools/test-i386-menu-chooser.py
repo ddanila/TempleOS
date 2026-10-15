@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""Require the actual menu chooser contract through public DocMenu."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import runpy
+import shutil
+
+ROOT = Path(__file__).resolve().parents[1]
+FIXTURE=ROOT/"tests/guest/i386-menu-chooser-reference/MenuChooser.HC"
+def chooser_commands():
+    source=FIXTURE.read_text()
+    commands=[('I64 MCPrerequisite(CDoc *d){return DocMenu(d);}',[]),
+              (f'U8 *mc_source=CAlloc({len(source)+1});',[]),
+              ('U0 MCTransfer(I64 o,U8*s,I64 n){MemCpy(mc_source+o,s,n);}',[])]
+    for offset in range(0,len(source),60):
+        chunk=source[offset:offset+60]
+        encoded=json.dumps(chunk.replace('$','$$'))
+        commands.append((f'MCTransfer({offset},{encoded},{len(chunk)});',[]))
+    commands += [(f'FileWrite("C:/MenuChooser.HC",mc_source,{len(source)})>0;',['1']),
+                 ('Free(mc_source);',[]),('#include "C:/MenuChooser.HC"',[])]
+    commands += [(f'MCChoose({i})=={value};',['1'])
+                 for i,value in enumerate((11,12,22,-1,17))]
+    return commands+[('mc_unlocked;',['1']),('6*7;',['42'])]
+
+COMMANDS=chooser_commands()
+
+if any(len(c[0])>255 for c in COMMANDS):
+    raise ValueError("Put/display fixture exceeds native input limit")
+
+
+def serializable(value):
+    if isinstance(value,dict):
+        return {str(key):serializable(item) for key,item in value.items()}
+    if isinstance(value,(list,tuple)):
+        return [serializable(item) for item in value]
+    if isinstance(value,set):
+        return [serializable(item) for item in sorted(value)]
+    return value
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('disk', type=Path)
+    parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    args = parser.parse_args()
+    source, out = args.disk.resolve(), args.out.resolve()
+    commands = list(COMMANDS)
+    if out.exists():
+        parser.error('Use a fresh output directory')
+    sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+    runner = ROOT/'tools/i386-kernel-input.py'
+    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
+    out.mkdir(parents=True)
+    working = out/'working.img'
+    shutil.copyfile(source, working)
+    report = dict(result='running', scope='DocMenu prerequisite then actual original chooser fixture: first left/right and second selection, cancel, unlocked callback, MSG_CMD and task/document restoration; not physical mouse, data editing, restart or popup UI',
+                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+    try:
+        report['behavior'] = runpy.run_path(str(runner))['run_input'](
+            working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            startup_check={'status':'ok', 'answers':[], 'commands':commands,
+                           'pause_window_manager':False,
+                           'rejection_prefixes':('INPUT REJECT ',),
+                           'command_timeout':120})
+        build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
+        saved=build['mutated_file_contents'](working,{'/MenuChooser.HC'}).get('/MenuChooser.HC')
+        if saved!=FIXTURE.read_bytes():raise ValueError('Guest chooser fixture differs from source')
+        report['guest_fixture_sha256']=sha(FIXTURE)
+        report['result'] = 'pass'
+    except Exception as exc:
+        report.update(result='fail', error=str(exc))
+        raise
+    finally:
+        report['inputs_unchanged'] = all(sha(Path(p)) == digest for p,digest in pins.items())
+        if not report['inputs_unchanged']:
+            report.update(result='fail', error='Native fixture inputs changed')
+        (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
+    if report['result']!='pass':
+        raise ValueError(report['error'])
+
+
+if __name__=='__main__':
+    main()
