@@ -11,79 +11,114 @@ public Bool View()
 
 #help_index "DolDoc"
 
+class CDocEdState {
+  CTask *task;
+  CDoc *doc,*old_put_doc,*old_display_doc,*old_border_doc,*bdoc;
+  I64 old_attr,old_top,old_bottom,old_left,old_right,old_title_src,dof_flags;
+  U8 *old_task_title;
+  Bool unlock,lock_saved,released;
+};
+U0 DocEdStateRestore(CDocEdState *state)
+{
+  CDoc *border;
+  U8 *title;
+  if(state->released)return;
+  state->released=TRUE;
+  if(state->lock_saved) {
+    if(state->unlock)DocUnlock(state->doc);
+    else if(!Bt(&state->doc->locked_flags,DOClf_LOCKED))DocLock(state->doc);
+  }
+  state->task->border_doc=state->old_border_doc;
+  state->task->display_doc=state->old_display_doc;
+  state->task->put_doc=state->old_put_doc;
+  state->task->text_attr=state->old_attr;
+  title=state->old_task_title;state->old_task_title=NULL;
+  if(title && state->task->title_src!=TTS_LOCKED_CONST) {
+    state->task->title_src=state->old_title_src;
+    StrCpy(state->task->task_title,title);
+  }
+  border=state->bdoc;state->bdoc=NULL;
+  Free(title);DocDel(border);
+  if(state->dof_flags&DOF_SIZE_MIN) {
+    WinHorz(state->old_left,state->old_right,state->task);
+    WinVert(state->old_top,state->old_bottom,state->task);
+  }
+}
+
 public Bool DocEd(CDoc *doc,I64 dof_flags=0)
 {//Live for user interaction. End on <ESC> or <SHIFT-ESC>.
-  CDoc *old_put_doc	  =DocPut,
-	*old_display_doc=DocDisplay,
-	*old_border_doc =DocBorder,*bdoc;
+  CDocEdState state;
   CDocEntry *doc_e;
-  I64 old_attr=Fs->text_attr,
-	old_top =Fs->win_top, old_bottom=Fs->win_bottom,
-	old_left=Fs->win_left,old_right =Fs->win_right,
-	old_title_src=Fs->title_src;
-  Bool res,unlock;
-  U8 *old_task_title;
+  Bool res;
+  MemSet(&state,0,sizeof(CDocEdState));
+  state.task=Fs;state.doc=doc;state.dof_flags=dof_flags;
+  state.old_put_doc=DocPut;state.old_display_doc=DocDisplay;state.old_border_doc=DocBorder;
+  state.old_attr=Fs->text_attr;state.old_title_src=Fs->title_src;
+  state.old_top=Fs->win_top;state.old_bottom=Fs->win_bottom;
+  state.old_left=Fs->win_left;state.old_right=Fs->win_right;
+  try {
   if (dof_flags&DOF_WIN_MAX)
     WinMax;
 
-  unlock=DocLock(doc);
+  state.unlock=DocLock(doc);
+  state.lock_saved=TRUE;
   doc->win_task=Fs;
-  bdoc=DocNew;
-  bdoc->flags|=DOCF_BORDER_DOC;
-  DocPrint(bdoc,"$$CM+TY+LX+NC,0,-1$$");
-  DocPrint(bdoc,"$$TX+RX+BD,\"[X]\"$$");
-  DocPrint(bdoc,"$$BK,1$$$$TX+LX+BD,\"MENU\"$$$$BK,0$$");
+  state.bdoc=DocNew;
+  state.bdoc->flags|=DOCF_BORDER_DOC;
+  DocPrint(state.bdoc,"$$CM+TY+LX+NC,0,-1$$");
+  DocPrint(state.bdoc,"$$TX+RX+BD,\"[X]\"$$");
+  DocPrint(state.bdoc,"$$BK,1$$$$TX+LX+BD,\"MENU\"$$$$BK,0$$");
 
-  old_task_title=StrNew(Fs->task_title);
+  state.old_task_title=StrNew(Fs->task_title);
   if (Fs->title_src!=TTS_LOCKED_CONST) {
     Fs->title_src=TTS_ED_FILENAME;
     MemCpy(Fs->task_title,doc->filename.name,STR_LEN-1);
   }
-  doc_e=DocPrint(bdoc,"$$DA-TRM-P+BD+RD+CX+IV,LEN=STR_LEN-1,"
+  doc_e=DocPrint(state.bdoc,"$$DA-TRM-P+BD+RD+CX+IV,LEN=STR_LEN-1,"
 	"A=\"%%s...\",SCX=16$$");
   doc_e->data=&Fs->task_title;
-  DocDataFmt(bdoc,doc_e);
+  DocDataFmt(state.bdoc,doc_e);
 
   if (doc->flags & DOCF_ALLOW_UNDO) {
-    DocPrint(bdoc,"$$CM+BY+LX+NC,1,1$$");
-    doc_e=DocPrint(bdoc,"$$DA+BD+RD-TRM,RT=U32,A=\"Undo:%%03d\"$$\n");
+    DocPrint(state.bdoc,"$$CM+BY+LX+NC,1,1$$");
+    doc_e=DocPrint(state.bdoc,"$$DA+BD+RD-TRM,RT=U32,A=\"Undo:%%03d\"$$\n");
     doc_e->data=&doc->undo_cnt;
-    DocDataFmt(bdoc,doc_e);
+    DocDataFmt(state.bdoc,doc_e);
   }
 
-  DocPrint(bdoc,"$$CM+BY+RX+NC,-31,1$$");
-  doc_e=DocPrint(bdoc,"$$TX+BD+TC,\"     \"$$");
+  DocPrint(state.bdoc,"$$CM+BY+RX+NC,-31,1$$");
+  doc_e=DocPrint(state.bdoc,"$$TX+BD+TC,\"     \"$$");
   doc_e->user_data=doc;
   doc_e->tag_cb=&EdMoreCB;
-  doc_e=DocPrint(bdoc,"$$TX+BD+TC,\" \"$$");
+  doc_e=DocPrint(state.bdoc,"$$TX+BD+TC,\" \"$$");
   doc_e->user_data=doc;
   doc_e->tag_cb=&EdDollarTypeCB;
-  doc_e=DocPrint(bdoc,"$$TX+BD+TC,\" \"$$");
+  doc_e=DocPrint(state.bdoc,"$$TX+BD+TC,\" \"$$");
   doc_e->user_data=doc;
   doc_e->tag_cb=&EdFilterCB;
-  doc_e=DocPrint(bdoc,"$$TX+BD+TC,\" \"$$");
+  doc_e=DocPrint(state.bdoc,"$$TX+BD+TC,\" \"$$");
   doc_e->user_data=doc;
   doc_e->tag_cb=&EdOverStrikeCB;
-  doc_e=DocPrint(bdoc,"$$TX+BD+TC,\" \"$$");
+  doc_e=DocPrint(state.bdoc,"$$TX+BD+TC,\" \"$$");
   doc_e->user_data=doc;
   doc_e->tag_cb=&EdAutoSaveCB;
-  doc_e=DocPrint(bdoc,"$$TX+BD+TC,\" \"$$");
+  doc_e=DocPrint(state.bdoc,"$$TX+BD+TC,\" \"$$");
   doc_e->user_data=doc;
   doc_e->tag_cb=&EdDollarCB;
-  doc_e=DocPrint(bdoc,"$$DA+BD+RD-TRM,A=\"Line:%%04d \"$$");
+  doc_e=DocPrint(state.bdoc,"$$DA+BD+RD-TRM,A=\"Line:%%04d \"$$");
   doc_e->data=&doc->line;
-  DocDataFmt(bdoc,doc_e);
-  doc_e=DocPrint(bdoc,"$$DA+BD+RD-TRM,A=\"Col:%%04d\"$$\n");
+  DocDataFmt(state.bdoc,doc_e);
+  doc_e=DocPrint(state.bdoc,"$$DA+BD+RD-TRM,A=\"Col:%%04d\"$$\n");
   doc_e->data=&doc->col;
-  DocDataFmt(bdoc,doc_e);
+  DocDataFmt(state.bdoc,doc_e);
 
-  DocRecalc(bdoc);
+  DocRecalc(state.bdoc);
   DocRecalc(doc);
   if (!(dof_flags&DOF_DONT_HOME))
     DocTop(doc);
-  Fs->border_doc=bdoc;
-  if (doc!=old_display_doc)
-    doc->parent_doc=old_display_doc;
+  Fs->border_doc=state.bdoc;
+  if (doc!=state.old_display_doc)
+    doc->parent_doc=state.old_display_doc;
   Fs->put_doc=Fs->display_doc=doc;
   if (!(dof_flags&DOF_DONT_TEXT_ATTR))
     Fs->text_attr=DOC_ATTR_DFT_TEXT;
@@ -111,22 +146,7 @@ public Bool DocEd(CDoc *doc,I64 dof_flags=0)
       doc_e=doc_e->next;
     }
   }
-  if (unlock)
-    DocUnlock(doc);
-  Fs->border_doc =old_border_doc;
-  Fs->display_doc=old_display_doc;
-  Fs->put_doc	 =old_put_doc;
-  Fs->text_attr  =old_attr;
-  if (Fs->title_src!=TTS_LOCKED_CONST) {
-    Fs->title_src  =old_title_src;
-    StrCpy(Fs->task_title,old_task_title);
-  }
-  Free(old_task_title);
-  DocDel(bdoc);
-  if (dof_flags&DOF_SIZE_MIN) {
-    WinHorz(old_left,old_right);
-    WinVert(old_top,old_bottom);
-  }
+  } catch { DocEdStateRestore(&state); }
+  DocEdStateRestore(&state);
   return res;
 }
-

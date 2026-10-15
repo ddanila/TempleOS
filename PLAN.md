@@ -11,6 +11,25 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared DocEd recovers an initial callback exception (2026-10-15)
+
+A real tag-callback throw now has a failing pre-fix control: masks [3,15] in
+build/i386-c4-doced-failure-quoted-before show missing restored state/heap for
+initially unlocked/locked documents. CDocEdState and a common restoration helper
+now free the temporary border/title and restore task roles, attributes/title,
+incoming lock ownership and SIZE_MIN geometry on return or propagating exception.
+The complete original form body is retained; native DocEd is not bound yet.
+
+The repaired shared-original contract passes [31,31] with unchanged inputs in
+build/i386-c4-doced-failure-cleanup. Two original bootstrap generations, six
+normal state cases (all 255) and the real chooser [11,12,22,-1,17,1] pass in
+build/i386-c4-doced-cleanup-state and build/i386-c4-doced-cleanup-chooser.
+A paired native failure runner is added for the same fixture, but remains
+unqualified behind native flagged-call support. Wrong-quoted diagnostic fixtures
+are excluded. Forced Exit, owner retirement, late input/action failures and
+constructor-allocation failures remain explicit native scope requirements.
+See [DocEd recovery evidence](docs/i386-menu-integration.md). C1–C5 remain open.
+
 ### Original View/DocEd core extracted; native flagged-call failure explicit (2026-10-15)
 
 The complete original View/DocEd implementation is extracted into

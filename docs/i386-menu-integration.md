@@ -187,3 +187,38 @@ existing harness rejected_answers option. `build/i386-c2-doced-flags-fast-red`
 fails explicitly on that answer, with unchanged inputs, before fixture transfer.
 The previous timeout run also showed zero on its final framebuffer; the new
 failure avoids waiting out the full command timeout for this known mismatch.
+
+## Recovered DocEd recalculation failure cleanup (2026-10-15)
+
+The shared core now records temporary border/title allocations, saved task
+roles/attributes/title source, incoming document-lock ownership and original
+geometry in CDocEdState. DocEdStateRestore is used on ordinary return and
+propagating exceptions; temporary allocation pointers are cleared as they are
+released. The complete original border construction, callbacks, View input and
+bound-data scan remain in the core. This intentionally repairs the original
+missing exception cleanup; native DocEd still does not bind this core.
+
+The real TX+TC tag callback in
+`tests/guest/i386-doced-failure-reference/DocEdFailure.HC` throws DEFail during
+DocEd's DocRecalc. The test catches the original exception and checks put/
+display/border roles, text attribute/title source/title text, incoming lock
+state and exact caller heap. Both initially unlocked and locked cases must
+return mask 31. The pre-fix shared-original control returns [3,15] in
+`build/i386-c4-doced-failure-quoted-before/result.json`; the repaired control
+passes [31,31] in `build/i386-c4-doced-failure-cleanup/result.json`, both with
+unchanged inputs. An earlier unquoted fixture did not compile and is excluded.
+The pinned-original quoted run times out and does not supply a returned mask.
+
+Two original rebuild generations pass. Ordinary state cases remain six masks
+of 255 in `build/i386-c4-doced-cleanup-state/result.json`; the real chooser stays
+[11,12,22,-1,17,1] in `build/i386-c4-doced-cleanup-chooser/result.json`, with
+unchanged inputs. `tools/test-i386-doced-failure.py` is ready to transfer the
+same source to the native guest once its flagged-call prerequisite is supplied;
+no native failure-cleanup pass is claimed.
+
+This covers a recovered callback during initial recalculation while the caller
+and document remain alive. Native integration still requires stack cleanup
+registration and leases for the edited document, old roles and temporary border
+through forced Exit and owner retirement; late View/action/scan failures and
+constructor-allocation failures need their own gates. Do not treat CDocEdState's
+ordinary exception handler as the complete native lifetime solution.
