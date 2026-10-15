@@ -19,12 +19,23 @@ and window/graphics/text-frame groups (24 submissions including setup).
 Normal 8 MiB startup passes in 47.47 seconds without build-provider loading.
 Original rebuild, cross-build and the 386 boot audit pass.
 
-Current-source diagnostic/native qualification is **not** green: the added
-8 MiB diagnostic session and 16 MiB development native-kernel rebuild attempt
-both end with a 307200-byte allocation failure and `FAIL native kernel`.
-Locate the startup/resource failure and restore these checks before claiming
-minimal-profile regression coverage or a newly qualified native generation.
+Current-source diagnostic/native qualification is **not** complete: the added
+8 MiB diagnostic session ends with a 307200-byte allocation failure and
+`FAIL native kernel`. The documented diagnostic profile is 16 MiB; its fresh
+run passes all 24 window/graphics/text-frame submissions. This 8 MiB diagnostic
+failure does not contradict the passing normal 8 MiB startup gate. The first
+16 MiB development native-kernel rebuild was interrupted while compiling,
+without a terminal build result; its separate guest log does not show that
+allocation failure. A fresh native rebuild is running in
+`build/i386-c2-managed-refresh-native-kernel-retry`; qualification requires a
+terminal passing result.
 See [checkpoint evidence](docs/i386-managed-refresh.md#checkpoint-evidence-and-open-regressions-2026-10-15).
+
+The next C2 TDD slice targets the original automatic derived-control prepass.
+The pinned original passes the callback-context/width contract (mask 3);
+the current native image returns 0. Add lifecycle/lock/IRQ cleanup gates before
+enabling the prepass. See [derived-control work](docs/i386-managed-refresh.md#next-tdd-slice-automatic-derived-controls).
+
 C1–C5 remain open; the automatic A/B gate is a C2 integration step only.
 
 ### Normal boot now runs a managed refresh worker (2026-10-15)

@@ -106,10 +106,42 @@ Two additional checks do **not** qualify at this checkpoint. The 8 MiB diagnosti
 image session (`build/i386-c2-managed-refresh-final-diagnostics`) exits without
 a passing result: its debug log ends in `FAIL native kernel` after a 307200-byte
 allocation fails during startup. The 16 MiB development native-kernel rebuild
-session (`build/i386-c2-managed-refresh-native-kernel`) has the same terminal
-allocation/failure markers; its last harness checkpoint names the first kernel
-build command, but that alone does not prove command execution began. Neither
-installation nor a new native generation is qualified by this attempt. Diagnose
-these startup/resource failures before claiming current-source minimal-profile
-or native-release regression coverage. Earlier qualified generations remain
+session (`build/i386-c2-managed-refresh-native-kernel`) was interrupted while
+compiling `I386HeapValid` in its first kernel build command. Its own guest log
+has no terminal allocation failure. The initial checkpoint mistakenly attributed
+the diagnostic failure to both sessions; this correction follows inspection of
+the distinct guest logs. Neither installation nor a new native generation is
+qualified by the interrupted attempt.
+
+The documented diagnostic startup profile is 16 MiB; the fresh run
+`build/i386-c2-managed-refresh-diagnostics16/result.json` passes all 24
+window/graphics/text-frame submissions. The failed 8 MiB diagnostic experiment
+does not invalidate normal 8 MiB startup. The native rebuild remains unqualified
+until a terminal passing result exists. Earlier qualified generations remain
 historical evidence, not substitutes for this image.
+
+## Next TDD slice: automatic derived controls
+
+The original WinMgr runs TaskDerivedValsUpdate over the task ring before window
+selection/rendering. The native worker currently lacks that prepass. The new
+`test-i386-auto-control-derived.py` attaches a control to the running task and
+sleeps, without geometry or presentation calls. Its callback must run as the
+actual manager and derive its width from the owner's pixel width (mask 3).
+The first native run returns 0 in the captured VGA screen
+`build/i386-c2-auto-derived-red/qemu/startup-command-05.ppm`, then times out
+waiting for 3, with unchanged pinned inputs. The final checker recognizes
+0 as an immediate rejected answer and fails that assertion in
+`build/i386-c2-auto-derived-red-final/result.json`, with unchanged pinned inputs.
+The matching pinned-original probe is
+`test-i386-auto-control-derived-reference.py`; its result is 3 in
+`build/i386-c1-auto-derived-reference/result.json` with unchanged inputs.
+
+Integration must retain original ring-wide ordering rather than update only the
+visible control under test. Use numeric task identities across callbacks and
+protect each selected owner before accessing its controls. Extend common scope
+cleanup to restore task-lock and interrupt state on normal return, exceptions,
+forced callback Exit and owner retirement. Test each route and a following
+successful frame, with parent-heap and presentation reuse observations. Run the
+existing explicit geometry/IRQ checks and automatic worker recovery gates too.
+Only then enable the prepass in normal boot. ODE/event and cursor/input work
+remain separate required desktop integration after this slice.

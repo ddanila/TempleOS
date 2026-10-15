@@ -3616,6 +3616,36 @@
           "result": "fail",
           "evidence": "build/i386-c2-doc-auto-refresh-red/result.json",
           "scope": "Native displayed document does not reach first automatic A frame; later assertions unexecuted; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-managed-refresh-final-auto/result.json",
+          "scope": "Normal-boot native managed WinMgr: automatic A/B callbacks and full-window glyph observations without app presentation; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-worker-lifecycle.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-managed-refresh-final-lifecycle/result.json",
+          "scope": "14 commands: actual worker callback context, protected public Kill, internal cancellation, worker death/restart, exact parent heap and presentation reuse; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-worker-error.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-managed-refresh-final-error/result.json",
+          "scope": "14 commands: per-window failure hide/report/cooldown, lock release, preserved worker identity and exact parent heap; full original debugging policy and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-control-derived-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-auto-derived-reference/result.json",
+          "scope": "Pinned original automatic derived-control callback Fs and owner pixel-width geometry after Sleep; mask 3; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-control-derived.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-auto-derived-red-final/result.json",
+          "scope": "Current native manager lacks automatic derived-control prepass; mask 0 rejected instead of required 3; whole-file unqualified"
         }
       ]
     },
