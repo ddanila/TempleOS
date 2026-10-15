@@ -355,3 +355,15 @@ editor retirement. See [contracts, fixture staging and remaining lifetime
 matrix](i386-doced-owner-retirement.md). This does not qualify saved-role
 retirement, recovered cancellation, explicit DocDel or complete teardown heap
 recovery, and does not close any C1–C5 milestone.
+
+## Saved-role teardown and parent restoration (Console 96)
+
+The saved put/display/border owner matrix exposed a surviving document with a
+parent_doc link to a retired saved display. Console 96 preserves and leases the
+original parent, restores that live parent on committed teardown, or clears it
+when its owner/document is retiring. It preserves a different callback-selected
+parent and ordinary DocEd parent behavior. Six cases, including original-parent
+retirement, live-parent preservation and a callback-selected live parent, now pass; old native and shared-original
+controls fail. See [masks, final-image regressions and remaining gates](i386-doced-owner-retirement.md).
+This does not close any C1–C5 milestone or the recovered-cancellation/restoration
+failure gates.

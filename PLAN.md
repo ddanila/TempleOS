@@ -11,6 +11,36 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### DocEd saved-role retirement repairs a dangling parent (Console 96, 2026-10-15)
+
+Saved put/display/border owner retirement now has six native cases, including
+original-parent owner retirement, preservation of a live original parent and
+a different parent selected by a real View tag callback.
+The edited document remains in the parent task's heap. Console 95 stopped the
+editor but left parent_doc pointing at a retired saved display (127 versus 255
+on its framebuffer). Targeted old-image cases also reject the missing parent
+lease and lost live parent; shared-original control masks are
+[187,59,187,187,59,155], all with unchanged inputs.
+
+Console 96 captures and leases the original parent as a fifth resource. Committed
+teardown restores it when DocEd's automatic binding is still present, clearing
+it if its owner/document is retiring. Other callback parent bindings and ordinary
+DocEd behavior are preserved. All six cases pass in ten commands in
+build/i386-c2-doced-saved-role-six-green. See [saved-role contracts and masks](docs/i386-doced-owner-retirement.md).
+
+Cross-build/limited 386 audit, two original bootstrap generations, source-matched
+original state/failure controls, native state/failure/Exit/form/edited-owner
+regressions all pass on build/i386-c2-doced-parent-cross/kernel.img. All 1480
+source/build hashes match. Normal 8 MiB startup passes nine checks in 49.15
+seconds. Public layouts, exports (231), private services (48 bytes) and Memory 25
+are unchanged. State/failure/Exit runners retain their complete cases and exact
+fixture checks while additive staging reduces 39/27/27 commands to 10/6/5.
+
+Explicit document deletion, cancellation with a recovered live caller, interrupted
+restoration, constructor/admission and late input/scan failures, precise teardown
+heap accounting, and full form/action/menu/editor/app parity remain open.
+C1–C5 remain incomplete.
+
 ### Independent DocEd owner retirement passes (2026-10-15)
 
 Two sibling-task contracts now qualify retirement of the edited document's

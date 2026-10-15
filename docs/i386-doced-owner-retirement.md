@@ -76,9 +76,87 @@ changed for this checkpoint.
 ## Remaining lifetime gates
 
 These cases qualify retirement of the edited document's memory owner at the two
-specified points. Saved put/display/border owners, explicit DocDel of an active
+specified points. Saved-role retirement outside the View cases below, explicit DocDel of an active
 document, recovered cancellation with a live caller, restoration interrupted by
 another exception, late input/data-scan failures, allocation failures and precise
 teardown heap accounting remain open. Retiring while manager frames borrow a
 temporary border also needs its own gate. TaskValidate becoming false is not
 proof that every backing allocation has been reclaimed. C1–C5 remain incomplete.
+
+## Saved-role owners and the original parent (Console 96)
+
+`tests/guest/i386-doced-saved-role-reference/DocEdSavedRole.HC` keeps the edited
+document in the parent task's live heap. A separate sibling owns a saved put,
+display or border document. The editor binds that role, then enters real DocEd
+and waits in View. Retiring the saved-role owner must stop the independent
+editor while leaving the edited document valid, unlocked and attached to its
+original window owner. The parent task's roles must also survive.
+
+This exposed a committed-teardown bug in Console 95: the saved display owner
+retired and the editor stopped, but DocEd's temporary parent_doc still pointed
+to the retired display. The framebuffer in
+`build/i386-c2-doced-saved-role-red/qemu/startup-command-04.ppm` shows 127 instead
+of 255; its inputs are unchanged. A stricter rerun rejects RoleLife immediately
+in `build/i386-c2-doced-parent-fast-red`. Targeted --case 3 and --case 4 runs on
+the old image also fail in `build/i386-c2-doced-parent-lease-red` and
+`build/i386-c2-doced-live-parent-red`.
+
+Console 96 captures the original parent_doc and leases it as a fifth document
+resource. During committed teardown, it undoes DocEd's automatic parent binding
+when that binding is still present. A live original parent is restored; an
+original parent whose owner is closing or whose document is retiring is cleared.
+A callback's different parent binding is preserved. Ordinary/recovered DocEd
+parent behavior is unchanged. Public layouts, 231 console exports, the private
+48-byte services and Memory 25 remain unchanged.
+
+The six cases require mask 255:
+
+| Case | Retired owner or restored link |
+| --- | --- |
+| 0 | Saved put owner |
+| 1 | Saved display owner; the surviving document must not keep its dead parent |
+| 2 | Saved border owner |
+| 3 | Original parent owner, after DocEd temporarily replaced that parent |
+| 4 | Saved display owner; preserve a separate live original parent |
+| 5 | Saved display owner; preserve a different live parent selected by a real View tag callback |
+
+Mask bits check active View binding (1), owner retirement (2), editor retirement
+without normal return (4), parent-task roles (8), surviving edited-document
+signature/heap (16), unlocked state (32), original window owner (64), and correct
+parent link (128). The failing shared-original control returns
+[187,59,187,187,59,155] with unchanged inputs in
+`build/i386-c4-doced-saved-role-six-before/result.json`. The fixture records
+parent-link failures before test-only repair permits safe fixture disposal.
+
+All six native cases pass, with exact fixture bytes and unchanged inputs, in
+`build/i386-c2-doced-saved-role-six-green/result.json` (ten commands). Run all cases,
+or use --case 0 through --case 5 to isolate one:
+
+```sh
+python3 tools/test-i386-doced-saved-role.py build/i386-c2-doced-parent-cross/kernel.img --out build/new-saved-roles
+```
+
+The final image is `build/i386-c2-doced-parent-cross/kernel.img`. Its cross-build
+and limited 386 audit pass, all 1480 source/build hashes match, and the two
+original bootstrap generations pass. Source-matched original state/failure
+controls pass in `build/i386-c4-doced-parent-{state,failure}`.
+
+Native regressions pass with unchanged inputs:
+
+- `build/i386-c2-doced-parent-state`: ten commands, all six state masks 255.
+- `build/i386-c2-doced-parent-failure`: six commands, both callback masks 31.
+- `build/i386-c2-doced-parent-exit`: five commands, callback Exit mask 63.
+- `build/i386-c2-doced-parent-form`: eight synchronized form/define commands.
+- `build/i386-c2-doced-parent-view-owner`: five edited-owner retirement commands.
+- `build/i386-c2-doced-parent-startup`: nine normal 8 MiB checks, 49.15 seconds.
+
+State/failure/Exit runners now use the same additive fixture staging, normal
+guest #include and independent post-run byte verification as the owner tests.
+Their previous 39/27/27 commands become 10/6/5 without dropping behavioral cases.
+The packaging preservation/rejection suite passes on the new image as well.
+
+This qualifies the specified saved-role and original-parent retirement cases
+while View is active. Explicit DocDel, constructor/admission failures, recovered
+cancellation, failures during restoration, late input/scan and precise teardown
+heap accounting remain open. It does not qualify arbitrary post-return document
+links or complete form/menu/editor/application compatibility.

@@ -1,7 +1,7 @@
 #include "/Adam/DolDoc/DocEdStateCore.HC"
 class CNativeDocEdScope:CNativeRenderScope {
   CDocEdState *state;
-  CNativeRenderScope borrows[4];
+  CNativeRenderScope borrows[5];
   I64 count;
   Bool opened;
 };
@@ -14,6 +14,7 @@ U0 NativeDocEdAbandon(CNativeRenderScope *base)
   CDocEdState *state=scope->state;
   U8 *title;
   CTask *previous;
+  CDoc *parent;
   scope->opened=FALSE;scope->count=0;
   state->released=TRUE;
   //Release only this task's actual ownership, including an incoming lock.
@@ -23,6 +24,13 @@ U0 NativeDocEdAbandon(CNativeRenderScope *base)
     previous=state->doc->mem_task;
   if(previous && NativeRenderOwnerClosing(previous))previous=NULL;
   if(state->doc->win_task==state->task)state->doc->win_task=previous;
+  parent=state->doc->parent_doc;
+  if(state->doc!=state->old_display_doc && parent==state->old_display_doc)
+    parent=state->old_doc_parent;
+  if(parent && parent==state->old_doc_parent &&
+      (NativeRenderOwnerClosing(parent->mem_task) || NativeRenderResourceRetiring(parent)))
+    parent=NULL;
+  state->doc->parent_doc=parent;
   state->task->put_doc=state->old_put_doc;
   state->task->display_doc=state->old_display_doc;
   state->task->border_doc=state->old_border_doc;
@@ -52,6 +60,7 @@ U0 NativeDocEdOpen(CNativeDocEdScope *scope,CDocEdState *state)
 {
   scope->state=state;scope->count=0;scope->opened=FALSE;
   NativeRenderScopeOpen(scope,&NativeDocEdAbandon);scope->opened=TRUE;
+  state->old_doc_parent=state->doc->parent_doc;
   state->old_doc_win_task=state->doc->win_task;state->old_doc_win_num=0;
   if(TaskValidate(state->old_doc_win_task))
     state->old_doc_win_num=state->old_doc_win_task->task_num;
@@ -59,6 +68,7 @@ U0 NativeDocEdOpen(CNativeDocEdScope *scope,CDocEdState *state)
   NativeDocEdBorrow(scope,state->old_put_doc);
   NativeDocEdBorrow(scope,state->old_display_doc);
   NativeDocEdBorrow(scope,state->old_border_doc);
+  NativeDocEdBorrow(scope,state->old_doc_parent);
 }
 U0 NativeDocEdClose(CNativeDocEdScope *scope)
 {

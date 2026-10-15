@@ -5,26 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-doced-state-reference/DocEdState.HC"
-def chooser_commands():
-    source=FIXTURE.read_text()
-    commands=[('I64 DEFlagGate(){CDoc*d=DocNew("Gate.DD");Bool r;Msg(MSG_KEY_DOWN,CH_ESC,0);r=DocEd(d,DOF_DONT_SHOW|DOF_DONT_WINMGR_SYNC);DocDel(d);FlushMsgs;return r;}',[]),
-              ('DEFlagGate;',['1']),
-              (f'U8 *wm_source=CAlloc({len(source)+1});',[]),
-              ('U0 WMTransfer(I64 o,U8*s,I64 n){MemCpy(wm_source+o,s,n);}',[])]
-    for offset in range(0,len(source),60):
-        chunk=source[offset:offset+60]
-        encoded=json.dumps(chunk.replace('$','$$'))
-        commands.append((f'WMTransfer({offset},{encoded},{len(chunk)});',[]))
-    commands += [(f'FileWrite("C:/DocEdState.HC",wm_source,{len(source)})>0;',['1']),
-                 ('Free(wm_source);',[]),('#include "C:/DocEdState.HC"',[]),
-                 *[(f'DEState({i});',['255']) for i in range(6)],('6*7;',['42'])]
-    return commands
-
-COMMANDS=chooser_commands()
+COMMANDS = [('I64 DEFlagGate(){CDoc*d=DocNew("Gate.DD");Bool r;Msg(MSG_KEY_DOWN,CH_ESC,0);r=DocEd(d,DOF_DONT_SHOW|DOF_DONT_WINMGR_SYNC);DocDel(d);FlushMsgs;return r;}', []), ('DEFlagGate;', ['1']), ('#include "C:/DocEdState.HC"', []), ('DEState(0);', ['255']), ('DEState(1);', ['255']), ('DEState(2);', ['255']), ('DEState(3);', ['255']), ('DEState(4);', ['255']), ('DEState(5);', ['255']), ('6*7;', ['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Put/display fixture exceeds native input limit")
@@ -52,12 +36,13 @@ def main():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     runner = ROOT/'tools/i386-kernel-input.py'
-    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
+    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, ROOT/'Kernel/FontStd.HC', ROOT/'tools/package-i386-native-image.py', ROOT/'tools/build-i386-kernel.py', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+        source, working, additions={'/DocEdState.HC':FIXTURE.read_bytes()})
     report = dict(result='running', scope='Paired original DocEd state fixture: exit result, roles, title/attribute/show state, incoming lock and geometry options; not full forms, callbacks or failure lifetimes',
-                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
@@ -65,7 +50,7 @@ def main():
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],
-                           'rejection_prefixes':('INPUT REJECT ',),
+                           'rejection_prefixes':('INPUT REJECT ','WINMGR window exception '),
                            'command_timeout':120})
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         saved=build['mutated_file_contents'](working,{'/DocEdState.HC'}).get('/DocEdState.HC')

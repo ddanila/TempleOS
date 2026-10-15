@@ -3,7 +3,7 @@
 class CDocEdState {
   CTask *task,*old_doc_win_task;
   I64 old_doc_win_num;
-  CDoc *doc,*old_put_doc,*old_display_doc,*old_border_doc,*bdoc;
+  CDoc *old_doc_parent,*doc,*old_put_doc,*old_display_doc,*old_border_doc,*bdoc;
   I64 old_attr,old_top,old_bottom,old_left,old_right,old_title_src,dof_flags;
   U8 *old_task_title;
   Bool unlock,lock_saved,released;
