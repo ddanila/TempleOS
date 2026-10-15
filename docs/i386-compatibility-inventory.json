@@ -3670,6 +3670,18 @@
           "result": "pass",
           "evidence": "build/i386-c2-automatic-derived-lifecycle-final/result.json",
           "scope": "17 commands: actual manager cancellation during hidden-control derived callback, owner retirement/replacement, actual manager death/new task identity, IRQ/context, exact parent and manager live heap and reusable presentation; not whole-file parity"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-refresh-reference/result.json",
+          "scope": "Pinned original Refresh ordinary-return modes: sync/pump request, one/two completed iterations, idle/full-refresh state, put-document identity, force wake; masks [7,7,15,15,15,15]; input pumping and interruption unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-document.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-refresh-document-red/result.json",
+          "scope": "Native Console 86 lacks public Refresh: ARView definition rejected before either A/B pixel/callback phase or final arithmetic command; no functional wait/frame qualification; whole-file unqualified"
         }
       ]
     },

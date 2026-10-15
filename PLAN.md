@@ -11,6 +11,26 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Refresh API baseline and next integration contract (2026-10-15)
+
+The pinned-original Refresh baseline passes six cases: zero-count sync, pump-only
+request publication, one/two-frame waits, preserved idle/full-refresh state on
+ordinary return, and forced wake from a far-future manager deadline. The expected
+masks are [7,7,15,15,15,15]. This baseline uses the ordinary original desktop.
+The new native visual gate requires Refresh(2), two dynamic evaluations per
+A/B phase and independent glyph frames without app presentation calls. Console
+86 rejects its function definition because Refresh is missing; neither visual
+phase nor the final arithmetic assertion executes. Both results retain unchanged
+pinned inputs. See [Refresh contract](docs/i386-refresh-contract.md).
+
+Next work includes active-frame synchronization, pump consumption/events,
+interrupted waits and document/owner lifetime; scoped temporary state; and
+ordinary-view manager cadence with accurate completed-iteration accounting.
+Current raw/explicit uploads share an internal counter, which is not yet the
+original manager-cycle contract. Publishing a wait function alone would not
+close this integration. Preserve visible work, frame leases and recovery while
+integrating stdout/input roles. C1–C5 remain incomplete.
+
 ### Automatic derived-control prepass and cooperative locking (2026-10-15)
 
 Console version 86 runs original-order derived updates before view admission on
