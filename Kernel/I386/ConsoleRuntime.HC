@@ -64,6 +64,12 @@ extern U0 DocInsDoc(CDoc *doc,CDoc *source);
 extern U0 DocCollapse(Bool collapse=TRUE,CDoc *doc=0);
 extern U0 DocEntryToggle(CDoc *doc);
 extern U0 DocFlagsToggle(CDoc *doc,I64 tog_flags);
+extern U8 *StrFind(U8 *needle,U8 *haystack_str,I64 flags=0);
+extern U0 EdFindNext(CDoc *doc);
+extern U0 EdSelAll(CDoc *doc,Bool sel);
+extern Bool EdFindPaired(CDoc *doc,U8 plus,U8 minus,Bool fwd,Bool abort_on_dbl_colon=FALSE);
+extern Bool EdGoToFun(CDoc *doc,Bool fwd,Bool abort_on_dbl_colon);
+extern U0 EdSelFun(CDoc *doc,Bool abort_on_dbl_colon=FALSE);
 extern I64 NativeTimeStamp();
 extern U0 NativeTimeStampInit();
 extern Bool DocCaptureUndo(CDoc *doc,Bool force=FALSE);
@@ -308,7 +314,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[265];
+CI386KernelSymbol console_doc_exports[271];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -677,7 +683,13 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(262,"_DOC_COLLAPSE",(&DocCollapse+0)(U64));
   ConsoleDocExportSet(263,"_DOC_ENTRY_TOGGLE",(&DocEntryToggle+0)(U64));
   ConsoleDocExportSet(264,"_DOC_FLAGS_TOGGLE",(&DocFlagsToggle+0)(U64));
-  for(i=0;i<265;i++) {
+  ConsoleDocExportSet(265,"_STR_FIND",(&StrFind+0)(U64));
+  ConsoleDocExportSet(266,"_ED_FIND_NEXT",(&EdFindNext+0)(U64));
+  ConsoleDocExportSet(267,"_ED_SEL_ALL",(&EdSelAll+0)(U64));
+  ConsoleDocExportSet(268,"_ED_FIND_PAIRED",(&EdFindPaired+0)(U64));
+  ConsoleDocExportSet(269,"_ED_GO_TO_FUN",(&EdGoToFun+0)(U64));
+  ConsoleDocExportSet(270,"_ED_SEL_FUN",(&EdSelFun+0)(U64));
+  for(i=0;i<271;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==261 || i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -981,3 +993,7 @@ import CCntsGlbls cnts;
 
 #include "/Adam/DolDoc/DocCollapseCore.HC"
 #include "/Adam/DolDoc/DocTransformCore.HC"
+
+#include "/Kernel/StringFindFlags.HH"
+#include "/Kernel/StrFindCore.HC"
+#include "/Adam/DolDoc/DocEditorSearchCore.HC"

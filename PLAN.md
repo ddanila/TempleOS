@@ -11,6 +11,52 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original editor search, pairing and selection integrated (Console 109, 2026-10-15)
+
+Complete unchanged StrFind, EdFindNext, EdSelAll, EdFindPaired, EdGoToFun and
+EdSelFun bodies now share StrFindCore.HC and DocEditorSearchCore.HC between
+original and native targets. StringFindFlags.HH shares the existing case and
+label-boundary flags. Byte checks prove full extraction and preservation of
+unrelated source bytes, including legacy KernelA.HH encoding. Six public
+services bring Console exports to 271; public task/document layouts, private
+console services and Memory 26 are unchanged. No branches or tool substitutes
+are introduced.
+
+Sixteen original cases pass masks of 63, both before extraction and on the
+current-source rebuild (`build/i386-c4-editor-search-qualified-reference`),
+with unchanged inputs. Native passes nineteen commands, exact fixture readback
+and unchanged inputs in `build/i386-c2-editor-search-contract`. Coverage:
+string offsets/case/label boundaries/empty needles/overlap; eight directional,
+whole-label, selected-only, filtered, absent and incoming-lock find-next cases;
+five nested/cross-line/absent/double-colon pair cases; and selection plus forward/
+backward function navigation with/without incoming locks. Exact entries/columns,
+input tags/search state, caller document/display and exact heap are checked.
+The previous native prerequisite fails in `build/i386-c2-editor-search-red`.
+
+Both original bootstrap generations and `build/i386-c2-editor-search-cross`
+pass, with the limited 386 audit (96 BIOS / 255 protected instructions) and all
+1496 source/build pins matched. All three new files are byte-verified inside
+the delivered RedSea image. Native kernel size remains 565608 bytes. Current-image
+transformation (14 commands), clock/undo (10) and normal 8 MiB startup
+(9 checks, 53.89 seconds, zero build-provider loads) pass under the
+`build/i386-c2-editor-search-` prefix.
+
+The 8 MiB log now exercises speculative backing-allocation failure followed by
+the existing smaller-allocation fallback. All required commands/VGA checks pass;
+no command rejection is observed. Record this pressure rather than treating
+passing startup as spare memory capacity. Before bulk-loading further prompt/
+tool code, measure provider footprint and evaluate the existing lazy-provider
+boundary while preserving minimal-profile gates and complete desktop behavior.
+
+Interactive replacement and go-to wrappers remain open: first establish the
+original DocForm/class-metadata and accept/cancel/lifetime contracts, then share
+complete DocForm/PopUpForm and EdFindReplace/EdReplace/go-to bodies. The current
+read-only services do not qualify those workflows, full DocPutKey, chooser,
+GetStr/TimeClock or applications. CP437 edge cases, malformed/data/bin documents,
+foreign ownership and exceptional/cancellation paths also remain open. See
+[search evidence and next form gate](docs/i386-editor-search.md).
+C1–C5 remain incomplete.
+
 ### Original tree/plain transformations integrated (Console 108, 2026-10-15)
 
 Complete DocCollapse, DocEntryToggle and DocFlagsToggle bodies now share

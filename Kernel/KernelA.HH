@@ -1247,10 +1247,7 @@ public class CSysFixedArea
 #include "/Kernel/StringUtilFlags.HH"
 
 //Flags for StrFind
-#define SFF_IGNORE_CASE		1
-#define SFF_WHOLE_LABELS_BEFORE	2
-#define SFF_WHOLE_LABELS_AFTER	4
-#define SFG_WHOLE_LABELS	(SFF_WHOLE_LABELS_BEFORE|SFF_WHOLE_LABELS_AFTER)
+#include "/Kernel/StringFindFlags.HH"
 
 #include "/Kernel/ListFlags.HH"
 

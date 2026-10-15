@@ -1,6 +1,8 @@
 #ifndef I386_PUBLIC_FORMAT_INCLUDED
 #define I386_PUBLIC_FORMAT_INCLUDED
 #include "/Kernel/I386/PublicKeyDev.HH"
+#include "/Kernel/StringFindFlags.HH"
+public _extern _STR_FIND U8 *StrFind(U8 *needle,U8 *haystack_str,I64 flags=0);
 public _extern _STR_PRINT_JOIN U8 *StrPrintJoin(U8 *dst,U8 *fmt,I64 argc,I64 *argv);
 public _extern _STR_PRINT U8 *StrPrint(U8 *dst,U8 *fmt,...);
 public _extern _CAT_PRINT U8 *CatPrint(U8 *dst,U8 *fmt,...);
