@@ -337,14 +337,7 @@ jh_done:
 
 #include "/Kernel/PopUpCore.HC"
 
-I64 PopUpPrint(U8 *fmt,...)
-{//Execute code in $LK,"PopUp",A="MN:PopUp"$ task.
-  U8 *buf=StrPrintJoin(NULL,fmt,argc,argv);
-  I64 res;
-  res=PopUp(buf,Fs);
-  Free(buf);
-  return res;
-}
+#include "/Kernel/PopUpPrintCore.HC"
 
 I64 Adam(U8 *fmt,...)
 {//Make adam_task execute code.

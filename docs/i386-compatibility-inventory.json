@@ -12191,6 +12191,30 @@
           "result": "pass",
           "evidence": "build/i386-c2-popup-live-caller-green/result.json",
           "scope": "Console91 24 commands: previous owner/retirement, recovered cancellation and committed caller kill, live caller empty queues/heap before exit, task retirement and presentation reuse; unchanged pins; general foreign master/output owner, UI and whole-file remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-print-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-popup-print-float-reference/result.json",
+          "scope": "Original PopUpPrint six formatting/execution/heap observations, including signed/wide/mixed/quote and float source; not chooser UI, general faults or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-print-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-popup-print-float-shared-reference/result.json",
+          "scope": "Same six observations on rebuilt original with shared formatter wrapper; unchanged inputs; not full popup UI or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-print.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-popup-print-float-green/result.json",
+          "scope": "Console92 thirteen commands execute formatted source in real children with exact Root frames, software-floating input example and caller heap; unchanged inputs; full formatting/UI and whole-file remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-print-lifetime.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-popup-print-lifetime/result.json",
+          "scope": "Twenty-four commands: formatted-source reclamation and empty request rings before recovered caller exits, committed kill, previous ownership, heap/presentation reuse; unchanged pins; foreign owner/fault/UI and whole-file remain open"
         }
       ]
     },

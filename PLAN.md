@@ -11,6 +11,34 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Formatted popup source and cancellation ownership (2026-10-15)
+
+Console 92 adds the original PopUpPrint variadic interface, sharing its kernel
+body and delegating complete formatting/execution to StrPrintJoin and PopUp.
+Native source-buffer scopes release temporary text through ordinary return,
+recovered cancellation and committed Exit. This supplies the execution wrapper
+needed by original PopUpMenu; it does not substitute for a chooser.
+
+Pinned and rebuilt-original controls pass six observations for decimal,
+signed/wide, mixed, quoted and floating input plus caller-heap recovery. The old
+native image rejects the absent API; the final 13-command native contract passes
+with unchanged inputs. All 24 formatted-popup lifetime commands pass, including
+an alive recovered caller with empty job queues and reclaimed source-buffer heap.
+Ordinary popup execution retains its 13-command pass. Original bootstrap,
+cross-build and limited 386 boot audit pass; all 1476 source/build hashes match.
+Normal 8 MiB startup passes in 48.74 seconds, WinMgr enabled and no build providers.
+Console has 230 exports; public layouts, Memory 25 and the private 48-byte service
+table remain unchanged. See [formatted popup evidence](docs/i386-popup-print.md).
+
+Next integrate the original form/editor path and complete mutually dependent
+DocEntryRun/DocMenu/PopUpMenu/PopUpPickLst bodies, with actual servant presentation,
+then GetStr and unchanged TimeClock workflows. The [integration sequence and
+gates](docs/i386-menu-integration.md) retain data editing, callbacks, both action
+sides, macros, aliases, cancellation, mouse/rendering and lifetime requirements.
+Do not replace them with a reduced picker or field-only servant constructor.
+The known 8 MiB worker capacity gap and full native generations remain open.
+C1–C5 are incomplete.
+
 ### Recovered popup callers no longer inherit an aborted result (2026-10-15)
 
 Console 91 fixes an ownership gap exposed by keeping a cancelled popup caller

@@ -91,3 +91,29 @@ U0 NativePopupKill(CTask *task)
 #define POPUP_SCOPE_CLOSE NativePopupClose(&popup_scope,&popup_opened)
 #define POPUP_FUNCTION NativePopUp
 #include "/Kernel/PopUpCore.HC"
+
+class CNativePopupBufferScope:CNativeRenderScope {
+  U8 **buffer;
+};
+U0 NativePopupBufferRelease(CNativeRenderScope *base)
+{
+  CNativePopupBufferScope *scope=base;
+  U8 *buffer=*scope->buffer;
+  *scope->buffer=NULL;Free(buffer);
+}
+U0 NativePopupBufferOpen(CNativePopupBufferScope *scope,U8 **buffer)
+{
+  scope->buffer=buffer;
+  NativeRenderScopeOpen(scope,&NativePopupBufferRelease);
+}
+U0 NativePopupBufferClose(CNativePopupBufferScope *scope,Bool *opened)
+{
+  if(!*opened)return;
+  *opened=FALSE;NativePopupBufferRelease(scope);NativeRenderScopeClose(scope);
+}
+#define POPUP_PRINT_FUNCTION NativePopUpPrint
+#define POPUP_PRINT_RUN NativePopUp
+#define POPUP_PRINT_SCOPE_LOCAL CNativePopupBufferScope popup_buffer_scope;Bool popup_buffer_opened=FALSE
+#define POPUP_PRINT_SCOPE_OPEN NativePopupBufferOpen(&popup_buffer_scope,&buf);popup_buffer_opened=TRUE
+#define POPUP_PRINT_SCOPE_CLOSE NativePopupBufferClose(&popup_buffer_scope,&popup_buffer_opened)
+#include "/Kernel/PopUpPrintCore.HC"

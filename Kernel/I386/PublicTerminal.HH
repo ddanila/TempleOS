@@ -16,5 +16,6 @@ public _extern _TASK_EXE CJob *TaskExe(CTask *srv,CTask *master,U8 *data,I64 fla
 public _extern _SRV_TASK_CONT U0 SrvTaskCont();
 public _extern _SRV_CMD_LINE U0 SrvCmdLine(I64 dummy=0);
 public _extern _POP_UP I64 PopUp(U8 *buf,CTask *parent=NULL,CTask **_pu_task=NULL);
+public _extern _POP_UP_PRINT I64 PopUpPrint(U8 *fmt,...);
 #define WIG_USER_TASK_DFT 0x1000
 #endif
