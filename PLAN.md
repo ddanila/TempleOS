@@ -11,6 +11,19 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original WinMax prerequisite captured (2026-10-15)
+
+The form/editor dependency review identifies WinMax as a missing native public
+service used by original DocEd's DOF_WIN_MAX branch. A paired original/native
+fixture now specifies bordered and borderless current-task geometry, restoring
+prior bounds after each case. The pinned original passes [1,1] with unchanged
+inputs in build/i386-c1-winmax-shared-reference. Native qualification remains
+open: build/i386-c2-winmax-shared-red rejects the absent WinMax identifier,
+with unchanged inputs, before exercising the shared geometry source. Task selection, invalid targets, interrupt state and callback/unwind
+behavior still need contracts before implementing and qualifying the shared
+service. See [menu integration dependencies](docs/i386-menu-integration.md).
+This advances C1 test coverage; C1–C5 remain incomplete.
+
 ### Formatted popup source and cancellation ownership (2026-10-15)
 
 Console 92 adds the original PopUpPrint variadic interface, sharing its kernel

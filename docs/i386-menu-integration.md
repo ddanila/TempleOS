@@ -50,3 +50,28 @@ startup and 16 MiB rebuild profile's required regressions while using explicit
 remains open. C5 still requires two full native generations with the complete
 compatibility suite and application inventory; original x64 rebuilds and focused
 popup tests do not satisfy it.
+
+## WinMax prerequisite contract (2026-10-15)
+
+Original DocEd calls WinMax for DOF_WIN_MAX. PublicWindow.HH currently has no
+WinMax binding, so restoring this original window service precedes full form
+integration. `tools/test-i386-winmax-reference.py` captures the original geometry
+using the same `tests/guest/i386-winmax-reference/WinMax.HC` source that
+`tools/test-i386-winmax.py` transfers to the native filesystem and checks byte
+for byte after a successful run.
+
+The pinned original passes [1,1] in
+`build/i386-c1-winmax-shared-reference/result.json`, with unchanged inputs:
+with a border, left/right/top/bottom are 1/78/2/58; without a border they are
+0/79/1/59. Each case explicitly restores prior bounds and the no-border flag.
+The native gate checks the public binding before transferring or executing the
+geometry fixture. The finalized native run rejects WinMax as an undefined
+identifier in `build/i386-c2-winmax-shared-red/result.json`, with unchanged
+inputs. A prerequisite rejection is not a geometry pass.
+
+These are current-task geometry checks only. Before declaring WinMax qualified,
+add explicit-target task selection, invalid-task handling, interrupt-state
+preservation, derived-control callbacks and exceptional cleanup. Original
+WinMax uses PUSHFD/CLI/POPFD without exception cleanup; any repair must have an
+explicit failing recovery contract. DocEd flag/lock/title/document restoration,
+real form input and full chooser integration remain separate open requirements.
