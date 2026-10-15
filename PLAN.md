@@ -11,6 +11,37 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete original DocLoad integrated (Console 103, 2026-10-15)
+
+The unchanged original DocLoad body is now shared through DocLoadCore.HC and
+exposed as a native public service, bringing console exports to 255. It inserts
+into a prepared target rather than resetting it, preserving the contract needed
+by original undo. Existing native DocRead/editor loading remains on its retained
+path. Public layouts, private console services and Memory 26 are unchanged.
+
+Seven paired original/native cases pass masks of 63: fresh text, insertion into
+existing text, incoming lock, null source, plain dollar/tab input, cursor marker
+and independently constructed binary record. They check exact text/bin linkage,
+cursor, locks, filter reset, caller role, immutable input and exact heap recovery.
+The binary oracle constructs a 16-byte header and known payload directly, then
+requires bin-7 references to be linked/renumbered to bin 1; it does not use the
+port's serializer as input. Native uses ten commands, exact fixture readback and
+unchanged inputs. The previous Console 102 image rejects the API prerequisite.
+
+Evidence: `build/i386-c4-doc-load-shared-reference` and
+`build/i386-c2-doc-load-contract`. The original two-generation bootstrap and
+`build/i386-c2-doc-load-cross` cross-build pass, including the limited 386 audit
+(96 BIOS / 255 protected instructions); all 1485 source/build pins match.
+Current-image clipboard and character/form suites (14 commands each), restoration
+exceptions (6) and retained-child Exit (5) pass. Normal 8 MiB startup passes nine
+checks in 56.68 seconds. Test result prefixes are `build/i386-c2-doc-load-`.
+
+Malformed input and failure/cancellation/Exit remain separate unqualified loader
+gates. Original undo still needs complete DocSave/Doc2PlainText serialization
+and a 386-compatible clock with defined frequency semantics. This does not
+qualify original undo, full DocPutKey, chooser input or C1–C5 completion. See
+[loading contracts and boundaries](docs/i386-doc-load.md).
+
 ### Complete clipboard/document insertion services (Console 102, 2026-10-15)
 
 The complete original clipboard and DocInsDoc bodies are now shared with the

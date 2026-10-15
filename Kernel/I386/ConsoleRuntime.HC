@@ -61,6 +61,7 @@ extern U0 EdCharDel(CDoc *doc);
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
 extern U0 EdLineDel(CDoc *doc);
 extern U0 DocInsDoc(CDoc *doc,CDoc *source);
+extern U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
 extern U0 ClipDel();
 extern U0 ClipCopy(CDoc *doc);
 extern U0 ClipCut(CDoc *doc);
@@ -296,7 +297,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[254];
+CI386KernelSymbol console_doc_exports[255];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -654,7 +655,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(251,"_DOC_CUT",(&DocCut+0)(U64));
   ConsoleDocExportSet(252,"_DOC_COPY",(&DocCopy+0)(U64));
   ConsoleDocExportSet(253,"_SYS_CLIP_DOC",(&sys_clip_doc+0)(U64));
-  for(i=0;i<254;i++) {
+  ConsoleDocExportSet(254,"_DOC_LOAD",(&DocLoad+0)(U64));
+  for(i=0;i<255;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -941,3 +943,5 @@ U0 NativeClipboardInit()
 {
   if(!sys_clip_doc)sys_clip_doc=DocNew(NULL,I386TaskSelf->owner->root);
 }
+
+#include "/Adam/DolDoc/DocLoadCore.HC"

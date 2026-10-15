@@ -94,4 +94,5 @@ public _extern _CLIP_PASTE U0 ClipPaste(CDoc *doc);
 public _extern _DOC_CUT U0 DocCut(CDoc *doc,CDocEntry *start,CDocEntry *end);
 public _extern _DOC_COPY CDoc *DocCopy(CDoc *doc,CDocEntry *start,CDocEntry *end);
 public _extern _SYS_CLIP_DOC CDoc *sys_clip_doc;
+public _extern _DOC_LOAD U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
 #endif
