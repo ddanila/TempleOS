@@ -379,3 +379,14 @@ cross-heap REMALLOC_DATA release and successful task reaping. The prior renderer
 retirement/self-delete suite also passes. See [deletion evidence and remaining
 caller-cancellation/descendant gates](i386-doced-deletion.md). These gates do not
 close C1–C5 or full form/action compatibility.
+
+## Complete action and chooser bodies compile (Console 100)
+
+DocEntryRunCore, DocMenuCore and the complete original PopUpMenu/PopUpPickLst
+bodies now compile into Console. The native adapter uses existing real message,
+Exit, popup and window providers. Four public exports are added. Eight paired
+original/native direct action cases check results, unlocked callbacks, messages,
+lock policy, command reset and exact heap recovery. This advances the original
+menu dependency graph without substituting a reduced chooser. See
+[entry-action integration and boundaries](i386-entry-actions.md). Actual chooser
+input remains a separate acceptance gate, as does full original DocPutKey.

@@ -11,6 +11,41 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete original action/menu services integrated (Console 100, 2026-10-15)
+
+Console now compiles the complete original DocEntryRunCore and DocMenuCore,
+plus the unchanged PopUpMenu and PopUpPickLst bodies shared with the original
+system. Forward bindings resolve their dependency cycle. Native adapters call
+the real message, Exit, popup and window providers; no action branch is stubbed.
+Four new public bindings bring console exports to 235. Memory 26, public
+layouts and the private console service table are unchanged.
+
+Eight direct action cases pass on original and native (all masks 63): left/right
+expressions, left/right unlocked callbacks, no action, collapse, Escape and Quit.
+They check result, action/toggle, messages, lock policy, command reset and exact
+caller heap. Native uses eleven commands and exact packaged fixture readback.
+Evidence: `build/i386-c4-entry-actions-provider-reference` and
+`build/i386-c2-menu-actions-action-state`, with unchanged inputs.
+
+The provider cross-build passes its limited 386 audit and all 1482 source/build
+pins match; the original two-generation bootstrap passes. Native restoration
+exceptions and retained-child Exit pass. Normal 8 MiB startup passes nine checks
+in 50.45 seconds. Evidence prefixes are `build/i386-c2-menu-actions-` and
+`build/i386-c2-menu-actions-provider-cross`.
+
+The actual unchanged chooser fixture now compiles after loading ScanCodes.HH,
+and reaches its first live DocMenu selection without completing it. The original
+chooser passes [11,12,22,-1,17,1] with unchanged inputs in
+`build/i386-c4-menu-actions-chooser-reference`; native acceptance remains red in
+`build/i386-c2-menu-actions-chooser-input`. This does not qualify full chooser or
+popup UI.
+The retained basic DocPutKey remains the next integration gap: port its complete
+original editing/form path and dependencies, including cursor/form navigation,
+undo, selection/clipboard and action dispatch, without an Enter-only substitute.
+Keep the full original chooser oracle as acceptance. See
+[complete bodies, direct contracts and remaining scope](docs/i386-entry-actions.md).
+C1–C5 remain incomplete.
+
 ### Restoration-control exceptions match the original (2026-10-15)
 
 A new shared fixture attaches a real task window control and throws during

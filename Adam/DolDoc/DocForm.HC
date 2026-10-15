@@ -87,11 +87,7 @@ public Bool DocForm(U8 *_d,U8 *class_name=lastclass,
 
 #include "/Adam/DolDoc/DocMenuCore.HC"
 
-public I64 PopUpMenu(CDoc *doc,I64 dof_flags=0)
-{//Run menu chooser doc in PopUp win task.
-  doc->flags|=DOCF_SIZE_MIN | DOCF_FORM;
-  return PopUpPrint("DocMenu(0x%X,0x%X);",doc,dof_flags);
-}
+#include "/Adam/DolDoc/DocMenuPopupCore.HC"
 
 public Bool PopUpForm(U8 *_d,U8 *class_name=lastclass,
 	I64 dof_flags=DOF_SIZE_MIN,U8 *header=NULL,U8 *footer=NULL)

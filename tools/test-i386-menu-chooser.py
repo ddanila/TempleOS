@@ -5,26 +5,13 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-menu-chooser-reference/MenuChooser.HC"
-def chooser_commands():
-    source=FIXTURE.read_text()
-    commands=[('I64 MCPrerequisite(CDoc *d){return DocMenu(d);}',[]),
-              (f'U8 *mc_source=CAlloc({len(source)+1});',[]),
-              ('U0 MCTransfer(I64 o,U8*s,I64 n){MemCpy(mc_source+o,s,n);}',[])]
-    for offset in range(0,len(source),60):
-        chunk=source[offset:offset+60]
-        encoded=json.dumps(chunk.replace('$','$$'))
-        commands.append((f'MCTransfer({offset},{encoded},{len(chunk)});',[]))
-    commands += [(f'FileWrite("C:/MenuChooser.HC",mc_source,{len(source)})>0;',['1']),
-                 ('Free(mc_source);',[]),('#include "C:/MenuChooser.HC"',[])]
-    commands += [(f'MCChoose({i})=={value};',['1'])
-                 for i,value in enumerate((11,12,22,-1,17))]
-    return commands+[('mc_unlocked;',['1']),('6*7;',['42'])]
-
-COMMANDS=chooser_commands()
+COMMANDS = [('I64 MCPrerequisite(CDoc*d){return DocMenu(d);}',[]),
+            ('#include "/Kernel/ScanCodes.HH"',[]),
+            ('#include "C:/MenuChooser.HC"',[])]+[(f'MCChoose({i})=={value};',['1'])
+            for i,value in enumerate((11,12,22,-1,17))]+[('mc_unlocked;',['1']),('6*7;',['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Put/display fixture exceeds native input limit")
@@ -52,23 +39,25 @@ def main():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     runner = ROOT/'tools/i386-kernel-input.py'
-    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
+    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, ROOT/'Kernel/FontStd.HC', ROOT/'Kernel/ScanCodes.HH', ROOT/'tools/package-i386-native-image.py', ROOT/'tools/build-i386-kernel.py', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
-    report = dict(result='running', scope='DocMenu prerequisite then actual original chooser fixture: first left/right and second selection, cancel, unlocked callback, MSG_CMD and task/document restoration; not physical mouse, data editing, restart or popup UI',
-                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+    packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+        source, working, additions={'/MenuChooser.HC':FIXTURE.read_bytes()})
+    report = dict(result='running', scope='Actual original chooser: first left/right and second selection, cancellation, unlocked callback, MSG_CMD and task/document restoration; not full input or popup qualification',
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
             cpu='486,-fpu', accel='tcg', qmp_stdio=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
-                           'rejection_prefixes':('INPUT REJECT ',),
+                           'rejected_answers':['0'],
+                           'rejection_prefixes':('INPUT REJECT ','WINMGR window exception '),
                            'command_timeout':120})
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         saved=build['mutated_file_contents'](working,{'/MenuChooser.HC'}).get('/MenuChooser.HC')
-        if saved!=FIXTURE.read_bytes():raise ValueError('Guest chooser fixture differs from source')
+        if saved!=FIXTURE.read_bytes():raise ValueError('Guest DocEd fixture differs from source')
         report['guest_fixture_sha256']=sha(FIXTURE)
         report['result'] = 'pass'
     except Exception as exc:

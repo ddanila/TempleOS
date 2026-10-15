@@ -48,6 +48,10 @@ extern U0 NativeSrvTaskCont();
 extern U0 NativeSrvCmdLine(I64 dummy=0);
 extern I64 NativePopUp(U8 *buf,CTask *parent=0,CTask **_pu_task=0);
 extern I64 NativePopUpPrint(U8 *fmt,...);
+extern I64 DocEntryRun(CDoc *doc,CDocEntry *entry,Bool exited,I64 *has_action=0);
+extern I64 DocMenu(CDoc *doc,I64 flags=0);
+extern I64 PopUpMenu(CDoc *doc,I64 flags=0);
+extern I64 PopUpPickLst(U8 *list);
 I64 (*native_servant_flush)(CTask *task);
 extern U0 NativeUserCmdLine(I64 dummy=0);
 extern CTask *NativeWinFocus(CTask *task=0);
@@ -260,6 +264,7 @@ extern U0 NativePrint(U8 *fmt,...);
 extern U0 NativePutS(U8 *text);
 extern U0 NativePutChars(U64 chars);
 U0 (*native_output_msg)(I64 msg_code,I64 arg1,I64 arg2,I64 flags);
+U0 (*native_action_exit)();
 #include "/Kernel/I386/InputFilterRuntime.HC"
 #include "/Kernel/I386/StreamRuntime.HC"
 U0 Yield()
@@ -275,7 +280,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[231];
+CI386KernelSymbol console_doc_exports[235];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -354,6 +359,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   provider=HashFind("_MSG",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_output_msg=provider->val;
+  provider=HashFind("_EXIT",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val) return FALSE;
+  native_action_exit=provider->val;
   provider=HashFind("_JOBS_HNDLR",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_input_jobs=provider->val;
@@ -607,7 +615,11 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(228,"_POP_UP",(&NativePopUp+0)(U64));
   ConsoleDocExportSet(229,"_POP_UP_PRINT",(&NativePopUpPrint+0)(U64));
   ConsoleDocExportSet(230,"_WIN_MAX",(&WinMax+0)(U64));
-  for(i=0;i<231;i++) {
+  ConsoleDocExportSet(231,"_DOC_ENTRY_RUN",(&DocEntryRun+0)(U64));
+  ConsoleDocExportSet(232,"_DOC_MENU",(&DocMenu+0)(U64));
+  ConsoleDocExportSet(233,"_POP_UP_MENU",(&PopUpMenu+0)(U64));
+  ConsoleDocExportSet(234,"_POP_UP_PICK_LST",(&PopUpPickLst+0)(U64));
+  for(i=0;i<235;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -868,3 +880,17 @@ U0 I386DocBreakPoll()
 #define DOC_ED_FUNCTION NativeOriginalDocEd
 #define DOC_VIEW_FUNCTION NativeOriginalView
 #include "/Kernel/I386/DocEdScope.HC"
+
+//Complete mutually dependent original actions and chooser wrappers.
+U0 NativeActionMsg(I64 code,I64 a,I64 b,I64 flags=0)
+{ (*native_output_msg)(code,a,b,flags); }
+U0 NativeActionExit() { (*native_action_exit)(); }
+#define Msg NativeActionMsg
+#define Exit NativeActionExit
+#define PopUp NativePopUp
+#define PopUpPrint NativePopUpPrint
+#define WinToTop NativeWinToTop
+#include "/Adam/DolDoc/DocEntryRunCore.HC"
+#include "/Adam/DolDoc/DocMenuCore.HC"
+#include "/Adam/DolDoc/DocMenuPopupCore.HC"
+#include "/Adam/DolDoc/DocPickLstCore.HC"
