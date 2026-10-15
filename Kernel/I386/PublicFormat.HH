@@ -14,4 +14,12 @@ public _extern _STR_SCAN U8 *StrScan(U8 *src,U8 *fmt,...);
 public _extern _STR_TO_I64 I64 Str2I64(U8 *src,I64 radix=10,U8 **end_ptr=NULL);
 public _extern _STR_TO_F64 F64 Str2F64(U8 *src,U8 **end_ptr=NULL);
 public _extern _STR_TO_DATE CDate Str2Date(U8 *src);
+#include "/Kernel/StringUtilFlags.HH"
+public _extern _STR_OCC I64 StrOcc(U8 *src,I64 ch);
+public _extern _STR_FIRST_OCC U8 *StrFirstOcc(U8 *src,U8 *marker);
+public _extern _STR_LAST_OCC U8 *StrLastOcc(U8 *src,U8 *marker);
+public _extern _STR_FIRST_REM U8 *StrFirstRem(U8 *src,U8 *marker,U8 *dst=NULL);
+public _extern _STR_LAST_REM U8 *StrLastRem(U8 *src,U8 *marker,U8 *dst=NULL);
+public _extern _STR_UTIL U8 *StrUtil(U8 *src,I64 flags);
+public _extern _MSTR_UTIL U8 *MStrUtil(U8 *src,I64 flags,F64 indent_scale_factor=0);
 #endif

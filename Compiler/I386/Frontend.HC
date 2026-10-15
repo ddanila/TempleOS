@@ -388,22 +388,17 @@ U0 I386FrontendMemberAdd(U8 *context,CCmpCtrl *cc,CMemberLst *member,CHashClass 
     I386FrontendUnavailable(context);
 }
 Bool I386FrontendNeedsHelpers(CCmpCtrl *cc,CHashClass *type,CHashClass **types)
-{//Conservatively mirror the backend's floating operand/type checks.
+{//This runs before OptPass012 constructs tree links. The union may still
+ //contain recycled machine-code bytes; inspect each node's own type/flags.
+ //Every operand is itself in this list, so no pre-optimization tree walk is needed.
   CI386Backend typer;
   CIntermediateCode *node;
-  I64 count;
   typer.types=types;
   if(I386IsF64(type)) return TRUE;
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
     if(node->ic_code==IC_IMM_F64 || node->ic_code==IC_TO_F64 ||
         node->ic_code==IC_TO_I64 || node->ic_flags&ICF_RES_TO_F64 ||
         I386IsF64(I386ValueClass(&typer,node))) return TRUE;
-    count=intermediate_code_table[node->ic_code].arg_cnt;
-    if(count==IS_1_ARG || count==IS_2_ARG) {
-      if(node->t.arg1_tree && I386IsF64(I386ValueClass(&typer,node->t.arg1_tree))) return TRUE;
-      if(count==IS_2_ARG && node->t.arg2_tree &&
-          I386IsF64(I386ValueClass(&typer,node->t.arg2_tree))) return TRUE;
-    }
   }
   return FALSE;
 }

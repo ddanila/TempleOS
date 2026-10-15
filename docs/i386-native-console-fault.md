@@ -55,25 +55,65 @@ now have bodies in this variant; their own lower-level dependencies remain real
 imports. This still does not reproduce the full compile state or execute mouse
 presentation. Root cause remains unproven; do not replace the original bodies.
 
-## Live replay
+## Diagnostic replay: terminal with captured evidence
 
-A new Console-only diagnostic replay is live in
+The Console-only diagnostic replay has terminated with the same failure in
 build/i386-c2-editor-replace-native-debug on the unchanged source/image. It opens
 a loopback GDB endpoint and has a watcher that waits for NativeMouseRestoreRows
 before attaching a conditional breakpoint at the mapped opcode-read instruction.
 If reached with the suspected end-of-address-space operand, the debugger saves
 registers, stack and guest RAM to fault-gdb.log and fault-ram.bin in that output
 directory. The generated fault.gdb will record the actual runtime-adjusted PC.
-Those artifacts are pending, not evidence already captured.
+The watcher captured registers, stack and the full 16 MiB guest RAM before
+detaching; the guest then reported the same vector 13/PC and the runner failed.
+The replay and watcher are terminal, not still running.
+
+The earlier blanket host-source freeze is lifted after verifying the actual
+replay boundary: the runner compiles embedded source.img files and audits against
+the original frozen export directory. Four key embedded files matched host
+sources before candidate edits; original image/export hashes are recorded in
+build/i386-native-console-debug-snapshot.json. Console-114 string API work uses
+a separate build directory and does not change this replay's source or compiler.
+Keep the replay image and reference export directory unchanged.
 
 The watcher is /tmp/watch-i386-native-console-fault.py; its log is
 /tmp/i386-native-console-fault-watcher.log. Build output is also retained in
-/tmp/i386-native-console-debug-build.log. Preserve the runtime sources while the
-replay runs and poll its actual process/session. Do not restart simply because
-an observation times out. This is a debug replay, not a release pass.
+/tmp/i386-native-console-debug-build.log. Preserve these captured inputs. This failed debug replay is not a release pass.
 
-Next inspect the captured operands/current backend node if the fault reproduces,
-reduce the actual failing state to a fast compiler contract, fix the cause, and
-rerun complete native component/generation gates. Directory-context reference
+The captured operands and fast contract below now identify the pre-scan phase
+error. Rerun native component/generation gates after the candidate repair. Directory-context reference
 work is independent test-first progress; it does not resolve this C5 failure.
 C1–C5 remain incomplete.
+
+## Captured cause and test-first repair
+
+`build/i386-c5-console-fault-capture.json` pins the captured RAM/register/log
+artifacts. I386ValueClass receives `ic=0xFFFFFFF7`; adding the opcode offset 8
+yields EAX=0xFFFFFFFF at the fault. Its caller is I386FrontendNeedsHelpers
+(return PC 0x295F21), not the backend emitter loop. The caller's node local is
+0xCC0E48, opcode 0x36 (IC_ADD). The target tree/code union starts at offset 85;
+arg2_tree at offset 97 contains 0xFFFFFFF7. The surrounding bytes decode as
+machine instructions, not constructed tree links.
+
+The pre-scan executes before the backend's OptPass012 establishes those links.
+Reading the recycled union is invalid at that phase. The candidate scans each
+listed node's own class/flags and explicit float/conversion opcodes instead.
+Operands are themselves list nodes, so detecting floating-point requirements
+does not require traversing unconstructed trees. I386ValueClass is unchanged;
+no fallback silently assigns a type to invalid IR.
+
+`tools/test-i386-helper-scan-reference.py` compiles the exact production scan,
+value classification and complete canonical backend type on the pinned original
+x64 system, with canonical opcode metadata. A synthetic pre-optimization integer
+node contains stale pointers to a valid F64 node. The old scan incorrectly
+requests helpers: mask 60 instead of 63 in
+`build/i386-c5-helper-scan-metadata-red`. The fixed scan passes 63 in
+`build/i386-c5-helper-scan-green`, including the observed -9 stale pointer, own
+F64 class, immediate F64, result-to-F64 flags and F64 result-type cases. Inputs
+remain unchanged in each run. The first fixture attempt lacked the private
+opcode table and timed out in the original debugger; it is a fixture failure,
+not the semantic red gate. Both failed attempts are retained.
+
+This proves the bounded phase-contract repair on x64. Native code generation,
+float regressions and full Console/Editor rebuilding still require a fresh
+candidate and current-source evidence. C1–C5 remain incomplete.

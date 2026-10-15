@@ -73,6 +73,8 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--max-console-span', type=lambda value: int(value, 0),
                         help='Optional byte budget for the logged Console provider load span')
+    parser.add_argument('--require-no-allocation-failures', action='store_true',
+                        help='Fail if the normal boot log contains any raw-heap exhaustion observations')
     args = parser.parse_args()
     if args.out.exists():
         parser.error('Use a fresh output path')
@@ -91,12 +93,19 @@ def main():
                                        pass_budget=actual <= args.max_console_span)
         if actual > args.max_console_span:
             report['result'] = 'fail'
+    if args.require_no_allocation_failures:
+        count = report['current']['allocation_failure_observation_count']
+        report['allocation_pressure_gate'] = dict(required_count=0, observed_count=count,
+                                                 pass_gate=count == 0)
+        if count:
+            report['result'] = 'fail'
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(dict(result=report['result'], current=report['current']['providers'],
                          pressure_observations=report['current']['allocation_failure_observation_count'],
                          delta=report.get('provider_span_delta_bytes'),
-                         console_budget=report.get('console_budget')), indent=2))
+                         console_budget=report.get('console_budget'),
+                         allocation_pressure_gate=report.get('allocation_pressure_gate')), indent=2))
     if report['result'] != 'pass':
         raise SystemExit(1)
 

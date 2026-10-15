@@ -13745,9 +13745,42 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Count characters; locate/remove first and last marker-set segments; normalize in place and allocated results; expand tabs and scale indentation with F64. Observe return pointers, exact strings, caller roles and caller heap."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-string-util-reference.py",
+        "documentation": "docs/i386-string-util.md",
+        "checks": [
+          "eleven explicit masks of 7",
+          "same fixture on native public API",
+          "not every original StrA/StrB service or allocation/cancellation failure"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-string-utilities",
+          "command": "python3 tools/test-i386-string-util-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-string-util-reference/result.json",
+          "scope": "Eleven bounded string contracts on the pinned original system"
+        },
+        {
+          "target": "native-string-utilities-prerequisite",
+          "command": "python3 tools/test-i386-string-util.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-string-util-prerequisite-red/result.json",
+          "scope": "Console 113 rejects StrOcc while compiling fixture; behavior cases not reached"
+        },
+        {
+          "target": "native-string-utilities-console114",
+          "command": "python3 tools/test-i386-string-util.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-string-util-compact-native/result.json",
+          "scope": "Eleven public-API contracts at 64 MiB; compact candidate still fails 8 MiB normal startup and is not release qualified"
+        }
+      ]
     },
     {
       "path": "Kernel/StrB.HC",
@@ -13762,9 +13795,42 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Count characters; locate/remove first and last marker-set segments; normalize in place and allocated results; expand tabs and scale indentation with F64. Observe return pointers, exact strings, caller roles and caller heap."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-string-util-reference.py",
+        "documentation": "docs/i386-string-util.md",
+        "checks": [
+          "eleven explicit masks of 7",
+          "same fixture on native public API",
+          "not every original StrA/StrB service or allocation/cancellation failure"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-string-utilities",
+          "command": "python3 tools/test-i386-string-util-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-string-util-reference/result.json",
+          "scope": "Eleven bounded string contracts on the pinned original system"
+        },
+        {
+          "target": "native-string-utilities-prerequisite",
+          "command": "python3 tools/test-i386-string-util.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-string-util-prerequisite-red/result.json",
+          "scope": "Console 113 rejects StrOcc while compiling fixture; behavior cases not reached"
+        },
+        {
+          "target": "native-string-utilities-console114",
+          "command": "python3 tools/test-i386-string-util.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-string-util-compact-native/result.json",
+          "scope": "Eleven public-API contracts at 64 MiB; compact candidate still fails 8 MiB normal startup and is not release qualified"
+        }
+      ]
     },
     {
       "path": "Kernel/StrPrint.HC",

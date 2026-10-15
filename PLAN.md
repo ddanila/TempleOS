@@ -11,6 +11,49 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Compiler fault captured and phase repair; public string API candidate (2026-10-15)
+
+The frozen Console-113 debug replay is terminal with the same fault after 723
+functions. The watcher captured registers, stack and 16 MiB guest RAM. Its
+caller is I386FrontendNeedsHelpers: before OptPass012 constructs tree links,
+it reads a recycled node union and passes 0xFFFFFFF7 to I386ValueClass. The
+opcode read at pointer+8 causes vector 13 at 0x220711. Evidence is pinned in
+build/i386-c5-console-fault-capture.json. No invalid-IR type fallback is added.
+
+A deterministic test compiles the actual pre-scan on original x64 with canonical
+types/opcode metadata. A stale F64 pointer in an integer node incorrectly turns
+on helpers: old mask 60, expected 63. The repair inspects each listed node's own
+class/flags and float/conversion opcodes without reading unconstructed trees.
+The same test passes 63, including the captured -9 pointer shape. Evidence:
+build/i386-c5-helper-scan-metadata-red and build/i386-c5-helper-scan-green, with
+unchanged inputs. Fresh native compiler/build/float qualification remains open.
+See [captured fault and repair](docs/i386-native-console-fault.md).
+
+Eleven original string-utility contracts pass; native Console 113 rejects StrOcc
+before behavior execution. Console 114 exposes seven complete existing bodies
+with original signatures/flags. All eleven native cases pass, including F64
+indent scaling, exact output/pointers, caller roles and heap recovery. The
+replacement/navigation regression also passes on the first candidate.
+
+The first candidate passes normal 8 MiB's nine commands in 57.32 seconds and
+fits the unchanged Console cap (2340888 <= 2345304), but logs ten recoverable
+8755-byte raw-heap failures. Its 8 MiB scanner gate fails OutMem. An explicit
+zero-observed-failure footprint gate rejects it and accepts the previous image.
+Bulk export initialization preserves all 283 name/index/function associations,
+saves 5720 payload bytes, and passes native utility cases, but its 8 MiB startup
+still fails OutMem compiling SPText. This resource regression is unresolved;
+do not promote either candidate as the minimal-profile replacement. Failures
+and limits are recorded in [string contracts](docs/i386-string-util.md).
+
+The old replay's embedded image/export inputs were verified independent before
+host edits, lifting the blanket host-source freeze. New builds use separate
+outputs. Source review also identified complete block-device metadata and task
+directory-string ownership as prerequisites for unchanged directory contexts;
+do not hide those differences with shortened records or restoration shims.
+C1–C5 remain incomplete. The current bootstrap passes. A cross-build combining the phase repair with
+the string API candidate is running in build/i386-c5-helper-scan-cross; native
+and resource gates must be repeated after it finishes.
+
 ### Original TimeClock punch commands captured; native GetStr still red (2026-10-15)
 
 The new unchanged-original application test calls PunchIn/PunchOut through real
