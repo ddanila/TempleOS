@@ -11,6 +11,25 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Clock and original undo: test-first checkpoint (2026-10-15)
+
+Draft paired reference/native runners and a shared guest fixture are recorded in
+`tools/test-i386-doc-undo-reference.py`, `tools/test-i386-doc-undo.py` and
+`tests/guest/i386-doc-undo-reference/`. They propose clock monotonicity,
+frequency/progress and interrupt-state checks, plus six undo cases covering
+disabled capture, forced capture, repeated restoration, dirty timing and an
+incoming document lock. Cursor, flags, undo rings, caller document and exact
+heap recovery are explicit assertions.
+
+These are unexecuted test candidates, not passing reference evidence or a
+confirmed native red gate. Only host Python syntax and whitespace checks have
+been performed at this checkpoint. No runtime implementation is included.
+Next establish the original-system oracle, confirm the native prerequisite
+failure, then implement a 386-compatible timestamp/frequency service and share
+the complete original undo bodies. Qualify timing limits and failure/ownership
+behavior before claiming compatibility; retain existing keyboard-driven undo
+and minimal-profile startup regressions. C1–C5 remain incomplete.
+
 ### DocRead uses the full loader with bounded binary preflight (Console 105, 2026-10-15)
 
 The native file adapter now calls complete original DocLoad instead of the
