@@ -30,6 +30,13 @@ surrounding definitions, compiler state and preceding work remain hypotheses;
 none is established as the cause. No guard that silently treats invalid IR as
 an integer type has been added, and mouse logic has not been shortened.
 
+The `--task-validator-body` variant also passes in
+build/i386-c5-mouse-compile-validator-body at 16 MiB on 486,-fpu, with unchanged
+pinned inputs. It substitutes the complete canonical Kernel/TaskValidate.HC
+body for its import and pins that file. Thus the presence of that definition
+alone is insufficient to reproduce the fault. This remains compilation-only
+evidence; the full Console failure and its root cause are still open.
+
 ## Live replay
 
 A new Console-only diagnostic replay is live in

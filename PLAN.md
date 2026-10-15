@@ -11,6 +11,17 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Task validator isolation checkpoint (2026-10-15)
+
+The exact mouse compile probe now supports `--task-validator-body`, using the
+complete original TaskValidate implementation and pinning its canonical source.
+The variant passes at 16 MiB on 486,-fpu in
+build/i386-c5-mouse-compile-validator-body with unchanged inputs. This rules out
+that definition alone as a sufficient reproduction, not as a possible participant
+in the full compiler state. The Console debug replay remains running; root cause,
+full native qualification and C1–C5 remain open. See
+[native Console fault evidence](docs/i386-native-console-fault.md).
+
 ### Directory-context oracle and native Console fault localization (2026-10-15)
 
 The prior 16 MiB no-FPU Console/Editor component build is terminal, failed at

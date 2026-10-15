@@ -18,6 +18,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--task-validator-body',action='store_true',help='Use the complete canonical TaskValidate body rather than an import')
     args=parser.parse_args()
     source,out=args.disk.resolve(),args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
@@ -38,6 +39,10 @@ import Bool NativeGraphicsTextLock(CNativeGraphicsScope*scope);
 import U0 NativeGraphicsTextUnlock(CNativeGraphicsScope*scope);
 import Bool TaskValidate(CTask*task);
 ''',extract(files[3],'U0 NativeMousePresentSplit(', '\n}\n'), 'I64 Main(){return 42;}\n']
+    if args.task_validator_body:
+        task=ROOT/'Kernel/TaskValidate.HC'
+        files.append(task)
+        parts=[part.replace('import Bool TaskValidate(CTask*task);',task.read_text()) for part in parts]
     payload=''.join(parts).encode()
     (out/'Probe.HC').write_bytes(payload)
     working=out/'working.img'
