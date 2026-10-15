@@ -11,6 +11,51 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Class-form oracle and measured editor-provider target (2026-10-15)
+
+Seven original DocForm cases now pass masks of 63 on two fresh runs in
+`build/i386-c4-class-form-final-reference` and
+`build/i386-c4-class-form-repeat-reference`, with unchanged inputs and exact
+caller heap recovery. Cases cover unknown/unformatted classes, explicit and
+inferred mixed-class bindings, sized cancellation, real numeric typing/accept
+(12 to 42) and typing/cancel (12 unchanged). A public observing key hook neither
+consumes keys nor mutates documents. Assertions include field addresses/types,
+array length, REMALLOC_DATA linkage, header/footer, structure guards, hook-ring
+cleanup, document/border/end-callback roles, title/attributes and original sizing.
+
+The reference establishes details previously assumed incorrectly: string arrays
+use the pointer-carrier raw type, Bool uses RT_I8, and direct SIZE_MIN forms
+retain smaller bounds because recalculation precedes DocEd's snapshot. Fixture
+cleanup restores bounds after measuring that behavior. Shared Adam heap deltas
+are telemetry, not a per-call zero assertion: yield-only controls also have
+positive/negative deltas. Root ownership cleanup remains a separate gate.
+Native lastclass inference passes, then the DocForm binding fails (Invalid lval)
+in `build/i386-c2-class-form-prerequisite-red`, with unchanged inputs. No native
+form/editing success is claimed. See [class-form contracts](docs/i386-class-form.md).
+
+The new pinned footprint report measures Console 109's retained provider span
+at 2361424 bytes, 24312 above Console 108; compiler/file/memory provider spans
+are unchanged. Existing 8 MiB startup still passes nine commands in 53.89 seconds
+and shows ten speculative backing-failure observations. The report validates
+actual command logs and normal-profile metadata/input pins; five invalid-evidence
+controls are rejected. Evidence: `build/i386-editor-provider-footprint-final.json`
+and `build/i386-provider-report-negative-controls.json`.
+
+The next architecture target caps mandatory Console at 2345304 bytes: Console
+108 plus 8 KiB for loading glue. The new budget gate deliberately fails by 16120
+bytes in `build/i386-editor-provider-budget-final-red.json`; it does not revoke
+existing startup acceptance. Extract optional editor services behind a validated
+lazy provider, preserve complete public APIs and shared original bodies, and
+require packaged source/module evidence, first/repeated use, caller lifetime/
+cancellation and repair/retry tests. Keep normal minimal boot unloaded and pass
+its byte/behavior gates, then integrate complete DocForm/PopUpForm and replacement/
+go-to routines. Native build/install/generation manifests must include the
+provider. See [implementation and acceptance sequence](docs/i386-editor-provider.md).
+
+This checkpoint changes tests, reporting and documentation only. Runtime remains
+Console 109/Memory 26, with all 1496 source/build pins unchanged. Full DocPutKey,
+chooser, GetStr/TimeClock, application workflows and C1–C5 remain incomplete.
+
 ### Original editor search, pairing and selection integrated (Console 109, 2026-10-15)
 
 Complete unchanged StrFind, EdFindNext, EdSelAll, EdFindPaired, EdGoToFun and

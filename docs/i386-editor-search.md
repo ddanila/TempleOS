@@ -103,3 +103,10 @@ mandatory provider footprint before bulk-loading further desktop/tool code;
 evaluate the existing lazy-provider boundary without dropping required services
 or relaxing the minimal startup/rebuild gates. Full desktop qualification keeps
 its separate 64/128 MiB working profiles.
+
+
+The next gates are now concrete: [the class-form reference](i386-class-form.md)
+passes on the original system, while native lastclass inference passes and the
+DocForm binding is missing. [The provider memory report and budget](i386-editor-provider.md)
+measure the search addition and establish a deliberately red loading-boundary
+target before further mandatory Console growth.
