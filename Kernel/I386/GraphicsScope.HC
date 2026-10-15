@@ -2,12 +2,15 @@ class CNativeGraphicsScope:CNativeRenderScope {
   CDC **alias;
   Bool *lease;
   CI386Task **presenter;
-  Bool owns_lease;
+  Bool owns_lease,owns_refresh;
 };
 extern Bool NativeGraphicsReady();
 U0 NativeGraphicsScopeReleaseLease(CNativeGraphicsScope *scope)
 {
   U32 irq=I386IrqSave;
+  if(scope->owns_refresh) {
+    scope->owns_refresh=FALSE;LBtr(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0);
+  }
   if(scope->owns_lease) {
     if(!scope->lease || !scope->presenter || *scope->presenter!=scope->task)
       KernelStop;
@@ -27,8 +30,13 @@ U0 NativeGraphicsScopeOpen(CNativeGraphicsScope *scope,CDC **alias,Bool *lease,
   CI386Task **presenter)
 {
   scope->alias=alias;scope->lease=lease;scope->presenter=presenter;
-  scope->owns_lease=FALSE;
+  scope->owns_lease=scope->owns_refresh=FALSE;
   NativeRenderScopeOpen(scope,&NativeGraphicsScopeRelease);
+}
+U0 NativeGraphicsScopeRefreshBegin(CNativeGraphicsScope *scope)
+{
+  if(!scope->owns_lease || scope->task!=native_window_worker)throw('Frame',TRUE);
+  LBts(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0);scope->owns_refresh=TRUE;
 }
 Bool NativeGraphicsScopeAcquire(CNativeGraphicsScope *scope)
 {//Foreign callers wait cooperatively. Same-task recursion cannot make progress.

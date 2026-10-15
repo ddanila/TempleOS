@@ -53,17 +53,58 @@ U0 NativeWindowReport(I64 ch,I64 number)
       Fs->except_callers[4],Fs->except_callers[5],Fs->except_callers[6],Fs->except_callers[7]);
   } catch { Fs->catch_except=TRUE; }
 }
+Bool NativeWindowLegacyPresent()
+{//Complete the retained ordinary view through the same validated frame lease.
+  CNativeGraphicsScope scope;
+  CNativeTerminal *terminal;
+  CTask *focus=sys_focus_task,*target;
+  I64 focus_num=0,target_num;
+  Bool result=FALSE,borrowed=FALSE;
+  if(TaskValidate(focus))focus_num=focus->task_num;
+  terminal=NativeTerminalFind(focus);
+  if(!terminal)terminal=native_terminal_root;
+  if(!terminal)return FALSE;
+  target=terminal->task;target_num=target->task_num;
+  try {
+    if(!NativeGraphicsTextLock(&scope))goto legacy_present_done;
+    borrowed=TRUE;
+    if(sys_focus_task!=focus || focus_num &&
+        (!TaskValidate(focus)||focus->task_num!=focus_num) ||
+        !TaskValidate(target)||target->task_num!=target_num || NativeWindowNeeded(TRUE))
+      goto legacy_present_done;
+    terminal=NativeTerminalFind(target);
+    if(!terminal)goto legacy_present_done;
+    NativeRenderScopeBorrow(&scope,target,target,NULL);
+    NativeGraphicsScopeRefreshBegin(&scope);
+    //An unchanged retained image is a completed iteration, with no dirty upload.
+    NativeConsolePresentRows(&terminal->surface);
+    result=TRUE;
+legacy_present_done:;
+  } catch {
+    if(borrowed)NativeGraphicsTextUnlock(&scope);
+  }
+  if(borrowed)NativeGraphicsTextUnlock(&scope);
+  return result;
+}
 U0 NativeWindowWorker(U8 *data)
 {
   I64 ch,number;
+  Bool completed,pump;
   SetRFlags(GetRFlags|0x200);
   while(TRUE) {
     Fs->task_end_cb=&NativeWindowCancel;
-    native_window_fault_task=0;
+    native_window_fault_task=0;pump=FALSE;
     try {
       NativeWindowDerived;
-      if(NativeWindowNeeded())
-        NativeGraphicsPresentChecked(&NativeWindowListDraw,FALSE,&NativeWindowAdmit);
+      pump=LBtr(&sys_semas[SEMA_JUST_PUMP_MSGS],0);
+      if(!pump) {
+        if(NativeWindowNeeded())
+          completed=NativeGraphicsPresentChecked(&NativeWindowListDraw,FALSE,&NativeWindowAdmit);
+        else completed=NativeWindowLegacyPresent;
+        if(completed) {
+          WinMgrRefreshTime(&winmgr,tS);winmgr.updates++;
+        }
+      }
     } catch {
       ch=Fs->except_ch;number=native_window_fault_task;
       Fs->catch_except=TRUE;
@@ -72,7 +113,7 @@ U0 NativeWindowWorker(U8 *data)
         (*native_window_sleep)(3000);
       }
     }
-    (*native_window_sleep)(33);
+    if(pump)(*native_window_sleep)(0);else (*native_window_sleep)(33);
   }
 }
 U0 NativeWinMgrEnsure()

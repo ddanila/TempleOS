@@ -7,10 +7,12 @@ as WinMgr, preserving the original callback execution context. The persistent
 drawing context is associated with WinMgr; the frame context retains the console
 association, matching the original initialization split.
 
-Console version 86 also runs the ring-wide derived-control prepass, including
+Console version 87 retains the ring-wide derived-control prepass, including
 hidden/covered tasks, before view admission. Its numeric snapshot preserves
 ordinary predecessor order across callbacks. Contended native task locks yield
-cooperatively. See [derived-control contracts](i386-derived-controls.md).
+cooperatively. See [derived-control contracts](i386-derived-controls.md). Public Refresh,
+manager-frame synchronization and completed-iteration accounting are covered in
+[native Refresh](i386-native-refresh.md).
 
 ## Scheduling, view admission and recovery
 
@@ -50,7 +52,7 @@ is not yet the complete original window-manager policy.
 
 Console interface version 84 introduced the private `window_ensure` callback, growing
 its 32-bit service table from 44 to 48 bytes. It exports NativeWinMgrStart as
-symbol 226. Version 86 retains that table and export count. Memory interface version 25 adds normal display defaults and public
+symbol 226. Version 87 retains that table and adds Refresh/winmgr state, for 228 exports. Memory interface version 25 adds normal display defaults and public
 WinMgr Kill protection; its table and 49-symbol count are unchanged. Public CTask
 layout is unchanged. Kernel/provider versions and service entry addresses are
 checked together.

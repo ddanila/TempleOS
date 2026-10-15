@@ -3,6 +3,9 @@
 #include "/Kernel/DisplayFlags.HH"
 #include "/Kernel/WindowInhibitFlags.HH"
 #include "/Kernel/ControlTypes.HH"
+#include "/Kernel/WindowManagerTypes.HH"
+public _extern _REFRESH U0 Refresh(I64 cnt=1,Bool force=FALSE);
+public _extern _WINMGR_STATE CWinMgrGlbls winmgr;
 #define TEXT_COLS 80
 #define TEXT_ROWS 60
 public _extern _TASK_VALIDATE Bool TaskValidate(CTask *task);

@@ -3694,6 +3694,30 @@
           "result": "pass",
           "evidence": "build/i386-c4-refresh-cleanup-final/result.json",
           "scope": "Original with shared Refresh source cleanup overlay: active-frame sync retained and interrupted flags restored, masks [15,0]; ordinary six modes retained separately; not native or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-modes.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-native-refresh-modes-local/result.json",
+          "scope": "15 commands: native six original ordinary-return modes plus isolated raw/explicit uploads excluded from manager count; retained ordinary-view bridge, not full pump-event or desktop parity"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-document.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-native-refresh-document/result.json",
+          "scope": "9 commands: public Refresh(2) produces two A/B dynamic document evaluations and independent glyph frames, restores input; not default put/display document composition"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-wait-lifetime.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-native-refresh-wait-lifetime/result.json",
+          "scope": "18 commands: abort/forced Exit/DocDel/document owner retirement restore temporary state before storage teardown; exact parent heap and presentation reuse; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-frame.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-native-refresh-frame-final/result.json",
+          "scope": "14 commands: actual held manager frame blocks zero-count waiter; normal release and actual manager death/restart unblock with released in-progress state, exact heap and rendering reuse; whole-file unqualified"
         }
       ]
     },

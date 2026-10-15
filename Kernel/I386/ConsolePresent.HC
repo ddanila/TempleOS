@@ -14,7 +14,7 @@ U0 NativeConsolePresentRows(CI386Text *surface)
   if(rows<0) KernelStop;
   if(rows) {
     NativeDisplayViewCommit(planes);
-    NativeWinRefreshCommit;
+    NativePresentationCommit;
     for(i=0;i<9;i++) message[i]=prefix[i];
     message[9]='0'+rows/10; message[10]='0'+rows%10;
     message[11]=10; message[12]=0; KernelLog(message);

@@ -11,6 +11,39 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native Refresh, wait lifetimes and manager-frame accounting (2026-10-15)
+
+Console version 87 publishes Refresh and winmgr state (228 public exports),
+using the shared repaired wait core. Native scopes protect the selected document
+and temporary flags through abort, committed Exit, DocDel and owner retirement.
+Actual manager frames bracket in-progress state through lease cleanup, including
+manager death. Raw/explicit uploads have separate physical accounting; only
+completed manager iterations advance the public update count. The retained
+ordinary-view path validates its view under the frame lease, including unchanged
+cached images. Pump-only iterations skip rendering/counter advancement.
+
+All 15 mode/count-isolation, 9 A/B visual, 18 waiter-lifetime and 14 held-frame /
+manager-restart commands pass. The old image still rejects the public API/state
+before functional observations. The final image also passes 14 worker lifecycle,
+14 error-isolation, 48 whole-window and 24 window/graphics/text-frame submissions.
+Original bootstrap, native cross-build and 386 boot audit pass; all 1473 build
+input/source hashes match. Normal 8 MiB startup takes 48.95 seconds without
+build-provider loading. See [native Refresh evidence](docs/i386-native-refresh.md).
+
+This closes the first public Refresh visual/lifetime integration gates, not C2
+or C4. Ordinary stdout/input still uses the retained bridge: it does not yet run
+the complete original put-document, persistent graphics and final-screen hook
+composition. Qualify those ordinary document roles next with automatic output
+oracles, including a view whose display_doc and put_doc are the same document.
+Complete pump/event semantics, raw/debug/focus transitions, ODE/menu/control/cursor
+work, bundled app/demo workflows and full native release qualification remain
+open. C1–C5 are incomplete.
+
+The native parser also rejects `&DocPut->flags` in the modes fixture's argument
+context. The final fixture uses the original baseline's local document pointer;
+keep this shorthand expression as an explicit C4 compiler gap. Public layouts
+and the private service table remain unchanged; Memory stays version 25.
+
 ### Shared Refresh exception cleanup and active-frame baseline (2026-10-15)
 
 The pinned original now has an actual held-frame synchronization oracle plus an

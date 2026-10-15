@@ -3,8 +3,10 @@
 The desktop compatibility goal requires the original public Refresh API, not
 application calls to private presentation helpers. Ordinary console/document
 views must make progress as well as custom shown documents. The native Console-86
-worker has automatic custom-document/control rendering but does not yet publish
-Refresh. Its default transcript/editor path still uses the retained bridge.
+worker had automatic custom-document/control rendering but did not publish
+Refresh. Console 87 now integrates the public API, scoped waits and manager-cycle
+accounting; see [native implementation and evidence](i386-native-refresh.md).
+Its default transcript/editor path still uses the retained bridge.
 
 ## Pinned original baseline
 
@@ -94,8 +96,9 @@ DOCf_DO_FULL_REFRESH set. The shared repair restores both before the outer catch
 idempotent restoration on ordinary return and exceptions. The original WinMgr
 includes this core. It restores the document flag only when Refresh changed it
 for a count greater than one; count 0/1 no longer uses an uninitialized saved
-flag. Native scope hooks are reserved for committed Exit and document/owner
-borrowing, but no native Refresh export or cadence integration is enabled yet.
+flag. At that repair checkpoint native scope hooks were reserved for committed Exit
+and document/owner borrowing. Console 87 now supplies them with public exports
+and retained-view cadence in the linked native implementation.
 The ordinary transcript/editor and manager-cycle gaps remain open.
 
 | Artifact under build/ | System | Observations |

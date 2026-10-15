@@ -1,6 +1,9 @@
 #ifndef REFRESH_SLEEP
 #define REFRESH_SLEEP Sleep
 #endif
+#ifndef REFRESH_JIFFIES
+#define REFRESH_JIFFIES cnts.jiffies
+#endif
 #ifndef REFRESH_SCOPE_LOCAL
 #define REFRESH_SCOPE_LOCAL
 #define REFRESH_SCOPE_OPEN
@@ -30,7 +33,7 @@ public U0 Refresh(I64 cnt=1,Bool force=FALSE)
     old_idle=LBts(&Fs->task_flags,TASKf_IDLE);idle_saved=TRUE;
     if(!cnt&&force)LBts(&sys_semas[SEMA_JUST_PUMP_MSGS],0);
     while(Bt(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0)) {
-      if(force&&sys_winmgr_task)sys_winmgr_task->wake_jiffy=cnts.jiffies;
+      if(force&&sys_winmgr_task)sys_winmgr_task->wake_jiffy=REFRESH_JIFFIES;
       Yield;
     }
     if(cnt>1&&old_doc) {
@@ -38,7 +41,7 @@ public U0 Refresh(I64 cnt=1,Bool force=FALSE)
     }
     update_cnt=winmgr.updates+cnt;
     while(winmgr.updates<update_cnt) {
-      if(force&&sys_winmgr_task)sys_winmgr_task->wake_jiffy=cnts.jiffies;
+      if(force&&sys_winmgr_task)sys_winmgr_task->wake_jiffy=REFRESH_JIFFIES;
       REFRESH_SLEEP(1);
     }
     REFRESH_SCOPE_RELEASE;
