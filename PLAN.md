@@ -11,6 +11,29 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native WinMax geometry and startup pass (2026-10-15)
+
+Console 93 now cross-builds and passes the limited 386 boot audit (96 BIOS,
+255 protected-mode instructions); all 1477 source/build hashes match. The native
+paired WinMax fixture passes 31 commands with exact persisted source and
+unchanged inputs: border/borderless bounds, explicit Fs IF on/off and invalid
+task no-op. Evidence: build/i386-c2-winmax-five-green. Normal 8 MiB startup
+passes nine checks in 50.85 seconds, with WinMgr active and no build providers,
+in build/i386-c2-winmax-startup.
+
+A second fixture checks real different-task targeting plus callback exception,
+task-lock release, IF recovery and continued use. The shared-original staged
+control passes [1,1] with unchanged inputs in
+build/i386-c4-winmax-recovery-staged. The native 31-command recovery session also passes with unchanged inputs
+and exact fixture bytes in build/i386-c2-winmax-recovery-entry-if. Initial diagnostics with wrong try-entry IF or changed inputs are
+excluded. Original timeout evidence must not be interpreted as a returned
+flag value. See [WinMax contracts](docs/i386-menu-integration.md).
+The pinned-original staged run reaches TARGET end then times out during
+recovery at 120 seconds, with unchanged inputs, in
+build/i386-c1-winmax-recovery-staged. The shared body completes this contract;
+no original returned IF value is inferred.
+Full DocEd/form/action integration and C1–C5 remain open.
+
 ### Shared WinMax candidate and expanded reference (2026-10-15)
 
 Console 93 adds the missing WinMax public binding (231 exports). Both original

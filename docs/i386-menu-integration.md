@@ -91,3 +91,43 @@ invalid-task bounds/IF preservation. Two original self-rebuild generations pass.
 The native cross-build is running at `build/i386-c2-winmax-cross`; native paired
 geometry, actual different-task targeting, callback recovery and startup remain
 unqualified. Older reference paths above describe historical two-case fixtures.
+
+### Native geometry/startup qualification and recovery contract
+
+The Console 93 cross-build completes with a limited 386 audit of 96 BIOS and
+255 protected-mode instructions; all 1477 source/build input hashes match.
+`build/i386-c2-winmax-five-green/result.json` passes all 31 commands, with
+unchanged inputs and exact persisted fixture bytes. This qualifies the paired
+current-task geometry, IF on/off and invalid-task cases on 486,-fpu at 64 MiB.
+`build/i386-c2-winmax-startup/result.json` passes nine normal-boot checks at
+8 MiB in 50.85 seconds, with the manager enabled and build providers unloaded.
+Neither run establishes C5 native-generation qualification.
+
+The additional shared fixture in `tests/guest/i386-winmax-recovery-reference`
+uses a real Spawn task to check target geometry, unchanged caller geometry,
+focus and window order. A real derived-control callback then throws WMFail;
+the caller must catch the original exception, observe IF enabled and an
+unlocked task, remove/free the control, restore geometry and continue.
+The outer try must be entered with IF enabled: an earlier diagnostic entered
+with IF disabled and could not isolate WinMax cleanup. Its results are not
+acceptance evidence. Another diagnostic modified fixture inputs during a run;
+its inputs_unchanged=false likewise excludes it.
+
+The rebuilt shared-original staged control passes [1,1] in
+`build/i386-c4-winmax-recovery-staged/result.json`, with unchanged inputs.
+Stage markers separate targeting from recovery in the original control;
+a timeout without an exported result does not establish a returned IF value.
+Forced Exit, owner retirement during callbacks, and complete form/editor
+lifetimes remain separate open requirements.
+
+The corrected native recovery session also passes, with unchanged inputs and
+exact transferred fixture bytes, in
+`build/i386-c2-winmax-recovery-entry-if/result.json` (31 commands). Thus the
+actual different-task and recovered callback-throw paths qualify on this
+cross-built image. This is not forced Exit/owner-retirement qualification.
+
+The pinned-original staged run terminates at its 120-second limit, with unchanged
+inputs, in `build/i386-c1-winmax-recovery-staged/result.json`. Its log reaches
+TARGET end and RECOVERY begin, but never RECOVERY end or an export. The shared
+body completes the same source; this is an intentional recovery repair rather
+than evidence that the original returned a particular IF value.
