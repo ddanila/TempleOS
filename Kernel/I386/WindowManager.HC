@@ -8,16 +8,17 @@ Bool NativeWindowNeeded(Bool coverage=FALSE)
   CTask *task=sys_winmgr_task;
   CDoc *doc;
   if(!native_window_started || !TaskValidate(task))return FALSE;
+  if(NativeLegacyViewActive(sys_focus_task))return FALSE;
   if(TaskValidate(sys_focus_task) &&
       !Bt(&sys_focus_task->display_flags,DISPLAYf_NOT_RAW))return FALSE;
+  if(gr.fp_final_scrn_update || gr.fp_wall_paper)return TRUE;
   do {
     if(!TaskValidate(task))return FALSE;
     if(task!=native_window_worker && !NativeRenderOwnerClosing(task) &&
         Bt(&task->display_flags,DISPLAYf_SHOW) &&
         (!coverage || Bt(gr.win_uncovered_bitmap,task->win_z_num))) {
       doc=DocDisplay(task);
-      //Default transcript/editor views still use the retained console bridge.
-      if(doc && doc!=DocPut(task) || task->draw_it ||
+      if(NativeTerminalDocumentView(task,doc) || task->draw_it ||
           task->next_ctrl!=&task->next_ctrl)return TRUE;
     }
     task=task->next_task;
@@ -39,6 +40,17 @@ U0 NativeWindowWorkerCleanup(CI386Task *task)
   sys_winmgr_task=native_window_anchor;
   native_window_worker=NULL;
 }
+U0 NativeWindowReportText(U8 *fmt,...)
+{//System diagnostics explicitly target the retained root console, not null stdout.
+  U8 *text=StrPrintJoin(NULL,fmt,argc,argv);
+  try {
+    if(native_terminal_root) {
+      I386TextWrite(&native_terminal_root->surface,text);
+      ConsolePresentText(&native_terminal_root->surface);
+    }
+  } catch { Free(text); }
+  Free(text);
+}
 U0 NativeWindowReport(I64 ch,I64 number)
 {
   CTask *task=NULL;
@@ -47,8 +59,8 @@ U0 NativeWindowReport(I64 ch,I64 number)
   KernelLog("WINMGR window exception ");KernelHex(ch);KernelLog(" ");
   KernelHex(number);KernelLog("\n");
   try {
-    NativePrint("Exception in WinMgr: Update Task Win\nExcept:%c:\n",ch);
-    NativePrint("%P:%P:%P:%P:%P:%P:%P:%P\n",Fs->except_callers[0],
+    NativeWindowReportText("Exception in WinMgr: Update Task Win\nExcept:%c:\n",ch);
+    NativeWindowReportText("%P:%P:%P:%P:%P:%P:%P:%P\n",Fs->except_callers[0],
       Fs->except_callers[1],Fs->except_callers[2],Fs->except_callers[3],
       Fs->except_callers[4],Fs->except_callers[5],Fs->except_callers[6],Fs->except_callers[7]);
   } catch { Fs->catch_except=TRUE; }

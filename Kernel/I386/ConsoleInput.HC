@@ -45,6 +45,12 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
       }
     console_diagnostic_filename[index]=0;
   }
+  try {
+    if(kind)NativeTerminalDiagnosticRecord("Warning: ");
+    else NativeTerminalDiagnosticRecord("Error: ");
+    if(message)NativeTerminalDiagnosticRecord(message);
+    NativeTerminalDiagnosticRecord("\n");
+  } catch { Fs->catch_except=TRUE; }
   if(kind) I386TextWrite(&console_text,"Warning: ");
   else I386TextWrite(&console_text,"Error: ");
   if(message) I386TextWrite(&console_text,message);

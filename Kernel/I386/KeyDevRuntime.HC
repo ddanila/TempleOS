@@ -76,15 +76,21 @@ Bool NativeKeyDevFilterString(U8 *s)
 Bool NativeKeyDevConsoleKey(I64 ch,I64 sc)
 {
   CDoc *doc=DocPut;
+  Bool project;
   if(sc&SCF_KEY_DESC) return FALSE;
+  project=NativeTerminalProjects(doc,NULL,sc);
   if(doc) DocPutKey(doc,ch,sc);
-  if(!(sc&(SCF_CTRL|SCF_ALT))) I386TextPut(&console_text,ch);
+  if(project && !(sc&(SCF_CTRL|SCF_ALT))) I386TextPut(&console_text,ch);
   ConsolePresent;
   return FALSE;
 }
 Bool NativeKeyDevConsoleString(U8 *s)
 {
-  NativeConsoleWrite(s);ConsolePresent;
+  CDoc *doc=DocPut;
+  Bool project=NativeTerminalProjects(doc,s);
+  if(doc)DocPrintPartial(doc,"%s",s);
+  if(project)I386TextWrite(&console_text,s);
+  ConsolePresent;
   return FALSE;
 }
 U0 NativeKeyDevStart()

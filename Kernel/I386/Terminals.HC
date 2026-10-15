@@ -12,7 +12,7 @@ class CNativeTerminal {
   U0 (*cleanup)(CI386Task *task);
   I64 loss_seen;
   CNativeTextInput *input_head,*input_tail;
-  Bool owns_planes,running,transcript_started;
+  Bool owns_planes,running,transcript_started,document_view;
 };
 CNativeTerminal *native_terminal_head,*native_terminal_root;
 U64 native_terminal_hotkeys_held;
@@ -21,6 +21,43 @@ CNativeTerminal *NativeTerminalFind(CTask *task)
   CNativeTerminal *terminal=native_terminal_head;
   while(terminal && terminal->task!=task) terminal=terminal->next;
   return terminal;
+}
+Bool NativeTerminalRichDocument(CDoc *doc)
+{//Only plain text/newlines/prompt markers are represented by the old projection.
+  CDocEntry *e;
+  if(doc->flags&(DOCF_IN_DOLLAR|DOCF_HIGHLIGHT|DOCF_WORD_WRAP|DOCF_OVERSTRIKE) ||
+      doc->user_put_s || doc->user_put_key)return TRUE;
+  for(e=doc->head.next;e!=doc;e=e->next) {
+    if(e->type_u8!=DOCT_TEXT && e->type_u8!=DOCT_NEW_LINE && e->type_u8!=DOCT_PMT)
+      return TRUE;
+    if(e->de_flags&DOCEF_TAG_CB)return TRUE;
+    if(e->type_u8==DOCT_TEXT && (e->type&0xFFFFFF00)!=0xF000)return TRUE;
+  }
+  return FALSE;
+}
+Bool NativeTerminalDocumentView(CTask *task,CDoc *doc)
+{
+  CNativeTerminal *terminal;
+  if(!doc)return FALSE;
+  terminal=NativeTerminalFind(task);
+  if(!terminal || doc!=terminal->document)return TRUE;
+  if(NativeTerminalRichDocument(doc))terminal->document_view=TRUE;
+  return terminal->document_view;
+}
+Bool NativeTerminalProjects(CDoc *doc,U8 *text=NULL,I64 sc=0)
+{//Decide before an output callback can yield, replace or consume the document.
+  CNativeTerminal *terminal=NativeTerminalFind(Fs);
+  if(!doc || !terminal || doc!=terminal->document)return FALSE;
+  if(NativeTerminalRichDocument(doc) || sc)terminal->document_view=TRUE;
+  if(!(doc->flags&DOCF_PLAIN_TEXT) && text)
+    while(*text)if(*text++=='$$')terminal->document_view=TRUE;
+  return !terminal->document_view;
+}
+U0 NativeTerminalDiagnosticRecord(U8 *text)
+{
+  CNativeTerminal *terminal=NativeTerminalFind(Fs);
+  if(terminal && terminal->document_view && DocPut==terminal->document &&
+      !NativeLegacyViewActive(Fs))NativeConsoleRecord(text);
 }
 CI386Text *NativeTerminalText()
 {

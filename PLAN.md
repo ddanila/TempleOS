@@ -11,6 +11,35 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Document-role integration checkpoint (2026-10-15)
+
+Console 88 is the next C2/C4 candidate. It replaces put/display pointer
+inequality as a renderer-selection rule with explicit retained-view ownership.
+Rich terminal entries and partial DolDoc stdout select document rendering;
+plain terminal output keeps the existing projection. Editor, help and directory
+picker views have scoped ownership and exception/Exit cleanup. This does not
+qualify arbitrary editor-resource lifetimes or complete desktop composition.
+
+The original bootstrap, cross-build and limited 386 boot audit pass for
+`build/i386-c2-document-roles-cross-fixed/kernel.img`. Three new automated gates
+cover same put/display roles, split stdout formatting and the existing terminal
+document itself, using independent A/B glyph observations and continued input.
+Their original-system reference runs pass. Native same-role and split-stdout
+checks pass with unchanged inputs. The existing-terminal check observes both A/B
+frames and command return, then fails its restored-console framebuffer check;
+continued arithmetic is not reached. Repair this return path next. Results are
+recorded in [the checkpoint](docs/i386-document-role-checkpoint.md). Unpaused editor/help/
+navigation regression and minimal-profile startup qualification remain required
+before treating this candidate as a qualified replacement for Console 87.
+
+The earlier development native flat-kernel build has now **passed**, including
+installation and independent 8 MiB boot, on its pinned Console-86 source image:
+`build/i386-c2-refresh-native-kernel/result.json`. It built six flat modules at
+16 MiB with cross-built retained modules. It is not a current Console-88 native
+rebuild or C5's two complete native generations. Earlier “running” entries below
+are historical checkpoint observations, superseded by this terminal result.
+C1–C5 remain open.
+
 ### Native Refresh, wait lifetimes and manager-frame accounting (2026-10-15)
 
 Console version 87 publishes Refresh and winmgr state (228 public exports),

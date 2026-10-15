@@ -133,7 +133,7 @@ def command_rejection(text, start, prefixes):
     return None
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None,keep_window_manager=False):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -711,7 +711,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 capture_audio_phase('tone_880')
             submit('Snd(72);SndRst;(InU8(0x61)&3)==0;', ['1'], 'speaker-reset')
             if audio_wav is not None: capture_audio_phase('reset')
-            if groups is None or set(groups)&{'windows','graphics','text-frames','documents','file-navigation','document-editing','document-resources','document-latency','document-sprites','document-compatibility','help','text'}:
+            component_manager_pause=not keep_window_manager and (groups is None or bool(set(groups)&{'windows','graphics','text-frames','documents','file-navigation','document-editing','document-resources','document-latency','document-sprites','document-compatibility','help','text'}))
+            if component_manager_pause:
                 active_group=None
                 submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')
             active_group='windows'
@@ -2020,6 +2021,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             if 'INPUT RESET' in log.read_text(): raise ValueError('Unexpected keyboard queue loss')
             if groups is not None:
                 result={'result':'pass','groups':list(groups),'native_commands':submitted,
+                        'window_manager_pause_requested':component_manager_pause,
                         'cpu':cpu,'ram_mib':ram_mib,'startup_seconds':startup_seconds,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'disk_sha256':hashlib.sha256(disk.read_bytes()).hexdigest(),
@@ -2029,6 +2031,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
                 return result
             result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,
+                    'window_manager_pause_requested':component_manager_pause,
                     'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,
                     'vga_uploads':len(uploads()), 'vga_text_rows':sum(uploads()),
@@ -2056,6 +2059,7 @@ def main():
     parser.add_argument('--group',action='append',choices=GROUPS,help='Repeat to select groups; omitted runs the full console suite')
     parser.add_argument('--list-groups',action='store_true')
     parser.add_argument('--diagnostics',action='store_true',help='Expect the diagnostic boot image')
+    parser.add_argument('--keep-window-manager',action='store_true',help='Leave WinMgr running during component-group sessions')
     parser.add_argument('--ram-mib',type=int,choices=(8,16,64,128),default=8,
                         help='Guest RAM profile (default: 8 MiB)')
     parser.add_argument('--cpu',default='486',help='QEMU CPU model (default: 486)')
@@ -2084,7 +2088,7 @@ def main():
     try:
         result=run_input(disk,args.out,diagnostics=args.diagnostics,groups=args.group,
                          cpu=args.cpu,qmp_stdio=args.qmp_stdio,ram_mib=args.ram_mib,
-                         snapshot=not args.writable_copy)
+                         snapshot=not args.writable_copy,keep_window_manager=args.keep_window_manager)
     finally:
         if provenance is not None:
             unchanged=hashlib.sha256(source.read_bytes()).hexdigest()==source_hash

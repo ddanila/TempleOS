@@ -6,7 +6,7 @@ class CNativeRenderScope {
   U0 (*release)(CNativeRenderScope *scope);
   CI386Task *resource_owner,*window_owner;
   U8 *resource;
-  Bool retiring_resource;
+  Bool retiring_resource,legacy_view;
 };
 CNativeRenderScope *native_render_scopes;
 extern U0 NativeRenderCleanup(CI386Task *task);
@@ -16,7 +16,7 @@ U0 NativeRenderScopeOpen(CNativeRenderScope *scope,
   U32 irq=I386IrqSave;
   scope->task=I386TaskSelf;scope->previous_cleanup=scope->task->cleanup;
   scope->resource_owner=scope->window_owner=NULL;
-  scope->resource=NULL;scope->retiring_resource=FALSE;
+  scope->resource=NULL;scope->retiring_resource=scope->legacy_view=FALSE;
   scope->release=release;scope->next=native_render_scopes;
   native_render_scopes=scope;scope->task->cleanup=&NativeRenderCleanup;
   I386IrqRestore(irq);
@@ -131,4 +131,39 @@ U0 NativeRenderOwnerRetire(CI386Task *task)
 {
   NativeRenderDrainExiting(task);
   NativeRenderRetire(task,NULL);
+}
+
+Bool NativeLegacyViewActive(CTask *task)
+{
+  CNativeRenderScope *scope=native_render_scopes;
+  while(scope) {
+    if(scope->task==task && scope->legacy_view)return TRUE;
+    scope=scope->next;
+  }
+  return FALSE;
+}
+class CNativeLegacyViewScope:CNativeRenderScope {
+  CDoc *old_put,*old_display;
+  Bool restore_docs;
+};
+U0 NativeLegacyViewRelease(CNativeRenderScope *base)
+{
+  CNativeLegacyViewScope *scope=base;
+  if(scope->restore_docs) {
+    scope->task->put_doc=scope->old_put;scope->task->display_doc=scope->old_display;
+  }
+  Free(scope);
+}
+CNativeLegacyViewScope *NativeLegacyViewOpen(Bool restore_docs=FALSE)
+{
+  CNativeLegacyViewScope *scope=CAlloc(sizeof(CNativeLegacyViewScope));
+  scope->old_put=Fs->put_doc;scope->old_display=Fs->display_doc;
+  scope->restore_docs=restore_docs;
+  NativeRenderScopeOpen(scope,&NativeLegacyViewRelease);scope->legacy_view=TRUE;
+  return scope;
+}
+U0 NativeLegacyViewClose(CNativeLegacyViewScope *scope)
+{
+  if(!scope)return;
+  NativeRenderScopeClose(scope);NativeLegacyViewRelease(scope);
 }

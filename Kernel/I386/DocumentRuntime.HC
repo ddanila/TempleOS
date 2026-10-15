@@ -391,16 +391,18 @@ Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
       last_mouse_item=-1,last_mouse_jiffy=0,mouse_jiffy;
   Bool done=FALSE,result=FALSE,new_mode=FALSE,rename_mode=FALSE,delete_mode=FALSE;
   Bool rename_directory,delete_directory,resume_mouse,activate;
+  CNativeLegacyViewScope *legacy_view=NULL;
   if(!directory) directory="C:/";
   if(!(current=NativeDirPathCopy(directory))) return FALSE;
   NativeDirPathTrim(current);
   if(!(items=NativeDirPickerLoad(current,&listing,&count))) {
     Free(current); return FALSE;
   }
+  try {
+  legacy_view=NativeLegacyViewOpen;
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   native_dir_mouse_visible=FALSE;
   KernelLog("FILE PICK begin\n"); NativeDirPickerDraw(current,items,count,selected);
-  try {
     while(!done) {
       activate=FALSE;
       decoded=NativeReadKey(console_config->reader,&event,FALSE);
@@ -555,7 +557,12 @@ Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
       }
       if(!decoded) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
     }
-  } catch { NativeDocEditConsoleRestore; KernelLog("FILE PICK exception\n"); }
+  } catch {
+    NativeLegacyViewClose(legacy_view);legacy_view=NULL;
+    Free(items);Free(listing);Free(current);
+    NativeDocEditConsoleRestore;KernelLog("FILE PICK exception\n");
+  }
+  NativeLegacyViewClose(legacy_view);legacy_view=NULL;
   Free(items); Free(listing); Free(current); NativeDocEditConsoleRestore;
   KernelLog("FILE PICK end\n"); return result;
 }
@@ -1303,6 +1310,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 {//Native keyboard/VGA session over the canonical document model. Escape exits.
   CI386KeyEvent event,queued_key;
   CDoc *old_put,*old_display;
+  CNativeLegacyViewScope *legacy_view=NULL;
   U8 *browse_path,*picked_path=NULL;
   U8 *undo_bodies[16];
   I64 undo_sizes[16];
@@ -1320,8 +1328,9 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
   MemSet(undo_bodies,0,sizeof(undo_bodies));
   MemSet(undo_sizes,0,sizeof(undo_sizes));
   old_put=Fs->put_doc; old_display=Fs->display_doc;
-  Fs->put_doc=Fs->display_doc=doc;
   try {
+    legacy_view=NativeLegacyViewOpen(TRUE);
+    Fs->put_doc=Fs->display_doc=doc;
     blink_phase=NativeDocEditBlinkPhase;
     MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
     native_doc_mouse_visible=FALSE;
@@ -1533,10 +1542,12 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
   } catch {
     Free(picked_path); picked_path=NULL;
     Fs->put_doc=old_put; Fs->display_doc=old_display;
+    NativeLegacyViewClose(legacy_view);legacy_view=NULL;
     NativeDocEditConsoleRestore;
     KernelLog("DOC EDIT exception\n");
   }
   Fs->put_doc=old_put; Fs->display_doc=old_display;
+  NativeLegacyViewClose(legacy_view);legacy_view=NULL;
   for(undo_index=0;undo_index<undo_count;undo_index++) Free(undo_bodies[undo_index]);
   NativeDocEditConsoleRestore;
   KernelLog("DOC EDIT end\n"); return result;
@@ -1889,6 +1900,7 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
       next_mouse_buttons,next_mouse_packets,mouse_offset,last_mouse_link=-1,
       last_mouse_jiffy=0,mouse_jiffy;
   Bool done=FALSE,result=FALSE,resume_mouse,activate;
+  CNativeLegacyViewScope *legacy_view=NULL;
   if(!name) name="C:/Doc/HelpIndex.DD";
   if(!console_config || !console_config->files || !console_config->files->read)
     return FALSE;
@@ -1909,11 +1921,12 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
   if(initial<0) initial=NativeHelpFindOffset(plain,size,find,occurrence);
   if(initial<0) initial=NativeHelpLineOffset(plain,size,line);
   pages[0]=initial;
+  try {
+    legacy_view=NativeLegacyViewOpen;
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   native_help_mouse_visible=FALSE;
   next=NativeHelpDraw(name,plain,size,initial,links,link_count,selected);
   KernelLog("HELP VIEW begin\n");
-  try {
     while(!done) {
       activate=FALSE;
       decoded=NativeReadKey(console_config->reader,&event,FALSE);
@@ -1998,7 +2011,11 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
       }
       if(!decoded) { I386SchedYield(I386TaskSelf->owner); I386TaskBreakPoll; }
     }
-  } catch { result=FALSE; }
+  } catch {
+    NativeLegacyViewClose(legacy_view);legacy_view=NULL;
+    Free(plain);Free(links);result=FALSE;
+  }
+  NativeLegacyViewClose(legacy_view);legacy_view=NULL;
   Free(plain); Free(links); NativeDocEditConsoleRestore;
   KernelLog("HELP VIEW end\n"); return result;
 }
