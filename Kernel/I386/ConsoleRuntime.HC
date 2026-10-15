@@ -60,6 +60,14 @@ extern U0 EdLineDown(CDoc *doc,I64 sc=I64_MIN);
 extern U0 EdCharDel(CDoc *doc);
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
 extern U0 EdLineDel(CDoc *doc);
+extern U0 DocInsDoc(CDoc *doc,CDoc *source);
+extern U0 ClipDel();
+extern U0 ClipCopy(CDoc *doc);
+extern U0 ClipCut(CDoc *doc);
+extern U0 ClipPaste(CDoc *doc);
+extern U0 DocCut(CDoc *doc,CDocEntry *start,CDocEntry *end);
+extern CDoc *DocCopy(CDoc *doc,CDocEntry *start,CDocEntry *end);
+CDoc *sys_clip_doc;
 I64 (*native_servant_flush)(CTask *task);
 extern U0 NativeUserCmdLine(I64 dummy=0);
 extern CTask *NativeWinFocus(CTask *task=0);
@@ -288,7 +296,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[246];
+CI386KernelSymbol console_doc_exports[254];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -638,10 +646,18 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(243,"_DOC_TOP",(&DocTop+0)(U64));
   ConsoleDocExportSet(244,"_DOC_CENTER",(&DocCenter+0)(U64));
   ConsoleDocExportSet(245,"_DOC_BOTTOM",(&DocBottom+0)(U64));
-  for(i=0;i<246;i++) {
+  ConsoleDocExportSet(246,"_DOC_INS_DOC",(&DocInsDoc+0)(U64));
+  ConsoleDocExportSet(247,"_CLIP_DEL",(&ClipDel+0)(U64));
+  ConsoleDocExportSet(248,"_CLIP_COPY",(&ClipCopy+0)(U64));
+  ConsoleDocExportSet(249,"_CLIP_CUT",(&ClipCut+0)(U64));
+  ConsoleDocExportSet(250,"_CLIP_PASTE",(&ClipPaste+0)(U64));
+  ConsoleDocExportSet(251,"_DOC_CUT",(&DocCut+0)(U64));
+  ConsoleDocExportSet(252,"_DOC_COPY",(&DocCopy+0)(U64));
+  ConsoleDocExportSet(253,"_SYS_CLIP_DOC",(&sys_clip_doc+0)(U64));
+  for(i=0;i<254;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
+    if(i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   DocDefaultsInit(&doldoc);
@@ -918,3 +934,10 @@ U0 NativeActionExit() { (*native_action_exit)(); }
 import I64 RoundI64(I64 num,I64 to);
 #define char_bmp_printable native_doc_printable
 #include "/Adam/DolDoc/DocChar.HC"
+
+#include "/Adam/DolDoc/DocInsertDocumentCore.HC"
+#include "/Adam/DolDoc/DocClipboardCore.HC"
+U0 NativeClipboardInit()
+{
+  if(!sys_clip_doc)sys_clip_doc=DocNew(NULL,I386TaskSelf->owner->root);
+}

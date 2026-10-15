@@ -86,4 +86,12 @@ public _extern _ED_LINE_DEL U0 EdLineDel(CDoc *doc);
 public _extern _DOC_TOP U0 DocTop(CDoc *doc=NULL);
 public _extern _DOC_CENTER U0 DocCenter(CDoc *doc=NULL,I64 recalc_flags=RECALCt_NORMAL);
 public _extern _DOC_BOTTOM U0 DocBottom(CDoc *doc=NULL);
+public _extern _DOC_INS_DOC U0 DocInsDoc(CDoc *doc=NULL,CDoc *source);
+public _extern _CLIP_DEL U0 ClipDel();
+public _extern _CLIP_COPY U0 ClipCopy(CDoc *doc);
+public _extern _CLIP_CUT U0 ClipCut(CDoc *doc);
+public _extern _CLIP_PASTE U0 ClipPaste(CDoc *doc);
+public _extern _DOC_CUT U0 DocCut(CDoc *doc,CDocEntry *start,CDocEntry *end);
+public _extern _DOC_COPY CDoc *DocCopy(CDoc *doc,CDocEntry *start,CDocEntry *end);
+public _extern _SYS_CLIP_DOC CDoc *sys_clip_doc;
 #endif

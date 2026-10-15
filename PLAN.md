@@ -11,6 +11,40 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete clipboard/document insertion services (Console 102, 2026-10-15)
+
+The complete original clipboard and DocInsDoc bodies are now shared with the
+native port. Seven services and the root-owned sys_clip_doc global bring console
+exports to 254; public layouts, Memory 26 and private console services are
+unchanged. Startup creates the clipboard once in the root heap. The original
+body comparison, two-generation bootstrap, cross-build and limited 386 audit
+pass; all 1484 source/build pins match on `build/i386-c2-clipboard-cross`.
+
+Six synchronous copy/cut/paste/document insertion cases pass masks of 63 on the
+original and native, with exact text, selection, incoming locks and heap
+recovery. A child-exit case checks root-owned clipboard/entry/tag allocations,
+physical child-list removal, surviving copied text and parent roles. Original
+worker heap deltas are recorded as telemetry separately from its portable mask
+31 because Adam's heap is shared across yielded sessions. Native requires mask
+63 plus zero raw caller/root heap deltas for both a copying worker and its
+no-copy control. All fourteen native commands pass with exact fixture readback
+and unchanged inputs. The original control also passes its portable oracle
+with unchanged inputs; shared Adam heap deltas remain explicit telemetry.
+Original evidence: `build/i386-c4-clipboard-final-reference`; native final run:
+`build/i386-c2-clipboard-final-contract`. Exact fixture readback and tool/image
+pins remain required.
+
+Current-image character/form primitives (14 commands), direct actions (11),
+restoration exceptions (6), retained-child Exit (5) and normal 8 MiB startup
+(9 checks in 54.98 seconds) pass under the `build/i386-c2-clipboard-` prefix.
+
+Data-field/binary/filtered clipboard branches, concurrency and failure/Exit
+lifetimes remain unqualified. Original undo needs complete DocLoad/serialization
+and a 386-compatible clock/frequency contract; existing native editor undo is
+separate. Full original DocPutKey and the actual chooser input gate remain open.
+See [clipboard contracts and allocation profiles](docs/i386-clipboard.md).
+C1–C5 remain incomplete.
+
 ### Original character/cursor primitives integrated (Console 101, 2026-10-15)
 
 The complete original DocChar.HC now compiles into Console: character/line

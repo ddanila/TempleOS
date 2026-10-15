@@ -2026,6 +2026,7 @@ public Bool Help(U8 *name=NULL)
   return NativeHelpView(name,1,NULL,1,NULL);
 }
 CTask *console_document_owner;
+extern U0 NativeClipboardInit();
 U0 ConsoleDocumentStart()
 {//Data belongs to the live console task; code and global record are retained.
   CTask *task=Fs;
@@ -2036,6 +2037,7 @@ U0 ConsoleDocumentStart()
   DocGlobalsInit;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocInit;
+  NativeClipboardInit;
   NativeTerminalTranscriptStart;
   NativeKeyDevStart;
   console_document_owner=task;
