@@ -11,6 +11,41 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original undo and 386 software timestamp qualified in bounded contracts (Console 106, 2026-10-15)
+
+The complete original DocCaptureUndo and DocUndoRestore bodies are shared,
+byte-identically extracted into DocUndoCore.HC. Native GetTSC is a monotonic
+software timestamp in PIT units with positive frequency metadata, preserving
+interrupt state. It combines actual delivered IRQ ticks and latched within-period
+movement, leaving the private random entropy clock unchanged. Console imports
+the existing kernel cnts global explicitly (58 loader bindings); the private
+configuration adds an IRQ tick pointer. Three exports bring the console count
+to 259. Public task/document layouts, Memory 26 and the console service table
+remain unchanged. The initial computed counter alias failed the parser's
+address requirement; the delivered import avoids it.
+
+The current-source original oracle passes all seven masks of 63 in
+`build/i386-c4-undo-qualified-reference`. Native passes ten commands in
+`build/i386-c2-undo-contract`: clock progress/frequency/IF checks plus disabled,
+forced/repeated, future/past dirty and incoming-lock undo cases, exact restored
+text/cursor, flags/rings/count, record ownership, caller document and exact heap
+recovery. Exact fixture readback and unchanged pinned inputs pass.
+
+Both original bootstrap generations and `build/i386-c2-undo-qualified-cross`
+pass; the limited 386 audit checks 96 BIOS / 255 protected instructions and all
+1489 source/build pins match. The kernel is 565608 bytes. Current-image save
+(21 commands), read (16), retained keyboard-driven undo (4) and normal 8 MiB
+startup (9 checks, 54.59 seconds, zero build-provider loads) pass under the
+`build/i386-c2-undo-` prefix.
+
+This qualifies bounded clock/undo contracts, not every undo path. PIT time
+cannot reconstruct whole unobserved periods during long interrupt masking.
+Autosave, foreign-owner lifetimes, allocation failure and cancellation/Exit
+remain explicit tests to add. The retained editor undo path is unchanged;
+complete original DocPutKey and real chooser input remain the next integration
+work. See [undo evidence and clock limits](docs/i386-doc-undo.md).
+C1–C5 remain incomplete.
+
 ### Original undo oracle passes; native clock prerequisite fails (2026-10-15)
 
 The paired draft is now executed. The qualified current x64 rebuild passes all

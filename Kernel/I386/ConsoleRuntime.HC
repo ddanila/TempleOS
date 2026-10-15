@@ -61,6 +61,10 @@ extern U0 EdCharDel(CDoc *doc);
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
 extern U0 EdLineDel(CDoc *doc);
 extern U0 DocInsDoc(CDoc *doc,CDoc *source);
+extern I64 NativeTimeStamp();
+extern U0 NativeTimeStampInit();
+extern Bool DocCaptureUndo(CDoc *doc,Bool force=FALSE);
+extern U0 DocUndoRestore(CDoc *doc);
 extern U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
 extern U8 *Doc2PlainText(CDoc *doc,CDocEntry *entry);
 extern U0 ClipDel();
@@ -298,7 +302,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[256];
+CI386KernelSymbol console_doc_exports[259];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -346,7 +350,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
-      !config->input_poll || !config->doc_diagnostic_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+      !config->pit_ticks || !config->jiffies || !config->input_poll || !config->doc_diagnostic_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
   provider=HashFind("_ADAM_TASK",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=3 || !provider->val) return FALSE;
   native_highlight_root=provider->val;
@@ -658,7 +662,10 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(253,"_SYS_CLIP_DOC",(&sys_clip_doc+0)(U64));
   ConsoleDocExportSet(254,"_DOC_LOAD",(&DocLoad+0)(U64));
   ConsoleDocExportSet(255,"_DOC_2_PLAIN_TEXT",(&Doc2PlainText+0)(U64));
-  for(i=0;i<256;i++) {
+  ConsoleDocExportSet(256,"_GET_TSC",(&NativeTimeStamp+0)(U64));
+  ConsoleDocExportSet(257,"_DOC_CAPTURE_UNDO",(&DocCaptureUndo+0)(U64));
+  ConsoleDocExportSet(258,"_DOC_UNDO_RESTORE",(&DocUndoRestore+0)(U64));
+  for(i=0;i<259;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -671,7 +678,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
     I386HeapFree(config->heap,display_planes);return FALSE;
   }
   console_planes=display_planes;
-  console_config=config; dbg.fun_seg_cache=native_fun_seg_cache;
+  console_config=config; NativeTimeStampInit; dbg.fun_seg_cache=native_fun_seg_cache;
   MusicSettingsRst;
   winmgr.fps=WINMGR_FPS;
   winmgr.ideal_refresh_tS=tS;
@@ -951,3 +958,8 @@ U0 NativeClipboardInit()
 #include "/Kernel/I386/Bits.HH"
 #include "/Adam/DolDoc/DocPlainTextCore.HC"
 #include "/Adam/DolDoc/DocSaveCore.HC"
+
+#include "/Kernel/I386/TimeStampRuntime.HC"
+#define GetTSC NativeTimeStamp
+import CCntsGlbls cnts;
+#include "/Adam/DolDoc/DocUndoCore.HC"

@@ -33,6 +33,8 @@ public _extern _DOC_BINS_VALIDATE U0 DocBinsValidate(CDoc *doc);
 public _extern _DOC_BIN_DEL U0 DocBinDel(CDoc *doc,CDocBin *bin);
 public _extern _DOC_ENTRY_DEL U0 DocEntryDel(CDoc *doc,CDocEntry *entry);
 public _extern _DOC_UNDO_DEL U0 DocUndoDel(CDoc *doc,CDocUndo *undo);
+public _extern _DOC_CAPTURE_UNDO Bool DocCaptureUndo(CDoc *doc,Bool force=FALSE);
+public _extern _DOC_UNDO_RESTORE U0 DocUndoRestore(CDoc *doc);
 public _extern _DOC_UNDO_COUNT U0 DocUndoCntSet(CDoc *doc);
 public _extern _DOC_REM_SOFT U0 DocRemSoftNewLines(CDoc *doc=0,CDocEntry *entry=0);
 public _extern _DOC_INS_ENTRY U0 DocInsEntry(CDoc *doc,CDocEntry *entry);

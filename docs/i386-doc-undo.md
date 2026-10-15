@@ -67,3 +67,39 @@ ownership guarantee.
 After the paired tests, run current-image serialization/loading and retained
 keyboard undo regressions, plus the normal 8 MiB startup gate. Bootstrap,
 cross-build, limited 386 audit and frozen source/build pins remain required.
+
+## Console 106 candidate
+
+The candidate adds three public exports (259 console exports total): GetTSC,
+DocCaptureUndo and DocUndoRestore. `DocUndoCore.HC` is a byte-identical extraction
+of both complete original functions and is included by both targets. The
+console explicitly imports the kernel's existing cnts global; its loader now
+provides 58 bindings. An initial cast/dereference macro failed the shared
+parser's address requirement at member access and is not retained.
+
+`TimeStampRuntime.HC` stores private last-count/last-value state under IRQ
+exclusion. Each call takes the maximum of delivered-tick absolute time and the
+previous timestamp plus observed modular PIT movement. The fixed frequency is
+1,193,182 units/second (1,193 truncated kHz); initialization sets the initial
+frequency and calibrated flag to describe this known PIT source. It does not
+calibrate or expose CPU cycles. The private configuration gains the actual tick
+pointer. Public task/document layouts and the console service table do not
+change. Existing native editor undo remains separate.
+
+Build/runtime qualification for this candidate must be read from the latest
+PLAN.md checkpoint; source integration alone is not passing evidence.
+
+The first Console 106 native run passes all ten commands at 64 MiB on
+QEMU TCG `486,-fpu`: the API prerequisite, exact guest fixture readback, clock
+mask 63, all six undo masks 63 and continued arithmetic. Inputs remain unchanged.
+Evidence: `build/i386-c2-undo-contract/result.json`. The candidate cross-build is
+`build/i386-c2-undo-qualified-cross`; it passes the limited loader instruction
+audit (96 BIOS / 255 protected instructions), and all 1,489 source/build pins
+match. Regression and current-source reference results remain separate gates.
+
+The refreshed original control also passes all seven masks of 63 with unchanged
+inputs in `build/i386-c4-undo-qualified-reference`. Current-image regressions
+pass under `build/i386-c2-undo-`: save (21 commands), read (16), retained
+keyboard undo (4) and normal 8 MiB startup (9 checks, 54.59 seconds, zero
+build-provider loads). These results qualify this bounded integration; the
+remaining failure/lifetime and full editor/application gates above stay open.

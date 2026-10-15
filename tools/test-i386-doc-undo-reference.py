@@ -57,7 +57,7 @@ def main():
                   baseline_repair_revision=REFERENCE['REPAIRS'],
                   system_source_sha256=source_hashes,
                   input_sha256={str(p):sha(p) for p in inputs},
-                  scope='Draft clock progress/frequency and undo capture/restore oracle; qualification pending')
+                  scope='Clock progress/frequency and bounded undo capture/restore: flags, cursor, record ownership, rings and exact heap recovery')
     try:
         iso = out/'original.iso'
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(extra[0]),
