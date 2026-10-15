@@ -11,6 +11,23 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original DocEd state contract captured (2026-10-15)
+
+Pinned-original and shared-original controls pass six masks of 255 with unchanged
+inputs in build/i386-c1-doced-state-reference and
+build/i386-c4-doced-state-reference. The actual message-driven DocEd path checks
+Esc/Shift-Esc results, role/title/attribute/lock restoration, document ownership,
+SHOW preservation and WIN_MAX versus SIZE_MIN geometry. A preserve-option
+combination is included, but cursor/attribute behavior during View is not yet
+observed. These state checks do not qualify bound fields, action callbacks,
+visible Refresh presentation or failure lifetimes.
+
+The native paired runner checks flagged Esc acceptance before transferring the
+full fixture. Current DocEd rejects every nonzero flag and uses private keyboard
+input; complete original View/form/action integration remains required rather
+than merely removing that rejection. See [DocEd state scope and next gates](docs/i386-menu-integration.md).
+C1–C5 remain incomplete.
+
 ### Native WinMax geometry and startup pass (2026-10-15)
 
 Console 93 now cross-builds and passes the limited 386 boot audit (96 BIOS,

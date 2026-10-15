@@ -131,3 +131,34 @@ inputs, in `build/i386-c1-winmax-recovery-staged/result.json`. Its log reaches
 TARGET end and RECOVERY begin, but never RECOVERY end or an export. The shared
 body completes the same source; this is an intentional recovery repair rather
 than evidence that the original returned a particular IF value.
+
+## DocEd state oracle before form integration (2026-10-15)
+
+`tests/guest/i386-doced-state-reference/DocEdState.HC` now calls the actual
+DocEd with real queued MSG_KEY_DOWN events. It does not replace View, DocGetKey
+or keyboard dispatch. Both pinned-original and shared-original controls pass
+six masks of 255, with unchanged inputs, in
+`build/i386-c1-doced-state-reference/result.json` and
+`build/i386-c4-doced-state-reference/result.json`.
+
+Each mask checks exit result, restored put/display/border roles, text attribute,
+title/source, incoming lock state, geometry, document owner/parent and unchanged
+SHOW state under DONT_SHOW. Modes cover Esc, Shift-Esc, WIN_MAX, WIN_MAX with
+SIZE_MIN, a DONT_HOME/DONT_TEXT_ATTR combination, and an initially locked doc.
+WIN_MAX alone retains maximized bounds; SIZE_MIN restores original bounds.
+The fixture then explicitly restores geometry for the next case.
+
+The preserve-option combination currently checks post-return restoration only;
+it does not yet observe cursor or text attribute while View is active. All
+cases skip window-manager synchronization and SHOW changes, so normal visible
+presentation and Refresh cadence remain unqualified by this oracle. Bound-data
+editing/scanning, checkboxes, lists, mouse, action callbacks and exceptional or
+forced-exit lifetimes still need separate contracts before full forms qualify.
+
+`tools/test-i386-doced-state.py` first requires a flagged DocEd call to accept
+queued Esc and return true, then transfers the identical fixture and checks
+persisted source bytes after success. The native implementation currently
+returns false for any nonzero flags and reads private NativeReadKey for its
+retained loop. Removing the flags rejection alone cannot supply the original
+message-driven View/form path; complete original input/action integration and
+scoped border/title/document ownership are required.
