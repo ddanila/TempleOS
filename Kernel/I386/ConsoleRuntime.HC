@@ -61,6 +61,9 @@ extern U0 EdCharDel(CDoc *doc);
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
 extern U0 EdLineDel(CDoc *doc);
 extern U0 DocInsDoc(CDoc *doc,CDoc *source);
+extern U0 DocCollapse(Bool collapse=TRUE,CDoc *doc=0);
+extern U0 DocEntryToggle(CDoc *doc);
+extern U0 DocFlagsToggle(CDoc *doc,I64 tog_flags);
 extern I64 NativeTimeStamp();
 extern U0 NativeTimeStampInit();
 extern Bool DocCaptureUndo(CDoc *doc,Bool force=FALSE);
@@ -305,7 +308,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[262];
+CI386KernelSymbol console_doc_exports[265];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -671,7 +674,10 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(259,"_CHAR_2_KEY_NAME",(&Char2KeyName+0)(U64));
   ConsoleDocExportSet(260,"_KEY_DESC_SET",(&KeyDescSet+0)(U64));
   ConsoleDocExportSet(261,"_KEYDEV",(&keydev+0)(U64));
-  for(i=0;i<262;i++) {
+  ConsoleDocExportSet(262,"_DOC_COLLAPSE",(&DocCollapse+0)(U64));
+  ConsoleDocExportSet(263,"_DOC_ENTRY_TOGGLE",(&DocEntryToggle+0)(U64));
+  ConsoleDocExportSet(264,"_DOC_FLAGS_TOGGLE",(&DocFlagsToggle+0)(U64));
+  for(i=0;i<265;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==261 || i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -972,3 +978,6 @@ import CCntsGlbls cnts;
 
 #include "/Kernel/KeyNameCore.HC"
 #include "/Kernel/KeyDescriptionCore.HC"
+
+#include "/Adam/DolDoc/DocCollapseCore.HC"
+#include "/Adam/DolDoc/DocTransformCore.HC"

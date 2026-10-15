@@ -11,6 +11,46 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original tree/plain transformations integrated (Console 108, 2026-10-15)
+
+Complete DocCollapse, DocEntryToggle and DocFlagsToggle bodies now share
+DocCollapseCore.HC and DocTransformCore.HC between original and native targets.
+Collapse and whole-document toggle are byte-identical extractions. Entry toggle
+adds the missing Free for its temporary Doc2PlainText result after DocPrint.
+The pinned original eleven-case control reproduces masks
+[63,63,63,63,63,31,63,63,63,63,31] with unchanged inputs in
+`build/i386-c4-transform-leak-control`: only the two formatted-to-literal
+conversions fail heap recovery. The fix preserves exact output and round-trip
+behavior. Three public services bring Console exports to 265; public layouts,
+private console services and Memory 26 remain unchanged.
+
+Eleven current-source original cases pass masks of 63 with unchanged inputs in
+`build/i386-c4-transform-roundtrip-reference`. Native passes fourteen commands,
+exact fixture readback and unchanged inputs in `build/i386-c2-transform-contract`.
+Cases cover actual tree entries/non-tree controls, expansion/collapse, default
+output document and incoming locks; both whole-plain flags, exact literal/
+structured text, no-cursor and unchanged undo node/ring/count/body bytes; entry
+conversion in both directions, three no-op paths and a complete entry round-trip.
+The entry literal format escapes quotes, unlike whole-document plain output;
+independent byte expectations distinguish these representations. Locks, caller
+document/display and exact heap are checked throughout. The previous native
+prerequisite fails in `build/i386-c2-transform-prerequisite-red`.
+
+Both original bootstrap generations and `build/i386-c2-transform-cross` pass,
+including the limited 386 audit (96 BIOS / 255 protected instructions); all 1493
+source/build pins match. The native kernel is 565608 bytes. Current-image
+serialization (21 commands), clock/undo (10), and normal 8 MiB startup
+(9 checks, 55.40 seconds, zero build-provider loads) pass under
+`build/i386-c2-transform-` (save, undo, startup).
+
+This qualifies bounded transformations, not full editor dispatch or tree GUI
+visibility. Binary/data-field/wrapping combinations, foreign owners, exceptional
+allocation/cancellation/Exit and incoming entry-toggle locks remain open. The
+retained DocPutKey callback gap is unchanged; next work continues search and
+matching helpers in the full input dependency graph, then actual chooser,
+GetStr/TimeClock and application workflows. See
+[transformation contracts](docs/i386-doc-transform.md). C1–C5 remain incomplete.
+
 ### Key names and descriptions shared for original input (Console 107, 2026-10-15)
 
 Complete Char2KeyName and KeyDescSet bodies are shared between the original
