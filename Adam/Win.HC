@@ -352,19 +352,7 @@ public U0 WinTileVert()
   POPFD
 }
 
-public U0 WinMax(CTask *task=NULL)
-{//Maximize task's window
-  I64 no_border;
-  if (!task) task=Fs;
-  if (!TaskValidate(task)) return;
-  PUSHFD
-  CLI //TODO Multiprocessor safe
-  no_border=Bt(&task->display_flags,DISPLAYf_NO_BORDER);
-  WinHorz(1-no_border,TEXT_COLS-2+no_border,task);
-  WinVert(2-no_border,TEXT_ROWS-2+no_border,task);
-  WinToTop(task);
-  POPFD
-}
+#include "/Kernel/WinMaxCore.HC"
 
 public Bool WinBorder(Bool val=OFF,CTask *task=NULL)
 {//Turn off (or on) window border.

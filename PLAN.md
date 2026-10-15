@@ -11,6 +11,26 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared WinMax candidate and expanded reference (2026-10-15)
+
+Console 93 adds the missing WinMax public binding (231 exports). Both original
+Adam/Win.HC and the native window runtime include Kernel/WinMaxCore.HC, retaining
+original sizing and WinToTop behavior. Its try/catch restores saved interrupt
+state when a derived-control callback throws; exceptional behavior still needs
+its explicit recovery contract and is not qualified by ordinary geometry tests.
+Public layouts and the private console service table are unchanged.
+
+Pinned-original and rebuilt shared-original controls both pass [1,1,1,1,1]:
+bordered/borderless geometry, explicit Fs with IF initially enabled/disabled,
+and a zero-initialized invalid task with unchanged bounds/IF. Evidence is in
+build/i386-c1-winmax-five-final-reference and
+build/i386-c4-winmax-shared-five-reference, both with unchanged inputs.
+The two-generation original bootstrap passes. The native cross-build is running
+under build/i386-c2-winmax-cross; no native WinMax pass is claimed yet.
+Next run the native paired fixture, qualify actual different-task selection and
+callback/unwind behavior, and preserve normal startup before DocEd integration.
+C1–C5 remain incomplete; this is a dependency candidate, not form compatibility.
+
 ### Original WinMax prerequisite captured (2026-10-15)
 
 The form/editor dependency review identifies WinMax as a missing native public

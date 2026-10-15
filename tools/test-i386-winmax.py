@@ -20,7 +20,8 @@ def chooser_commands():
         commands.append((f'WMTransfer({offset},{encoded},{len(chunk)});',[]))
     commands += [(f'FileWrite("C:/WinMax.HC",wm_source,{len(source)})>0;',['1']),
                  ('Free(wm_source);',[]),('#include "C:/WinMax.HC"',[]),
-                 ('WMCase(TRUE);',['1']),('WMCase(FALSE);',['1']),('6*7;',['42'])]
+                 ('WMCase(TRUE);',['1']),('WMCase(FALSE);',['1']),('WMInterrupts(TRUE);',['1']),
+                 ('WMInterrupts(FALSE);',['1']),('WMInvalid;',['1']),('6*7;',['42'])]
     return commands
 
 COMMANDS=chooser_commands()
@@ -55,7 +56,7 @@ def main():
     out.mkdir(parents=True)
     working = out/'working.img'
     shutil.copyfile(source, working)
-    report = dict(result='running', scope='WinMax prerequisite followed by identical original geometry fixture; border and borderless current-task bounds, restoration and continuation; not task selection, IRQ, exception or form behavior',
+    report = dict(result='running', scope='WinMax prerequisite followed by identical original geometry fixture; border and borderless current-task bounds, restoration and continuation; plus IF preservation and invalid-task no-op; not different-task selection, exception or form behavior',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](

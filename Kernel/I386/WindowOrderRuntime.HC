@@ -33,3 +33,5 @@ U0 NativeWindowTaskInsert(CTask *task,CTask *pred)
 #define TaskQueIns NativeWindowTaskInsert
 #define WinToTop NativeWinToTop
 #include "/Adam/WinOrderCore.HC"
+
+#include "/Kernel/WinMaxCore.HC"

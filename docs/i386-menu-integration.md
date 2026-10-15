@@ -75,3 +75,19 @@ preservation, derived-control callbacks and exceptional cleanup. Original
 WinMax uses PUSHFD/CLI/POPFD without exception cleanup; any repair must have an
 explicit failing recovery contract. DocEd flag/lock/title/document restoration,
 real form input and full chooser integration remain separate open requirements.
+
+### Shared candidate and five-case controls
+
+Kernel/WinMaxCore.HC is now included by both original Adam/Win.HC and the native
+window-order runtime. Console 93 publishes _WIN_MAX as export 230 (231 total).
+The original sizing and ordering calls are preserved. Saved interrupt state is
+restored through try/catch, following WinSize.HC's existing cleanup pattern;
+this does not promise geometry rollback when callbacks fail.
+
+Both `build/i386-c1-winmax-five-final-reference/result.json` and
+`build/i386-c4-winmax-shared-five-reference/result.json` pass [1,1,1,1,1], with
+unchanged inputs. The additional cases check explicit Fs with IF on/off and
+invalid-task bounds/IF preservation. Two original self-rebuild generations pass.
+The native cross-build is running at `build/i386-c2-winmax-cross`; native paired
+geometry, actual different-task targeting, callback recovery and startup remain
+unqualified. Older reference paths above describe historical two-case fixtures.

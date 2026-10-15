@@ -10,7 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))
-EXPECTED = [1,1]
+EXPECTED = [1,1,1,1,1]
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
                   baseline_repair_revision=REFERENCE['REPAIRS'],
                   system_source_sha256=source_hashes,
                   input_sha256={str(p):sha(p) for p in inputs},
-                  scope='Original WinMax current-task border and borderless geometry, followed by explicit restoration; task selection, IRQ and exception behavior remain unqualified')
+                  scope='Original WinMax current-task border and borderless geometry, followed by explicit restoration; plus IF preservation for explicit Fs and invalid-task no-op; different-task selection and exception behavior remain unqualified')
     try:
         iso = out/'original.iso'
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(extra[0]),
@@ -66,7 +66,7 @@ def main():
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),
                         '--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
         data = (out/'guest/winmax.bin').read_bytes()
-        report['observed']=list(struct.unpack('<2q',data))
+        report['observed']=list(struct.unpack('<5q',data))
         report['expected']=EXPECTED
         if report['observed']!=EXPECTED:
             raise ValueError('Original WinMax geometry differs from explicit oracle')
