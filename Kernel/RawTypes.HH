@@ -20,4 +20,7 @@
 #define RTF_UNSIGNED	1
 #define RTG_MASK	0xFF
 
+//Original compiler raw-type display names; indices match RT_* above.
+#define RAW_TYPE_NAMES_LIST " \0 \0I0\0U0\0I8\0U8\0I16\0U16\0I32\0U32\0I64\0U64\0F32\0UF32\0F64\0UF64\0"
+
 #endif

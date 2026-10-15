@@ -11,6 +11,42 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Full original serialization replaces the native subset (Console 104, 2026-10-15)
+
+Public DocSave now uses the complete unchanged original body, with complete
+Doc2PlainText shared alongside it. The new entry-serialization export brings
+console exports to 256. The canonical raw-type name list is shared with original
+compiler initialization and loaded at native startup if absent; the document
+header now exposes RT_* declarations. Public layouts, Memory 26 and private
+console services are unchanged. The private record serializer remains available
+for existing component probes, but is no longer public DocSave.
+
+Eight entry-string and ten document-byte contracts pass on original and native.
+They cover named/numeric colors, button values, quote/backslash/dollar escaping
+(including the original \d dollar escape), links/macros, high flags/user data,
+bound U32 metadata, plain/doubled dollars, cursor, independent binary records,
+incoming lock, CRLF and bound-data filtering. Exact bytes and size are checked
+against independent expectations before DocLoad round-trip checks, with cursor,
+lock/role preservation and exact heap recovery. Native passes 21 commands with
+exact fixture readback and unchanged inputs. Evidence:
+`build/i386-c4-doc-save-filter-reference` and
+`build/i386-c2-doc-save-types-contract`.
+
+The original two-generation bootstrap and
+`build/i386-c2-doc-save-types-cross` pass, including the limited 386 audit
+(96 BIOS / 255 protected instructions); all 1487 source/build pins match.
+Current-image loading (10 commands), clipboard and character/form primitives
+(14 each), keyboard-driven retained undo (4) and normal 8 MiB startup
+(9 checks in 54.73 seconds) pass under `build/i386-c2-doc-save-types-`.
+
+This is complete serializer source integration with bounded contracts, not
+qualification of every entry combination or failure/lifetime path. DocRead and
+retained editor restore still use their record loader; full reader/writer
+interchange remains an explicit integration gate. Original undo requires a
+386-compatible clock/frequency contract and complete capture/restore testing.
+Full DocPutKey and actual chooser input remain open. See
+[serialization contracts and boundaries](docs/i386-doc-save.md). C1–C5 remain incomplete.
+
 ### Complete original DocLoad integrated (Console 103, 2026-10-15)
 
 The unchanged original DocLoad body is now shared through DocLoadCore.HC and

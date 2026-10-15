@@ -1,6 +1,7 @@
 #ifndef I386_PUBLIC_DOCUMENT_INCLUDED
 #define I386_PUBLIC_DOCUMENT_INCLUDED
 #include "/Kernel/DocGlobals.HH"
+#include "/Kernel/RawTypes.HH"
 #include "/Adam/DolDoc/EdLinkTypes.HH"
 #help_index "DolDoc"
 public _extern _DOC_LINK_FILE U8 *DocLinkFile(U8 *link_st,CTask *mem_task=NULL);
@@ -95,4 +96,5 @@ public _extern _DOC_CUT U0 DocCut(CDoc *doc,CDocEntry *start,CDocEntry *end);
 public _extern _DOC_COPY CDoc *DocCopy(CDoc *doc,CDocEntry *start,CDocEntry *end);
 public _extern _SYS_CLIP_DOC CDoc *sys_clip_doc;
 public _extern _DOC_LOAD U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
+public _extern _DOC_2_PLAIN_TEXT U8 *Doc2PlainText(CDoc *doc,CDocEntry *entry);
 #endif

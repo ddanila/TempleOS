@@ -175,10 +175,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 #include "/Adam/DolDoc/DocBasicSaveCore.HC"
 #include "/Kernel/I386/DocRecordSaveCore.HC"
 #include "/Kernel/I386/DocRecordLoadCore.HC"
-public U8 *DocSave(CDoc *doc,I64 *_size=NULL)
-{
-  return NativeDocRecordSaveCore(doc,_size);
-}
+extern U8 *DocSave(CDoc *doc,I64 *_size=NULL);
 
 
 
@@ -2036,6 +2033,8 @@ U0 ConsoleDocumentStart()
   }
   DocGlobalsInit;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
+  if(!HashFind("ST_RAW_TYPES",Fs->hash_table,HTT_DEFINE_STR))
+    DefineLstLoad("ST_RAW_TYPES",RAW_TYPE_NAMES_LIST);
   DocInit;
   NativeClipboardInit;
   NativeTerminalTranscriptStart;
