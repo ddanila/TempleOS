@@ -8,15 +8,10 @@ U0 NativeEditorSetup()
 {
  native_editor_context.version=I386_EDITOR_VERSION;native_editor_context.bytes=sizeof(CI386EditorContext);
  native_editor_context.alpha_numeric=char_bmp_alpha_numeric;
- native_editor_context.doc_lock=&DocLock;native_editor_context.doc_unlock=&DocUnlock;
- native_editor_context.doc_recalc=&DocRecalc;native_editor_context.doc_center=&DocCenter;
+ native_editor_context.symbols=console_doc_exports;
+ native_editor_context.symbol_count=sizeof(console_doc_exports)/sizeof(CI386KernelSymbol);
  native_editor_context.str_cmp=&StrCmp;native_editor_context.hash_find=&HashFind;
- native_editor_context.doc_new=&DocNew;native_editor_context.doc_del=&DocDel;
- native_editor_context.doc_print=&DocPrint;native_editor_context.alloc=&MAlloc;
- native_editor_context.free=&Free;native_editor_context.data_fmt=&DocDataFmt;
- native_editor_context.doc_ed=&DocEd;native_editor_context.entry_run=&DocEntryRun;
- native_editor_context.popup_print=&NativePopUpPrint;
- native_editor_context.cur_u8=&EdCurU8;native_editor_context.cursor_left=&EdCursorLeft;native_editor_context.cursor_right=&EdCursorRight;
+ native_editor_context.alloc=&MAlloc;native_editor_context.free=&Free;
 }
 U0 NativeEditorRequire()
 {

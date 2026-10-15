@@ -37,7 +37,7 @@ def layout(module):
             raise ValueError('Missing real editor entry: '+name)
     if exports.get('editor_version', (0,))[0] != 3:
         raise ValueError('Missing editor version')
-    if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 2:
+    if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 3:
         raise ValueError('Wrong editor version')
     return dict(image_bytes=size+8, required_entries=list(names), external_imports=[],
                 locally_resolved_references=len(imports))

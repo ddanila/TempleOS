@@ -1,8 +1,9 @@
 #ifndef I386_EDITOR_RUNTIME_INCLUDED
 #define I386_EDITOR_RUNTIME_INCLUDED
 #include "/Kernel/I386/DocAccess.HH"
-#define I386_EDITOR_VERSION 2
-class CI386EditorContext {
+#include "/Kernel/I386/KernelSymbols.HH"
+#define I386_EDITOR_VERSION 3
+class CI386EditorBindings {
  U32 version,bytes;
  U32 *alpha_numeric;
  Bool (*doc_lock)(CDoc *doc);
@@ -23,6 +24,16 @@ class CI386EditorContext {
  Bool (*doc_ed)(CDoc *doc,I64 flags);
  I64 (*entry_run)(CDoc *doc,CDocEntry *entry,Bool exited,I64 *action);
  I64 (*popup_print)(U8 *format,...);
+};
+class CI386EditorContext {
+ U32 version,bytes;
+ U32 *alpha_numeric;
+ CI386KernelSymbol *symbols;
+ I64 symbol_count;
+ I64 (*str_cmp)(U8 *a,U8 *b);
+ CHash *(*hash_find)(U8 *name,CHashTable *table,I64 mask,I64 instance);
+ U8 *(*alloc)(I64 bytes,CTask *task);
+ U0 (*free)(U8 *allocation);
 };
 class CI386EditorServices {
  U32 version,bytes;

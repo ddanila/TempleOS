@@ -32,8 +32,8 @@ def main():
         if module[position] != 3: raise ValueError('Not an i386 editor module')
     elif args.fault == 'wrong-version':
         position = 32+next(offset for kind, offset, name, _ in records if kind == 3 and name == b'editor_version')
-        bad = 3
-        if module[position] != 2: raise ValueError('Unexpected editor version')
+        bad = 4
+        if module[position] != 3: raise ValueError('Unexpected editor version')
     else:
         position = next(record for kind, _, name, record in records if kind == 1 and name == b'StrFind')
         bad = 2  #An unresolved import record, with no matching binding.

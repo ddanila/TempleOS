@@ -8,7 +8,8 @@
 #include "/Kernel/StringFindFlags.HH"
 #include "/Kernel/RawTypes.HH"
 U32 editor_version=I386_EDITOR_VERSION;
-CI386EditorContext *editor_context;
+CI386EditorBindings editor_bindings;
+CI386EditorBindings *editor_context;
 Bool DocLock(CDoc*d){return (*editor_context->doc_lock)(d);}
 Bool DocUnlock(CDoc*d){return (*editor_context->doc_unlock)(d);}
 Bool DocRecalc(CDoc*d,I64 flags=RECALCt_NORMAL){return (*editor_context->doc_recalc)(d,flags);}
@@ -46,15 +47,44 @@ I64 DocEntryRun(CDoc*d,CDocEntry*e,Bool exited,I64*action=NULL){return (*editor_
 #define PopUpPrint (*editor_context->popup_print)
 #include "/Adam/DolDoc/DocClassFormCore.HC"
 #include "/Adam/DolDoc/DocFormPopupCore.HC"
+//Resolve only the permanent Console array. Caller hash-table shadows are irrelevant.
+U8 *EditorConsoleSymbol(CI386EditorContext*context,U8*name)
+{
+ I64 i;U8*result=NULL;CI386KernelSymbol*symbol;
+ for(i=0;i<context->symbol_count;i++){
+  symbol=&context->symbols[i];
+  if(symbol->str&&!(*context->str_cmp)(symbol->str,name)){
+   if(result||symbol->kind!=1||symbol->type!=HTT_EXPORT_SYS_SYM||symbol->val<=0||symbol->val>0xFFFFFFFF)return NULL;
+   result=symbol->val;
+  }
+ }
+ return result;
+}
 Bool EditorInit(CI386EditorContext*context,I64 bytes)
 {
  if(editor_context||!context||bytes!=sizeof(CI386EditorContext)||context->version!=I386_EDITOR_VERSION||
-    context->bytes!=sizeof(CI386EditorContext)||!context->alpha_numeric||!context->doc_lock||!context->doc_unlock||
-    !context->doc_recalc||!context->doc_center||!context->cur_u8||!context->cursor_left||!context->cursor_right||!context->str_cmp||!context->hash_find||!context->doc_new||!context->doc_del||
-    !context->doc_print||!context->alloc||!context->free||!context->data_fmt||
-    !context->doc_ed||!context->entry_run||!context->popup_print)return FALSE;
- editor_context=context;return TRUE;
+    context->bytes!=sizeof(CI386EditorContext)||!context->alpha_numeric||!context->symbols||
+    context->symbol_count<=0||context->symbol_count>4096||!context->str_cmp||!context->hash_find||!context->alloc||!context->free)return FALSE;
+ editor_bindings.alpha_numeric=context->alpha_numeric;
+ editor_bindings.str_cmp=context->str_cmp;editor_bindings.hash_find=context->hash_find;
+ editor_bindings.alloc=context->alloc;editor_bindings.free=context->free;
+ if(!(editor_bindings.doc_lock=EditorConsoleSymbol(context,"_DOC_LOCK")))return FALSE;
+ if(!(editor_bindings.doc_unlock=EditorConsoleSymbol(context,"_DOC_UNLOCK")))return FALSE;
+ if(!(editor_bindings.doc_recalc=EditorConsoleSymbol(context,"_DOC_RECALC")))return FALSE;
+ if(!(editor_bindings.doc_center=EditorConsoleSymbol(context,"_DOC_CENTER")))return FALSE;
+ if(!(editor_bindings.cur_u8=EditorConsoleSymbol(context,"_ED_CUR_U8")))return FALSE;
+ if(!(editor_bindings.cursor_left=EditorConsoleSymbol(context,"_ED_CURSOR_LEFT")))return FALSE;
+ if(!(editor_bindings.cursor_right=EditorConsoleSymbol(context,"_ED_CURSOR_RIGHT")))return FALSE;
+ if(!(editor_bindings.doc_new=EditorConsoleSymbol(context,"_DOC_NEW")))return FALSE;
+ if(!(editor_bindings.doc_del=EditorConsoleSymbol(context,"_DOC_DEL")))return FALSE;
+ if(!(editor_bindings.doc_print=EditorConsoleSymbol(context,"_DOC_PRINT")))return FALSE;
+ if(!(editor_bindings.data_fmt=EditorConsoleSymbol(context,"_DOC_DATA_FMT")))return FALSE;
+ if(!(editor_bindings.doc_ed=EditorConsoleSymbol(context,"_DOC_ED")))return FALSE;
+ if(!(editor_bindings.entry_run=EditorConsoleSymbol(context,"_DOC_ENTRY_RUN")))return FALSE;
+ if(!(editor_bindings.popup_print=EditorConsoleSymbol(context,"_POP_UP_PRINT")))return FALSE;
+ editor_context=&editor_bindings;return TRUE;
 }
+
 I64 Main(CI386EditorServices*services,I64 bytes)
 {
  if(!services||bytes!=sizeof(CI386EditorServices))return 0;

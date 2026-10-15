@@ -11,6 +11,61 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Permanent editor exports and replacement TDD baseline (Console 112, 2026-10-15)
+
+The optional provider now resolves existing Console document dependencies from
+its permanent export array instead of growing mandatory callback setup or
+borrowing the first caller's namespace. Private context/services version 3 are
+40/44 bytes on i386. Required names must match exactly, with function kind,
+system-export type, nonzero 32-bit address and no duplicates; bindings are
+published only after all required lookups succeed. Public CDoc/CTask layouts,
+273 Console exports and Memory 26 are unchanged. Full original search/form
+bodies remain intact. New public stubs/exports still count against the budget.
+
+Original bootstrap and cross-build `build/i386-c2-editor-export-cross` pass:
+569584 kernel bytes, all 1502 source/build pins matching and the limited boot
+instruction audit. The nineteen-command search suite and version-3 repeated
+wrong-version rejection, guest repair/retry and cached reuse pass. Evidence:
+`build/i386-c2-editor-export-search` and
+`build/i386-c2-editor-export-version-recovery`.
+
+`build/i386-c2-editor-export-owner-checked` proves a first child can shadow the
+real _DOC_NEW export locally while full DocForm on a known public unformatted
+class still uses Console's allocator. No poison callback runs. Two children
+retire naturally; the second restores the public pool exactly, parent reuse
+works, caller heap/document/end-callback roles recover, parent export identity
+is unchanged, and exactly one provider load occurs. Fixture prerequisites
+(type include and void setup) were corrected before these assertions ran.
+Forced cancellation/reentrancy remain separate gates.
+
+Normal 8 MiB startup passes nine commands in 55.14 seconds, leaving the editor
+unloaded. `build/i386-editor-export-budget.json` records Console span 2344448,
+568 below Console 111 and 856 below the unchanged cap; other core spans are
+unchanged and backing-failure observations are zero. The strengthened original
+form oracle still passes seven masks of 63. Native diagnostic-only observations
+remain [63,63,63,63,63,60,62], with exact caller heap recovery: typed accept and
+cancel are still failed, not reclassified as passes. Evidence:
+`build/i386-c4-editor-export-form-reference` and
+`build/i386-c2-editor-export-form-observation`.
+
+The provider compiles natively at 16 MiB on 486 without an FPU and passes its
+persisted export audit in `build/i386-c2-editor-export-native-build` (53482 bytes,
+165 records, 35 exports). This is not installation/runtime qualification of that
+native module, byte identity or two complete native desktop generations.
+
+Ten new public EdReplace contracts pass on original in
+`build/i386-c4-editor-replace-final-reference`: counts/exact text, case folding,
+whole labels, selection, empty/missing/oversized inputs, saved settings, marker
+cleanup, incoming lock, roles and heap. Native prerequisite test
+`build/i386-c2-editor-replace-prerequisite-red` rejects the missing EdReplace
+binding before the fixture executes. Next integrate complete replacement/go-to
+bodies and their actual dependencies, then the complete original input path;
+do not substitute a plain-text replacement loop or numeric-only input handler.
+Prompted replacement, popup ownership, autocomplete/tool dependencies, native
+generations and full C1–C5 qualification remain open. See
+[replacement contracts](docs/i386-editor-replace.md) and
+[provider ownership/budget](docs/i386-editor-provider.md).
+
 ### Complete original class-form wrappers integrated; typed input remains red (Console 111, 2026-10-15)
 
 DocForm and PopUpForm now compile intact in the optional editor provider, with

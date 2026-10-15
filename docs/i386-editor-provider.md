@@ -186,3 +186,56 @@ the remaining typed-input failure, strengthened cancellation oracle and the
 unexplained initial inferred-class failure. Compiling complete form wrappers
 is not complete form/input or popup qualification. Full native generations,
 forced cancellation/reentrancy and the diagnostic allocation issue remain open.
+
+## Permanent export resolution (Console 112)
+
+The private version-3 context now passes the permanent Console export array and
+its count, the canonical character bitmap, and four stable kernel callbacks
+(string comparison, metadata hash lookup, allocation and free). Context/services
+are 40/44 bytes on i386. The optional provider resolves its document callbacks
+by exact export name, checking kind, type, nonzero 32-bit address and duplicate
+matches before publishing its own bindings pointer. It never searches the first
+caller's hash table for those callbacks and never writes its bindings back into
+the caller's namespace/context. Public document layouts and 273 Console exports
+remain unchanged; Memory remains 26.
+
+This moves growing dependency initialization out of mandatory Console. The
+original callback semantics and full shared search/form bodies remain intact.
+The corrected cross-build `build/i386-c2-editor-export-cross` passes with 569584
+kernel bytes and 1502 matching build pins. The nineteen-command search suite
+passes in `build/i386-c2-editor-export-search`.
+
+`build/i386-c2-editor-export-owner-checked` passes seven commands: a first child
+installs a real _DOC_NEW shadow that resolves locally, calls complete DocForm
+on a known public unformatted class, and exits. The poisoned allocator is never
+called; a second child and the parent reuse the same provider. Per-call heap
+and document/end-callback roles recover exactly, the second child's public pool
+recovers, and parent export identity is unchanged. There is exactly one load.
+The fixture explicitly checks the class exists, so unknown-class early return
+cannot substitute for allocation. Initial fixture runs stopped at a missing
+canonical type include and an unexpected pointer-printing setup expression;
+neither reached the ownership assertion. A void setup function fixes the latter.
+
+Version-3 repeated wrong-version rejection, guest repair/retry and cached reuse
+pass in `build/i386-c2-editor-export-version-recovery`. All test inputs remain
+unchanged. Normal 8 MiB startup passes nine commands in 55.14 seconds with zero editor
+loads in `build/i386-c2-editor-export-startup`. The qualified report
+`build/i386-editor-export-budget.json` records Console 2344448 bytes, 568 below
+Console 111 and 856 below the unchanged cap; other measured core spans are
+unchanged and no backing failures are observed. This is provider span, not
+peak RAM. Additional dependencies already exported by Console can now be
+resolved without adding mandatory per-callback initialization code; new public
+entry stubs/exports still count against the budget.
+
+The strengthened original form oracle passes seven masks of 63 in
+`build/i386-c4-editor-export-form-reference`. Native diagnostic-only observations
+in `build/i386-c2-editor-export-form-observation` remain
+[63,63,63,63,63,60,62], with zero caller heap deltas and unchanged inputs. Typed
+accept/cancel remain red; this is no form-compatibility pass.
+
+The provider compiles natively on 486 without an FPU at 16 MiB in
+`build/i386-c2-editor-export-native-build`: persisted export audit passes for
+53482 bytes, 165 records and 35 exports. This is component build evidence;
+installation/runtime on that native module and full generations remain open.
+The [replacement oracle](i386-editor-replace.md) is the next dependency gate. This does not qualify forced cancellation/reentrancy,
+new native generations, the diagnostic memory case or full desktop behavior.
