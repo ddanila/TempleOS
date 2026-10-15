@@ -10,6 +10,34 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Cooperative graphics/text ownership checkpoint (2026-10-15)
+
+Managed graphics and text presenters now wait cooperatively when another task
+owns the shared frame buffers. Same-task recursion still returns false. Each
+cleanup scope records whether it acquired the lease, so canceling a waiter
+cannot release the holder's ownership. Text presentation now participates in
+the common task-termination cleanup stack.
+
+The new test covers a yielding frame/document holder, normal parent-scope
+removal below child scopes, competing graphics/text callers, canceled and
+replaced waiters, holder termination, retry, retained document tags and exact
+parent-heap recovery. The prior image fails with mask 117 instead of 127
+(`build/i386-c4-graphics-wait-red/result.json`). See
+[graphics lifecycle evidence](docs/i386-graphics-exit.md).
+
+All 25 contention commands pass, with mask 127 in each of four cases
+(`build/i386-c4-graphics-wait-green/result.json`). The prior 24-command forced
+Exit suite and 16-command graphics/text-frame groups pass, including every
+pixel checkpoint. Bootstrap, cross-build and 386 instruction audit pass;
+8 MiB startup passes in 45.83 seconds with no build-provider loading.
+
+C1 inventory/reference work and C2 desktop integration remain in progress; C4
+component contracts are advancing alongside them. C3 full app/demo workflows
+and C5 full-desktop native-generation qualification remain open. The completed
+bounded-memory self-hosting goal is the foundation, not desktop parity.
+Scheduled automatic document refresh is the next integration target; owner
+termination, raw/editor/focus ownership and the automatic A/B gate remain open.
+
 ### Managed graphics presentation and mixed-scope Exit pass (2026-10-15)
 
 Root-owned graphics storage can now be presented by other managed tasks under

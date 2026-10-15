@@ -1531,6 +1531,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-graphics-exit-green/result.json",
           "scope": "Mixed document/frame/document callback Exit releases parent document resources and presentation guard; yielding/owner termination and whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-graphics-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-graphics-wait-green/result.json",
+          "scope": "25-command managed graphics/text contention gate: yielding holder, interleaved document scopes, waiter cancellation, recursive refusal, holder kill, retained tags and exact parent recovery; not scheduled refresh, owner termination or whole-file qualification"
         }
       ]
     },
@@ -2267,6 +2273,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-graphics-exit-regression/result.json",
           "scope": "11 graphics allocation/context/layering/exception commands and independent frame pixels after shared cleanup stack; worker/whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-graphics-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-graphics-wait-green/result.json",
+          "scope": "25-command managed graphics/text contention gate: yielding holder, interleaved document scopes, waiter cancellation, recursive refusal, holder kill, retained tags and exact parent recovery; not scheduled refresh, owner termination or whole-file qualification"
         }
       ]
     },

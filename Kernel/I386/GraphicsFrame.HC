@@ -2,6 +2,7 @@ CDC *graphics_persistent,*graphics_frame;
 U8 *graphics_planes[4];
 U16 *graphics_zbuffer,*graphics_uncovered;
 Bool graphics_presenting;
+CI386Task *graphics_presenter;
 #include "/Kernel/GraphicsWindowReserveCore.HC"
 U8 *NativeGraphicsWindowAlloc(U8 *context,I64 bytes)
 {
@@ -32,13 +33,25 @@ Bool NativeGraphicsReady()
     gr.dc==graphics_persistent && gr.dc2==graphics_frame && gr.text_base==i386_text_base &&
     gr.win_z_buf==graphics_zbuffer && gr.win_uncovered_bitmap==graphics_uncovered;
 }
-Bool NativeGraphicsTextLock()
+Bool NativeGraphicsTextLock(CNativeGraphicsScope *scope)
 {
-  if(!NativeGraphicsReady || graphics_presenting) return FALSE;
-  graphics_presenting=TRUE; return TRUE;
+  Bool result=FALSE;
+  try {
+    NativeGraphicsScopeOpen(scope,NULL,&graphics_presenting,&graphics_presenter);
+    result=NativeGraphicsScopeAcquire(scope);
+  } catch {
+    NativeGraphicsScopeReleaseLease(scope);
+    NativeRenderScopeClose(scope);
+  }
+  if(!result)NativeRenderScopeClose(scope);
+  return result;
 }
-U0 NativeGraphicsTextUnlock()
-{ graphics_presenting=FALSE; }
+U0 NativeGraphicsTextUnlock(CNativeGraphicsScope *scope)
+{
+  NativeGraphicsScopeReleaseLease(scope);
+  NativeRenderScopeClose(scope);
+}
+
 U8 **NativeGraphicsPlanes()
 {
   if(NativeGraphicsReady) return graphics_planes;
@@ -103,16 +116,16 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
 {//Root-owned storage; managed callers serialize presentation through one lease.
   Bool result=FALSE;
   CNativeGraphicsScope scope;
-  if(!NativeGraphicsReady || graphics_presenting ||
+  if(!NativeGraphicsReady ||
       gr.dc->dc_signature!=DCS_SIGNATURE_VAL || gr.dc2->dc_signature!=DCS_SIGNATURE_VAL ||
       gr.dc->width_internal!=640 || gr.dc->height!=480 ||
       gr.dc2->width_internal!=640 || gr.dc2->height!=480 ||
       !gr.dc->body || !gr.dc2->body) return FALSE;
-  gr.pan_text_x=MinI64(7,MaxI64(-7,gr.pan_text_x));
-  gr.pan_text_y=MinI64(7,MaxI64(-7,gr.pan_text_y));
   try {
-    NativeGraphicsScopeOpen(&scope,NULL,&graphics_presenting);
-    graphics_presenting=TRUE;
+    NativeGraphicsScopeOpen(&scope,NULL,&graphics_presenting,&graphics_presenter);
+    if(!NativeGraphicsScopeAcquire(&scope))goto graphics_present_done;
+    gr.pan_text_x=MinI64(7,MaxI64(-7,gr.pan_text_x));
+    gr.pan_text_y=MinI64(7,MaxI64(-7,gr.pan_text_y));
     //Refresh from the live ring, including tasks removed since the previous frame.
     WinZBufUpdate;
     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
@@ -120,11 +133,12 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
     GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
     result=I386VgaSplitRows(graphics_planes,0,480);
     if(result) NativeWinRefreshCommit;
+graphics_present_done:
+    NativeGraphicsScopeReleaseLease(&scope);
   } catch {
-    graphics_presenting=FALSE;
+    NativeGraphicsScopeReleaseLease(&scope);
     NativeRenderScopeClose(&scope);
   }
-  graphics_presenting=FALSE;
   NativeRenderScopeClose(&scope);
   return result;
 }

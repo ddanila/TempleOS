@@ -42,7 +42,9 @@ open. Passing an explicit presentation test does not supersede it.
    callback/allocation sites. Native renderer cleanup now passes plain child,
    nested and User-terminal callback Exit cases. Draw/final and mixed document/
    frame exits now pass as well; see [graphics lifecycle](i386-graphics-exit.md).
-   Continue with owner termination, yielding callbacks and competing presenters.
+   Yielding holders and competing managed graphics/text presenters now have a
+   separate cancellation/interleaving gate in that lifecycle document. Continue
+   with storage-owner termination and raw/editor display ownership.
 2. **Worker/document lifetime and presentation ownership.** Use the native
    scheduler's established ownership model. Exit waits for linked children and
    inherited task/code/heap references defer retirement; reuse those guarantees

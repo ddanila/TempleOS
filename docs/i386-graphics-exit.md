@@ -3,8 +3,9 @@
 NativeGraphicsPresent now separates the lifetime of its root-owned storage from
 the task presenting a frame. NativeGraphicsReady validates that storage owner and
 the existing context/buffer invariants; a different managed task can present
-through the same exclusive presentation guard. Busy or recursive presentation
-still returns false. This is a prerequisite for a managed refresh worker, not
+through the same exclusive presentation guard. A different managed task now
+waits cooperatively for that guard; same-task recursion returns false. This is
+a prerequisite for a managed refresh worker, not
 a scheduled window manager or a complete arbitration policy.
 
 ## Executable task-lifecycle contract
@@ -39,7 +40,7 @@ A common stack matters: separate per-family drains could skip an intermediate
 compositor cleanup when a document callback enters a frame and then another
 document. The combined nesting test exercises that sequence. The structure is
 also prepared to remove interleaved scopes from other cooperative tasks, but
-concurrent-task interleaving is not separately qualified by these cases.
+concurrent-task interleaving is covered separately by the wait test below.
 
 The presenter acquires its busy flag only after entering the protected scope,
 and clears it before removing that scope on ordinary return. GraphicsFrameCore
@@ -58,11 +59,39 @@ Bootstrap rebuild, native cross-build and 386 boot audit pass
 (`build/i386-c4-graphics-exit-cross`). Startup passes at 8 MiB in 45.88 seconds
 without build-provider loads (`build/i386-c4-graphics-exit-startup/result.json`).
 
+## Cooperative presentation and cancellation
+
+```
+python3 tools/test-i386-graphics-wait.py IMAGE --out build/FRESH-graphics-wait
+```
+
+Each scope records whether it acquired the lease. A waiting or recursive scope
+cannot release another scope's lease during normal cleanup or task termination.
+Acquisition yields through the managed scheduler and checks readiness again on
+every attempt. Text presentation registers its lease in the same cleanup stack.
+
+The test starts a graphics holder inside a document callback, lets the parent
+document scope close below the child's scopes, and starts a competing graphics
+or text presenter. The waiter must stay alive without returning until the
+holder is killed. Two further cases kill and replace the waiter first; this
+must leave the holder's lease intact. Checks include recursive refusal,
+retained tags, unlocked documents, presentation retry and exact parent-heap
+recovery. This exercises managed APIs, not raw-console or focus arbitration.
+
+The prior image returns 117 instead of 127 in the first case
+(`build/i386-c4-graphics-wait-red/result.json`). All 25 commands pass on the
+corrected image, with 127 in all four cases
+(`build/i386-c4-graphics-wait-green/result.json`). The prior 24-command Exit
+suite remains green (`build/i386-c4-graphics-wait-exit-regression/result.json`),
+as do all 16 graphics/text-frame commands and their pixel checkpoints
+(`build/i386-c4-graphics-wait-frames/result.json`). Bootstrap, cross-build and
+386 boot audit pass; 8 MiB startup passes in 45.83 seconds without build-provider
+loads (`build/i386-c4-graphics-wait-startup/result.json`).
+
 ## Remaining qualification
 
-Callbacks which yield while another presenter, raw console, editor or focus
-change competes for display ownership still need an arbitration policy and
-end-to-end tests. Storage-owner termination, arbitrary callback-installed cleanup
+Raw console, editor and focus changes still need display-ownership integration
+and end-to-end tests. Storage-owner termination, arbitrary callback-installed cleanup
 wrappers, all allocator/geometry failures and scheduled refresh remain open.
 Do not enable a background worker merely because the forced-exit cases pass:
 the automatic A/B document gate and the rest of the refresh plan still apply.
