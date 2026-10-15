@@ -106,3 +106,24 @@ commands, 23 mouse commands and 17 linked-owner commands. Reports are under
 `build/i386-c4-render-retire-{end-regression,descendants,graphics-exit,doc-exit,callback,documents,frames,mouse,linked}/result.json`.
 All 1,463 recorded source/build-input hashes match the current files; the source
 image hash and recorded test input hashes were checked before committing.
+
+## Displayed-document replacement
+
+`python3 tools/test-i386-render-document-replace.py IMAGE --out OUT` passes all
+44 commands in `build/i386-c4-render-document-replace-verified/result.json`.
+A managed renderer yields inside the old root-owned document's tag while a
+separate task installs a replacement display document and deletes the old one.
+The test observes cancellation before deletion completes, no old-frame return
+or unexpected exception, and the replacement still selected. A fresh renderer
+then evaluates its tag to `alive` with worker Fs/document-lock identity intact.
+After restoring the saved display pointer and deleting the replacement, exact
+root heap and graphics/text helper reuse return mask 255. All earlier retirement
+cases run in the same session. Image, runner, base fixture and replacement
+fixture hashes are pinned and unchanged.
+
+The initial fixture exceeded the terminal's 255-character input limit before
+executing the replacement case. The corrected fixture splits helpers into valid
+input lines. An intermediate attempt was explicitly interrupted to fix a
+root-owner relationship assertion. Neither attempt is OS-failure evidence.
+This covers explicit replacement with fresh-worker recovery; automatic worker
+supervision and scheduled window updates remain open.

@@ -88,3 +88,39 @@ These steps advance C2/C4 and enable C3 applications. They do not replace the
 C1–C5 acceptance requirements or qualify a reduced, opt-in presentation demo as
 the complete desktop. Repeatable behavior remains automated; no manual-session
 gate is introduced.
+
+## Source path for the scheduled worker
+
+The original `Adam/Gr/GrScrn.HC:GrUpdateTaskWin` draws the border and clears
+window text, calls `DocUpdateTaskDocs`, then invokes task drawing and controls.
+`Adam/DolDoc/DocRecalcLib.HC:DocUpdateTaskDocs` selects the displayed document,
+updates title/border metadata, renders it with cursor handling, then updates the
+border document with saved/restored scroll. Reuse this behavior when extracting
+shared update cores; a focused-document callback alone is not desktop parity.
+`GraphicsFrameCore` already composes retained text before invoking the current
+frame's drawing callback, matching the required temporal ordering.
+
+For the managed worker, acquire the graphics lease before selecting a window
+and register that task as a render-scope owner before any yielding operation.
+Select `DocDisplay`/`DocBorder` within that scope. Document-specific scopes then
+protect memory/window owners during recalc; the outer task scope must also
+cover task drawing, controls and owner-compiled callbacks. Rescan the live
+window ring after a yield instead of keeping an unprotected next-task pointer.
+Worker cancellation must unwind the entire frame and restart through a resident
+supervisor or an explicitly tested recovery path. The root proxy cannot simply
+be rebound until window order, background ownership and cleanup are qualified.
+
+The replacement fixture is
+`python3 tools/test-i386-render-document-replace.py IMAGE --out OUT`.
+It retains the owner-retirement regressions and adds displayed-document swap,
+old-render cancellation, a fresh renderer on the new document, and exact heap
+recovery after restoring the original display pointer. It is a lifecycle test;
+it does not enable the scheduled worker or satisfy the automatic A/B gate.
+
+Current retirement-image recheck still fails the automatic gate:
+`build/i386-c2-doc-auto-refresh-retirement-red/result.json`. The application
+reaches `DOC AUTO first`, then the first A-frame observation times out; phase B
+is not executed. Pinned inputs remain unchanged. The 44-command replacement
+session passes separately in
+`build/i386-c4-render-document-replace-verified/result.json`. Safe explicit
+replacement therefore does not establish automatic displayed-document refresh.

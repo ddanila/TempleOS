@@ -10,6 +10,24 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Displayed-document replacement lifecycle passes (2026-10-15)
+
+A 44-command QEMU session now covers swapping the displayed document while a
+managed renderer yields in its old tag. Deleting the old document cancels that
+renderer; a fresh renderer successfully evaluates the replacement with its own
+Fs. The session restores the original display pointer, frees the replacement,
+checks exact root heap and reuses graphics/text presentation (mask 255).
+Owner-retirement regressions pass in the same session. See
+[replacement evidence](docs/i386-render-retirement.md#displayed-document-replacement).
+
+The current image still fails the first automatic A-frame observation
+(`build/i386-c2-doc-auto-refresh-retirement-red/result.json`); phase B is not
+executed. This confirms the integration gate remains open.
+
+This adds lifecycle evidence without changing OS behavior. The scheduled worker,
+protected target selection, original update ordering and automatic cancellation
+recovery still require integration; C1–C5 remain open.
+
 ### Independent render borrowers retire before their owners (2026-10-15)
 
 Managed Exit now cancels tracked document render borrowers before owner heap and

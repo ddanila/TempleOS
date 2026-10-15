@@ -1259,6 +1259,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-owner-retire-green/result.json",
           "scope": "35-command native independent-borrower contract: owner Exit/kill, concurrent deletion, rejected self-deletion and retry, exact parent heap and presentation reuse; scheduled refresh and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-render-document-replace.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-document-replace-verified/result.json",
+          "scope": "44-command native lifecycle session: replace displayed document during yielding render, cancel old renderer, fresh renderer evaluates replacement, restore display pointer, exact heap and presentation reuse; not automatic refresh or whole-file qualification"
         }
       ]
     },
@@ -1569,6 +1575,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-owner-retire-green/result.json",
           "scope": "35-command native independent-borrower contract: owner Exit/kill, concurrent deletion, rejected self-deletion and retry, exact parent heap and presentation reuse; scheduled refresh and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-render-document-replace.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-document-replace-verified/result.json",
+          "scope": "44-command native lifecycle session: replace displayed document during yielding render, cancel old renderer, fresh renderer evaluates replacement, restore display pointer, exact heap and presentation reuse; not automatic refresh or whole-file qualification"
         }
       ]
     },
