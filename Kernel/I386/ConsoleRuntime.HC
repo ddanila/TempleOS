@@ -864,8 +864,7 @@ U0 I386DocBreakPoll()
 
 #include "/Kernel/I386/PopupRuntime.HC"
 
-//Compile the complete original path before binding public native DocEd.
-//Native forced-exit/owner-retirement scopes are still required.
+//Original flagged/form sessions use native document/teardown scopes.
 #define DOC_ED_FUNCTION NativeOriginalDocEd
 #define DOC_VIEW_FUNCTION NativeOriginalView
-#include "/Adam/DolDoc/DocEdCore.HC"
+#include "/Kernel/I386/DocEdScope.HC"

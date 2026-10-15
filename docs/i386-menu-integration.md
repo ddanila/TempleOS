@@ -257,3 +257,88 @@ Normal 8 MiB startup passes all nine checks in 50.18 seconds in
 `build/i386-c2-doced-core-startup/result.json`, with the manager active and
 build providers unloaded. This checks the retained normal image, not execution
 of the internal original DocEd candidate.
+
+## Native DocEd lifetime candidate (Console 95)
+
+Flagged calls and DOCF_FORM documents now enter the complete shared core;
+ordinary non-form editing retains its existing editor. DocEdStateCore.HC holds
+the common restored state. Native DocEdScope.HC registers a main cleanup frame
+and leases for the edited and saved put/display/border documents before any
+maximization, locking or allocation. Ordinary/recovered cleanup retains these
+leases through restoration, then closes them in reverse order, including when
+restoration itself throws. An incoming locked document is reacquired through
+DocLock rather than merely checking whether some task holds the lock bit.
+
+Committed release uses DocUnlockCore with the non-polling break-unlock adapter
+and releases only the exiting task's actual ownership. It restores/detaches task
+roles and title state and restores the edited document's prior valid window
+owner (falling back to its memory owner). The temporary border belongs to the
+exiting task's heap: it is detached, without DocDel or user callbacks during
+stack drain. Existing owner retirement drains render borrowers before that heap
+is reclaimed. This is a separate teardown path from ordinary SIZE_MIN window
+restoration, which may call controls and yield.
+
+The cross-task fixture `tests/guest/i386-doced-exit-reference/DocEdExit.HC`
+allocates its document in the parent, then calls real DocEd in a spawned child.
+A real tag callback calls Exit. Mask 63 requires callback entry, no worker
+return, unlocked parent-owned document, unchanged parent roles, continued
+DocPrint/DocSize use, and restored parent window ownership. The shared-original
+control fails with mask 27 in `build/i386-c4-doced-exit-state-before/result.json`,
+with unchanged inputs. Its stale lock/window owner are recorded before explicit
+test-only repair permits the control to finish. Earlier diagnostic fixtures
+used normal DocUnlock on a dead task's lock or assumed plain DocPrint returned
+an entry; those observations are not this final oracle's acceptance evidence.
+
+Console 95 cross-builds and passes the limited 386 audit; all 1480 source/build
+hashes match. Original bootstrap and shared-original state/failure contracts
+pass. Native state, recovered-failure and callback-Exit suites pass in
+`build/i386-c2-doced-scopes-{state,failure,exit}` (39/27/27 commands), with
+unchanged inputs and exact persisted fixture bytes. Normal 8 MiB startup passes
+nine checks in 49.10 seconds in `build/i386-c2-doced-scopes-startup`.
+No full form-action or owner-retirement acceptance is claimed yet. Complete
+DocPutKey/DocChar/DocEntryRun semantics, visible/synchronized sessions, late
+failures and constructor failure still need integration and tests.
+
+## Final Console 95 qualification and WinMgr define dependency
+
+The zero-flag DOCF_FORM path uses ordinary SHOW and Refresh synchronization.
+Its first run exposes UndefDef from the actual border callback's ST_DOC_CMDS
+lookup in WinMgr. `build/i386-c2-doced-form-defines-red/result.json` rejects the
+background WINMGR window exception explicitly, with unchanged inputs. This
+failure was absent from the earlier DONT_SHOW/DONT_WINMGR_SYNC state checks.
+
+DocInitCore.HC now shares its complete standard-list loading in
+DocStdDefinesInit; DocInit still calls it before creating the global dictionary.
+Each independent WinMgr worker initializes these lists plus ST_COLORS in its
+own hash table. It does not call DocInit or replace doldoc.hash. This keeps
+standard border callbacks usable independently of the console task's private
+hash table and allows normal worker ownership/reclamation on restart.
+
+The final candidate is `build/i386-c2-doced-worker-defines-cross/kernel.img`:
+all 1480 source/build pins match and its limited 386 audit passes. Final native
+runs, all with unchanged inputs, are:
+
+- `build/i386-c2-doced-final-state`: 39 commands, six state masks 255 and exact
+  persisted shared fixture.
+- `build/i386-c2-doced-final-failure`: 27 commands, both recovered callback masks
+  31, exact caller heap and persisted fixture.
+- `build/i386-c2-doced-final-exit`: 27 commands, mask 63 for actual callback Exit,
+  parent-owned lock/window recovery and continued use, exact persisted fixture.
+- `build/i386-c2-doced-form-defines-green`: eight commands, zero-flag form Esc
+  with real Refresh, all four standard lists visible through WinMgr's hash,
+  no background window exception, then continued arithmetic.
+- `build/i386-c2-doced-final-startup`: nine normal 8 MiB checks in 49.55 seconds,
+  manager enabled and build providers unloaded.
+
+The final original two-generation bootstrap passes; state and real chooser
+controls remain six masks of 255 and [11,12,22,-1,17,1] in
+`build/i386-c4-doced-defines-{state,chooser}` with unchanged inputs. Native form
+runs use the explicit 64 MiB profile; minimal startup remains at 8 MiB.
+
+This does not qualify full field editing, DocEntryRun/DocMenu actions, public
+View, ordinary non-form original editor parity, independent owner retirement,
+recovered cancellation, late scan/input/constructor failures or interruption of
+restoration itself. In particular closing scopes when restoration throws does
+not by itself prove all temporary allocations have finished cleanup. Add exact
+resource gates for those paths and for committed-exit border borrowers; do not
+infer complete teardown heap recovery from TaskValidate becoming false.

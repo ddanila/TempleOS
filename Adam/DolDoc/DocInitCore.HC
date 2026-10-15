@@ -27,7 +27,7 @@ CHashTable *DocDictionaryNew()
   return table;
 }
 
-U0 DocInit()
+U0 DocStdDefinesInit()
 {//$LK-UL,"CMD Defines",A="MN:DOCT_TEXT"$
 
   DefineLstLoad("ST_DOC_CMDS",
@@ -42,6 +42,12 @@ U0 DocInit()
 	"TRM\0Z\0H\0TR\0LS\0SK\0PU\0SIF\0FS\0NC\0DD\0DL\0DRT\0");
   DefineLstLoad("ST_LINK_TYPES",
 	"FI\0FA\0FF\0FL\0MN\0PI\0PF\0PL\0BF\0DN\0HI\0AD\0AI\0AA\0AF\0AL\0");
+
+}
+
+U0 DocInit()
+{
+  DocStdDefinesInit;
 
   doldoc.hash=DocDictionaryNew;
 

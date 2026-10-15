@@ -1306,6 +1306,7 @@ U0 NativeDocEditConsoleRestore()
   ConsolePresent;
 }
 extern Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor);
+extern Bool NativeOriginalDocEd(CDoc *doc,I64 flags=0);
 public Bool DocEd(CDoc *doc,I64 flags=0)
 {//Native keyboard/VGA session over the canonical document model. Escape exits.
   CI386KeyEvent event,queued_key;
@@ -1323,7 +1324,8 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
       mouse_hit_y,mouse_hold_due=0,mouse_now,mouse_old_endpoint;
   Bool done=FALSE,changed,redraw,dirty=FALSE,yield_frame,result=TRUE,replacing=FALSE,mouse_dragging=FALSE;
   I64 save_status=0;
-  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL || flags) return FALSE;
+  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return FALSE;
+  if(flags || doc->flags&DOCF_FORM)return NativeOriginalDocEd(doc,flags);
   find[0]=0; replace[0]=0;
   MemSet(undo_bodies,0,sizeof(undo_bodies));
   MemSet(undo_sizes,0,sizeof(undo_sizes));

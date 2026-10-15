@@ -11,6 +11,63 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native DocEd state, callback recovery and cross-task Exit pass (2026-10-15)
+
+Console 95 now routes flagged and DOCF_FORM sessions through the complete
+original View/DocEd core with native document leases and separate committed
+teardown. On the final build/i386-c2-doced-worker-defines-cross image, native
+state/failure/Exit suites pass 39/27/27 commands with unchanged inputs and exact
+fixture bytes in build/i386-c2-doced-final-{state,failure,exit}. Callback Exit
+releases a parent-owned document's lock and restores its prior window owner;
+the failing shared-original control is mask 27 versus required 63.
+
+The synchronized zero-flag form check exposed a real WinMgr UndefDef when its
+border callback queried ST_DOC_CMDS. The strict test fails on that background
+exception in build/i386-c2-doced-form-defines-red. DocStdDefinesInit now shares
+all original standard lists, and WinMgr initializes them plus ST_COLORS in its
+own hash table without resetting the global DolDoc dictionary. The final eight
+form-dispatch/worker-definition commands pass with no background window fault
+in build/i386-c2-doced-form-defines-green. This is queued Esc with real Refresh
+synchronization, not full field/action or visual qualification.
+
+Final original bootstrap, state and real-chooser controls pass. Cross-build and
+limited 386 audit pass; all 1480 source/build hashes match. Normal 8 MiB startup
+passes nine checks in 49.55 seconds (build/i386-c2-doced-final-startup). Console
+exports remain 231, private services 48 bytes, public layouts and Memory 25
+unchanged. Ordinary non-form editing still uses the retained native editor.
+
+Next qualify independent document-owner retirement, recovered cancellation and
+failures during restoration itself, late input/scan and constructor failures;
+then complete original key/action/menu bodies and actual popup presentation.
+Public View, ordinary original editor parity, GetStr and application workflows
+remain open. Full heap accounting for committed teardown and concurrent border
+borrowers still need explicit gates. C1–C5 remain incomplete.
+
+### Native DocEd scope/dispatch candidate (Console 95, 2026-10-15)
+
+Flagged and DOCF_FORM calls now enter the complete shared original core. Native
+scopes lease the edited and saved role documents; ordinary/recovered restoration
+keeps leases until completion and closes them even if restoration throws.
+Committed Exit uses a non-yielding ownership-aware unlock, restores role/title
+state and prior document window ownership, and leaves the task-owned temporary
+border to heap reclamation after render borrowers drain. It does not call
+DocDel or user window callbacks during stack cleanup. Ordinary non-form editing
+retains its existing path.
+
+A real spawned-child callback Exit on a parent-owned document has a failing
+shared-original control, mask 27 instead of 63, with unchanged inputs in
+build/i386-c4-doced-exit-state-before. It exposes the stale lock and child window
+owner; test-only cleanup follows observation. Native state/failure/Exit suites
+pass in build/i386-c2-doced-scopes-{state,failure,exit}, with unchanged inputs
+and exact persisted fixtures (39/27/27 commands). The original
+bootstrap and reference state/failure controls pass; cross-build and limited
+386 audit pass with 1480 matching source/build hashes. Normal 8 MiB startup
+passes nine checks in 49.10 seconds (build/i386-c2-doced-scopes-startup).
+
+The zero-flag form-dispatch check is running separately. Full form actions,
+physical/visible input, owner retirement and late/constructor failures are open;
+C1–C5 remain incomplete. See [native DocEd lifetime contracts](docs/i386-menu-integration.md).
+
 ### Complete original DocEd body compiles in native Console 94 (2026-10-15)
 
 The native console compiles the shared complete core under internal

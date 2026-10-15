@@ -103,6 +103,8 @@ U0 NativeWindowWorker(U8 *data)
   I64 ch,number;
   Bool completed,pump;
   SetRFlags(GetRFlags|0x200);
+  DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
+  DocStdDefinesInit;
   while(TRUE) {
     Fs->task_end_cb=&NativeWindowCancel;
     native_window_fault_task=0;pump=FALSE;
