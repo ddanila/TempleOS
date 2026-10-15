@@ -23,7 +23,7 @@ Bool NativeWindowNeeded(Bool coverage=FALSE)
     }
     task=task->next_task;
   } while(task!=sys_winmgr_task);
-  return FALSE;
+  return NativeGraphicsPersistentVisible;
 }
 Bool NativeWindowOwnsView()
 {

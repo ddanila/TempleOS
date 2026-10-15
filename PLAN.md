@@ -11,6 +11,33 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Persistent graphics joins ordinary document composition (2026-10-15)
+
+Console 89 admits the original manager compositor when the persistent bitmap
+contains a nontransparent pixel, including direct public `gr.dc->body` writes.
+Terminals whose default document participates in a manager update stay on document
+presentation, so removing the final hook or last pixel cannot revive a stale
+retained surface. Existing raw/private-view arbitration and manager-frame leases
+remain in place; complete mode/cursor/input/event compatibility is still open.
+
+A pinned-original eight-value pixel/text-cell oracle passes. Console 88 fails
+the corresponding first native observation. Console 89 passes all twelve native
+commands and exact frames: persistent pixel, final-hook overlay, hook removal,
+transparent clear, restored heading and continued `6*7` input. Inputs are
+unchanged. Original bootstrap, cross-build and limited 386 boot audit pass;
+all 1473 source/build hashes match. Normal 8 MiB startup passes in 49.40 seconds
+with WinMgr enabled and no build-provider loads. All fourteen held-frame /
+manager-death/restart commands also pass with unchanged inputs. See
+[persistent composition evidence](docs/i386-persistent-composition.md).
+
+The earlier ownership candidate passes 214 unpaused editor/help/navigation
+commands. Separate palette-fixed Console-88 and Console-89 regressions are still
+running; they are not qualified by that older pass. A fresh unchanged TimeClock
+load check confirms source packaging but still rejects GetStr at PunchOut line
+127 (`Invalid lval`); GetStr remains absent from native public declarations.
+Keep its original input contract as the next application dependency, rather than
+changing the bundled source. C1–C5 remain incomplete.
+
 ### Terminal return and original prompt colors repaired (2026-10-15)
 
 The Console-88 candidate now initializes each terminal task's text palette from

@@ -2433,6 +2433,24 @@
           "result": "fail",
           "evidence": "build/i386-c4-window-ring-anchor-red/result.json",
           "scope": "Early numeric prototype passes reorder but returns 61 for parent-cover case with graphics-owner visibility anchor; later cases unexecuted; current source uses sys_winmgr_task consistently"
+        },
+        {
+          "command": "python3 tools/test-i386-persistent-window-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-persistent-window-reference/result.json",
+          "scope": "Original plain default put/display document plus persistent direct-body pixel, final-hook overlay/removal and transparent clear: eight pixel/text-cell values; full screen/desktop and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-persistent-window.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-persistent-window-red/result.json",
+          "scope": "Console-88 rejects first ordinary plain-document/persistent-pixel visual observation after PG A; subsequent overlay/clear/input phases unexecuted, pinned inputs unchanged; preserved failing baseline"
+        },
+        {
+          "command": "python3 tools/test-i386-persistent-window.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-persistent-window-green/result.json",
+          "scope": "Console-89 twelve-command normal-manager session: plain default put/display doc, direct persistent body write, final-hook overlay/removal, transparent clear, exact full frames and continued input; unchanged pins; complete desktop/raw/cursor and whole-file qualification remain open"
         }
       ]
     },
@@ -3742,6 +3760,24 @@
           "result": "pass",
           "evidence": "build/i386-c2-native-refresh-frame-final/result.json",
           "scope": "14 commands: actual held manager frame blocks zero-count waiter; normal release and actual manager death/restart unblock with released in-progress state, exact heap and rendering reuse; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-persistent-window-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-persistent-window-reference/result.json",
+          "scope": "Original plain default put/display document plus persistent direct-body pixel, final-hook overlay/removal and transparent clear: eight pixel/text-cell values; full screen/desktop and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-persistent-window.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-persistent-window-red/result.json",
+          "scope": "Console-88 rejects first ordinary plain-document/persistent-pixel visual observation after PG A; subsequent overlay/clear/input phases unexecuted, pinned inputs unchanged; preserved failing baseline"
+        },
+        {
+          "command": "python3 tools/test-i386-persistent-window.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-persistent-window-green/result.json",
+          "scope": "Console-89 twelve-command normal-manager session: plain default put/display doc, direct persistent body write, final-hook overlay/removal, transparent clear, exact full frames and continued input; unchanged pins; complete desktop/raw/cursor and whole-file qualification remain open"
         }
       ]
     },

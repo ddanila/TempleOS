@@ -33,6 +33,14 @@ Bool NativeGraphicsReady()
     gr.dc==graphics_persistent && gr.dc2==graphics_frame && gr.text_base==i386_text_base &&
     gr.win_z_buf==graphics_zbuffer && gr.win_uncovered_bitmap==graphics_uncovered;
 }
+Bool NativeGraphicsPersistentVisible()
+{//Direct public bitmap writes need admission even without a drawing API call.
+  U32 *pixel,*end;
+  if(!NativeGraphicsReady)return FALSE;
+  pixel=gr.dc->body;end=pixel+640*480/4;
+  while(pixel<end)if(*pixel++!=0xFFFFFFFF)return TRUE;
+  return FALSE;
+}
 Bool NativeGraphicsTextLock(CNativeGraphicsScope *scope)
 {
   Bool result=FALSE;

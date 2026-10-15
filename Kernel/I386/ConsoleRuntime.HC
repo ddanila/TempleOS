@@ -60,6 +60,7 @@ extern CNativeLegacyViewScope *NativeLegacyViewOpen(Bool restore_docs=FALSE);
 extern U0 NativeLegacyViewClose(CNativeLegacyViewScope *scope);
 extern Bool NativeTerminalProjects(CDoc *doc,U8 *text=0,I64 sc=0);
 extern U0 NativeTerminalDiagnosticRecord(U8 *text);
+extern U0 NativeTerminalDocumentRendered(CTask *task);
 extern U0 NativeConsoleWrite(U8 *text);
 extern U0 NativeConsolePut(I64 ch);
 extern CDocEntry *NativeConsolePrompt();

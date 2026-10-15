@@ -44,6 +44,14 @@ Bool NativeTerminalDocumentView(CTask *task,CDoc *doc)
   if(NativeTerminalRichDocument(doc))terminal->document_view=TRUE;
   return terminal->document_view;
 }
+U0 NativeTerminalDocumentRendered(CTask *task)
+{//Once composed, the retained text projection may no longer match this view.
+  CNativeTerminal *terminal;
+  if(!TaskValidate(task) || task->win_inhibit&WIF_SELF_DOC)return;
+  terminal=NativeTerminalFind(task);
+  if(terminal && DocDisplay(task)==terminal->document &&
+      !(terminal->document->flags&DOCF_DONT_SHOW))terminal->document_view=TRUE;
+}
 Bool NativeTerminalProjects(CDoc *doc,U8 *text=NULL,I64 sc=0)
 {//Decide before an output callback can yield, replace or consume the document.
   CNativeTerminal *terminal=NativeTerminalFind(Fs);

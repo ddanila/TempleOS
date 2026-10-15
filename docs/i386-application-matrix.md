@@ -79,3 +79,15 @@ The public Now binding now passes its focused native test. Unchanged TimeClock
 source compilation advances to GetStr in PunchOut (TimeClk.HC line 127).
 GetStr and its original input/flag behavior are the next dependency to test and
 port; no full application pass is claimed.
+
+
+A fresh Console-88 check (2026-10-15) packages all three original TimeClock files
+unchanged and confirms native source availability. Loading is still rejected at
+`GetStr(,,GSF_WITH_NEW_LINE)` in PunchOut, TimeClk.HC line 127; the current
+compiler diagnostic is `Invalid lval`, and GetStr remains absent from the native
+public declarations. Evidence: `build/i386-c3-timeclock-console88-load/result.json`
+and its guest log, with unchanged checker/image inputs; additive packaging is in
+`build/i386-c3-timeclock-console88-package/result.json`. The rejection precedes
+the continuation arithmetic command and does not qualify Load/Install or any
+native application workflow. Preserve the unchanged source and implement the
+original GetStr contract rather than editing the app around this dependency.

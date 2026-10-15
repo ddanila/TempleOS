@@ -78,7 +78,9 @@ U0 NativeWindowListDraw(CDC *dc)
       {
         if(I386TaskSelf==native_window_worker)native_window_fault_task=task->task_num;
         GrUpdateTaskWin(task);
-        if(I386TaskSelf==native_window_worker)native_window_fault_task=0;
+        if(I386TaskSelf==native_window_worker) {
+          NativeTerminalDocumentRendered(task);native_window_fault_task=0;
+        }
       }
     }
     NativeWindowListRelease(&scope);
