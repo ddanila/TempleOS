@@ -43,6 +43,17 @@ write to a fresh `--output` path, review the differences, and preserve reviewed
 workflow/test fields when updating the checked-in inventory. `source_at_discovery`
 is an initial observation, not a live runtime status.
 
+## Reviewed service evidence (2026-10-15)
+
+The inventory now maps the bounded replacement/navigation/search tests to
+Adam/DolDoc/DocFind.HC and the twelve directory-context reference cases to
+Kernel/BlkDev/DskDirContext.HC. Each entry records its workflow, oracle, commands,
+evidence paths and limits. The native directory-context prerequisite is recorded
+as failed, before fixture execution. Both files remain unqualified: passing
+component cases does not establish all original workflows or whole-file parity.
+The exhaustive discovery check and its five regression guards pass; all 686
+items still have qualification gaps.
+
 ## C1 remaining work
 
 Review launch candidates and group helper files/assets under their consuming

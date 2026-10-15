@@ -37,6 +37,15 @@ body for its import and pins that file. Thus the presence of that definition
 alone is insufficient to reproduce the fault. This remains compilation-only
 evidence; the full Console failure and its root cause are still open.
 
+The combined `--task-validator-body --helper-bodies` variant also passes in
+build/i386-c5-mouse-compile-helper-bodies with unchanged inputs. Besides the task
+validator, it includes complete canonical NativeTerminalFind,
+NativeMouseBackingMatches and NativeDisplayViewMatches bodies, with their real
+global types and remaining helper import signatures. DisplayView.HC is pinned.
+These additional definitions are still insufficient to reproduce the fault in
+isolation. Graphics locking and row presentation remain imports, and the full
+preceding Console compile state is absent. No runtime mouse pass is claimed.
+
 ## Live replay
 
 A new Console-only diagnostic replay is live in

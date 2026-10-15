@@ -1012,9 +1012,31 @@
       ],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Construct real documents; exercise replacement and line navigation, including locked and null documents; compare text, counts, cursor state, roles and heap against the original. Exercise search, pairing and selection separately.",
+      "oracle": "docs/i386-editor-replace.md and docs/i386-editor-provider.md: fourteen replacement/navigation contracts and search suite; provider first-use, recovery and ownership are separate integration gates. Full interactive prompts, direct DocFind/DocAnchorFind workflows and whole-file compatibility remain open.",
+      "tests": [
+        {
+          "target": "original-replacement-navigation",
+          "command": "python3 tools/test-i386-editor-replace-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-editor-replace-navigation-reference/result.json",
+          "scope": "Fourteen bounded contracts with masks 63"
+        },
+        {
+          "target": "native-replacement-navigation",
+          "command": "python3 tools/test-i386-editor-replace.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-editor-replace-navigation-native/result.json",
+          "scope": "Nineteen commands including cold null calls and one first-use provider load; not full interactive editor compatibility"
+        },
+        {
+          "target": "native-search",
+          "command": "python3 tools/test-i386-editor-search.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-editor-replace-search/result.json",
+          "scope": "Bounded search/pairing/selection regression, not all original DocFind.HC workflows"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocForm.HC",
@@ -11854,9 +11876,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Create directory contexts from filename, trimmed/semicolon masks, directory and nested paths; observe returned fields and current drive/directory; delete with restore TRUE/FALSE, including failed traversal after a valid prefix.",
+      "oracle": "docs/i386-directory-context.md: twelve original-system cases require mask 63, public fields, caller document roles and exact caller heap; original RAM B: maps to native C:. Cross-drive/media, init-in-progress, allocation failure, cancellation and exception cases remain open.",
+      "tests": [
+        {
+          "target": "original-directory-context",
+          "command": "python3 tools/test-i386-directory-context-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-directory-context-partial-reference/result.json",
+          "scope": "Twelve bounded original behavior cases; not complete API qualification"
+        },
+        {
+          "target": "native-directory-context",
+          "command": "python3 tools/test-i386-directory-context.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-directory-context-partial-prerequisite-red/result.json",
+          "scope": "DirContextNew rejected in prerequisite declaration; setup and behavior cases not reached"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskDrv.HC",

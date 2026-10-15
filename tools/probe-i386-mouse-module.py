@@ -19,6 +19,7 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--task-validator-body',action='store_true',help='Use the complete canonical TaskValidate body rather than an import')
+    parser.add_argument('--helper-bodies',action='store_true',help='Use complete canonical terminal lookup, backing and display-view match bodies')
     args=parser.parse_args()
     source,out=args.disk.resolve(),args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
@@ -43,6 +44,19 @@ import Bool TaskValidate(CTask*task);
         task=ROOT/'Kernel/TaskValidate.HC'
         files.append(task)
         parts=[part.replace('import Bool TaskValidate(CTask*task);',task.read_text()) for part in parts]
+    if args.helper_bodies:
+        display=ROOT/'Kernel/I386/DisplayView.HC'
+        files.append(display)
+        replacements={
+            'import CNativeTerminal *NativeTerminalFind(CTask*task);':
+                'CNativeTerminal *native_terminal_head;\n'+extract(files[0],'CNativeTerminal *NativeTerminalFind(', '\n}\n'),
+            'import Bool NativeMouseBackingMatches(U8**planes,CNativeTerminal*terminal);':
+                'U8 *graphics_planes[4];\nimport Bool NativeGraphicsReady();\n'+extract(files[3],'Bool NativeMouseBackingMatches(', '\n}\n'),
+            'import Bool NativeDisplayViewMatches(U8**planes);':
+                'U8 *native_display_planes[4];\n'+extract(display,'Bool NativeDisplayViewMatches(', '\n}\n'),
+        }
+        for prototype,body in replacements.items():
+            parts=[part.replace(prototype,body) for part in parts]
     payload=''.join(parts).encode()
     (out/'Probe.HC').write_bytes(payload)
     working=out/'working.img'

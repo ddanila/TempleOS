@@ -11,6 +11,24 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Expanded compile isolation and C1 evidence mapping (2026-10-15)
+
+The mouse compile probe with complete original TaskValidate, NativeTerminalFind,
+NativeMouseBackingMatches and NativeDisplayViewMatches bodies passes at 16 MiB
+on 486,-fpu with unchanged inputs in
+build/i386-c5-mouse-compile-helper-bodies. These definitions alone still do not
+reproduce the full Console failure; remaining imports and preceding compiler
+state differ. The full diagnostic replay remains live, with runtime sources
+frozen. No compiler fix or mouse runtime qualification is claimed.
+
+C1's machine-readable inventory now maps existing replacement/navigation/search
+and directory-context contracts to their original source entries, including
+workflow, oracle, reproducible command, result and bounded scope. The native
+directory-context prerequisite failure is explicit. Both entries remain
+unqualified, and all 686 reference items still have qualification gaps. The
+exhaustive inventory check and all five regression guards pass. C1–C5 remain
+open; see [reviewed service evidence](docs/i386-desktop-compatibility.md).
+
 ### Task validator isolation checkpoint (2026-10-15)
 
 The exact mouse compile probe now supports `--task-validator-body`, using the
