@@ -25,4 +25,5 @@ public _extern _WIN_SCROLLS_INIT U0 WinScrollsInit(CTask *task);
 public _extern _DRAW_CTRLS U0 DrawCtrls(CTask *task);
 public _extern _GR_UPDATE_TASK_WIN U0 GrUpdateTaskWin(CTask *task);
 public _extern _SYS_TASK_BEING_SCRN_UPDATED CTask *sys_task_being_scrn_updated;
+public _extern _WINDOW_PRESENT Bool NativeWindowPresent(Bool blink=FALSE);
 #endif

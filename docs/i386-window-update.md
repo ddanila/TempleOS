@@ -92,3 +92,9 @@ returned 63 in its first case, but its oracle omitted the `0` and `0` printed by
 two top-level assignments. The verified session includes those outputs and
 passes every full-console observation. This was a fixture correction, not an OS
 failure or a relaxed rendering oracle.
+
+The subsequent [window-ring component](i386-window-traversal.md) invokes this
+body through a task-number snapshot and live lookup, with matching order and
+visibility anchors. It adds deleted/new target, callback reorder, parent-cover
+and two full-frame pixel observations. It is still an explicit frame component;
+normal-boot scheduling remains open.

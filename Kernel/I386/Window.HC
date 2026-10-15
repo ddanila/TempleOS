@@ -35,11 +35,11 @@ U16 *MemSetU16(U16 *dst,I64 value,I64 count)
 }
 #include "/Adam/Gr/GrWindowVisibility.HC"
 U0 WinZBufUpdate()
-{//The console presentation owner anchors the native public task ring.
+{//Window order and visibility use the same public window-manager anchor.
   //The single-CPU scheduler is cooperative; this retained path never yields.
   //Keyboard/timer IRQs may run without changing the public task ring.
-  if(!graphics_owner || !gr.win_z_buf) return;
-  WindowVisibilityCore(graphics_owner);
+  if(!graphics_owner || !gr.win_z_buf || !TaskValidate(sys_winmgr_task)) return;
+  WindowVisibilityCore(sys_winmgr_task);
   native_window_dirty=FALSE;
 }
 

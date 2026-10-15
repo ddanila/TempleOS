@@ -10,6 +10,38 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Numeric window traversal and consistent visibility anchor (2026-10-15)
+
+NativeWindowPresent now snapshots public task numbers, then rescans the live
+ring before each protected whole-window update. Deleted targets are skipped;
+new identities become eligible the following frame. Callback reordering cannot
+skip or duplicate a captured target. The temporary identity array participates
+in common native normal/exception/Exit cleanup.
+
+Visibility and traversal now share sys_winmgr_task with public window order.
+The console task is graphics_owner while the kernel memory root is the current
+window-manager proxy; treating graphics_owner as the ordering anchor
+could force the console behind windows even when raised. Console version 83
+exports the explicit ring presenter (225 symbols); memory/public layouts remain
+unchanged. See [traversal contract](docs/i386-window-traversal.md).
+
+The naive pointer control returns mask 61 on reordering. An early numeric
+prototype with the wrong visibility anchor returns 61 when the raised parent
+should cover its children; the fixture temporarily applies the original
+CHILDREN_NOT_ON_TOP policy for that case. The isolated visibility regression
+now isolates the actual sys_winmgr_task ring, keeping all six checks unchanged.
+All 36 ring commands, six mask-63 cases and both independent full-frame
+observations pass. The 48-command whole-window and 31-command worker-recovery
+regressions remain green. All 23 window/graphics/text-frame commands and pixel
+checks pass. Rebuild,
+cross-build and 386 boot audit pass; final 8 MiB startup takes 46.62 seconds
+without build-provider loading.
+
+This is an explicit presentation component. Protected derived-control updates,
+ODE/event work, original error reporting/isolation, scheduled cadence, actual
+window-manager rebinding, cursor/view policy and normal stdout/input remain
+integration work. The automatic native A/B gate and C1–C5 remain open.
+
 ### Shared whole-window rendering and control recovery (2026-10-15)
 
 The original window body is shared with the native renderer: border/text clearing,

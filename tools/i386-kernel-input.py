@@ -710,7 +710,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('#include "/Kernel/I386/WindowServiceCheck.HC"', [], 'window-service-source')
             submit('WindowServiceCheck;', ['14'], 'window-service-check')
             submit('#include "/Kernel/I386/WindowVisibilityCheck.HC"', [], 'window-visibility-source')
-            submit('WindowVisibilityCheck(Fs);', ['6'], 'window-visibility-check')
+            submit('WindowVisibilityCheck(sys_winmgr_task);', ['6'], 'window-visibility-check')
             submit('#include "/Kernel/I386/WindowTextCheck.HC"', [], 'window-text-source')
             submit('WindowTextCheck;', ['10'], 'window-text-check')
             submit('Fs->win_width==80 && Fs->win_height==60 && Fs->pix_width==640 && Fs->pix_height==480;', ['1'], 'console-viewport')

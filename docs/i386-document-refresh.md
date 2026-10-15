@@ -138,3 +138,9 @@ controls. Native scopes also restore aliases, expanded control geometry, outer
 scroll and the current-update context on forced Exit. Its shared control cleanup
 corrects a pinned-original callback-error defect. Scheduled traversal, original
 per-window error policy and automatic desktop integration remain open.
+
+The [numeric ring presenter](i386-window-traversal.md) now captures frame member
+identities and re-finds live targets after yielding callbacks. Its visibility
+anchor is sys_winmgr_task, matching window order rather than graphics-storage
+ownership. The explicit component has mutation/cleanup and split-frame pixel
+coverage; normal-boot scheduling and the automatic A/B gate remain open.

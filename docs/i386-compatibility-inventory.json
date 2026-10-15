@@ -2391,6 +2391,24 @@
           "result": "pass",
           "evidence": "build/i386-c4-window-update-original-refresh/result.json",
           "scope": "Rebuilt-original automatic A/B callback, cells and glyph pixels remain green after extracting shared window/control bodies; not native scheduled rendering or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-window-list.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-window-ring-final-green/result.json",
+          "scope": "36-command native explicit window-ring component using original per-window body: reorder, parent-cover policy, future target deletion/new identity deferral, caught fault, presenter Exit, exact parent heap, retry and two independent split-frame pixel checks; not scheduled GrUpdateTasks, ODE/event work or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-window-list.py BASE_IMAGE --naive-control --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-window-ring-naive-red/result.json",
+          "scope": "Deliberate guest next-pointer control skips B after A raises itself; first case returns 61 rather than 63, later cases unexecuted; not a claim that the committed OS implemented this traversal"
+        },
+        {
+          "command": "python3 tools/test-i386-window-list.py PROTOTYPE_IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-window-ring-anchor-red/result.json",
+          "scope": "Early numeric prototype passes reorder but returns 61 for parent-cover case with graphics-owner visibility anchor; later cases unexecuted; current source uses sys_winmgr_task consistently"
         }
       ]
     },
