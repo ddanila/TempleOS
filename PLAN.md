@@ -11,6 +11,30 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared Refresh exception cleanup and active-frame baseline (2026-10-15)
+
+The pinned original now has an actual held-frame synchronization oracle plus an
+interrupted-wait control. It returns [15,3]: zero-count Refresh blocks until the
+held final-screen callback completes, but aborting a two-frame waiter leaves its
+idle and full-refresh flags set. The new shared Refresh core returns [15,0],
+restoring those temporary flags before the caller catches the exception. Both
+systems retain the six ordinary-return mode masks [7,7,15,15,15,15]. All four
+reports retain unchanged pinned inputs; see
+[repair and evidence](docs/i386-refresh-contract.md#shared-cleanup-repair-and-active-frame-oracle).
+
+The original WinMgr uses the shared core; its complete compiler/kernel
+self-rebuild and reboot pass with matching source hashes. Native committed-Exit/document-owner
+scope hooks and public exports are the next integration work; the native visual
+Refresh gate remains red. Ordinary stdout/input view integration, manager-cycle
+accounting, pump/event semantics and complete desktop/app qualification remain
+open. This checkpoint does not close C1–C5.
+
+The older development flat-kernel run ends at its 2400-second command limit,
+without a terminal guest compiler/allocation rejection. A new run on the pinned
+Console-86 disk is active in `build/i386-c2-refresh-native-kernel`, using a
+10800-second per-command limit. It has not qualified a native generation and
+its source image predates this shared-core repair.
+
 ### Refresh API baseline and next integration contract (2026-10-15)
 
 The pinned-original Refresh baseline passes six cases: zero-count sync, pump-only

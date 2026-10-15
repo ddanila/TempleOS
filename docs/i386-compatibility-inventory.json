@@ -3682,6 +3682,18 @@
           "result": "fail",
           "evidence": "build/i386-c2-refresh-document-red/result.json",
           "scope": "Native Console 86 lacks public Refresh: ARView definition rejected before either A/B pixel/callback phase or final arithmetic command; no functional wait/frame qualification; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-lifetime-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-refresh-lifetime-reference-pinned/result.json",
+          "scope": "Pinned original actual final-screen frame sync and interrupted Refresh: masks [15,3], with expected idle/full-refresh state leakage; not native or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-lifetime-reference.py --cleanup-control --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-refresh-cleanup-final/result.json",
+          "scope": "Original with shared Refresh source cleanup overlay: active-frame sync retained and interrupted flags restored, masks [15,0]; ordinary six modes retained separately; not native or whole-file qualification"
         }
       ]
     },

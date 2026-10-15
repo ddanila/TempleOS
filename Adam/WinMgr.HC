@@ -2,36 +2,7 @@
 
 #help_index "Windows;Task/Delay"
 
-public U0 Refresh(I64 cnt=1,Bool force=FALSE)
-{//Wait for 30fps WinMgr to start & finish scrn refresh.
-  //0,FALSE Cnt Sync to WinMgr.
-  //0,TRUE  Pump Msgs.
-  //1 Cnt Wait and Pump Msgs.
-  //2 Cnt Make Sure to do a Full Refresh
-  //and Set Cur Pos.
-  Bool	old_full_refresh,
-	old_idle=LBts(&Fs->task_flags,TASKf_IDLE);
-  CDoc *old_doc=DocPut;
-  I64 update_cnt;
-  if (!cnt&&force)
-    LBts(&sys_semas[SEMA_JUST_PUMP_MSGS],0);
-  while (Bt(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0)) {
-    if (force && sys_winmgr_task)
-      sys_winmgr_task->wake_jiffy=cnts.jiffies;
-    Yield;
-  }
-  if (cnt>1 && old_doc)
-    old_full_refresh=LBts(&old_doc->flags,DOCf_DO_FULL_REFRESH);
-  update_cnt=winmgr.updates+cnt;
-  while (winmgr.updates<update_cnt) {
-    if (force && sys_winmgr_task)
-      sys_winmgr_task->wake_jiffy=cnts.jiffies;
-    Sleep(1);
-  }
-  if (old_doc)
-    LBEqu(&old_doc->flags,DOCf_DO_FULL_REFRESH,old_full_refresh);
-  LBEqu(&Fs->task_flags,TASKf_IDLE,old_idle);
-}
+#include "/Adam/RefreshCore.HC"
 
 #help_index "Windows"
 

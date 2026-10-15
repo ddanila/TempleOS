@@ -15,6 +15,8 @@ REFERENCE = runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--cleanup-control', action='store_true',
+                        help='Overlay current shared Refresh cleanup on the pinned original')
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists():
@@ -27,10 +29,18 @@ def main():
     inputs = [Path(__file__).resolve(), fixture/'Once.HC',
               ROOT/'tools/test-i386-timeclock-reference.py',
               ROOT/'tools/build-iso.py', ROOT/'tools/guest-run.py']
+    if args.cleanup_control:
+        inputs += [ROOT/'Adam/WinMgr.HC', ROOT/'Adam/RefreshCore.HC', ROOT/'Adam/WinMgrRefreshCore.HC']
+        for path in inputs[-3:]:
+            target = overlay/path.relative_to(ROOT)
+            target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes(path.read_bytes())
+            sources[str(path.relative_to(ROOT))] = sha(path)
     pins = {str(p):sha(p) for p in inputs}
     report = dict(result='running', reference_revision=REFERENCE['REFERENCE'],
                   repair_revision=REFERENCE['REPAIRS'], source_sha256=sources,
                   input_sha256=pins, expected=[7,7,15,15,15,15],
+                  system='shared-cleanup-control' if args.cleanup_control else 'pinned-original',
                   scope='Original Refresh: zero-count sync, pump-only request, one/two-frame waits, force wake from future deadline, idle and full-refresh state preservation on ordinary return; not interruption or whole-desktop qualification')
     try:
         iso = out/'original.iso'

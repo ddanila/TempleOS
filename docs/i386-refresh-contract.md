@@ -75,3 +75,59 @@ passing a Refresh test through it does not qualify original stdout/input/Adam
 roles or complete desktop composition. Mouse/control events, ODE work, cursor
 composition and the full bundled application inventory remain required C2/C3/C4
 work. Full native generations and release profiles remain C5 work.
+
+## Shared cleanup repair and active-frame oracle
+
+The final lifetime fixture holds the manager's final-screen callback while
+REFRESH_IN_PROGRESS is set. A second task calls Refresh(0,FALSE); it must remain
+idle and blocked until that actual frame is released, then return after the
+in-progress flag clears. Probe state is explicitly initialized. This uses the
+frame hook rather than assuming every document tag evaluation occurs in a
+screen refresh.
+
+The second case pauses WinMgr, starts an independent two-frame waiter using a
+parent-owned put document, and aborts it through a one-shot task-end callback
+that throws to its outer catch. The pinned original leaves TASKf_IDLE and
+DOCf_DO_FULL_REFRESH set. The shared repair restores both before the outer catch.
+
+`Adam/RefreshCore.HC` now holds the original wait/pump/force logic, with common
+idempotent restoration on ordinary return and exceptions. The original WinMgr
+includes this core. It restores the document flag only when Refresh changed it
+for a count greater than one; count 0/1 no longer uses an uninitialized saved
+flag. Native scope hooks are reserved for committed Exit and document/owner
+borrowing, but no native Refresh export or cadence integration is enabled yet.
+The ordinary transcript/editor and manager-cycle gaps remain open.
+
+| Artifact under build/ | System | Observations |
+| --- | --- | --- |
+| i386-c1-refresh-modes-pinned/result.json | Pinned original | [7,7,15,15,15,15], pass |
+| i386-c4-refresh-modes-control/result.json | Original with current shared cleanup overlay | Same six masks, pass |
+| i386-c1-refresh-lifetime-reference-pinned/result.json | Pinned original | [15,3], frame synchronization passes; interrupted flags leak as expected |
+| i386-c4-refresh-cleanup-final/result.json | Original with current shared cleanup overlay | [15,0], frame synchronization passes and interrupted flags restore |
+
+The full original compiler/kernel self-rebuild and reboot also pass in
+`build/rebuild-test/result.json`, with matching source hashes.
+
+All four reports retain unchanged inputs. Control overlays pin the three changed
+source inputs and record their actual hashes in the system-source map; they
+remain original-system controls, not native-port qualification.
+
+```
+python3 tools/test-i386-refresh-reference.py --out OUT
+python3 tools/test-i386-refresh-reference.py --cleanup-control --out OUT
+python3 tools/test-i386-refresh-lifetime-reference.py --out OUT
+python3 tools/test-i386-refresh-lifetime-reference.py --cleanup-control --out OUT
+```
+
+## Development native-build observation
+
+The earlier Console-84 development flat-kernel attempt in
+`build/i386-c2-managed-refresh-native-kernel-retry` terminates on the 2400-second
+command observation limit while still compiling the first kernel module. Its
+guest log contains continued module output, without a terminal allocation or
+compiler rejection. No installed boot or native generation is qualified by that
+attempt. A new attempt uses the pinned Console-86 cross-built source disk in
+`build/i386-c2-refresh-native-kernel` with a 10800-second per-command limit,
+16 MiB build RAM and 486,-fpu TCG. It is still a development flat-kernel build
+with cross-built retained modules, not full C5 qualification. Its guest source
+image predates the shared Refresh repair above.
