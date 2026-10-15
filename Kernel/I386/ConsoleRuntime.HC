@@ -46,6 +46,7 @@ extern U0 NativeTerminalConsoleHeading();
 extern U0 NativeUserTaskCont();
 extern U0 NativeSrvTaskCont();
 extern U0 NativeSrvCmdLine(I64 dummy=0);
+extern I64 NativePopUp(U8 *buf,CTask *parent=0,CTask **_pu_task=0);
 I64 (*native_servant_flush)(CTask *task);
 extern U0 NativeUserCmdLine(I64 dummy=0);
 extern CTask *NativeWinFocus(CTask *task=0);
@@ -272,7 +273,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[228];
+CI386KernelSymbol console_doc_exports[229];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -601,7 +602,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(225,"_WINMGR_START",(&NativeWinMgrStart+0)(U64));
   ConsoleDocExportSet(226,"_REFRESH",(&Refresh+0)(U64));
   ConsoleDocExportSet(227,"_WINMGR_STATE",(&winmgr+0)(U64));
-  for(i=0;i<228;i++) {
+  ConsoleDocExportSet(228,"_POP_UP",(&NativePopUp+0)(U64));
+  for(i=0;i<229;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -855,3 +857,5 @@ U0 I386DocBreakPoll()
 
 #include "/Kernel/I386/WindowManager.HC"
 #include "/Kernel/I386/RefreshScope.HC"
+
+#include "/Kernel/I386/PopupRuntime.HC"

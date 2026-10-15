@@ -12154,7 +12154,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-popup-execution-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-popup-execution-reference-fixed/result.json",
+          "scope": "Pinned-original PopUp sync42/negative/wide, async lifetime/output-pointer and caller-heap observations; not cancellation, chooser/default startup or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-execution-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-popup-execution-shared-reference-final/result.json",
+          "scope": "Same five popup result/lifecycle observations on rebuilt original using shared execution core; not complete original/native popup UI or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-popup-execution.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-popup-execution-green-routing/result.json",
+          "scope": "Console90 thirteen-command real servant/result/async/caller-heap contract with exact Root pixels and no null-document scalar leak; unchanged inputs; cancellation, full servant startup, menus and whole-file remain open"
+        }
+      ]
     },
     {
       "path": "Kernel/KCfg.HC",
@@ -13562,6 +13581,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-getkey-physical-rows/result.json",
           "scope": "Scheduled and IF-masked debugger physical key delivery and raw cursor frames; precise blink timing/all debugger combinations remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-getstr-console89-red/result.json",
+          "scope": "Current-interface GetStr helper rejects before thirteen scripted cases; missing API and full input/replay dependency path remain open; unchanged inputs, not thirteen observed failures"
         }
       ]
     },

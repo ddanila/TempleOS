@@ -11,6 +11,38 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Real popup execution dependency and scalar routing (2026-10-15)
+
+GetStr's full original path depends on selected-entry replay, which in turn
+requires real popup execution and menu/list selection. Console 90 now shares
+the original kernel PopUp execution body: actual SrvCmdLine tasks, TaskExe
+flags, JobResScan results, synchronous retirement and asynchronous handoff.
+Native common scopes track child identity and previous popup ownership. No
+menu/action branch has been replaced with a stub; those dependencies remain
+open before DocEntryRun/GetStr can be bound completely.
+
+The pinned original and rebuilt-original shared-core controls pass all five
+result/lifecycle observations. The native prior image rejects the missing API.
+The first built candidate exposes a child's scalar result leaking into Root;
+ConsoleAnswer now retains the job value but omits presentation without DocPut.
+The final 13-command popup test passes synchronous 42, negative/wide values,
+async retirement/output-pointer rules, repeated caller-heap recovery and exact
+Root pixels, with unchanged inputs. Console has 229 exports; public layouts,
+Memory 25 and the 48-byte private service table remain unchanged.
+
+Original bootstrap, cross-build and limited 386 boot audit pass; all 1475 source/
+build hashes match. Normal 8 MiB startup passes in 48.59 seconds without build
+providers. Actual self-queue jobs pass 21 commands at 8 MiB; spawned-worker jobs
+pass 24 at 64 MiB. The 8 MiB spawned-worker fixture hits an allocation failure
+before job results on both Console 89 and 90. Preserve that pre-existing gap
+and the default 8 MiB checker; the 64 MiB desktop profile is explicit.
+
+Both preceding images now pass all 214 unpaused editor/help/navigation commands.
+The popup candidate still needs cancellation/fault/previous-owner and full
+servant startup qualification. Next implement real popup menu/list selection and
+full entry-action semantics, then original GetStr and unchanged TimeClock.
+See [popup evidence and boundaries](docs/i386-popup-execution.md). C1–C5 remain open.
+
 ### Persistent graphics joins ordinary document composition (2026-10-15)
 
 Console 89 admits the original manager compositor when the persistent bitmap

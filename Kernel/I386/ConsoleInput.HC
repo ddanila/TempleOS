@@ -20,6 +20,8 @@ U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 {
   CConsoleExecutionResult *result=context;
   result->last_value=value;
+  //A document-less servant still returns its value, without writing into Root.
+  if(!DocPut)return;
   if(type->ptr_stars_cnt) {
     NativeConsoleWrite("0x"); ConsoleUnsigned(value(U32),16);
   } else if(type->raw_type==RT_F64) ConsoleFloat(value);

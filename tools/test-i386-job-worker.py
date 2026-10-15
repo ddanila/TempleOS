@@ -18,23 +18,24 @@ def main():
     parser.add_argument('disk', type=Path, nargs='?')
     parser.add_argument('--original', action='store_true')
     parser.add_argument('--execution', action='store_true', help='Actual TaskExe self-queue execution contract')
+    parser.add_argument('--ram-mib',type=int,choices=(8,64),default=8)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     if args.original == bool(args.disk):
         parser.error('Choose --original or a native disk')
-    fixture = FIXTURE
+    fixture = ROOT/'tests/guest/i386-job-results/Execution.HC' if args.execution else FIXTURE
     out = args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
     files = [Path(__file__).resolve(), fixture]
     if args.original:
-        files += [ROOT / p for p in ('Kernel/Job.HC', 'Kernel/JobInCore.HC', 'Kernel/Mem/MAllocFree.HC', 'tools/build-iso.py', 'tools/guest-run.py')]
+        files += [ROOT / p for p in ('Kernel/Job.HC', 'Kernel/PopUpCore.HC', 'Kernel/JobInCore.HC', 'Kernel/Mem/MAllocFree.HC', 'tools/build-iso.py', 'tools/guest-run.py')]
     else:
         files += [args.disk.resolve(), ROOT / 'tools/i386-kernel-input.py', ROOT / 'tools/build-i386-kernel.py']
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in files}
-    report = dict(result='running', input_sha256=pins, execution=args.execution, scope='Actual spawned worker runs ten wake-master TaskExe requests: dispatched/done flags, master resumed, result42 and empty rings, then retirement; no exact heap, cancellation, worker fault or popup UI coverage')
+    report = dict(result='running', input_sha256=pins, execution=args.execution, ram_mib=2048 if args.original else args.ram_mib, scope='Actual spawned worker runs ten wake-master TaskExe requests: dispatched/done flags, master resumed, result42 and empty rings, then retirement; no exact heap, cancellation, worker fault or popup UI coverage')
     if args.execution:
         report['scope'] = 'Actual TaskExe self-queue: copied writable source, metadata, pending scan, execution, result42 and empty rings across ten cycles; no heap, cross-task, servant or popup coverage'
     (out / 'result.json').write_text(json.dumps(report, indent=2)+'\n')
@@ -69,8 +70,8 @@ def main():
                 commands.append((command, []))
             commands += [(f'FileWrite("C:/DollarContract.HC",dp_source,{len(source)})>0;', ['1']),
                          ('Free(dp_source);', []), ('#include "C:/DollarContract.HC"', []),
-                         ('JRContract;', ['42']*10+['63']), ('6*7;', ['42'])]
-            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, startup_check={'status':'ok', 'answers':[], 'commands':commands})
+                         ('JRContract;', ['42']*10+['63'] if args.execution else ['63']), ('6*7;', ['42'])]
+            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, ram_mib=args.ram_mib, startup_check={'status':'ok', 'answers':[], 'commands':commands,'rejection_prefixes':('INPUT REJECT ',)})
         if not args.original:
             saved = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, {'/DollarContract.HC'}).get('/DollarContract.HC')
             report['guest_fixture_sha256'] = hashlib.sha256(saved).hexdigest() if saved is not None else None

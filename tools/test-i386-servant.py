@@ -65,7 +65,7 @@ def main():
                 commands.append((command, []))
             commands += [(f'FileWrite("C:/DollarContract.HC",dp_source,{len(source)})>0;', ['1']),
                          ('Free(dp_source);', []), ('#include "C:/DollarContract.HC"', []),
-                         ('JRContract;', ['42']*10+['63']), ('6*7;', ['42'])]
+                         ('JRContract;', ['63']), ('6*7;', ['42'])]
             report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, startup_check={'status':'ok', 'answers':[], 'commands':commands})
         if not args.original:
             saved = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, {'/DollarContract.HC'}).get('/DollarContract.HC')

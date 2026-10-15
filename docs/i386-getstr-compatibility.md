@@ -188,3 +188,15 @@ and prompt path, entry replay, filters, task exit and recovery still require
 integration. `build/i386-c2-getstr-byte-red/result.json` rejects the missing
 GetStr helper definition on the interface-74 candidate with unchanged input
 hashes. It does not exercise thirteen native input cases.
+
+
+## Execution dependency checkpoint (2026-10-15)
+
+A fresh Console-89 GetStr gate still rejects its helper definition before the
+thirteen input cases (`build/i386-c2-getstr-console89-red/result.json`, unchanged
+inputs). The implementation dependency audit requires the full DocEntryRun path,
+including real popup macros and list/menu selection. [Popup execution](i386-popup-execution.md)
+now has a passing shared original core and native ordinary execution gate.
+Popup chooser UI, full servant document startup and entry actions remain open;
+GetStr itself is not bound or qualified by this dependency pass. Preserve its
+original document/filter/Escape semantics rather than substituting a line buffer.

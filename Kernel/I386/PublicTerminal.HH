@@ -15,5 +15,6 @@ public _extern _JOB_DEL U0 JobDel(CJob *job);
 public _extern _TASK_EXE CJob *TaskExe(CTask *srv,CTask *master,U8 *data,I64 flags);
 public _extern _SRV_TASK_CONT U0 SrvTaskCont();
 public _extern _SRV_CMD_LINE U0 SrvCmdLine(I64 dummy=0);
+public _extern _POP_UP I64 PopUp(U8 *buf,CTask *parent=NULL,CTask **_pu_task=NULL);
 #define WIG_USER_TASK_DFT 0x1000
 #endif

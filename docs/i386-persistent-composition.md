@@ -95,3 +95,8 @@ held-frame and actual manager-death/restart commands, with unchanged inputs.
 This preserves scoped REFRESH_IN_PROGRESS release and completed-frame accounting
 through the new composition admission path. It does not replace the still-running
 full private-view regression.
+
+Both private-view runs above are now terminal pass: Console 88 (palette fixed)
+and Console 89 each pass all 214 commands with WinMgr enabled and unchanged
+source images. This supersedes their earlier active status; the new Console-90
+popup candidate has separate qualification.
