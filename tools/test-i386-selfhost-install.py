@@ -11,7 +11,7 @@ import shutil
 ROOT = Path(__file__).resolve().parent.parent
 FLAT = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
 RETAINED = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
-            'CompilerProbe', 'CompilerRuntime', 'BuildRuntime', 'DocDiagnosticRuntime')
+            'CompilerProbe', 'CompilerRuntime', 'BuildRuntime', 'DocDiagnosticRuntime', 'EditorRuntime')
 BOOT_AREA = 2048 * 512
 
 

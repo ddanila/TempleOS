@@ -70,6 +70,7 @@ extern U0 EdSelAll(CDoc *doc,Bool sel);
 extern Bool EdFindPaired(CDoc *doc,U8 plus,U8 minus,Bool fwd,Bool abort_on_dbl_colon=FALSE);
 extern Bool EdGoToFun(CDoc *doc,Bool fwd,Bool abort_on_dbl_colon);
 extern U0 EdSelFun(CDoc *doc,Bool abort_on_dbl_colon=FALSE);
+extern U0 NativeEditorSetup();
 extern I64 NativeTimeStamp();
 extern U0 NativeTimeStampInit();
 extern Bool DocCaptureUndo(CDoc *doc,Bool force=FALSE);
@@ -362,7 +363,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
-      !config->pit_ticks || !config->jiffies || !config->input_poll || !config->doc_diagnostic_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+      !config->pit_ticks || !config->jiffies || !config->input_poll || !config->doc_diagnostic_load || !config->editor_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
   provider=HashFind("_ADAM_TASK",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=3 || !provider->val) return FALSE;
   native_highlight_root=provider->val;
@@ -702,7 +703,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
     I386HeapFree(config->heap,display_planes);return FALSE;
   }
   console_planes=display_planes;
-  console_config=config; NativeTimeStampInit; dbg.fun_seg_cache=native_fun_seg_cache;
+  console_config=config; NativeEditorSetup; NativeTimeStampInit; dbg.fun_seg_cache=native_fun_seg_cache;
   MusicSettingsRst;
   winmgr.fps=WINMGR_FPS;
   winmgr.ideal_refresh_tS=tS;
@@ -994,6 +995,4 @@ import CCntsGlbls cnts;
 #include "/Adam/DolDoc/DocCollapseCore.HC"
 #include "/Adam/DolDoc/DocTransformCore.HC"
 
-#include "/Kernel/StringFindFlags.HH"
-#include "/Kernel/StrFindCore.HC"
-#include "/Adam/DolDoc/DocEditorSearchCore.HC"
+#include "/Kernel/I386/EditorDispatch.HC"

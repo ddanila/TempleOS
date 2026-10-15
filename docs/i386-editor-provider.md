@@ -4,8 +4,8 @@ The full desktop uses the planned 64 MiB profile, with 128 MiB for rebuilding.
 The existing minimal 8 MiB startup and 16 MiB rebuilding workloads remain gates.
 Complete original editor/tool behavior must not be cut down to meet those gates.
 Move optional editor services behind a real loading boundary before further
-large additions to mandatory Console. This is next implementation work, not an
-already implemented provider.
+large additions to mandatory Console. Console 110 now contains an implementation candidate. Its corrected bootstrap
+and cross-build pass; runtime acceptance remains pending.
 
 ## Measured starting point
 
@@ -74,3 +74,27 @@ diagnostic mode, a missing successful command and a changed input pin are all
 rejected. Evidence: `build/i386-provider-report-negative-controls.json`. The
 report validates the actual nine-command normal boot log and matching behavior
 metadata as well as file pins; it does not rely on a pass label alone.
+
+## Console 110 checkpoint
+
+`EditorRuntime.HH` defines private version-1 context and service tables.
+`EditorRuntime.HC` compiles the complete shared search/selection bodies without
+external module imports; context callbacks supply document operations.
+`EditorDispatch.HC` retains context, image and successful service bindings in
+Console and loads on first public call. Kernel loading validates the module and
+service addresses. No first caller namespace owns these bindings.
+
+The corrected build is `build/i386-c2-editor-provider-copy-cross` (569584 kernel
+bytes). An earlier first-use fault exposed a struct-value/address cast in the
+kernel copy loop; explicit pointer copying and destination validation replace
+it. This correction has build evidence only at this checkpoint.
+
+`tools/test-i386-editor-provider.py` checks packaging, exact delivered source,
+exports, search behavior and load count. The recovery driver adds wrong-target,
+wrong-version and unresolved-import mutations, repeated rejection, guest repair,
+retry and cached reuse. These new runtime gates have not yet passed on the
+corrected candidate. Normal startup/footprint, transform/undo regressions,
+child-first ownership, cancellation/reentrancy and native generations also
+remain pending. Historical Console 109 measurements above are not measurements
+of Console 110. Full class forms and the remaining original input/editor
+services are still subsequent implementation work.

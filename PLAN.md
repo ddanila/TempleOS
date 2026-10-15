@@ -11,6 +11,32 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Optional editor provider: build checkpoint (Console 110, 2026-10-15)
+
+Search and selection now have an optional `EditorRuntime.t32m` candidate,
+using the complete shared original bodies behind unchanged public entry points.
+A private versioned context/service table supplies document operations and the
+canonical character bitmap. The kernel loads and validates the module, while
+Console retains its context, successful image and dispatch table. Packaging,
+retained-build/install and native-generation module lists include the provider.
+No public CDoc/CTask layout changes are intended.
+
+The original-system bootstrap and corrected cross-build pass. The latter is
+`build/i386-c2-editor-provider-copy-cross`, with a 569584-byte native kernel;
+the limited boot audit covers 96 BIOS and 255 protected-mode instructions.
+An earlier first-use run faulted because a local service-table struct was cast
+as an address during copying. The correction copies through an explicit pointer
+and validates the destination table before initialization. **Runtime acceptance
+of this corrected candidate is pending**; the build is not a first-use pass.
+
+New test drivers check packaged source/module exports, nineteen-command search
+behavior and one-time loading, plus malformed-module rejection, guest repair,
+retry and cached reuse. Their candidate runs, normal 8 MiB startup and measured
+2345304-byte Console budget, transformation/undo regressions, caller lifetime,
+cancellation/reentrancy and complete native-generation qualification remain to
+be completed. Console is now version 110; Memory remains 26. No C1–C5 milestone
+is closed by this checkpoint. See [provider acceptance sequence](docs/i386-editor-provider.md).
+
 ### Class-form oracle and measured editor-provider target (2026-10-15)
 
 Seven original DocForm cases now pass masks of 63 on two fresh runs in

@@ -817,6 +817,33 @@ diagnostic_load_done:
   I386IrqRestore(irq);return valid;
 }
 
+Bool KernelEditorLoad(CI386EditorServices *services,U8 **owned,I64 *image_bytes)
+{
+ CI386RedSeaEntry entry;CI386EditorServices candidate;U8*image=0,*candidate_data=&candidate;
+ I64 (*initialize)(CI386EditorServices *services,I64 bytes);I64 size,i;
+ Bool valid=FALSE;U32 irq=I386IrqSave;
+ if(!services||!owned||!image_bytes||*owned)goto editor_load_done;
+ if(I386RedSeaBegin(&kernel_volume)){
+  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/EditorRuntime.t32m",&entry)==1)
+   image=I386RedSeaLoadBound(&kernel_volume,&entry,&kernel_heap,"Main",0,0);
+  if(!I386RedSeaEnd(&kernel_volume)){kernel_volume.signature=0;if(image){I386HeapFree(&kernel_heap,image);image=0;}}
+ }
+ if(image){
+  size=I386HeapSize(&kernel_heap,image);*owned=image;*image_bytes=size;
+  for(i=0;i<sizeof(candidate);i++)candidate_data[i]=0;
+  initialize=image;
+  valid=(*initialize)(&candidate,sizeof(candidate))==1&&
+   KernelServiceCheck(image,size,&candidate,sizeof(candidate),I386_EDITOR_VERSION);
+  if(valid){
+   for(i=0;i<sizeof(candidate);i++)services(U8*)[i]=candidate_data[i];
+   valid=KernelServiceCheck(image,size,services,sizeof(candidate),I386_EDITOR_VERSION);
+  }
+  if(!valid){*owned=0;*image_bytes=0;I386HeapFree(&kernel_heap,image);}
+ }
+editor_load_done:
+ I386IrqRestore(irq);return valid;
+}
+
 U0 KernelConsoleLoad()
 {
   CI386ModuleBinding bindings[58];
@@ -870,6 +897,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.defer_root_headers=kernel_diagnostics;
   kernel_console_config.input_poll=&KernelInputPoll;
   kernel_console_config.doc_diagnostic_load=&KernelDocDiagnosticLoad;
+  kernel_console_config.editor_load=&KernelEditorLoad;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }
 
