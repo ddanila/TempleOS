@@ -367,3 +367,15 @@ retirement, live-parent preservation and a callback-selected live parent, now pa
 controls fail. See [masks, final-image regressions and remaining gates](i386-doced-owner-retirement.md).
 This does not close any C1–C5 milestone or the recovered-cancellation/restoration
 failure gates.
+
+## Explicit deletion and foreign-owner storage (Console 98)
+
+DocDel's active-editor tests exposed window-owner and allocation-owner wait
+cycles. Deletion no longer keeps the window task as a dependency. Foreign owner
+storage is retained through the existing task lifetime reference while logical
+owner retirement completes, then the full destructor frees entries/document and
+drops that reference. Caller-owned and editor-owned target suites pass, including
+cross-heap REMALLOC_DATA release and successful task reaping. The prior renderer
+retirement/self-delete suite also passes. See [deletion evidence and remaining
+caller-cancellation/descendant gates](i386-doced-deletion.md). These gates do not
+close C1–C5 or full form/action compatibility.

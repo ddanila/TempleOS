@@ -11,6 +11,38 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### DocDel drains active editors without retirement cycles (Console 98, 2026-10-15)
+
+Explicit deletion now has caller-owned edited/saved-display/original-parent cases
+and an editor-owned document case. Console 96 deadlocked because the deleter
+pinned the window task it was trying to retire. Removing that unused dependency
+fixes caller-owned targets; the foreign-owner case still deadlocks on Console 97.
+Console 98 instead retains foreign owner storage with the existing task lifetime
+reference, allowing logical owner exit while the full destructor runs. The
+reference is released after disposal; public layouts/services and Memory 25
+are unchanged.
+
+Caller-owned cases pass masks [63,63,63] in seven commands in
+build/i386-c2-docdel-retained-green, checking target-live end hooks, exact target
+allocation recovery and surviving document state. The editor-owned case passes
+mask 127 in five commands in build/i386-c2-owned-delete-retained. Its real entry
+owns a parent-heap REMALLOC_DATA buffer, which must be freed by the full
+destructor; the parent child-list head must return after task reaping, catching
+a leaked retention reference. Shared-original controls return [13,13,13] and
+[43], with unchanged inputs. See [deletion cycles, masks and evidence](docs/i386-doced-deletion.md).
+
+The final build/i386-c2-docdel-retained-cross image passes original bootstrap,
+cross-build and limited 386 audit; all 1480 source/build hashes match. Saved-role,
+state, callback-failure and synchronized form regressions pass, as does the
+existing 35-command renderer retirement/self-delete suite. Normal 8 MiB startup
+passes nine checks in 49.45 seconds. Test fixtures and base images remain pinned.
+
+Deleter cancellation/recovery, forced caller Exit with a retained child owner,
+reference release before descendant-reaping waits, constructor/admission/late
+failures and precise backing-memory budgets remain required gates. This does
+not qualify cyclic descendant retirement or complete form/menu/editor/app parity.
+C1–C5 remain incomplete.
+
 ### DocEd saved-role retirement repairs a dangling parent (Console 96, 2026-10-15)
 
 Saved put/display/border owner retirement now has six native cases, including

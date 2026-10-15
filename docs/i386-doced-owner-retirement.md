@@ -76,8 +76,8 @@ changed for this checkpoint.
 ## Remaining lifetime gates
 
 These cases qualify retirement of the edited document's memory owner at the two
-specified points. Saved-role retirement outside the View cases below, explicit DocDel of an active
-document, recovered cancellation with a live caller, restoration interrupted by
+specified points. Saved-role retirement outside the View cases below, recovered cancellation with
+a live caller, restoration interrupted by
 another exception, late input/data-scan failures, allocation failures and precise
 teardown heap accounting remain open. Retiring while manager frames borrow a
 temporary border also needs its own gate. TaskValidate becoming false is not
@@ -156,7 +156,12 @@ Their previous 39/27/27 commands become 10/6/5 without dropping behavioral cases
 The packaging preservation/rejection suite passes on the new image as well.
 
 This qualifies the specified saved-role and original-parent retirement cases
-while View is active. Explicit DocDel, constructor/admission failures, recovered
+while View is active. Explicit DocDel is now covered by the separate
+[deletion contracts](i386-doced-deletion.md). Constructor/admission failures, recovered
 cancellation, failures during restoration, late input/scan and precise teardown
 heap accounting remain open. It does not qualify arbitrary post-return document
 links or complete form/menu/editor/application compatibility.
+
+Explicit deletion through scoped View, including foreign allocation owners,
+now has the [Console 98 regression and storage-retention evidence](i386-doced-deletion.md).
+Deleter cancellation and cyclic descendant teardown remain unqualified.

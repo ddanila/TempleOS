@@ -133,3 +133,14 @@ scope before document selection and restores temporary border scroll on Exit.
 It also exercises recovery of a persistent managed render task through the
 existing one-shot end callback, rather than requiring a new task per frame.
 Scheduled integration remains open.
+
+## Console 98 deletion storage retention
+
+DocDel no longer pins the window task it must drain. Foreign allocation owners
+are held by the existing task-storage lifetime reference rather than a render
+owner dependency; they may finish logically while their heaps remain live for
+the full destructor. The reference is released after disposal. The original
+retiring-resource/self-delete guards and cleanup stack remain in use. Actual
+DocEd/renderer deletion and cross-heap-owned-data tests pass; see
+[deletion contracts](i386-doced-deletion.md). Caller cancellation and cyclic
+parent/descendant retirement are still separate unqualified gates.
