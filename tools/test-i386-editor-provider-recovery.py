@@ -49,7 +49,8 @@ def main():
              f'Bool ok=p&&n=={len(module)};if(ok){{p[{position}]=v;'
              'ok=FileWrite("C:'+PROVIDER+'",p,n)>0;}Free(p);return ok;}')
     commands = [
-        ('Cd("C:/Probe");U8*er_dir=FileNameAbs("EditorProbe.HC");CDoc*er_put=DocPut,*er_display=DocDisplay;I64 er_border=Fs->border_src;', []),
+        ('U8*er_dir;CDoc*er_put,*er_display;I64 er_border;', []),
+        ('Bool ERSetup(){Bool ok=Cd("C:/Probe");er_dir=FileNameAbs("EditorProbe.HC");er_put=DocPut;er_display=DocDisplay;er_border=Fs->border_src;return ok;}ERSetup;', ['1']),
         ('I64 ERReject(){I64 n=Fs->data_heap->used_u8s;Bool hit=FALSE;try{StrFind("cat","cat");}catch{if(Fs->except_ch==\'Editor\'){Fs->catch_except=TRUE;hit=TRUE;}}return hit&&Fs->data_heap->used_u8s==n;}', []),
         ('Bool ERDir(){U8*p=FileNameAbs("EditorProbe.HC");Bool ok=!StrCmp(p,er_dir);Free(p);return ok;}', []),
         (patch, []), ('Bool ERUse(){U8*s="xxcat";return StrFind("cat",s)==s+2;}', []),
@@ -58,7 +59,7 @@ def main():
         (f'ERPatch({module[position]});', ['1']), ('ERUse();', ['1']), ('ERUse();', ['1']),
         (f'ERPatch({bad});', ['1']), ('ERUse();', ['1']), (f'ERPatch({module[position]});', ['1']),
         ('ERDir();', ['1']), ('DocPut==er_put&&DocDisplay==er_display&&Fs->border_src==er_border;', ['1']),
-        ('Free(er_dir);Cd("C:/");', []), ('6*7;', ['42'])]
+        ('Bool ERClean(){Free(er_dir);return Cd("C:/");}ERClean;', ['1']), ('6*7;', ['42'])]
     if any(len(command)>255 for command, _ in commands): raise ValueError('Editor recovery command exceeds input limit')
     report = dict(result='running', fault=args.fault, mutation_offset=position, input_sha256=pins,
                   scope='Repeated rejection, guest repair/retry, cached reuse after on-disk corruption, exact restored module, caller heap/directory/document roles; not complete cancellation/lifetime qualification', commands=commands)

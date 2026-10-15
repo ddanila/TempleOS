@@ -11,6 +11,78 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Editor malformed-import and native-provider checkpoint (2026-10-15)
+
+Unresolved-import rejection/repair/retry also passes in
+`build/i386-c2-editor-provider-recovery-missing-import`; all three malformed
+module cases now have unchanged-input evidence. Forced cancellation and
+reentrant initialization remain unqualified.
+
+At 16 MiB on `486,-fpu`, the guest compiles and persists EditorRuntime; the
+export audit passes in `build/i386-c2-editor-provider-native-build`. Its 32428
+bytes differ from the 30875-byte cross-built module. The strict comparison
+failure is retained in `cross-comparison.json`; this is not native-generation
+reproducibility evidence. Native references resolve locally to module exports,
+so the provider check now validates that resolution rather than forbidding all
+reference records. External dependencies remain forbidden.
+
+The guest installs that native module byte-identically. All nineteen search/
+selection commands pass on the installed image in
+`build/i386-c2-editor-provider-native-first-use`, with exactly one load and
+unchanged inputs. However, the generic installation suite is **not a pass**:
+its independent 8 MiB reboot passes arithmetic, then DocAllocationCheck returns
+-1 when its optional 65067-byte diagnostic allocation fails (expected 13).
+Evidence: `build/i386-c2-editor-provider-native-install/boot/debug.log` and the
+captured diagnostic screen. The separately recorded normal-startup pass is unchanged.
+Retained-build audit exceptions now write terminal failure reports instead of
+leaving `running`; both failing strict comparison and passing export-only audit
+were checked. Full native generations, diagnostic resource behavior, complete
+forms/input and application compatibility remain open; C1–C5 are incomplete.
+
+### Editor recovery, caller retirement and regressions (2026-10-15)
+
+Wrong-version and wrong-target modules each pass repeated rejection, exact
+caller heap recovery, directory/document-role preservation, guest repair and
+retry, cached reuse while disk bytes are invalid again, and byte-identical
+final repair. Evidence: `build/i386-c2-editor-provider-recovery-version-v2` and
+`build/i386-c2-editor-provider-recovery-wrong-target`. The original recovery
+fixture stopped at a VGA setup mismatch before exercising rejection; checked
+setup/cleanup now replaces mixed declarations and expressions.
+
+`build/i386-c2-editor-provider-lifetime` passes nine commands: a child first
+loads the provider, two children exit naturally, the second restores the public
+task pool exactly, and the surviving parent reuses the same image. Exactly one
+provider load is observed. This is natural retirement evidence, not forced
+cancellation/reentrancy qualification.
+
+The fourteen-command transformation and ten-command undo regressions pass in
+`build/i386-c2-editor-provider-copy-transform` and
+`build/i386-c2-editor-provider-copy-undo`. All these test inputs remain unchanged.
+Unresolved-import rejection and native provider build qualification are next;
+complete forms/input/application workflows and C1–C5 remain open.
+
+### Optional editor first-use and minimal budget pass (2026-10-15)
+
+The corrected Console 110 candidate now passes the packaged-provider gate and
+all nineteen search/selection commands in
+`build/i386-c2-editor-provider-copy-first-use`. The real importless module,
+required exports and exact delivered source are checked. All sixteen behavior
+masks are 63; the log shows no load before actual search and exactly one load
+across first/repeated use. Test inputs and all 1499 build pins match.
+
+Normal 8 MiB startup passes nine commands in 54.05 seconds on `486,-fpu`, with
+the window manager active and no editor-provider load, in
+`build/i386-c2-editor-provider-copy-startup`. The qualified footprint report
+`build/i386-editor-provider-copy-budget.json` passes the 2345304-byte Console
+budget: retained span 2343392, margin 1912, down 18032 from Console 109 and up
+6280 from Console 108. Other measured core-provider spans are unchanged; this
+run records zero backing-allocation-failure observations. These are provider
+load spans, not peak RAM or a promise that all desktop work fits in 8 MiB.
+
+Failure/repair/retry qualification is next, followed by transform/undo
+regressions, child-first ownership, cancellation/reentrancy and native builds.
+Complete forms/input/application workflows and C1–C5 remain open.
+
 ### Optional editor provider: build checkpoint (Console 110, 2026-10-15)
 
 Search and selection now have an optional `EditorRuntime.t32m` candidate,

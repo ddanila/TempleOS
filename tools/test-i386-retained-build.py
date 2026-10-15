@@ -131,39 +131,45 @@ def main():
     if args.compare_installed:
         installed_paths = {f'/Modules/I386/{name}.t32m' for name in selected}
         comparison = files(args.compare_installed, installed_paths)
-    result = {'result': 'pass', 'source_disk_sha256': sha256(source),
+    result = {'result': 'running', 'source_disk_sha256': sha256(source),
               'module_order': list(selected),
               'modules': {}}
-    if not args.audit_only and (args.reference_exports/'BuildRuntime.t32m').is_file():
-        log = (out/'qemu/debug.log').read_text()
-        marker = 'BUILD PROVIDER loaded\n'
-        if log.count(marker) != 1 or log.find(marker) < log.find('READY native kernel'):
-            raise ValueError('Build provider must load once after startup and be reused')
-        result['build_provider_loads'] = 1
-    for name in selected:
-        path = f'/Probe/Retained{name}.t32m'
-        module = actual.get(path)
-        count, exports = exports_of(module)
-        host = (args.reference_exports / f'{name}.t32m').read_bytes()
-        _, host_exports = exports_of(host)
-        missing = set(host_exports) - set(exports)
-        extra = set(exports) - set(host_exports)
-        if name == 'CompilerRuntime':
-            missing -= {'_I386_DIV_BEGIN', '_I386_DIV_END'}
-        if missing or extra:
-            raise ValueError(f'{name} export set differs from cross-built module')
-        if name == 'ConsoleRuntime':
-            check_console_alloc_wrappers(module)
-        if comparison is not None and module != comparison.get(
-                f'/Modules/I386/{name}.t32m'):
-            raise ValueError(f'{name} differs from installed comparison module')
-        result['modules'][name] = {'bytes': len(module), 'records': count,
-                                   'exports': len(exports),
-                                   'sha256': hashlib.sha256(module).hexdigest(),
-                                   'reference_sha256': hashlib.sha256(host).hexdigest()}
-    if comparison is not None:
-        result['byte_identical_to_installed'] = str(args.compare_installed)
-        result['installed_disk_sha256'] = sha256(args.compare_installed)
+    try:
+        if not args.audit_only and (args.reference_exports/'BuildRuntime.t32m').is_file():
+            log = (out/'qemu/debug.log').read_text()
+            marker = 'BUILD PROVIDER loaded\n'
+            if log.count(marker) != 1 or log.find(marker) < log.find('READY native kernel'):
+                raise ValueError('Build provider must load once after startup and be reused')
+            result['build_provider_loads'] = 1
+        for name in selected:
+            path = f'/Probe/Retained{name}.t32m'
+            module = actual.get(path)
+            count, exports = exports_of(module)
+            host = (args.reference_exports / f'{name}.t32m').read_bytes()
+            _, host_exports = exports_of(host)
+            missing = set(host_exports) - set(exports)
+            extra = set(exports) - set(host_exports)
+            if name == 'CompilerRuntime':
+                missing -= {'_I386_DIV_BEGIN', '_I386_DIV_END'}
+            if missing or extra:
+                raise ValueError(f'{name} export set differs from cross-built module')
+            if name == 'ConsoleRuntime':
+                check_console_alloc_wrappers(module)
+            if comparison is not None and module != comparison.get(
+                    f'/Modules/I386/{name}.t32m'):
+                raise ValueError(f'{name} differs from installed comparison module')
+            result['modules'][name] = {'bytes': len(module), 'records': count,
+                                       'exports': len(exports),
+                                       'sha256': hashlib.sha256(module).hexdigest(),
+                                       'reference_sha256': hashlib.sha256(host).hexdigest()}
+        if comparison is not None:
+            result['byte_identical_to_installed'] = str(args.compare_installed)
+            result['installed_disk_sha256'] = sha256(args.compare_installed)
+    except Exception as error:
+        result.update(result='fail', error=str(error))
+        (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+        raise
+    result['result'] = 'pass'
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)
 

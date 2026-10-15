@@ -19,15 +19,17 @@ def sha(path):
 
 def layout(module):
     size, count, records = struct.unpack_from('<III', module, 16)
-    exports, imports = {}, set()
+    exports, imports = {}, []
     for index in range(count):
         kind, offset, name, length = struct.unpack_from('<4I', module, records+16*index)
         if kind in (1, 2, 3, 5):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
-            else: imports.add(symbol)
-    if imports:
-        raise ValueError('Editor provider must use its explicit persistent context')
+            else: imports.append((kind, symbol))
+    for kind, symbol in imports:
+        target = exports.get(symbol, (0,))[0]
+        if (kind == 2 and target != 1) or (kind == 5 and target not in (1, 3)):
+            raise ValueError('Editor provider has an external dependency: '+symbol)
     names = ('Main', 'EditorInit', 'StrFind', 'EdFindNext', 'EdSelAll', 'EdFindPaired', 'EdGoToFun', 'EdSelFun')
     for name in names:
         if exports.get(name, (0,))[0] != 1:
@@ -36,7 +38,8 @@ def layout(module):
         raise ValueError('Missing editor version')
     if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 1:
         raise ValueError('Wrong editor version')
-    return dict(image_bytes=size+8, required_entries=list(names), imports=[])
+    return dict(image_bytes=size+8, required_entries=list(names), external_imports=[],
+                locally_resolved_references=len(imports))
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)

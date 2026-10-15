@@ -5,7 +5,8 @@ The existing minimal 8 MiB startup and 16 MiB rebuilding workloads remain gates.
 Complete original editor/tool behavior must not be cut down to meet those gates.
 Move optional editor services behind a real loading boundary before further
 large additions to mandatory Console. Console 110 now contains an implementation candidate. Its corrected bootstrap
-and cross-build pass; runtime acceptance remains pending.
+and cross-build pass; first-use search and minimal startup now pass.
+Failure recovery and full lifecycle qualification remain open.
 
 ## Measured starting point
 
@@ -98,3 +99,73 @@ child-first ownership, cancellation/reentrancy and native generations also
 remain pending. Historical Console 109 measurements above are not measurements
 of Console 110. Full class forms and the remaining original input/editor
 services are still subsequent implementation work.
+
+## First runtime qualification
+
+The corrected candidate passes `build/i386-c2-editor-provider-copy-first-use`:
+real packaged module and exact delivered sources, required exports, sixteen
+masks of 63 over nineteen commands, no early load and exactly one successful
+load. All inputs remain unchanged. All 1499 cross-build pins also match.
+
+`build/i386-c2-editor-provider-copy-startup` passes nine normal 8 MiB commands in
+54.05 seconds on `486,-fpu`, with automatic window management active and zero
+editor loads. `build/i386-editor-provider-copy-budget.json` records a Console
+span of 2343392 bytes, 1912 below the budget and 18032 below Console 109. Other
+core spans are unchanged, with zero observed backing allocation failures.
+
+These results supersede the earlier pending first-use/startup status only.
+Malformed-module recovery, lifetime/cancellation, transform/undo regressions
+and native-generation acceptance are still separate gates.
+
+## Wrong-version recovery and child-first ownership
+
+`build/i386-c2-editor-provider-recovery-version-v2` passes two rejected load
+attempts with exact caller heap recovery, unchanged directory/document roles,
+guest repair and successful retry. One module load serves three successful
+calls, including a cached call while the on-disk module is corrupted again.
+The fixture repairs the provider byte-identically before finishing; inputs
+remain pinned. The first fixture run stalled on its setup VGA expectation,
+before rejection was exercised; explicit checked setup/cleanup replaces the
+mixed declaration/expression command. It is not a provider failure result.
+
+`build/i386-c2-editor-provider-lifetime` passes nine commands: first load from
+a child, two natural child exits, exact public pool recovery for the second
+child and a surviving parent call. Only one load is logged, and inputs remain
+unchanged. This qualifies natural caller retirement, not forced cancellation
+or reentrant initialization.
+
+Wrong-target recovery also passes in
+`build/i386-c2-editor-provider-recovery-wrong-target`, with the same two rejected
+attempts, three successful calls and exact final repair. Fourteen-command
+transform and ten-command undo regressions pass in
+`build/i386-c2-editor-provider-copy-transform` and
+`build/i386-c2-editor-provider-copy-undo`; inputs remain unchanged.
+
+## Native provider and remaining diagnostic resource failure
+
+Unresolved-import recovery passes in
+`build/i386-c2-editor-provider-recovery-missing-import`, completing the three
+malformed-module cases. All inputs remain unchanged.
+
+The guest-built provider in `build/i386-c2-editor-provider-native-build` passes
+the export audit at 16 MiB. The strict cross/native byte comparison fails
+(30875 versus 32428 bytes); its report is retained separately. Local function/
+data references in the native module resolve against its own exports. The
+provider verifier accepts those references and rejects external dependencies.
+The retained-build tool now records audit failures as terminal failures rather
+than leaving a stale running status.
+
+Guest installation preserves the native module bytes exactly. Its nineteen
+search/selection commands pass in
+`build/i386-c2-editor-provider-native-first-use`, with one load and unchanged
+inputs. This proves the installed optional module's bounded behavior, not a
+complete native generation or reproducibility.
+
+The generic install suite remains failed in
+`build/i386-c2-editor-provider-native-install`: independent 8 MiB reboot passes
+arithmetic, but DocAllocationCheck returns -1 when loading its optional
+65067-byte diagnostic module exhausts the heap. Its expected result was 13;
+the debug log and captured VGA checkpoint show the failure. Keep this resource
+case visible alongside the separate qualified normal-startup result. Forced
+cancellation/reentrancy, complete native generations and original forms/input
+remain open.
