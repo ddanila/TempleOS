@@ -11,6 +11,28 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Restoration-control exceptions match the original (2026-10-15)
+
+A new shared fixture attaches a real task window control and throws during
+DocEd's ordinary geometry restoration, after View completes. Both original and
+native return masks [127,255]: a horizontal callback exception skips subsequent
+vertical restoration; a vertical callback exception occurs after both coordinates
+have been assigned. The port preserves this original behavior. Both cases require
+the original exception, restored document roles/title/attribute, exact heap
+recovery, released document/task locks, preserved IRQ state and actual callback
+entry. Post-observation document deletion also checks that native leases closed.
+
+Original evidence is `build/i386-c4-doced-restore-reference/result.json`; native
+evidence is `build/i386-c2-doced-restore-compatible/result.json` on the qualified
+Console 99 / Memory 26 image. Both pass with unchanged inputs; native uses six
+commands, exact fixture readback and continued arithmetic. Runtime is unchanged.
+See [restoration contracts and boundaries](docs/i386-doced-restoration.md).
+
+This qualifies geometry-control exceptions during restoration, not all interrupted
+restoration. Recovered cancellation at the lock transition, border-destructor
+failure, constructor/admission and late input/scan failures remain open alongside
+full original form/menu/editor/application workflows. C1–C5 remain incomplete.
+
 ### Selective Exit preparation fixes retained-child retirement (2026-10-15)
 
 Console 99 / Memory 26 releases an abandoned DocDel foreign-owner storage
