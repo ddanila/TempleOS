@@ -342,3 +342,16 @@ restoration itself. In particular closing scopes when restoration throws does
 not by itself prove all temporary allocations have finished cleanup. Add exact
 resource gates for those paths and for committed-exit border borrowers; do not
 infer complete teardown heap recovery from TaskValidate becoming false.
+
+## Independent edited-document owner retirement qualifies
+
+The native edited-document lease now has actual sibling-owner retirement gates
+at initial tag-callback and View-waiting points. The shared-original controls
+return mask 11, while the unchanged Console 95 image passes masks 31 and 15.
+The View case hides both windows and waits for role binding after initial
+recalculation, so its safety does not depend on that callback's inner lease.
+An end hook in the callback case records the owner's live heap/document at
+editor retirement. See [contracts, fixture staging and remaining lifetime
+matrix](i386-doced-owner-retirement.md). This does not qualify saved-role
+retirement, recovered cancellation, explicit DocDel or complete teardown heap
+recovery, and does not close any C1–C5 milestone.

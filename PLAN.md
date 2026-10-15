@@ -11,6 +11,35 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Independent DocEd owner retirement passes (2026-10-15)
+
+Two sibling-task contracts now qualify retirement of the edited document's
+memory owner: during an actual tag callback and while original View awaits
+input after document/border binding. Both shared-original controls leave the
+editor alive, returning mask 11 instead of 31/15, with unchanged inputs in
+build/i386-c4-doced-owner-order-before and
+build/i386-c4-doced-view-owner-final-before. The callback case additionally
+observes a live owner and actual owner-heap document in the editor's end hook.
+
+Both native contracts pass on the unchanged Console 95 image, with parent role
+preservation, no normal editor return, exact fixture bytes and continued
+execution in build/i386-c2-doced-owner-packed and
+build/i386-c2-doced-view-owner-packed-final. The View case hides
+both siblings and leaves no live initial recalculation callback, exercising the
+outer DocEd lease rather than depending on a renderer lease.
+
+The runners now stage their shared fixtures using the existing additive native
+image packager, then use real guest #include. Five commands replace the earlier
+33/30-command uploads without dropping retirement checks. Base image and
+original tree/boot bytes are preserved, packaging tools are pinned, and the
+existing packaging regression passes. Runtime OS source is unchanged.
+
+Saved-role owner retirement, explicit document deletion, recovered cancellation,
+failures during restoration, late/constructor failures and precise teardown heap
+accounting remain open, along with full form/menu/editor/app qualification.
+See [owner-retirement evidence and limits](docs/i386-doced-owner-retirement.md).
+C1–C5 remain incomplete.
+
 ### Native DocEd state, callback recovery and cross-task Exit pass (2026-10-15)
 
 Console 95 now routes flagged and DOCF_FORM sessions through the complete
