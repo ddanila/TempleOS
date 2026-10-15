@@ -45,6 +45,11 @@ open. Passing an explicit presentation test does not supersede it.
    Yielding holders and competing managed graphics/text presenters now have a
    separate cancellation/interleaving gate in that lifecycle document. Continue
    with storage-owner termination and raw/editor display ownership.
+   A terminal document owner's Exit/external kill while a linked child yields
+   inside its owner-compiled tag now passes both lifecycle cases; see
+   [owner-exit coverage](i386-render-owner-exit.md). This does not establish
+   lifetime protection for an unrelated persistent worker or qualify a change
+   to the original callback execution context.
 2. **Worker/document lifetime and presentation ownership.** Use the native
    scheduler's established ownership model. Exit waits for linked children and
    inherited task/code/heap references defer retirement; reuse those guarantees

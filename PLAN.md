@@ -10,6 +10,26 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Linked document-owner exit qualifies (2026-10-15)
+
+A new seventeen-command native gate covers a User terminal whose linked child
+is presenting its document and yielding inside a dynamic tag compiled by that
+owner. Explicit owner Exit and external owner kill both return mask 63: actual
+callback entry, no return from the canceled frame, both tasks retired, exact
+parent heap and graphics/text presentation reuse. Image, harness and fixture
+hashes remain pinned in
+`build/i386-c4-render-owner-exit-lines/result.json`. The existing kernel passes;
+this adds missing lifecycle evidence without changing its behavior.
+
+See [owner-exit coverage](docs/i386-render-owner-exit.md). This qualifies linked
+owner/child retirement, not an unrelated persistent worker retaining arbitrary
+document/code pointers. Preserve original callback execution context when
+choosing the scheduled-worker lifetime design; do not substitute per-owner
+callbacks merely because this case is green. Shared graphics-storage owner
+termination, document replacement/deletion under an independent worker,
+raw/editor/focus ownership and the automatic A/B refresh gate remain open.
+C1–C5 remain incomplete.
+
 ### Cooperative graphics/text ownership checkpoint (2026-10-15)
 
 Managed graphics and text presenters now wait cooperatively when another task

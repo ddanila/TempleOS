@@ -1240,7 +1240,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-render-owner-exit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-owner-exit-lines/result.json",
+          "scope": "17-command native linked-lifecycle contract: User owns displayed document and compiled tag; owner Exit/external kill retires yielding child renderer before terminal document cleanup, exact parent heap and presentation reuse; not independent worker lifetime or whole-file qualification"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocPlain.HC",
@@ -1537,6 +1544,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-graphics-wait-green/result.json",
           "scope": "25-command managed graphics/text contention gate: yielding holder, interleaved document scopes, waiter cancellation, recursive refusal, holder kill, retained tags and exact parent recovery; not scheduled refresh, owner termination or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-render-owner-exit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-owner-exit-lines/result.json",
+          "scope": "17-command native linked-lifecycle contract: User owns displayed document and compiled tag; owner Exit/external kill retires yielding child renderer before terminal document cleanup, exact parent heap and presentation reuse; not independent worker lifetime or whole-file qualification"
         }
       ]
     },
@@ -2279,6 +2292,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-graphics-wait-green/result.json",
           "scope": "25-command managed graphics/text contention gate: yielding holder, interleaved document scopes, waiter cancellation, recursive refusal, holder kill, retained tags and exact parent recovery; not scheduled refresh, owner termination or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-render-owner-exit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-owner-exit-lines/result.json",
+          "scope": "17-command native linked-lifecycle contract: User owns displayed document and compiled tag; owner Exit/external kill retires yielding child renderer before terminal document cleanup, exact parent heap and presentation reuse; not independent worker lifetime or whole-file qualification"
         }
       ]
     },
