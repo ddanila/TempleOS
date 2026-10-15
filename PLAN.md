@@ -11,6 +11,44 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### DocRead uses the full loader with bounded binary preflight (Console 105, 2026-10-15)
+
+The native file adapter now calls complete original DocLoad instead of the
+record-subset loader. Requested flags survive loading, fixing plain-dollar
+handling; menu/link entries and named colors can be reopened through DocRead.
+Binary preflight requires every appended header and payload to fit the file
+before entering the trusting original loader. Cleanup clears consumed pointers.
+Native missing-file and truncated-record NULL results remain unchanged. Public
+layouts, exports (256), Memory 26 and private console services are unchanged.
+
+Ten paired valid-file cases pass masks of 63: text, menu values, named color,
+link, CRLF, plain-dollar/tab flags, cursor, binary record, empty file and a
+zero-length binary record. They check exact structure/text, flags/lock, filename
+and attributes, caller directory/role, unchanged file bytes and exact heap
+recovery. Native also passes three malformed-record masks of 7 (partial header,
+oversized payload, maximum U32 payload), missing-file rejection and continued
+execution in sixteen commands. Exact fixture readback and unchanged inputs pass.
+
+The original ISO control uses pinned preloaded input files, not writes to its
+read-only boot volume. Native writes equivalent known bytes on a disposable
+writable copy; setup respects FileWrite's block-count return and verifies exact
+FileRead size. The earlier native menu case fails mask 60. Current evidence:
+`build/i386-c4-doc-read-qualified-reference` and
+`build/i386-c2-doc-read-contract`.
+
+The original two-generation bootstrap and `build/i386-c2-doc-read-cross` pass,
+including the limited 386 audit; all 1487 source/build pins match. Current-image
+serializer (21 commands), loader (10), clipboard (14), keyboard-driven retained
+undo (4) and normal 8 MiB startup (9 checks in 57.60 seconds) pass under the
+`build/i386-c2-doc-read-` prefix.
+
+This is format-loader integration, not the complete original DocRead wrapper:
+default temporary filename, relative-path/directory-context and error/lifetime
+semantics still need qualification. The retained editor's internal restore path
+remains on its record loader. Original undo clock/capture and complete DocPutKey/
+chooser input remain open. See [reader contracts and boundaries](docs/i386-doc-read.md).
+C1–C5 remain incomplete.
+
 ### Full original serialization replaces the native subset (Console 104, 2026-10-15)
 
 Public DocSave now uses the complete unchanged original body, with complete

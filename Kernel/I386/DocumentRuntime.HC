@@ -567,6 +567,24 @@ public Bool EdDir(U8 *directory=NULL)
 {//Browse directories and edit a selected file; Escape returns to prompt.
   return NativeDirPicker(directory,NULL,FALSE);
 }
+extern U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
+Bool NativeDocReadRecordsValid(U8 *source,I64 size)
+{//The file provider supplies a trailing zero outside size. Bound binary records
+ //before the original loader, which intentionally trusts their lengths.
+  I64 index=0,header=offset(CDocBin.end)-offset(CDocBin.start),payload;
+  if(!source || size<0)return FALSE;
+  while(index<size && source[index])index++;
+  if(index==size)return TRUE;
+  index++;
+  while(index<size) {
+    if(size-index<header)return FALSE;
+    payload=*(source+index+offset(CDocBin.size)-offset(CDocBin.start))(U32 *);
+    index+=header;
+    if(payload>size-index)return FALSE;
+    index+=payload;
+  }
+  return TRUE;
+}
 public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
 {
   CDoc *doc=NULL;
@@ -577,14 +595,15 @@ public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
     doc=DocNew(name,Fs);
     doc->flags|=flags;
     buffer=(*console_config->files->read)(console_config->heap,name,&size,&attr,NULL);
-    if(!buffer || !NativeDocRecordLoadCore(doc,buffer,size)) {
+    if(!buffer || !NativeDocReadRecordsValid(buffer,size)) {
       if(buffer) I386HeapFree(console_config->heap,buffer);
-      DocDel(doc); return NULL;
+      buffer=NULL;DocDel(doc);doc=NULL;return NULL;
     }
-    doc->file_attr=attr; I386HeapFree(console_config->heap,buffer);
+    DocLoad(doc,buffer,size);
+    doc->file_attr=attr; I386HeapFree(console_config->heap,buffer);buffer=NULL;
   } catch {
     if(buffer) I386HeapFree(console_config->heap,buffer);
-    DocDel(doc);
+    buffer=NULL;DocDel(doc);doc=NULL;
   }
   return doc;
 }
