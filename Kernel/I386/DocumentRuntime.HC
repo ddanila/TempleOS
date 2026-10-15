@@ -27,6 +27,10 @@ Bool native_dir_mouse_visible,native_help_mouse_visible;
 extern U0 NativeKeyDevStart();
 extern U0 NativeDocMouseShow(U8 *planes,I64 x,I64 y);
 extern U0 NativeMousePlaneMove(U8 *planes,I64 old_x,I64 old_y,I64 x,I64 y);
+extern U0 NativeDocMouseShowSplit(U8 **planes,I64 x,I64 y);
+extern U0 NativeMousePlaneMoveSplit(U8 **planes,I64 old_x,I64 old_y,I64 x,I64 y);
+extern U0 NativeDocMouseMove(CDoc *doc,I64 old_x,I64 old_y,I64 x,I64 y);
+extern U0 NativeMousePlaneHide(U8 *planes,I64 x,I64 y);
 U0 NativeDocAllocArm(I64 fail_after)
 {
   native_doc_alloc_fail_after=fail_after; native_doc_alloc_count=0;
@@ -931,55 +935,6 @@ Bool NativeDocHasSprite(CDoc *doc)
   return FALSE;
 }
 #include "/Kernel/MousePlaneCore.HC"
-U0 NativeDocMouseShowSplit(U8 **planes,I64 x,I64 y)
-{//Upload transient XOR pixels, then restore all four clean backing planes.
-  I64 first=y,count=10;
-  if(!planes || y>=480 || y+10<=0) return;
-  if(first<0) { count+=first; first=0; }
-  if(first+count>480) count=480-first;
-  MousePlaneSplitXor(planes,x,y);
-  if(!I386VgaSplitRows(planes,first,count)) KernelStop;
-  MousePlaneSplitXor(planes,x,y);
-}
-U0 NativeDocMouseShow(U8 *planes,I64 x,I64 y)
-{
-  U8 *split[4];I64 p;
-  if(!planes) return;
-  for(p=0;p<4;p++) split[p]=planes+p*38400;
-  NativeDocMouseShowSplit(split,x,y);
-}
-U0 NativeMousePlaneMoveSplit(U8 **planes,I64 old_x,I64 old_y,I64 x,I64 y)
-{
-  I64 first=old_y,count=10;
-  if(first<0) { count+=first; first=0; }
-  if(first<480 && count>0) {
-    if(first+count>480) count=480-first;
-    if(!I386VgaSplitRows(planes,first,count)) KernelStop;
-  }
-  NativeDocMouseShowSplit(planes,x,y);
-}
-U0 NativeMousePlaneMove(U8 *planes,I64 old_x,I64 old_y,I64 x,I64 y)
-{
-  U8 *split[4];I64 p;
-  if(!planes) return;
-  for(p=0;p<4;p++) split[p]=planes+p*38400;
-  NativeMousePlaneMoveSplit(split,old_x,old_y,x,y);
-}
-U0 NativeDocMouseMove(CDoc *doc,I64 old_x,I64 old_y,I64 x,I64 y)
-{
-  U8 **planes=NativeGraphicsPlanes;
-  if(NativeDocHasSprite(doc) && planes)
-    NativeMousePlaneMoveSplit(planes,old_x,old_y,x,y);
-  else NativeMousePlaneMove(console_planes,old_x,old_y,x,y);
-}
-U0 NativeMousePlaneHide(U8 *planes,I64 x,I64 y)
-{//Restore the clean backing rows underneath a transient pointer overlay.
-  I64 first=y,count=10;
-  if(!planes || y>=480 || y+10<=0) return;
-  if(first<0) { count+=first; first=0; }
-  if(first+count>480) count=480-first;
-  if(count>0 && !I386VgaRows(planes,first,count)) KernelStop;
-}
 U0 NativeDocEditDraw(CDoc *doc,Bool blink_phase=FALSE,I64 save_status=0)
 {
   I64 mouse_x,mouse_y;

@@ -132,7 +132,10 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
       gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,gr.fp_final_scrn_update);
     GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
     result=I386VgaSplitRows(graphics_planes,0,480);
-    if(result) NativeWinRefreshCommit;
+    if(result) {
+      NativeDisplayViewCommit(graphics_planes);
+      NativeWinRefreshCommit;
+    }
 graphics_present_done:
     NativeGraphicsScopeReleaseLease(&scope);
   } catch {

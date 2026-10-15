@@ -916,7 +916,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-packed-sprite-editor.py IMAGE --mouse --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-mouse-present-final-sprite/result.json",
+          "scope": "Native editor adapter: saved/reopened original packed rectangle, pointer XOR over blue pixels and movement restoring clean inclusive edges, 12 commands and full VGA checks; not original whole-file or all editor gestures"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocExt.HC",
@@ -2304,6 +2311,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-raw-present-wait-final/result.json",
           "scope": "Native bulk console-upload adapter: 18 commands/four frame-holder and raw-waiter completion/cancellation cases, same-task deferral, exact parent heap and console pixels; not original whole-file, mouse/editor arbitration or scheduled refresh"
+        },
+        {
+          "command": "python3 tools/test-i386-mouse-present-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-mouse-present-wait-final/result.json",
+          "scope": "Native fullscreen upload/pointer adapter: 23 commands, real packet/lease contention, killed waiter, stale backing epoch and solid-blue VGA oracle, exact parent recovery and whole-console transitions; not original cursor composition, whole-file or full desktop qualification"
         }
       ]
     },

@@ -91,7 +91,9 @@ loads (`build/i386-c4-graphics-wait-startup/result.json`).
 ## Remaining qualification
 
 Bulk raw console/focus uploads now join the presentation lease and have separate
-[contention and stale-focus contracts](i386-raw-presentation.md). Mouse overlays,
+[contention and stale-focus contracts](i386-raw-presentation.md). Native mouse
+overlays now share that lease and validate the displayed backing; see
+[mouse presentation](i386-mouse-presentation.md). Original cursor composition,
 full editor/view ownership and debugger transitions during a held frame still
 need integration. Storage-owner termination, arbitrary callback-installed cleanup
 wrappers, all allocator/geometry failures and scheduled refresh remain open.

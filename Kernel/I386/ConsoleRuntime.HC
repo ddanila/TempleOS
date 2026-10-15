@@ -809,6 +809,7 @@ U0 I386DocBreakPoll()
 
 #include "/Kernel/I386/Terminals.HC"
 #include "/Kernel/I386/ConsolePresent.HC"
+#include "/Kernel/I386/MousePresent.HC"
 
 #include "/Kernel/I386/ServantRuntime.HC"
 

@@ -60,8 +60,11 @@ open. Passing an explicit presentation test does not supersede it.
    presentation failure path into KernelStop. Preserve terminal surfaces and
    focus. Bulk console/focus uploads now join the lease and revalidate terminal
    identity/focus after waiting; see [raw presentation](i386-raw-presentation.md).
-   Mouse overlays, full editor/view ownership and debugger transitions during
-   a held frame remain open. Validate the chosen lifecycle with end-to-end
+   Native mouse overlays also join the lease, reject stale backing images and
+   restore complete raw images on view changes; see
+   [mouse presentation](i386-mouse-presentation.md). Original cursor composition,
+   full editor/view ownership and debugger transitions during a held frame
+   remain open. Validate the chosen lifecycle with end-to-end
    termination/recovery tests before enabling the worker at normal boot.
 3. **Scheduled original window updates.** Integrate document, border, task
    drawing and controls with the refresh/compositor contract and measured

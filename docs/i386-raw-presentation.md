@@ -66,8 +66,9 @@ Bootstrap rebuilding, cross-build and 386 boot audit pass. Startup passes at
 
 ## Remaining display work
 
-Mouse-overlay helpers still upload directly. Debugger transitions during a held
-frame, full editor/mouse arbitration,
+Native mouse-overlay helpers now join the lease and revalidate their backing
+image epoch; see [mouse presentation](i386-mouse-presentation.md). Debugger
+transitions during a held frame, full editor/view arbitration,
 frame and raw-view selection for scheduled refresh, refresh-worker document/code
 lifetime, storage-owner termination and the automatic A/B refresh gate remain
 open. These tests qualify bulk terminal uploads and stale focus requests, not a

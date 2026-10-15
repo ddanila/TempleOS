@@ -64,13 +64,12 @@ def require_unlocked_image(path):
 
 
 def console_pixels(rows, foreground_cells=None, background_cells=None, underline_cells=None,
-                   pixel_colors=None, pointer=None):
+                   pixel_colors=None, pointer=None, canvas_color=15):
     #Read the original font, independently of the native framebuffer implementation.
     source=(ROOT/'Kernel/FontStd.HC').read_bytes()
     glyphs=[int(value,16) for value in re.findall(rb'0x[0-9A-Fa-f]{16}',source)]
     if len(glyphs)!=256: raise ValueError('Unexpected TempleOS font')
     font=b''.join(struct.pack('<Q',value) for value in glyphs)
-    pixels=bytearray(b'\xff'*(640*480*3))
     if len(rows)>60 or any(len(row)>80 for row in rows): raise ValueError('Invalid expected text grid')
     foreground_cells=foreground_cells or {}
     background_cells=background_cells or {}
@@ -83,10 +82,12 @@ def console_pixels(rows, foreground_cells=None, background_cells=None, underline
         blue=42 if color&1 else 0
         if color&8: red+=21; green+=21; blue+=21
         if color==6: green=21
-        #QEMU exposes the programmed six-bit VGA DAC channels as value<<2.
-        palette.append(bytes((255 if red==63 else red<<2,
-                              255 if green==63 else green<<2,
-                              255 if blue==63 else blue<<2)))
+        #Use the same six-bit DAC expansion as the independent frame oracle.
+        palette.append(bytes((value<<2)|((value&1)*3)
+                             for value in (red,green,blue)))
+    if not isinstance(canvas_color,int) or not 0<=canvas_color<16:
+        raise ValueError('Invalid expected canvas color')
+    pixels=bytearray(palette[canvas_color]*(640*480))
     for row,line in enumerate(rows):
         for column,ch in enumerate(line.encode('cp437')):
             foreground=palette[foreground_cells.get((row,column),0)]
@@ -260,8 +261,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                      'after_bytes':audio_wav.stat().st_size,
                                      'observation_seconds':time.monotonic()-started}
 
-            def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None):
-                expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer)
+            def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15):
+                expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
                 rejected=console_pixels(rejected_rows) if rejected_rows is not None else None
                 path=out/f'{name}.ppm'
                 def matches():
@@ -338,7 +339,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            colors=interaction.get('initial_colors'),
                            backgrounds=interaction.get('initial_backgrounds'),
                            underlines=interaction.get('initial_underlines'),
-                           pixels=interaction.get('initial_pixels'))
+                           pixels=interaction.get('initial_pixels'),
+                           canvas_color=interaction.get('initial_canvas_color',15))
                     interaction_marks={}
                     latency_started=None
                     latency_name=None
@@ -361,7 +363,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                             screen(action['expect_rows'],name+'-'+action.get('label','checkpoint'),timeout=timeout,
                                    colors=action.get('colors'),backgrounds=action.get('backgrounds'),
                                    underlines=action.get('underlines'),pixels=action.get('pixels'),
-                                   pointer=action.get('pointer'))
+                                   pointer=action.get('pointer'),
+                                   canvas_color=action.get('canvas_color',15))
                             if latency_started is not None:
                                 interaction_latencies[latency_name]=time.monotonic()-latency_started
                                 if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
@@ -431,7 +434,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            backgrounds=interaction.get('final_backgrounds'),
                            underlines=interaction.get('final_underlines'),
                            pixels=interaction.get('final_pixels'),
-                           pointer=interaction.get('final_pointer'))
+                           pointer=interaction.get('final_pointer'),
+                           canvas_color=interaction.get('final_canvas_color',15))
                     if latency_started is not None:
                         interaction_latencies[latency_name]=time.monotonic()-latency_started
                         if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
@@ -481,6 +485,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
                 screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,
+                       pointer=interaction.get('return_pointer') if interaction is not None else None,
                        rejection_message=rejection_message)
             if startup_check is not None:
                 for index,command_spec in enumerate(startup_check['commands']):

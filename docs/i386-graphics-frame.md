@@ -36,6 +36,13 @@ terminal identity and focus after waiting, so an older request cannot upload a
 retired or superseded terminal. See [raw presentation](i386-raw-presentation.md)
 for cancellation and stale-focus contracts and remaining mouse/editor work.
 
+Successful uploads now publish their backing-plane identity and an image epoch.
+Returning to a different raw terminal image forces a complete redraw, including
+ordinary console output after either frame helper. Native pointer operations
+share the lease and reject stale backing epochs; see
+[mouse presentation](i386-mouse-presentation.md). Frame layering and single
+document-callback evaluation retain their established order.
+
 The console task owns both persistent contexts for its lifetime. Repeated
 `NativeGraphicsStart` calls validate and reuse them. Initialization publishes
 neither context until both contexts and the conversion buffer are allocated. Shared `DCNew` and `DCAlias`

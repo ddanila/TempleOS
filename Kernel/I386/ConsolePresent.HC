@@ -1,10 +1,19 @@
 //Raw terminal uploads share the graphics lease, without retaining stale surfaces.
 U0 NativeConsolePresentRows(CI386Text *surface)
 {
-  I64 rows=I386TextPresent(surface),i;
+  I64 rows,i,p;
+  U8 *planes[4];
   U8 message[13],*prefix="VGA ROWS ";
+  if(!surface || !surface->planes)KernelStop;
+  for(p=0;p<4;p++)planes[p]=surface->planes+p*38400;
+  //Partial text rows cannot restore a different graphics/terminal image.
+  if(!NativeDisplayViewMatches(planes)) {
+    surface->dirty_first=0;surface->dirty_last=60;
+  }
+  rows=I386TextPresent(surface);
   if(rows<0) KernelStop;
   if(rows) {
+    NativeDisplayViewCommit(planes);
     NativeWinRefreshCommit;
     for(i=0;i<9;i++) message[i]=prefix[i];
     message[9]='0'+rows/10; message[10]='0'+rows%10;

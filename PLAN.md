@@ -10,6 +10,39 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native pointer leases and displayed backing qualify (2026-10-15)
+
+Native pointer show/move/hide operations now share one graphics lease. They
+capture and revalidate terminal identity, focus, backing planes and the displayed
+image epoch. Old-row restoration cannot paint a superseded terminal image over
+a newly completed frame. XOR backing is restored before release. Successful raw,
+graphics and text uploads publish the retained backing identity; returning to a
+different raw image redraws all sixty rows. Invalid graphics readiness no longer
+falls through to an unleased temporary text image after graphics startup.
+
+The old image paints a pointer through a yielding frame and fails the full VGA
+checkpoint (`build/i386-c4-mouse-present-wait-red-final/result.json`). All
+23 current-image commands pass: real packet observation, focus change, killed
+waiting terminal, solid-blue frame after release without a focus change, exact
+parent heap, invalid-context rejection and automatic console restoration after
+both frame APIs (`build/i386-c4-mouse-present-wait-final/result.json`). All three
+lifecycle cases return mask 127.
+
+The twelve-command packed-sprite mouse session passes colored XOR and clean
+rectangle restoration. Its new coverage exposed six incorrect RGB expectations
+in the console oracle; DAC expansion now agrees with the already-qualified
+all-color graphics-frame oracle. The input harness supports uniform canvases
+and root-pointer observations on return. All 46 legacy mouse commands, 16
+frame commands, 18 raw-contention commands and 21 stale-focus commands pass
+with their pixel checks. Bootstrap, cross-build and 386 boot audit pass; 8 MiB
+startup passes in 48.46 seconds with no build-provider loading. See
+[mouse/view evidence](docs/i386-mouse-presentation.md).
+
+This qualifies the existing native fullscreen helper boundary. Original cursor
+composition, full editor/view arbitration, held-frame debugger transitions,
+independent refresh-worker document/code lifetime, storage-owner termination
+and the automatic A/B refresh gate remain open. C1–C5 remain incomplete.
+
 ### Bulk terminal upload and stale-focus ownership pass (2026-10-15)
 
 Raw console, restoration and focus uploads now join the managed graphics lease

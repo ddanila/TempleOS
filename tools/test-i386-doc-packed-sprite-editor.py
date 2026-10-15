@@ -44,9 +44,26 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    parser.add_argument('--mouse',action='store_true',
+                        help='Check physical pointer XOR and clean sprite backing after movement')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
+    if args.mouse:
+        for index,spec in enumerate(commands):
+            if spec[0]=='DocEd(cp_doc);':
+                interaction=dict(spec[2])
+                interaction['events']=[
+                    {'mouse_to':[12,36]},
+                    {'expect_rows':EDITOR_ROWS,'pixels':SPRITE_PIXELS,
+                     'pointer':[12,36],'label':'pointer-over-packed-rectangle'},
+                    {'mouse_to':[100,60]},
+                    {'expect_rows':EDITOR_ROWS,'pixels':SPRITE_PIXELS,
+                     'pointer':[100,60],'label':'clean-rectangle-after-pointer-move'},
+                    {'mouse_to':[12,36]},
+                ]
+                interaction['final_pointer']=[12,36]
+                commands[index]=(spec[0],spec[1],interaction)
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -56,7 +73,10 @@ def main():
     working = out/'working.img'
     shutil.copyfile(source, working)
     report = dict(result='running', scope='Original packed 20-byte color/rectangle/end saved and reloaded, then full-frame editor pixels including inclusive rectangle edges; not arbitrary sprites, editing gestures or full desktop parity',
-                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib,
+                  mouse=args.mouse)
+    if args.mouse:
+        report['scope']+='; physical pointer over blue rectangle, movement restores clean backing'
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
