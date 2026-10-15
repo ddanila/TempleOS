@@ -75,4 +75,15 @@ public _extern _DOC_ENTRY_RUN I64 DocEntryRun(CDoc *doc,CDocEntry *entry,
 public _extern _DOC_MENU I64 DocMenu(CDoc *doc,I64 flags=0);
 public _extern _POP_UP_MENU I64 PopUpMenu(CDoc *doc,I64 flags=0);
 public _extern _POP_UP_PICK_LST I64 PopUpPickLst(U8 *list);
+public _extern _ED_CUR_U8 I64 EdCurU8(CDoc *doc);
+public _extern _ED_CURSOR_LEFT U0 EdCursorLeft(CDoc *doc,I64 sc=I64_MIN);
+public _extern _ED_CURSOR_RIGHT U0 EdCursorRight(CDoc *doc,I64 sc=I64_MIN);
+public _extern _ED_LINE_UP U0 EdLineUp(CDoc *doc,I64 sc=I64_MIN);
+public _extern _ED_LINE_DOWN U0 EdLineDown(CDoc *doc,I64 sc=I64_MIN);
+public _extern _ED_CHAR_DEL U0 EdCharDel(CDoc *doc);
+public _extern _ED_CHAR_INS U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
+public _extern _ED_LINE_DEL U0 EdLineDel(CDoc *doc);
+public _extern _DOC_TOP U0 DocTop(CDoc *doc=NULL);
+public _extern _DOC_CENTER U0 DocCenter(CDoc *doc=NULL,I64 recalc_flags=RECALCt_NORMAL);
+public _extern _DOC_BOTTOM U0 DocBottom(CDoc *doc=NULL);
 #endif

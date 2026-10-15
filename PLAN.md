@@ -11,6 +11,43 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original character/cursor primitives integrated (Console 101, 2026-10-15)
+
+The complete original DocChar.HC now compiles into Console: character/line
+insertion/deletion, left/right and vertical cursor movement, selection and
+form/hex/data-field branches are preserved. Eight new primitive exports and
+three previously internal original navigation services (DocTop/Center/Bottom)
+bring the console export count to 246. Public task/document layouts, Memory 26
+and the private console service table are unchanged. RoundI64 uses the existing
+public math provider through an explicit import/kernel binding. The common
+dollar-input core has an include guard so both input paths share one definition.
+
+Eleven paired contracts cover eight text/cursor operations and three form-entry
+handoffs. The latter exercise EdCharIns's Escape message followed by actual
+DocEntryRun dispatch for first left/right and second-entry selection. Required
+observations include exact first-line text/current character, selected form entry and
+messages, released locks, caller roles and exact heap recovery. Original masks
+are eight 31s followed by three 63s in
+`build/i386-c4-doc-char-navigation-reference`, with unchanged inputs.
+
+The original two-generation bootstrap and
+`build/i386-c2-doc-char-navigation-cross` cross-build pass; the limited 386 audit
+passes (96 BIOS / 255 protected instructions), with all 1482 source/build pins
+matching. Native primitives pass all eleven masks in fourteen commands with
+exact fixture readback and unchanged inputs. Direct actions (11 commands),
+restoration exceptions (6), retained-child Exit (5) and normal 8 MiB startup
+(9 checks, 52.97 seconds) pass. The 22-command typed-dollar input regression also passes with unchanged inputs.
+Native evidence uses the
+`build/i386-c2-doc-char-navigation-` prefix.
+
+This supplies dependencies for the full original DocPutKey, without redirecting
+native input to a reduced form handler. The retained basic DocPutKey and the
+failing full chooser gate remain in place. Undo, clipboard/selection, remaining
+editor services and full input/action/popup lifetime qualification are still
+required. Complete source presence does not qualify untested selection, hex/data
+or failure branches. See [contracts and boundaries](docs/i386-doc-char.md).
+C1–C5 remain incomplete.
+
 ### Complete original action/menu services integrated (Console 100, 2026-10-15)
 
 Console now compiles the complete original DocEntryRunCore and DocMenuCore,

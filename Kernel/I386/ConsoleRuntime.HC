@@ -52,6 +52,14 @@ extern I64 DocEntryRun(CDoc *doc,CDocEntry *entry,Bool exited,I64 *has_action=0)
 extern I64 DocMenu(CDoc *doc,I64 flags=0);
 extern I64 PopUpMenu(CDoc *doc,I64 flags=0);
 extern I64 PopUpPickLst(U8 *list);
+extern I64 EdCurU8(CDoc *doc);
+extern U0 EdCursorLeft(CDoc *doc,I64 sc=I64_MIN);
+extern U0 EdCursorRight(CDoc *doc,I64 sc=I64_MIN);
+extern U0 EdLineUp(CDoc *doc,I64 sc=I64_MIN);
+extern U0 EdLineDown(CDoc *doc,I64 sc=I64_MIN);
+extern U0 EdCharDel(CDoc *doc);
+extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
+extern U0 EdLineDel(CDoc *doc);
 I64 (*native_servant_flush)(CTask *task);
 extern U0 NativeUserCmdLine(I64 dummy=0);
 extern CTask *NativeWinFocus(CTask *task=0);
@@ -280,7 +288,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[235];
+CI386KernelSymbol console_doc_exports[246];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -619,7 +627,18 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(232,"_DOC_MENU",(&DocMenu+0)(U64));
   ConsoleDocExportSet(233,"_POP_UP_MENU",(&PopUpMenu+0)(U64));
   ConsoleDocExportSet(234,"_POP_UP_PICK_LST",(&PopUpPickLst+0)(U64));
-  for(i=0;i<235;i++) {
+  ConsoleDocExportSet(235,"_ED_CUR_U8",(&EdCurU8+0)(U64));
+  ConsoleDocExportSet(236,"_ED_CURSOR_LEFT",(&EdCursorLeft+0)(U64));
+  ConsoleDocExportSet(237,"_ED_CURSOR_RIGHT",(&EdCursorRight+0)(U64));
+  ConsoleDocExportSet(238,"_ED_LINE_UP",(&EdLineUp+0)(U64));
+  ConsoleDocExportSet(239,"_ED_LINE_DOWN",(&EdLineDown+0)(U64));
+  ConsoleDocExportSet(240,"_ED_CHAR_DEL",(&EdCharDel+0)(U64));
+  ConsoleDocExportSet(241,"_ED_CHAR_INS",(&EdCharIns+0)(U64));
+  ConsoleDocExportSet(242,"_ED_LINE_DEL",(&EdLineDel+0)(U64));
+  ConsoleDocExportSet(243,"_DOC_TOP",(&DocTop+0)(U64));
+  ConsoleDocExportSet(244,"_DOC_CENTER",(&DocCenter+0)(U64));
+  ConsoleDocExportSet(245,"_DOC_BOTTOM",(&DocBottom+0)(U64));
+  for(i=0;i<246;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -894,3 +913,8 @@ U0 NativeActionExit() { (*native_action_exit)(); }
 #include "/Adam/DolDoc/DocMenuCore.HC"
 #include "/Adam/DolDoc/DocMenuPopupCore.HC"
 #include "/Adam/DolDoc/DocPickLstCore.HC"
+
+//Complete original character, selection and cursor primitives for DocPutKey.
+import I64 RoundI64(I64 num,I64 to);
+#define char_bmp_printable native_doc_printable
+#include "/Adam/DolDoc/DocChar.HC"

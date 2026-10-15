@@ -1,3 +1,5 @@
+#ifndef DOC_DOLLAR_INPUT_CORE_INCLUDED
+#define DOC_DOLLAR_INPUT_CORE_INCLUDED
 //Caller holds the document lock. TRUE consumes the key; FALSE inserts it.
 U0 ChkDollarBufSize(CDoc *doc)
 {
@@ -40,3 +42,5 @@ Bool DocDollarInputCore(CDoc *doc,I64 ch,Bool printable)
   }
   return ch=='\r';
 }
+
+#endif
