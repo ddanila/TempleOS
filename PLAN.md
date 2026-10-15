@@ -11,6 +11,23 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original undo oracle passes; native clock prerequisite fails (2026-10-15)
+
+The paired draft is now executed. The qualified current x64 rebuild passes all
+seven expected masks of 63 with unchanged inputs in
+`build/i386-c4-undo-first-reference`. Console 105 rejects the first native
+prerequisite at GetTSC (Invalid lval), with unchanged inputs, in
+`build/i386-c2-undo-prerequisite-red`. This is an API prerequisite failure, not
+an observed undo behavior mismatch. No native runtime change is claimed.
+
+[The undo contract](docs/i386-doc-undo.md) records coverage and the next
+architecture: a monotonic PIT-unit clock with frequency metadata, actual IRQ
+tick handoff distinct from millisecond jiffies, interrupt-state preservation,
+and unchanged shared original capture/restore bodies. Long interrupt-disabled
+intervals, foreign ownership, autosave and failure/Exit paths need separate
+qualification. The existing entropy mixer cannot substitute for this clock.
+C1–C5 remain incomplete; next implement and qualify this dependency.
+
 ### Clock and original undo: test-first checkpoint (2026-10-15)
 
 Draft paired reference/native runners and a shared guest fixture are recorded in
