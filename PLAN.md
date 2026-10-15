@@ -11,6 +11,33 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### DocDel cancellation qualified; descendant Exit regression recorded (2026-10-15)
+
+The shared live-caller cancellation fixture passes on the original system and
+Console 98 (mask 255). It checks recovered cancellation, restored document
+roles and heap state, successful retry, and physical owner reaping while the
+recovered caller remains alive. Evidence:
+`build/i386-c4-docdel-cancel-reference` and `build/i386-c2-docdel-cancel`;
+both report unchanged inputs.
+
+The committed caller-Exit fixture passes on the original system (mask 127) but
+fails on Console 98 (observed mask 91): a deleter retains its child document
+owner's storage, then waits for that child to be physically reaped before
+releasing the reference. Evidence:
+`build/i386-c4-docdel-caller-exit-final-reference` and
+`build/i386-c2-docdel-caller-exit-observed-red`. The native runner deliberately
+remains red until the runtime meets the contract.
+
+Next implementation: release abandoned foreign-owner retention before the
+child-reaping barrier, while preserving other parent-owned cleanup resources
+until descendants finish. A broad early scope-drain experiment was excluded
+from this checkpoint because it could free parent temporaries still used by
+children. Qualify selective preparation with the new regression, recovered
+cancellation, descendant/end-callback and renderer regressions, and normal
+8 MiB startup before accepting a runtime change. Runtime remains Console 98 /
+Memory 25. Task regression runners now allow an explicit 64 MiB desktop profile;
+their default remains 8 MiB. C1–C5 remain incomplete.
+
 ### DocDel drains active editors without retirement cycles (Console 98, 2026-10-15)
 
 Explicit deletion now has caller-owned edited/saved-display/original-parent cases

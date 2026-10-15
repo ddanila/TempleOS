@@ -51,6 +51,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path, nargs='?')
     parser.add_argument('--original', action='store_true')
+    parser.add_argument('--ram-mib',type=int,choices=(8,64),default=8)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     if args.original == (args.disk is not None):
@@ -92,11 +93,11 @@ Report("DONE original queued descendants\n");
     else:
         disk_hash = sha(args.disk)
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
+        behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib,
                           startup_check={'status': 'ok', 'answers': [], 'commands': commands})
         if sha(args.disk) != disk_hash:
             raise ValueError('Descendant test changed the input disk')
-        report = {'result': 'pass', 'behavior': behavior,
+        report = {'result': 'pass', 'ram_mib':args.ram_mib, 'behavior': behavior,
                   'disk_sha256': disk_hash, 'source_disk_unchanged': True}
     if sha(Path(__file__)) != checker:
         raise ValueError('Descendant checker changed during execution')
