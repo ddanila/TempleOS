@@ -91,3 +91,17 @@ and its guest log, with unchanged checker/image inputs; additive packaging is in
 the continuation arithmetic command and does not qualify Load/Install or any
 native application workflow. Preserve the unchanged source and implement the
 original GetStr contract rather than editing the app around this dependency.
+
+
+The original punch-command oracle now passes (2026-10-15) in
+`build/i386-c3-timeclock-punch-reference`: real GetStr through scripted input,
+accepted/multiline/empty/cancel descriptions, duplicate commands, independently
+decoded typed records and a final closed report. Cancellation commits a punch
+with an empty description. See [punch-command contracts](i386-timeclock-punch.md).
+Reboot, physical keyboard, elapsed-time and full native workflows remain open.
+A fresh unchanged-source Console-113 load check still rejects GetStr at line
+127, after source availability passes, in
+`build/i386-c3-timeclock-console113-load` with unchanged inputs. Its additive
+package is `build/i386-c3-timeclock-console113-package`; the three application
+files match the pinned reference digests. This is an explicit native red gate,
+not a qualified application.

@@ -4691,7 +4691,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Original Load/Install; write two controlled entries, reopen and render a closed report. Interactive punch commands and reboot remain open."
+        "description": "Original Load/Install; controlled-entry storage/reopen/report plus Load/install unchanged original TimeClock; initialize empty application storage; punch in/out with multiline, accepted, empty and cancelled descriptions; repeat already-in/out commands; reopen records and observe final closed report."
       },
       "oracle": {
         "tool": "tools/test-i386-timeclock-reference.py",
@@ -4700,7 +4700,8 @@
           "34-byte typed records including EOF",
           "reopened entries",
           "5400-second closed report"
-        ]
+        ],
+        "punch_commands": "docs/i386-timeclock-punch.md: independent typed-record decoder, expected descriptions, stage prefixes, byte-identical duplicates and per-command original Now bounds. Reboot, time progression, physical keyboard, resource cleanup and complete native workflows remain open."
       },
       "tests": [
         {
@@ -4729,6 +4730,20 @@
           "result": "fail",
           "evidence": "build/i386-c1-now-followups/timeclock-load/result.json",
           "gap": "Now is exposed; original PunchOut compilation reaches missing GetStr at TimeClk.HC line 127"
+        },
+        {
+          "target": "original-punch-commands",
+          "command": "python3 tools/test-i386-timeclock-punch-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-punch-reference/result.json",
+          "scope": "Scripted real GetStr and unchanged public punch commands; bounded command/storage integration, not whole-application qualification"
+        },
+        {
+          "target": "native-console113-load",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c3-timeclock-console113-load/result.json",
+          "scope": "Additive unchanged three-file application package; source availability passes, Load rejects missing GetStr at line 127; punch workflow not reached"
         }
       ]
     },
@@ -4750,7 +4765,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Original Load/Install; write two controlled entries, reopen and render a closed report. Interactive punch commands and reboot remain open."
+        "description": "Original Load/Install; controlled-entry storage/reopen/report plus Load/install unchanged original TimeClock; initialize empty application storage; punch in/out with multiline, accepted, empty and cancelled descriptions; repeat already-in/out commands; reopen records and observe final closed report."
       },
       "oracle": {
         "tool": "tools/test-i386-timeclock-reference.py",
@@ -4759,7 +4774,8 @@
           "34-byte typed records including EOF",
           "reopened entries",
           "5400-second closed report"
-        ]
+        ],
+        "punch_commands": "docs/i386-timeclock-punch.md: independent typed-record decoder, expected descriptions, stage prefixes, byte-identical duplicates and per-command original Now bounds. Reboot, time progression, physical keyboard, resource cleanup and complete native workflows remain open."
       },
       "tests": [
         {
@@ -4788,6 +4804,20 @@
           "result": "fail",
           "evidence": "build/i386-c1-now-followups/timeclock-load/result.json",
           "gap": "Now is exposed; original PunchOut compilation reaches missing GetStr at TimeClk.HC line 127"
+        },
+        {
+          "target": "original-punch-commands",
+          "command": "python3 tools/test-i386-timeclock-punch-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-punch-reference/result.json",
+          "scope": "Scripted real GetStr and unchanged public punch commands; bounded command/storage integration, not whole-application qualification"
+        },
+        {
+          "target": "native-console113-load",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c3-timeclock-console113-load/result.json",
+          "scope": "Additive unchanged three-file application package; source availability passes, Load rejects missing GetStr at line 127; punch workflow not reached"
         }
       ]
     },
@@ -4810,7 +4840,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Original Load/Install; write two controlled entries, reopen and render a closed report. Interactive punch commands and reboot remain open."
+        "description": "Original Load/Install; controlled-entry storage/reopen/report plus Load/install unchanged original TimeClock; initialize empty application storage; punch in/out with multiline, accepted, empty and cancelled descriptions; repeat already-in/out commands; reopen records and observe final closed report."
       },
       "oracle": {
         "tool": "tools/test-i386-timeclock-reference.py",
@@ -4819,7 +4849,8 @@
           "34-byte typed records including EOF",
           "reopened entries",
           "5400-second closed report"
-        ]
+        ],
+        "punch_commands": "docs/i386-timeclock-punch.md: independent typed-record decoder, expected descriptions, stage prefixes, byte-identical duplicates and per-command original Now bounds. Reboot, time progression, physical keyboard, resource cleanup and complete native workflows remain open."
       },
       "tests": [
         {
@@ -4848,6 +4879,20 @@
           "result": "fail",
           "evidence": "build/i386-c1-now-followups/timeclock-load/result.json",
           "gap": "Now is exposed; original PunchOut compilation reaches missing GetStr at TimeClk.HC line 127"
+        },
+        {
+          "target": "original-punch-commands",
+          "command": "python3 tools/test-i386-timeclock-punch-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-punch-reference/result.json",
+          "scope": "Scripted real GetStr and unchanged public punch commands; bounded command/storage integration, not whole-application qualification"
+        },
+        {
+          "target": "native-console113-load",
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c3-timeclock-console113-load/result.json",
+          "scope": "Additive unchanged three-file application package; source availability passes, Load rejects missing GetStr at line 127; punch workflow not reached"
         }
       ]
     },

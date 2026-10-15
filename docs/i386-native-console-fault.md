@@ -46,6 +46,15 @@ These additional definitions are still insufficient to reproduce the fault in
 isolation. Graphics locking and row presentation remain imports, and the full
 preceding Console compile state is absent. No runtime mouse pass is claimed.
 
+The combined `--presentation-bodies --helper-bodies --task-validator-body`
+probe passes in build/i386-c5-mouse-compile-direct-bodies with unchanged inputs.
+It adds complete canonical NativeMouseRestoreRows, NativeMousePresentRows,
+NativeGraphicsTextLock and NativeGraphicsTextUnlock bodies and pins
+GraphicsFrame.HC. All direct non-intrinsic helpers of NativeMousePresentSplit
+now have bodies in this variant; their own lower-level dependencies remain real
+imports. This still does not reproduce the full compile state or execute mouse
+presentation. Root cause remains unproven; do not replace the original bodies.
+
 ## Live replay
 
 A new Console-only diagnostic replay is live in

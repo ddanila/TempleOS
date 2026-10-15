@@ -11,6 +11,30 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original TimeClock punch commands captured; native GetStr still red (2026-10-15)
+
+The new unchanged-original application test calls PunchIn/PunchOut through real
+GetStr with scripted input. Multiline, empty and cancelled descriptions, already
+in/out duplicates and final closed reporting pass. The host independently checks
+four typed records, intermediate prefixes, exact duplicate file bytes and Now
+bounds. Cancellation commits an empty-description punch. All observed dates in
+the first capture are equal; elapsed-time and reboot remain unqualified.
+Evidence: build/i386-c3-timeclock-punch-reference, with unchanged inputs. The
+inventory maps this bounded workflow to all three original TimeClock files,
+retaining the existing controlled storage/report evidence and unqualified status.
+
+A fresh Console-113 additive package contains byte-identical original application
+sources. Availability passes, but Load still rejects GetStr at TimeClk line 127
+before any punch workflow in build/i386-c3-timeclock-console113-load; inputs are
+unchanged. Preserve this red gate and port original input behavior. See
+[TimeClock punch contracts](docs/i386-timeclock-punch.md).
+
+The isolated mouse compile also passes with every direct helper body present
+(row presentation, text lock/unlock, matching, lookup and validator), retaining
+real lower-level imports. Evidence: build/i386-c5-mouse-compile-direct-bodies.
+The full Console debug replay remains running on frozen runtime sources; its
+fault root cause and full native qualification remain open. C1–C5 are incomplete.
+
 ### Expanded compile isolation and C1 evidence mapping (2026-10-15)
 
 The mouse compile probe with complete original TaskValidate, NativeTerminalFind,

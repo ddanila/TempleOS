@@ -20,6 +20,7 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--task-validator-body',action='store_true',help='Use the complete canonical TaskValidate body rather than an import')
     parser.add_argument('--helper-bodies',action='store_true',help='Use complete canonical terminal lookup, backing and display-view match bodies')
+    parser.add_argument('--presentation-bodies',action='store_true',help='Use complete canonical row presentation and graphics text lock/unlock bodies')
     args=parser.parse_args()
     source,out=args.disk.resolve(),args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
@@ -54,6 +55,27 @@ import Bool TaskValidate(CTask*task);
                 'U8 *graphics_planes[4];\nimport Bool NativeGraphicsReady();\n'+extract(files[3],'Bool NativeMouseBackingMatches(', '\n}\n'),
             'import Bool NativeDisplayViewMatches(U8**planes);':
                 'U8 *native_display_planes[4];\n'+extract(display,'Bool NativeDisplayViewMatches(', '\n}\n'),
+        }
+        for prototype,body in replacements.items():
+            parts=[part.replace(prototype,body) for part in parts]
+    if args.presentation_bodies:
+        frame=ROOT/'Kernel/I386/GraphicsFrame.HC'
+        files.append(frame)
+        replacements={
+            'import U0 NativeMousePresentRows(U8**planes,I64 old_y,I64 x,I64 y,I64 operation);':
+                'import Bool I386VgaSplitRows(U8**planes,I64 first,I64 count);\n'
+                'import U0 KernelStop();\nimport U0 MousePlaneSplitXor(U8**planes,I64 x,I64 y);\n'+
+                extract(files[3],'U0 NativeMouseRestoreRows(', '\n}\n')+
+                extract(files[3],'U0 NativeMousePresentRows(', '\n}\n'),
+            'import Bool NativeGraphicsTextLock(CNativeGraphicsScope*scope);':
+                'Bool graphics_presenting;\nCI386Task *graphics_presenter;\n'
+                'import U0 NativeGraphicsScopeOpen(CNativeGraphicsScope*scope,CDC**alias,Bool*lease,CI386Task**presenter);\n'
+                'import Bool NativeGraphicsScopeAcquire(CNativeGraphicsScope*scope);\n'
+                'import U0 NativeGraphicsScopeReleaseLease(CNativeGraphicsScope*scope);\n'
+                'import U0 NativeRenderScopeClose(CNativeRenderScope*scope);\n'+
+                extract(frame,'Bool NativeGraphicsTextLock(', '\n}\n'),
+            'import U0 NativeGraphicsTextUnlock(CNativeGraphicsScope*scope);':
+                extract(frame,'U0 NativeGraphicsTextUnlock(', '\n}\n'),
         }
         for prototype,body in replacements.items():
             parts=[part.replace(prototype,body) for part in parts]
