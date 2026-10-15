@@ -11,6 +11,45 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Key names and descriptions shared for original input (Console 107, 2026-10-15)
+
+Complete Char2KeyName and KeyDescSet bodies are shared between the original
+kernel and native Console through KeyNameCore.HC and KeyDescriptionCore.HC.
+The description body is byte-identical; the name body adds one tested buffer
+initialization. With include_ctrl FALSE, the original control-letter branch
+appended to uninitialized stack data. The pinned original extended oracle fails
+[47,63] with unchanged inputs in `build/i386-c4-key-description-control-red`.
+The shared fix produces the intended unprefixed letter on both targets rather
+than copying undefined output.
+
+Console 107 publishes both functions and the existing keydev global (262
+exports). The native object is defined before export setup because taking the
+AOT address of an extern data declaration was rejected; there is one object,
+not a second key-hook state. Public task/document layouts, private console
+services and Memory 26 are unchanged. The previous native prerequisite rejects
+undefined KeyDescSet in `build/i386-c2-key-description-red`.
+
+The final current-source original oracle passes [63,63] with unchanged inputs
+in `build/i386-c4-key-description-wide-reference`. Native passes five commands,
+exact fixture readback and unchanged inputs in
+`build/i386-c2-key-description-contract`: named/control/printable/empty names,
+control prefixes on/off, wide signed/string formatting, same/distinct caller
+identity, empty description, prior global-state restoration and exact heap.
+Both bootstrap generations and `build/i386-c2-key-description-global-cross`
+pass; all 1491 source/build pins match, including the limited 386 audit
+(96 BIOS / 255 protected instructions). The native kernel is 565608 bytes.
+Current-image hook dispatch (21 commands and persisted values), clock/undo
+(10) and normal 8 MiB startup (9 checks, 52.43 seconds, zero build-provider
+loads) pass under the `build/i386-c2-key-description-` prefix.
+
+This closes a bounded service dependency, not full input dispatch or chooser
+integration. Out-of-range names, oversized descriptions, exceptional/concurrent
+writers and broader caller lifetimes remain unqualified. Next share and qualify
+tree/plain transformations and continue the full dependency graph. The retained
+DocPutKey callback gap and actual chooser/GetStr/TimeClock gates remain open.
+See [key-description evidence](docs/i386-key-description.md) and the
+[full input dependency review](docs/i386-doc-put-key.md). C1–C5 remain incomplete.
+
 ### Full original input: paired behavior gate and dependency review (2026-10-15)
 
 Six direct public DocPutKey cases pass masks of 63 on the qualified original

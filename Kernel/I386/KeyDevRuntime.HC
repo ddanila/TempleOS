@@ -1,6 +1,5 @@
 #include "/Kernel/KeyDevTypes.HH"
 #include "/Kernel/ScanFlags.HH"
-CKeyDevGlbls keydev;
 Bool native_keydev_ready;
 U8 *ACAlloc(I64 size)
 {

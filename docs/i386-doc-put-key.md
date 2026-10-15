@@ -59,7 +59,7 @@ handler to pass the current tests.
 | Dependency family in original DocPutKey | Canonical source and next work |
 | --- | --- |
 | Editing, clipboard and undo | DocChar.HC, DocClipboardCore.HC and DocUndoCore.HC are shared with bounded contracts. Route the original dispatcher through these services and retain their regressions. |
-| Key descriptions and names | Kernel/KeyDev.HC KeyDescSet and Kernel/SerialDev/Keyboard.HC Char2KeyName; preserve formatted description and handler identity, not just returned key text. |
+| Key descriptions and names | Kernel/KeyDev.HC KeyDescSet and Kernel/SerialDev/Keyboard.HC Char2KeyName now share complete bodies with Console 107; [bounded paired contracts and the control-name bug fix](i386-key-description.md) preserve formatted description and handler identity. Full description-mode dispatcher routing remains open. |
 | Tree/plain-text transformations | DocRecalcLib.HC DocCollapse and DocPlain.HC DocEntryToggle/DocFlagsToggle; cover tree state, serialized text and undo-ring preservation. |
 | Find, matching and go-to | DocFind.HC; preserve directional matching, selection, find state and interactive prompts. |
 | Autocomplete | Adam/AutoComplete services ACMan, ACFillIn, ACDDef, ACDFillin and AutoComplete; requires actual symbol/dictionary behavior and task integration. |

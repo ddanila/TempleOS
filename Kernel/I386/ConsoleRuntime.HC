@@ -272,6 +272,9 @@ extern U8 *NativeAStrNew(U8 *text);
 
 #include "/Kernel/JobResScanCore.HC"
 #include "/Kernel/KeyDevTypes.HH"
+CKeyDevGlbls keydev;
+extern U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
+extern U0 KeyDescSet(U8 *fmt,...);
 extern U0 PutKey(I64 ch=0,I64 sc=0);
 extern U0 PutChars(U64 chars);
 extern U0 PutS(U8 *s);
@@ -302,7 +305,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[259];
+CI386KernelSymbol console_doc_exports[262];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -665,10 +668,13 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(256,"_GET_TSC",(&NativeTimeStamp+0)(U64));
   ConsoleDocExportSet(257,"_DOC_CAPTURE_UNDO",(&DocCaptureUndo+0)(U64));
   ConsoleDocExportSet(258,"_DOC_UNDO_RESTORE",(&DocUndoRestore+0)(U64));
-  for(i=0;i<259;i++) {
+  ConsoleDocExportSet(259,"_CHAR_2_KEY_NAME",(&Char2KeyName+0)(U64));
+  ConsoleDocExportSet(260,"_KEY_DESC_SET",(&KeyDescSet+0)(U64));
+  ConsoleDocExportSet(261,"_KEYDEV",(&keydev+0)(U64));
+  for(i=0;i<262;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
-    if(i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
+    if(i==261 || i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
     HashAdd(&console_doc_exports[i],task->hash_table);
   }
   DocDefaultsInit(&doldoc);
@@ -963,3 +969,6 @@ U0 NativeClipboardInit()
 #define GetTSC NativeTimeStamp
 import CCntsGlbls cnts;
 #include "/Adam/DolDoc/DocUndoCore.HC"
+
+#include "/Kernel/KeyNameCore.HC"
+#include "/Kernel/KeyDescriptionCore.HC"
