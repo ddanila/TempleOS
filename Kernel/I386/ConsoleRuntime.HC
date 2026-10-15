@@ -70,6 +70,8 @@ extern U0 EdSelAll(CDoc *doc,Bool sel);
 extern Bool EdFindPaired(CDoc *doc,U8 plus,U8 minus,Bool fwd,Bool abort_on_dbl_colon=FALSE);
 extern Bool EdGoToFun(CDoc *doc,Bool fwd,Bool abort_on_dbl_colon);
 extern U0 EdSelFun(CDoc *doc,Bool abort_on_dbl_colon=FALSE);
+extern Bool DocForm(U8*data,U8*name=lastclass,I64 flags=0,U8*header=0,U8*footer=0);
+extern Bool PopUpForm(U8*data,U8*name=lastclass,I64 flags=DOF_SIZE_MIN,U8*header=0,U8*footer=0);
 extern U0 NativeEditorSetup();
 extern I64 NativeTimeStamp();
 extern U0 NativeTimeStampInit();
@@ -315,7 +317,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[271];
+CI386KernelSymbol console_doc_exports[273];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -690,7 +692,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(268,"_ED_FIND_PAIRED",(&EdFindPaired+0)(U64));
   ConsoleDocExportSet(269,"_ED_GO_TO_FUN",(&EdGoToFun+0)(U64));
   ConsoleDocExportSet(270,"_ED_SEL_FUN",(&EdSelFun+0)(U64));
-  for(i=0;i<271;i++) {
+  ConsoleDocExportSet(271,"_DOC_FORM",(&DocForm+0)(U64));
+  ConsoleDocExportSet(272,"_POP_UP_FORM",(&PopUpForm+0)(U64));
+  for(i=0;i<273;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==261 || i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;

@@ -107,4 +107,6 @@ public _extern _DOC_COPY CDoc *DocCopy(CDoc *doc,CDocEntry *start,CDocEntry *end
 public _extern _SYS_CLIP_DOC CDoc *sys_clip_doc;
 public _extern _DOC_LOAD U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
 public _extern _DOC_2_PLAIN_TEXT U8 *Doc2PlainText(CDoc *doc,CDocEntry *entry);
+public _extern _DOC_FORM Bool DocForm(U8 *data,U8 *class_name=lastclass,I64 flags=0,U8 *header=0,U8 *footer=0);
+public _extern _POP_UP_FORM Bool PopUpForm(U8 *data,U8 *class_name=lastclass,I64 flags=DOF_SIZE_MIN,U8 *header=0,U8 *footer=0);
 #endif

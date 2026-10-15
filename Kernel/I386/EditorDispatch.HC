@@ -10,6 +10,12 @@ U0 NativeEditorSetup()
  native_editor_context.alpha_numeric=char_bmp_alpha_numeric;
  native_editor_context.doc_lock=&DocLock;native_editor_context.doc_unlock=&DocUnlock;
  native_editor_context.doc_recalc=&DocRecalc;native_editor_context.doc_center=&DocCenter;
+ native_editor_context.str_cmp=&StrCmp;native_editor_context.hash_find=&HashFind;
+ native_editor_context.doc_new=&DocNew;native_editor_context.doc_del=&DocDel;
+ native_editor_context.doc_print=&DocPrint;native_editor_context.alloc=&MAlloc;
+ native_editor_context.free=&Free;native_editor_context.data_fmt=&DocDataFmt;
+ native_editor_context.doc_ed=&DocEd;native_editor_context.entry_run=&DocEntryRun;
+ native_editor_context.popup_print=&NativePopUpPrint;
  native_editor_context.cur_u8=&EdCurU8;native_editor_context.cursor_left=&EdCursorLeft;native_editor_context.cursor_right=&EdCursorRight;
 }
 U0 NativeEditorRequire()
@@ -45,3 +51,7 @@ Bool EdFindPaired(CDoc*doc,U8 plus,U8 minus,Bool fwd,Bool abort_on_dbl_colon=FAL
 Bool EdGoToFun(CDoc*doc,Bool fwd,Bool abort_on_dbl_colon)
 {NativeEditorRequire;return (*native_editor_services.go_to_fun)(doc,fwd,abort_on_dbl_colon);}
 U0 EdSelFun(CDoc*doc,Bool abort_on_dbl_colon=FALSE){NativeEditorRequire;(*native_editor_services.sel_fun)(doc,abort_on_dbl_colon);}
+Bool DocForm(U8*data,U8*name=lastclass,I64 flags=0,U8*header=NULL,U8*footer=NULL)
+{NativeEditorRequire;return (*native_editor_services.form)(data,name,flags,header,footer);}
+Bool PopUpForm(U8*data,U8*name=lastclass,I64 flags=DOF_SIZE_MIN,U8*header=NULL,U8*footer=NULL)
+{NativeEditorRequire;return (*native_editor_services.popup)(data,name,flags,header,footer);}

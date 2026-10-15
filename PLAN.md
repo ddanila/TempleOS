@@ -11,6 +11,57 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete original class-form wrappers integrated; typed input remains red (Console 111, 2026-10-15)
+
+DocForm and PopUpForm now compile intact in the optional editor provider, with
+stable public entries preserving lastclass defaults. The original system shares
+DocClassFormCore.HC, DocFormPopupCore.HC and OptClassFwdCore.HC; extraction
+comparisons prove unchanged bodies. Full MemberLookup.HC supplies real metadata
+lookup. Private context/services version 2 (84/44 bytes on i386) borrow permanent
+Console operations, including the original variadic printing/popup functions.
+Console exports increase from 271 to 273; Memory remains 26.
+
+The original compiler/kernel bootstrap passes. Corrected cross-build
+`build/i386-c2-class-form-variadic-cross` passes with 569584 kernel bytes, all
+1502 source/build pins matching, and the limited boot instruction audit.
+Initial builds exposed adapter/declaration/header errors; removing redundant
+intrinsic/variadic adapters also avoids the first Console candidate's 392-byte
+budget excess. Original form bodies were not pruned or replaced.
+
+The nineteen-command search suite passes in `build/i386-c2-class-form-search`.
+Version-2 wrong-version rejection, repair/retry and cached reuse pass in
+`build/i386-c2-class-form-provider-version-recovery`. Normal 8 MiB startup passes
+nine commands in 57.69 seconds with zero editor loads. The qualified footprint
+report `build/i386-class-form-provider-budget.json` records Console 2345016
+bytes, 288 below the unchanged limit; other core spans are unchanged and no
+backing-allocation failures are observed.
+
+Native form binding, explicit/inferred classes and sized cancellation now run,
+but the strict suite remains failed: numeric accept leaves 12 instead of 42.
+The initial strict run stopped earlier at inferred-class case 3; subsequent
+observation and telemetry runs pass that case, without a proven explanation for
+the first failure. Keep this discrepancy visible. All observed caller heaps
+recover exactly. PopUpForm's complete body compiles but its workflow is not yet
+qualified.
+
+The fixture now additionally requires the live numeric tag to become N:42
+before Escape in both accept and cancel cases. Unchanged final data alone must
+not let cancellation pass when typing was ignored. The strengthened original
+oracle passes all seven masks of 63 with zero caller heap deltas in
+`build/i386-c4-class-form-typed-tag-reference`. The strengthened native strict run fails at numeric accept with mask 60 in
+`build/i386-c2-class-form-typed-tag-native`. Diagnostic-only
+`build/i386-c2-class-form-typed-tag-observation` records masks
+[63,63,63,63,63,60,62]: cases 0–4 pass; neither numeric case reaches the edited
+tag, and the field stays 12. Every caller heap delta is zero, and inputs stay
+unchanged. Cancel is now correctly red rather than a false positive. Observation-only mode records masks and
+values as `observed`, never compatibility acceptance.
+
+Next implement/qualify the complete original input path and its actual
+remaining dependencies; do not patch a numeric-only form handler or weaken the
+oracle. Full chooser, replacement/go-to, GetStr/TimeClock, popup ownership,
+cancellation/reentrancy, native generations and application parity remain open.
+C1–C5 are incomplete. See [class-form contracts](docs/i386-class-form.md).
+
 ### Editor malformed-import and native-provider checkpoint (2026-10-15)
 
 Unresolved-import rejection/repair/retry also passes in

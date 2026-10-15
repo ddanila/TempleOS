@@ -6,13 +6,7 @@ CCodeMisc *OptLabelFwd(CCodeMisc *lb)
   return lb;
 }
 
-CHashClass *OptClassFwd(CHashClass *tmpc)
-{//Class forwarding for unions and subclasses.
-  CHashClass *tmpc1;
-  while (tmpc1=tmpc->fwd_class)
-    tmpc=tmpc1;
-  return tmpc;
-}
+#include "/Compiler/OptClassFwdCore.HC"
 
 U0 OptSetNOP1(CIntermediateCode *tmpi)
 {

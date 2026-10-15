@@ -31,9 +31,15 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    parser.add_argument('--observe',action='store_true',
+                        help='Record masks without asserting compatibility; diagnostic evidence only')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
+    if args.observe:
+        commands = commands[:4]+[
+            ('U0 FPProbe(I64 i){I64 m=FPContract(i);U8*s=MStrPrint("FORM PROBE %d %d %d %d %d %d %d\\n",i,m,fp_bound[i],fp_seen_each[i],fp_heap_delta[i],fp_numeric_value[i],fp_typed[i]),*p=s;while(*p)OutU8(0xE9,*p++);Free(s);}', [])
+        ]+[(f'FPProbe({i});',[]) for i in range(7)]+[('6*7;',['42'])]
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -58,16 +64,27 @@ def main():
         saved=build['mutated_file_contents'](working,{'/Form.HC'}).get('/Form.HC')
         if saved!=FIXTURE.read_bytes():raise ValueError('Guest class form fixture differs from source')
         report['guest_fixture_sha256']=sha(FIXTURE)
-        report['result'] = 'pass'
+        if args.observe:
+            log=(out/'qemu/debug.log').read_text()
+            report['observations']=[list(map(int,line.split()[2:])) for line in log.splitlines() if line.startswith('FORM PROBE ')]
+            if [row[0] for row in report['observations']] != list(range(7)):
+                raise ValueError('Missing form observations')
+            report['observation_columns']=['case','mask','binding_mask','key_observations','caller_heap_delta','numeric_value','typed_tag_is_42']
+            report.update(result='observed', qualification='diagnostic-only; no compatibility acceptance')
+        else:
+            report['result'] = 'pass'
     except Exception as exc:
         report.update(result='fail', error=str(exc))
         raise
     finally:
+        log_path=out/'qemu/debug.log'
+        if log_path.exists():
+            report['failed_contracts']=[list(map(int,line.split()[2:])) for line in log_path.read_text().splitlines() if line.startswith('FORM FAILURE ')]
         report['inputs_unchanged'] = all(sha(Path(p)) == digest for p,digest in pins.items())
         if not report['inputs_unchanged']:
             report.update(result='fail', error='Native fixture inputs changed')
         (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
-    if report['result']!='pass':
+    if report['result'] not in ('pass','observed'):
         raise ValueError(report['error'])
 
 

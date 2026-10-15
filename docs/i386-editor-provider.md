@@ -169,3 +169,20 @@ the debug log and captured VGA checkpoint show the failure. Keep this resource
 case visible alongside the separate qualified normal-startup result. Forced
 cancellation/reentrancy, complete native generations and original forms/input
 remain open.
+
+## Version-2 complete form candidate
+
+Console 111 adds stable public DocForm/PopUpForm dispatch. The optional module
+shares their complete original bodies and the original class-forwarding and
+member-metadata helpers. Context/services are now version 2, 84/44 bytes on
+32-bit targets; real variadic DocPrint/PopUpPrint pointers preserve their ABI.
+LBtr remains the existing intrinsic. No public CDoc/CTask layout changes occur.
+
+The corrected cross-build, nineteen-command search regression and version-2
+wrong-version recovery pass. Normal 8 MiB startup passes in 57.69 seconds,
+keeping editor code unloaded. The budget report records 2345016 Console bytes,
+288 below the unchanged cap. See [class-form evidence](i386-class-form.md) for
+the remaining typed-input failure, strengthened cancellation oracle and the
+unexplained initial inferred-class failure. Compiling complete form wrappers
+is not complete form/input or popup qualification. Full native generations,
+forced cancellation/reentrancy and the diagnostic allocation issue remain open.

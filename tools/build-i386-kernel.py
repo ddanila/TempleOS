@@ -234,7 +234,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 110:
+    if struct.unpack_from('<I', module, version_offset)[0] != 111:
         raise ValueError('Unexpected console version')
     entry_names=('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders', 'NativeWinMgrEnsure')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
@@ -3125,10 +3125,10 @@ def main():
         result['bit_assignment']={'cases_per_phase':168,'task_phases':[0,1],
                                   'old_value_and_neighbor_bytes':'pass','locked_instructions':'audited'}
         doc_batches=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC DOC LAYOUT ')]
-        if doc_batches!=[(phase,n,1,0) for phase in (0,1) for n in (*range(16,257,16),271)]:
+        if doc_batches!=[(phase,n,1,0) for phase in (0,1) for n in (*range(16,273,16),273)]:
             raise ValueError('Native document layout batches or reclamation failed')
         doc_cases=[tuple(int(x,16) for x in line.split()[3:]) for line in log.splitlines() if line.startswith('PUBLIC DOC CASE ')]
-        if doc_cases!=[(0,271),(1,271)] or 'PASS original document records\n' not in (exports/'debug.log').read_text():
+        if doc_cases!=[(0,273),(1,273)] or 'PASS original document records\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/native document records failed')
         help_phases=[int(line.split()[3],16) for line in log.splitlines() if line.startswith('PUBLIC HELP CASE ')]
         if help_phases!=[0,1] or 'PASS original help metadata\n' not in (exports/'debug.log').read_text():
@@ -3160,7 +3160,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=110,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=111,image_bytes=csize,retained_heap_bytes=cspan,
             service_addresses=dict(zip(console_layout['entry_names'],entries)),
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         # Both header attempts complete exactly these unused forward classes.
