@@ -11,6 +11,27 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete original DocEd body compiles in native Console 94 (2026-10-15)
+
+The native console compiles the shared complete core under internal
+NativeOriginalDocEd/NativeOriginalView names using actual existing providers;
+the module audit requires both symbols. Default names preserve original APIs.
+The cross-build and limited 386 audit pass (96 BIOS/255 protected instructions),
+with all 1478 source/build input hashes matched in build/i386-c2-doced-core-cross.
+Two original bootstrap generations and the shared-original recovered-callback
+check [31,31] pass (build/i386-c4-doced-named-core-failure).
+
+Public native DocEd is deliberately not routed to this internal candidate yet:
+normal restoration may yield or call user controls, whereas native forced-exit
+scope releases must not yield. Separate committed teardown, document lock
+ownership and edited/saved-role leases need actual Exit/owner-retirement gates.
+The retained native editor and its flagged-call failure remain current behavior.
+No form workflow, public API parity or C1–C5 completion is claimed. Console's
+public table stays 231 entries, private services 48 bytes and Memory 25 unchanged.
+Normal 8 MiB startup passes nine checks in 50.18 seconds, with WinMgr
+active and no build providers, in build/i386-c2-doced-core-startup.
+See [native core binding requirements](docs/i386-menu-integration.md).
+
 ### Shared DocEd recovers an initial callback exception (2026-10-15)
 
 A real tag-callback throw now has a failing pre-fix control: masks [3,15] in

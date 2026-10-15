@@ -1,7 +1,13 @@
+#ifndef DOC_ED_FUNCTION
+#define DOC_ED_FUNCTION DocEd
+#endif
+#ifndef DOC_VIEW_FUNCTION
+#define DOC_VIEW_FUNCTION View
+#endif
 //Complete original View and DocEd state/input path.
 #help_index "DolDoc/Output;StdOut/DolDoc"
 
-public Bool View()
+public Bool DOC_VIEW_FUNCTION()
 {//Go live for user interaction until <ESC> or <SHIFT-ESC>.
   I64 ch;
   do ch=DocGetKey;
@@ -45,7 +51,7 @@ U0 DocEdStateRestore(CDocEdState *state)
   }
 }
 
-public Bool DocEd(CDoc *doc,I64 dof_flags=0)
+public Bool DOC_ED_FUNCTION(CDoc *doc,I64 dof_flags=0)
 {//Live for user interaction. End on <ESC> or <SHIFT-ESC>.
   CDocEdState state;
   CDocEntry *doc_e;
@@ -135,7 +141,7 @@ public Bool DocEd(CDoc *doc,I64 dof_flags=0)
     if (doc->flags&DOCF_SIZE_MIN)
       Refresh(2,TRUE);
   }
-  res=View;
+  res=DOC_VIEW_FUNCTION;
 
   DocLock(doc);
   if (res) {

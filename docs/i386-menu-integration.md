@@ -222,3 +222,38 @@ registration and leases for the edited document, old roles and temporary border
 through forced Exit and owner retirement; late View/action/scan failures and
 constructor-allocation failures need their own gates. Do not treat CDocEdState's
 ordinary exception handler as the complete native lifetime solution.
+
+## Complete original core compiles natively (Console 94)
+
+The shared core has function-name bindings DOC_ED_FUNCTION and DOC_VIEW_FUNCTION,
+which default to original DocEd/View. The native console now compiles the same
+complete source as NativeOriginalDocEd/NativeOriginalView after its real input,
+window, border, data and refresh providers. The module audit requires both
+functions. These are internal compiled functions: no new public header binding
+or console export-table entry is added, and public DocEd still uses the retained
+native editor and rejects flags. There is no native form acceptance claim.
+
+`build/i386-c2-doced-core-cross` cross-builds and passes the limited 386 audit
+(96 BIOS/255 protected instructions). All 1478 source/build hashes match.
+Two original bootstrap generations pass, and the shared-original callback
+failure check remains [31,31] with unchanged inputs in
+`build/i386-c4-doced-named-core-failure/result.json`. Console is version 94;
+its public table remains 231 entries and its private service table stays 48
+bytes; public layouts and Memory 25 are unchanged.
+
+The next binding requirement is lifetime integration, not a reduced form loop.
+NativeRenderDrainExiting/NativeRenderCleanup release callbacks must not yield.
+DocEdStateRestore can lock a document, retire its temporary border and invoke
+window/control callbacks while restoring SIZE_MIN geometry, so it cannot be
+registered directly as a forced-exit release callback. Separate ordinary/
+recovered restoration from committed teardown. Track incoming versus currently
+held document locks; borrow the edited and saved role documents; restore/detach
+task roles while resources are alive; ensure manager borrowers drain before
+owner heaps disappear. Cover callback Exit and owner retirement with actual
+cross-task tests before qualifying this path. Only then route real forms and
+flags to the complete core and continue full original key/action integration.
+
+Normal 8 MiB startup passes all nine checks in 50.18 seconds in
+`build/i386-c2-doced-core-startup/result.json`, with the manager active and
+build providers unloaded. This checks the retained normal image, not execution
+of the internal original DocEd candidate.

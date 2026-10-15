@@ -863,3 +863,9 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/RefreshScope.HC"
 
 #include "/Kernel/I386/PopupRuntime.HC"
+
+//Compile the complete original path before binding public native DocEd.
+//Native forced-exit/owner-retirement scopes are still required.
+#define DOC_ED_FUNCTION NativeOriginalDocEd
+#define DOC_VIEW_FUNCTION NativeOriginalView
+#include "/Adam/DolDoc/DocEdCore.HC"
