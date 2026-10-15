@@ -4,6 +4,7 @@ Bool MemoryKill(CTask *task,Bool wait=TRUE,Bool just_break=FALSE)
 {
   U32 irq=I386IrqSave;
   CHashExport *focus;
+  CI386KernelSymbol *manager;
   if(!MemoryTaskValidate(task)) {
     I386IrqRestore(irq); return FALSE;
   }
@@ -27,7 +28,8 @@ Bool MemoryKill(CTask *task,Bool wait=TRUE,Bool just_break=FALSE)
     I386TaskSelf->task_flags|=1<<TASKf_PENDING_BREAK;
     I386IrqRestore(irq); return TRUE;
   }
-  if(task==memory_root) {
+  manager=HashFind("_SYS_WINMGR_TASK",I386TaskSelf->hash_table,HTT_EXPORT_SYS_SYM);
+  if(task==memory_root || manager && manager->kind==3 && *manager->val(CTask **)==task) {
     I386IrqRestore(irq); return FALSE;
   }
   //Do not rewrite wake/suspend flags for asynchronous requests. The scheduler

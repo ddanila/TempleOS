@@ -42,7 +42,11 @@ U0 NativeWindowListDraw(CDC *dc)
       if(task && !NativeRenderOwnerClosing(task) &&
           Bt(&task->display_flags,DISPLAYf_SHOW) &&
           Bt(gr.win_uncovered_bitmap,task->win_z_num))
+      {
+        if(I386TaskSelf==native_window_worker)native_window_fault_task=task->task_num;
         GrUpdateTaskWin(task);
+        if(I386TaskSelf==native_window_worker)native_window_fault_task=0;
+      }
     }
     NativeWindowListRelease(&scope);
   } catch {

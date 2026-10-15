@@ -25,11 +25,13 @@ fixture uses the original display-flag bit indices.
 
 Pinned original and rebuilt-original controls pass:
 `build/i386-c1-doc-auto-refresh-reference-flags/result.json` and
-`build/i386-c4-doc-auto-refresh-control/result.json`. The native test fails to
-show its initial A frame (`build/i386-c2-doc-auto-refresh-red/result.json`). Its
-application only selects the document, changes the dynamic value and sleeps or
-waits for keys; NativeTextBaseRestore appears only in teardown. This gate remains
-open. Passing an explicit presentation test does not supersede it.
+`build/i386-c4-doc-auto-refresh-control/result.json`. The historical native first-A
+failure remains a failing control. Normal boot now starts a real managed refresh
+task, and the automatic A/B gate passes without application presentation calls.
+See [managed refresh architecture and evidence](i386-managed-refresh.md).
+
+This closes the first full-window dynamic document gate. It does not establish
+complete window management, normal stdout/input parity or bundled app acceptance.
 
 ## Architectural work and gates
 
@@ -144,3 +146,9 @@ identities and re-finds live targets after yielding callbacks. Its visibility
 anchor is sys_winmgr_task, matching window order rather than graphics-storage
 ownership. The explicit component has mutation/cleanup and split-frame pixel
 coverage; normal-boot scheduling and the automatic A/B gate remain open.
+
+Normal-boot scheduling, real sys_winmgr_task binding and kernel-root restart are
+now implemented in the [managed worker](i386-managed-refresh.md). The automatic
+A/B case, actual worker death/restart and per-window failure isolation have
+separate gates. Earlier component checkpoints above describe their original
+scope; full desktop, event/cursor/view and stdout/input acceptance remains open.

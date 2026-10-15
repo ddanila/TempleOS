@@ -112,7 +112,7 @@ Bool NativeGraphicsStart()
   WinZBufUpdate;
   return TRUE;
 }
-Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
+Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)())
 {//Root-owned storage; managed callers serialize presentation through one lease.
   Bool result=FALSE;
   CNativeGraphicsScope scope;
@@ -128,6 +128,7 @@ Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
     gr.pan_text_y=MinI64(7,MaxI64(-7,gr.pan_text_y));
     //Refresh from the live ring, including tasks removed since the previous frame.
     WinZBufUpdate;
+    if(admit && !(*admit)())goto graphics_present_done;
     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
       gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,gr.fp_final_scrn_update);
     GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
@@ -145,3 +146,6 @@ graphics_present_done:
   NativeRenderScopeClose(&scope);
   return result;
 }
+
+Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
+{ return NativeGraphicsPresentChecked(draw,blink,NULL); }

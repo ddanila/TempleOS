@@ -106,6 +106,7 @@ U0 MemoryTaskRootInit(CI386Task *root)
   root->next_input_filter_task=root->last_input_filter_task=root;
   JobCtrlInit(&root->srv_ctrl);
   root->task_num=memory_task_number;
+  root->display_flags|=1<<DISPLAYf_NOT_RAW;
   if(!root->gs->seth_task) root->gs->seth_task=root;
 }
 Bool MemoryTaskEnsure(CI386Task *task)
@@ -126,7 +127,9 @@ Bool MemoryTaskEnsure(CI386Task *task)
   else if(!task->next_input_filter_task || !task->last_input_filter_task) return FALSE;
   if(!task->srv_ctrl.next_waiting && !task->srv_ctrl.last_waiting)
     JobCtrlInit(&task->srv_ctrl);
-  if(!task->task_num) task->task_num=++memory_task_number;
+  if(!task->task_num) {
+    task->task_num=++memory_task_number;task->display_flags|=1<<DISPLAYf_NOT_RAW;
+  }
   if(task!=memory_root && !task->parent_task) task->parent_task=memory_root;
   return TRUE;
 }
@@ -200,6 +203,7 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   task->memory=memory_pool.heap;
   task->parent_task=parent; task->gs=parent->gs;
   task->task_num=++memory_task_number;
+  task->display_flags|=1<<DISPLAYf_NOT_RAW;
   task->next_child_task=task->last_child_task=MemoryChildHead(task);
   task->next_sibling_task=task->last_sibling_task=task;
   JobCtrlInit(&task->srv_ctrl);

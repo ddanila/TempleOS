@@ -45,3 +45,5 @@ if(!NativeGraphicsStart) throw('Graphics',TRUE);
 
 #define I386_GRAPHICS_STARTED 1
 #include "/Kernel/I386/PublicRaster.HH"
+
+if(!NativeWinMgrStart) throw('WinMgr',TRUE);

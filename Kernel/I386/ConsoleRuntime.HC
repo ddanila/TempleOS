@@ -77,6 +77,12 @@ extern Bool NativeKeyboardStart();
 extern I64 NativeReadKey(CI386KeyboardReader *reader,CI386KeyEvent *event,Bool wait=TRUE);
 extern I64 NativeJobSource(U8 *text);
 CTask *sys_focus_task,*sys_winmgr_task,*sys_task_being_scrn_updated;
+CTask *native_window_worker;
+I64 native_window_fault_task;
+U0 (*native_window_sleep)(I64 ms);
+extern Bool NativeWindowOwnsView();
+extern U0 NativeWinMgrEnsure();
+extern Bool NativeWinMgrStart();
 extern I64 NativeWinToTop(CTask *task=0,Bool update_z_buf=TRUE);
 extern Bool DocExe(CDoc *doc,I64 flags=0);
 extern I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
@@ -260,7 +266,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[225];
+CI386KernelSymbol console_doc_exports[226];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -345,6 +351,9 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   provider=HashFind("_YIELD",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_input_yield=provider->val;
+  provider=HashFind("_SLEEP",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=1 || !provider->val)return FALSE;
+  native_window_sleep=provider->val;
   provider=HashFind("_FLUSH_MSGS",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_servant_flush=provider->val;
@@ -583,7 +592,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(222,"_GR_UPDATE_TASK_WIN",(&GrUpdateTaskWin+0)(U64));
   ConsoleDocExportSet(223,"_SYS_TASK_BEING_SCRN_UPDATED",(&sys_task_being_scrn_updated+0)(U64));
   ConsoleDocExportSet(224,"_WINDOW_PRESENT",(&NativeWindowPresent+0)(U64));
-  for(i=0;i<225;i++) {
+  ConsoleDocExportSet(225,"_WINMGR_START",(&NativeWinMgrStart+0)(U64));
+  for(i=0;i<226;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -646,6 +656,7 @@ I64 Main(CI386ConsoleServices *services,I64 bytes)
   services->cancel_read=&ConsoleCancelRead;
   services->cancel_wait=&I386TaskCancelWait; services->key_irq=&ConsoleKeyIrq;
   services->root_headers=&ConsoleRootHeaders;
+  services->window_ensure=&NativeWinMgrEnsure;
   services->cpu_capture=&ConsoleCpuCapture; services->cpu_debug=&ConsoleCpuDebug;
   return 1;
 }
@@ -833,3 +844,5 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/ServantRuntime.HC"
 
 #include "/Kernel/I386/WindowOrderRuntime.HC"
+
+#include "/Kernel/I386/WindowManager.HC"

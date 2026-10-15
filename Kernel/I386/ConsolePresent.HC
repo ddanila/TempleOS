@@ -30,6 +30,7 @@ U0 ConsolePresentText(CI386Text *surface)
   Bool borrowed=FALSE;
   //Before graphics startup there is no competing frame owner or managed wait.
   if(!graphics_owner) { NativeConsolePresentRows(surface);return; }
+  if(NativeWindowOwnsView)return;
   while(terminal && surface!=&terminal->surface)terminal=terminal->next;
   if(terminal) {
     task=terminal->task;task_num=task->task_num;

@@ -13,6 +13,7 @@
 #include "/Kernel/I386/MemoryPublic.HH"
 #include "/Kernel/I386/HashPublic.HH"
 #include "/Kernel/TimeTypes.HH"
+#include "/Kernel/DisplayFlags.HH"
 #include "/Kernel/SemaTypes.HH"
 import CCntsGlbls cnts;
 import Bool I386SchedYield(CI386Scheduler *s);

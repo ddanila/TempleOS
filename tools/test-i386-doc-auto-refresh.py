@@ -58,6 +58,7 @@ def main():
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
             cpu='486,-fpu', accel='tcg', qmp_stdio=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
+                           'pause_window_manager':False,
                            'rejection_prefixes':('INPUT REJECT ',),
                            'command_timeout':120})
         report['result'] = 'pass'

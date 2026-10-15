@@ -487,6 +487,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,
                        pointer=interaction.get('return_pointer') if interaction is not None else None,
                        rejection_message=rejection_message)
+            pause_window_manager=startup_check is not None and startup_check.get('pause_window_manager',True)
+            if pause_window_manager:
+                submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')
             if startup_check is not None:
                 for index,command_spec in enumerate(startup_check['commands']):
                     source,answers=command_spec[:2]
@@ -496,6 +499,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,'startup_status':status,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
+                        'setup_commands':int(pause_window_manager),
+                        'window_manager_pause_requested':pause_window_manager,
                         'vga':'all pixels matched at each checkpoint',
                         'interaction_latencies_seconds':interaction_latencies}
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
@@ -706,6 +711,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 capture_audio_phase('tone_880')
             submit('Snd(72);SndRst;(InU8(0x61)&3)==0;', ['1'], 'speaker-reset')
             if audio_wav is not None: capture_audio_phase('reset')
+            if groups is None or set(groups)&{'windows','graphics','text-frames','documents','file-navigation','document-editing','document-resources','document-latency','document-sprites','document-compatibility','help','text'}:
+                active_group=None
+                submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')
             active_group='windows'
             submit('#include "/Kernel/I386/WindowServiceCheck.HC"', [], 'window-service-source')
             submit('WindowServiceCheck;', ['14'], 'window-service-check')

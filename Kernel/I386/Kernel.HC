@@ -250,6 +250,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   kernel_keys->task.memory=&kernel_heap;
   KernelLog("CONSOLE TASK SPAWNED\n");
   while(1) {
+    if(kernel_console.window_ensure)kernel_console.window_ensure();
     if(!I386SchedIdle(&kernel_scheduler,&i386_idle)) I386SchedYield(&kernel_scheduler);
   }
 }

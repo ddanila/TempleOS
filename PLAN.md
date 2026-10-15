@@ -6,9 +6,53 @@
 386+/VGA port, preserving their HolyC and DolDoc behavior, with automated
 compatibility tests and native self-hosting.**
 
-Status: C1 discovery and the C2 runnable baseline are in progress; full
+Status: C1 discovery and C2 desktop integration are in progress; normal-boot
+automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
+
+### Current checkpoint and next acceptance work (2026-10-15)
+
+The final normal image passes automatic refresh (9 commands), worker lifecycle
+(14), error isolation (14), window traversal (36), whole-window update (48),
+and window/graphics/text-frame groups (24 submissions including setup).
+Normal 8 MiB startup passes in 47.47 seconds without build-provider loading.
+Original rebuild, cross-build and the 386 boot audit pass.
+
+Current-source diagnostic/native qualification is **not** green: the added
+8 MiB diagnostic session and 16 MiB development native-kernel rebuild attempt
+both end with a 307200-byte allocation failure and `FAIL native kernel`.
+Locate the startup/resource failure and restore these checks before claiming
+minimal-profile regression coverage or a newly qualified native generation.
+See [checkpoint evidence](docs/i386-managed-refresh.md#checkpoint-evidence-and-open-regressions-2026-10-15).
+C1–C5 remain open; the automatic A/B gate is a C2 integration step only.
+
+### Normal boot now runs a managed refresh worker (2026-10-15)
+
+The native system now starts a real WinMgr and binds sys_winmgr_task to it.
+Dynamic shown documents refresh through the original window body without app
+DocRecalc/presentation calls. The first automatic full-window A/B gate passes;
+its previous image still fails the first A observation. Callback Fs is the real
+manager. The kernel memory root supervises actual worker death and restart.
+
+Public Kill protects WinMgr; owner/document retirement requests internal unwind
+through the existing one-shot callback and common resource scopes. Per-window
+failures hide/report the offending view and delay after releasing the frame.
+The retained transcript/editor bridge remains until original stdout/input and
+view integration is complete. Admission is rechecked after waiting for the
+frame lease. Focused raw mode inhibits automatic presentation.
+
+Console version 84 adds a kernel-idle supervision callback (44-to-48-byte private
+service table) and exports startup as symbol 226. Memory version 25 adds normal
+display defaults and public manager protection; public CTask layout is unchanged.
+Explicit component tests pause the manager after normal boot. Automatic refresh,
+worker lifecycle/error and normal startup checks leave it enabled. See
+[managed refresh contract](docs/i386-managed-refresh.md).
+
+This closes the first automatic A/B integration gate, not C2 or the full port.
+Derived-control lifetime, ODE/event work, original cursor/view arbitration,
+held-frame raw/debug recovery, complete stdout/input/Adam-role compatibility and
+all app/demo workflows remain open. C1–C5 are incomplete.
 
 ### Numeric window traversal and consistent visibility anchor (2026-10-15)
 

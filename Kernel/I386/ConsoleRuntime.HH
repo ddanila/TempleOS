@@ -6,7 +6,7 @@
 #include "/Kernel/I386/Mouse.HH"
 //Native task extensions include public heap ownership callbacks.
 #include "/Kernel/I386/DocDiagnostic.HH"
-#define I386_CONSOLE_VERSION 83
+#define I386_CONSOLE_VERSION 84
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;
@@ -33,5 +33,6 @@ class CI386ConsoleServices {
   Bool (*cpu_capture)(CI386ExceptionFrame *frame);
   U0 (*cpu_debug)(CI386ExceptionFrame *frame);
   Bool (*root_headers)();
+  U0 (*window_ensure)();
 };
 #endif

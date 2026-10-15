@@ -116,7 +116,12 @@ U0 NativeRenderRetire(CI386Task *owner,U8 *resource)
     //The immortal root cannot be killed. Its explicit renderer must return;
     //scheduled refresh uses cancellable managed tasks instead.
     if(borrower==I386TaskSelf->owner->root)Yield;
-    else {
+    else if(borrower==sys_winmgr_task) {
+      //Public Kill protects WinMgr. Owner retirement requests internal unwind.
+      irq=I386IrqSave;borrower->task_flags|=1<<TASKf_KILL_TASK;I386IrqRestore(irq);
+      do Yield;
+      while(TaskValidate(borrower) && borrower->task_flags&(1<<TASKf_KILL_TASK));
+    } else {
       if(!(*native_user_providers.kill)(borrower,TRUE,FALSE))Yield;
     }
     //Never retain a stack scope across yielding; callbacks can recover a kill.
