@@ -223,6 +223,7 @@ extern U8 *NativeAStrNew(U8 *text);
 #define AStrNew NativeAStrNew
 #include "/Kernel/I386/RenderScope.HC"
 #include "/Kernel/I386/DocRecalcScope.HC"
+#include "/Kernel/I386/DocDelete.HC"
 #include "/Adam/DolDoc/DocRecalcCore.HC"
 #include "/Kernel/StrIMatchCore.HC"
 #include "/Adam/DolDoc/DocFindCore.HC"
@@ -275,6 +276,7 @@ extern U0 NativeDebugGoClear(U8 *ip=U32_MAX,CTask *task=NULL);
 extern U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL);
 extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
 U32 console_version=I386_CONSOLE_VERSION;
+U8 **native_owner_retire_slot;
 extern Bool NativeGraphicsStart();
 extern Bool NativeGraphicsStorageReserve();
 extern Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
@@ -313,6 +315,11 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   provider=HashFind("_KILL",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_user_providers.kill=provider->val;
+  provider=HashFind("I386TaskOwnerRetireHook",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=3 || !provider->val)return FALSE;
+  native_owner_retire_slot=provider->val;
+  if(*native_owner_retire_slot && *native_owner_retire_slot!=&NativeRenderOwnerRetire)
+    return FALSE;
   provider=HashFind("_SUSPEND",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_user_providers.suspend=provider->val;
@@ -586,6 +593,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   winmgr.ideal_refresh_tS=tS;
   winmgr.last_refresh_tS=winmgr.ideal_refresh_tS;
   NativeBreakpointInstall;
+  *native_owner_retire_slot=(&NativeRenderOwnerRetire+0)(U64);
   if(config->defer_root_headers) return TRUE;
   return ConsoleRootHeaders;
 }

@@ -4,6 +4,9 @@ class CNativeRenderScope {
   CI386Task *task;
   U0 (*previous_cleanup)(CI386Task *task);
   U0 (*release)(CNativeRenderScope *scope);
+  CI386Task *resource_owner,*window_owner;
+  U8 *resource;
+  Bool retiring_resource;
 };
 CNativeRenderScope *native_render_scopes;
 extern U0 NativeRenderCleanup(CI386Task *task);
@@ -12,9 +15,34 @@ U0 NativeRenderScopeOpen(CNativeRenderScope *scope,
 {
   U32 irq=I386IrqSave;
   scope->task=I386TaskSelf;scope->previous_cleanup=scope->task->cleanup;
+  scope->resource_owner=scope->window_owner=NULL;
+  scope->resource=NULL;scope->retiring_resource=FALSE;
   scope->release=release;scope->next=native_render_scopes;
   native_render_scopes=scope;scope->task->cleanup=&NativeRenderCleanup;
   I386IrqRestore(irq);
+}
+
+Bool NativeRenderOwnerClosing(CI386Task *owner)
+{
+  return owner && (!TaskValidate(owner) ||
+    owner->task_flags&(1<<TASKf_KILL_TASK));
+}
+Bool NativeRenderResourceRetiring(U8 *resource)
+{
+  CNativeRenderScope *scope=native_render_scopes;
+  while(scope) {
+    if(scope->resource==resource && scope->retiring_resource)return TRUE;
+    scope=scope->next;
+  }
+  return FALSE;
+}
+U0 NativeRenderScopeBorrow(CNativeRenderScope *scope,CI386Task *owner,
+  CI386Task *window_owner,U8 *resource)
+{//Admission is cooperative/atomic: no yield before the association is published.
+  if(NativeRenderOwnerClosing(owner) || NativeRenderOwnerClosing(window_owner) ||
+      NativeRenderResourceRetiring(resource))throw('DocGone',TRUE);
+  scope->resource_owner=owner;scope->window_owner=window_owner;
+  scope->resource=resource;
 }
 U0 NativeRenderScopeRemove(CNativeRenderScope *scope)
 {//Caller excludes IRQs; another task's live scope may precede this one.
@@ -50,4 +78,52 @@ U0 NativeRenderCleanup(CI386Task *task)
       return;
     }
   }
+}
+U0 NativeRenderDrainExiting(CI386Task *task)
+{//Committed Exit abandons its own render frames before canceling other users.
+  CNativeRenderScope *scope;
+  U32 irq,finishing;
+  while(task->cleanup==&NativeRenderCleanup) {
+    irq=I386IrqSave;scope=native_render_scopes;
+    while(scope && scope->task!=task)scope=scope->next;
+    if(!scope)KernelStop;
+    NativeRenderScopeRemove(scope);task->cleanup=scope->previous_cleanup;
+    finishing=task->finishing;task->finishing=TRUE;
+    I386IrqRestore(irq);
+    //These native release functions do not yield. Suppress break delivery on
+    //DocUnlock while Exit is committed, without invoking prior task cleanup.
+    (*scope->release)(scope);
+    irq=I386IrqSave;task->finishing=finishing;I386IrqRestore(irq);
+  }
+}
+U0 NativeRenderRetire(CI386Task *owner,U8 *resource)
+{
+  CNativeRenderScope *scope;
+  CI386Task *borrower;
+  U32 irq;
+  while(TRUE) {
+    irq=I386IrqSave;scope=native_render_scopes;borrower=NULL;
+    while(scope) {
+      if(scope->task!=I386TaskSelf &&
+          (resource && scope->resource==resource || !resource &&
+           (scope->resource_owner==owner || scope->window_owner==owner))) {
+        borrower=scope->task;break;
+      }
+      scope=scope->next;
+    }
+    I386IrqRestore(irq);
+    if(!borrower)return;
+    //The immortal root cannot be killed. Its explicit renderer must return;
+    //scheduled refresh uses cancellable managed tasks instead.
+    if(borrower==I386TaskSelf->owner->root)Yield;
+    else {
+      if(!(*native_user_providers.kill)(borrower,TRUE,FALSE))Yield;
+    }
+    //Never retain a stack scope across yielding; callbacks can recover a kill.
+  }
+}
+U0 NativeRenderOwnerRetire(CI386Task *task)
+{
+  NativeRenderDrainExiting(task);
+  NativeRenderRetire(task,NULL);
 }

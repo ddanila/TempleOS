@@ -1253,6 +1253,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-owner-exit-lines/result.json",
           "scope": "17-command native linked-lifecycle contract: User owns displayed document and compiled tag; owner Exit/external kill retires yielding child renderer before terminal document cleanup, exact parent heap and presentation reuse; not independent worker lifetime or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-render-owner-retire.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-owner-retire-green/result.json",
+          "scope": "35-command native independent-borrower contract: owner Exit/kill, concurrent deletion, rejected self-deletion and retry, exact parent heap and presentation reuse; scheduled refresh and whole-file qualification remain open"
         }
       ]
     },
@@ -1557,6 +1563,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-owner-exit-lines/result.json",
           "scope": "17-command native linked-lifecycle contract: User owns displayed document and compiled tag; owner Exit/external kill retires yielding child renderer before terminal document cleanup, exact parent heap and presentation reuse; not independent worker lifetime or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-render-owner-retire.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-render-owner-retire-green/result.json",
+          "scope": "35-command native independent-borrower contract: owner Exit/kill, concurrent deletion, rejected self-deletion and retry, exact parent heap and presentation reuse; scheduled refresh and whole-file qualification remain open"
         }
       ]
     },

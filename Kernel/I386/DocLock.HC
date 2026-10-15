@@ -4,7 +4,7 @@
 #include "/Adam/DolDoc/DocLockCore.HC"
 U0 I386DocYield()
 {//A document waiter owns no lock yet. Resume normally before checking breaks.
-  I386SchedYield(I386TaskSelf->owner);
+  Yield;
   I386DocBreakPoll;
 }
 Bool I386DocBreakLock(CTask *task)

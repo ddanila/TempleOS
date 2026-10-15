@@ -49,7 +49,11 @@ open. Passing an explicit presentation test does not supersede it.
    inside its owner-compiled tag now passes both lifecycle cases; see
    [owner-exit coverage](i386-render-owner-exit.md). This does not establish
    lifetime protection for an unrelated persistent worker or qualify a change
-   to the original callback execution context.
+   to the original callback execution context. The subsequent
+   [managed retirement contract](i386-render-retirement.md) now covers active
+   independent borrowers, owner Exit/kill and concurrent DocDel while preserving
+   worker Fs. Target registration before yielding, worker restart and document
+   replacement integration remain open.
 2. **Worker/document lifetime and presentation ownership.** Use the native
    scheduler's established ownership model. Exit waits for linked children and
    inherited task/code/heap references defer retirement; reuse those guarantees

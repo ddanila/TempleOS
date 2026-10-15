@@ -3,6 +3,9 @@
 #define DOC_RECALC_SCOPE_OPEN
 #define DOC_RECALC_SCOPE_CLOSE
 #endif
+#ifndef DOC_RECALC_SCOPE_LOCKED
+#define DOC_RECALC_SCOPE_LOCKED
+#endif
 #ifndef DOC_RECALC_FPS
 #define DOC_RECALC_FPS winmgr.fps
 #endif
@@ -289,24 +292,25 @@ public Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL)
 
   if (!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return FALSE;
 
+  try {
+  DOC_RECALC_SCOPE_OPEN;
     //WinMgr updates all wins $TX,"30",D="WINMGR_FPS"$, 33.33333mS
   if (recalc_flags&RECALCG_MASK==RECALCt_TO_SCRN && doc->owning_task!=Fs) {
     i_jif=DOC_RECALC_JIFFIES+JIFFY_FREQ/250; //4 ms
     while (Bt(&doc->locked_flags,DOClf_LOCKED)) {
       if (DOC_RECALC_JIFFIES>=i_jif)
-	return FALSE; //Bail-out if doc locked.
+	{result=FALSE;goto doc_recalc_done;} //Bail-out if doc locked.
       Yield;
     }
   }
 
-  try {
-  DOC_RECALC_SCOPE_OPEN;
   unlock=DocLock(doc);
   if (doc->doc_signature!=DOC_SIGNATURE_VAL) {
     result=FALSE;
     goto doc_recalc_done;
   }
 
+  DOC_RECALC_SCOPE_LOCKED;
   win_task=doc->win_task;
   mem_task=doc->mem_task;
   blink_flag=Blink;

@@ -10,6 +10,28 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Independent render borrowers retire before their owners (2026-10-15)
+
+Managed Exit now cancels tracked document render borrowers before owner heap and
+code teardown, after existing end callbacks and linked-child retirement. Render
+scopes track both document memory and window owners while preserving worker Fs.
+Native DocDel blocks new borrowers, cancels active render users and rejects
+recursive self-deletion with DocBusy. Memory/console interfaces are now 24/80;
+public CTask and service-table layouts remain unchanged.
+
+The previous image fails the first independent-owner case with mask 61 instead
+of 63. All 35 new commands pass on the current image: six explicit Exit/kill
+owner cases, concurrent deletion and rejected self-deletion followed by retry,
+with exact parent-heap recovery and reusable graphics/text presentation.
+Bootstrap, cross-build and 386 boot audit pass. The 8 MiB interactive startup
+check passes in 46.49 seconds without build-provider loading. See
+[retirement contract and boundaries](docs/i386-render-retirement.md).
+
+This supplies a lifetime building block for scheduled refresh. Worker supervision,
+protected target selection, document replacement, original cursor/view behavior,
+window-manager rebinding and the automatic A/B refresh gate remain open.
+C1–C5 remain incomplete; this is not desktop/application parity.
+
 ### Native pointer leases and displayed backing qualify (2026-10-15)
 
 Native pointer show/move/hide operations now share one graphics lease. They

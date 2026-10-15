@@ -35,7 +35,8 @@ CI386BackingPool memory_pool;
 CI386Task *memory_root;
 CTask *adam_task;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[48];
+CI386KernelSymbol memory_exports[49];
+U0 (*memory_owner_retire)(CI386Task *task);
 CSema memory_semas[SEMA_SEMAS_NUM];
 CJob memory_macro_head;
 CTask *memory_macro_task;
@@ -66,7 +67,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//Reserve startup pages early; subsequent public backing grows on demand.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[48],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0I386PostKeyTimed\0I386ScanKeyTimed\0I386CAllocExact\0";
+  U8 *addresses[49],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0I386PostKeyTimed\0I386ScanKeyTimed\0I386CAllocExact\0I386TaskOwnerRetireHook\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->gs || !root->owner || root->owner->root!=root ||
@@ -105,10 +106,11 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[42]=&MemoryKill; addresses[43]=&MemoryHashRemDel; addresses[44]=&adam_task;
   addresses[45]=&MemoryPostKeyTimed; addresses[46]=&MemoryScanTimed;
   addresses[47]=&MemoryCAllocExact;
-  for(i=0;i<48;i++) {
+  addresses[48]=&memory_owner_retire;
+  for(i=0;i<49;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1;
-    if(i>=39 && i<=41 || i==44) memory_exports[i].kind=3;
+    if(i>=39 && i<=41 || i==44 || i==48) memory_exports[i].kind=3;
     memory_exports[i].val=(addresses[i]+0)(U64);
     HashAdd(&memory_exports[i],symbols);
     while(*names) names++;

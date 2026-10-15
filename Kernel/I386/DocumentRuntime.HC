@@ -133,15 +133,7 @@ public CDoc *DocNew(U8 *filename=NULL,CTask *task=NULL)
   }
   return doc;
 }
-public U0 DocDel(CDoc *doc)
-{
-  Bool unlock;
-  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
-  unlock=DocLock(doc); NativeDocRstUnlocked(doc,TRUE);
-  doc->doc_signature=0; Free(doc->find_replace); Free(doc->dollar_buf);
-  if(unlock) DocUnlock(doc);
-  Free(doc);
-}
+extern U0 DocDel(CDoc *doc);
 public I64 DocSize(CDoc *doc)
 {
   CDocEntry *entry;

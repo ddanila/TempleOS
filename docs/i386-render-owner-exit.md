@@ -48,3 +48,7 @@ refresh is enabled. Root-owned graphics-storage termination is a separate gap.
 
 The automatic A/B document-refresh gate and C1–C5 remain open. See
 [the refresh integration plan](i386-document-refresh.md).
+
+The later [managed retirement contract](i386-render-retirement.md) adds separate
+independent-borrower and concurrent-deletion coverage. The linked test above
+remains the regression for the original parent/child lifetime ordering.
