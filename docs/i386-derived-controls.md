@@ -92,3 +92,83 @@ cleanup; the automatic mask-3 contract remains open until the prepass is wired.
 
 The existing automatic A/B refresh regression also passes all 9 commands with
 unchanged pinned inputs in `build/i386-c4-derived-scope-auto/result.json`.
+
+## Automatic ring prepass candidate (Console 86)
+
+The resident manager now runs the derived pass before view admission on every
+iteration, including iterations without a custom shown document. This preserves
+updates for hidden and covered tasks. It snapshots task numbers in predecessor
+order, starting at the manager's predecessor and ending with the manager itself.
+Each number is resolved again before entering the protected derived update. New
+members join the next pass; disappeared members are skipped. The common list
+scope releases the temporary numbers on exceptions and forced Exit as well as
+normal completion. Failures retain the offending task number for the existing
+worker report/unwind path. Full original general-error/debug policy is still
+separate work.
+
+The original spin wait remains the default in the shared core. The native hook
+restores the caller's IRQ state, yields to the lock holder, then masks IRQs before
+retrying. A waiting scope borrows the target but does not claim its lock; its
+cancellation must not release another updater's lock. The new contention fixture
+checks canceled and successful waiters, callback ordering, exact parent heap and
+presentation reuse. Version 85 times out in the first contested call in
+`build/i386-c4-derived-contention-red/result.json` with unchanged pinned inputs.
+
+The automatic ring fixture attaches controls to two hidden tasks and a pass-end
+marker to the manager. It checks predecessor order and completion in one pass,
+then moves the first target to the bottom from its callback. This specifically
+rejects a live-pointer walk that skips the second target. Setup briefly suspends
+the manager while attaching controls, then resumes ordinary OS scheduling;
+there is no app call to derived-value or presentation helpers during observation.
+Cleanup checks task locks, manager identity, exact parent heap and frame reuse.
+
+The matching pinned-original probe records `[15,13]` in
+`build/i386-c1-auto-derived-ring-reference/result.json`, with unchanged inputs:
+normal hidden-task updates succeed, but moving the first target makes the
+original live-pointer loop skip the second in that pass. Native qualification
+requires the safer snapshot behavior (mask 63 in both complete cases), while
+preserving the original ordinary predecessor order and callback context. This
+is a deliberate lifetime/traversal improvement, not a claim that the original
+handles callback ring mutation safely.
+
+```
+python3 tools/test-i386-control-derived-contention.py IMAGE --out OUT
+python3 tools/test-i386-auto-control-derived.py IMAGE --out OUT
+python3 tools/test-i386-auto-derived-ring.py IMAGE --out OUT
+python3 tools/test-i386-auto-derived-ring-reference.py --out OUT
+```
+
+Control-list mutation/reentrant derived updates, full bare-task control disposal,
+ODE/events and mouse/cursor/stdout integration remain open. Completing these
+prepass contracts does not close C2, C4, or any complete C1–C5 milestone.
+
+## Console-86 final-image evidence
+
+`build/i386-c2-automatic-derived-cross/kernel.img` is the final image. Bootstrap,
+cross-build and the 386 boot audit pass. All 1471 recorded source/build inputs
+match. The result files below retain their fixture/input provenance:
+
+| Result path under build/ | Scope | Result |
+| --- | --- | --- |
+| i386-c2-automatic-derived-simple/result.json | First automatic control callback/width gate, 7 commands | pass |
+| i386-c4-derived-contention-final/result.json | Canceled/successful contended waiters, 16 commands | pass |
+| i386-c2-automatic-derived-ring/result.json | Hidden tasks, predecessor order and one-pass callback reordering, 21 commands | pass |
+| i386-c2-automatic-derived-lifecycle-final/result.json | Actual manager owner-driven cancellation and actual death/restart, exact parent **and manager** live heap, 17 commands | pass |
+| i386-c2-automatic-derived-explicit/result.json | All six explicit lifecycle cases, 20 commands | pass |
+| i386-c2-automatic-derived-worker/result.json | Existing document-callback cancellation/restart, 14 commands | pass |
+| i386-c2-automatic-derived-error/result.json | Existing document-callback error isolation/report/cooldown, 14 commands | pass |
+| i386-c2-automatic-derived-document/result.json | Automatic full-window A/B document glyphs, 9 commands | pass |
+| i386-c2-automatic-derived-frames/result.json | Windows/graphics/text frames at 64 MiB, 24 submissions including pause setup | pass |
+| i386-c2-automatic-derived-startup/result.json | Normal 8 MiB startup, 9 commands, 48.64 seconds, manager enabled and zero build-provider loads | pass |
+
+The automatic-derived lifecycle fixture records the manager's live heap while
+paused before the scenario. After owner cancellation/replacement or actual
+manager restart, it requires the same live-byte count on the healthy manager.
+This checks temporary pass-snapshot recovery as well as the parent-owned control
+allocation. It does not establish bounded peak memory for arbitrary callbacks.
+The earlier lifecycle prototype lacks this manager-heap assertion; the final
+17-command artifact above is authoritative for that stronger claim.
+
+These are component/integration gates. Complete native generations using the
+full desktop/application set are not qualified by these cross-built tests. The
+older Console-84 development native-kernel attempt remains separate evidence.

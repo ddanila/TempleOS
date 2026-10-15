@@ -3646,6 +3646,30 @@
           "result": "fail",
           "evidence": "build/i386-c2-auto-derived-red-final/result.json",
           "scope": "Current native manager lacks automatic derived-control prepass; mask 0 rejected instead of required 3; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-control-derived.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-automatic-derived-simple/result.json",
+          "scope": "Normal-boot manager automatically invokes control geometry callback with original Fs/derived width contract; 7 commands; not whole-file parity"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-derived-ring-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-auto-derived-ring-reference/result.json",
+          "scope": "Pinned original hidden-task prepass with end marker: masks [15,13], ordinary predecessor order succeeds and callback ring mutation skips the second target; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-derived-ring.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-automatic-derived-ring/result.json",
+          "scope": "21 commands: actual manager updates two hidden targets in original predecessor order within one pass; snapshot survives callback reordering; lock/context/heap/presentation checks; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-auto-derived-lifecycle.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-automatic-derived-lifecycle-final/result.json",
+          "scope": "17 commands: actual manager cancellation during hidden-control derived callback, owner retirement/replacement, actual manager death/new task identity, IRQ/context, exact parent and manager live heap and reusable presentation; not whole-file parity"
         }
       ]
     },
@@ -12387,6 +12411,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-derived-lifecycle-final/result.json",
           "scope": "Native scoped TaskDerivedValsUpdate shared core: normal/throw/Exit/updater kill/owner Exit/kill; 20 commands, six mask-63 cases, target lock, callback IRQ/context, exact parent heap and presentation reuse; not automatic prepass or whole-file parity"
+        },
+        {
+          "command": "python3 tools/test-i386-control-derived-contention.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-derived-contention-final/result.json",
+          "scope": "16 commands: native cooperative contended lock, canceled waiter preserves holder lock, successful waiter resumes, exact parent heap and presentation reuse; original default spin policy and public layout unchanged; not whole-file parity"
         }
       ]
     },

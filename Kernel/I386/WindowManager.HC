@@ -61,6 +61,7 @@ U0 NativeWindowWorker(U8 *data)
     Fs->task_end_cb=&NativeWindowCancel;
     native_window_fault_task=0;
     try {
+      NativeWindowDerived;
       if(NativeWindowNeeded())
         NativeGraphicsPresentChecked(&NativeWindowListDraw,FALSE,&NativeWindowAdmit);
     } catch {

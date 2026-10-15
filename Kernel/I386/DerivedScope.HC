@@ -22,6 +22,9 @@ U0 NativeDerivedOpen(CNativeDerivedScope *scope,CTask *task,I64 flags,
   if(!task)throw('DocGone',TRUE);
   NativeRenderScopeBorrow(scope,task,task,NULL);
 }
+U0 NativeDerivedWait(I64 flags)
+{ SetRFlags(flags);Yield;SetRFlags(flags&~0x200); }
+#define TASK_DERIVED_LOCK_WAIT NativeDerivedWait(flags)
 #define TASK_DERIVED_SCOPE_LOCAL CNativeDerivedScope native_derived_scope
 #define TASK_DERIVED_SCOPE_OPEN NativeDerivedOpen(&native_derived_scope,task,flags,&locked,invalidate)
 #define TASK_DERIVED_SCOPE_CLOSE NativeRenderScopeClose(&native_derived_scope)

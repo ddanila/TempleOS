@@ -11,6 +11,45 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Automatic derived-control prepass and cooperative locking (2026-10-15)
+
+Console version 86 runs original-order derived updates before view admission on
+every WinMgr iteration, including hidden and covered tasks. Numeric task
+snapshots survive callback reordering and share normal/exception/Exit cleanup.
+Native lock contention now yields to the holder; canceling a waiter does not
+unlock the holder's target. No public layout or service-table changes occur.
+
+The first automatic-control gate now passes 7 commands (original mask 3,
+previous-native mask 0). The 21-command ring gate updates both hidden tasks in
+one pass and survives moving the first target from its callback. The pinned
+original returns [15,13]: normal ordering succeeds but its pointer walk skips
+the second target after that mutation. The port intentionally requires the safer
+snapshot traversal. Both 16-command contention cases pass; version 85 stalls
+in the first contested call.
+
+Original bootstrap, cross-build and 386 boot audit pass. Normal 8 MiB startup
+passes 9 commands in 48.64 seconds without build-provider loading. Existing
+worker lifecycle (14), callback-error isolation (14), automatic document A/B (9)
+and 64 MiB window/graphics/text-frame checks (24 submissions) pass. The stronger
+automatic-derived lifecycle test additionally checks the manager's live heap;
+its final 17-command run passes, as does the 20-command explicit lifecycle
+regression.
+See [contracts and evidence](docs/i386-derived-controls.md).
+
+This advances C2/C4. Control-list mutation/reentrancy, complete control disposal,
+ODE/events, cursor/view/input/stdout integration, bundled app/demo workflows and
+complete native release qualification remain open. C1–C5 are incomplete. The
+earlier Console-84 development native-kernel build is still running on its
+pinned guest source image; it does not qualify the new Console-86 image.
+
+The next desktop contract is original frame/Refresh cadence with ordinary
+stdout/input views, alongside the remaining event/control/mouse paths. Capture
+original Refresh modes and interruption behavior first. Require progress without
+application presentation calls, actual completed-frame accounting and recovery;
+do not substitute artificial counter increments for the original visible work.
+The transcript/editor bridge remains a compatibility gap until those ordinary
+views and their input/document roles are integrated.
+
 ### Derived-control cleanup candidate (2026-10-15)
 
 Console version 85 wraps explicit derived-control updates in the common native

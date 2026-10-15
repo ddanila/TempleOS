@@ -7,6 +7,11 @@ as WinMgr, preserving the original callback execution context. The persistent
 drawing context is associated with WinMgr; the frame context retains the console
 association, matching the original initialization split.
 
+Console version 86 also runs the ring-wide derived-control prepass, including
+hidden/covered tasks, before view admission. Its numeric snapshot preserves
+ordinary predecessor order across callbacks. Contended native task locks yield
+cooperatively. See [derived-control contracts](i386-derived-controls.md).
+
 ## Scheduling, view admission and recovery
 
 The worker requests frames at a nominal 33 ms cadence. It uses the numeric window
@@ -43,9 +48,9 @@ is not yet the complete original window-manager policy.
 
 ## Interface and test separation
 
-Console interface version 84 adds the private `window_ensure` callback, growing
+Console interface version 84 introduced the private `window_ensure` callback, growing
 its 32-bit service table from 44 to 48 bytes. It exports NativeWinMgrStart as
-symbol 226. Memory interface version 25 adds normal display defaults and public
+symbol 226. Version 86 retains that table and export count. Memory interface version 25 adds normal display defaults and public
 WinMgr Kill protection; its table and 49-symbol count are unchanged. Public CTask
 layout is unchanged. Kernel/provider versions and service entry addresses are
 checked together.
@@ -84,7 +89,7 @@ full stack-symbol or debugger qualification.
 ## Remaining desktop acceptance
 
 The automatic full-window A/B case is one executable desktop baseline, not C2
-completion. Protected per-frame derived-control updates, ODE/event work, mouse
+completion. Control-list mutation and reentrant derived-update lifetime, ODE/event work, mouse
 and cursor composition, complete legacy-view/stdout/input integration, overlapping
 window arbitration and held-frame raw/debug transitions remain open. Root/Adam
 role compatibility and all bundled app/demo workflows still require qualification.
@@ -123,7 +128,8 @@ historical evidence, not substitutes for this image.
 ## Next TDD slice: automatic derived controls
 
 The original WinMgr runs TaskDerivedValsUpdate over the task ring before window
-selection/rendering. The native worker currently lacks that prepass. The new
+selection/rendering. Version 84 lacked that prepass; version 86 integrates it with the scope and
+contention contracts in [derived-control work](i386-derived-controls.md). The
 `test-i386-auto-control-derived.py` attaches a control to the running task and
 sleeps, without geometry or presentation calls. Its callback must run as the
 actual manager and derive its width from the owner's pixel width (mask 3).

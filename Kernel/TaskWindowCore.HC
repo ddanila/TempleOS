@@ -3,6 +3,10 @@
 #define TASK_DERIVED_SCOPE_OPEN
 #define TASK_DERIVED_SCOPE_CLOSE
 #endif
+//Native single-CPU callers must let the lock holder run while waiting.
+#ifndef TASK_DERIVED_LOCK_WAIT
+#define TASK_DERIVED_LOCK_WAIT
+#endif
 U0 TaskWindowDerivedRelease(CTask *task,I64 flags,Bool *locked)
 {
   if(*locked) {
@@ -20,7 +24,7 @@ U0 TaskWindowDerivedCore(CTask *task,U0 (*controls)(CTask *task),U0 (*invalidate
   try {
     TASK_DERIVED_SCOPE_OPEN;
     SetRFlags(flags&~0x200);
-    while(LBts(&task->task_flags,TASKf_TASK_LOCK)) {}
+    while(LBts(&task->task_flags,TASKf_TASK_LOCK)) { TASK_DERIVED_LOCK_WAIT; }
     locked=TRUE;
     WinDerivedValsUpdate(task);
     if(controls) (*controls)(task);

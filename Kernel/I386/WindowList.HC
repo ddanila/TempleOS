@@ -18,6 +18,39 @@ CTask *NativeWindowFind(I64 number)
   } while(task!=anchor);
   return NULL;
 }
+U0 NativeWindowDerived()
+{//Original predecessor order, including hidden/covered tasks and manager last.
+  CNativeWindowListScope scope;
+  CTask *task,*anchor=sys_winmgr_task;
+  I64 *numbers=NULL,count=0,i;
+  scope.numbers=&numbers;
+  try {
+    NativeRenderScopeOpen(&scope,&NativeWindowListRelease);
+    task=anchor;
+    do {
+      if(!TaskValidate(task))throw('WinList',TRUE);
+      count++;task=task->last_task;
+    } while(task!=anchor);
+    numbers=MAlloc(count*sizeof(I64));
+    task=anchor->last_task;
+    for(i=0;i<count;i++) {
+      numbers[i]=task->task_num;task=task->last_task;
+    }
+    for(i=0;i<count;i++) {
+      task=NativeWindowFind(numbers[i]);
+      if(task && !NativeRenderOwnerClosing(task)) {
+        native_window_fault_task=task->task_num;
+        TaskDerivedValsUpdate(task,FALSE);
+        native_window_fault_task=0;
+      }
+    }
+    NativeWindowListRelease(&scope);
+  } catch {
+    NativeWindowListRelease(&scope);
+    NativeRenderScopeClose(&scope);
+  }
+  NativeRenderScopeClose(&scope);
+}
 U0 NativeWindowListDraw(CDC *dc)
 {
   CNativeWindowListScope scope;
