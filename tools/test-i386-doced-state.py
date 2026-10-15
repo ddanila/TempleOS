@@ -64,6 +64,7 @@ def main():
             cpu='486,-fpu', accel='tcg', qmp_stdio=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
+                           'rejected_answers':['0'],
                            'rejection_prefixes':('INPUT REJECT ',),
                            'command_timeout':120})
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))

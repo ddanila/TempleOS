@@ -11,6 +11,22 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original View/DocEd core extracted; native flagged-call failure explicit (2026-10-15)
+
+The complete original View/DocEd implementation is extracted into
+Adam/DolDoc/DocEdCore.HC, preserving the original function bodies and help-index
+assignments. The original editor includes it; the native retained editor does
+not yet bind it. This prepares actual original form/state integration without
+replacing forms with a reduced chooser. Native scoped border/title/document
+cleanup and full original key/action handling remain required.
+
+The native flagged-call test now fails immediately on its exact VGA zero answer,
+with unchanged inputs in build/i386-c2-doced-flags-fast-red, before transferring
+the full six-case fixture. The final two-generation original bootstrap passes. Final controls pass with
+unchanged inputs in build/i386-c4-doced-core-final-state (six masks of 255) and
+build/i386-c4-doced-core-final-chooser ([11,12,22,-1,17,1]). No native DocEd/form
+pass or C1–C5 completion is claimed.
+
 ### Original DocEd state contract captured (2026-10-15)
 
 Pinned-original and shared-original controls pass six masks of 255 with unchanged

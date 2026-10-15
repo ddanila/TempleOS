@@ -162,3 +162,28 @@ returns false for any nonzero flags and reads private NativeReadKey for its
 retained loop. Removing the flags rejection alone cannot supply the original
 message-driven View/form path; complete original input/action integration and
 scoped border/title/document ownership are required.
+
+### Complete original editor core extracted
+
+`Adam/DolDoc/DocEdCore.HC` now contains the complete original View and DocEd
+bodies. Adam/DolDoc/DocEd.HC includes it after the existing border callbacks.
+The extraction preserves the function bodies byte for byte, including bound
+DATA/CHECK_BOX scanning, border tags and callbacks, option handling, actual
+View/DocGetKey input, and ordinary restoration. Original help-index assignments
+are retained in the core. Native DocEd does not yet bind this core.
+
+The first extraction passes a two-generation original bootstrap, the six-mask
+state oracle and the real chooser oracle [11,12,22,-1,17,1]. After preserving original help-index metadata, the final two-generation
+bootstrap also passes. Both final controls pass with unchanged inputs in
+`build/i386-c4-doced-core-final-state/result.json` (six masks of 255) and
+`build/i386-c4-doced-core-final-chooser/result.json` ([11,12,22,-1,17,1]).
+This refactor does not add exception/forced-exit cleanup to the original body:
+border/title allocations and old document roles must enter native cleanup scopes
+before full form lifetimes qualify. Complete original DocPutKey/DocChar/action
+semantics remain required; the retained native basic editor is not an equivalent.
+
+The native flagged-call gate now rejects an exact VGA answer of zero using the
+existing harness rejected_answers option. `build/i386-c2-doced-flags-fast-red`
+fails explicitly on that answer, with unchanged inputs, before fixture transfer.
+The previous timeout run also showed zero on its final framebuffer; the new
+failure avoids waiting out the full command timeout for this known mismatch.
