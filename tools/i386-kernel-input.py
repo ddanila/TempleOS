@@ -436,7 +436,15 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         interaction_latencies[latency_name]=time.monotonic()-latency_started
                         if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
                             raise ValueError(f'{latency_name} exceeded visible-update budget')
-                    if interaction.get('exit_hotkey'):
+                    if 'exit_keys' in interaction:
+                        chord=interaction['exit_keys']
+                        if not isinstance(chord,list) or not chord or not all(isinstance(k,str) for k in chord):
+                            raise ValueError('An exit key chord requires a nonempty list of key names')
+                        for modifier in chord[:-1]: key(modifier,True)
+                        try: press(chord[-1])
+                        finally:
+                            for modifier in reversed(chord[:-1]): key(modifier,False)
+                    elif interaction.get('exit_hotkey'):
                         key('ctrl',True); key('alt',True); press('c')
                         key('alt',False); key('ctrl',False)
                     elif interaction.get('exit_shift'):

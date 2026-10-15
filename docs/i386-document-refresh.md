@@ -58,8 +58,11 @@ open. Passing an explicit presentation test does not supersede it.
    release. Serialize shared graphics buffers with editor, raw and explicit
    graphics users; a transient competing refresh must not turn their current
    presentation failure path into KernelStop. Preserve terminal surfaces and
-   focus. Validate the chosen lifecycle with end-to-end termination/recovery
-   tests before enabling the worker at normal boot.
+   focus. Bulk console/focus uploads now join the lease and revalidate terminal
+   identity/focus after waiting; see [raw presentation](i386-raw-presentation.md).
+   Mouse overlays, full editor/view ownership and debugger transitions during
+   a held frame remain open. Validate the chosen lifecycle with end-to-end
+   termination/recovery tests before enabling the worker at normal boot.
 3. **Scheduled original window updates.** Integrate document, border, task
    drawing and controls with the refresh/compositor contract and measured
    cadence. Reconcile the existing sys_winmgr_task root proxy and public window

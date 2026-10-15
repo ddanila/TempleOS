@@ -10,6 +10,37 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Bulk terminal upload and stale-focus ownership pass (2026-10-15)
+
+Raw console, restoration and focus uploads now join the managed graphics lease
+after graphics startup. Foreign callers wait cooperatively; same-task uploads
+leave dirty rows pending without releasing the outer frame's lease. After a
+wait, the raw path revalidates the task number, terminal surface and current
+focus before touching the saved pointer. Early initialization alone retains
+the direct-upload path.
+
+The preceding image returns mask 125 instead of 127 because raw restoration
+bypasses a yielding frame (`build/i386-c4-raw-present-wait-red-final/result.json`).
+All eighteen raw commands now pass, including four holder/waiter completion and
+cancellation cases, exact parent heap, full console pixels and graphics retry
+(`build/i386-c4-raw-present-wait-final/result.json`). Both stale-focus cases also
+pass in a twenty-one-command session: suspend the older request, let the newer
+terminal display, then resume the older request last. Full VGA observations
+retain the newer terminal with either a live or retired old terminal
+(`build/i386-c4-focus-present-wait-verified/result.json`).
+
+The input harness can finish an observation with an explicit key chord. The
+existing terminal history/focus/exit and editor kill/save/recovery workflows
+remain green, as do all sixteen graphics/text-frame commands and pixel checks.
+Bootstrap, cross-build and 386 boot audit pass; 8 MiB startup passes in 49.90
+seconds with no build-provider loading. See
+[raw presentation evidence](docs/i386-raw-presentation.md).
+
+This closes the bulk terminal-upload contention gap, not complete display
+ownership. Mouse overlays, full editor/view arbitration, debugger transitions
+during a held frame, persistent-worker document/code lifetime, storage-owner
+termination and the automatic A/B refresh gate remain open. C1–C5 remain open.
+
 ### Linked document-owner exit qualifies (2026-10-15)
 
 A new seventeen-command native gate covers a User terminal whose linked child

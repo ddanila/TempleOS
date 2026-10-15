@@ -31,6 +31,11 @@ for the root-owned contexts through the shared guard;
 the ownership and termination contract. Keyboard/timer interrupts
 remain enabled during frame composition and upload.
 
+Bulk terminal console/focus uploads also acquire this lease. They revalidate
+terminal identity and focus after waiting, so an older request cannot upload a
+retired or superseded terminal. See [raw presentation](i386-raw-presentation.md)
+for cancellation and stale-focus contracts and remaining mouse/editor work.
+
 The console task owns both persistent contexts for its lifetime. Repeated
 `NativeGraphicsStart` calls validate and reuse them. Initialization publishes
 neither context until both contexts and the conversion buffer are allocated. Shared `DCNew` and `DCAlias`

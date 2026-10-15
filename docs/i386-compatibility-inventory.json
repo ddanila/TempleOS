@@ -2298,6 +2298,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-owner-exit-lines/result.json",
           "scope": "17-command native linked-lifecycle contract: User owns displayed document and compiled tag; owner Exit/external kill retires yielding child renderer before terminal document cleanup, exact parent heap and presentation reuse; not independent worker lifetime or whole-file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-raw-present-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-raw-present-wait-final/result.json",
+          "scope": "Native bulk console-upload adapter: 18 commands/four frame-holder and raw-waiter completion/cancellation cases, same-task deferral, exact parent heap and console pixels; not original whole-file, mouse/editor arbitration or scheduled refresh"
         }
       ]
     },
@@ -3461,7 +3467,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-focus-present-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-focus-present-wait-verified/result.json",
+          "scope": "Native focus-upload adapter: 21 commands/two cases force older request completion after newer terminal display, including old terminal retirement; independent full VGA pixels, focus hotkey and exact parent heap; not original whole-file or full window-manager parity"
+        }
+      ]
     },
     {
       "path": "Adam/WinMgr.HC",

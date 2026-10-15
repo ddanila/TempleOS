@@ -765,18 +765,7 @@ U0 NativeTerminalInput()
 #include "/Kernel/I386/ConsoleInput.HC"
 #include "/Kernel/I386/Debugger.HC"
 
-U0 ConsolePresentText(CI386Text *surface)
-{
-  I64 rows=I386TextPresent(surface),i;
-  U8 message[13],*prefix="VGA ROWS ";
-  if(rows<0) KernelStop;
-  if(rows) {
-    NativeWinRefreshCommit;
-    for(i=0;i<9;i++) message[i]=prefix[i];
-    message[9]='0'+rows/10; message[10]='0'+rows%10;
-    message[11]=10; message[12]=0; KernelLog(message);
-  }
-}
+extern U0 ConsolePresentText(CI386Text *surface);
 
 U0 ConsolePresent()
 {
@@ -819,6 +808,7 @@ U0 I386DocBreakPoll()
 #include "/Kernel/I386/KeyboardMessages.HC"
 
 #include "/Kernel/I386/Terminals.HC"
+#include "/Kernel/I386/ConsolePresent.HC"
 
 #include "/Kernel/I386/ServantRuntime.HC"
 

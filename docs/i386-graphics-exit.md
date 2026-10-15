@@ -90,8 +90,10 @@ loads (`build/i386-c4-graphics-wait-startup/result.json`).
 
 ## Remaining qualification
 
-Raw console, editor and focus changes still need display-ownership integration
-and end-to-end tests. Storage-owner termination, arbitrary callback-installed cleanup
+Bulk raw console/focus uploads now join the presentation lease and have separate
+[contention and stale-focus contracts](i386-raw-presentation.md). Mouse overlays,
+full editor/view ownership and debugger transitions during a held frame still
+need integration. Storage-owner termination, arbitrary callback-installed cleanup
 wrappers, all allocator/geometry failures and scheduled refresh remain open.
 Do not enable a background worker merely because the forced-exit cases pass:
 the automatic A/B document gate and the rest of the refresh plan still apply.
