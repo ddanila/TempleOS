@@ -11,6 +11,73 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete replacement and lazy navigation pass paired contracts (Console 113, 2026-10-15)
+
+The complete original PopUpReplaceSkipAllCancel, EdFindReplace, EdReplace and
+EdGoToLine bodies now share DocEditorReplaceCore.HC. DocFindPromptTypes.HH
+shares the real go-to class and format metadata with native root headers.
+Reconstruction proves the extracted original tail byte-identical. The complete
+unchanged DocFindCore.HC moves into the optional provider too. Public EdReplace
+and DocGoToLine keep stable signatures/defaults; null calls return without
+loading. Prompted branches are retained and compiled, not replaced with stubs.
+
+Private context/services version 4 are 48/52 bytes. Console supplies permanent
+document exports; the kernel loader fills the canonical bitmap and six actual
+kernel callbacks from its private index. This preserves ownership under a
+shadowed first caller and avoids a rejected cross-builder function-address
+array initializer. That initializer's target-safe relocation support remains
+unqualified compiler work. Console exports are 276; Memory remains 26; public
+CDoc/CTask layouts are unchanged.
+
+Original bootstrap and build/i386-c2-editor-replace-navigation-cross pass with
+570800 kernel bytes and all 1504 build pins matching. The expanded original
+oracle passes fourteen masks of 63 in
+build/i386-c4-editor-replace-navigation-reference. The native paired suite
+passes nineteen commands in build/i386-c2-editor-replace-navigation-native:
+exact replacement counts/text, case/whole-label/selection behavior, empty/
+missing/oversized inputs, saved settings, marker cleanup, incoming locks,
+caller roles/heap, line navigation, null preconditions and actual prompt-class
+metadata. Null calls remain cold; the first real replacement loads exactly once.
+These are bounded public behavior contracts, not prompted UI qualification.
+
+An intermediate candidate met the byte budget but exhausted 8 MiB heap on a
+132-byte request while compiling SPText. Moving the full navigation core
+recovers 5344 resident bytes relative to that candidate. Normal startup then
+passes all nine commands in 55.55 seconds with zero editor loads. The report
+build/i386-editor-replace-navigation-budget.json records Console 2339848 bytes,
+5456 below the unchanged cap; other core spans are unchanged and backing-failure
+observations are zero. Provider spans are not peak RAM.
+
+Search, shadowed-first-child lifetime and version-4 wrong-version repair/retry
+pass in build/i386-c2-editor-replace-search,
+build/i386-c2-editor-replace-owner and
+build/i386-c2-editor-replace-version-recovery. Full 16 MiB no-FPU startup
+diagnostics pass in build/i386-c2-editor-replace-diagnostics. The actual layout
+logs confirm 271 assertions per phase, 34 accepted batches and zero batch heap
+deltas. The host expected count is corrected to match DocLayoutCheck.HH and
+CompilerHeaderProbe.HC, rather than the unrelated export count. Evidence:
+build/i386-editor-replace-layout-evidence.json. The separate legacy 8 MiB
+build --test path is not claimed.
+
+Fresh form observations in build/i386-c2-editor-replace-form-observation remain
+[63,63,63,63,63,60,62] with zero caller heap deltas. Numeric accept/cancel remain
+red. The strengthened ownership fixture in
+build/i386-c2-editor-replace-owner-allocating shadows both _DOC_NEW and _MALLOC,
+verifies both shadows are visible locally, and exercises allocating EdReplace
+in addition to DocForm. No poison callback runs; two child exits, exact
+per-call heap/roles, second-child public-pool recovery and parent export
+identities pass with one provider load.
+
+Native Console/Editor component builds are still running at 16 MiB on
+486 without an FPU in build/i386-c2-editor-replace-native-build. The live process
+continues to compile functions; no export-audit, installation or generation pass
+is claimed. Preserve the frozen runtime source while this job completes.
+Installed native runtime, full native generations, prompted replacement/go-to,
+typed forms, forced cancellation/reentrancy, autocomplete, file/desktop/God
+tools and full original DocPutKey still require work. C1–C5 remain incomplete.
+See [replacement evidence](docs/i386-editor-replace.md) and
+[full input dependencies](docs/i386-doc-put-key.md).
+
 ### Permanent editor exports and replacement TDD baseline (Console 112, 2026-10-15)
 
 The optional provider now resolves existing Console document dependencies from

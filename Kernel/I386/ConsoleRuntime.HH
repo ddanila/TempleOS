@@ -7,7 +7,7 @@
 //Native task extensions include public heap ownership callbacks.
 #include "/Kernel/I386/DocDiagnostic.HH"
 #include "/Kernel/I386/EditorRuntime.HH"
-#define I386_CONSOLE_VERSION 112
+#define I386_CONSOLE_VERSION 113
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;
@@ -20,7 +20,7 @@ class CI386ConsoleConfig {
   I64 *jiffies;
   U32 pit_divisor;
   U64 *pit_ticks;
-  Bool (*editor_load)(CI386EditorServices *services,U8 **owned,I64 *image_bytes);
+  Bool (*editor_load)(CI386EditorServices *services,U8 **owned,I64 *image_bytes,CI386EditorContext *context);
   Bool defer_root_headers;
   Bool (*input_poll)();
   Bool (*doc_diagnostic_load)(CI386DocDiagnosticServices *services,U8 **image,I64 *bytes);

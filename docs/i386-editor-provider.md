@@ -239,3 +239,60 @@ The provider compiles natively on 486 without an FPU at 16 MiB in
 installation/runtime on that native module and full generations remain open.
 The [replacement oracle](i386-editor-replace.md) is the next dependency gate. This does not qualify forced cancellation/reentrancy,
 new native generations, the diagnostic memory case or full desktop behavior.
+
+## Complete replacement and optional navigation (Console 113)
+
+Public EdReplace and DocGoToLine delegate to full original bodies in the
+optional provider. The complete DocFindCore.HC moves there alongside the shared
+DocEditorReplaceCore.HC; no search/navigation/replacement branches are pruned.
+The go-to form class is shared with root headers so real format metadata exists
+for the compiled prompt. See [replacement contracts](i386-editor-replace.md).
+
+Private context/services version 4 are 48/52 bytes. Console supplies its permanent
+document-export array; KernelEditorLoad fills version/size, the canonical bitmap
+and six actual kernel callbacks through its private symbol index. The callback
+load interface now receives the permanent context pointer. Context callback
+fields form a contiguous six-pointer block after the document-array/count
+fields. No caller namespace supplies their addresses, and partial service tables
+are not published. This avoids unsupported cross-builder function-address array
+initializers without substituting custom memory operations.
+
+The corrected cross-build is build/i386-c2-editor-replace-navigation-cross,
+with 570800 kernel bytes and 1504 matching input pins. There are 276 Console
+exports; Memory remains 26. An intermediate build met the span cap but exhausted
+8 MiB heap while compiling SPText. Moving the full navigation core recovers
+5344 resident bytes relative to that candidate. Qualified normal startup now
+passes nine commands in 55.55 seconds, with zero editor loads and no observed
+backing failures. The budget report records 2339848 Console bytes, 5456 below
+the unchanged cap. These spans are not peak RAM.
+
+The nineteen-command replacement/navigation suite, nineteen-command search
+suite, shadowed-first-child ownership and version-4 wrong-version repair/retry
+all pass. The fourteen-case original replacement/navigation/metadata oracle
+passes on the same source snapshot. Full 16 MiB no-FPU startup diagnostics also
+pass. Their actual layout evidence is 271 assertions per phase, 34 accepted
+batches with zero heap delta. The host checker now uses that actual layout
+count rather than the unrelated number of Console exports. Evidence is
+build/i386-editor-replace-layout-evidence.json; this is not acceptance of the
+separate legacy 8 MiB build --test path.
+
+Current native Console/Editor build qualification is running. Installation,
+full native generations, prompted replacement/go-to, typed forms, forced
+cancellation/reentrancy and full desktop/application parity remain open.
+
+## Checkpoint: stronger ownership and pending native audit
+
+build/i386-c2-editor-replace-owner-allocating passes with both _DOC_NEW and
+_MALLOC shadowed in the first child. Both shadow identities are checked; the
+fixture calls complete DocForm and allocating EdReplace, so the provider's
+kernel allocation callback is actually exercised. No poison callback runs.
+Two children retire, the second restores the public pool, parent export
+identities and caller roles/heap recover, and the one provider image survives
+for parent reuse. All inputs remain unchanged.
+
+The final form observation run remains [63,63,63,63,63,60,62] with zero caller
+heap deltas in build/i386-c2-editor-replace-form-observation. Those typed cases
+are still failures. The current native Console/Editor build job is live in
+build/i386-c2-editor-replace-native-build at 16 MiB on 486 without an FPU. Its
+export audit and installed runtime are pending. Keep runtime sources frozen
+until it terminates; component build intent is not a qualification result.

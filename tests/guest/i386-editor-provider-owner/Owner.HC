@@ -3,24 +3,32 @@
 public class ELOpaque { I64 value; };
 class ELExport:CHashExport { U32 kind; };
 CTask *el_child;I64 el_result,el_poison;
-CHash *el_parent_export;
+CHash *el_parent_export,*el_parent_malloc;
 CDoc *ELPoison(U8*name,CTask*task){el_poison++;return NULL;}
+U8 *ELMallocPoison(I64 bytes,CTask*task){el_poison++;return NULL;}
 Bool ELUse()
 {
- I64 before=Fs->data_heap->used_u8s;ELOpaque data;Bool result;
+ I64 before=Fs->data_heap->used_u8s,count;ELOpaque data;Bool result,text_ok;CDoc*d;U8*line;
  CDoc*put=DocPut,*display=DocDisplay,*border=DocBorder;U8*end=Fs->task_end_cb;
  if(!HashFind("ELOpaque",Fs->hash_table,HTT_CLASS))return FALSE;
  data.value=42;result=DocForm(&data,"ELOpaque");
- return !result&&data.value==42&&DocPut==put&&DocDisplay==display&&DocBorder==border&&
+ d=DocNew("EditorOwner.DD");d->flags|=DOCF_PLAIN_TEXT;
+ DocLoad(d,"cat",3);d->flags&=~DOCF_PLAIN_TEXT;DocTop(d);
+ count=EdReplace(d,"cat","dog",FALSE);line=DocScanLine(d,d->head.next);
+ text_ok=line&&!StrCmp(line,"dog");Free(line);DocDel(d);
+ return !result&&data.value==42&&count==1&&text_ok&&DocPut==put&&DocDisplay==display&&DocBorder==border&&
    Fs->task_end_cb==end&&Fs->data_heap->used_u8s==before;
 }
 U0 ELRun(U8*unused)
 {
- ELExport*shadow=CAlloc(sizeof(ELExport));
+ ELExport*shadow=CAlloc(sizeof(ELExport)),*memory=CAlloc(sizeof(ELExport));
  shadow->str=StrNew("_DOC_NEW");shadow->type=HTT_EXPORT_SYS_SYM;
  shadow->kind=1;shadow->val=&ELPoison;HashAdd(shadow,Fs->hash_table);
- el_result=HashFind("_DOC_NEW",Fs->hash_table,HTT_EXPORT_SYS_SYM)==shadow&&ELUse&&!el_poison;
- HashRemDel(shadow,Fs->hash_table);
+ memory->str=StrNew("_MALLOC");memory->type=HTT_EXPORT_SYS_SYM;
+ memory->kind=1;memory->val=&ELMallocPoison;HashAdd(memory,Fs->hash_table);
+ el_result=HashFind("_DOC_NEW",Fs->hash_table,HTT_EXPORT_SYS_SYM)==shadow&&
+   HashFind("_MALLOC",Fs->hash_table,HTT_EXPORT_SYS_SYM)==memory&&ELUse&&!el_poison;
+ HashRemDel(memory,Fs->hash_table);HashRemDel(shadow,Fs->hash_table);
 }
 Bool ELWait()
 {
@@ -39,4 +47,4 @@ Bool ELRepeat()
  return ELStart&&Fs->data_heap->bp->used_u8s==n&&Fs->data_heap->bp->alloced_u8s==r;
 }
 
-U0 ELSetup(){el_parent_export=HashFind("_DOC_NEW",Fs->hash_table,HTT_EXPORT_SYS_SYM);}
+U0 ELSetup(){el_parent_export=HashFind("_DOC_NEW",Fs->hash_table,HTT_EXPORT_SYS_SYM);el_parent_malloc=HashFind("_MALLOC",Fs->hash_table,HTT_EXPORT_SYS_SYM); }

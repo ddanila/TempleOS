@@ -7,6 +7,7 @@
 #include "/Kernel/I386/EditorRuntime.HH"
 #include "/Kernel/StringFindFlags.HH"
 #include "/Kernel/RawTypes.HH"
+#include "/Kernel/NumericLimits.HH"
 U32 editor_version=I386_EDITOR_VERSION;
 CI386EditorBindings editor_bindings;
 CI386EditorBindings *editor_context;
@@ -60,14 +61,24 @@ U8 *EditorConsoleSymbol(CI386EditorContext*context,U8*name)
  }
  return result;
 }
+U8 *MemCpy(U8*d,U8*s,I64 n){return (*editor_context->copy)(d,s,n);}
+U8 *MemSet(U8*d,I64 v,I64 n){return (*editor_context->set)(d,v,n);}
+CDocEntry *DocSplitTag(CDoc*d,CDocEntry*e,I64 at,I64 x,I64 y,I64 type){return (*editor_context->split_tag)(d,e,at,x,y,type);}
+U0 DocEntryDel(CDoc*d,CDocEntry*e){(*editor_context->entry_del)(d,e);}
+U0 DocRemSoftNewLines(CDoc*d=NULL,CDocEntry*e=NULL){(*editor_context->rem_soft)(d,e);}
+U0 DocBottom(CDoc*d=NULL){(*editor_context->doc_bottom)(d);}
+#include "/Adam/DolDoc/DocFindCore.HC"
+I64 PopUpMenu(CDoc*d,I64 flags=0){return (*editor_context->popup_menu)(d,flags);}
+#include "/Adam/DolDoc/DocEditorReplaceCore.HC"
 Bool EditorInit(CI386EditorContext*context,I64 bytes)
 {
  if(editor_context||!context||bytes!=sizeof(CI386EditorContext)||context->version!=I386_EDITOR_VERSION||
     context->bytes!=sizeof(CI386EditorContext)||!context->alpha_numeric||!context->symbols||
-    context->symbol_count<=0||context->symbol_count>4096||!context->str_cmp||!context->hash_find||!context->alloc||!context->free)return FALSE;
+    context->symbol_count<=0||context->symbol_count>4096||!context->str_cmp||!context->hash_find||!context->alloc||!context->free||!context->copy||!context->set)return FALSE;
  editor_bindings.alpha_numeric=context->alpha_numeric;
  editor_bindings.str_cmp=context->str_cmp;editor_bindings.hash_find=context->hash_find;
  editor_bindings.alloc=context->alloc;editor_bindings.free=context->free;
+ editor_bindings.copy=context->copy;editor_bindings.set=context->set;
  if(!(editor_bindings.doc_lock=EditorConsoleSymbol(context,"_DOC_LOCK")))return FALSE;
  if(!(editor_bindings.doc_unlock=EditorConsoleSymbol(context,"_DOC_UNLOCK")))return FALSE;
  if(!(editor_bindings.doc_recalc=EditorConsoleSymbol(context,"_DOC_RECALC")))return FALSE;
@@ -82,6 +93,11 @@ Bool EditorInit(CI386EditorContext*context,I64 bytes)
  if(!(editor_bindings.doc_ed=EditorConsoleSymbol(context,"_DOC_ED")))return FALSE;
  if(!(editor_bindings.entry_run=EditorConsoleSymbol(context,"_DOC_ENTRY_RUN")))return FALSE;
  if(!(editor_bindings.popup_print=EditorConsoleSymbol(context,"_POP_UP_PRINT")))return FALSE;
+ if(!(editor_bindings.split_tag=EditorConsoleSymbol(context,"_DOC_SPLIT_TAG")))return FALSE;
+ if(!(editor_bindings.entry_del=EditorConsoleSymbol(context,"_DOC_ENTRY_DEL")))return FALSE;
+ if(!(editor_bindings.rem_soft=EditorConsoleSymbol(context,"_DOC_REM_SOFT")))return FALSE;
+ if(!(editor_bindings.doc_bottom=EditorConsoleSymbol(context,"_DOC_BOTTOM")))return FALSE;
+ if(!(editor_bindings.popup_menu=EditorConsoleSymbol(context,"_POP_UP_MENU")))return FALSE;
  editor_context=&editor_bindings;return TRUE;
 }
 
@@ -91,6 +107,6 @@ I64 Main(CI386EditorServices*services,I64 bytes)
  services->version=editor_version;services->bytes=sizeof(CI386EditorServices);services->init=&EditorInit;
  services->str_find=&StrFind;services->find_next=&EdFindNext;services->sel_all=&EdSelAll;
  services->find_paired=&EdFindPaired;services->go_to_fun=&EdGoToFun;services->sel_fun=&EdSelFun;
- services->form=&DocForm;services->popup=&PopUpForm;
+ services->form=&DocForm;services->popup=&PopUpForm;services->replace=&EdReplace;services->go_to_line=&DocGoToLine;
  return 1;
 }

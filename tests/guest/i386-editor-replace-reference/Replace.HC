@@ -40,3 +40,39 @@ I64 RRContract(I64 mode)
  if(Fs->data_heap->used_u8s==before)m|=32;return m;
 }
 I64 RRCheck(I64 mode){I64 m=RRContract(mode);if(m!=63)throw('Replace',TRUE);return m;}
+
+I64 RRLine(I64 mode)
+{
+ I64 before=Fs->data_heap->used_u8s,m=0,target=2;CDoc*d,*put=DocPut,*display=DocDisplay,*border=DocBorder;
+ CEdFindText saved;Bool result;U8*want="two";
+ if(mode==2){
+  if(!DocGoToLine(NULL,1))m|=1;m|=14;
+  if(DocPut==put&&DocDisplay==display&&DocBorder==border)m|=16;
+  if(Fs->data_heap->used_u8s==before)m|=32;return m;
+ }
+ d=DocNew("GoTo.DD");d->flags|=DOCF_PLAIN_TEXT;DocLoad(d,"one\ntwo\nthree",13);d->flags&=~DOCF_PLAIN_TEXT;
+ MemCpy(&saved,d->find_replace,sizeof(CEdFindText));
+ if(mode==1){DocLock(d);target=3;want="three";}
+ result=DocGoToLine(d,target);
+ if(result)m|=1;
+ if(d->cur_entry!=d&&d->cur_entry->y==target-1&&!d->cur_col&&!StrCmp(d->cur_entry->tag,want))m|=2;
+ if(d->doc_signature==DOC_SIGNATURE_VAL&&RRBytes(&saved,d->find_replace,sizeof(CEdFindText)))m|=4;
+ if(Bt(&d->locked_flags,DOClf_LOCKED)==(mode==1))m|=8;
+ if(DocPut==put&&DocDisplay==display&&DocBorder==border)m|=16;
+ DocUnlock(d);DocDel(d);if(Fs->data_heap->used_u8s==before)m|=32;return m;
+}
+I64 RRLineCheck(I64 mode){I64 m=RRLine(mode);if(m!=63)throw('GoToLine',TRUE);return m;}
+#include "/Kernel/SymbolTypes.HH"
+I64 RRMeta()
+{
+ I64 before=Fs->data_heap->used_u8s,m=0;CHashClass*c=HashFind("CEdLineGoTo",Fs->hash_table,HTT_CLASS);
+ CMemberLst*member;CMemberLstMeta*meta;
+ if(c){m|=1;if(member=c->member_lst_and_root){
+  if(!StrCmp(member->str,"line"))m|=2;
+  if(!member->offset&&member->member_class->raw_type==RT_I64)m|=4;
+  for(meta=member->meta;meta;meta=meta->next)
+   if(!StrCmp(meta->str,"format")&&!StrCmp(meta->user_data,"$$DA,A=\"Go to Line:%d\"$$"))m|=8;
+  if(!member->dim.next&&!member->member_class->ptr_stars_cnt)m|=16;
+ }}
+ if(Fs->data_heap->used_u8s==before)m|=32;return m;
+}

@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROVIDER = '/Modules/I386/EditorRuntime.t32m'
 SOURCES = ('Kernel/I386/EditorRuntime.HC', 'Kernel/I386/EditorRuntime.HH', 'Kernel/I386/EditorDispatch.HC',
            'Adam/DolDoc/DocClassFormCore.HC', 'Adam/DolDoc/DocFormPopupCore.HC',
+           'Adam/DolDoc/DocFindCore.HC', 'Adam/DolDoc/DocEditorReplaceCore.HC', 'Adam/DolDoc/DocFindPromptTypes.HH',
            'Compiler/OptClassFwdCore.HC', 'Compiler/MemberLookup.HC', 'Kernel/StrFindCore.HC', 'Kernel/StringFindFlags.HH', 'Adam/DolDoc/DocEditorSearchCore.HC')
 
 def sha(path):
@@ -31,13 +32,13 @@ def layout(module):
         target = exports.get(symbol, (0,))[0]
         if (kind == 2 and target != 1) or (kind == 5 and target not in (1, 3)):
             raise ValueError('Editor provider has an external dependency: '+symbol)
-    names = ('Main', 'EditorInit', 'StrFind', 'EdFindNext', 'EdSelAll', 'EdFindPaired', 'EdGoToFun', 'EdSelFun', 'DocForm', 'PopUpForm')
+    names = ('Main', 'EditorInit', 'StrFind', 'EdFindNext', 'EdSelAll', 'EdFindPaired', 'EdGoToFun', 'EdSelFun', 'DocForm', 'PopUpForm', 'EdReplace', 'EdFindReplace', 'EdGoToLine', 'PopUpReplaceSkipAllCancel', 'DocGoToLine', 'DocFind', 'DocAnchorFind')
     for name in names:
         if exports.get(name, (0,))[0] != 1:
             raise ValueError('Missing real editor entry: '+name)
     if exports.get('editor_version', (0,))[0] != 3:
         raise ValueError('Missing editor version')
-    if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 3:
+    if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 4:
         raise ValueError('Wrong editor version')
     return dict(image_bytes=size+8, required_entries=list(names), external_imports=[],
                 locally_resolved_references=len(imports))

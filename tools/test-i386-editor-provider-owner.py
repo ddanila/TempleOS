@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resolve editor services from permanent Console exports despite a first-caller shadow."""
+"""Resolve editor services from permanent Console exports despite a first-caller document and kernel allocator shadows."""
 import argparse
 import hashlib
 import json
@@ -29,11 +29,11 @@ def main():
         ('#include "C:/EditorOwner.HC"', []),
         ('ELSetup;', []),
         ('ELStart;', ['1']), ('ELRepeat;', ['1']), ('ELUse;', ['1']),
-        ('!el_poison&&HashFind("_DOC_NEW",Fs->hash_table,HTT_EXPORT_SYS_SYM)==el_parent_export;', ['1']),
+        ('!el_poison&&HashFind("_DOC_NEW",Fs->hash_table,HTT_EXPORT_SYS_SYM)==el_parent_export&&HashFind("_MALLOC",Fs->hash_table,HTT_EXPORT_SYS_SYM)==el_parent_malloc;', ['1']),
         ('6*7;', ['42'])]
     if any(len(c)>255 for c, _ in commands): raise ValueError('Lifetime command too long')
     report = dict(result='running', input_sha256=pins, commands=commands,
-                  packaging=packaging, scope='Real DocForm allocation under a first-child export shadow, two natural child exits, exact per-call heap/roles, parent reuse, second-child public pool recovery; not forced cancellation/reentrancy')
+                  packaging=packaging, scope='Real DocForm and allocating EdReplace under first-child document/kernel shadows, two natural child exits, exact per-call heap/roles, parent reuse, second-child public pool recovery; not forced cancellation/reentrancy')
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=64, cpu='486,-fpu', qmp_stdio=True,
@@ -44,7 +44,7 @@ def main():
         first = log.index('INPUT LINE ELStart;')
         if log.count('EDITOR loaded ') != 1 or 'EDITOR loaded ' in log[:first]:
             raise ValueError('Provider must first load in child and be reused')
-        report.update(result='pass', first_use_task='child-with-shadow', natural_child_exits=2, shadow_poison_calls=0,
+        report.update(result='pass', first_use_task='child-with-shadow', natural_child_exits=2, shadow_poison_calls=0, shadowed_exports=['_DOC_NEW','_MALLOC'],
                       second_child_public_pool_restored=True, provider_loads=1)
     except Exception as exc:
         report.update(result='fail', error=str(exc))

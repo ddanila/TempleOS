@@ -817,12 +817,21 @@ diagnostic_load_done:
   I386IrqRestore(irq);return valid;
 }
 
-Bool KernelEditorLoad(CI386EditorServices *services,U8 **owned,I64 *image_bytes)
+Bool KernelEditorLoad(CI386EditorServices *services,U8 **owned,I64 *image_bytes,CI386EditorContext *context)
 {
- CI386RedSeaEntry entry;CI386EditorServices candidate;U8*image=0,*candidate_data=&candidate;
+ CI386RedSeaEntry entry;CI386EditorServices candidate;CI386ModuleBinding callback;
+ U8*image=0,*candidate_data=&candidate,*names="StrCmp\0HashFind\0_MALLOC\0_FREE\0_MEMCPY\0_MEMSET\0";
+ U32 *slots;
  I64 (*initialize)(CI386EditorServices *services,I64 bytes);I64 size,i;
  Bool valid=FALSE;U32 irq=I386IrqSave;
- if(!services||!owned||!image_bytes||*owned)goto editor_load_done;
+ if(!services||!owned||!image_bytes||!context||*owned)goto editor_load_done;
+ context->version=I386_EDITOR_VERSION;context->bytes=sizeof(CI386EditorContext);
+ context->alpha_numeric=char_bmp_alpha_numeric;slots=&context->str_cmp;
+ for(i=0;i<6;i++){
+  KernelBinding(&callback,names);
+  if(callback.kind!=1)goto editor_load_done;
+  slots[i]=callback.address;while(*names++);
+ }
  if(I386RedSeaBegin(&kernel_volume)){
   if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/EditorRuntime.t32m",&entry)==1)
    image=I386RedSeaLoadBound(&kernel_volume,&entry,&kernel_heap,"Main",0,0);

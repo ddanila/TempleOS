@@ -36,6 +36,7 @@ import U0 SysTry(U8 *catch_start,U8 *untry_start);
 import U0 SysUntry();
 import U0 throw(I64 ch=0,Bool no_log=FALSE);
 CI386ConsoleConfig *console_config;
+CI386EditorContext native_editor_context;
 CI386Text console_default_text;
 U8 *console_default_planes;
 extern CI386Text *NativeTerminalText();
@@ -72,7 +73,8 @@ extern Bool EdGoToFun(CDoc *doc,Bool fwd,Bool abort_on_dbl_colon);
 extern U0 EdSelFun(CDoc *doc,Bool abort_on_dbl_colon=FALSE);
 extern Bool DocForm(U8*data,U8*name=lastclass,I64 flags=0,U8*header=0,U8*footer=0);
 extern Bool PopUpForm(U8*data,U8*name=lastclass,I64 flags=DOF_SIZE_MIN,U8*header=0,U8*footer=0);
-extern U0 NativeEditorSetup();
+extern Bool DocGoToLine(CDoc *doc,I64 line_num);
+extern I64 EdReplace(CDoc*doc,U8*find,U8*replace,Bool sel=TRUE,Bool match_case=TRUE,Bool whole_labels=FALSE);
 extern I64 NativeTimeStamp();
 extern U0 NativeTimeStampInit();
 extern Bool DocCaptureUndo(CDoc *doc,Bool force=FALSE);
@@ -280,7 +282,7 @@ extern U8 *NativeAStrNew(U8 *text);
 #include "/Kernel/I386/DocDelete.HC"
 #include "/Adam/DolDoc/DocRecalcCore.HC"
 #include "/Kernel/StrIMatchCore.HC"
-#include "/Adam/DolDoc/DocFindCore.HC"
+
 
 #include "/Kernel/JobResScanCore.HC"
 #include "/Kernel/KeyDevTypes.HH"
@@ -317,7 +319,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[273];
+CI386KernelSymbol console_doc_exports[276];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -694,7 +696,10 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(270,"_ED_SEL_FUN",(&EdSelFun+0)(U64));
   ConsoleDocExportSet(271,"_DOC_FORM",(&DocForm+0)(U64));
   ConsoleDocExportSet(272,"_POP_UP_FORM",(&PopUpForm+0)(U64));
-  for(i=0;i<273;i++) {
+  ConsoleDocExportSet(273,"_DOC_SPLIT_TAG",(&DocSplitTag+0)(U64));
+  ConsoleDocExportSet(274,"_DOC_GO_TO_LINE",(&DocGoToLine+0)(U64));
+  ConsoleDocExportSet(275,"_ED_REPLACE",(&EdReplace+0)(U64));
+  for(i=0;i<276;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==261 || i==253 || i==227 || i==223 || i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;
@@ -707,7 +712,10 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
     I386HeapFree(config->heap,display_planes);return FALSE;
   }
   console_planes=display_planes;
-  console_config=config; NativeEditorSetup; NativeTimeStampInit; dbg.fun_seg_cache=native_fun_seg_cache;
+  console_config=config;
+  native_editor_context.symbols=console_doc_exports;
+  native_editor_context.symbol_count=sizeof(console_doc_exports)/sizeof(CI386KernelSymbol);
+  NativeTimeStampInit; dbg.fun_seg_cache=native_fun_seg_cache;
   MusicSettingsRst;
   winmgr.fps=WINMGR_FPS;
   winmgr.ideal_refresh_tS=tS;

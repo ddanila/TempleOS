@@ -1,18 +1,8 @@
 //Stable public entry points; optional code/context never belongs to a caller.
-CI386EditorContext native_editor_context;
 CI386EditorServices native_editor_services;
 U8 *native_editor_image;
 I64 native_editor_image_bytes;
 Bool native_editor_loading;
-U0 NativeEditorSetup()
-{
- native_editor_context.version=I386_EDITOR_VERSION;native_editor_context.bytes=sizeof(CI386EditorContext);
- native_editor_context.alpha_numeric=char_bmp_alpha_numeric;
- native_editor_context.symbols=console_doc_exports;
- native_editor_context.symbol_count=sizeof(console_doc_exports)/sizeof(CI386KernelSymbol);
- native_editor_context.str_cmp=&StrCmp;native_editor_context.hash_find=&HashFind;
- native_editor_context.alloc=&MAlloc;native_editor_context.free=&Free;
-}
 U0 NativeEditorRequire()
 {
  CI386EditorServices candidate;
@@ -22,7 +12,7 @@ U0 NativeEditorRequire()
  if(native_editor_loading||!console_config){I386IrqRestore(flags);throw('Editor',TRUE);}
  native_editor_loading=TRUE;MemSet(&candidate,0,sizeof(candidate));
  try {
-  if((*console_config->editor_load)(&candidate,&native_editor_image,&native_editor_image_bytes)&&
+  if((*console_config->editor_load)(&candidate,&native_editor_image,&native_editor_image_bytes,&native_editor_context)&&
      candidate.version==I386_EDITOR_VERSION&&candidate.bytes==sizeof(candidate)&&candidate.init)
    valid=(*candidate.init)(&native_editor_context,sizeof(CI386EditorContext));
   if(valid){MemCpy(&native_editor_services,&candidate,sizeof(candidate));KernelLog("EDITOR loaded ");KernelHex(native_editor_image_bytes);KernelLog("\n");}
@@ -50,3 +40,7 @@ Bool DocForm(U8*data,U8*name=lastclass,I64 flags=0,U8*header=NULL,U8*footer=NULL
 {NativeEditorRequire;return (*native_editor_services.form)(data,name,flags,header,footer);}
 Bool PopUpForm(U8*data,U8*name=lastclass,I64 flags=DOF_SIZE_MIN,U8*header=NULL,U8*footer=NULL)
 {NativeEditorRequire;return (*native_editor_services.popup)(data,name,flags,header,footer);}
+I64 EdReplace(CDoc*doc,U8*find,U8*replace,Bool sel=TRUE,Bool match_case=TRUE,Bool whole_labels=FALSE)
+{if(!doc)return -1;NativeEditorRequire;return (*native_editor_services.replace)(doc,find,replace,sel,match_case,whole_labels);}
+Bool DocGoToLine(CDoc*doc,I64 line_num)
+{if(!doc)return FALSE;NativeEditorRequire;return (*native_editor_services.go_to_line)(doc,line_num);}

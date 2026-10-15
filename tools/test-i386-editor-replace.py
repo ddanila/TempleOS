@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-editor-replace-reference/Replace.HC"
 COMMANDS = [('I64 RRGate(CDoc*d){return EdReplace(d,"cat","dog",FALSE);}',[]),
-            ('#include "C:/Replace.HC"',[])]+[(f'RRCheck({i});',['63']) for i in range(10)]+[('6*7;',['42'])]
+            ('EdReplace(NULL,"cat","dog");',['-1']),('!DocGoToLine(NULL,1);',['1']),('#include "C:/Replace.HC"',[])]+[(f'RRCheck({i});',['63']) for i in range(10)]+[(f'RRLineCheck({i});',['63']) for i in range(3)]+[('RRMeta;',['63']),('6*7;',['42'])]
 
 
 if any(len(c[0])>255 for c in COMMANDS):
@@ -57,6 +57,11 @@ def main():
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         saved=build['mutated_file_contents'](working,{'/Replace.HC'}).get('/Replace.HC')
         if saved!=FIXTURE.read_bytes():raise ValueError('Guest editor replacement fixture differs from source')
+        log=(out/'qemu/debug.log').read_text()
+        first=log.index('INPUT LINE RRCheck(0);')
+        if 'EDITOR loaded ' in log[:first] or log.count('EDITOR loaded ')!=1:
+            raise ValueError('Null replacement must remain cold; first real replacement must load once')
+        report['provider_loads']=1
         report['guest_fixture_sha256']=sha(FIXTURE)
         report['result'] = 'pass'
     except Exception as exc:
