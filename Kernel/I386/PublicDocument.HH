@@ -69,4 +69,5 @@ public _extern _ED_DOLLAR_TYPE_CB U8 *EdDollarTypeCB(CDoc *doc,CDocEntry *entry,
 public _extern _DOC_PRINT_PARTIAL U0 DocPrintPartial(CDoc *doc=NULL,U8 *fmt,...);
 public _extern _DOC_GET_KEY I64 DocGetKey(I64 *sc=NULL);
 public _extern _DOC_RECALC Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL);
+public _extern _DOC_UPDATE_TASK_DOCS U0 DocUpdateTaskDocs(CTask *task);
 #endif

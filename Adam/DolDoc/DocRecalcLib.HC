@@ -145,24 +145,40 @@ public I64 DocMax(I64 i=I64_MAX)
 }
 
 #help_index "DolDoc/Task;StdOut/Task"
+#ifndef DOC_UPDATE_TASK_SCOPE_LOCAL
+#define DOC_UPDATE_TASK_SCOPE_LOCAL
+#define DOC_UPDATE_TASK_SCOPE_OPEN
+#define DOC_UPDATE_TASK_SCOPE_RELEASE
+#define DOC_UPDATE_TASK_SCOPE_CLOSE
+#define DOC_UPDATE_TASK_SCROLL_SAVE WinScrollNull(task,&saved_scroll)
+#define DOC_UPDATE_TASK_SCROLL_RESTORE WinScrollRestore(task,&saved_scroll)
+#endif
 U0 DocUpdateTaskDocs(CTask *task)
 {//This is called from $LK,"GrUpdateTaskWin",A="MN:GrUpdateTaskWin"$() by the winmgr at 30fps.
   CDoc *doc;
   CD3I64 saved_scroll;
-  if (task->border_src==BDS_CUR_DRV && task->cur_dv)
-    task->border_attr=DrvTextAttrGet(Drv2Let(task->cur_dv));
-  if (task->title_src==TTS_TASK_NAME)
-    StrCpy(task->task_title,task->task_name);
-  if ((doc=DocDisplay(task)) && !(doc->flags&DOCF_DONT_SHOW)) {
-    if (task->border_src==BDS_ED_FILENAME_DRV)
-      task->border_attr=DrvTextAttrGet(*doc->filename.name);
-    if (task->title_src==TTS_ED_FILENAME)
-      MemCpy(task->task_title,doc->filename.name,STR_LEN-1);
-    DocRecalc(doc,RECALCt_TO_SCRN|RECALCF_HAS_CURSOR);
+  DOC_UPDATE_TASK_SCOPE_LOCAL;
+  try {
+    DOC_UPDATE_TASK_SCOPE_OPEN;
+    if (task->border_src==BDS_CUR_DRV && task->cur_dv)
+      task->border_attr=DrvTextAttrGet(Drv2Let(task->cur_dv));
+    if (task->title_src==TTS_TASK_NAME)
+      StrCpy(task->task_title,task->task_name);
+    if ((doc=DocDisplay(task)) && !(doc->flags&DOCF_DONT_SHOW)) {
+      if (task->border_src==BDS_ED_FILENAME_DRV)
+        task->border_attr=DrvTextAttrGet(*doc->filename.name);
+      if (task->title_src==TTS_ED_FILENAME)
+        MemCpy(task->task_title,doc->filename.name,STR_LEN-1);
+      DocRecalc(doc,RECALCt_TO_SCRN|RECALCF_HAS_CURSOR);
+    }
+    if ((doc=DocBorder(task)) && !(doc->flags&DOCF_DONT_SHOW)) {
+      DOC_UPDATE_TASK_SCROLL_SAVE;
+      DocRecalc(doc,RECALCt_TO_SCRN);
+      DOC_UPDATE_TASK_SCROLL_RESTORE;
+    }
+  } catch {
+    DOC_UPDATE_TASK_SCOPE_RELEASE;
+    DOC_UPDATE_TASK_SCOPE_CLOSE;
   }
-  if ((doc=DocBorder(task)) && !(doc->flags&DOCF_DONT_SHOW)) {
-    WinScrollNull(task,&saved_scroll);
-    DocRecalc(doc,RECALCt_TO_SCRN);
-    WinScrollRestore(task,&saved_scroll);
-  }
+  DOC_UPDATE_TASK_SCOPE_CLOSE;
 }

@@ -10,6 +10,31 @@ Status: C1 discovery and the C2 runnable baseline are in progress; full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original task-document updates gain native cleanup (2026-10-15)
+
+The shared original DocUpdateTaskDocs path now runs within a native target-owner
+scope. It registers before document selection, preserves worker Fs, and restores
+border scroll on callback exceptions or forced Exit. Console version 81 exports
+this original entry point; memory remains version 24 and public layouts are
+unchanged. The prior image's actual internal function returns 61 instead of 63
+on border callback Exit because scroll is not restored.
+
+The new task-update contract covers owner Exit/kill, border Exit and normal
+border return. A persistent-worker prototype also recovers cancellation via the
+existing one-shot task-end callback, renders a replacement on the same task,
+and stops with exact parent heap and reusable graphics/text presentation. See
+[task-update and recovery evidence](docs/i386-task-document-update.md).
+
+All 38 task-update, 31 worker-recovery, 44 replacement and 16 frame commands
+pass on the final image. Original self-rebuild, native cross-build and 386 boot
+audit pass; 8 MiB startup takes 47.15 seconds without build-provider loading.
+The rebuilt original automatic A/B control retains its metadata and glyph pixels.
+
+This advances the document stage of C2/C4. Whole-window task drawing, controls,
+original cursor/view arbitration, scheduled ring traversal/recovery, normal
+stdout/input integration and the automatic native A/B gate remain open.
+No scheduled worker is enabled at boot; C1–C5 remain incomplete.
+
 ### Displayed-document replacement lifecycle passes (2026-10-15)
 
 A 44-command QEMU session now covers swapping the displayed document while a

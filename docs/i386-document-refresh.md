@@ -124,3 +124,10 @@ is not executed. Pinned inputs remain unchanged. The 44-command replacement
 session passes separately in
 `build/i386-c4-render-document-replace-verified/result.json`. Safe explicit
 replacement therefore does not establish automatic displayed-document refresh.
+
+The original document-update entry point now has a native target-owner scope
+covering document selection, metadata and border rendering, including scroll
+restoration on forced Exit. See [task-document updates](i386-task-document-update.md)
+for its contract and the persistent managed-worker recovery prototype. This
+scope is the inner document stage; the eventual window scope must also cover
+task drawing, controls and any other owner-compiled callbacks.

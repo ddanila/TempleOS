@@ -174,6 +174,8 @@ U8 NativeDriveAlias(U8 alias)
 #include "/Kernel/FileMaskTypes.HH"
 #include "/Kernel/WildMatchCore.HC"
 #include "/Kernel/BlkDev/FilesFindMatchCore.HC"
+#include "/Kernel/I386/RenderScope.HC"
+#include "/Kernel/I386/TaskUpdateScope.HC"
 #include "/Adam/DolDoc/DocRecalcLib.HC"
 #define BLINK_JIFFIES NativeJiffies()
 #include "/Kernel/BlinkCore.HC"
@@ -221,7 +223,6 @@ extern I64 GrBlot3(CDC *dc,I64 x1,I64 y1,I64 z1,CDC *img);
 //Song strings use the existing scheduler-root-owned provider defined below.
 extern U8 *NativeAStrNew(U8 *text);
 #define AStrNew NativeAStrNew
-#include "/Kernel/I386/RenderScope.HC"
 #include "/Kernel/I386/DocRecalcScope.HC"
 #include "/Kernel/I386/DocDelete.HC"
 #include "/Adam/DolDoc/DocRecalcCore.HC"
@@ -259,7 +260,7 @@ U0 PlaySysMacro(I64 n=1)
 U8 *console_title="TempleOS i386\nHolyC console\n\n";
 CI386KeyboardState console_hotkeys;
 CI386Task *console_break_task;
-CI386KernelSymbol console_doc_exports[220];
+CI386KernelSymbol console_doc_exports[221];
 extern U8 *NativeCaller(I64 num=1);
 extern U0 NativeDebug(U8 *msg=NULL,I64 msg_num=0);
 extern Bool NativeDebugMode(Bool value);
@@ -574,7 +575,8 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   ConsoleDocExportSet(217,"_DOC_PRINT_PARTIAL",(&DocPrintPartial+0)(U64));
   ConsoleDocExportSet(218,"_DOC_GET_KEY",(&DocGetKey+0)(U64));
   ConsoleDocExportSet(219,"_DOC_RECALC",(&DocRecalc+0)(U64));
-  for(i=0;i<220;i++) {
+  ConsoleDocExportSet(220,"_DOC_UPDATE_TASK_DOCS",(&DocUpdateTaskDocs+0)(U64));
+  for(i=0;i<221;i++) {
     console_doc_exports[i].type=HTT_EXPORT_SYS_SYM;
     console_doc_exports[i].kind=1;
     if(i==172 || i==18 || i==33 || i==51 || i==69 || i==70 || i==78 || i==118) console_doc_exports[i].kind=3;

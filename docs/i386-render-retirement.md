@@ -127,3 +127,9 @@ input lines. An intermediate attempt was explicitly interrupted to fix a
 root-owner relationship assertion. Neither attempt is OS-failure evidence.
 This covers explicit replacement with fresh-worker recovery; automatic worker
 supervision and scheduled window updates remain open.
+
+The [task-document update contract](i386-task-document-update.md) adds a target
+scope before document selection and restores temporary border scroll on Exit.
+It also exercises recovery of a persistent managed render task through the
+existing one-shot end callback, rather than requiring a new task per frame.
+Scheduled integration remains open.
