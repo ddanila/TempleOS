@@ -11,6 +11,34 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Full original input: paired behavior gate and dependency review (2026-10-15)
+
+Six direct public DocPutKey cases pass masks of 63 on the qualified original
+rebuild in `build/i386-c4-put-key-seeded-reference`: consuming/fallthrough user
+callbacks, null/default output document, ordinary insertion, overstrike and
+seeded Alt-Backspace undo. Assertions cover exact text, callback arguments and
+pre-lock invocation, unlocked return, caller document/display and exact heap.
+The initial undo fixture assumed an immediate unforced snapshot on a fresh
+document; original mask 57 rejected that assumption. The final setup explicitly
+seeds a snapshot and supplies the real Backspace scan code.
+
+Console 106 compiles the same fixture but rejects PKCheck(0) with the explicit
+PutKey assertion in `build/i386-c2-put-key-contract-red`; the retained wrapper
+does not call user_put_key before editing. Both runs preserve pinned inputs.
+This is a confirmed behavior red gate, not a missing fixture API. Remaining
+native cases have not run past this first failure. No runtime change is made
+at this checkpoint.
+
+[Complete input integration](docs/i386-doc-put-key.md) reviews the full original
+dispatcher's dependencies: key descriptions/names, tree/plain transformations,
+search/matching, autocomplete, file/directory context and pickers, macro editing,
+desktop tools, God services and sprite editing. Bare calls and globals must be
+reviewed as well as explicit function calls. Integrate complete services before
+sharing the full dispatcher; do not trim shortcuts or add a chooser-only input
+substitute. The existing actual chooser, GetStr and TimeClock gates stay open.
+Yielding/foreign ownership, incoming locks, description mode and exceptional
+callbacks need additional independent contracts. C1–C5 remain incomplete.
+
 ### Original undo and 386 software timestamp qualified in bounded contracts (Console 106, 2026-10-15)
 
 The complete original DocCaptureUndo and DocUndoRestore bodies are shared,
