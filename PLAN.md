@@ -11,6 +11,24 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Derived-control cleanup candidate (2026-10-15)
+
+Console version 85 wraps explicit derived-control updates in the common native
+owner/resource scope stack. It borrows the target before taking its task lock,
+then shares idempotent lock/IRQ release between ordinary unwind and forced Exit.
+Public CTask and private service layouts are unchanged. The shared original
+core retains its control/geometry order with empty default scope hooks.
+
+Original self-rebuild, native cross-build and 386 boot audit pass. The candidate
+passes normal 8 MiB startup in 49.91 seconds without build-provider loading.
+Lifecycle validation covers return, throw, callback Exit, updater kill and owner
+Exit/kill. The previous image returns mask 61 on callback Exit; the candidate passes all
+20 commands and six mask-63 cases. Both retain unchanged pinned inputs. The
+existing 64 MiB window/graphics/text-frame regression passes 24 submissions.
+Automatic A/B refresh retains its 9-command pass with unchanged inputs. The automatic prepass is still absent: its
+original mask-3/native mask-0 gate remains open. See
+[derived-control contract](docs/i386-derived-controls.md).
+
 ### Current checkpoint and next acceptance work (2026-10-15)
 
 The final normal image passes automatic refresh (9 commands), worker lifecycle

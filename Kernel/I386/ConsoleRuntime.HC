@@ -181,6 +181,7 @@ U8 NativeDriveAlias(U8 alias)
 #include "/Kernel/WildMatchCore.HC"
 #include "/Kernel/BlkDev/FilesFindMatchCore.HC"
 #include "/Kernel/I386/RenderScope.HC"
+#include "/Kernel/I386/DerivedScope.HC"
 #include "/Kernel/I386/TaskUpdateScope.HC"
 #include "/Adam/DolDoc/DocRecalcLib.HC"
 #define BLINK_JIFFIES NativeJiffies()

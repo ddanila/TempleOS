@@ -16,16 +16,10 @@ U0 WinDerivedValsUpdate(CTask *task)
 #include "/Kernel/TaskValidate.HC"
 #include "/Kernel/WinInside.HC"
 #include "/Adam/Ctrls/CtrlsCore.HC"
-#include "/Kernel/TaskWindowCore.HC"
 Bool native_window_dirty;
 CTask *graphics_owner;
 U0 NativeWindowInvalidate() { native_window_dirty=TRUE; }
-U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE)
-{
-  if(!task) task=Fs;
-  if(update_z_buf) TaskWindowDerivedCore(task,&CtrlsUpdate,&NativeWindowInvalidate);
-  else TaskWindowDerivedCore(task,&CtrlsUpdate,NULL);
-}
+extern U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE);
 #include "/Kernel/WinSize.HC"
 U16 *MemSetU16(U16 *dst,I64 value,I64 count)
 {

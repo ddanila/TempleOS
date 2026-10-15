@@ -12381,7 +12381,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-control-derived-lifecycle.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-derived-lifecycle-final/result.json",
+          "scope": "Native scoped TaskDerivedValsUpdate shared core: normal/throw/Exit/updater kill/owner Exit/kill; 20 commands, six mask-63 cases, target lock, callback IRQ/context, exact parent heap and presentation reuse; not automatic prepass or whole-file parity"
+        }
+      ]
     },
     {
       "path": "Kernel/KUtils.HC",
