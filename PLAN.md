@@ -18,8 +18,9 @@ PortNop bodies, with native HPET counter reads. Original/rebuilt-original/native
 controls pass with six byte-identical saved documents and two byte-identical raw
 VGA captures. Real hardware delay and timer-state restoration pass; the preceding
 native image rejects the first Busy call. Bootstrap/cross-build pass with all
-1528 source and 24 build inputs unchanged. Candidate-specific startup/memory
-qualification is pending. Original terminal startup and the strict TimeClock
+1528 source and 24 build inputs unchanged. The isolated 8 MiB startup gate
+fails at 62.374019 seconds with all nine behavior/VGA checks passing and
+unchanged execution pins. Candidate-specific 16 MiB diagnostics remain pending. Original terminal startup and the strict TimeClock
 report mismatch remain open. See docs/i386-doc-type.md. All 686 inventory entries
 and C1–C5 remain unqualified.
 

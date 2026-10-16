@@ -33,8 +33,11 @@ its result; subsequent host validation additionally checks reference hashes.
 The preceding Console-131 image rejects the fixture at its first Busy call
 (`build/i386-c2-doc-type-native-red`). Fresh bootstrap and cross-build pass;
 `build/i386-c2-doc-type-cross/input-audit.json` records all 1528 source and 24
-build inputs unchanged. Candidate-specific 8 MiB startup and 16 MiB diagnostics
-are pending. Earlier candidates' startup timing failures remain recorded.
+build inputs unchanged. The isolated 8 MiB gate fails the 60-second startup limit at
+62.374019 seconds in `build/i386-c2-doc-type-startup`, despite all nine behavior/
+VGA checks passing, no build-provider load and unchanged execution pins. The
+coordinator resumed the older C5 build and skipped dependent diagnostics.
+Candidate-specific 16 MiB diagnostics remain pending.
 
 ```sh
 python3 tools/test-i386-doc-type.py --out ORIGINAL
