@@ -31,6 +31,14 @@ U0 I386Dword(CI386Out *out,U32 val)
   I64 i;
   for(i=0;i<4;i++) I386Byte(out,val.u8[i]);
 }
+U0 I386PushDword(CI386Out *out,U32 val)
+{//PUSH imm8 sign-extends to the same 32-bit stack word as PUSH imm32.
+  if(val<=0x7F || val>=0xFFFFFF80) {
+    I386Byte(out,0x6A); I386Byte(out,val);
+  } else {
+    I386Byte(out,0x68); I386Dword(out,val);
+  }
+}
 U0 I386Bytes(CI386Out *out,U8 *bytes,I64 count)
 {//Input must not alias the growable output buffer.
   I64 i;

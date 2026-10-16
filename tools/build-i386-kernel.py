@@ -184,7 +184,7 @@ def compiler_runtime_layout(module):
     if exports.get('compiler_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-runtime interface version')
     version_offset = 32+exports['compiler_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 72:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 73:
         raise ValueError('Unexpected compiler-runtime interface version')
     return dict(image_bytes=size+8, string_offset=8+exports['I386LexStringChunk'][1],
                 number_offset=8+exports['I386LexNumber'][1], char_offset=8+exports['I386LexChar'][1],
@@ -234,7 +234,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 121:
+    if struct.unpack_from('<I', module, version_offset)[0] != 122:
         raise ValueError('Unexpected console version')
     entry_names=('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders', 'NativeWinMgrEnsure')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
@@ -2659,6 +2659,8 @@ def main():
             raise ValueError('Native branch optimizer allocation recovery failed')
         if [int(line.split()[2], 16) for line in log.splitlines() if line.startswith('OPTIMIZER PROBE ')] != [0, 1]:
             raise ValueError('Native shared optimizer probes failed')
+        if [int(line.split()[3], 16) for line in log.splitlines() if line.startswith('EMITTER PUSH WORDS ')] != [0, 1]:
+            raise ValueError('Native immediate push encoding/execution probes failed')
         if [int(line.split()[2], 16) for line in log.splitlines() if line.startswith('EMITTER PROBE ')] != [0, 1]:
             raise ValueError('Native owned code emitter probes failed')
         if [int(line.split()[2], 16) for line in log.splitlines() if line.startswith('BACKEND PROBE ')] != [0, 1]:
@@ -2999,7 +3001,7 @@ def main():
             raise ValueError('Missing queued-file compiler break cleanup')
         result['file_break_cleanup']={'cases':2,'result':'pass'}
         result['input_break_cleanup']={'phases':[0,1],'cases_per_phase':3,'result':'pass'}
-        result['compiler_runtime'] = dict(module='CompilerRuntime', version=72, export_at_address=compiler_export_at_address, validator_address=address+runtime_layout['validator_offset'], image_address=address,
+        result['compiler_runtime'] = dict(module='CompilerRuntime', version=73, export_at_address=compiler_export_at_address, validator_address=address+runtime_layout['validator_offset'], image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
             number_address=number_address, char_address=char_address, punct_address=punct_address, ident_address=ident_address, ident_token_address=ident_token_address, string_token_address=string_token_address, next_address=next_address, include_address=include_address, control_new_address=control_new_address, control_del_address=control_del_address, symbols_init_address=symbols_init_address, active_control_queue=True, code_retire_address=code_retire_address, code_branch_address=code_branch_address, code_optimize_address=code_optimize_address, out_new_address=out_new_address, out_del_address=out_del_address, backend_address=backend_address, expression_address=expression_address, type_address=type_address, parser_alloc_address=parser_alloc_address, parser_free_address=parser_free_address, parser_token_address=parser_token_address, declarations_address=declarations_address, native_declaration_phases=[0,1], code_init_address=code_init_address, class_address=class_address, fun_join_address=fun_join_address, publish_classes_address=publish_classes_address, bootstrap_scalars_address=bootstrap_scalars_address, load_scalars_address=load_scalars_address, scalar_check_address=scalar_check_address, frontend_address=frontend_address, statement_address=statement_address, command_address=command_address, publish_address=publish_address, input_address=input_address, break_poll_address=break_poll_address, math_bind_address=math_bind_address, native_input_phases=[0,1], native_program_phases=[0,1], native_command_phases=[0,1], native_statement_phases=[0,1], native_frontend_phases=[0,1], native_publication_phases=[0,1], native_symbol_phases=[0,1], parser_token_phases=[0,1], parser_memory_phases=[0,1], native_expression_phases=[0,1], native_backend_phases=[0,1], native_emitter_phases=[0,1], code_save_address=code_save_address, code_push_address=code_push_address, code_pop_address=code_pop_address, code_free_address=code_free_address, code_append_address=code_append_address, code_add_address=code_add_address, code_misc_address=code_misc_address, code_discard_address=code_discard_address, compiler_exception_recovery_phases=[0,1], branch_optimizer_recovery_phases=[0,1], shared_optimizer_phases=[0,1], control_unwind_address=control_unwind_address, control_enter_address=control_enter_address, control_leave_address=control_leave_address, control_drain_address=control_drain_address, task_owned_symbols=True, owned_control_phases=['boot','task'], include_phases=['boot', 'task'], conditional_phases=['boot', 'task'], definition_phases=['boot', 'task'], token_stream_phases=['boot', 'task'], probe_phases=['boot', 'task'], identifier_token_phases=['boot', 'task'], string_token_phases=['boot', 'task'], lifetime='kernel lifetime')
         from PIL import Image
@@ -3160,7 +3162,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=121,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=122,image_bytes=csize,retained_heap_bytes=cspan,
             service_addresses=dict(zip(console_layout['entry_names'],entries)),
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         # Both header attempts complete exactly these unused forward classes.

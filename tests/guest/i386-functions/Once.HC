@@ -1,6 +1,7 @@
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 I64 case_number=0;
+U8 *case_end;
 U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
   U8 *prefix="",U8 *suffix="")
 {
@@ -25,6 +26,7 @@ U0 EmitCase(U8 *body,I64 a,I64 b,I64 expected,U8 **cursor,
       Report(line); Free(line);
     }
   }
+  if (*cursor+28+aot->aot_U8s>case_end) { Report("FAIL fixture capacity\n"); throw; }
   case_number++;
   (*cursor)(U32 *)[0]=aot->aot_U8s; *cursor+=4;
   (*cursor)(I64 *)[0]=expected; *cursor+=8;
@@ -146,6 +148,7 @@ U0 EmitLinkedCase(I64 a,I64 b,I64 expected,U8 **cursor,Bool reverse)
       }
     base+=h->code_size;
   }
+  if (*cursor+28+size>case_end) { Report("FAIL fixture capacity\n"); throw; }
   (*cursor)(U32 *)[0]=size; *cursor+=4;
   (*cursor)(I64 *)[0]=expected; *cursor+=8;
   (*cursor)(I64 *)[0]=a; *cursor+=8;
@@ -162,7 +165,8 @@ U0 EmitLinkedCase(I64 a,I64 b,I64 expected,U8 **cursor,Bool reverse)
 
 U0 CompileTests()
 {
-  U8 *data=MAlloc(131072),*cursor=data,*line;
+  U8 *data=MAlloc(1048576),*cursor=data,*line;
+  case_end=data+1048576;
   Report("START i386 functions\n");
   EmitCase("return a+b;",0xFFFFFFFF,1,0x100000000,&cursor);
   EmitCase("return a-b;",0x100000000,1,0xFFFFFFFF,&cursor);
@@ -441,43 +445,43 @@ U0 CompileTests()
   //Frame-pointer ABI and bounded traversal for exception/diagnostic consumers.
   EmitCase("return (&a+0)(U64)-(GetRBP+0)(U64);",0x100000000,42,8,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("return (&b+0)(U64)-(GetRBP+0)(U64);",0x100000000,42,16,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f[2]; return I386FrameValid(&f[0],f,sizeof(f))+2*I386FrameValid(&f[1],f,sizeof(f));",0x100000000,42,3,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f[2]; f[0].parent=&f[1]; return I386FrameParent(f,f,sizeof(f))==&f[1];",0x100000000,42,1,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f[2]; f[1].parent=&f[0]; return I386FrameParent(&f[1],f,sizeof(f))==NULL;",0x100000000,42,1,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f; f.parent=&f; return I386FrameParent(&f,&f,sizeof(f))==NULL;",0x100000000,42,1,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f; return I386FrameValid(&f,&f,7)+I386FrameValid(&f,&f,-1);",0x100000000,42,0,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f[2]; return I386FrameValid((f(U8 *)+1)(CI386Frame *),f,sizeof(f));",0x100000000,42,0,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("return I386FrameValid(0xFFFFFFF8,0xFFFFFFF8,8)+2*I386FrameValid(0xFFFFFFF8,0xFFFFFFF8,9);",0x100000000,42,1,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("return I386FrameParent(NULL,NULL,0)==NULL && I386FrameReturn(NULL,NULL,0)==NULL;",0x100000000,42,1,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("CI386Frame f; f.parent=NULL; f.return_address=0xFEDCBA98; return (I386FrameReturn(&f,&f,sizeof(f))+0)(U64);",0x100000000,42,4275878552,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   EmitCase("return Probe(a,b);",0x100000000,42,4294967338,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0\nextern I64 Probe(I64 x,I64 y);",
-    "#include \"/Kernel/I386/Frame.HC\"\nI64 Probe(I64 x,I64 y) { CI386Frame *me=GetRBP,*parent=me->parent,*found; I64 size=(parent(U8 *)+8)-me(U8 *); found=I386FrameParent(me,me,size); if(found!=parent || !I386FrameReturn(me,me,size)) return -1; return (found(U8 *)+8)(I64 *)[0]+(found(U8 *)+16)(I64 *)[0]; }");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"\nI64 Probe(I64 x,I64 y) { CI386Frame *me=GetRBP,*parent=me->parent,*found; I64 size=(parent(U8 *)+8)-me(U8 *); found=I386FrameParent(me,me,size); if(found!=parent || !I386FrameReturn(me,me,size)) return -1; return (found(U8 *)+8)(I64 *)[0]+(found(U8 *)+16)(I64 *)[0]; }");
   EmitCase("CI386Frame f[2]; f[0].parent=(f(U8 *)+4)(CI386Frame *); return I386FrameParent(f,f,sizeof(f))==NULL;",0,0,1,&cursor,
     "#include \"/Kernel/I386/Frame.HH\"\n#define TRUE 1\n#define FALSE 0\n#define NULL 0",
-    "#include \"/Kernel/I386/Frame.HC\"");
+    "#define I386_HEAP_SOURCE_BUILD\n#include \"/Kernel/I386/Heap.HC\"\n#include \"/Kernel/I386/Frame.HC\"");
   //Switch tables must retain 64-bit selectors and HolyC prefix/footer semantics.
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",1,0,11,&cursor);
   EmitSwitchCase("switch(a) { case 1: return 11; case 3: return 33; default: return 99; }",3,0,33,&cursor);

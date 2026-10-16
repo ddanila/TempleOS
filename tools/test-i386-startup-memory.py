@@ -69,6 +69,11 @@ def main():
             raise ValueError('Startup acquired build-only support')
         result['build_provider_loads'] = 0
         if args.diagnostics:
+            push_phases = [int(line.split()[3], 16) for line in log.splitlines()
+                           if line.startswith('EMITTER PUSH WORDS ')]
+            if push_phases != [0, 1]:
+                raise ValueError('Missing immediate push encoding/execution probes')
+            result['immediate_push_cases'] = 128
             markers = [f'PUBLICATION CASE {phase:016X} {case:016X}\n'
                        for phase in (0, 1) for case in range(11)]
             missing = [marker.strip() for marker in markers if marker not in log]

@@ -129,5 +129,7 @@ checks and exact VGA restoration, with unchanged execution inputs and no Build
 provider. The 16 MiB diagnostic guest remained active, so this is not an
 isolated timing measurement. The recorded pause wrapper resumed both C5
 processes afterward; neither was restarted.
-The full 16 MiB regression remains live in ...drive-identity-diagnostics.
+The full 16 MiB regression passes in ...drive-identity-diagnostics: both
+preserved memory phases, 22 publication/28 program cases and all nine
+interactive checks, with unchanged execution inputs.
 These bounded results do not qualify the complete filesystem lifecycle.

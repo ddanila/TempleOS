@@ -11,6 +11,11 @@ U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   I64 base_used,base_allocations,round,i,count,capacity,size,accepted,value;
   U32 flags=GetRFlags;
+  U32 words[8];
+  I64 low,high,half,offset,length;
+
+  words[0]=0; words[1]=0x7F; words[2]=0x80; words[3]=0xFFFFFF7F;
+  words[4]=0xFFFFFF80; words[5]=0xFFFFFFFF; words[6]=0x80000000; words[7]=0x7FFFFFFF;
   cc=probe->files->control_new("",CCF_DONT_FREE_BUF,"Probe/Emit.HC");
   if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
   base_used=heap->used; base_allocations=heap->allocations;
@@ -37,6 +42,36 @@ U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         !probe->compiler->out_del(heap,cc,out) ||
         heap->used!=base_used || heap->allocations!=base_allocations) KernelStop;
   }
+  //Both halves independently cover signed-byte boundaries and full-width words.
+  for(high=0;high<8;high++) for(low=0;low<8;low++) {
+    value.u32[0]=words[low]; value.u32[1]=words[high];
+    out=probe->compiler->out_new(heap,cc);
+    out->measuring=TRUE;
+    I386PushDword(out,value.u32[1]); I386PushDword(out,value.u32[0]);
+    I386Bytes(out,"\x58\x5A\xC3",3);
+    count=out->count; out->planned=count; out->count=0; out->measuring=FALSE;
+    I386PushDword(out,value.u32[1]); I386PushDword(out,value.u32[0]);
+    I386Bytes(out,"\x58\x5A\xC3",3);
+    offset=0;
+    for(half=1;half>=0;half--) {
+      //The oracle uses the vector index, independent of the emitter predicate.
+      i=low; if(half) i=high;
+      length=5; if(i==0 || i==1 || i==4 || i==5) length=2;
+      if(length==2) {
+        if(out->data[offset]!=0x6A || out->data[offset+1]!=value.u8[half*4]) KernelStop;
+      } else {
+        if(out->data[offset]!=0x68) KernelStop;
+        for(i=0;i<4;i++) if(out->data[offset+1+i]!=value.u8[half*4+i]) KernelStop;
+      }
+      offset+=length;
+    }
+    if(out->count!=offset+3 || count!=out->count || out->capacity!=count ||
+        out->data[offset]!=0x58 || out->data[offset+1]!=0x5A || out->data[offset+2]!=0xC3) KernelStop;
+    generated=out->data;
+    if((*generated)()!=value || !probe->compiler->out_del(heap,cc,out) ||
+        heap->used!=base_used || heap->allocations!=base_allocations) KernelStop;
+  }
+  KernelLog("EMITTER PUSH WORDS "); KernelHex(probe->phase); KernelLog("\n");
   out=probe->compiler->out_new(heap,cc);
   for(i=0;i<64;i++) I386Byte(out,i);
   before=out->data; count=out->count; capacity=out->capacity;

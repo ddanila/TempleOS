@@ -35,16 +35,7 @@ U8 DrvNextFreeLet(U8 first_drv_let='C')
 
 #include "/Kernel/BlkDev/DriveDeleteCore.HC"
 
-U0 DrvBlkDevDel(CBlkDev *bd)
-{//Delete drv's of BlkDev
-  I64 i;
-  CDrv *dv;
-  for (i=0;i<DRVS_NUM;i++) {
-    dv=&blkdev.drvs[i];
-    if (dv->bd==bd)
-      DrvDel(dv);
-  }
-}
+#include "/Kernel/BlkDev/DriveDeviceDeleteCore.HC"
 
 U0 DrvFATBlkAlloc(CDrv *dv)
 {

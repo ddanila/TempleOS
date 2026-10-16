@@ -11996,8 +11996,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags. Delete isolated drive records under nested/forwarded locks with caller/root allocations and verify complete record clearing.",
-      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record.",
+      "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags. Delete isolated drive records under nested/forwarded locks with caller/root allocations and verify complete record clearing. Delete all drives belonging to a device across the complete canonical table, including unmounted slots and a null device argument.",
+      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record. docs/i386-drive-device-delete.md adds eight mask-63 full-table deletion cases, with context-independent table access, matched clearing, unmatched preservation and exact allocation recovery.",
       "tests": [
         {
           "target": "original-drive-state",
@@ -12096,6 +12096,41 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-identity-native/result.json",
           "scope": "All 56 cases/59 commands at 64 MiB; unchanged inputs and exact fixture. Full filesystem lifecycle remains unqualified."
+        },
+        {
+          "target": "original-device-wide-drive-delete",
+          "command": "python3 tools/test-i386-drive-device-delete-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-device-delete-context-reference/result.json",
+          "scope": "All eight patterns on the pinned original; all 26 slots accessed with caller directory fields cleared; unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-device-wide-drive-delete",
+          "command": "python3 tools/test-i386-drive-device-delete-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-device-delete-binding-current/result.json",
+          "scope": "Same eight cases on the current rebuilt original with the shared complete routine; unchanged inputs."
+        },
+        {
+          "target": "native-device-wide-drive-delete-missing-binding",
+          "command": "python3 tools/test-i386-drive-device-delete.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-device-delete-red/result.json",
+          "scope": "Preceding image rejects the private-function preflight; no behavioral case executes; unchanged inputs."
+        },
+        {
+          "target": "native-device-wide-drive-delete-invalid-table-binding",
+          "command": "python3 tools/test-i386-drive-device-delete.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-device-delete-identity-red/result.json",
+          "scope": "Faulty image fails canonical current-drive identity before table mutation; unchanged inputs."
+        },
+        {
+          "target": "native-device-wide-drive-delete",
+          "command": "python3 tools/test-i386-drive-device-delete.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-device-delete-final-native/result.json",
+          "scope": "All eight full-table cases/12 commands at 64 MiB, canonical identity preflight, unchanged inputs and exact fixture/adapter delivery. Not full media lifecycle qualification."
         }
       ]
     },

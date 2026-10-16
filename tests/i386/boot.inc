@@ -2,7 +2,13 @@
 %ifndef BOOT_SECTORS
 %define BOOT_SECTORS 128
 %endif
-%ifdef COMPILER_GRAPH_TEST
+%ifdef FUNCTION_CORPUS_STAGE
+;The complete function corpus includes frame helpers and their real heap dependencies.
+;384 KiB of code ends at 0x70000, below the ordinary stack at 0x90000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 768
+%error Function corpus stage must fit below physical 0x70000
+%endif
+%elifdef COMPILER_GRAPH_TEST
 %define BOOT_SECTORS_LIMIT 832
 ;Compiler graph fixture uses its first arena at 0x78000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 832

@@ -41,8 +41,8 @@ public U8 *I386Expr(U8 *source,I64 *size)
           depth++;
           break;
         case IC_IMM_I64:
-          I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[1]);
-          I386Byte(&out,0x68); I386Dword(&out,ic->ic_data.u32[0]);
+          I386PushDword(&out,ic->ic_data.u32[1]);
+          I386PushDword(&out,ic->ic_data.u32[0]);
           depth++;
           break;
         case IC_UNARY_MINUS:

@@ -11,6 +11,35 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete device-wide deletion and compact immediate pushes (2026-10-16)
+
+ConsoleRuntime 122 shares the complete original DrvBlkDevDel table walk and
+borrows the canonical drive array through its kernel-owned configuration.
+Task-exit drive release also indexes that array directly. All eight full-table
+cases pass on the original, rebuilt-original and final native systems. Native
+validation covers canonical identity, context-independent access, exact fixture
+delivery and 12 commands at 64 MiB, with unchanged inputs. A regression rejects
+the preceding export initialization-order bug before table mutation; the binding
+now uses the validated config argument instead of an unassigned global.
+
+CompilerRuntime 73 emits the shorter immediate push when sign extension exactly
+preserves the 32-bit word. Console and Compiler modules shrink by 286080 and
+227202 bytes versus the failed direct-table candidate. Nine expression and 245
+function cases pass with instruction audit. Both native diagnostic phases pass
+64 boundary-word pairs each, preserved-memory checks, 22 publication/28 program
+cases and nine interactive checks on the pre-binding-fix image. Only Console
+changes in the final cross-build, at the same module size.
+
+Final bootstrap/cross-build passes with 1506 source/24 build-input hashes
+unchanged. The corrected 8 MiB image passes all nine checks in 56.954345 seconds,
+with unchanged inputs and no build provider. The final image also passes all 56 existing drive-deletion cases/59 commands
+with unchanged inputs. All nine public task-cancellation cases pass with the source image unchanged.
+The final 16 MiB diagnostic regression remains running. Earlier failures and the reverted parser-storage
+experiment are retained in docs/i386-drive-device-delete.md,
+docs/i386-immediate-push.md and docs/i386-parser-scratch.md. The ongoing C5 native
+build remains pinned to CompilerRuntime 72 and commit 0bed4c3a. All 686 inventory
+entries remain unqualified; C1-C5 are open.
+
 ### Preserve deleted mounted drive identities (2026-10-16)
 
 FileRuntime 58 records first publication separately from CDrv, so lookup and
@@ -22,8 +51,10 @@ ATA/task regression pass. A diagnosed 100-yield worker wait was raised to the
 existing publication test's 1000-yield bound without changing cleanup checks.
 Two 8 MiB runs pass all functional checks but exceed the startup limit under
 contention. With C5 briefly paused, the gate passes at 56.482688 seconds with
-all nine checks and unchanged inputs; C5 has resumed. The newer full 16 MiB
-diagnostic verdict remains pending. See docs/i386-drive-delete.md. Full drive/media lifecycle
+all nine checks and unchanged inputs; C5 has resumed. The full 16 MiB
+diagnostic gate also passes, including both preserved memory phases,
+22 publication/28 program cases and all nine interactive checks, with unchanged
+execution inputs. See docs/i386-drive-delete.md. Full drive/media lifecycle
 and C1-C5 remain open; all 686 inventory entries remain unqualified.
 
 ### Complete original drive deletion (2026-10-16)
