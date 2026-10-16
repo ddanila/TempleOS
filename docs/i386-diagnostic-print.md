@@ -156,3 +156,9 @@ at 64 MiB in build/i386-c4-validator-binding-extern-native, with unchanged
 inputs and a byte-identical delivered fixture. Both whole-buffer and streamed
 callback validation reject malformed inputs, accept the restored module and
 recover the caller's heap exactly. The source disk remains unchanged.
+
+The final image also passes the broader public task-kill regression: all nine
+cases/69 commands at 64 MiB, with an unchanged source disk, in
+build/i386-c4-diagnostic-print-validator-kill. The detached selected-module C5
+build remains live on its older 9d64ad4b snapshot; it does not qualify this
+latest source or two full native generations.

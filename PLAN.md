@@ -33,7 +33,9 @@ heap recovery and unchanged inputs.
 Bootstrap and build/i386-c4-diagnostic-print-validator-cross pass, with all
 1496 source and 24 build-input hashes matching. Normal 8 MiB startup is restored
 in build/i386-c4-diagnostic-print-validator-startup: nine commands, exact VGA
-restoration, no Build provider and 58.282055 seconds. Earlier failed images and
+restoration, no Build provider and 58.282055 seconds. The same image passes
+all nine public kill cases/69 commands at 64 MiB with its source disk unchanged
+in build/i386-c4-diagnostic-print-validator-kill. Earlier failed images and
 independent before/after heap snapshots remain documented in
 [diagnostic printing evidence](docs/i386-diagnostic-print.md).
 
