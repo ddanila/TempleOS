@@ -11,6 +11,36 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Drive-state contracts and canonical block-device type (2026-10-16)
+
+Nine new original-system drive-state cases pass with masks of 31 and unchanged
+inputs in `build/i386-c4-drive-state-reference-fixed`. They cover lookup and
+boot/home aliases, zero/lowercase/uppercase same-drive resets, invalid lookup,
+invalid-drive exception cleanup, device metadata and initialization-in-progress
+directory-context deletion, with caller roles and exact heap recovery. The
+first fixture used nonexistent ToLower and failed before execution; its evidence
+is retained. Native `Let2Drv` remains unavailable: the final prerequisite gate
+fails before fixture setup in `build/i386-c4-drive-state-final-prerequisite-red`.
+
+The complete original CBlkDev record and flags now share BlockDevRecord.HH.
+Extraction reconstructs KernelA.HH byte-for-byte; native DriveTypes.HH includes
+the complete record. The original compiler/kernel bootstrap and separate
+`build/i386-c4-block-device-cross` pass (570800 kernel bytes, all 1505 source/build
+pins matching, limited 386 boot audit). All eleven native record-check commands
+pass at 64 MiB on TCG `486,-fpu` in `build/i386-c4-block-device-record-native`:
+100-byte size, every offset/size for all 22 fields, flags and signature. The
+same harness rejects the preceding image's first size check in
+`build/i386-c4-block-device-record-final-red`; both runs preserve their inputs.
+This does not supply real native backing-device instances, resolve task directory
+ownership or implement Drv/Let2Drv/DirContextNew/DirContextDel. Those remain the
+next prerequisites; full input and C1–C5 remain incomplete. The inventory maps
+the bounded original evidence while preserving all unqualified statuses.
+
+The prior repaired Console/Editor native build continues on its independently
+verified embedded sources in `build/i386-c5-helper-scan-native-build`; no
+component export or installed-generation pass is claimed yet. See
+[drive-state contracts and boundaries](docs/i386-directory-context.md).
+
 ### Compiler fault captured and phase repair; public string API candidate (2026-10-15)
 
 **2026-10-16 runtime follow-up:** The combined image passes all sixteen

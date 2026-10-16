@@ -4,9 +4,7 @@
 #ifndef CTask
 extern class CTask;
 #endif
-#ifndef CBlkDev
-extern class CBlkDev;
-#endif
+#include "/Kernel/BlkDev/BlockDevRecord.HH"
 #ifndef CFAT32FileInfoSect
 extern class CFAT32FileInfoSect;
 #endif

@@ -11922,7 +11922,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Create directory contexts from filename, trimmed/semicolon masks, directory and nested paths; observe returned fields and current drive/directory; delete with restore TRUE/FALSE, including failed traversal after a valid prefix.",
-      "oracle": "docs/i386-directory-context.md: twelve original-system cases require mask 63, public fields, caller document roles and exact caller heap; original RAM B: maps to native C:. Cross-drive/media, init-in-progress, allocation failure, cancellation and exception cases remain open.",
+      "oracle": "docs/i386-directory-context.md: twelve original-system cases require mask 63, public fields, caller document roles and exact caller heap; original RAM B: maps to native C:. The additional drive-state oracle covers initialization-in-progress deletion on original; native behavior, cross-drive/media, allocation failure and cancellation remain open.",
       "tests": [
         {
           "target": "original-directory-context",
@@ -11937,6 +11937,13 @@
           "result": "fail",
           "evidence": "build/i386-c2-directory-context-partial-prerequisite-red/result.json",
           "scope": "DirContextNew rejected in prerequisite declaration; setup and behavior cases not reached"
+        },
+        {
+          "target": "original-directory-context-initialization",
+          "command": "python3 tools/test-i386-drive-state-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-state-reference-fixed/result.json",
+          "scope": "Case 6 sets the real old device initialization flag, then observes root directory restoration through the full original deletion routine, roles and exact heap recovery; not actual concurrent device initialization"
         }
       ]
     },
@@ -11953,9 +11960,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags.",
+      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification.",
+      "tests": [
+        {
+          "target": "original-drive-state",
+          "command": "python3 tools/test-i386-drive-state-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-state-reference-fixed/result.json",
+          "scope": "Nine bounded original drive/context cases; not complete drive API qualification"
+        },
+        {
+          "target": "native-drive-state",
+          "command": "python3 tools/test-i386-drive-state.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-state-final-prerequisite-red/result.json",
+          "scope": "Let2Drv is rejected by the preflight declaration; no setup or behavioral case executes"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskFile.HC",

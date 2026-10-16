@@ -69,10 +69,10 @@ Exposing the string utilities removes only one dependency family. Before
 integrating the unchanged context routines, resolve these actual representation
 boundaries:
 
-* Native `CDrv` has its canonical complete record, but `CBlkDev` is only forward
-  declared in that header. `BlockDevTypes.HH` currently supplies device-kind
-  constants, not the complete block-device record/flags. Context deletion reads
-  `old_dv->bd->flags`, so a private shortened record would be unsafe.
+* Initial review found native `CDrv` complete but `CBlkDev` only forward
+  declared, with `BlockDevTypes.HH` supplying only device-kind constants.
+  The shared complete record below resolves that declaration gap. Context
+  deletion reads `old_dv->bd->flags`, so real device instances remain necessary.
 * `I386TaskFilesDrive` constructs stable public drive identities from mounted
   RedSea volumes, but does not associate a real `CBlkDev` with them. Supply
   accurate backing-device identity and state before relying on that field.
@@ -90,3 +90,72 @@ These are source-review findings, not runtime qualification. Keep the existing
 same-drive context cases and add drive/device and exceptional ownership gates;
 do not make directory restoration a string-only shim or remove original
 initialization branches to avoid these prerequisites.
+
+## Drive-state oracle and canonical device record (2026-10-16)
+
+The shared `tests/guest/i386-drive-state-reference/Contract.HC` fixture adds
+nine bounded observations on the real original APIs. All return mask 31 in
+`build/i386-c4-drive-state-reference-fixed`, with unchanged inputs:
+
+| Case | Observation before cleanup |
+| --- | --- |
+| Lookup | Omitted/current and lowercase letters resolve to the same drive. |
+| Three same-drive resets | Drv with zero, lowercase or uppercase succeeds and resets the directory to `/`. |
+| Invalid lookup | Let2Drv with `?` and except FALSE returns NULL without changing drive/directory. |
+| Invalid change | Drv with `?` throws `Drv`; catching it preserves drive/directory and recovers heap usage. |
+| Initialization restoration | Set the saved drive's real device initialization flag, delete a context and observe the saved drive and `/`; restore the original device flags. |
+| Validation | DrvChk accepts the current drive and rejects NULL with except FALSE. |
+| Aliases | Boot/home aliases resolve to the same identities as their expanded letters. |
+
+Each case checks the real device signature/type/initialized flags, document
+roles, and exact caller heap recovery after restoring the fixture directory.
+Original B: RAM maps explicitly to native C: ATA, so the expected device kind
+is derived from the selected drive letter. The initialization case deliberately
+sets a flag on a disposable test system; it does not qualify concurrent hardware
+initialization, cross-drive switching, removable media or allocation failure.
+
+The first reference fixture called nonexistent `ToLower` and stopped in the
+original debugger before executing cases. Its failed output remains in
+`build/i386-c4-drive-state-reference`. The corrected fixture forms the lowercase
+letter from the known uppercase A–Z range. This is a fixture repair, not a
+changed behavioral expectation.
+
+`Kernel/BlkDev/BlockDevRecord.HH` now shares the complete original device record
+and flags between KernelA.HH and native DriveTypes.HH. The extracted section
+reconstructs the original header byte-for-byte; evidence is
+`build/i386-block-device-extraction.json`. The original two-stage compiler/kernel
+bootstrap passes. The separate i386 build completes in
+`build/i386-c4-block-device-cross`, with a 570800-byte kernel, matching 1481
+source and 24 build-input hashes, both disk hashes verified and the limited
+386 boot instruction audit passing (96 BIOS/255 protected-mode instructions).
+This supplies the type, not backing-device instances or directory-string
+ownership. Those prerequisites and public Drv/Let2Drv/context integration remain
+open.
+
+Before editing host headers, four relevant inputs embedded in the live repaired
+Console build were compared byte-for-byte with host files and recorded in
+`build/i386-c5-helper-scan-native-input-boundary.json`. That build continues on
+its independent embedded image and original export directory; the new cross-build
+does not change its source epoch.
+
+The native preflight on the preceding combined image fails as expected in
+`build/i386-c4-drive-state-final-prerequisite-red`, with unchanged inputs:
+`Let2Drv` is rejected in the gate declaration before loading or executing the
+fixture. The complete drive workflow remains red; sharing the type alone does
+not close it.
+
+`tools/test-i386-block-device-record.py` separately tests the delivered public
+record without including a replacement declaration. All eleven commands pass
+at 64 MiB on TCG `486,-fpu` in `build/i386-c4-block-device-record-native`: total
+size 100 bytes, offsets and sizes for all 22 fields, initialization flags,
+signature and a follow-up arithmetic command. The preceding image fails the
+first size predicate in `build/i386-c4-block-device-record-final-red`. Both
+runs use the same final harness and preserve inputs. This is public type/layout
+qualification, not allocated device instances, drive operations or the 8 MiB
+resource gate. No new minimal-profile pass is claimed.
+
+```sh
+python3 tools/test-i386-drive-state-reference.py --out OUT-original
+python3 tools/test-i386-drive-state.py IMAGE --out OUT-native
+python3 tools/test-i386-block-device-record.py IMAGE --out OUT-record
+```
