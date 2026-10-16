@@ -1,0 +1,14 @@
+#ifndef TERM_RIGHT_MENU_TYPES_INCLUDED
+#define TERM_RIGHT_MENU_TYPES_INCLUDED
+#define RIGHT_INCLUDE	0
+#define RIGHT_AINCLUDE	1
+#define RIGHT_COPY	2
+#define RIGHT_MOVE	3
+#define RIGHT_DELETE	4
+#define RIGHT_TYPE	5
+#define RIGHT_ED	6
+#define RIGHT_MOUNT	7
+#define RIGHT_PLAIN	8
+#define RIGHT_INFILE	9
+
+#endif

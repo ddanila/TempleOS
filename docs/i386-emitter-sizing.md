@@ -98,3 +98,10 @@ recorded. Several isolated timing checks paused the launcher and guest together;
 the wall-clock command deadline includes those pauses. This is a timeout, not
 the previous allocation failure, and neither complete native generation is
 qualified. Preserve the working disk and logs in the failed run directory.
+
+The separate `build/i386-c5-array-literal-native-build` run now uses the committed
+Compiler 74 / Console 132 image and immutable source/runner snapshot from
+`a086a85c`. It rebuilds ConsoleRuntime and EditorRuntime at 16 MiB on TCG
+486,-fpu with a 43200-second command limit. Its input-audit.json pins the image,
+manifest and runners. The longer finite limit addresses the observed timeout;
+this running test is not qualification and does not replace the failed evidence.

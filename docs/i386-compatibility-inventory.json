@@ -1794,7 +1794,44 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-reference-covered/result.json",
+          "scope": "Original thirteen terminal-menu action/cancellation/covered cases and exact three menu documents; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-rebuilt-covered/result.json",
+          "scope": "Shared-source original thirteen menu cases and exact original documents; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-term-right-menu-native-covered/result.json",
+          "scope": "Native refresh now progresses but first button activation stalls at existing basic DocPutKey gap; full menu unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py --refresh-only --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-refresh-reference/result.json",
+          "scope": "Original explicitly covered popup ShiftEsc, advancing refresh and caller roles; not button activation"
+        },
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --refresh-only --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c2-term-right-menu-refresh-red/result.json",
+          "scope": "Pre-fix covered popup stalls in Refresh with counter fixed at 55"
+        },
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --refresh-only --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-refresh-native/result.json",
+          "scope": "Four native commands: covered popup ShiftEsc, advancing refresh, eleven buttons and restored roles; full button menu remains failing"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocTree.HC",
@@ -3934,6 +3971,24 @@
           "result": "pass",
           "evidence": "build/i386-c2-persistent-window-green/result.json",
           "scope": "Console-89 twelve-command normal-manager session: plain default put/display doc, direct persistent body write, final-hook overlay/removal, transparent clear, exact full frames and continued input; unchanged pins; complete desktop/raw/cursor and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-auto-refresh.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-visible-refresh/result.json",
+          "scope": "Visible dynamic document A/B full-frame updates and legacy restoration after covered-frame fallback; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-refresh-modes.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-refresh-modes/result.json",
+          "scope": "Ordinary/pumped/forced Refresh modes, state restoration and exclusion of explicit uploads from manager count; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --refresh-only --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-term-right-menu-refresh-native/result.json",
+          "scope": "Explicitly covered real popup ShiftEsc and refresh progress; full button activation remains failing; whole-file unqualified"
         }
       ]
     },

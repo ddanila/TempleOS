@@ -112,9 +112,13 @@ U0 NativeWindowWorker(U8 *data)
       NativeWindowDerived;
       pump=LBtr(&sys_semas[SEMA_JUST_PUMP_MSGS],0);
       if(!pump) {
+        completed=FALSE;
         if(NativeWindowNeeded())
           completed=NativeGraphicsPresentChecked(&NativeWindowListDraw,FALSE,&NativeWindowAdmit);
-        else completed=NativeWindowLegacyPresent;
+        //A shown document can be fully covered by the retained console. The
+        //document admission then declines, but its Refresh still needs frames.
+        //The legacy presenter rechecks coverage under its own presentation lease.
+        if(!completed)completed=NativeWindowLegacyPresent;
         if(completed) {
           WinMgrRefreshTime(&winmgr,tS);winmgr.updates++;
         }

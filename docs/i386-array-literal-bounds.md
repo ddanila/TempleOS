@@ -41,7 +41,10 @@ no build-provider loads and unchanged execution pins. The control starts in
 in this paired observation. Evidence is in
 `build/i386-c4-array-literal-startup-compare.json` and its two referenced runs.
 This is one comparison with limited margin; the earlier control failure at
-62.374019 seconds remains recorded. Candidate 16 MiB diagnostics are running.
+62.374019 seconds remains recorded. The 16 MiB diagnostics pass all 128 push-word, 22 publication and 28 program
+cases, both memory phases and nine interactive/VGA checks in
+`build/i386-c4-array-literal-diagnostics`, with unchanged pins and
+226.821058-second startup.
 No completed compatibility milestone is claimed.
 
 ```sh

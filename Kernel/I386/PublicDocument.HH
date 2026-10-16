@@ -84,6 +84,8 @@ public _extern _DOC_UPDATE_TASK_DOCS U0 DocUpdateTaskDocs(CTask *task);
 public _extern _DOC_ENTRY_RUN I64 DocEntryRun(CDoc *doc,CDocEntry *entry,
   Bool exited,I64 *has_action=NULL);
 public _extern _DOC_MENU I64 DocMenu(CDoc *doc,I64 flags=0);
+#include "/Adam/DolDoc/TermRightMenuTypes.HH"
+public _extern _POP_UP_TERM_RIGHT I64 PopUpTermRight(U8 *header);
 public _extern _POP_UP_MENU I64 PopUpMenu(CDoc *doc,I64 flags=0);
 public _extern _POP_UP_PICK_LST I64 PopUpPickLst(U8 *list);
 public _extern _ED_CUR_U8 I64 EdCurU8(CDoc *doc);

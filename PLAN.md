@@ -11,6 +11,27 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original terminal right-click menu candidate (2026-10-16)
+
+ConsoleRuntime 133 shares complete original PopUpTermRight and all ten action
+constants. The original and rebuilt-original controls pass all thirteen selection/
+cancellation/covered-popup cases in real tasks, restore caller document/popup roles,
+and save three byte-identical menu documents. An initial fixture error selected
+non-button entries; its failures remain recorded. Native integration then exposed
+a covered-popup Refresh stall: document admission declined and skipped the
+retained-console presenter, leaving the update count frozen. A fallback to the
+legacy presenter retains its coverage recheck and completed-frame requirement.
+Fresh bootstrap/cross-build pass with all 1530 source and 24 build pins unchanged.
+Visible dynamic-document and ordinary Refresh regressions pass. The full menu
+gate remains red: frames now progress, but the existing basic DocPutKey cannot
+activate the button. Complete original DocPutKey is still required. The separate
+covered-popup ShiftEsc regression now passes four commands with unchanged pins;
+the pre-fix image stalls at update count 55 and the fixed image progresses from
+57 to 71. Only WindowManager.HC and ConsoleRuntime differ across those builds.
+Candidate resource gates are pending. Full terminal callback
+and startup integration remain open. See docs/i386-term-right-menu.md.
+All inventory entries and C1–C5 remain unqualified.
+
 ### Literal array-bound startup optimization candidate (2026-10-16)
 
 CompilerRuntime 74 avoids compiling/executing a literal array bound only when
@@ -24,7 +45,9 @@ document/VGA regression with unchanged inputs. An isolated comparison passes all
 nine behavior/VGA checks on both images: control 59.607815 seconds, candidate
 58.104980 seconds, with unchanged pins and no build-provider loads. This single
 paired observation leaves limited timing margin and preserves the earlier control
-failure. Candidate 16 MiB diagnostics are running. See docs/i386-array-literal-bounds.md.
+failure. The 16 MiB diagnostics pass all 128/22/28 cases, both memory phases and
+nine interactive/VGA checks with unchanged pins and 226.821058-second startup.
+See docs/i386-array-literal-bounds.md.
 C1–C5 and all inventory entries remain unqualified.
 
 ### Original document output integration candidate (2026-10-16)
@@ -306,7 +329,10 @@ retry in `build/i386-c5-block-table-native-build`, pinned to 66b4a08e, now ends
 at its 14400-second command timeout during ConsoleRuntime (`NativeWinToTop`
 is the last function-start marker). It includes deliberate timing-isolation
 pauses; this is not another observed allocation rejection. Console completion,
-EditorRuntime and two native release generations remain unqualified. See docs/i386-emitter-sizing.md.
+EditorRuntime and two native release generations remain unqualified. A separate
+run now uses committed a086a85c (Compiler 74 / Console 132) and immutable runners
+with a 43200-second command limit in `build/i386-c5-array-literal-native-build`.
+It is running, not qualified. See docs/i386-emitter-sizing.md.
 All 686 inventory entries and C1-C5 remain unqualified.
 
 ### Complete original RedSea free-list teardown (2026-10-16)
