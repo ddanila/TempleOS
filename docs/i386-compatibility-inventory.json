@@ -11997,7 +11997,7 @@
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags. Delete isolated drive records under nested/forwarded locks with caller/root allocations and verify complete record clearing.",
-      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle.",
+      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record.",
       "tests": [
         {
           "target": "original-drive-state",
@@ -12068,6 +12068,34 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-delete-native/result.json",
           "scope": "All 48 cases/51 commands at 64 MiB on 486,-fpu; unchanged inputs and exact guest fixture. Not complete filesystem or minimal-profile qualification."
+        },
+        {
+          "target": "original-mounted-drive-deletion",
+          "command": "python3 tools/test-i386-drive-delete-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-identity-reference/result.json",
+          "scope": "All 56 cases, including eight mounted-record deletion/lookup checks; unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-mounted-drive-deletion",
+          "command": "python3 tools/test-i386-drive-delete-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-identity-current/result.json",
+          "scope": "Same 56 cases on rebuilt original; unchanged inputs."
+        },
+        {
+          "target": "native-mounted-drive-deletion-baseline",
+          "command": "python3 tools/test-i386-drive-delete.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-identity-red/result.json",
+          "scope": "Preceding image fails case 48 after 48 passes; unchanged inputs."
+        },
+        {
+          "target": "native-mounted-drive-deletion",
+          "command": "python3 tools/test-i386-drive-delete.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-identity-native/result.json",
+          "scope": "All 56 cases/59 commands at 64 MiB; unchanged inputs and exact fixture. Full filesystem lifecycle remains unqualified."
         }
       ]
     },

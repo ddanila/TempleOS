@@ -10,7 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))
-EXPECTED = [63]*48
+EXPECTED = [63]*56
 
 
 def main():
@@ -66,7 +66,7 @@ def main():
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),
                         '--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
         data = (out/'guest/drive-delete.bin').read_bytes()
-        report['observed']=list(struct.unpack('<48q',data))
+        report['observed']=list(struct.unpack('<56q',data))
         report['expected']=EXPECTED
         if report['observed']!=EXPECTED:
             raise ValueError('Original drive deletion differs from explicit oracle')

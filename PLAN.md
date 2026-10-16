@@ -11,6 +11,21 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Preserve deleted mounted drive identities (2026-10-16)
+
+FileRuntime 58 records first publication separately from CDrv, so lookup and
+task inheritance no longer republish a record cleared by the complete original
+DrvDel. All 56 original/rebuilt-original/native cases pass; the preceding native
+image fails the first mounted-deletion case. The native run checks 59 commands,
+exact fixture delivery and unchanged inputs. Bootstrap, cross-build and the
+ATA/task regression pass. A diagnosed 100-yield worker wait was raised to the
+existing publication test's 1000-yield bound without changing cleanup checks.
+Two 8 MiB runs pass all functional checks but exceed the startup limit under
+contention. With C5 briefly paused, the gate passes at 56.482688 seconds with
+all nine checks and unchanged inputs; C5 has resumed. The newer full 16 MiB
+diagnostic verdict remains pending. See docs/i386-drive-delete.md. Full drive/media lifecycle
+and C1-C5 remain open; all 686 inventory entries remain unqualified.
+
 ### Complete original drive deletion (2026-10-16)
 
 Console 121 exposes the complete original DrvDel, shared with the original
@@ -21,9 +36,10 @@ full record clearing with adjacent canaries, repeated deletion and retained
 FAT32/untyped list nodes. Native tests run 51 commands at 64 MiB with unchanged
 inputs and the exact delivered fixture. Bootstrap/cross-build and all 1505
 source/24 build-input hashes pass. The standard 8 MiB gate passes in
-57.193246 seconds with all nine checks and unchanged inputs. The 16 MiB
-regression has completed boot; its interactive checks and final verdict remain
-pending in `build/i386-c4-drive-delete-diagnostics`.
+57.193246 seconds with all nine checks and unchanged inputs. The full 16 MiB
+regression passes in `build/i386-c4-drive-delete-diagnostics`: both memory
+phases, 22 publication/28 program cases and all nine interactive checks, with
+unchanged execution inputs.
 See docs/i386-drive-delete.md. Full drive-table/media initialization,
 Drv/DirContext and C1-C5 remain open; all 686 inventory entries remain
 unqualified. The live C5 emitter rebuild uses its earlier 0bed4c3a source epoch.

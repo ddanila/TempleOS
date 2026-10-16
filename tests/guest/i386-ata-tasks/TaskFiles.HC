@@ -6,6 +6,7 @@ CFilePathContext task_environment;
 U32 task_white_space[8],task_files_done,task_files_busy;
 extern U0 DirectoryReader(I64 id);
 extern CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive);
+extern CDrv *I386TaskFilesDriveInit(CI386FileVolumes *volumes,U8 drive);
 extern I64 I386ModuleStageWrite(U8 *context,U32 offset,U8 *buffer,U32 bytes);
 extern Bool I386ModuleStageSeal(CI386ModuleStage *stage);
 extern Bool I386ModuleStageUnwound(CI386ModuleStage *stage,Bool clean);
@@ -351,10 +352,13 @@ I64 StageTest()
   }
   worker=I386TaskSpawn(&scheduler,&heap,8192,&StageWorker,0,0x18,0x20,512);
   if(!worker)return 50;
-  for(i=0;i<100 && !worker->task.finished;i++)I386SchedYield(&scheduler);
-  if(!worker->task.finished || !worker->task.file_state ||
-      !((worker->task.file_state(CI386TaskFiles *))->stage) ||
-      !I386TaskDestroy(worker) || heap.used!=used || heap.allocations!=allocations)return 51;
+  //ATA completion yields depend on host I/O scheduling, as in PublicationWorkerTest.
+  for(i=0;i<1000 && !worker->task.finished;i++)I386SchedYield(&scheduler);
+  if(!worker->task.finished)return 106;
+  if(!worker->task.file_state)return 107;
+  if(!((worker->task.file_state(CI386TaskFiles *))->stage))return 108;
+  if(!I386TaskDestroy(worker))return 109;
+  if(heap.used!=used || heap.allocations!=allocations)return 110;
   if(!I386RedSeaBegin(&volumes[0]))return 56;
   worker=I386TaskSpawn(&scheduler,&heap,8192,&StageCancelWorker,0,0x18,0x20,512);
   if(!worker)return 57;
@@ -381,7 +385,8 @@ I64 TaskFilesTest()
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *selected;
-  CDrv *first,*same,*second;
+  CDrv *first,*same,*second,saved_drive;
+  U8 *drive_bytes,*saved_bytes;
   U32 device_flags;
   I64 i,round,used,allocations;
   task_environment.cur_dir="/One"; task_environment.cur_drv='C';
@@ -401,10 +406,16 @@ I64 TaskFilesTest()
       !(same->bd->flags&BDF_INIT_IN_PROGRESS))return 101;
   first->bd->flags=device_flags;
   disks[0].public_device.bd_signature=0;
-  if(I386TaskFilesDrive(&task_volumes,'C') || first->dv_signature)return 102;
+  if(I386TaskFilesDriveInit(&task_volumes,'C') || first->dv_signature)return 102;
   disks[0].public_device.bd_signature=BD_SIGNATURE_VAL;
-  if(I386TaskFilesDrive(&task_volumes,'C')!=first ||
+  if(I386TaskFilesDriveInit(&task_volumes,'C')!=first ||
       first->bd!=same->bd || first->bd->flags!=device_flags)return 103;
+  //Clearing a published record is deletion, not a request for lazy remount.
+  drive_bytes=first;saved_bytes=&saved_drive;
+  for(i=0;i<sizeof(CDrv);i++){saved_bytes[i]=drive_bytes[i];drive_bytes[i]=0;}
+  if(I386TaskFilesDrive(&task_volumes,'C')!=first)return 104;
+  for(i=0;i<sizeof(CDrv);i++)if(drive_bytes[i])return 105;
+  for(i=0;i<sizeof(CDrv);i++)drive_bytes[i]=saved_bytes[i];
   task_volumes.letter['E'-'A']=0;
   if(!I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes) ||
       I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes)) return 30;

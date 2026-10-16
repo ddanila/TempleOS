@@ -37,7 +37,7 @@ U8 I386TaskFilesLetter(CI386TaskFiles *state)
   if(!state->directory_owner)return state->drive;
   return 0;
 }
-CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
+CDrv *I386TaskFilesDriveInit(CI386FileVolumes *volumes,U8 drive)
 {
   CI386RedSea *volume;
   CDrv *identity;
@@ -59,7 +59,14 @@ CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
   if(!identity->bd->first_drv_let)identity->bd->first_drv_let=drive;
   identity->dv_signature=DRV_SIGNATURE_VAL;
   volume->public_drive=identity;
+  volumes->initialized_drives|=1<<(drive-'A');
   return identity;
+}
+CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
+{//Ordinary lookup and task inheritance must not republish a deleted identity.
+  if(!volumes || drive<'A' || drive>'Z' || !volumes->letter[drive-'A']) return 0;
+  if(volumes->initialized_drives&(1<<(drive-'A'))) return &volumes->drives[drive-'A'];
+  return I386TaskFilesDriveInit(volumes,drive);
 }
 CI386TaskFiles *I386TaskFilesNew(CI386Task *task,CI386Heap *heap,CFilePathContext *environment,
   CI386FileVolumes *volumes,U8 *directory,U8 drive,U8 **new_directory)

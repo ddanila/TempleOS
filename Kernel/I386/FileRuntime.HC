@@ -125,11 +125,7 @@ CDrv *I386FileRuntimeDriveLookup(U8 letter)
   CI386TaskFiles *state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
   CDrv *result=0;
   if(!state)return 0;
-  if('A'<=letter<='Z' && volumes->letter[letter-'A']) {
-    result=&volumes->drives[letter-'A'];
-    //Publish an as-yet unused mounted identity; validation belongs to DrvChk.
-    if(!result->drv_let)result=I386TaskFilesDrive(volumes,letter);
-  }
+  result=I386TaskFilesDrive(volumes,letter);
   if(!I386TaskFilesRelease(state))throw('Drv');
   return result;
 }

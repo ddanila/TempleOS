@@ -60,8 +60,74 @@ on TCG 486,-fpu in `...drive-delete-native`, with unchanged inputs and a
 byte-identical delivered fixture. The standard 8 MiB regression passes in
 `build/i386-c4-drive-delete-startup`: 57.193246-second startup, all nine
 commands, exact VGA restoration, no Build provider and unchanged execution
-inputs. This run overlapped the diagnostic and C5 guests. The 16 MiB run in
-`...drive-delete-diagnostics` has completed boot and remains live for its
-interactive checks; its final verdict is pending. All 686 inventory entries and C1-C5 remain
+inputs. This run overlapped the diagnostic and C5 guests. The full 16 MiB run in
+`...drive-delete-diagnostics` passes: 237.380647-second boot, both preserved
+memory phases, 22 publication/28 program cases and all nine interactive checks.
+Its execution inputs remain unchanged. All 686 inventory entries and C1-C5 remain
 unqualified. The concurrent C5 emitter build remains pinned to 0bed4c3a and its
 own immutable disk; it does not qualify this newer Console 121 source epoch.
+
+
+## Preserve deletion of mounted identities
+
+FileRuntime 58 separates first publication of each of the 26 canonical drive
+records from ordinary lookup. The volume table retains an initialized-drive
+bitmap outside CDrv, so the complete original DrvDel can clear every byte of
+CDrv without making the next lookup treat it as an unpublished mount.
+Task initialization, inheritance and directory changes use the same getter;
+explicit I386TaskFilesDriveInit retains physical-volume/device validation and
+publication. The bitmap does not implement media remount or full Drv behavior.
+
+Eight additional cases temporarily delete the actual current or boot drive
+record, preserving its owned allocations for exact restoration. Uppercase and
+lowercase Let2Drv and Let2BlkDev calls with exceptions disabled must reject the
+record and leave it entirely zero. Each case then restores every byte and checks
+pointer identity, caller directory/document state and exact caller heap use.
+The original and rebuilt-original controls pass all 56 cases with unchanged
+inputs in build/i386-c4-drive-identity-reference and
+build/i386-c4-drive-identity-current.
+
+The initial native mapped-deletion baseline fails case 48 after all preceding
+48 cases pass in build/i386-c4-drive-delete-mapped-red. The diagnostic
+...drive-delete-mapped-mask observes mask 57 instead of 63: lookup accepts the
+record and republishes it. Both runs preserve their input hashes.
+Two original exception-throwing fixture attempts are retained in
+...drive-delete-mapped-reference and ...drive-delete-mapped-log-reference.
+They time out at case 51: exception logging reaches prompt/directory formatting
+while the current drive is deleted, recursively throwing Drv. Keeping Adam
+runnable does not fix that invalid logging context. The final fixture tests
+non-throwing lookups; it makes no claim about exceptions in that context.
+
+The ATA/task fixture separately verifies that an ordinary getter preserves a
+cleared published identity, while explicit initialization still rejects and
+recovers a damaged physical device signature. Bootstrap and cross-build pass, with all 1505 source and 24 build-input hashes
+unchanged. The final 56-case fixture fails case 48 on the preceding image in
+build/i386-c4-drive-identity-red, then passes all 56 cases/59 commands on the
+new image in ...drive-identity-native. Both runs retain unchanged inputs; the
+passing run also verifies the delivered fixture byte for byte.
+
+The ATA fixture initially omitted the new internal initializer's forward
+extern; the compiler failure is preserved in ...drive-identity-ata-extern-red.
+After that correction, a compound staged-worker assertion failed (51).
+Splitting its conditions reproduced failure 106: the worker was unfinished
+after 100 cooperative yields. The identical split fixture also passed twice.
+These runs are preserved as ...drive-identity-ata-stage-red,
+...drive-identity-ata-wait-red, ...drive-identity-ata-split-pass and
+...drive-identity-ata-repeat-pass. As in the existing publication-worker test,
+the staged-worker wait now permits at most 1000 yields. Its completion,
+retained stage, destruction and exact heap checks are unchanged. The final
+ATA/task run passes in build/i386-c4-drive-identity-ata-final, including the
+protected-mode instruction audit.
+
+The first 8 MiB run passes all nine functional/VGA checks but fails the
+60-second startup gate at 65.422216 seconds with several guests active.
+That failure is preserved in ...drive-identity-startup. A lighter-load repeat
+also passes the functional checks but misses the timing gate at 61.517815
+seconds in ...drive-identity-startup-repeat. With the C5 build briefly paused,
+...drive-identity-startup-c5-paused passes at 56.482688 seconds, all nine
+checks and exact VGA restoration, with unchanged execution inputs and no Build
+provider. The 16 MiB diagnostic guest remained active, so this is not an
+isolated timing measurement. The recorded pause wrapper resumed both C5
+processes afterward; neither was restarted.
+The full 16 MiB regression remains live in ...drive-identity-diagnostics.
+These bounded results do not qualify the complete filesystem lifecycle.

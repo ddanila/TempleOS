@@ -14,6 +14,8 @@ class CI386FileVolumes {
   CI386RedSea *letter[26]; CI386ResidentFile *resident; CI386Heap *resident_heap;
   //Stable public identities share the lifetime of the mounted-volume table.
   CDrv drives[26];
+  //Publication state survives public DrvDel clearing the identity itself.
+  U32 initialized_drives;
 };
 //Quiescent volumes/channel and IF clear. Paths/volumes stay stable throughout the call.
 //Owned decoded bytes; optional owned name is the requested absolute name, not a found alias.

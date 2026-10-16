@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-drive-delete-reference/Contract.HC"
 COMMANDS = [('U0 DDGate(){DrvDel(NULL);}',[]),
-            ('#include "C:/Contract.HC"',[])]+[(f'DDCheck({i});',['63']) for i in range(48)]+[('6*7;',['42'])]
+            ('#include "C:/Contract.HC"',[])]+[(f'DDCheck({i});',['63']) for i in range(56)]+[('6*7;',['42'])]
 
 
 if any(len(c[0])>255 for c in COMMANDS):
