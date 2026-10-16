@@ -400,3 +400,72 @@ verifies unchanged inputs and the byte-identical delivered fixture. Startup
 takes 59.092091 seconds in the separate normal 8 MiB gate. All 1510 cross-build
 source/build pins still match. Inventory coverage and its five guard tests
 pass, with all 686 items still unqualified.
+
+## Drive-lock integration oracle (2026-10-16)
+
+The next dependency is real lock integration, not just two public names.
+Original `BlkDevLock` follows the controller-forwarding chain, waits while
+another task owns the target and returns FALSE for same-owner reacquisition.
+`BlkDevUnlock` only releases a lock held by the caller; its reset option clears
+INITIALIZED and INIT_IN_PROGRESS, preserving other flags. `DrvLock` couples
+that device lock to the public drive lock. `DrvUnlock` releases both.
+
+The shared `i386-drive-lock-reference/Contract.HC` fixture observes twelve
+cases: acquisition/reacquisition/unlock return values and fields; reset flags;
+a two-hop controller-forwarding chain; bad signature/NULL exceptions;
+non-owner unlock; competing task handoff; exclusion of a real FileRead;
+normal task exit while owning a device; normal exit while owning a drive;
+exclusion and persisted results of a real FileWrite; killed-owner cleanup; and cancellation of a waiting task without releasing
+the current owner's lock.
+Every case also checks restored caller directory text and drive identity, document
+roles, released device ownership and exact caller heap recovery. The original
+uses RAM drive B and the native runner uses its writable ATA drive C in a
+disposable image. This is an explicit media-profile mapping, not RAM/ATA parity.
+The fixture does not issue raw hardware commands or synthesize file results.
+
+Integration points reviewed before implementation:
+
+- `Kernel/BlkDev/DskBlkDev.HC` and `DskDrv.HC` contain the complete original
+  lock/unlock routines; their forwarding and reentrant return behavior must be
+  preserved.
+- `Kernel/KTask.HC` releases drive/device locks during TaskEnd, and
+  `Kernel/KExcept.HC` releases them for Break. The respective full release
+  routines iterate the canonical device and drive registries.
+- `Kernel/I386/AtaChannel.HC` currently provides a separate nonrecursive FIFO
+  channel gate with cancellable waiters. `RedSeaTaskBegin/End` use it directly;
+  neither checks the public device/drive lock fields. Public locking must
+  coordinate with this gate before actual file transactions can claim parity.
+- `CI386FileVolumes.drives` and each mounted volume's `disk->public_device`
+  provide stable public identities. They must participate in task cleanup as
+  well as I/O exclusion. The existing native owner-retirement hook presently
+  concerns render/document lifetime; simply exporting original lock bodies
+  would leave file exclusion and task cleanup incomplete.
+
+The first reference compile failed because its exception identifier exceeded
+HolyC's eight-byte character-literal limit. The screenshot and failed run are
+retained in `build/i386-c4-drive-lock-reference`; the fixture now uses DrvLock.
+The prior native preflight rejects the missing BlkDevLock binding in
+`build/i386-c4-drive-lock-red`. No runtime lock implementation or directory
+context completion is claimed by this oracle checkpoint.
+
+The next reference run reached setup and exposed a fixture assumption about
+FileWrite: the original returns its starting disk block, not a byte count.
+The corrected fixture requires a positive result and verifies the real file's
+size and bytes by readback. It compares restored directory text rather than
+allocation identity because original file operations can replace cur_dir.
+`build/i386-c4-drive-lock-reference-block-result` passes all eleven initial
+mask-31 cases with unchanged inputs. The expanded fixture adds waiter kill.
+These failed fixture attempts do not indicate runtime implementation failures.
+
+The final twelve-case oracle passes against both the pinned original in
+`build/i386-c4-drive-lock-reference-cancel` and the current rebuilt original in
+`build/i386-c4-drive-lock-current-reference`. Every result is 31, and both
+runners verify unchanged inputs. This establishes real lock exclusion and
+cleanup behavior to preserve; it does not qualify the native implementation.
+Break cleanup, remapping, additional controller/media profiles and the complete
+Drv/DirContext workflows still need executable coverage.
+
+`build/i386-c4-drive-lock-final-red` uses the final shared fixture and rejects
+the BlkDevLock preflight with unchanged inputs. Inventory coverage and all five
+guard tests still pass. No OS source changed in this checkpoint, so the prior
+bootstrap, cross-build and 8 MiB startup artifacts retain their source scope.

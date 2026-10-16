@@ -11,6 +11,26 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original drive-lock integration contracts (2026-10-16)
+
+Twelve shared cases now specify the missing drive/device locking integration:
+forwarded and reentrant locks, reset flags, validation errors, non-owner
+unlock, task contention, real FileRead/FileWrite exclusion, normal device/drive
+owner exit, killed-owner cleanup and killed-waiter preservation of the live
+owner. Both pinned and rebuilt original systems return twelve masks of 31 with
+unchanged inputs in `build/i386-c4-drive-lock-reference-cancel` and
+`build/i386-c4-drive-lock-current-reference`.
+
+The native preflight exposes missing BlkDevLock. Source review also identifies
+the deeper integration gap: current RedSea transactions acquire a separate,
+nonrecursive ATA channel gate without consulting the public lock fields, and
+task/Break cleanup must release the canonical public drive/device owners.
+Simply exporting the original routines would not satisfy these contracts.
+`docs/i386-directory-context.md` records the integration points, explicit B RAM
+versus C ATA test profile, and retained fixture failures. No public lock or
+full directory-context implementation is claimed by this test-first checkpoint.
+All 686 inventory entries remain unqualified; C1–C5 remain open.
+
 ### Original filename and silent-output prerequisites (2026-10-16)
 
 The complete original FileNameChk, Silent and IsSilent bodies now live in shared
