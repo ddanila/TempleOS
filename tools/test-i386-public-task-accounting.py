@@ -91,6 +91,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--ram-mib', type=int, choices=(8, 64), default=8,
+                        help='Native guest RAM; 64 MiB is the full desktop test profile')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -102,11 +104,11 @@ def main():
     callback_hash = sha(END_CALLBACKS)
     commands, header_hashes = behavior_commands(args.disk)
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-    behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
+    behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib,
                       startup_check={'status': 'ok', 'answers': [], 'commands': commands})
     if sha(args.disk) != disk_hash or sha(Path(__file__)) != checker_hash or sha(CONTRACT) != contract_hash or sha(DESCENDANTS) != descendant_hash or sha(EXCEPTIONS) != exception_hash or sha(END_CALLBACKS) != callback_hash:
         raise ValueError('Accounting disk or checker changed during execution')
-    report = {'result': 'pass', 'behavior': behavior,
+    report = {'result': 'pass', 'behavior': behavior, 'ram_mib': args.ram_mib,
               'disk_sha256': disk_hash, 'checker_sha256': checker_hash,
               'public_contract_sha256': contract_hash, 'source_disk_unchanged': True,
               'descendant_checker_sha256': descendant_hash,

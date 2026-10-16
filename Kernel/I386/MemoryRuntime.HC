@@ -237,7 +237,14 @@ U0 MemoryProbe(I64 phase)
 #include "/Kernel/TaskDelayCore.HC"
 
 Bool MemoryCoreYield(CI386Scheduler *scheduler) { return I386SchedYield(scheduler); }
-#include "/Kernel/I386/TaskRuntimeCore.HC"
+//Use the kernel-lifetime scheduler/lifecycle implementation instead of retaining
+//a second copy in this provider. Public task/job ownership remains below.
+import Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task);
+import Bool I386SchedFinish(CI386Scheduler *s);
+import CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
+  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
+  U16 fs=0x18,U16 gs=0x20,I64 private_size=0,Bool queued=FALSE);
+import Bool I386TaskDestroy(CI386OwnedTask *owned);
 #include "/Kernel/I386/TaskRuntimePublic.HC"
 
 #include "/Kernel/I386/MessagePosting.HC"

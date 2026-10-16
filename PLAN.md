@@ -11,6 +11,32 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Startup memory recovery through shared task lifecycle (2026-10-16)
+
+A stopped 8 MiB guest capture identifies the startup failure as allocation of
+the Keyboard task by Spawn, before interactive input. Only 7680 public pool
+bytes are free; the capture does not support reducing the public startup reserve.
+The retained memory provider duplicates 55608 bytes of kernel lifecycle code.
+It now imports the existing kernel creation, activation, finish and destruction
+routines, retaining public ownership/job/message behavior and stack sizes.
+Memory service version 27 checks the new import contract. The old reference
+core remains available to its independent tests.
+
+Bootstrap and `build/i386-c4-shared-lifecycle-cross` pass; the memory image saves
+exactly 55608 bytes and contains no local TaskRuntime-prefixed lifecycle functions.
+All 1508 source/build pins match. At 8 MiB all nine retained-state/literal/math/
+graphics/restoration commands now pass without acquiring the build provider.
+The overall startup gate still fails: 64.978408 seconds versus the unchanged
+60-second limit. Do not promote the minimal profile. The sampled boot profile
+finds I386HeapScanSelect in 181/241 root-header samples; preserve its full
+corruption checks while addressing that bottleneck.
+
+Public cancellation (69 commands) and message posting (44 commands) pass at
+64 MiB. Task-accounting control/candidate runs remain in progress; their final
+results will be recorded separately. The older full native Console rebuild is
+still live on its own source epoch. Full C1–C5 remain open. See
+[startup capture, footprint and validation evidence](docs/i386-startup-memory-profile.md).
+
 ### Shared original drive/device lookup (2026-10-16)
 
 Native Let2Drv, BlkDevChk, Let2BlkDev and DrvIsWritable now execute shared complete

@@ -153,7 +153,7 @@ Bool MemoryTaskActivate(CTask *public_task,CTask *pred)
   CI386Task *task=public_task,*before=pred;
   if(!record || !before || before==task || before->owner!=memory_root->owner ||
       before->finished || !before->next_task || !before->last_task ||
-      !TaskRuntimeSchedActivate(memory_root->owner,task)) return FALSE;
+      !I386SchedActivate(memory_root->owner,task)) return FALSE;
   //The private ring stays attached; public dispatch inserts before pred.
   task->last_task->next_task=task->next_task;
   task->next_task->last_task=task->last_task;
@@ -191,7 +191,7 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   if(!stack_size) stack_size=MEM_DFT_STK;
   record=I386HeapAlloc(memory_pool.heap,sizeof(CMemoryTaskRecord),TRUE);
   if(!record) { I386IrqRestore(irq); throw('OutMem',TRUE); return 0; }
-  owned=TaskRuntimeTaskCreateFrom(memory_root->owner,memory_pool.heap,parent,
+  owned=I386TaskCreateFrom(memory_root->owner,memory_pool.heap,parent,
       stack_size,&MemoryTaskEntry,(data+0)(U64),0x18,0x20);
   if(!owned) {
     I386HeapFree(memory_pool.heap,record);
@@ -280,7 +280,7 @@ U0 Exit()
   I386IrqRestore(irq);
   //Exit need not return through the lexical untry epilogues on this stack.
   while(task->except_top) SysUntry;
-  if(!TaskRuntimeSchedFinish(task->owner)) throw('Task',TRUE);
+  if(!I386SchedFinish(task->owner)) throw('Task',TRUE);
 }
 U0 MemoryTaskCheckExit()
 {
@@ -347,7 +347,7 @@ U0 MemoryTaskReap()
           sibling_last->next_sibling_task=sibling_next;
           sibling_next->last_sibling_task=sibling_last;
         }
-        if(TaskRuntimeTaskDestroy(record->owned)) {
+        if(I386TaskDestroy(record->owned)) {
           if(last) last->next=next; else memory_tasks=next;
           if(!I386HeapFree(memory_pool.heap,record)) KernelStop;
           progress=TRUE; goto memory_reap_advance;
