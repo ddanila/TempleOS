@@ -25,8 +25,11 @@ both complete disk images. The final native mapping/root-growth run passes
 22 commands and all 83 persisted files; slot selection (42 cases/46 commands)
 and deletion (56 cases/59 commands) also pass with unchanged inputs. The 8 MiB
 gate passes nine checks in 57.808564 seconds with no build-provider load and
-unchanged execution inputs. Separate 16 MiB diagnostics are running from the
-isolated committed 4f4b4c48 snapshot; the older C5 build resumed after timing. Previous candidates exposed boot/home alias dependence
+unchanged execution inputs. The separate 16 MiB diagnostics pass in
+225.739603 seconds with 128 push-word, 22 publication and 28 program cases,
+both memory phases and nine interactive/VGA checks; all four execution pins
+are unchanged. These gates use the isolated committed 4f4b4c48 snapshot;
+the older C5 build resumed after timing. Previous candidates exposed boot/home alias dependence
 on the current signature and stale public roots after relocation; both now have
 regressions. See docs/i386-drive-map.md. Full mounting, original public Spawn
 initialization and C1–C5 remain open.

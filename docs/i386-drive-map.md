@@ -120,7 +120,10 @@ in 57.808564 seconds, with no build-provider load and all four execution pins
 unchanged (build/i386-c4-drive-map-startup). It uses the isolated committed
 4f4b4c48 source snapshot, matching all 1511 source and 24 build inputs. The
 coordinator resumed the older C5 build afterward and started separate 16 MiB
-diagnostics (build/i386-c4-drive-map-diagnostics); those remain pending.
+diagnostics (build/i386-c4-drive-map-diagnostics). These now pass: startup in
+225.739603 seconds, 128 push-word cases, 22 publication cases, 28 program
+cases, both preserved-memory phases and nine interactive/VGA checks. All four
+execution pins remain unchanged; input-audit.json records their verification.
 Coordinator state is recorded in build/i386-c4-drive-map-gates.json. The original controls establish a
 C1/C4 baseline, not complete mounting qualification. C1–C5 and all 686 inventory
 qualifications remain open.
