@@ -25,8 +25,10 @@ Pinned-original and shared-source controls pass with unchanged input hashes:
 
 Bootstrap and cross-build pass with all 1516 source and 24 build inputs
 unchanged (`build/i386-c2-bitmap-document-cross/input-audit.json`). The native three-command suite passes all six checks and four exact buffers
-with unchanged inputs in `build/i386-c2-bitmap-document-bytes-native`. Minimal
-memory qualification is pending.
+with unchanged inputs in `build/i386-c2-bitmap-document-bytes-native`. The isolated
+8 MiB gate passes all nine checks in 56.453438 seconds with no build-provider
+load on committed 406db5e9. Its four execution pins match the committed source
+snapshot; 16 MiB diagnostics are still running.
 
 The unchanged old native image rejects the corrected global-vector fixture at
 DC2Sprite in `build/i386-c2-bitmap-document-binding-red` with execution inputs

@@ -17,8 +17,9 @@ ConsoleRuntime 129 now shares the complete original DC2Sprite and DocSprite
 bodies. Original and shared-source controls pass six ownership/insertion checks
 and four independently constructed packed bitmap buffers. Bootstrap/cross-build
 pass with all 1516 source and 24 build inputs unchanged. The native suite passes
-all six checks and four exact buffers with unchanged inputs; memory gates are
-pending. Full GR loading, Type and desktop startup remain open. See
+all six checks and four exact buffers with unchanged inputs. The isolated 8 MiB
+gate passes nine checks in 56.453438 seconds with no build-provider load and
+unchanged pins on committed 406db5e9; 16 MiB diagnostics are running. Full GR loading, Type and desktop startup remain open. See
 docs/i386-bitmap-document.md. No inventory item or C1–C5 milestone closes.
 
 ### Original terminal startup reference (2026-10-16)
