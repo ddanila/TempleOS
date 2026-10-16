@@ -11,6 +11,23 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Orphan block-device release regression (2026-10-16)
+
+The original BlkDevsRelease walks the full physical-device table. The native
+adapter instead discovers devices through drive records, so an owned device
+becomes invisible when its last drive association disappears. Eight original
+and rebuilt-original mask-31 cases pass with unchanged inputs. The same native
+runner passes the four associated-device cases, then fails the first orphan
+case after restoring all borrowed records; inputs are unchanged.
+
+The required fix is a canonical 26-record CBlkDev table shared by ATA metadata,
+channel forwarding, mounted drives and the complete release loop. CI386Ata's
+embedded public record must not become a second identity. Boot/secondary-target,
+installation/format and standalone protocol callers need lifetime migration and
+regression coverage. See docs/i386-block-release.md. This is a failing regression
+checkpoint, not implementation or qualification of the physical-device table.
+C1-C5 and all 686 inventory qualifications remain open.
+
 ### Complete device-wide deletion and compact immediate pushes (2026-10-16)
 
 ConsoleRuntime 122 shares the complete original DrvBlkDevDel table walk and

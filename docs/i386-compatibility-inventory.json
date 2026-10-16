@@ -11768,8 +11768,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "Release current-task-owned block devices, including devices with no remaining drive associations; preserve unrelated ownership, invalid signatures, non-initialization flags and caller state.",
+      "oracle": "docs/i386-block-release.md: eight mask-31 original cases cover associated/orphan devices, ownership/signature filtering, exact record restoration and repeated release. Full physical-device table, media initialization/deletion and lifecycle remain unqualified.",
       "tests": [
         {
           "target": "original-drive-device-lookup",
@@ -11791,6 +11791,27 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-lookup-native/result.json",
           "scope": "Fifteen commands, twelve original mask-31 cases at 64 MiB on 486,-fpu; not full Drv/media initialization, remapping or minimal profile qualification"
+        },
+        {
+          "target": "original-orphan-block-release",
+          "command": "python3 tools/test-i386-block-release-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-release-reference/result.json",
+          "scope": "Eight original cases, unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-orphan-block-release",
+          "command": "python3 tools/test-i386-block-release-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-release-current/result.json",
+          "scope": "Same eight cases on the rebuilt original, unchanged inputs."
+        },
+        {
+          "target": "native-orphan-block-release",
+          "command": "python3 tools/test-i386-block-release.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-block-release-red/result.json",
+          "scope": "Canonical drive identity and cases 0-3 pass; first orphan case 4 fails after restoration; later cases do not run. Inputs unchanged."
         }
       ]
     },
