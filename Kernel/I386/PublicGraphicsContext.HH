@@ -26,4 +26,5 @@ public _extern _GRAPHICS_START Bool NativeGraphicsStart();
 public _extern _GRAPHICS_PRESENT Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
 public _extern _DC_2_SPRITE U8 *DC2Sprite(CDC *dc);
 public _extern _DC_LOAD CDC *DCLoad(U8 *src,I64 *_size=NULL,CTask *task=NULL);
+public _extern _GR_READ CDC *GRRead(U8 *filename,CTask *task=NULL);
 #endif

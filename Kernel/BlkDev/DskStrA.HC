@@ -69,11 +69,7 @@ U8 *ExtChg(U8 *filename,U8 *extension)
   return CatPrint(res,".%s",extension);
 }
 
-U8 *ExtDft(U8 *filename,U8 *extension)
-{//Give extension if has none.
-  U8 *res=MAlloc(StrLen(filename)+1+StrLen(extension)+1);
-  return FileNameWriteDefault(res,filename,extension);
-}
+#include "/Kernel/BlkDev/ExtDftCore.HC"
 
 CDirEntry *Cd2DirEntry(CDirEntry *tmpde,U8 *abs_name)
 {

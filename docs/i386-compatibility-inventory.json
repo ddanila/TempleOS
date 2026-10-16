@@ -2173,6 +2173,24 @@
           "result": "pass",
           "evidence": "build/i386-c2-dc-load-native/result.json",
           "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-gr-read.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-gr-read-reference/result.json",
+          "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-gr-read.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-gr-read-rebuilt/result.json",
+          "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-gr-read.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-gr-read-native/result.json",
+          "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
         }
       ]
     },
@@ -12446,7 +12464,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-gr-read.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-gr-read-reference/result.json",
+          "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-gr-read.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-gr-read-rebuilt/result.json",
+          "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-gr-read.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-gr-read-native/result.json",
+          "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskStrB.HC",

@@ -11,6 +11,18 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original graphics-file read integration candidate (2026-10-16)
+
+ConsoleRuntime 131 shares the original ExtDft, GRRead and DocGR bodies over the
+native public file reader and original device-context/sprite services. Original
+and rebuilt-original controls pass fourteen extension, file, compression,
+ownership and document-insertion checks. Bootstrap/cross-build pass with all
+1523 source and 24 build inputs unchanged. The native four-command suite passes
+all fourteen checks with unchanged inputs; the preceding image rejects the
+fixture at ExtDft. Resource gates are pending;
+full Type, raw DocDump and original terminal startup remain open. See
+docs/i386-gr-read.md. All 686 inventory entries and C1–C5 remain unqualified.
+
 ### Original device-context load integration candidate (2026-10-16)
 
 ConsoleRuntime 130 integrates original DCLoad and ExpandBuf bodies over the

@@ -115,27 +115,10 @@ public I64 GRWrite(U8 *filename,CDC *dc,I64 dcsf_flags=DCSF_COMPRESSED)
   return size;
 }
 
-public CDC *GRRead(U8 *filename,CTask *task=NULL)
-{//TempleOS GR File.
-  CDC	*dc=NULL;
-  U8	*st=ExtDft(filename,"GR.Z"),
-	*src=FileRead(st);
-  if (src)
-    dc=DCLoad(src,,task);
-  Free(src);
-  Free(st);
-  return dc;
-}
+#include "/Adam/Gr/GRReadCore.HC"
 
 #help_index "Graphics/Sprite;Graphics/GR Files;DolDoc/Output;StdOut/DolDoc"
-public U0 DocGR(CDoc *doc=NULL,U8 *filename)
-{//Put a GR file into a document as asprite.
-  CDC *dc=GRRead(filename);
-  CSprite *elems=DC2Sprite(dc);
-  DocSprite(doc,elems);
-  Free(elems);
-  DCDel(dc);
-}
+#include "/Adam/Gr/DocGRCore.HC"
 
 #help_index "Graphics/Device Contexts;Graphics/Scrn"
 public CDC *DCScrnCapture(Bool include_zoom=TRUE,CTask *task=NULL)

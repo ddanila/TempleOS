@@ -54,4 +54,5 @@ public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(
   U8 *kernel_module,U8 *helper_directory,U8 *target);
 public _extern _FILE_READ U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0);
 public _extern _CD Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE);
+public _extern _EXT_DFT U8 *ExtDft(U8 *filename,U8 *extension);
 #endif
