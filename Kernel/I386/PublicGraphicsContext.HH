@@ -24,4 +24,5 @@ public extern CGrGlbls gr;
 public extern CBGR48 gr_palette_std[COLORS_NUM];
 public _extern _GRAPHICS_START Bool NativeGraphicsStart();
 public _extern _GRAPHICS_PRESENT Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
+public _extern _DC_2_SPRITE U8 *DC2Sprite(CDC *dc);
 #endif

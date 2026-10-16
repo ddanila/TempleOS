@@ -2540,6 +2540,24 @@
           "result": "pass",
           "evidence": "build/i386-c4-sprite-validate-native/result.json",
           "scope": "18 structural bounds/count/index cases using original record metadata; not full renderer geometry/resource qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-bitmap-document.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-bitmap-document-bytes-reference/result.json",
+          "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-bitmap-document.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-bitmap-document-bytes-shared/result.json",
+          "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-bitmap-document.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-bitmap-document-bytes-native/result.json",
+          "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
         }
       ]
     },
@@ -2752,6 +2770,24 @@
           "result": "pass",
           "evidence": "build/i386-c4-sprite-validate-native/result.json",
           "scope": "18 structural bounds/count/index cases using original record metadata; not full renderer geometry/resource qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-bitmap-document.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-bitmap-document-bytes-reference/result.json",
+          "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-bitmap-document.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-bitmap-document-bytes-shared/result.json",
+          "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-bitmap-document.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-bitmap-document-bytes-native/result.json",
+          "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
         }
       ]
     },

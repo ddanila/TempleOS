@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original bitmap document integration candidate (2026-10-16)
+
+ConsoleRuntime 129 now shares the complete original DC2Sprite and DocSprite
+bodies. Original and shared-source controls pass six ownership/insertion checks
+and four independently constructed packed bitmap buffers. Bootstrap/cross-build
+pass with all 1516 source and 24 build inputs unchanged. The native suite passes
+all six checks and four exact buffers with unchanged inputs; memory gates are
+pending. Full GR loading, Type and desktop startup remain open. See
+docs/i386-bitmap-document.md. No inventory item or C1–C5 milestone closes.
+
 ### Original terminal startup reference (2026-10-16)
 
 The pinned-original DocTermNew → Type(full Start.DD) → DocClear control passes

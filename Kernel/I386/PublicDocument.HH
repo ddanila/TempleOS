@@ -114,4 +114,5 @@ public _extern _ED_REPLACE I64 EdReplace(CDoc *doc,U8 *find,U8 *replace,
   Bool sel=TRUE,Bool match_case=TRUE,Bool whole_labels=FALSE);
 #include "/Adam/DolDoc/DocFindPromptTypes.HH"
 public _extern _DOC_CLEAR U0 DocClear(CDoc *doc=NULL,Bool clear_holds=FALSE);
+public _extern _DOC_SPRITE CDocEntry *DocSprite(CDoc *doc=NULL,U8 *elems,U8 *fmt=NULL);
 #endif
