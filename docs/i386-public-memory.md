@@ -327,3 +327,50 @@ table remains 16 bytes; the version check rejects the previous provider before
 binding. The current module uses 118344 image / 118360 heap bytes. See
 [bit assignment](i386-bit-assignment.md) for original-x64/native behavior and the
 instruction-level LOCK contract. This does not supply scheduling or break services.
+
+## Live task storage during isolated diagnostics, 2026-10-16
+
+The expanded 16 MiB diagnostic startup exposed an old MemoryProbe assumption:
+phase 1 required an empty task heap even after current-directory strings became
+public task allocations. Both the first-fit candidate and its source-pinned
+413273ed predecessor failed after the second timer tick. Their MemoryRuntime
+modules were byte-identical. The stopped capture in
+build/i386-c4-raw-heap-first-diagnostic-stop resolves the return site to
+MemoryProbe+0x7e4, the empty-control guard. Its task owns a 16-byte span containing
+cur_dir="/"; the allocation header points to that task's actual heap control.
+empty-heap-assumption.json records the addresses and observations. This is live
+owned state, not an allocator leak.
+
+MemoryRuntime 28 preserves that state while retaining the complete probe. With
+interrupts masked, it copies every owned heap page into temporary kernel-arena
+storage and saves the original control bytes. It initializes an isolated
+control at the original address, so public selectors and ownership callbacks
+continue to exercise real task bindings. Existing allocation, zeroing, copying,
+hash/define, alignment, reclamation and teardown checks still run. The isolated
+control and provider must be fully destroyed before the original control is
+restored. Every original page byte is compared with its snapshot; snapshots
+are freed; directory ownership and exact outer kernel allocation counts/bytes
+must match. No original live heap page is freed or trimmed for the probe.
+
+The host diagnostic gate now requires exactly one preserved-state and completion
+record for each phase, plus nonzero live storage in phase 1. It retains the
+22 publication and 28 program-publication cases and the normal presentation
+checks. Both bootstrap generations and build/i386-c4-live-memory-probe-cross
+pass with 1501 source and 24 build-input hashes matching. Normal 8 MiB startup
+passes in build/i386-c4-live-memory-probe-startup at 56.135985 seconds, with all
+nine commands, exact VGA restoration and no build-only provider. The complete
+16 MiB execution in build/i386-c4-live-memory-probe-diagnostics completes
+startup in 232.370448 seconds and passes all nine interactive/presentation
+commands, all 22 publication and 28 program-publication cases.
+
+Both memory phases have completed in the new diagnostic run: phase 0 preserves
+an empty control; phase 1 preserves 16 live bytes in an 8192-byte owned page,
+including exact page comparison and snapshot reclamation. The worker completes its compiler/loader probes and the final interaction checks.
+The initial host verdict nevertheless fails: substring counting mistakenly
+counts PARSER MEMORY PROBE 0 as another MEMORY PROBE 0 completion. The checker
+now uses exact-line matching. exact-line-review.json retains an offline review
+of the completed, hashed guest log; the original failed result is unchanged.
+A fresh whole-gate rerun with the corrected checker is active in
+build/i386-c4-live-memory-probe-exact-diagnostics. It must finish before the
+updated command is reported as passing. The normal 8 MiB gate remains passing;
+this correction does not qualify complete desktop/application parity or C1-C5.

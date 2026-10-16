@@ -11,6 +11,23 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Preserve live task heaps during diagnostics (2026-10-16)
+
+MemoryRuntime 28 corrects the isolated probe's outdated empty-heap assumption.
+It snapshots the real task control and every owned page before testing an
+isolated control at the same address with interrupts masked. It then tears
+down the isolated heap, restores the original control, checks every saved page
+byte and directory ownership, and requires exact kernel allocation recovery.
+The worker's legitimate 16-byte current-directory allocation survives; both
+memory phases and all 22 publication/28 program-publication cases complete.
+All nine 16 MiB interactive checks also complete. The initial host verdict is
+a false failure from matching PARSER MEMORY PROBE as MEMORY PROBE; exact-line
+matching fixes the checker, and a fresh full rerun is active. Its passing
+verdict remains pending. Normal 8 MiB startup
+passes at 56.135985 seconds with all nine checks. Bootstrap/cross-build and all
+1501 source/24 build-input hashes pass. See docs/i386-public-memory.md.
+C1-C5 and all 686 inventory entries remain unqualified.
+
 ### First-fit validation and startup recovery (2026-10-16)
 
 The original raw-renderer image's startup timing failure is addressed by

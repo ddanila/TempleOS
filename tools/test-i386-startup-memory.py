@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import re
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,6 +81,20 @@ def main():
             if missing:
                 raise ValueError(f'Missing program publication diagnostics: {missing}')
             result['program_publication_cases'] = len(program_markers)
+            preserved=[]
+            for phase in (0,1):
+                pattern=rf'^MEMORY PROBE PRESERVED {phase:016X} ([0-9A-F]{{16}}) ([0-9A-F]{{16}})$'
+                matches=re.findall(pattern,log,re.M)
+                if len(matches)!=1:
+                    raise ValueError(f'Missing or duplicate preserved memory probe: {phase}')
+                used,owned=(int(value,16) for value in matches[0])
+                if used>owned or phase==1 and not used:
+                    raise ValueError(f'Memory probe did not preserve live task storage: {phase}')
+                for prefix in ('MEMORY PROBE ISOLATED','MEMORY PROBE'):
+                    if log.splitlines().count(f'{prefix} {phase:016X}')!=1:
+                        raise ValueError(f'Missing memory probe completion: {phase}')
+                preserved.append(dict(phase=phase,used_bytes=used,owned_bytes=owned))
+            result['memory_probe_preserved']=preserved
 
         seconds = result['behavior']['startup_seconds']
         result['interactive_budget_pass'] = not args.diagnostics and args.ram_mib == 8 and seconds <= 60

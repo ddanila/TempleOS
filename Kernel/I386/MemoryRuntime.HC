@@ -143,6 +143,42 @@ U0 MemoryProbeReclaim(CI386PublicPool *pool)
 {//Only the diagnostic pool; root graphics and startup reservations stay owned.
   if(I386MemBackingTrim(pool)<0) KernelStop;
 }
+//Diagnostic snapshots use the kernel arena, never the control under test.
+class CMemoryProbePage {
+  CMemoryProbePage *next;
+  CMemBlk *block;
+  I64 size;
+  U0 data;
+};
+CMemoryProbePage *MemoryProbeSavePages(CHeapCtrl *hc)
+{
+  CMemoryProbePage *head=0,*page;
+  CMemBlk *block;
+  I64 remaining=hc->alloced_u8s,size;
+  for(block=hc->next_mem_blk;block!=&hc->next_mem_blk;block=block->next) {
+    size=block->pags*512;
+    if(size<512 || size>remaining) KernelStop;
+    page=I386HeapAlloc(memory_pool.heap,sizeof(CMemoryProbePage)+size);
+    if(!page) KernelStop;
+    page->next=head;page->block=block;page->size=size;head=page;
+    MemoryCopy(&page->data,block,size);
+    remaining-=size;
+  }
+  if(remaining) KernelStop;
+  return head;
+}
+U0 MemoryProbeCheckPages(CMemoryProbePage *page)
+{
+  CMemoryProbePage *next;
+  I64 i;
+  U8 *original,*saved;
+  while(page) {
+    original=page->block;saved=&page->data;next=page->next;
+    for(i=0;i<page->size;i++) if(original[i]!=saved[i]) KernelStop;
+    if(!I386HeapFree(memory_pool.heap,page)) KernelStop;
+    page=next;
+  }
+}
 U0 MemoryProbe(I64 phase)
 {
   CI386Task *task=I386TaskSelf;
@@ -153,21 +189,24 @@ U0 MemoryProbe(I64 phase)
   U8 *bytes;
   I64 i,before,allocations;
   U8 *p,*q;
-  I64 capacity;
+  I64 capacity,outer_used=memory_pool.heap->used,outer_allocations=memory_pool.heap->allocations;
+  CMemoryProbePage *saved_pages;
+  U8 *directory=task->cur_dir;
   if(!memory_root || !state || task->code_heap!=task->data_heap ||
       task->data_heap!=&state->control || state->control.mem_task!=task ||
       state->control.bp!=&memory_pool ||
       !phase && (task!=memory_root || state->parent) ||
       phase && (task==memory_root || state->parent!=memory_root->heap_state)) KernelStop;
-  //Use the current task's empty control with a separate backing provider. The
-  //control stays at its original address, so public selectors and ownership
-  //callbacks remain real. IRQs stay masked; other tasks keep their live heaps.
-  if(state->control.used_u8s || !I386MemHeapTrim(&state->control)) KernelStop;
+  //Keep every existing allocation (including the inherited current directory).
+  //With IRQs masked, temporarily reuse the real control address for the probe;
+  //its original pages and self-referential links stay untouched until restore.
+  if(state->control.locked_flags || !I386MemBackingValid(&memory_pool)) KernelStop;
+  saved_pages=MemoryProbeSavePages(&state->control);
   for(i=0;i<sizeof(CHeapCtrl);i++) (&saved_control)(U8 *)[i]=(&state->control)(U8 *)[i];
   for(i=0;i<sizeof(CI386BackingPool);i++) (&root_before)(U8 *)[i]=(&memory_pool)(U8 *)[i];
+  MemorySet(&state->control,0,sizeof(CHeapCtrl));
   bytes=&probe_pool; for(i=0;i<sizeof(CI386BackingPool);i++) bytes[i]=0;
-  if(!I386MemHeapDestroy(&state->control) ||
-      !I386MemBackingInit(&probe_pool,memory_pool.heap,I386_NATIVE_BACKING_QUANTUM)) KernelStop;
+  if(!I386MemBackingInit(&probe_pool,memory_pool.heap,I386_NATIVE_BACKING_QUANTUM)) KernelStop;
   probe_pool.reclaim=&MemoryProbeReclaim;
   if(!I386MemHeapInit(&state->control,&probe_pool,task) ||
       I386TaskHeapsValid(task)!=state) KernelStop;
@@ -219,6 +258,12 @@ U0 MemoryProbe(I64 phase)
     if((&memory_pool)(U8 *)[i]!=(&root_before)(U8 *)[i]) KernelStop;
   if(I386TaskHeapsValid(task)!=state || !I386MemBackingValid(&memory_pool) ||
       memory_pool.heap->used!=before || memory_pool.heap->allocations!=allocations) KernelStop;
+  MemoryProbeCheckPages(saved_pages);
+  if(task->cur_dir!=directory || memory_pool.heap->used!=outer_used ||
+      memory_pool.heap->allocations!=outer_allocations) KernelStop;
+  if(directory && (MemoryHeap(directory)!=&state->control || MemorySize(directory)<2 || *directory!='/')) KernelStop;
+  KernelLog("MEMORY PROBE PRESERVED ");KernelHex(phase);KernelLog(" ");
+  KernelHex(saved_control.used_u8s);KernelLog(" ");KernelHex(saved_control.alloced_u8s);KernelLog("\n");
   KernelLog("MEMORY PROBE ISOLATED "); KernelHex(phase); KernelLog("\n");
   I386IrqRestore(flags);
   KernelLog("MEMORY PROBE "); KernelHex(phase); KernelLog("\n");
