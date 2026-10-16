@@ -312,6 +312,7 @@ def main():
                      'Kernel/I386/TaskModuleStage.HC', 'Kernel/I386/TaskModuleStage.HH',
                      'Kernel/I386/ModuleStageCore.HC', 'Kernel/I386/ModuleStage.HH',
                      'Kernel/I386/TaskFiles.HC', 'Kernel/I386/TaskFiles.HH',
+                     'Kernel/I386/FileVolumes.HC', 'Kernel/I386/FileContext.HH',
                      'Kernel/I386/RedSeaAlloc.HC', 'Kernel/I386/RedSeaTask.HC',
                      'Kernel/I386/WaitCancel.HC'):
             task_stage_inputs[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
@@ -998,10 +999,14 @@ def main():
             [0x20]*3+[0x30,0xE7]+[0x20]*3+[0x30,0xE7,0x20]+
             [0xE7,0x20,0x30,0xE7]+[0x20]*4+
             [0x30,0xE7]*2+[0x30,0x30,0xE7]+[0x30,0xE7]*2+[0x20]*2)
+        # External mapped record: reserve, partial write, failed release flush,
+        # private remount plus retry, then explicit mounted-record publication.
+        mapped_stage_commands = ([0x20]*3+[0x30,0xE7]+[0x20,0x30]+
+                                 [0x20]*3+[0x30]+[0x20]*5+[0x30,0xE7]+[0x20]*2)
         expected_commands = ([0xEC]*2+[0x20]*64+[0x30]*2+[0xE7]*2+[0x20]*2+
                              [0x20]*6+[0x30]*2+[0xE7]+[0x20]*6+
                              stage_commands+publication_commands+publication_worker_commands+
-                             publication_growth_commands+[0x20]*8)
+                             publication_growth_commands+mapped_stage_commands+[0x20]*8)
         if commands[-len(expected_commands):] != expected_commands:
             raise RuntimeError('Cooperative ATA command stream or poison suppression differs')
         for drive_id, target, before in ((0,disk,ata_task_before),(1,slave,slave_bytes)):
@@ -1028,6 +1033,9 @@ def main():
             'failed_commands':1,'poisoned_requests_issued':0,
             'redsea_volumes':2,'serialized_file_bytes':1024,'file_sector_writes':2,
             'inherited_task_directories':2,'relative_file_reads':2,'borrowed_reap_rejected':True,
+            'stage_external_mapping_cases':1,'stage_mapped_backend_invalidation_cases':2,'stage_mapped_quarantine_retry_cases':1,
+            'stage_mapped_commands':len(mapped_stage_commands),
+            'stage_mapped_root_refresh_cases':1,'stage_mapped_deleted_record_cases':1,
             'stage_readback_bytes':1025,'stage_chunk_bytes':17,
             'stage_worker_exit_cleanup':True,'stage_flush_failure_retry':True,
             'stage_queued_wait_cancellation_cleanup':True,

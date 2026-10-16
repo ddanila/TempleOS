@@ -11,18 +11,23 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
-### Drive-letter mapping baseline (2026-10-16)
+### Canonical drive-letter mapping candidate (2026-10-16)
 
-Fifteen original and rebuilt-original cases pass for mapping aliases, external
-records (including invalid signatures and real reads through a mounted-record
-copy), mapped read/find/write, directory
-creation/change and child-task access,
-with exact restoration and unchanged inputs. The native preflight rejects missing
-DrvMap. File operations currently index volumes directly by letter, so a correct
-port requires an independent letter map and changes throughout file/context
-resolution. See docs/i386-drive-map.md; a lookup-only adapter would not satisfy
-these workflows. Original task-birth directory semantics also need comparison
-with native private-context cloning. C1–C5 remain open.
+ConsoleRuntime 126 shares the original DrvMap body over an independent map;
+FileRuntime 60 resolves real I/O through the mapped record and mounted backend.
+External records retain their lock identity, root metadata and backend validity.
+BuildRuntime 3 preserves mapped views through native staging and failure cleanup;
+CompilerProbe 19 carries the changed private RedSea layout. Bootstrap/cross-build,
+all 15 rebuilt-original controls and the expanded ATA/task suite pass. The latter
+checks external-record staging, backend quarantine before/after acquisition,
+root refresh, deleted-record rejection, cleanup retry, exact command traffic and
+both complete disk images. The final native mapping/root-growth run passes
+22 commands and all 83 persisted files; slot selection (42 cases/46 commands)
+and deletion (56 cases/59 commands) also pass with unchanged inputs. Memory
+gates will run from an isolated committed source snapshot. Previous candidates exposed boot/home alias dependence
+on the current signature and stale public roots after relocation; both now have
+regressions. See docs/i386-drive-map.md. Full mounting, original public Spawn
+initialization and C1–C5 remain open.
 
 ### Original drive-slot API candidate (2026-10-16)
 
@@ -35,8 +40,9 @@ original control pass with unchanged inputs. Native behavior passes 42 cases/46
 commands; drive deletion (56 cases) and block-slot selection (20 cases) also pass
 with unchanged inputs. Memory gates are queued behind the active guests using an
 isolated committed source snapshot. The queued 8 MiB gate subsequently passes
-all nine checks in 58.410043 seconds with unchanged inputs; 16 MiB diagnostics
-are now running. See docs/i386-drive-slot.md for corrected alias expectations and the
+all nine checks in 58.410043 seconds with unchanged inputs. The 16 MiB diagnostic
+gate also passes both memory phases, 128 push-word cases, 22 publication/28
+program cases and all nine interactive/VGA checks, with unchanged inputs. See docs/i386-drive-slot.md for corrected alias expectations and the
 scope boundary: this is not full mounting or resource teardown. C1–C5 remain open.
 
 ### Original block-device slot-selection candidate (2026-10-16)

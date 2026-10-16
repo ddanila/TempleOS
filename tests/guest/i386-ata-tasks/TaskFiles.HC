@@ -2,6 +2,7 @@
 #include "/Kernel/I386/TaskModuleStage.HH"
 #include "/Kernel/I386/TaskModulePublication.HC"
 CI386FileVolumes task_volumes;
+//Explicit fixture remounts republish the canonical drive identity as mount setup.
 CFilePathContext task_environment;
 U32 task_white_space[8],task_files_done,task_files_busy;
 extern U0 DirectoryReader(I64 id);
@@ -127,7 +128,7 @@ I64 PublicationTest(U8 *source,U8 *bitmap)
     if(!cleaned && !(*owner->stage->cleanup)(owner->stage->context))return 81;
     if(owner->stage || heap.used!=used || heap.allocations!=allocations)return 81;
     if(!volumes[0].signature && (!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
-        !I386RedSeaTaskBind(&volumes[0],&volume_io)))return 82;
+        (!I386RedSeaTaskBind(&volumes[0],&volume_io) || !I386TaskFilesDriveInit(&task_volumes,'C'))))return 82;
     if(root.io_locks || channel.owner || channel.head || channel.tail)return 83;
     //Recovery may acquire the raw channel and close through the volume API.
     //That must not leave a public device owner blocking the next file task.
@@ -207,7 +208,7 @@ I64 PublicationWorkerTest(U8 *bitmap)
       !I386RedSeaSectorWrite(&view,2050,publication_worker_original) || !I386RedSeaFlush(&view) ||
       !I386RedSeaSectorWrite(&view,2049,bitmap) || !I386RedSeaFlush(&view) ||
       !I386RedSeaEnd(&volumes[0]) || !I386RedSeaMount(&volumes[0],&disks[0],2048) ||
-      !I386RedSeaTaskBind(&volumes[0],&volume_io))return 98;
+      (!I386RedSeaTaskBind(&volumes[0],&volume_io) || !I386TaskFilesDriveInit(&task_volumes,'C')))return 98;
   return 0;
 }
 I64 PublicationGrowthTest(U8 *source,U8 *bitmap)
@@ -262,7 +263,7 @@ I64 PublicationGrowthTest(U8 *source,U8 *bitmap)
       !(*owner->stage->cleanup)(owner->stage->context) || owner->stage ||
       heap.used!=used || heap.allocations!=allocations ||
       !I386RedSeaMount(&volumes[0],&disks[0],2048) ||
-      !I386RedSeaTaskBind(&volumes[0],&volume_io) || volumes[0].root!=2050)return 107;
+      (!I386RedSeaTaskBind(&volumes[0],&volume_io) || !I386TaskFilesDriveInit(&task_volumes,'C')) || volumes[0].root!=2050)return 107;
   return 0;
 }
 I64 stage_read_fail_after,stage_read_count;
@@ -336,7 +337,7 @@ I64 StageTest()
   if(!(*state->stage->cleanup)(state->stage->context) || state->stage ||
       volumes[0].signature || heap.used!=used || heap.allocations!=allocations)return 48;
   if(!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
-      !I386RedSeaTaskBind(&volumes[0],&volume_io))return 49;
+      (!I386RedSeaTaskBind(&volumes[0],&volume_io) || !I386TaskFilesDriveInit(&task_volumes,'C')))return 49;
   for(n=1;n<=2;n++) {
     unit=I386TaskModuleStageNew("C:/ReadFault.t32m",1025);
     if(!unit || (*unit->emit)(unit,0,source,1025)!=1025 ||
@@ -380,6 +381,56 @@ I64 StageTest()
   if(state->stage || state->busy || root.io_locks || channel.owner || channel.poisoned)return 54;
   return 0;
 }
+Bool MappedStageInvalidateOnAcquire(U8 *context)
+{
+  Bool result=I386RedSeaTaskBegin(context);
+  if(result)volumes[0].signature=0;
+  return result;
+}
+I64 MappedStageTest()
+{//Retained external-record view, owned reservation and shared quarantine/retry.
+  CI386TaskFiles *owner=root.file_state;
+  CI386ModuleStage *unit;CI386TaskModuleStage *stage;
+  CDrv copy,*source=I386TaskFilesDrive(&task_volumes,'C'),*saved=task_volumes.drive_map['X'-'A'];
+  U8 bytes[65];I64 i,used=heap.used,allocations=heap.allocations;
+  for(i=0;i<sizeof(CDrv);i++)(&copy)(U8 *)[i]=source(U8 *)[i];
+  for(i=0;i<65;i++)bytes[i]=i+1;
+  copy.drv_let='X';task_volumes.drive_map['X'-'A']=&copy;
+  unit=I386TaskModuleStageNew("X:/Mapped.t32m",65);stage=unit;
+  if(!unit || stage->volume==&volumes[0] || stage->volume->public_drive!=&copy ||
+      stage->volume->disk!=&disks[0] || stage->volume->backing!=&volumes[0])return 114;
+  volumes[0].signature=0;
+  if(I386RedSeaValid(stage->volume) || I386RedSeaBegin(stage->volume) ||
+      root.io_locks || channel.owner)return 115;
+  volumes[0].signature=0x52533332;
+  volume_io.begin=&MappedStageInvalidateOnAcquire;
+  Bool acquired=I386RedSeaBegin(stage->volume);
+  volume_io.begin=&I386RedSeaTaskBegin;
+  if(acquired || volumes[0].signature || root.io_locks || channel.owner ||
+      copy.owning_task || copy.locked_flags)return 116;
+  volumes[0].signature=0x52533332;
+  stage->volume->root=copy.root_clus+1;
+  if(!I386RedSeaBegin(stage->volume) || stage->volume->root!=copy.root_clus ||
+      !I386RedSeaEnd(stage->volume))return 117;
+  copy.dv_signature=0;
+  if(I386RedSeaBegin(stage->volume) || root.io_locks || channel.owner ||
+      copy.owning_task || copy.locked_flags)return 118;
+  copy.dv_signature=DRV_SIGNATURE_VAL;
+  if((*unit->emit)(unit,0,bytes,65)!=65 ||
+      copy.owning_task || copy.locked_flags || root.io_locks)return 110;
+  I386RedSeaTaskFailArm(3,1);
+  if((*owner->stage->cleanup)(owner->stage->context) || !owner->stage ||
+      !stage->block || volumes[0].signature || root.io_locks || channel.owner)return 111;
+  I386RedSeaTaskFailArm(0,0);
+  if(!(*owner->stage->cleanup)(owner->stage->context) || owner->stage ||
+      heap.used!=used || heap.allocations!=allocations || volumes[0].signature ||
+      root.io_locks || channel.owner || copy.owning_task || copy.locked_flags)return 112;
+  task_volumes.drive_map['X'-'A']=saved;
+  if(!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
+      !I386RedSeaTaskBind(&volumes[0],&volume_io) ||
+      !I386TaskFilesDriveInit(&task_volumes,'C'))return 113;
+  return 0;
+}
 I64 TaskFilesTest()
 {
   CI386TaskFiles *state;
@@ -421,6 +472,7 @@ I64 TaskFilesTest()
       I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes)) return 30;
   used=heap.used; allocations=heap.allocations;
   i=StageTest;if(i)return i;
+  i=MappedStageTest;if(i)return i;
   if(I386TaskSpawn(&scheduler,&heap,8192,&DirectoryReader,0,0x18,0x20,24) ||
       heap.used!=used || heap.allocations!=allocations || root.next!=&root) return 31;
   if(I386TaskFilesSet(&root,"relative",'C') || I386TaskFilesSet(&root,"/",'c')) return 32;

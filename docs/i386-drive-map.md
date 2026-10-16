@@ -44,12 +44,11 @@ lookup rejects the mapped record. A first version used a conditional expression
 rejected by the original compiler; that fixture-only failure remains under the
 -signature paths. The corrected ordinary-if version passes both controls.
 
-## Required implementation
+## Native mapping candidate
 
-Native CI386FileVolumes currently combines a physical-volume array indexed by
-letter with canonical CDrv records. It has no independent letter-to-record map.
-Adding only DrvMap and changing Let2Drv would leave actual I/O on the wrong volume.
-The migration must:
+The initial native system combined physical-volume indexing with public letters.
+The candidate separates those identities and routes filesystem operations through
+the mapped record. Its implementation requirements are:
 
 - Preserve canonical drive identities and introduce a lifetime-stable letter map;
   slot preparation/search must continue to operate on physical records.
@@ -65,6 +64,58 @@ The migration must:
   publication and task lifetime. Test mapped reads, writes, directory changes,
   child-task access and exact persisted output on the delivered native image.
 
-The native implementation remains missing. These controls are a C1/C4 baseline,
-not a completed letter-map migration or complete mounting qualification. C1–C5
-and all 686 inventory qualifications remain open.
+ConsoleRuntime 126 now shares the original DrvMap body with only its mapping
+storage expression adapted. FileRuntime 60 owns the independent 26-pointer map,
+initialized to the canonical records just as in BlkDevsInitAll. Physical slot
+preparation stays on the canonical table. Logical lookup does not republish
+records cleared by DrvDel. Current-directory letters follow the current record;
+private context cloning preserves that pointer even if its letter is remapped.
+This does not change the separately unqualified public Spawn initialization policy.
+
+Read/find/write, directory creation/deletion, rename/move, Cd, installation and
+BuildRuntime 3 staging/publication now resolve mapped device and mounted extent.
+External records borrow operation-owned RedSea views with their own public-drive
+lock identity and a pointer to the mounted backend; native build stages retain their view through cleanup. Uncertain
+mutations through views quarantine the matching shared backend. Retained views
+reject backend quarantine, including after channel acquisition; they refresh
+the public root and reject deleted records before I/O. CompilerProbe 19 carries
+the changed RedSea layout. Mapping and
+lookup accept external records; I/O still requires a supported mounted backend
+with matching device, offset and size; the mapped record supplies the root,
+which must be within the mounted extent. Root growth updates that public record. General mounting and additional
+filesystem types remain separate work.
+
+The first candidate passes the 15 native cases and exact persisted files
+(build/i386-c4-drive-map-native), but the slot regression exposes a boot/home
+alias incorrectly depending on the current record's signature. The corrected
+alias/explicit-lookup helpers access task configuration independently. The new
+mapped root-growth regression rejects that first image after root relocation
+(build/i386-c4-drive-map-root-red); it requires 80 exact files through both
+letters and a changed public root cluster.
+
+The final cross-build is build/i386-c4-drive-map-lifetime-cross; all
+1511 source and 24 build inputs match. The rebuilt-original control passes all 15 cases
+(build/i386-c4-drive-map-current-lifetime). The 42-case slot regression also
+passes (build/i386-c4-drive-map-slot-lifetime).
+
+The ATA/task regression passes with an added retained external-record view and
+failed-cleanup quarantine/retry case (build/i386-c4-drive-map-ata-lifetime).
+It checks all 20 additional ATA commands, exact 32 MiB backing bytes, owned
+reservation recovery, locks and heap balance. It additionally rejects backend
+invalidation both before and during channel acquisition, refreshes a retained
+root and rejects a deleted mapped record without issuing disk commands. Fixture remounts now explicitly
+republish canonical drive records. An initial compile failure exposed a missing
+forward declaration for the shared quarantine helper; its snapshot remains under
+-drive-map-ata-forward-declaration-failure. The first expanded transport run
+correctly rejected the previous command-stream expectation; that artifact remains
+under -drive-map-ata-mapped-old-expectation. The final cross-build includes the updated exact command expectations and
+counters in its pinned build inputs.
+
+The final native lifetime image passes the 15 mask-31 mapping cases plus mapped
+root growth in 22 commands, with exact readback of all 83 persisted files
+(build/i386-c4-drive-map-native-lifetime). The 56-case/59-command drive-deletion
+regression also passes (build/i386-c4-drive-map-delete-lifetime). All final native
+runs preserve their execution inputs. The memory gates will use an isolated
+committed source snapshot; they are not yet counted as passing. The original controls establish a
+C1/C4 baseline, not complete mounting qualification. C1–C5 and all 686 inventory
+qualifications remain open.

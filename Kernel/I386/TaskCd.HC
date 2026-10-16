@@ -15,7 +15,7 @@ Bool I386TaskCd(U8 *dirname,Bool make_dirs)
   CI386Heap *heap;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   U8 *buffer=0,*mapped=0,*cursor,*component,*clean=0;
   I64 capacity=8,length=3,i,count,old,drive,ch;
   Bool result=FALSE,root=FALSE;
@@ -32,7 +32,7 @@ Bool I386TaskCd(U8 *dirname,Bool make_dirs)
   buffer=I386HeapAlloc(heap,capacity,TRUE);
   mapped=I386FileNameAbs(heap,&paths,dirname);
   if(!buffer || !mapped) goto task_cd_release;
-  drive=mapped[0]; volume=volumes->letter[drive-'A'];
+  drive=mapped[0]; volume=I386FileVolume(volumes,drive,&view);
   if(!volume || !volume->io) goto task_cd_release;
   cursor=dirname;
   if(cursor[0] && cursor[1]==':') {cursor+=2; if(drive!=paths.cur_drv) root=TRUE;}
@@ -54,7 +54,7 @@ Bool I386TaskCd(U8 *dirname,Bool make_dirs)
     else if(count==1 && component[0]=='~') {
       if(!paths.home_dir) {result=FALSE;break;}
       length=0;while(paths.home_dir[length]) {buffer[length]=paths.home_dir[length];length++;}
-      buffer[length]=0;drive=buffer[0];volume=volumes->letter[drive-'A'];
+      buffer[length]=0;drive=buffer[0];volume=I386FileVolume(volumes,drive,&view);
       if(!volume || !I386TaskCdExists(volume,buffer))result=FALSE;
     }
     else if(count==1 && component[0]=='.') {}

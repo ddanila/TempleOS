@@ -2,7 +2,7 @@
 #define I386_BUILD_RUNTIME_INCLUDED
 #include "/Kernel/I386/FileRuntime.HH"
 #include "/Kernel/I386/TaskModuleStage.HH"
-#define I386_BUILD_SERVICES_VERSION 2
+#define I386_BUILD_SERVICES_VERSION 3
 class CI386BuildContext {
   CI386CompilerServices *compiler;
   CI386FileServices *files;

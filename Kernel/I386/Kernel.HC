@@ -717,7 +717,7 @@ U0 KernelFileLoad()
   kernel_file_image=KernelServiceLoad("/Modules/I386/FileRuntime.t32m","FILES ",
     bindings,38,&kernel_files,sizeof(CI386FileServices),I386_FILE_SERVICES_VERSION);
   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
-  if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=7 ||
+  if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=9 ||
       !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
   kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
@@ -912,6 +912,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.drive_records=kernel_volumes.drives;
+  kernel_console_config.drive_map=kernel_volumes.drive_map;
   kernel_console_config.block_records=kernel_block_devices;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
   kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
@@ -932,7 +933,7 @@ Bool kernel_build_loading;
 CI386BuildServices *I386BuildRuntimeAcquire()
 {
   U32 flags=I386IrqSave;
-  CI386ModuleBinding bindings[41];
+  CI386ModuleBinding bindings[43];
   CI386RedSeaEntry entry;
   CI386BuildServices candidate;
   I64 (*initialize)(CI386BuildServices *services,I64 bytes);
@@ -948,10 +949,12 @@ CI386BuildServices *I386BuildRuntimeAcquire()
   KernelBinding(&bindings[38],"I386TaskFilesValid");
   KernelBinding(&bindings[39],"I386TaskFilesAccess");
   KernelBinding(&bindings[40],"KernelHex");
+  KernelBinding(&bindings[41],"I386FileVolume");
+  KernelBinding(&bindings[42],"I386FileVolumeSame");
   if(I386RedSeaBegin(&kernel_volume)) {
     if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,
         "/Modules/I386/BuildRuntime.t32m",&entry)==1)
-      image=I386RedSeaLoadBound(&kernel_volume,&entry,&kernel_heap,"Main",bindings,41);
+      image=I386RedSeaLoadBound(&kernel_volume,&entry,&kernel_heap,"Main",bindings,43);
     if(!I386RedSeaEnd(&kernel_volume)) {
       kernel_volume.signature=0;
       if(image){I386HeapFree(&kernel_heap,image);image=0;}

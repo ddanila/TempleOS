@@ -9,6 +9,12 @@ Bool I386RedSeaBegin(CI386RedSea *volume)
   if(!volume->io) return TRUE;
   if(!volume->io->begin) return FALSE;
   if(!(*volume->io->begin)(volume->io->context))return FALSE;
+  //A queued operation may resume after quarantine, deletion or root relocation.
+  if(volume->backing && volume->public_drive)volume->root=volume->public_drive->root_clus;
+  if(!I386RedSeaValid(volume) ||
+      volume->public_drive && volume->public_drive->dv_signature!=DRV_SIGNATURE_VAL) {
+    (*volume->io->end)(volume->io->context);return FALSE;
+  }
 #ifdef I386_REDSEA_TASK_LOCKS
   CDrv *dv=volume->public_drive;
   CI386Task *task=I386TaskSelf;

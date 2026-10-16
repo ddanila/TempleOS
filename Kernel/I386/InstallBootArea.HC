@@ -75,7 +75,7 @@ Bool I386TaskInstallBootPayload(U8 *source,U8 *target,U8 *image,I64 bytes)
   CI386Task *task=I386TaskSelf;
   CI386FileVolumes *volumes;
   CFilePathContext paths;
-  CI386RedSea *from,*to;
+  CI386RedSea *from,*to,from_view,to_view;
   I64 first,second;
   U32 flags=I386IrqSave;
   Bool result=FALSE,first_owned=FALSE,second_owned=FALSE;
@@ -86,9 +86,9 @@ Bool I386TaskInstallBootPayload(U8 *source,U8 *target,U8 *image,I64 bytes)
       source[0]==target[0]) goto install_boot_done;
   state=I386TaskFilesBorrow(task,&paths,&volumes);
   if(!state) goto install_boot_done;
-  from=volumes->letter[source[0]-'A']; to=volumes->letter[target[0]-'A'];
+  from=I386FileVolume(volumes,source[0],&from_view); to=I386FileVolume(volumes,target[0],&to_view);
   if(!task->owner || !I386RedSeaValid(from) || !I386RedSeaValid(to) ||
-      !from->io || !to->io) goto install_boot_release;
+      !from->io || !to->io || from->disk==to->disk) goto install_boot_release;
   first=0; second=1;
   if(from->disk->io==0x170 && to->disk->io==0x170) first=1;
   else if(from->disk->io!=0x1F0 && from->disk->io!=0x170 ||

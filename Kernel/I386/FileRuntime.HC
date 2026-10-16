@@ -105,34 +105,35 @@ U8 *I386FileRuntimeTmpFilename()
   return file_compiler.tmp_filename;
 }
 U8 I386FileRuntimeDriveAlias(U8 alias)
-{
-  CFilePathContext paths;
-  CI386FileVolumes *volumes;
-  CI386TaskFiles *state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
+{//Boot/home aliases are valid even after the current drive record is cleared.
+  U32 flags=I386IrqSave;
+  CI386Task *task=I386TaskSelf;
+  CI386TaskFiles *state=I386TaskFilesValid(task);
   U8 result=0;
-  if(!state) throw('Drv');
-  if(!alias) result=paths.cur_drv;
-  else if(alias==':') result=paths.boot_drv;
-  else if(alias=='~' && paths.home_dir) result=*paths.home_dir;
-  else result=alias;
-  if(!I386TaskFilesRelease(state)) throw('Drv');
+  if(state) {
+    if(!alias) {
+      if(task->cur_dv && task->cur_dv->dv_signature==DRV_SIGNATURE_VAL)
+        result=task->cur_dv->drv_let;
+    } else if(alias==':')result=state->environment->boot_drv;
+    else if(alias=='~' && state->environment->home_dir)result=*state->environment->home_dir;
+    else result=alias;
+  }
+  I386IrqRestore(flags);
+  if(!result)throw('Drv');
   return result;
 }
 CDrv *I386FileRuntimeDriveLookup(U8 letter)
-{
-  CFilePathContext paths;
-  CI386FileVolumes *volumes;
-  CI386TaskFiles *state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
+{//An explicit lookup does not depend on the caller's current drive signature.
+  U32 flags=I386IrqSave;
+  CI386TaskFiles *state=I386TaskFilesValid(I386TaskSelf);
   CDrv *result=0;
-  if(!state)return 0;
-  result=I386TaskFilesDrive(volumes,letter);
-  if(!I386TaskFilesRelease(state))throw('Drv');
-  return result;
+  if(state)result=I386TaskFilesDrive(state->volumes,letter);
+  I386IrqRestore(flags);return result;
 }
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
 Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(!binding || index<0 || index>6) return FALSE;
+  if(!binding || index<0 || index>8) return FALSE;
   binding->kind=I386_MODULE_EXPORT;
   if(!index){binding->name="I386ArcEntryGet";binding->address=(&I386ArcEntryGet+0)(U64);}
   else if(index==1){binding->name="I386TaskModuleStageNew";binding->address=(&I386TaskModuleStageNew+0)(U64);}
@@ -140,7 +141,9 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   else if(index==3){binding->name="I386TaskModulePublish";binding->address=(&I386TaskModulePublish+0)(U64);}
   else if(index==4){binding->name="I386TaskFilesValid";binding->address=(&I386TaskFilesValid+0)(U64);}
   else if(index==5){binding->name="I386TaskFilesAccess";binding->address=(&I386TaskFilesAccess+0)(U64);}
-  else {binding->name="I386TaskBuildModule";binding->address=(&I386TaskBuildModule+0)(U64);}
+  else if(index==6){binding->name="I386TaskBuildModule";binding->address=(&I386TaskBuildModule+0)(U64);}
+  else if(index==7){binding->name="I386FileVolume";binding->address=(&I386FileVolume+0)(U64);}
+  else {binding->name="I386FileVolumeSame";binding->address=(&I386FileVolumeSame+0)(U64);}
   return TRUE;
 }
 #assert sizeof(CI386FileServices)==120

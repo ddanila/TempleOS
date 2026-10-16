@@ -8,9 +8,11 @@ class CI386TaskModuleStage {
   CI386TaskFileStage *publication;
   CI386TaskFiles *owner;
   CI386RedSea *volume;
+  CI386RedSea mapped_volume;
   I64 block,blocks;
   Bool active;
 };
+extern U0 I386TaskModuleStageQuarantine(CI386TaskModuleStage *stage);
 extern CI386ModuleStage *I386TaskModuleStageNew(U8 *target,I64 bytes);
 extern Bool I386TaskModuleStageCleanup(U8 *context);
 extern I64 I386TaskModuleStageReadRange(CI386ModuleStage *unit,U32 offset,U8 *buffer,U32 bytes);

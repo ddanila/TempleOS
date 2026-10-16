@@ -1,4 +1,5 @@
 #include "/Kernel/I386/TaskFiles.HH"
+#include "/Kernel/I386/FileVolumes.HC"
 #include "/Kernel/I386/Cpu.HH"
 #define I386_TASK_FILES_MAGIC 0x46535431
 Bool I386TaskFilesAccess(CI386Task *task)
@@ -32,41 +33,10 @@ CI386TaskFiles *I386TaskFilesValid(CI386Task *task)
 }
 U8 I386TaskFilesLetter(CI386TaskFiles *state)
 {//Public field assignment is part of original directory-context restoration.
-  I64 i;
-  for(i=0;i<26;i++)if(state->task->cur_dv==&state->volumes->drives[i])return 'A'+i;
+  CDrv *drive=state->task->cur_dv;
+  if(drive && drive->dv_signature==DRV_SIGNATURE_VAL)return drive->drv_let;
   if(!state->directory_owner)return state->drive;
   return 0;
-}
-CDrv *I386TaskFilesDriveInit(CI386FileVolumes *volumes,U8 drive)
-{
-  CI386RedSea *volume;
-  CDrv *identity;
-  U8 *bytes;
-  I64 i;
-  if(!volumes || drive<'A' || drive>'Z' || !(volume=volumes->letter[drive-'A'])) return 0;
-  identity=&volumes->drives[drive-'A'];
-  if(!I386RedSeaValid(volume)) {identity->dv_signature=0;return 0;}
-  if(!volume->disk->public_device || volume->disk->public_device->bd_signature!=BD_SIGNATURE_VAL) {
-    identity->dv_signature=0;return 0;
-  }
-  if(identity->dv_signature!=DRV_SIGNATURE_VAL) {
-    bytes=identity;for(i=0;i<sizeof(CDrv);i++)bytes[i]=0;
-  }
-  identity->drv_let=drive; identity->fs_type=1; //Canonical FSt_REDSEA.
-  identity->drv_offset=volume->start; identity->size=volume->sectors;
-  identity->root_clus=volume->root;
-  identity->bd=volume->disk->public_device;
-  if(!identity->bd->first_drv_let)identity->bd->first_drv_let=drive;
-  identity->dv_signature=DRV_SIGNATURE_VAL;
-  volume->public_drive=identity;
-  volumes->initialized_drives|=1<<(drive-'A');
-  return identity;
-}
-CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
-{//Ordinary lookup and task inheritance must not republish a deleted identity.
-  if(!volumes || drive<'A' || drive>'Z' || !volumes->letter[drive-'A']) return 0;
-  if(volumes->initialized_drives&(1<<(drive-'A'))) return &volumes->drives[drive-'A'];
-  return I386TaskFilesDriveInit(volumes,drive);
 }
 CI386TaskFiles *I386TaskFilesNew(CI386Task *task,CI386Heap *heap,CFilePathContext *environment,
   CI386FileVolumes *volumes,U8 *directory,U8 drive,U8 **new_directory)
@@ -132,7 +102,7 @@ Bool I386TaskFilesClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
   if(!copy) goto files_clone_done;
   target->file_state=copy; target->file_clone=&I386TaskFilesClone; target->file_destroy=&I386TaskFilesDestroy;
   target->cur_dir=new_directory;
-  target->cur_dv=I386TaskFilesDrive(copy->volumes,copy->drive);
+  target->cur_dv=source->cur_dv;
   result=TRUE;
 files_clone_done:
   I386IrqRestore(flags); return result;

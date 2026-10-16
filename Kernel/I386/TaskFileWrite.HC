@@ -27,7 +27,7 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   CI386RedSeaEntry parent,existing;
   U8 *absolute=0,*path,*leaf,*cursor;
   I64 drive,status;
@@ -49,7 +49,7 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
       }
       drive=absolute[0]; if('a'<=drive<='z') drive-=32;
       if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; path=absolute+2;
+        volume=I386FileVolume(volumes,drive,&view); path=absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         if(public_mode && volume && volume->io && *leaf &&
@@ -83,7 +83,7 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
             }
           }
           file_write_cache_done:
-          if(!I386RedSeaEnd(volume)) {
+          if(!I386FileVolumeEnd(volumes,volume)) {
             KernelLog("FILE WRITE end error\n"); result=FALSE;
           }
         }
@@ -124,7 +124,7 @@ Bool I386TaskFileDelete(U8 *filename)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   CI386RedSeaEntry parent;
   U8 *absolute=0,*path,*leaf,*cursor;
   I64 drive,status;
@@ -135,7 +135,7 @@ Bool I386TaskFileDelete(U8 *filename)
     if(absolute) {
       drive=absolute[0]; if('a'<=drive<='z') drive-=32;
       if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; path=absolute+2;
+        volume=I386FileVolume(volumes,drive,&view); path=absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         if(volume && volume->io && *leaf && I386RedSeaBegin(volume)) {
@@ -147,7 +147,7 @@ Bool I386TaskFileDelete(U8 *filename)
             if(status!=1 || !(parent.attr&0x10)) parent.block=0;
           }
           if(parent.block) result=I386RedSeaDelete(volume,parent.block,leaf)==1;
-          if(!I386RedSeaEnd(volume)) result=FALSE;
+          if(!I386FileVolumeEnd(volumes,volume)) result=FALSE;
         }
       }
       I386HeapFree(state->heap,absolute);
@@ -164,7 +164,7 @@ Bool I386TaskDirDelete(U8 *filename)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   CI386RedSeaEntry parent;
   U8 *absolute=0,*path,*leaf,*cursor;
   I64 drive,status;
@@ -175,7 +175,7 @@ Bool I386TaskDirDelete(U8 *filename)
     if(absolute) {
       drive=absolute[0]; if('a'<=drive<='z') drive-=32;
       if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; path=absolute+2;
+        volume=I386FileVolume(volumes,drive,&view); path=absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         if(volume && volume->io && *leaf && I386RedSeaBegin(volume)) {
@@ -187,7 +187,7 @@ Bool I386TaskDirDelete(U8 *filename)
             if(status!=1 || !(parent.attr&0x10)) parent.block=0;
           }
           if(parent.block) result=I386RedSeaDirDelete(volume,parent.block,leaf)==1;
-          if(!I386RedSeaEnd(volume)) result=FALSE;
+          if(!I386FileVolumeEnd(volumes,volume)) result=FALSE;
         }
       }
       I386HeapFree(state->heap,absolute);
@@ -204,7 +204,7 @@ Bool I386TaskFileRename(U8 *old_filename,U8 *new_filename)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume,*new_volume;
+  CI386RedSea *volume,*new_volume,view,new_view;
   CI386RedSeaEntry parent,new_parent;
   U8 *old_absolute=0,*new_absolute=0,*path,*new_path,*leaf,*new_leaf,*cursor;
   I64 drive,new_drive,status;
@@ -219,13 +219,13 @@ Bool I386TaskFileRename(U8 *old_filename,U8 *new_filename)
       if('A'<=drive<='Z' && 'A'<=new_drive<='Z' && drive==new_drive &&
          old_absolute[1]==':' && old_absolute[2]=='/' &&
          new_absolute[1]==':' && new_absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; new_volume=volumes->letter[new_drive-'A'];
+        volume=I386FileVolume(volumes,drive,&view); new_volume=I386FileVolume(volumes,new_drive,&new_view);
         path=old_absolute+2; new_path=new_absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         new_leaf=new_path; cursor=new_path;
         while(*cursor) { if(*cursor=='/') new_leaf=cursor+1; cursor++; }
-        if(volume && volume==new_volume && volume->io && *leaf && *new_leaf &&
+        if(volume && I386FileVolumeSame(volume,new_volume) && volume->io && *leaf && *new_leaf &&
            I386RedSeaBegin(volume)) {
           if(leaf==path+1) parent.block=volume->root;
           else {
@@ -241,7 +241,7 @@ Bool I386TaskFileRename(U8 *old_filename,U8 *new_filename)
           }
           if(parent.block && parent.block==new_parent.block)
             result=I386RedSeaRename(volume,parent.block,leaf,new_leaf)==1;
-          if(!I386RedSeaEnd(volume)) result=FALSE;
+          if(!I386FileVolumeEnd(volumes,volume)) result=FALSE;
         }
       }
     }
@@ -259,7 +259,7 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume,*new_volume;
+  CI386RedSea *volume,*new_volume,view,new_view;
   CI386RedSeaEntry parent,new_parent,source,collision;
   U8 *old_absolute=0,*new_absolute=0,*buffer=0;
   U8 *path,*new_path,*leaf,*new_leaf,*cursor;
@@ -275,13 +275,13 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
       if('A'<=drive<='Z' && 'A'<=new_drive<='Z' && drive==new_drive &&
          old_absolute[1]==':' && old_absolute[2]=='/' &&
          new_absolute[1]==':' && new_absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; new_volume=volumes->letter[new_drive-'A'];
+        volume=I386FileVolume(volumes,drive,&view); new_volume=I386FileVolume(volumes,new_drive,&new_view);
         path=old_absolute+2; new_path=new_absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         new_leaf=new_path; cursor=new_path;
         while(*cursor) { if(*cursor=='/') new_leaf=cursor+1; cursor++; }
-        if(volume && volume==new_volume && volume->io && *leaf && *new_leaf &&
+        if(volume && I386FileVolumeSame(volume,new_volume) && volume->io && *leaf && *new_leaf &&
            I386RedSeaBegin(volume)) {
           if(leaf==path+1) { parent.block=volume->root; source_root=TRUE; }
           else {
@@ -326,7 +326,7 @@ Bool I386TaskFileMoveStage(U8 *old_filename,U8 *new_filename,I64 fail_stage)
               }
             }
           }
-          if(!I386RedSeaEnd(volume)) result=FALSE;
+          if(!I386FileVolumeEnd(volumes,volume)) result=FALSE;
         }
       }
     }
@@ -436,7 +436,7 @@ I64 I386TaskDirList(U8 *filename,U8 *buffer,I64 capacity,I64 *entries=0)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   CI386RedSeaEntry directory;
   U8 *absolute=0,*path,sector[512],*raw;
   I64 drive,status,size,index,needed=1,count=0,at=0;
@@ -447,7 +447,7 @@ I64 I386TaskDirList(U8 *filename,U8 *buffer,I64 capacity,I64 *entries=0)
     if(absolute) {
       drive=absolute[0]; if('a'<=drive<='z') drive-=32;
       if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; path=absolute+2;
+        volume=I386FileVolume(volumes,drive,&view); path=absolute+2;
         if(volume && volume->io && I386RedSeaBegin(volume)) {
           if(path[0]=='/' && !path[1]) {
             directory.block=volume->root; directory.attr=0x10;
@@ -489,7 +489,7 @@ I64 I386TaskDirList(U8 *filename,U8 *buffer,I64 capacity,I64 *entries=0)
               if(ok) buffer[at]=0;
             }
           }
-          if(!I386RedSeaEnd(volume)) ok=FALSE;
+          if(!I386FileVolumeEnd(volumes,volume)) ok=FALSE;
         }
       }
       I386HeapFree(state->heap,absolute);
@@ -519,7 +519,7 @@ Bool I386TaskDirMk(U8 *filename,I64 entry_cnt=0)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   CI386RedSeaEntry parent,created;
   U8 *absolute=0,*buffer=0,*path,*leaf,*cursor;
   I64 drive,status,size;
@@ -530,7 +530,7 @@ Bool I386TaskDirMk(U8 *filename,I64 entry_cnt=0)
     if(absolute) {
       drive=absolute[0]; if('a'<=drive<='z') drive-=32;
       if('A'<=drive<='Z' && absolute[1]==':' && absolute[2]=='/') {
-        volume=volumes->letter[drive-'A']; path=absolute+2;
+        volume=I386FileVolume(volumes,drive,&view); path=absolute+2;
         leaf=path; cursor=path;
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         if(volume && volume->io && *leaf && I386RedSeaBegin(volume)) {
@@ -565,7 +565,7 @@ Bool I386TaskDirMk(U8 *filename,I64 entry_cnt=0)
               result=status==1;
             } else KernelLog("DIR MK exists/error\n");
           }
-          if(!I386RedSeaEnd(volume)) {
+          if(!I386FileVolumeEnd(volumes,volume)) {
             KernelLog("DIR MK end error\n"); result=FALSE;
           }
         }

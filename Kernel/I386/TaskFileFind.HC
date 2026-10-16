@@ -21,7 +21,7 @@ I64 I386TaskFileFind(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 options)
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *volumes;
-  CI386RedSea *volume=0;
+  CI386RedSea *volume=0,view;
   CI386RedSeaEntry found,directory;
   U8 *absolute=0,*candidate=0,*name;
   I64 drive,phase,variant,limit=1,status,i,last,hops;
@@ -34,7 +34,7 @@ I64 I386TaskFileFind(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 options)
   if(!absolute) goto find_release;
   drive=absolute[0];if('a'<=drive<='z')drive-=32;
   if(!('A'<=drive<='Z') || absolute[1]!=':' || absolute[2]!='/') {result=-1;goto find_release;}
-  volume=volumes->letter[drive-'A'];
+  volume=I386FileVolume(volumes,drive,&view);
   if(!volume) {result=-1;goto find_release;}
   if(!I386RedSeaBegin(volume)) goto find_release;
   opened=TRUE;

@@ -84,6 +84,7 @@ I64 I386RedSeaGrowRoot(CI386RedSea *volume,I64 size)
   if(!I386RedSeaSectorWrite(volume,volume->start,boot) ||
       !I386RedSeaFlush(volume)) goto io_fail;
   volume->root=fresh;
+  if(volume->public_drive)volume->public_drive->root_clus=fresh;
   if(!I386RedSeaReparentRootChildren(volume,fresh,size+512,fresh)) goto io_fail;
   if(!I386RedSeaFree(volume,old,old_blocks) || !I386RedSeaFlush(volume)) {
     volume->signature=0; return -1;

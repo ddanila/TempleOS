@@ -35,6 +35,8 @@ import Bool I386RedSeaDirectory(CI386RedSea *volume,I64 block,U8 *sector,I64 *si
 import U0 I386RedSeaPutWord(U8 *p,U64 value);
 import CI386TaskFiles *I386TaskFilesValid(CI386Task *task);
 import Bool I386TaskFilesAccess(CI386Task *task);
+import CI386RedSea *I386FileVolume(CI386FileVolumes *volumes,U8 drive,CI386RedSea *view);
+import Bool I386FileVolumeSame(CI386RedSea *a,CI386RedSea *b);
 #include "/Kernel/I386/TaskModuleStage.HC"
 #define I386_REDSEA_MUTATION_IMPORTS 1
 #include "/Kernel/I386/TaskModulePublication.HC"

@@ -14,7 +14,10 @@ U0 I386RedSeaPutWord(U8 *p,U64 value)
 Bool I386RedSeaValid(CI386RedSea *v)
 {
   return v && v->signature==0x52533332 && v->disk &&
-    v->disk->signature==0x41543332 && v->start>=0 && v->sectors>=3 &&
+    v->disk->signature==0x41543332 &&
+    (!v->backing || v->backing->signature==0x52533332 &&
+      v->backing->disk==v->disk && v->backing->start==v->start &&
+      v->backing->sectors==v->sectors) && v->start>=0 && v->sectors>=3 &&
     v->start<v->disk->sectors && v->sectors<=v->disk->sectors-v->start &&
     v->first>v->start && v->first<v->start+v->sectors &&
     v->root>=v->first && v->root<v->start+v->sectors;
@@ -63,7 +66,7 @@ public Bool I386RedSeaMount(CI386RedSea *volume,CI386Ata *disk,I64 start)
   bitmap=I386RedSeaWord(sector+32);
   if (sectors<3 || sectors>disk->sectors-start || bitmap<1 || bitmap>=sectors-1 ||
       bitmap<(sectors+4095)/4096) return FALSE;
-  v.public_drive=0;v.public_drive_unlock=FALSE;v.public_drive_active=FALSE;
+  v.backing=0;v.public_drive=0;v.public_drive_unlock=FALSE;v.public_drive_active=FALSE;
   v.io=0; v.disk=disk; v.signature=0x52533332; v.start=start; v.sectors=sectors;
   v.first=start+bitmap+1; v.root=root;
   if (!I386RedSeaValid(&v) || !I386RedSeaDirectory(&v,root,sector,&size)) return FALSE;

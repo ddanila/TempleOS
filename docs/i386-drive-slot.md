@@ -56,5 +56,8 @@ teardown. All 686 inventory entries and C1–C5 remain unqualified/open.
 
 The queued 8 MiB gate subsequently passes all nine checks in 58.410043 seconds,
 with no build provider and all four execution pins unchanged
-(build/i386-c4-drive-slot-startup). C5 resumed afterward; the separate 16 MiB
-diagnostic gate is now running against the isolated f038f05e source snapshot.
+(build/i386-c4-drive-slot-startup). C5 resumed afterward. The separate 16 MiB diagnostic gate also passes against
+the isolated f038f05e source snapshot, with all four execution pins unchanged.
+Startup took 232.955310 seconds; both memory phases, 128 push-word cases,
+22 publication/28 program cases and all nine interactive/VGA checks pass
+(build/i386-c4-drive-slot-diagnostics).

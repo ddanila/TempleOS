@@ -12,6 +12,8 @@ class CI386RedSeaIo {
 };
 class CI386RedSea {
   CI386Ata *disk;
+  //Mapped views borrow this mounted backend; quarantine invalidates every view.
+  CI386RedSea *backing;
   U32 signature;
   I64 start,sectors,first,root;
   CI386RedSeaIo *io;

@@ -15,7 +15,8 @@ Bool I386TaskModulePublicationCleanup(U8 *context)
     if(!io || !io->begin || !io->end || !(*io->begin)(io->context))return FALSE;
     resolved=I386RedSeaPublicationRecover(p);
     if(p->transaction.phase==I386_PUBLISH_PREPARED)resolved=TRUE;
-    if(!(*io->end)(io->context)){stage->volume->signature=0;return FALSE;}
+    if(!(*io->end)(io->context)){stage->volume->signature=0;I386TaskModuleStageQuarantine(stage);return FALSE;}
+    I386TaskModuleStageQuarantine(stage);
     if(!resolved)return FALSE;
     phase=p->transaction.phase;
   }
@@ -57,6 +58,7 @@ Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target)
   CI386RedSeaPublication *p;
   CI386TaskModulePublication *owned;
   CI386RedSeaEntry parent;
+  CI386RedSea view;
   U8 *path,*leaf,*cursor;
   U32 flags=I386IrqSave,drive;
   I64 status;
@@ -65,7 +67,7 @@ Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target)
     goto module_publish_done;
   drive=target[0];if('a'<=drive<='z')drive-=32;
   if(drive<'A' || drive>'Z' || !stage->owner ||
-      stage->owner->volumes->letter[drive-'A']!=stage->volume)
+      !I386FileVolumeSame(I386FileVolume(stage->owner->volumes,drive,&view),stage->volume))
     goto module_publish_done;
   p=I386TaskModulePublicationNew(unit,target);
   if(!p)goto module_publish_done;
@@ -87,6 +89,7 @@ Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target)
       result=I386RedSeaPublicationCommit(p);
     if(!I386RedSeaEnd(stage->volume)){stage->volume->signature=0;result=FALSE;}
   }
+  I386TaskModuleStageQuarantine(stage);
   stage->active=FALSE;
 module_publish_done:
   I386IrqRestore(flags);return result;

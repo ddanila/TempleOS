@@ -1,5 +1,15 @@
 #include "/Kernel/I386/TaskModuleStage.HH"
 #include "/Kernel/I386/ModuleStageCore.HC"
+U0 I386TaskModuleStageQuarantine(CI386TaskModuleStage *stage)
+{//A failed mapped publication must also quarantine its shared mounted backend.
+  I64 i;CI386RedSea *volume;
+  if(stage->volume->signature)return;
+  for(i=0;i<26;i++) {
+    volume=stage->owner->volumes->letter[i];
+    if(volume && volume->disk==stage->volume->disk && volume->start==stage->volume->start &&
+        volume->sectors==stage->volume->sectors)volume->signature=0;
+  }
+}
 I64 I386TaskModuleStageWrite(U8 *context,U32 offset,U8 *buffer,U32 bytes)
 {
   CI386TaskModuleStage *stage=context;
@@ -12,6 +22,7 @@ I64 I386TaskModuleStageWrite(U8 *context,U32 offset,U8 *buffer,U32 bytes)
     result=I386RedSeaWrite(stage->volume,&entry,offset,buffer,bytes);
     if(!I386RedSeaEnd(stage->volume)){stage->volume->signature=0;result=-1;}
   }
+  I386TaskModuleStageQuarantine(stage);
   stage->active=FALSE;I386IrqRestore(flags);return result;
 }
 Bool I386TaskModuleStageFlush(U8 *context)
@@ -24,6 +35,7 @@ Bool I386TaskModuleStageFlush(U8 *context)
     result=I386RedSeaFlush(stage->volume);
     if(!I386RedSeaEnd(stage->volume)){stage->volume->signature=0;result=FALSE;}
   }
+  I386TaskModuleStageQuarantine(stage);
   stage->active=FALSE;I386IrqRestore(flags);return result;
 }
 I64 I386TaskModuleStageReadAt(U8 *context,U32 offset,U8 *buffer,I64 bytes)
@@ -38,6 +50,7 @@ I64 I386TaskModuleStageReadAt(U8 *context,U32 offset,U8 *buffer,I64 bytes)
     result=I386RedSeaRead(stage->volume,&entry,offset,buffer,bytes);
     if(!I386RedSeaEnd(stage->volume)){stage->volume->signature=0;result=-1;}
   }
+  I386TaskModuleStageQuarantine(stage);
   stage->active=FALSE;I386IrqRestore(flags);return result;
 }
 I64 I386TaskModuleStageRead(U8 *context,U8 *buffer,I64 bytes)
@@ -76,6 +89,7 @@ stage_release_end:
   if(!(*io->end)(io->context)){stage->volume->signature=0;result=FALSE;}
   if(result)stage->block=0;
 stage_release_done:
+  I386TaskModuleStageQuarantine(stage);
   stage->active=FALSE;I386IrqRestore(flags);return result;
 }
 Bool I386TaskModuleStageCleanup(U8 *context)
@@ -106,6 +120,7 @@ Bool I386TaskModuleStageReserve(CI386ModuleStage *unit,I64 bytes)
     ready=reserved>0 && I386RedSeaFlush(stage->volume);
     if(!I386RedSeaEnd(stage->volume)){stage->volume->signature=0;ready=FALSE;}
   }
+  I386TaskModuleStageQuarantine(stage);
   stage->active=FALSE;
   if(!ready)unit->phase=I386_STAGE_FAILED;
 stage_reserve_done:
@@ -116,7 +131,7 @@ CI386ModuleStage *I386TaskModuleStageNew(U8 *target,I64 bytes)
   CI386Task *task=I386TaskSelf;
   CI386TaskFiles *owner;
   CI386TaskModuleStage *stage=0;
-  CI386RedSea *volume;
+  CI386RedSea *volume,view;
   U32 flags=I386IrqSave,drive;
   Bool ready=FALSE;
   if((bytes && bytes<32) || bytes>4194304 || !target || !*target ||
@@ -125,11 +140,15 @@ CI386ModuleStage *I386TaskModuleStageNew(U8 *target,I64 bytes)
   if(!owner || !I386TaskFilesAccess(task) || !task->owner || task->finished ||
       task->finishing || owner->busy || owner->stage)goto stage_new_done;
   drive=target[0];if('a'<=drive<='z')drive-=32;
-  if(drive<'A' || drive>'Z' || !(volume=owner->volumes->letter[drive-'A']) ||
+  if(drive<'A' || drive>'Z' || !(volume=I386FileVolume(owner->volumes,drive,&view)) ||
       !volume->io || !I386RedSeaValid(volume))goto stage_new_done;
   stage=I386HeapAlloc(owner->heap,sizeof(CI386TaskModuleStage),TRUE);
   if(!stage)goto stage_new_done;
   stage->owner=owner;stage->volume=volume;
+  if(volume==&view) {
+    I64 i;for(i=0;i<sizeof(CI386RedSea);i++)(&stage->mapped_volume)(U8 *)[i]=(&view)(U8 *)[i];
+    stage->volume=&stage->mapped_volume;
+  }
   stage->unit.reserve=&I386TaskModuleStageReserve;
   stage->unit.emit=&I386ModuleStageWrite;stage->unit.seal=&I386ModuleStageSeal;
   stage->unit.unwound=&I386ModuleStageUnwound;stage->unit.readback=&I386ModuleStageRead;

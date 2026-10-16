@@ -30,21 +30,28 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--root-growth',action='store_true',help='Also force mapped RedSea root relocation and verify all 80 files')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
+    growth=FIXTURE.with_name('Growth.HC')
+    if args.root_growth:
+        commands[-1:-1]=[('#include "C:/Growth.HC"',[]),('DMRootGrowth;',['1'])]
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     runner = ROOT/'tools/i386-kernel-input.py'
     pins = {str(p):sha(p) for p in [source, runner, FIXTURE, FIXTURE.with_name('Native.HC'), ROOT/'Kernel/FontStd.HC', ROOT/'tools/package-i386-native-image.py', ROOT/'tools/build-i386-kernel.py', Path(__file__).resolve()]}
+    if args.root_growth:pins[str(growth)]=sha(growth)
+    additions={'/Contract.HC':FIXTURE.read_bytes(),'/Native.HC':FIXTURE.with_name('Native.HC').read_bytes()}
+    if args.root_growth:additions['/Growth.HC']=growth.read_bytes()
     out.mkdir(parents=True)
     working = out/'working.img'
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
-        source, working, additions={'/Contract.HC':FIXTURE.read_bytes(),'/Native.HC':FIXTURE.with_name('Native.HC').read_bytes()})
+        source, working, additions=additions)
     report = dict(result='running', scope='Original drive mapping, aliases, external and invalid-signature records, file I/O, current directory and child-task visibility',
-                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib, root_growth=args.root_growth)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
@@ -60,6 +67,10 @@ def main():
         saved=delivered.get('/Contract.HC')
         if saved!=FIXTURE.read_bytes():raise ValueError('Guest drive mapping fixture differs from source')
         expected_files={'/Probe/DriveMap/Seed.TXT':b'seed','/Probe/DriveMap/Write.TXT':b'mapped','/Probe/DriveMap/Sub/Child.TXT':b'child'}
+        if args.root_growth:
+            expected_files.update({f'/MapRoot{i:03d}.TXT':b'grow' for i in range(80)})
+            if build['mutated_file_contents'](working,{'/Growth.HC'}).get('/Growth.HC')!=growth.read_bytes():
+                raise ValueError('Root growth fixture differs from source')
         persisted=build['mutated_file_contents'](working,set(expected_files))
         if persisted!=expected_files:raise ValueError('Mapped I/O did not persist exact files on the backing volume')
         report['persisted_files_sha256']={name:hashlib.sha256(data).hexdigest() for name,data in expected_files.items()}

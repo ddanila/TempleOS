@@ -12,6 +12,7 @@ public _extern _LET_TO_BLOCK_DEV CBlkDev *Let2BlkDev(U8 drv_let=0,Bool except=TR
 public _extern _DRV_IS_WRITABLE CBlkDev *DrvIsWritable(U8 drv_let=0,Bool except=FALSE);
 public _extern _BLOCK_DEV_LOCK Bool BlkDevLock(CBlkDev *bd);
 public _extern _BLOCK_DEV_UNLOCK Bool BlkDevUnlock(CBlkDev *bd,Bool rst=FALSE);
+public _extern _DRV_MAP Bool DrvMap(U8 drv_let,CDrv *dv);
 public _extern _DRV_DEL U0 DrvDel(CDrv *dv);
 public _extern _DRV_MAKE_FREE_SLOT CDrv *DrvMakeFreeSlot(U8 drv_let);
 public _extern _DRV_NEXT_FREE_LET U8 DrvNextFreeLet(U8 first_drv_let='C');

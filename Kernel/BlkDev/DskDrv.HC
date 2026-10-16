@@ -103,16 +103,7 @@ U0 DskChg(U8 drv_let=0)
   RedSeaFreeFreeLst(dv);
 }
 
-Bool DrvMap(U8 drv_let,CDrv *dv)
-{//Make drive letter map to another.
-  drv_let=Let2Let(drv_let);
-  if ('A'<=drv_let<='Z') {
-    blkdev.let_to_drv[drv_let-'A']=dv;
-    dv->drv_let=drv_let;
-    return TRUE;
-  } else
-    return FALSE;
-}
+#include "/Kernel/BlkDev/DriveMapCore.HC"
 
 Bool Drv(U8 drv_let)
 {//Change drive.  You can set drive with $LK,"Cd",A="MN:Cd"$() as well.
