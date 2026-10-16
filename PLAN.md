@@ -11,6 +11,19 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original WinBorder dependency candidate (2026-10-16)
+
+ConsoleRuntime 134 shares the byte-identical original WinBorder body and appends
+its public export. The pinned-original five-case contract passes mask 31 for
+border transitions, repeated calls, geometry restoration, both IF states and
+invalid-task rejection. The initial cross-build exposed a missing forward
+declaration, then a NULL macro ordering issue in that declaration. Both failures
+are retained. Corrected bootstrap/cross-build pass with all 1531 source and 24
+build-input hashes unchanged. Native validation passes all three commands and
+mask 31 with unchanged execution inputs; isolated resource gates are queued.
+This service advances the full DocPutKey dependency graph; native menu
+button activation remains unqualified. See docs/i386-win-border.md.
+
 ### Original terminal right-click menu candidate (2026-10-16)
 
 ConsoleRuntime 133 shares complete original PopUpTermRight and all ten action
@@ -28,7 +41,9 @@ activate the button. Complete original DocPutKey is still required. The separate
 covered-popup ShiftEsc regression now passes four commands with unchanged pins;
 the pre-fix image stalls at update count 55 and the fixed image progresses from
 57 to 71. Only WindowManager.HC and ConsoleRuntime differ across those builds.
-Candidate resource gates are pending. Full terminal callback
+The isolated 8 MiB startup gate passes in 58.406789 seconds, including all nine
+behavior/VGA checks, no build-provider loads and four unchanged input pins.
+The 16 MiB diagnostic gate remains running. Full terminal callback
 and startup integration remain open. See docs/i386-term-right-menu.md.
 All inventory entries and C1–C5 remain unqualified.
 

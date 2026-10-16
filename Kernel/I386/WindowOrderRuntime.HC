@@ -35,3 +35,5 @@ U0 NativeWindowTaskInsert(CTask *task,CTask *pred)
 #include "/Adam/WinOrderCore.HC"
 
 #include "/Kernel/WinMaxCore.HC"
+
+#include "/Kernel/WinBorderCore.HC"

@@ -69,7 +69,11 @@ update counter fixed at 55. The corrected image passes all four commands in
 71, ShiftEsc returns cancellation, and caller roles are restored. Both execution
 input sets remain unchanged. `control-comparison.json` in the refreshed cross
 build confirms WindowManager.HC is the only changed source and ConsoleRuntime
-the only changed module. Candidate startup/memory gates remain pending.
+the only changed module. The isolated 8 MiB startup gate passes in 58.406789 seconds in
+`build/i386-c2-term-right-menu-startup`, including all nine behavior/VGA checks,
+no build-provider loads and all four input hashes verified. The C5 launcher and
+guest were paused together during this gate and resumed afterward. The 16 MiB
+diagnostics remain running.
 
 ```sh
 python3 tools/test-i386-term-right-menu.py --out ORIGINAL

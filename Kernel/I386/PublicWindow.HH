@@ -11,6 +11,7 @@ public _extern _WINMGR_STATE CWinMgrGlbls winmgr;
 public _extern _TASK_VALIDATE Bool TaskValidate(CTask *task);
 public _extern _TASK_DERIVED_VALS_UPDATE U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE);
 public _extern _WIN_HORZ Bool WinHorz(I64 left,I64 right,CTask *task=NULL);
+public _extern _WIN_BORDER Bool WinBorder(Bool val=OFF,CTask *task=NULL);
 public _extern _WIN_MAX U0 WinMax(CTask *task=NULL);
 public _extern _WIN_VERT Bool WinVert(I64 top,I64 bottom,CTask *task=NULL);
 public _extern _CTRL_FIND_UNIQUE CCtrl *CtrlFindUnique(CTask *task,I64 type);
