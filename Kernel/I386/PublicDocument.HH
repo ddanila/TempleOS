@@ -113,4 +113,5 @@ public _extern _DOC_GO_TO_LINE Bool DocGoToLine(CDoc *doc,I64 line_num);
 public _extern _ED_REPLACE I64 EdReplace(CDoc *doc,U8 *find,U8 *replace,
   Bool sel=TRUE,Bool match_case=TRUE,Bool whole_labels=FALSE);
 #include "/Adam/DolDoc/DocFindPromptTypes.HH"
+public _extern _DOC_CLEAR U0 DocClear(CDoc *doc=NULL,Bool clear_holds=FALSE);
 #endif

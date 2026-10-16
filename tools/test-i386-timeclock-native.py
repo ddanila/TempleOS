@@ -9,7 +9,8 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('FileFind("C:/Apps/TimeClock/Load.HC");', ['1']),
-            ('#include "C:/Apps/TimeClock/Load.HC"', []),
+            ('!FileFind("~/TimeClock",,FUF_JUST_DIRS);', ['1']),
+            ('#include "C:/Apps/TimeClock/Load.HC"', ['1']),
             ('6*7;', ['42'])]
 
 

@@ -143,21 +143,7 @@ I64 GetChar(I64 *_scan_code=NULL,Bool echo=TRUE,Bool raw_cursor=FALSE)
   return ch1;
 }
 
-U8 *GetStr(U8 *msg=NULL,U8 *dft=NULL,I64 flags=0)
-{//Returns a $LK,"MAlloc",A="MN:MAlloc"$()ed prompted string.  See $LK,"Flags",A="MN:GSF_SHIFT_ESC_EXIT"$.
-  U8 *st;
-  if (msg)
-    "" msg,dft;
-  st=(*fp_getstr2)(flags);
-  if (!*st) {
-    Free(st);
-    if (dft)
-      return StrNew(dft);
-    else
-      return StrNew("");
-  }
-  return st;
-}
+#include "/Kernel/GetStrCore.HC"
 
 I64 GetS(U8 *buf,I64 size,Bool allow_ext=TRUE)
 {//Prompt into fixed length string. Size must include terminator.

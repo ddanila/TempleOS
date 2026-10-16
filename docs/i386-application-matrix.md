@@ -105,3 +105,11 @@ A fresh unchanged-source Console-113 load check still rejects GetStr at line
 package is `build/i386-c3-timeclock-console113-package`; the three application
 files match the pinned reference digests. This is an explicit native red gate,
 not a qualified application.
+
+Console-128 clears the GetStr and DocClear binding dependencies. The unchanged
+three-file TimeClock package passes native source availability, fresh-install
+precondition, Load/Install and continuation arithmetic in
+build/i386-c3-timeclock-docclear-load-result, with unchanged inputs. The native
+punch/storage/reboot oracle is now running. This is a loading milestone, not
+whole-application qualification; elapsed-time report formatting and physical
+keyboard workflows remain open.

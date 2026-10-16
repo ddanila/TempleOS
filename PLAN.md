@@ -11,6 +11,19 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original GetStr integration candidate (2026-10-16)
+
+ConsoleRuntime 128 integrates the original GetStr and complete DocGetStr2 bodies,
+including document extraction, entry replay, flags and the overridable fp_getstr2
+hook. Original and shared-source controls pass 21 exported byte buffers. The
+native suite passes 26 commands covering hook/prompt/default handling and all
+thirteen scripted-input cases. Bootstrap/cross-build pass with all 1514 source
+and 24 build inputs unchanged. DocClear's existing original body is now publicly
+bound, allowing unchanged TimeClock Load/Install to pass its four-command gate.
+Native punch/persistence/reboot tests are running; minimal-profile gates and
+physical-keyboard/filter/replay/task-exit qualification remain open. See
+docs/i386-getstr-compatibility.md. No inventory item or C1–C5 milestone closes.
+
 ### Public Spawn home-directory candidate (2026-10-16)
 
 The original and rebuilt-original seven-case controls establish that Spawn

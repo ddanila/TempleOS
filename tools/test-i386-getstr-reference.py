@@ -18,6 +18,8 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--shared-dollar-input', action='store_true',
                         help='Use the current extracted dollar-input core and original editor integration')
+    parser.add_argument('--shared-getstr', action='store_true',
+                        help='Use current shared GetStr wrapper and document-input cores')
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists():
@@ -40,7 +42,19 @@ def main():
             (overlay/name).write_bytes(path.read_bytes())
             report['source_overrides'][name] = reference.sha(path)
             report['input_sha256'][str(path)] = reference.sha(path)
-    expected = {'single.bin':b'alpha\0', 'empty.bin':b'\0',
+    if args.shared_getstr:
+        report['mode'] = 'shared-getstr'
+        for name in ('Kernel/SerialDev/Message.HC', 'Kernel/GetStrCore.HC',
+                     'Kernel/KeyGetCore.HC', 'Kernel/KeyScanCore.HC',
+                     'Kernel/KeyDescFlag.HH', 'Kernel/GetStrFlags.HH', 'Adam/DolDoc/DocGet.HC',
+                     'Adam/DolDoc/DocGetStrCore.HC', 'Adam/DolDoc/DocGetKeyCore.HC',
+                     'Adam/DolDoc/DocScanLineCore.HC'):
+            path = ROOT/name
+            (overlay/name).parent.mkdir(parents=True, exist_ok=True)
+            (overlay/name).write_bytes(path.read_bytes())
+            report['source_overrides'][name] = reference.sha(path)
+            report['input_sha256'][str(path)] = reference.sha(path)
+    expected = {'hook.bin':b'hook\0', 'hook-default.bin':b'fallback\0', 'single.bin':b'alpha\0', 'empty.bin':b'\0',
                 'default.bin':b'fallback\0', 'multiline.bin':b'alpha\nbeta\n\0',
                 'cancel.bin':b'\0', 'cancel-default.bin':b'fallback\0',
                 'backspace.bin':b'abZ\0', 'erased-default.bin':b'fallback\0',
@@ -62,6 +76,8 @@ def main():
         report['observed_hex'] = {name:data.hex() for name,data in observed.items()}
         if observed != expected:
             raise ValueError('Original GetStr differs from explicit byte expectations')
+        if 'PASS original GetStr hook and prompt\n' not in (out/'guest/debug.log').read_text():
+            raise ValueError('Original hook/prompt checks did not complete')
         if 'PASS original typed dollar state and growth\n' not in (out/'guest/debug.log').read_text():
             raise ValueError('Original typed dollar state/growth checks did not complete')
         report['result'] = 'pass'

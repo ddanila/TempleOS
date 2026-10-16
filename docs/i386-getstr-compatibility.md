@@ -200,3 +200,49 @@ now has a passing shared original core and native ordinary execution gate.
 Popup chooser UI, full servant document startup and entry actions remain open;
 GetStr itself is not bound or qualified by this dependency pass. Preserve its
 original document/filter/Escape semantics rather than substituting a line buffer.
+
+## Original input implementation candidate (2026-10-16)
+
+Console-126 still rejects the missing binding before fixture execution
+(build/i386-c2-getstr-console126-red, unchanged inputs). The original wrapper
+and complete DocGetStr2 implementation are now extracted byte-for-byte into
+Kernel/GetStrCore.HC and Adam/DolDoc/DocGetStrCore.HC. Both original call sites
+include the shared bodies. Native integration uses the existing DocGetKey,
+DocEntryRun, DocScanLine and document output paths, including the original
+Escape replay, multiline extraction and Shift-Escape behavior. The public
+fp_getstr2 hook remains overridable; shared input flag definitions are available
+to native callers. No replacement line buffer is introduced.
+
+The original and shared-source controls pass all 21 exported byte buffers,
+including thirteen scripted input cases, document extraction, an overridden
+hook, exact flag forwarding, formatted prompt and fallback after an empty hook
+result (build/i386-c2-getstr-hook-declared-reference and -hook-declared-shared).
+The initial expanded fixture used a function-pointer initializer unsupported
+by the original parser; separating declaration and assignment fixes the fixture.
+Bootstrap and the Console-127 cross-build pass. Its first native fixture stops
+on an address printed by a top-level hook-save assignment, before input cases;
+a void setup helper removes that nondeterministic display expectation.
+
+Unchanged TimeClock compilation advances past GetStr and fails in Install at
+DocClear (build/i386-c3-timeclock-getstr-load). DocClear's original implementation
+is already compiled in DocRecalcLib; Console-128 adds its missing public binding.
+The corrected native GetStr suite, Console-128 build and unchanged application
+workflows remain in progress. All inventory qualifications and C1–C5 remain open.
+
+The corrected Console-127 fixture passes all 26 native commands with unchanged
+inputs (build/i386-c2-getstr-void-setup-native). Hook replacement, forwarded
+flags, formatted prompt/default behavior and all thirteen scripted-input cases
+match the original oracle. The Console-128 bootstrap and cross-build pass;
+its full GetStr rerun and unchanged TimeClock load/punch/reboot workflows are
+running. These remain distinct from physical-keyboard, filter/replay and task-exit
+qualification.
+
+Console-128 passes the full 26-command native GetStr suite with unchanged
+inputs (build/i386-c2-getstr-docclear-native). Its cross-build matches all 1514
+source and 24 build-input hashes. Unchanged TimeClock now passes source
+availability, a fresh-install precondition, Load/Install and continuation
+arithmetic in four commands (build/i386-c3-timeclock-docclear-load-result).
+The harness accounts for the first installation's top-level DirMk result;
+the earlier empty-answer expectation is retained as a fixture failure, not an
+application rejection. Native punch/storage/reboot checks are running. The
+minimal-profile memory gates and full C1–C5 qualification remain open.

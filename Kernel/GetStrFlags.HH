@@ -1,0 +1,7 @@
+#ifndef GET_STR_FLAGS_INCLUDED
+#define GET_STR_FLAGS_INCLUDED
+#ifndef GSF_SHIFT_ESC_EXIT
+#define GSF_SHIFT_ESC_EXIT 1
+#define GSF_WITH_NEW_LINE 2
+#endif
+#endif

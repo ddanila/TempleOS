@@ -10,6 +10,28 @@ U0 CaptureStr(U8 *name,U8 *input,U8 *dft=NULL,I64 flags=0)
   Report(line); Free(line);
   //Keep exported memory alive until the host has captured it.
 }
+I64 input_hook_flags;
+U8 *InputHook(I64 flags)
+{ input_hook_flags=flags; if(flags&1)return StrNew("hook");return StrNew(""); }
+U0 CaptureHook()
+{
+  U8 *(*saved)(I64 flags);
+  CDoc *old=Fs->put_doc,*doc=DocNew;
+  U8 *st,*prompt,*line;
+  saved=fp_getstr2;Fs->put_doc=doc;fp_getstr2=&InputHook;
+  st=GetStr("prompt%s:","fallback",0x1235);
+  prompt=DocScanLine(doc,doc->head.next);
+  if(input_hook_flags!=0x1235 || StrCmp(prompt,"promptfallback:") || StrCmp(st,"hook"))
+    {Report("FAIL GetStr hook/prompt\n");throw('Input');}
+  line=MStrPrint("EXPORT hook.bin %X %X\n",st,StrLen(st)+1);Report(line);Free(line);Free(prompt);
+  st=GetStr(NULL,"fallback",0x1234);
+  if(input_hook_flags!=0x1234 || StrCmp(st,"fallback"))
+    {Report("FAIL GetStr hook/default\n");throw('Input');}
+  line=MStrPrint("EXPORT hook-default.bin %X %X\n",st,StrLen(st)+1);Report(line);Free(line);
+  fp_getstr2=saved;Fs->put_doc=old;DocDel(doc);
+  Report("PASS original GetStr hook and prompt\n");
+}
+CaptureHook;
 CaptureStr("single.bin","alpha\n");
 CaptureStr("empty.bin","\n");
 CaptureStr("default.bin","\n","fallback");
