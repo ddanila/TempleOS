@@ -12067,7 +12067,7 @@
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags. Delete isolated drive records under nested/forwarded locks with caller/root allocations and verify complete record clearing. Delete all drives belonging to a device across the complete canonical table, including unmounted slots and a null device argument.",
-      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record. docs/i386-drive-device-delete.md adds eight mask-63 full-table deletion cases, with context-independent table access, matched clearing, unmatched preservation and exact allocation recovery.",
+      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record. docs/i386-drive-device-delete.md adds eight mask-63 full-table deletion cases, with context-independent table access, matched clearing, unmatched preservation and exact allocation recovery. docs/i386-drive-slot.md defines 42 preparation/selection/default/alias/error cases; original/native behavior passes; memory gates are pending and full mounting remains unqualified.",
       "tests": [
         {
           "target": "original-drive-state",
@@ -12201,6 +12201,34 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-device-delete-final-native/result.json",
           "scope": "All eight full-table cases/12 commands at 64 MiB, canonical identity preflight, unchanged inputs and exact fixture/adapter delivery. Not full media lifecycle qualification."
+        },
+        {
+          "target": "original-drive-slots",
+          "command": "python3 tools/test-i386-drive-slot-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-slot-reference-alias/result.json",
+          "scope": "42 cases, scoped original logging suppression while borrowing records, unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-drive-slots",
+          "command": "python3 tools/test-i386-drive-slot-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-slot-current-alias/result.json",
+          "scope": "Same 42 cases on rebuilt original with unchanged inputs."
+        },
+        {
+          "target": "native-drive-slots-missing",
+          "command": "python3 tools/test-i386-drive-slot.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-slot-red/result.json",
+          "scope": "ConsoleRuntime 124 rejects missing API at preflight before table mutation."
+        },
+        {
+          "target": "native-drive-slots",
+          "command": "python3 tools/test-i386-drive-slot.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-slot-native/result.json",
+          "scope": "42 original cases/46 commands at 64 MiB, canonical identity, exact fixture delivery and unchanged inputs; not full mounting or teardown."
         }
       ]
     },

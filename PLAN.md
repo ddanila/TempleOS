@@ -11,6 +11,19 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original drive-slot API candidate (2026-10-16)
+
+Both original controls pass 42 drive-record preparation and free-letter cases,
+including type-class boundaries, aliases, default argument, exhaustion, repeat
+behavior and exact restoration. The native preflight rejects the missing API.
+ConsoleRuntime 125 now shares the complete DrvMakeFreeSlot and DrvNextFreeLet
+bodies over the canonical drive table. Bootstrap/cross-build and the rebuilt
+original control pass with unchanged inputs. Native behavior passes 42 cases/46
+commands; drive deletion (56 cases) and block-slot selection (20 cases) also pass
+with unchanged inputs. Memory gates are queued behind the active guests using an
+isolated committed source snapshot. See docs/i386-drive-slot.md for corrected alias expectations and the
+scope boundary: this is not full mounting or resource teardown. C1–C5 remain open.
+
 ### Original block-device slot-selection candidate (2026-10-16)
 
 Twenty original and rebuilt-original cases now define full-table slot selection,
