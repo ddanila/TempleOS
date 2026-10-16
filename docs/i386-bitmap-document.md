@@ -28,7 +28,9 @@ unchanged (`build/i386-c2-bitmap-document-cross/input-audit.json`). The native t
 with unchanged inputs in `build/i386-c2-bitmap-document-bytes-native`. The isolated
 8 MiB gate passes all nine checks in 56.453438 seconds with no build-provider
 load on committed 406db5e9. Its four execution pins match the committed source
-snapshot; 16 MiB diagnostics are still running.
+snapshot. The 16 MiB diagnostic gate also passes all 128 immediate-push,
+22 publication and 28 program cases, both memory phases and nine interactive/VGA
+checks with unchanged execution pins in `build/i386-c2-bitmap-document-diagnostics`.
 
 The unchanged old native image rejects the corrected global-vector fixture at
 DC2Sprite in `build/i386-c2-bitmap-document-binding-red` with execution inputs

@@ -19,7 +19,9 @@ and four independently constructed packed bitmap buffers. Bootstrap/cross-build
 pass with all 1516 source and 24 build inputs unchanged. The native suite passes
 all six checks and four exact buffers with unchanged inputs. The isolated 8 MiB
 gate passes nine checks in 56.453438 seconds with no build-provider load and
-unchanged pins on committed 406db5e9; 16 MiB diagnostics are running. Full GR loading, Type and desktop startup remain open. See
+unchanged pins on committed 406db5e9. The 16 MiB diagnostics also pass all 128
+push-word, 22 publication and 28 program cases, both memory phases and nine
+interactive/VGA checks with unchanged execution pins. Full GR loading, Type and desktop startup remain open. See
 docs/i386-bitmap-document.md. No inventory item or C1–C5 milestone closes.
 
 ### Original terminal startup reference (2026-10-16)
