@@ -50,9 +50,15 @@ host edits, lifting the blanket host-source freeze. New builds use separate
 outputs. Source review also identified complete block-device metadata and task
 directory-string ownership as prerequisites for unchanged directory contexts;
 do not hide those differences with shortened records or restoration shims.
-C1–C5 remain incomplete. The current bootstrap passes. A cross-build combining the phase repair with
-the string API candidate is running in build/i386-c5-helper-scan-cross; native
-and resource gates must be repeated after it finishes.
+C1–C5 remain incomplete. The current bootstrap passes. On 2026-10-16, the
+combined phase-repair/string-API cross-build completed in
+build/i386-c5-helper-scan-cross from commit 2c953e2e. All 1480 source hashes and
+24 build-input hashes match the workspace; both normal and diagnostic disk
+hashes match the manifest. The kernel is 570800 bytes, and the limited 386 boot
+instruction audit passes (96 BIOS and 255 protected-mode instructions).
+This build did not run a boot test. Native Console/Editor rebuilding, float/API
+regressions and the 8 MiB resource gates remain pending on this combined image;
+the earlier memory failures remain unresolved.
 
 ### Original TimeClock punch commands captured; native GetStr still red (2026-10-15)
 

@@ -117,3 +117,17 @@ not the semantic red gate. Both failed attempts are retained.
 This proves the bounded phase-contract repair on x64. Native code generation,
 float regressions and full Console/Editor rebuilding still require a fresh
 candidate and current-source evidence. C1–C5 remain incomplete.
+
+## Combined build checkpoint (2026-10-16)
+
+The repaired compiler and Console-114 string/export candidate now cross-build
+successfully in `build/i386-c5-helper-scan-cross` from commit `2c953e2e`.
+The manifest's 1480 source hashes and 24 build-input hashes match the workspace;
+both disk image hashes also verify. The matching-source original bootstrap
+passes. The kernel is 570800 bytes and the limited boot instruction audit passes
+with 96 BIOS and 255 protected-mode instructions.
+
+No boot test ran as part of this cross-build. Native Console/Editor rebuilding,
+floating-point regressions and installed generations remain unqualified for the
+repair. The combined image also needs fresh API and 8 MiB resource checks; the
+preceding string candidate's memory failures remain open.

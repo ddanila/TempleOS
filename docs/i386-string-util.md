@@ -97,5 +97,10 @@ However, `build/i386-c4-string-util-compact-startup` fails the ordinary 8 MiB ga
 with OutMem while compiling SPText. Smaller retained code alone has not solved
 the resource/fragmentation regression. Keep this failure visible and do not
 promote Console 114 as a replacement for the qualified minimal-profile image.
-The helper pre-scan compiler repair is a subsequent candidate; it requires its
-own bootstrap, cross-build and repeated API/resource checks.
+The subsequent helper pre-scan repair is included in the completed
+`build/i386-c5-helper-scan-cross` build from commit `2c953e2e` (2026-10-16).
+Its matching-source bootstrap passes; all 1480 source and 24 build-input hashes,
+plus both disk hashes, verify. The 570800-byte kernel passes the limited 386 boot
+instruction audit (96 BIOS/255 protected-mode instructions). No boot test ran.
+Repeated native API, scanner, editor and 8 MiB resource checks remain pending
+on this combined image; earlier candidate results do not qualify it.
