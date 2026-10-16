@@ -22,7 +22,8 @@ the seven native cases and the standalone ATA/task suite pass. The final mapped-
 Public lifecycle for the final constructor layout passes at 8 MiB with the
 source disk unchanged. The isolated 8 MiB gate passes nine checks in 58.005773
 seconds with no build provider and unchanged inputs. The 16 MiB diagnostics
-are running on committed 7cf982e6. The standalone task fixture exposed a pre-existing
+also pass all 128 push-word, 22 publication and 28 program cases, both memory
+phases and nine interactive checks with unchanged pins on committed 7cf982e6. The standalone task fixture exposed a pre-existing
 missing bit-intrinsic declaration, reproduced on committed 4f4b4c48; its header
 fix passes both private task variants. See docs/i386-spawn-home.md. All 686 inventory qualifications
 and C1–C5 remain open.

@@ -47,7 +47,10 @@ Public task lifecycle also passes at 8 MiB with the source disk unchanged
 (build/i386-c4-spawn-home-public-tasks-private-abi). The isolated 8 MiB gate
 passes all nine checks in 58.005773 seconds without a build-provider load
 (build/i386-c4-spawn-home-startup); all four execution pins remain unchanged.
-The 16 MiB diagnostic gate is running. Both use committed 7cf982e6; its 1511
+The 16 MiB diagnostic gate also passes: 128 push-word cases, 22 publication
+cases, 28 program cases, both preserved-memory phases and nine interactive/VGA
+checks, with all four execution pins unchanged
+(build/i386-c4-spawn-home-diagnostics). Both use committed 7cf982e6; its 1511
 source and 24 build input hashes match the cross-build.
 
 The standalone private task regression exposed a pre-existing fixture dependency:
