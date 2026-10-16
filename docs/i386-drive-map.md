@@ -115,7 +115,12 @@ The final native lifetime image passes the 15 mask-31 mapping cases plus mapped
 root growth in 22 commands, with exact readback of all 83 persisted files
 (build/i386-c4-drive-map-native-lifetime). The 56-case/59-command drive-deletion
 regression also passes (build/i386-c4-drive-map-delete-lifetime). All final native
-runs preserve their execution inputs. The memory gates will use an isolated
-committed source snapshot; they are not yet counted as passing. The original controls establish a
+runs preserve their execution inputs. The 8 MiB gate also passes all nine checks
+in 57.808564 seconds, with no build-provider load and all four execution pins
+unchanged (build/i386-c4-drive-map-startup). It uses the isolated committed
+4f4b4c48 source snapshot, matching all 1511 source and 24 build inputs. The
+coordinator resumed the older C5 build afterward and started separate 16 MiB
+diagnostics (build/i386-c4-drive-map-diagnostics); those remain pending.
+Coordinator state is recorded in build/i386-c4-drive-map-gates.json. The original controls establish a
 C1/C4 baseline, not complete mounting qualification. C1–C5 and all 686 inventory
 qualifications remain open.
