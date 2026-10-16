@@ -167,8 +167,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
   KernelSymbols;
   KernelCompilerLoad;
-  KernelFileLoad;
   KernelMemoryLoad;
+  KernelFileLoad;
   //Load the large temporary provider before console allocation fragments RAM.
   if(kernel_diagnostics) KernelCompilerProbeLoad;
   if(!kernel_diagnostics) {

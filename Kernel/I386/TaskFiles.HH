@@ -1,6 +1,6 @@
 #ifndef I386_TASK_FILES_INCLUDED
 #define I386_TASK_FILES_INCLUDED
-#include "/Kernel/I386/Task.HH"
+#include "/Kernel/I386/TaskHeaps.HH"
 #include "/Kernel/I386/FileContext.HH"
 class CI386TaskFileStage {
   U8 *context;
@@ -12,10 +12,13 @@ class CI386TaskFiles {
   CFilePathContext *environment;
   CI386FileVolumes *volumes;
   CI386TaskFileStage *stage;
-  U32 signature,bytes,busy;
+  U32 signature;
+  CI386TaskHeaps *directory_owner;
+  U32 busy;
   U8 drive;
 };
-//Owned directory bytes follow the record. Environment home/boot/bitmap and the
+//Public tasks own cur_dir on their data heap; raw foundation tasks use trailing
+//record storage. Environment home/boot/bitmap and the
 //volume table are borrowed and must stay live. Init/Set are internal state commits,
 //not Cd: callers supply an already established rooted directory and drive letter.
 public extern Bool I386TaskFilesInit(CI386Task *task,CI386Heap *heap,CFilePathContext *environment,CI386FileVolumes *volumes);

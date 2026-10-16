@@ -11944,6 +11944,20 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-state-reference-fixed/result.json",
           "scope": "Case 6 sets the real old device initialization flag, then observes root directory restoration through the full original deletion routine, roles and exact heap recovery; not actual concurrent device initialization"
+        },
+        {
+          "target": "original-directory-ownership",
+          "command": "python3 tools/test-i386-directory-owner-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-directory-owner-reference-child-fixed/result.json",
+          "scope": "Four public directory ownership/replacement cases with caller roles, exact heap recovery and child isolation; child explicitly selects directory because original Spawn starts at home"
+        },
+        {
+          "target": "native-directory-ownership",
+          "command": "python3 tools/test-i386-directory-owner.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-directory-owner-native/result.json",
+          "scope": "Same four cases at 64 MiB on 486,-fpu, eight commands; representation prerequisite only, not DirContextNew/Del integration or minimal memory qualification"
         }
       ]
     },

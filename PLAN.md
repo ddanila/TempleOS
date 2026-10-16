@@ -11,6 +11,34 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Public task directory ownership (2026-10-16)
+
+Public task directory strings now belong to each task's public heap. File
+operations, clones and cleanup read the current `Fs->cur_dir`; direct original
+Free/StrNew replacement is supported without a cached interior pointer. Drive
+selection reads `Fs->cur_dv` against actual mounted identities. Root memory now
+initializes before file state; file service version 54 rejects mismatched providers.
+Private foundation fixtures retain their own trailing-record storage.
+
+The pinned original four-case oracle passes in
+`build/i386-c4-directory-owner-reference-child-fixed`; all eight native commands
+pass at 64 MiB without an FPU in `build/i386-c4-directory-owner-native`, including
+same-path/child/root replacement, FileNameAbs observations, caller roles, exact
+heap recovery and child isolation. The old image fails the ownership preflight
+with BAD PUBLIC MEMORY. The first child oracle incorrectly assumed original
+Spawn inherited the directory; source review and its mask-29 result establish
+that original Spawn starts at home. The corrected ownership test explicitly
+selects its directory. Native spawn-directory parity remains open.
+
+Bootstrap and `build/i386-c4-directory-owner-final-cross` pass with all 1505
+source/build pins matching. ATA task and public heap lifecycle suites pass at
+8 MiB with unchanged heap capacities; their fixture code reservations were
+expanded after explicit transport-size failures. Normal 8 MiB startup remains
+red in `build/i386-c4-directory-owner-startup-8m`, before the first command:
+9480 requested bytes versus 9184 largest free payload. No minimal-profile pass
+or full original drive/context integration is claimed. C1–C5 remain open.
+See [ownership evidence and limitations](docs/i386-directory-context.md).
+
 ### Drive-state contracts and canonical block-device type (2026-10-16)
 
 **Backing-device follow-up:** identified native ATA disks now own persistent

@@ -77,11 +77,11 @@ boundaries:
   without backing-device records. The identity implementation below associates
   them with their identified physical ATA disk. Full public device services,
   locking, remapping and removable-media behavior remain separate work.
-* `I386TaskFilesNew` embeds the directory string immediately after its state
-  allocation. Canonical context deletion's initialization-in-progress branch
-  frees/replaces `Fs->cur_dir` directly. That branch cannot safely use an interior
-  pointer owned by the task file-state allocation. Resolve ownership and keep
-  the public directory/drive fields synchronized with internal file operations.
+* Initial review found `I386TaskFilesNew` embedding the directory string immediately
+  after its state allocation. Canonical context deletion's initialization-in-progress branch
+  frees/replaces `Fs->cur_dir` directly. That branch could not safely use the interior
+  pointer. The ownership implementation below replaces this representation for
+  public tasks; full context integration remains outstanding.
 * The original `Drv` changes device state and resets the directory, while native
   file operations use `CI386TaskFiles` and its borrow/set/release protocol. Test
   public drive changes, alias resolution, restoration and initialization/error
@@ -237,3 +237,68 @@ python3 tools/test-i386.py --ata-tasks --qmp-stdio
 python3 tools/test-i386-block-device-identity.py IMAGE --out OUT-identity
 python3 tools/test-i386-startup-memory.py IMAGE --out OUT-startup
 ```
+
+## Public directory allocation ownership (2026-10-16)
+
+Public task directory strings now use the task's public heap through its retained
+allocation/capacity/release callbacks. The file provider loads after the memory
+provider, so the root receives the same ownership as children. `Fs->cur_dir` is
+read on borrow, clone, replacement and cleanup; direct original `Free`/`StrNew`
+replacement no longer leaves a cached private pointer. Public drive selection
+comes from `Fs->cur_dv` matched against the mounted identity table. Directory
+validation checks ownership and a terminating NUL within the allocation capacity.
+The private foundation fixtures without public heaps retain their trailing-record
+storage; this is not a special case in public Free. File service version 54
+requires matching kernel/provider/host validation.
+
+The shared `i386-directory-owner-reference/Contract.HC` oracle checks same-path,
+child-directory and root replacements with actual FileNameAbs/Cd, exact caller
+heap restoration and unchanged document roles. A fourth case checks a child has
+its own allocation, replaces it independently, and exits without changing the
+parent. The first three cases pass on pinned original in
+`build/i386-c4-directory-owner-reference`. The first child fixture incorrectly
+assumed original Spawn inherited the current directory (mask 29); evidence is
+`build/i386-c4-directory-owner-reference-with-child`. Original KTask.HC initializes
+new tasks at home. The corrected fixture explicitly enters the test directory;
+all four masks are 31 with unchanged inputs in
+`build/i386-c4-directory-owner-reference-child-fixed`. Native Spawn's inherited
+start directory remains a separate compatibility gap, not qualified by this test.
+
+The old native image fails the initial `MHeapCtrl(Fs->cur_dir)` check with
+`BAD PUBLIC MEMORY` in `build/i386-c4-directory-owner-red`. This is a real ownership
+failure before any Free, not merely a missing API. Its inputs stayed unchanged.
+
+The original two-generation compiler/kernel bootstrap passes. The standalone
+ATA task and public heap lifecycle suites also pass at 8 MiB on QEMU 486.
+Their original test images exceeded boot transfer reservations (527202 and
+238858 bytes respectively); those failures are preserved in
+`build/i386-c4-directory-owner-ata-transport-failure` and
+`build/i386-c4-directory-owner-task-heaps-transport-failure`. The ATA fixture now
+reserves code through 0x92000 and the same 32 KiB stack through 0x9A000, below
+descriptor scratch 0x9C000. The heap fixture starts its arenas at 0x4C000,
+0x54000 and 0x5C000, keeping their capacities unchanged and ending before its
+0x90000 stack. Production boot reservations and guest RAM limits are unchanged.
+Independent compiler-ISO reads verify all delivered Kernel/Compiler/fixture
+HolyC sources against the current files (799 ATA and 798 heap files).
+
+This is a directory representation change, not a replacement implementation of
+DirContextNew/Del or Drv. Public drive initialization, remapping, removable media,
+allocation-failure injection in the new ownership path and cancellation still
+need coverage. C1–C5 and all inventory qualification remain open.
+
+The final image `build/i386-c4-directory-owner-final-cross` passes the limited
+386 boot instruction audit (96 BIOS/255 protected-mode instructions); its kernel
+is 574056 bytes and all 1481 source plus 24 build-input hashes match. The first
+cross build stopped at the host's stale version-53 check; the final build uses
+version 54 consistently. All eight commands, including four mask-31 cases, pass
+at 64 MiB on TCG `486,-fpu` in `build/i386-c4-directory-owner-native`, with unchanged
+inputs and byte-verified delivered fixture. The backend green artifacts are
+`build/i386-c4-directory-owner-ata-green` (169 publication turns) and
+`build/i386-c4-directory-owner-task-heaps-green`.
+
+Normal 8 MiB startup remains red in `build/i386-c4-directory-owner-startup-8m`:
+after startup source finishes, before the first command, allocation of 9480 bytes
+fails with 9184 largest free payload, 6611464 raw bytes used out of 6634496 and
+9514 allocations. This is not an 8 MiB interaction pass; the minimal profile
+cannot be promoted. The independent older Console rebuild continues compiling
+its embedded source epoch and provides no qualification for this new image.
