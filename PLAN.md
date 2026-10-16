@@ -51,7 +51,10 @@ Final bootstrap/cross-build passes with 1506 source/24 build-input hashes
 unchanged. The corrected 8 MiB image passes all nine checks in 56.954345 seconds,
 with unchanged inputs and no build provider. The final image also passes all 56 existing drive-deletion cases/59 commands
 with unchanged inputs. All nine public task-cancellation cases pass with the source image unchanged.
-The final 16 MiB diagnostic regression remains running. Earlier failures and the reverted parser-storage
+The final 16 MiB diagnostic gate also passes (startup 246.119320 seconds):
+128 push-word cases, 32 backend cases, both preserved-memory phases,
+22 publication/28 program cases and all nine interactive checks, with unchanged
+execution inputs. Earlier failures and the reverted parser-storage
 experiment are retained in docs/i386-drive-device-delete.md,
 docs/i386-immediate-push.md and docs/i386-parser-scratch.md. The ongoing C5 native
 build remains pinned to CompilerRuntime 72 and commit 0bed4c3a. All 686 inventory

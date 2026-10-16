@@ -116,6 +116,7 @@ C5 was paused for the timing run and resumed. The final native runner passes all
 ...final-native, with exact common-fixture/adapter delivery and unchanged inputs.
 The canonical identity check passes before any table mutation. The final image also passes all 56 existing DrvDel/mounted-identity cases
 (59 commands) in ...final-drive-regression with unchanged inputs. All nine public task-cancellation cases also pass in ...final-task-kill with
-the source image unchanged. The final 16 MiB regression is running in
-...final-diagnostics; the preceding compact-code image already passes the full
-16 MiB gate, but that result does not qualify the corrected Console binding.
+the source image unchanged. The final 16 MiB gate passes in ...final-diagnostics, startup 246.119320
+seconds: both memory-preservation phases, 128 immediate-push cases, 32 backend
+cases, 22 publication/28 program cases and all nine interactive checks. All
+four execution inputs remain unchanged. This is the corrected Console image.

@@ -50,4 +50,7 @@ The final binding correction rebuild is ...drive-device-delete-binding-cross.
 Its CompilerRuntime and CompilerProbe modules are byte-identical to the compact
 candidate above; only ConsoleRuntime changes. The final 8 MiB gate passes at
 56.954345 seconds with all nine checks and unchanged inputs. The final 16 MiB
-regression is running in ...drive-device-delete-final-diagnostics.
+regression passes in ...drive-device-delete-final-diagnostics, startup
+246.119320 seconds, with 128 push-word cases, 32 backend cases, both
+preserved-memory phases, 22 publication/28 program cases, all nine interactive
+checks and unchanged execution inputs.
