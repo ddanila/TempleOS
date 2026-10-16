@@ -1156,8 +1156,7 @@ public class CSysFixedArea
 
 #include "/Kernel/CharCodes.HH"
 
-#define ST_ERR_ST   "$$LTRED$$$$BK,1$$ERROR:$$FG$$$$BK,0$$ "
-#define ST_WARN_ST  "$$RED$$$$BK,1$$WARNING:$$FG$$$$BK,0$$ "
+#include "/Kernel/DiagnosticText.HH"
 
 #include "/Kernel/ScanFlags.HH"
 

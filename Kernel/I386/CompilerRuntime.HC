@@ -131,7 +131,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"
-#include "/Kernel/I386/ModuleCheck.HC"
+#include "/Kernel/I386/ModuleCheckBridge.HC"
 #include "/Kernel/I386/ModulePackCore.HC"
 #include "/Kernel/I386/ModuleWriteCore.HC"
 #include "/Kernel/I386/SoftF64.HC"

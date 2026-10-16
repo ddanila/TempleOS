@@ -11,6 +11,39 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original diagnostic output and minimal-profile memory (2026-10-16)
+
+The complete original GetOutOfDollar, PrintErr and PrintWarn routines are now
+shared with Console 118. Eight original-system cases cover document formatting,
+four caller fields, unfinished dollar commands, raw state, document roles and
+heap recovery. Pinned and rebuilt originals pass all eight. Native cases 0-6
+pass; case 7 remains a real failure because the native key-device chain lacks
+the original raw-output handlers. The full gate remains failing, not reduced.
+
+Adding the declarations exposed the minimal profile's remaining heap pressure.
+Console export initialization now shares its ordered setup and data-kind bitmap,
+with all 299 bindings and 12 data kinds preserved. More substantially, CompilerRuntime
+71 delegates module validation to the complete kernel-owned validator through
+provider-local wrappers, retaining publication bounds. This removes 23,152
+compiler bytes while the kernel grows 240 bytes. The canonical validator passes
+176 target cases; all nine installed-provider positive/malformed/callback
+cases pass in build/i386-c4-validator-binding-extern-native, with exact caller
+heap recovery and unchanged inputs.
+
+Bootstrap and build/i386-c4-diagnostic-print-validator-cross pass, with all
+1496 source and 24 build-input hashes matching. Normal 8 MiB startup is restored
+in build/i386-c4-diagnostic-print-validator-startup: nine commands, exact VGA
+restoration, no Build provider and 58.282055 seconds. Earlier failed images and
+independent before/after heap snapshots remain documented in
+[diagnostic printing evidence](docs/i386-diagnostic-print.md).
+
+Next: complete the original raw-output route, including RawPutChar's full
+character, scrolling, font/cache and hardware behavior; retain the failing
+pending-dollar case and add independent visual/cache observations. Drv, media
+initialization and DirContext integration remain open. The detached C5 build
+continues on its earlier source snapshot; it is not current-source generation
+qualification. All 686 inventory entries and C1-C5 remain unqualified.
+
 ### Operation-specific drive-lock release (2026-10-16)
 
 Twenty shared oracle cases now distinguish whole-file read/write, which release

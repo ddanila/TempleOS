@@ -8,6 +8,10 @@ public _extern _STR_PRINT U8 *StrPrint(U8 *dst,U8 *fmt,...);
 public _extern _CAT_PRINT U8 *CatPrint(U8 *dst,U8 *fmt,...);
 public _extern _MSTR_PRINT U8 *MStrPrint(U8 *fmt,...);
 public _extern _PRINT U0 Print(U8 *fmt,...);
+#include "/Kernel/DiagnosticText.HH"
+public _extern _GET_OUT_OF_DOLLAR U0 GetOutOfDollar();
+public _extern _PRINT_ERR U0 PrintErr(U8 *fmt,...);
+public _extern _PRINT_WARN U0 PrintWarn(U8 *fmt,...);
 public _extern _PUT_S U0 PutS(U8 *text);
 public _extern _PUT_CHARS U0 PutChars(U64 chars);
 public _extern _STR_SCAN U8 *StrScan(U8 *src,U8 *fmt,...);
