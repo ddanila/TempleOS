@@ -11,6 +11,14 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original terminal startup reference (2026-10-16)
+
+The pinned-original DocTermNew → Type(full Start.DD) → DocClear control passes
+with exact exported documents and unchanged test inputs. It establishes that
+the welcome's held word-wrap command survives clearing, independently confirming
+the native TimeClock report gap. Full native startup, graphics-file Type support
+and desktop orchestration remain open. See docs/i386-terminal-startup.md.
+
 ### Original GetStr integration candidate (2026-10-16)
 
 ConsoleRuntime 128 integrates the original GetStr and complete DocGetStr2 bodies,

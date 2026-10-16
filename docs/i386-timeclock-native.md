@@ -53,3 +53,7 @@ python3 tools/test-i386-timeclock-report-native.py PACKAGE/candidate.img --out R
 Physical keyboard input, full original desktop startup, complete report parity,
 resource qualification and native-generation acceptance remain open. No inventory
 entry or C1–C5 milestone is marked complete by these component tests.
+
+The independent [terminal startup reference](i386-terminal-startup.md) now
+passes exact fresh/welcome/cleared document comparisons on the pinned original
+system, confirming the retained setting without executing TimeClock.
