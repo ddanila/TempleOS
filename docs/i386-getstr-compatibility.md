@@ -246,3 +246,13 @@ The harness accounts for the first installation's top-level DirMk result;
 the earlier empty-answer expectation is retained as a fixture failure, not an
 application rejection. Native punch/storage/reboot checks are running. The
 minimal-profile memory gates and full C1–C5 qualification remain open.
+
+The isolated committed f0639b4a image passes all nine 8 MiB startup/storage/VGA
+checks in 58.910551 seconds, with no build-provider load and all four execution
+pins unchanged (build/i386-c2-getstr-startup). Separate 16 MiB diagnostics are
+running from the same source snapshot. The native punch fixture's initial
+FileWrite byte-count assumption was incorrect: the API returns an allocation
+location. The corrected fixture retains independent exact persisted-byte checks;
+all seven command stages and host record checks pass, with cold reboot reopen
+still running. A separate deterministic report/reboot run compares the entire
+saved DolDoc document against the original 5,400-second report golden.

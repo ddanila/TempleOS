@@ -20,8 +20,10 @@ native suite passes 26 commands covering hook/prompt/default handling and all
 thirteen scripted-input cases. Bootstrap/cross-build pass with all 1514 source
 and 24 build inputs unchanged. DocClear's existing original body is now publicly
 bound, allowing unchanged TimeClock Load/Install to pass its four-command gate.
-Native punch/persistence/reboot tests are running; minimal-profile gates and
-physical-keyboard/filter/replay/task-exit qualification remain open. See
+The 8 MiB gate passes all nine checks in 58.910551 seconds with no build
+provider and unchanged pins on committed f0639b4a; 16 MiB diagnostics are running.
+Native punch/persistence/reboot and exact report tests are running;
+physical-keyboard/filter/replay/task-exit qualification remains open. See
 docs/i386-getstr-compatibility.md. No inventory item or C1–C5 milestone closes.
 
 ### Public Spawn home-directory candidate (2026-10-16)
