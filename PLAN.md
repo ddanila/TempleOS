@@ -20,8 +20,11 @@ remain unchanged. Corrected original and preceding native controls pass eight
 array-bound masks and the independent compile-time call count. Both bootstrap
 generations and cross-build pass with all 1528 source and 24 build inputs
 unchanged. The candidate passes the four-command array-bound suite and nine-command
-document/VGA regression with unchanged inputs. Isolated startup/memory qualification
-is pending; no timing improvement is claimed. See docs/i386-array-literal-bounds.md.
+document/VGA regression with unchanged inputs. An isolated comparison passes all
+nine behavior/VGA checks on both images: control 59.607815 seconds, candidate
+58.104980 seconds, with unchanged pins and no build-provider loads. This single
+paired observation leaves limited timing margin and preserves the earlier control
+failure. Candidate 16 MiB diagnostics are running. See docs/i386-array-literal-bounds.md.
 C1–C5 and all inventory entries remain unqualified.
 
 ### Original document output integration candidate (2026-10-16)

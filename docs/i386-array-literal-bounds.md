@@ -35,8 +35,14 @@ instruction audit. All 1528 source and 24 build inputs remain unchanged in
 `build/i386-c4-array-literal-native`, and the nine-command document/VGA regression
 passes in `build/i386-c4-array-literal-doc-type`, both with unchanged inputs.
 The latter preserves all six exact document buffers, two full raw VGA captures
-and real hardware delay checks. Isolated startup/memory qualification is pending.
-No startup speedup or completed compatibility milestone is claimed yet.
+and real hardware delay checks. The isolated comparison passes all nine behavior/VGA checks on both images with
+no build-provider loads and unchanged execution pins. The control starts in
+59.607815 seconds; Compiler 74 starts in 58.104980 seconds, 1.502834 seconds less
+in this paired observation. Evidence is in
+`build/i386-c4-array-literal-startup-compare.json` and its two referenced runs.
+This is one comparison with limited margin; the earlier control failure at
+62.374019 seconds remains recorded. Candidate 16 MiB diagnostics are running.
+No completed compatibility milestone is claimed.
 
 ```sh
 python3 tools/test-i386-array-literal.py --out ORIGINAL
