@@ -21,8 +21,9 @@ with all 1520 source and 24 build inputs unchanged. The native four-command suit
 passes all eleven checks, and bitmap insertion passes its six-check/four-buffer
 regression with unchanged inputs. The isolated 8 MiB gate fails the 60-second
 startup limit at 61.118576 seconds, despite nine passing behavior checks and
-unchanged pins; the dependent diagnostic gate has not run. Startup-cost
-investigation is active; GRRead, DocGR, full Type and original terminal startup remain open.
+unchanged pins. A controlled repeat passes at 58.007704 seconds, compared with
+56.245635 seconds for Console-129 under the same isolation. Timing margin remains
+limited and the 16 MiB gate is outstanding; GRRead, DocGR, full Type and original terminal startup remain open.
 See docs/i386-dc-load.md. All 686 inventory entries and C1–C5 remain unqualified.
 
 ### Original bitmap document integration candidate (2026-10-16)

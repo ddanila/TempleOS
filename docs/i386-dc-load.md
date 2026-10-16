@@ -55,9 +55,12 @@ inputs in `build/i386-c2-dc-load-bitmap-regression`. The isolated 8 MiB gate fai
 8b4e4efc: 61.118576 seconds, with all nine behavior/VGA checks passing, zero
 build-provider loads and all four execution pins unchanged. Evidence is in
 `build/i386-c2-dc-load-startup/result.json`. The gate coordinator resumed C5
-and did not run the dependent 16 MiB diagnostics. A controlled startup comparison
-against Console-129 is investigating the added cost; resource qualification
-remains open. GRRead, DocGR, complete
+and did not run the dependent 16 MiB diagnostics. A controlled repeat of the identical committed image passes at 58.007704
+seconds; the preceding Console-129 image passes at 56.245635 seconds under the
+same isolation. Both preserve all execution inputs. The comparison and sampled
+header-phase timestamps are in `build/i386-c2-dc-load-startup-compare.json`.
+The first failure remains evidence of limited timing margin, not a behavior
+failure or an erased result. The 16 MiB diagnostic gate remains outstanding. GRRead, DocGR, complete
 Type, original terminal startup and C1–C5 acceptance remain open. This suite does
 not qualify malformed compressed dictionary streams or complete source files.
 
