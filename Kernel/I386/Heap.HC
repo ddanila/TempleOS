@@ -46,7 +46,7 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
   //remaining arena before advancing, so used/count cannot overflow. The region
   //check retains the wide address-overflow and control/arena overlap checks.
   Bool valid=FALSE;
-  U32 last_free=0,requested=0xFFFFFFFF;
+  U32 requested=0xFFFFFFFF;
   CI386HeapBlock *candidate=0;
   U8 *target=ptr-16;
   if (!hc || hc->signature!=I386_HEAP_MAGIC ||
@@ -58,6 +58,7 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
     MOV ECX,U32 CI386Heap.size[EBX]
     XOR EDI,EDI
     XOR EDX,EDX
+    XOR EBX,EBX //Previous block was free; keep it off the stack in the hot loop.
 @@10:
     CMP ECX,24
     JB I32 @@90
@@ -70,17 +71,15 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
     JA I32 @@90
     CMP U32 CI386HeapBlock.reserved[ESI],0
     JNZ I32 @@90
-    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
-    JE @@30
     CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_USED
-    JNE I32 @@90
-    SUB EAX,16
-    CMP U32 CI386HeapBlock.requested[ESI],EAX
+    JNE @@30
+    //A used block ends the free run, so EBX can first hold its payload bound.
+    LEA EBX,U32 -16[EAX]
+    CMP U32 CI386HeapBlock.requested[ESI],EBX
     JA I32 @@90
-    ADD EAX,16
     ADD EDI,EAX
     ADD EDX,1
-    MOV U32 &last_free[EBP],0
+    XOR EBX,EBX
     CMP ESI,U32 &target[EBP]
     JNE @@40
     PUSH EAX
@@ -89,11 +88,13 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
     POP EAX
     JMP @@40
 @@30:
-    CMP U32 &last_free[EBP],0
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
+    JNE I32 @@90
+    TEST EBX,EBX
     JNZ I32 @@90
     CMP U32 CI386HeapBlock.requested[ESI],0
     JNZ I32 @@90
-    MOV U32 &last_free[EBP],1
+    MOV EBX,1
     CMP U32 &need[EBP],0
     JE @@40
     CMP EAX,U32 &need[EBP]
@@ -103,6 +104,7 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
     ADD ESI,EAX
     SUB ECX,EAX
     JNZ I32 @@10
+    MOV EBX,U32 &hc[EBP]
     CMP EDI,U32 CI386Heap.used[EBX]
     JNE I32 @@90
     CMP EDX,U32 CI386Heap.allocations[EBX]

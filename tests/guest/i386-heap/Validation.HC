@@ -77,6 +77,15 @@ I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
     *word=old;
   }
   if(checks!=160 || !I386HeapValid(hc) || !HeapValidReference(hc)) return 305;
+  //Consistent counters must not hide two adjacent free blocks. This also
+  //exercises the free-run state after several valid allocated blocks.
+  blocks[2]->tag=I386_HEAP_FREE;blocks[2]->requested=0;
+  hc->used-=blocks[2]->span;hc->allocations--;
+  if(HeapValidReference(hc) || I386HeapValid(hc) ||
+      !HeapRejectsCorruption(hc,arena,p))return 309;
+  blocks[2]->tag=I386_HEAP_USED;blocks[2]->requested=33;
+  hc->used+=blocks[2]->span;hc->allocations++;
+  if(!I386HeapValid(hc) || !HeapValidReference(hc))return 310;
   blocks[3]->reserved=1; before=Hash(arena,256);
   if(I386HeapSize(hc,p)!=-1 || I386HeapAlloc(hc,1) || I386HeapFree(hc,p) ||
       Hash(arena,256)!=before) return 306;

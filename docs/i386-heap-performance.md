@@ -103,3 +103,48 @@ samples. Remaining samples include allocation, size and free scans, so bootstrap
 allocator scaling remains a measured constraint. The short startup phase yields
 few samples; these proportions are approximate and do not replace end-to-end
 latency measurements. Full validation remains enabled in normal boot.
+
+## Allocated-block hot path, 2026-10-16
+
+The current desktop startup profile found I386HeapScanSelect in 181/241
+root-header samples (`build/i386-c4-shared-lifecycle-boot-profile`). The normal
+8 MiB workload completed its nine functional checks but missed the 60-second
+startup gate. This follow-up keeps the whole physical chain scan, metadata and
+control-counter checks, and mutation only after successful validation.
+
+The assembly path now checks the common USED tag first, retains the previous-free
+state in EBX, and uses LEA to calculate the payload bound without subtracting and
+restoring the span. EBX is reloaded with the control pointer before final counter
+checks. No arena layout, allocation size, stack size or API changed. The portable
+validator remains unchanged. The first candidate incorrectly annotated the LEA
+operand as U8; compilation rejected it. Correcting that annotation to U32 is
+recorded alongside the preserved failed kernel and standalone compile artifacts:
+`build/i386-c4-heap-hotloop-cross` and
+`build/i386-c4-heap-hotloop-asm-compile-red`.
+
+The corruption corpus adds adjacent free blocks whose requested lengths and
+control counters are otherwise valid. Both the independent reference and native
+validator must reject them, and allocation/free/size operations must leave arena
+and control bytes untouched. Existing 160 header/control mutations, later-block
+corruption, allocation, coalescing, exhaustion and alignment checks remain.
+
+The assembly core, public heap/backing and high-placement suites pass at 8 MiB
+in `build/i386-c4-heap-hotloop-{core,public,high}-green`, including instruction
+audits. Independent reads of each compiler ISO verify 800 delivered Kernel,
+Compiler, corruption-fixture and generated-target files. The portable path also
+passes in `build/i386-c4-heap-hotloop-source-green`; it was run before correcting
+the inactive assembly annotation, so that artifact is not a current whole-file
+source-hash match. Its portable implementation and fixture are unchanged.
+
+Both original bootstrap generations and
+`build/i386-c4-heap-hotloop-fixed-cross` pass: 575128 kernel bytes, all 1484 source
+and 24 build-input hashes matching, and the limited 96-BIOS/255-protected-mode
+instruction audit. The fresh control uses an isolated d308b828 checkout and the
+same prior immutable image, harness, 8 MiB RAM, 486,-fpu CPU, nine commands and
+60-second threshold. It completes all functional checks but fails timing at
+65.024112 seconds in `build/i386-c4-heap-hotloop-startup-control`. The candidate
+passes the complete gate at 56.025820 seconds in
+`build/i386-c4-heap-hotloop-startup-native`, including retained static state,
+literals, arithmetic, graphics activation and exact text/graphics restoration.
+No build-only provider loads. These are observed QEMU runs, not physical-386 or
+full desktop/application/native-generation qualification; C1–C5 remain open.

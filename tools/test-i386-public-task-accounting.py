@@ -39,7 +39,7 @@ def accounting_layouts(disk):
     return layout_commands, {path: hashlib.sha256(data).hexdigest() for path, data in headers.items()}
 
 
-def behavior_commands(disk):
+def behavior_commands(disk, ram_mib=8):
     layout_commands, header_hashes = accounting_layouts(disk)
     contract = runpy.run_path(str(CONTRACT))['behavior_commands']()
     definitions = [(source, []) for source, _ in contract
@@ -75,7 +75,7 @@ def behavior_commands(disk):
         ("BootBad(-1,8192,'Task',TRUE);", ['1']),
         ("BootBad(-1,128,'OutMem');", ['1']),
         ("BootBad(-1,8193,'OutMem');", ['1']),
-        ("BootBad(-1,0x800000,'OutMem');", ['1']),
+        (f"BootBad(-1,{ram_mib*1024*1024},'OutMem');", ['1']),
         ('Free(LifeState);', []),
         ('Free(DescState);', []),
         ('Free(TryState);', []),
@@ -102,7 +102,7 @@ def main():
     descendant_hash = sha(DESCENDANTS)
     exception_hash = sha(EXCEPTIONS)
     callback_hash = sha(END_CALLBACKS)
-    commands, header_hashes = behavior_commands(args.disk)
+    commands, header_hashes = behavior_commands(args.disk, args.ram_mib)
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib,
                       startup_check={'status': 'ok', 'answers': [], 'commands': commands})
@@ -119,7 +119,7 @@ def main():
               'descendant_cycles': 20, 'descendant_variants': 5,
               'exception_cycles': 20, 'exception_variants': 4,
               'end_callback_cycles': 20, 'end_callback_variants': 5,
-              'creation_rejections': 6,
+              'creation_rejections': 6, 'oversized_stack_bytes': args.ram_mib*1024*1024,
               'scope': 'Bootstrap recovery through public calls, including queued descendants; not late clone-hook failures or dormant disposal'}
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))

@@ -11,6 +11,31 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Normal 8 MiB startup gate restored (2026-10-16)
+
+The heap validator retains its full-chain checks but uses a shorter common
+allocated-block path: USED-first classification, register-held free-run state,
+and a payload-bound LEA. The corruption corpus adds adjacent free blocks with
+consistent counters; rejection must leave all bytes unchanged. Core, public
+heap/backing and high-placement suites pass with instruction audits and
+independent compiler-ISO source verification. The unchanged portable validator
+also passes. Failed U8-annotated LEA compile artifacts are retained; the corrected
+operand is U32.
+
+Bootstrap and `build/i386-c4-heap-hotloop-fixed-cross` pass with all 1508
+source/build pins matching. The fresh prior-image control completes all nine
+functional commands but takes 65.024112 seconds. The candidate passes the same
+normal 8 MiB gate in 56.025820 seconds, including exact VGA restoration and no
+build-provider load, in `build/i386-c4-heap-hotloop-startup-native`. This restores
+that bounded gate, not complete minimal/rebuild or C1–C5 qualification.
+
+Both earlier lifecycle-accounting runs reached the same fixture error: expecting
+an 8 MiB stack request to fail in a 64 MiB guest. All preceding checks completed.
+The corrected harness requests the configured RAM size and preserves every
+OutMem/recovery assertion; full control/candidate `-ram-bound` reruns remain live.
+See [heap evidence](docs/i386-heap-performance.md) and
+[accounting follow-up](docs/i386-startup-memory-profile.md).
+
 ### Startup memory recovery through shared task lifecycle (2026-10-16)
 
 A stopped 8 MiB guest capture identifies the startup failure as allocation of

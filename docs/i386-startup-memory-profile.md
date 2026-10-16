@@ -81,3 +81,15 @@ pauses invalidate timing comparisons. This points to the full raw-heap validator
 as the next performance target, not to shrinking the workload. Its existing
 whole-chain corruption/rejection guarantees must remain covered by the heap
 regression corpus.
+
+Both long accounting runs reached the oversized-stack rejection and timed out
+there (`build/i386-c4-shared-lifecycle-accounting-control` and
+`build/i386-c4-shared-lifecycle-accounting`). The harness had kept an 8 MiB stack
+request while selecting a 64 MiB guest; that request no longer guaranteed
+OutMem. All preceding sequential assertions completed in both runs, including
+normal/Exit, deferred activation, descendants, exceptions, end callbacks and five
+invalid-creation cases. This is not a full accounting pass. The corrected harness
+requests the selected RAM size as stack payload, which cannot fit alongside its
+record and resident OS, and retains all rejection/recovery assertions. Default
+8 MiB behavior is unchanged. Corrected full control/candidate runs use the
+`-ram-bound` artifact suffix and remain pending until their final verdicts.
