@@ -148,3 +148,62 @@ passes the complete gate at 56.025820 seconds in
 literals, arithmetic, graphics activation and exact text/graphics restoration.
 No build-only provider loads. These are observed QEMU runs, not physical-386 or
 full desktop/application/native-generation qualification; C1–C5 remain open.
+
+## First-fit selection during complete validation, 2026-10-16
+
+After integrating the original raw renderer, normal 8 MiB startup completed its
+behavior checks but took 61.301742 seconds against the unchanged 60-second
+limit. The source-pinned prior image passed at 57.137695 seconds. Statistical
+profiles in build/i386-c4-raw-output-{boot-profile,prior-boot-profile} attribute
+285/376 and 271/373 root-header samples to I386HeapScanSelect respectively.
+These paused profiles identify the dominant cost; they do not establish the
+cause of the difference between individual timing runs.
+
+Ordinary I386HeapAlloc previously validated every block, then traversed the
+arena again to locate its first fitting free block. It now asks the same
+validator to remember the first fit during the complete validation pass. The
+candidate is published only after all block invariants and both control totals
+match. Allocation then splits or consumes that same first-fit block. High
+placement retains last-fit selection. The public API, layout, request sizes,
+zeroing, overflow checks, coalescing and all corruption checks are unchanged.
+The assembly and portable implementations both implement this selection mode;
+no validation cache or early exit replaces the whole-arena scan.
+
+The independent corruption corpus retains its 160 mutations and adds an early
+usable free hole followed by a corrupt later block. Allocation must reject it
+without changing arena or control bytes; repairing the later block must allow
+allocation at that exact first hole. Core, public, cache and high-placement
+suites pass for both implementations at 8 MiB, with instruction audits, in
+build/i386-c4-raw-heap-first-{core,public,cache,high} and their -source variants.
+Independent RedSea reads of all eight compiler ISOs match 817 Kernel/Compiler,
+fixture and generated-target files in each; delivered-source-audit.json records
+the hashes. An initial test invocation correctly rejected stale bootstrap pins;
+it supplied no execution evidence.
+
+The fresh two-generation bootstrap and build/i386-c4-raw-heap-first-cross pass,
+including the 96-BIOS/255-protected-mode instruction audit. All 1501 source and
+24 build-input hashes match. The unpaused normal 8 MiB gate passes in
+build/i386-c4-raw-heap-first-startup at 55.824419 seconds, with all nine commands,
+exact VGA restoration and no build-only provider load. The 60-second threshold
+is unchanged. All 13 frozen raw captures match in
+build/i386-c4-raw-heap-first-native (17 commands); all eight diagnostic-print
+cases pass in build/i386-c4-raw-heap-first-print (11 commands). Both run at
+64 MiB with unchanged inputs. The 16 MiB diagnostic-startup suite fails after
+the second timer tick in build/i386-c4-raw-heap-first-diagnostics. The matching
+413273ed checkout and pre-optimization image also fail at this boundary in
+build/i386-c4-raw-heap-first-prior-diagnostics. Their MemoryRuntime modules are
+byte-identical; this is not a passing diagnostic gate.
+
+The startup-memory observer now supports 8/16 MiB and records stopped registers
+and bounded EBP return frames. Its 16 MiB capture in
+build/i386-c4-raw-heap-first-diagnostic-stop has unchanged inputs and resolves
+the failure to MemoryProbe+0x7e4, the empty-control guard in phase 1. Independent
+reads of the saved memory and generated instruction offsets find used_u8s=16;
+the only live span is the public allocation backing cur_dir="/", with its
+owner equal to the task's actual heap control. The record is in
+empty-heap-assumption.json. Allocating current-directory strings in the task
+heap is expected behavior; the diagnostic's assumption predates that change.
+The next correction must preserve live task allocations while exercising and
+tearing down the isolated probe heap. It must retain the full probe and exact
+restoration checks, not suppress phase 1 or its failure. The 16 MiB gate and
+full C1-C5 qualification remain open.

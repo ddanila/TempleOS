@@ -11,6 +11,24 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### First-fit validation and startup recovery (2026-10-16)
+
+The original raw-renderer image's startup timing failure is addressed by
+selecting the ordinary first-fit allocation during the existing full heap
+validation pass, removing its second arena traversal. Every metadata/counter
+check remains; selection is published only after validation succeeds. Both
+assembly and portable core/public/cache/high-placement suites pass, including
+an early free hole followed by later corruption, with independent ISO source
+audits. Bootstrap and cross-build pass; normal 8 MiB startup now passes at
+55.824419 seconds with all nine checks and no Build provider. All 13 raw captures and eight diagnostic-print cases pass on the new image
+with unchanged inputs. The 16 MiB diagnostic suite fails on both this image
+and the source-pinned prior image. A stopped-memory capture locates phase 1's
+outdated empty-heap assertion: cur_dir="/" correctly owns a 16-byte public heap
+allocation. Preserve that live state while correcting the isolated probe; the
+16 MiB gate remains open.
+See docs/i386-heap-performance.md. C1-C5 and all 686 inventory entries remain
+unqualified.
+
 ### Complete original raw renderer integration (2026-10-16)
 
 Console 119 shares the complete original RawPutChar and both raw key-device

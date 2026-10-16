@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture a stopped 8 MiB startup heap and resolve allocation-failure callers."""
+"""Capture a stopped startup heap and resolve failure callers."""
 import argparse
 from collections import Counter
 import hashlib
@@ -18,7 +18,7 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def analyze(disk, log, memory):
+def analyze(disk, log, memory, registers=""):
     read = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
     names = ('Kernel', 'CompilerRuntime', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime')
     paths = {f'/Modules/I386/{name}.t32m' for name in names}
@@ -70,7 +70,17 @@ def analyze(disk, log, memory):
         callers.append([dict(return_address=int(word, 16),
                              symbols=[label for lo, hi, label in ranges if lo <= int(word, 16)-1 < hi])
                         for word in match[1].split()])
-    return dict(heap_address=heap_address, arena=arena, capacity=capacity, used=used, peak=peak,
+    stopped_callers=[]
+    match=re.search(r'\bEBP=([0-9A-Fa-f]+)',registers)
+    frame=int(match[1],16) if match else 0
+    for depth in range(16):
+        if not 0x1000<=frame<=len(memory)-8 or frame&3:break
+        parent,address=struct.unpack_from('<2I',memory,frame)
+        stopped_callers.append(dict(frame=frame,return_address=address,
+            symbols=[dict(name=label,offset=address-1-lo) for lo,hi,label in ranges if lo<=address-1<hi]))
+        if parent<=frame:break
+        frame=parent
+    return dict(stopped_callers=stopped_callers,heap_address=heap_address, arena=arena, capacity=capacity, used=used, peak=peak,
                 allocations=allocations, largest_free=max((b['span']-16 for b in blocks if not b['live']), default=0),
                 requested_bytes=sum(size*count for size, count in histogram.items()),
                 allocation_sizes=[dict(bytes=size, count=count, requested_total=size*count)
@@ -84,6 +94,7 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--timeout', type=float, default=180)
+    parser.add_argument('--ram-mib',type=int,choices=(8,16),default=8)
     args = parser.parse_args()
     disk, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -91,11 +102,11 @@ def main():
     out.mkdir(parents=True)
     pins = {str(p):sha(p) for p in (disk, Path(__file__).resolve(), ROOT/'tools/profile-i386-boot.py', ROOT/'tools/build-i386-kernel.py')}
     log_path = out/'debug.log'
-    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486,-fpu', '-m', '8',
+    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486,-fpu', '-m', str(args.ram_mib),
            '-nic', 'none', '-snapshot', '-drive', f'file={disk},format=raw,if=ide',
            '-display', 'none', '-no-reboot', '-debugcon', f'file:{log_path}', '-qmp', 'stdio']
     (out/'command.json').write_text(json.dumps(cmd, indent=2)+'\n')
-    report = dict(result='running', scope='Stopped startup heap snapshot; not interaction or timing qualification', input_sha256=pins)
+    report = dict(result='running', scope='Stopped startup heap snapshot; not interaction or timing qualification', ram_mib=args.ram_mib, input_sha256=pins)
     with (out/'qemu.log').open('w') as stderr:
         proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr, bufsize=0)
         try:
@@ -123,10 +134,12 @@ def main():
             else:
                 raise TimeoutError('Startup observation timed out')
             command('stop')
+            registers=command('human-monitor-command',**{'command-line':'info registers'})
+            report['registers']=registers
             dump = out/'memory.bin'
-            command('pmemsave', val=0, size=8*1024*1024, filename=str(dump))
+            command('pmemsave', val=0, size=args.ram_mib*1024*1024, filename=str(dump))
             log = log_path.read_text()
-            report.update(analyze(disk, log, dump.read_bytes()))
+            report.update(analyze(disk, log, dump.read_bytes(),registers))
             report.update(result='captured', boot_failed='FAIL native kernel' in log, memory_sha256=sha(dump))
             command('quit')
             proc.wait(timeout=10)

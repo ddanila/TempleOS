@@ -87,3 +87,12 @@ current image remains failing at 61.301742 seconds. This single control does
 not identify a cause, but it means the miss cannot be dismissed solely as
 fixture concurrency; startup performance needs investigation before this
 checkpoint qualifies the minimal profile.
+
+The subsequent full-validation/first-fit optimization restores the minimal
+profile: build/i386-c4-raw-heap-first-startup passes at 55.824419 seconds with
+all nine checks and the unchanged 60-second threshold. All 13 frozen raw
+captures and eight diagnostic-print cases also pass on that new image, with
+unchanged inputs, in build/i386-c4-raw-heap-first-{native,print}. See
+[i386-heap-performance.md](i386-heap-performance.md) for the allocator change,
+independent corruption/placement tests and source audits. Earlier timing
+failures remain recorded rather than overwritten.

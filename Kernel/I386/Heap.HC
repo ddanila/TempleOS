@@ -3,7 +3,7 @@
 //The guest source compiler uses the portable validator until it can rebuild
 //the 386 assembly block. Both paths validate and locate in one full scan.
 #ifdef I386_HEAP_SOURCE_BUILD
-I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
+I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,Bool first=FALSE)
 {//Check the whole physical block chain before trusting metadata for mutation.
   //Each span is bounded by the remaining arena before advancing the cursor.
   //Thus the accumulated used bytes and block count cannot overflow U32.
@@ -24,7 +24,7 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
     if(block->tag==I386_HEAP_FREE) {
       if(last_free || block->requested) return -1;
       last_free=TRUE;
-      if(need && span>=need) candidate=block;
+      if(need && span>=need && (!first || !candidate)) candidate=block;
     } else if(block->tag==I386_HEAP_USED) {
       if(block->requested>span-16) return -1;
       if(cursor+16==ptr) requested=block->requested;
@@ -40,7 +40,7 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
 }
 
 #else
-I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
+I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,Bool first=FALSE)
 {//Check the whole physical block chain before trusting metadata for mutation.
   //This hot loop uses bounded U32 arithmetic: each span is checked against the
   //remaining arena before advancing, so used/count cannot overflow. The region
@@ -99,6 +99,11 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected)
     JE @@40
     CMP EAX,U32 &need[EBP]
     JB @@40
+    CMP U8 &first[EBP],0
+    JE @@35
+    CMP U32 &candidate[EBP],0
+    JNE @@40
+@@35:
     MOV U32 &candidate[EBP],ESI
 @@40:
     ADD ESI,EAX
@@ -166,51 +171,19 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
   CI386HeapBlock *block=0,*rest;
   U8 *result;
   U32 offset=0,need,i,requested;
-  if(size<0 || size>0xFFFFFFFF-23 || !I386HeapValid(hc)) return 0;
+  if(size<0 || size>0xFFFFFFFF-23) return 0;
   requested=size; need=(size+7)&~7;
   if(!need) need=8;
   need+=16;
-#ifdef I386_HEAP_SOURCE_BUILD
-  while(offset<hc->size) {
-    block=hc->base+offset;
-    if(block->tag==I386_HEAP_FREE && block->span>=need) break;
-    offset+=block->span;
-  }
-  if(offset>=hc->size) {
-#ifdef I386_HEAP_FAILURE_TRACE
-    I386HeapExhausted(hc,size);
-#endif
-    return 0;
-  }
-#else
-  asm {
-    MOV EBX,U32 &hc[EBP]
-    MOV ESI,U32 CI386Heap.base[EBX]
-    MOV ECX,U32 CI386Heap.size[EBX]
-    XOR EDX,EDX
-@@10:
-    MOV EAX,U32 CI386HeapBlock.span[ESI]
-    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
-    JNE @@20
-    CMP EAX,U32 &need[EBP]
-    JB @@20
-    MOV U32 &block[EBP],ESI
-    MOV U32 &offset[EBP],EDX
-    JMP @@90
-@@20:
-    ADD ESI,EAX
-    ADD EDX,EAX
-    SUB ECX,EAX
-    JNZ @@10
-@@90:
-  }
+  //Remember the first fit, but finish validation before publishing or mutating it.
+  if(I386HeapScanSelect(hc,0,need,&block,TRUE)<0)return 0;
   if(!block) {
 #ifdef I386_HEAP_FAILURE_TRACE
     I386HeapExhausted(hc,size);
 #endif
     return 0;
   }
-#endif
+  offset=block(U8 *)-hc->base;
   if(block->span-need>=24) {
     rest=hc->base+offset+need;
     rest->span=block->span-need; rest->requested=0;

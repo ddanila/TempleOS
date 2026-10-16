@@ -90,6 +90,12 @@ I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
   if(I386HeapSize(hc,p)!=-1 || I386HeapAlloc(hc,1) || I386HeapFree(hc,p) ||
       Hash(arena,256)!=before) return 306;
   blocks[3]->reserved=0;
+  //An early usable hole must not hide later damage during first-fit selection.
+  if(!I386HeapFree(hc,p))return 311;
+  blocks[3]->reserved=1;
+  if(!HeapRejectsCorruption(hc,arena,q))return 312;
+  blocks[3]->reserved=0;
+  if(I386HeapAlloc(hc,1)!=p)return 313;
   if(!I386HeapFree(hc,p) || !I386HeapFree(hc,q) || !I386HeapFree(hc,r) ||
       !I386HeapValid(hc) || !HeapValidReference(hc) || hc->used || hc->allocations) return 307;
   return 0;
