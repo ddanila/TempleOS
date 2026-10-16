@@ -13,6 +13,19 @@ the foundation, but does not establish desktop or application parity.
 
 ### Compiler fault captured and phase repair; public string API candidate (2026-10-15)
 
+**2026-10-16 runtime follow-up:** The combined image passes all sixteen
+software-F64/retained-state commands at 16 MiB in
+`build/i386-c5-helper-scan-float-16m` and all eleven string utility cases at
+64 MiB in `build/i386-c5-helper-scan-string-util`, with unchanged inputs.
+The ordinary 8 MiB gate still fails in `build/i386-c5-helper-scan-startup`:
+four commands succeed before compiling the SPText string comparison exhausts
+the raw heap (537-byte request, largest free payload 360 bytes, 10688 total
+unallocated span bytes). The Console span is below its unchanged cap; this
+does not qualify the resource gate. All 1504 source/build pins and both disk
+hashes still match. A fresh Console/Editor native build is running at 16 MiB
+on TCG `486,-fpu` in `build/i386-c5-helper-scan-native-build`; its persisted
+export audit and installation remain pending. C1–C5 remain incomplete.
+
 The frozen Console-113 debug replay is terminal with the same fault after 723
 functions. The watcher captured registers, stack and 16 MiB guest RAM. Its
 caller is I386FrontendNeedsHelpers: before OptPass012 constructs tree links,

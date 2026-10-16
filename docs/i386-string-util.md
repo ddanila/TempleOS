@@ -104,3 +104,26 @@ plus both disk hashes, verify. The 570800-byte kernel passes the limited 386 boo
 instruction audit (96 BIOS/255 protected-mode instructions). No boot test ran.
 Repeated native API, scanner, editor and 8 MiB resource checks remain pending
 on this combined image; earlier candidate results do not qualify it.
+
+## Combined-image runtime checks (2026-10-16)
+
+The combined image still fails the normal 8 MiB gate in
+`build/i386-c5-helper-scan-startup`. Four commands succeed, including defining
+SPText; compiling `StrCmp(SPText(),"VGA")==0;` then fails with OutMem. The
+537-byte request finds a largest free payload of only 360 bytes, with raw usage
+6627392 of 6638080 bytes and 9404 allocations. The 10688 unallocated span bytes
+are fragmented; they do not establish that a sufficiently large block exists.
+`build/i386-c5-helper-scan-memory-failure.json` pins and summarizes the actual
+failure log. Console's load span is 2335168 bytes, below the unchanged cap,
+which again demonstrates that the span cap alone cannot qualify this image.
+
+The same image passes all sixteen runtime integer/software-F64 commands at
+16 MiB on TCG `486,-fpu` in `build/i386-c5-helper-scan-float-16m`. This is a
+compiler behavior result at 16 MiB, not an 8 MiB regression pass. All 1480 source
+and 24 build-input hashes and both cross-build disk hashes still match.
+
+All eleven public utility cases also pass at 64 MiB on TCG `486,-fpu` in
+`build/i386-c5-helper-scan-string-util`, including exact output/pointers,
+indent scaling, caller roles and heap recovery. Fixture and image inputs remain
+unchanged. This refreshes API evidence for the repaired compiler image; scanner,
+editor and minimal-profile resource requalification remain open.

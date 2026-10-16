@@ -131,3 +131,34 @@ No boot test ran as part of this cross-build. Native Console/Editor rebuilding,
 floating-point regressions and installed generations remain unqualified for the
 repair. The combined image also needs fresh API and 8 MiB resource checks; the
 preceding string candidate's memory failures remain open.
+
+## First native execution of the repair (2026-10-16)
+
+`build/i386-c5-helper-scan-float-16m` passes all sixteen existing software-F64
+and retained-state commands at 16 MiB on TCG `486,-fpu`. Conversion in both
+directions, arithmetic, modulus, sqrt/abs, comparisons and repeated static
+updates execute successfully. The input hashes remain unchanged. This closes
+that bounded runtime regression at 16 MiB; it does not prove full native
+Console compilation or installed-generation reproducibility.
+
+The ordinary 8 MiB startup regression remains red in
+`build/i386-c5-helper-scan-startup`: four commands succeed before parser payload
+allocation fails on the string-comparison command. See
+[the measured resource failure](i386-string-util.md#combined-image-runtime-checks-2026-10-16).
+Do not promote this combined candidate as the minimal-profile replacement.
+
+A fresh selected-component build is running in
+`build/i386-c5-helper-scan-native-build`, using the repaired image's embedded
+sources and matching export directory. It builds ConsoleRuntime followed by
+EditorRuntime at 16 MiB on TCG `486,-fpu`, with a 14400-second per-command limit.
+No component/export/install pass is claimed until the runner terminates and
+audits its persisted output. The earlier failed replay remains untouched.
+
+```sh
+python3 tools/test-i386-retained-build.py \
+  --disk build/i386-c5-helper-scan-cross/kernel.img \
+  --out build/NEW-helper-scan-native-build \
+  --reference-exports build/i386-c5-helper-scan-cross/exports \
+  --accel tcg --cpu 486,-fpu --qmp-stdio \
+  --module ConsoleRuntime --module EditorRuntime --command-timeout 14400
+```
