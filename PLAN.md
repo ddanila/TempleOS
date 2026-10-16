@@ -11,6 +11,41 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native drive/device locking integration (2026-10-16)
+
+The complete original lock/unlock and release routines are now shared with the
+native console. Mounted devices share their controller's public ownership;
+RedSea transactions also track public drive ownership. Queued physical sessions
+retain cancellation, while waiters behind an outer public lock retry without
+reserving the channel against its owner. Exit releases public locks before
+waiting for descendants; the console Break checkpoint also invokes release.
+
+The expanded original oracle established two additional behaviors: killing a
+file reader must not strand its borrowed state or release another owner, and
+original FileRead can release a caller's device-only lock via DrvUnlock. All
+fourteen masks match on pinned original, rebuilt original and native systems.
+`build/i386-c4-drive-lock-native-green` passes nineteen commands at 64 MiB with
+unchanged inputs. The 8 MiB ATA foundation suite passes with 808 independently
+verified compiler-ISO sources, including queued cancellation and publication.
+
+Bootstrap and `build/i386-c4-drive-lock-reservation-cross` pass with all 1490
+source and 24 build-input pins matching. Normal 8 MiB startup passes in
+55.797052 seconds, with nine commands and exact VGA restoration. Test-only ATA
+transport grew 4 KiB while preserving its 32 KiB root stack; production limits
+are unchanged. Full artifact history and remaining scope are documented in
+`docs/i386-directory-context.md`. The broader public kill regression remains
+live; no result is inferred from that pending run.
+
+The older independent C5 retained build stopped at GrPlot3 after 449 function
+starts without a terminal report. Its process/handle disappearance and preserved
+artifacts are recorded in `process-exit-observation.json`; it is not a pass.
+A replacement selected-module native build is now live in
+`build/i386-c5-drive-lock-native-build`, using the current verified image and
+its exact reference exports at 16 MiB on 486,-fpu. It runs in a detached session;
+its PID is recorded in `build/i386-c5-drive-lock-native-build.pid`. This is
+pending evidence, not a completed native generation.
+All 686 inventory entries remain unqualified and C1-C5 remain open.
+
 ### Original drive-lock integration contracts (2026-10-16)
 
 Twelve shared cases now specify the missing drive/device locking integration:

@@ -9,12 +9,12 @@
 %error Compiler graph test stage must fit below physical 0x78000
 %endif
 %elifdef ATA_STAGE_TEST
-%define BOOT_SECTORS_LIMIT 1040
-%define BOOT_STACK_TOP 0x9A000
-;Code ends at 0x92000; a 32 KiB root stack ends at 0x9A000.
+%define BOOT_SECTORS_LIMIT 1048
+%define BOOT_STACK_TOP 0x9B000
+;Code ends at 0x93000; a 32 KiB root stack ends at 0x9B000.
 ;The fixture heap starts at 1 MiB, and descriptor scratch stays at 0x9C000.
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 1040
-%error ATA staging test stage must fit below physical 0x92000
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 1048
+%error ATA staging test stage must fit below physical 0x93000
 %endif
 %elifdef LEX_MACRO_TEST
 ;Definition/token/task fixtures use their first arena at physical 0x60000.

@@ -469,3 +469,95 @@ Drv/DirContext workflows still need executable coverage.
 the BlkDevLock preflight with unchanged inputs. Inventory coverage and all five
 guard tests still pass. No OS source changed in this checkpoint, so the prior
 bootstrap, cross-build and 8 MiB startup artifacts retain their source scope.
+
+## Native lock integration implementation (2026-10-16)
+
+The complete original device/drive lock, unlock and release routines now live
+in four shared cores. Reconstruction in `build/i386-drive-lock-extraction.json`
+confirms the two original containing files byte for byte. Native release scans
+resolve the mounted canonical drive/device records; empty slots use zeroed
+records. ConsoleRuntime exports the original public functions and invokes the
+release routines before its existing owner-retirement work, including before
+waiting for descendants. Its Break checkpoint also releases public locks.
+
+Mounted devices on one ATA controller forward to one public device lock.
+Physical transactions participate in that ownership rather than running behind
+an unrelated gate. Existing physical-session waiters retain channel queuing
+and cancellation. A retained outer public lock wakes queued transactions to
+retry without reserving the channel against its owner. A file operation waiting
+on a public owner keeps its borrowed state protected, observes kill requests,
+and unwinds normally instead of exiting with that borrow pinned.
+
+RedSea sessions also track the canonical public drive. This matters because
+the original DrvUnlock releases its device even if the caller had already held
+only the device lock. The first new reference assumption that FileRead would
+preserve such a device lock was wrong; the captured original result is retained
+in `build/i386-c4-drive-lock-reference-io-kill`. The isolated oracle now has
+fourteen cases, adding killed file-reader cleanup and FileRead's release of an
+outer device lock. It restores device flags between cases: killing a RAM-drive
+reader during entry can leave initialization flags changed before it acquires
+the device, an effect outside this lock-only fixture. This is not a claim of
+interrupted media-initialization compatibility.
+
+`build/i386-c4-drive-lock-reference-isolated` passes all fourteen mask-31 cases.
+The native code is still under validation at this checkpoint. It does not yet
+qualify remapping, unmounted devices, all media initialization or full directory
+contexts. The ATA foundation fixture enables the same RedSea lock adapter used
+by the native kernel so existing queued cancellation/publication checks exercise
+the integration rather than bypassing it.
+
+The first integrated native compile failed on two NULL tokens in foundation
+files that do not import that macro. These adapter assignments now use 0; the
+original shared routine bodies remain unchanged. Failed compiler artifacts are
+`build/i386-c4-drive-lock-cross` and
+`build/i386-c4-drive-lock-ata-compile-red`.
+
+The older independent C5 native-build process stopped after 449 function starts
+at GrPlot3 without a terminal runner report or completed module. Its prior PIDs
+and exec handle no longer exist; `process-exit-observation.json` beside its
+artifacts records this observation. The cause is not established and the stale
+running report is not qualification evidence. No replacement run is counted.
+
+The native fixture first hit the unrelated missing MemCmp public binding.
+Its independent four-byte comparisons now avoid that dependency while retaining
+exact content checks. A later run completed every case but timed out at cleanup
+because the harness expected no output from a pointer assignment; the captured
+screen shows its correct 0x0 result. The final harness expects that value.
+Artifacts `-native` and `-native-bytes` retain both failures.
+
+The ATA fixture required its canonical intrinsic declarations and a larger
+test-only transport. Its 536018-byte runner now fits the 1048-sector allowance:
+code ends below 0x93000, the unchanged 32 KiB root stack ends at 0x9B000, and
+descriptor scratch remains at 0x9C000. Production boot defaults, RAM and task
+stacks are unchanged. The staged compile/size/reservation failures are retained.
+
+Validation now passes:
+
+- Both original bootstrap generations; 1490 source hashes.
+- Final cross-build `build/i386-c4-drive-lock-reservation-cross`: 578136 kernel
+  bytes, all 1490 source and 24 build-input pins matching, limited boot audit.
+- Pinned and rebuilt original fourteen-case controls in `-reference-bytes` and
+  `-final-reference`, with unchanged inputs.
+- `build/i386-c4-drive-lock-native-green`: nineteen commands at 64 MiB on
+  TCG 486,-fpu, all fourteen masks 31, unchanged inputs and byte-identical
+  delivered fixture.
+- `build/i386-c4-drive-lock-ata-green`: 8 MiB ATA/channel/file publication and
+  cancellation suite with instruction audit. Independent ISO inspection checks
+  all 808 delivered Kernel/Compiler/fixture HolyC sources.
+- Normal 8 MiB startup in `build/i386-c4-drive-lock-startup-8m`: nine commands,
+  55.797052 seconds, exact VGA restoration and no build-provider load. The three
+  candidate images are byte-identical across test-transport harness updates,
+  recorded in `build/i386-c4-drive-lock-image-identity.json`.
+- Inventory coverage and five guard tests; all 686 entries remain unqualified.
+
+ConsoleRuntime is version 117 and FileRuntime version 56. The broader public
+kill regression is running in `build/i386-c4-drive-lock-kill`; it is not yet
+claimed as a pass. This checkpoint still does not qualify every lock-state
+combination, drive remapping, unmounted devices, Break end-to-end behavior,
+interrupted media initialization, full Drv/DirContext or C1-C5 completion.
+
+A replacement C5 selected-module build is live in
+`build/i386-c5-drive-lock-native-build`, on the verified current image at
+16 MiB, TCG 486,-fpu. Its detached launcher PID is recorded beside the output
+folder. This remains pending evidence; the selected-module run does not by
+itself satisfy two complete native release generations.

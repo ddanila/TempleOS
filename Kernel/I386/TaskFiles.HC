@@ -58,6 +58,7 @@ CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
   identity->bd=&volume->disk->public_device;
   if(!identity->bd->first_drv_let)identity->bd->first_drv_let=drive;
   identity->dv_signature=DRV_SIGNATURE_VAL;
+  volume->public_drive=identity;
   return identity;
 }
 CI386TaskFiles *I386TaskFilesNew(CI386Task *task,CI386Heap *heap,CFilePathContext *environment,

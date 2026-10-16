@@ -1,6 +1,8 @@
 #include "/Kernel/Types.HH"
 #define TRUE 1
 #define FALSE 0
+#define I386_REDSEA_TASK_LOCKS 1
+#include "/Kernel/I386/Intrinsic.HH"
 #include "/Kernel/I386/AtaTask.HH"
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/Cpu.HH"

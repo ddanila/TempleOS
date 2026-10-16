@@ -1,39 +1,6 @@
-Bool DrvLock(CDrv *dv)
-{//Make this task have exclusive access to drv & BlkDev.
-  DrvChk(dv);
-  BlkDevLock(dv->bd);
-  if (!Bt(&dv->locked_flags,DVlf_LOCKED) || dv->owning_task!=Fs) {
-    while (LBts(&dv->locked_flags,DVlf_LOCKED))
-      Yield;
-    dv->owning_task=Fs;
-    return TRUE;
-  } else
-    return FALSE;
-}
+#include "/Kernel/BlkDev/DriveLockCore.HC"
 
-Bool DrvUnlock(CDrv *dv,Bool rst=FALSE)
-{//Release exclusive lock on access to drv & BlkDev.
-  DrvChk(dv);
-  if (Bt(&dv->locked_flags,DVlf_LOCKED) && dv->owning_task==Fs) {
-    BlkDevUnlock(dv->bd,rst);
-    dv->owning_task=NULL;
-    LBtr(&dv->locked_flags,DVlf_LOCKED);
-    Yield; //Prevent deadlock
-    return TRUE;
-  } else
-    return FALSE;
-}
-
-U0 DrvsRelease()
-{//When task dies, release all owned drvs.
-  I64 i;
-  CDrv *dv;
-  for (i=0;i<DRVS_NUM;i++) {
-    dv=&blkdev.drvs[i];
-    if (dv->owning_task==Fs && dv->dv_signature==DRV_SIGNATURE_VAL)
-      DrvUnlock(dv,TRUE);
-  }
-}
+#include "/Kernel/BlkDev/DriveReleaseCore.HC"
 
 CDrv *DrvMakeFreeSlot(U8 drv_let)
 {//Make a slot free for a new drv, like during $LK,"Mount",A="MN:Mount"$().

@@ -1,3 +1,4 @@
+Bool LKFour(U8 *data,U8 *expected){I64 i;for(i=0;i<4;i++)if(data[i]!=expected[i])return FALSE;return TRUE;}
 I64 LKStage,LKResult,LKMode,LKRelease;
 CBlkDev *LKDevice;
 CDrv *LKDrive;
@@ -13,7 +14,7 @@ U0 LKChild(U8 *unused)
   LKResult=LKResult&&BlkDevUnlock(LKDevice);
  }else if(LKMode==2){
   data=FileRead(LKPath,&size);
-  LKResult=data&&size==4&&!MemCmp(data,"lock",4);Free(data);
+  LKResult=data&&size==4&&LKFour(data,"lock");Free(data);
  }else if(LKMode==3){
   LKResult=BlkDevLock(LKDevice)&&LKDevice->owning_task==Fs;
  }else if(LKMode==4){
@@ -38,6 +39,7 @@ Bool LKSetup(U8 letter)
 I64 LKContract(I64 mode)
 {
  CBlkDev a,b,c;CTask *child=NULL;I64 i,m=0,before=Fs->data_heap->used_u8s;
+ I64 device_flags=LKDevice->flags;
  Bool ok=FALSE,held=FALSE,caught=FALSE;U8 *data;I64 size;
  CDrv *drive=Fs->cur_dv;U8 *directory=StrNew(Fs->cur_dir);
  CDoc *put=DocPut,*display=DocDisplay,*border=DocBorder;
@@ -64,7 +66,7 @@ I64 LKContract(I64 mode)
   if(mode==5){ok=ok&&LKWait(2)&&LKDevice->owning_task==child;LKRelease=1;}
   ok=ok&&LKWait(3);while(TaskValidate(child))Yield;
   ok=ok&&LKResult&&!LKDevice->owning_task&&!Bt(&LKDevice->locked_flags,BDlf_LOCKED);
-  if(mode==9){data=FileRead(LKPath,&size);ok=ok&&data&&size==4&&!MemCmp(data,"next",4);Free(data);}
+  if(mode==9){data=FileRead(LKPath,&size);ok=ok&&data&&size==4&&LKFour(data,"next");Free(data);}
  }else if(mode==7||mode==8){
   LKStage=LKResult=0;LKMode=3;if(mode==8)LKMode=4;
   child=Spawn(&LKChild,NULL,"Lock owner exit",-1,Fs);ok=child&&LKWait(3);
@@ -79,8 +81,8 @@ I64 LKContract(I64 mode)
   Kill(child);while(TaskValidate(child))Yield;
   ok=ok&&LKResult&&!LKDevice->owning_task&&!Bt(&LKDevice->locked_flags,BDlf_LOCKED);
  }
- if(mode==11){
-  LKStage=LKResult=LKRelease=0;LKMode=1;
+ if(mode==11||mode==12){
+  LKStage=LKResult=LKRelease=0;LKMode=1;if(mode==12)LKMode=2;
   held=BlkDevLock(LKDevice);child=Spawn(&LKChild,NULL,"Killed lock waiter",-1,Fs);
   ok=held&&child&&LKWait(1);for(i=0;i<20;i++)Yield;
   ok=ok&&LKStage==1&&!LKResult&&LKDevice->owning_task==Fs;
@@ -88,6 +90,14 @@ I64 LKContract(I64 mode)
   ok=ok&&LKDevice->owning_task==Fs&&Bt(&LKDevice->locked_flags,BDlf_LOCKED);
   if(held)ok=BlkDevUnlock(LKDevice)&&ok;
  }
+ if(mode==13){
+  held=BlkDevLock(LKDevice);data=FileRead(LKPath,&size);
+  ok=held&&data&&size==4&&!LKDevice->owning_task&&!Bt(&LKDevice->locked_flags,BDlf_LOCKED);
+  Free(data);if(LKDevice->owning_task==Fs)BlkDevUnlock(LKDevice);
+ }
+ //Keep lock cases independent of interrupted media initialization. Original
+ //RAM-drive entry can set INIT_IN_PROGRESS before waiting on the device lock.
+ LKDevice->flags=device_flags;
  if(ok)m|=1;
  if(Fs->cur_dv==drive&&!StrCmp(Fs->cur_dir,directory))m|=2;
  if(!LKDevice->owning_task&&!Bt(&LKDevice->locked_flags,BDlf_LOCKED))m|=4;

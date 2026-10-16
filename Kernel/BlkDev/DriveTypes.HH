@@ -11,6 +11,8 @@ extern class CFAT32FileInfoSect;
 #ifndef CFreeLst
 extern class CFreeLst;
 #endif
+#define DVlf_LOCKED	0
+
 #define DRVS_NUM		26
 
 #define DRV_SIGNATURE_VAL	'DVSV'

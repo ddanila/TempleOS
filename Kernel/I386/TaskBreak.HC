@@ -58,6 +58,9 @@ public Bool I386TaskBreakPoll()
   task->task_flags&=~(1<<TASKf_PENDING_BREAK);
   task->wake_jiffy=0;
   I386IrqRestore(flags);
+#ifdef I386_TASK_BREAK_RELEASE
+  I386_TASK_BREAK_RELEASE
+#endif
   throw('Break');
   return FALSE;
 }

@@ -1,32 +1,4 @@
-Bool BlkDevLock(CBlkDev *bd)
-{//Make this task have exclusive access to BlkDev.
-  BlkDevChk(bd);
-  while (bd->lock_fwding)
-    bd=bd->lock_fwding; //If two blkdevs on same controller, use just one lock
-  if (!Bt(&bd->locked_flags,BDlf_LOCKED) || bd->owning_task!=Fs) {
-    while (LBts(&bd->locked_flags,BDlf_LOCKED))
-      Yield;
-    bd->owning_task=Fs;
-    return TRUE;
-  } else
-    return FALSE;
-}
-
-Bool BlkDevUnlock(CBlkDev *bd,Bool rst=FALSE)
-{//Release exclusive lock on access to BlkDev.
-  BlkDevChk(bd);
-  while (bd->lock_fwding)
-    bd=bd->lock_fwding; //If two blkdevs on same controller, use just one lock
-  if (Bt(&bd->locked_flags,BDlf_LOCKED) && bd->owning_task==Fs) {
-    if (rst)
-      bd->flags&=~(BDF_INITIALIZED|BDF_INIT_IN_PROGRESS);
-    bd->owning_task=NULL;
-    LBtr(&bd->locked_flags,BDlf_LOCKED);
-    Yield; //Prevent deadlock
-    return TRUE;
-  } else
-    return FALSE;
-}
+#include "/Kernel/BlkDev/BlockDevLockCore.HC"
 
 Bool BlkDevInit(CBlkDev *bd)
 {
@@ -111,16 +83,7 @@ Bool BlkDevInit(CBlkDev *bd)
   return res;
 }
 
-U0 BlkDevsRelease()
-{//When task dies, release all owned BlkDevs.
-  I64 i;
-  CBlkDev *bd;
-  for (i=0;i<BLKDEVS_NUM;i++) {
-    bd=&blkdev.blkdevs[i];
-    if (bd->owning_task==Fs && bd->bd_signature==BD_SIGNATURE_VAL)
-      BlkDevUnlock(bd,TRUE);
-  }
-}
+#include "/Kernel/BlkDev/BlockDevReleaseCore.HC"
 
 CBlkDev *BlkDevNextFreeSlot(U8 first_drv_let,I64 type)
 {//Locate free slot for new BlkDev, like during $LK,"Mount",A="MN:Mount"$().

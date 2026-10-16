@@ -8,6 +8,7 @@
 #define I386_HEAP_FAILURE_TRACE 1
 #define I386_ARENA_CALLER_TRACE 1
 #define I386_TASK_NATIVE_BUILD 1
+#define I386_REDSEA_TASK_LOCKS 1
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/BootMap.HH"

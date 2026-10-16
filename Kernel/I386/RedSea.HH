@@ -1,6 +1,7 @@
 #ifndef I386_REDSEA_INCLUDED
 #define I386_REDSEA_INCLUDED
 #include "/Kernel/I386/Ata.HH"
+#include "/Kernel/BlkDev/DriveTypes.HH"
 class CI386RedSeaIo {
   U8 *context;
   Bool (*begin)(U8 *context);
@@ -14,6 +15,8 @@ class CI386RedSea {
   U32 signature;
   I64 start,sectors,first,root;
   CI386RedSeaIo *io;
+  CDrv *public_drive;
+  Bool public_drive_unlock;
 };
 class CI386RedSeaEntry {
   U16 attr;

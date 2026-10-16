@@ -836,7 +836,6 @@ class CISOPriDesc
 #include "/Kernel/BlkDev/BlockDevRecord.HH"
 
 //Drive locked_flags
-#define DVlf_LOCKED	0
 
 //See $LK,"ST_DRV_TYPES",A="MN:ST_DRV_TYPES"$
 #define FSt_NULL	0

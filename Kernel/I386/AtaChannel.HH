@@ -1,6 +1,7 @@
 #ifndef I386_ATA_CHANNEL_INCLUDED
 #define I386_ATA_CHANNEL_INCLUDED
 #include "/Kernel/I386/Scheduler.HH"
+#include "/Kernel/BlkDev/BlockDevRecord.HH"
 extern class CI386AtaWaiter;
 class CI386AtaChannel {
   CI386Scheduler *scheduler;
@@ -8,6 +9,8 @@ class CI386AtaChannel {
   CI386AtaWaiter *head,*tail;
   U32 signature,poisoned;
   U16 io,control;
+  CBlkDev *public_device;
+  Bool public_unlock;
 };
 //One stable gate per physical channel, shared by both drives. Initially zeroed.
 public extern Bool I386AtaChannelInit(CI386AtaChannel *channel,CI386Scheduler *scheduler,I64 number);

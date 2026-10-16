@@ -55,5 +55,9 @@ Bool I386RedSeaTaskBind(CI386RedSea *volume,CI386RedSeaIo *io)
       !I386RedSeaTaskIdle(channel) || volume->disk->io!=channel->io || volume->disk->control!=channel->control ||
       io->begin!=&I386RedSeaTaskBegin || io->end!=&I386RedSeaTaskEnd ||
       io->read!=&I386RedSeaTaskRead || io->write!=&I386RedSeaTaskWrite || io->flush!=&I386RedSeaTaskFlush) return FALSE;
+  //Mounted devices on one controller share the original public lock target.
+  if(channel->public_device && channel->public_device!=&volume->disk->public_device)
+    volume->disk->public_device.lock_fwding=channel->public_device;
+  else channel->public_device=&volume->disk->public_device;
   volume->io=io; return TRUE;
 }

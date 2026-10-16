@@ -11,8 +11,8 @@
 %ifndef BOOT_STACK_TOP
 %define BOOT_STACK_TOP 0x90000
 %endif
-; Explicit test reservations may extend to 0x92000; kernel default is unchanged.
-%if BOOT_SECTORS_LIMIT > 1040 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
+; Explicit test reservations may extend to 0x93000; kernel default is unchanged.
+%if BOOT_SECTORS_LIMIT > 1048 || BOOT_SECTORS < 1 || BOOT_SECTORS > BOOT_SECTORS_LIMIT
 %error Boot stage exceeds its declared low-memory reservation
 %endif
 bits 16
