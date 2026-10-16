@@ -21,7 +21,9 @@ thirteen scripted-input cases. Bootstrap/cross-build pass with all 1514 source
 and 24 build inputs unchanged. DocClear's existing original body is now publicly
 bound, allowing unchanged TimeClock Load/Install to pass its four-command gate.
 The 8 MiB gate passes all nine checks in 58.910551 seconds with no build
-provider and unchanged pins on committed f0639b4a; 16 MiB diagnostics are running.
+provider and unchanged pins on committed f0639b4a. The 16 MiB diagnostics also
+pass 128 push-word, 22 publication and 28 program cases, both memory phases
+and nine interactive/VGA checks with unchanged execution pins.
 Native punch/persistence/cold-reboot checks pass in 14 commands with unchanged
 inputs. The strict report test matches records/content/dates/total but fails on
 the missing original welcome-document held word-wrap entry;

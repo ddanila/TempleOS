@@ -263,3 +263,9 @@ commands, with unchanged inputs and exact reopened data
 failed: native default terminal startup omits the original welcome document's
 held word-wrap entry. All later report bytes and controlled records match.
 See docs/i386-timeclock-native.md for that C2 gap and the retained evidence.
+
+The separate 16 MiB diagnostic gate also passes on committed f0639b4a:
+128 push-word cases, 22 publication cases, 28 program cases, both preserved-memory
+phases and nine interactive/VGA checks (build/i386-c2-getstr-diagnostics).
+All four execution pins remain unchanged. This completes the candidate's
+minimal-profile regression gates, not C1–C5 or application qualification.
