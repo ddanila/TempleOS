@@ -40,8 +40,11 @@ dependent diagnostics. Startup performance remains open.
 
 The preceding DCLoad candidate's initial 61.118576-second startup failure and
 controlled 58.007704-second pass remain recorded in
-[its qualification evidence](i386-dc-load.md). This candidate needs its own
-memory gates; a predecessor's pass does not qualify it.
+[its qualification evidence](i386-dc-load.md). The independent 16 MiB diagnostic run passes in
+`build/i386-c2-gr-read-diagnostics`: 235.338626-second startup, all 128 push-word,
+22 publication and 28 program cases, both memory phases and nine interactive/VGA
+checks. All four execution pins remain unchanged. This diagnostic pass does not
+erase the isolated 8 MiB startup failure.
 
 ```sh
 python3 tools/test-i386-gr-read.py --out ORIGINAL

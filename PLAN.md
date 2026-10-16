@@ -33,8 +33,10 @@ ownership and document-insertion checks. Bootstrap/cross-build pass with all
 all fourteen checks with unchanged inputs; the preceding image rejects the
 fixture at ExtDft. The isolated 8 MiB gate fails the startup limit at 61.817467
 seconds with nine passing behavior/VGA checks and unchanged pins; performance
-qualification remains open;
-full Type, raw DocDump and original terminal startup remain open. See
+qualification remains open. Independent 16 MiB diagnostics pass all 128/22/28
+cases, both memory phases and nine interactive/VGA checks with unchanged pins
+and a 235.338626-second startup. At this checkpoint, full Type, raw DocDump and
+original terminal startup remain open. See
 docs/i386-gr-read.md. All 686 inventory entries and C1–C5 remain unqualified.
 
 ### Original device-context load integration candidate (2026-10-16)
