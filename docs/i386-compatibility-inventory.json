@@ -987,7 +987,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-type.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-reference/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-rebuilt/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-native/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocFind.HC",
@@ -1489,6 +1508,24 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-stream-callback-green/result.json",
           "scope": "16 native commands for callback consume/pass-through, text/user-data, pre-lock order and exact heap recovery from a throwing hook; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-reference/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-rebuilt/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-native/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
         }
       ]
     },
@@ -13097,7 +13134,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-doc-type.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-reference/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-rebuilt/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-doc-type.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-doc-type-native/result.json",
+          "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        }
+      ]
     },
     {
       "path": "Kernel/KStart16.HC",

@@ -1,8 +1,4 @@
-U0 PortNop()
-{//Innoculous (reads IRQ Mask) which should take fixed time
-//because it's an ISA-bus standard.  It takes 1.0uS-2.0uS.
-  InU8(0x21);
-}
+#include "/Kernel/PortNopCore.HC"
 
 #include "/Kernel/EndianCore.HC"
 
@@ -99,16 +95,7 @@ F64 tS()
 
 #include "/Kernel/BlinkCore.HC"
 
-U0 Busy(I64 ÊS)
-{//Loosely timed.
-  I64 i;
-  if (cnts.HPET_freq) {
-    i=HPET+cnts.HPET_freq*ÊS/1000000;
-    while (HPET<i);
-  } else
-    for (i=0;i<ÊS;i++)
-      PortNop;
-}
+#include "/Kernel/BusyCore.HC"
 
 #include "/Kernel/TaskDelayCore.HC"
 

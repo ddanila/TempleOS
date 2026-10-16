@@ -116,4 +116,7 @@ public _extern _ED_REPLACE I64 EdReplace(CDoc *doc,U8 *find,U8 *replace,
 public _extern _DOC_CLEAR U0 DocClear(CDoc *doc=NULL,Bool clear_holds=FALSE);
 public _extern _DOC_SPRITE CDocEntry *DocSprite(CDoc *doc=NULL,U8 *elems,U8 *fmt=NULL);
 public _extern _DOC_GR U0 DocGR(CDoc *doc=NULL,U8 *filename);
+public _extern _DOC_DUMP U0 DocDump(CDoc *doc,I64 uS_delay=0);
+public _extern _DOC_TYPE Bool DocType(CDoc *doc=NULL,U8 *filename,I64 trailing_new_lines=1);
+public _extern _TYPE Bool Type(U8 *filename,I64 trailing_new_lines=1);
 #endif

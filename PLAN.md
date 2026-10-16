@@ -11,6 +11,18 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original document output integration candidate (2026-10-16)
+
+ConsoleRuntime 132 integrates complete original Type, DocType, DocDump, Busy and
+PortNop bodies, with native HPET counter reads. Original/rebuilt-original/native
+controls pass with six byte-identical saved documents and two byte-identical raw
+VGA captures. Real hardware delay and timer-state restoration pass; the preceding
+native image rejects the first Busy call. Bootstrap/cross-build pass with all
+1528 source and 24 build inputs unchanged. Candidate-specific startup/memory
+qualification is pending. Original terminal startup and the strict TimeClock
+report mismatch remain open. See docs/i386-doc-type.md. All 686 inventory entries
+and C1–C5 remain unqualified.
+
 ### Original graphics-file read integration candidate (2026-10-16)
 
 ConsoleRuntime 131 shares the original ExtDft, GRRead and DocGR bodies over the

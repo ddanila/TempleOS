@@ -26,4 +26,7 @@ public _extern _GET_TSC I64 GetTSC();
 public _extern _ADAM_TASK CTask *adam_task;
 public _intern 0x15 CTask *Fs();
 public _intern 0x17 CCPU *Gs();
+public _extern _PORT_NOP U0 PortNop();
+public _extern _HPET I64 HPET();
+public _extern _BUSY U0 Busy(I64 uS);
 #endif
