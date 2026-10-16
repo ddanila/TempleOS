@@ -219,15 +219,7 @@ Bool IsMute()
   return Bt(&sys_semas[SEMA_MUTE],0);
 }
 
-Bool Silent(Bool val=ON)
-{//Turn-off StdOut console text. (Not sound.)
-  return LBEqu(&Fs->display_flags,DISPLAYf_SILENT,val);
-}
-
-Bool IsSilent()
-{//Return StdOut turned-off?
-  return Bt(&Fs->display_flags,DISPLAYf_SILENT);
-}
+#include "/Kernel/SilentCore.HC"
 
 Bool SysDbg(Bool val)
 {//Set SysDbg bit you can use while debugging.

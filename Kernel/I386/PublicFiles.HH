@@ -14,6 +14,7 @@ public _extern _LET_TO_BLOCK_DEV_TYPE I64 Let2BlkDevType(U8 drv_let);
 public _extern _DRV_TEXT_ATTR_GET U8 DrvTextAttrGet(U8 drv_let=0);
 #include "/Kernel/DirEntryTypes.HH"
 #include "/Kernel/FileFindFlags.HH"
+public _extern _FILE_NAME_CHK Bool FileNameChk(U8 *filename);
 public _extern _FILE_NAME_ABS U8 *FileNameAbs(U8 *filename,I64 fuf_flags=0);
 public _extern _FILE_FIND Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 public _extern _FILE_WRITE I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);

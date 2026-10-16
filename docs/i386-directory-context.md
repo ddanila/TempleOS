@@ -349,3 +349,54 @@ inputs and byte-identical delivered fixtures. Normal 8 MiB startup still fails
 before the first command in `build/i386-c4-drive-lookup-startup-8m`: 9480 bytes
 requested, 9184 largest free payload, 6611296 bytes used out of 6634496 and 9545
 allocations. This does not promote the minimal profile or complete C1–C5.
+
+## Filename and silent-output prerequisites (2026-10-16)
+
+`FileNameCheckCore.HC` and `SilentCore.HC` hold the complete original
+`FileNameChk`, `Silent`, and `IsSilent` bodies. The original kernel includes
+those same files. Native ConsoleRuntime version 116 exports all three public
+routines and imports the actual kernel `char_bmp_filename` allocation through
+an additional loader binding. No separate filename table is used by the native
+implementation. `build/i386-directory-prereqs-extraction.json` verifies exact
+body identity and reconstructs both pre-extraction source files byte for byte.
+
+The shared directory-prerequisites fixture checks null/empty names, dot names,
+the 37/38-byte length boundary, all 255 non-NUL single-byte names against the
+original bitmap values, input-string preservation, silent flag return values,
+unrelated display flag preservation, and the real output hook chain. With
+silence disabled the hook sees three keys and two strings; enabling silence
+suppresses PutKey, PutChars, PutS and Print. The fixture restores the flag and
+removes its hook. These are bounded prerequisites for directory contexts;
+Drv media initialization and full DirContextNew/Del remain outstanding.
+
+The first reference fixture failed to compile because HolyC does not accept
+its initialized local array. The first correction was stopped after inspecting
+the captured error, before another full timeout. The corrected fixture moves
+the expected table to global storage, uses the actual flag bit index and gives
+its output hook a valid positive priority. A subsequent reference compile
+also rejected C-style ternary syntax; the final fixture uses ordinary HolyC
+conditional returns. Both failed compile screenshots are retained.
+
+Both original bootstrap generations pass with 1486 source hashes. The prior
+native image rejects the IsSilent preflight in
+`build/i386-c4-directory-prereqs-red` with unchanged inputs. The first new
+cross-build compiled every module but the host packager rejected the added
+bitmap import because its import allowlist had not yet been updated. That
+artifact is retained in `build/i386-c4-directory-prereqs-cross`; the corrected
+build updates the allowlist as well as the loader.
+
+The corrected cross-build, `build/i386-c4-directory-prereqs-fixed-cross`,
+passes with 575392 kernel bytes, 1486 source hashes and 24 build-input hashes.
+The limited boot audit covers 96 BIOS and 255 protected-mode instructions.
+Both `build/i386-c4-directory-prereqs-reference-green` (pinned original) and
+`build/i386-c4-directory-prereqs-current-reference` (rebuilt original) pass
+all eight mask-31 cases with unchanged inputs. The normal 8 MiB no-FPU startup
+gate passes in `build/i386-c4-directory-prereqs-startup-8m`, with all nine
+commands, exact VGA restoration and no build-provider load.
+
+All eleven native commands pass in `build/i386-c4-directory-prereqs-native`
+at 64 MiB on TCG `486,-fpu`, including all eight mask-31 cases. The runner
+verifies unchanged inputs and the byte-identical delivered fixture. Startup
+takes 59.092091 seconds in the separate normal 8 MiB gate. All 1510 cross-build
+source/build pins still match. Inventory coverage and its five guard tests
+pass, with all 686 items still unqualified.

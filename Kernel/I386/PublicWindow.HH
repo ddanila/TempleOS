@@ -19,6 +19,8 @@ public _extern _CTRL_INSIDE Bool CtrlInside(CCtrl *c,I64 x,I64 y);
 public _extern _WIN_Z_BUF_UPDATE U0 WinZBufUpdate();
 public _extern _WIN_INSIDE Bool WinInside(I64 x,I64 y,CTask *task=NULL,I64 border=0);
 public _extern _SYS_FOCUS_TASK CTask *sys_focus_task;
+public _extern _SILENT Bool Silent(Bool val=ON);
+public _extern _IS_SILENT Bool IsSilent();
 public _extern _IS_RAW Bool IsRaw();
 public _extern _RAW Bool Raw(Bool val);
 public _extern _VGA_FLUSH U0 VGAFlush();

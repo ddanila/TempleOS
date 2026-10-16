@@ -11,6 +11,30 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original filename and silent-output prerequisites (2026-10-16)
+
+The complete original FileNameChk, Silent and IsSilent bodies now live in shared
+cores included by both kernels. ConsoleRuntime version 116 exposes the public
+calls and imports the actual kernel filename bitmap. Byte reconstruction
+confirms the extraction preserved both original files exactly.
+
+Eight shared cases pass against the pinned original, the rebuilt original and
+the native 486/no-FPU image: every non-NUL filename byte, length boundaries,
+input preservation, flag return/restoration semantics and suppression of the
+real output hook chain. Native evidence is
+`build/i386-c4-directory-prereqs-native` (eleven commands, 64 MiB); original
+controls are `-reference-green` and `-current-reference`. Fixture compile
+failures and the initial missing host-import allowlist are retained and
+explained in `docs/i386-directory-context.md`.
+
+Both bootstrap generations and `build/i386-c4-directory-prereqs-fixed-cross`
+pass, with all 1486 source and 24 build-input hashes matching. The normal 8 MiB
+startup gate passes in 59.092091 seconds, including all nine commands and exact
+VGA restoration without loading the build provider. Full Drv media
+initialization and DirContextNew/Del remain outstanding. Inventory coverage and
+five guard tests pass; all 686 entries remain unqualified. The older retained
+Console/Editor native build remains live on its recorded independent inputs.
+
 ### Normal 8 MiB startup gate restored (2026-10-16)
 
 The heap validator retains its full-chain checks but uses a shorter common
@@ -32,7 +56,10 @@ that bounded gate, not complete minimal/rebuild or C1–C5 qualification.
 Both earlier lifecycle-accounting runs reached the same fixture error: expecting
 an 8 MiB stack request to fail in a 64 MiB guest. All preceding checks completed.
 The corrected harness requests the configured RAM size and preserves every
-OutMem/recovery assertion; full control/candidate `-ram-bound` reruns remain live.
+OutMem/recovery assertion; full control/candidate `-ram-bound` reruns now both pass at 64 MiB. Each
+completes 100 lifecycle cycles and six creation rejection/recovery cases,
+including the corrected 64 MiB stack request. Both source disks remain
+unchanged; late clone-hook failure and dormant disposal are not covered.
 See [heap evidence](docs/i386-heap-performance.md) and
 [accounting follow-up](docs/i386-startup-memory-profile.md).
 
