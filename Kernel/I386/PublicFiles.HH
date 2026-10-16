@@ -4,6 +4,8 @@
 #include "/Kernel/BlkDev/FreeListTypes.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
+#include "/Kernel/BlkDev/BlockSize.HH"
+public _extern _BLOCK_DEV_NEXT_FREE_SLOT CBlkDev *BlkDevNextFreeSlot(U8 first_drv_let,I64 type);
 public _extern _LET_TO_DRV CDrv *Let2Drv(U8 drv_let=0,Bool except=TRUE);
 public _extern _BLOCK_DEV_CHECK CBlkDev *BlkDevChk(CBlkDev *bd,Bool except=TRUE);
 public _extern _LET_TO_BLOCK_DEV CBlkDev *Let2BlkDev(U8 drv_let=0,Bool except=TRUE);

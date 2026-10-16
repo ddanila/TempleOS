@@ -11769,7 +11769,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Release current-task-owned block devices, including devices with no remaining drive associations; preserve unrelated ownership, invalid signatures, non-initialization flags and caller state.",
-      "oracle": "docs/i386-block-release.md: sixteen mask-31 original/native cases cover associated/orphan devices and all 26 canonical slots, ownership/signature/lock filtering, exact restoration and repeated release. General allocation, media initialization/deletion and lifecycle remain unqualified.",
+      "oracle": "docs/i386-block-release.md: sixteen mask-31 original/native cases cover associated/orphan devices and all 26 canonical slots, ownership/signature/lock filtering, exact restoration and repeated release. General allocation, media initialization/deletion and lifecycle remain unqualified. docs/i386-block-slot.md defines twenty full-table slot/default/error cases; the original and native routine pass those cases; full media lifecycle remains unqualified.",
       "tests": [
         {
           "target": "original-drive-device-lookup",
@@ -11833,6 +11833,34 @@
           "result": "pass",
           "evidence": "build/i386-c4-block-table-native/result.json",
           "scope": "Sixteen cases/21 commands at 64 MiB, canonical drive/device identity and exact fixture delivery; unchanged inputs."
+        },
+        {
+          "target": "original-block-slots",
+          "command": "python3 tools/test-i386-block-slot-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-slot-reference-scoped/result.json",
+          "scope": "Twenty cases; original logging suppressed only during table borrowing; unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-block-slots",
+          "command": "python3 tools/test-i386-block-slot-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-slot-current-scoped/result.json",
+          "scope": "Twenty identical cases on rebuilt original; unchanged inputs."
+        },
+        {
+          "target": "native-block-slots-missing",
+          "command": "python3 tools/test-i386-block-slot.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-block-slot-red/result.json",
+          "scope": "ConsoleRuntime 123 rejects missing API at preflight; no table mutation, unchanged execution inputs."
+        },
+        {
+          "target": "native-block-slots",
+          "command": "python3 tools/test-i386-block-slot.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-slot-native/result.json",
+          "scope": "Twenty original slot/default/error cases, canonical device identity and exact delivery; 24 commands at 64 MiB, unchanged inputs. Not mounting or media initialization."
         }
       ]
     },

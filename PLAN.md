@@ -11,6 +11,22 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original block-device slot-selection candidate (2026-10-16)
+
+Twenty original and rebuilt-original cases now define full-table slot selection,
+all type defaults, exception filtering and the original non-reservation behavior.
+Both controls pass with unchanged inputs. The preceding native image rejects the
+missing public API. ConsoleRuntime 124 shares the complete original routine over
+the canonical table, with shared block-size constants and a public declaration;
+bootstrap/cross-build pass with unchanged inputs. The 8 MiB gate passes all nine
+checks in 58.009153 seconds, unchanged inputs and no build provider. Native slot
+selection passes twenty cases/24 commands; the block-release regression passes
+sixteen cases/21 commands. Both preserve their execution inputs. The full 16 MiB
+diagnostic gate remains in progress.
+See docs/i386-block-slot.md, including
+the original logging isolation required while borrowing physical-device records.
+This does not implement mounting or the remaining media lifecycle; C1–C5 remain open.
+
 ### Refresh RedSea write and directory-growth regressions (2026-10-16)
 
 The remaining migrated RedSea fixtures now cover current behavior: raw writes

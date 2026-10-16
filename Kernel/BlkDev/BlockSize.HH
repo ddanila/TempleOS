@@ -1,0 +1,6 @@
+#ifndef BLOCK_SIZE_INCLUDED
+#define BLOCK_SIZE_INCLUDED
+#define BLK_SIZE_BITS	9
+#define BLK_SIZE	(1<<BLK_SIZE_BITS)
+#define DVD_BLK_SIZE	(4*BLK_SIZE)
+#endif
