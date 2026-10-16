@@ -234,6 +234,9 @@ def main():
     #Other core corpora retain their 192 KiB transfer and first arena at 0x40000.
     boot_sectors = 832 if args.task_symbols else 1024 if args.ata_tasks else 640 if args.ata_tasks or args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 448 if args.task_heaps or args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
     kind = 'expressions'
+    # ATA metadata/lifecycle checks extend the fixture past the old 64 KiB transfer.
+    # This changes test transport capacity, not guest RAM or production boot limits.
+    if args.ata: boot_sectors=160
     for mode in ('functions', 'inline-asm', 'data', 'vga', 'arc-expand', 'arc', 'heap', 'hash', 'symbols', 'keywords', 'lex-state', 'lex-string', 'lex-punct', 'lex-ident', 'lex-tokens', 'lex-define', 'lex-cond', 'lex-number', 'except-records', 'except-context', 'except-runtime', 'except-tasks', 'memory', 'a20', 'irq', 'task-heaps', 'tasks', 'input', 'messages', 'task-symbols', 'ata-tasks', 'ata', 'redsea-read', 'redsea', 'redsea-write', 'redsea-alloc', 'redsea-create', 'redsea-delete', 'redsea-replace', 'redsea-load', 'redsea-load-set', 'redsea-bind', 'soft-f64', 'soft-f64-convert', 'soft-f64-compare', 'soft-f64-to-int', 'soft-f64-log', 'soft-f64-trig-reduce', 'soft-f64-trig', 'soft-f64-polar', 'soft-f64-unary', 'integer-math', 'float'):
         if getattr(args, mode.replace('-', '_')):
             kind = mode
@@ -938,7 +941,21 @@ def main():
     else:
         result = subprocess.run(cmd, timeout=20)
     runner_kind = 'functions' if functions else 'expressions'
-    if not (args.input or args.messages) and (result.returncode != 33 or log.read_text() != f'PASS i386 {runner_kind}\n'):
+    runner_text=log.read_text()
+    publication_worker_turns=None
+    if args.ata_tasks:
+        rows=[line for line in runner_text.splitlines() if line.startswith('PUBLICATION TURNS ')]
+        if len(rows)==1:
+            fields=rows[0].split()
+            if len(fields)!=3 or len(fields[2])!=8:
+                raise ValueError('Malformed publication-worker turn count')
+            publication_worker_turns=int(fields[2],16)
+            if not 1<=publication_worker_turns<=1000:
+                raise ValueError('Publication-worker turn count exceeds fixture bound')
+            runner_text=runner_text.replace(rows[0]+'\n','',1)
+        elif result.returncode==33:
+            raise ValueError('Missing or duplicate publication-worker turn count')
+    if not (args.input or args.messages) and (result.returncode != 33 or runner_text != f'PASS i386 {runner_kind}\n'):
         raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
     if args.ata_tasks:
         commands = [int(line.rsplit('cmd 0x', 1)[1], 16)
@@ -1164,6 +1181,7 @@ def main():
            for name, digest in redsea_owned_inputs.items()):
         raise ValueError('RedSea allocation test sources changed during the run')
     (OUT/'result.json').write_text(json.dumps({'redsea_owned_source_sha256': redsea_owned_inputs,
+        'publication_worker_turns': publication_worker_turns,
         'owned_reservation_write_faults': 2 if args.redsea_alloc else 0,
         'owned_release_retry_cases': 2 if args.redsea_alloc else 0, 'cases': count, 'retained_task_core_cycles': 20 if args.task_runtime_core else 0, 'retained_task_discard_cycles': 20 if args.task_runtime_core else 0, 'retained_creator_discard_cases': 1 if args.task_runtime_core else 0, 'retained_cleanup_retry_cases': 1 if args.task_runtime_core else 0, 'cpu': '486,-fpu' if args.soft_f64_trig_reduce or args.soft_f64_polar or args.soft_f64_trig else '486',
         'boot_variants': 2 if args.memory else 1,

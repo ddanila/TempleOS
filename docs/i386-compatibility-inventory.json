@@ -11976,6 +11976,13 @@
           "result": "fail",
           "evidence": "build/i386-c4-drive-state-final-prerequisite-red/result.json",
           "scope": "Let2Drv is rejected by the preflight declaration; no setup or behavioral case executes"
+        },
+        {
+          "target": "native-backing-device-identity",
+          "command": "python3 tools/test-i386-block-device-identity.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-device-identity-api-native/result.json",
+          "scope": "15 public metadata/stability commands at 64 MiB; not Drv/Let2Drv behavior, device locking or complete drive compatibility"
         }
       ]
     },

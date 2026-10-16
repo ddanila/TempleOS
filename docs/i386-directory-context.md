@@ -73,9 +73,10 @@ boundaries:
   declared, with `BlockDevTypes.HH` supplying only device-kind constants.
   The shared complete record below resolves that declaration gap. Context
   deletion reads `old_dv->bd->flags`, so real device instances remain necessary.
-* `I386TaskFilesDrive` constructs stable public drive identities from mounted
-  RedSea volumes, but does not associate a real `CBlkDev` with them. Supply
-  accurate backing-device identity and state before relying on that field.
+* `I386TaskFilesDrive` initially constructed stable public drive identities
+  without backing-device records. The identity implementation below associates
+  them with their identified physical ATA disk. Full public device services,
+  locking, remapping and removable-media behavior remain separate work.
 * `I386TaskFilesNew` embeds the directory string immediately after its state
   allocation. Canonical context deletion's initialization-in-progress branch
   frees/replaces `Fs->cur_dir` directly. That branch cannot safely use an interior
@@ -158,4 +159,81 @@ resource gate. No new minimal-profile pass is claimed.
 python3 tools/test-i386-drive-state-reference.py --out OUT-original
 python3 tools/test-i386-drive-state.py IMAGE --out OUT-native
 python3 tools/test-i386-block-device-record.py IMAGE --out OUT-record
+```
+
+## Native backing-device identity (2026-10-16)
+
+Each `CI386Ata` now owns a complete canonical `CBlkDev` for the lifetime of the
+identified physical disk. Mounted `CDrv` records borrow that address; two
+volumes on the same disk share it, and different disks have distinct records.
+The record reports the real command/control-block base ports, unit, 512-byte
+sector size and accessible capacity. The native protocol submits one sector
+per command, so max_reads/max_writes are one; it advertises no software cache
+or removable-media support. Optional retained IDENTIFY, RAM and file records
+are NULL, rather than pointers into temporary or non-freeable storage.
+
+Successful identification preserves the same device's mount/initialization
+state, while a different channel/unit starts a fresh identity. Rejected decode
+profiles leave the entire destination unchanged. Issued read/write commands
+update the original last-write flag. Drive lookup preserves flags, refuses an
+invalid device signature and can recover after the signature is restored.
+This does not yet implement original public device locks, timestamps, retained
+IDENTIFY ownership, media replacement, Drv/Let2Drv or directory contexts.
+
+The first implementation reset metadata on every successful identification.
+The expanded protected-mode ATA fixture catches that as error 63 in
+`build/i386-c4-device-ata-reidentify-red`; its source snapshot and red-result
+manifest are retained. The repaired fixture passes in
+`build/i386-c4-device-ata-green`, including decode rejection preservation,
+same/different-device identification, real LBA28/CHS reads/writes, last-write
+flags, flushes, disk-byte verification and the instruction audit at 8 MiB on
+QEMU 486. This backend run is not the no-FPU normal OS startup gate.
+
+The extended fixture exceeded its former 128-sector bootstrap transfer limit
+(66382 bytes versus a 66048-byte limit). That harness failure is preserved in
+`build/i386-c4-device-ata-transport-failure`. Its test loader now reserves 160
+sectors; production boot limits and guest RAM are unchanged.
+
+The task suite initially stopped at publication-worker error 94. Diagnostic
+output proves the worker had file/stage state but had not finished after 100
+cooperative scheduler turns. A controlled rebuild with the pre-change ATA,
+task-file code and fixture reproduces the same error in
+`build/i386-c4-device-ata-tasks-baseline-control`; its control manifest pins the
+actual overriding sources and harness. This is not evidence of a new device
+identity regression. The fixture now waits up to 1000 turns and records the
+actual count, while retaining all finish, cleanup, heap, disk and command-order
+requirements. `build/i386-c4-device-ata-tasks-green` passes at 8 MiB on QEMU 486,
+observing 253 turns. New assertions cover shared/different device identities,
+flag preservation, invalid-signature recovery and inherited/changed task drives.
+
+The source-matching original bootstrap and final cross-build pass in
+`build/i386-c4-device-identity-final-cross`: 574056 kernel bytes, all 1481 source
+and 24 build-input hashes matching, both disk hashes verified and the limited
+386 boot audit passing. Independent reads of the two backend compiler ISOs
+confirm all 802/807 delivered compiler/kernel and selected fixture inputs match
+the workspace (`compiled-input-audit.json` in each passing backend directory).
+
+All 15 public identity commands pass at 64 MiB on TCG `486,-fpu` in
+`build/i386-c4-device-identity-api-native`, including real disk capacity and
+metadata stability across Cd with the initialization flag set. The same final
+harness rejects the preceding image's NULL device pointer in
+`build/i386-c4-device-identity-api-red`; inputs remain unchanged in both runs.
+The first native fixture reached its mutation step, then timed out because its
+empty expected output omitted the assignment's correct scalar result, 130.
+That attempt remains in `build/i386-c4-block-device-identity-native`. The final
+fixture uses a void helper, without changing any metadata expectation.
+
+Normal 8 MiB startup remains failed in
+`build/i386-c4-device-identity-startup-8m`: the first SPNext function definition
+exhausts the heap on a 1636-byte request with a largest free payload of 712
+bytes. Thus this candidate is not a minimal-profile replacement, despite its
+64 MiB metadata pass and 8 MiB isolated backend passes. Directory strings still
+use the incompatible interior-pointer ownership described above. Public drive
+services, resource recovery and C1–C5 remain open.
+
+```sh
+python3 tools/test-i386.py --ata --qmp-stdio
+python3 tools/test-i386.py --ata-tasks --qmp-stdio
+python3 tools/test-i386-block-device-identity.py IMAGE --out OUT-identity
+python3 tools/test-i386-startup-memory.py IMAGE --out OUT-startup
 ```

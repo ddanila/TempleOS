@@ -1,5 +1,6 @@
 #ifndef I386_ATA_INCLUDED
 #define I386_ATA_INCLUDED
+#include "/Kernel/BlkDev/BlockDevRecord.HH"
 class CI386AtaPoll {
   U8 *context;
   U0 (*step)(U8 *context);
@@ -9,6 +10,9 @@ class CI386Ata {
   U32 signature,sectors,cylinders,heads,sectors_per_track;
   U16 io,control;
   U8 drive,lba,flush;
+  //Same lifetime as the identified physical disk; mounted volumes borrow this
+  //canonical public record. Optional retained IDENTIFY/file/RAM records are NULL.
+  CBlkDev public_device;
 };
 //Internal shared protocol: optional synchronous poll callback, IF clear on return.
 //The caller owns channel exclusion, callback lifetime and touched initialization.

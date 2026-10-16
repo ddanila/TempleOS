@@ -13,6 +13,28 @@ the foundation, but does not establish desktop or application parity.
 
 ### Drive-state contracts and canonical block-device type (2026-10-16)
 
+**Backing-device follow-up:** identified native ATA disks now own persistent
+canonical CBlkDev records; mounted volumes borrow their actual device identity.
+Ports, unit, capacity, single-sector transfer limits and last-write flags reflect
+the native protocol. Optional retained/file/RAM records are NULL. An error-63
+regression first exposed same-device re-identification clearing mount/init state;
+the repair passes the full ATA fixture in `build/i386-c4-device-ata-green`.
+The task suite passes in `build/i386-c4-device-ata-tasks-green`, including shared
+and distinct device identities, flag/signature recovery and task inheritance.
+Its publication worker requires 253 cooperative turns; a pre-change control
+also fails the old 100-turn fixture bound. The bounded wait now records turns
+and retains all cleanup/heap/disk/command-order assertions. Backend tests use
+8 MiB on QEMU 486; these are not normal no-FPU OS startup passes.
+
+Bootstrap and `build/i386-c4-device-identity-final-cross` pass (574056 kernel
+bytes, all 1505 source/build pins and both disk hashes verified). All 15 public
+metadata commands pass at 64 MiB without an FPU in
+`build/i386-c4-device-identity-api-native`, paired with the old image's NULL-pointer
+red gate. Normal 8 MiB startup still fails, now at the first function definition
+(1636-byte request, largest free payload 712 bytes), in
+`build/i386-c4-device-identity-startup-8m`. Do not promote the minimal profile.
+Directory-string ownership, public drive/context services and C1–C5 remain open.
+
 Nine new original-system drive-state cases pass with masks of 31 and unchanged
 inputs in `build/i386-c4-drive-state-reference-fixed`. They cover lookup and
 boot/home aliases, zero/lowercase/uppercase same-drive resets, invalid lookup,

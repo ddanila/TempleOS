@@ -39,7 +39,10 @@ Bool I386AtaWait(U16 io,U8 mask,U8 wanted,Bool errors,I64 polls,CI386AtaPoll *po
 Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive)
 {//Decode a complete IDENTIFY response without I/O; publish only a usable profile.
   U32 cylinders,heads,spt,sectors;
-  Bool lba;
+  CBlkDev *bd;
+  U8 *bytes;
+  I64 i;
+  Bool lba,same_device;
   if (!disk || !words || channel<0 || channel>1 || drive<0 || drive>1 ||
       (words[0]&0x8000)) return FALSE;
   if ((words[106]&0xD000)==0x5000 && (words[117]!=256 || words[118])) return FALSE;
@@ -55,12 +58,27 @@ Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive)
     if (sectors>0x10000000) sectors=0x10000000;
   }
   if (!sectors) return FALSE;
+  bd=&disk->public_device;
+  same_device=disk->signature==0x41543332 && bd->bd_signature==BD_SIGNATURE_VAL &&
+    bd->type==BDT_ATA && disk->drive==drive &&
+    ((!channel && disk->io==0x1F0 && disk->control==0x3F6) ||
+     (channel && disk->io==0x170 && disk->control==0x376));
   disk->signature=0x41543332; disk->sectors=sectors;
   disk->cylinders=cylinders; disk->heads=heads; disk->sectors_per_track=spt;
   disk->io=0x1F0; disk->control=0x3F6;
   if (channel) { disk->io=0x170; disk->control=0x376; }
   disk->drive=drive; disk->lba=lba;
   disk->flush=(words[83]&0xD000)==0x5000;
+  if(!same_device) {
+    bytes=bd;for(i=0;i<sizeof(CBlkDev);i++)bytes[i]=0;
+  }
+  bd->type=BDT_ATA;bd->flags|=BDF_INITIALIZED;
+  bd->flags&=~BDF_LAST_WAS_WRITE;
+  bd->unit=drive;bd->base0=disk->io;bd->base1=disk->control-2;
+  bd->blk_size=512;bd->max_blk=sectors-1;
+  //This protocol submits one sector per command; it has no software read cache.
+  bd->max_reads=1;bd->max_writes=1;
+  bd->bd_signature=BD_SIGNATURE_VAL;
   return TRUE;
 }
 public Bool I386AtaIdentifyPolled(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll)
@@ -116,6 +134,8 @@ public Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool wri
   OutU8(io+1,0); OutU8(io+2,1);
   OutU8(io+3,sector); OutU8(io+4,cl); OutU8(io+5,ch);
   OutU8(io+7,command); I386AtaPause(disk->control);
+  if(write)disk->public_device.flags|=BDF_LAST_WAS_WRITE;
+  else disk->public_device.flags&=~BDF_LAST_WAS_WRITE;
   if (!I386AtaWait(io,8,8,TRUE,polls,poll)) return FALSE;
   if (write) {
     for (i=0;i<256;i++) OutU16(io,words[i]);

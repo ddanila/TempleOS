@@ -28,12 +28,17 @@ CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
   if(!volumes || drive<'A' || drive>'Z' || !(volume=volumes->letter[drive-'A'])) return 0;
   identity=&volumes->drives[drive-'A'];
   if(!I386RedSeaValid(volume)) {identity->dv_signature=0;return 0;}
+  if(volume->disk->public_device.bd_signature!=BD_SIGNATURE_VAL) {
+    identity->dv_signature=0;return 0;
+  }
   if(identity->dv_signature!=DRV_SIGNATURE_VAL) {
     bytes=identity;for(i=0;i<sizeof(CDrv);i++)bytes[i]=0;
   }
   identity->drv_let=drive; identity->fs_type=1; //Canonical FSt_REDSEA.
   identity->drv_offset=volume->start; identity->size=volume->sectors;
   identity->root_clus=volume->root;
+  identity->bd=&volume->disk->public_device;
+  if(!identity->bd->first_drv_let)identity->bd->first_drv_let=drive;
   identity->dv_signature=DRV_SIGNATURE_VAL;
   return identity;
 }

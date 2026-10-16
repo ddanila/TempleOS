@@ -5,6 +5,7 @@ CI386FileVolumes task_volumes;
 CFilePathContext task_environment;
 U32 task_white_space[8],task_files_done,task_files_busy;
 extern U0 DirectoryReader(I64 id);
+extern CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive);
 extern I64 I386ModuleStageWrite(U8 *context,U32 offset,U8 *buffer,U32 bytes);
 extern Bool I386ModuleStageSeal(CI386ModuleStage *stage);
 extern Bool I386ModuleStageUnwound(CI386ModuleStage *stage,Bool clean);
@@ -166,11 +167,25 @@ I64 PublicationWorkerTest(U8 *bitmap)
       !I386RedSeaEnd(&volumes[0]))return 92;
   worker=I386TaskSpawn(&scheduler,&heap,8192,&PublicationWorker,0,0x18,0x20,512);
   if(!worker)return 93;
-  for(i=0;i<100 && !worker->task.finished;i++)I386SchedYield(&scheduler);
+  //Each ATA wait yields cooperatively, including its initial status poll.
+  //Bound the fixture wait and report the actual turns; this is not a throughput gate.
+  for(i=0;i<1000 && !worker->task.finished;i++)I386SchedYield(&scheduler);
+  U8 *turn_label="PUBLICATION TURNS ";
+  while(*turn_label)OutU8(0xE9,*turn_label++);Diagnostic(i);OutU8(0xE9,10);
   if(!worker->task.finished || !publication_worker_done || !worker->task.file_state ||
-      !((worker->task.file_state(CI386TaskFiles *))->stage) ||
-      !I386TaskDestroy(worker) || heap.used!=used || heap.allocations!=allocations ||
-      volumes[0].signature || root.io_locks || channel.owner)return 94;
+      !((worker->task.file_state(CI386TaskFiles *))->stage)) {
+    Diagnostic(0x9401);Diagnostic(worker->task.finished);Diagnostic(publication_worker_done);
+    Diagnostic(worker->task.file_state!=0);
+    if(worker->task.file_state)Diagnostic((worker->task.file_state(CI386TaskFiles *))->stage!=0);
+    return 94;
+  }
+  if(!I386TaskDestroy(worker)){Diagnostic(0x9402);return 94;}
+  if(heap.used!=used || heap.allocations!=allocations ||
+      volumes[0].signature || root.io_locks || channel.owner) {
+    Diagnostic(0x9403);Diagnostic(heap.used);Diagnostic(used);
+    Diagnostic(heap.allocations);Diagnostic(allocations);Diagnostic(volumes[0].signature);
+    Diagnostic(root.io_locks);Diagnostic(channel.owner!=0);return 94;
+  }
   if(!(*volume_io.begin)(volume_io.context) || !I386RedSeaMount(&view,&disks[0],2048))return 95;
   view.io=&volume_io;
   if(!I386RedSeaSectorRead(&view,2050,current) ||
@@ -362,11 +377,31 @@ I64 TaskFilesTest()
   CI386TaskFiles *state;
   CFilePathContext paths;
   CI386FileVolumes *selected;
+  CDrv *first,*same,*second;
+  U32 device_flags;
   I64 i,round,used,allocations;
   task_environment.cur_dir="/One"; task_environment.cur_drv='C';
   task_environment.home_dir="C:/"; task_environment.boot_drv='C';
   task_environment.white_space=task_white_space;
   task_volumes.letter['C'-'A']=&volumes[0]; task_volumes.letter['D'-'A']=&volumes[1];
+  task_volumes.letter['E'-'A']=&volumes[0];
+  first=I386TaskFilesDrive(&task_volumes,'C');
+  same=I386TaskFilesDrive(&task_volumes,'E');
+  second=I386TaskFilesDrive(&task_volumes,'D');
+  if(!first || !same || !second || first==same || first->bd!=same->bd ||
+      first->bd==second->bd || first->bd!=&disks[0].public_device ||
+      second->bd!=&disks[1].public_device || first->bd->first_drv_let!='C' ||
+      second->bd->first_drv_let!='D')return 100;
+  device_flags=first->bd->flags;first->bd->flags|=BDF_INIT_IN_PROGRESS;
+  if(I386TaskFilesDrive(&task_volumes,'C')!=first ||
+      !(same->bd->flags&BDF_INIT_IN_PROGRESS))return 101;
+  first->bd->flags=device_flags;
+  disks[0].public_device.bd_signature=0;
+  if(I386TaskFilesDrive(&task_volumes,'C') || first->dv_signature)return 102;
+  disks[0].public_device.bd_signature=BD_SIGNATURE_VAL;
+  if(I386TaskFilesDrive(&task_volumes,'C')!=first ||
+      first->bd!=same->bd || first->bd->flags!=device_flags)return 103;
+  task_volumes.letter['E'-'A']=0;
   if(!I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes) ||
       I386TaskFilesInit(&root,&heap,&task_environment,&task_volumes)) return 30;
   used=heap.used; allocations=heap.allocations;
@@ -422,6 +457,7 @@ U0 DirectoryReader(I64 id)
   for(i=0;i<599;i++) huge[i]='a'; huge[0]='/'; huge[599]=0;
   if(I386TaskFilesSet(task,huge,'D')) { errors++; return; }
   if(id && !I386TaskFilesSet(task,"/Two",'D')) { errors++; return; }
+  if(!task->cur_dv || task->cur_dv->bd!=&disks[id].public_device) { errors++; return; }
   state=I386TaskFilesBorrow(task,&paths,&selected);
   if(!state || paths.cur_drv!='C'+id || paths.cur_dir[1]!="OT"(U8 *)[id]) { errors++; return; }
   name=I386FileNameAbs(&heap,&paths,"Local.BIN");
