@@ -19,7 +19,8 @@ The old native image fails the first case. MemoryRuntime 29 and FileRuntime 61
 now provide an explicit public file-birth policy while preserving the private
 constructor signature and inherited-context behavior. Bootstrap, cross-build,
 the seven native cases and the standalone ATA/task suite pass. The final mapped-root regression and private/retained task suites also pass.
-Public lifecycle for the final constructor layout is running; memory gates remain pending. The standalone task fixture exposed a pre-existing
+Public lifecycle for the final constructor layout passes at 8 MiB with the
+source disk unchanged; memory gates are queued on committed 7cf982e6. The standalone task fixture exposed a pre-existing
 missing bit-intrinsic declaration, reproduced on committed 4f4b4c48; its header
 fix passes both private task variants. See docs/i386-spawn-home.md. All 686 inventory qualifications
 and C1–C5 remain open.

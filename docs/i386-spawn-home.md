@@ -43,8 +43,10 @@ seven-case oracle passes with unchanged execution inputs
 (build/i386-c4-spawn-home-native-private-abi). The standalone ATA/task regression
 also passes. The final drive-map/root-growth regression passes with unchanged inputs and
 exact readback of all 83 files (build/i386-c4-spawn-home-drive-map-private-abi).
-Public task lifecycle for this revision is in progress; the preceding candidate
-passed it at 8 MiB. Memory gates remain pending.
+Public task lifecycle also passes at 8 MiB with the source disk unchanged
+(build/i386-c4-spawn-home-public-tasks-private-abi). Memory gates are queued
+against the isolated committed 7cf982e6 snapshot; its 1511 source and 24 build
+input hashes match the cross-build.
 
 The standalone private task regression exposed a pre-existing fixture dependency:
 AtaChannel.HC now uses Bt/LBts/LBtr, but this fixture omitted their declarations.
